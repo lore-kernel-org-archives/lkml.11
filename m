@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9EADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FFBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345825AbiAXTsU (ORCPT
+        id S1347913AbiAXTs0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:48:20 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35486 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344264AbiAXTiG (ORCPT
+        Mon, 24 Jan 2022 14:48:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344735AbiAXTiB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:38:06 -0500
+        Mon, 24 Jan 2022 14:38:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23256C034018;
+        Mon, 24 Jan 2022 11:17:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 067CE61525;
-        Mon, 24 Jan 2022 19:38:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6A97C340E7;
-        Mon, 24 Jan 2022 19:38:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC65461302;
+        Mon, 24 Jan 2022 19:17:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BC50C340E7;
+        Mon, 24 Jan 2022 19:17:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053085;
-        bh=FRukRTFFv3IyJWhgY9Oz80eIT2Q6q8nsT2qXjYOW4+U=;
+        s=korg; t=1643051854;
+        bh=EJgoFtTl4eify1IUXr818WdwvCYS5XNlYluJSAyTn+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TXQnSNGXW1QRBZMN/Ilq5AUytLKRPIBSxwecXiQrWXKXxhvpLvQMQ7JTPOp5QwBYB
-         jtSyNbNBJ5qXzm81evsXUu8q//Oe9p3mQLnpa3TfzeikCPOR4/n2lIugh7td7GQmTq
-         XgWLxLl16/Sr7EaYMq2JzbUN8N+KuUgfdb63RzJs=
+        b=dBmBIqdFTy0u1eCp4yoDwpD4w4E0zIjqshiPZyjQFjuGif1AEb8CTFVUytmuLuGRx
+         WOYi21zr6EeZjFvddbWb1JJtuNb2pwPxRxwBJRRqFiKE7fLih+HJTINcSLFx7WGttK
+         9Ez9QZWF0UJWGo0X2703qTKma3KCkgcvHKNBb9CY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jeroen van Wolffelaar <jeroen@wolffelaar.nl>,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.4 270/320] ext4: set csum seed in tmp inode while migrating to extents
-Date:   Mon, 24 Jan 2022 19:44:14 +0100
-Message-Id: <20220124184003.161692485@linuxfoundation.org>
+        stable@vger.kernel.org, Anton Vasilyev <vasilyev@ispras.ru>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 075/239] media: dw2102: Fix use after free
+Date:   Mon, 24 Jan 2022 19:41:53 +0100
+Message-Id: <20220124183945.506614198@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,55 +50,407 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luís Henriques <lhenriques@suse.de>
+From: Anton Vasilyev <vasilyev@ispras.ru>
 
-commit e81c9302a6c3c008f5c30beb73b38adb0170ff2d upstream.
+[ Upstream commit 589a9f0eb799f77de2c09583bf5bad221fa5d685 ]
 
-When migrating to extents, the temporary inode will have it's own checksum
-seed.  This means that, when swapping the inodes data, the inode checksums
-will be incorrect.
+dvb_usb_device_init stores parts of properties at d->props
+and d->desc and uses it on dvb_usb_device_exit.
+Free of properties on module probe leads to use after free.
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=204597
 
-This can be fixed by recalculating the extents checksums again.  Or simply
-by copying the seed into the temporary inode.
+The patch makes properties static instead of allocated on heap to prevent
+memleak and use after free.
+Also fixes s421_properties.devices initialization to have 2 element
+instead of 6 copied from p7500_properties.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213357
-Reported-by: Jeroen van Wolffelaar <jeroen@wolffelaar.nl>
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
-Link: https://lore.kernel.org/r/20211214175058.19511-1-lhenriques@suse.de
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[mchehab: fix function call alignments]
+Link: https://lore.kernel.org/linux-media/20190822104147.4420-1-vasilyev@ispras.ru
+Signed-off-by: Anton Vasilyev <vasilyev@ispras.ru>
+Fixes: 299c7007e936 ("media: dw2102: Fix memleak on sequence of probes")
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/migrate.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/media/usb/dvb-usb/dw2102.c | 338 ++++++++++++++++++-----------
+ 1 file changed, 215 insertions(+), 123 deletions(-)
 
---- a/fs/ext4/migrate.c
-+++ b/fs/ext4/migrate.c
-@@ -477,6 +477,17 @@ int ext4_ext_migrate(struct inode *inode
- 		ext4_journal_stop(handle);
- 		goto out_unlock;
+diff --git a/drivers/media/usb/dvb-usb/dw2102.c b/drivers/media/usb/dvb-usb/dw2102.c
+index 9ce8b4d79d1fa..ebb0c982a6f21 100644
+--- a/drivers/media/usb/dvb-usb/dw2102.c
++++ b/drivers/media/usb/dvb-usb/dw2102.c
+@@ -2101,46 +2101,153 @@ static struct dvb_usb_device_properties s6x0_properties = {
  	}
-+	/*
-+	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
-+	 * is so that the metadata blocks will have the correct checksum after
-+	 * the migration.
-+	 *
-+	 * Note however that, if a crash occurs during the migration process,
-+	 * the recovery process is broken because the tmp_inode checksums will
-+	 * be wrong and the orphans cleanup will fail.
-+	 */
-+	ei = EXT4_I(inode);
-+	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
- 	i_size_write(tmp_inode, i_size_read(inode));
- 	/*
- 	 * Set the i_nlink to zero so it will be deleted later
-@@ -520,7 +531,6 @@ int ext4_ext_migrate(struct inode *inode
- 		goto out_tmp_inode;
+ };
+ 
+-static const struct dvb_usb_device_description d1100 = {
+-	"Prof 1100 USB ",
+-	{&dw2102_table[PROF_1100], NULL},
+-	{NULL},
+-};
++static struct dvb_usb_device_properties p1100_properties = {
++	.caps = DVB_USB_IS_AN_I2C_ADAPTER,
++	.usb_ctrl = DEVICE_SPECIFIC,
++	.size_of_priv = sizeof(struct dw2102_state),
++	.firmware = P1100_FIRMWARE,
++	.no_reconnect = 1,
+ 
+-static const struct dvb_usb_device_description d660 = {
+-	"TeVii S660 USB",
+-	{&dw2102_table[TEVII_S660], NULL},
+-	{NULL},
+-};
++	.i2c_algo = &s6x0_i2c_algo,
++	.rc.core = {
++		.rc_interval = 150,
++		.rc_codes = RC_MAP_TBS_NEC,
++		.module_name = "dw2102",
++		.allowed_protos   = RC_PROTO_BIT_NEC,
++		.rc_query = prof_rc_query,
++	},
+ 
+-static const struct dvb_usb_device_description d480_1 = {
+-	"TeVii S480.1 USB",
+-	{&dw2102_table[TEVII_S480_1], NULL},
+-	{NULL},
++	.generic_bulk_ctrl_endpoint = 0x81,
++	.num_adapters = 1,
++	.download_firmware = dw2102_load_firmware,
++	.read_mac_address = s6x0_read_mac_address,
++	.adapter = {
++		{
++			.num_frontends = 1,
++			.fe = {{
++				.frontend_attach = stv0288_frontend_attach,
++				.stream = {
++					.type = USB_BULK,
++					.count = 8,
++					.endpoint = 0x82,
++					.u = {
++						.bulk = {
++							.buffersize = 4096,
++						}
++					}
++				},
++			} },
++		}
++	},
++	.num_device_descs = 1,
++	.devices = {
++		{"Prof 1100 USB ",
++			{&dw2102_table[PROF_1100], NULL},
++			{NULL},
++		},
++	}
+ };
+ 
+-static const struct dvb_usb_device_description d480_2 = {
+-	"TeVii S480.2 USB",
+-	{&dw2102_table[TEVII_S480_2], NULL},
+-	{NULL},
+-};
++static struct dvb_usb_device_properties s660_properties = {
++	.caps = DVB_USB_IS_AN_I2C_ADAPTER,
++	.usb_ctrl = DEVICE_SPECIFIC,
++	.size_of_priv = sizeof(struct dw2102_state),
++	.firmware = S660_FIRMWARE,
++	.no_reconnect = 1,
+ 
+-static const struct dvb_usb_device_description d7500 = {
+-	"Prof 7500 USB DVB-S2",
+-	{&dw2102_table[PROF_7500], NULL},
+-	{NULL},
+-};
++	.i2c_algo = &s6x0_i2c_algo,
++	.rc.core = {
++		.rc_interval = 150,
++		.rc_codes = RC_MAP_TEVII_NEC,
++		.module_name = "dw2102",
++		.allowed_protos   = RC_PROTO_BIT_NEC,
++		.rc_query = dw2102_rc_query,
++	},
+ 
+-static const struct dvb_usb_device_description d421 = {
+-	"TeVii S421 PCI",
+-	{&dw2102_table[TEVII_S421], NULL},
+-	{NULL},
++	.generic_bulk_ctrl_endpoint = 0x81,
++	.num_adapters = 1,
++	.download_firmware = dw2102_load_firmware,
++	.read_mac_address = s6x0_read_mac_address,
++	.adapter = {
++		{
++			.num_frontends = 1,
++			.fe = {{
++				.frontend_attach = ds3000_frontend_attach,
++				.stream = {
++					.type = USB_BULK,
++					.count = 8,
++					.endpoint = 0x82,
++					.u = {
++						.bulk = {
++							.buffersize = 4096,
++						}
++					}
++				},
++			} },
++		}
++	},
++	.num_device_descs = 3,
++	.devices = {
++		{"TeVii S660 USB",
++			{&dw2102_table[TEVII_S660], NULL},
++			{NULL},
++		},
++		{"TeVii S480.1 USB",
++			{&dw2102_table[TEVII_S480_1], NULL},
++			{NULL},
++		},
++		{"TeVii S480.2 USB",
++			{&dw2102_table[TEVII_S480_2], NULL},
++			{NULL},
++		},
++	}
+ };
+ 
+-static const struct dvb_usb_device_description d632 = {
+-	"TeVii S632 USB",
+-	{&dw2102_table[TEVII_S632], NULL},
+-	{NULL},
++static struct dvb_usb_device_properties p7500_properties = {
++	.caps = DVB_USB_IS_AN_I2C_ADAPTER,
++	.usb_ctrl = DEVICE_SPECIFIC,
++	.size_of_priv = sizeof(struct dw2102_state),
++	.firmware = P7500_FIRMWARE,
++	.no_reconnect = 1,
++
++	.i2c_algo = &s6x0_i2c_algo,
++	.rc.core = {
++		.rc_interval = 150,
++		.rc_codes = RC_MAP_TBS_NEC,
++		.module_name = "dw2102",
++		.allowed_protos   = RC_PROTO_BIT_NEC,
++		.rc_query = prof_rc_query,
++	},
++
++	.generic_bulk_ctrl_endpoint = 0x81,
++	.num_adapters = 1,
++	.download_firmware = dw2102_load_firmware,
++	.read_mac_address = s6x0_read_mac_address,
++	.adapter = {
++		{
++			.num_frontends = 1,
++			.fe = {{
++				.frontend_attach = prof_7500_frontend_attach,
++				.stream = {
++					.type = USB_BULK,
++					.count = 8,
++					.endpoint = 0x82,
++					.u = {
++						.bulk = {
++							.buffersize = 4096,
++						}
++					}
++				},
++			} },
++		}
++	},
++	.num_device_descs = 1,
++	.devices = {
++		{"Prof 7500 USB DVB-S2",
++			{&dw2102_table[PROF_7500], NULL},
++			{NULL},
++		},
++	}
+ };
+ 
+ static struct dvb_usb_device_properties su3000_properties = {
+@@ -2212,6 +2319,59 @@ static struct dvb_usb_device_properties su3000_properties = {
+ 	}
+ };
+ 
++static struct dvb_usb_device_properties s421_properties = {
++	.caps = DVB_USB_IS_AN_I2C_ADAPTER,
++	.usb_ctrl = DEVICE_SPECIFIC,
++	.size_of_priv = sizeof(struct dw2102_state),
++	.power_ctrl = su3000_power_ctrl,
++	.num_adapters = 1,
++	.identify_state	= su3000_identify_state,
++	.i2c_algo = &su3000_i2c_algo,
++
++	.rc.core = {
++		.rc_interval = 150,
++		.rc_codes = RC_MAP_SU3000,
++		.module_name = "dw2102",
++		.allowed_protos   = RC_PROTO_BIT_RC5,
++		.rc_query = su3000_rc_query,
++	},
++
++	.read_mac_address = su3000_read_mac_address,
++
++	.generic_bulk_ctrl_endpoint = 0x01,
++
++	.adapter = {
++		{
++		.num_frontends = 1,
++		.fe = {{
++			.streaming_ctrl   = su3000_streaming_ctrl,
++			.frontend_attach  = m88rs2000_frontend_attach,
++			.stream = {
++				.type = USB_BULK,
++				.count = 8,
++				.endpoint = 0x82,
++				.u = {
++					.bulk = {
++						.buffersize = 4096,
++					}
++				}
++			}
++		} },
++		}
++	},
++	.num_device_descs = 2,
++	.devices = {
++		{ "TeVii S421 PCI",
++			{ &dw2102_table[TEVII_S421], NULL },
++			{ NULL },
++		},
++		{ "TeVii S632 USB",
++			{ &dw2102_table[TEVII_S632], NULL },
++			{ NULL },
++		},
++	}
++};
++
+ static struct dvb_usb_device_properties t220_properties = {
+ 	.caps = DVB_USB_IS_AN_I2C_ADAPTER,
+ 	.usb_ctrl = DEVICE_SPECIFIC,
+@@ -2329,101 +2489,33 @@ static struct dvb_usb_device_properties tt_s2_4600_properties = {
+ static int dw2102_probe(struct usb_interface *intf,
+ 		const struct usb_device_id *id)
+ {
+-	int retval = -ENOMEM;
+-	struct dvb_usb_device_properties *p1100;
+-	struct dvb_usb_device_properties *s660;
+-	struct dvb_usb_device_properties *p7500;
+-	struct dvb_usb_device_properties *s421;
+-
+-	p1100 = kmemdup(&s6x0_properties,
+-			sizeof(struct dvb_usb_device_properties), GFP_KERNEL);
+-	if (!p1100)
+-		goto err0;
+-
+-	/* copy default structure */
+-	/* fill only different fields */
+-	p1100->firmware = P1100_FIRMWARE;
+-	p1100->devices[0] = d1100;
+-	p1100->rc.core.rc_query = prof_rc_query;
+-	p1100->rc.core.rc_codes = RC_MAP_TBS_NEC;
+-	p1100->adapter->fe[0].frontend_attach = stv0288_frontend_attach;
+-
+-	s660 = kmemdup(&s6x0_properties,
+-		       sizeof(struct dvb_usb_device_properties), GFP_KERNEL);
+-	if (!s660)
+-		goto err1;
+-
+-	s660->firmware = S660_FIRMWARE;
+-	s660->num_device_descs = 3;
+-	s660->devices[0] = d660;
+-	s660->devices[1] = d480_1;
+-	s660->devices[2] = d480_2;
+-	s660->adapter->fe[0].frontend_attach = ds3000_frontend_attach;
+-
+-	p7500 = kmemdup(&s6x0_properties,
+-			sizeof(struct dvb_usb_device_properties), GFP_KERNEL);
+-	if (!p7500)
+-		goto err2;
+-
+-	p7500->firmware = P7500_FIRMWARE;
+-	p7500->devices[0] = d7500;
+-	p7500->rc.core.rc_query = prof_rc_query;
+-	p7500->rc.core.rc_codes = RC_MAP_TBS_NEC;
+-	p7500->adapter->fe[0].frontend_attach = prof_7500_frontend_attach;
+-
+-
+-	s421 = kmemdup(&su3000_properties,
+-		       sizeof(struct dvb_usb_device_properties), GFP_KERNEL);
+-	if (!s421)
+-		goto err3;
+-
+-	s421->num_device_descs = 2;
+-	s421->devices[0] = d421;
+-	s421->devices[1] = d632;
+-	s421->adapter->fe[0].frontend_attach = m88rs2000_frontend_attach;
+-
+-	if (0 == dvb_usb_device_init(intf, &dw2102_properties,
+-			THIS_MODULE, NULL, adapter_nr) ||
+-	    0 == dvb_usb_device_init(intf, &dw2104_properties,
+-			THIS_MODULE, NULL, adapter_nr) ||
+-	    0 == dvb_usb_device_init(intf, &dw3101_properties,
+-			THIS_MODULE, NULL, adapter_nr) ||
+-	    0 == dvb_usb_device_init(intf, &s6x0_properties,
+-			THIS_MODULE, NULL, adapter_nr) ||
+-	    0 == dvb_usb_device_init(intf, p1100,
+-			THIS_MODULE, NULL, adapter_nr) ||
+-	    0 == dvb_usb_device_init(intf, s660,
+-			THIS_MODULE, NULL, adapter_nr) ||
+-	    0 == dvb_usb_device_init(intf, p7500,
+-			THIS_MODULE, NULL, adapter_nr) ||
+-	    0 == dvb_usb_device_init(intf, s421,
+-			THIS_MODULE, NULL, adapter_nr) ||
+-	    0 == dvb_usb_device_init(intf, &su3000_properties,
+-			 THIS_MODULE, NULL, adapter_nr) ||
+-	    0 == dvb_usb_device_init(intf, &t220_properties,
+-			 THIS_MODULE, NULL, adapter_nr) ||
+-	    0 == dvb_usb_device_init(intf, &tt_s2_4600_properties,
+-			 THIS_MODULE, NULL, adapter_nr)) {
+-
+-		/* clean up copied properties */
+-		kfree(s421);
+-		kfree(p7500);
+-		kfree(s660);
+-		kfree(p1100);
++	if (!(dvb_usb_device_init(intf, &dw2102_properties,
++			          THIS_MODULE, NULL, adapter_nr) &&
++	      dvb_usb_device_init(intf, &dw2104_properties,
++				  THIS_MODULE, NULL, adapter_nr) &&
++	      dvb_usb_device_init(intf, &dw3101_properties,
++			          THIS_MODULE, NULL, adapter_nr) &&
++	      dvb_usb_device_init(intf, &s6x0_properties,
++			          THIS_MODULE, NULL, adapter_nr) &&
++	      dvb_usb_device_init(intf, &p1100_properties,
++			          THIS_MODULE, NULL, adapter_nr) &&
++	      dvb_usb_device_init(intf, &s660_properties,
++				  THIS_MODULE, NULL, adapter_nr) &&
++	      dvb_usb_device_init(intf, &p7500_properties,
++				  THIS_MODULE, NULL, adapter_nr) &&
++	      dvb_usb_device_init(intf, &s421_properties,
++				  THIS_MODULE, NULL, adapter_nr) &&
++	      dvb_usb_device_init(intf, &su3000_properties,
++				  THIS_MODULE, NULL, adapter_nr) &&
++	      dvb_usb_device_init(intf, &t220_properties,
++				  THIS_MODULE, NULL, adapter_nr) &&
++	      dvb_usb_device_init(intf, &tt_s2_4600_properties,
++				  THIS_MODULE, NULL, adapter_nr))) {
+ 
+ 		return 0;
  	}
  
--	ei = EXT4_I(inode);
- 	i_data = ei->i_data;
- 	memset(&lb, 0, sizeof(lb));
+-	retval = -ENODEV;
+-	kfree(s421);
+-err3:
+-	kfree(p7500);
+-err2:
+-	kfree(s660);
+-err1:
+-	kfree(p1100);
+-err0:
+-	return retval;
++	return -ENODEV;
+ }
  
+ static void dw2102_disconnect(struct usb_interface *intf)
+-- 
+2.34.1
+
 
 
