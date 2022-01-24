@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F836C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EA6C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345986AbiAXTEx (ORCPT
+        id S1346045AbiAXTE7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:04:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344554AbiAXS6D (ORCPT
+        Mon, 24 Jan 2022 14:04:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55670 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344468AbiAXS6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:58:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07FD6C0613E8;
-        Mon, 24 Jan 2022 10:55:33 -0800 (PST)
+        Mon, 24 Jan 2022 13:58:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B85CAB8122C;
-        Mon, 24 Jan 2022 18:55:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C696FC340E5;
-        Mon, 24 Jan 2022 18:55:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 007CF61566;
+        Mon, 24 Jan 2022 18:58:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B521FC340E5;
+        Mon, 24 Jan 2022 18:58:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050530;
-        bh=6eJMNFLC4J4YXEf8UTR8rPyP5Sm6y2D30rxDWjAaccU=;
+        s=korg; t=1643050711;
+        bh=+XtKoOjpVtsjzrCJegCHfhUIBfJ+lHSZtrtZyDlAyA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RlLBnA6vHwwoO2gTXb6t8kzAqOnlnN1xMYgnqz+guPypnl4xrautXQE11f+mA86Q4
-         P15imPggJTp68hERIggNIaEIozQ6ytpegSr1Y5opRb1P026QIGKtZsBlzzE6W+QPYB
-         yjRjxpIl2st27GJkxbnuWZH9/6bMAmSv6ecnxbUo=
+        b=EEgP12C5wTXb0f+sotmAXuaGiuurV3UwXaGvPnWiJNkv981ipzjZ3SfHddzLSOgV1
+         I6Hl1yk/KGRw8y3gntfvfKDgS1MfUeOt2RwgQKbtImBU36f3YYDDLgEXpbFVgd1ILX
+         yECXRDYmBO5WdC6A9BJKc6f994x7UbbHS1ihFrj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
-Subject: [PATCH 4.9 031/157] Bluetooth: stop proccessing malicious adv data
-Date:   Mon, 24 Jan 2022 19:42:01 +0100
-Message-Id: <20220124183933.790385755@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Young <sean@mess.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 089/157] media: igorplugusb: receiver overflow should be reported
+Date:   Mon, 24 Jan 2022 19:42:59 +0100
+Message-Id: <20220124183935.608122385@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -51,52 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Sean Young <sean@mess.org>
 
-[ Upstream commit 3a56ef719f0b9682afb8a86d64b2399e36faa4e6 ]
+[ Upstream commit 8fede658e7ddb605bbd68ed38067ddb0af033db4 ]
 
-Syzbot reported slab-out-of-bounds read in hci_le_adv_report_evt(). The
-problem was in missing validaion check.
+Without this, some IR will be missing mid-stream and we might decode
+something which never really occurred.
 
-We should check if data is not malicious and we can read next data block.
-If we won't check ptr validness, code can read a way beyond skb->end and
-it can cause problems, of course.
-
-Fixes: e95beb414168 ("Bluetooth: hci_le_adv_report_evt code refactoring")
-Reported-and-tested-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sean Young <sean@mess.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/media/rc/igorplugusb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index f9484755a9baf..17cfd9f8e98e0 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4967,7 +4967,8 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		struct hci_ev_le_advertising_info *ev = ptr;
- 		s8 rssi;
- 
--		if (ev->length <= HCI_MAX_AD_LENGTH) {
-+		if (ev->length <= HCI_MAX_AD_LENGTH &&
-+		    ev->data + ev->length <= skb_tail_pointer(skb)) {
- 			rssi = ev->data[ev->length];
- 			process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
- 					   ev->bdaddr_type, NULL, 0, rssi,
-@@ -4977,6 +4978,11 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		}
- 
- 		ptr += sizeof(*ev) + ev->length + 1;
-+
-+		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
-+			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
-+			break;
+diff --git a/drivers/media/rc/igorplugusb.c b/drivers/media/rc/igorplugusb.c
+index 5cf983be07a20..0f4c4c39bf6da 100644
+--- a/drivers/media/rc/igorplugusb.c
++++ b/drivers/media/rc/igorplugusb.c
+@@ -73,9 +73,11 @@ static void igorplugusb_irdata(struct igorplugusb *ir, unsigned len)
+ 	if (start >= len) {
+ 		dev_err(ir->dev, "receive overflow invalid: %u", overflow);
+ 	} else {
+-		if (overflow > 0)
++		if (overflow > 0) {
+ 			dev_warn(ir->dev, "receive overflow, at least %u lost",
+ 								overflow);
++			ir_raw_event_reset(ir->rc);
 +		}
- 	}
  
- 	hci_dev_unlock(hdev);
+ 		do {
+ 			rawir.duration = ir->buf_in[i] * 85333;
 -- 
 2.34.1
 
