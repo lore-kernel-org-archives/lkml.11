@@ -2,92 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA7BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C01C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238709AbiAXOx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:53:56 -0500
-Received: from mga01.intel.com ([192.55.52.88]:63871 "EHLO mga01.intel.com"
+        id S238634AbiAXO61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:58:27 -0500
+Received: from foss.arm.com ([217.140.110.172]:36858 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231403AbiAXOxz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:53:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643036035; x=1674572035;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=HsIRnM64QqAoEu0GEH2hXeq3tAM799zncK8DTVzxh58=;
-  b=By3dSiN0tpelwrSV7D/j0O/mTJUaZLy3RIrBh5l656tcH+6/IlyqmTlJ
-   KiDlp9mAmkartjqljfSDpPbbRfYHfVmclDOsEsNt/z2cw554VHAw4TQCy
-   D9sHhp1JrIka+L3MjfV5Q/RMchDqjfusioZWbMscrCga2b2jbYf22EnNk
-   ujEJGMwflAMZtrfhsQ7NP2mGswIJEYT8PjH/VJPpjk0gcIlny3UNiv1KQ
-   R9IkjYjmj3nb8QCIMhpUErM+BGj1ZhwxUEFbLZtmTZWOcUpf8/kr93JAL
-   U/pHp9sJVKNHDU52sG9bhSCZnddY01FT6q0tYFyTibyT4rKuxtwLFbHhe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270496511"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="270496511"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:53:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="562677786"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga001.jf.intel.com with ESMTP; 24 Jan 2022 06:53:52 -0800
+        id S231260AbiAXO6X (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 09:58:23 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CAFC86D;
+        Mon, 24 Jan 2022 06:58:21 -0800 (PST)
+Received: from [10.57.39.131] (unknown [10.57.39.131])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2DDD73F7D8;
+        Mon, 24 Jan 2022 06:58:20 -0800 (PST)
+Subject: Re: [RFC PATCH 1/1] perf/core: Wake up parent event if inherited
+ event has no ring buffer
 To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>
-References: <YajkzwmWQua3Kh6A@hirez.programming.kicks-ass.net>
- <105f35d2-3c53-b550-bfb4-aa340d31128e@linux.intel.com>
- <88f466ff-a065-1e9a-4226-0abe2e71b686@linux.intel.com>
- <972a0e28-ad63-9766-88da-02743f80181b@intel.com> <Yao35lElOkwtBYEb@kroah.com>
- <c2b5c9bb-1b75-bf56-3754-b5b18812d65e@linux.intel.com>
- <YbyWuxoBSicFBGuv@hirez.programming.kicks-ass.net>
- <YcGhIm7yqYPk4Nuu@hirez.programming.kicks-ass.net>
- <YeE4rtq6t73OxOi+@hirez.programming.kicks-ass.net>
- <cd534ff9-e500-c7ea-426a-347ac2b0830b@linux.intel.com>
- <YeLxE3zQ7Vexk3gv@hirez.programming.kicks-ass.net>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: earlyprintk=xdbc seems broken
-Message-ID: <dfb311e3-1a83-31a2-3c82-fd982c0757f6@linux.intel.com>
-Date:   Mon, 24 Jan 2022 16:55:22 +0200
+Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
+        namhyung@kernel.org, linux-perf-users@vger.kernel.org,
+        leo.yan@linaro.com, Suzuki.Poulose@arm.com,
+        Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
+        linux-kernel@vger.kernel.org
+References: <20211206113840.130802-1-james.clark@arm.com>
+ <20211206113840.130802-2-james.clark@arm.com>
+ <Ye6SR0yxTrkNUQF6@hirez.programming.kicks-ass.net>
+From:   James Clark <james.clark@arm.com>
+Message-ID: <a4b64cff-f3f1-e6ad-38e9-b65a113ce561@arm.com>
+Date:   Mon, 24 Jan 2022 14:58:18 +0000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <YeLxE3zQ7Vexk3gv@hirez.programming.kicks-ass.net>
+In-Reply-To: <Ye6SR0yxTrkNUQF6@hirez.programming.kicks-ass.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- 
-> [    0.000000] xhci_dbc:early_xdbc_parse_parameter: dbgp_num: 0
-> [    4.984106] xhci_dbc:xdbc_start: waiting for connection timed out, DCPORTSC:0xa0
-> [    9.946159] xhci_dbc:xdbc_start: waiting for connection timed out, DCPORTSC:0xa0
-> [    9.946163] xhci_dbc:early_xdbc_setup_hardware: failed to setup the connection to host
->
-> [   12.818364] xhci_hcd 0000:00:0d.0: xHCI Host Controller
-> [   12.818373] xhci_hcd 0000:00:0d.0: new USB bus registered, assigned bus number 1
-> [   12.820360] xhci_hcd 0000:00:0d.0: xHCI Host Controller
-> [   12.820363] xhci_hcd 0000:00:0d.0: new USB bus registered, assigned bus number 2
-> [   12.821036] xhci_hcd 0000:00:14.0: xHCI Host Controller
-> [   12.821040] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 3
-> [   12.823451] xhci_hcd 0000:00:14.0: xHCI Host Controller
-> [   12.823453] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 4
-> [   17.115089] usb usb4-port4: Cannot enable. Maybe the USB cable is bad?
-> [   17.115163] usb usb4-port4: config error
 
-Ok, I see it now.
-Your setup has two xhci controllers, earlypringk=dbc enables dbc on the first xhci
-it finds, which would be at 0000:00:0d.0.
-Your cable is connected to the second xhci host at 0000:00:14.0
 
-does using "earlyprintk=xdbc1" work?
+On 24/01/2022 11:49, Peter Zijlstra wrote:
+> On Mon, Dec 06, 2021 at 11:38:40AM +0000, James Clark wrote:
+>> When using per-process mode and event inheritance is set to true, forked
+>> processes will create a new perf events via inherit_event() ->
+>> perf_event_alloc(). But these events will not have ring buffers assigned
+>> to them. Any call to wakeup will be dropped if it's called on an event
+>> with no ring buffer assigned because that's the object that holds the
+>> wakeup list.
+>>
+>> If the child event is disabled due to a call to perf_aux_output_begin()
+>> or perf_aux_output_end(), the wakeup is dropped leaving userspace
+>> hanging forever on the poll.
+>>
+>> Normally the event is explicitly re-enabled by userspace after it wakes
+>> up to read the aux data, but in this case it does not get woken up so
+>> the event remains disabled.
+>>
+>> This can be reproduced when using Arm SPE and 'stress' which forks once
+>> before running the workload. By looking at the list of aux buffers read,
+>> it's apparent that they stop after the fork:
+>>
+>>   perf record -e arm_spe// -vvv -- stress -c 1
+>>
+>> With this patch applied they continue to be printed. This behaviour
+>> doesn't happen when using systemwide or per-cpu mode.
+>>
+>> Reported-by: Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>
+>> Signed-off-by: James Clark <james.clark@arm.com>
+>> ---
+> 
+> Would this be the better patch?
+
+Yes I tested this and it also works. There is one other suspicious access
+of ->rb followed by if(rb) here in perf_poll(), but maybe it works out ok?
+
+	mutex_lock(&event->mmap_mutex);
+	rb = event->rb;
+	if (rb)
+		events = atomic_xchg(&rb->poll, 0);
+
+We also have a Perf self test that covers this failure for Arm SPE now, I'm not
+sure if I should post that separately or with your new version of this fix?
 
 Thanks
--Mathias
+James
+ 
+> 
+> 
+> ---
+> diff --git a/kernel/events/core.c b/kernel/events/core.c
+> index 479c9e672ec4..b1c1928c0e7c 100644
+> --- a/kernel/events/core.c
+> +++ b/kernel/events/core.c
+> @@ -5985,6 +5985,8 @@ static void ring_buffer_attach(struct perf_event *event,
+>  	struct perf_buffer *old_rb = NULL;
+>  	unsigned long flags;
+>  
+> +	WARN_ON_ONCE(event->parent);
+> +
+>  	if (event->rb) {
+>  		/*
+>  		 * Should be impossible, we set this when removing
+> @@ -6042,6 +6044,9 @@ static void ring_buffer_wakeup(struct perf_event *event)
+>  {
+>  	struct perf_buffer *rb;
+>  
+> +	if (event->parent)
+> +		event = event->parent;
+> +
+>  	rcu_read_lock();
+>  	rb = rcu_dereference(event->rb);
+>  	if (rb) {
+> @@ -6055,6 +6060,9 @@ struct perf_buffer *ring_buffer_get(struct perf_event *event)
+>  {
+>  	struct perf_buffer *rb;
+>  
+> +	if (event->parent)
+> +		event = event->parent;
+> +
+>  	rcu_read_lock();
+>  	rb = rcu_dereference(event->rb);
+>  	if (rb) {
+> @@ -6763,7 +6771,7 @@ static unsigned long perf_prepare_sample_aux(struct perf_event *event,
+>  	if (WARN_ON_ONCE(READ_ONCE(sampler->oncpu) != smp_processor_id()))
+>  		goto out;
+>  
+> -	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
+> +	rb = ring_buffer_get(sampler);
+>  	if (!rb)
+>  		goto out;
+>  
+> @@ -6829,7 +6837,7 @@ static void perf_aux_sample_output(struct perf_event *event,
+>  	if (WARN_ON_ONCE(!sampler || !data->aux_size))
+>  		return;
+>  
+> -	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
+> +	rb = ring_buffer_get(sampler);
+>  	if (!rb)
+>  		return;
+>  
+> 
