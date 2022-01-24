@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC231C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EFA3C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586352AbiAXW0S (ORCPT
+        id S1586400AbiAXW0X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:26:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51424 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453775AbiAXVay (ORCPT
+        Mon, 24 Jan 2022 17:26:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41100 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359700AbiAXV07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:30:54 -0500
+        Mon, 24 Jan 2022 16:26:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F71A614DD;
-        Mon, 24 Jan 2022 21:30:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7A7FC340E7;
-        Mon, 24 Jan 2022 21:30:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F024B811A2;
+        Mon, 24 Jan 2022 21:26:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B74DFC340E4;
+        Mon, 24 Jan 2022 21:26:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059851;
-        bh=PVz8ZLaocFB/t0tWMTtejzI8NBaFzsQAP49wgSYBZck=;
+        s=korg; t=1643059616;
+        bh=0NPR2GEkXmlKshR2DCdw5F1yXLjr3XEZ5JAnE8LMcEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OoMghYkZMvsWBRrs4lRyGxHTP0niN1mzwX7Slqele+2yX0yRFg3o/Jr2HRnV8W89v
-         +a8+QdPzR9S0vbv14jTZj0ot7vCqf1IuFKO8dRpSrCCG5ztTYw2eyfUKy0syei6InN
-         Q1OaCcnyRhEKuPFFEfbrmg+tKDfJjhhtelK5yIXk=
+        b=YlN9bp9oMRbjuGrcQktLgo20UfiOkYFRw0fqE8ITFyF+EaG4/8W2xIu7s5H4LdtKm
+         mPCW/6NP1pmzF5fmoOOt0dtuuFR+Qm2sVZKUFsZpaAelv9InkIH2rxfpZPyRy9El+m
+         aimCXK+ZweAMvKqnGkgEYYIfRiqhBymCLtX2IkUw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0754/1039] scsi: lpfc: Fix leaked lpfc_dmabuf mbox allocations with NPIV
-Date:   Mon, 24 Jan 2022 19:42:23 +0100
-Message-Id: <20220124184150.679689672@linuxfoundation.org>
+Subject: [PATCH 5.16 0675/1039] ath9k_htc: fix NULL pointer dereference at ath9k_htc_rxep()
+Date:   Mon, 24 Jan 2022 19:41:04 +0100
+Message-Id: <20220124184148.057636054@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,119 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
 
-[ Upstream commit f0d3919697492950f57a26a1093aee53880d669d ]
+[ Upstream commit b0ec7e55fce65f125bd1d7f02e2dc4de62abee34 ]
 
-During rmmod testing, messages appeared indicating lpfc_mbuf_pool entries
-were still busy. This situation was only seen doing rmmod after at least 1
-vport (NPIV) instance was created and destroyed. The number of messages
-scaled with the number of vports created.
+syzbot is reporting lockdep warning followed by kernel panic at
+ath9k_htc_rxep() [1], for ath9k_htc_rxep() depends on ath9k_rx_init()
+being already completed.
 
-When a vport is created, it can receive a PLOGI from another initiator
-Nport.  When this happens, the driver prepares to ack the PLOGI and
-prepares an RPI for registration (via mbx cmd) which includes an mbuf
-allocation. During the unsolicited PLOGI processing and after the RPI
-preparation, the driver recognizes it is one of the vport instances and
-decides to reject the PLOGI. During the LS_RJT preparation for the PLOGI,
-the mailbox struct allocated for RPI registration is freed, but the mbuf
-that was also allocated is not released.
+Since ath9k_htc_rxep() is set by ath9k_htc_connect_svc(WMI_BEACON_SVC)
+ from ath9k_init_htc_services(), it is possible that ath9k_htc_rxep() is
+called via timer interrupt before ath9k_rx_init() from ath9k_init_device()
+is called.
 
-Fix by freeing the mbuf with the mailbox struct in the LS_RJT path.
+Since we can't call ath9k_init_device() before ath9k_init_htc_services(),
+let's hold ath9k_htc_rxep() no-op until ath9k_rx_init() completes.
 
-As part of the code review to figure the issue out a couple of other areas
-where found that also would not have released the mbuf. Those are cleaned
-up as well.
-
-Link: https://lore.kernel.org/r/20211204002644.116455-2-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Link: https://syzkaller.appspot.com/bug?extid=4d2d56175b934b9a7bf9 [1]
+Reported-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Tested-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/2b88f416-b2cb-7a18-d688-951e6dc3fe92@i-love.sakura.ne.jp
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_els.c       | 6 +++++-
- drivers/scsi/lpfc/lpfc_init.c      | 8 ++++++--
- drivers/scsi/lpfc/lpfc_nportdisc.c | 6 ++++++
- 3 files changed, 17 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath9k/htc.h          | 1 +
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
-index e83453bea2aee..5c10416c1c75a 100644
---- a/drivers/scsi/lpfc/lpfc_els.c
-+++ b/drivers/scsi/lpfc/lpfc_els.c
-@@ -6899,6 +6899,7 @@ static int
- lpfc_get_rdp_info(struct lpfc_hba *phba, struct lpfc_rdp_context *rdp_context)
- {
- 	LPFC_MBOXQ_t *mbox = NULL;
-+	struct lpfc_dmabuf *mp;
- 	int rc;
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 0a1634238e673..4f71e962279af 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -281,6 +281,7 @@ struct ath9k_htc_rxbuf {
+ struct ath9k_htc_rx {
+ 	struct list_head rxbuf;
+ 	spinlock_t rxbuflock;
++	bool initialized;
+ };
  
- 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
-@@ -6914,8 +6915,11 @@ lpfc_get_rdp_info(struct lpfc_hba *phba, struct lpfc_rdp_context *rdp_context)
- 	mbox->mbox_cmpl = lpfc_mbx_cmpl_rdp_page_a0;
- 	mbox->ctx_ndlp = (struct lpfc_rdp_context *)rdp_context;
- 	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_NOWAIT);
--	if (rc == MBX_NOT_FINISHED)
-+	if (rc == MBX_NOT_FINISHED) {
-+		mp = (struct lpfc_dmabuf *)mbox->ctx_buf;
-+		lpfc_mbuf_free(phba, mp->virt, mp->phys);
- 		goto issue_mbox_fail;
-+	}
+ #define ATH9K_HTC_TX_CLEANUP_INTERVAL 50 /* ms */
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+index 8e69e8989f6d3..e7a21eaf3a68d 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -1130,6 +1130,10 @@ void ath9k_htc_rxep(void *drv_priv, struct sk_buff *skb,
+ 	struct ath9k_htc_rxbuf *rxbuf = NULL, *tmp_buf = NULL;
+ 	unsigned long flags;
  
++	/* Check if ath9k_rx_init() completed. */
++	if (!data_race(priv->rx.initialized))
++		goto err;
++
+ 	spin_lock_irqsave(&priv->rx.rxbuflock, flags);
+ 	list_for_each_entry(tmp_buf, &priv->rx.rxbuf, list) {
+ 		if (!tmp_buf->in_process) {
+@@ -1185,6 +1189,10 @@ int ath9k_rx_init(struct ath9k_htc_priv *priv)
+ 		list_add_tail(&rxbuf->list, &priv->rx.rxbuf);
+ 	}
+ 
++	/* Allow ath9k_htc_rxep() to operate. */
++	smp_wmb();
++	priv->rx.initialized = true;
++
  	return 0;
  
-diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
-index ba17a8f740a95..7628b0634c57a 100644
---- a/drivers/scsi/lpfc/lpfc_init.c
-+++ b/drivers/scsi/lpfc/lpfc_init.c
-@@ -5373,8 +5373,10 @@ lpfc_sli4_async_link_evt(struct lpfc_hba *phba,
- 	 */
- 	if (!(phba->hba_flag & HBA_FCOE_MODE)) {
- 		rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
--		if (rc == MBX_NOT_FINISHED)
-+		if (rc == MBX_NOT_FINISHED) {
-+			lpfc_mbuf_free(phba, mp->virt, mp->phys);
- 			goto out_free_dmabuf;
-+		}
- 		return;
- 	}
- 	/*
-@@ -6337,8 +6339,10 @@ lpfc_sli4_async_fc_evt(struct lpfc_hba *phba, struct lpfc_acqe_fc_la *acqe_fc)
- 	}
- 
- 	rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
--	if (rc == MBX_NOT_FINISHED)
-+	if (rc == MBX_NOT_FINISHED) {
-+		lpfc_mbuf_free(phba, mp->virt, mp->phys);
- 		goto out_free_dmabuf;
-+	}
- 	return;
- 
- out_free_dmabuf:
-diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
-index 27263f02ab9f6..7d717a4ac14d1 100644
---- a/drivers/scsi/lpfc/lpfc_nportdisc.c
-+++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
-@@ -322,6 +322,7 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- {
- 	struct lpfc_hba    *phba = vport->phba;
- 	struct lpfc_dmabuf *pcmd;
-+	struct lpfc_dmabuf *mp;
- 	uint64_t nlp_portwwn = 0;
- 	uint32_t *lp;
- 	IOCB_t *icmd;
-@@ -571,6 +572,11 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- 		 * a default RPI.
- 		 */
- 		if (phba->sli_rev == LPFC_SLI_REV4) {
-+			mp = (struct lpfc_dmabuf *)login_mbox->ctx_buf;
-+			if (mp) {
-+				lpfc_mbuf_free(phba, mp->virt, mp->phys);
-+				kfree(mp);
-+			}
- 			mempool_free(login_mbox, phba->mbox_mem_pool);
- 			login_mbox = NULL;
- 		} else {
+ err:
 -- 
 2.34.1
 
