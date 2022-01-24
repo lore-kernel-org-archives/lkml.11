@@ -2,108 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D260CC3525A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 217D6C3526E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448133AbiAXVMD (ORCPT
+        id S1448263AbiAXVMS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:03 -0500
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:57501 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390405AbiAXUpT (ORCPT
+        Mon, 24 Jan 2022 16:12:18 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35626 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1389423AbiAXUkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:45:19 -0500
-Received: from [192.168.1.18] ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id C6DBnl19kAWDQC6DBnQiEv; Mon, 24 Jan 2022 21:45:16 +0100
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Mon, 24 Jan 2022 21:45:16 +0100
-X-ME-IP: 90.126.236.122
-Message-ID: <6a1b84da-d55e-e058-13a8-9920b05ff20d@wanadoo.fr>
-Date:   Mon, 24 Jan 2022 21:45:12 +0100
+        Mon, 24 Jan 2022 15:40:52 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7C1061507;
+        Mon, 24 Jan 2022 20:40:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE9A8C340E5;
+        Mon, 24 Jan 2022 20:40:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643056852;
+        bh=5ND4c0WFizvbyzJNtRy1VuRdoEZMvxVRqMNu9KAXCrQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uZc38GgQmMTEOZ4chdSkQbrZaTxn9i21iXI7YoULqtWVesZ0QFadIbiaJDSCXL18l
+         B2Zjbq0IEgFQ44gjIHfe+y7bBchBokqbwS3NIDIzukdIpkWLJFyjd+46sGnfNZAmoK
+         1B51HE6vuWEwBRgTxH5g4wYnJB/Ah1m+ciDdqZxw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 622/846] x86/kbuild: Enable CONFIG_KALLSYMS_ALL=y in the defconfigs
+Date:   Mon, 24 Jan 2022 19:42:19 +0100
+Message-Id: <20220124184122.498894189@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] lib/string_helpers: Use the given gfp flag when
- allocating memory
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc:     Andy Shevchenko <andy@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@suse.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <1ec96b6e4f2e35599931d7516c6938c4a8845bf0.1642337606.git.christophe.jaillet@wanadoo.fr>
- <Ye63DkOZkBd2j+8+@smile.fi.intel.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <Ye63DkOZkBd2j+8+@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 24/01/2022 à 15:26, Andy Shevchenko a écrit :
-> On Sun, Jan 16, 2022 at 01:53:37PM +0100, Christophe JAILLET wrote:
->> kstrdup_quotable_cmdline() and kstrdup_quotable_file() are given a gfp flag
->> that is passed and used for memory allocation in kstrdup_quotable() just a
->> few lines below.
->>
->> It looks reasonable to use this gfp value for the buffer allocated and
->> freed in these functions as well.
-> 
-> Acked-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+From: Ingo Molnar <mingo@kernel.org>
 
-Hi,
-just in case, another patch has been proposed in the thread related to 
-the v1 of this patch.
-See [1].
+[ Upstream commit b6aa86cff44cf099299d3a5e66348cb709cd7964 ]
 
-I let you see which approach is the more relevant.
+Most distro kernels have this option enabled, to improve debug output.
 
-CJ
+Lockdep also selects it.
 
-[1]: https://lore.kernel.org/linux-kernel/YeU8PhtvvXIWtTk%2F@dhcp22.suse.cz/
+Enable this in the defconfig kernel as well, to make it more
+representative of what people are using on x86.
 
-> 
->> Fixes: 0ee931c4e31a ("mm: treewide: remove GFP_TEMPORARY allocation flag")
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> ---
->> According to what I've found in 5.16, all callers use GFP_KERNEL, so this
->> patch should be a no-op.
->> But who knows how it will be used in the future. Better safe than sorry.
->>
->> v2: Add the change for kstrdup_quotable_file()
->> ---
->>   lib/string_helpers.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/lib/string_helpers.c b/lib/string_helpers.c
->> index 90f9f1b7afec..4433e486b725 100644
->> --- a/lib/string_helpers.c
->> +++ b/lib/string_helpers.c
->> @@ -624,7 +624,7 @@ char *kstrdup_quotable_cmdline(struct task_struct *task, gfp_t gfp)
->>   	char *buffer, *quoted;
->>   	int i, res;
->>   
->> -	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
->> +	buffer = kmalloc(PAGE_SIZE, gfp);
->>   	if (!buffer)
->>   		return NULL;
->>   
->> @@ -660,7 +660,7 @@ char *kstrdup_quotable_file(struct file *file, gfp_t gfp)
->>   		return kstrdup("<unknown>", gfp);
->>   
->>   	/* We add 11 spaces for ' (deleted)' to be appended */
->> -	temp = kmalloc(PATH_MAX + 11, GFP_KERNEL);
->> +	temp = kmalloc(PATH_MAX + 11, gfp);
->>   	if (!temp)
->>   		return kstrdup("<no_memory>", gfp);
->>   
->> -- 
->> 2.32.0
->>
-> 
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/YdTn7gssoMVDMgMw@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/configs/i386_defconfig   | 1 +
+ arch/x86/configs/x86_64_defconfig | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
+index e81885384f604..99398cbdae434 100644
+--- a/arch/x86/configs/i386_defconfig
++++ b/arch/x86/configs/i386_defconfig
+@@ -262,3 +262,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
+ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
+ CONFIG_EARLY_PRINTK_DBGP=y
+ CONFIG_DEBUG_BOOT_PARAMS=y
++CONFIG_KALLSYMS_ALL=y
+diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
+index e8a7a0af2bdaa..d7298b104a456 100644
+--- a/arch/x86/configs/x86_64_defconfig
++++ b/arch/x86/configs/x86_64_defconfig
+@@ -258,3 +258,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
+ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
+ CONFIG_EARLY_PRINTK_DBGP=y
+ CONFIG_DEBUG_BOOT_PARAMS=y
++CONFIG_KALLSYMS_ALL=y
+-- 
+2.34.1
+
+
 
