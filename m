@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7751EC35273
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1473C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388034AbiAXUiD (ORCPT
+        id S1385923AbiAXUer (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:38:03 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42826 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380744AbiAXUQv (ORCPT
+        Mon, 24 Jan 2022 15:34:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355456AbiAXUNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:16:51 -0500
+        Mon, 24 Jan 2022 15:13:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F48DC06177E;
+        Mon, 24 Jan 2022 11:37:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CC686091A;
-        Mon, 24 Jan 2022 20:16:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 068BFC340E5;
-        Mon, 24 Jan 2022 20:16:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BF5BB80FA1;
+        Mon, 24 Jan 2022 19:37:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E94DC340E5;
+        Mon, 24 Jan 2022 19:36:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055410;
-        bh=LXCnAdlwZsWaJMfvC9G5RI+dkOsFueE+RgYoeHYqS7c=;
+        s=korg; t=1643053018;
+        bh=KXa3PZX3KZ79XnZVl87pu7FZ3QvuxgE02+fJGd2UNa4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AVAKlyiFwc3dfccxVeIck1ptZmzCoyRr1JPuEoh+lTjAaEYBjoMjzbe1mkfzGCAhx
-         DMO81/O6HdPHvAfSoRhqnHJ0NqywDWOdIjZiE3vqo5rabi6oFwgsWH+8aduvEbyLTz
-         iAmvFhEa/0IYaqPzrP0akHonkN39jyD621/Zs2ns=
+        b=zwBay6TLX9Yv9r0Lm8wTWrlpP6jRSD3zGXHbQGHmr1r6IVGRU9pBsn4pPK5/kR/QC
+         xY9QE6HPqXqpIqIorA8XM7UVDA83HYEceJdGMtcEYo3sK/Oaj/ysHSu40vgVjUAQaI
+         nh6yvrNv6GerfCQGqtM+fDpKoOf1t7g72TuCMa9U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Prasad Malisetty <pmaliset@codeaurora.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 141/846] arm64: dts: qcom: sc7280: Fix incorrect clock name
-Date:   Mon, 24 Jan 2022 19:34:18 +0100
-Message-Id: <20220124184105.850912402@linuxfoundation.org>
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.4 250/320] fuse: Pass correct lend value to filemap_write_and_wait_range()
+Date:   Mon, 24 Jan 2022 19:43:54 +0100
+Message-Id: <20220124184002.493762000@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,38 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prasad Malisetty <pmaliset@codeaurora.org>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit fa09b2248714c64644576d8064e9bd292a504a0e ]
+commit e388164ea385f04666c4633f5dc4f951fca71890 upstream.
 
-Replace pcie_1_pipe-clk clock name with pcie_1_pipe_clk
-To match with dt binding.
+The acceptable maximum value of lend parameter in
+filemap_write_and_wait_range() is LLONG_MAX rather than -1. And there is
+also some logic depending on LLONG_MAX check in write_cache_pages(). So
+let's pass LLONG_MAX to filemap_write_and_wait_range() in
+fuse_writeback_range() instead.
 
-Fixes: ab7772de8612 ("arm64: dts: qcom: SC7280: Add rpmhcc clock controller node")
-Signed-off-by: Prasad Malisetty <pmaliset@codeaurora.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1637060508-30375-2-git-send-email-pmaliset@codeaurora.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 59bda8ecee2f ("fuse: flush extending writes")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Cc: <stable@vger.kernel.org> # v5.15
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 2 +-
+ fs/fuse/file.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index f58336536a92a..692973c4f4344 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -429,7 +429,7 @@
- 				 <&rpmhcc RPMH_CXO_CLK_A>, <&sleep_clk>,
- 				 <0>, <0>, <0>, <0>, <0>, <0>;
- 			clock-names = "bi_tcxo", "bi_tcxo_ao", "sleep_clk",
--				      "pcie_0_pipe_clk", "pcie_1_pipe-clk",
-+				      "pcie_0_pipe_clk", "pcie_1_pipe_clk",
- 				      "ufs_phy_rx_symbol_0_clk", "ufs_phy_rx_symbol_1_clk",
- 				      "ufs_phy_tx_symbol_0_clk",
- 				      "usb3_phy_wrapper_gcc_usb30_pipe_clk";
--- 
-2.34.1
-
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -3188,7 +3188,7 @@ fuse_direct_IO(struct kiocb *iocb, struc
+ 
+ static int fuse_writeback_range(struct inode *inode, loff_t start, loff_t end)
+ {
+-	int err = filemap_write_and_wait_range(inode->i_mapping, start, -1);
++	int err = filemap_write_and_wait_range(inode->i_mapping, start, LLONG_MAX);
+ 
+ 	if (!err)
+ 		fuse_sync_writes(inode);
 
 
