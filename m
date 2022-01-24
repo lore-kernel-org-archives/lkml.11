@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8266C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0641C3526D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447572AbiAXVK7 (ORCPT
+        id S1447596AbiAXVLD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:10:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42142 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390869AbiAXUqc (ORCPT
+        Mon, 24 Jan 2022 16:11:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33284 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357146AbiAXUiB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE25DC061254;
-        Mon, 24 Jan 2022 11:56:20 -0800 (PST)
+        Mon, 24 Jan 2022 15:38:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E3C860B89;
-        Mon, 24 Jan 2022 19:56:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D15CC340E5;
-        Mon, 24 Jan 2022 19:56:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D1206155D;
+        Mon, 24 Jan 2022 20:37:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E10BC340E5;
+        Mon, 24 Jan 2022 20:37:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054179;
-        bh=lIX2r7eSQ/EpCjwtdMC7rJeKPE+cTnyydeIsvHazwQY=;
+        s=korg; t=1643056678;
+        bh=Cb9EVCLgrdF1SQTd8o2XCnYYOhe12nsfQMzRNlY/iCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FByfYnQhKGOYE43K5Bpt4OFYXJwGb0B+QxkS+tYqyo6vVkpSIPgDwaTGfKwzrtr6T
-         qcTmRfOx0KjcWrx73TBNuXKFW9vrGkRYJtAbIgqhtPX6PAxfHzVrNfss8x0WGYJeoj
-         AZtmZLGeEaRelhNgmHqOpbNXTdjz1YRYKu6/E4fg=
+        b=x4Pru1gZYEdcwigxIrsiv6frxyEpE10KFMS/uFuoMJezpVaBrjgYMV58H6fPEiCtR
+         8Ee5MKJZ5u4lr440gWTcpWJVAulqEnPE2U4jfwDTYTh8V8oqUjamlFpehvHHLLihHk
+         4jXg5/bjQxvwfnN6j3TnpFx7wzUkymKlNpl1xA0U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 304/563] drm/bridge: dw-hdmi: handle ELD when DRM_BRIDGE_ATTACH_NO_CONNECTOR
-Date:   Mon, 24 Jan 2022 19:41:09 +0100
-Message-Id: <20220124184034.955939214@linuxfoundation.org>
+Subject: [PATCH 5.15 564/846] PM: runtime: Add safety net to supplier device release
+Date:   Mon, 24 Jan 2022 19:41:21 +0100
+Message-Id: <20220124184120.492157189@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,144 +47,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neil Armstrong <narmstrong@baylibre.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 3f2532d65a571ca02258b547b5b68ab2e9406fdb ]
+[ Upstream commit d1579e61192e0e686faa4208500ef4c3b529b16c ]
 
-The current ELD handling takes the internal connector ELD buffer and
-shares it to the I2S and AHB sub-driver.
+Because refcount_dec_not_one() returns true if the target refcount
+becomes saturated, it is generally unsafe to use its return value as
+a loop termination condition, but that is what happens when a device
+link's supplier device is released during runtime PM suspend
+operations and on device link removal.
 
-But with DRM_BRIDGE_ATTACH_NO_CONNECTOR, the connector is created
-elsewhere (or not), and an eventual connector is known only
-if the bridge chain up to a connector is enabled.
+To address this, introduce pm_runtime_release_supplier() to be used
+in the above cases which will check the supplier device's runtime
+PM usage counter in addition to the refcount_dec_not_one() return
+value, so the loop can be terminated in case the rpm_active refcount
+value becomes invalid, and update the code in question to use it as
+appropriate.
 
-The current dw-hdmi code gets the current connector from
-atomic_enable() so use the already stored connector pointer and
-replace the buffer pointer with a callback returning the current
-connector ELD buffer.
+This change is not expected to have any visible functional impact.
 
-Since a connector is not always available, either pass an empty
-ELD to the alsa HDMI driver or don't call snd_pcm_hw_constraint_eld()
-in AHB driver.
-
-Reported-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-[narmstrong: fixed typo in commit log]
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211029135947.3022875-1-narmstrong@baylibre.com
+Reported-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c | 10 +++++++---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h     |  4 ++--
- drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c |  9 ++++++++-
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c           | 12 ++++++++++--
- 4 files changed, 27 insertions(+), 8 deletions(-)
+ drivers/base/core.c          |  3 +--
+ drivers/base/power/runtime.c | 41 ++++++++++++++++++++++++++----------
+ include/linux/pm_runtime.h   |  3 +++
+ 3 files changed, 34 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
-index d0db1acf11d73..7d2ed0ed2fe26 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
-@@ -320,13 +320,17 @@ static int dw_hdmi_open(struct snd_pcm_substream *substream)
- 	struct snd_pcm_runtime *runtime = substream->runtime;
- 	struct snd_dw_hdmi *dw = substream->private_data;
- 	void __iomem *base = dw->data.base;
-+	u8 *eld;
- 	int ret;
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 63577de268565..8e73a34e10055 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -485,8 +485,7 @@ static void device_link_release_fn(struct work_struct *work)
+ 	/* Ensure that all references to the link object have been dropped. */
+ 	device_link_synchronize_removal();
  
- 	runtime->hw = dw_hdmi_hw;
+-	while (refcount_dec_not_one(&link->rpm_active))
+-		pm_runtime_put(link->supplier);
++	pm_runtime_release_supplier(link, true);
  
--	ret = snd_pcm_hw_constraint_eld(runtime, dw->data.eld);
--	if (ret < 0)
--		return ret;
-+	eld = dw->data.get_eld(dw->data.hdmi);
-+	if (eld) {
-+		ret = snd_pcm_hw_constraint_eld(runtime, eld);
-+		if (ret < 0)
-+			return ret;
-+	}
- 
- 	ret = snd_pcm_limit_hw_rates(runtime);
- 	if (ret < 0)
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h
-index cb07dc0da5a70..f72d27208ebef 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h
-@@ -9,15 +9,15 @@ struct dw_hdmi_audio_data {
- 	void __iomem *base;
- 	int irq;
- 	struct dw_hdmi *hdmi;
--	u8 *eld;
-+	u8 *(*get_eld)(struct dw_hdmi *hdmi);
- };
- 
- struct dw_hdmi_i2s_audio_data {
- 	struct dw_hdmi *hdmi;
--	u8 *eld;
- 
- 	void (*write)(struct dw_hdmi *hdmi, u8 val, int offset);
- 	u8 (*read)(struct dw_hdmi *hdmi, int offset);
-+	u8 *(*get_eld)(struct dw_hdmi *hdmi);
- };
- 
- #endif
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
-index 9fef6413741dc..9682416056ed6 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
-@@ -135,8 +135,15 @@ static int dw_hdmi_i2s_get_eld(struct device *dev, void *data, uint8_t *buf,
- 			       size_t len)
- {
- 	struct dw_hdmi_i2s_audio_data *audio = data;
-+	u8 *eld;
-+
-+	eld = audio->get_eld(audio->hdmi);
-+	if (eld)
-+		memcpy(buf, eld, min_t(size_t, MAX_ELD_BYTES, len));
-+	else
-+		/* Pass en empty ELD if connector not available */
-+		memset(buf, 0, len);
- 
--	memcpy(buf, audio->eld, min_t(size_t, MAX_ELD_BYTES, len));
+ 	put_device(link->consumer);
+ 	put_device(link->supplier);
+diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+index ec94049442b99..44ae3909e64bb 100644
+--- a/drivers/base/power/runtime.c
++++ b/drivers/base/power/runtime.c
+@@ -305,19 +305,40 @@ static int rpm_get_suppliers(struct device *dev)
  	return 0;
  }
  
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index 0c79a9ba48bb6..29c0eb4bd7546 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -756,6 +756,14 @@ static void hdmi_enable_audio_clk(struct dw_hdmi *hdmi, bool enable)
- 	hdmi_writeb(hdmi, hdmi->mc_clkdis, HDMI_MC_CLKDIS);
- }
- 
-+static u8 *hdmi_audio_get_eld(struct dw_hdmi *hdmi)
++/**
++ * pm_runtime_release_supplier - Drop references to device link's supplier.
++ * @link: Target device link.
++ * @check_idle: Whether or not to check if the supplier device is idle.
++ *
++ * Drop all runtime PM references associated with @link to its supplier device
++ * and if @check_idle is set, check if that device is idle (and so it can be
++ * suspended).
++ */
++void pm_runtime_release_supplier(struct device_link *link, bool check_idle)
 +{
-+	if (!hdmi->curr_conn)
-+		return NULL;
++	struct device *supplier = link->supplier;
 +
-+	return hdmi->curr_conn->eld;
++	/*
++	 * The additional power.usage_count check is a safety net in case
++	 * the rpm_active refcount becomes saturated, in which case
++	 * refcount_dec_not_one() would return true forever, but it is not
++	 * strictly necessary.
++	 */
++	while (refcount_dec_not_one(&link->rpm_active) &&
++	       atomic_read(&supplier->power.usage_count) > 0)
++		pm_runtime_put_noidle(supplier);
++
++	if (check_idle)
++		pm_request_idle(supplier);
 +}
 +
- static void dw_hdmi_ahb_audio_enable(struct dw_hdmi *hdmi)
+ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
  {
- 	hdmi_set_cts_n(hdmi, hdmi->audio_cts, hdmi->audio_n);
-@@ -3395,7 +3403,7 @@ struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
- 		audio.base = hdmi->regs;
- 		audio.irq = irq;
- 		audio.hdmi = hdmi;
--		audio.eld = hdmi->connector.eld;
-+		audio.get_eld = hdmi_audio_get_eld;
- 		hdmi->enable_audio = dw_hdmi_ahb_audio_enable;
- 		hdmi->disable_audio = dw_hdmi_ahb_audio_disable;
+ 	struct device_link *link;
  
-@@ -3408,7 +3416,7 @@ struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
- 		struct dw_hdmi_i2s_audio_data audio;
+ 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
+-				device_links_read_lock_held()) {
+-
+-		while (refcount_dec_not_one(&link->rpm_active))
+-			pm_runtime_put_noidle(link->supplier);
+-
+-		if (try_to_suspend)
+-			pm_request_idle(link->supplier);
+-	}
++				device_links_read_lock_held())
++		pm_runtime_release_supplier(link, try_to_suspend);
+ }
  
- 		audio.hdmi	= hdmi;
--		audio.eld	= hdmi->connector.eld;
-+		audio.get_eld	= hdmi_audio_get_eld;
- 		audio.write	= hdmi_writeb;
- 		audio.read	= hdmi_readb;
- 		hdmi->enable_audio = dw_hdmi_i2s_audio_enable;
+ static void rpm_put_suppliers(struct device *dev)
+@@ -1770,9 +1791,7 @@ void pm_runtime_drop_link(struct device_link *link)
+ 		return;
+ 
+ 	pm_runtime_drop_link_count(link->consumer);
+-
+-	while (refcount_dec_not_one(&link->rpm_active))
+-		pm_runtime_put(link->supplier);
++	pm_runtime_release_supplier(link, true);
+ }
+ 
+ static bool pm_runtime_need_not_resume(struct device *dev)
+diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+index eddd66d426caf..016de5776b6db 100644
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -58,6 +58,7 @@ extern void pm_runtime_get_suppliers(struct device *dev);
+ extern void pm_runtime_put_suppliers(struct device *dev);
+ extern void pm_runtime_new_link(struct device *dev);
+ extern void pm_runtime_drop_link(struct device_link *link);
++extern void pm_runtime_release_supplier(struct device_link *link, bool check_idle);
+ 
+ extern int devm_pm_runtime_enable(struct device *dev);
+ 
+@@ -283,6 +284,8 @@ static inline void pm_runtime_get_suppliers(struct device *dev) {}
+ static inline void pm_runtime_put_suppliers(struct device *dev) {}
+ static inline void pm_runtime_new_link(struct device *dev) {}
+ static inline void pm_runtime_drop_link(struct device_link *link) {}
++static inline void pm_runtime_release_supplier(struct device_link *link,
++					       bool check_idle) {}
+ 
+ #endif /* !CONFIG_PM */
+ 
 -- 
 2.34.1
 
