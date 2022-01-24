@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C419C3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 896EAC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2370798AbiAYAGN (ORCPT
+        id S2370838AbiAYAGS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:06:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
+        Mon, 24 Jan 2022 19:06:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847534AbiAXXT7 (ORCPT
+        with ESMTP id S1847533AbiAXXT7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:19:59 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8280CC073201;
-        Mon, 24 Jan 2022 13:27:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB45C06F8FD;
+        Mon, 24 Jan 2022 13:27:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F52D61501;
-        Mon, 24 Jan 2022 21:27:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04273C340E5;
-        Mon, 24 Jan 2022 21:27:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58A1661490;
+        Mon, 24 Jan 2022 21:27:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32F10C340E4;
+        Mon, 24 Jan 2022 21:27:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059671;
-        bh=rpmcbgRmo92CR8JccGNiGhKCTuJGoSWyJ8PiMq7HjvU=;
+        s=korg; t=1643059662;
+        bh=P6eFo3h9qX3r6YCHPSkuPE/RNoXMNV1Mnn7M6uecedU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vZeSLu9da6h/8ZMEfApDZtaNj5mf/b2RoaeVp4xOZZP2/pnBeM2r7NgpPFxawpghS
-         tta/JZ/k0rguTQLFOGHBsbn2MBOVurR0Sersv2/r2EdtMjIit+sGYEyuUE+ei7f7uI
-         usr/33CDbW8nRPmBNm9UHqPsfhZ0G0NlD7yhWWRk=
+        b=N3lw26p6aQ1Hj4Z3y9cV57qYeVMJDllBK7VX0EoFPkiKtSKJZa1XN4XFha0CU6Y3Z
+         C3AvWagQL10P9eidMGSNoS6odpK8QNHNc7kK6q0E+wrF+N4EfEIy+CXIOICROof+ST
+         jivP42Ae9JZDq/K89YlD030tJFO07mzhyF1mSEXo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biwen Li <biwen.li@nxp.com>,
-        Li Yang <leoyang.lil@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Jingwen Chen <Jingwen.Chen2@amd.com>,
+        Horace Chen <horace.chen@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0661/1039] arm64: dts: ls1028a-qds: move rtc node to the correct i2c bus
-Date:   Mon, 24 Jan 2022 19:40:50 +0100
-Message-Id: <20220124184147.587438573@linuxfoundation.org>
+Subject: [PATCH 5.16 0658/1039] drm/amd/amdgpu: fix psp tmr bo pin count leak in SRIOV
+Date:   Mon, 24 Jan 2022 19:40:47 +0100
+Message-Id: <20220124184147.486025851@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,52 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biwen Li <biwen.li@nxp.com>
+From: Jingwen Chen <Jingwen.Chen2@amd.com>
 
-[ Upstream commit cbe9d948eadfe352ad45495a7cc5bf20a1b29d90 ]
+[ Upstream commit 85dfc1d692c9434c37842e610be37cd4ae4e0081 ]
 
-The i2c rtc is on i2c2 bus not i2c1 bus, so fix it in dts.
+[Why]
+psp tmr bo will be pinned during loading amdgpu and reset in SRIOV while
+only unpinned in unload amdgpu
 
-Signed-off-by: Biwen Li <biwen.li@nxp.com>
-Signed-off-by: Li Yang <leoyang.lil@nxp.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+[How]
+add amdgpu_in_reset and sriov judgement to skip pin bo
+
+v2: fix wrong judgement
+
+Signed-off-by: Jingwen Chen <Jingwen.Chen2@amd.com>
+Reviewed-by: Horace Chen <horace.chen@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-index 6e2a1da662fb4..4597848598df0 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-@@ -272,11 +272,6 @@
- 				vcc-supply = <&sb_3v3>;
- 			};
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
+index c641f84649d6b..d011ae7e50a54 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
+@@ -2017,12 +2017,16 @@ static int psp_hw_start(struct psp_context *psp)
+ 		return ret;
+ 	}
  
--			rtc@51 {
--				compatible = "nxp,pcf2129";
--				reg = <0x51>;
--			};
--
- 			eeprom@56 {
- 				compatible = "atmel,24c512";
- 				reg = <0x56>;
-@@ -318,6 +313,15 @@
- 
- };
- 
-+&i2c1 {
-+	status = "okay";
++	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev))
++		goto skip_pin_bo;
 +
-+	rtc@51 {
-+		compatible = "nxp,pcf2129";
-+		reg = <0x51>;
-+	};
-+};
-+
- &enetc_port1 {
- 	phy-handle = <&qds_phy1>;
- 	phy-mode = "rgmii-id";
+ 	ret = psp_tmr_init(psp);
+ 	if (ret) {
+ 		DRM_ERROR("PSP tmr init failed!\n");
+ 		return ret;
+ 	}
+ 
++skip_pin_bo:
+ 	/*
+ 	 * For ASICs with DF Cstate management centralized
+ 	 * to PMFW, TMR setup should be performed after PMFW
 -- 
 2.34.1
 
