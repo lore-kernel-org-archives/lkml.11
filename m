@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CECC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45244C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576897AbiAXV4l (ORCPT
+        id S1576890AbiAXV4k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:56:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44548 "EHLO
+        Mon, 24 Jan 2022 16:56:40 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44430 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451030AbiAXVWA (ORCPT
+        with ESMTP id S1450966AbiAXVVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:22:00 -0500
+        Mon, 24 Jan 2022 16:21:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1F2161320;
-        Mon, 24 Jan 2022 21:21:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0EE5C340E4;
-        Mon, 24 Jan 2022 21:21:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 150B8614DA;
+        Mon, 24 Jan 2022 21:21:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7789C340E4;
+        Mon, 24 Jan 2022 21:21:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059319;
-        bh=KHJX1CBivhLoDwFSvdl5GVShspbncmIWqtKSQBbrEYo=;
+        s=korg; t=1643059313;
+        bh=xwKORReWGw5mqUHtAtglYkKZr9iec73HNhvD8L3tEmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=00lfQvDFvd+Agb0mASjxRy5W5dK+LY/yPqLi7yMiSPXjjIqb3vc/Bn9rmyuqm68O7
-         9Imj+xv+jozJi/l7j9paAQjHA1wt+ooC8sONB+Kn/LqD+JWAOs22fadgXMuGFjK8r9
-         Cp9OERoo7iLPowzfYkle4j2b3cliM67zgBjJ/Y3M=
+        b=P9FH4s0+PtwgauWWsJ7Y73v5YFNHTrWYjiAtXQ/U+r8W8KG1sVaUP4K3smZC3nzlV
+         YU/xh/pcjKwjh2Sh2777FTYmqzYqPTeTd1OTMlgpuTSM/qOy9hbynAi/fR57ylwqu+
+         NtBMdDvXQcrxC+Xx6FuV9w+oj+DPBB0/PCgofKrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vasily Khoruzhick <anarsoul@gmail.com>,
-        Roman Stratiienko <r.stratiienko@gmail.com>,
-        Qiang Yu <yuq825@gmail.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0549/1039] drm/lima: fix warning when CONFIG_DEBUG_SG=y & CONFIG_DMA_API_DEBUG=y
-Date:   Mon, 24 Jan 2022 19:38:58 +0100
-Message-Id: <20220124184143.737026613@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0574/1039] libbpf: Accommodate DWARF/compiler bug with duplicated structs
+Date:   Mon, 24 Jan 2022 19:39:23 +0100
+Message-Id: <20220124184144.643212658@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,37 +48,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qiang Yu <yuq825@gmail.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit 89636a06fa2ee7826a19c39c19a9bc99ab9340a9 ]
+[ Upstream commit efdd3eb8015e7447095f02a26eaabd164cd18004 ]
 
-Otherwise get following warning:
+According to [0], compilers sometimes might produce duplicate DWARF
+definitions for exactly the same struct/union within the same
+compilation unit (CU). We've had similar issues with identical arrays
+and handled them with a similar workaround in 6b6e6b1d09aa ("libbpf:
+Accomodate DWARF/compiler bug with duplicated identical arrays"). Do the
+same for struct/union by ensuring that two structs/unions are exactly
+the same, down to the integer values of field referenced type IDs.
 
-DMA-API: lima 1c40000.gpu: mapping sg segment longer than device claims to support [len=4149248] [max=65536]
+Solving this more generically (allowing referenced types to be
+equivalent, but using different type IDs, all within a single CU)
+requires a huge complexity increase to handle many-to-many mappings
+between canonidal and candidate type graphs. Before we invest in that,
+let's see if this approach handles all the instances of this issue in
+practice. Thankfully it's pretty rare, it seems.
 
-See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/5496
+  [0] https://lore.kernel.org/bpf/YXr2NFlJTAhHdZqq@krava/
 
-Reviewed-by: Vasily Khoruzhick <anarsoul@gmail.com>
-Reported-by: Roman Stratiienko <r.stratiienko@gmail.com>
-Signed-off-by: Qiang Yu <yuq825@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211031041604.187216-1-yuq825@gmail.com
+Reported-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20211117194114.347675-1-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/lima/lima_device.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/lib/bpf/btf.c | 45 +++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 41 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/lima/lima_device.c b/drivers/gpu/drm/lima/lima_device.c
-index f74f8048af8f2..02cef0cea6572 100644
---- a/drivers/gpu/drm/lima/lima_device.c
-+++ b/drivers/gpu/drm/lima/lima_device.c
-@@ -358,6 +358,7 @@ int lima_device_init(struct lima_device *ldev)
- 	int err, i;
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+index c2400804d6bac..dc86259980231 100644
+--- a/tools/lib/bpf/btf.c
++++ b/tools/lib/bpf/btf.c
+@@ -3443,8 +3443,8 @@ static long btf_hash_struct(struct btf_type *t)
+ }
  
- 	dma_set_coherent_mask(ldev->dev, DMA_BIT_MASK(32));
-+	dma_set_max_seg_size(ldev->dev, UINT_MAX);
+ /*
+- * Check structural compatibility of two FUNC_PROTOs, ignoring referenced type
+- * IDs. This check is performed during type graph equivalence check and
++ * Check structural compatibility of two STRUCTs/UNIONs, ignoring referenced
++ * type IDs. This check is performed during type graph equivalence check and
+  * referenced types equivalence is checked separately.
+  */
+ static bool btf_shallow_equal_struct(struct btf_type *t1, struct btf_type *t2)
+@@ -3817,6 +3817,31 @@ static int btf_dedup_identical_arrays(struct btf_dedup *d, __u32 id1, __u32 id2)
+ 	return btf_equal_array(t1, t2);
+ }
  
- 	err = lima_clk_init(ldev);
- 	if (err)
++/* Check if given two types are identical STRUCT/UNION definitions */
++static bool btf_dedup_identical_structs(struct btf_dedup *d, __u32 id1, __u32 id2)
++{
++	const struct btf_member *m1, *m2;
++	struct btf_type *t1, *t2;
++	int n, i;
++
++	t1 = btf_type_by_id(d->btf, id1);
++	t2 = btf_type_by_id(d->btf, id2);
++
++	if (!btf_is_composite(t1) || btf_kind(t1) != btf_kind(t2))
++		return false;
++
++	if (!btf_shallow_equal_struct(t1, t2))
++		return false;
++
++	m1 = btf_members(t1);
++	m2 = btf_members(t2);
++	for (i = 0, n = btf_vlen(t1); i < n; i++, m1++, m2++) {
++		if (m1->type != m2->type)
++			return false;
++	}
++	return true;
++}
++
+ /*
+  * Check equivalence of BTF type graph formed by candidate struct/union (we'll
+  * call it "candidate graph" in this description for brevity) to a type graph
+@@ -3928,6 +3953,8 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
+ 
+ 	hypot_type_id = d->hypot_map[canon_id];
+ 	if (hypot_type_id <= BTF_MAX_NR_TYPES) {
++		if (hypot_type_id == cand_id)
++			return 1;
+ 		/* In some cases compiler will generate different DWARF types
+ 		 * for *identical* array type definitions and use them for
+ 		 * different fields within the *same* struct. This breaks type
+@@ -3936,8 +3963,18 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
+ 		 * types within a single CU. So work around that by explicitly
+ 		 * allowing identical array types here.
+ 		 */
+-		return hypot_type_id == cand_id ||
+-		       btf_dedup_identical_arrays(d, hypot_type_id, cand_id);
++		if (btf_dedup_identical_arrays(d, hypot_type_id, cand_id))
++			return 1;
++		/* It turns out that similar situation can happen with
++		 * struct/union sometimes, sigh... Handle the case where
++		 * structs/unions are exactly the same, down to the referenced
++		 * type IDs. Anything more complicated (e.g., if referenced
++		 * types are different, but equivalent) is *way more*
++		 * complicated and requires a many-to-many equivalence mapping.
++		 */
++		if (btf_dedup_identical_structs(d, hypot_type_id, cand_id))
++			return 1;
++		return 0;
+ 	}
+ 
+ 	if (btf_dedup_hypot_map_add(d, canon_id, cand_id))
 -- 
 2.34.1
 
