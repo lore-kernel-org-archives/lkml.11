@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26568C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:44:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245366AbiAXUoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:44:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382154AbiAXUZQ (ORCPT
+        id S1358293AbiAXUoN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 15:44:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33540 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382208AbiAXUZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:25:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A07C07E303;
-        Mon, 24 Jan 2022 11:41:11 -0800 (PST)
+        Mon, 24 Jan 2022 15:25:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 201F5B81229;
-        Mon, 24 Jan 2022 19:41:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39E93C340E5;
-        Mon, 24 Jan 2022 19:41:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0890B8122C;
+        Mon, 24 Jan 2022 20:25:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A9BFC340E8;
+        Mon, 24 Jan 2022 20:25:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053268;
-        bh=iC3yFsiXLxji/n8wtnpCQ/0JmVUjZqt5fHAV9bJWQ+Y=;
+        s=korg; t=1643055915;
+        bh=C2yRUz42DqSxD6SVZ6vEK2YQtCMvqicsfk/FQJFLEfQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DfJwQRwJTcgrSMFt6CGi68c7sGMAsfO9d3WM1xd1vIySWaFLhFT9QJLj85kbAxreU
-         g6/6Rn0O4Xkg63MRSXkRWoPNn5d/ZWoH4N45QYwrNxq3hL1TPPtTYCbCJNBxiC+Sai
-         riLz20tPtut4/uxIoShBvoeqQgBgnMkIbFGyoPS8=
+        b=CxMdtwUydBNN46lQ+7UMAN+T5M8sftX2pM1ecrdXIhoPjpiOhK2pbTBb0TDjMhsCI
+         iEOX4bIeBB6n5cqjyM49OOjBOc6+mQkd/FK98KHmRlH7r1G6fPnvVqFMiItAjEgedl
+         uJqVa+N5YktjxLVx3WJnSvQwsu35afcCdOWKIaas=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.10 011/563] mtd: rawnand: davinci: Dont calculate ECC when reading page
-Date:   Mon, 24 Jan 2022 19:36:16 +0100
-Message-Id: <20220124184024.803953330@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 291/846] backlight: qcom-wled: Respect enabled-strings in set_brightness
+Date:   Mon, 24 Jan 2022 19:36:48 +0100
+Message-Id: <20220124184110.972393777@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,42 +51,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-commit 71e89591502d737c10db2bd4d8fcfaa352552afb upstream.
+[ Upstream commit ec961cf3241153e0f27d850f1bf0f172e7d27a21 ]
 
-The function nand_davinci_read_page_hwecc_oob_first() does read the ECC
-data from the OOB area. Therefore it does not need to calculate the ECC
-as it is already available.
+The hardware is capable of controlling any non-contiguous sequence of
+LEDs specified in the DT using qcom,enabled-strings as u32
+array, and this also follows from the DT-bindings documentation.  The
+numbers specified in this array represent indices of the LED strings
+that are to be enabled and disabled.
 
-Cc: <stable@vger.kernel.org> # v5.2
-Fixes: a0ac778eb82c ("mtd: rawnand: ingenic: Add support for the JZ4740")
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211016132228.40254-1-paul@crapouillou.net
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Its value is appropriately used to setup and enable string modules, but
+completely disregarded in the set_brightness paths which only iterate
+over the number of strings linearly.
+Take an example where only string 2 is enabled with
+qcom,enabled_strings=<2>: this string is appropriately enabled but
+subsequent brightness changes would have only touched the zero'th
+brightness register because num_strings is 1 here.  This is simply
+addressed by looking up the string for this index in the enabled_strings
+array just like the other codepaths that iterate over num_strings.
+
+Likewise enabled_strings is now also used in the autodetection path for
+consistent behaviour: when a list of strings is specified in DT only
+those strings will be probed for autodetection, analogous to how the
+number of strings that need to be probed is already bound by
+qcom,num-strings.  After all autodetection uses the set_brightness
+helpers to set an initial value, which could otherwise end up changing
+brightness on a different set of strings.
+
+Fixes: 775d2ffb4af6 ("backlight: qcom-wled: Restructure the driver for WLED3")
+Fixes: 03b2b5e86986 ("backlight: qcom-wled: Add support for WLED4 peripheral")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211115203459.1634079-10-marijn.suijten@somainline.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/davinci_nand.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/video/backlight/qcom-wled.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
---- a/drivers/mtd/nand/raw/davinci_nand.c
-+++ b/drivers/mtd/nand/raw/davinci_nand.c
-@@ -394,7 +394,6 @@ static int nand_davinci_read_page_hwecc_
- 	int eccsteps = chip->ecc.steps;
- 	uint8_t *p = buf;
- 	uint8_t *ecc_code = chip->ecc.code_buf;
--	uint8_t *ecc_calc = chip->ecc.calc_buf;
- 	unsigned int max_bitflips = 0;
+diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
+index 5306b06044b4f..f12c76d6e61de 100644
+--- a/drivers/video/backlight/qcom-wled.c
++++ b/drivers/video/backlight/qcom-wled.c
+@@ -237,7 +237,7 @@ static int wled3_set_brightness(struct wled *wled, u16 brightness)
  
- 	/* Read the OOB area first */
-@@ -420,8 +419,6 @@ static int nand_davinci_read_page_hwecc_
- 		if (ret)
- 			return ret;
+ 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
+ 		rc = regmap_bulk_write(wled->regmap, wled->ctrl_addr +
+-				       WLED3_SINK_REG_BRIGHT(i),
++				       WLED3_SINK_REG_BRIGHT(wled->cfg.enabled_strings[i]),
+ 				       &v, sizeof(v));
+ 		if (rc < 0)
+ 			return rc;
+@@ -260,7 +260,7 @@ static int wled4_set_brightness(struct wled *wled, u16 brightness)
  
--		chip->ecc.calculate(chip, p, &ecc_calc[i]);
--
- 		stat = chip->ecc.correct(chip, p, &ecc_code[i], NULL);
- 		if (stat == -EBADMSG &&
- 		    (chip->ecc.options & NAND_ECC_GENERIC_ERASED_CHECK)) {
+ 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
+ 		rc = regmap_bulk_write(wled->regmap, wled->sink_addr +
+-				       WLED4_SINK_REG_BRIGHT(i),
++				       WLED4_SINK_REG_BRIGHT(wled->cfg.enabled_strings[i]),
+ 				       &v, sizeof(v));
+ 		if (rc < 0)
+ 			return rc;
+@@ -571,7 +571,7 @@ unlock_mutex:
+ 
+ static void wled_auto_string_detection(struct wled *wled)
+ {
+-	int rc = 0, i, delay_time_us;
++	int rc = 0, i, j, delay_time_us;
+ 	u32 sink_config = 0;
+ 	u8 sink_test = 0, sink_valid = 0, val;
+ 	bool fault_set;
+@@ -618,14 +618,15 @@ static void wled_auto_string_detection(struct wled *wled)
+ 
+ 	/* Iterate through the strings one by one */
+ 	for (i = 0; i < wled->cfg.num_strings; i++) {
+-		sink_test = BIT((WLED4_SINK_REG_CURR_SINK_SHFT + i));
++		j = wled->cfg.enabled_strings[i];
++		sink_test = BIT((WLED4_SINK_REG_CURR_SINK_SHFT + j));
+ 
+ 		/* Enable feedback control */
+ 		rc = regmap_write(wled->regmap, wled->ctrl_addr +
+-				  WLED3_CTRL_REG_FEEDBACK_CONTROL, i + 1);
++				  WLED3_CTRL_REG_FEEDBACK_CONTROL, j + 1);
+ 		if (rc < 0) {
+ 			dev_err(wled->dev, "Failed to enable feedback for SINK %d rc = %d\n",
+-				i + 1, rc);
++				j + 1, rc);
+ 			goto failed_detect;
+ 		}
+ 
+@@ -634,7 +635,7 @@ static void wled_auto_string_detection(struct wled *wled)
+ 				  WLED4_SINK_REG_CURR_SINK, sink_test);
+ 		if (rc < 0) {
+ 			dev_err(wled->dev, "Failed to configure SINK %d rc=%d\n",
+-				i + 1, rc);
++				j + 1, rc);
+ 			goto failed_detect;
+ 		}
+ 
+@@ -661,7 +662,7 @@ static void wled_auto_string_detection(struct wled *wled)
+ 
+ 		if (fault_set)
+ 			dev_dbg(wled->dev, "WLED OVP fault detected with SINK %d\n",
+-				i + 1);
++				j + 1);
+ 		else
+ 			sink_valid |= sink_test;
+ 
+@@ -701,15 +702,16 @@ static void wled_auto_string_detection(struct wled *wled)
+ 	/* Enable valid sinks */
+ 	if (wled->version == 4) {
+ 		for (i = 0; i < wled->cfg.num_strings; i++) {
++			j = wled->cfg.enabled_strings[i];
+ 			if (sink_config &
+-			    BIT(WLED4_SINK_REG_CURR_SINK_SHFT + i))
++			    BIT(WLED4_SINK_REG_CURR_SINK_SHFT + j))
+ 				val = WLED4_SINK_REG_STR_MOD_MASK;
+ 			else
+ 				/* Disable modulator_en for unused sink */
+ 				val = 0;
+ 
+ 			rc = regmap_write(wled->regmap, wled->sink_addr +
+-					  WLED4_SINK_REG_STR_MOD_EN(i), val);
++					  WLED4_SINK_REG_STR_MOD_EN(j), val);
+ 			if (rc < 0) {
+ 				dev_err(wled->dev, "Failed to configure MODULATOR_EN rc=%d\n",
+ 					rc);
+-- 
+2.34.1
+
 
 
