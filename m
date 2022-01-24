@@ -2,163 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F194C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C78D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229780AbiAXKdm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 05:33:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
+        id S233410AbiAXKfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 05:35:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231820AbiAXKdj (ORCPT
+        with ESMTP id S229780AbiAXKfM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 05:33:39 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F3DC06173D
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 02:33:38 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id y17so4672858plg.7
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 02:33:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=xuZZHkIuEnvDpyJcRake/wQb+VN1KTh62QLAapj5S6A=;
-        b=yP3/Yb6xFM6+tLxjq5XcIad0refYGallErDeE9C88nR55gLVvfTPJ88r6MTD++X6WO
-         8YHrHPqyc4NtBwhov02CQWHZnBTahB2EwJ2YSVjfSomgxUoPXtA5LHUMzQAGwIR4RpFj
-         RpwJbKue+JC1gMUyUcajyC4AcFFV5NNFWAwQsIu0HTIznMdhbGlQ3pfkjUALHHVHnkbD
-         J4luQJJR1LdEo4eB228pOZ5o9+lxkTHet1xEtmg2DrQoTSMDPojAQEj0/rA11K9V6kCD
-         QVtSjwDQ9/RBV43vgO+0pDKYssXJQVqyw3knC6hckiw9OPSkJSNpHJphUaPWdecd7wz3
-         RfWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xuZZHkIuEnvDpyJcRake/wQb+VN1KTh62QLAapj5S6A=;
-        b=cIgPJ1OKWcRDqXvsdnzhYOEGFTsEscoFHl38b6e0rdMuvhzojsz0fQPWrW4Ty/t9B/
-         PqCg3pKbfznWBVb8FioxrC/zaunaHIZ112K2wkz+R/GV0ImFcx46HZILQdh3J2nejmMO
-         J7y/Tl0hwsp2VWc61vmA1d4Oof12GlZcueWnnVo1vtemycPEYsoqAFkEAKqoi47Lwk+7
-         UqprYJEFhGyKa2JExZFwqSz0E9bzsUyPLEmpNp0tYoRvQdzRfxDsJt8/TNAX0chMIJ0T
-         49itpbgH8jkGlhqQQbvChzmowOHZQgz6FOoNh3kJoQO+9mg6BvvUxFE77uBL894ku1se
-         gmKQ==
-X-Gm-Message-State: AOAM530qRwUo+W77Kqz+NCAFKngx1CeEH3RKtoVROE3WSbN2PSB0hw9n
-        vfMAfNors5ADO3BjvBV6kFFN/K7b0l4ne87qFGzTyg==
-X-Google-Smtp-Source: ABdhPJwuFbZnb2vERsmDh601w9ewh9vuqyRtmzf3a2qbtmwp4E0LvoNexgMawcQOJKUxEcrYp5o7jRcK77wK63Zw+fY=
-X-Received: by 2002:a17:90b:1bcc:: with SMTP id oa12mr1306143pjb.4.1643020418211;
- Mon, 24 Jan 2022 02:33:38 -0800 (PST)
+        Mon, 24 Jan 2022 05:35:12 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC22C06173B;
+        Mon, 24 Jan 2022 02:35:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BA652CE1084;
+        Mon, 24 Jan 2022 10:35:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 975B8C340E1;
+        Mon, 24 Jan 2022 10:35:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643020509;
+        bh=4DW+brPdZos02wxjXVsOUcvneTuVQw0JJNkmVqyY/VY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lRev4780I1jkQoy4By4NlAYN0dfeX1CgpypbsoanFqV2ZffzOPxiGk1pj7SQQjal5
+         L4xvzrRP1vIP/BRCYr03DPVj+d+8qjG7gcoc2HpM7rA1s/F/kDhlLIYPt37uQgFiTs
+         rcH64RTKpESXdHxvAqql85mTf0rpxnzIcY0uNVRs=
+Date:   Mon, 24 Jan 2022 11:35:06 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Vikash Bansal <bvikas@vmware.com>
+Cc:     bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, srivatsab@vmware.com,
+        srivatsa@csail.mit.edu, amakhalov@vmware.com, srinidhir@vmware.com,
+        anishs@vmware.com, vsirnapalli@vmware.com, akaher@vmware.com
+Subject: Re: [PATCH v2] PCI: Speed up device init by parsing capabilities all
+ at once
+Message-ID: <Ye6A2uB/zX5GaliR@kroah.com>
+References: <1642881286-31024-1-git-send-email-bvikas@vmware.com>
 MIME-Version: 1.0
-References: <20220120001621.705352-1-jsd@semihalf.com> <20220120001621.705352-2-jsd@semihalf.com>
- <5bec947e-272b-cfa0-b9b6-4d0d2626153f@redhat.com>
-In-Reply-To: <5bec947e-272b-cfa0-b9b6-4d0d2626153f@redhat.com>
-From:   =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
-Date:   Mon, 24 Jan 2022 11:33:27 +0100
-Message-ID: <CAOtMz3ONrgq3QCvMqQHxiQhhaGuEY8PG4hLbFt4r9T9+ALG_iA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] i2c: designware: Add missing locks
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Raul E Rangel <rrangel@chromium.org>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1642881286-31024-1-git-send-email-bvikas@vmware.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-czw., 20 sty 2022 o 12:25 Hans de Goede <hdegoede@redhat.com> napisa=C5=82(=
-a):
->
-> Hi,
->
-> On 1/20/22 01:16, Jan Dabros wrote:
-> > All accesses to controller's registers should be protected on
-> > probe, disable and xfer paths. This is needed for i2c bus controllers
-> > that are shared with but not controller by kernel.
-> >
-> > Signed-off-by: Jan Dabros <jsd@semihalf.com>
->
-> Thanks, patch looks good to me:
->
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+On Sat, Jan 22, 2022 at 11:54:46AM -0800, Vikash Bansal wrote:
+> In the current implementation, the PCI capability list is parsed from
+> the beginning to find each capability, which results in a large number
+> of redundant PCI reads.
+> 
+> Instead, we can parse the complete list just once, store it in the
+> pci_dev structure, and get the offset of each capability directly from
+> the pci_dev structure.
+> 
+> This implementation improves pci devices initialization time  by ~2-3%
+> (from 270ms to 261ms) in case of bare metal and 7-8% (From 201ms to 184ms)
+> in case of VM running on ESXi.
+> 
+> It also adds a memory overhead of 20bytes (value of PCI_CAP_ID_MAX) per
+> PCI device.
+> 
+> Run pahole for pci_dev structure. This patch is not adding any padding
+> bytes.
+> 
+> Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+> ---
+>  drivers/pci/pci.c   | 43 ++++++++++++++++++++++++++++++++++++-------
+>  drivers/pci/probe.c |  1 +
+>  include/linux/pci.h |  2 ++
+>  3 files changed, 39 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 9ecce435fb3f..b361788bcc27 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -468,6 +468,41 @@ static u8 __pci_bus_find_cap_start(struct pci_bus *bus,
+>  	return 0;
+>  }
+>  
+> +
+> +/**
+> + * pci_find_all_capabilities - Read all capabilities
+> + * @dev: the PCI device
+> + *
+> + * Read all capabilities and store offsets in cap_off
+> + * array in pci_dev structure.
+> + */
+> +void pci_find_all_capabilities(struct pci_dev *dev)
+> +{
+> +	int ttl = PCI_FIND_CAP_TTL;
+> +	u16 ent;
+> +	u8 pos;
+> +	u8 id;
+> +
+> +	pos = __pci_bus_find_cap_start(dev->bus, dev->devfn, dev->hdr_type);
+> +	if (!pos)
+> +		return;
+> +	pci_bus_read_config_byte(dev->bus, dev->devfn, pos, &pos);
+> +	while (ttl--) {
+> +		if (pos < 0x40)
+> +			break;
+> +		pos &= ~3;
+> +		pci_bus_read_config_word(dev->bus, dev->devfn, pos, &ent);
+> +		id = ent & 0xff;
+> +		if (id == 0xff)
+> +			break;
+> +
+> +		/* Read first instance of capability */
+> +		if (!(dev->cap_off[id]))
+> +			dev->cap_off[id] = pos;
+> +		pos = (ent >> 8);
+> +	}
+> +}
+> +
+>  /**
+>   * pci_find_capability - query for devices' capabilities
+>   * @dev: PCI device to query
+> @@ -489,13 +524,7 @@ static u8 __pci_bus_find_cap_start(struct pci_bus *bus,
+>   */
+>  u8 pci_find_capability(struct pci_dev *dev, int cap)
+>  {
+> -	u8 pos;
+> -
+> -	pos = __pci_bus_find_cap_start(dev->bus, dev->devfn, dev->hdr_type);
+> -	if (pos)
+> -		pos = __pci_find_next_cap(dev->bus, dev->devfn, pos, cap);
+> -
+> -	return pos;
+> +	return dev->cap_off[cap];
+>  }
+>  EXPORT_SYMBOL(pci_find_capability);
+>  
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 17a969942d37..b2fa5b2c42f6 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1831,6 +1831,7 @@ int pci_setup_device(struct pci_dev *dev)
+>  	dev->hdr_type = hdr_type & 0x7f;
+>  	dev->multifunction = !!(hdr_type & 0x80);
+>  	dev->error_state = pci_channel_io_normal;
+> +	pci_find_all_capabilities(dev);
+>  	set_pcie_port_type(dev);
+>  
+>  	pci_set_of_node(dev);
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 8253a5413d7c..abcf7fdc4c98 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -335,6 +335,7 @@ struct pci_dev {
+>  	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */
+>  	u8		revision;	/* PCI revision, low byte of class word */
+>  	u8		hdr_type;	/* PCI header type (`multi' flag masked out) */
+> +	u8              cap_off[PCI_CAP_ID_MAX]; /* Offsets of all pci capabilities */
+>  #ifdef CONFIG_PCIEAER
+>  	u16		aer_cap;	/* AER capability offset */
+>  	struct aer_stats *aer_stats;	/* AER stats for this device */
+> @@ -1140,6 +1141,7 @@ void pci_sort_breadthfirst(void);
+>  
+>  u8 pci_bus_find_capability(struct pci_bus *bus, unsigned int devfn, int cap);
+>  u8 pci_find_capability(struct pci_dev *dev, int cap);
+> +void pci_find_all_capabilities(struct pci_dev *dev);
+>  u8 pci_find_next_capability(struct pci_dev *dev, u8 pos, int cap);
+>  u8 pci_find_ht_capability(struct pci_dev *dev, int ht_cap);
+>  u8 pci_find_next_ht_capability(struct pci_dev *dev, u8 pos, int ht_cap);
+> -- 
+> 2.30.0
+> 
 
-Thanks!
+Hi,
 
-Best Regards,
-Jan
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
->
->
-> Regards,
->
-> Hans
->
->
-> > ---
-> >  drivers/i2c/busses/i2c-designware-common.c | 12 ++++++++++++
-> >  drivers/i2c/busses/i2c-designware-master.c |  6 ++++++
-> >  2 files changed, 18 insertions(+)
-> >
-> > diff --git a/drivers/i2c/busses/i2c-designware-common.c b/drivers/i2c/b=
-usses/i2c-designware-common.c
-> > index bf2a4920638a..9f8574320eb2 100644
-> > --- a/drivers/i2c/busses/i2c-designware-common.c
-> > +++ b/drivers/i2c/busses/i2c-designware-common.c
-> > @@ -578,7 +578,12 @@ int i2c_dw_set_fifo_size(struct dw_i2c_dev *dev)
-> >        * Try to detect the FIFO depth if not set by interface driver,
-> >        * the depth could be from 2 to 256 from HW spec.
-> >        */
-> > +     ret =3D i2c_dw_acquire_lock(dev);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> >       ret =3D regmap_read(dev->map, DW_IC_COMP_PARAM_1, &param);
-> > +     i2c_dw_release_lock(dev);
-> >       if (ret)
-> >               return ret;
-> >
-> > @@ -607,6 +612,11 @@ u32 i2c_dw_func(struct i2c_adapter *adap)
-> >  void i2c_dw_disable(struct dw_i2c_dev *dev)
-> >  {
-> >       u32 dummy;
-> > +     int ret;
-> > +
-> > +     ret =3D i2c_dw_acquire_lock(dev);
-> > +     if (ret)
-> > +             return;
-> >
-> >       /* Disable controller */
-> >       __i2c_dw_disable(dev);
-> > @@ -614,6 +624,8 @@ void i2c_dw_disable(struct dw_i2c_dev *dev)
-> >       /* Disable all interrupts */
-> >       regmap_write(dev->map, DW_IC_INTR_MASK, 0);
-> >       regmap_read(dev->map, DW_IC_CLR_INTR, &dummy);
-> > +
-> > +     i2c_dw_release_lock(dev);
-> >  }
-> >
-> >  void i2c_dw_disable_int(struct dw_i2c_dev *dev)
-> > diff --git a/drivers/i2c/busses/i2c-designware-master.c b/drivers/i2c/b=
-usses/i2c-designware-master.c
-> > index 9177463c2cbb..1a4b23556db3 100644
-> > --- a/drivers/i2c/busses/i2c-designware-master.c
-> > +++ b/drivers/i2c/busses/i2c-designware-master.c
-> > @@ -905,7 +905,13 @@ int i2c_dw_probe_master(struct dw_i2c_dev *dev)
-> >               irq_flags =3D IRQF_SHARED | IRQF_COND_SUSPEND;
-> >       }
-> >
-> > +     ret =3D i2c_dw_acquire_lock(dev);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> >       i2c_dw_disable_int(dev);
-> > +     i2c_dw_release_lock(dev);
-> > +
-> >       ret =3D devm_request_irq(dev->dev, dev->irq, i2c_dw_isr, irq_flag=
-s,
-> >                              dev_name(dev->dev), dev);
-> >       if (ret) {
-> >
->
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
