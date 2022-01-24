@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A738EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE227C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836985AbiAXWld (ORCPT
+        id S1837027AbiAXWlk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:41:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        Mon, 24 Jan 2022 17:41:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457498AbiAXVlo (ORCPT
+        with ESMTP id S1457500AbiAXVlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:41:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AB2C07E327;
-        Mon, 24 Jan 2022 12:28:41 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D8EDC07E329;
+        Mon, 24 Jan 2022 12:28:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B0CEB80FA1;
-        Mon, 24 Jan 2022 20:28:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62714C340E5;
-        Mon, 24 Jan 2022 20:28:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFE9361505;
+        Mon, 24 Jan 2022 20:28:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0C5BC340E5;
+        Mon, 24 Jan 2022 20:28:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056120;
-        bh=aSGRryT8CX9zcMXnbNFnHw3ZKZPdNaaFhHni5Gc/+NI=;
+        s=korg; t=1643056138;
+        bh=ZTrTILL+jVZqYLfi1HTYLKwvvvtqq9rneJNTbYsC+Cc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PyjHjhgJOV3e2Y1Sw/714Ua4/7RIkFSZRm19XcLBLb9+6+qsxkgS8acQiW08yLyRP
-         wLe60VMdHJQKGCNu5ndiBQSEwEX+NipTU9KaF0WSCKujuBltr9+NUL44KhbVMjPLwg
-         nuH4+rpW/YzhlkY9wS6vAZyE5JlblLp9DHQYfSG8=
+        b=x4IKEXIGB0mKl/OoWdgiiBM7DvEQpC/ndEezvdImEff3xxUZQjyFbQWQEfLtlpfE0
+         JMYrVgisD4IS54dnhbhVVAJSvgD5D1A5ZmlSrnz2ECD20JmQAjsIFvxFvoqfxnH6jn
+         WMr3SH4n2l/MC7R/ylwQStSVoU9mD036YJA7Gi+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 378/846] RDMA/bnxt_re: Scan the whole bitmap when checking if "disabling RCFW with pending cmd-bit"
-Date:   Mon, 24 Jan 2022 19:38:15 +0100
-Message-Id: <20220124184113.967830355@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Abel Vesa <abel.vesa@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 383/846] clk: imx8mn: Fix imx8mn_clko1_sels
+Date:   Mon, 24 Jan 2022 19:38:20 +0100
+Message-Id: <20220124184114.149730908@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,67 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit a917dfb66c0a1fa1caacf3d71edcafcab48e6ff0 ]
+[ Upstream commit 570727e9acfac1c2330a01dd5e1272e9c3acec08 ]
 
-The 'cmdq->cmdq_bitmap' bitmap is 'rcfw->cmdq_depth' bits long.  The size
-stored in 'cmdq->bmap_size' is the size of the bitmap in bytes.
+When attempting to use sys_pll1_80m as the parent for clko1, the
+system hangs.  This is due to the fact that the source select
+for sys_pll1_80m was incorrectly pointing to m7_alt_pll_clk, which
+doesn't yet exist.
 
-Remove this erroneous 'bmap_size' and use 'rcfw->cmdq_depth' directly in
-'bnxt_qplib_disable_rcfw_channel()'. Otherwise some error messages may be
-missing.
+According to Rev 3 of the TRM, The imx8mn_clko1_sels also incorrectly
+references an osc_27m which does not exist, nor does an entry for
+source select bits 010b.  Fix both by inserting a dummy clock into
+the missing space in the table and renaming the incorrectly name clock
+with dummy.
 
-Other uses of 'cmdq_bitmap' already take into account 'rcfw->cmdq_depth'
-directly.
-
-Fixes: 1ac5a4047975 ("RDMA/bnxt_re: Add bnxt_re RoCE driver")
-Link: https://lore.kernel.org/r/47ed717c3070a1d0f53e7b4c768a4fd11caf365d.1636707421.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Selvin Xavier <selvin.xavier@broadcom.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 96d6392b54db ("clk: imx: Add support for i.MX8MN clock driver")
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Link: https://lore.kernel.org/r/20211117133202.775633-1-aford173@gmail.com
+Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/bnxt_re/qplib_rcfw.c | 6 ++----
- drivers/infiniband/hw/bnxt_re/qplib_rcfw.h | 1 -
- 2 files changed, 2 insertions(+), 5 deletions(-)
+ drivers/clk/imx/clk-imx8mn.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/hw/bnxt_re/qplib_rcfw.c b/drivers/infiniband/hw/bnxt_re/qplib_rcfw.c
-index 5d384def5e5fe..d2d39126f1852 100644
---- a/drivers/infiniband/hw/bnxt_re/qplib_rcfw.c
-+++ b/drivers/infiniband/hw/bnxt_re/qplib_rcfw.c
-@@ -618,8 +618,6 @@ int bnxt_qplib_alloc_rcfw_channel(struct bnxt_qplib_res *res,
- 	if (!cmdq->cmdq_bitmap)
- 		goto fail;
+diff --git a/drivers/clk/imx/clk-imx8mn.c b/drivers/clk/imx/clk-imx8mn.c
+index c55577604e16a..021355a247081 100644
+--- a/drivers/clk/imx/clk-imx8mn.c
++++ b/drivers/clk/imx/clk-imx8mn.c
+@@ -277,9 +277,9 @@ static const char * const imx8mn_pdm_sels[] = {"osc_24m", "sys_pll2_100m", "audi
  
--	cmdq->bmap_size = bmap_size;
--
- 	/* Allocate one extra to hold the QP1 entries */
- 	rcfw->qp_tbl_size = qp_tbl_sz + 1;
- 	rcfw->qp_tbl = kcalloc(rcfw->qp_tbl_size, sizeof(struct bnxt_qplib_qp_node),
-@@ -667,8 +665,8 @@ void bnxt_qplib_disable_rcfw_channel(struct bnxt_qplib_rcfw *rcfw)
- 	iounmap(cmdq->cmdq_mbox.reg.bar_reg);
- 	iounmap(creq->creq_db.reg.bar_reg);
+ static const char * const imx8mn_dram_core_sels[] = {"dram_pll_out", "dram_alt_root", };
  
--	indx = find_first_bit(cmdq->cmdq_bitmap, cmdq->bmap_size);
--	if (indx != cmdq->bmap_size)
-+	indx = find_first_bit(cmdq->cmdq_bitmap, rcfw->cmdq_depth);
-+	if (indx != rcfw->cmdq_depth)
- 		dev_err(&rcfw->pdev->dev,
- 			"disabling RCFW with pending cmd-bit %lx\n", indx);
- 
-diff --git a/drivers/infiniband/hw/bnxt_re/qplib_rcfw.h b/drivers/infiniband/hw/bnxt_re/qplib_rcfw.h
-index 9474c00465821..0c6d0b70ce890 100644
---- a/drivers/infiniband/hw/bnxt_re/qplib_rcfw.h
-+++ b/drivers/infiniband/hw/bnxt_re/qplib_rcfw.h
-@@ -152,7 +152,6 @@ struct bnxt_qplib_cmdq_ctx {
- 	wait_queue_head_t		waitq;
- 	unsigned long			flags;
- 	unsigned long			*cmdq_bitmap;
--	u32				bmap_size;
- 	u32				seq_num;
- };
- 
+-static const char * const imx8mn_clko1_sels[] = {"osc_24m", "sys_pll1_800m", "osc_27m",
+-						 "sys_pll1_200m", "audio_pll2_out", "vpu_pll",
+-						 "sys_pll1_80m", };
++static const char * const imx8mn_clko1_sels[] = {"osc_24m", "sys_pll1_800m", "dummy",
++						 "sys_pll1_200m", "audio_pll2_out", "sys_pll2_500m",
++						 "dummy", "sys_pll1_80m", };
+ static const char * const imx8mn_clko2_sels[] = {"osc_24m", "sys_pll2_200m", "sys_pll1_400m",
+ 						 "sys_pll2_166m", "sys_pll3_out", "audio_pll1_out",
+ 						 "video_pll1_out", "osc_32k", };
 -- 
 2.34.1
 
