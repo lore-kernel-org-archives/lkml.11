@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F73DC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 467D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379542AbiAXULh (ORCPT
+        id S1379598AbiAXULy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:11:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58152 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356682AbiAXTxF (ORCPT
+        Mon, 24 Jan 2022 15:11:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48564 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354409AbiAXTx1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:53:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1824C0613A6;
-        Mon, 24 Jan 2022 11:26:40 -0800 (PST)
+        Mon, 24 Jan 2022 14:53:27 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D6CCB81240;
-        Mon, 24 Jan 2022 19:26:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6E1DC339CC;
-        Mon, 24 Jan 2022 19:26:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CB0060B02;
+        Mon, 24 Jan 2022 19:53:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AB79C340E5;
+        Mon, 24 Jan 2022 19:53:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052398;
-        bh=lUHBLmJPWPHY9xfX0f7oW/LhUvOKBWyNMSXZN69tKvo=;
+        s=korg; t=1643054006;
+        bh=hPIfp+xb0nCIRiWKRjRo3dFFJQLH9qNfIauxYLsotvI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J1esuzkOf5o2e8ciRTwNfR4YdyyQ6fV3vkARvZxCqG0npTBw/jUuMLUnCF9fLYfuI
-         Gx8XXGsjtdYWpRMeZuFdOhkF4W/dspi4seoyCxlkw9Mj9B1CDF4bX8orH4BizaPRLw
-         YadGTTkNl23zjDvDyqbolR2bLgKRK0NsNcwHoYN4=
+        b=BkCuA0JnRtlxv/AsFIMJzXZKZ/S1AnAVq9J7+iWGQcgYdNq9j9YucJC1/CUOLkP5t
+         5VCoVztMOK2JITcevTChfVioDNfIR7oBVLyaJvPRkhWW2FAV8tQKMVTnzPyepRbxwQ
+         O2tUmWCEYohf8Nn1p4zsOw+nj4luhmoot6O4EG9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 045/320] media: aspeed: Update signal status immediately to ensure sane hw state
-Date:   Mon, 24 Jan 2022 19:40:29 +0100
-Message-Id: <20220124183955.277750504@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 215/563] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_init
+Date:   Mon, 24 Jan 2022 19:39:40 +0100
+Message-Id: <20220124184031.886701421@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,63 +47,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jammy Huang <jammy_huang@aspeedtech.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit af6d1bde395cac174ee71adcd3fa43f6435c7206 ]
+[ Upstream commit f364c571a5c77e96de2d32062ff019d6b8d2e2bc ]
 
-If res-chg, VE_INTERRUPT_MODE_DETECT_WD irq will be raised. But
-v4l2_input_status won't be updated to no-signal immediately until
-aspeed_video_get_resolution() in aspeed_video_resolution_work().
+The function performs a check on its input parameters, however, the
+hdev parameter is used before the check.
 
-During the period of time, aspeed_video_start_frame() could be called
-because it doesn't know signal becomes unstable now. If it goes with
-aspeed_video_init_regs() of aspeed_video_irq_res_change()
-simultaneously, it will mess up hw state.
+Initialize the stack variables after checking the input parameters to
+avoid a possible NULL pointer dereference.
 
-To fix this problem, v4l2_input_status is updated to no-signal
-immediately for VE_INTERRUPT_MODE_DETECT_WD irq.
-
-Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
-Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
-Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 9614219e9310e ("HID: uclogic: Extract tablet parameter discovery into a module")
+Addresses-Coverity-ID: 1443831 ("Null pointer dereference")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/aspeed-video.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/hid/hid-uclogic-params.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
-index be1238f22b8ae..1e0867016bf37 100644
---- a/drivers/media/platform/aspeed-video.c
-+++ b/drivers/media/platform/aspeed-video.c
-@@ -533,6 +533,8 @@ static void aspeed_video_irq_res_change(struct aspeed_video *video, ulong delay)
- 	set_bit(VIDEO_RES_CHANGE, &video->flags);
- 	clear_bit(VIDEO_FRAME_INPRG, &video->flags);
+diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
+index dd05bed4ca53a..851ab8e24f9d7 100644
+--- a/drivers/hid/hid-uclogic-params.c
++++ b/drivers/hid/hid-uclogic-params.c
+@@ -832,10 +832,10 @@ int uclogic_params_init(struct uclogic_params *params,
+ 			struct hid_device *hdev)
+ {
+ 	int rc;
+-	struct usb_device *udev = hid_to_usb_dev(hdev);
+-	__u8  bNumInterfaces = udev->config->desc.bNumInterfaces;
+-	struct usb_interface *iface = to_usb_interface(hdev->dev.parent);
+-	__u8 bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
++	struct usb_device *udev;
++	__u8  bNumInterfaces;
++	struct usb_interface *iface;
++	__u8 bInterfaceNumber;
+ 	bool found;
+ 	/* The resulting parameters (noop) */
+ 	struct uclogic_params p = {0, };
+@@ -846,6 +846,11 @@ int uclogic_params_init(struct uclogic_params *params,
+ 		goto cleanup;
+ 	}
  
-+	video->v4l2_input_status = V4L2_IN_ST_NO_SIGNAL;
++	udev = hid_to_usb_dev(hdev);
++	bNumInterfaces = udev->config->desc.bNumInterfaces;
++	iface = to_usb_interface(hdev->dev.parent);
++	bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
 +
- 	aspeed_video_off(video);
- 	aspeed_video_bufs_done(video, VB2_BUF_STATE_ERROR);
- 
-@@ -1315,7 +1317,6 @@ static void aspeed_video_resolution_work(struct work_struct *work)
- 	struct delayed_work *dwork = to_delayed_work(work);
- 	struct aspeed_video *video = container_of(dwork, struct aspeed_video,
- 						  res_work);
--	u32 input_status = video->v4l2_input_status;
- 
- 	aspeed_video_on(video);
- 
-@@ -1328,8 +1329,7 @@ static void aspeed_video_resolution_work(struct work_struct *work)
- 	aspeed_video_get_resolution(video);
- 
- 	if (video->detected_timings.width != video->active_timings.width ||
--	    video->detected_timings.height != video->active_timings.height ||
--	    input_status != video->v4l2_input_status) {
-+	    video->detected_timings.height != video->active_timings.height) {
- 		static const struct v4l2_event ev = {
- 			.type = V4L2_EVENT_SOURCE_CHANGE,
- 			.u.src_change.changes = V4L2_EVENT_SRC_CH_RESOLUTION,
+ 	/*
+ 	 * Set replacement report descriptor if the original matches the
+ 	 * specified size. Otherwise keep interface unchanged.
 -- 
 2.34.1
 
