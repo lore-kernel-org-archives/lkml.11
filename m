@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C2FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CC7C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451359AbiAXVWp (ORCPT
+        id S1451516AbiAXVXF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:22:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44240 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442662AbiAXUzE (ORCPT
+        Mon, 24 Jan 2022 16:23:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50626 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442227AbiAXUxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:55:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74C2C047CE4;
-        Mon, 24 Jan 2022 11:59:59 -0800 (PST)
+        Mon, 24 Jan 2022 15:53:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A00AFB81229;
-        Mon, 24 Jan 2022 19:59:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03E47C340E5;
-        Mon, 24 Jan 2022 19:59:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50A1DB810A8;
+        Mon, 24 Jan 2022 20:53:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 749D3C340E5;
+        Mon, 24 Jan 2022 20:53:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054397;
-        bh=/dLmxP0k5YulXdYMfs2D5bBa+Ba737FmT5TgawM3dGg=;
+        s=korg; t=1643057632;
+        bh=UxwUpDXJ4axt9oqEZOsHQYJIuHllOhKTqnBfWUdnq5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vF/8skGovRwakkmlzaILgojRMk0CDlGbKb5tPabqJGZBQLWLOq/ygtNnPswinsoU6
-         pBWx7vVbxUv0QL8TlE9UpJKdnUEZk4ddgF4aaobWQ2n0O0wpjZ8F9H6YAI/shTLp7S
-         46qQaQrRIxxr2pkFaabCUll93EfVKg3eWkeDDyOc=
+        b=rnvjZFJXt/WmuWsrHIlPtL5XOsNZoThAIF8G3dUTVYdtW5rMePWwfytnGglHPmyRe
+         Xl9zkp3+0ejCmb93FOlT4kf1rQ+7FS5xLoqWqEH3X4f1xKwBA4uPz84/DjgfyoV3KD
+         6Ud58JqnRoG5HkHSxY9t7YqVEvZVHb8Dkr0vdeB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 376/563] iwlwifi: remove module loading failure message
-Date:   Mon, 24 Jan 2022 19:42:21 +0100
-Message-Id: <20220124184037.433003114@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas De Marchi <lucas.demarchi@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 5.16 0029/1039] x86/gpu: Reserve stolen memory for first integrated Intel GPU
+Date:   Mon, 24 Jan 2022 19:30:18 +0100
+Message-Id: <20220124184126.116269503@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +46,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Lucas De Marchi <lucas.demarchi@intel.com>
 
-[ Upstream commit 6518f83ffa51131daaf439b66094f684da3fb0ae ]
+commit 9c494ca4d3a535f9ca11ad6af1813983c1c6cbdd upstream.
 
-When CONFIG_DEBUG_TEST_DRIVER_REMOVE is set, iwlwifi crashes
-when the opmode module cannot be loaded, due to completing
-the completion before using drv->dev, which can then already
-be freed.
+"Stolen memory" is memory set aside for use by an Intel integrated GPU.
+The intel_graphics_quirks() early quirk reserves this memory when it is
+called for a GPU that appears in the intel_early_ids[] table of integrated
+GPUs.
 
-Fix this by removing the (fairly useless) message. Moving the
-completion later causes a deadlock instead, so that's not an
-option.
+Previously intel_graphics_quirks() was marked as QFLAG_APPLY_ONCE, so it
+was called only for the first Intel GPU found.  If a discrete GPU happened
+to be enumerated first, intel_graphics_quirks() was called for it but not
+for any integrated GPU found later.  Therefore, stolen memory for such an
+integrated GPU was never reserved.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/20211210091245.289008-2-luca@coelho.fi
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+For example, this problem occurs in this Alderlake-P (integrated) + DG2
+(discrete) topology where the DG2 is found first, but stolen memory is
+associated with the integrated GPU:
+
+  - 00:01.0 Bridge
+    `- 03:00.0 DG2 discrete GPU
+  - 00:02.0 Integrated GPU (with stolen memory)
+
+Remove the QFLAG_APPLY_ONCE flag and call intel_graphics_quirks() for every
+Intel GPU.  Reserve stolen memory for the first GPU that appears in
+intel_early_ids[].
+
+[bhelgaas: commit log, add code comment, squash in
+https://lore.kernel.org/r/20220118190558.2ququ4vdfjuahicm@ldmartin-desk2]
+Link: https://lore.kernel.org/r/20220114002843.2083382-1-lucas.demarchi@intel.com
+Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ arch/x86/kernel/early-quirks.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index 4bdfd6afa7324..30c6d7b18599a 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -1629,15 +1629,8 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	 * else from proceeding if the module fails to load
- 	 * or hangs loading.
- 	 */
--	if (load_module) {
-+	if (load_module)
- 		request_module("%s", op->name);
--#ifdef CONFIG_IWLWIFI_OPMODE_MODULAR
--		if (err)
--			IWL_ERR(drv,
--				"failed to load module %s (error %d), is dynamic loading enabled?\n",
--				op->name, err);
--#endif
--	}
- 	failure = false;
- 	goto free;
+--- a/arch/x86/kernel/early-quirks.c
++++ b/arch/x86/kernel/early-quirks.c
+@@ -515,6 +515,7 @@ static const struct intel_early_ops gen1
+ 	.stolen_size = gen9_stolen_size,
+ };
  
--- 
-2.34.1
-
++/* Intel integrated GPUs for which we need to reserve "stolen memory" */
+ static const struct pci_device_id intel_early_ids[] __initconst = {
+ 	INTEL_I830_IDS(&i830_early_ops),
+ 	INTEL_I845G_IDS(&i845_early_ops),
+@@ -591,6 +592,13 @@ static void __init intel_graphics_quirks
+ 	u16 device;
+ 	int i;
+ 
++	/*
++	 * Reserve "stolen memory" for an integrated GPU.  If we've already
++	 * found one, there's nothing to do for other (discrete) GPUs.
++	 */
++	if (resource_size(&intel_graphics_stolen_res))
++		return;
++
+ 	device = read_pci_config_16(num, slot, func, PCI_DEVICE_ID);
+ 
+ 	for (i = 0; i < ARRAY_SIZE(intel_early_ids); i++) {
+@@ -703,7 +711,7 @@ static struct chipset early_qrk[] __init
+ 	{ PCI_VENDOR_ID_INTEL, 0x3406, PCI_CLASS_BRIDGE_HOST,
+ 	  PCI_BASE_CLASS_BRIDGE, 0, intel_remapping_check },
+ 	{ PCI_VENDOR_ID_INTEL, PCI_ANY_ID, PCI_CLASS_DISPLAY_VGA, PCI_ANY_ID,
+-	  QFLAG_APPLY_ONCE, intel_graphics_quirks },
++	  0, intel_graphics_quirks },
+ 	/*
+ 	 * HPET on the current version of the Baytrail platform has accuracy
+ 	 * problems: it will halt in deep idle state - so we disable it.
 
 
