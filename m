@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D68C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452131AbiAXVYG (ORCPT
+        id S1452167AbiAXVYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:24:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45164 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350425AbiAXU5F (ORCPT
+        Mon, 24 Jan 2022 16:24:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50102 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443556AbiAXU5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:57:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2076C110F33;
-        Mon, 24 Jan 2022 11:18:28 -0800 (PST)
+        Mon, 24 Jan 2022 15:57:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5191A60918;
-        Mon, 24 Jan 2022 19:18:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31F0CC340E5;
-        Mon, 24 Jan 2022 19:18:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25FF9611C8;
+        Mon, 24 Jan 2022 20:57:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0A2BC340E5;
+        Mon, 24 Jan 2022 20:57:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051907;
-        bh=I5g32WXKgHPSR8SEIEeB0HviWhU+yo4ohTjx1FEUO9I=;
+        s=korg; t=1643057837;
+        bh=4V4cxWlmyZvF0156r5z/jnCjIkSbiX6J5fCpOPi18WM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UDrCgavj08fU8wtHvmDBD7op80DCQqCWzr8BQS6w1bFO6J2MGCV6IEHiY3F26rzVD
-         vBuDQLULRdNw3WHi0MD93rSwIodCGZ9l6qijFXTSAMhn00Mw2FWAyuVi0eGi5OgRcj
-         PFVpS1cyPv24M0MTBqOYhzH3GB+rwz66w/4mZC08=
+        b=jchcq3oREjjcK/wq+xfV5Jua6WNcX5BeKZNtOmU6E0cFS6S07LY6dqeDgpHfsPbBb
+         HrHCiWq8vha9+HiaYlbKAgynaEyQwuRqKiydr51zb/q/CGgBGK9KaqGFWh4iXYKMU3
+         coGnbLTgwjbeLUZoqBVwO/YWCrEBlBKARWZKQdOM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Hector Martin <marcan@marcan.st>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 108/239] iommu/io-pgtable-arm: Fix table descriptor paddr formatting
-Date:   Mon, 24 Jan 2022 19:42:26 +0100
-Message-Id: <20220124183946.539996444@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Michael Stapelberg <michael@stapelberg.ch>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0096/1039] drm/vc4: hdmi: Set a default HSM rate
+Date:   Mon, 24 Jan 2022 19:31:25 +0100
+Message-Id: <20220124184128.387367217@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,67 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 9abe2ac834851a7d0b0756e295cf7a292c45ca53 ]
+[ Upstream commit 3e85b81591609bb794bb00cd619b20965b5b38cd ]
 
-Table descriptors were being installed without properly formatting the
-address using paddr_to_iopte, which does not match up with the
-iopte_deref in __arm_lpae_map. This is incorrect for the LPAE pte
-format, as it does not handle the high bits properly.
+When the firmware doesn't setup the HSM rate (such as when booting
+without an HDMI cable plugged in), its rate is 0 and thus any register
+access results in a CPU stall, even though HSM is enabled.
 
-This was found on Apple T6000 DARTs, which require a new pte format
-(different shift); adding support for that to
-paddr_to_iopte/iopte_to_paddr caused it to break badly, as even <48-bit
-addresses would end up incorrect in that case.
+Let's enforce a minimum rate at boot to avoid this issue.
 
-Fixes: 6c89928ff7a0 ("iommu/io-pgtable-arm: Support 52-bit physical address")
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Link: https://lore.kernel.org/r/20211120031343.88034-1-marcan@marcan.st
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Fixes: 4f6e3d66ac52 ("drm/vc4: Add runtime PM support to the HDMI encoder driver")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Michael Stapelberg <michael@stapelberg.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-4-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/io-pgtable-arm.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 2f79efd16a052..4bd2dd70acaec 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -346,11 +346,12 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
- 					     arm_lpae_iopte *ptep,
- 					     arm_lpae_iopte curr,
--					     struct io_pgtable_cfg *cfg)
-+					     struct arm_lpae_io_pgtable *data)
- {
- 	arm_lpae_iopte old, new;
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index b284623e28634..33f61e2f7e6d1 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -94,6 +94,7 @@
+ # define VC4_HD_M_SW_RST			BIT(2)
+ # define VC4_HD_M_ENABLE			BIT(0)
  
--	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
-+	new = paddr_to_iopte(__pa(table), data) | ARM_LPAE_PTE_TYPE_TABLE;
- 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
- 		new |= ARM_LPAE_PTE_NSTABLE;
++#define HSM_MIN_CLOCK_FREQ	120000000
+ #define CEC_CLOCK_FREQ 40000
  
-@@ -402,7 +403,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 		if (!cptep)
- 			return -ENOMEM;
- 
--		pte = arm_lpae_install_table(cptep, ptep, 0, cfg);
-+		pte = arm_lpae_install_table(cptep, ptep, 0, data);
- 		if (pte)
- 			__arm_lpae_free_pages(cptep, tblsz, cfg);
- 	} else if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA) &&
-@@ -562,7 +563,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, &tablep[i]);
+ #define HDMI_14_MAX_TMDS_CLK   (340 * 1000 * 1000)
+@@ -2162,6 +2163,19 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 			vc4_hdmi->disable_4kp60 = true;
  	}
  
--	pte = arm_lpae_install_table(tablep, ptep, blk_pte, cfg);
-+	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
- 	if (pte != blk_pte) {
- 		__arm_lpae_free_pages(tablep, tablesz, cfg);
- 		/*
++	/*
++	 * If we boot without any cable connected to the HDMI connector,
++	 * the firmware will skip the HSM initialization and leave it
++	 * with a rate of 0, resulting in a bus lockup when we're
++	 * accessing the registers even if it's enabled.
++	 *
++	 * Let's put a sensible default at runtime_resume so that we
++	 * don't end up in this situation.
++	 */
++	ret = clk_set_min_rate(vc4_hdmi->hsm_clock, HSM_MIN_CLOCK_FREQ);
++	if (ret)
++		goto err_put_ddc;
++
+ 	if (vc4_hdmi->variant->reset)
+ 		vc4_hdmi->variant->reset(vc4_hdmi);
+ 
 -- 
 2.34.1
 
