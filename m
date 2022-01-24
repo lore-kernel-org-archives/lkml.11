@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59548C47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B59C47085
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379933AbiAXUPT (ORCPT
+        id S1380352AbiAXUQL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:15:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42094 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358442AbiAXTzO (ORCPT
+        Mon, 24 Jan 2022 15:16:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350954AbiAXTwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:55:14 -0500
+        Mon, 24 Jan 2022 14:52:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3623C0617A3;
+        Mon, 24 Jan 2022 11:24:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75341B811FB;
-        Mon, 24 Jan 2022 19:55:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CC3FC340E5;
-        Mon, 24 Jan 2022 19:55:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B79BB8122F;
+        Mon, 24 Jan 2022 19:24:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 866E0C340E8;
+        Mon, 24 Jan 2022 19:24:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054112;
-        bh=9OYIhp4tcNcPNdnDiXHPbH5wBCGJndxbPgN1unI9o3Y=;
+        s=korg; t=1643052297;
+        bh=Q3d16Erybi8ks3P6I31MKaCH6TV11ACxsCvMgjcQY2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nygkoRjbjeinuWg3fuba3ch9mudvbRLMwhMgkeAGVIi3+tCMg5UXUOEZjlUKaGgWL
-         REGkDUlGEzlN7kYCbihFpIKrf2sBE7aVbW5UAnL/LAUJUGxZLg3y6Pvnbcpc1OV1DO
-         a7mlxvLSsn9G5GPvMq/W7YrhXalltLAk8+POro28=
+        b=Q7cvptfEzOOb46dFmQV+FG/b9ajbnRYhFI1is89ZOsqw9MI6kdU5c2UiY/mYBLYbL
+         nLfc0tUnRwrJapa8AtWr2ivFzCUQhOmGKAvTCk5dkM1M3ZEVSYf/X0Lf0I+nLPyu3G
+         1cmuhHlSecjm7r+D5MHShPL6VNIB8Rupj4hM/XCM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Xiang Chen <chenxiang66@hisilicon.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH 5.10 281/563] scsi: block: pm: Always set request queue runtime active in blk_post_runtime_resume()
-Date:   Mon, 24 Jan 2022 19:40:46 +0100
-Message-Id: <20220124184034.158011166@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Nobuhiro Iwamatsu <iwamatsu@nigauri.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 5.4 013/320] rtc: cmos: take rtc_lock while reading from CMOS
+Date:   Mon, 24 Jan 2022 19:39:57 +0100
+Message-Id: <20220124183954.205099585@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,120 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Mateusz Jończyk <mat.jonczyk@o2.pl>
 
-[ Upstream commit 6e1fcab00a23f7fe9f4fe9704905a790efa1eeab ]
+commit 454f47ff464325223129b9b5b8d0b61946ec704d upstream.
 
-John Garry reported a deadlock that occurs when trying to access a
-runtime-suspended SATA device.  For obscure reasons, the rescan procedure
-causes the link to be hard-reset, which disconnects the device.
+Reading from the CMOS involves writing to the index register and then
+reading from the data register. Therefore access to the CMOS has to be
+serialized with rtc_lock. This invocation of CMOS_READ was not
+serialized, which could cause trouble when other code is accessing CMOS
+at the same time.
 
-The rescan tries to carry out a runtime resume when accessing the device.
-scsi_rescan_device() holds the SCSI device lock and won't release it until
-it can put commands onto the device's block queue.  This can't happen until
-the queue is successfully runtime-resumed or the device is unregistered.
-But the runtime resume fails because the device is disconnected, and
-__scsi_remove_device() can't do the unregistration because it can't get the
-device lock.
+Use spin_lock_irq() like the rest of the function.
 
-The best way to resolve this deadlock appears to be to allow the block
-queue to start running again even after an unsuccessful runtime resume.
-The idea is that the driver or the SCSI error handler will need to be able
-to use the queue to resolve the runtime resume failure.
+Nothing in kernel modifies the RTC_DM_BINARY bit, so there could be a
+separate pair of spin_lock_irq() / spin_unlock_irq() before doing the
+math.
 
-This patch removes the err argument to blk_post_runtime_resume() and makes
-the routine act as though the resume was successful always.  This fixes the
-deadlock.
-
-Link: https://lore.kernel.org/r/1639999298-244569-4-git-send-email-chenxiang66@hisilicon.com
-Fixes: e27829dc92e5 ("scsi: serialize ->rescan against ->remove")
-Reported-and-tested-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Reviewed-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Cc: Alessandro Zummo <a.zummo@towertech.it>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20211210200131.153887-2-mat.jonczyk@o2.pl
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-pm.c         | 22 +++++++---------------
- drivers/scsi/scsi_pm.c |  2 +-
- include/linux/blk-pm.h |  2 +-
- 3 files changed, 9 insertions(+), 17 deletions(-)
+ drivers/rtc/rtc-cmos.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/block/blk-pm.c b/block/blk-pm.c
-index 17bd020268d42..2dad62cc15727 100644
---- a/block/blk-pm.c
-+++ b/block/blk-pm.c
-@@ -163,27 +163,19 @@ EXPORT_SYMBOL(blk_pre_runtime_resume);
- /**
-  * blk_post_runtime_resume - Post runtime resume processing
-  * @q: the queue of the device
-- * @err: return value of the device's runtime_resume function
-  *
-  * Description:
-- *    Update the queue's runtime status according to the return value of the
-- *    device's runtime_resume function. If the resume was successful, call
-- *    blk_set_runtime_active() to do the real work of restarting the queue.
-+ *    For historical reasons, this routine merely calls blk_set_runtime_active()
-+ *    to do the real work of restarting the queue.  It does this regardless of
-+ *    whether the device's runtime-resume succeeded; even if it failed the
-+ *    driver or error handler will need to communicate with the device.
-  *
-  *    This function should be called near the end of the device's
-  *    runtime_resume callback.
-  */
--void blk_post_runtime_resume(struct request_queue *q, int err)
-+void blk_post_runtime_resume(struct request_queue *q)
- {
--	if (!q->dev)
--		return;
--	if (!err) {
--		blk_set_runtime_active(q);
--	} else {
--		spin_lock_irq(&q->queue_lock);
--		q->rpm_status = RPM_SUSPENDED;
--		spin_unlock_irq(&q->queue_lock);
--	}
-+	blk_set_runtime_active(q);
- }
- EXPORT_SYMBOL(blk_post_runtime_resume);
+--- a/drivers/rtc/rtc-cmos.c
++++ b/drivers/rtc/rtc-cmos.c
+@@ -463,7 +463,10 @@ static int cmos_set_alarm(struct device
+ 	min = t->time.tm_min;
+ 	sec = t->time.tm_sec;
  
-@@ -201,7 +193,7 @@ EXPORT_SYMBOL(blk_post_runtime_resume);
-  * runtime PM status and re-enable peeking requests from the queue. It
-  * should be called before first request is added to the queue.
-  *
-- * This function is also called by blk_post_runtime_resume() for successful
-+ * This function is also called by blk_post_runtime_resume() for
-  * runtime resumes.  It does everything necessary to restart the queue.
-  */
- void blk_set_runtime_active(struct request_queue *q)
-diff --git a/drivers/scsi/scsi_pm.c b/drivers/scsi/scsi_pm.c
-index 3717eea37ecb3..e91a0a5bc7a3e 100644
---- a/drivers/scsi/scsi_pm.c
-+++ b/drivers/scsi/scsi_pm.c
-@@ -262,7 +262,7 @@ static int sdev_runtime_resume(struct device *dev)
- 	blk_pre_runtime_resume(sdev->request_queue);
- 	if (pm && pm->runtime_resume)
- 		err = pm->runtime_resume(dev);
--	blk_post_runtime_resume(sdev->request_queue, err);
-+	blk_post_runtime_resume(sdev->request_queue);
- 
- 	return err;
- }
-diff --git a/include/linux/blk-pm.h b/include/linux/blk-pm.h
-index b80c65aba2493..2580e05a8ab67 100644
---- a/include/linux/blk-pm.h
-+++ b/include/linux/blk-pm.h
-@@ -14,7 +14,7 @@ extern void blk_pm_runtime_init(struct request_queue *q, struct device *dev);
- extern int blk_pre_runtime_suspend(struct request_queue *q);
- extern void blk_post_runtime_suspend(struct request_queue *q, int err);
- extern void blk_pre_runtime_resume(struct request_queue *q);
--extern void blk_post_runtime_resume(struct request_queue *q, int err);
-+extern void blk_post_runtime_resume(struct request_queue *q);
- extern void blk_set_runtime_active(struct request_queue *q);
- #else
- static inline void blk_pm_runtime_init(struct request_queue *q,
--- 
-2.34.1
-
++	spin_lock_irq(&rtc_lock);
+ 	rtc_control = CMOS_READ(RTC_CONTROL);
++	spin_unlock_irq(&rtc_lock);
++
+ 	if (!(rtc_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD) {
+ 		/* Writing 0xff means "don't care" or "match all".  */
+ 		mon = (mon <= 12) ? bin2bcd(mon) : 0xff;
 
 
