@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB83FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:08:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446343AbiAXVIB (ORCPT
+        id S1376311AbiAXVIJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:08:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42254 "EHLO
+        Mon, 24 Jan 2022 16:08:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390169AbiAXUpD (ORCPT
+        with ESMTP id S1358518AbiAXUmZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:45:03 -0500
+        Mon, 24 Jan 2022 15:42:25 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C16CC0424C9;
-        Mon, 24 Jan 2022 11:54:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F1FC04966E;
+        Mon, 24 Jan 2022 11:52:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 243316090A;
-        Mon, 24 Jan 2022 19:54:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 092B1C340E5;
-        Mon, 24 Jan 2022 19:54:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3D3360B43;
+        Mon, 24 Jan 2022 19:52:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC940C340E8;
+        Mon, 24 Jan 2022 19:52:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054062;
-        bh=3/xGQscgkM8CssT8T+AIB1T7dP+Y+M/pd+KZ9tVxfUw=;
+        s=korg; t=1643053975;
+        bh=stAZSoMPzPSb71CrbNvLWrWhQ3nE4fD5aHfcj2BwaxA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VtHgAQgjvZdj2zGvRzb3yyknKnTDVIfVzVoj/RzouHwm1w6SblXUDiEPWOhzA1a0u
-         O4Xh8XN4xkVr2YHJ8uACwDWs0jQeBYSYKNDmJEQe3+eqp2kfEHZFVe0btGpdNdi58Z
-         gKQgZLwUORbxjuhK4nhWQlVIZ43mQN5dHG1Hse0Y=
+        b=SZgEKaoam9ojbWuVvHT7zYb6PRW7Xm9pav5Qlrp863Gss8KZ3pM89ubHxFpprqALY
+         RWv0Nn/qrqfPbrWEoVT53UosoSDiwWnwGKmkv4rh+eX38LQlg6Lw5lcrd3Op7seDFM
+         6Y8cj4ykqkUkEOajxN3CuqB4LGPPJgP6xNDI2EvE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Juergen Gross <jgross@suse.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 266/563] PCI/MSI: Fix pci_irq_vector()/pci_irq_get_affinity()
-Date:   Mon, 24 Jan 2022 19:40:31 +0100
-Message-Id: <20220124184033.640624882@linuxfoundation.org>
+Subject: [PATCH 5.10 238/563] ext4: avoid trim error on fs with small groups
+Date:   Mon, 24 Jan 2022 19:40:03 +0100
+Message-Id: <20220124184032.672243166@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -52,95 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 29bbc35e29d9b6347780dcacde2deb4b39344167 ]
+[ Upstream commit 173b6e383d2a204c9921ffc1eca3b87aa2106c33 ]
 
-pci_irq_vector() and pci_irq_get_affinity() use the list position to find the
-MSI-X descriptor at a given index. That's correct for the normal case where
-the entry number is the same as the list position.
+A user reported FITRIM ioctl failing for him on ext4 on some devices
+without apparent reason.  After some debugging we've found out that
+these devices (being LVM volumes) report rather large discard
+granularity of 42MB and the filesystem had 1k blocksize and thus group
+size of 8MB. Because ext4 FITRIM implementation puts discard
+granularity into minlen, ext4_trim_fs() declared the trim request as
+invalid. However just silently doing nothing seems to be a more
+appropriate reaction to such combination of parameters since user did
+not specify anything wrong.
 
-But it's wrong for cases where MSI-X was allocated with an entries array
-describing sparse entry numbers into the hardware message descriptor
-table. That's inconsistent at best.
-
-Make it always check the entry number because that's what the zero base
-index really means. This change won't break existing users which use a
-sparse entries array for allocation because these users retrieve the Linux
-interrupt number from the entries array after allocation and none of them
-uses pci_irq_vector() or pci_irq_get_affinity().
-
-Fixes: aff171641d18 ("PCI: Provide sensible IRQ vector alloc/free routines")
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-Link: https://lore.kernel.org/r/20211206210223.929792157@linutronix.de
+CC: Lukas Czerner <lczerner@redhat.com>
+Fixes: 5c2ed62fd447 ("ext4: Adjust minlen with discard_granularity in the FITRIM ioctl")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20211112152202.26614-1-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/msi.c | 26 ++++++++++++++++++--------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+ fs/ext4/ioctl.c   | 2 --
+ fs/ext4/mballoc.c | 8 ++++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index 57314fec2261b..3da69b26e6743 100644
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -1291,19 +1291,24 @@ EXPORT_SYMBOL(pci_free_irq_vectors);
+diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
+index cb54ea6461fd8..413bf3d2f7844 100644
+--- a/fs/ext4/ioctl.c
++++ b/fs/ext4/ioctl.c
+@@ -1123,8 +1123,6 @@ resizefs_out:
+ 		    sizeof(range)))
+ 			return -EFAULT;
  
- /**
-  * pci_irq_vector - return Linux IRQ number of a device vector
-- * @dev: PCI device to operate on
-- * @nr: device-relative interrupt vector index (0-based).
-+ * @dev:	PCI device to operate on
-+ * @nr:		Interrupt vector index (0-based)
-+ *
-+ * @nr has the following meanings depending on the interrupt mode:
-+ *   MSI-X:	The index in the MSI-X vector table
-+ *   MSI:	The index of the enabled MSI vectors
-+ *   INTx:	Must be 0
-+ *
-+ * Return: The Linux interrupt number or -EINVAl if @nr is out of range.
+-		range.minlen = max((unsigned int)range.minlen,
+-				   q->limits.discard_granularity);
+ 		ret = ext4_trim_fs(sb, &range);
+ 		if (ret < 0)
+ 			return ret;
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index d7cb7d719ee58..60aef7fdd61d0 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -5815,6 +5815,7 @@ out:
   */
- int pci_irq_vector(struct pci_dev *dev, unsigned int nr)
+ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
  {
- 	if (dev->msix_enabled) {
- 		struct msi_desc *entry;
--		int i = 0;
- 
- 		for_each_pci_msi_entry(entry, dev) {
--			if (i == nr)
-+			if (entry->msi_attrib.entry_nr == nr)
- 				return entry->irq;
--			i++;
- 		}
- 		WARN_ON_ONCE(1);
++	struct request_queue *q = bdev_get_queue(sb->s_bdev);
+ 	struct ext4_group_info *grp;
+ 	ext4_group_t group, first_group, last_group;
+ 	ext4_grpblk_t cnt = 0, first_cluster, last_cluster;
+@@ -5833,6 +5834,13 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
+ 	    start >= max_blks ||
+ 	    range->len < sb->s_blocksize)
  		return -EINVAL;
-@@ -1327,17 +1332,22 @@ EXPORT_SYMBOL(pci_irq_vector);
-  * pci_irq_get_affinity - return the affinity of a particular MSI vector
-  * @dev:	PCI device to operate on
-  * @nr:		device-relative interrupt vector index (0-based).
-+ *
-+ * @nr has the following meanings depending on the interrupt mode:
-+ *   MSI-X:	The index in the MSI-X vector table
-+ *   MSI:	The index of the enabled MSI vectors
-+ *   INTx:	Must be 0
-+ *
-+ * Return: A cpumask pointer or NULL if @nr is out of range
-  */
- const struct cpumask *pci_irq_get_affinity(struct pci_dev *dev, int nr)
- {
- 	if (dev->msix_enabled) {
- 		struct msi_desc *entry;
--		int i = 0;
- 
- 		for_each_pci_msi_entry(entry, dev) {
--			if (i == nr)
-+			if (entry->msi_attrib.entry_nr == nr)
- 				return &entry->affinity->mask;
--			i++;
- 		}
- 		WARN_ON_ONCE(1);
- 		return NULL;
++	/* No point to try to trim less than discard granularity */
++	if (range->minlen < q->limits.discard_granularity) {
++		minlen = EXT4_NUM_B2C(EXT4_SB(sb),
++			q->limits.discard_granularity >> sb->s_blocksize_bits);
++		if (minlen > EXT4_CLUSTERS_PER_GROUP(sb))
++			goto out;
++	}
+ 	if (end >= max_blks)
+ 		end = max_blks - 1;
+ 	if (end <= first_data_blk)
 -- 
 2.34.1
 
