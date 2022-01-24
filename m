@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84894C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 300E5C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453645AbiAXVae (ORCPT
+        id S1453735AbiAXVar (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:30:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49988 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442904AbiAXU7P (ORCPT
+        Mon, 24 Jan 2022 16:30:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54516 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443916AbiAXU7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:59:15 -0500
+        Mon, 24 Jan 2022 15:59:37 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 681D460907;
-        Mon, 24 Jan 2022 20:59:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E20C340E5;
-        Mon, 24 Jan 2022 20:59:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C27AB810BD;
+        Mon, 24 Jan 2022 20:59:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84FC4C340E5;
+        Mon, 24 Jan 2022 20:59:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057953;
-        bh=yt0SBqxMsExRaYTBC1Vv6ewmv9rpWwvS0gCEpAGnriw=;
+        s=korg; t=1643057972;
+        bh=0IGBf5tEYiMjH+4RXC5rOqHobWxotPtGXGTcCVuL41w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D4dj8fWa3QAFx/FmnOKDQrO2wKs92j1pawxmDAX17rbn/P/+hv81vsmRVieEEXasY
-         HR4Q/4Sq/D6A656u5ut0nhjkGC/f5UTQDSODcqbV04F88EnZYAArRMAp+Mt32XAoAk
-         NiT3qJrvlDHLrLJqCoET08smFE0eHgmJarYIwHXA=
+        b=f0aKrhXncadlwPsS0Xqz8olRSRZ0a0jT5TxNhDjj+ALwQ34p1cD+JKj3iCF2nxuId
+         IzgnzyLDyHV7YTqU83/VspTZbVE0RXl8X2bNUOqGbEOJ8dgWJXXdNSV3nqMChzO/4M
+         othgkgOPKm6Q7pTOg/LaynHzI5D6DUW5+qKGXPoU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>,
-        Alexander Stein <alexander.stein@mailbox.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0134/1039] arm64: dts: amlogic: Fix SPI NOR flash node name for ODROID N2/N2+
-Date:   Mon, 24 Jan 2022 19:32:03 +0100
-Message-Id: <20220124184129.666187858@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Subject: [PATCH 5.16 0139/1039] Bluetooth: stop proccessing malicious adv data
+Date:   Mon, 24 Jan 2022 19:32:08 +0100
+Message-Id: <20220124184129.852295486@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,36 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@mailbox.org>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 95d35256b564aca33fb661eac77dc94bfcffc8df ]
+[ Upstream commit 3a56ef719f0b9682afb8a86d64b2399e36faa4e6 ]
 
-Fix the schema warning: "spi-flash@0: $nodename:0: 'spi-flash@0' does
- not match '^flash(@.*)?$'" from jedec,spi-nor.yaml
+Syzbot reported slab-out-of-bounds read in hci_le_adv_report_evt(). The
+problem was in missing validaion check.
 
-Fixes: a084eaf3096c ("arm64: dts: meson-g12b-odroid-n2: add SPIFC controller node")
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211026182813.900775-3-alexander.stein@mailbox.org
+We should check if data is not malicious and we can read next data block.
+If we won't check ptr validness, code can read a way beyond skb->end and
+it can cause problems, of course.
+
+Fixes: e95beb414168 ("Bluetooth: hci_le_adv_report_evt code refactoring")
+Reported-and-tested-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bluetooth/hci_event.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-index e8a00a2f88128..3e968b2441918 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-@@ -609,7 +609,7 @@
- 	pinctrl-0 = <&nor_pins>;
- 	pinctrl-names = "default";
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 7d0db1ca12482..59f0691d907f6 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5825,7 +5825,8 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		struct hci_ev_le_advertising_info *ev = ptr;
+ 		s8 rssi;
  
--	mx25u64: spi-flash@0 {
-+	mx25u64: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "mxicy,mx25u6435f", "jedec,spi-nor";
+-		if (ev->length <= HCI_MAX_AD_LENGTH) {
++		if (ev->length <= HCI_MAX_AD_LENGTH &&
++		    ev->data + ev->length <= skb_tail_pointer(skb)) {
+ 			rssi = ev->data[ev->length];
+ 			process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
+ 					   ev->bdaddr_type, NULL, 0, rssi,
+@@ -5835,6 +5836,11 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		}
+ 
+ 		ptr += sizeof(*ev) + ev->length + 1;
++
++		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
++			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
++			break;
++		}
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
 -- 
 2.34.1
 
