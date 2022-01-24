@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB89C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2615C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242267AbiAXImX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 03:42:23 -0500
+        id S242285AbiAXIm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 03:42:28 -0500
 Received: from mga09.intel.com ([134.134.136.24]:62581 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242239AbiAXImN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 03:42:13 -0500
+        id S242242AbiAXImW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 03:42:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643013733; x=1674549733;
+  t=1643013742; x=1674549742;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ruYPOgJrcYMBa3FmjqCOu4n6zLK6I1fiqk+W/rHxgTc=;
-  b=gldvlAX0inIrOreqHj1TB2nf7uYy1mabAyzghXoK2effShzMImzpQwRO
-   A/jcAn9PrHmTN2lNuXH0SIh4u2P657T40W2lOeJk6sLMGCoDqE44Ns9wh
-   rvMqz9R0Chk2bsFZa1KMmicLhfAEXyzusNjgP90htE0Xy3ZE34EircMUI
-   0iOI1/eYTqIU0Fu4MmY0IcYektik9QGPCLHWJ3F+VvND8KiMX41ne7kd5
-   I985dmm0WCFF9TpwVdswiNG4eTo3uV6NWh/1cf2SerPKMAPCxPfLZOdCm
-   BnYUPNMzsGkUqOtLNK8UXXmWUYdZxEgGzUMO8pv6PLqOMwiDmXJhyk4LV
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="245778338"
+  bh=wMz/88t6sXC6bchK+SUeYsfhZWrCD/X2I+77HMnVuUg=;
+  b=BWElwywS6mRLXNMFiQ3f5bgYjG5kDaqNq2qzK6fk60CMk0TLm100j8pK
+   gNHocTfA2KGprg9sl7QKmzrce6rYX9+fc5uEKvUDNAqqniAIxRBeJNuGR
+   mgn2QyscJ/yo7nc9VJEr6F/1nFbZQ6ebMtm5RVKXNgTcbofm38Zbv3jym
+   hr/qNBudYluTkRNK4pVrrrhly5L4h3uE3wpt6+KGF3vTbQrE67nb2yr8s
+   s29Sd5S5bcHSbV8SEaLU2/feiqf1vysMCMoy8vQnoKTOmMoqKeHRiXexw
+   YVxq27fsxTNoCadkoceEgjIfwy2mSJchg4K2Z/e8J3SRm2DgOAgsCX5Y7
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="245778358"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="245778338"
+   d="scan'208";a="245778358"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 00:42:13 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 00:42:18 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="627416985"
+   d="scan'208";a="627417026"
 Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 00:42:11 -0800
+  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 00:42:16 -0800
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     Jiri Olsa <jolsa@redhat.com>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 04/25] perf intel-pt: pkt-decoder: Add MODE.Exec IFLAG bit
-Date:   Mon, 24 Jan 2022 10:41:40 +0200
-Message-Id: <20220124084201.2699795-5-adrian.hunter@intel.com>
+Subject: [PATCH 06/25] perf intel-pt: decoder: Factor out clearing of FUP event variables
+Date:   Mon, 24 Jan 2022 10:41:42 +0200
+Message-Id: <20220124084201.2699795-7-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220124084201.2699795-1-adrian.hunter@intel.com>
 References: <20220124084201.2699795-1-adrian.hunter@intel.com>
@@ -52,57 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As of Intel SDM (https://www.intel.com/sdm) version 076, there is a new
-Intel PT feature called Event Trace which adds a bit to the existing
-MODE.Exec packet to record the interrupt flag. Amend the packet decoder and
-packet decoder test accordingly.
+Factor out clearing of FUP event variables, to avoid code duplication.
 
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/perf/arch/x86/tests/intel-pt-pkt-decoder-test.c   | 7 +++++--
- tools/perf/util/intel-pt-decoder/intel-pt-pkt-decoder.c | 4 +++-
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ .../util/intel-pt-decoder/intel-pt-decoder.c  | 24 +++++++++----------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/tools/perf/arch/x86/tests/intel-pt-pkt-decoder-test.c b/tools/perf/arch/x86/tests/intel-pt-pkt-decoder-test.c
-index 0155215c1d41..42237656f453 100644
---- a/tools/perf/arch/x86/tests/intel-pt-pkt-decoder-test.c
-+++ b/tools/perf/arch/x86/tests/intel-pt-pkt-decoder-test.c
-@@ -70,8 +70,11 @@ static struct test_data {
- 	{8, {0x02, 0x43, 3, 4, 6, 8, 10, 12}, 0, {INTEL_PT_PIP, 0, 0xC0A08060403}, 0, 0 },
- 	/* Mode Exec Packet */
- 	{2, {0x99, 0x00}, 0, {INTEL_PT_MODE_EXEC, 0, 16}, 0, 0 },
--	{2, {0x99, 0x01}, 0, {INTEL_PT_MODE_EXEC, 0, 64}, 0, 0 },
--	{2, {0x99, 0x02}, 0, {INTEL_PT_MODE_EXEC, 0, 32}, 0, 0 },
-+	{2, {0x99, 0x01}, 0, {INTEL_PT_MODE_EXEC, 1, 64}, 0, 0 },
-+	{2, {0x99, 0x02}, 0, {INTEL_PT_MODE_EXEC, 2, 32}, 0, 0 },
-+	{2, {0x99, 0x04}, 0, {INTEL_PT_MODE_EXEC, 4, 16}, 0, 0 },
-+	{2, {0x99, 0x05}, 0, {INTEL_PT_MODE_EXEC, 5, 64}, 0, 0 },
-+	{2, {0x99, 0x06}, 0, {INTEL_PT_MODE_EXEC, 6, 32}, 0, 0 },
- 	/* Mode TSX Packet */
- 	{2, {0x99, 0x20}, 0, {INTEL_PT_MODE_TSX, 0, 0}, 0, 0 },
- 	{2, {0x99, 0x21}, 0, {INTEL_PT_MODE_TSX, 0, 1}, 0, 0 },
-diff --git a/tools/perf/util/intel-pt-decoder/intel-pt-pkt-decoder.c b/tools/perf/util/intel-pt-decoder/intel-pt-pkt-decoder.c
-index 885174964c27..18f97f43e01a 100644
---- a/tools/perf/util/intel-pt-decoder/intel-pt-pkt-decoder.c
-+++ b/tools/perf/util/intel-pt-decoder/intel-pt-pkt-decoder.c
-@@ -504,6 +504,7 @@ static int intel_pt_get_mode(const unsigned char *buf, size_t len,
- 	switch (buf[1] >> 5) {
- 	case 0:
- 		packet->type = INTEL_PT_MODE_EXEC;
-+		packet->count = buf[1];
- 		switch (buf[1] & 3) {
- 		case 0:
- 			packet->payload = 16;
-@@ -741,7 +742,8 @@ int intel_pt_pkt_desc(const struct intel_pt_pkt *packet, char *buf,
- 		return snprintf(buf, buf_len, "%s CTC 0x%x FC 0x%x", name,
- 				(unsigned)payload, packet->count);
- 	case INTEL_PT_MODE_EXEC:
--		return snprintf(buf, buf_len, "%s %lld", name, payload);
-+		return snprintf(buf, buf_len, "%s IF:%d %lld",
-+				name, !!(packet->count & 4), payload);
- 	case INTEL_PT_MODE_TSX:
- 		return snprintf(buf, buf_len, "%s TXAbort:%u InTX:%u",
- 				name, (unsigned)(payload >> 1) & 1,
+diff --git a/tools/perf/util/intel-pt-decoder/intel-pt-decoder.c b/tools/perf/util/intel-pt-decoder/intel-pt-decoder.c
+index 3980ee2080ae..5792d536b458 100644
+--- a/tools/perf/util/intel-pt-decoder/intel-pt-decoder.c
++++ b/tools/perf/util/intel-pt-decoder/intel-pt-decoder.c
+@@ -1206,6 +1206,16 @@ static int intel_pt_walk_insn(struct intel_pt_decoder *decoder,
+ 	return err;
+ }
+ 
++static void intel_pt_clear_fup_event(struct intel_pt_decoder *decoder)
++{
++	decoder->set_fup_tx_flags = false;
++	decoder->set_fup_ptw = false;
++	decoder->set_fup_mwait = false;
++	decoder->set_fup_pwre = false;
++	decoder->set_fup_exstop = false;
++	decoder->set_fup_bep = false;
++}
++
+ static bool intel_pt_fup_event(struct intel_pt_decoder *decoder)
+ {
+ 	enum intel_pt_sample_type type = decoder->state.type;
+@@ -1623,12 +1633,7 @@ static int intel_pt_overflow(struct intel_pt_decoder *decoder)
+ 	decoder->state.from_ip = decoder->ip;
+ 	decoder->ip = 0;
+ 	decoder->pge = false;
+-	decoder->set_fup_tx_flags = false;
+-	decoder->set_fup_ptw = false;
+-	decoder->set_fup_mwait = false;
+-	decoder->set_fup_pwre = false;
+-	decoder->set_fup_exstop = false;
+-	decoder->set_fup_bep = false;
++	intel_pt_clear_fup_event(decoder);
+ 	decoder->overflow = true;
+ 	return -EOVERFLOW;
+ }
+@@ -3518,12 +3523,7 @@ static int intel_pt_sync_ip(struct intel_pt_decoder *decoder)
+ {
+ 	int err;
+ 
+-	decoder->set_fup_tx_flags = false;
+-	decoder->set_fup_ptw = false;
+-	decoder->set_fup_mwait = false;
+-	decoder->set_fup_pwre = false;
+-	decoder->set_fup_exstop = false;
+-	decoder->set_fup_bep = false;
++	intel_pt_clear_fup_event(decoder);
+ 	decoder->overflow = false;
+ 
+ 	if (!decoder->branch_enable) {
 -- 
 2.25.1
 
