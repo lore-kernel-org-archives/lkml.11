@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D10C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 618E9C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451997AbiAXVXy (ORCPT
+        id S1451964AbiAXVXv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:23:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49742 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443357AbiAXU4o (ORCPT
+        Mon, 24 Jan 2022 16:23:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44592 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443277AbiAXU4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:56:44 -0500
+        Mon, 24 Jan 2022 15:56:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C877C110F30;
+        Mon, 24 Jan 2022 11:18:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46EDE60B11;
-        Mon, 24 Jan 2022 20:56:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E1D2C340E5;
-        Mon, 24 Jan 2022 20:56:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09FDF60BB9;
+        Mon, 24 Jan 2022 19:18:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE8CDC340E5;
+        Mon, 24 Jan 2022 19:18:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057803;
-        bh=PSnOz8+2zdvBrxOTMHC/DW/3Ey4OxIgreWCpGuumD1E=;
+        s=korg; t=1643051898;
+        bh=42cKnB73ycwsYbytnMtn+m7ZqxOi3VaJu09BCcgAuRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aiKx61+vY1wQd9xuXoPDZN9nNrnAUhJeUdWY+S5LzZaH4gNFiMRXTG3bfjFNeUVi9
-         K/W8zIWUOFZSuKcr4KN2bv9yVGNnQJ5rcR+AkJPiMLC0DYZEkL5gtYOdm4QmNdZN3a
-         6SQjzVpDfPYhkWBFFtxlftkaQVmJ3fJEnXKLGUeM=
+        b=hNQZ5L8Cvab0bSwn2+4DzrZsgx/mzTkQghIvGsrGHSQ8Vgq1OUkGNe+Ht3ty6VVZ5
+         pxU8AjPennwDieHls7XwYGyWCEfLx+4a1PfU0FpPzX5PzNab2W9fQx44lJlZratNCZ
+         37KDbnX0bdJKsmMauFLWmTIBesDM/5Tcst0sls00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.16 0052/1039] media: pvrusb2: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:30:41 +0100
-Message-Id: <20220124184126.884775655@linuxfoundation.org>
+        stable@vger.kernel.org, Diego Viola <diego.viola@gmail.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 123/239] drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR
+Date:   Mon, 24 Jan 2022 19:42:41 +0100
+Message-Id: <20220124183947.011511046@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,60 +51,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Ben Skeggs <bskeggs@redhat.com>
 
-commit b82bf9b9dc305d7d3d93eab106d70dbf2171b43e upstream.
+[ Upstream commit 1d2271d2fb85e54bfc9630a6c30ac0feb9ffb983 ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+There have been reports of the WFI timing out on some boards, and a
+patch was proposed to just remove it.  This stuff is rather fragile,
+and I believe the WFI might be needed with our FW prior to GM200.
 
-Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
-Cc: stable@vger.kernel.org      # 2.6.18
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+However, we probably should not be touching PMU during init on GPUs
+where we depend on NVIDIA FW, outside of limited circumstances, so
+this should be a somewhat safer change that achieves the desired
+result.
+
+Reported-by: Diego Viola <diego.viola@gmail.com>
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ .../gpu/drm/nouveau/nvkm/subdev/pmu/base.c    | 37 +++++++++++--------
+ 1 file changed, 21 insertions(+), 16 deletions(-)
 
---- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-+++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-@@ -1467,7 +1467,7 @@ static int pvr2_upload_firmware1(struct
- 	for (address = 0; address < fwsize; address += 0x800) {
- 		memcpy(fw_ptr, fw_entry->data + address, 0x800);
- 		ret += usb_control_msg(hdw->usb_dev, pipe, 0xa0, 0x40, address,
--				       0, fw_ptr, 0x800, HZ);
-+				       0, fw_ptr, 0x800, 1000);
- 	}
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+index ce70a193caa7f..8cf3d1b4662de 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+@@ -70,20 +70,13 @@ nvkm_pmu_fini(struct nvkm_subdev *subdev, bool suspend)
+ 	return 0;
+ }
  
- 	trace_firmware("Upload done, releasing device's CPU");
-@@ -1605,7 +1605,7 @@ int pvr2_upload_firmware2(struct pvr2_hd
- 			((u32 *)fw_ptr)[icnt] = swab32(((u32 *)fw_ptr)[icnt]);
+-static int
++static void
+ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ {
+ 	struct nvkm_device *device = pmu->subdev.device;
  
- 		ret |= usb_bulk_msg(hdw->usb_dev, pipe, fw_ptr,bcnt,
--				    &actual_length, HZ);
-+				    &actual_length, 1000);
- 		ret |= (actual_length != bcnt);
- 		if (ret) break;
- 		fw_done += bcnt;
-@@ -3438,7 +3438,7 @@ void pvr2_hdw_cpufw_set_enabled(struct p
- 						      0xa0,0xc0,
- 						      address,0,
- 						      hdw->fw_buffer+address,
--						      0x800,HZ);
-+						      0x800,1000);
- 				if (ret < 0) break;
- 			}
+ 	if (!pmu->func->enabled(pmu))
+-		return 0;
+-
+-	/* Inhibit interrupts, and wait for idle. */
+-	nvkm_wr32(device, 0x10a014, 0x0000ffff);
+-	nvkm_msec(device, 2000,
+-		if (!nvkm_rd32(device, 0x10a04c))
+-			break;
+-	);
++		return;
  
-@@ -3977,7 +3977,7 @@ void pvr2_hdw_cpureset_assert(struct pvr
- 	/* Write the CPUCS register on the 8051.  The lsb of the register
- 	   is the reset bit; a 1 asserts reset while a 0 clears it. */
- 	pipe = usb_sndctrlpipe(hdw->usb_dev, 0);
--	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,HZ);
-+	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,1000);
- 	if (ret < 0) {
- 		pvr2_trace(PVR2_TRACE_ERROR_LEGS,
- 			   "cpureset_assert(%d) error=%d",val,ret);
+ 	/* Reset. */
+ 	if (pmu->func->reset)
+@@ -94,25 +87,37 @@ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ 		if (!(nvkm_rd32(device, 0x10a10c) & 0x00000006))
+ 			break;
+ 	);
+-
+-	return 0;
+ }
+ 
+ static int
+ nvkm_pmu_preinit(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	return nvkm_pmu_reset(pmu);
++	nvkm_pmu_reset(pmu);
++	return 0;
+ }
+ 
+ static int
+ nvkm_pmu_init(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	int ret = nvkm_pmu_reset(pmu);
+-	if (ret == 0 && pmu->func->init)
+-		ret = pmu->func->init(pmu);
+-	return ret;
++	struct nvkm_device *device = pmu->subdev.device;
++
++	if (!pmu->func->init)
++		return 0;
++
++	if (pmu->func->enabled(pmu)) {
++		/* Inhibit interrupts, and wait for idle. */
++		nvkm_wr32(device, 0x10a014, 0x0000ffff);
++		nvkm_msec(device, 2000,
++			if (!nvkm_rd32(device, 0x10a04c))
++				break;
++		);
++
++		nvkm_pmu_reset(pmu);
++	}
++
++	return pmu->func->init(pmu);
+ }
+ 
+ static int
+-- 
+2.34.1
+
 
 
