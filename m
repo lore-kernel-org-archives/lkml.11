@@ -2,134 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7A2EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:22:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DFE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240967AbiAXRWh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 12:22:37 -0500
-Received: from mta-p7.oit.umn.edu ([134.84.196.207]:50060 "EHLO
-        mta-p7.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240257AbiAXRWg (ORCPT
+        id S244441AbiAXRWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 12:22:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241070AbiAXRWo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:22:36 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p7.oit.umn.edu (Postfix) with ESMTP id 4JjGyM4z18z9vCBS
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:22:35 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p7.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p7.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id GsEAzjtjryDo for <linux-kernel@vger.kernel.org>;
-        Mon, 24 Jan 2022 11:22:35 -0600 (CST)
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p7.oit.umn.edu (Postfix) with ESMTPS id 4JjGyM2ybtz9vCBX
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:22:35 -0600 (CST)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p7.oit.umn.edu 4JjGyM2ybtz9vCBX
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p7.oit.umn.edu 4JjGyM2ybtz9vCBX
-Received: by mail-pf1-f199.google.com with SMTP id u80-20020a627953000000b004c82105f20dso2670272pfc.11
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 09:22:35 -0800 (PST)
+        Mon, 24 Jan 2022 12:22:44 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5041DC061401
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 09:22:44 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id s61-20020a17090a69c300b001b4d0427ea2so21115624pjj.4
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 09:22:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
+        d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=vF2fJlNmkwltSc0OR3AIOEuqnVr6sggA/rInxG0v7nA=;
-        b=Yf8BnyP70J3zZ+qyndL20aJT2U8I9ToajN4PBdtxQasG/aAXHhRCIg0jRGBqS6fQY8
-         RtQMY8TaJ791JxjlCUR5zTpYwO0MWe55lkNuhSq0L0JEm9zLtA5GlI1Ia/ascECJtlpa
-         qojMzEpxA8KgJ19GjWWArLyNjVtsoBXaYsfT9fJw/Ukez7878s1JvJjGshReJ3df4S2/
-         PNAsPZAMyj4R5T5Va3FhueenTt7XAfdMwQjdznznQ5hKoOFk/gy3qiAbvTbKtKLB8X1Y
-         DLK73a5L+rj+jPDXgr8XQwqGRXbcAAfIpLHIJMEdl8Z7acX4QrVdPymIt5OeAWAYVFFE
-         YDsw==
+        bh=MrF7wrhR/r11uhM1Zd7BV21fovtaCNxXQvw8C85WbLY=;
+        b=GLBFXmuYlThw8gVudTodEivYKQS9SKar/0ZJSgx9vZ2jV0i1C2mAs9UMhy+CDEzy5d
+         IFZTJOCLmtmr4tACBXyGpVkTCutTOkPjFKFsiXQuW10B7yMTisNiToMK0lgAYfmQGU2o
+         x5zzA/bx0jdyqosLimsGRim5t9m/10nNbO/oc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=vF2fJlNmkwltSc0OR3AIOEuqnVr6sggA/rInxG0v7nA=;
-        b=AkLJI+7Isujua6GBMtFl6m/ZVlrR26huVFtZPOi4ig38nfL8oiHjboxhGOeoJNYWtI
-         vY6bBvPwCycLSGZNqG4G6MJ11I1gjDVU9Kdx+WeNyfsVvo6Dpyju+YSOIIv6HAv1ORgp
-         3y7/XHrV+wtrES5OEMqCVbQMst8yV+rY+AA0jUN5DXx3EB7jFXwurhtK5vZBJdaUZ9mT
-         QFFiDDHBxjK+jrMx9k4zZh42j0gPFnPk3h2gFmqOkvike+tjxrfS08nzobtZ9FQyoELd
-         r17fX7LdsodGmdtrCsJ+YRMjUgzjQWBUxMqRr1Pl3tnxyoKXYWD+VGqTSKusnmoXMtmS
-         ElWA==
-X-Gm-Message-State: AOAM532Z7RwBMcOSdo1koqxW6CKpQBAj8hW40+Rnqt8Qmi2wKpd0eqxl
-        WHF7Vd2OsYzPblBJ2SWPvJ/1COceWWDreHCvpDusTRRWP8FwQpDU9P2XHXqUAjeyzibizJETk51
-        JsFD28g/3XA5QXWdgkdkUQUiu+29T
-X-Received: by 2002:a17:90b:3e89:: with SMTP id rj9mr2835557pjb.91.1643044954585;
-        Mon, 24 Jan 2022 09:22:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwVYIlsxxKPhOwLx6Y538/G0Ur+T0jMdT68g/yxhxWRf5Og9AScrTI+fLaX8CMn7nQku5HzqA==
-X-Received: by 2002:a17:90b:3e89:: with SMTP id rj9mr2835546pjb.91.1643044954385;
-        Mon, 24 Jan 2022 09:22:34 -0800 (PST)
-Received: from zqy787-GE5S.lan ([36.4.61.248])
-        by smtp.gmail.com with ESMTPSA id me4sm20786965pjb.26.2022.01.24.09.22.29
+        bh=MrF7wrhR/r11uhM1Zd7BV21fovtaCNxXQvw8C85WbLY=;
+        b=hTockWvTaTY8tCjMncvR+J7t5OMXgRqCLoJwf+gzXtmNiIz/r+wLFhaefz+sK1muU+
+         0Lk1QbN8+ZMxjMPpftdVg8KsRXBwQrwDEWUFDDOR4zlCmfSHQx4Bj//0b51q7LiGhHAW
+         SUsCGlbPNRSnasJU3Mg888V3NKM64mTDh+0v99LvOCnfB5KKNaz947116lXJE1Z+Db+B
+         bukmOwO304V0anFA7j2fSqzdNQKjGtZ7xwPxEI1HOWTl32tKxyrFm+pL86qOfcODfbXy
+         1PpN6BN5S5V7iVrPflrQynj7ZkE1+s4dqu9+4JTt+mQ4O2QfZlNTy+kV3IyhWtMwYQT/
+         MSqw==
+X-Gm-Message-State: AOAM531eHql7/Go69kqBP7Tuo1+BZQue1haUozdcvhtwF7rgqZetqBne
+        aY9NeeULHnXvT+nAdBR2lGz8Wg==
+X-Google-Smtp-Source: ABdhPJzrcJk7jTA+I8Ws2u0wMgyvDme0Vzcmms3hN2SNCAdRMMOG6NzZq8hGBo8rxEKZTG9pux+DpQ==
+X-Received: by 2002:a17:90b:380a:: with SMTP id mq10mr2879344pjb.147.1643044963893;
+        Mon, 24 Jan 2022 09:22:43 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id om12sm8581896pjb.48.2022.01.24.09.22.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 09:22:34 -0800 (PST)
-From:   Zhou Qingyang <zhou1615@umn.edu>
-To:     zhou1615@umn.edu
-Cc:     kjlu@umn.edu, Sathya Prakash <sathya.prakash@broadcom.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Nagalakshmi Nandigama <Nagalakshmi.Nandigama@lsi.com>,
-        James Bottomley <JBottomley@Parallels.com>,
-        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] scsi: mpt3sas: FIx a NULL pointer dereference bug in mpt3sas_transport_port_add()
-Date:   Tue, 25 Jan 2022 01:21:20 +0800
-Message-Id: <20220124172120.62828-1-zhou1615@umn.edu>
-X-Mailer: git-send-email 2.25.1
+        Mon, 24 Jan 2022 09:22:43 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH RESEND] net/mlx5e: Use struct_group() for memcpy() region
+Date:   Mon, 24 Jan 2022 09:22:41 -0800
+Message-Id: <20220124172242.2410996-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2499; h=from:subject; bh=1Hy/h6xR6CfzT4qu6mjl1eEfD5rBqmasVCiGJ8yfoaE=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBh7uBhn8A0lQDkjRJO9V5Sl0KNR5PpwAX0g9yKG64U XkTagiOJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYe7gYQAKCRCJcvTf3G3AJrh+D/ 9XD/78mqJDQUOAqNi51dHFcJMTBtQW/5SOOscaza/hl+yTU06iM1xjcDFcsLZb7jaJ4KYcV/EZAnXv l73wUOrNTN38IgVBXoE6OMtjQHaJwjcbzEhxfcnx3ncVKWRelfg1Wcz3UCHgAp621U13ng7iIXtQFg JKnUuwTjUH8vLpNlDdzLwHJqxN7wWA/+r3YU5GGTsWbTGlUZSs4+TPUzhcF48K1Wx5gsWUUBD9lFg5 5oWex5SYi2l7himxmjllot0E3lyw9ot26ak3oWLfRQqqOUet5u4UhWbA1ZBkD6gys1OziqKY2YDzdA L/GNU45qVkr8K5864876AiJ2cFYIFEMng2G2M8xkgH2Pcj0aECmYo+BXt/WC4R5aNKGUbre0I77CKl uCiIH3lTD5mLBNIxe58Lr9ekNwdedX+uNPiZo96/OH0SKqmfp30VohtJJFlB3gauX/slbX9ONDffMR jtuYoEIwR5ODB0gsr3Rku7j/b0nYxJs80sAziKrtJTrlb9tk7RSlanVomFiTGvHxQoI8E8uiRogOG7 7u6sCJqdnF9kLjGpEkjPyi47V741Xkyly/jqjpTJjHzxQHSFinFisqz41YE2HEoINtxxy8kF6n2Rpy +uF1HuWJz6ebx3q5MGvBrhW3cnyzxgaMa1O85G0cJqOg8sujaw7WJe0sV8wQ==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In mpt3sas_transport_port_add(), sas_end_device_alloc() is assigned to rphy
-and there is a dereference of it. sas_end_device_alloc() could return NULL
-on failure of allocation, which could introduce a NULL pointer dereference
-bug.
+In preparation for FORTIFY_SOURCE performing compile-time and run-time
+field bounds checking for memcpy(), memmove(), and memset(), avoid
+intentionally writing across neighboring fields.
 
-The same as sas_expander_alloc().
+Use struct_group() in struct vlan_ethhdr around members h_dest and
+h_source, so they can be referenced together. This will allow memcpy()
+and sizeof() to more easily reason about sizes, improve readability,
+and avoid future warnings about writing beyond the end of h_dest.
 
-Fix this bug by adding a NULL check of rphy.
+"pahole" shows no size nor member offset changes to struct vlan_ethhdr.
+"objdump -d" shows no object code changes.
 
-This bug was found by a static analyzer.
-
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: f92363d12359 ("mpt3sas: add new driver supporting 12GB SAS")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Cc: Saeed Mahameed <saeedm@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-rdma@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
-The analysis employs differential checking to identify inconsistent 
-security operations (e.g., checks or kfrees) between two code paths 
-and confirms that the inconsistent operations are not recovered in the
-current function or the callers, so they constitute bugs. 
+Since this results in no binary differences, I will carry this in my tree
+unless someone else wants to pick it up. It's one of the last remaining
+clean-ups needed for the next step in memcpy() hardening.
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c | 2 +-
+ include/linux/if_vlan.h                         | 6 ++++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
- drivers/scsi/mpt3sas/mpt3sas_transport.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_transport.c b/drivers/scsi/mpt3sas/mpt3sas_transport.c
-index 0681daee6c14..1caa929cf8bc 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_transport.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_transport.c
-@@ -823,6 +823,11 @@ mpt3sas_transport_port_add(struct MPT3SAS_ADAPTER *ioc, u16 handle,
- 			hba_port->sas_address =
- 			    mpt3sas_port->remote_identify.sas_address;
- 	}
-+	if (!rphy) {
-+		ioc_err(ioc, "failure at %s:%d/%s()!\n",
-+			__FILE__, __LINE__, __func__);
-+		goto out_fail;
-+	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+index 7fd33b356cc8..ee7ecb88adc1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+@@ -208,7 +208,7 @@ static inline void mlx5e_insert_vlan(void *start, struct sk_buff *skb, u16 ihs)
+ 	int cpy1_sz = 2 * ETH_ALEN;
+ 	int cpy2_sz = ihs - cpy1_sz;
  
- 	rphy->identify = mpt3sas_port->remote_identify;
- 
+-	memcpy(vhdr, skb->data, cpy1_sz);
++	memcpy(&vhdr->addrs, skb->data, cpy1_sz);
+ 	vhdr->h_vlan_proto = skb->vlan_proto;
+ 	vhdr->h_vlan_TCI = cpu_to_be16(skb_vlan_tag_get(skb));
+ 	memcpy(&vhdr->h_vlan_encapsulated_proto, skb->data + cpy1_sz, cpy2_sz);
+diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
+index 8420fe504927..2be4dd7e90a9 100644
+--- a/include/linux/if_vlan.h
++++ b/include/linux/if_vlan.h
+@@ -46,8 +46,10 @@ struct vlan_hdr {
+  *	@h_vlan_encapsulated_proto: packet type ID or len
+  */
+ struct vlan_ethhdr {
+-	unsigned char	h_dest[ETH_ALEN];
+-	unsigned char	h_source[ETH_ALEN];
++	struct_group(addrs,
++		unsigned char	h_dest[ETH_ALEN];
++		unsigned char	h_source[ETH_ALEN];
++	);
+ 	__be16		h_vlan_proto;
+ 	__be16		h_vlan_TCI;
+ 	__be16		h_vlan_encapsulated_proto;
 -- 
-2.25.1
+2.30.2
 
