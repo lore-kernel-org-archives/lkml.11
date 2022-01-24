@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 670BAC35272
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5FE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2364213AbiAXXrB (ORCPT
+        id S2364602AbiAXXsh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:47:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45770 "EHLO
+        Mon, 24 Jan 2022 18:48:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356424AbiAXWz7 (ORCPT
+        with ESMTP id S1838697AbiAXWry (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:55:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78006C0680BD;
-        Mon, 24 Jan 2022 13:10:05 -0800 (PST)
+        Mon, 24 Jan 2022 17:47:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8A8C058CB0;
+        Mon, 24 Jan 2022 13:07:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 401AAB810BD;
-        Mon, 24 Jan 2022 21:10:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58E52C340E5;
-        Mon, 24 Jan 2022 21:10:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E22F26131F;
+        Mon, 24 Jan 2022 21:07:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF8CC340E5;
+        Mon, 24 Jan 2022 21:06:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058603;
-        bh=GenLxtxLRHNWfA86dEZ+thJRET1S9HTGCB7UNjRlrEI=;
+        s=korg; t=1643058420;
+        bh=gpWjQ0VaBNniP4xA1fEF6HlyF6wN8PjRmBVxu/REmpg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i52JiI3TTBbe8kszDIbz5mnNnirjtwDoK5q661/dXpzXlGrqlckxUU639KUh3BgHd
-         /DOSeg+cMPK2iDsPHCRzpUzytbi0mM/eeopgOTx9hSGEzm80Y0roFa3AzD3oNbjexP
-         Mk46JPpXSMczI85bUMwU/fRoh6O2/MXwc6gfpdlg=
+        b=0mK114W1b0NCUzMHpDwjLB2BgwSWAP8xQvV1FtOUhmqfg7v002SUPhqTb6wNb1HSV
+         qS7HQ7QSadMLYS5Gz1vTJ2MoBwP1/gkNumKF37tvEcuesGyYaKpI+WGEHsdMyfBqOk
+         bgsKPDGM1mloBozLL536JLkL2nf23EfKVcKgm6Rc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>,
-        Paul Chaignon <paul@isovalent.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0343/1039] bpftool: Enable line buffering for stdout
-Date:   Mon, 24 Jan 2022 19:35:32 +0100
-Message-Id: <20220124184136.830520895@linuxfoundation.org>
+        stable@vger.kernel.org, Steven Maddox <s.maddox@lantizia.me.uk>,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0283/1039] ARM: dts: gemini: NAS4220-B: fis-index-block with 128 KiB sectors
+Date:   Mon, 24 Jan 2022 19:34:32 +0100
+Message-Id: <20220124184134.800970372@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,39 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Chaignon <paul@isovalent.com>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-[ Upstream commit 1a1a0b0364ad291bd8e509da104ac8b5b1afec5d ]
+[ Upstream commit 4754eab7e5a78bdefe7a960c5c260c95ebbb5fa6 ]
 
-The output of bpftool prog tracelog is currently buffered, which is
-inconvenient when piping the output into other commands. A simple
-tracelog | grep will typically not display anything. This patch fixes it
-by enabling line buffering on stdout for the whole bpftool binary.
+Steven Maddox reported in the OpenWrt bugzilla, that his
+RaidSonic IB-NAS4220-B was no longer booting with the new
+OpenWrt 21.02 (uses linux 5.10's device-tree). However, it was
+working with the previous OpenWrt 19.07 series (uses 4.14).
 
-Fixes: 30da46b5dc3a ("tools: bpftool: add a command to dump the trace pipe")
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-Signed-off-by: Paul Chaignon <paul@isovalent.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20211220214528.GA11706@Mem
+|[    5.548038] No RedBoot partition table detected in 30000000.flash
+|[    5.618553] Searching for RedBoot partition table in 30000000.flash at offset 0x0
+|[    5.739093] No RedBoot partition table detected in 30000000.flash
+|...
+|[    7.039504] Waiting for root device /dev/mtdblock3...
+
+The provided bootlog shows that the RedBoot partition parser was
+looking for the partition table "at offset 0x0". Which is strange
+since the comment in the device-tree says it should be at 0xfe0000.
+
+Further digging on the internet led to a review site that took
+some useful PCB pictures of their review unit back in February 2009.
+Their picture shows a Spansion S29GL128N11TFI01 flash chip.
+
+>From Spansion's Datasheet:
+"S29GL128N: One hundred twenty-eight 64 Kword (128 Kbyte) sectors"
+Steven also provided a "cat /sys/class/mtd/mtd0/erasesize" from his
+unit: "131072".
+
+With the 128 KiB Sector/Erasesize in mind. This patch changes the
+fis-index-block property to (0xfe0000 / 0x20000) = 0x7f.
+
+Fixes: b5a923f8c739 ("ARM: dts: gemini: Switch to redboot partition parsing")
+Reported-by: Steven Maddox <s.maddox@lantizia.me.uk>
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Tested-by: Steven Maddox <s.maddox@lantizia.me.uk>
+Link: https://lore.kernel.org/r/20211206004334.4169408-1-linus.walleij@linaro.org'
+Bugzilla: https://bugs.openwrt.org/index.php?do=details&task_id=4137
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/bpftool/main.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/gemini-nas4220b.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-index 28237d7cef67f..8fbcff9d557d9 100644
---- a/tools/bpf/bpftool/main.c
-+++ b/tools/bpf/bpftool/main.c
-@@ -400,6 +400,8 @@ int main(int argc, char **argv)
- 	};
- 	int opt, ret;
+diff --git a/arch/arm/boot/dts/gemini-nas4220b.dts b/arch/arm/boot/dts/gemini-nas4220b.dts
+index 13112a8a5dd88..6544c730340fa 100644
+--- a/arch/arm/boot/dts/gemini-nas4220b.dts
++++ b/arch/arm/boot/dts/gemini-nas4220b.dts
+@@ -84,7 +84,7 @@
+ 			partitions {
+ 				compatible = "redboot-fis";
+ 				/* Eraseblock at 0xfe0000 */
+-				fis-index-block = <0x1fc>;
++				fis-index-block = <0x7f>;
+ 			};
+ 		};
  
-+	setlinebuf(stdout);
-+
- 	last_do_help = do_help;
- 	pretty_output = false;
- 	json_output = false;
 -- 
 2.34.1
 
