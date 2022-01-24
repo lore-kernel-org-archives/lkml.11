@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD5C3C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE30C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382996AbiAXU0h (ORCPT
+        id S1383011AbiAXU0l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:26:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359630AbiAXT75 (ORCPT
+        Mon, 24 Jan 2022 15:26:41 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44952 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359483AbiAXT7p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:59:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D647C04D63B;
-        Mon, 24 Jan 2022 11:28:19 -0800 (PST)
+        Mon, 24 Jan 2022 14:59:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4579AB8119D;
-        Mon, 24 Jan 2022 19:28:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DDB8C340E5;
-        Mon, 24 Jan 2022 19:28:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C91ACB810AF;
+        Mon, 24 Jan 2022 19:59:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0CCBC340E5;
+        Mon, 24 Jan 2022 19:59:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052497;
-        bh=f9JKyd9rol/S9GiU0MrQzzrG3hpPdnm2HGeVfi+YH18=;
+        s=korg; t=1643054382;
+        bh=sr+Q2oFR8CNiUVEfQQFtfRQdkcamxTQq3ai2GqUz1MU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EpzoPg5OHAXl7SlfhfbsvrXD4iDYoeB9SUr6zfsLyvbACBLjKhC4GTGS3mbVRPNOR
-         DYRKf+0x8kE6hZvsB+1DlYDpkGwsripCuQt4AguEUVRBnV2jdwy2fV8PhKfis/AYug
-         KzhGnJDmcwfwqeQB+faynSJGwSy7bYn1L+ZsZbNg=
+        b=ErVkFFUfauQPMkMApl1BZKI+D8oieF6iy5j+y62c4TnIJu3cX2mny+wsYvBJywNC1
+         tAGtyDZ6sWoMP/K3LaTQ1aUYzxneRgsCYjzfuRGFZg33qVxb4AGRHm0kVmjluQLUA+
+         WOft6rB6V0q2S0kPPyPyjLz3VYxWQAbQQGVXrZGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 061/320] arm64: dts: qcom: msm8916: fix MMC controller aliases
-Date:   Mon, 24 Jan 2022 19:40:45 +0100
-Message-Id: <20220124183955.808212535@linuxfoundation.org>
+Subject: [PATCH 5.10 372/563] ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
+Date:   Mon, 24 Jan 2022 19:42:17 +0100
+Message-Id: <20220124184037.273763997@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +47,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit b0293c19d42f6d6951c2fab9a47fed50baf2c14d ]
+[ Upstream commit 6ce708f54cc8d73beca213cec66ede5ce100a781 ]
 
-Change sdhcN aliases to mmcN to make them actually work. Currently the
-board uses non-standard aliases sdhcN, which do not work, resulting in
-mmc0 and mmc1 hosts randomly changing indices between boots.
+Large pkt_len can lead to out-out-bound memcpy. Current
+ath9k_hif_usb_rx_stream allows combining the content of two urb
+inputs to one pkt. The first input can indicate the size of the
+pkt. Any remaining size is saved in hif_dev->rx_remain_len.
+While processing the next input, memcpy is used with rx_remain_len.
 
-Fixes: c4da5a561627 ("arm64: dts: qcom: Add msm8916 sdhci configuration nodes")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211201020559.1611890-1-dmitry.baryshkov@linaro.org
+4-byte pkt_len can go up to 0xffff, while a single input is 0x4000
+maximum in size (MAX_RX_BUF_SIZE). Thus, the patch adds a check for
+pkt_len which must not exceed 2 * MAX_RX_BUG_SIZE.
+
+BUG: KASAN: slab-out-of-bounds in ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+Read of size 46393 at addr ffff888018798000 by task kworker/0:1/23
+
+CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 5.6.0 #63
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
+Workqueue: events request_firmware_work_func
+Call Trace:
+ <IRQ>
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ __kasan_report.cold+0x37/0x7c
+ ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ kasan_report+0xe/0x20
+ check_memory_region+0x15a/0x1d0
+ memcpy+0x20/0x50
+ ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ ? hif_usb_mgmt_cb+0x2d9/0x2d9 [ath9k_htc]
+ ? _raw_spin_lock_irqsave+0x7b/0xd0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? __usb_unanchor_urb+0x12f/0x210
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __hrtimer_run_queues+0x316/0x740
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ irq_exit+0x114/0x140
+ smp_apic_timer_interrupt+0xde/0x380
+ apic_timer_interrupt+0xf/0x20
+
+I found the bug using a custome USBFuzz port. It's a research work
+to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
+providing hand-crafted usb descriptors to QEMU.
+
+After fixing the value of pkt_tag to ATH_USB_RX_STREAM_MODE_TAG in QEMU
+emulation, I found the KASAN report. The bug is triggerable whenever
+pkt_len is above two MAX_RX_BUG_SIZE. I used the same input that crashes
+to test the driver works when applying the patch.
+
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath9k/hif_usb.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index 449843f2184d8..301c1c467c0b7 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -16,8 +16,8 @@
- 	#size-cells = <2>;
+diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+index 860da13bfb6ac..f06eec99de688 100644
+--- a/drivers/net/wireless/ath/ath9k/hif_usb.c
++++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+@@ -590,6 +590,13 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+ 			return;
+ 		}
  
- 	aliases {
--		sdhc1 = &sdhc_1; /* SDC1 eMMC slot */
--		sdhc2 = &sdhc_2; /* SDC2 SD card slot */
-+		mmc0 = &sdhc_1; /* SDC1 eMMC slot */
-+		mmc1 = &sdhc_2; /* SDC2 SD card slot */
- 	};
- 
- 	chosen { };
++		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
++			dev_err(&hif_dev->udev->dev,
++				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
++			RX_STAT_INC(skb_dropped);
++			return;
++		}
++
+ 		pad_len = 4 - (pkt_len & 0x3);
+ 		if (pad_len == 4)
+ 			pad_len = 0;
 -- 
 2.34.1
 
