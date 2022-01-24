@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35DA7C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20662C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3413263AbiAYAin (ORCPT
+        id S3413246AbiAYAil (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:38:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
+        Mon, 24 Jan 2022 19:38:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2364587AbiAXXse (ORCPT
+        with ESMTP id S2364654AbiAXXsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:48:34 -0500
+        Mon, 24 Jan 2022 18:48:46 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2982C07E32C;
-        Mon, 24 Jan 2022 13:43:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324CFC0419C0;
+        Mon, 24 Jan 2022 13:43:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68BB8B812A5;
-        Mon, 24 Jan 2022 21:43:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FD08C340E5;
-        Mon, 24 Jan 2022 21:43:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0EC4B812A7;
+        Mon, 24 Jan 2022 21:43:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0767FC340E4;
+        Mon, 24 Jan 2022 21:43:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060622;
-        bh=T7Qh6ncURuM95zleYtc/I17OlL/HQAyS5maJpXJereo=;
+        s=korg; t=1643060628;
+        bh=n3qzIhkJTs5Zt29pol17QM7Ob/p00R3z1XaX+um3/So=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B24HB/VInSjEUzu1V/eOMNp09xh0p0tJDMUVR8qNcy+p9LwDp7MUuU9HMvnWTzs7F
-         dwDuoRoJ9w/iamWdeJKfQlvzyU/e3KcVh8gY8lfwcEioZqgz7ju6i56Q98WyhhkkVK
-         eMgpPkQqIhFut9o0eRvTiUE+A7MXQi0UIzeTSZIM=
+        b=TGHqDCxsdV5qyCYeU/jSX+S4JPzkJ5gGjcETTC3sMSoh9pDdXlbwMAGVAykIWeEFh
+         4C+AGe78Vuj9CyJtM20QIGYTi3tj5GgtU6CqWe+Piw1ukGhE6uyc4YQlgcOO85LDdA
+         VnPRNtMJou8uklS5cjC7LCAVhX9DlosV2AmzabaM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miroslav Lichvar <mlichvar@redhat.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 1008/1039] net: fix sock_timestamping_bind_phc() to release device
-Date:   Mon, 24 Jan 2022 19:46:37 +0100
-Message-Id: <20220124184159.173240015@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>,
+        Stephen Boyd <swboyd@chromium.org>
+Subject: [PATCH 5.16 0978/1039] HID: vivaldi: fix handling devices not using numbered reports
+Date:   Mon, 24 Jan 2022 19:46:07 +0100
+Message-Id: <20220124184158.161854494@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,32 +51,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miroslav Lichvar <mlichvar@redhat.com>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-commit 2a4d75bfe41232608f5596a6d1369f92ccb20817 upstream.
+commit 3fe6acd4dc922237b30e55473c9349c6ce0690f3 upstream.
 
-Don't forget to release the device in sock_timestamping_bind_phc() after
-it was used to get the vclock indices.
+Unfortunately details of USB HID transport bled into HID core and
+handling of numbered/unnumbered reports is quite a mess, with
+hid_report_len() calculating the length according to USB rules,
+and hid_hw_raw_request() adding report ID to the buffer for both
+numbered and unnumbered reports.
 
-Fixes: d463126e23f1 ("net: sock: extend SO_TIMESTAMPING for PHC binding")
-Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
-Cc: Yangbo Lu <yangbo.lu@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Untangling it all requres a lot of changes in HID, so for now let's
+handle this in the driver.
+
+[jkosina@suse.cz: microoptimize field->report->id to report->id]
+Fixes: 14c9c014babe ("HID: add vivaldi HID driver")
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Tested-by: Stephen Boyd <swboyd@chromium.org> # CoachZ
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/sock.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/hid/hid-vivaldi.c |   34 ++++++++++++++++++++++++++++------
+ 1 file changed, 28 insertions(+), 6 deletions(-)
 
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -843,6 +843,8 @@ static int sock_timestamping_bind_phc(st
+--- a/drivers/hid/hid-vivaldi.c
++++ b/drivers/hid/hid-vivaldi.c
+@@ -74,10 +74,11 @@ static void vivaldi_feature_mapping(stru
+ 				    struct hid_usage *usage)
+ {
+ 	struct vivaldi_data *drvdata = hid_get_drvdata(hdev);
++	struct hid_report *report = field->report;
+ 	int fn_key;
+ 	int ret;
+ 	u32 report_len;
+-	u8 *buf;
++	u8 *report_data, *buf;
+ 
+ 	if (field->logical != HID_USAGE_FN_ROW_PHYSMAP ||
+ 	    (usage->hid & HID_USAGE_PAGE) != HID_UP_ORDINAL)
+@@ -89,12 +90,24 @@ static void vivaldi_feature_mapping(stru
+ 	if (fn_key > drvdata->max_function_row_key)
+ 		drvdata->max_function_row_key = fn_key;
+ 
+-	buf = hid_alloc_report_buf(field->report, GFP_KERNEL);
+-	if (!buf)
++	report_data = buf = hid_alloc_report_buf(report, GFP_KERNEL);
++	if (!report_data)
+ 		return;
+ 
+-	report_len = hid_report_len(field->report);
+-	ret = hid_hw_raw_request(hdev, field->report->id, buf,
++	report_len = hid_report_len(report);
++	if (!report->id) {
++		/*
++		 * hid_hw_raw_request() will stuff report ID (which will be 0)
++		 * into the first byte of the buffer even for unnumbered
++		 * reports, so we need to account for this to avoid getting
++		 * -EOVERFLOW in return.
++		 * Note that hid_alloc_report_buf() adds 7 bytes to the size
++		 * so we can safely say that we have space for an extra byte.
++		 */
++		report_len++;
++	}
++
++	ret = hid_hw_raw_request(hdev, report->id, report_data,
+ 				 report_len, HID_FEATURE_REPORT,
+ 				 HID_REQ_GET_REPORT);
+ 	if (ret < 0) {
+@@ -103,7 +116,16 @@ static void vivaldi_feature_mapping(stru
+ 		goto out;
  	}
  
- 	num = ethtool_get_phc_vclocks(dev, &vclock_index);
-+	dev_put(dev);
+-	ret = hid_report_raw_event(hdev, HID_FEATURE_REPORT, buf,
++	if (!report->id) {
++		/*
++		 * Undo the damage from hid_hw_raw_request() for unnumbered
++		 * reports.
++		 */
++		report_data++;
++		report_len--;
++	}
 +
- 	for (i = 0; i < num; i++) {
- 		if (*(vclock_index + i) == phc_index) {
- 			match = true;
++	ret = hid_report_raw_event(hdev, HID_FEATURE_REPORT, report_data,
+ 				   report_len, 0);
+ 	if (ret) {
+ 		dev_warn(&hdev->dev, "failed to report feature %d\n",
 
 
