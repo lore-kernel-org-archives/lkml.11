@@ -2,273 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B25DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:32:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD05C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243218AbiAXPc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:32:59 -0500
-Received: from mga02.intel.com ([134.134.136.20]:22167 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235301AbiAXPc4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:32:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643038376; x=1674574376;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xzr0pkymjg0lZPz5PjBfOmmxDJm21Ju8OBtd1Sb19XI=;
-  b=ITO4RhEI7oikTwBo31filDwiLDtbiueC7ee5xJFwF3RDcqEE0GvJwSVF
-   cOKSKA+tCaW77GjHNJJKkw3EcAdP9xvuoKkaxTg27Ag9DRkQvcxN5rGkh
-   c2OlXhOSTdlwOSVo6rnR90I0WLBEtfSy+fVutHOw/UycK+tixItQiEo3y
-   VKaw0lakOmeUamZZatAZjDu5uNVFtHQYXX+WpHuyM9eTMuIzlX3XCKT2Q
-   Qqu5nCivmh3TWY6H4rXvQpM4KVBxdOhEM+V5jeirye04ZoX0z2J3/uqcH
-   jMkEEp0+bjuy/cBMxp80ByS6pRdKeoyB4O0n/+UCGuoPsHwKLSZMRRvFP
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="233430652"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="233430652"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:32:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="476756089"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 24 Jan 2022 07:32:52 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nC1Ku-000IWn-6Q; Mon, 24 Jan 2022 15:32:52 +0000
-Date:   Mon, 24 Jan 2022 23:32:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>, jic23@kernel.org,
-        lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
-        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org,
-        LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-Subject: Re: [PATCH V1 3/6] iio: accel: sca3300: modified to support multi
- chips
-Message-ID: <202201242336.1dSTFe7a-lkp@intel.com>
-References: <20220124093912.2429190-4-Qing-wu.Li@leica-geosystems.com.cn>
+        id S243219AbiAXPdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:33:24 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:36699 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235688AbiAXPdU (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:33:20 -0500
+Received: by mail-io1-f69.google.com with SMTP id b15-20020a056602330f00b006109348c3daso2516394ioz.3
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 07:33:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Mry99N6iPIKy3cjwP5Cz2+xI8pMASkNhENwJAhEUElM=;
+        b=KbLZk4mGgZ3uu5dsK4af3N7Q5eRVC/AwOk/S3bjSqqtdyl6J2FYHzV+/W3yFNKShHk
+         ahXfJgIVUcN9wScYp4ctSEY8YN58zxIdHT/ON5s3ts0Tw5m4jdyi4S3z/vrKclfi/kkP
+         8EiDU7h7J/FV06g/o/mpBdAnxxDW4fxHKcjmqHB2rn+zipUgSvbZwV7T3+dVhvfR6t/l
+         xj754rKrgF2nbUkaRR3j3xINibr7x8PyQzSrm6hlpNwShFsi6bFjxsBu0YH9jIvFkWTp
+         hQnoWteFR/Vc3kvWZyeqGSXaAEEMhVIMeGaDOvAOLWB7XeyuujKOpxdIAHYWK50sPUkX
+         n+PQ==
+X-Gm-Message-State: AOAM533jORn+uNLcDQFKB/ibd8Zvo1uQJ5keq6pU3jkb+KEfSHFtS8TW
+        zPJ4n3ZkSWQ53g45uRfPbo4iJkS9Z83K70NnzntQ/m27j4RQ
+X-Google-Smtp-Source: ABdhPJzhUPkKA7cUxXakLctP8xEq5DBmQoVBiEn3H9/v82Whk0G7QSUFIGTrHR5mQBsotDViMgenfJDBsnEITr1RaS8ltnN5U/u0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124093912.2429190-4-Qing-wu.Li@leica-geosystems.com.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a05:6e02:144a:: with SMTP id p10mr9296910ilo.152.1643038399809;
+ Mon, 24 Jan 2022 07:33:19 -0800 (PST)
+Date:   Mon, 24 Jan 2022 07:33:19 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000002c4f0905d655b052@google.com>
+Subject: [syzbot] WARNING in free_loaded_vmcs (3)
+From:   syzbot <syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com>
+To:     bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
+        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mingo@redhat.com,
+        pbonzini@redhat.com, seanjc@google.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi LI,
+Hello,
 
-Thank you for the patch! Perhaps something to improve:
+syzbot found the following issue on:
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on v5.17-rc1 next-20220124]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+HEAD commit:    dd81e1c7d5fb Merge tag 'powerpc-5.17-2' of git://git.kerne..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11a31ae0700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=916d34c0d501b86
+dashboard link: https://syzkaller.appspot.com/bug?extid=8112db3ab20e70d50c31
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16c7b51fb00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1212815bb00000
 
-url:    https://github.com/0day-ci/linux/commits/LI-Qingwu/i-iio-accel-sca3300-add-compitible-for-scl3300/20220124-174021
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-config: parisc-randconfig-r015-20220124 (https://download.01.org/0day-ci/archive/20220124/202201242336.1dSTFe7a-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/7dc3bc68cdfcb252dd79fea28a5e944d76784fe8
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review LI-Qingwu/i-iio-accel-sca3300-add-compitible-for-scl3300/20220124-174021
-        git checkout 7dc3bc68cdfcb252dd79fea28a5e944d76784fe8
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash drivers/iio/accel/
+Bisection is inconclusive: the issue happens on the oldest tested release.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1736d857b00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=14b6d857b00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10b6d857b00000
 
-All warnings (new ones prefixed by >>):
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com
 
-   drivers/iio/accel/sca3300.c:74:60: error: macro "IIO_ENUM_AVAILABLE" requires 3 arguments, but only 2 given
-      74 |         IIO_ENUM_AVAILABLE("op_mode", &sca3300_op_mode_enum),
-         |                                                            ^
-   In file included from include/linux/iio/buffer.h:10,
-                    from drivers/iio/accel/sca3300.c:17:
-   include/linux/iio/iio.h:112: note: macro "IIO_ENUM_AVAILABLE" defined here
-     112 | #define IIO_ENUM_AVAILABLE(_name, _shared, _e) \
-         | 
-   drivers/iio/accel/sca3300.c:74:9: error: 'IIO_ENUM_AVAILABLE' undeclared here (not in a function)
-      74 |         IIO_ENUM_AVAILABLE("op_mode", &sca3300_op_mode_enum),
-         |         ^~~~~~~~~~~~~~~~~~
->> drivers/iio/accel/sca3300.c:185:31: warning: initialization of 'long unsigned int' from 'const long unsigned int *' makes integer from pointer without a cast [-Wint-conversion]
-     185 |                 .scan_masks = sca3300_scan_masks,
-         |                               ^~~~~~~~~~~~~~~~~~
-   drivers/iio/accel/sca3300.c:185:31: note: (near initialization for 'sca3300_chip_info_tbl[0].scan_masks')
-   drivers/iio/accel/sca3300.c: In function 'sca3300_write_raw':
->> drivers/iio/accel/sca3300.c:307:34: warning: comparison between pointer and integer
-     307 |                         if ((val == sca3300_accel_scale[data->chip_info->chip_type][0]) &&
-         |                                  ^~
-   drivers/iio/accel/sca3300.c:308:35: warning: comparison between pointer and integer
-     308 |                             (val2 == sca3300_accel_scale[data->chip_info->chip_type][1]))
-         |                                   ^~
-   drivers/iio/accel/sca3300.c: In function 'sca3300_init':
->> drivers/iio/accel/sca3300.c:422:57: warning: assignment to 'const long unsigned int *' from 'long unsigned int' makes pointer from integer without a cast [-Wint-conversion]
-     422 |                         indio_dev->available_scan_masks = sca3300_chip_info_tbl[i].scan_masks;
-         |                                                         ^
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3606 at arch/x86/kvm/vmx/vmx.c:2665 free_loaded_vmcs arch/x86/kvm/vmx/vmx.c:2665 [inline]
+WARNING: CPU: 0 PID: 3606 at arch/x86/kvm/vmx/vmx.c:2665 free_loaded_vmcs+0x158/0x1a0 arch/x86/kvm/vmx/vmx.c:2656
+Modules linked in:
+CPU: 1 PID: 3606 Comm: syz-executor725 Not tainted 5.17.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:free_loaded_vmcs arch/x86/kvm/vmx/vmx.c:2665 [inline]
+RIP: 0010:free_loaded_vmcs+0x158/0x1a0 arch/x86/kvm/vmx/vmx.c:2656
+Code: 81 e8 bc 8c 4c 00 48 89 da 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 75 49 48 8b 2b e9 25 ff ff ff e8 38 17 58 00 <0f> 0b eb b3 e8 8f 4d 9f 00 e9 f7 fe ff ff 48 89 df e8 92 4d 9f 00
+RSP: 0018:ffffc90001d2f890 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff888079c1a2e8 RCX: 0000000000000000
+RDX: ffff888021b65700 RSI: ffffffff81204388 RDI: ffff888079c1a2f0
+RBP: ffff88807594d000 R08: 0000000000000001 R09: 0000000000000001
+R10: ffffffff817ea048 R11: 0000000000000001 R12: 0000000000000000
+R13: ffff888079c18000 R14: 0000000000000003 R15: ffffc90001d2f918
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fc975b8a328 CR3: 000000007f686000 CR4: 00000000003526f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ kvm_arch_vcpu_destroy+0x72/0x2f0 arch/x86/kvm/x86.c:11123
+ kvm_vcpu_destroy arch/x86/kvm/../../../virt/kvm/kvm_main.c:441 [inline]
+ kvm_destroy_vcpus+0x11f/0x290 arch/x86/kvm/../../../virt/kvm/kvm_main.c:460
+ kvm_free_vcpus arch/x86/kvm/x86.c:11564 [inline]
+ kvm_arch_destroy_vm+0x2e8/0x470 arch/x86/kvm/x86.c:11676
+ kvm_destroy_vm arch/x86/kvm/../../../virt/kvm/kvm_main.c:1217 [inline]
+ kvm_put_kvm+0x4fa/0xb00 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1250
+ kvm_vm_release+0x3f/0x50 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1273
+ __fput+0x286/0x9f0 fs/file_table.c:311
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:32 [inline]
+ do_exit+0xb29/0x2a30 kernel/exit.c:806
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+ get_signal+0x4b0/0x28c0 kernel/signal.c:2862
+ arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
+ handle_signal_work kernel/entry/common.c:148 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+ exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fc975b35729
+Code: Unable to access opcode bytes at RIP 0x7fc975b356ff.
+RSP: 002b:00007fc975ae5308 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+RAX: fffffffffffffe00 RBX: 00007fc975bbe408 RCX: 00007fc975b35729
+RDX: 0000000000000000 RSI: 0000000000000080 RDI: 00007fc975bbe408
+RBP: 00007fc975bbe400 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fc975bbe40c
+R13: 00007fc975b8b0b8 R14: 6d766b2f7665642f R15: 0000000000022000
+ </TASK>
 
-
-vim +185 drivers/iio/accel/sca3300.c
-
-   177	
-   178	static const struct sca3300_chip_info sca3300_chip_info_tbl[] = {
-   179		[CHIP_SCA3300] = {
-   180			.chip_type = CHIP_SCA3300,
-   181			.name = "sca3300",
-   182			.chip_id = 0x51,
-   183			.channels = sca3300_channels,
-   184			.num_channels = ARRAY_SIZE(sca3300_channels),
- > 185			.scan_masks = sca3300_scan_masks,
-   186		},
-   187	};
-   188	
-   189	DECLARE_CRC8_TABLE(sca3300_crc_table);
-   190	
-   191	static int sca3300_transfer(struct sca3300_data *sca_data, int *val)
-   192	{
-   193		/* Consecutive requests min. 10 us delay (Datasheet section 5.1.2) */
-   194		struct spi_delay delay = { .value = 10, .unit = SPI_DELAY_UNIT_USECS };
-   195		int32_t ret;
-   196		int rs;
-   197		u8 crc;
-   198		struct spi_transfer xfers[2] = {
-   199			{
-   200				.tx_buf = sca_data->txbuf,
-   201				.len = ARRAY_SIZE(sca_data->txbuf),
-   202				.delay = delay,
-   203				.cs_change = 1,
-   204			},
-   205			{
-   206				.rx_buf = sca_data->rxbuf,
-   207				.len = ARRAY_SIZE(sca_data->rxbuf),
-   208				.delay = delay,
-   209			}
-   210		};
-   211	
-   212		/* inverted crc value as described in device data sheet */
-   213		crc = ~crc8(sca3300_crc_table, &sca_data->txbuf[0], 3, CRC8_INIT_VALUE);
-   214		sca_data->txbuf[3] = crc;
-   215	
-   216		ret = spi_sync_transfer(sca_data->spi, xfers, ARRAY_SIZE(xfers));
-   217		if (ret) {
-   218			dev_err(&sca_data->spi->dev,
-   219				"transfer error, error: %d\n", ret);
-   220			return -EIO;
-   221		}
-   222	
-   223		crc = ~crc8(sca3300_crc_table, &sca_data->rxbuf[0], 3, CRC8_INIT_VALUE);
-   224		if (sca_data->rxbuf[3] != crc) {
-   225			dev_err(&sca_data->spi->dev, "CRC checksum mismatch");
-   226			return -EIO;
-   227		}
-   228	
-   229		/* get return status */
-   230		rs = sca_data->rxbuf[0] & SCA3300_MASK_RS_STATUS;
-   231		if (rs == SCA3300_VALUE_RS_ERROR)
-   232			ret = -EINVAL;
-   233	
-   234		*val = sign_extend32(get_unaligned_be16(&sca_data->rxbuf[1]), 15);
-   235	
-   236		return ret;
-   237	}
-   238	
-   239	static int sca3300_error_handler(struct sca3300_data *sca_data)
-   240	{
-   241		int ret;
-   242		int val;
-   243	
-   244		mutex_lock(&sca_data->lock);
-   245		sca_data->txbuf[0] = SCA3300_REG_STATUS << 2;
-   246		ret = sca3300_transfer(sca_data, &val);
-   247		mutex_unlock(&sca_data->lock);
-   248		/*
-   249		 * Return status error is cleared after reading status register once,
-   250		 * expect EINVAL here.
-   251		 */
-   252		if (ret != -EINVAL) {
-   253			dev_err(&sca_data->spi->dev,
-   254				"error reading device status: %d\n", ret);
-   255			return ret;
-   256		}
-   257	
-   258		dev_err(&sca_data->spi->dev, "device status: 0x%lx\n",
-   259			val & SCA3300_STATUS_MASK);
-   260	
-   261		return 0;
-   262	}
-   263	
-   264	static int sca3300_read_reg(struct sca3300_data *sca_data, u8 reg, int *val)
-   265	{
-   266		int ret;
-   267	
-   268		mutex_lock(&sca_data->lock);
-   269		sca_data->txbuf[0] = reg << 2;
-   270		ret = sca3300_transfer(sca_data, val);
-   271		mutex_unlock(&sca_data->lock);
-   272		if (ret != -EINVAL)
-   273			return ret;
-   274	
-   275		return sca3300_error_handler(sca_data);
-   276	}
-   277	
-   278	static int sca3300_write_reg(struct sca3300_data *sca_data, u8 reg, int val)
-   279	{
-   280		int reg_val = 0;
-   281		int ret;
-   282	
-   283		mutex_lock(&sca_data->lock);
-   284		/* BIT(7) for write operation */
-   285		sca_data->txbuf[0] = BIT(7) | (reg << 2);
-   286		put_unaligned_be16(val, &sca_data->txbuf[1]);
-   287		ret = sca3300_transfer(sca_data, &reg_val);
-   288		mutex_unlock(&sca_data->lock);
-   289		if (ret != -EINVAL)
-   290			return ret;
-   291	
-   292		return sca3300_error_handler(sca_data);
-   293	}
-   294	
-   295	static int sca3300_write_raw(struct iio_dev *indio_dev,
-   296				     struct iio_chan_spec const *chan,
-   297				     int val, int val2, long mask)
-   298	{
-   299		struct sca3300_data *data = iio_priv(indio_dev);
-   300		int reg_val;
-   301		int ret;
-   302		int i;
-   303	
-   304		switch (mask) {
-   305		case IIO_CHAN_INFO_SCALE:
-   306			for (i = 0; i < OP_MOD_CNT; i++) {
- > 307				if ((val == sca3300_accel_scale[data->chip_info->chip_type][0]) &&
-   308				    (val2 == sca3300_accel_scale[data->chip_info->chip_type][1]))
-   309					return sca3300_write_reg(data, SCA3300_REG_MODE, i);
-   310			}
-   311			return -EINVAL;
-   312		case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-   313			ret = sca3300_read_reg(data, SCA3300_REG_MODE, &reg_val);
-   314			if (ret)
-   315				return ret;
-   316			/* freq. change is possible only for mode 3 and 4 */
-   317			if (reg_val == 2 && val == sca3300_lp_freq[data->chip_info->chip_type][3])
-   318				return sca3300_write_reg(data, SCA3300_REG_MODE, 3);
-   319			if (reg_val == 3 && val == sca3300_lp_freq[data->chip_info->chip_type][2])
-   320				return sca3300_write_reg(data, SCA3300_REG_MODE, 2);
-   321			return -EINVAL;
-   322		default:
-   323			return -EINVAL;
-   324		}
-   325	}
-   326	
 
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
