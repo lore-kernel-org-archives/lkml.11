@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C5A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:19:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348604AbiAXTTD (ORCPT
+        id S1344824AbiAXTTF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:19:03 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37860 "EHLO
+        Mon, 24 Jan 2022 14:19:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38016 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347252AbiAXTKB (ORCPT
+        with ESMTP id S1347297AbiAXTKK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:10:01 -0500
+        Mon, 24 Jan 2022 14:10:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32FFF60B86;
-        Mon, 24 Jan 2022 19:10:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 168D9C340E5;
-        Mon, 24 Jan 2022 19:09:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D3E8611ED;
+        Mon, 24 Jan 2022 19:10:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 659C9C340E7;
+        Mon, 24 Jan 2022 19:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051399;
-        bh=Vk903Ehecft00WxikSEHVggSSpBxZ6zdw122CcEELU4=;
+        s=korg; t=1643051409;
+        bh=dvbrGGiVEQLOwzw10P90CvJsrbmFx1l9dlTRO+LfejY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yhWHF1wYzeYKJLzUdQcW4rTiYj0kNYG03juc5/K0PkZOz0Ilrdkpz2LyXpyzOKEPB
-         j0pb/xXBXC7duOK2DRoL0LMa7t6d2rKknB/uqWfffHZA/8C2ZQVloqI58kFNrxw8kZ
-         /k5UfeNCDfO7rJyB2bjGR7OIR15kw1dv+plOEgrE=
+        b=1UGGe8Cx7DpN0gHdt1PssUtZFtZkLi/glcvFWxfASFfRDWS71VW4qlpdg6h+j/jLn
+         UQdduWtaS+ne/z9oynyib5CLtlq7mBkqJApUnAIwzbIWbk97zV8RHdkCmnNriwPVCV
+         iq9Pl1KUdwtaBuZSOO17cEpmDDiGRZhE3IcihzSQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suresh Kumar <suresh2514@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 106/186] net: bonding: debug: avoid printing debug logs when bond is not notifying peers
-Date:   Mon, 24 Jan 2022 19:43:01 +0100
-Message-Id: <20220124183940.518749455@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.14 153/186] ext4: make sure quota gets properly shutdown on error
+Date:   Mon, 24 Jan 2022 19:43:48 +0100
+Message-Id: <20220124183942.024288543@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,68 +46,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Kumar <surkumar@redhat.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit fee32de284ac277ba434a2d59f8ce46528ff3946 ]
+commit 15fc69bbbbbc8c72e5f6cc4e1be0f51283c5448e upstream.
 
-Currently "bond_should_notify_peers: slave ..." messages are printed whenever
-"bond_should_notify_peers" function is called.
+When we hit an error when enabling quotas and setting inode flags, we do
+not properly shutdown quota subsystem despite returning error from
+Q_QUOTAON quotactl. This can lead to some odd situations like kernel
+using quota file while it is still writeable for userspace. Make sure we
+properly cleanup the quota subsystem in case of error.
 
-+++
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Received LACPDU on port 1
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Rx Machine: Port=1, Last State=6, Curr State=6
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): partner sync=1
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-...
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Received LACPDU on port 2
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Rx Machine: Port=2, Last State=6, Curr State=6
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): partner sync=1
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-+++
-
-This is confusing and can also clutter up debug logs.
-Print logs only when the peer notification happens.
-
-Signed-off-by: Suresh Kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Cc: stable@kernel.org
+Link: https://lore.kernel.org/r/20211007155336.12493-2-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/ext4/super.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 340e7bf6463ec..7096fcbf699c0 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -782,14 +782,14 @@ static bool bond_should_notify_peers(struct bonding *bond)
- 	slave = rcu_dereference(bond->curr_active_slave);
- 	rcu_read_unlock();
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -5678,10 +5678,7 @@ static int ext4_quota_on(struct super_bl
  
--	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
--		   slave ? slave->dev->name : "NULL");
--
- 	if (!slave || !bond->send_peer_notif ||
- 	    !netif_carrier_ok(bond->dev) ||
- 	    test_bit(__LINK_STATE_LINKWATCH_PENDING, &slave->dev->state))
- 		return false;
+ 	lockdep_set_quota_inode(path->dentry->d_inode, I_DATA_SEM_QUOTA);
+ 	err = dquot_quota_on(sb, type, format_id, path);
+-	if (err) {
+-		lockdep_set_quota_inode(path->dentry->d_inode,
+-					     I_DATA_SEM_NORMAL);
+-	} else {
++	if (!err) {
+ 		struct inode *inode = d_inode(path->dentry);
+ 		handle_t *handle;
  
-+	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
-+		   slave ? slave->dev->name : "NULL");
-+
- 	return true;
+@@ -5701,7 +5698,12 @@ static int ext4_quota_on(struct super_bl
+ 		ext4_journal_stop(handle);
+ 	unlock_inode:
+ 		inode_unlock(inode);
++		if (err)
++			dquot_quota_off(sb, type);
+ 	}
++	if (err)
++		lockdep_set_quota_inode(path->dentry->d_inode,
++					     I_DATA_SEM_NORMAL);
+ 	return err;
  }
  
--- 
-2.34.1
-
 
 
