@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21547C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA61C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346637AbiAXT0k (ORCPT
+        id S1351334AbiAXT0q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:26:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48328 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345698AbiAXTT2 (ORCPT
+        Mon, 24 Jan 2022 14:26:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42540 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345805AbiAXTT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:19:28 -0500
+        Mon, 24 Jan 2022 14:19:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC7AF6121F;
-        Mon, 24 Jan 2022 19:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FB4CC340E8;
-        Mon, 24 Jan 2022 19:19:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87007B8123F;
+        Mon, 24 Jan 2022 19:19:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3E0EC340E5;
+        Mon, 24 Jan 2022 19:19:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051967;
-        bh=/0GNHOcGMKJ+IUCw8BtEQJCDlBLL5fjf7fhxbTN3nVE=;
+        s=korg; t=1643051964;
+        bh=iS+y03BfRF0LeTvWUGV0QoMfW2bryzaHTzsrUFwQqKk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M/BzC18JXSyHdjD2yZZyXgz0pNABfzlS+/5YS1eRkSk4RT+ENgYmZ3QAU1jA62Tpy
-         s6RjD6zssOu30g75BHSW0ZfXtqd3ZdGGFRZD4Ho2b+jIG+/Txa8rerX6P5vX9l/C2i
-         3cPerwlDTacX95LTitOUoAKAMM+6PgkRAOMdtqvw=
+        b=wj/s0s3BBdivZ9XZX35DB2RmMoWXJXqnwiDSFi+mbd52AhlH9R9vI3f5ktK9eTajg
+         o3dqqveVXQ38l09ymNTNxLZVNleTO7Zm3JWknJcRMPKM/7UvexD6/V+N7++Y3ez6iI
+         2fhtGGOFlF378Y4tG8FHKu5Sfs4s4bBoq27YlS0g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Mark Brown <broonie@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 112/239] dmaengine: pxa/mmp: stop referencing config->slave_id
-Date:   Mon, 24 Jan 2022 19:42:30 +0100
-Message-Id: <20220124183946.660918740@linuxfoundation.org>
+Subject: [PATCH 4.19 111/239] ASoC: rt5663: Handle device_property_read_u32_array error codes
+Date:   Mon, 24 Jan 2022 19:42:29 +0100
+Message-Id: <20220124183946.631656385@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -47,61 +47,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 134c37fa250a87a7e77c80a7c59ae16c462e46e0 ]
+[ Upstream commit 2167c0b205960607fb136b4bb3c556a62be1569a ]
 
-The last driver referencing the slave_id on Marvell PXA and MMP platforms
-was the SPI driver, but this stopped doing so a long time ago, so the
-TODO from the earlier patch can no be removed.
+The return value of device_property_read_u32_array() is not always 0.
+To catch the exception in case that devm_kzalloc failed and the
+rt5663->imp_table was NULL, which caused the failure of
+device_property_read_u32_array.
 
-Fixes: b729bf34535e ("spi/pxa2xx: Don't use slave_id of dma_slave_config")
-Fixes: 13b3006b8ebd ("dma: mmp_pdma: add filter function")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20211122222203.4103644-7-arnd@kernel.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 450f0f6a8fb4 ("ASoC: rt5663: Add the manual offset field to compensate the DC offset")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20211215031550.70702-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/mmp_pdma.c | 6 ------
- drivers/dma/pxa_dma.c  | 7 -------
- 2 files changed, 13 deletions(-)
+ sound/soc/codecs/rt5663.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/dma/mmp_pdma.c b/drivers/dma/mmp_pdma.c
-index eb3a1f42ab065..e8b2d3e31de80 100644
---- a/drivers/dma/mmp_pdma.c
-+++ b/drivers/dma/mmp_pdma.c
-@@ -722,12 +722,6 @@ static int mmp_pdma_config(struct dma_chan *dchan,
+diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
+index 9bd24ad422407..dd77f131ce6c5 100644
+--- a/sound/soc/codecs/rt5663.c
++++ b/sound/soc/codecs/rt5663.c
+@@ -3446,6 +3446,7 @@ static void rt5663_calibrate(struct rt5663_priv *rt5663)
+ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
+ {
+ 	int table_size;
++	int ret;
  
- 	chan->dir = cfg->direction;
- 	chan->dev_addr = addr;
--	/* FIXME: drivers should be ported over to use the filter
--	 * function. Once that's done, the following two lines can
--	 * be removed.
--	 */
--	if (cfg->slave_id)
--		chan->drcmr = cfg->slave_id;
+ 	device_property_read_u32(dev, "realtek,dc_offset_l_manual",
+ 		&rt5663->pdata.dc_offset_l_manual);
+@@ -3462,9 +3463,11 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
+ 		table_size = sizeof(struct impedance_mapping_table) *
+ 			rt5663->pdata.impedance_sensing_num;
+ 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
+-		device_property_read_u32_array(dev,
++		ret = device_property_read_u32_array(dev,
+ 			"realtek,impedance_sensing_table",
+ 			(u32 *)rt5663->imp_table, table_size);
++		if (ret)
++			return ret;
+ 	}
  
  	return 0;
- }
-diff --git a/drivers/dma/pxa_dma.c b/drivers/dma/pxa_dma.c
-index b31c28b67ad3e..c54986902b9d2 100644
---- a/drivers/dma/pxa_dma.c
-+++ b/drivers/dma/pxa_dma.c
-@@ -960,13 +960,6 @@ static void pxad_get_config(struct pxad_chan *chan,
- 		*dcmd |= PXA_DCMD_BURST16;
- 	else if (maxburst == 32)
- 		*dcmd |= PXA_DCMD_BURST32;
--
--	/* FIXME: drivers should be ported over to use the filter
--	 * function. Once that's done, the following two lines can
--	 * be removed.
--	 */
--	if (chan->cfg.slave_id)
--		chan->drcmr = chan->cfg.slave_id;
- }
+@@ -3489,8 +3492,11 @@ static int rt5663_i2c_probe(struct i2c_client *i2c,
  
- static struct dma_async_tx_descriptor *
+ 	if (pdata)
+ 		rt5663->pdata = *pdata;
+-	else
+-		rt5663_parse_dp(rt5663, &i2c->dev);
++	else {
++		ret = rt5663_parse_dp(rt5663, &i2c->dev);
++		if (ret)
++			return ret;
++	}
+ 
+ 	regmap = devm_regmap_init_i2c(i2c, &temp_regmap);
+ 	if (IS_ERR(regmap)) {
 -- 
 2.34.1
 
