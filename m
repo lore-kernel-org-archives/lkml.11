@@ -2,170 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E71C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 07:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 07:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241848AbiAXH2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 02:28:30 -0500
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:41200
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241842AbiAXH2Z (ORCPT
+        id S241857AbiAXH2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 02:28:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51866 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241844AbiAXH2d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 02:28:25 -0500
-Received: from HP-EliteBook-840-G7.. (36-229-235-192.dynamic-ip.hinet.net [36.229.235.192])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 7A27B3F165;
-        Mon, 24 Jan 2022 07:28:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643009304;
-        bh=dj16gFP5CrsdfGvdwZ7qFQSRJlPlMNcu4pgF0B1jdwU=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=FFHyCs9r9oCp5/xPILV8zOMHxXLhkDt35DUtlG2Jm9TcGYIDlIfL3CcuC2trpZ1E6
-         BsHufcXP8WgfifSX3W/rrHmf/KHHPFrVzIOVLGCkzRQl5hoCQygPcsX36i+zy0sIkX
-         meRpEjMl8oO8kEOen9VYcH7plUP/22miuDov8RA0Roy4QBuaP/PKA8Bd2lvzvAgciO
-         KqbZezdyzpKOEL0wcZxmq8HV1zOt9/qYW0IpKdEUIYGWGpS3rFftaDYGSFnzsY7g1B
-         7aCJHXg+//jtu05tN7npF/CHURyEbvx70eNDfGyqSdhZCxU450ZbhgQuJQSK1begnJ
-         ZGWlaAvsnY//w==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     arnd@arndb.de, gregkh@linuxfoundation.org, ulf.hansson@linaro.org
-Cc:     linux-pm@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Ricky WU <ricky_wu@realtek.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v5 3/4] misc: rtsx: Cleanup power management ops
-Date:   Mon, 24 Jan 2022 15:28:02 +0800
-Message-Id: <20220124072804.1811690-3-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220124072804.1811690-1-kai.heng.feng@canonical.com>
-References: <20220121014039.1693208-1-kai.heng.feng@canonical.com>
- <20220124072804.1811690-1-kai.heng.feng@canonical.com>
+        Mon, 24 Jan 2022 02:28:33 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AC2C06173D;
+        Sun, 23 Jan 2022 23:28:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=YpJARcXKoGZPiJTfBdQDT9/oQ0nkzXZFh+P1EKhj/Rk=; b=1zmEJAk7pautCE8IyG6nZ+P5DN
+        jcPS/4+RmkEGX01/KBzzlRLnv4Ujbp7wwgKrSXqfwku67x107dWyRcpSaWDJg2eGf0hDMWfsacXFb
+        yRZJcr1xvoDHM7gKnb2AOf5U7uVKNsooqq+S+D5m1p4X/GnRmt2wP472bzUalfgBZNOewWJDqX1jH
+        dFw11VZyBegH/EYSd1cXZwJQmpWxfT/clDdLodgbufqdxJ0oj2JFWUbRjBVSFra1KbbS8rFatUTR5
+        g9gxfWDSGqJhMgnekdc4tCgIhLhAZNbGLyqmIbdSqYI7fa1kbs32J9dYVoNCQULd88p/VI0M8GdoB
+        KM8aRK3Q==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nBtm5-002UAu-N6; Mon, 24 Jan 2022 07:28:25 +0000
+Date:   Sun, 23 Jan 2022 23:28:25 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     NeilBrown <neilb@suse.de>
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Christoph Hellwig <hch@infradead.org>,
+        David Howells <dhowells@redhat.com>, linux-nfs@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH 03/23] MM: drop swap_set_page_dirty
+Message-ID: <Ye5VGY7jy+wXk806@infradead.org>
+References: <164299573337.26253.7538614611220034049.stgit@noble.brown>
+ <164299611274.26253.3394253485576079921.stgit@noble.brown>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <164299611274.26253.3394253485576079921.stgit@noble.brown>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-- Use cancel_delayed_work_sync to ensure there's no race with
-  carddet_work.
+On Mon, Jan 24, 2022 at 02:48:32PM +1100, NeilBrown wrote:
+> Pages that are written to swap are owned by the MM subsystem - not any
+> filesystem.
+> 
+> When such a page is passed to a filesystem to be written out to a
+> swap-file, the filesystem handles the data, but the page itself does not
+> belong to the filesystem.  So calling the filesystem's set_page_dirty
+> address_space operation makes no sense.  This is for pages in the given
+> address space, and a page to be written to swap does not exist in the
+> given address space.
+> 
+> So drop swap_set_page_dirty() which calls the address-space's
+> set_page_dirty, and alway use __set_page_dirty_no_writeback, which is
+> appropriate for pages being swapped out.
 
-- Remove device_wakeup_disable to save some CPU cycles. If the device
-  really has ACPI _DSW then the wakeup should be disabled in probe
-  routine.
+Yes, this looks sane to me:
 
-- Remove fetch_vendor_settings from runtime resume routine, since they
-  are already saved in "struct rtsx_pcr".
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 
-- Move variable assignments to the top of the functions.
-
-Cc: Ricky WU <ricky_wu@realtek.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v5:
- - No change.
-
-v4:
- - Move variable assignments to the top of the functions.
-
-v3:
-v2:
- - No change.
-
- drivers/misc/cardreader/rtsx_pcr.c | 34 ++++++++----------------------
- 1 file changed, 9 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/misc/cardreader/rtsx_pcr.c b/drivers/misc/cardreader/rtsx_pcr.c
-index f919290f01192..ec395a33faf8b 100644
---- a/drivers/misc/cardreader/rtsx_pcr.c
-+++ b/drivers/misc/cardreader/rtsx_pcr.c
-@@ -1660,22 +1660,17 @@ static void rtsx_pci_remove(struct pci_dev *pcidev)
- static int __maybe_unused rtsx_pci_suspend(struct device *dev_d)
- {
- 	struct pci_dev *pcidev = to_pci_dev(dev_d);
--	struct pcr_handle *handle;
--	struct rtsx_pcr *pcr;
-+	struct pcr_handle *handle = pci_get_drvdata(pcidev);
-+	struct rtsx_pcr *pcr = handle->pcr;
- 
- 	dev_dbg(&(pcidev->dev), "--> %s\n", __func__);
- 
--	handle = pci_get_drvdata(pcidev);
--	pcr = handle->pcr;
--
--	cancel_delayed_work(&pcr->carddet_work);
-+	cancel_delayed_work_sync(&pcr->carddet_work);
- 
- 	mutex_lock(&pcr->pcr_mutex);
- 
- 	rtsx_pci_power_off(pcr, HOST_ENTER_S3);
- 
--	device_wakeup_disable(dev_d);
--
- 	mutex_unlock(&pcr->pcr_mutex);
- 	return 0;
- }
-@@ -1683,15 +1678,12 @@ static int __maybe_unused rtsx_pci_suspend(struct device *dev_d)
- static int __maybe_unused rtsx_pci_resume(struct device *dev_d)
- {
- 	struct pci_dev *pcidev = to_pci_dev(dev_d);
--	struct pcr_handle *handle;
--	struct rtsx_pcr *pcr;
-+	struct pcr_handle *handle = pci_get_drvdata(pcidev);
-+	struct rtsx_pcr *pcr = handle->pcr;
- 	int ret = 0;
- 
- 	dev_dbg(&(pcidev->dev), "--> %s\n", __func__);
- 
--	handle = pci_get_drvdata(pcidev);
--	pcr = handle->pcr;
--
- 	mutex_lock(&pcr->pcr_mutex);
- 
- 	ret = rtsx_pci_write_register(pcr, HOST_SLEEP_STATE, 0x03, 0x00);
-@@ -1711,13 +1703,11 @@ static int __maybe_unused rtsx_pci_resume(struct device *dev_d)
- 
- static void rtsx_pci_shutdown(struct pci_dev *pcidev)
- {
--	struct pcr_handle *handle;
--	struct rtsx_pcr *pcr;
-+	struct pcr_handle *handle = pci_get_drvdata(pcidev);
-+	struct rtsx_pcr *pcr = handle->pcr;
- 
- 	dev_dbg(&(pcidev->dev), "--> %s\n", __func__);
- 
--	handle = pci_get_drvdata(pcidev);
--	pcr = handle->pcr;
- 	rtsx_pci_power_off(pcr, HOST_ENTER_S1);
- 
- 	pci_disable_device(pcidev);
-@@ -1756,11 +1746,8 @@ static int rtsx_pci_runtime_idle(struct device *device)
- static int rtsx_pci_runtime_suspend(struct device *device)
- {
- 	struct pci_dev *pcidev = to_pci_dev(device);
--	struct pcr_handle *handle;
--	struct rtsx_pcr *pcr;
--
--	handle = pci_get_drvdata(pcidev);
--	pcr = handle->pcr;
-+	struct pcr_handle *handle = pci_get_drvdata(pcidev);
-+	struct rtsx_pcr *pcr = handle->pcr;
- 
- 	dev_dbg(device, "--> %s\n", __func__);
- 
-@@ -1786,9 +1773,6 @@ static int rtsx_pci_runtime_resume(struct device *device)
- 
- 	rtsx_pci_write_register(pcr, HOST_SLEEP_STATE, 0x03, 0x00);
- 
--	if (pcr->ops->fetch_vendor_settings)
--		pcr->ops->fetch_vendor_settings(pcr);
--
- 	rtsx_pci_init_hw(pcr);
- 
- 	if (pcr->slots[RTSX_SD_CARD].p_dev != NULL) {
--- 
-2.33.1
-
+> 
+> Fixes-no-auto-backport: 62c230bc1790 ("mm: add support for a filesystem to activate swap files and use direct_IO for writing swap pages")
+> Signed-off-by: NeilBrown <neilb@suse.de>
+> ---
+>  include/linux/swap.h |    1 -
+>  mm/page_io.c         |   14 --------------
+>  mm/swap_state.c      |    2 +-
+>  3 files changed, 1 insertion(+), 16 deletions(-)
+> 
+> diff --git a/include/linux/swap.h b/include/linux/swap.h
+> index 3f54a8941c9d..a43929f7033e 100644
+> --- a/include/linux/swap.h
+> +++ b/include/linux/swap.h
+> @@ -419,7 +419,6 @@ extern void kswapd_stop(int nid);
+>  
+>  #ifdef CONFIG_SWAP
+>  
+> -extern int swap_set_page_dirty(struct page *page);
+>  int add_swap_extent(struct swap_info_struct *sis, unsigned long start_page,
+>  		unsigned long nr_pages, sector_t start_block);
+>  int generic_swapfile_activate(struct swap_info_struct *, struct file *,
+> diff --git a/mm/page_io.c b/mm/page_io.c
+> index f8c26092e869..34b12d6f94d7 100644
+> --- a/mm/page_io.c
+> +++ b/mm/page_io.c
+> @@ -438,17 +438,3 @@ int swap_readpage(struct page *page, bool synchronous)
+>  	delayacct_swapin_end();
+>  	return ret;
+>  }
+> -
+> -int swap_set_page_dirty(struct page *page)
+> -{
+> -	struct swap_info_struct *sis = page_swap_info(page);
+> -
+> -	if (data_race(sis->flags & SWP_FS_OPS)) {
+> -		struct address_space *mapping = sis->swap_file->f_mapping;
+> -
+> -		VM_BUG_ON_PAGE(!PageSwapCache(page), page);
+> -		return mapping->a_ops->set_page_dirty(page);
+> -	} else {
+> -		return __set_page_dirty_no_writeback(page);
+> -	}
+> -}
+> diff --git a/mm/swap_state.c b/mm/swap_state.c
+> index 093ecf864200..d541594be1c3 100644
+> --- a/mm/swap_state.c
+> +++ b/mm/swap_state.c
+> @@ -31,7 +31,7 @@
+>   */
+>  static const struct address_space_operations swap_aops = {
+>  	.writepage	= swap_writepage,
+> -	.set_page_dirty	= swap_set_page_dirty,
+> +	.set_page_dirty	= __set_page_dirty_no_writeback,
+>  #ifdef CONFIG_MIGRATION
+>  	.migratepage	= migrate_page,
+>  #endif
+> 
+> 
+---end quoted text---
