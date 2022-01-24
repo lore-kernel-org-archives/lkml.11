@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F18AC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B34C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451944AbiAXVXt (ORCPT
+        id S1452099AbiAXVYD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:23:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44572 "EHLO
+        Mon, 24 Jan 2022 16:24:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443258AbiAXU4e (ORCPT
+        with ESMTP id S1443215AbiAXU4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:56:34 -0500
+        Mon, 24 Jan 2022 15:56:31 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272A6C07A94A;
-        Mon, 24 Jan 2022 11:18:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A47C0D9431;
+        Mon, 24 Jan 2022 11:18:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2D97B81238;
-        Mon, 24 Jan 2022 19:18:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB59CC340E5;
-        Mon, 24 Jan 2022 19:18:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E55BAB8123D;
+        Mon, 24 Jan 2022 19:18:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1B52C340E5;
+        Mon, 24 Jan 2022 19:18:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051923;
-        bh=M4UE480JwyzeOBq6t7B72Ees1unLdZDrfoZ7S9bjVYc=;
+        s=korg; t=1643051882;
+        bh=TYR6G0G1NNZYgGiHfvo4P7O8iCjHHs0h9Uv+G6h0s/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bdg/XbhFrMJFdewhn/BIPQ++Wng3kND2otsxRKLFG0uBj+jF9tYH72GMYrPB7zaCF
-         P2rkpsjLHhyvkhLeZxivi/6XRhvFbU/T29fSJVn425QrUE0ZhtQ9JAXwA1vrmAcWFj
-         5rjaGW5q9M5Ak+NvpEBShmcG2tDMwcyadP5WXZG4=
+        b=JDPGAkDSImTTwFUOZ4m02MmyNheI3dwy3yO6hGF15Kwcwjf9yFWO2f9VNTMfdfm3c
+         4TecFQFjVezSt4smLjhHWwiKNzyFiJOXym/6+4MaeYtmN97LQXd4gMi21s3aKTSqHE
+         vJicPHssYQ6kf/xDjWGmZhwfupSettaK2DH/v3eA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 130/239] gpiolib: acpi: Do not set the IRQ type if the IRQ is already in use
-Date:   Mon, 24 Jan 2022 19:42:48 +0100
-Message-Id: <20220124183947.242153916@linuxfoundation.org>
+Subject: [PATCH 4.19 118/239] mips: bcm63xx: add support for clk_set_parent()
+Date:   Mon, 24 Jan 2022 19:42:36 +0100
+Message-Id: <20220124183946.860857778@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -50,59 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit bdfd6ab8fdccd8b138837efff66f4a1911496378 ]
+[ Upstream commit 6f03055d508ff4feb8db02ba3df9303a1db8d381 ]
 
-If the IRQ is already in use, then acpi_dev_gpio_irq_get_by() really
-should not change the type underneath the current owner.
+The MIPS BMC63XX subarch does not provide/support clk_set_parent().
+This causes build errors in a few drivers, so add a simple implementation
+of that function so that callers of it will build without errors.
 
-I specifically hit an issue with this an a Chuwi Hi8 Super (CWI509) Bay
-Trail tablet, when the Boot OS selection in the BIOS is set to Android.
-In this case _STA for a MAX17047 ACPI I2C device wrongly returns 0xf and
-the _CRS resources for this device include a GpioInt pointing to a GPIO
-already in use by an _AEI handler, with a different type then specified
-in the _CRS for the MAX17047 device. Leading to the acpi_dev_gpio_irq_get()
-call done by the i2c-core-acpi.c code changing the type breaking the
-_AEI handler.
+Fixes these build errors:
 
-Now this clearly is a bug in the DSDT of this tablet (in Android mode),
-but in general calling irq_set_irq_type() on an IRQ which already is
-in use seems like a bad idea.
+ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
+ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Fixes: e7300d04bd08 ("MIPS: BCM63xx: Add support for the Broadcom BCM63xx family of SOCs." )
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpiolib-acpi.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ arch/mips/bcm63xx/clk.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/gpio/gpiolib-acpi.c b/drivers/gpio/gpiolib-acpi.c
-index b018909a4e46c..47cdc1f89e3fb 100644
---- a/drivers/gpio/gpiolib-acpi.c
-+++ b/drivers/gpio/gpiolib-acpi.c
-@@ -904,10 +904,17 @@ int acpi_dev_gpio_irq_get(struct acpi_device *adev, int index)
- 			irq_flags = acpi_dev_get_irq_type(info.triggering,
- 							  info.polarity);
+diff --git a/arch/mips/bcm63xx/clk.c b/arch/mips/bcm63xx/clk.c
+index aba6e2d6a736c..dcfa0ea912fe1 100644
+--- a/arch/mips/bcm63xx/clk.c
++++ b/arch/mips/bcm63xx/clk.c
+@@ -387,6 +387,12 @@ struct clk *clk_get_parent(struct clk *clk)
+ }
+ EXPORT_SYMBOL(clk_get_parent);
  
--			/* Set type if specified and different than the current one */
--			if (irq_flags != IRQ_TYPE_NONE &&
--			    irq_flags != irq_get_trigger_type(irq))
--				irq_set_irq_type(irq, irq_flags);
-+			/*
-+			 * If the IRQ is not already in use then set type
-+			 * if specified and different than the current one.
-+			 */
-+			if (can_request_irq(irq, irq_flags)) {
-+				if (irq_flags != IRQ_TYPE_NONE &&
-+				    irq_flags != irq_get_trigger_type(irq))
-+					irq_set_irq_type(irq, irq_flags);
-+			} else {
-+				dev_dbg(&adev->dev, "IRQ %d already in use\n", irq);
-+			}
- 
- 			return irq;
- 		}
++int clk_set_parent(struct clk *clk, struct clk *parent)
++{
++	return 0;
++}
++EXPORT_SYMBOL(clk_set_parent);
++
+ unsigned long clk_get_rate(struct clk *clk)
+ {
+ 	if (!clk)
 -- 
 2.34.1
 
