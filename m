@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53CDCC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:44:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343611AbiAXToW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:44:22 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52872 "EHLO
+        id S235776AbiAXToZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:44:25 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57572 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352276AbiAXTaD (ORCPT
+        with ESMTP id S1353746AbiAXTfT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:30:03 -0500
+        Mon, 24 Jan 2022 14:35:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E699B8122C;
-        Mon, 24 Jan 2022 19:30:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64AF8C340E5;
-        Mon, 24 Jan 2022 19:29:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BEE2B8121C;
+        Mon, 24 Jan 2022 19:35:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57F64C340E5;
+        Mon, 24 Jan 2022 19:35:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052599;
-        bh=4S2dYCqoHBKcD8cOK9/6OdcbmPKRa6oX9Z0TpfEVuIo=;
+        s=korg; t=1643052916;
+        bh=Bf2KpLKl42cxGt39Tk6pcrnnOXoTk3V933L/qa6WQzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJJm1PsyQxTpVWO9TeY+dabjxnCC6uHIGPQaTLUOWYNsYaJOHUjrkYY7u6L+qbqqh
-         gNkux9HEmEq91nvpyHdvQI1MDG0odBgRLbswctZU3E9um+Cb6xENw+6DlJnJqxS86H
-         sAfYHibQMAf8XBKTlzwfhqJP0KHlUSqkAKmROsPw=
+        b=n/Sp8akf+NfLGVPpgv69FDqtG7vE8pgdS/F+nIvntrWhpJr8DppL0Gkyrkbz+4Jpw
+         aQSPjcSvygtaZvH1hIntEpTEnsAmSGlyPFOcECDEVGDV561Q1dqDY89wqGm7iOQ6rI
+         IXAEBm+hUlEpL732upXRuTTaqEZQsO3Z3XwiSuuc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Joe Thornber <ejt@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 113/320] net/mlx5e: Dont block routes with nexthop objects in SW
-Date:   Mon, 24 Jan 2022 19:41:37 +0100
-Message-Id: <20220124183957.554448069@linuxfoundation.org>
+Subject: [PATCH 5.4 216/320] dm space map common: add bounds check to sm_ll_lookup_bitmap()
+Date:   Mon, 24 Jan 2022 19:43:20 +0100
+Message-Id: <20220124184000.992054632@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -48,46 +46,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Joe Thornber <ejt@redhat.com>
 
-[ Upstream commit 9e72a55a3c9d54b38a704bb7292d984574a81d9d ]
+[ Upstream commit cba23ac158db7f3cd48a923d6861bee2eb7a2978 ]
 
-Routes with nexthop objects is currently not supported by multipath offload
-and any attempts to use it is blocked, however this also block adding SW
-routes with nexthop.
+Corrupted metadata could warrant returning error from sm_ll_lookup_bitmap().
 
-Resolve this by returning NOTIFY_DONE instead of an error which will allow such
-a route to be created in SW but not offloaded.
-
-This fix also solve an issue which block adding such routes on different devices
-due to missing check if the route FIB device is one of multipath devices.
-
-Fixes: 6a87afc072c3 ("mlx5: Fail attempts to use routes with nexthop objects")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Joe Thornber <ejt@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/md/persistent-data/dm-space-map-common.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-index bdc7f915d80e3..101667c6b5843 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-@@ -265,10 +265,8 @@ static int mlx5_lag_fib_event(struct notifier_block *nb,
- 		fen_info = container_of(info, struct fib_entry_notifier_info,
- 					info);
- 		fi = fen_info->fi;
--		if (fi->nh) {
--			NL_SET_ERR_MSG_MOD(info->extack, "IPv4 route with nexthop objects is not supported");
--			return notifier_from_errno(-EINVAL);
--		}
-+		if (fi->nh)
-+			return NOTIFY_DONE;
- 		fib_dev = fib_info_nh(fen_info->fi, 0)->fib_nh_dev;
- 		if (fib_dev != ldev->pf[0].netdev &&
- 		    fib_dev != ldev->pf[1].netdev) {
+diff --git a/drivers/md/persistent-data/dm-space-map-common.c b/drivers/md/persistent-data/dm-space-map-common.c
+index a213bf11738fb..85853ab629717 100644
+--- a/drivers/md/persistent-data/dm-space-map-common.c
++++ b/drivers/md/persistent-data/dm-space-map-common.c
+@@ -281,6 +281,11 @@ int sm_ll_lookup_bitmap(struct ll_disk *ll, dm_block_t b, uint32_t *result)
+ 	struct disk_index_entry ie_disk;
+ 	struct dm_block *blk;
+ 
++	if (b >= ll->nr_blocks) {
++		DMERR_LIMIT("metadata block out of bounds");
++		return -EINVAL;
++	}
++
+ 	b = do_div(index, ll->entries_per_block);
+ 	r = ll->load_ie(ll, index, &ie_disk);
+ 	if (r < 0)
 -- 
 2.34.1
 
