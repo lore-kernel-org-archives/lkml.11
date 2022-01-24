@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B260C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:40:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0420C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355021AbiAXTjv (ORCPT
+        id S1355059AbiAXTjz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:39:51 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59192 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346860AbiAXTd6 (ORCPT
+        Mon, 24 Jan 2022 14:39:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349371AbiAXTd7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:33:58 -0500
+        Mon, 24 Jan 2022 14:33:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012FBC09B04F;
+        Mon, 24 Jan 2022 11:16:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A06B60909;
-        Mon, 24 Jan 2022 19:33:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 412DCC340E5;
-        Mon, 24 Jan 2022 19:33:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 968AF6130A;
+        Mon, 24 Jan 2022 19:16:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C958C340E5;
+        Mon, 24 Jan 2022 19:16:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052835;
-        bh=pgsZHp9ixRySTOMnwePYjcM7jO08VdKO54ioWL4fvKA=;
+        s=korg; t=1643051773;
+        bh=ePwTLxA62Y36SORi+qh5QbEO3e+K23U1KOM0lweoOO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sekp9GWDIERD4sRv7gWYOYONOHL23qweS3Rdtt2a9ckZmIYNtWTmEjDjEbYhn0mLg
-         RTFEtS6umF0MT6HPJ0Hx36uCYmNaf8SeoGFkSJA/ce4wcorGYsd3hHPRFl9WGFFhb3
-         zugbhWByFN6Z/1h/be1G0wzx84qwK2RVAzOz69pc=
+        b=lx/c3da//267pxA023+TpriEV1jJVju4Ek5UwyTK/QX94Z5NVKBwZdDWAgcsRn4E6
+         x79x7sqc7iZ5UCorWruKDreobb2I6gGu64sXG65FzGbvh8a0jSHbXvv2VMKJWgXC6K
+         RQuD+pz6/6kHipGdOzNme8gapsjJbfs0dJAjDzu0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alistair Francis <alistair@alistair23.me>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 189/320] HID: quirks: Allow inverting the absolute X/Y values
-Date:   Mon, 24 Jan 2022 19:42:53 +0100
-Message-Id: <20220124184000.070956590@linuxfoundation.org>
+Subject: [PATCH 4.19 083/239] mmc: meson-mx-sdio: add IRQ check
+Date:   Mon, 24 Jan 2022 19:42:01 +0100
+Message-Id: <20220124183945.759993210@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,53 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alistair Francis <alistair@alistair23.me>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-[ Upstream commit fd8d135b2c5e88662f2729e034913f183455a667 ]
+[ Upstream commit 8fc9a77bc64e1f23d07953439817d8402ac9706f ]
 
-Add a HID_QUIRK_X_INVERT/HID_QUIRK_Y_INVERT quirk that can be used
-to invert the X/Y values.
+The driver neglects to check the result of platform_get_irq()'s call and
+blithely passes the negative error codes to devm_request_threaded_irq()
+(which takes *unsigned* IRQ #), causing it to fail with -EINVAL, overriding
+an original error code. Stop calling devm_request_threaded_irq() with the
+invalid IRQ #s.
 
-Signed-off-by: Alistair Francis <alistair@alistair23.me>
-[bentiss: silence checkpatch warning]
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Link: https://lore.kernel.org/r/20211208124045.61815-2-alistair@alistair23.me
+Fixes: ed80a13bb4c4 ("mmc: meson-mx-sdio: Add a driver for the Amlogic Meson8 and Meson8b SoC")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Link: https://lore.kernel.org/r/20211217202717.10041-3-s.shtylyov@omp.ru
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-input.c | 6 ++++++
- include/linux/hid.h     | 2 ++
- 2 files changed, 8 insertions(+)
+ drivers/mmc/host/meson-mx-sdio.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
-index ea4c97f5b0736..749558aa27e78 100644
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -1288,6 +1288,12 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct
+diff --git a/drivers/mmc/host/meson-mx-sdio.c b/drivers/mmc/host/meson-mx-sdio.c
+index 27837a794e7b3..1f7e4352b0677 100644
+--- a/drivers/mmc/host/meson-mx-sdio.c
++++ b/drivers/mmc/host/meson-mx-sdio.c
+@@ -668,6 +668,11 @@ static int meson_mx_mmc_probe(struct platform_device *pdev)
+ 	}
  
- 	input = field->hidinput->input;
- 
-+	if (usage->type == EV_ABS &&
-+	    (((*quirks & HID_QUIRK_X_INVERT) && usage->code == ABS_X) ||
-+	     ((*quirks & HID_QUIRK_Y_INVERT) && usage->code == ABS_Y))) {
-+		value = field->logical_maximum - value;
+ 	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		ret = irq;
++		goto error_free_mmc;
 +	}
 +
- 	if (usage->hat_min < usage->hat_max || usage->hat_dir) {
- 		int hat_dir = usage->hat_dir;
- 		if (!hat_dir)
-diff --git a/include/linux/hid.h b/include/linux/hid.h
-index ad46ed41e8836..d5f9bbf8afa51 100644
---- a/include/linux/hid.h
-+++ b/include/linux/hid.h
-@@ -344,6 +344,8 @@ struct hid_item {
- /* BIT(9) reserved for backward compatibility, was NO_INIT_INPUT_REPORTS */
- #define HID_QUIRK_ALWAYS_POLL			BIT(10)
- #define HID_QUIRK_INPUT_PER_APP			BIT(11)
-+#define HID_QUIRK_X_INVERT			BIT(12)
-+#define HID_QUIRK_Y_INVERT			BIT(13)
- #define HID_QUIRK_SKIP_OUTPUT_REPORTS		BIT(16)
- #define HID_QUIRK_SKIP_OUTPUT_REPORT_ID		BIT(17)
- #define HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP	BIT(18)
+ 	ret = devm_request_threaded_irq(host->controller_dev, irq,
+ 					meson_mx_mmc_irq,
+ 					meson_mx_mmc_irq_thread, IRQF_ONESHOT,
 -- 
 2.34.1
 
