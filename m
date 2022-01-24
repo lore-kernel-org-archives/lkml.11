@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A27C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF036C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:52:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351533AbiAXTwV (ORCPT
+        id S1351662AbiAXTw3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:52:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355412AbiAXTlQ (ORCPT
+        Mon, 24 Jan 2022 14:52:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37046 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349011AbiAXTlZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:41:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA50CC06175E;
-        Mon, 24 Jan 2022 11:21:22 -0800 (PST)
+        Mon, 24 Jan 2022 14:41:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90D17B811F9;
-        Mon, 24 Jan 2022 19:21:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7526C340E5;
-        Mon, 24 Jan 2022 19:21:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7623614B8;
+        Mon, 24 Jan 2022 19:41:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3E6C340E5;
+        Mon, 24 Jan 2022 19:41:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052080;
-        bh=TXblizUNnF0qFAWhKFQNE34d8SwkK57tLFPlgMicx4A=;
+        s=korg; t=1643053284;
+        bh=KPoA4CJ44t2LfAsR757OJdlzVPP+4sLlen+NDQtwD7Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1pFLRIZkgD9q9/Q6c8isODjLyFUcONKjEE6zW8P5HELxq3bx3vtcDK+J+/qE9eRqi
-         KSpsb/fyYhOU4URkPL3LnUTTzpVyq2TOKcKf76797nyzd+HYdZPwmuNn2wEfLbZMMq
-         P2u2SrWagMHFeuwMpa0bmzi/HDsxsg/Va2mCtRsE=
+        b=lUQBM3y7w52KSFutkVOopTqC+vgTSZAdad0w6nedEfDgB+1jh5UDWxEj5wq/roetQ
+         H+D9/LOqAK6umNSaeJJTJU9rXwal98900Un7nh57i9cvcsy6PwDE1CPHiJgKnbAV/L
+         R6tzvb1qza7xt8OhxIevzkpYkFvki/HWI1YkRV0c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 150/239] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
-Date:   Mon, 24 Jan 2022 19:43:08 +0100
-Message-Id: <20220124183947.864839011@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
+        Willy Tarreau <w@1wt.eu>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH 5.10 016/563] tools/nolibc: i386: fix initial stack alignment
+Date:   Mon, 24 Jan 2022 19:36:21 +0100
+Message-Id: <20220124184024.981263898@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,57 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
+commit ebbe0d8a449d183fa43b42d84fcb248e25303985 upstream.
 
-The mmc core takes a specific path to support initializing of a
-non-standard SDIO card. This is triggered by looking for the card-quirk,
-MMC_QUIRK_NONSTD_SDIO.
+After re-checking in the spec and comparing stack offsets with glibc,
+The last pushed argument must be 16-byte aligned (i.e. aligned before the
+call) so that in the callee esp+4 is multiple of 16, so the principle is
+the 32-bit equivalent to what Ammar fixed for x86_64. It's possible that
+32-bit code using SSE2 or MMX could have been affected. In addition the
+frame pointer ought to be zero at the deepest level.
 
-In mmc_sdio_init_card() this gets rather messy, as it causes the code to
-bail out earlier, compared to the usual path. This leads to that the OCR
-doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
-been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
-assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
-
-To make the behaviour consistent, let's instead rely on the core to save
-the OCR in card->ocr during initialization.
-
-Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://gitlab.com/x86-psABIs/i386-ABI/-/wikis/Intel386-psABI
+Cc: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
+Cc: stable@vger.kernel.org
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/sdio.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/include/nolibc/nolibc.h |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
-index 4e72ad24322f7..5f1ee88aa7615 100644
---- a/drivers/mmc/core/sdio.c
-+++ b/drivers/mmc/core/sdio.c
-@@ -634,6 +634,8 @@ try_again:
- 	if (host->ops->init_card)
- 		host->ops->init_card(host, card);
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -606,13 +606,21 @@ struct sys_stat_struct {
+ })
  
-+	card->ocr = ocr_card;
-+
- 	/*
- 	 * If the host and card support UHS-I mode request the card
- 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
-@@ -740,7 +742,7 @@ try_again:
- 
- 		card = oldcard;
- 	}
--	card->ocr = ocr_card;
-+
- 	mmc_fixup_device(card, sdio_fixup_methods);
- 
- 	if (card->type == MMC_TYPE_SD_COMBO) {
--- 
-2.34.1
-
+ /* startup code */
++/*
++ * i386 System V ABI mandates:
++ * 1) last pushed argument must be 16-byte aligned.
++ * 2) The deepest stack frame should be set to zero
++ *
++ */
+ asm(".section .text\n"
+     ".global _start\n"
+     "_start:\n"
+     "pop %eax\n"                // argc   (first arg, %eax)
+     "mov %esp, %ebx\n"          // argv[] (second arg, %ebx)
+     "lea 4(%ebx,%eax,4),%ecx\n" // then a NULL then envp (third arg, %ecx)
+-    "and $-16, %esp\n"          // x86 ABI : esp must be 16-byte aligned when
++    "xor %ebp, %ebp\n"          // zero the stack frame
++    "and $-16, %esp\n"          // x86 ABI : esp must be 16-byte aligned before
++    "sub $4, %esp\n"            // the call instruction (args are aligned)
+     "push %ecx\n"               // push all registers on the stack so that we
+     "push %ebx\n"               // support both regparm and plain stack modes
+     "push %eax\n"
 
 
