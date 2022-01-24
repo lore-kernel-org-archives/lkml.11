@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C75C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E94FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385809AbiAXUeg (ORCPT
+        id S1385823AbiAXUek (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:34:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33860 "EHLO
+        Mon, 24 Jan 2022 15:34:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355438AbiAXUNl (ORCPT
+        with ESMTP id S1355459AbiAXUNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:13:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D8CC061777;
-        Mon, 24 Jan 2022 11:36:23 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D013AC0604D1;
+        Mon, 24 Jan 2022 11:37:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F5D8B81240;
-        Mon, 24 Jan 2022 19:36:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7139CC340E5;
-        Mon, 24 Jan 2022 19:36:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E11F614FC;
+        Mon, 24 Jan 2022 19:37:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49DAFC340E5;
+        Mon, 24 Jan 2022 19:37:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052981;
-        bh=eIli/jZZdbrp+7cIzVhZHbCgnb9mpafPIXG0izMYOVw=;
+        s=korg; t=1643053021;
+        bh=QR8yZAhBM7iYkAK09ew+ffn9nmVg2lFDcim+AuhC6z0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zE27nK49nnXFx/96M1VM1Iz8gMlO3RI+SsQKd/vFnt0fdb/Ecc6ELmEdREGpjFxZ3
-         Qo0+YPZ/DzX1O84KhGg0REyp2V9zkz+r9HU9XAH8Y4cqY/kDWgErQlxBVVmWfAYjLK
-         GwtZHWRPQO/tVFNt7u08dl7UqjdISAHN4Xu8bzLQ=
+        b=uaMph8oNPNHKHUdVllV9XuoCJCC1k2saptmg2JZ5XO/DJVM7hR06mMKxM3mkRZLK+
+         kG6bK7MFXdQaktSytk6gIgTrJ4pOJLNKSWkZi9WfJCcujhUzu0Y4tKlH61TM/yCjA7
+         6DXfihI26P8vaMbszc8dUSkh/2Bk3JAvNbxXv3G0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 235/320] w1: Misuse of get_user()/put_user() reported by sparse
-Date:   Mon, 24 Jan 2022 19:43:39 +0100
-Message-Id: <20220124184001.980402858@linuxfoundation.org>
+        stable@vger.kernel.org, Rafael Gago Castano <rgc@hms.se>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        Lukas Wunner <lukas@wunner.de>
+Subject: [PATCH 5.4 251/320] serial: Fix incorrect rs485 polarity on uart open
+Date:   Mon, 24 Jan 2022 19:43:55 +0100
+Message-Id: <20220124184002.524758989@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,86 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit 33dc3e3e99e626ce51f462d883b05856c6c30b1d ]
+commit d3b3404df318504ec084213ab1065b73f49b0f1d upstream.
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/w1/slaves/w1_ds28e04.c:342:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char [noderef] __user *_pu_addr @@     got char *buf @@
-   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     expected char [noderef] __user *_pu_addr
-   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     got char *buf
->> drivers/w1/slaves/w1_ds28e04.c:356:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char const [noderef] __user *_gu_addr @@     got char const *buf @@
-   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     expected char const [noderef] __user *_gu_addr
-   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     got char const *buf
+Commit a6845e1e1b78 ("serial: core: Consider rs485 settings to drive
+RTS") sought to deassert RTS when opening an rs485-enabled uart port.
+That way, the transceiver does not occupy the bus until it transmits
+data.
 
-The buffer buf is a failsafe buffer in kernel space, it's not user
-memory hence doesn't deserve the use of get_user() or put_user().
+Unfortunately, the commit mixed up the logic and *asserted* RTS instead
+of *deasserting* it:
 
-Access 'buf' content directly.
+The commit amended uart_port_dtr_rts(), which raises DTR and RTS when
+opening an rs232 port.  "Raising" actually means lowering the signal
+that's coming out of the uart, because an rs232 transceiver not only
+changes a signal's voltage level, it also *inverts* the signal.  See
+the simplified schematic in the MAX232 datasheet for an example:
+https://www.ti.com/lit/ds/symlink/max232.pdf
 
-Link: https://lore.kernel.org/lkml/202111190526.K5vb7NWC-lkp@intel.com/T/
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Link: https://lore.kernel.org/r/d14ed8d71ad4372e6839ae427f91441d3ba0e94d.1637946316.git.christophe.leroy@csgroup.eu
+So, to raise RTS on an rs232 port, TIOCM_RTS is *set* in port->mctrl
+and that results in the signal being driven low.
+
+In contrast to rs232, the signal level for rs485 Transmit Enable is the
+identity, not the inversion:  If the transceiver expects a "high" RTS
+signal for Transmit Enable, the signal coming out of the uart must also
+be high, so TIOCM_RTS must be *cleared* in port->mctrl.
+
+The commit did the exact opposite, but it's easy to see why given the
+confusing semantics of rs232 and rs485.  Fix it.
+
+Fixes: a6845e1e1b78 ("serial: core: Consider rs485 settings to drive RTS")
+Cc: stable@vger.kernel.org # v4.14+
+Cc: Rafael Gago Castano <rgc@hms.se>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Su Bao Cheng <baocheng.su@siemens.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/9395767847833f2f3193c49cde38501eeb3b5669.1639821059.git.lukas@wunner.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/w1/slaves/w1_ds28e04.c | 26 ++++++--------------------
- 1 file changed, 6 insertions(+), 20 deletions(-)
+ drivers/tty/serial/serial_core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/w1/slaves/w1_ds28e04.c b/drivers/w1/slaves/w1_ds28e04.c
-index 8a640f1590784..06a9966f8c933 100644
---- a/drivers/w1/slaves/w1_ds28e04.c
-+++ b/drivers/w1/slaves/w1_ds28e04.c
-@@ -32,7 +32,7 @@ static int w1_strong_pullup = 1;
- module_param_named(strong_pullup, w1_strong_pullup, int, 0);
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -160,7 +160,7 @@ static void uart_port_dtr_rts(struct uar
+ 	int RTS_after_send = !!(uport->rs485.flags & SER_RS485_RTS_AFTER_SEND);
  
- /* enable/disable CRC checking on DS28E04-100 memory accesses */
--static char w1_enable_crccheck = 1;
-+static bool w1_enable_crccheck = true;
+ 	if (raise) {
+-		if (rs485_on && !RTS_after_send) {
++		if (rs485_on && RTS_after_send) {
+ 			uart_set_mctrl(uport, TIOCM_DTR);
+ 			uart_clear_mctrl(uport, TIOCM_RTS);
+ 		} else {
+@@ -169,7 +169,7 @@ static void uart_port_dtr_rts(struct uar
+ 	} else {
+ 		unsigned int clear = TIOCM_DTR;
  
- #define W1_EEPROM_SIZE		512
- #define W1_PAGE_COUNT		16
-@@ -339,32 +339,18 @@ static BIN_ATTR_RW(pio, 1);
- static ssize_t crccheck_show(struct device *dev, struct device_attribute *attr,
- 			     char *buf)
- {
--	if (put_user(w1_enable_crccheck + 0x30, buf))
--		return -EFAULT;
--
--	return sizeof(w1_enable_crccheck);
-+	return sysfs_emit(buf, "%d\n", w1_enable_crccheck);
+-		clear |= (!rs485_on || !RTS_after_send) ? TIOCM_RTS : 0;
++		clear |= (!rs485_on || RTS_after_send) ? TIOCM_RTS : 0;
+ 		uart_clear_mctrl(uport, clear);
+ 	}
  }
- 
- static ssize_t crccheck_store(struct device *dev, struct device_attribute *attr,
- 			      const char *buf, size_t count)
- {
--	char val;
--
--	if (count != 1 || !buf)
--		return -EINVAL;
-+	int err = kstrtobool(buf, &w1_enable_crccheck);
- 
--	if (get_user(val, buf))
--		return -EFAULT;
-+	if (err)
-+		return err;
- 
--	/* convert to decimal */
--	val = val - 0x30;
--	if (val != 0 && val != 1)
--		return -EINVAL;
--
--	/* set the new value */
--	w1_enable_crccheck = val;
--
--	return sizeof(w1_enable_crccheck);
-+	return count;
- }
- 
- static DEVICE_ATTR_RW(crccheck);
--- 
-2.34.1
-
 
 
