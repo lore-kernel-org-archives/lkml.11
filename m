@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A412DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63236C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847738AbiAXXUb (ORCPT
+        id S1847849AbiAXXUq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:20:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
+        Mon, 24 Jan 2022 18:20:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584597AbiAXWV3 (ORCPT
+        with ESMTP id S1584587AbiAXWV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:21:29 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC54C0424E7;
-        Mon, 24 Jan 2022 12:52:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56999C0424E2;
+        Mon, 24 Jan 2022 12:51:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76509B81218;
-        Mon, 24 Jan 2022 20:52:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A030C340E5;
-        Mon, 24 Jan 2022 20:51:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E789B81061;
+        Mon, 24 Jan 2022 20:51:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D111C340E5;
+        Mon, 24 Jan 2022 20:51:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057519;
-        bh=RwgNWwgC6tm4OmIYkTg6If1aFsmpPow52E85Zp5Xwvo=;
+        s=korg; t=1643057491;
+        bh=ZFkvLrbQuEXn14yPP2X0Q5NlzUl9AI4o2OqopNOvoAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZEVoA2hFwIKhYwJp/dSeVtIgHAoQP1WZs/I5TmLSQV3qlHjFBlb5XpIeZcuPPqcwE
-         a5z9DhU6OqYtr1fudBe1wa1VOqPC9LKvhk3YgyNMI84KbYrEiI2IyovSC7C2LlgeKx
-         Umgl5X5BUDoM5ROm6/jzJMlb5S8/ctl4vTtsdBkE=
+        b=OHzykWs7qiIA7c7VZ9rDOUOQyWnHdQpYBolNIfyMhESmb3lZxAlH9RYUdFhqcJNPb
+         ZnD/yvsVWOn4cchjpIY7F0BGEXqN8pxGq5L414ToutLgiu8oA15chuFmYC7b4cHuS7
+         XmXtzXO2Fq2IFWD7Lm7k6pPJecY9Q1ZknojZlnC4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sam Protsenko <semen.protsenko@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>
-Subject: [PATCH 5.15 840/846] dt-bindings: watchdog: Require samsung,syscon-phandle for Exynos7
-Date:   Mon, 24 Jan 2022 19:45:57 +0100
-Message-Id: <20220124184129.880609350@linuxfoundation.org>
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.15 787/846] pinctrl/rockchip: fix gpio device creation
+Date:   Mon, 24 Jan 2022 19:45:04 +0100
+Message-Id: <20220124184128.105321929@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,46 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sam Protsenko <semen.protsenko@linaro.org>
+From: John Keeping <john@metanate.com>
 
-commit 33950f9a36aca55c2b1e6062d9b29f3e97f91c40 upstream.
+commit bceb6732f3fd2a55d8f2e518cced1c7555e216b6 upstream.
 
-Exynos7 watchdog driver is clearly indicating that its dts node must
-define syscon phandle property. That was probably forgotten, so add it.
+GPIO nodes are not themselves busses, so passing rockchip_bank_match
+here is wrong.  Passing NULL instead uses the standard bus match table
+which is more appropriate.
 
-Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-Fixes: 2b9366b66967 ("watchdog: s3c2410_wdt: Add support for Watchdog device on Exynos7")
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20211107202943.8859-2-semen.protsenko@linaro.org
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+devm_of_platform_populate() shows that this is the normal way to call
+of_platform_populate() from a device driver, so in order to match that
+more closely also add the pinctrl device as the parent for the newly
+created GPIO controllers.
+
+Specifically, using the wrong match here can break dynamic GPIO hogs as
+marking the GPIO bank as a bus means that of_platform_notify() will set
+OF_POPULATED on new child nodes and if this happens before
+of_gpio_notify() is called then the new hog will be skipped as
+OF_POPULATED is already set.
+
+Fixes: 9ce9a02039de ("pinctrl/rockchip: drop the gpio related codes")
+Signed-off-by: John Keeping <john@metanate.com>
+Link: https://lore.kernel.org/r/20211126151352.1509583-1-john@metanate.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/watchdog/samsung-wdt.yaml |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/pinctrl/pinctrl-rockchip.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/watchdog/samsung-wdt.yaml
-+++ b/Documentation/devicetree/bindings/watchdog/samsung-wdt.yaml
-@@ -39,8 +39,8 @@ properties:
-   samsung,syscon-phandle:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
--      Phandle to the PMU system controller node (in case of Exynos5250
--      and Exynos5420).
-+      Phandle to the PMU system controller node (in case of Exynos5250,
-+      Exynos5420 and Exynos7).
+--- a/drivers/pinctrl/pinctrl-rockchip.c
++++ b/drivers/pinctrl/pinctrl-rockchip.c
+@@ -2748,7 +2748,7 @@ static int rockchip_pinctrl_probe(struct
  
- required:
-   - compatible
-@@ -58,6 +58,7 @@ allOf:
-             enum:
-               - samsung,exynos5250-wdt
-               - samsung,exynos5420-wdt
-+              - samsung,exynos7-wdt
-     then:
-       required:
-         - samsung,syscon-phandle
+ 	platform_set_drvdata(pdev, info);
+ 
+-	ret = of_platform_populate(np, rockchip_bank_match, NULL, NULL);
++	ret = of_platform_populate(np, NULL, NULL, &pdev->dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to register gpio device\n");
+ 		return ret;
 
 
