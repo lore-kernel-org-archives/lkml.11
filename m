@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76CC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 01:54:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5CA0C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 01:54:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240742AbiAXByO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 20:54:14 -0500
-Received: from mga11.intel.com ([192.55.52.93]:16811 "EHLO mga11.intel.com"
+        id S240755AbiAXByW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 20:54:22 -0500
+Received: from mga06.intel.com ([134.134.136.31]:20501 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238668AbiAXByN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 20:54:13 -0500
+        id S240743AbiAXByO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 23 Jan 2022 20:54:14 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642989253; x=1674525253;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ngiBZ4miI2i9+e7eQ8QzZsVgrw+8WTFv/7YWGiVXsVM=;
-  b=dbSgAmfaBp99HEcKeaCjAP3tUZPP4LaKY6z1QaaM36A09fmWs70TXQHK
-   2bQvC0LK/898ZThWp9yMXUzqWRXUXRuzxEuQzGkSVTgo0JHzDzX8worIO
-   7r2o0iZVYjamOCdmC8h8aXU95r3qwUEvC9cJzmVlkFrO3h2ToS3trDi+0
-   kuzmBIERDwEasgP3K02jWisCO0KJMJxGUP9IFYrmVFKe7ZdqeZSmv8UBd
-   3SjtKCbf1oiDCqKkcataCEokjYX1mEkeecaTOID/69jRspBAlagus3OAj
-   MZ57NXSjWtLCchrLC5uHbj208iJlGyK1EvXYlIPyUOkAoex09WEAhcLNh
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="243536972"
+  t=1642989254; x=1674525254;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+LXecIMRVcm+6l6u17VPJeZsX7SGcDdtoraU1ufkp0U=;
+  b=R5xyLskPBTZNg58Kl/RPA5/3s7uSoIYM/XXZGmgN7bKkeqjdO44ODBUc
+   JzQ8UMsLgq4YyfHs63pUMNoV40cVaW7bZdgAo/SAcbOESCEGvfnTo3JOj
+   oZjIixLOl6XBjVpTE09R5jbkmqbYFCwlYKSrfy4pMWXZVWPBuoub++QpC
+   dtW3UNaQutkloRSpQnfbTPjEXQiJ+8Cq+yxvzTOwpqJq+5Rlf76SrX+bK
+   qGJ3Nf7TRkreXbMjo5gqaGsK9eGGuE3/dVzLcdZspcJREWftHDWXqbYzM
+   493fJ7c0KTr/vTx65y8RB0JFBfpO6CS66mqyVCSwAE+IxmuQywMOLC0vY
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="306658411"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="243536972"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2022 17:54:12 -0800
+   d="scan'208";a="306658411"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2022 17:54:13 -0800
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="476550367"
+   d="scan'208";a="627320393"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2022 17:54:12 -0800
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2022 17:54:13 -0800
 From:   ira.weiny@intel.com
 To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
@@ -40,10 +40,12 @@ To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
 Cc:     Ira Weiny <ira.weiny@intel.com>, amd-gfx@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         intel-gfx@lists.freedesktop.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH V2 0/7] DRM kmap() fixes and kmap_local_page() conversions
-Date:   Sun, 23 Jan 2022 17:54:02 -0800
-Message-Id: <20220124015409.807587-1-ira.weiny@intel.com>
+Subject: [PATCH V2 3/7] drm/gma: Remove calls to kmap()
+Date:   Sun, 23 Jan 2022 17:54:05 -0800
+Message-Id: <20220124015409.807587-4-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220124015409.807587-1-ira.weiny@intel.com>
+References: <20220124015409.807587-1-ira.weiny@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -52,51 +54,68 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Changes from V1:
-	Use memcpy_to_page() where appropriate
-	Rebased to latest
-
-The kmap() call may cause issues with work being done with persistent memory.
-For this and other reasons it is being deprecated.
-
-This series starts by converting the last easy kmap() uses in the drm tree to
+kmap() is being deprecated and these instances are easy to convert to
 kmap_local_page().
 
-The final 2 patches fix bugs found while working on the ttm_bo_kmap_ttm()
-conversion.  They are valid fixes but were found via code inspection not
-because of any actual bug so don't require a stable tag.[1]
+Furthermore, in gma_crtc_cursor_set() use the memcpy_from_page() helper
+instead of an open coded use of kmap_local_page().
 
-There is one more call to kmap() used in ttm_bo_kmap_ttm().  Unfortunately,
-fixing this is not straight forward so it is left to future work.[2]
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+---
+ drivers/gpu/drm/gma500/gma_display.c | 6 ++----
+ drivers/gpu/drm/gma500/mmu.c         | 8 ++++----
+ 2 files changed, 6 insertions(+), 8 deletions(-)
 
-[1] https://lore.kernel.org/lkml/fb71af05-a889-8f6e-031b-426b58a64f00@amd.com/
-[2] https://lore.kernel.org/lkml/20211215210949.GW3538886@iweiny-DESK2.sc.intel.com/
-
-
-Ira Weiny (7):
-drm/i915: Replace kmap() with kmap_local_page()
-drm/amd: Replace kmap() with kmap_local_page()
-drm/gma: Remove calls to kmap()
-drm/radeon: Replace kmap() with kmap_local_page()
-drm/msm: Alter comment to use kmap_local_page()
-drm/amdgpu: Ensure kunmap is called on error
-drm/radeon: Ensure kunmap is called on error
-
-drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 8 ++++----
-drivers/gpu/drm/amd/amdgpu/amdgpu_uvd.c | 1 +
-drivers/gpu/drm/gma500/gma_display.c | 6 ++----
-drivers/gpu/drm/gma500/mmu.c | 8 ++++----
-drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 6 ++----
-drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c | 8 ++++----
-drivers/gpu/drm/i915/gt/intel_ggtt_fencing.c | 4 ++--
-drivers/gpu/drm/i915/gt/shmem_utils.c | 7 ++-----
-drivers/gpu/drm/i915/i915_gem.c | 8 ++++----
-drivers/gpu/drm/i915/i915_gpu_error.c | 4 ++--
-drivers/gpu/drm/msm/msm_gem_submit.c | 4 ++--
-drivers/gpu/drm/radeon/radeon_ttm.c | 4 ++--
-drivers/gpu/drm/radeon/radeon_uvd.c | 1 +
-13 files changed, 32 insertions(+), 37 deletions(-)
-
---
+diff --git a/drivers/gpu/drm/gma500/gma_display.c b/drivers/gpu/drm/gma500/gma_display.c
+index 99da3118131a..60ba7de59139 100644
+--- a/drivers/gpu/drm/gma500/gma_display.c
++++ b/drivers/gpu/drm/gma500/gma_display.c
+@@ -335,7 +335,7 @@ int gma_crtc_cursor_set(struct drm_crtc *crtc,
+ 	struct psb_gem_object *pobj;
+ 	struct psb_gem_object *cursor_pobj = gma_crtc->cursor_pobj;
+ 	struct drm_gem_object *obj;
+-	void *tmp_dst, *tmp_src;
++	void *tmp_dst;
+ 	int ret = 0, i, cursor_pages;
+ 
+ 	/* If we didn't get a handle then turn the cursor off */
+@@ -400,9 +400,7 @@ int gma_crtc_cursor_set(struct drm_crtc *crtc,
+ 		/* Copy the cursor to cursor mem */
+ 		tmp_dst = dev_priv->vram_addr + cursor_pobj->offset;
+ 		for (i = 0; i < cursor_pages; i++) {
+-			tmp_src = kmap(pobj->pages[i]);
+-			memcpy(tmp_dst, tmp_src, PAGE_SIZE);
+-			kunmap(pobj->pages[i]);
++			memcpy_from_page(tmp_dst, pobj->pages[i], 0, PAGE_SIZE);
+ 			tmp_dst += PAGE_SIZE;
+ 		}
+ 
+diff --git a/drivers/gpu/drm/gma500/mmu.c b/drivers/gpu/drm/gma500/mmu.c
+index fe9ace2a7967..a70b01ccdf70 100644
+--- a/drivers/gpu/drm/gma500/mmu.c
++++ b/drivers/gpu/drm/gma500/mmu.c
+@@ -184,17 +184,17 @@ struct psb_mmu_pd *psb_mmu_alloc_pd(struct psb_mmu_driver *driver,
+ 		pd->invalid_pte = 0;
+ 	}
+ 
+-	v = kmap(pd->dummy_pt);
++	v = kmap_local_page(pd->dummy_pt);
+ 	for (i = 0; i < (PAGE_SIZE / sizeof(uint32_t)); ++i)
+ 		v[i] = pd->invalid_pte;
+ 
+-	kunmap(pd->dummy_pt);
++	kunmap_local(v);
+ 
+-	v = kmap(pd->p);
++	v = kmap_local_page(pd->p);
+ 	for (i = 0; i < (PAGE_SIZE / sizeof(uint32_t)); ++i)
+ 		v[i] = pd->invalid_pde;
+ 
+-	kunmap(pd->p);
++	kunmap_local(v);
+ 
+ 	clear_page(kmap(pd->dummy_page));
+ 	kunmap(pd->dummy_page);
+-- 
 2.31.1
 
