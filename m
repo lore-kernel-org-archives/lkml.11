@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D201C3526D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6332C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452435AbiAXVZh (ORCPT
+        id S1452676AbiAXV0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:25:37 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50964 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344034AbiAXU6L (ORCPT
+        Mon, 24 Jan 2022 16:26:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43748 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1392314AbiAXUvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:58:11 -0500
+        Mon, 24 Jan 2022 15:51:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1DDC054310;
+        Mon, 24 Jan 2022 11:58:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E10396135E;
-        Mon, 24 Jan 2022 20:58:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCB50C340FF;
-        Mon, 24 Jan 2022 20:58:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3919260B43;
+        Mon, 24 Jan 2022 19:58:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1487FC340EA;
+        Mon, 24 Jan 2022 19:58:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057887;
-        bh=87EGaLCvwwvOqdzfY5gZL3MVLBoAuuQp2zJygvRpI54=;
+        s=korg; t=1643054295;
+        bh=ixHiAAhTeUJ3CTD9gpQ0BpOp0z4g1efWh7BF2ublt54=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zTpX4xMLHgrySUBp+NjNoDEqGWhfTn/tPEMsknUHSxFjQCKtA7KItE8PnLvfwwueS
-         WubH2IP5o/CWmmYmR1BcAXKWaRsqE/6LhKLR72laltt4U3OfCCRNX4rhDVmvL3LGaZ
-         YkqEq93NV5XTvBa/QE5f/+ob2NgFropkem1Rpheg=
+        b=upMIpHhkNmWpMaX6NU7iZtLVorcDJt4SdV71UbpnYQSAlzxC9LtXsec5H81r9tfKk
+         MT0TKK8mKXiXHKucX0nGuXy8KtGx9QOaMjtBoH51wt3+9+nwt4LOBvsWpvv24obIns
+         RyKllc98E57kE2z2b0GI0jnaSW/3GKzsaP3u7WPk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, James Hilliard <james.hilliard1@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0111/1039] wcn36xx: Fix DMA channel enable/disable cycle
-Date:   Mon, 24 Jan 2022 19:31:40 +0100
-Message-Id: <20220124184128.867009451@linuxfoundation.org>
+Subject: [PATCH 5.10 342/563] media: uvcvideo: Increase UVC_CTRL_CONTROL_TIMEOUT to 5 seconds.
+Date:   Mon, 24 Jan 2022 19:41:47 +0100
+Message-Id: <20220124184036.250507367@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,123 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: James Hilliard <james.hilliard1@gmail.com>
 
-[ Upstream commit 89dcb1da611d9b3ff0728502d58372fdaae9ebff ]
+[ Upstream commit c8ed7d2f614cd8b315981d116c7a2fb01829500d ]
 
-Right now we have a broken sequence where we enable DMA channel interrupts
-which can be left enabled and never disabled if we hit an error path.
+Some uvc devices appear to require the maximum allowed USB timeout
+for GET_CUR/SET_CUR requests.
 
-Worse still when we unload the driver, the DMA channel interrupt bits are
-left intact. About the only saving grace here is that we do remember to
-disable the wcnss interrupt when unload the driver.
+So lets just bump the UVC control timeout to 5 seconds which is the
+same as the usb ctrl get/set defaults:
+USB_CTRL_GET_TIMEOUT 5000
+USB_CTRL_SET_TIMEOUT 5000
 
-Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211105122152.1580542-2-bryan.odonoghue@linaro.org
+It fixes the following runtime warnings:
+   Failed to query (GET_CUR) UVC control 11 on unit 2: -110 (exp. 1).
+   Failed to query (SET_CUR) UVC control 3 on unit 2: -110 (exp. 2).
+
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wcn36xx/dxe.c | 38 ++++++++++++++++++--------
- 1 file changed, 27 insertions(+), 11 deletions(-)
+ drivers/media/usb/uvc/uvcvideo.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/dxe.c b/drivers/net/wireless/ath/wcn36xx/dxe.c
-index aff04ef662663..0c4f63f1312f8 100644
---- a/drivers/net/wireless/ath/wcn36xx/dxe.c
-+++ b/drivers/net/wireless/ath/wcn36xx/dxe.c
-@@ -272,6 +272,21 @@ static int wcn36xx_dxe_enable_ch_int(struct wcn36xx *wcn, u16 wcn_ch)
- 	return 0;
- }
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index a3dfacf069c44..c884020b28784 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -183,7 +183,7 @@
+ /* Maximum status buffer size in bytes of interrupt URB. */
+ #define UVC_MAX_STATUS_SIZE	16
  
-+static void wcn36xx_dxe_disable_ch_int(struct wcn36xx *wcn, u16 wcn_ch)
-+{
-+	int reg_data = 0;
-+
-+	wcn36xx_dxe_read_register(wcn,
-+				  WCN36XX_DXE_INT_MASK_REG,
-+				  &reg_data);
-+
-+	reg_data &= ~wcn_ch;
-+
-+	wcn36xx_dxe_write_register(wcn,
-+				   WCN36XX_DXE_INT_MASK_REG,
-+				   (int)reg_data);
-+}
-+
- static int wcn36xx_dxe_fill_skb(struct device *dev,
- 				struct wcn36xx_dxe_ctl *ctl,
- 				gfp_t gfp)
-@@ -869,7 +884,6 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 		WCN36XX_DXE_WQ_TX_L);
+-#define UVC_CTRL_CONTROL_TIMEOUT	500
++#define UVC_CTRL_CONTROL_TIMEOUT	5000
+ #define UVC_CTRL_STREAMING_TIMEOUT	5000
  
- 	wcn36xx_dxe_read_register(wcn, WCN36XX_DXE_REG_CH_EN, &reg_data);
--	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_L);
- 
- 	/***************************************/
- 	/* Init descriptors for TX HIGH channel */
-@@ -893,9 +907,6 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 
- 	wcn36xx_dxe_read_register(wcn, WCN36XX_DXE_REG_CH_EN, &reg_data);
- 
--	/* Enable channel interrupts */
--	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_H);
--
- 	/***************************************/
- 	/* Init descriptors for RX LOW channel */
- 	/***************************************/
-@@ -905,7 +916,6 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 		goto out_err_rxl_ch;
- 	}
- 
--
- 	/* For RX we need to preallocated buffers */
- 	wcn36xx_dxe_ch_alloc_skb(wcn, &wcn->dxe_rx_l_ch);
- 
-@@ -928,9 +938,6 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 		WCN36XX_DXE_REG_CTL_RX_L,
- 		WCN36XX_DXE_CH_DEFAULT_CTL_RX_L);
- 
--	/* Enable channel interrupts */
--	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_L);
--
- 	/***************************************/
- 	/* Init descriptors for RX HIGH channel */
- 	/***************************************/
-@@ -962,15 +969,18 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 		WCN36XX_DXE_REG_CTL_RX_H,
- 		WCN36XX_DXE_CH_DEFAULT_CTL_RX_H);
- 
--	/* Enable channel interrupts */
--	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_H);
--
- 	ret = wcn36xx_dxe_request_irqs(wcn);
- 	if (ret < 0)
- 		goto out_err_irq;
- 
- 	timer_setup(&wcn->tx_ack_timer, wcn36xx_dxe_tx_timer, 0);
- 
-+	/* Enable channel interrupts */
-+	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_L);
-+	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_H);
-+	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_L);
-+	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_H);
-+
- 	return 0;
- 
- out_err_irq:
-@@ -987,6 +997,12 @@ out_err_txh_ch:
- 
- void wcn36xx_dxe_deinit(struct wcn36xx *wcn)
- {
-+	/* Disable channel interrupts */
-+	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_H);
-+	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_L);
-+	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_H);
-+	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_L);
-+
- 	free_irq(wcn->tx_irq, wcn);
- 	free_irq(wcn->rx_irq, wcn);
- 	del_timer(&wcn->tx_ack_timer);
+ /* Maximum allowed number of control mappings per device */
 -- 
 2.34.1
 
