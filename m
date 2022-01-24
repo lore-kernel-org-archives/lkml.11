@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FC9C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A22C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239165AbiAXTrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:47:49 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34360 "EHLO
+        id S1350342AbiAXTry (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:47:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34544 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354331AbiAXTgb (ORCPT
+        with ESMTP id S1354633AbiAXTgy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:36:31 -0500
+        Mon, 24 Jan 2022 14:36:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC9A260909;
-        Mon, 24 Jan 2022 19:36:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4013C340E5;
-        Mon, 24 Jan 2022 19:36:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D236E6141C;
+        Mon, 24 Jan 2022 19:36:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC58C340E5;
+        Mon, 24 Jan 2022 19:36:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052990;
-        bh=HouZgAats866R4r1zSh6Cjti9p5j8T6zOH2vHVEIsVA=;
+        s=korg; t=1643053013;
+        bh=N9z9CA+DDyeJ2G05kqCDHc2y8kstWZPWxKWqeGhvqvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ax1hrUYe5XNcuQ9TfXg/3wJMd4AQ1byLQt8D8yvq8hEDW9j2BnDMQyoQv1mXOAWu
-         uDX8V/IDEhN1tpJMHpqUfAcixe/3jjJbAIcUZP95PX4Rhx6NRl7bu+8Gq/YXNWTC/J
-         EWib6mFMuaaEYa1fDQ9KAclf7C73vZLqmMv0cD8Y=
+        b=C/4mcIM8BDORH1AMLuJUQcUCnZgzBmXUp9o28BnK96r5Mz0vv5zYtI/PAzUcXF3y6
+         Dkebau1MxwmCTxu9FCNl0AZbkXUQod1dXm6eIup8fz6QAoWdRiuKXfIOiQ4k4EDDE/
+         7lrOPL9lYOMVZZZClDoAEZuAvrd1IsrlMnuSQDLU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lenny Szubowicz <lszubowi@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bob Moore <robert.moore@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 206/320] ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
-Date:   Mon, 24 Jan 2022 19:43:10 +0100
-Message-Id: <20220124184000.641096927@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Li <Meng.Li@windriver.com>,
+        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.4 248/320] crypto: caam - replace this_cpu_ptr with raw_cpu_ptr
+Date:   Mon, 24 Jan 2022 19:43:52 +0100
+Message-Id: <20220124184002.429181031@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,56 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Meng Li <Meng.Li@windriver.com>
 
-[ Upstream commit 24ea5f90ec9548044a6209685c5010edd66ffe8f ]
+commit efd21e10fc3bf4c6da122470a5ae89ec4ed8d180 upstream.
 
-ACPICA commit d984f12041392fa4156b52e2f7e5c5e7bc38ad9e
+When enable the kernel debug config, there is below calltrace detected:
+BUG: using smp_processor_id() in preemptible [00000000] code: cryptomgr_test/339
+caller is debug_smp_processor_id+0x20/0x30
+CPU: 9 PID: 339 Comm: cryptomgr_test Not tainted 5.10.63-yocto-standard #1
+Hardware name: NXP Layerscape LX2160ARDB (DT)
+Call trace:
+ dump_backtrace+0x0/0x1a0
+ show_stack+0x24/0x30
+ dump_stack+0xf0/0x13c
+ check_preemption_disabled+0x100/0x110
+ debug_smp_processor_id+0x20/0x30
+ dpaa2_caam_enqueue+0x10c/0x25c
+ ......
+ cryptomgr_test+0x38/0x60
+ kthread+0x158/0x164
+ ret_from_fork+0x10/0x38
+According to the comment in commit ac5d15b4519f("crypto: caam/qi2
+ - use affine DPIOs "), because preemption is no longer disabled
+while trying to enqueue an FQID, it might be possible to run the
+enqueue on a different CPU(due to migration, when in process context),
+however this wouldn't be a functionality issue. But there will be
+above calltrace when enable kernel debug config. So, replace this_cpu_ptr
+with raw_cpu_ptr to avoid above call trace.
 
-If Operand[0] is a reference of the ACPI_REFCLASS_REFOF class,
-acpi_ex_opcode_1A_0T_1R () calls acpi_ns_get_attached_object () to
-obtain return_desc which may require additional resolution with
-the help of acpi_ex_read_data_from_field (). If the latter fails,
-the reference counter of the original return_desc is decremented
-which is incorrect, because acpi_ns_get_attached_object () does not
-increment the reference counter of the object returned by it.
-
-This issue may lead to premature deletion of the attached object
-while it is still attached and a use-after-free and crash in the
-host OS.  For example, this may happen when on evaluation of ref_of()
-a local region field where there is no registered handler for the
-given Operation Region.
-
-Fix it by making acpi_ex_opcode_1A_0T_1R () return Status right away
-after a acpi_ex_read_data_from_field () failure.
-
-Link: https://github.com/acpica/acpica/commit/d984f120
-Link: https://github.com/acpica/acpica/pull/685
-Reported-by: Lenny Szubowicz <lszubowi@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ac5d15b4519f ("crypto: caam/qi2 - use affine DPIOs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Meng Li <Meng.Li@windriver.com>
+Reviewed-by: Horia Geantă <horia.geanta@nxp.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/acpica/exoparg1.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/crypto/caam/caamalg_qi2.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/acpica/exoparg1.c b/drivers/acpi/acpica/exoparg1.c
-index 06e35ea098234..6d84618ba3871 100644
---- a/drivers/acpi/acpica/exoparg1.c
-+++ b/drivers/acpi/acpica/exoparg1.c
-@@ -1007,7 +1007,8 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
- 						    (walk_state, return_desc,
- 						     &temp_desc);
- 						if (ACPI_FAILURE(status)) {
--							goto cleanup;
-+							return_ACPI_STATUS
-+							    (status);
- 						}
+--- a/drivers/crypto/caam/caamalg_qi2.c
++++ b/drivers/crypto/caam/caamalg_qi2.c
+@@ -5421,7 +5421,7 @@ int dpaa2_caam_enqueue(struct device *de
+ 	dpaa2_fd_set_len(&fd, dpaa2_fl_get_len(&req->fd_flt[1]));
+ 	dpaa2_fd_set_flc(&fd, req->flc_dma);
  
- 						return_desc = temp_desc;
--- 
-2.34.1
-
+-	ppriv = this_cpu_ptr(priv->ppriv);
++	ppriv = raw_cpu_ptr(priv->ppriv);
+ 	for (i = 0; i < (priv->dpseci_attr.num_tx_queues << 1); i++) {
+ 		err = dpaa2_io_service_enqueue_fq(ppriv->dpio, ppriv->req_fqid,
+ 						  &fd);
 
 
