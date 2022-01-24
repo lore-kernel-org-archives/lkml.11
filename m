@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3A2C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8925C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377236AbiAXUFK (ORCPT
+        id S1377095AbiAXUEz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:05:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56300 "EHLO
+        Mon, 24 Jan 2022 15:04:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356808AbiAXTrX (ORCPT
+        with ESMTP id S1356708AbiAXTrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:47:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B4EC038AE9;
-        Mon, 24 Jan 2022 11:23:06 -0800 (PST)
+        Mon, 24 Jan 2022 14:47:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E0BC038ADE;
+        Mon, 24 Jan 2022 11:22:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B795E60010;
-        Mon, 24 Jan 2022 19:23:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D07EC340E7;
-        Mon, 24 Jan 2022 19:23:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6EF6EB810BD;
+        Mon, 24 Jan 2022 19:22:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3A3EC340E5;
+        Mon, 24 Jan 2022 19:22:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052185;
-        bh=q5V/oWsy8/Any2yGd1E9n2BPhXEB4Nbics/VFJRxRGQ=;
+        s=korg; t=1643052166;
+        bh=HJF1USL0tK5yt1VH2wuXAGk9bp4CfHgV/w0pSwgs8ZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kLRp1dQbdqFXE6iHDkMgd++kF/Kj+TyQPArv0PLjIcEYGnscjJzcbIa4up74XZ/6N
-         66+YPSeDJB3JHnC2atdXAvSXyUMVHaBvy71sVdrXGL24Vfe+rJ7z9521mbL+Lw7sXA
-         0Z586HCNPrLjqDoqiWeSN3uoQ3WxjzvkxrMTr7T8=
+        b=Ro9gttmReiYHy/V5lWEX2sIWoooyoGRFLnBALRlp4V+yiY3UG1Xk5oYsK/UyDmCx7
+         rfVhQaNeuhZ41QVKXvCK3SKqG60VhsZeXyNRiTKkgZdA/3jplIiwdL0S2w3HRwvIr0
+         9y+LwqGg51B9pJUDS1hThmXOREC2HcPRr6CI7rcc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 183/239] i2c: i801: Dont silently correct invalid transfer size
-Date:   Mon, 24 Jan 2022 19:43:41 +0100
-Message-Id: <20220124183948.918214094@linuxfoundation.org>
+        stable@vger.kernel.org, Pascal Paillet <p.paillet@st.com>,
+        Mark Brown <broonie@kernel.org>, Andre Kalb <andre.kalb@sma.de>
+Subject: [PATCH 4.19 209/239] regulator: core: Let boot-on regulators be powered off
+Date:   Mon, 24 Jan 2022 19:44:07 +0100
+Message-Id: <20220124183949.754390300@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -50,63 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Pascal Paillet <p.paillet@st.com>
 
-[ Upstream commit effa453168a7eeb8a562ff4edc1dbf9067360a61 ]
+commit 089b3f61ecfc43ca4ea26d595e1d31ead6de3f7b upstream.
 
-If an invalid block size is provided, reject it instead of silently
-changing it to a supported value. Especially critical I see the case of
-a write transfer with block length 0. In this case we have no guarantee
-that the byte we would write is valid. When silently reducing a read to
-32 bytes then we don't return an error and the caller may falsely
-assume that we returned the full requested data.
+Boot-on regulators are always kept on because their use_count value
+is now incremented at boot time and never cleaned.
 
-If this change should break any (broken) caller, then I think we should
-fix the caller.
+Only increment count value for alway-on regulators.
+regulator_late_cleanup() is now able to power off boot-on regulators
+when unused.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 05f224ca6693 ("regulator: core: Clean enabling always-on regulators + their supplies")
+Signed-off-by: Pascal Paillet <p.paillet@st.com>
+Link: https://lore.kernel.org/r/20191113102737.27831-1-p.paillet@st.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Acked-by: Andre Kalb <andre.kalb@sma.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-i801.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ drivers/regulator/core.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-i801.c b/drivers/i2c/busses/i2c-i801.c
-index efafd028c5d16..fb0ddaad87d2e 100644
---- a/drivers/i2c/busses/i2c-i801.c
-+++ b/drivers/i2c/busses/i2c-i801.c
-@@ -774,6 +774,11 @@ static int i801_block_transaction(struct i801_priv *priv,
- 	int result = 0;
- 	unsigned char hostc;
- 
-+	if (read_write == I2C_SMBUS_READ && command == I2C_SMBUS_BLOCK_DATA)
-+		data->block[0] = I2C_SMBUS_BLOCK_MAX;
-+	else if (data->block[0] < 1 || data->block[0] > I2C_SMBUS_BLOCK_MAX)
-+		return -EPROTO;
-+
- 	if (command == I2C_SMBUS_I2C_BLOCK_DATA) {
- 		if (read_write == I2C_SMBUS_WRITE) {
- 			/* set I2C_EN bit in configuration register */
-@@ -787,16 +792,6 @@ static int i801_block_transaction(struct i801_priv *priv,
+--- a/drivers/regulator/core.c
++++ b/drivers/regulator/core.c
+@@ -1211,7 +1211,9 @@ static int set_machine_constraints(struc
+ 			rdev_err(rdev, "failed to enable\n");
+ 			return ret;
  		}
+-		rdev->use_count++;
++
++		if (rdev->constraints->always_on)
++			rdev->use_count++;
  	}
  
--	if (read_write == I2C_SMBUS_WRITE
--	 || command == I2C_SMBUS_I2C_BLOCK_DATA) {
--		if (data->block[0] < 1)
--			data->block[0] = 1;
--		if (data->block[0] > I2C_SMBUS_BLOCK_MAX)
--			data->block[0] = I2C_SMBUS_BLOCK_MAX;
--	} else {
--		data->block[0] = 32;	/* max for SMBus block reads */
--	}
--
- 	/* Experience has shown that the block buffer can only be used for
- 	   SMBus (not I2C) block transactions, even though the datasheet
- 	   doesn't mention this limitation. */
--- 
-2.34.1
-
+ 	print_constraints(rdev);
 
 
