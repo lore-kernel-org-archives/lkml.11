@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 081D9C35274
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B2DC41535
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2369321AbiAYABb (ORCPT
+        id S2369411AbiAYABn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:01:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50114 "EHLO
+        Mon, 24 Jan 2022 19:01:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847012AbiAXXSP (ORCPT
+        with ESMTP id S1384807AbiAXXR7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:18:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4E0C0604EF;
-        Mon, 24 Jan 2022 13:25:55 -0800 (PST)
+        Mon, 24 Jan 2022 18:17:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8C6C08B4E9;
+        Mon, 24 Jan 2022 11:43:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CBD661305;
-        Mon, 24 Jan 2022 21:25:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8121C340E4;
-        Mon, 24 Jan 2022 21:25:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10015B81188;
+        Mon, 24 Jan 2022 19:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C465C340E8;
+        Mon, 24 Jan 2022 19:43:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059554;
-        bh=b1kuycPtIuGNh9eiV5SiIWKNRLWLaFZgezxgdv7TYmM=;
+        s=korg; t=1643053409;
+        bh=2w476mOJU7MWM/BdfYpZC7AEg+AEjB5Orgrjn+jLcw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z7nqdNvRs0/8L1TxKfRq705IedcPA65fo7aWfqXJkB2/BDtvJu7Tt1IEx1jrFqELw
-         g1F13ciYc8iPeshDIYe4YiVmB6vQzhlG6SPyrkk4uuJaZtM3tdAqAtOLMtlxsX3fTP
-         sPh4bnrYANe8I9ACdgEsax+obissgV0r6+tOyYNw=
+        b=N7t81xr7wTSmyktLnV/CnCMVKSVatHp+f6j9hnL5S7ReOe8TsKF6bo20OywWyvsgF
+         oHrfGNC9zB+cXYjpSRQ3clXmnN1pyShXlbqIZYdwJ2muZrnqZYf9h3YgZ2DKR5DOVn
+         f8quT+m3babc2vjhOWqg+KmOFxTzWJujsLIRKuCg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Benjamin Li <benl@squareup.com>,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0622/1039] thunderbolt: Runtime PM activate both ends of the device link
-Date:   Mon, 24 Jan 2022 19:40:11 +0100
-Message-Id: <20220124184146.248815390@linuxfoundation.org>
+Subject: [PATCH 5.10 055/563] wcn36xx: ensure pairing of init_scan/finish_scan and start_scan/end_scan
+Date:   Mon, 24 Jan 2022 19:37:00 +0100
+Message-Id: <20220124184026.315778418@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,72 +51,198 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
+From: Benjamin Li <benl@squareup.com>
 
-[ Upstream commit f3380cac0c0b3a6f49ab161e2a057c363962f48d ]
+[ Upstream commit 8f1ba8b0ee2679f0b3d22d2a5c1bc70c436fd872 ]
 
-If protocol tunnels are already up when the driver is loaded, for
-instance if the boot firmware implements connection manager of its own,
-runtime PM reference count of the consumer devices behind the tunnel
-might have been increased already before the device link is created but
-the supplier device runtime PM reference count is not. This leads to a
-situation where the supplier (the Thunderbolt driver) can runtime
-suspend even if it should not because the corresponding protocol tunnel
-needs to be up causing the devices to be removed from the corresponding
-native bus.
+An SMD capture from the downstream prima driver on WCN3680B shows the
+following command sequence for connected scans:
 
-Prevent this from happening by making both sides of the link runtime PM
-active briefly. The pm_runtime_put() for the consumer (PCIe
-root/downstream port, xHCI) then allows it to runtime suspend again but
-keeps the supplier runtime resumed the whole time it is runtime active.
+- init_scan_req
+    - start_scan_req, channel 1
+    - end_scan_req, channel 1
+    - start_scan_req, channel 2
+    - ...
+    - end_scan_req, channel 3
+- finish_scan_req
+- init_scan_req
+    - start_scan_req, channel 4
+    - ...
+    - end_scan_req, channel 6
+- finish_scan_req
+- ...
+    - end_scan_req, channel 165
+- finish_scan_req
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Upstream currently never calls wcn36xx_smd_end_scan, and in some cases[1]
+still sends finish_scan_req twice in a row or before init_scan_req. A
+typical connected scan looks like this:
+
+- init_scan_req
+    - start_scan_req, channel 1
+- finish_scan_req
+- init_scan_req
+    - start_scan_req, channel 2
+- ...
+    - start_scan_req, channel 165
+- finish_scan_req
+- finish_scan_req
+
+This patch cleans up scanning so that init/finish and start/end are always
+paired together and correctly nested.
+
+- init_scan_req
+    - start_scan_req, channel 1
+    - end_scan_req, channel 1
+- finish_scan_req
+- init_scan_req
+    - start_scan_req, channel 2
+    - end_scan_req, channel 2
+- ...
+    - start_scan_req, channel 165
+    - end_scan_req, channel 165
+- finish_scan_req
+
+Note that upstream will not do batching of 3 active-probe scans before
+returning to the operating channel, and this patch does not change that.
+To match downstream in this aspect, adjust IEEE80211_PROBE_DELAY and/or
+the 125ms max off-channel time in ieee80211_scan_state_decision.
+
+[1]: commit d195d7aac09b ("wcn36xx: Ensure finish scan is not requested
+before start scan") addressed one case of finish_scan_req being sent
+without a preceding init_scan_req (the case of the operating channel
+coinciding with the first scan channel); two other cases are:
+1) if SW scan is started and aborted immediately, without scanning any
+   channels, we send a finish_scan_req without ever sending init_scan_req,
+   and
+2) as SW scan logic always returns us to the operating channel before
+   calling wcn36xx_sw_scan_complete, finish_scan_req is always sent twice
+   at the end of a SW scan
+
+Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
+Signed-off-by: Benjamin Li <benl@squareup.com>
+Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211027170306.555535-4-benl@squareup.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thunderbolt/acpi.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/wireless/ath/wcn36xx/main.c    | 34 +++++++++++++++++-----
+ drivers/net/wireless/ath/wcn36xx/smd.c     |  4 +++
+ drivers/net/wireless/ath/wcn36xx/wcn36xx.h |  1 +
+ 3 files changed, 32 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/thunderbolt/acpi.c b/drivers/thunderbolt/acpi.c
-index b67e72d5644b3..7c9597a339295 100644
---- a/drivers/thunderbolt/acpi.c
-+++ b/drivers/thunderbolt/acpi.c
-@@ -7,6 +7,7 @@
-  */
+diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
+index 629ddfd74da1a..9aaf6f7473333 100644
+--- a/drivers/net/wireless/ath/wcn36xx/main.c
++++ b/drivers/net/wireless/ath/wcn36xx/main.c
+@@ -397,6 +397,7 @@ static void wcn36xx_change_opchannel(struct wcn36xx *wcn, int ch)
+ static int wcn36xx_config(struct ieee80211_hw *hw, u32 changed)
+ {
+ 	struct wcn36xx *wcn = hw->priv;
++	int ret;
  
- #include <linux/acpi.h>
-+#include <linux/pm_runtime.h>
+ 	wcn36xx_dbg(WCN36XX_DBG_MAC, "mac config changed 0x%08x\n", changed);
  
- #include "tb.h"
- 
-@@ -74,8 +75,18 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
- 		 pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM))) {
- 		const struct device_link *link;
- 
-+		/*
-+		 * Make them both active first to make sure the NHI does
-+		 * not runtime suspend before the consumer. The
-+		 * pm_runtime_put() below then allows the consumer to
-+		 * runtime suspend again (which then allows NHI runtime
-+		 * suspend too now that the device link is established).
-+		 */
-+		pm_runtime_get_sync(&pdev->dev);
-+
- 		link = device_link_add(&pdev->dev, &nhi->pdev->dev,
- 				       DL_FLAG_AUTOREMOVE_SUPPLIER |
-+				       DL_FLAG_RPM_ACTIVE |
- 				       DL_FLAG_PM_RUNTIME);
- 		if (link) {
- 			dev_dbg(&nhi->pdev->dev, "created link from %s\n",
-@@ -84,6 +95,8 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
- 			dev_warn(&nhi->pdev->dev, "device link creation from %s failed\n",
- 				 dev_name(&pdev->dev));
+@@ -412,17 +413,31 @@ static int wcn36xx_config(struct ieee80211_hw *hw, u32 changed)
+ 			 * want to receive/transmit regular data packets, then
+ 			 * simply stop the scan session and exit PS mode.
+ 			 */
+-			wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
+-						wcn->sw_scan_vif);
+-			wcn->sw_scan_channel = 0;
++			if (wcn->sw_scan_channel)
++				wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
++			if (wcn->sw_scan_init) {
++				wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
++							wcn->sw_scan_vif);
++			}
+ 		} else if (wcn->sw_scan) {
+ 			/* A scan is ongoing, do not change the operating
+ 			 * channel, but start a scan session on the channel.
+ 			 */
+-			wcn36xx_smd_init_scan(wcn, HAL_SYS_MODE_SCAN,
+-					      wcn->sw_scan_vif);
++			if (wcn->sw_scan_channel)
++				wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
++			if (!wcn->sw_scan_init) {
++				/* This can fail if we are unable to notify the
++				 * operating channel.
++				 */
++				ret = wcn36xx_smd_init_scan(wcn,
++							    HAL_SYS_MODE_SCAN,
++							    wcn->sw_scan_vif);
++				if (ret) {
++					mutex_unlock(&wcn->conf_mutex);
++					return -EIO;
++				}
++			}
+ 			wcn36xx_smd_start_scan(wcn, ch);
+-			wcn->sw_scan_channel = ch;
+ 		} else {
+ 			wcn36xx_change_opchannel(wcn, ch);
  		}
-+
-+		pm_runtime_put(&pdev->dev);
- 	}
+@@ -709,7 +724,12 @@ static void wcn36xx_sw_scan_complete(struct ieee80211_hw *hw,
+ 	struct wcn36xx *wcn = hw->priv;
  
- out_put:
+ 	/* ensure that any scan session is finished */
+-	wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN, wcn->sw_scan_vif);
++	if (wcn->sw_scan_channel)
++		wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
++	if (wcn->sw_scan_init) {
++		wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
++					wcn->sw_scan_vif);
++	}
+ 	wcn->sw_scan = false;
+ 	wcn->sw_scan_opchannel = 0;
+ }
+diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
+index 3793907ace92e..ad312e17f7a3c 100644
+--- a/drivers/net/wireless/ath/wcn36xx/smd.c
++++ b/drivers/net/wireless/ath/wcn36xx/smd.c
+@@ -730,6 +730,7 @@ int wcn36xx_smd_init_scan(struct wcn36xx *wcn, enum wcn36xx_hal_sys_mode mode,
+ 		wcn36xx_err("hal_init_scan response failed err=%d\n", ret);
+ 		goto out;
+ 	}
++	wcn->sw_scan_init = true;
+ out:
+ 	mutex_unlock(&wcn->hal_mutex);
+ 	return ret;
+@@ -760,6 +761,7 @@ int wcn36xx_smd_start_scan(struct wcn36xx *wcn, u8 scan_channel)
+ 		wcn36xx_err("hal_start_scan response failed err=%d\n", ret);
+ 		goto out;
+ 	}
++	wcn->sw_scan_channel = scan_channel;
+ out:
+ 	mutex_unlock(&wcn->hal_mutex);
+ 	return ret;
+@@ -790,6 +792,7 @@ int wcn36xx_smd_end_scan(struct wcn36xx *wcn, u8 scan_channel)
+ 		wcn36xx_err("hal_end_scan response failed err=%d\n", ret);
+ 		goto out;
+ 	}
++	wcn->sw_scan_channel = 0;
+ out:
+ 	mutex_unlock(&wcn->hal_mutex);
+ 	return ret;
+@@ -831,6 +834,7 @@ int wcn36xx_smd_finish_scan(struct wcn36xx *wcn,
+ 		wcn36xx_err("hal_finish_scan response failed err=%d\n", ret);
+ 		goto out;
+ 	}
++	wcn->sw_scan_init = false;
+ out:
+ 	mutex_unlock(&wcn->hal_mutex);
+ 	return ret;
+diff --git a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
+index 9b4dee2fc6483..5c40d0bdee245 100644
+--- a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
++++ b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
+@@ -231,6 +231,7 @@ struct wcn36xx {
+ 	struct cfg80211_scan_request *scan_req;
+ 	bool			sw_scan;
+ 	u8			sw_scan_opchannel;
++	bool			sw_scan_init;
+ 	u8			sw_scan_channel;
+ 	struct ieee80211_vif	*sw_scan_vif;
+ 	struct mutex		scan_lock;
 -- 
 2.34.1
 
