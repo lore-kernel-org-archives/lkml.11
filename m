@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E195C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E37E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586757AbiAXW1R (ORCPT
+        id S1586586AbiAXW05 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:27:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
+        Mon, 24 Jan 2022 17:26:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447759AbiAXVLZ (ORCPT
+        with ESMTP id S1390829AbiAXVM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:11:25 -0500
+        Mon, 24 Jan 2022 16:12:58 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72AF4C09D339;
-        Mon, 24 Jan 2022 12:09:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA0BC06E000;
+        Mon, 24 Jan 2022 12:10:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12DEE611CD;
-        Mon, 24 Jan 2022 20:09:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D896EC340E5;
-        Mon, 24 Jan 2022 20:09:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69219611CD;
+        Mon, 24 Jan 2022 20:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A4FFC340E7;
+        Mon, 24 Jan 2022 20:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054950;
-        bh=Q+kbtrSzN3sW0F+y05oRP18A4WGq9IVLlwKWgshlVIM=;
+        s=korg; t=1643055015;
+        bh=fdw1b/O5jRA9uMPseswenIy2CXbtFeNmPjVBedmsMlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FsXvZ3alGTP+0jMPAlurJmPPGzBvb660x9X3LYpi5LN7QmqK6MRL1Gmqho78tcQtT
-         XRqnmHWGxP4AcFg0EQUIlqbWp9czMQH9NqOHaE7JQLYMwZWGWJVC3EtmUkqw2uOZwX
-         XEo33MN6M+bIli19mnLLBA1WNe7XXH7DsjHOVYlA=
+        b=td2SgnJ0OWxhx+8fUUPIAPGyb5LD4SNc7IKWJdA1sL4PWqrYo+yjVY3Si+edSz/Sf
+         2SAFl7DqKF1SP484HOjBxAN7P/KrOAdgqHRotzEWeZrc8pkwbAUBhobPa09/U5oUjT
+         eZ8EC+9VM51IIwg6kFOaHEJYPgh7147y0XgS+JI4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@mailbox.org>,
-        Rob Herring <robh@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 5.10 556/563] dt-bindings: display: meson-vpu: Add missing amlogic,canvas property
-Date:   Mon, 24 Jan 2022 19:45:21 +0100
-Message-Id: <20220124184043.665712880@linuxfoundation.org>
+        Stefan Riedmueller <s.riedmueller@phytec.de>,
+        Han Xu <han.xu@nxp.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.15 014/846] mtd: rawnand: gpmi: Remove explicit default gpmi clock setting for i.MX6
+Date:   Mon, 24 Jan 2022 19:32:11 +0100
+Message-Id: <20220124184101.407137179@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,54 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@mailbox.org>
+From: Stefan Riedmueller <s.riedmueller@phytec.de>
 
-commit 640f35b871d29cd685ce0ea0762636381beeb98a upstream.
+commit aa1baa0e6c1aa4872e481dce4fc7fd6f3dd8496b upstream.
 
-This property was already mentioned in the old textual bindings
-amlogic,meson-vpu.txt, but got dropped during conversion.
-Adding it back similar to amlogic,gx-vdec.yaml.
+There is no need to explicitly set the default gpmi clock rate during
+boot for the i.MX 6 since this is done during nand_detect anyway.
 
-Fixes: 6b9ebf1e0e67 ("dt-bindings: display: amlogic, meson-vpu: convert to yaml")
-Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211219094155.177206-1-alexander.stein@mailbox.org
+Signed-off-by: Stefan Riedmueller <s.riedmueller@phytec.de>
+Cc: stable@vger.kernel.org
+Acked-by: Han Xu <han.xu@nxp.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20211102202022.15551-1-ceggers@arri.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    9 ---------
+ 1 file changed, 9 deletions(-)
 
---- a/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
-+++ b/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
-@@ -78,6 +78,10 @@ properties:
-   interrupts:
-     maxItems: 1
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+@@ -1054,15 +1054,6 @@ static int gpmi_get_clks(struct gpmi_nan
+ 		r->clock[i] = clk;
+ 	}
  
-+  amlogic,canvas:
-+    description: should point to a canvas provider node
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+
-   power-domains:
-     maxItems: 1
-     description: phandle to the associated power domain
-@@ -106,6 +110,7 @@ required:
-   - port@1
-   - "#address-cells"
-   - "#size-cells"
-+  - amlogic,canvas
+-	if (GPMI_IS_MX6(this))
+-		/*
+-		 * Set the default value for the gpmi clock.
+-		 *
+-		 * If you want to use the ONFI nand which is in the
+-		 * Synchronous Mode, you should change the clock as you need.
+-		 */
+-		clk_set_rate(r->clock[0], 22000000);
+-
+ 	return 0;
  
- additionalProperties: false
- 
-@@ -118,6 +123,7 @@ examples:
-         interrupts = <3>;
-         #address-cells = <1>;
-         #size-cells = <0>;
-+        amlogic,canvas = <&canvas>;
- 
-         /* CVBS VDAC output port */
-         port@0 {
+ err_clock:
 
 
