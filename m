@@ -2,111 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50587C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE27C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234645AbiAXTN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:13:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46586 "EHLO
+        id S1344407AbiAXTOA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:14:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346230AbiAXTFN (ORCPT
+        with ESMTP id S1346233AbiAXTFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:05:13 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6580CC0613E5
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:00:16 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id j2so23912888ejk.6
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:00:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nT/ZnOHsKJlxYz4RqSgPwsd6TUWvpfzybqxkqHLwAN4=;
-        b=k9IWBrqvExqU3irvTU/m+erA5ybtTbL59pFHFgYqkP57ohTZ/v3GlH9Tu7iUlhg6hG
-         a/TNhyk/+HHdmMH/HYBmjBFQuKCdgJCKebYkoDz3tOkFFaZye31lrvmlV+MEUvZuBgug
-         PfEsTeO1eGfHVbT+6Gl68gmAEz54KK/oow/vQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nT/ZnOHsKJlxYz4RqSgPwsd6TUWvpfzybqxkqHLwAN4=;
-        b=Mw8XbGA8kRsMYAGlh1LzC5+eX/1iPE3TRLNqFn61OThv8BwpGwVTTw2UDr5djZxBNm
-         aGgwtVuSYGiUhGhQ4NBRqXHhtiYL6+ZvxwuLTnW6o/H0nhWUe4cdQKqXFSpbfafcb8aM
-         dbwPAmf8H4HNAPjc53S0PfBQo8d07bK7y3J3a/LraVoo1JBxsLE37zNwB2pJGpMnVYK8
-         XWiihh2EniMiugiu4tRP2T+umcqkIgBeeND01UfOYxOp7xzzIWtU9N+8+BOhORM7xDsn
-         ThyIJhl1TuXCEOF/sJZmq31Mhx/hACkBSpu8+Naf7CdjJpAiMtqsyXoLCfAwvOTLZxAh
-         /RZg==
-X-Gm-Message-State: AOAM530bL4QoI3llDIINh/T7jS88ik1S8rpyUNvip44bz+Vai3/U7ol/
-        H98Hnes6AinXvc45xrg+uqQUkQ==
-X-Google-Smtp-Source: ABdhPJwYGNun9Hzk3k6pwp4tGzmkEh86jeWwUHDIfzQx2wPsTL5GWj1R20Vl0XN/0YmqK56g5Z7M/w==
-X-Received: by 2002:a17:906:4acd:: with SMTP id u13mr13618410ejt.563.1643050814994;
-        Mon, 24 Jan 2022 11:00:14 -0800 (PST)
-Received: from alco.lan (80.71.134.83.ipv4.parknet.dk. [80.71.134.83])
-        by smtp.gmail.com with ESMTPSA id by22sm5221518ejb.84.2022.01.24.11.00.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 11:00:14 -0800 (PST)
-From:   Ricardo Ribalda <ribalda@chromium.org>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ricardo Ribalda <ribalda@chromium.org>
-Subject: [PATCH v3 1/2] media: uvcvideo: Only create input devs if hw supports it
-Date:   Mon, 24 Jan 2022 20:00:12 +0100
-Message-Id: <20220124190013.221601-1-ribalda@chromium.org>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 369ADC0613E9;
+        Mon, 24 Jan 2022 11:00:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA64360B86;
+        Mon, 24 Jan 2022 19:00:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6034C340E5;
+        Mon, 24 Jan 2022 19:00:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643050823;
+        bh=WGNVpAlelXoXa7YIBX5GGnhU0Tj3kAZDb3k7l8hJze8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zrKAnwMhA+5cIEKFRFKnLWYLEo94uFaARbe1AnRt2feexqxeq3jLUOvl6i7CxnOgS
+         AAGx4WIPXt5wgLnTFOa1XWvtN4es0v/jI2RGRARTZE0z1hcujB0u/HjKVvf67ZlGDP
+         rhlN/4kiRrCwNudzoqBaCS7SGvKF8ff2WiDUuUTs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Lukas Czerner <lczerner@redhat.com>, stable@kernel.org
+Subject: [PATCH 4.9 124/157] ext4: dont use the orphan list when migrating an inode
+Date:   Mon, 24 Jan 2022 19:43:34 +0100
+Message-Id: <20220124183936.708241634@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
+References: <20220124183932.787526760@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Examine the stream headers to figure out if the device has a GPIO and
-can be used as an input.
+From: Theodore Ts'o <tytso@mit.edu>
 
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+commit 6eeaf88fd586f05aaf1d48cb3a139d2a5c6eb055 upstream.
+
+We probably want to remove the indirect block to extents migration
+feature after a deprecation window, but until then, let's fix a
+potential data loss problem caused by the fact that we put the
+tmp_inode on the orphan list.  In the unlikely case where we crash and
+do a journal recovery, the data blocks belonging to the inode being
+migrated are also represented in the tmp_inode on the orphan list ---
+and so its data blocks will get marked unallocated, and available for
+reuse.
+
+Instead, stop putting the tmp_inode on the oprhan list.  So in the
+case where we crash while migrating the inode, we'll leak an inode,
+which is not a disaster.  It will be easily fixed the next time we run
+fsck, and it's better than potentially having blocks getting claimed
+by two different files, and losing data as a result.
+
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Lukas Czerner <lczerner@redhat.com>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/uvc/uvc_status.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ fs/ext4/migrate.c |   19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/media/usb/uvc/uvc_status.c b/drivers/media/usb/uvc/uvc_status.c
-index 753c8226db70..3ef0b281ffc5 100644
---- a/drivers/media/usb/uvc/uvc_status.c
-+++ b/drivers/media/usb/uvc/uvc_status.c
-@@ -18,11 +18,34 @@
-  * Input device
-  */
- #ifdef CONFIG_USB_VIDEO_CLASS_INPUT_EVDEV
-+
-+static bool uvc_input_has_button(struct uvc_device *dev)
-+{
-+	struct uvc_streaming *stream;
-+
-+	/*
-+	 * The device has GPIO button event if both bTriggerSupport and
-+	 * bTriggerUsage are one. Otherwise the camera button does not
-+	 * exist or is handled automatically by the camera without host
-+	 * driver or client application intervention.
-+	 */
-+	list_for_each_entry(stream, &dev->streams, list) {
-+		if (stream->header.bTriggerSupport == 1 &&
-+		    stream->header.bTriggerUsage == 1)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- static int uvc_input_init(struct uvc_device *dev)
- {
- 	struct input_dev *input;
- 	int ret;
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -462,12 +462,12 @@ int ext4_ext_migrate(struct inode *inode
+ 	percpu_down_write(&sbi->s_writepages_rwsem);
  
-+	if (!uvc_input_has_button(dev))
-+		return 0;
-+
- 	input = input_allocate_device();
- 	if (input == NULL)
- 		return -ENOMEM;
--- 
-2.35.0.rc0.227.g00780c9af4-goog
+ 	/*
+-	 * Worst case we can touch the allocation bitmaps, a bgd
+-	 * block, and a block to link in the orphan list.  We do need
+-	 * need to worry about credits for modifying the quota inode.
++	 * Worst case we can touch the allocation bitmaps and a block
++	 * group descriptor block.  We do need need to worry about
++	 * credits for modifying the quota inode.
+ 	 */
+ 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE,
+-		4 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
++		3 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
+ 
+ 	if (IS_ERR(handle)) {
+ 		retval = PTR_ERR(handle);
+@@ -488,10 +488,6 @@ int ext4_ext_migrate(struct inode *inode
+ 	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
+ 	 * is so that the metadata blocks will have the correct checksum after
+ 	 * the migration.
+-	 *
+-	 * Note however that, if a crash occurs during the migration process,
+-	 * the recovery process is broken because the tmp_inode checksums will
+-	 * be wrong and the orphans cleanup will fail.
+ 	 */
+ 	ei = EXT4_I(inode);
+ 	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+@@ -503,7 +499,6 @@ int ext4_ext_migrate(struct inode *inode
+ 	clear_nlink(tmp_inode);
+ 
+ 	ext4_ext_tree_init(handle, tmp_inode);
+-	ext4_orphan_add(handle, tmp_inode);
+ 	ext4_journal_stop(handle);
+ 
+ 	/*
+@@ -528,12 +523,6 @@ int ext4_ext_migrate(struct inode *inode
+ 
+ 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE, 1);
+ 	if (IS_ERR(handle)) {
+-		/*
+-		 * It is impossible to update on-disk structures without
+-		 * a handle, so just rollback in-core changes and live other
+-		 * work to orphan_list_cleanup()
+-		 */
+-		ext4_orphan_del(NULL, tmp_inode);
+ 		retval = PTR_ERR(handle);
+ 		goto out_tmp_inode;
+ 	}
+
 
