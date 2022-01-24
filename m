@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E8BC4707E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE521C35268
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358675AbiAXTzi (ORCPT
+        id S1358572AbiAXTz1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:55:38 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35808 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344460AbiAXToA (ORCPT
+        Mon, 24 Jan 2022 14:55:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54240 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349076AbiAXTlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:44:00 -0500
+        Mon, 24 Jan 2022 14:41:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB718C07A96A;
+        Mon, 24 Jan 2022 11:20:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2084B80FA1;
-        Mon, 24 Jan 2022 19:43:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D43BC340E7;
-        Mon, 24 Jan 2022 19:43:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AFDF612FA;
+        Mon, 24 Jan 2022 19:20:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C996C340E5;
+        Mon, 24 Jan 2022 19:20:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053433;
-        bh=yXIFEi0hrJpSznLM8N/k1ZoZ5zdtMovx27QVj/OKBf8=;
+        s=korg; t=1643052000;
+        bh=6DzRQODJCjeMyBnMxcQy/tJblSzRKBAhvfHA3MzPxh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X50Lv/Ti5Fgva732kJp81uPt2SK0gkHCbEyybT0bcL/Co92lfyv7quZI0yf0or1J1
-         h6RPbhl3bCan7ZrvaE8YHHs04o72Ts/drm8pbn1rB7DhhuqtEXo/8GCZRU78ZmH2+v
-         74Od2aPDewPn2lKoerO+r3Gti/sR7fj5nxq4+ytY=
+        b=R05fWYbiTuO0n3zCr3lQI5CfgOuA+8NwMM1SToPClI9HPq3p5hTS9E2DMDorhZ305
+         vDnPcjZ0IaEvgf6JVa8zAjhLxs+KZOoZdiJw/lPUV9DEp6Xw8KHiOOSVc+tCjrWvRw
+         ZgL7Ef4nAXnmkV4mvlox1uMhfejHvzxDEcjAkEDE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sam Bingner <sam@bingner.com>,
-        Yifeng Li <tomli@tomli.me>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-Subject: [PATCH 5.10 036/563] PCI: Add function 1 DMA alias quirk for Marvell 88SE9125 SATA controller
-Date:   Mon, 24 Jan 2022 19:36:41 +0100
-Message-Id: <20220124184025.677502576@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 156/239] iwlwifi: remove module loading failure message
+Date:   Mon, 24 Jan 2022 19:43:14 +0100
+Message-Id: <20220124183948.051913651@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,54 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yifeng Li <tomli@tomli.me>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit e445375882883f69018aa669b67cbb37ec873406 upstream.
+[ Upstream commit 6518f83ffa51131daaf439b66094f684da3fb0ae ]
 
-Like other SATA controller chips in the Marvell 88SE91xx series, the
-Marvell 88SE9125 has the same DMA requester ID hardware bug that prevents
-it from working under IOMMU.  Add it to the list of devices that need the
-quirk.
+When CONFIG_DEBUG_TEST_DRIVER_REMOVE is set, iwlwifi crashes
+when the opmode module cannot be loaded, due to completing
+the completion before using drv->dev, which can then already
+be freed.
 
-Without this patch, device initialization fails with DMA errors:
+Fix this by removing the (fairly useless) message. Moving the
+completion later causes a deadlock instead, so that's not an
+option.
 
-  ata8: softreset failed (1st FIS failed)
-  DMAR: DRHD: handling fault status reg 2
-  DMAR: [DMA Write NO_PASID] Request device [03:00.1] fault addr 0xfffc0000 [fault reason 0x02] Present bit in context entry is clear
-  DMAR: DRHD: handling fault status reg 2
-  DMAR: [DMA Read NO_PASID] Request device [03:00.1] fault addr 0xfffc0000 [fault reason 0x02] Present bit in context entry is clear
-
-After applying the patch, the controller can be successfully initialized:
-
-  ata8: SATA link up 1.5 Gbps (SStatus 113 SControl 330)
-  ata8.00: ATAPI: PIONEER BD-RW   BDR-207M, 1.21, max UDMA/100
-  ata8.00: configured for UDMA/100
-  scsi 7:0:0:0: CD-ROM            PIONEER  BD-RW   BDR-207M 1.21 PQ: 0 ANSI: 5
-
-Link: https://lore.kernel.org/r/YahpKVR+McJVDdkD@work
-Reported-by: Sam Bingner <sam@bingner.com>
-Tested-by: Sam Bingner <sam@bingner.com>
-Tested-by: Yifeng Li <tomli@tomli.me>
-Signed-off-by: Yifeng Li <tomli@tomli.me>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/20211210091245.289008-2-luca@coelho.fi
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/quirks.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -4077,6 +4077,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_M
- 			 quirk_dma_func1_alias);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9123,
- 			 quirk_dma_func1_alias);
-+/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c136 */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9125,
-+			 quirk_dma_func1_alias);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9128,
- 			 quirk_dma_func1_alias);
- /* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c14 */
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+index 72f5df66cdeb5..c44108823f796 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+@@ -1532,15 +1532,8 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
+ 	 * else from proceeding if the module fails to load
+ 	 * or hangs loading.
+ 	 */
+-	if (load_module) {
++	if (load_module)
+ 		request_module("%s", op->name);
+-#ifdef CONFIG_IWLWIFI_OPMODE_MODULAR
+-		if (err)
+-			IWL_ERR(drv,
+-				"failed to load module %s (error %d), is dynamic loading enabled?\n",
+-				op->name, err);
+-#endif
+-	}
+ 	failure = false;
+ 	goto free;
+ 
+-- 
+2.34.1
+
 
 
