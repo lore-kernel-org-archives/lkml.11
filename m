@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1540DC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F63C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457430AbiAXVli (ORCPT
+        id S1457583AbiAXVly (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:41:38 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57154 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353826AbiAXVEY (ORCPT
+        Mon, 24 Jan 2022 16:41:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57242 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1445742AbiAXVEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:04:24 -0500
+        Mon, 24 Jan 2022 16:04:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53618B8105C;
-        Mon, 24 Jan 2022 21:04:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D64C340E5;
-        Mon, 24 Jan 2022 21:04:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83DF860E8D;
+        Mon, 24 Jan 2022 21:04:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C0CFC340E5;
+        Mon, 24 Jan 2022 21:04:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058260;
-        bh=kGmLlB4MlOcx7kUoAHREAVQ8rneyprtlbE/fHjmAESE=;
+        s=korg; t=1643058290;
+        bh=BqysmeVxkEVWax6vfPWYAI80fhHBzoQXcnZnF30vv98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ARKYqElNp/TNQU1v3Ec+PpmJM1bhwOQxW61dmrwEkKNLgNMZ9pARZ7kQ2PvY1kHRV
-         oaXXoMAsrBnyOzEzDGBz2obLiWOmqmTij/urYvmCeDCQ6+FT7V6WG2ErbKhpdsh1Nu
-         iOPV/mS96uc+ZPdYq9XikXoRCPLWK5Vb58qTFU6Y=
+        b=WzjErDMfADw1jI8hE8Tt0OjRVh6JOLFzzApx8exKGHPVls7SpcI3OPdeYJzCakPBW
+         a5pexa3ZWPfIxKYBtYY4lVhIAtA8vPS4ppMFlYtF2+BFbVvM+lB1UhBNumGjb1HJ6g
+         oOP5ks5hx1bff8S1JbHVRKuJcZ6UxS8SX2LdS81E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0198/1039] net: stmmac: Add platform level debug register dump feature
-Date:   Mon, 24 Jan 2022 19:33:07 +0100
-Message-Id: <20220124184131.981512022@linuxfoundation.org>
+Subject: [PATCH 5.16 0242/1039] samples: bpf: Fix xdp_sample_user.o linking with Clang
+Date:   Mon, 24 Jan 2022 19:33:51 +0100
+Message-Id: <20220124184133.462059058@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,99 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 4047b9db1aa7512a10ba3560a3f63821c8c40235 ]
+[ Upstream commit e64fbcaa7a666f16329b1c67af15ea501bc84586 ]
 
-dwmac-qcom-ethqos currently exposes a mechanism to dump rgmii registers
-after the 'stmmac_dvr_probe()' returns. However with commit
-5ec55823438e ("net: stmmac: add clocks management for gmac driver"),
-we now let 'pm_runtime_put()' disable the clocks before returning from
-'stmmac_dvr_probe()'.
+Clang (13) doesn't get the jokes about specifying libraries to link in
+cclags of individual .o objects:
 
-This causes a crash when 'rgmii_dump()' register dumps are enabled,
-as the clocks are already off.
+clang-13: warning: -lm: 'linker' input unused [-Wunused-command-line-argument]
+[ ... ]
+  LD  samples/bpf/xdp_redirect_cpu
+  LD  samples/bpf/xdp_redirect_map_multi
+  LD  samples/bpf/xdp_redirect_map
+  LD  samples/bpf/xdp_redirect
+  LD  samples/bpf/xdp_monitor
+/usr/bin/ld: samples/bpf/xdp_sample_user.o: in function `sample_summary_print':
+xdp_sample_user.c:(.text+0x84c): undefined reference to `floor'
+/usr/bin/ld: xdp_sample_user.c:(.text+0x870): undefined reference to `ceil'
+/usr/bin/ld: xdp_sample_user.c:(.text+0x8cf): undefined reference to `floor'
+/usr/bin/ld: xdp_sample_user.c:(.text+0x8f3): undefined reference to `ceil'
+[ more ]
 
-Since other dwmac drivers (possible future users as well) might
-require a similar register dump feature, introduce a platform level
-callback to allow the same.
+Specify '-lm' as ldflags for all xdp_sample_user.o users in the main
+Makefile and remove it from ccflags of ^ in Makefile.target -- just
+like it's done for all other samples. This works with all compilers.
 
-This fixes the crash noticed while enabling rgmii_dump() dumps in
-dwmac-qcom-ethqos driver as well. It also allows future changes
-to keep a invoking the register dump callback from the correct
-place inside 'stmmac_dvr_probe()'.
-
-Fixes: 5ec55823438e ("net: stmmac: add clocks management for gmac driver")
-Cc: Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 6e1051a54e31 ("samples: bpf: Convert xdp_monitor to XDP samples helper")
+Fixes: b926c55d856c ("samples: bpf: Convert xdp_redirect to XDP samples helper")
+Fixes: e531a220cc59 ("samples: bpf: Convert xdp_redirect_cpu to XDP samples helper")
+Fixes: bbe65865aa05 ("samples: bpf: Convert xdp_redirect_map to XDP samples helper")
+Fixes: 594a116b2aa1 ("samples: bpf: Convert xdp_redirect_map_multi to XDP samples helper")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Link: https://lore.kernel.org/bpf/20211203195004.5803-2-alexandr.lobakin@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 7 ++++---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c       | 3 +++
- include/linux/stmmac.h                                  | 1 +
- 3 files changed, 8 insertions(+), 3 deletions(-)
+ samples/bpf/Makefile | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-index 5c74b6279d690..6b1d9e8879f46 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-@@ -113,8 +113,10 @@ static void rgmii_updatel(struct qcom_ethqos *ethqos,
- 	rgmii_writel(ethqos, temp, offset);
- }
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 6ae62b1dc9388..38638845db9d7 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -215,6 +215,11 @@ TPROGS_LDFLAGS := -L$(SYSROOT)/usr/lib
+ endif
  
--static void rgmii_dump(struct qcom_ethqos *ethqos)
-+static void rgmii_dump(void *priv)
- {
-+	struct qcom_ethqos *ethqos = priv;
-+
- 	dev_dbg(&ethqos->pdev->dev, "Rgmii register dump\n");
- 	dev_dbg(&ethqos->pdev->dev, "RGMII_IO_MACRO_CONFIG: %x\n",
- 		rgmii_readl(ethqos, RGMII_IO_MACRO_CONFIG));
-@@ -499,6 +501,7 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
+ TPROGS_LDLIBS			+= $(LIBBPF) -lelf -lz
++TPROGLDLIBS_xdp_monitor		+= -lm
++TPROGLDLIBS_xdp_redirect	+= -lm
++TPROGLDLIBS_xdp_redirect_cpu	+= -lm
++TPROGLDLIBS_xdp_redirect_map	+= -lm
++TPROGLDLIBS_xdp_redirect_map_multi += -lm
+ TPROGLDLIBS_tracex4		+= -lrt
+ TPROGLDLIBS_trace_output	+= -lrt
+ TPROGLDLIBS_map_perf_test	+= -lrt
+@@ -345,7 +350,7 @@ $(obj)/hbm_edt_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
  
- 	plat_dat->bsp_priv = ethqos;
- 	plat_dat->fix_mac_speed = ethqos_fix_mac_speed;
-+	plat_dat->dump_debug_regs = rgmii_dump;
- 	plat_dat->has_gmac4 = 1;
- 	plat_dat->pmt = 1;
- 	plat_dat->tso_en = of_property_read_bool(np, "snps,tso");
-@@ -507,8 +510,6 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_clk;
- 
--	rgmii_dump(ethqos);
--
- 	return ret;
- 
- err_clk:
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 8ded4be08b001..e81a79845d425 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7094,6 +7094,9 @@ int stmmac_dvr_probe(struct device *device,
- 	stmmac_init_fs(ndev);
- #endif
- 
-+	if (priv->plat->dump_debug_regs)
-+		priv->plat->dump_debug_regs(priv->plat->bsp_priv);
-+
- 	/* Let pm_runtime_put() disable the clocks.
- 	 * If CONFIG_PM is not enabled, the clocks will stay powered.
- 	 */
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index a6f03b36fc4f7..1450397fc0bcd 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -233,6 +233,7 @@ struct plat_stmmacenet_data {
- 	int (*clks_config)(void *priv, bool enabled);
- 	int (*crosststamp)(ktime_t *device, struct system_counterval_t *system,
- 			   void *ctx);
-+	void (*dump_debug_regs)(void *priv);
- 	void *bsp_priv;
- 	struct clk *stmmac_clk;
- 	struct clk *pclk;
+ # Override includes for xdp_sample_user.o because $(srctree)/usr/include in
+ # TPROGS_CFLAGS causes conflicts
+-XDP_SAMPLE_CFLAGS += -Wall -O2 -lm \
++XDP_SAMPLE_CFLAGS += -Wall -O2 \
+ 		     -I$(src)/../../tools/include \
+ 		     -I$(src)/../../tools/include/uapi \
+ 		     -I$(LIBBPF_INCLUDE) \
 -- 
 2.34.1
 
