@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16CC8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B23C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847158AbiAXXSo (ORCPT
+        id S1847220AbiAXXTG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:18:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38116 "EHLO
+        Mon, 24 Jan 2022 18:19:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1585442AbiAXWXd (ORCPT
+        with ESMTP id S1584689AbiAXWVd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:23:33 -0500
+        Mon, 24 Jan 2022 17:21:33 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82181C04189A;
-        Mon, 24 Jan 2022 12:53:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48013C041882;
+        Mon, 24 Jan 2022 12:52:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E560B81218;
-        Mon, 24 Jan 2022 20:53:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 720DBC340E5;
-        Mon, 24 Jan 2022 20:53:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04579B80CCF;
+        Mon, 24 Jan 2022 20:52:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E942C36AE3;
+        Mon, 24 Jan 2022 20:52:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057626;
-        bh=E+29dWAS2bNGWEVBTIKKRP7OxbGQOJmSmmqhxe69i2s=;
+        s=korg; t=1643057571;
+        bh=uDUAb+qZBHXld3qkmkZnFDhDfgMIF+C1eIkgRfrPvD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BeF8sHTQBI2shzoqeLW9ayyVfDISZ2Q6x9nloNAlZxF2OA2ZiUSnzxs8wYYf65O2/
-         wyiT9cb7izFbTJWRVAwvX8Sv38FUw8anVIvAY7F4CzlnK/GOVtT8hnRSfhiWmt5K9n
-         wuiDllbrutCZq9yLtkkbYjy3IsRG3uSXPIHygf6Q=
+        b=UmJbyc5VqwfYgT8jI0xcQRz58kmNnPh4O44QkvDnf+y2Zv3/jfEgPzeFAS2JpQZcI
+         cNe1CplXU58HRALIM+SSju3j9OPWnJjLuqROz6WPNdO2HtTi8OPSGAB5bqeHZJe9BQ
+         bAXbWyn5pDNLm9VCrG4s0GgicMH6q3nC6QGPBo+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Kossifidis <mick@ics.forth.gr>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.16 0027/1039] riscv: use hart id instead of cpu id on machine_kexec
-Date:   Mon, 24 Jan 2022 19:30:16 +0100
-Message-Id: <20220124184126.052139899@linuxfoundation.org>
+        stable@vger.kernel.org, Wenqing Liu <wenqingliu0120@gmail.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.16 0010/1039] f2fs: fix to do sanity check on inode type during garbage collection
+Date:   Mon, 24 Jan 2022 19:29:59 +0100
+Message-Id: <20220124184125.486229792@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,36 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Kossifidis <mick@ics.forth.gr>
+From: Chao Yu <chao@kernel.org>
 
-commit 0e105f1d0037d677dff3c697d22f9551e6c39af8 upstream.
+commit 9056d6489f5a41cfbb67f719d2c0ce61ead72d9f upstream.
 
-raw_smp_processor_id() doesn't return the hart id as stated in
-arch/riscv/include/asm/smp.h, use smp_processor_id() instead
-to get the cpu id, and cpuid_to_hartid_map() to pass the hart id
-to the next kernel. This fixes kexec on HiFive Unleashed/Unmatched
-where cpu ids and hart ids don't match (on qemu-virt they match).
+As report by Wenqing Liu in bugzilla:
 
-Fixes: fba8a8674f68 ("RISC-V: Add kexec support")
-Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+https://bugzilla.kernel.org/show_bug.cgi?id=215231
+
+- Overview
+kernel NULL pointer dereference triggered  in folio_mark_dirty() when mount and operate on a crafted f2fs image
+
+- Reproduce
+tested on kernel 5.16-rc3, 5.15.X under root
+
+1. mkdir mnt
+2. mount -t f2fs tmp1.img mnt
+3. touch tmp
+4. cp tmp mnt
+
+F2FS-fs (loop0): sanity_check_inode: inode (ino=49) extent info [5942, 4294180864, 4] is incorrect, run fsck to fix
+F2FS-fs (loop0): f2fs_check_nid_range: out-of-range nid=31340049, run fsck to fix.
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+ folio_mark_dirty+0x33/0x50
+ move_data_page+0x2dd/0x460 [f2fs]
+ do_garbage_collect+0xc18/0x16a0 [f2fs]
+ f2fs_gc+0x1d3/0xd90 [f2fs]
+ f2fs_balance_fs+0x13a/0x570 [f2fs]
+ f2fs_create+0x285/0x840 [f2fs]
+ path_openat+0xe6d/0x1040
+ do_filp_open+0xc5/0x140
+ do_sys_openat2+0x23a/0x310
+ do_sys_open+0x57/0x80
+
+The root cause is for special file: e.g. character, block, fifo or socket file,
+f2fs doesn't assign address space operations pointer array for mapping->a_ops field,
+so, in a fuzzed image, SSA table indicates a data block belong to special file, when
+f2fs tries to migrate that block, it causes NULL pointer access once move_data_page()
+calls a_ops->set_dirty_page().
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/machine_kexec.c |    3 ++-
+ fs/f2fs/gc.c |    3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/riscv/kernel/machine_kexec.c
-+++ b/arch/riscv/kernel/machine_kexec.c
-@@ -169,7 +169,8 @@ machine_kexec(struct kimage *image)
- 	struct kimage_arch *internal = &image->arch;
- 	unsigned long jump_addr = (unsigned long) image->start;
- 	unsigned long first_ind_entry = (unsigned long) &image->head;
--	unsigned long this_hart_id = raw_smp_processor_id();
-+	unsigned long this_cpu_id = smp_processor_id();
-+	unsigned long this_hart_id = cpuid_to_hartid_map(this_cpu_id);
- 	unsigned long fdt_addr = internal->fdt_addr;
- 	void *control_code_buffer = page_address(image->control_code_page);
- 	riscv_kexec_method kexec_method = NULL;
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -1457,7 +1457,8 @@ next_step:
+ 
+ 		if (phase == 3) {
+ 			inode = f2fs_iget(sb, dni.ino);
+-			if (IS_ERR(inode) || is_bad_inode(inode))
++			if (IS_ERR(inode) || is_bad_inode(inode) ||
++					special_file(inode->i_mode))
+ 				continue;
+ 
+ 			if (!down_write_trylock(
 
 
