@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51E53C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31782C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452214AbiAXVYT (ORCPT
+        id S1452182AbiAXVYO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:24:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46816 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241281AbiAXU5h (ORCPT
+        Mon, 24 Jan 2022 16:24:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52570 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443570AbiAXU5Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:57:37 -0500
+        Mon, 24 Jan 2022 15:57:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDA94612E9;
-        Mon, 24 Jan 2022 20:57:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2763C340E8;
-        Mon, 24 Jan 2022 20:57:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 443A7B80CCF;
+        Mon, 24 Jan 2022 20:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DB19C340E5;
+        Mon, 24 Jan 2022 20:57:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057856;
-        bh=RFhbMtU9WWHcwmOOT93T6numiDfaJre4ODtUp/i8QeU=;
+        s=korg; t=1643057841;
+        bh=eEUMKP1KZjrhKIfKroVDFJye3c2C2i+TYzy8Gb6Bsnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AwFvmi2hJ/qrIGIZg+LAq5torC0PZsrJXfeE2QC/PU4JCTKRnrhkXh5PMjQ+A7N/p
-         pMnpLwTB1jQOyM+svNQhZVF1nKSlVvND/OgmEyFiJAxhwVWv0CYuB6vQNOshLlqany
-         3pEAJ+mxzoA8Q6ojT0l7Xu2T/1RFn+frVREMChj8=
+        b=k+jLLZ6RhY22AFRWcBAhR4Z7Cv134TL3syLAnIQt+3XiswG/tDhPdIysMbFqMHjW0
+         BfStUsVEw1iIXfAP3JbCPryyQOMpIe42EpDPJXycNIHeTl2NMNY2S5Of8o2vodPBdg
+         XlwHz7iPRNXWzZQWV3Vzad3czVtGvgfl8bVLS3xU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
-        Marek Vasut <marex@denx.de>, Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Michael Stapelberg <michael@stapelberg.ch>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0102/1039] drm/bridge: sn65dsi83: Fix bridge removal
-Date:   Mon, 24 Jan 2022 19:31:31 +0100
-Message-Id: <20220124184128.591074711@linuxfoundation.org>
+Subject: [PATCH 5.16 0097/1039] drm/vc4: hdmi: Move the HSM clock enable to runtime_pm
+Date:   Mon, 24 Jan 2022 19:31:26 +0100
+Message-Id: <20220124184128.416967340@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,46 +51,164 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit c05f1a4e2c4b8a217b448828c4e59fb47454dc75 ]
+[ Upstream commit c86b41214362e8e715e1343e16d5d6af0562db05 ]
 
-Commit 24417d5b0c00 ("drm/bridge: ti-sn65dsi83: Implement .detach
-callback") moved the unregistration of the bridge DSI device and bridge
-itself to the detach callback.
+In order to access the HDMI controller, we need to make sure the HSM
+clock is enabled. If we were to access it with the clock disabled, the
+CPU would completely hang, resulting in an hard crash.
 
-While this is correct for the DSI device detach and unregistration, the
-bridge is added in the driver probe, and should thus be removed as part
-of its remove callback.
+Since we have different code path that would require it, let's move that
+clock enable / disable to runtime_pm that will take care of the
+reference counting for us.
 
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Reviewed-by: Marek Vasut <marex@denx.de>
-Fixes: 24417d5b0c00 ("drm/bridge: ti-sn65dsi83: Implement .detach callback")
+Since we also want to change the HSM clock rate and it's only valid
+while the clock is disabled, we need to move the clk_set_min_rate() call
+on the HSM clock above pm_runtime_get_and_sync().
+
+Fixes: 4f6e3d66ac52 ("drm/vc4: Add runtime PM support to the HDMI encoder driver")
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211025151536.1048186-14-maxime@cerno.tech
+Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Michael Stapelberg <michael@stapelberg.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-5-maxime@cerno.tech
+Link: https://lore.kernel.org/linux-arm-kernel/20210924152334.1342630-1-maxime@cerno.tech/
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/ti-sn65dsi83.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 70 +++++++++++++++++++++-------------
+ 1 file changed, 44 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi83.c b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
-index ba1160ec6d6e8..07917681782d2 100644
---- a/drivers/gpu/drm/bridge/ti-sn65dsi83.c
-+++ b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
-@@ -297,7 +297,6 @@ static void sn65dsi83_detach(struct drm_bridge *bridge)
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 33f61e2f7e6d1..63b07087d37e8 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -628,7 +628,6 @@ static void vc4_hdmi_encoder_post_crtc_powerdown(struct drm_encoder *encoder,
+ 		vc4_hdmi->variant->phy_disable(vc4_hdmi);
  
- 	mipi_dsi_detach(ctx->dsi);
- 	mipi_dsi_device_unregister(ctx->dsi);
--	drm_bridge_remove(&ctx->bridge);
- 	ctx->dsi = NULL;
+ 	clk_disable_unprepare(vc4_hdmi->pixel_bvb_clock);
+-	clk_disable_unprepare(vc4_hdmi->hsm_clock);
+ 	clk_disable_unprepare(vc4_hdmi->pixel_clock);
+ 
+ 	ret = pm_runtime_put(&vc4_hdmi->pdev->dev);
+@@ -894,28 +893,10 @@ static void vc4_hdmi_encoder_pre_crtc_configure(struct drm_encoder *encoder,
+ 		conn_state_to_vc4_hdmi_conn_state(conn_state);
+ 	struct drm_display_mode *mode = &encoder->crtc->state->adjusted_mode;
+ 	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
+-	unsigned long bvb_rate, pixel_rate, hsm_rate;
++	unsigned long pixel_rate = vc4_conn_state->pixel_rate;
++	unsigned long bvb_rate, hsm_rate;
+ 	int ret;
+ 
+-	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
+-	if (ret < 0) {
+-		DRM_ERROR("Failed to retain power domain: %d\n", ret);
+-		return;
+-	}
+-
+-	pixel_rate = vc4_conn_state->pixel_rate;
+-	ret = clk_set_rate(vc4_hdmi->pixel_clock, pixel_rate);
+-	if (ret) {
+-		DRM_ERROR("Failed to set pixel clock rate: %d\n", ret);
+-		return;
+-	}
+-
+-	ret = clk_prepare_enable(vc4_hdmi->pixel_clock);
+-	if (ret) {
+-		DRM_ERROR("Failed to turn on pixel clock: %d\n", ret);
+-		return;
+-	}
+-
+ 	/*
+ 	 * As stated in RPi's vc4 firmware "HDMI state machine (HSM) clock must
+ 	 * be faster than pixel clock, infinitesimally faster, tested in
+@@ -939,10 +920,21 @@ static void vc4_hdmi_encoder_pre_crtc_configure(struct drm_encoder *encoder,
+ 		return;
+ 	}
+ 
+-	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
++	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
++	if (ret < 0) {
++		DRM_ERROR("Failed to retain power domain: %d\n", ret);
++		return;
++	}
++
++	ret = clk_set_rate(vc4_hdmi->pixel_clock, pixel_rate);
+ 	if (ret) {
+-		DRM_ERROR("Failed to turn on HSM clock: %d\n", ret);
+-		clk_disable_unprepare(vc4_hdmi->pixel_clock);
++		DRM_ERROR("Failed to set pixel clock rate: %d\n", ret);
++		return;
++	}
++
++	ret = clk_prepare_enable(vc4_hdmi->pixel_clock);
++	if (ret) {
++		DRM_ERROR("Failed to turn on pixel clock: %d\n", ret);
+ 		return;
+ 	}
+ 
+@@ -958,7 +950,6 @@ static void vc4_hdmi_encoder_pre_crtc_configure(struct drm_encoder *encoder,
+ 	ret = clk_set_min_rate(vc4_hdmi->pixel_bvb_clock, bvb_rate);
+ 	if (ret) {
+ 		DRM_ERROR("Failed to set pixel bvb clock rate: %d\n", ret);
+-		clk_disable_unprepare(vc4_hdmi->hsm_clock);
+ 		clk_disable_unprepare(vc4_hdmi->pixel_clock);
+ 		return;
+ 	}
+@@ -966,7 +957,6 @@ static void vc4_hdmi_encoder_pre_crtc_configure(struct drm_encoder *encoder,
+ 	ret = clk_prepare_enable(vc4_hdmi->pixel_bvb_clock);
+ 	if (ret) {
+ 		DRM_ERROR("Failed to turn on pixel bvb clock: %d\n", ret);
+-		clk_disable_unprepare(vc4_hdmi->hsm_clock);
+ 		clk_disable_unprepare(vc4_hdmi->pixel_clock);
+ 		return;
+ 	}
+@@ -2100,6 +2090,27 @@ static int vc5_hdmi_init_resources(struct vc4_hdmi *vc4_hdmi)
+ 	return 0;
  }
  
-@@ -711,6 +710,7 @@ static int sn65dsi83_remove(struct i2c_client *client)
++static int __maybe_unused vc4_hdmi_runtime_suspend(struct device *dev)
++{
++	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
++
++	clk_disable_unprepare(vc4_hdmi->hsm_clock);
++
++	return 0;
++}
++
++static int vc4_hdmi_runtime_resume(struct device *dev)
++{
++	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
++	int ret;
++
++	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
+ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
  {
- 	struct sn65dsi83 *ctx = i2c_get_clientdata(client);
+ 	const struct vc4_hdmi_variant *variant = of_device_get_match_data(dev);
+@@ -2367,11 +2378,18 @@ static const struct of_device_id vc4_hdmi_dt_match[] = {
+ 	{}
+ };
  
-+	drm_bridge_remove(&ctx->bridge);
- 	of_node_put(ctx->host_node);
- 
- 	return 0;
++static const struct dev_pm_ops vc4_hdmi_pm_ops = {
++	SET_RUNTIME_PM_OPS(vc4_hdmi_runtime_suspend,
++			   vc4_hdmi_runtime_resume,
++			   NULL)
++};
++
+ struct platform_driver vc4_hdmi_driver = {
+ 	.probe = vc4_hdmi_dev_probe,
+ 	.remove = vc4_hdmi_dev_remove,
+ 	.driver = {
+ 		.name = "vc4_hdmi",
+ 		.of_match_table = vc4_hdmi_dt_match,
++		.pm = &vc4_hdmi_pm_ops,
+ 	},
+ };
 -- 
 2.34.1
 
