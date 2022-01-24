@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED2AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EACC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345517AbiAXTXW (ORCPT
+        id S1345458AbiAXTXc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:23:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346472AbiAXTNY (ORCPT
+        Mon, 24 Jan 2022 14:23:32 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38960 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344855AbiAXTNZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:13:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C338C061763;
-        Mon, 24 Jan 2022 11:05:57 -0800 (PST)
+        Mon, 24 Jan 2022 14:13:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B02F7603DE;
-        Mon, 24 Jan 2022 19:05:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E359C340E5;
-        Mon, 24 Jan 2022 19:05:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25F8FB811F9;
+        Mon, 24 Jan 2022 19:13:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBB9C340E5;
+        Mon, 24 Jan 2022 19:13:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051156;
-        bh=2oJQ6ThJe2gdSrrrORMLu8Meow0HMdp7Eylv6Q47zng=;
+        s=korg; t=1643051601;
+        bh=Oo2lX6416TxPeLNk85BzSqjJdoOIIwJmRJQe4N3bdMg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SOmjTNJ1cDKyeNDilmDqnqy9zXJmSOudddDbFlINnjSAciBE5tWzUtc04UJnnPkVJ
-         0C4su13uolZcwy1wsKoo9jGJzjYWF7B/RAQrM8rZmaXXg0QfSKqFjKgUTq4VoDiMCV
-         lnuh/J2i1tVd1N4LKVlu26Re3gvmyDvfFv8PdhLY=
+        b=PSh/NZIjPASiyLOL5Jp0Ct3SkrbEAFqUntEiLtYX/yy9kK9J8lKTW2HH0arRNMNFh
+         QkdiibcJkgY3T/AW6GUPlLH5x0qt+IW6NbROtBWEB7nctEqiHIx9ppd6Whcti7oCV5
+         Ku27iyZ3+Ax42gpfJEhvWLrMZHOPOpZC8bakvEJA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
-        Thara Gopinath <thara.gopinath@linaro.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 040/186] crypto: qce - fix uaf on qce_ahash_register_one
-Date:   Mon, 24 Jan 2022 19:41:55 +0100
-Message-Id: <20220124183938.413364817@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
+Subject: [PATCH 4.19 027/239] nfc: llcp: fix NULL error pointer dereference on sendmsg() after failed bind()
+Date:   Mon, 24 Jan 2022 19:41:05 +0100
+Message-Id: <20220124183943.988707524@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +48,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit b4cb4d31631912842eb7dce02b4350cbb7562d5e ]
+commit dded08927ca3c31a5c37f8e7f95fe98770475dd4 upstream.
 
-Pointer base points to sub field of tmpl, it
-is dereferenced after tmpl is freed. Fix
-this by accessing base before free tmpl.
+Syzbot detected a NULL pointer dereference of nfc_llcp_sock->dev pointer
+(which is a 'struct nfc_dev *') with calls to llcp_sock_sendmsg() after
+a failed llcp_sock_bind(). The message being sent is a SOCK_DGRAM.
 
-Fixes: ec8f5d8f ("crypto: qce - Qualcomm crypto engine driver")
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
-Acked-by: Thara Gopinath <thara.gopinath@linaro.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+KASAN report:
+
+  BUG: KASAN: null-ptr-deref in nfc_alloc_send_skb+0x2d/0xc0
+  Read of size 4 at addr 00000000000005c8 by task llcp_sock_nfc_a/899
+
+  CPU: 5 PID: 899 Comm: llcp_sock_nfc_a Not tainted 5.16.0-rc6-next-20211224-00001-gc6437fbf18b0 #125
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x45/0x59
+   ? nfc_alloc_send_skb+0x2d/0xc0
+   __kasan_report.cold+0x117/0x11c
+   ? mark_lock+0x480/0x4f0
+   ? nfc_alloc_send_skb+0x2d/0xc0
+   kasan_report+0x38/0x50
+   nfc_alloc_send_skb+0x2d/0xc0
+   nfc_llcp_send_ui_frame+0x18c/0x2a0
+   ? nfc_llcp_send_i_frame+0x230/0x230
+   ? __local_bh_enable_ip+0x86/0xe0
+   ? llcp_sock_connect+0x470/0x470
+   ? llcp_sock_connect+0x470/0x470
+   sock_sendmsg+0x8e/0xa0
+   ____sys_sendmsg+0x253/0x3f0
+   ...
+
+The issue was visible only with multiple simultaneous calls to bind() and
+sendmsg(), which resulted in most of the bind() calls to fail.  The
+bind() was failing on checking if there is available WKS/SDP/SAP
+(respective bit in 'struct nfc_llcp_local' fields).  When there was no
+available WKS/SDP/SAP, the bind returned error but the sendmsg() to such
+socket was able to trigger mentioned NULL pointer dereference of
+nfc_llcp_sock->dev.
+
+The code looks simply racy and currently it protects several paths
+against race with checks for (!nfc_llcp_sock->local) which is NULL-ified
+in error paths of bind().  The llcp_sock_sendmsg() did not have such
+check but called function nfc_llcp_send_ui_frame() had, although not
+protected with lock_sock().
+
+Therefore the race could look like (same socket is used all the time):
+  CPU0                                     CPU1
+  ====                                     ====
+  llcp_sock_bind()
+  - lock_sock()
+    - success
+  - release_sock()
+  - return 0
+                                           llcp_sock_sendmsg()
+                                           - lock_sock()
+                                           - release_sock()
+  llcp_sock_bind(), same socket
+  - lock_sock()
+    - error
+                                           - nfc_llcp_send_ui_frame()
+                                             - if (!llcp_sock->local)
+    - llcp_sock->local = NULL
+    - nfc_put_device(dev)
+                                             - dereference llcp_sock->dev
+  - release_sock()
+  - return -ERRNO
+
+The nfc_llcp_send_ui_frame() checked llcp_sock->local outside of the
+lock, which is racy and ineffective check.  Instead, its caller
+llcp_sock_sendmsg(), should perform the check inside lock_sock().
+
+Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
+Fixes: b874dec21d1c ("NFC: Implement LLCP connection less Tx path")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/qce/sha.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/nfc/llcp_sock.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/crypto/qce/sha.c b/drivers/crypto/qce/sha.c
-index 47e114ac09d01..ff1e788f92767 100644
---- a/drivers/crypto/qce/sha.c
-+++ b/drivers/crypto/qce/sha.c
-@@ -544,8 +544,8 @@ static int qce_ahash_register_one(const struct qce_ahash_def *def,
+--- a/net/nfc/llcp_sock.c
++++ b/net/nfc/llcp_sock.c
+@@ -796,6 +796,11 @@ static int llcp_sock_sendmsg(struct sock
  
- 	ret = crypto_register_ahash(alg);
- 	if (ret) {
--		kfree(tmpl);
- 		dev_err(qce->dev, "%s registration failed\n", base->cra_name);
-+		kfree(tmpl);
- 		return ret;
- 	}
+ 	lock_sock(sk);
  
--- 
-2.34.1
-
++	if (!llcp_sock->local) {
++		release_sock(sk);
++		return -ENODEV;
++	}
++
+ 	if (sk->sk_type == SOCK_DGRAM) {
+ 		DECLARE_SOCKADDR(struct sockaddr_nfc_llcp *, addr,
+ 				 msg->msg_name);
 
 
