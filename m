@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7D3C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C35BC4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2362298AbiAXXmK (ORCPT
+        id S1386624AbiAXXri (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:42:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46134 "EHLO
+        Mon, 24 Jan 2022 18:47:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1841093AbiAXW5g (ORCPT
+        with ESMTP id S1589221AbiAXWyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:57:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FE9C055ABD;
-        Mon, 24 Jan 2022 13:11:51 -0800 (PST)
+        Mon, 24 Jan 2022 17:54:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3E3C061A78;
+        Mon, 24 Jan 2022 13:09:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D55EAB8121C;
-        Mon, 24 Jan 2022 21:11:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4F6FC340E8;
-        Mon, 24 Jan 2022 21:11:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A6836146B;
+        Mon, 24 Jan 2022 21:09:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B14FC340E5;
+        Mon, 24 Jan 2022 21:09:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058708;
-        bh=50E6Rx/1hjD8ce3GLxo312lfRaJ+k/VnmDjEgimOyp8=;
+        s=korg; t=1643058565;
+        bh=SFpaN1Q+FQLxVudgmI3DnJry1PBPmM+zzf/zOsrDouM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YzRyBZR/aZlM+3FYFPcDckYcClD3Vz4I2PNT4Yph8Z7SpFhvXwCR1pU1pXTzq8rsV
-         TO43SSbwfX3+nfbB6GYSP7XEzfJhrppAdHaH4bdhr32PHQvhL+shOvYKohKOBD6YHt
-         GIPFXiwVlX2HJo2eH8vo1u2BCy0lUrM22Sf9JafY=
+        b=DCyT/Xrgo32ARRs662fIHjjYPnTqMBsJto9NOsC8BGn9aIKRuvx/uiCkx3CkQqG+N
+         i+sweG40o/bz+jgXBW2KT4b4j/QhIEO24GfmlzfE3hPVnlgQfEc2wPAHyvzQ2BD6ci
+         S9a7RnyHa3f1EhIuU6bJ8hddEBoxxbhh50g7xB9I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Golle <daniel@makrotopia.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Nathan Errera <nathan.errera@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0369/1039] net: ethernet: mtk_eth_soc: fix return values and refactor MDIO ops
-Date:   Mon, 24 Jan 2022 19:35:58 +0100
-Message-Id: <20220124184137.699085044@linuxfoundation.org>
+Subject: [PATCH 5.16 0329/1039] iwlwifi: mvm: test roc running status bits before removing the sta
+Date:   Mon, 24 Jan 2022 19:35:18 +0100
+Message-Id: <20220124184136.366304226@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,135 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Golle <daniel@makrotopia.org>
+From: Nathan Errera <nathan.errera@intel.com>
 
-[ Upstream commit eda80b249df7bbc7b3dd13907343a3e59bfc57fd ]
+[ Upstream commit 998e1aba6e5eb35370eaf30ccc1823426ec11f90 ]
 
-Instead of returning -1 (-EPERM) when MDIO bus is stuck busy
-while writing or 0xffff if it happens while reading, return the
-appropriate -ETIMEDOUT. Also fix return type to int instead of u32.
-Refactor functions to use bitfield helpers instead of having various
-masking and shifting constants in the code, which also results in the
-register definitions in the header file being more obviously related
-to what is stated in the MediaTek's Reference Manual.
+In some cases the sta is being removed twice since we do not test the
+roc aux running before removing it. Start looking at the bit before
+removing the sta.
 
-Fixes: 656e705243fd0 ("net-next: mediatek: add support for MT7623 ethernet")
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Nathan Errera <nathan.errera@intel.com>
+Fixes: 2c2c3647cde4 ("iwlwifi: mvm: support ADD_STA_CMD_API_S ver 12")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211219121514.d5376ac6bcb0.Ic5f8470ea60c072bde9d1503e5f528b65e301e20@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 53 ++++++++++++---------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 16 +++++--
- 2 files changed, 41 insertions(+), 28 deletions(-)
+ .../net/wireless/intel/iwlwifi/mvm/time-event.c   | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 75d67d1b5f6b2..ab023d3ca81f9 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -91,46 +91,53 @@ static int mtk_mdio_busy_wait(struct mtk_eth *eth)
- 	}
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+index e91f8e889df70..f93f15357a3f8 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+@@ -49,14 +49,13 @@ void iwl_mvm_roc_done_wk(struct work_struct *wk)
+ 	struct iwl_mvm *mvm = container_of(wk, struct iwl_mvm, roc_done_wk);
  
- 	dev_err(eth->dev, "mdio: MDIO timeout\n");
--	return -1;
-+	return -ETIMEDOUT;
- }
+ 	/*
+-	 * Clear the ROC_RUNNING /ROC_AUX_RUNNING status bit.
++	 * Clear the ROC_RUNNING status bit.
+ 	 * This will cause the TX path to drop offchannel transmissions.
+ 	 * That would also be done by mac80211, but it is racy, in particular
+ 	 * in the case that the time event actually completed in the firmware
+ 	 * (which is handled in iwl_mvm_te_handle_notif).
+ 	 */
+ 	clear_bit(IWL_MVM_STATUS_ROC_RUNNING, &mvm->status);
+-	clear_bit(IWL_MVM_STATUS_ROC_AUX_RUNNING, &mvm->status);
  
--static u32 _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr,
--			   u32 phy_register, u32 write_data)
-+static int _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg,
-+			   u32 write_data)
- {
--	if (mtk_mdio_busy_wait(eth))
--		return -1;
-+	int ret;
+ 	synchronize_net();
  
--	write_data &= 0xffff;
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
- 
--	mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START | PHY_IAC_WRITE |
--		(phy_register << PHY_IAC_REG_SHIFT) |
--		(phy_addr << PHY_IAC_ADDR_SHIFT) | write_data,
-+	mtk_w32(eth, PHY_IAC_ACCESS |
-+		     PHY_IAC_START_C22 |
-+		     PHY_IAC_CMD_WRITE |
-+		     PHY_IAC_REG(phy_reg) |
-+		     PHY_IAC_ADDR(phy_addr) |
-+		     PHY_IAC_DATA(write_data),
- 		MTK_PHY_IAC);
- 
--	if (mtk_mdio_busy_wait(eth))
--		return -1;
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
- 
- 	return 0;
- }
- 
--static u32 _mtk_mdio_read(struct mtk_eth *eth, int phy_addr, int phy_reg)
-+static int _mtk_mdio_read(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg)
- {
--	u32 d;
-+	int ret;
- 
--	if (mtk_mdio_busy_wait(eth))
--		return 0xffff;
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
- 
--	mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START | PHY_IAC_READ |
--		(phy_reg << PHY_IAC_REG_SHIFT) |
--		(phy_addr << PHY_IAC_ADDR_SHIFT),
-+	mtk_w32(eth, PHY_IAC_ACCESS |
-+		     PHY_IAC_START_C22 |
-+		     PHY_IAC_CMD_C22_READ |
-+		     PHY_IAC_REG(phy_reg) |
-+		     PHY_IAC_ADDR(phy_addr),
- 		MTK_PHY_IAC);
- 
--	if (mtk_mdio_busy_wait(eth))
--		return 0xffff;
--
--	d = mtk_r32(eth, MTK_PHY_IAC) & 0xffff;
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
- 
--	return d;
-+	return mtk_r32(eth, MTK_PHY_IAC) & PHY_IAC_DATA_MASK;
- }
- 
- static int mtk_mdio_write(struct mii_bus *bus, int phy_addr,
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 5ef70dd8b49c6..f2d90639d7ed1 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -341,11 +341,17 @@
- /* PHY Indirect Access Control registers */
- #define MTK_PHY_IAC		0x10004
- #define PHY_IAC_ACCESS		BIT(31)
--#define PHY_IAC_READ		BIT(19)
--#define PHY_IAC_WRITE		BIT(18)
--#define PHY_IAC_START		BIT(16)
--#define PHY_IAC_ADDR_SHIFT	20
--#define PHY_IAC_REG_SHIFT	25
-+#define PHY_IAC_REG_MASK	GENMASK(29, 25)
-+#define PHY_IAC_REG(x)		FIELD_PREP(PHY_IAC_REG_MASK, (x))
-+#define PHY_IAC_ADDR_MASK	GENMASK(24, 20)
-+#define PHY_IAC_ADDR(x)		FIELD_PREP(PHY_IAC_ADDR_MASK, (x))
-+#define PHY_IAC_CMD_MASK	GENMASK(19, 18)
-+#define PHY_IAC_CMD_WRITE	FIELD_PREP(PHY_IAC_CMD_MASK, 1)
-+#define PHY_IAC_CMD_C22_READ	FIELD_PREP(PHY_IAC_CMD_MASK, 2)
-+#define PHY_IAC_START_MASK	GENMASK(17, 16)
-+#define PHY_IAC_START_C22	FIELD_PREP(PHY_IAC_START_MASK, 1)
-+#define PHY_IAC_DATA_MASK	GENMASK(15, 0)
-+#define PHY_IAC_DATA(x)		FIELD_PREP(PHY_IAC_DATA_MASK, (x))
- #define PHY_IAC_TIMEOUT		HZ
- 
- #define MTK_MAC_MISC		0x1000c
+@@ -82,9 +81,19 @@ void iwl_mvm_roc_done_wk(struct work_struct *wk)
+ 			mvmvif = iwl_mvm_vif_from_mac80211(mvm->p2p_device_vif);
+ 			iwl_mvm_flush_sta(mvm, &mvmvif->bcast_sta, true);
+ 		}
+-	} else {
++	}
++
++	/*
++	 * Clear the ROC_AUX_RUNNING status bit.
++	 * This will cause the TX path to drop offchannel transmissions.
++	 * That would also be done by mac80211, but it is racy, in particular
++	 * in the case that the time event actually completed in the firmware
++	 * (which is handled in iwl_mvm_te_handle_notif).
++	 */
++	if (test_and_clear_bit(IWL_MVM_STATUS_ROC_AUX_RUNNING, &mvm->status)) {
+ 		/* do the same in case of hot spot 2.0 */
+ 		iwl_mvm_flush_sta(mvm, &mvm->aux_sta, true);
++
+ 		/* In newer version of this command an aux station is added only
+ 		 * in cases of dedicated tx queue and need to be removed in end
+ 		 * of use */
 -- 
 2.34.1
 
