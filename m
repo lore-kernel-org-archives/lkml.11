@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F172C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C17C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:46:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446705AbiAXVoM (ORCPT
+        id S1573150AbiAXVoe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:44:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58514 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446333AbiAXVH4 (ORCPT
+        Mon, 24 Jan 2022 16:44:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60210 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1447251AbiAXVKS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:07:56 -0500
+        Mon, 24 Jan 2022 16:10:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA35461320;
-        Mon, 24 Jan 2022 21:07:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E59FC340E5;
-        Mon, 24 Jan 2022 21:07:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F782B810BD;
+        Mon, 24 Jan 2022 21:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0FCFC340E5;
+        Mon, 24 Jan 2022 21:10:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058473;
-        bh=mogSOkaOkrrWOdetxmlOv7cZA4WGTZhATUoGO5ISBOc=;
+        s=korg; t=1643058615;
+        bh=dpr/6SmkftpYgHSoOA96Mr8yGDl3BpFvFZ1P7MbL7hc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bwysiofRA47rJrF6DC7TYnewxQIEkx2vb020Fmsv7+Nwvk5Q5ohbYraL+0WvW1h6h
-         8FHc2Lmxrvtyhco6NYYKu+kJ0pZf7XFMmA6XxPQvjjg9OnA8IgV8m+tza0UgPDvizq
-         6oHVEMiAFpK+IW3X6rd+tWfjPdY3Xm37qNvTB3ZE=
+        b=t3sbXaXykg7TQalfkWM7B99UpeMqtmxMMtaMyqFJkLNhpUZJ5z/aXzlB51114NdA7
+         PdIdzsGzxXRNQ21XmDTA7ClhLIJYnp9smfnmhuZtgHUC1Ts4no5e9M6gKxO9JjEj07
+         0f+w/i9x98RpekQCtHY62DujjhYeeB8hdIYalV/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0267/1039] x86/uaccess: Move variable into switch case statement
-Date:   Mon, 24 Jan 2022 19:34:16 +0100
-Message-Id: <20220124184134.279284920@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0347/1039] backlight: qcom-wled: Override default length with qcom,enabled-strings
+Date:   Mon, 24 Jan 2022 19:35:36 +0100
+Message-Id: <20220124184136.958390768@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,47 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit 61646ca83d3889696f2772edaff122dd96a2935e ]
+[ Upstream commit 2b4b49602f9feca7b7a84eaa33ad9e666c8aa695 ]
 
-When building with automatic stack variable initialization, GCC 12
-complains about variables defined outside of switch case statements.
-Move the variable into the case that uses it, which silences the warning:
+The length of qcom,enabled-strings as property array is enough to
+determine the number of strings to be enabled, without needing to set
+qcom,num-strings to override the default number of strings when less
+than the default (which is also the maximum) is provided in DT.
 
-./arch/x86/include/asm/uaccess.h:317:23: warning: statement will never be executed [-Wswitch-unreachable]
-  317 |         unsigned char x_u8__; \
-      |                       ^~~~~~
+This also introduces an extra warning when qcom,num-strings is set,
+denoting that it is not necessary to set both anymore.  It is usually
+more concise to set just qcom,num-length when a zero-based, contiguous
+range of strings is needed (the majority of the cases), or to only set
+qcom,enabled-strings when a specific set of indices is desired.
 
-Fixes: 865c50e1d279 ("x86/uaccess: utilize CONFIG_CC_HAS_ASM_GOTO_OUTPUT")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lkml.kernel.org/r/20211209043456.1377875-1-keescook@chromium.org
+Fixes: 775d2ffb4af6 ("backlight: qcom-wled: Restructure the driver for WLED3")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211115203459.1634079-6-marijn.suijten@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/uaccess.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/video/backlight/qcom-wled.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 33a68407def3f..8ab9e79abb2b4 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -314,11 +314,12 @@ do {									\
- do {									\
- 	__chk_user_ptr(ptr);						\
- 	switch (size) {							\
--	unsigned char x_u8__;						\
--	case 1:								\
-+	case 1:	{							\
-+		unsigned char x_u8__;					\
- 		__get_user_asm(x_u8__, ptr, "b", "=q", label);		\
- 		(x) = x_u8__;						\
- 		break;							\
-+	}								\
- 	case 2:								\
- 		__get_user_asm(x, ptr, "w", "=r", label);		\
- 		break;							\
+diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
+index dbcbeda655192..c057368e5056e 100644
+--- a/drivers/video/backlight/qcom-wled.c
++++ b/drivers/video/backlight/qcom-wled.c
+@@ -1521,6 +1521,8 @@ static int wled_configure(struct wled *wled)
+ 				return -EINVAL;
+ 			}
+ 		}
++
++		cfg->num_strings = string_len;
+ 	}
+ 
+ 	rc = of_property_read_u32(dev->of_node, "qcom,num-strings", &val);
+@@ -1531,9 +1533,13 @@ static int wled_configure(struct wled *wled)
+ 			return -EINVAL;
+ 		}
+ 
+-		if (string_len > 0 && val > string_len) {
+-			dev_err(dev, "qcom,num-strings exceeds qcom,enabled-strings\n");
+-			return -EINVAL;
++		if (string_len > 0) {
++			dev_warn(dev, "Only one of qcom,num-strings or qcom,enabled-strings"
++				      " should be set\n");
++			if (val > string_len) {
++				dev_err(dev, "qcom,num-strings exceeds qcom,enabled-strings\n");
++				return -EINVAL;
++			}
+ 		}
+ 
+ 		cfg->num_strings = val;
 -- 
 2.34.1
 
