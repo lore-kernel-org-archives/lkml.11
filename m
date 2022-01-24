@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C14C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3478C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:04:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376810AbiAXUEF (ORCPT
+        id S1353138AbiAXUEO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:04:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43560 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356432AbiAXTqP (ORCPT
+        Mon, 24 Jan 2022 15:04:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36948 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356391AbiAXTqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:46:15 -0500
+        Mon, 24 Jan 2022 14:46:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56D88614BB;
-        Mon, 24 Jan 2022 19:46:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 658C6C340E5;
-        Mon, 24 Jan 2022 19:46:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED4EFB8121A;
+        Mon, 24 Jan 2022 19:46:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DF38C340E5;
+        Mon, 24 Jan 2022 19:46:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053572;
-        bh=k3U219NtxpqvwwJsFdcR9puEAbmjM0wOQedBtfEhGzM=;
+        s=korg; t=1643053563;
+        bh=6ip6A0h5hrMAi23ynIfiqNaHv6NylR563ug94IIyhyA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zfouQ9pJwVnbpRd8KTwVPyxtqMyQeMdK98wHZ2xskwb2m1L3m6S17Mi4XGO748JnR
-         R3qr7glQZPFNXjk7xArWVmhAcEtMsKVP24gxUBmk9FhX6RqBtiDKK36WrwsgRPOF1h
-         tQfW6M98ClyLMqXpnLxkkY37zyn99GLGTZ0+/yoo=
+        b=b6ZvJpVVXj+jpLSq2/Q7cTVxfB/ir2EWme5o7Rn+6qnbDGjC2NDCTzfD//T6gRJJo
+         0b9SJx3/pGwvSZrsAFM0F+petkRoU7aOPWUEl385wAzKOqMJxjtX31JMOuFXl6KTxf
+         +rGW+5fgQKrg+FovNjM/yafoQGU1bvmoLTmmJcqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 077/563] media: aspeed: Update signal status immediately to ensure sane hw state
-Date:   Mon, 24 Jan 2022 19:37:22 +0100
-Message-Id: <20220124184027.052803371@linuxfoundation.org>
+Subject: [PATCH 5.10 074/563] media: atomisp: fix uninitialized bug in gmin_get_pmic_id_and_addr()
+Date:   Mon, 24 Jan 2022 19:37:19 +0100
+Message-Id: <20220124184026.960692562@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,63 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jammy Huang <jammy_huang@aspeedtech.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit af6d1bde395cac174ee71adcd3fa43f6435c7206 ]
+[ Upstream commit cb4d67a998e97365afdf34965b069601da1dae60 ]
 
-If res-chg, VE_INTERRUPT_MODE_DETECT_WD irq will be raised. But
-v4l2_input_status won't be updated to no-signal immediately until
-aspeed_video_get_resolution() in aspeed_video_resolution_work().
+The "power" pointer is not initialized on the else path and that would
+lead to an Oops.
 
-During the period of time, aspeed_video_start_frame() could be called
-because it doesn't know signal becomes unstable now. If it goes with
-aspeed_video_init_regs() of aspeed_video_irq_res_change()
-simultaneously, it will mess up hw state.
-
-To fix this problem, v4l2_input_status is updated to no-signal
-immediately for VE_INTERRUPT_MODE_DETECT_WD irq.
-
-Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
-Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
-Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Link: https://lore.kernel.org/linux-media/20211012082150.GA31086@kili
+Fixes: c30f4cb2d4c7 ("media: atomisp: Refactor PMIC detection to a separate function")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/aspeed-video.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
-index 23c41c545c536..debc7509c173c 100644
---- a/drivers/media/platform/aspeed-video.c
-+++ b/drivers/media/platform/aspeed-video.c
-@@ -556,6 +556,8 @@ static void aspeed_video_irq_res_change(struct aspeed_video *video, ulong delay)
- 	set_bit(VIDEO_RES_CHANGE, &video->flags);
- 	clear_bit(VIDEO_FRAME_INPRG, &video->flags);
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+index 135994d44802c..34480ca164746 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+@@ -481,7 +481,7 @@ fail:
  
-+	video->v4l2_input_status = V4L2_IN_ST_NO_SIGNAL;
-+
- 	aspeed_video_off(video);
- 	aspeed_video_bufs_done(video, VB2_BUF_STATE_ERROR);
+ static u8 gmin_get_pmic_id_and_addr(struct device *dev)
+ {
+-	struct i2c_client *power;
++	struct i2c_client *power = NULL;
+ 	static u8 pmic_i2c_addr;
  
-@@ -1337,7 +1339,6 @@ static void aspeed_video_resolution_work(struct work_struct *work)
- 	struct delayed_work *dwork = to_delayed_work(work);
- 	struct aspeed_video *video = container_of(dwork, struct aspeed_video,
- 						  res_work);
--	u32 input_status = video->v4l2_input_status;
- 
- 	aspeed_video_on(video);
- 
-@@ -1350,8 +1351,7 @@ static void aspeed_video_resolution_work(struct work_struct *work)
- 	aspeed_video_get_resolution(video);
- 
- 	if (video->detected_timings.width != video->active_timings.width ||
--	    video->detected_timings.height != video->active_timings.height ||
--	    input_status != video->v4l2_input_status) {
-+	    video->detected_timings.height != video->active_timings.height) {
- 		static const struct v4l2_event ev = {
- 			.type = V4L2_EVENT_SOURCE_CHANGE,
- 			.u.src_change.changes = V4L2_EVENT_SRC_CH_RESOLUTION,
+ 	if (pmic_id)
 -- 
 2.34.1
 
