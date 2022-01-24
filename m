@@ -2,116 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBCC6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79762C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:55:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242496AbiAXIzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 03:55:12 -0500
-Received: from mga07.intel.com ([134.134.136.100]:19950 "EHLO mga07.intel.com"
+        id S242497AbiAXIzi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 03:55:38 -0500
+Received: from mout.gmx.net ([212.227.15.18]:38383 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242477AbiAXIzK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 03:55:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643014510; x=1674550510;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=B7mRVQn3mGN3EOaG2zxuvdC0hKN77JXTeveSRmb0/ZQ=;
-  b=FO4O4sd4KL/7iz7SjW8782ijhREtC042mS4H30znv+TuqxG/dh7ZLgSc
-   Umbmr5mHNkGtZBGuQjzY0keVjLatmOZTyaguA4bTEXnPMJvtpplZGKtUv
-   8DR1QCDkyDCKIvsYrvOoWraBAF7ws6ERoCT4iMY0pNQRaGNHNBhtXiaC4
-   KImH7yZFB5CGJ1NWmtKlDWqR9WQIbv+5eXqn8MW9KwnMjpeBVp6egI+P6
-   C6lcEr+wj1U8oEVwiE23+X/2VgTUTZ5UKgROSsZdi8LKm36xgy2PXr20Y
-   eoOxzoOoHbWblCGVuCQza3HwSqeSU6H5mlJIKDtjdboFTvxpFYWizXZ56
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="309320373"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="309320373"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 00:55:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="673558970"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 24 Jan 2022 00:55:00 -0800
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 24 Jan 2022 10:54:59 +0200
-Date:   Mon, 24 Jan 2022 10:54:59 +0200
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Robert =?utf-8?B?xZp3acSZY2tp?= <robert@swiecki.net>,
-        Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-Subject: Re: [PATCH] usb: typec: Only attempt to link USB ports if there is
- fwnode
-Message-ID: <Ye5pY97VOb4TdZjH@kuha.fi.intel.com>
-References: <20220118093627.74098-1-heikki.krogerus@linux.intel.com>
+        id S235066AbiAXIzf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 03:55:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1643014505;
+        bh=9GE6/HhU03ye1tHqFSMbTSMegWHrLXW6xFPGDsUr8xM=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=QUh+1xtexuxipdL236MxFYyHzhPxnzCKu96XdjalgAlH630DHbEOqlpnxlwd/fp9c
+         cBgdUqlXrqmRf7bmbPVeB4x1zgX15AUy+8pPamZWjkIuSq5aWekYyiUFWcBxWcCuAX
+         njwz1Li5KYV2K3lM8WT785YI6yoAKRd3Dk9R1Oys=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.79.70] ([80.245.79.70]) by web-mail.gmx.net
+ (3c-app-gmx-bs10.server.lan [172.19.170.61]) (via HTTP); Mon, 24 Jan 2022
+ 09:55:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220118093627.74098-1-heikki.krogerus@linux.intel.com>
+Message-ID: <trinity-2e9cf5db-4c9b-4ad7-b684-74541e639edf-1643014505272@3c-app-gmx-bs10>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Sascha Hauer <sha@pengutronix.de>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-rockchip@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Johan Jonker <jbx6244@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Aw: Re: [PATCH v2 2/2] arm64: dts: rockchip: Add Bananapi R2 Pro
+Content-Type: text/plain; charset=UTF-8
+Date:   Mon, 24 Jan 2022 09:55:05 +0100
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20220124083102.GW23490@pengutronix.de>
+References: <20220123135116.136846-1-linux@fw-web.de>
+ <20220123135116.136846-3-linux@fw-web.de>
+ <20220124083102.GW23490@pengutronix.de>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:Je7aAK7RjPFg0XaJcEiMbvJFAZZll0ExxcjcIROYGq8ZJ+yJhJihQ0DH8cXaUjJApV+Sq
+ vtI1A7TR+ffLQap/cfhT093HzRJKZolw/7vnIh2TtHGAooQMcDd1u4Tyxw6k6eWe5fW2/2jcRSX6
+ +NKoaY/X7gnLUNh4PHOYMgdlTu0Pw2oSNJsuF46ghBkkkRqurG3yj4avwXZxJg+8Rg3sP39vGA1Q
+ +qJZx9kky3hznHpPz01NcySxy7ytuGGHWEZNVSyFUByvzW+uqONUQnVL0bzcesBFxiKgCROgOSG0
+ aw=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:35Zn1CJ4Kws=:FmdPaVG2vDoyBYTlDJ+9xT
+ mpXPYJicuxSkBD50ZR4K7GG/9pR9hiuV7B44aHcLlIGvRU+fxFK03lJHKWVtSialWwl5zmhx4
+ YB4X9SxyhadWUYtwHzaEkQIz7S3y7cE12uqFmORT232FGsn+faJTAFwcENzTzSHjxv+tJStDS
+ iUccLfyKO/v3EGrk5UdlJx3hQHV1103cxQC4q8OqQYsZV0umTCMD3K3xZChHE6SMsXC8k3ETU
+ 52zDzHcR8g88vTtxdRS1ZG66hATckhIOfnU/AAM2a5pJELAy5Wo5bQ/TLlrkv53gn5HBwel8G
+ Oi0bbPxw51D+I5U7/pTS2weHFoh4M4gjZUIu03IjAtA5tpWrJvbIQwIzh5otTv30/1DXbZGQu
+ M2Vx1NkCcg53ZGHAvf1sen/I0lsDAaxnoQKPjicUWYxS0e6MODarfTClIL4KUByGXkcMvU+3q
+ m5WLhsU0Vuoy2K6T8eakhmPTU32KP3KH3wYCdSNvmhcDg33v1wXLwIu/eLS05vvmmOPDXoZqL
+ 9XtNZ02P8blO8ICEkRMjK4wq9O8YYV9B1BJAlUBCh1Qhi2rIydH9HA14z62EzjpWl3gSBHHeR
+ ljy27JzOdFgFEsVz6IQqofCuxw0MIBq2CijzPvC41JexzORKTqeP4QIIkiamxuzy/O2UG5ij0
+ 8CONA2uJ8m0pv/LXvmYeBld0DoVBa/JrPvGEyRdYk6m4VeA4XONiKeux/XGauXEEuFk2LzTwu
+ OlTJ4NNZrJmD6VT9cvolNivSh30DtAOO7Rh6JfvGuGZ8C9+4JAneWAKbitkPSRxgWAmT7VJUR
+ RcVA7Ur
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 12:36:27PM +0300, Heikki Krogerus wrote:
-> The code that creates the links to the USB ports attached to
-> a connector inside the system assumed that the ACPI nodes
-> (fwnodes) always exist for the connectors, but it can not do
-> that.
-> 
-> There is no guarantee that every USB Type-C connector has
-> ACPI device node representing it in the ACPI tables, and
-> even if there are the nodes in the ACPI tables, the _STA
-> method in those nodes may still return 0 (which means the
-> device does not exist from ACPI PoW).
-> 
-> This fixes NULL pointer dereference that happens if the
-> nodes are missing.
+Hi
 
-I'll resend this togher wit the other fix.
+> Gesendet: Montag, 24. Januar 2022 um 09:31 Uhr
+> Von: "Sascha Hauer" <sha@pengutronix.de>
+> An: "Frank Wunderlich" <linux@fw-web.de>
+> Cc: linux-rockchip@lists.infradead.org, "Frank Wunderlich" <frank-w@publ=
+ic-files.de>, "Rob Herring" <robh+dt@kernel.org>, "Heiko Stuebner" <heiko@=
+sntech.de>, "Peter Geis" <pgwipeout@gmail.com>, "Johan Jonker" <jbx6244@gm=
+ail.com>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org=
+, linux-kernel@vger.kernel.org
+> Betreff: Re: [PATCH v2 2/2] arm64: dts: rockchip: Add Bananapi R2 Pro
+>
+> On Sun, Jan 23, 2022 at 02:51:16PM +0100, Frank Wunderlich wrote:
+> > From: Frank Wunderlich <frank-w@public-files.de>
+> >
+> > This patch adds Devicetree for Bananapi R2 Pro based on RK3568.
+> > Add uart/sd/emmc/i2c/rk809/tsadc nodes for basic function.
+> > Gmac0 is directly connected to wan-port so usable without additional
+> > driver.
+> > On gmac1 there is a switch (rtl8367rb) connected which have not yet a
+> > driver in mainline.
+> >
+> > Patch also prepares nodes for GPIO header.
+> >
+> > Co-developed-by: Peter Geis <pgwipeout@gmail.com>
+> > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> > Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> > ---
+> > +&gmac0 {
+> > +	assigned-clocks =3D <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
+> > +	assigned-clock-parents =3D <&cru SCLK_GMAC0_RGMII_SPEED>, <&cru CLK_=
+MAC0_2TOP>;
+> > +	clock_in_out =3D "input";
+> > +	phy-handle =3D <&rgmii_phy0>;
+> > +	phy-mode =3D "rgmii";
+> > +	pinctrl-names =3D "default";
+> > +	pinctrl-0 =3D <&gmac0_miim
+> > +		     &gmac0_tx_bus2
+> > +		     &gmac0_rx_bus2
+> > +		     &gmac0_rgmii_clk
+> > +		     &gmac0_rgmii_bus>;
+> > +
+> > +	snps,reset-gpio =3D <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+> > +	snps,reset-active-low;
+> > +	/* Reset time is 20ms, 100ms for rtl8211f */
+>
+> Is this really a rtl8211f? I don't know and it could indeed be a
+> rtl8211f, I'm just asking because the comment is copy pasted from
+> the Quartz64 board.
 
-thanks,
+i know thats a RTL8211 phy, but i see no additional letter on the chip, ba=
+sed on shematics it's a RTL8211F-CG
 
-> Reported-and-tested-by: Robert Święcki <robert@swiecki.net>
-> Reported-by: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-> Fixes: 730b49aac426 ("usb: typec: port-mapper: Convert to the component framework")
-> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> ---
-> Hi guys,
-> 
-> Mikhail, I got confirmation from Robert that the patch fixes the
-> issue.
-> 
-> thanks,
-> ---
->  drivers/usb/typec/port-mapper.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/usb/typec/port-mapper.c b/drivers/usb/typec/port-mapper.c
-> index 07d307418b470..b6e0c6acc628c 100644
-> --- a/drivers/usb/typec/port-mapper.c
-> +++ b/drivers/usb/typec/port-mapper.c
-> @@ -56,6 +56,9 @@ int typec_link_ports(struct typec_port *con)
->  {
->  	struct each_port_arg arg = { .port = con, .match = NULL };
->  
-> +	if (!has_acpi_companion(&con->dev))
-> +		return 0;
-> +
->  	bus_for_each_dev(&acpi_bus_type, NULL, &arg, typec_port_match);
->  
->  	/*
-> @@ -74,5 +77,6 @@ int typec_link_ports(struct typec_port *con)
->  
->  void typec_unlink_ports(struct typec_port *con)
->  {
-> -	component_master_del(&con->dev, &typec_aggregate_ops);
-> +	if (has_acpi_companion(&con->dev))
-> +		component_master_del(&con->dev, &typec_aggregate_ops);
->  }
-> -- 
-> 2.34.1
+> > +	snps,reset-delays-us =3D <0 20000 100000>;
+> > +
+> > +&mdio0 {
+> > +	rgmii_phy0: ethernet-phy@0 {
+> > +		compatible =3D "ethernet-phy-ieee802.3-c22";
+> > +		reg =3D <0x0>;
+> > +	};
+>
+> 0 is the broadcast address. I'm not sure if it's a good idea to use it.
+> There should be another address the phy listens on.
 
--- 
-heikki
+took this from the 3568-EVB (like the most parts, as the board is mostly t=
+he same), and in linux it's the same and working. The switch have also phy=
+-id 0 on mdio bus #1, are you sure this is invalid?
+
+regards Frank
