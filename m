@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE03C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20909C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343924AbiAXSwm (ORCPT
+        id S1343698AbiAXSwo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:52:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
+        Mon, 24 Jan 2022 13:52:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242005AbiAXSvY (ORCPT
+        with ESMTP id S1343688AbiAXSv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:51:24 -0500
+        Mon, 24 Jan 2022 13:51:26 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF39AC06177E;
-        Mon, 24 Jan 2022 10:51:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCD9C061751;
+        Mon, 24 Jan 2022 10:51:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96C70B8121B;
-        Mon, 24 Jan 2022 18:51:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9646C340E5;
-        Mon, 24 Jan 2022 18:51:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76795B81227;
+        Mon, 24 Jan 2022 18:51:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB902C340E7;
+        Mon, 24 Jan 2022 18:51:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050273;
-        bh=4jx1Bl4S5uQyeaT0H4TWgXfSBRxVssLycfkRR4kmCkU=;
+        s=korg; t=1643050279;
+        bh=D77353yRkWUoeoAkcoVvyTrgVQDRoCb6uV1U5naKB+w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VRNJXTh773fKJA81a19OFXtUAvLEswz4a3/JCCAL8rEZHLovVQFqqa/tZcyEbAdQx
-         7BLd/hj7DCroJQWpQ7lDoT/a2Kv2IYggYJR/m/r3KJ9Q3u+Qa71tAtIs80dfxaf4WB
-         1L7QyJQz4KKGzIexGqE6Ayv6/swNRmzAYS90oH0Y=
+        b=N6nMVQXiGmiEcZXgJOVq7yIvK/ofCSgFYZXdf3HNDdPmxn7bvRl2yQLcKw+GcPIZy
+         IKrRPQWj/64AKW6lEt7rbXooB55u7Ta8WNOAKdgKjtxrUTeISCOM3m7hTB7Etwtteo
+         /R3y75gqlHwcE49KhZoL3+cHqKDsYPTWDJdF8vXQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, rkardell@mida.se,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
+        Mark Zhang <markzhang@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 066/114] media: m920x: dont use stack on USB reads
-Date:   Mon, 24 Jan 2022 19:42:41 +0100
-Message-Id: <20220124183929.139516454@linuxfoundation.org>
+Subject: [PATCH 4.4 050/114] RDMA/core: Let ib_find_gid() continue search even after empty entry
+Date:   Mon, 24 Jan 2022 19:42:25 +0100
+Message-Id: <20220124183928.647449106@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -50,57 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Avihai Horon <avihaih@nvidia.com>
 
-[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
+[ Upstream commit 483d805191a23191f8294bbf9b4e94836f5d92e4 ]
 
-Using stack-allocated pointers for USB message data don't work.
-This driver is almost OK with that, except for the I2C read
-logic.
+Currently, ib_find_gid() will stop searching after encountering the first
+empty GID table entry. This behavior is wrong since neither IB nor RoCE
+spec enforce tightly packed GID tables.
 
-Fix it by using a temporary read buffer, just like on all other
-calls to m920x_read().
+For example, when a valid GID entry exists at index N, and if a GID entry
+is empty at index N-1, ib_find_gid() will fail to find the valid entry.
 
-Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
-Reported-by: rkardell@mida.se
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fix it by making ib_find_gid() continue searching even after encountering
+missing entries.
+
+Fixes: 5eb620c81ce3 ("IB/core: Add helpers for uncached GID and P_Key searches")
+Link: https://lore.kernel.org/r/e55d331b96cecfc2cf19803d16e7109ea966882d.1639055490.git.leonro@nvidia.com
+Signed-off-by: Avihai Horon <avihaih@nvidia.com>
+Reviewed-by: Mark Zhang <markzhang@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/infiniband/core/device.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
-index eafc5c82467f4..5b806779e2106 100644
---- a/drivers/media/usb/dvb-usb/m920x.c
-+++ b/drivers/media/usb/dvb-usb/m920x.c
-@@ -284,6 +284,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
- 			/* Should check for ack here, if we knew how. */
- 		}
- 		if (msg[i].flags & I2C_M_RD) {
-+			char *read = kmalloc(1, GFP_KERNEL);
-+			if (!read) {
-+				ret = -ENOMEM;
-+				kfree(read);
-+				goto unlock;
-+			}
+diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+index 179e8134d57fc..a14a3ec99ffe1 100644
+--- a/drivers/infiniband/core/device.c
++++ b/drivers/infiniband/core/device.c
+@@ -848,7 +848,8 @@ int ib_find_gid(struct ib_device *device, union ib_gid *gid,
+ 		for (i = 0; i < device->port_immutable[port].gid_tbl_len; ++i) {
+ 			ret = ib_query_gid(device, port, i, &tmp_gid, NULL);
+ 			if (ret)
+-				return ret;
++				continue;
 +
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction?
- 				 * Send STOP, otherwise send ACK. */
-@@ -291,9 +298,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
- 
- 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
- 						      0x20 | stop,
--						      &msg[i].buf[j], 1)) != 0)
-+						      read, 1)) != 0)
- 					goto unlock;
-+				msg[i].buf[j] = read[0];
- 			}
-+
-+			kfree(read);
- 		} else {
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction? Then send STOP. */
+ 			if (!memcmp(&tmp_gid, gid, sizeof *gid)) {
+ 				*port_num = port;
+ 				if (index)
 -- 
 2.34.1
 
