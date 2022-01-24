@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19975C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A006C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:54:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351936AbiAXTx5 (ORCPT
+        id S1351972AbiAXTyA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:53:57 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38000 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350666AbiAXTmw (ORCPT
+        Mon, 24 Jan 2022 14:54:00 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33092 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346385AbiAXTnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:42:52 -0500
+        Mon, 24 Jan 2022 14:43:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C704E61482;
-        Mon, 24 Jan 2022 19:42:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B8B1C340E5;
-        Mon, 24 Jan 2022 19:42:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FA85B810AF;
+        Mon, 24 Jan 2022 19:43:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5281C340E5;
+        Mon, 24 Jan 2022 19:43:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053370;
-        bh=ixjdja7ZV8c6BZ81vUfCtuM7LebAtBUhgDp4H5GYMis=;
+        s=korg; t=1643053382;
+        bh=3+Q1qqp470v+gEM0d91TJ6IrB2l1J253vXc0zAZHbcA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KZxG2uV6pL1dBK1Pj1USmAm0MfwoeXa7rYhqslEQZ714j1JHJznUYMzgpqDxDMqHu
-         RPp+ue6jFFUnhxMCBLtvOwv6Z2rDAN8hFZj7R0Rutpq1MV+/1DFz5KuxJOr7J4FORm
-         NguooX6mnJ8xud8YLBjJfWgLx7y+fun+UzMzzOzE=
+        b=rusgf2Vg0mGAwMcU5OvFuIAE8iK0yQe/t3dFYclkDCG/QtYul49QsSyDCTU5kA+3h
+         NlUNowTK/q7Dn/hfrHe0g/X1M7lsYhotlbVPMxrZkNwllzp1ZacAq9nJfqNskFoFrB
+         V2IhF/2Ku09Yt08rKgC96OwR7dho+0Tl7JI+si24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 043/563] drm/bridge: display-connector: fix an uninitialized pointer in probe()
-Date:   Mon, 24 Jan 2022 19:36:48 +0100
-Message-Id: <20220124184025.907593866@linuxfoundation.org>
+Subject: [PATCH 5.10 047/563] drm/rockchip: dsi: Fix unbalanced clock on probe error
+Date:   Mon, 24 Jan 2022 19:36:52 +0100
+Message-Id: <20220124184026.039348000@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,36 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 189723fbe9aca18d6f7d638c59a40288030932b5 ]
+[ Upstream commit 251888398753924059f3bb247a44153a2853137f ]
 
-The "label" pointer is used for debug output.  The code assumes that it
-is either NULL or valid, but it is never set to NULL.  It is either
-valid or uninitialized.
+Our probe() function never enabled this clock, so we shouldn't disable
+it if we fail to probe the bridge.
 
-Fixes: 0c275c30176b ("drm/bridge: Add bridge driver for display connectors")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211013080825.GE6010@kili
+Noted by inspection.
+
+Fixes: 2d4f7bdafd70 ("drm/rockchip: dsi: migrate to use dw-mipi-dsi bridge driver")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210928143413.v3.3.Ie8ceefb51ab6065a1151869b6fcda41a467d4d2c@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/display-connector.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/display-connector.c b/drivers/gpu/drm/bridge/display-connector.c
-index 4d278573cdb99..544a47335cac4 100644
---- a/drivers/gpu/drm/bridge/display-connector.c
-+++ b/drivers/gpu/drm/bridge/display-connector.c
-@@ -104,7 +104,7 @@ static int display_connector_probe(struct platform_device *pdev)
- {
- 	struct display_connector *conn;
- 	unsigned int type;
--	const char *label;
-+	const char *label = NULL;
- 	int ret;
+diff --git a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+index d0c9610ad2202..433b2f459a7d9 100644
+--- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+@@ -1126,14 +1126,10 @@ static int dw_mipi_dsi_rockchip_probe(struct platform_device *pdev)
+ 		if (ret != -EPROBE_DEFER)
+ 			DRM_DEV_ERROR(dev,
+ 				      "Failed to probe dw_mipi_dsi: %d\n", ret);
+-		goto err_clkdisable;
++		return ret;
+ 	}
  
- 	conn = devm_kzalloc(&pdev->dev, sizeof(*conn), GFP_KERNEL);
+ 	return 0;
+-
+-err_clkdisable:
+-	clk_disable_unprepare(dsi->pllref_clk);
+-	return ret;
+ }
+ 
+ static int dw_mipi_dsi_rockchip_remove(struct platform_device *pdev)
 -- 
 2.34.1
 
