@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67743C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E4FC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349458AbiAXTUr (ORCPT
+        id S1349521AbiAXTUy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:20:47 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42248 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346348AbiAXTMh (ORCPT
+        Mon, 24 Jan 2022 14:20:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38408 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346427AbiAXTMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:12:37 -0500
+        Mon, 24 Jan 2022 14:12:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1221611A9;
-        Mon, 24 Jan 2022 19:12:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97FE2C340E5;
-        Mon, 24 Jan 2022 19:12:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1969B8121A;
+        Mon, 24 Jan 2022 19:12:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8396C340E8;
+        Mon, 24 Jan 2022 19:12:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051555;
-        bh=7MC46cqVCemBIVTmpcjdimelq3KvYsWQumf2TrlMETo=;
+        s=korg; t=1643051561;
+        bh=sqIKcZ/QTMPYz57hTGY6s+dI4WplPMK/ztbGXgAGfns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QIv0oRvv+6nOyegDsecpJeOfQnpFJlxjDmgR86qGzivKyiUeKNHSxmdqd84kU8DbT
-         gg4mQ7SzJUII0LvjdKDXJmosU/zXAZaZ2yx3m5+bsztFIWmGg/th8DL4rgbQi4g0+Z
-         I+qcrWUdtgO2MwXlBOn1qgOLWkW4AV6uuphR+S1M=
+        b=z6qH0vGxqa3dBGn7gv31Dut6jc6Iffa5pYS0VbPkT6MCNy258B8iidVTG5OC+iz1h
+         /sS579gO1gs571EqUvQ89qTdyHJH8U2vUVa93CpTSMRJ03c1su6iS47IFg80n9YQGQ
+         Z/oYCrCEQaYd+1YgUGGR5PcXpRGOkU2jmlaHLKjQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Paul Barker <paul.barker@sancloud.com>
-Subject: [PATCH 4.19 013/239] kbuild: Add $(KBUILD_HOSTLDFLAGS) to has_libelf test
-Date:   Mon, 24 Jan 2022 19:40:51 +0100
-Message-Id: <20220124183943.538536958@linuxfoundation.org>
+        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>
+Subject: [PATCH 4.19 015/239] KVM: s390: Clarify SIGP orders versus STOP/RESTART
+Date:   Mon, 24 Jan 2022 19:40:53 +0100
+Message-Id: <20220124183943.599752654@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -47,54 +47,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Eric Farman <farman@linux.ibm.com>
 
-commit f634ca650f724347892068489c7920631a3aac6a upstream.
+commit 812de04661c4daa7ac385c0dfd62594540538034 upstream.
 
-Normally, invocations of $(HOSTCC) include $(KBUILD_HOSTLDFLAGS), which
-in turn includes $(HOSTLDFLAGS), which allows users to pass in their own
-flags when linking. However, the 'has_libelf' test does not, meaning
-that if a user requests a specific linker via HOSTLDFLAGS=-fuse-ld=...,
-it is not respected and the build might error.
+With KVM_CAP_S390_USER_SIGP, there are only five Signal Processor
+orders (CONDITIONAL EMERGENCY SIGNAL, EMERGENCY SIGNAL, EXTERNAL CALL,
+SENSE, and SENSE RUNNING STATUS) which are intended for frequent use
+and thus are processed in-kernel. The remainder are sent to userspace
+with the KVM_CAP_S390_USER_SIGP capability. Of those, three orders
+(RESTART, STOP, and STOP AND STORE STATUS) have the potential to
+inject work back into the kernel, and thus are asynchronous.
 
-For example, if a user building with clang wants to use all of the LLVM
-tools without any GNU tools, they might remove all of the GNU tools from
-their system or PATH then build with
+Let's look for those pending IRQs when processing one of the in-kernel
+SIGP orders, and return BUSY (CC2) if one is in process. This is in
+agreement with the Principles of Operation, which states that only one
+order can be "active" on a CPU at a time.
 
-$ make HOSTLDFLAGS=-fuse-ld=lld LLVM=1 LLVM_IAS=1
-
-which says use all of the LLVM tools, the integrated assembler, and
-ld.lld for linking host executables. Without this change, the build will
-error because $(HOSTCC) uses its default linker, rather than the one
-requested via -fuse-ld=..., which is GNU ld in clang's case in a default
-configuration.
-
-error: Cannot generate ORC metadata for CONFIG_UNWINDER_ORC=y, please
-install libelf-dev, libelf-devel or elfutils-libelf-devel
-make[1]: *** [Makefile:1260: prepare-objtool] Error 1
-
-Add $(KBUILD_HOSTLDFLAGS) to the 'has_libelf' test so that the linker
-choice is respected.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/479
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Paul Barker <paul.barker@sancloud.com>
+Cc: stable@vger.kernel.org
+Suggested-by: David Hildenbrand <david@redhat.com>
+Signed-off-by: Eric Farman <farman@linux.ibm.com>
+Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Link: https://lore.kernel.org/r/20211213210550.856213-2-farman@linux.ibm.com
+[borntraeger@linux.ibm.com: add stable tag]
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/kvm/interrupt.c |    7 +++++++
+ arch/s390/kvm/kvm-s390.c  |    9 +++++++--
+ arch/s390/kvm/kvm-s390.h  |    1 +
+ arch/s390/kvm/sigp.c      |   28 ++++++++++++++++++++++++++++
+ 4 files changed, 43 insertions(+), 2 deletions(-)
 
---- a/Makefile
-+++ b/Makefile
-@@ -972,7 +972,7 @@ HOST_LIBELF_LIBS = $(shell pkg-config li
+--- a/arch/s390/kvm/interrupt.c
++++ b/arch/s390/kvm/interrupt.c
+@@ -1900,6 +1900,13 @@ int kvm_s390_is_stop_irq_pending(struct
+ 	return test_bit(IRQ_PEND_SIGP_STOP, &li->pending_irqs);
+ }
  
- ifdef CONFIG_STACK_VALIDATION
-   has_libelf := $(call try-run,\
--		echo "int main() {}" | $(HOSTCC) -xc -o /dev/null $(HOST_LIBELF_LIBS) -,1,0)
-+		echo "int main() {}" | $(HOSTCC) $(KBUILD_HOSTLDFLAGS) -xc -o /dev/null $(HOST_LIBELF_LIBS) -,1,0)
-   ifeq ($(has_libelf),1)
-     objtool_target := tools/objtool FORCE
-   else
++int kvm_s390_is_restart_irq_pending(struct kvm_vcpu *vcpu)
++{
++	struct kvm_s390_local_interrupt *li = &vcpu->arch.local_int;
++
++	return test_bit(IRQ_PEND_RESTART, &li->pending_irqs);
++}
++
+ void kvm_s390_clear_stop_irq(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_s390_local_interrupt *li = &vcpu->arch.local_int;
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -3844,10 +3844,15 @@ void kvm_s390_vcpu_stop(struct kvm_vcpu
+ 	spin_lock(&vcpu->kvm->arch.start_stop_lock);
+ 	online_vcpus = atomic_read(&vcpu->kvm->online_vcpus);
+ 
+-	/* SIGP STOP and SIGP STOP AND STORE STATUS has been fully processed */
++	/*
++	 * Set the VCPU to STOPPED and THEN clear the interrupt flag,
++	 * now that the SIGP STOP and SIGP STOP AND STORE STATUS orders
++	 * have been fully processed. This will ensure that the VCPU
++	 * is kept BUSY if another VCPU is inquiring with SIGP SENSE.
++	 */
++	kvm_s390_set_cpuflags(vcpu, CPUSTAT_STOPPED);
+ 	kvm_s390_clear_stop_irq(vcpu);
+ 
+-	kvm_s390_set_cpuflags(vcpu, CPUSTAT_STOPPED);
+ 	__disable_ibs_on_vcpu(vcpu);
+ 
+ 	for (i = 0; i < online_vcpus; i++) {
+--- a/arch/s390/kvm/kvm-s390.h
++++ b/arch/s390/kvm/kvm-s390.h
+@@ -372,6 +372,7 @@ void kvm_s390_destroy_adapters(struct kv
+ int kvm_s390_ext_call_pending(struct kvm_vcpu *vcpu);
+ extern struct kvm_device_ops kvm_flic_ops;
+ int kvm_s390_is_stop_irq_pending(struct kvm_vcpu *vcpu);
++int kvm_s390_is_restart_irq_pending(struct kvm_vcpu *vcpu);
+ void kvm_s390_clear_stop_irq(struct kvm_vcpu *vcpu);
+ int kvm_s390_set_irq_state(struct kvm_vcpu *vcpu,
+ 			   void __user *buf, int len);
+--- a/arch/s390/kvm/sigp.c
++++ b/arch/s390/kvm/sigp.c
+@@ -288,6 +288,34 @@ static int handle_sigp_dst(struct kvm_vc
+ 	if (!dst_vcpu)
+ 		return SIGP_CC_NOT_OPERATIONAL;
+ 
++	/*
++	 * SIGP RESTART, SIGP STOP, and SIGP STOP AND STORE STATUS orders
++	 * are processed asynchronously. Until the affected VCPU finishes
++	 * its work and calls back into KVM to clear the (RESTART or STOP)
++	 * interrupt, we need to return any new non-reset orders "busy".
++	 *
++	 * This is important because a single VCPU could issue:
++	 *  1) SIGP STOP $DESTINATION
++	 *  2) SIGP SENSE $DESTINATION
++	 *
++	 * If the SIGP SENSE would not be rejected as "busy", it could
++	 * return an incorrect answer as to whether the VCPU is STOPPED
++	 * or OPERATING.
++	 */
++	if (order_code != SIGP_INITIAL_CPU_RESET &&
++	    order_code != SIGP_CPU_RESET) {
++		/*
++		 * Lockless check. Both SIGP STOP and SIGP (RE)START
++		 * properly synchronize everything while processing
++		 * their orders, while the guest cannot observe a
++		 * difference when issuing other orders from two
++		 * different VCPUs.
++		 */
++		if (kvm_s390_is_stop_irq_pending(dst_vcpu) ||
++		    kvm_s390_is_restart_irq_pending(dst_vcpu))
++			return SIGP_CC_BUSY;
++	}
++
+ 	switch (order_code) {
+ 	case SIGP_SENSE:
+ 		vcpu->stat.instruction_sigp_sense++;
 
 
