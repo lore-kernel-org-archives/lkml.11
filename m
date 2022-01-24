@@ -2,126 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA11FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 16:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA46C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 16:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243809AbiAXQlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 11:41:44 -0500
-Received: from mta-p8.oit.umn.edu ([134.84.196.208]:52498 "EHLO
-        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241174AbiAXQlm (ORCPT
+        id S243822AbiAXQmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 11:42:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40020 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241174AbiAXQmD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 11:41:42 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 4JjG393q2Rz9vKMM
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 16:41:41 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p8.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id LyBRGfAocl05 for <linux-kernel@vger.kernel.org>;
-        Mon, 24 Jan 2022 10:41:41 -0600 (CST)
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Mon, 24 Jan 2022 11:42:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19838C06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 08:42:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 4JjG391gYlz9vKMN
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:41:41 -0600 (CST)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p8.oit.umn.edu 4JjG391gYlz9vKMN
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p8.oit.umn.edu 4JjG391gYlz9vKMN
-Received: by mail-pl1-f197.google.com with SMTP id p17-20020a170903249100b0014af06caa65so3598938plw.6
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 08:41:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZjxyaAEg9dgyhIAkpzzAptxU/LU+QVbkLgcz/aYUJL0=;
-        b=VirmN0SOTo8kwAsb6NJ8f0My6angxwwfXPytMw1MiWvZSTJvH+k60e1XJyHLwmUJ8I
-         gb0dYxOJhTRm6FHSjRNj1F6BYyfFQ8+rziWRzJ00cmkMG234HWQcyUGZn5QJtTbt/0x5
-         WbHHVlcfwvqCi20uI+e6uqC7Qe1Eo2tLyk+amiDmu4D5peJpc9psf3Irx6gq3vG41A0C
-         FIAlbksV75hxBifi+VXqDsxG/vbBE68AVFX6uEYDWAe+mYQwZ8A+Pc4O0JHjfAlsM/mJ
-         4xTil0FcCZpFLqjqcbEgxhd0Ryw/MGyG3tq1qmv37KkJPwdGE8iTmytU4kXKL8ky7oxJ
-         COMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZjxyaAEg9dgyhIAkpzzAptxU/LU+QVbkLgcz/aYUJL0=;
-        b=y3LlT+90Csz3CPhwC4SoMSVtaz/6jUaWccUIU/yUbrEHNmlZfDnxmRBma7t8JXlKkW
-         a3ABoaypQcTBtH9t16Tp2QpcJY5GkDnYZlpJtV5LlFnDHSUPjA9p/0g5uZ/LS2ZYnSsv
-         Cayv2S2FnfX93/KmlkYX1AR1K78dNM9u/lMNN/CTh2KHT/DPGt4L6MzH1vOT/7n9Zl6/
-         yHZ6Fdrt7ygYVAQnbknXqesVGitCpc6XJIpOH6YGejII0y1yj2HC61ZgHqflZIO7cavt
-         xlAUO9+c5ZGZ2C7G/q069uvdnbllYQwKz/RJSq5yEBALIbW3cem6ElCh5sbL0n3fFvH0
-         7SFQ==
-X-Gm-Message-State: AOAM530ahC/yqpW1Notoh8COs9GuBcGHRTdfftFdx/j7AnZhDfc6s8Dx
-        40LaRhw+BbqfYPXa8Mat7Fpf0/+PIWgeexMVtsbtIeT1vWMFDPEOoZCgrvIYbfGMeS+/hwquEkC
-        +SbTa61vO26QAV/fXYU9CD4+cNTt2
-X-Received: by 2002:a17:90a:3f09:: with SMTP id l9mr2728753pjc.38.1643042500403;
-        Mon, 24 Jan 2022 08:41:40 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyOpsozHODGgFyK9SCHH//gLgeWWuohBy6yEBU2ijxYIw5SjGOPgAKzc1o1kBe/gI7Gr6S2GA==
-X-Received: by 2002:a17:90a:3f09:: with SMTP id l9mr2728731pjc.38.1643042500108;
-        Mon, 24 Jan 2022 08:41:40 -0800 (PST)
-Received: from zqy787-GE5S.lan ([36.4.61.248])
-        by smtp.gmail.com with ESMTPSA id my11sm11680862pjb.35.2022.01.24.08.41.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 08:41:39 -0800 (PST)
-From:   Zhou Qingyang <zhou1615@umn.edu>
-To:     zhou1615@umn.edu
-Cc:     kjlu@umn.edu, "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Lv Zheng <lv.zheng@intel.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ACPI: OSL: Fix a NULL pointer dereference in extlog_init().
-Date:   Tue, 25 Jan 2022 00:41:34 +0800
-Message-Id: <20220124164134.52046-1-zhou1615@umn.edu>
-X-Mailer: git-send-email 2.25.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 939766104F
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 16:42:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D004EC340E5;
+        Mon, 24 Jan 2022 16:42:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643042522;
+        bh=yToCtP1DwHyWLCVgbj3vG9Ean9EZBDLjsYvmycPPUTY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LszlyFoM5z3ooARQUNpD6cf7lKe/84UjAPNJGnMY+3DnFKzQDKXCn2JHKC5wlp5vM
+         HonFcrLEXXgFKNsu6m6zJjC+Fvvp6cEifmbRLmQwZQlM1AnzkXWGllbnKab8bbzfcY
+         4/Kfwt69NVI1Fx5u8LSyEtIBXMN4Wljdru5EkNzxhQjJMP5m9DQtE5UshJhM01Hb9+
+         pP3Euc9ceq0KVgthQIGajjbaQNLIHzxxy22S8b2/w1E4YcTl55dZVGLTUOz22eO1G5
+         OW1IZILKfrQMgX8cr1AMw57A65MfNciTw5xky234+pCbff98AsjCv8YWszAanx986N
+         2C+T7pK6P+QWQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 8F56440C99; Mon, 24 Jan 2022 13:39:59 -0300 (-03)
+Date:   Mon, 24 Jan 2022 13:39:59 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        Alexei Budankov <abudankov@huawei.com>,
+        Riccardo Mancini <rickyman7@gmail.com>
+Subject: Re: [PATCH v13 11/16] perf record: Introduce data transferred and
+ compressed stats
+Message-ID: <Ye7WX9L7rbn5HicP@kernel.org>
+References: <cover.1642440724.git.alexey.v.bayduraev@linux.intel.com>
+ <b5d598034c507dfb7544d2125500280b7d434764.1642440724.git.alexey.v.bayduraev@linux.intel.com>
+ <Ye7FkknVAUJjM+oV@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ye7FkknVAUJjM+oV@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In extlog_init(), acpi_os_map_iomem() is assigned to extlog_l1_hdr and
-there is a dereference of it through l1_head. on the failure of
-acpi_os_map_iomem(), the return value of it could be NULL, which may
-introduce a NULL pointer dereference.
+Em Mon, Jan 24, 2022 at 12:28:18PM -0300, Arnaldo Carvalho de Melo escreveu:
+> builtin-record.c:2141:4: note: in expansion of macro 'pr_debug'
+>  2141 |    pr_debug("written=%ld\n", thread_data[t].bytes_written);
+>       |    ^~~~~~~~
+> builtin-record.c:2141:24: note: format string is defined here
+>  2141 |    pr_debug("written=%ld\n", thread_data[t].bytes_written);
+>       |                      ~~^
+>       |                        |
+>       |                        long int
+>       |                      %lld
+> 
+> Fixed with the following patch, no need to resend, I'll fix several
+> other similar issues and put the result in a tmp.perf/thread branch
+> while I review/test it.
 
-Fix this bug by adding a NULL check of extlog_l1_hdr.
+Did it, with the fix it builds in all containers, now to test it and
+review patch by patch one more time.
 
-This bug was found by a static analyzer.
+[acme@quaco perf]$ git push acme.korg perf/core:tmp.perf/threaded
+Enumerating objects: 134, done.
+Counting objects: 100% (134/134), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (55/55), done.
+Writing objects: 100% (108/108), 23.64 KiB | 4.73 MiB/s, done.
+Total 108 (delta 105), reused 55 (delta 53), pack-reused 0
+remote: Resolving deltas: 100% (105/105), completed with 25 local objects.
+remote: Recorded in the transparency log
+remote:  manifest: updated /pub/scm/linux/kernel/git/acme/linux.git
+remote: Done in 0.06s
+remote: Notifying frontends: dfw ams sin
+To gitolite.kernel.org:/pub/scm/linux/kernel/git/acme/linux.git
+ * [new branch]                        perf/core -> tmp.perf/threaded
+[acme@quaco perf]$
 
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
+- Arnaldo
 
-Fixes: a238317ce818 ("ACPI: Clean up acpi_os_map/unmap_memory() to eliminate __iomem.")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
----
-The analysis employs differential checking to identify inconsistent 
-security operations (e.g., checks or kfrees) between two code paths 
-and confirms that the inconsistent operations are not recovered in the
-current function or the callers, so they constitute bugs. 
+> diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
+> index 0f8488d12f446b84..d19d0639c3f1abc0 100644
+> --- a/tools/perf/builtin-record.c
+> +++ b/tools/perf/builtin-record.c
+> @@ -2114,10 +2114,10 @@ static int record__stop_threads(struct record *rec)
+>  		pr_debug("threads[%d]: samples=%lld, wakes=%ld, ", thread_data[t].tid,
+>  			 thread_data[t].samples, thread_data[t].waking);
+>  		if (thread_data[t].bytes_transferred && thread_data[t].bytes_compressed)
+> -			pr_debug("trasferred=%ld, compressed=%ld\n",
+> +			pr_debug("transferred=%" PRIu64 ", compressed=%" PRIu64 "\n",
+>  				 thread_data[t].bytes_transferred, thread_data[t].bytes_compressed);
+>  		else
+> -			pr_debug("written=%ld\n", thread_data[t].bytes_written);
+> +			pr_debug("written=%" PRIu64 "\n", thread_data[t].bytes_written);
+>  	}
+>  
+>  	return 0;
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
- drivers/acpi/acpi_extlog.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/acpi/acpi_extlog.c b/drivers/acpi/acpi_extlog.c
-index 72f1fb77abcd..2187ac23d3d4 100644
---- a/drivers/acpi/acpi_extlog.c
-+++ b/drivers/acpi/acpi_extlog.c
-@@ -239,6 +239,12 @@ static int __init extlog_init(void)
- 	}
- 
- 	extlog_l1_hdr = acpi_os_map_iomem(l1_dirbase, l1_hdr_size);
-+	if (!extlog_l1_hdr) {
-+		rc = -ENOMEM;
-+		release_mem_region(l1_dirbase, l1_hdr_size);
-+		goto err;
-+	}
-+
- 	l1_head = (struct extlog_l1_head *)extlog_l1_hdr;
- 	l1_size = l1_head->total_len;
- 	l1_percpu_entry = l1_head->entries;
 -- 
-2.25.1
 
+- Arnaldo
