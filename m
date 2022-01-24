@@ -2,87 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8614CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C759C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374238AbiAYAQf (ORCPT
+        id S2374331AbiAYAQt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:16:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
+        Mon, 24 Jan 2022 19:16:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385512AbiAXX2E (ORCPT
+        with ESMTP id S1383889AbiAXX2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:28:04 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648D4C01D7F5;
-        Mon, 24 Jan 2022 13:31:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=0s5qsJ6CO8DHG5dILS8ndyGrYhqvc3LsWkk+L8HKEI0=; b=gJFxnAsU44AByjE9wITE9i1Tjw
-        FJwXhpBr5nd/5sGygmwrjDEglZZaBdUDof9zwV6r2VI3sFRCXlTH+vkU4BLoRJRR9ZFFxsMPt0S0D
-        hAfl2O+bJNZp4cNOKTYPYW9CSKYwC5QQt0WMY3wZp6KBbetSaf5z+KgQdoERNWcGBBG3IrcSpHkDx
-        kDPVaa7rSpVcSGvnLexZCuqzPQgOcZ4MZ5oUufxETQuZfoMSmHtzdJp4vgN9w3YN5+zujDh7S8GrK
-        JF5t9Fp2icGJt/Hx5/uxP/c1yciGxw+uS0A6jRe9ftYdUQ7AFQnclzNQQUcB3CCyE3CUWCvJ109AS
-        Plb+5iEA==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nC6vy-005Kjw-Dl; Mon, 24 Jan 2022 21:31:30 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96038C01D7F7;
+        Mon, 24 Jan 2022 13:31:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DCA9B8123A;
+        Mon, 24 Jan 2022 21:31:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9584DC340E4;
+        Mon, 24 Jan 2022 21:31:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643059898;
+        bh=LTV0XAwMy9g8Y7DFWmRAMBCvbCPAanzUK5p1srS9zEc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=b5O54t8Pl34vpujvHlusIuEnjBpuEVv95udKWuzp5/vpFjE3fkHEPFMoZ6JV/paL7
+         E/0POWvROMYS+Ne7HS2c+dEkZLU3UlnDe8bN9VBrn1LKkz/ORUXWFAAvzTSQ/OBi+C
+         ULixIemiwRA7xMV/8+0coWn6CLJ5ar4M3/OaEaVE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-ia64@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        kernel test robot <lkp@intel.com>,
-        Christoph Hellwig <hch@infradead.org>
-Subject: [PATCH -next v2] ia64: make IA64_MCA_RECOVERY bool instead of tristate
-Date:   Mon, 24 Jan 2022 13:31:29 -0800
-Message-Id: <20220124213129.29306-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.31.1
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0772/1039] scsi: mpi3mr: Fixes around reply request queues
+Date:   Mon, 24 Jan 2022 19:42:41 +0100
+Message-Id: <20220124184151.254085952@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In linux-next, IA64_MCA_RECOVERY uses the (new) function make_task_dead(),
-which is not exported for use by modules. Instead of exporting it for
-one user, convert IA64_MCA_RECOVERY to be a bool Kconfig symbol.
+From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
 
-In a config file from "kernel test robot <lkp@intel.com>" for a
-different problem, this linker error was exposed when
-CONFIG_IA64_MCA_RECOVERY=m.
+[ Upstream commit 243bcc8efdb1f44b1a1d415e6821a246714c68ce ]
 
-Fixes this build error:
+Set reply queue depth of 1K for B0 and 4K for A0.
 
-ERROR: modpost: "make_task_dead" [arch/ia64/kernel/mca_recovery.ko] undefined!
+While freeing the segmented request queues use the actual queue depth that
+is used while creating them.
 
-Fixes: 0e25498f8cd4 ("exit: Add and use make_task_dead.")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-ia64@vger.kernel.org
-Cc: Tony Luck <tony.luck@intel.com>
-Cc: kernel test robot <lkp@intel.com>
-Suggested-by: Christoph Hellwig <hch@infradead.org>
+Link: https://lore.kernel.org/r/20211220141159.16117-25-sreekanth.reddy@broadcom.com
+Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-v1 was [PATCH -next] exit: export make_task_dead().
-Christoph suggests and prefers that IA64 MCA recovery code just be
-forced to be builtin if it is enabled.
+ drivers/scsi/mpi3mr/mpi3mr.h    | 3 ++-
+ drivers/scsi/mpi3mr/mpi3mr_fw.c | 4 +++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
- arch/ia64/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+diff --git a/drivers/scsi/mpi3mr/mpi3mr.h b/drivers/scsi/mpi3mr/mpi3mr.h
+index 9787b53a2b598..2cc42432bd0c0 100644
+--- a/drivers/scsi/mpi3mr/mpi3mr.h
++++ b/drivers/scsi/mpi3mr/mpi3mr.h
+@@ -79,7 +79,8 @@ extern int prot_mask;
+ 
+ /* Operational queue management definitions */
+ #define MPI3MR_OP_REQ_Q_QD		512
+-#define MPI3MR_OP_REP_Q_QD		4096
++#define MPI3MR_OP_REP_Q_QD		1024
++#define MPI3MR_OP_REP_Q_QD4K		4096
+ #define MPI3MR_OP_REQ_Q_SEG_SIZE	4096
+ #define MPI3MR_OP_REP_Q_SEG_SIZE	4096
+ #define MPI3MR_MAX_SEG_LIST_SIZE	4096
+diff --git a/drivers/scsi/mpi3mr/mpi3mr_fw.c b/drivers/scsi/mpi3mr/mpi3mr_fw.c
+index aa5d877df6f83..2daf633ea2955 100644
+--- a/drivers/scsi/mpi3mr/mpi3mr_fw.c
++++ b/drivers/scsi/mpi3mr/mpi3mr_fw.c
+@@ -1278,7 +1278,7 @@ static void mpi3mr_free_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
+ 			mrioc->op_reply_qinfo[q_idx].q_segment_list = NULL;
+ 		}
+ 	} else
+-		size = mrioc->req_qinfo[q_idx].num_requests *
++		size = mrioc->req_qinfo[q_idx].segment_qd *
+ 		    mrioc->facts.op_req_sz;
+ 
+ 	for (j = 0; j < mrioc->req_qinfo[q_idx].num_segments; j++) {
+@@ -1565,6 +1565,8 @@ static int mpi3mr_create_op_reply_q(struct mpi3mr_ioc *mrioc, u16 qidx)
+ 
+ 	reply_qid = qidx + 1;
+ 	op_reply_q->num_replies = MPI3MR_OP_REP_Q_QD;
++	if (!mrioc->pdev->revision)
++		op_reply_q->num_replies = MPI3MR_OP_REP_Q_QD4K;
+ 	op_reply_q->ci = 0;
+ 	op_reply_q->ephase = 1;
+ 	atomic_set(&op_reply_q->pend_ios, 0);
+-- 
+2.34.1
 
---- linux-next-20220121.orig/arch/ia64/Kconfig
-+++ linux-next-20220121/arch/ia64/Kconfig
-@@ -318,7 +318,7 @@ config ARCH_PROC_KCORE_TEXT
- 	depends on PROC_KCORE
- 
- config IA64_MCA_RECOVERY
--	tristate "MCA recovery from errors other than TLB."
-+	bool "MCA recovery from errors other than TLB."
- 
- config IA64_PALINFO
- 	tristate "/proc/pal support"
+
+
