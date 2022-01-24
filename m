@@ -2,93 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5823EC35278
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1286C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355563AbiAYDXs (ORCPT
+        id S2361778AbiAYDYd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:23:48 -0500
-Received: from mga06.intel.com ([134.134.136.31]:10769 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1319531AbiAYDJF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:09:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643080145; x=1674616145;
-  h=cc:subject:to:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=xFZOp1fGsqzXn/fUyBiOUmJ92pSPaeM/so/3oAX5ed4=;
-  b=Bpm13Y77m0B7h97A69uPYIAZdah9C5hsqofPyraBp7E5Jzwp12mVZ5Lq
-   7tzYXvRiprUN02iew7GRTKchluyc6LAvq2x2z3DGJjCx+BQTGUchvjiPe
-   Q8nBSVveNeffmi3J6sXSa1djj9YjF5R2s9571FKU/tFAT/mBv4/TirXHe
-   7KZVNHRgUot3cxQ0Bhx/MuO3+/wKTVCEKeUb/WnG9E4DuAnWlL5bj721u
-   t2F5Rie/vHdfb7/wP6bA96NlVilWNTwNj5kepkdLMKYBtcdOwwUK5jTp8
-   VpHE3Tf8+9/OdEQc5HFB+MfaagAhdaU8ImmjkZ9FpfMvbvfCIYIPjKVsv
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="306920745"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="306920745"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 19:05:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="534532285"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by orsmga008.jf.intel.com with ESMTP; 24 Jan 2022 19:05:05 -0800
-Cc:     baolu.lu@linux.intel.com,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 6/7] iommu: Use right way to retrieve iommu_ops
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-7-baolu.lu@linux.intel.com>
- <BN9PR11MB52761ADE7D2696DDF0388A6F8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <229d72cf-3d1b-8df2-7438-309893f6aa9a@linux.intel.com>
-Date:   Tue, 25 Jan 2022 11:04:05 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 24 Jan 2022 22:24:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1320491AbiAYDNG (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 22:13:06 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05BF8C08ED72
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:55:34 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id p15so25642039ejc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:55:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=JGwAG6/K6eqI4ROP11oN6njq1BO8cXo10ivrjJT1IhM=;
+        b=R64AiEWFknCntog0tZC18TGnXiB1y5Y2xTuz/CmG0WEAEb8hm8E6OlvEkEIPAOdJM3
+         Bw1nSqPs7QKx8RD3sME4v6zItGSmxO4aG+bc0TJ474BByBNnA3i75lKemIZ7eTHIH/9P
+         oZosPYguHpX9tOo2yjIxcD2llPd6b4Mi0apoAIK6cldMPfGZclgoI/+Uu1AB+Asx6XOP
+         CgPwk83bL4hgyCPvU7M9BDluwiY8S6nB/TEbnfiXsKCBFinTJT0ra/2h4oQBU6vzKxwi
+         EwUqjMguq+7vNWTqvpv2kfnT2jewJMe0T4zg6ppg47t5uHQiinAR0t3t6KP11NOYRRXs
+         Fvfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=JGwAG6/K6eqI4ROP11oN6njq1BO8cXo10ivrjJT1IhM=;
+        b=1eeeFIIOu8Jo75aRoYBMXEQXLlfArDCFRxrSrrq21yxI0bvXg/TDgLDVjjayRqzrIt
+         DTGr03nGloh3bdqRbYFgayrbhIRlw5YbdjXfTLYBw+Guf2+QTBF2br8cLr7jAQW/JFyT
+         n1alQclhs/bnA77FYd5NAgf0NEEJF/Onr5dBcZjJ9zzytKyByk3FDMAxQDuuCNKlLrip
+         F/tovq1b3c2xMrmpxt8NF/U0r/neAcwb0eL1gFFYg8y8kM56l632DwTVYawkv4WOF4Xp
+         pZYUQVaYlIy6q95Ek9g3CgA1m81OmVin3YzRE0Hz3B2cyYkHGGa4lUfDyJtY/D/OAirG
+         AoxQ==
+X-Gm-Message-State: AOAM531qniywMFQO7a6sPZFB7C9xtAokKO2OP8qgLBueMhrEoOC0EK/g
+        WreXpsXnABBa1tk1NaktptY=
+X-Google-Smtp-Source: ABdhPJy4fhvQOv9L/Pg64yA057D2kOcfopDmGD1qNwJrWjtYqPlrSaW4ZhmHBJNGtCfkbs6U7aZeDg==
+X-Received: by 2002:a17:907:d1a:: with SMTP id gn26mr1946334ejc.53.1643064932433;
+        Mon, 24 Jan 2022 14:55:32 -0800 (PST)
+Received: from localhost ([185.92.221.13])
+        by smtp.gmail.com with ESMTPSA id d6sm5045772eds.25.2022.01.24.14.55.31
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 24 Jan 2022 14:55:31 -0800 (PST)
+Date:   Mon, 24 Jan 2022 22:55:31 +0000
+From:   Wei Yang <richard.weiyang@gmail.com>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Wei Yang <richard.weiyang@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        peterz@infradead.org, will@kernel.org, linyunsheng@huawei.com,
+        aarcange@redhat.com, feng.tang@intel.com, ebiederm@xmission.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm: remove offset check on page->compound_head and
+ folio->lru
+Message-ID: <20220124225531.26yyse52yo5x3fr5@master>
+Reply-To: Wei Yang <richard.weiyang@gmail.com>
+References: <20220106235254.19190-1-richard.weiyang@gmail.com>
+ <Yde6hZ41agqa2zs3@casper.infradead.org>
+ <20220107134059.flxr2hcd6ilb6vt7@master>
+ <Ydi6iMbSZ/FewYPT@casper.infradead.org>
+ <20220107160825.13c71fdd871d7d5611d116b9@linux-foundation.org>
+ <YdjfsbAR0UlwyC6b@casper.infradead.org>
+ <20220108081340.3oi2z2rm3cbqozzt@master>
+ <20220123013852.mm7eyn3z26v3hkc2@master>
+ <93c48e68-2266-72ee-0763-65805b94c968@suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB52761ADE7D2696DDF0388A6F8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <93c48e68-2266-72ee-0763-65805b94c968@suse.cz>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/24/22 5:48 PM, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Monday, January 24, 2022 3:11 PM
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index aa5486243892..111b3e9c79bb 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -385,6 +385,14 @@ static inline void iommu_iotlb_gather_init(struct
->> iommu_iotlb_gather *gather)
->>   	};
->>   }
->>
->> +static inline const struct iommu_ops *dev_iommu_ops_get(struct device
->> *dev)
-> 
-> dev_get_iommu_ops or just dev_iommu_ops?
+On Mon, Jan 24, 2022 at 11:30:10AM +0100, Vlastimil Babka wrote:
+>On 1/23/22 02:38, Wei Yang wrote:
+>> On Sat, Jan 08, 2022 at 08:13:40AM +0000, Wei Yang wrote:
+>>>On Sat, Jan 08, 2022 at 12:49:53AM +0000, Matthew Wilcox wrote:
+>>>>On Fri, Jan 07, 2022 at 04:08:25PM -0800, Andrew Morton wrote:
+>>>>> On Fri, 7 Jan 2022 22:11:20 +0000 Matthew Wilcox <willy@infradead.org> wrote:
+>>>>> 
+>>>>> > > Hi, Matthew
+>>>>> > > 
+>>>>> > > Would you mind sharing some insight on this check?
+>>>>> > 
+>>>>> > It's right there in the comments.
+>>>>> 
+>>>>> Well I can't figure out which comment you're referring to?
+>>>>
+>>>>         * WARNING: bit 0 of the first word is used for PageTail(). That
+>>>>         * means the other users of this union MUST NOT use the bit to
+>>>>         * avoid collision and false-positive PageTail().
+>>>>
+>>>
+>>>I know this requirement on bit 0 of first word. But I don't see the connection
+>>>between this and the check of page->compound_head and folio->lru.
+>>>
+>>>This is more like a internal requirement on struct page. There are 8 struct in
+>>>this five words union. And this requirement apply to bit 0 of first word of
+>>>all those five struct.
+>>>
+>>>To me, if folio has the same layout of page, folio meets this requirement. I
+>>>still not catch the point why we need this check here.
+>>>
+>> 
+>> Hi, Matthew
+>> 
+>> Are you back from vocation? If you could give more insight on this check, I
+>> would be appreciated.
+>
+>I can offer my insight (which might be of course wrong). Ideally one day
+>page.lru will be gone and only folio will be used for LRU pages. Then there
+>won't be a  FOLIO_MATCH(lru, lru); and FOLIO_MATCH(compound_head, lru);
+>won't appear to be redundant anymore. lru is list_head so two pointers and
 
-dev_iommu_ops() looks better.
+Thanks for your comment.
 
-Best regards,
-baolu
+I can't imagine the final result. If we would remove page.lru, we could remove
+FOLIO_MATCH(lru, lru) and add FOLIO_MATCH(compound_head, lru) at that moment?
+
+>thus valid pointers are aligned in such a way they can't accidentaly set the
+>bit 0.
+>
+
+-- 
+Wei Yang
+Help you, Help me
