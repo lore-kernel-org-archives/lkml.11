@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D834C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 595F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359076AbiAXUnm (ORCPT
+        id S1358126AbiAXUny (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:43:42 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50666 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381925AbiAXUY4 (ORCPT
+        Mon, 24 Jan 2022 15:43:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60264 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381828AbiAXUYq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:24:56 -0500
+        Mon, 24 Jan 2022 15:24:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9771261383;
-        Mon, 24 Jan 2022 20:24:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DCC1C340E5;
-        Mon, 24 Jan 2022 20:24:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AB47B81229;
+        Mon, 24 Jan 2022 20:24:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4ACAC340E5;
+        Mon, 24 Jan 2022 20:24:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055895;
-        bh=ywvwEwdbHU5wOPoIxh/ANzlr4vblBlzIaHREvpeMLtM=;
+        s=korg; t=1643055883;
+        bh=O3rKWbRYROdrjBDmKSVUoul83ssFRlJvdg9Jkqbc8ek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mIm69H7CIMECbVhqCBQsXQ7S3yT9QO0GEJA0vcCyOkJpX80EEwHPJtBw7bWcrS/1P
-         reHkK3ieZF6uMdU3SQurBZtnEIscvNjvgBz0bo5N/F9UiUBnEhX3NcVH1b7QEgsnxx
-         Hfm6B6ewZ6F83vDrXy+XtcdrxgKURd44jIhGI9Qo=
+        b=sjNOAg/TzQf7+TDkOvTZKQ2HnriKNGQzfSlgg7JDlcZ1JKcr0tjauq/AZQuEpvOvW
+         aKnmIF/slZt/dJTfTUDpZTFSbPKCNpLVv1YlmuvvnPDwvm474g3eLRDjtsK+6/Tvb2
+         xx8yScm8Dp3+gS3MCnmR1/KBrwFZ/pDuLS3opfYk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 302/846] pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in __nonstatic_find_io_region()
-Date:   Mon, 24 Jan 2022 19:36:59 +0100
-Message-Id: <20220124184111.322682730@linuxfoundation.org>
+Subject: [PATCH 5.15 290/846] backlight: qcom-wled: Use cpu_to_le16 macro to perform conversion
+Date:   Mon, 24 Jan 2022 19:36:47 +0100
+Message-Id: <20220124184110.936266340@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,53 +51,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit ca0fe0d7c35c97528bdf621fdca75f13157c27af ]
+[ Upstream commit 0a139358548968b2ff308257b4fbeec7badcc3e1 ]
 
-In __nonstatic_find_io_region(), pcmcia_make_resource() is assigned to
-res and used in pci_bus_alloc_resource(). There is a dereference of res
-in pci_bus_alloc_resource(), which could lead to a NULL pointer
-dereference on failure of pcmcia_make_resource().
+The kernel already provides appropriate primitives to perform endianness
+conversion which should be used in favour of manual bit-wrangling.
 
-Fix this bug by adding a check of res.
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_PCCARD_NONSTATIC=y show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 49b1153adfe1 ("pcmcia: move all pcmcia_resource_ops providers into one module")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-[linux@dominikbrodowski.net: Fix typo in commit message]
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211115203459.1634079-4-marijn.suijten@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pcmcia/rsrc_nonstatic.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/video/backlight/qcom-wled.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/pcmcia/rsrc_nonstatic.c b/drivers/pcmcia/rsrc_nonstatic.c
-index bb15a8bdbaab5..827ca6e9ee54a 100644
---- a/drivers/pcmcia/rsrc_nonstatic.c
-+++ b/drivers/pcmcia/rsrc_nonstatic.c
-@@ -690,6 +690,9 @@ static struct resource *__nonstatic_find_io_region(struct pcmcia_socket *s,
- 	unsigned long min = base;
- 	int ret;
+diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
+index c057368e5056e..5306b06044b4f 100644
+--- a/drivers/video/backlight/qcom-wled.c
++++ b/drivers/video/backlight/qcom-wled.c
+@@ -231,14 +231,14 @@ struct wled {
+ static int wled3_set_brightness(struct wled *wled, u16 brightness)
+ {
+ 	int rc, i;
+-	u8 v[2];
++	__le16 v;
  
-+	if (!res)
-+		return NULL;
-+
- 	data.mask = align - 1;
- 	data.offset = base & data.mask;
- 	data.map = &s_data->io_db;
+-	v[0] = brightness & 0xff;
+-	v[1] = (brightness >> 8) & 0xf;
++	v = cpu_to_le16(brightness & WLED3_SINK_REG_BRIGHT_MAX);
+ 
+ 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
+ 		rc = regmap_bulk_write(wled->regmap, wled->ctrl_addr +
+-				       WLED3_SINK_REG_BRIGHT(i), v, 2);
++				       WLED3_SINK_REG_BRIGHT(i),
++				       &v, sizeof(v));
+ 		if (rc < 0)
+ 			return rc;
+ 	}
+@@ -250,18 +250,18 @@ static int wled4_set_brightness(struct wled *wled, u16 brightness)
+ {
+ 	int rc, i;
+ 	u16 low_limit = wled->max_brightness * 4 / 1000;
+-	u8 v[2];
++	__le16 v;
+ 
+ 	/* WLED4's lower limit of operation is 0.4% */
+ 	if (brightness > 0 && brightness < low_limit)
+ 		brightness = low_limit;
+ 
+-	v[0] = brightness & 0xff;
+-	v[1] = (brightness >> 8) & 0xf;
++	v = cpu_to_le16(brightness & WLED3_SINK_REG_BRIGHT_MAX);
+ 
+ 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
+ 		rc = regmap_bulk_write(wled->regmap, wled->sink_addr +
+-				       WLED4_SINK_REG_BRIGHT(i), v, 2);
++				       WLED4_SINK_REG_BRIGHT(i),
++				       &v, sizeof(v));
+ 		if (rc < 0)
+ 			return rc;
+ 	}
+@@ -273,21 +273,20 @@ static int wled5_set_brightness(struct wled *wled, u16 brightness)
+ {
+ 	int rc, offset;
+ 	u16 low_limit = wled->max_brightness * 1 / 1000;
+-	u8 v[2];
++	__le16 v;
+ 
+ 	/* WLED5's lower limit is 0.1% */
+ 	if (brightness < low_limit)
+ 		brightness = low_limit;
+ 
+-	v[0] = brightness & 0xff;
+-	v[1] = (brightness >> 8) & 0x7f;
++	v = cpu_to_le16(brightness & WLED5_SINK_REG_BRIGHT_MAX_15B);
+ 
+ 	offset = (wled->cfg.mod_sel == MOD_A) ?
+ 		  WLED5_SINK_REG_MOD_A_BRIGHTNESS_LSB :
+ 		  WLED5_SINK_REG_MOD_B_BRIGHTNESS_LSB;
+ 
+ 	rc = regmap_bulk_write(wled->regmap, wled->sink_addr + offset,
+-			       v, 2);
++			       &v, sizeof(v));
+ 	return rc;
+ }
+ 
 -- 
 2.34.1
 
