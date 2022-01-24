@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 304D6C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E09A7C35275
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382775AbiAXXhS (ORCPT
+        id S2360605AbiAXXhF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:37:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
+        Mon, 24 Jan 2022 18:37:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382474AbiAXW4C (ORCPT
+        with ESMTP id S1382589AbiAXW4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:56:02 -0500
+        Mon, 24 Jan 2022 17:56:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA4EC055AA0;
-        Mon, 24 Jan 2022 13:10:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CABBC055AA5;
+        Mon, 24 Jan 2022 13:11:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CD006141C;
-        Mon, 24 Jan 2022 21:10:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC78C340E5;
-        Mon, 24 Jan 2022 21:10:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B42F61469;
+        Mon, 24 Jan 2022 21:11:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCEE3C340E5;
+        Mon, 24 Jan 2022 21:11:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058633;
-        bh=1sxxLQIPWRG6aWSNdg8Rs1aLFGBqVedpdVrcpjRSgSU=;
+        s=korg; t=1643058664;
+        bh=2BQlgnQsNwEwfMzcRqMA7YHREraPyfZU8xrRYkLHLTU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dWlCZEk4OmQgk1laMwEUiMQ0BDnklTLeJXYWMQAOMATGv6MD9Ru0l0Boj9Y+WowtM
-         AYZNNcnm/dpxOL5Le41aEQzbWqLkr4jRLbTDPaIEO5Rhf2PVwV7CXcidDongP3pKsu
-         /YJfgrJQci4JMNLDa+6IEzINPNb+Kvj11B8lLBMw=
+        b=Y143LeyqjIO+aQNMWbs3xBKNlT8WooTvoQxFGMfLanofKX0DfidKuOrpYBhCUsV83
+         77ycAYuG0EYeS0UluziiosRXDN6v1tR0uLEDOqO0aRXzfWRPyJwRj+YCpBP/mKOHW1
+         6uUNbQn8JQwFTnJtS8wrUBadC2ewaLQf/gTmVJiM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernard Zhao <bernard@vivo.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0335/1039] selinux: fix potential memleak in selinux_add_opt()
-Date:   Mon, 24 Jan 2022 19:35:24 +0100
-Message-Id: <20220124184136.568570374@linuxfoundation.org>
+Subject: [PATCH 5.16 0362/1039] serial: 8250_bcm7271: Propagate error codes from brcmuart_probe()
+Date:   Mon, 24 Jan 2022 19:35:51 +0100
+Message-Id: <20220124184137.453861148@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,61 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bernard Zhao <bernard@vivo.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit 2e08df3c7c4e4e74e3dd5104c100f0bf6288aaa8 ]
+[ Upstream commit c195438f1e84de8fa46b4f5264d12379bee6e9a1 ]
 
-This patch try to fix potential memleak in error branch.
+In case of failures brcmuart_probe() always returned -ENODEV, this
+isn't correct for example platform_get_irq_byname() may return
+-EPROBE_DEFER to handle such cases propagate error codes in
+brcmuart_probe() in case of failures.
 
-Fixes: ba6418623385 ("selinux: new helper - selinux_add_opt()")
-Signed-off-by: Bernard Zhao <bernard@vivo.com>
-[PM: tweak the subject line, add Fixes tag]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Fixes: 41a469482de25 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Link: https://lore.kernel.org/r/20211224142917.6966-4-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/selinux/hooks.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_bcm7271.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index dde4ecc0cd186..49b4f59db35e7 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -988,18 +988,22 @@ out:
- static int selinux_add_opt(int token, const char *s, void **mnt_opts)
- {
- 	struct selinux_mnt_opts *opts = *mnt_opts;
-+	bool is_alloc_opts = false;
- 
- 	if (token == Opt_seclabel)	/* eaten and completely ignored */
- 		return 0;
- 
-+	if (!s)
-+		return -ENOMEM;
-+
- 	if (!opts) {
- 		opts = kzalloc(sizeof(struct selinux_mnt_opts), GFP_KERNEL);
- 		if (!opts)
- 			return -ENOMEM;
- 		*mnt_opts = opts;
-+		is_alloc_opts = true;
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 5163d60756b73..0877cf24f7de0 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -1076,14 +1076,18 @@ static int brcmuart_probe(struct platform_device *pdev)
+ 		priv->rx_bufs = dma_alloc_coherent(dev,
+ 						   priv->rx_size,
+ 						   &priv->rx_addr, GFP_KERNEL);
+-		if (!priv->rx_bufs)
++		if (!priv->rx_bufs) {
++			ret = -EINVAL;
+ 			goto err;
++		}
+ 		priv->tx_size = UART_XMIT_SIZE;
+ 		priv->tx_buf = dma_alloc_coherent(dev,
+ 						  priv->tx_size,
+ 						  &priv->tx_addr, GFP_KERNEL);
+-		if (!priv->tx_buf)
++		if (!priv->tx_buf) {
++			ret = -EINVAL;
+ 			goto err;
++		}
  	}
--	if (!s)
--		return -ENOMEM;
-+
- 	switch (token) {
- 	case Opt_context:
- 		if (opts->context || opts->defcontext)
-@@ -1024,6 +1028,10 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
- 	}
- 	return 0;
- Einval:
-+	if (is_alloc_opts) {
-+		kfree(opts);
-+		*mnt_opts = NULL;
-+	}
- 	pr_warn(SEL_MOUNT_FAIL_MSG);
- 	return -EINVAL;
+ 
+ 	ret = serial8250_register_8250_port(&up);
+@@ -1097,6 +1101,7 @@ static int brcmuart_probe(struct platform_device *pdev)
+ 	if (priv->dma_enabled) {
+ 		dma_irq = platform_get_irq_byname(pdev,  "dma");
+ 		if (dma_irq < 0) {
++			ret = dma_irq;
+ 			dev_err(dev, "no IRQ resource info\n");
+ 			goto err1;
+ 		}
+@@ -1116,7 +1121,7 @@ err1:
+ err:
+ 	brcmuart_free_bufs(dev, priv);
+ 	brcmuart_arbitration(priv, 0);
+-	return -ENODEV;
++	return ret;
  }
+ 
+ static int brcmuart_remove(struct platform_device *pdev)
 -- 
 2.34.1
 
