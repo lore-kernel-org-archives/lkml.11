@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87ADCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A739C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347188AbiAXT32 (ORCPT
+        id S1352079AbiAXT3f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:29:28 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44520 "EHLO
+        Mon, 24 Jan 2022 14:29:35 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43174 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349083AbiAXTUN (ORCPT
+        with ESMTP id S1349106AbiAXTUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:20:13 -0500
+        Mon, 24 Jan 2022 14:20:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71EE4B81215;
-        Mon, 24 Jan 2022 19:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94417C340E5;
-        Mon, 24 Jan 2022 19:20:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 816F7B81233;
+        Mon, 24 Jan 2022 19:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF6F7C340E5;
+        Mon, 24 Jan 2022 19:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052010;
-        bh=M+C72fu1TYuBwspSurqtW2dRhsY/waKoaRw+xlfV8vU=;
+        s=korg; t=1643052013;
+        bh=FNVb3dcHIBLomxyIdcLDZf6bDvbLp1BTjjK8xjoWU5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BxMsxa6TzSlU3/JHVxDaAGXU4ztvrKlAhWzcfpLK4aw342JT1yw9XVrfMRR/Z0HYe
-         IL/p723GXn0AxyxV4KI9XV0T6bHQWoJz/wg22wPJJSm2KsXOyn887yLC2s9R/+oVbu
-         7qhQXWFOapGYXOFm09xCpthIPVjcn9YLyQH0z6xw=
+        b=0A+q92prHDfR3XAGLy/4WSH7WfDVvdPQjqOe6TVMwRPRQJcl37twItikpUs1q/MyX
+         BvKQbC6VHBb8lnkZ9q91ygqIzlVCkrPfWhAzprsJ68eazyKE98JjJ/t3zaNK7OwEBy
+         oPSrBqtcKYmN80Vc4q4X6pIW81H4fCVfdJW8JUAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, Mark Langsdorf <mlangsdo@redhat.com>,
+        Bob Moore <robert.moore@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 159/239] jffs2: GC deadlock reading a page that is used in jffs2_write_begin()
-Date:   Mon, 24 Jan 2022 19:43:17 +0100
-Message-Id: <20220124183948.151995130@linuxfoundation.org>
+Subject: [PATCH 4.19 160/239] ACPICA: actypes.h: Expand the ACPI_ACCESS_ definitions
+Date:   Mon, 24 Jan 2022 19:43:18 +0100
+Message-Id: <20220124183948.185753446@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -48,131 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
+From: Mark Langsdorf <mlangsdo@redhat.com>
 
-[ Upstream commit aa39cc675799bc92da153af9a13d6f969c348e82 ]
+[ Upstream commit f81bdeaf816142e0729eea0cc84c395ec9673151 ]
 
-GC task can deadlock in read_cache_page() because it may attempt
-to release a page that is actually allocated by another task in
-jffs2_write_begin().
-The reason is that in jffs2_write_begin() there is a small window
-a cache page is allocated for use but not set Uptodate yet.
+ACPICA commit bc02c76d518135531483dfc276ed28b7ee632ce1
 
-This ends up with a deadlock between two tasks:
-1) A task (e.g. file copy)
-   - jffs2_write_begin() locks a cache page
-   - jffs2_write_end() tries to lock "alloc_sem" from
-	 jffs2_reserve_space() <-- STUCK
-2) GC task (jffs2_gcd_mtd3)
-   - jffs2_garbage_collect_pass() locks "alloc_sem"
-   - try to lock the same cache page in read_cache_page() <-- STUCK
+The current ACPI_ACCESS_*_WIDTH defines do not provide a way to
+test that size is small enough to not cause an overflow when
+applied to a 32-bit integer.
 
-So to avoid this deadlock, hold "alloc_sem" in jffs2_write_begin()
-while reading data in a cache page.
+Rather than adding more magic numbers, add ACPI_ACCESS_*_SHIFT,
+ACPI_ACCESS_*_MAX, and ACPI_ACCESS_*_DEFAULT #defines and
+redefine ACPI_ACCESS_*_WIDTH in terms of the new #defines.
 
-Signed-off-by: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+This was inititally reported on Linux where a size of 102 in
+ACPI_ACCESS_BIT_WIDTH caused an overflow error in the SPCR
+initialization code.
+
+Link: https://github.com/acpica/acpica/commit/bc02c76d
+Signed-off-by: Mark Langsdorf <mlangsdo@redhat.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jffs2/file.c | 40 +++++++++++++++++++++++++---------------
- 1 file changed, 25 insertions(+), 15 deletions(-)
+ include/acpi/actypes.h | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/fs/jffs2/file.c b/fs/jffs2/file.c
-index 7d8654a1472ef..3047872fdac9b 100644
---- a/fs/jffs2/file.c
-+++ b/fs/jffs2/file.c
-@@ -135,20 +135,15 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 	struct page *pg;
- 	struct inode *inode = mapping->host;
- 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
-+	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
- 	pgoff_t index = pos >> PAGE_SHIFT;
- 	uint32_t pageofs = index << PAGE_SHIFT;
- 	int ret = 0;
+diff --git a/include/acpi/actypes.h b/include/acpi/actypes.h
+index 2939a6cd7fecb..9fc1dfc7f4c32 100644
+--- a/include/acpi/actypes.h
++++ b/include/acpi/actypes.h
+@@ -532,8 +532,14 @@ typedef u64 acpi_integer;
+  * Can be used with access_width of struct acpi_generic_address and access_size of
+  * struct acpi_resource_generic_register.
+  */
+-#define ACPI_ACCESS_BIT_WIDTH(size)     (1 << ((size) + 2))
+-#define ACPI_ACCESS_BYTE_WIDTH(size)    (1 << ((size) - 1))
++#define ACPI_ACCESS_BIT_SHIFT		2
++#define ACPI_ACCESS_BYTE_SHIFT		-1
++#define ACPI_ACCESS_BIT_MAX		(31 - ACPI_ACCESS_BIT_SHIFT)
++#define ACPI_ACCESS_BYTE_MAX		(31 - ACPI_ACCESS_BYTE_SHIFT)
++#define ACPI_ACCESS_BIT_DEFAULT		(8 - ACPI_ACCESS_BIT_SHIFT)
++#define ACPI_ACCESS_BYTE_DEFAULT	(8 - ACPI_ACCESS_BYTE_SHIFT)
++#define ACPI_ACCESS_BIT_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BIT_SHIFT))
++#define ACPI_ACCESS_BYTE_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BYTE_SHIFT))
  
--	pg = grab_cache_page_write_begin(mapping, index, flags);
--	if (!pg)
--		return -ENOMEM;
--	*pagep = pg;
--
- 	jffs2_dbg(1, "%s()\n", __func__);
- 
- 	if (pageofs > inode->i_size) {
- 		/* Make new hole frag from old EOF to new page */
--		struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
- 		struct jffs2_raw_inode ri;
- 		struct jffs2_full_dnode *fn;
- 		uint32_t alloc_len;
-@@ -159,7 +154,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 		ret = jffs2_reserve_space(c, sizeof(ri), &alloc_len,
- 					  ALLOC_NORMAL, JFFS2_SUMMARY_INODE_SIZE);
- 		if (ret)
--			goto out_page;
-+			goto out_err;
- 
- 		mutex_lock(&f->sem);
- 		memset(&ri, 0, sizeof(ri));
-@@ -189,7 +184,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 			ret = PTR_ERR(fn);
- 			jffs2_complete_reservation(c);
- 			mutex_unlock(&f->sem);
--			goto out_page;
-+			goto out_err;
- 		}
- 		ret = jffs2_add_full_dnode_to_inode(c, f, fn);
- 		if (f->metadata) {
-@@ -204,13 +199,26 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 			jffs2_free_full_dnode(fn);
- 			jffs2_complete_reservation(c);
- 			mutex_unlock(&f->sem);
--			goto out_page;
-+			goto out_err;
- 		}
- 		jffs2_complete_reservation(c);
- 		inode->i_size = pageofs;
- 		mutex_unlock(&f->sem);
- 	}
- 
-+	/*
-+	 * While getting a page and reading data in, lock c->alloc_sem until
-+	 * the page is Uptodate. Otherwise GC task may attempt to read the same
-+	 * page in read_cache_page(), which causes a deadlock.
-+	 */
-+	mutex_lock(&c->alloc_sem);
-+	pg = grab_cache_page_write_begin(mapping, index, flags);
-+	if (!pg) {
-+		ret = -ENOMEM;
-+		goto release_sem;
-+	}
-+	*pagep = pg;
-+
- 	/*
- 	 * Read in the page if it wasn't already present. Cannot optimize away
- 	 * the whole page write case until jffs2_write_end can handle the
-@@ -220,15 +228,17 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 		mutex_lock(&f->sem);
- 		ret = jffs2_do_readpage_nolock(inode, pg);
- 		mutex_unlock(&f->sem);
--		if (ret)
--			goto out_page;
-+		if (ret) {
-+			unlock_page(pg);
-+			put_page(pg);
-+			goto release_sem;
-+		}
- 	}
- 	jffs2_dbg(1, "end write_begin(). pg->flags %lx\n", pg->flags);
--	return ret;
- 
--out_page:
--	unlock_page(pg);
--	put_page(pg);
-+release_sem:
-+	mutex_unlock(&c->alloc_sem);
-+out_err:
- 	return ret;
- }
- 
+ /*******************************************************************************
+  *
 -- 
 2.34.1
 
