@@ -2,114 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD0DC46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCFDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386103AbiAXUfK (ORCPT
+        id S1386120AbiAXUfL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:35:10 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54018 "EHLO
+        Mon, 24 Jan 2022 15:35:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54100 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348693AbiAXUMl (ORCPT
+        with ESMTP id S1354844AbiAXUMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:12:41 -0500
+        Mon, 24 Jan 2022 15:12:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3CE8B8123F;
-        Mon, 24 Jan 2022 20:12:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83020C340F5;
-        Mon, 24 Jan 2022 20:12:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643055158;
-        bh=LIpzrBypwYEGVNUjiOpGMHuLMUB4NRzeRBE/q+tX41U=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B846B8122C;
+        Mon, 24 Jan 2022 20:12:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F252C36AF7;
+        Mon, 24 Jan 2022 20:12:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643055165;
+        bh=OyAxWRyTORWwfydUXk/mk1xaM+bjpiLPUqUmxODiws8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O0w4JTLS/QPzG+PD1NU35JZbHIr5W+1sR2XF3TomuspTnLcw1SSE95XTSH+9A+aYA
-         EEwhHMGpY1pSBYOWxDLDh6rm3SrBM4FCg96UgZwnnLlcb1LirMecVjvManY5yQfHng
-         pkMggytohHcloxokTUvb5xlqvSGAzrxuR0chBgQVwPqJJubsUvGsZigL/Gsk5FJna3
-         04un9rXI/o6KX674qY5mFYorTU3mx61hJOU/uHIbXl0DAkcyDMJjfWsQJsa4aPTlz4
-         v6XzxNs+7sEE+O0WR8HUN/WYnizhQxszb/iUc8M6chuTwZyZ912WpN3yokS026Wc8I
-         QuzdNqDrCrCMA==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nC5hc-002Y3f-JF; Mon, 24 Jan 2022 20:12:36 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Mark Rutland <mark.rutland@arm.com>, Will Deacon <will@kernel.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dougall <dougallj@gmail.com>, kernel-team@android.com
-Subject: [PATCH v4 03/10] dt-bindings: apple,aic: Add affinity description for per-cpu pseudo-interrupts
-Date:   Mon, 24 Jan 2022 20:12:24 +0000
-Message-Id: <20220124201231.298961-4-maz@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220124201231.298961-1-maz@kernel.org>
-References: <20220124201231.298961-1-maz@kernel.org>
+        b=OelarNXx1G+nrnz2qn0SyShP2nPLRfv7koAsN1AlqtVneHA1lLEOl7w2oM54C/2PB
+         JjKUEeR1ezFlksuUm78c/A6S63pMeMBgNP5KlIMmpNyKX5e8v50EvoLfE9w9XlSt9T
+         nV6QKQE3ln1p5AIEgmzA8yXQDIZlJYNUxgGE4HNA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        D Scott Phillips <scott@os.amperecomputing.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 5.15 062/846] arm64: errata: Fix exec handling in erratum 1418040 workaround
+Date:   Mon, 24 Jan 2022 19:32:59 +0100
+Message-Id: <20220124184103.109839229@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mark.rutland@arm.com, will@kernel.org, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, robh+dt@kernel.org, tglx@linutronix.de, dougallj@gmail.com, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some of the FIQ per-cpu pseudo-interrupts are better described with
-a specific affinity, the most obvious candidate being the CPU PMUs.
+From: D Scott Phillips <scott@os.amperecomputing.com>
 
-Augment the AIC binding to be able to specify that affinity in the
-interrupt controller node.
+commit 38e0257e0e6f4fef2aa2966b089b56a8b1cfb75c upstream.
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
+The erratum 1418040 workaround enables CNTVCT_EL1 access trapping in EL0
+when executing compat threads. The workaround is applied when switching
+between tasks, but the need for the workaround could also change at an
+exec(), when a non-compat task execs a compat binary or vice versa. Apply
+the workaround in arch_setup_new_exec().
+
+This leaves a small window of time between SET_PERSONALITY and
+arch_setup_new_exec where preemption could occur and confuse the old
+workaround logic that compares TIF_32BIT between prev and next. Instead, we
+can just read cntkctl to make sure it's in the state that the next task
+needs. I measured cntkctl read time to be about the same as a mov from a
+general-purpose register on N1. Update the workaround logic to examine the
+current value of cntkctl instead of the previous task's compat state.
+
+Fixes: d49f7d7376d0 ("arm64: Move handling of erratum 1418040 into C code")
+Cc: <stable@vger.kernel.org> # 5.9.x
+Signed-off-by: D Scott Phillips <scott@os.amperecomputing.com>
+Reviewed-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20211220234114.3926-1-scott@os.amperecomputing.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../interrupt-controller/apple,aic.yaml       | 27 +++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ arch/arm64/kernel/process.c |   39 ++++++++++++++++-----------------------
+ 1 file changed, 16 insertions(+), 23 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml b/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
-index c7577d401786..d97683eb2c54 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
-@@ -70,6 +70,33 @@ properties:
-   power-domains:
-     maxItems: 1
+--- a/arch/arm64/kernel/process.c
++++ b/arch/arm64/kernel/process.c
+@@ -439,34 +439,26 @@ static void entry_task_switch(struct tas
  
-+  affinities:
-+    type: object
-+    description:
-+      FIQ affinity can be expressed as a single "affinities" node,
-+      containing a set of sub-nodes, one per FIQ with a non-default
-+      affinity.
-+    patternProperties:
-+      "^.+-affinity$":
-+        type: object
-+        properties:
-+          fiq-index:
-+            description:
-+              The interrupt number specified as a FIQ, and for which
-+              the affinity is not the default.
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            maximum: 5
-+
-+          cpus:
-+            $ref: /schemas/types.yaml#/definitions/phandle-array
-+            description:
-+              Should be a list of phandles to CPU nodes (as described in
-+              Documentation/devicetree/bindings/arm/cpus.yaml).
-+
-+        required:
-+          - fiq-index
-+          - cpus
-+
- required:
-   - compatible
-   - '#interrupt-cells'
--- 
-2.30.2
+ /*
+  * ARM erratum 1418040 handling, affecting the 32bit view of CNTVCT.
+- * Assuming the virtual counter is enabled at the beginning of times:
+- *
+- * - disable access when switching from a 64bit task to a 32bit task
+- * - enable access when switching from a 32bit task to a 64bit task
++ * Ensure access is disabled when switching to a 32bit task, ensure
++ * access is enabled when switching to a 64bit task.
+  */
+-static void erratum_1418040_thread_switch(struct task_struct *prev,
+-					  struct task_struct *next)
++static void erratum_1418040_thread_switch(struct task_struct *next)
+ {
+-	bool prev32, next32;
+-	u64 val;
+-
+-	if (!IS_ENABLED(CONFIG_ARM64_ERRATUM_1418040))
+-		return;
+-
+-	prev32 = is_compat_thread(task_thread_info(prev));
+-	next32 = is_compat_thread(task_thread_info(next));
+-
+-	if (prev32 == next32 || !this_cpu_has_cap(ARM64_WORKAROUND_1418040))
++	if (!IS_ENABLED(CONFIG_ARM64_ERRATUM_1418040) ||
++	    !this_cpu_has_cap(ARM64_WORKAROUND_1418040))
+ 		return;
+ 
+-	val = read_sysreg(cntkctl_el1);
+-
+-	if (!next32)
+-		val |= ARCH_TIMER_USR_VCT_ACCESS_EN;
++	if (is_compat_thread(task_thread_info(next)))
++		sysreg_clear_set(cntkctl_el1, ARCH_TIMER_USR_VCT_ACCESS_EN, 0);
+ 	else
+-		val &= ~ARCH_TIMER_USR_VCT_ACCESS_EN;
++		sysreg_clear_set(cntkctl_el1, 0, ARCH_TIMER_USR_VCT_ACCESS_EN);
++}
+ 
+-	write_sysreg(val, cntkctl_el1);
++static void erratum_1418040_new_exec(void)
++{
++	preempt_disable();
++	erratum_1418040_thread_switch(current);
++	preempt_enable();
+ }
+ 
+ /*
+@@ -501,7 +493,7 @@ __notrace_funcgraph struct task_struct *
+ 	contextidr_thread_switch(next);
+ 	entry_task_switch(next);
+ 	ssbs_thread_switch(next);
+-	erratum_1418040_thread_switch(prev, next);
++	erratum_1418040_thread_switch(next);
+ 	ptrauth_thread_switch_user(next);
+ 
+ 	/*
+@@ -613,6 +605,7 @@ void arch_setup_new_exec(void)
+ 	current->mm->context.flags = mmflags;
+ 	ptrauth_thread_init_user();
+ 	mte_thread_init_user();
++	erratum_1418040_new_exec();
+ 
+ 	if (task_spec_ssb_noexec(current)) {
+ 		arch_prctl_spec_ctrl_set(current, PR_SPEC_STORE_BYPASS,
+
 
