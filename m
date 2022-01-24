@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41DB9C35268
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 839DFC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380811AbiAXUQ5 (ORCPT
+        id S1380586AbiAXUQb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44852 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359325AbiAXT7d (ORCPT
+        Mon, 24 Jan 2022 15:16:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54256 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344741AbiAXT54 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:59:33 -0500
+        Mon, 24 Jan 2022 14:57:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DF43B811F3;
-        Mon, 24 Jan 2022 19:59:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 361B3C340E5;
-        Mon, 24 Jan 2022 19:59:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44288601B6;
+        Mon, 24 Jan 2022 19:57:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 208EDC340E5;
+        Mon, 24 Jan 2022 19:57:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054370;
-        bh=NtvLuRHT3V4sSBm45JA9E7W19eu6qsnP4a59oSTKsyc=;
+        s=korg; t=1643054268;
+        bh=71nH87Z6BVAnpSiRG8nwjV+jcRkslnkAPdOkkfFElvE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2nVZ3rFv9GlmehdNBN6VwshJ2n3vTGexpEP3Fw3kXQlDwwGSVKN4b/EpUnQbC2rab
-         OqZ9Sgdxh7uoole3NY83/uob//xdrL2SAytSlrcRCpJs6ZT5VLgzIWrilTAGxDgYd4
-         lW6sS4KZjtP96JxEjdGEvHhsmW/ItOcjMGjW7wxw=
+        b=k+sn+aJcOBYU4MZQGL3uQZ3gWmJk6jEkhwGNqtqGz6PrkZYcytsoLy+H/2+io7EHY
+         R/Z++UO8vc5XjVkt1ZRfaa8WI+vfBQbOhulBWPKwO0tUCfkAw4iHJ30rpbBYdIiG0A
+         10HUFjFJPxBY53rZHTolH0pQWqsTljGeq6rMRogI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 368/563] arm64: tegra: Adjust length of CCPLEX cluster MMIO region
-Date:   Mon, 24 Jan 2022 19:42:13 +0100
-Message-Id: <20220124184037.149943023@linuxfoundation.org>
+Subject: [PATCH 5.10 334/563] ACPI: Change acpi_device_always_present() into acpi_device_override_status()
+Date:   Mon, 24 Jan 2022 19:41:39 +0100
+Message-Id: <20220124184035.980450043@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,33 +47,206 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 2b14cbd643feea5fc17c6e8bead4e71088c69acd ]
+[ Upstream commit 1a68b346a2c9969c05e80a3b99a9ab160b5655c0 ]
 
-The Tegra186 CCPLEX cluster register region is 4 MiB is length, not 4
-MiB - 1. This was likely presumed to be the "limit" rather than length.
-Fix it up.
+Currently, acpi_bus_get_status() calls acpi_device_always_present() to
+allow platform quirks to override the _STA return to report that a
+device is present (status = ACPI_STA_DEFAULT) independent of the _STA
+return.
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+In some cases it might also be useful to have the opposite functionality
+and have a platform quirk which marks a device as not present (status = 0)
+to work around ACPI table bugs.
+
+Change acpi_device_always_present() into a more generic
+acpi_device_override_status() function to allow this.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra186.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/bus.c       |  4 +--
+ drivers/acpi/x86/utils.c | 64 +++++++++++++++++++++++-----------------
+ include/acpi/acpi_bus.h  |  5 ++--
+ 3 files changed, 42 insertions(+), 31 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-index 0c46ab7bbbf37..eec6418ecdb1a 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-@@ -985,7 +985,7 @@
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index e317214aabec5..5e14288fcabe9 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -98,8 +98,8 @@ int acpi_bus_get_status(struct acpi_device *device)
+ 	acpi_status status;
+ 	unsigned long long sta;
  
- 	ccplex@e000000 {
- 		compatible = "nvidia,tegra186-ccplex-cluster";
--		reg = <0x0 0x0e000000 0x0 0x3fffff>;
-+		reg = <0x0 0x0e000000 0x0 0x400000>;
+-	if (acpi_device_always_present(device)) {
+-		acpi_set_device_status(device, ACPI_STA_DEFAULT);
++	if (acpi_device_override_status(device, &sta)) {
++		acpi_set_device_status(device, sta);
+ 		return 0;
+ 	}
  
- 		nvidia,bpmp = <&bpmp>;
- 	};
+diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
+index baaa44edc9441..c6b0782dcced5 100644
+--- a/drivers/acpi/x86/utils.c
++++ b/drivers/acpi/x86/utils.c
+@@ -22,54 +22,63 @@
+  * Some BIOS-es (temporarily) hide specific APCI devices to work around Windows
+  * driver bugs. We use DMI matching to match known cases of this.
+  *
+- * We work around this by always reporting ACPI_STA_DEFAULT for these
+- * devices. Note this MUST only be done for devices where this is safe.
++ * Likewise sometimes some not-actually present devices are sometimes
++ * reported as present, which may cause issues.
+  *
+- * This forcing of devices to be present is limited to specific CPU (SoC)
+- * models both to avoid potentially causing trouble on other models and
+- * because some HIDs are re-used on different SoCs for completely
+- * different devices.
++ * We work around this by using the below quirk list to override the status
++ * reported by the _STA method with a fixed value (ACPI_STA_DEFAULT or 0).
++ * Note this MUST only be done for devices where this is safe.
++ *
++ * This status overriding is limited to specific CPU (SoC) models both to
++ * avoid potentially causing trouble on other models and because some HIDs
++ * are re-used on different SoCs for completely different devices.
+  */
+-struct always_present_id {
++struct override_status_id {
+ 	struct acpi_device_id hid[2];
+ 	struct x86_cpu_id cpu_ids[2];
+ 	struct dmi_system_id dmi_ids[2]; /* Optional */
+ 	const char *uid;
++	unsigned long long status;
+ };
+ 
+-#define X86_MATCH(model)	X86_MATCH_INTEL_FAM6_MODEL(model, NULL)
+-
+-#define ENTRY(hid, uid, cpu_models, dmi...) {				\
++#define ENTRY(status, hid, uid, cpu_model, dmi...) {			\
+ 	{ { hid, }, {} },						\
+-	{ cpu_models, {} },						\
++	{ X86_MATCH_INTEL_FAM6_MODEL(cpu_model, NULL), {} },		\
+ 	{ { .matches = dmi }, {} },					\
+ 	uid,								\
++	status,								\
+ }
+ 
+-static const struct always_present_id always_present_ids[] = {
++#define PRESENT_ENTRY_HID(hid, uid, cpu_model, dmi...) \
++	ENTRY(ACPI_STA_DEFAULT, hid, uid, cpu_model, dmi)
++
++#define NOT_PRESENT_ENTRY_HID(hid, uid, cpu_model, dmi...) \
++	ENTRY(0, hid, uid, cpu_model, dmi)
++
++static const struct override_status_id override_status_ids[] = {
+ 	/*
+ 	 * Bay / Cherry Trail PWM directly poked by GPU driver in win10,
+ 	 * but Linux uses a separate PWM driver, harmless if not used.
+ 	 */
+-	ENTRY("80860F09", "1", X86_MATCH(ATOM_SILVERMONT), {}),
+-	ENTRY("80862288", "1", X86_MATCH(ATOM_AIRMONT), {}),
++	PRESENT_ENTRY_HID("80860F09", "1", ATOM_SILVERMONT, {}),
++	PRESENT_ENTRY_HID("80862288", "1", ATOM_AIRMONT, {}),
+ 
+ 	/*
+ 	 * The INT0002 device is necessary to clear wakeup interrupt sources
+ 	 * on Cherry Trail devices, without it we get nobody cared IRQ msgs.
+ 	 */
+-	ENTRY("INT0002", "1", X86_MATCH(ATOM_AIRMONT), {}),
++	PRESENT_ENTRY_HID("INT0002", "1", ATOM_AIRMONT, {}),
+ 	/*
+ 	 * On the Dell Venue 11 Pro 7130 and 7139, the DSDT hides
+ 	 * the touchscreen ACPI device until a certain time
+ 	 * after _SB.PCI0.GFX0.LCD.LCD1._ON gets called has passed
+ 	 * *and* _STA has been called at least 3 times since.
+ 	 */
+-	ENTRY("SYNA7500", "1", X86_MATCH(HASWELL_L), {
++	PRESENT_ENTRY_HID("SYNA7500", "1", HASWELL_L, {
+ 		DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Venue 11 Pro 7130"),
+ 	      }),
+-	ENTRY("SYNA7500", "1", X86_MATCH(HASWELL_L), {
++	PRESENT_ENTRY_HID("SYNA7500", "1", HASWELL_L, {
+ 		DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Venue 11 Pro 7139"),
+ 	      }),
+@@ -85,19 +94,19 @@ static const struct always_present_id always_present_ids[] = {
+ 	 * was copy-pasted from the GPD win, so it has a disabled KIOX000A
+ 	 * node which we should not enable, thus we also check the BIOS date.
+ 	 */
+-	ENTRY("KIOX000A", "1", X86_MATCH(ATOM_AIRMONT), {
++	PRESENT_ENTRY_HID("KIOX000A", "1", ATOM_AIRMONT, {
+ 		DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
+ 		DMI_MATCH(DMI_BOARD_NAME, "Default string"),
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
+ 		DMI_MATCH(DMI_BIOS_DATE, "02/21/2017")
+ 	      }),
+-	ENTRY("KIOX000A", "1", X86_MATCH(ATOM_AIRMONT), {
++	PRESENT_ENTRY_HID("KIOX000A", "1", ATOM_AIRMONT, {
+ 		DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
+ 		DMI_MATCH(DMI_BOARD_NAME, "Default string"),
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
+ 		DMI_MATCH(DMI_BIOS_DATE, "03/20/2017")
+ 	      }),
+-	ENTRY("KIOX000A", "1", X86_MATCH(ATOM_AIRMONT), {
++	PRESENT_ENTRY_HID("KIOX000A", "1", ATOM_AIRMONT, {
+ 		DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
+ 		DMI_MATCH(DMI_BOARD_NAME, "Default string"),
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
+@@ -105,26 +114,27 @@ static const struct always_present_id always_present_ids[] = {
+ 	      }),
+ };
+ 
+-bool acpi_device_always_present(struct acpi_device *adev)
++bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status)
+ {
+ 	bool ret = false;
+ 	unsigned int i;
+ 
+-	for (i = 0; i < ARRAY_SIZE(always_present_ids); i++) {
+-		if (acpi_match_device_ids(adev, always_present_ids[i].hid))
++	for (i = 0; i < ARRAY_SIZE(override_status_ids); i++) {
++		if (acpi_match_device_ids(adev, override_status_ids[i].hid))
+ 			continue;
+ 
+ 		if (!adev->pnp.unique_id ||
+-		    strcmp(adev->pnp.unique_id, always_present_ids[i].uid))
++		    strcmp(adev->pnp.unique_id, override_status_ids[i].uid))
+ 			continue;
+ 
+-		if (!x86_match_cpu(always_present_ids[i].cpu_ids))
++		if (!x86_match_cpu(override_status_ids[i].cpu_ids))
+ 			continue;
+ 
+-		if (always_present_ids[i].dmi_ids[0].matches[0].slot &&
+-		    !dmi_check_system(always_present_ids[i].dmi_ids))
++		if (override_status_ids[i].dmi_ids[0].matches[0].slot &&
++		    !dmi_check_system(override_status_ids[i].dmi_ids))
+ 			continue;
+ 
++		*status = override_status_ids[i].status;
+ 		ret = true;
+ 		break;
+ 	}
+diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+index 6ad3b89a8a2e0..0f5366792d22e 100644
+--- a/include/acpi/acpi_bus.h
++++ b/include/acpi/acpi_bus.h
+@@ -605,9 +605,10 @@ int acpi_enable_wakeup_device_power(struct acpi_device *dev, int state);
+ int acpi_disable_wakeup_device_power(struct acpi_device *dev);
+ 
+ #ifdef CONFIG_X86
+-bool acpi_device_always_present(struct acpi_device *adev);
++bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status);
+ #else
+-static inline bool acpi_device_always_present(struct acpi_device *adev)
++static inline bool acpi_device_override_status(struct acpi_device *adev,
++					       unsigned long long *status)
+ {
+ 	return false;
+ }
 -- 
 2.34.1
 
