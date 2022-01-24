@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 198A7C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE48C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838058AbiAXWpu (ORCPT
+        id S1837855AbiAXWp1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:45:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
+        Mon, 24 Jan 2022 17:45:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377401AbiAXVh2 (ORCPT
+        with ESMTP id S1456059AbiAXVhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:28 -0500
+        Mon, 24 Jan 2022 16:37:40 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BD6C05A19B;
-        Mon, 24 Jan 2022 12:23:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B16C0BD123;
+        Mon, 24 Jan 2022 12:23:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E50D161491;
-        Mon, 24 Jan 2022 20:23:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA5B8C340E5;
-        Mon, 24 Jan 2022 20:23:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 782606090A;
+        Mon, 24 Jan 2022 20:23:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5197CC340E5;
+        Mon, 24 Jan 2022 20:23:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055805;
-        bh=3POvJJyTnUSsgYbLhRzcncXzFxDB1opYPXtwcY0P3l8=;
+        s=korg; t=1643055825;
+        bh=8y110tx3r7t2HN8cFeLXNOvhc6Q0LIpe9KAMP9H6Dxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f+OcBSmXqdeCHCBvL1hgTYSFvJuxVYyr7lX+9BphnXaX94b5yLXX8Rgd1izDv8/sJ
-         ptmiYkuS1WrHfBNnaCvJdi6F9cDjxX4lWYGLrz+lRZQk3MHJw6dLCXTkFLIfwUkZVm
-         b2KnXdtW1NoAykqGjLtaQRDDRwZXp6uG8uEfpvV8=
+        b=MKftoACtbORfdaZrySg+MAoeVaeYzG86qB/W/a0J/hTNkOIWm3acPdCNUCGfmUbuz
+         fsUeBxt/g3GYuOBrwWy3m9P4l1f+nvmdj1iW7AmDKRxI4zbi8QmidmOsu507yHJOvN
+         RrsTOqGqYoPiwwuHHqyTC2D6ttz8ov+u3/yVQjKM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avraham Stern <avraham.stern@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 272/846] iwlwifi: mvm: perform 6GHz passive scan after suspend
-Date:   Mon, 24 Jan 2022 19:36:29 +0100
-Message-Id: <20220124184110.314861809@linuxfoundation.org>
+Subject: [PATCH 5.15 278/846] um: fix ndelay/udelay defines
+Date:   Mon, 24 Jan 2022 19:36:35 +0100
+Message-Id: <20220124184110.524009825@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,62 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Avraham Stern <avraham.stern@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit f4745cbb17572209a7fa27a6796ed70e7ada860b ]
+[ Upstream commit 5f8539e2ff962e25b57742ca7106456403abbc94 ]
 
-The 6GHz passive scan is performed only once every 50 minutes.
-However, in case of suspend/resume, the regulatory information
-is reset, so 6GHz channels may become disabled.
-Fix it by performing a 6GHz passive scan within 60 seconds after
-suspend/resume even if the 50 minutes timeout did not expire yet.
+Many places in the kernel use 'udelay' as an identifier, and
+are broken with the current "#define udelay um_udelay". Fix
+this by adding an argument to the macro, and do the same to
+'ndelay' as well, just in case.
 
-Signed-off-by: Avraham Stern <avraham.stern@intel.com>
-Fixes: e8fe3b41c3a3 ("iwlwifi: mvm: Add support for 6GHz passive scan")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219121514.6d5c043372cf.I251dd5618a3f0b8febbcca788eb861f1cd6039bc@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Fixes: 0bc8fb4dda2b ("um: Implement ndelay/udelay in time-travel mode")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 21 ++++++++-----------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+ arch/um/include/asm/delay.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-index d78e436fa8b53..d4d562779d0a2 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1924,22 +1924,19 @@ static void iwl_mvm_scan_6ghz_passive_scan(struct iwl_mvm *mvm,
- 	}
+diff --git a/arch/um/include/asm/delay.h b/arch/um/include/asm/delay.h
+index 56fc2b8f2dd01..e79b2ab6f40c8 100644
+--- a/arch/um/include/asm/delay.h
++++ b/arch/um/include/asm/delay.h
+@@ -14,7 +14,7 @@ static inline void um_ndelay(unsigned long nsecs)
+ 	ndelay(nsecs);
+ }
+ #undef ndelay
+-#define ndelay um_ndelay
++#define ndelay(n) um_ndelay(n)
  
- 	/*
--	 * 6GHz passive scan is allowed while associated in a defined time
--	 * interval following HW reset or resume flow
-+	 * 6GHz passive scan is allowed in a defined time interval following HW
-+	 * reset or resume flow, or while not associated and a large interval
-+	 * has passed since the last 6GHz passive scan.
- 	 */
--	if (vif->bss_conf.assoc &&
-+	if ((vif->bss_conf.assoc ||
-+	     time_after(mvm->last_6ghz_passive_scan_jiffies +
-+			(IWL_MVM_6GHZ_PASSIVE_SCAN_TIMEOUT * HZ), jiffies)) &&
- 	    (time_before(mvm->last_reset_or_resume_time_jiffies +
- 			 (IWL_MVM_6GHZ_PASSIVE_SCAN_ASSOC_TIMEOUT * HZ),
- 			 jiffies))) {
--		IWL_DEBUG_SCAN(mvm, "6GHz passive scan: associated\n");
--		return;
--	}
--
--	/* No need for 6GHz passive scan if not enough time elapsed */
--	if (time_after(mvm->last_6ghz_passive_scan_jiffies +
--		       (IWL_MVM_6GHZ_PASSIVE_SCAN_TIMEOUT * HZ), jiffies)) {
--		IWL_DEBUG_SCAN(mvm,
--			       "6GHz passive scan: timeout did not expire\n");
-+		IWL_DEBUG_SCAN(mvm, "6GHz passive scan: %s\n",
-+			       vif->bss_conf.assoc ? "associated" :
-+			       "timeout did not expire");
- 		return;
- 	}
- 
+ static inline void um_udelay(unsigned long usecs)
+ {
+@@ -26,5 +26,5 @@ static inline void um_udelay(unsigned long usecs)
+ 	udelay(usecs);
+ }
+ #undef udelay
+-#define udelay um_udelay
++#define udelay(n) um_udelay(n)
+ #endif /* __UM_DELAY_H */
 -- 
 2.34.1
 
