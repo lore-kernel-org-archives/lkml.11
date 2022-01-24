@@ -2,195 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36723C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238422AbiAXMLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:11:18 -0500
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:53695 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237863AbiAXMLK (ORCPT
+        id S238287AbiAXMMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:12:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233792AbiAXMM2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:11:10 -0500
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 8198C58018C;
-        Mon, 24 Jan 2022 07:11:09 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Mon, 24 Jan 2022 07:11:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alistair23.me;
-         h=cc:cc:content-transfer-encoding:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; bh=iFE30ZBYJvCyNk
-        M0bB9sCSLWOJ+dFFVmxcQv5U8f2Ek=; b=sFaJZbgtUeLAWxocb1HvewYSWmgi1J
-        Re1ZdEuZzL/938sA+qmN8/V9uqSF0L0vNex+CnpmYcNX7FQv5Ab+4EsQWhgwYyS2
-        BxBRjkarT13aS94OAP7CA5+ZtFovRlo781V9mXCY0+2naEz2uqm+thCrqRRTjP3C
-        +8i8adF5ILCqVpjdpmFXgJbcxkt92Hao8M++0wm+u3kSM3nNe7kFR3T5pAqhSVPI
-        NHrGxktbZFDL9myBRd1SKz9DtxHXVr6I9e+GSntdBdwhR6d92bXLqO7AqkBe1XC1
-        vQn27LWHTajONUzwk7ri/UDXb2+eoaaiapnBgFuf9r5OKtkIAAfJPC6A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=iFE30Z
-        BYJvCyNkM0bB9sCSLWOJ+dFFVmxcQv5U8f2Ek=; b=SxrHIhM9QqCGIGebAZRtTh
-        YexoR8oVDJ5lzGLRIsbH0rfne1ycAoMdqmKWdIiKzg2sA+KPuIZPzIgprJlWMzp3
-        BkGCC5TZ6heQU7KhS5Mdu1nzti/9e4oeCVvl1lD+vN4q5jPJmJ132dLU2Ind1aVT
-        3l1PnYZ2oJYPOKC8HG/N9WdJcA2pxZ0GfoaWpAwUUXDkqFDdAxYRWFw80esffR7u
-        qX8Z00KRPR8nOoWgvEIPbnjW2IPIchNYxZvpRk9+jJCoPphrDkb+ZNit7qenWDLS
-        6+L/tk4zNltJR5PTU419W3ecZgTL4Ahcmlwm6rhHe6lrqyWJiLJxLr/mli+pWRMQ
-        ==
-X-ME-Sender: <xms:XZfuYTGqGKqgzT4iF0o1VUBZ4VDY2TXBdSC6ceGKDioz7591nWp9Nw>
-    <xme:XZfuYQWZikCehBHIKL2WcSVzj7uO0yzV9Bana6O9g1ZVBJFl3eH9r2KamBbVTx7hF
-    BzrKFbzfjLsYMur7lQ>
-X-ME-Received: <xmr:XZfuYVL9eV6hR4iAO9MckKw5oXCizGOnU80_7HfLjz08dG19yG9diSW9Y-sMgahdr_qpRYnHtCK2IWiR_8LebgKqaSrIRfD5n2yyCrAshDjj>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrvdeigdefkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpeetlhhishhtrghirhcuhfhrrghntghishcuoegrlhhishhtrghi
-    rhesrghlihhsthgrihhrvdefrdhmvgeqnecuggftrfgrthhtvghrnhepgeegtdetjeekge
-    eguefgheeuvedugedvteejveeiudegvddtkeffkeehtdetudfhnecuvehluhhsthgvrhfu
-    ihiivgepudenucfrrghrrghmpehmrghilhhfrhhomheprghlihhsthgrihhrsegrlhhish
-    htrghirhdvfedrmhgv
-X-ME-Proxy: <xmx:XZfuYRH0A7zj_roVyA5Rpvn806K1fiOzZBoS8VXz9zzwMcCoEhh81w>
-    <xmx:XZfuYZX15ZRVwpqEJG5Fh_tDwkCTBUf8AE3nDMzvw4LQCxnIudAXCA>
-    <xmx:XZfuYcMK0By7wOuhnGcuTTGHIgUNi1vV7WVyQrukOH0Ka0tBJ4hAhQ>
-    <xmx:XZfuYdn56FVv7fMDhdTQZ8XAwiMg3C_QoLid89kUn_WAQRghgzqdxQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 24 Jan 2022 07:11:03 -0500 (EST)
-From:   Alistair Francis <alistair@alistair23.me>
-To:     broonie@kernel.org, robh+dt@kernel.org, kernel@pengutronix.de,
-        lgirdwood@gmail.com, lee.jones@linaro.org
-Cc:     linux-pm@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-imx@nxp.com, rui.zhang@intel.com,
-        alistair23@gmail.com, amitk@kernel.org,
-        linux-arm-kernel@lists.infradead.org, andreas@kemnade.info,
-        s.hauer@pengutronix.de, linux-kernel@vger.kernel.org,
-        shawnguo@kernel.org, Alistair Francis <alistair@alistair23.me>
-Subject: [PATCH v18 8/8] ARM: dts: imx7d-remarkable2: Enable lcdif
-Date:   Mon, 24 Jan 2022 22:10:09 +1000
-Message-Id: <20220124121009.108649-9-alistair@alistair23.me>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220124121009.108649-1-alistair@alistair23.me>
-References: <20220124121009.108649-1-alistair@alistair23.me>
+        Mon, 24 Jan 2022 07:12:28 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A289C06173D
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 04:12:28 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id s13so20808581ejy.3
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 04:12:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=monstr-eu.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=EF33JaMG+hm3D3rC4FKnXqraG6SkDY8uCv7rbWwdgXo=;
+        b=h9kOSUGdVE4gKL9s/LJMs1IPT3IbpeWYBrpfv+AuECTvZC/d9Mgmj+8/qzAF3eXbfK
+         m2PtizTIvCHLxd6Gr7Fy05dMKmmlLLy4fEUmMzmo48gVyiHxEhPLV4MLyO9oPA3wQplh
+         Vu1eRpEh9FNcwp+b/0xm/G3Q5QeqPlP25zblpv7pn1fhf7z/jOebqtlWaC7aW9HA3fhF
+         VjHo7lvhY7/oUqkPSCrDzarLxSsOAQnP9tESF52Jr02HUzNrium0qVdHZa1C0dYGAGE8
+         mDJhzJkStQMJW3cmp/Q9xzv797988P0T7BpUMuqWmKMM8P4QGKIRCVs93TY4AR01o66n
+         x2fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EF33JaMG+hm3D3rC4FKnXqraG6SkDY8uCv7rbWwdgXo=;
+        b=t+Zy6IDGt/3Mp08T1VvTcSljMn3jZLkjh5flyQr3hXf6aFawUGWSNRy+o1hFqp1lhE
+         Kbn5oIBkGiJFzDZXCeqG9T8QvI0Q/NGPWT0oDPye4QnnRbFHVQMZYb61pZCd9jMkZ8ZW
+         /+ZsBN7SlynIsFGKhyTcfQbpMBaEgire8r7zbm+pJmigCQTyUbQEUkVrs9gGJ74HXvEf
+         YdozkMwPaXYqp2czFshn3Qufk6IAGp0gLiKLVpJuP2UeXX41VzbkmphrZ9wnjfVl+cSz
+         RBu4bnv/wgzqpu8MNcivSmye/F4JPGQcDdmAUCfUXczFZqqk2L5uZpI12vda57gVJlk+
+         x1vw==
+X-Gm-Message-State: AOAM530In8MUkLfoOZzCU05iJ4LOBLG4cQUjeKavXwcsP+jQSUSMJiLB
+        o/jgbANtrQHybsUoOPXjbYIdfg==
+X-Google-Smtp-Source: ABdhPJyQSddN36xdAtpIRActuatI3ilXCh3FopeB7M5+U2SlQv66S7Fj/8y3ScreZHIH5mQGHDw6Ng==
+X-Received: by 2002:a17:906:c099:: with SMTP id f25mr12755359ejz.458.1643026346842;
+        Mon, 24 Jan 2022 04:12:26 -0800 (PST)
+Received: from ?IPV6:2a02:768:2307:40d6::f9e? ([2a02:768:2307:40d6::f9e])
+        by smtp.gmail.com with ESMTPSA id gu2sm4768438ejb.221.2022.01.24.04.12.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 04:12:26 -0800 (PST)
+Message-ID: <9e98c6c9-36a8-046a-b195-78942fdcafff@monstr.eu>
+Date:   Mon, 24 Jan 2022 13:12:25 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1] microblaze/PCI: Remove pci_phys_mem_access_prot() dead
+ code
+Content-Language: en-US
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>
+References: <20220121205150.1151607-1-helgaas@kernel.org>
+From:   Michal Simek <monstr@monstr.eu>
+In-Reply-To: <20220121205150.1151607-1-helgaas@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Connect the dispaly on the reMarkable2.
 
-Signed-off-by: Alistair Francis <alistair@alistair23.me>
----
- arch/arm/boot/dts/imx7d-remarkable2.dts | 74 +++++++++++++++++++++++++
- 1 file changed, 74 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx7d-remarkable2.dts b/arch/arm/boot/dts/imx7d-remarkable2.dts
-index 99ac0d242936..03a4029e1e57 100644
---- a/arch/arm/boot/dts/imx7d-remarkable2.dts
-+++ b/arch/arm/boot/dts/imx7d-remarkable2.dts
-@@ -68,6 +68,16 @@ reg_digitizer: regulator-digitizer {
- 		startup-delay-us = <100000>; /* 100 ms */
- 	};
- 
-+	reg_sdoe: regulator-sdoe {
-+		compatible = "regulator-fixed";
-+		regulator-name = "SDOE";
-+		pinctrl-names = "default", "sleep";
-+		pinctrl-0 = <&pinctrl_sdoe_reg>;
-+		pinctrl-1 = <&pinctrl_sdoe_reg>;
-+		gpio = <&gpio3 27 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+	};
-+
- 	wifi_pwrseq: wifi_pwrseq {
- 		compatible = "mmc-pwrseq-simple";
- 		pinctrl-names = "default";
-@@ -76,6 +86,16 @@ wifi_pwrseq: wifi_pwrseq {
- 		clocks = <&clks IMX7D_CLKO2_ROOT_DIV>;
- 		clock-names = "ext_clock";
- 	};
-+
-+	panel {
-+		compatible = "eink,vb3300-kca";
-+
-+		port {
-+			panel_in: endpoint {
-+				remote-endpoint = <&display_out>;
-+			};
-+		};
-+	};
- };
- 
- &clks {
-@@ -132,6 +152,20 @@ reg_epdpmic: vcom {
- 	};
- };
- 
-+&lcdif {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_lcdif>;
-+	lcd-supply = <&reg_epdpmic>;
-+	lcd2-supply = <&reg_sdoe>;
-+	status = "okay";
-+
-+	port {
-+		display_out: endpoint {
-+			remote-endpoint = <&panel_in>;
-+		};
-+	};
-+};
-+
- &snvs_pwrkey {
- 	status = "okay";
- };
-@@ -246,6 +280,46 @@ MX7D_PAD_I2C4_SCL__I2C4_SCL		0x4000007f
- 		>;
- 	};
- 
-+	pinctrl_lcdif: lcdifgrp {
-+		fsl,pins = <
-+			MX7D_PAD_LCD_DATA00__LCD_DATA0		0x79
-+			MX7D_PAD_LCD_DATA01__LCD_DATA1		0x79
-+			MX7D_PAD_LCD_DATA02__LCD_DATA2		0x79
-+			MX7D_PAD_LCD_DATA03__LCD_DATA3		0x79
-+			MX7D_PAD_LCD_DATA04__LCD_DATA4		0x79
-+			MX7D_PAD_LCD_DATA05__LCD_DATA5		0x79
-+			MX7D_PAD_LCD_DATA06__LCD_DATA6		0x79
-+			MX7D_PAD_LCD_DATA07__LCD_DATA7		0x79
-+			MX7D_PAD_LCD_DATA08__LCD_DATA8		0x79
-+			MX7D_PAD_LCD_DATA09__LCD_DATA9		0x79
-+			MX7D_PAD_LCD_DATA10__LCD_DATA10		0x79
-+			MX7D_PAD_LCD_DATA11__LCD_DATA11		0x79
-+			MX7D_PAD_LCD_DATA12__LCD_DATA12		0x79
-+			MX7D_PAD_LCD_DATA13__LCD_DATA13		0x79
-+			MX7D_PAD_LCD_DATA14__LCD_DATA14		0x79
-+			MX7D_PAD_LCD_DATA15__LCD_DATA15		0x79
-+
-+			MX7D_PAD_LCD_DATA17__LCD_DATA17		0x79
-+			MX7D_PAD_LCD_DATA18__LCD_DATA18		0x79
-+			MX7D_PAD_LCD_DATA19__LCD_DATA19		0x79
-+			MX7D_PAD_LCD_DATA20__LCD_DATA20		0x79
-+			MX7D_PAD_LCD_DATA21__LCD_DATA21		0x79
-+
-+			MX7D_PAD_LCD_DATA23__LCD_DATA23		0x79
-+			MX7D_PAD_LCD_CLK__LCD_CLK		0x79
-+			MX7D_PAD_LCD_ENABLE__LCD_ENABLE		0x79
-+			MX7D_PAD_LCD_VSYNC__LCD_VSYNC		0x79
-+			MX7D_PAD_LCD_HSYNC__LCD_HSYNC		0x79
-+			MX7D_PAD_LCD_RESET__LCD_RESET		0x79
-+		>;
-+	};
-+
-+	pinctrl_sdoe_reg: sdoereggrp {
-+		fsl,pins = <
-+			MX7D_PAD_LCD_DATA22__GPIO3_IO27		0x74
-+		>;
-+	};
-+
- 	pinctrl_uart1: uart1grp {
- 		fsl,pins = <
- 			MX7D_PAD_UART1_TX_DATA__UART1_DCE_TX	0x79
+On 1/21/22 21:51, Bjorn Helgaas wrote:
+> From: Bjorn Helgaas <bhelgaas@google.com>
+> 
+> pci_phys_mem_access_prot() is defined but never used.  Remove it.
+> 
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+>   arch/microblaze/include/asm/pci.h |  4 ---
+>   arch/microblaze/pci/pci-common.c  | 49 -------------------------------
+>   2 files changed, 53 deletions(-)
+> 
+> diff --git a/arch/microblaze/include/asm/pci.h b/arch/microblaze/include/asm/pci.h
+> index 7c4dc5d85f53..d90528064604 100644
+> --- a/arch/microblaze/include/asm/pci.h
+> +++ b/arch/microblaze/include/asm/pci.h
+> @@ -61,10 +61,6 @@ extern int pci_mmap_legacy_page_range(struct pci_bus *bus,
+>   extern void pcibios_resource_survey(void);
+>   
+>   struct file;
+> -extern pgprot_t	pci_phys_mem_access_prot(struct file *file,
+> -					 unsigned long pfn,
+> -					 unsigned long size,
+> -					 pgprot_t prot);
+>   
+>   /* This part of code was originally in xilinx-pci.h */
+>   #ifdef CONFIG_PCI_XILINX
+> diff --git a/arch/microblaze/pci/pci-common.c b/arch/microblaze/pci/pci-common.c
+> index 622a4867f9e9..33bab7eec731 100644
+> --- a/arch/microblaze/pci/pci-common.c
+> +++ b/arch/microblaze/pci/pci-common.c
+> @@ -165,55 +165,6 @@ int pci_iobar_pfn(struct pci_dev *pdev, int bar, struct vm_area_struct *vma)
+>   	return 0;
+>   }
+>   
+> -/*
+> - * This one is used by /dev/mem and fbdev who have no clue about the
+> - * PCI device, it tries to find the PCI device first and calls the
+> - * above routine
+> - */
+> -pgprot_t pci_phys_mem_access_prot(struct file *file,
+> -				  unsigned long pfn,
+> -				  unsigned long size,
+> -				  pgprot_t prot)
+> -{
+> -	struct pci_dev *pdev = NULL;
+> -	struct resource *found = NULL;
+> -	resource_size_t offset = ((resource_size_t)pfn) << PAGE_SHIFT;
+> -	int i;
+> -
+> -	if (page_is_ram(pfn))
+> -		return prot;
+> -
+> -	prot = pgprot_noncached(prot);
+> -	for_each_pci_dev(pdev) {
+> -		for (i = 0; i <= PCI_ROM_RESOURCE; i++) {
+> -			struct resource *rp = &pdev->resource[i];
+> -			int flags = rp->flags;
+> -
+> -			/* Active and same type? */
+> -			if ((flags & IORESOURCE_MEM) == 0)
+> -				continue;
+> -			/* In the range of this resource? */
+> -			if (offset < (rp->start & PAGE_MASK) ||
+> -			    offset > rp->end)
+> -				continue;
+> -			found = rp;
+> -			break;
+> -		}
+> -		if (found)
+> -			break;
+> -	}
+> -	if (found) {
+> -		if (found->flags & IORESOURCE_PREFETCH)
+> -			prot = pgprot_noncached_wc(prot);
+> -		pci_dev_put(pdev);
+> -	}
+> -
+> -	pr_debug("PCI: Non-PCI map for %llx, prot: %lx\n",
+> -		 (unsigned long long)offset, pgprot_val(prot));
+> -
+> -	return prot;
+> -}
+> -
+>   /* This provides legacy IO read access on a bus */
+>   int pci_legacy_read(struct pci_bus *bus, loff_t port, u32 *val, size_t size)
+>   {
+
+Applied.
+M
+
 -- 
-2.31.1
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Xilinx Microblaze
+Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
+U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP/Versal SoCs
+
 
