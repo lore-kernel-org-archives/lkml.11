@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C093BC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1808EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3411785AbiAYAes (ORCPT
+        id S3412002AbiAYAf2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:34:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
+        Mon, 24 Jan 2022 19:35:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2363403AbiAXXo0 (ORCPT
+        with ESMTP id S2364062AbiAXXqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:44:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEFBC0FE684;
-        Mon, 24 Jan 2022 13:39:12 -0800 (PST)
+        Mon, 24 Jan 2022 18:46:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10003C0613A8;
+        Mon, 24 Jan 2022 13:41:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1789E614B4;
-        Mon, 24 Jan 2022 21:39:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFCA1C340E7;
-        Mon, 24 Jan 2022 21:39:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB19DB8105C;
+        Mon, 24 Jan 2022 21:41:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02551C340E4;
+        Mon, 24 Jan 2022 21:41:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060351;
-        bh=T4NY8zqPRR6WKhwieFaRIRF4HrYhvq77oMAZe4cIyL0=;
+        s=korg; t=1643060511;
+        bh=qEjckpQvRmxcTRNa+OgIplbRP5NSdJP2K0D8QWEZUBw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TJa/P/eLeqNLh85IoqBUP58tayy1wqIySTbigFHencJffqiyJ5cnPF5rYVYfLmTft
-         m5i2Altt85dDt+AqVNkXeYFjvGseG0cMLCLLBpchKJkWeAQxd6BgI1DtzvA15Pq3WO
-         WuOBSKqJv/JF6BA2SoEgu1cVGFH1azSGH37VKtKw=
+        b=mBxC5oWjT+Lj7cRzeyPhlkxo8DrYc4UX+EUZSZl9gincvlCzc62g+z7f1CzP5Ok4N
+         GZDJigELz1ia09k168OCHIGVsnxNmV3UVXHIBW3oTWfe9ty9g4xW02XJSpveDxeLB7
+         BnpwJZuy8ObEbpkTF9s5+/LZQiTG/V9bL5QHKnfg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 0920/1039] scsi: core: Show SCMD_LAST in text form
-Date:   Mon, 24 Jan 2022 19:45:09 +0100
-Message-Id: <20220124184156.224871831@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 0971/1039] net: axienet: limit minimum TX ring size
+Date:   Mon, 24 Jan 2022 19:46:00 +0100
+Message-Id: <20220124184157.930377306@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,32 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit 3369046e54ca8f82e0cb17740643da2d80d3cfa8 upstream.
+commit 70f5817deddbc6ef3faa35841cab83c280cc653a upstream.
 
-The SCSI debugfs code supports showing information about pending commands,
-including translating SCSI command flags from numeric into text format.
-Also convert the SCMD_LAST flag from numeric into text form.
+The driver will not work properly if the TX ring size is set to below
+MAX_SKB_FRAGS + 1 since it needs to hold at least one full maximally
+fragmented packet in the TX ring. Limit setting the ring size to below
+this value.
 
-Link: https://lore.kernel.org/r/20211129194609.3466071-4-bvanassche@acm.org
-Fixes: 8930a6c20791 ("scsi: core: add support for request batching")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 8b09ca823ffb4 ("net: axienet: Make RX/TX ring sizes configurable")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/scsi_debugfs.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/scsi/scsi_debugfs.c
-+++ b/drivers/scsi/scsi_debugfs.c
-@@ -9,6 +9,7 @@
- static const char *const scsi_cmd_flags[] = {
- 	SCSI_CMD_FLAG_NAME(TAGGED),
- 	SCSI_CMD_FLAG_NAME(INITIALIZED),
-+	SCSI_CMD_FLAG_NAME(LAST),
- };
- #undef SCSI_CMD_FLAG_NAME
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -43,6 +43,7 @@
+ /* Descriptors defines for Tx and Rx DMA */
+ #define TX_BD_NUM_DEFAULT		64
+ #define RX_BD_NUM_DEFAULT		1024
++#define TX_BD_NUM_MIN			(MAX_SKB_FRAGS + 1)
+ #define TX_BD_NUM_MAX			4096
+ #define RX_BD_NUM_MAX			4096
  
+@@ -1364,7 +1365,8 @@ static int axienet_ethtools_set_ringpara
+ 	if (ering->rx_pending > RX_BD_NUM_MAX ||
+ 	    ering->rx_mini_pending ||
+ 	    ering->rx_jumbo_pending ||
+-	    ering->rx_pending > TX_BD_NUM_MAX)
++	    ering->tx_pending < TX_BD_NUM_MIN ||
++	    ering->tx_pending > TX_BD_NUM_MAX)
+ 		return -EINVAL;
+ 
+ 	if (netif_running(ndev))
 
 
