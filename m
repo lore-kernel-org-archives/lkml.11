@@ -2,43 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D14C35268
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F9CC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357575AbiAXTuS (ORCPT
+        id S1350757AbiAXTuY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:50:18 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59098 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355137AbiAXTkE (ORCPT
+        Mon, 24 Jan 2022 14:50:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35862 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355281AbiAXTkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:40:04 -0500
+        Mon, 24 Jan 2022 14:40:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC34BB8119D;
-        Mon, 24 Jan 2022 19:40:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5BECC340E5;
-        Mon, 24 Jan 2022 19:40:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DBAA61031;
+        Mon, 24 Jan 2022 19:40:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A6ACC340E5;
+        Mon, 24 Jan 2022 19:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053202;
-        bh=cAsgGxHRlMgNK0AryRN0I/ANz2aq81Z9fpR9OCPmRwY=;
+        s=korg; t=1643053221;
+        bh=Rx8dchfiegJrJJRwYhJBopyQhGvxJQNkEZe4Sd9hbbY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o1ECqNOoFFdGX5NY9hfFnDwNycKEleid+y2cyDIMk86eAnm3/PJm4rLpRqrtrAX8k
-         W8PQQsWt6Lxz+9fqYSaM/RT7GRCvuSUZ4pjqc56c8oIhDc6lYbZFDS6/SQsvCHJ3ZX
-         +acYBbM2lYZSt62DzqM1OJ8ngDKTsoZ3POhQq9j0=
+        b=spsIrxw+2mtkDVYB9481wgyjzKfIuu7HgGc8FwhsFHgk3p7NpE0c/qlEm/IlpVj5g
+         T1mBE84WiKAzdWIUKsJhJoC+gKaVyACk85kvgDBeXJ3ymdtfx+Tk0a+k1DfUGtIR08
+         Sh+ffg7Tb5GgsAavy160V3SikWN2iYKYG7YPSlEE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suresh Udipi <sudipi@jp.adit-jv.com>,
-        Michael Rodin <mrodin@de.adit-jv.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.4 276/320] media: rcar-csi2: Optimize the selection PHTW register
-Date:   Mon, 24 Jan 2022 19:44:20 +0100
-Message-Id: <20220124184003.361849513@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Lukas Czerner <lczerner@redhat.com>, stable@kernel.org
+Subject: [PATCH 5.4 272/320] ext4: dont use the orphan list when migrating an inode
+Date:   Mon, 24 Jan 2022 19:44:16 +0100
+Message-Id: <20220124184003.230984352@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,50 +46,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Udipi <sudipi@jp.adit-jv.com>
+From: Theodore Ts'o <tytso@mit.edu>
 
-commit 549cc89cd09a85aaa16dc07ef3db811d5cf9bcb1 upstream.
+commit 6eeaf88fd586f05aaf1d48cb3a139d2a5c6eb055 upstream.
 
-PHTW register is selected based on default bit rate from Table[1].
-for the bit rates less than or equal to 250. Currently first
-value of default bit rate which is greater than or equal to
-the caculated mbps is selected. This selection can be further
-improved by selecting the default bit rate which is nearest to
-the calculated value.
+We probably want to remove the indirect block to extents migration
+feature after a deprecation window, but until then, let's fix a
+potential data loss problem caused by the fact that we put the
+tmp_inode on the orphan list.  In the unlikely case where we crash and
+do a journal recovery, the data blocks belonging to the inode being
+migrated are also represented in the tmp_inode on the orphan list ---
+and so its data blocks will get marked unallocated, and available for
+reuse.
 
-[1] specs r19uh0105ej0200-r-car-3rd-generation.pdf [Table 25.12]
+Instead, stop putting the tmp_inode on the oprhan list.  So in the
+case where we crash while migrating the inode, we'll leak an inode,
+which is not a disaster.  It will be easily fixed the next time we run
+fsck, and it's better than potentially having blocks getting claimed
+by two different files, and losing data as a result.
 
-Fixes: 769afd212b16 ("media: rcar-csi2: add Renesas R-Car MIPI CSI-2 receiver driver")
-Signed-off-by: Suresh Udipi <sudipi@jp.adit-jv.com>
-Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Lukas Czerner <lczerner@redhat.com>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/rcar-vin/rcar-csi2.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ fs/ext4/migrate.c |   19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
 
---- a/drivers/media/platform/rcar-vin/rcar-csi2.c
-+++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
-@@ -911,10 +911,17 @@ static int rcsi2_phtw_write_mbps(struct
- 				 const struct rcsi2_mbps_reg *values, u16 code)
- {
- 	const struct rcsi2_mbps_reg *value;
-+	const struct rcsi2_mbps_reg *prev_value = NULL;
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -455,12 +455,12 @@ int ext4_ext_migrate(struct inode *inode
+ 	percpu_down_write(&sbi->s_writepages_rwsem);
  
--	for (value = values; value->mbps; value++)
-+	for (value = values; value->mbps; value++) {
- 		if (value->mbps >= mbps)
- 			break;
-+		prev_value = value;
-+	}
-+
-+	if (prev_value &&
-+	    ((mbps - prev_value->mbps) <= (value->mbps - mbps)))
-+		value = prev_value;
+ 	/*
+-	 * Worst case we can touch the allocation bitmaps, a bgd
+-	 * block, and a block to link in the orphan list.  We do need
+-	 * need to worry about credits for modifying the quota inode.
++	 * Worst case we can touch the allocation bitmaps and a block
++	 * group descriptor block.  We do need need to worry about
++	 * credits for modifying the quota inode.
+ 	 */
+ 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE,
+-		4 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
++		3 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
  
- 	if (!value->mbps) {
- 		dev_err(priv->dev, "Unsupported PHY speed (%u Mbps)", mbps);
+ 	if (IS_ERR(handle)) {
+ 		retval = PTR_ERR(handle);
+@@ -481,10 +481,6 @@ int ext4_ext_migrate(struct inode *inode
+ 	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
+ 	 * is so that the metadata blocks will have the correct checksum after
+ 	 * the migration.
+-	 *
+-	 * Note however that, if a crash occurs during the migration process,
+-	 * the recovery process is broken because the tmp_inode checksums will
+-	 * be wrong and the orphans cleanup will fail.
+ 	 */
+ 	ei = EXT4_I(inode);
+ 	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+@@ -496,7 +492,6 @@ int ext4_ext_migrate(struct inode *inode
+ 	clear_nlink(tmp_inode);
+ 
+ 	ext4_ext_tree_init(handle, tmp_inode);
+-	ext4_orphan_add(handle, tmp_inode);
+ 	ext4_journal_stop(handle);
+ 
+ 	/*
+@@ -521,12 +516,6 @@ int ext4_ext_migrate(struct inode *inode
+ 
+ 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE, 1);
+ 	if (IS_ERR(handle)) {
+-		/*
+-		 * It is impossible to update on-disk structures without
+-		 * a handle, so just rollback in-core changes and live other
+-		 * work to orphan_list_cleanup()
+-		 */
+-		ext4_orphan_del(NULL, tmp_inode);
+ 		retval = PTR_ERR(handle);
+ 		goto out_tmp_inode;
+ 	}
 
 
