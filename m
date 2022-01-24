@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79711C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03216C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354270AbiAXTgZ (ORCPT
+        id S1354356AbiAXTgd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:25 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57640 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352504AbiAXTaf (ORCPT
+        Mon, 24 Jan 2022 14:36:33 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54102 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352812AbiAXTbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:30:35 -0500
+        Mon, 24 Jan 2022 14:31:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 326B3612A5;
-        Mon, 24 Jan 2022 19:30:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ABE3C340E7;
-        Mon, 24 Jan 2022 19:30:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE9E6B8121B;
+        Mon, 24 Jan 2022 19:31:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD8CEC340E5;
+        Mon, 24 Jan 2022 19:31:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052634;
-        bh=CRtmMYSLfsM5EdcONKC8ytJivi6XgTG8sj7QVf4Qt/Q=;
+        s=korg; t=1643052664;
+        bh=ojLv2A8YiZqQBiDKnhqmW0NP9PBK7G+zSluVkxtI0IA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0f5jruICbqhZPQYCBCyxh2YfP41HbSVy5zsf64+GFoINaFj1mo9xltXbXz1Y2RB6i
-         w8cpP8whKXcZlvbZfon1DQe2BPlsz8XytzIfWxJeCvgdxlo7frfnFFp+39TViBXD+g
-         D1Aqp7Ps0ZGfoRwqwQx9DszsrRqxpVs31YC6+h7o=
+        b=Lfyu98jfTxtiuJfCC18FGhkwArO/yLNz7l1027LZgoFume2GuYJSRiDsuR61dUT7z
+         gl14gsUjCXLZuII55rR/+lVe3wn4wm+zRTJkLQ6L3zZtYcBm9yxLHB9CkPY7cadiiA
+         qixTcQ4lZt6AwaboNPTnndYLIBc1Q/lXITS51uVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Zixun <zhang133010@icloud.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 097/320] x86/mce/inject: Avoid out-of-bounds write when setting flags
-Date:   Mon, 24 Jan 2022 19:41:21 +0100
-Message-Id: <20220124183957.027398739@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 101/320] netfilter: ipt_CLUSTERIP: fix refcount leak in clusterip_tg_check()
+Date:   Mon, 24 Jan 2022 19:41:25 +0100
+Message-Id: <20220124183957.161789148@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,53 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Zixun <zhang133010@icloud.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit de768416b203ac84e02a757b782a32efb388476f ]
+[ Upstream commit d94a69cb2cfa77294921aae9afcfb866e723a2da ]
 
-A contrived zero-length write, for example, by using write(2):
+The issue takes place in one error path of clusterip_tg_check(). When
+memcmp() returns nonzero, the function simply returns the error code,
+forgetting to decrease the reference count of a clusterip_config
+object, which is bumped earlier by clusterip_config_find_get(). This
+may incur reference count leak.
 
-  ...
-  ret = write(fd, str, 0);
-  ...
+Fix this issue by decrementing the refcount of the object in specific
+error path.
 
-to the "flags" file causes:
-
-  BUG: KASAN: stack-out-of-bounds in flags_write
-  Write of size 1 at addr ffff888019be7ddf by task writefile/3787
-
-  CPU: 4 PID: 3787 Comm: writefile Not tainted 5.16.0-rc7+ #12
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-
-due to accessing buf one char before its start.
-
-Prevent such out-of-bounds access.
-
-  [ bp: Productize into a proper patch. Link below is the next best
-    thing because the original mail didn't get archived on lore. ]
-
-Fixes: 0451d14d0561 ("EDAC, mce_amd_inj: Modify flags attribute to use string arguments")
-Signed-off-by: Zhang Zixun <zhang133010@icloud.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/linux-edac/YcnePfF1OOqoQwrX@zn.tnic/
+Fixes: 06aa151ad1fc74 ("netfilter: ipt_CLUSTERIP: check MAC address when duplicate config is set")
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/inject.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/netfilter/ipt_CLUSTERIP.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/inject.c b/arch/x86/kernel/cpu/mce/inject.c
-index eb2d41c1816d6..e1fda5b19b6f6 100644
---- a/arch/x86/kernel/cpu/mce/inject.c
-+++ b/arch/x86/kernel/cpu/mce/inject.c
-@@ -347,7 +347,7 @@ static ssize_t flags_write(struct file *filp, const char __user *ubuf,
- 	char buf[MAX_FLAG_OPT_SIZE], *__buf;
- 	int err;
- 
--	if (cnt > MAX_FLAG_OPT_SIZE)
-+	if (!cnt || cnt > MAX_FLAG_OPT_SIZE)
+diff --git a/net/ipv4/netfilter/ipt_CLUSTERIP.c b/net/ipv4/netfilter/ipt_CLUSTERIP.c
+index 6bdb1ab8af617..63ebb87d85331 100644
+--- a/net/ipv4/netfilter/ipt_CLUSTERIP.c
++++ b/net/ipv4/netfilter/ipt_CLUSTERIP.c
+@@ -505,8 +505,11 @@ static int clusterip_tg_check(const struct xt_tgchk_param *par)
+ 			if (IS_ERR(config))
+ 				return PTR_ERR(config);
+ 		}
+-	} else if (memcmp(&config->clustermac, &cipinfo->clustermac, ETH_ALEN))
++	} else if (memcmp(&config->clustermac, &cipinfo->clustermac, ETH_ALEN)) {
++		clusterip_config_entry_put(config);
++		clusterip_config_put(config);
  		return -EINVAL;
++	}
  
- 	if (copy_from_user(&buf, ubuf, cnt))
+ 	ret = nf_ct_netns_get(par->net, par->family);
+ 	if (ret < 0) {
 -- 
 2.34.1
 
