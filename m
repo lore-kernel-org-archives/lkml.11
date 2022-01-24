@@ -2,119 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC5BCC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:31:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A78C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243216AbiAXPbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:31:05 -0500
-Received: from mout.gmx.net ([212.227.15.18]:46439 "EHLO mout.gmx.net"
+        id S235681AbiAXPcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:32:55 -0500
+Received: from mga05.intel.com ([192.55.52.43]:21800 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239105AbiAXPbC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:31:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643038243;
-        bh=0HDaa8ybzAU3WahzXsoJL/1AGix1sCiymZJmVtib/YY=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=POJNcweazGJQnB5ck0iuQoSUgsdehlB/3SIXnB4wz21ejzxlWPRsItBs6aIX4W2Gl
-         XDnr3olJnJRp/aI/73nPJ4ma2jeZJ52Buzayrv9bmlxIXv76ndOK3k7EIr5PO83S4h
-         CDDhZ3IS6Dsuc1hTsgw60xipLp3c9mXHrvQ+4aZQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.165.96]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MZTmO-1moLe12XbC-00WY0w; Mon, 24
- Jan 2022 16:30:43 +0100
-Message-ID: <de6e06e1-f293-1c98-7898-b5d52c400b59@gmx.de>
-Date:   Mon, 24 Jan 2022 16:29:34 +0100
+        id S233010AbiAXPcy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:32:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643038374; x=1674574374;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/N7wfLow10MDvZWbjcrnYxRRIYUPADVRbu5mKH8flZs=;
+  b=lKQCAS44w342YauCVeRS8Kf0b5sSjM12fLrmQ/J4e871V/9MNq12bk5b
+   o5VYSyegAj8E8ivnsND54PXoPAPajePBkdazGOMPlfHvYSR7TkREiyEOE
+   2Dp75sf69a0uTcwi7wjuZ+ujTUKJngVN+7iT1NvCPG1Ito8vwOhK6gJO9
+   uHUc6+Ww+DJnSuFpuf3dsCqTkitXmZZ5FIRKfku3NIT6xKHbcx9fPXIi3
+   JQLSoAhRLbgyoz2s3nPouMhuwdW2ZWDC5e+4WSsdaqNCCp0V36h23Gtfn
+   PWkf0d83VJy2dd4KoY9v7O2QzAhCxgEku1yTteeb5gFXRzP9r4EM93+hh
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="332424014"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="332424014"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:32:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="479114879"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 24 Jan 2022 07:32:52 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nC1Ku-000IWh-1I; Mon, 24 Jan 2022 15:32:52 +0000
+Date:   Mon, 24 Jan 2022 23:32:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jinyang He <hejinyang@loongson.cn>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: arch/mips/kernel/relocate.c:41:12: warning: no previous prototype
+ for function 'plat_post_relocation'
+Message-ID: <202201242332.W7XuI6gI-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Gerd Hoffmann <kraxel@redhat.com>
-Cc:     linux-fbdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sven Schnelle <svens@stackframe.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Claudio Suarez <cssk@net-c.es>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <20220119110839.33187-1-deller@gmx.de>
- <20220119110839.33187-3-deller@gmx.de> <YelyGDNDTn1Aq/hm@phenom.ffwll.local>
- <6c000477-002b-d125-b945-2c4831bad8a5@gmx.de>
- <20220121072006.ylw2hdl7jbkbwnre@sirius.home.kraxel.org>
- <64fd46cb-9746-3fd0-ec92-c64dba76875a@gmx.de>
- <d23800b4-503c-a6e2-2c51-2c07a736dffc@suse.de>
- <2fc200bb-4b40-7833-31c9-90a78512b601@redhat.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <2fc200bb-4b40-7833-31c9-90a78512b601@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:D47fAUTkxrhoBsLC8ZEQMrVPeldhoeO7xA5iYubuNtsUdu1RaLF
- H0nJStLonxAyXhSltp94/rMAgm6y95mtSV7oDmrh0n8LwBx1JTcQvFn8LsYlmpmOPljOu8/
- KXIlPqXLduRe0mLga9vA7uo6N7+w+dfzffUVJySwGQo9fCywOWrP+AB+VXMtJFR0BHW+i7d
- YHAcXKSZPcnZUUzbtNdUw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:PpnOdBYXFhY=:5S8n7Yl+ZL6mBPKg1QS35L
- F2iXhWM+VfhCnsQ8ESinVeG/5FXG8USbAATlwo1jDSpeAhOcS2hj5kE949+WcQkJfH3a+94fk
- iRJDDYLyuKkexkng0yEkD+NRMdNjlBLvHtoi9LLYqHq35el/ZDOotqrjbIawnVKScth3ciul8
- iKni7/XdEOeEGQ3zM/v4Xu68XMkLp/uWkL2bFhuXPSRzB+5+Ptk+T14AjY4r3q6JFG1q1Un9q
- 3TC9T/9LBIMyLGomWXOt/L864pbd87W1IpqT0FbZ/Y7FdVeH8ZZpcfqOaxLQNJXSeMzN+FVkt
- 0WqkxFfpMqt2iPIkjajeouCYPAEajn6Hmcb3t//MrMojYnqTeySNofoOstEWgqJdYykGCrV8P
- cKeoZayK4l4GyyVdqOC0sf1B9MEZfoudA7uvNY88+dfkPT8/kz4kNwZ0AuFwHtycxFhFHcyci
- /cLJ1AAkZ6/HcOEKn/+ueZ0yIUYtexIY8AE7FR3Tpt06mGXd4OeUp4BiJmDC31jUHvyKzpg7u
- wIhQBz64p8X7zHrGEWvWk+xz5V8Vb60oJgyuBNpEtBYvxpQNpCHKqYLWWQ6uEFFPMh9imeqDK
- zEcr92JRH4B3umFFqI/NdIP3dCLndpABxN9RMkPm0EQf+snyaSym9Ita8noPhSfhZQU3vkO9R
- 0lB9/oAleQI7y+1BBdRrAGY4LDgwWFfPhPKvO17HGJdF69HNqW4o4hzOAUdY5TQ7ujtFqsB6i
- aqPZVUh+ELrJXMd1ADKbmZ5jWX1fbxDS/rapwWbO51Z/NWwM2Wjpa4UYGNpMlBfFcVedABHT9
- 2mcBH6T3/pz+L0suKh1xwcu/9RHG7NzcS8CdL2xJ9aht8j8i1NnZ2Hq8sqmSi9jRQj7MZZJ2c
- u5vKZ8JJD78VZjRsbv6jIU5JoTS8jrpyh1yanMC92SHTs1SmWeXHAAbye0KCnUwzqfm/Y9Sm0
- xWc/CqiMJEt/Oa3pui/5KbxPxpjwiN7pq07snWc7GLZeyMpFT4nOCP+TDV+KJwh2MjKJeyQWh
- mW07wSCMBPW7feiccCtPq2dRUV9oJbTNhV0bz15kM2J7BzdGLbZOK/ifJB0OKLU4r1LXI2b2S
- eyKJkPT3Gg03gw=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/24/22 12:50, Javier Martinez Canillas wrote:
-> On 1/24/22 12:33, Thomas Zimmermann wrote:
->
-> [snip]
->
->>> Thoughts?
->>
->> I can't say I approve keeping fbdev alive, but...
->>
->> With fbdev emulation, every DRM driver is an fbdev driver too. So
->> CONFIG_FB_DRIVER is somewhat misleading. Better add an option like
->> CONFIG_FBCON_HW_SCROLLING and have it selected by the fbdev drivers tha=
-t
->> absolutely need HW acceleration. That option would then protect the rsp
->> code.
+Hi Jinyang,
 
-I'm not a fan of something like CONFIG_FBCON_HW_SCROLLING, but I'm not
-against it either.
-For me it sounds that this is not the real direction you want to go,
-which is to prevent that any other drivers take the framebuffer before
-you take it with simpledrm or similiar.
-CONFIG_FBCON_HW_SCROLLING IMHO just disables the (from your POV) neglectab=
-le accleration part.
-With an option like CONFIG_FB_DRIVER (maybe better: CONFIG_FB_LEGACY_DRIVE=
-RS)
-it's an easy option for distros to disable all of the legacy drivers
-from being built & shipped.
+FYI, the error/warning still remains.
 
-Instead of CONFIG_FBCON_HW_SCROLLING we could also choose
-CONFIG_FBCON_LEGACY_ACCELERATION, because it includes fillrect() as well..=
-.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
+commit: a307a4ce9ecd2e23c71318201330d9d648b3f818 MIPS: Loongson64: Add KASLR support
+date:   1 year, 2 months ago
+config: mips-randconfig-c004-20220120 (https://download.01.org/0day-ci/archive/20220124/202201242332.W7XuI6gI-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f7b7138a62648f4019c55e4671682af1f851f295)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a307a4ce9ecd2e23c71318201330d9d648b3f818
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout a307a4ce9ecd2e23c71318201330d9d648b3f818
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/
 
-> Agreed that this option would be better and allow distros
-> to disable the code that was reverted.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Yes, but IMHO it doesn't hurt either to leave it in.
-It doesn't break anything at least.
-Anyway...
+All warnings (new ones prefixed by >>):
 
-Helge
+   In file included from include/asm-generic/preempt.h:5:
+   In file included from include/linux/thread_info.h:38:
+   In file included from arch/mips/include/asm/thread_info.h:16:
+   In file included from arch/mips/include/asm/processor.h:14:
+   In file included from include/linux/atomic.h:7:
+   arch/mips/include/asm/atomic.h:257:1: warning: converting the result of '<<' to a boolean always evaluates to true [-Wtautological-constant-compare]
+   ATOMIC_SIP_OP(atomic, int, subu, ll, sc)
+   ^
+   arch/mips/include/asm/atomic.h:251:7: note: expanded from macro 'ATOMIC_SIP_OP'
+           if (!__SYNC_loongson3_war)                                      \
+                ^
+   arch/mips/include/asm/sync.h:147:34: note: expanded from macro '__SYNC_loongson3_war'
+   # define __SYNC_loongson3_war   (1 << 31)
+                                      ^
+   In file included from arch/mips/kernel/relocate.c:12:
+   In file included from arch/mips/include/asm/cacheflush.h:13:
+   In file included from include/linux/mm.h:10:
+   In file included from include/linux/gfp.h:6:
+   In file included from include/linux/mmzone.h:8:
+   In file included from include/linux/spinlock.h:51:
+   In file included from include/linux/preempt.h:78:
+   In file included from ./arch/mips/include/generated/asm/preempt.h:1:
+   In file included from include/asm-generic/preempt.h:5:
+   In file included from include/linux/thread_info.h:38:
+   In file included from arch/mips/include/asm/thread_info.h:16:
+   In file included from arch/mips/include/asm/processor.h:14:
+   In file included from include/linux/atomic.h:7:
+   arch/mips/include/asm/atomic.h:261:1: warning: converting the result of '<<' to a boolean always evaluates to true [-Wtautological-constant-compare]
+   ATOMIC_SIP_OP(atomic64, s64, dsubu, lld, scd)
+   ^
+   arch/mips/include/asm/atomic.h:251:7: note: expanded from macro 'ATOMIC_SIP_OP'
+           if (!__SYNC_loongson3_war)                                      \
+                ^
+   arch/mips/include/asm/sync.h:147:34: note: expanded from macro '__SYNC_loongson3_war'
+   # define __SYNC_loongson3_war   (1 << 31)
+                                      ^
+   In file included from arch/mips/kernel/relocate.c:12:
+   In file included from arch/mips/include/asm/cacheflush.h:13:
+   In file included from include/linux/mm.h:10:
+   In file included from include/linux/gfp.h:6:
+   In file included from include/linux/mmzone.h:8:
+   In file included from include/linux/spinlock.h:59:
+   In file included from include/linux/lockdep.h:14:
+   In file included from include/linux/smp.h:15:
+   In file included from include/linux/smp_types.h:5:
+   include/linux/llist.h:222:9: warning: converting the result of '<<' to a boolean always evaluates to true [-Wtautological-constant-compare]
+           return xchg(&head->first, NULL);
+                  ^
+   arch/mips/include/asm/cmpxchg.h:102:7: note: expanded from macro 'xchg'
+           if (!__SYNC_loongson3_war)                                      \
+                ^
+   arch/mips/include/asm/sync.h:147:34: note: expanded from macro '__SYNC_loongson3_war'
+   # define __SYNC_loongson3_war   (1 << 31)
+                                      ^
+   In file included from arch/mips/kernel/relocate.c:12:
+   In file included from arch/mips/include/asm/cacheflush.h:13:
+   In file included from include/linux/mm.h:10:
+   In file included from include/linux/gfp.h:6:
+   In file included from include/linux/mmzone.h:8:
+   In file included from include/linux/spinlock.h:59:
+   In file included from include/linux/lockdep.h:27:
+   include/linux/debug_locks.h:17:9: warning: converting the result of '<<' to a boolean always evaluates to true [-Wtautological-constant-compare]
+           return xchg(&debug_locks, 0);
+                  ^
+   arch/mips/include/asm/cmpxchg.h:102:7: note: expanded from macro 'xchg'
+           if (!__SYNC_loongson3_war)                                      \
+                ^
+   arch/mips/include/asm/sync.h:147:34: note: expanded from macro '__SYNC_loongson3_war'
+   # define __SYNC_loongson3_war   (1 << 31)
+                                      ^
+   In file included from arch/mips/kernel/relocate.c:12:
+   In file included from arch/mips/include/asm/cacheflush.h:13:
+   In file included from include/linux/mm.h:33:
+   In file included from include/linux/pgtable.h:6:
+   arch/mips/include/asm/pgtable.h:200:3: warning: converting the result of '<<' to a boolean always evaluates to true [-Wtautological-constant-compare]
+                   cmpxchg64(&buddy->pte, 0, _PAGE_GLOBAL);
+                   ^
+   arch/mips/include/asm/cmpxchg.h:220:2: note: expanded from macro 'cmpxchg64'
+           cmpxchg((ptr), (o), (n));                                       \
+           ^
+   arch/mips/include/asm/cmpxchg.h:194:7: note: expanded from macro 'cmpxchg'
+           if (!__SYNC_loongson3_war)                                      \
+                ^
+   arch/mips/include/asm/sync.h:147:34: note: expanded from macro '__SYNC_loongson3_war'
+   # define __SYNC_loongson3_war   (1 << 31)
+                                      ^
+   In file included from arch/mips/kernel/relocate.c:12:
+   In file included from arch/mips/include/asm/cacheflush.h:13:
+   In file included from include/linux/mm.h:33:
+   In file included from include/linux/pgtable.h:6:
+   arch/mips/include/asm/pgtable.h:200:3: warning: converting the result of '<<' to a boolean always evaluates to true [-Wtautological-constant-compare]
+   arch/mips/include/asm/cmpxchg.h:220:2: note: expanded from macro 'cmpxchg64'
+           cmpxchg((ptr), (o), (n));                                       \
+           ^
+   arch/mips/include/asm/cmpxchg.h:204:7: note: expanded from macro 'cmpxchg'
+           if (!__SYNC_loongson3_war)                                      \
+                ^
+   arch/mips/include/asm/sync.h:147:34: note: expanded from macro '__SYNC_loongson3_war'
+   # define __SYNC_loongson3_war   (1 << 31)
+                                      ^
+>> arch/mips/kernel/relocate.c:41:12: warning: no previous prototype for function 'plat_post_relocation' [-Wmissing-prototypes]
+   int __weak plat_post_relocation(long offset)
+              ^
+   arch/mips/kernel/relocate.c:41:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int __weak plat_post_relocation(long offset)
+   ^
+   static 
+   arch/mips/kernel/relocate.c:135:12: warning: no previous prototype for function 'do_relocations' [-Wmissing-prototypes]
+   int __init do_relocations(void *kbase_old, void *kbase_new, long offset)
+              ^
+   arch/mips/kernel/relocate.c:135:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int __init do_relocations(void *kbase_old, void *kbase_new, long offset)
+   ^
+   static 
+>> arch/mips/kernel/relocate.c:304:14: warning: no previous prototype for function 'relocate_kernel' [-Wmissing-prototypes]
+   void *__init relocate_kernel(void)
+                ^
+   arch/mips/kernel/relocate.c:304:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void *__init relocate_kernel(void)
+   ^
+   static 
+   arch/mips/kernel/relocate.c:415:6: warning: no previous prototype for function 'show_kernel_relocation' [-Wmissing-prototypes]
+   void show_kernel_relocation(const char *level)
+        ^
+   arch/mips/kernel/relocate.c:415:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void show_kernel_relocation(const char *level)
+   ^
+   static 
+   16 warnings generated.
+
+
+vim +/plat_post_relocation +41 arch/mips/kernel/relocate.c
+
+4c9fff362261d6 Marcin Nowakowski 2016-11-23  35  
+8cc709d7d4f013 Steven J. Hill    2016-12-09  36  /*
+8cc709d7d4f013 Steven J. Hill    2016-12-09  37   * This function may be defined for a platform to perform any post-relocation
+8cc709d7d4f013 Steven J. Hill    2016-12-09  38   * fixup necessary.
+8cc709d7d4f013 Steven J. Hill    2016-12-09  39   * Return non-zero to abort relocation
+8cc709d7d4f013 Steven J. Hill    2016-12-09  40   */
+8cc709d7d4f013 Steven J. Hill    2016-12-09 @41  int __weak plat_post_relocation(long offset)
+8cc709d7d4f013 Steven J. Hill    2016-12-09  42  {
+8cc709d7d4f013 Steven J. Hill    2016-12-09  43  	return 0;
+8cc709d7d4f013 Steven J. Hill    2016-12-09  44  }
+8cc709d7d4f013 Steven J. Hill    2016-12-09  45  
+
+:::::: The code at line 41 was first introduced by commit
+:::::: 8cc709d7d4f013f51d38ceb2e3c8c82d230cf457 MIPS: Relocatable: Provide plat_post_relocation hook
+
+:::::: TO: Steven J. Hill <Steven.Hill@cavium.com>
+:::::: CC: Ralf Baechle <ralf@linux-mips.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
