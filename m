@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF94CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D4D0C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:03:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577284AbiAXV7o (ORCPT
+        id S1577324AbiAXV7w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:59:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38896 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451331AbiAXVWl (ORCPT
+        Mon, 24 Jan 2022 16:59:52 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43272 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1451345AbiAXVWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:22:41 -0500
+        Mon, 24 Jan 2022 16:22:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5222EB8123A;
-        Mon, 24 Jan 2022 21:22:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76659C340E5;
-        Mon, 24 Jan 2022 21:22:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C269D61305;
+        Mon, 24 Jan 2022 21:22:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C15C340E4;
+        Mon, 24 Jan 2022 21:22:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059359;
-        bh=9n98TaX+hUU8kjXcOlvMGtKM6jKo4501BytYLKGahLk=;
+        s=korg; t=1643059362;
+        bh=K1P0TxYjsDj04lZnqfKDF20Wp9vKSWilXUlbwfumO/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dhxDa85WKc3dpC+Iisml4rNXfOmm/n5kQtjixhHbQOLbODMl+0NPiJon4/IAdx/bh
-         lGyYDy7iJ2R/iyPpvrwyN/PBoMDHfo8Ij8XScW/TUObtMdlfTPcLU7HAo+PqOASLta
-         sRnanMXNquQIEk6c1FNHcbdPHkv5bV82XaQ1LP5Y=
+        b=ggKcWDDidZeyN8vLWMo08nX3+1CWwm+jCx69VNzwC4koWY+l3BuB9aQAZN8Y3m7Ps
+         D+YWRohe0jzSc4A5GPlDJLKd+6cu50NnOMD3kCyFX8+VXK9pnzVow4PICQUe4kcDso
+         9E9kCPpQrpgp+T5JYopAnwiWaRYD/lpIpAJi0VFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0546/1039] libbpf: Detect corrupted ELF symbols section
-Date:   Mon, 24 Jan 2022 19:38:55 +0100
-Message-Id: <20220124184143.626129823@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0583/1039] drm/amdgpu/display: set vblank_disable_immediate for DC
+Date:   Mon, 24 Jan 2022 19:39:32 +0100
+Message-Id: <20220124184144.945945777@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,35 +47,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit 833907876be55205d0ec153dcd819c014404ee16 ]
+[ Upstream commit 92020e81ddbeac351ea4a19bcf01743f32b9c800 ]
 
-Prevent divide-by-zero if ELF is corrupted and has zero sh_entsize.
-Reported by oss-fuzz project.
+Disable vblanks immediately to save power.  I think this was
+missed when we merged DC support.
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20211103173213.1376990-2-andrii@kernel.org
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1781
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c           | 1 -
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 +++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 2696f0b7f0acc..1cc0383471f01 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3556,7 +3556,7 @@ static int bpf_object__collect_externs(struct bpf_object *obj)
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
+index cc2e0c9cfe0a1..4f3c62adccbde 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
+@@ -333,7 +333,6 @@ int amdgpu_irq_init(struct amdgpu_device *adev)
+ 	if (!amdgpu_device_has_dc_support(adev)) {
+ 		if (!adev->enable_virtual_display)
+ 			/* Disable vblank IRQs aggressively for power-saving */
+-			/* XXX: can this be enabled for DC? */
+ 			adev_to_drm(adev)->vblank_disable_immediate = true;
  
- 	scn = elf_sec_by_idx(obj, obj->efile.symbols_shndx);
- 	sh = elf_sec_hdr(obj, scn);
--	if (!sh)
-+	if (!sh || sh->sh_entsize != sizeof(Elf64_Sym))
- 		return -LIBBPF_ERRNO__FORMAT;
+ 		r = drm_vblank_init(adev_to_drm(adev), adev->mode_info.num_crtc);
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 05f7ffd6a28da..e12f841d1d110 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -1597,6 +1597,9 @@ static int amdgpu_dm_init(struct amdgpu_device *adev)
+ 	adev_to_drm(adev)->mode_config.cursor_width = adev->dm.dc->caps.max_cursor_size;
+ 	adev_to_drm(adev)->mode_config.cursor_height = adev->dm.dc->caps.max_cursor_size;
  
- 	dummy_var_btf_id = add_dummy_ksym_var(obj->btf);
++	/* Disable vblank IRQs aggressively for power-saving */
++	adev_to_drm(adev)->vblank_disable_immediate = true;
++
+ 	if (drm_vblank_init(adev_to_drm(adev), adev->dm.display_indexes_num)) {
+ 		DRM_ERROR(
+ 		"amdgpu: failed to initialize sw for display support.\n");
 -- 
 2.34.1
 
