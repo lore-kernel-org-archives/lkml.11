@@ -2,141 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B84D6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47050C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:57:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366184AbiAXXw2 (ORCPT
+        id S2366222AbiAXXwb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:52:28 -0500
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:8116 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1840615AbiAXWyw (ORCPT
+        Mon, 24 Jan 2022 18:52:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1845504AbiAXXMa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:54:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1643064894; x=1674600894;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=tCQU+m5DYoHuerB1mz/UMZFKa6gGl9Rfb7pcDwFKfco=;
-  b=Xtzq4h8cl4HVBhJokEwve7jCp06LmsIAgX5CXpFnnqOwbgPf6BYeON4d
-   2/twaKpXfjFNvvHFAIg0xnfu3VX6aiI74DNA1yQZuOkp8xpINYyb+QxuH
-   UO5fV6rjcQlosFgX55TCZlwv1lIICOZicERhoF70XDLjQabJ8YVLqHqXa
-   U=;
-X-IronPort-AV: E=Sophos;i="5.88,313,1635206400"; 
-   d="scan'208";a="172800001"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1box-d-74e80b3c.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 24 Jan 2022 22:54:16 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1box-d-74e80b3c.us-east-1.amazon.com (Postfix) with ESMTPS id 643298728F;
-        Mon, 24 Jan 2022 22:54:11 +0000 (UTC)
-Received: from EX13D02UWB002.ant.amazon.com (10.43.161.160) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Mon, 24 Jan 2022 22:54:10 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D02UWB002.ant.amazon.com (10.43.161.160) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Mon, 24 Jan 2022 22:54:10 +0000
-Received: from dev-dsk-alisaidi-i31e-9f3421fe.us-east-1.amazon.com
- (10.200.138.153) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1497.28 via Frontend Transport; Mon, 24 Jan 2022 22:54:09
- +0000
-Received: by dev-dsk-alisaidi-i31e-9f3421fe.us-east-1.amazon.com (Postfix, from userid 5131138)
-        id B167A21B28; Mon, 24 Jan 2022 22:54:09 +0000 (UTC)
-From:   Ali Saidi <alisaidi@amazon.com>
-To:     <james.clark@arm.com>
-CC:     <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
-        <alisaidi@amazon.com>, <andrew.kilroy@arm.com>,
-        <benh@kernel.crashing.org>, <german.gomez@arm.com>,
-        <john.garry@huawei.com>, <jolsa@redhat.com>, <leo.yan@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
-        <mingo@redhat.com>, <namhyung@kernel.org>, <peterz@infradead.org>,
-        <will@kernel.org>
-Subject: Re: [PATCH] perf arm-spe: Use SPE data source for neoverse cores
-Date:   Mon, 24 Jan 2022 22:53:33 +0000
-Message-ID: <20220124225333.19864-1-alisaidi@amazon.com>
-X-Mailer: git-send-email 2.24.4.AMZN
-In-Reply-To: <0ba26f30-6978-36ad-f7d0-7b8465648e54@arm.com>
-References: <0ba26f30-6978-36ad-f7d0-7b8465648e54@arm.com>
+        Mon, 24 Jan 2022 18:12:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CA3C067A64;
+        Mon, 24 Jan 2022 13:19:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90B5CB81142;
+        Mon, 24 Jan 2022 21:19:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C620BC340E4;
+        Mon, 24 Jan 2022 21:19:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643059172;
+        bh=YxXYK6Vs5YW1etJLgYJ8W5bksdi4WJjPLmiyrsJ/acs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dicLUq/oyuv1H/hYRPVLhZF51bgwNe6WeadGzq82gJLcpEyc7maVPRzMcFidDAdmr
+         /IxczO3MuvkhcPzF5ONPOz5QfHzrs+xxaOrdYqkfL1o7GHiaU5wkzVTz1rHGnGGiu7
+         AkL+m2vURc1iNyZMx3AXwR+rHs7QyPbRtYhY8gBY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0528/1039] ASoC: fsl_asrc: refine the check of available clock divider
+Date:   Mon, 24 Jan 2022 19:38:37 +0100
+Message-Id: <20220124184143.035179889@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/24/22, 11:24 AM, "James Clark" <james.clark@arm.com> wrote:
->On 21/01/2022 18:24, Ali Saidi wrote:
->> When synthesizing data from SPE, augment the type with source information
->> for Arm Neoverse cores. The field is IMPLDEF but the Neoverse cores all use
->> the same encoding. I can't find encoding information for any other SPE
->> implementations to unify their choices with Arm's thus that is left for future
->> work.
->> 
->> This changes enables the expected behavior of perf c2c on a system with SPE where
->> lines that are shared among multiple cores show up in perf c2c output. 
->> 
->> Signed-off-by: Ali Saidi <alisaidi@amazon.com> 
->> ---
->>  .../util/arm-spe-decoder/arm-spe-decoder.c    |  1 +
->>  .../util/arm-spe-decoder/arm-spe-decoder.h    | 12 +++++
->>  tools/perf/util/arm-spe.c                     | 48 ++++++++++++++-----
->>  3 files changed, 49 insertions(+), 12 deletions(-)
->> 
->[...]
->> +static u64 arm_spe__synth_data_source(const struct arm_spe_record *record, u64 midr)
->>  {
->>  	union perf_mem_data_src	data_src = { 0 };
->> +	bool is_neoverse = is_midr_in_range(midr, neoverse_spe);
->>  
->>  	if (record->op == ARM_SPE_LD)
->>  		data_src.mem_op = PERF_MEM_OP_LOAD;
->> @@ -409,19 +418,30 @@ static u64 arm_spe__synth_data_source(const struct arm_spe_record *record)
->>  		data_src.mem_op = PERF_MEM_OP_STORE;
->>  
->>  	if (record->type & (ARM_SPE_LLC_ACCESS | ARM_SPE_LLC_MISS)) {
->> -		data_src.mem_lvl = PERF_MEM_LVL_L3;
->> +		if (is_neoverse && record->source == ARM_SPE_NV_DRAM) {
->> +			data_src.mem_lvl = PERF_MEM_LVL_LOC_RAM | PERF_MEM_LVL_HIT;
->> +		} else if (is_neoverse && record->source == ARM_SPE_NV_PEER_CLSTR) {
->> +			data_src.mem_snoop = PERF_MEM_SNOOP_HITM;
->
->I'm not following how LLC_ACCESS | LLC_MISS ends up as HITM in this case (ARM_SPE_NV_PEER_CLSTR)?
->I thought there was no way to determine a HITM from SPE. Wouldn't one of the other values
->like PERF_MEM_SNOOP_MISS be more accurate?
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-Thanks for taking a look James.
+[ Upstream commit 320386343451ab6a3577e0ee200dac56a6182944 ]
 
-I'd really like someone familiar with perf c2c output to also end up getting
-similar output when running on an Arm system with SPE. There are obviously large
-micro-architectural differences that have been abstracted away by the data_src
-abstraction but fundamentally my understanding of x86 HITM is that the line
-was found in the snoop filter of the LLC as being owned by another core and
-therefore the request needs to go to another core to get the line.  I'm not
-100% sure if on x86 it's really guaranteed to be dirty or not and it's not
-always going to be dirty in a Neoverse system, but since the SPE source
-indicates it was sourced from another core it is a core-2-core transfer of a
-line which is currently owned by another cpu core and that is the interesting
-data point that would be used to drive optimization and elimination of frequent
-core-2-core transfers (true or false sharing).
+According to RM, the clock divider range is from 1 to 8, clock
+prescaling ratio may be any power of 2 from 1 to 128.
+So the supported divider is not all the value between
+1 and 1024, just limited value in that range.
 
->> +			data_src.mem_lvl = PERF_MEM_LVL_L3 | PERF_MEM_LVL_HIT;
->
->This one also adds PERF_MEM_LVL_HIT even though the check of "if (record->type & ARM_SPE_LLC_MISS)"
->hasn't happened yet. Maybe some comments would make it a bit clearer, but at the moment it's
->not obvious how the result is derived because there are some things that don't add up like
->ARM_SPE_LLC_MISS == PERF_MEM_LVL_HIT.
+Create table for the supported divder and add function to
+check the clock divider is available by comparing with
+the table.
 
-Assuming the above is correct, my reading of the existing code that creates the
-c2c output is that when an access is marked as an LLC hit, that doesn't
-necessarily mean that the data was present in the LLC. I don't see how it could
-given that LLC_HIT + HITM means the line was dirty in another CPUs cache, and so
-LLC_HIT + HITM seems to mean that it was a hit in the LLC snoop filter and
-required a different core to provide the line. This and the above certainly
-deserve a comment as to why the miss is being attributed in this way if it's
-otherwise acceptable.
+Fixes: d0250cf4f2ab ("ASoC: fsl_asrc: Add an option to select internal ratio mode")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1641380883-20709-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/fsl/fsl_asrc.c | 69 +++++++++++++++++++++++++++++++++-------
+ 1 file changed, 58 insertions(+), 11 deletions(-)
 
-Thanks,
-Ali
+diff --git a/sound/soc/fsl/fsl_asrc.c b/sound/soc/fsl/fsl_asrc.c
+index 24b41881a68f8..d7d1536a4f377 100644
+--- a/sound/soc/fsl/fsl_asrc.c
++++ b/sound/soc/fsl/fsl_asrc.c
+@@ -19,6 +19,7 @@
+ #include "fsl_asrc.h"
+ 
+ #define IDEAL_RATIO_DECIMAL_DEPTH 26
++#define DIVIDER_NUM  64
+ 
+ #define pair_err(fmt, ...) \
+ 	dev_err(&asrc->pdev->dev, "Pair %c: " fmt, 'A' + index, ##__VA_ARGS__)
+@@ -101,6 +102,55 @@ static unsigned char clk_map_imx8qxp[2][ASRC_CLK_MAP_LEN] = {
+ 	},
+ };
+ 
++/*
++ * According to RM, the divider range is 1 ~ 8,
++ * prescaler is power of 2 from 1 ~ 128.
++ */
++static int asrc_clk_divider[DIVIDER_NUM] = {
++	1,  2,  4,  8,  16,  32,  64,  128,  /* divider = 1 */
++	2,  4,  8, 16,  32,  64, 128,  256,  /* divider = 2 */
++	3,  6, 12, 24,  48,  96, 192,  384,  /* divider = 3 */
++	4,  8, 16, 32,  64, 128, 256,  512,  /* divider = 4 */
++	5, 10, 20, 40,  80, 160, 320,  640,  /* divider = 5 */
++	6, 12, 24, 48,  96, 192, 384,  768,  /* divider = 6 */
++	7, 14, 28, 56, 112, 224, 448,  896,  /* divider = 7 */
++	8, 16, 32, 64, 128, 256, 512, 1024,  /* divider = 8 */
++};
++
++/*
++ * Check if the divider is available for internal ratio mode
++ */
++static bool fsl_asrc_divider_avail(int clk_rate, int rate, int *div)
++{
++	u32 rem, i;
++	u64 n;
++
++	if (div)
++		*div = 0;
++
++	if (clk_rate == 0 || rate == 0)
++		return false;
++
++	n = clk_rate;
++	rem = do_div(n, rate);
++
++	if (div)
++		*div = n;
++
++	if (rem != 0)
++		return false;
++
++	for (i = 0; i < DIVIDER_NUM; i++) {
++		if (n == asrc_clk_divider[i])
++			break;
++	}
++
++	if (i == DIVIDER_NUM)
++		return false;
++
++	return true;
++}
++
+ /**
+  * fsl_asrc_sel_proc - Select the pre-processing and post-processing options
+  * @inrate: input sample rate
+@@ -330,12 +380,12 @@ static int fsl_asrc_config_pair(struct fsl_asrc_pair *pair, bool use_ideal_rate)
+ 	enum asrc_word_width input_word_width;
+ 	enum asrc_word_width output_word_width;
+ 	u32 inrate, outrate, indiv, outdiv;
+-	u32 clk_index[2], div[2], rem[2];
++	u32 clk_index[2], div[2];
+ 	u64 clk_rate;
+ 	int in, out, channels;
+ 	int pre_proc, post_proc;
+ 	struct clk *clk;
+-	bool ideal;
++	bool ideal, div_avail;
+ 
+ 	if (!config) {
+ 		pair_err("invalid pair config\n");
+@@ -415,8 +465,7 @@ static int fsl_asrc_config_pair(struct fsl_asrc_pair *pair, bool use_ideal_rate)
+ 	clk = asrc_priv->asrck_clk[clk_index[ideal ? OUT : IN]];
+ 
+ 	clk_rate = clk_get_rate(clk);
+-	rem[IN] = do_div(clk_rate, inrate);
+-	div[IN] = (u32)clk_rate;
++	div_avail = fsl_asrc_divider_avail(clk_rate, inrate, &div[IN]);
+ 
+ 	/*
+ 	 * The divider range is [1, 1024], defined by the hardware. For non-
+@@ -425,7 +474,7 @@ static int fsl_asrc_config_pair(struct fsl_asrc_pair *pair, bool use_ideal_rate)
+ 	 * only result in different converting speeds. So remainder does not
+ 	 * matter, as long as we keep the divider within its valid range.
+ 	 */
+-	if (div[IN] == 0 || (!ideal && (div[IN] > 1024 || rem[IN] != 0))) {
++	if (div[IN] == 0 || (!ideal && !div_avail)) {
+ 		pair_err("failed to support input sample rate %dHz by asrck_%x\n",
+ 				inrate, clk_index[ideal ? OUT : IN]);
+ 		return -EINVAL;
+@@ -436,13 +485,12 @@ static int fsl_asrc_config_pair(struct fsl_asrc_pair *pair, bool use_ideal_rate)
+ 	clk = asrc_priv->asrck_clk[clk_index[OUT]];
+ 	clk_rate = clk_get_rate(clk);
+ 	if (ideal && use_ideal_rate)
+-		rem[OUT] = do_div(clk_rate, IDEAL_RATIO_RATE);
++		div_avail = fsl_asrc_divider_avail(clk_rate, IDEAL_RATIO_RATE, &div[OUT]);
+ 	else
+-		rem[OUT] = do_div(clk_rate, outrate);
+-	div[OUT] = clk_rate;
++		div_avail = fsl_asrc_divider_avail(clk_rate, outrate, &div[OUT]);
+ 
+ 	/* Output divider has the same limitation as the input one */
+-	if (div[OUT] == 0 || (!ideal && (div[OUT] > 1024 || rem[OUT] != 0))) {
++	if (div[OUT] == 0 || (!ideal && !div_avail)) {
+ 		pair_err("failed to support output sample rate %dHz by asrck_%x\n",
+ 				outrate, clk_index[OUT]);
+ 		return -EINVAL;
+@@ -621,8 +669,7 @@ static void fsl_asrc_select_clk(struct fsl_asrc_priv *asrc_priv,
+ 			clk_index = asrc_priv->clk_map[j][i];
+ 			clk_rate = clk_get_rate(asrc_priv->asrck_clk[clk_index]);
+ 			/* Only match a perfect clock source with no remainder */
+-			if (clk_rate != 0 && (clk_rate / rate[j]) <= 1024 &&
+-			    (clk_rate % rate[j]) == 0)
++			if (fsl_asrc_divider_avail(clk_rate, rate[j], NULL))
+ 				break;
+ 		}
+ 
+-- 
+2.34.1
+
+
 
