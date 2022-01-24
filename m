@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99973C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED350C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245191AbiAXUwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:52:50 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51730 "EHLO
+        id S1358261AbiAXUwx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 15:52:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53096 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384574AbiAXUaH (ORCPT
+        with ESMTP id S1384621AbiAXUaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:30:07 -0500
+        Mon, 24 Jan 2022 15:30:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6F1D6152D;
-        Mon, 24 Jan 2022 20:30:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CB77C340E5;
-        Mon, 24 Jan 2022 20:30:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 813A961512;
+        Mon, 24 Jan 2022 20:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F046C340E5;
+        Mon, 24 Jan 2022 20:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056206;
-        bh=mrzrnxbmD+5U4WQgviGOnIsr+fY8KnoUK66V9RP2bRA=;
+        s=korg; t=1643056214;
+        bh=eXD3O4QmX5J7aE4pQ1f46f7WdUCuth2V6BwFwk8xKBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rQi48VY/Qhi30Tr0cQFinZZJ3csMaEeuytMRvQzayWoWcO/b45cwoYnVqUxosuInN
-         0IEIHm69Y5kJg4qQTdpltAjLmiMEQDH1cbJB3OuHNJ51CRpSdiZZ3NVzDiKtp4i4TH
-         XCd4ilWe7LhH4d0U8dJg35onavsTlb8U5mfECtPQ=
+        b=Huxj35rT2hgAn0hzZDRNXXZ1n0E5Zw9Hcx+DTjQNRycbmB3aVaUT7DZ3huxC2cECN
+         kDOJfRcERZmuCNs0XTCEtrT3A3QLCq3qpe4pqtpy4vlZYKvrA5o7ppfQ5aRvTnELlR
+         SrRjspmGXbF44V0BEXUEouqqI/6RJIy3cot3iVfc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
+        Mark Zhang <markzhang@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 407/846] PCI/MSI: Fix pci_irq_vector()/pci_irq_get_affinity()
-Date:   Mon, 24 Jan 2022 19:38:44 +0100
-Message-Id: <20220124184114.998619758@linuxfoundation.org>
+Subject: [PATCH 5.15 410/846] RDMA/core: Let ib_find_gid() continue search even after empty entry
+Date:   Mon, 24 Jan 2022 19:38:47 +0100
+Message-Id: <20220124184115.121049627@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,95 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Avihai Horon <avihaih@nvidia.com>
 
-[ Upstream commit 29bbc35e29d9b6347780dcacde2deb4b39344167 ]
+[ Upstream commit 483d805191a23191f8294bbf9b4e94836f5d92e4 ]
 
-pci_irq_vector() and pci_irq_get_affinity() use the list position to find the
-MSI-X descriptor at a given index. That's correct for the normal case where
-the entry number is the same as the list position.
+Currently, ib_find_gid() will stop searching after encountering the first
+empty GID table entry. This behavior is wrong since neither IB nor RoCE
+spec enforce tightly packed GID tables.
 
-But it's wrong for cases where MSI-X was allocated with an entries array
-describing sparse entry numbers into the hardware message descriptor
-table. That's inconsistent at best.
+For example, when a valid GID entry exists at index N, and if a GID entry
+is empty at index N-1, ib_find_gid() will fail to find the valid entry.
 
-Make it always check the entry number because that's what the zero base
-index really means. This change won't break existing users which use a
-sparse entries array for allocation because these users retrieve the Linux
-interrupt number from the entries array after allocation and none of them
-uses pci_irq_vector() or pci_irq_get_affinity().
+Fix it by making ib_find_gid() continue searching even after encountering
+missing entries.
 
-Fixes: aff171641d18 ("PCI: Provide sensible IRQ vector alloc/free routines")
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-Link: https://lore.kernel.org/r/20211206210223.929792157@linutronix.de
+Fixes: 5eb620c81ce3 ("IB/core: Add helpers for uncached GID and P_Key searches")
+Link: https://lore.kernel.org/r/e55d331b96cecfc2cf19803d16e7109ea966882d.1639055490.git.leonro@nvidia.com
+Signed-off-by: Avihai Horon <avihaih@nvidia.com>
+Reviewed-by: Mark Zhang <markzhang@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/msi.c | 26 ++++++++++++++++++--------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+ drivers/infiniband/core/device.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index e11530cb05699..cc4c2b8a5efd7 100644
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -1193,19 +1193,24 @@ EXPORT_SYMBOL(pci_free_irq_vectors);
- 
- /**
-  * pci_irq_vector - return Linux IRQ number of a device vector
-- * @dev: PCI device to operate on
-- * @nr: device-relative interrupt vector index (0-based).
-+ * @dev:	PCI device to operate on
-+ * @nr:		Interrupt vector index (0-based)
-+ *
-+ * @nr has the following meanings depending on the interrupt mode:
-+ *   MSI-X:	The index in the MSI-X vector table
-+ *   MSI:	The index of the enabled MSI vectors
-+ *   INTx:	Must be 0
-+ *
-+ * Return: The Linux interrupt number or -EINVAl if @nr is out of range.
-  */
- int pci_irq_vector(struct pci_dev *dev, unsigned int nr)
- {
- 	if (dev->msix_enabled) {
- 		struct msi_desc *entry;
--		int i = 0;
- 
- 		for_each_pci_msi_entry(entry, dev) {
--			if (i == nr)
-+			if (entry->msi_attrib.entry_nr == nr)
- 				return entry->irq;
--			i++;
- 		}
- 		WARN_ON_ONCE(1);
- 		return -EINVAL;
-@@ -1229,17 +1234,22 @@ EXPORT_SYMBOL(pci_irq_vector);
-  * pci_irq_get_affinity - return the affinity of a particular MSI vector
-  * @dev:	PCI device to operate on
-  * @nr:		device-relative interrupt vector index (0-based).
-+ *
-+ * @nr has the following meanings depending on the interrupt mode:
-+ *   MSI-X:	The index in the MSI-X vector table
-+ *   MSI:	The index of the enabled MSI vectors
-+ *   INTx:	Must be 0
-+ *
-+ * Return: A cpumask pointer or NULL if @nr is out of range
-  */
- const struct cpumask *pci_irq_get_affinity(struct pci_dev *dev, int nr)
- {
- 	if (dev->msix_enabled) {
- 		struct msi_desc *entry;
--		int i = 0;
- 
- 		for_each_pci_msi_entry(entry, dev) {
--			if (i == nr)
-+			if (entry->msi_attrib.entry_nr == nr)
- 				return &entry->affinity->mask;
--			i++;
- 		}
- 		WARN_ON_ONCE(1);
- 		return NULL;
+diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+index f4814bb7f082f..6ab46648af909 100644
+--- a/drivers/infiniband/core/device.c
++++ b/drivers/infiniband/core/device.c
+@@ -2461,7 +2461,8 @@ int ib_find_gid(struct ib_device *device, union ib_gid *gid,
+ 		     ++i) {
+ 			ret = rdma_query_gid(device, port, i, &tmp_gid);
+ 			if (ret)
+-				return ret;
++				continue;
++
+ 			if (!memcmp(&tmp_gid, gid, sizeof *gid)) {
+ 				*port_num = port;
+ 				if (index)
 -- 
 2.34.1
 
