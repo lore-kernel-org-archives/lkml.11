@@ -2,42 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E74C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4530DC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586308AbiAXW0N (ORCPT
+        id S1586476AbiAXW0i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:26:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45248 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453650AbiAXVag (ORCPT
+        Mon, 24 Jan 2022 17:26:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52820 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453875AbiAXVbH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:30:36 -0500
+        Mon, 24 Jan 2022 16:31:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0712C0AD1A5;
+        Mon, 24 Jan 2022 12:19:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ACF46B80FA1;
-        Mon, 24 Jan 2022 21:30:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDA3EC340E5;
-        Mon, 24 Jan 2022 21:30:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B8A561496;
+        Mon, 24 Jan 2022 20:19:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3904BC340E5;
+        Mon, 24 Jan 2022 20:19:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059833;
-        bh=3Efeav5/jfwkBywK9Tb1QYQGO5lWAXrOAFpR3Rex+s8=;
+        s=korg; t=1643055582;
+        bh=EJZBgQ2DExYn0jf+mQ9xSJ8Ik+LpQLT9pEL3+xAQ1yk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=boMC0HAW1mo4sZ+EFMqoOBzfsG2Zzs6q2XDPc1Ns3rZlThkSdpkYEIumtuWlLwI+j
-         3OQnHkI4QmnsfJRxTwPjVJXSpOzfrUL8yufPGLqluGF/+SSAtYIXkna088Jt9ZXy45
-         TW3OYb4agbDVJnFjdnrArD6wh+FZRHf0i70cE5yc=
+        b=gxcEy1GyPiDM33zBNqqgDeJI9UV+jzY5OO8N+0RqVVI2zNScpyB/JpUIKnSsYfLCV
+         J3NIxRTva54qBWc+cyeqo4V9lKHdQ81mltVVYWGjq0mYphLPyuwD7kxQgzrqbzXv38
+         c3susrLcPHl2NShzdL1LYCKD7FxpcKoKzn7XExJ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0749/1039] dm: fix alloc_dax error handling in alloc_dev
-Date:   Mon, 24 Jan 2022 19:42:18 +0100
-Message-Id: <20220124184150.516686433@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vincent Donnefort <vincent.donnefort@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 199/846] sched/fair: Fix detection of per-CPU kthreads waking a task
+Date:   Mon, 24 Jan 2022 19:35:16 +0100
+Message-Id: <20220124184107.804854195@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,38 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Vincent Donnefort <vincent.donnefort@arm.com>
 
-[ Upstream commit d751939235b9b7bc4af15f90a3e99288a8b844a7 ]
+[ Upstream commit 8b4e74ccb582797f6f0b0a50372ebd9fd2372a27 ]
 
-Make sure ->dax_dev is NULL on error so that the cleanup path doesn't
-trip over an ERR_PTR.
+select_idle_sibling() has a special case for tasks woken up by a per-CPU
+kthread, where the selected CPU is the previous one. However, the current
+condition for this exit path is incomplete. A task can wake up from an
+interrupt context (e.g. hrtimer), while a per-CPU kthread is running. A
+such scenario would spuriously trigger the special case described above.
+Also, a recent change made the idle task like a regular per-CPU kthread,
+hence making that situation more likely to happen
+(is_per_cpu_kthread(swapper) being true now).
 
-Reported-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20211129102203.2243509-2-hch@lst.de
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Checking for task context makes sure select_idle_sibling() will not
+interpret a wake up from any other context as a wake up by a per-CPU
+kthread.
+
+Fixes: 52262ee567ad ("sched/fair: Allow a per-CPU kthread waking a task to stack on the same CPU, to fix XFS performance regression")
+Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
+Link: https://lore.kernel.org/r/20211201143450.479472-1-vincent.donnefort@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/sched/fair.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/md/dm.c b/drivers/md/dm.c
-index 662742a310cbb..acc84dc1bded5 100644
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -1786,8 +1786,10 @@ static struct mapped_device *alloc_dev(int minor)
- 	if (IS_ENABLED(CONFIG_DAX_DRIVER)) {
- 		md->dax_dev = alloc_dax(md, md->disk->disk_name,
- 					&dm_dax_ops, 0);
--		if (IS_ERR(md->dax_dev))
-+		if (IS_ERR(md->dax_dev)) {
-+			md->dax_dev = NULL;
- 			goto bad;
-+		}
- 	}
- 
- 	format_dev_t(md->name, MKDEV(_major, minor));
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 6f16dfb742462..c6cb8832796b5 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -6429,6 +6429,7 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
+ 	 * pattern is IO completions.
+ 	 */
+ 	if (is_per_cpu_kthread(current) &&
++	    in_task() &&
+ 	    prev == smp_processor_id() &&
+ 	    this_rq()->nr_running <= 1) {
+ 		return prev;
 -- 
 2.34.1
 
