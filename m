@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C52C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E8DC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410140AbiAYA2f (ORCPT
+        id S3410209AbiAYA2p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:28:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55758 "EHLO
+        Mon, 24 Jan 2022 19:28:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2360830AbiAXXiL (ORCPT
+        with ESMTP id S1387192AbiAXXeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:38:11 -0500
+        Mon, 24 Jan 2022 18:34:09 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41C1C05A196;
-        Mon, 24 Jan 2022 13:37:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2D7C07597F;
+        Mon, 24 Jan 2022 13:36:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FFDDB815A3;
-        Mon, 24 Jan 2022 21:37:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D0C0C340E7;
-        Mon, 24 Jan 2022 21:37:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38C9DB8121C;
+        Mon, 24 Jan 2022 21:36:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D8C2C340E4;
+        Mon, 24 Jan 2022 21:36:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060274;
-        bh=qVf6X/MyLwQb6dyX8oDw0ogwiwMI+qywgDAlFOV1Q30=;
+        s=korg; t=1643060170;
+        bh=nlpsVFFBLXH+IEIkEIU95YTgMgVg2K0Hj1A5Aq2u94E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w8x6A7/Gg6fnArTxzCIQqOuZZ8rP4f7M9iNQBAoU5x9KmS+2oqIi2yPyRGlbvd08p
-         83nrI9j7h8x77NppSHYW2McsmCOLXWD5g7go/yMRHjdV0x4nUUYPeQ04M54lR5U3oA
-         AY7vN0/EMYztQwPvyN3fSunOR+M6ow7z8N43ilP8=
+        b=DC3y3AaZ+AbIaeAHwep9VUnqMyojbvA7GbjpAx6kay5AvrdZMlGq4iWGq1wNCP+Dk
+         wpivzixp1pZANCBiKUM/chkn3BZXRXY3vm2yzxgQqNTbi6pPgsXH1tRAY83j7Cb5u1
+         2iejhdn89phDH/spQX24pZtxbQIBbwcylGT4Xzls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org
-Subject: [PATCH 5.16 0895/1039] ext4: Fix BUG_ON in ext4_bread when write quota data
-Date:   Mon, 24 Jan 2022 19:44:44 +0100
-Message-Id: <20220124184155.370097086@linuxfoundation.org>
+        stable@vger.kernel.org, Yizhuo Zhai <yzhai003@ucr.edu>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 0861/1039] drm/amd/display: Fix the uninitialized variable in enable_stream_features()
+Date:   Mon, 24 Jan 2022 19:44:10 +0100
+Message-Id: <20220124184154.238652206@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,103 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Yizhuo Zhai <yzhai003@ucr.edu>
 
-commit 380a0091cab482489e9b19e07f2a166ad2b76d5c upstream.
+commit 0726ed3065eeb910f9cea0c933bc021a848e00b3 upstream.
 
-We got issue as follows when run syzkaller:
-[  167.936972] EXT4-fs error (device loop0): __ext4_remount:6314: comm rep: Abort forced by user
-[  167.938306] EXT4-fs (loop0): Remounting filesystem read-only
-[  167.981637] Assertion failure in ext4_getblk() at fs/ext4/inode.c:847: '(EXT4_SB(inode->i_sb)->s_mount_state & EXT4_FC_REPLAY) || handle != NULL || create == 0'
-[  167.983601] ------------[ cut here ]------------
-[  167.984245] kernel BUG at fs/ext4/inode.c:847!
-[  167.984882] invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-[  167.985624] CPU: 7 PID: 2290 Comm: rep Tainted: G    B             5.16.0-rc5-next-20211217+ #123
-[  167.986823] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
-[  167.988590] RIP: 0010:ext4_getblk+0x17e/0x504
-[  167.989189] Code: c6 01 74 28 49 c7 c0 a0 a3 5c 9b b9 4f 03 00 00 48 c7 c2 80 9c 5c 9b 48 c7 c6 40 b6 5c 9b 48 c7 c7 20 a4 5c 9b e8 77 e3 fd ff <0f> 0b 8b 04 244
-[  167.991679] RSP: 0018:ffff8881736f7398 EFLAGS: 00010282
-[  167.992385] RAX: 0000000000000094 RBX: 1ffff1102e6dee75 RCX: 0000000000000000
-[  167.993337] RDX: 0000000000000001 RSI: ffffffff9b6e29e0 RDI: ffffed102e6dee66
-[  167.994292] RBP: ffff88816a076210 R08: 0000000000000094 R09: ffffed107363fa09
-[  167.995252] R10: ffff88839b1fd047 R11: ffffed107363fa08 R12: ffff88816a0761e8
-[  167.996205] R13: 0000000000000000 R14: 0000000000000021 R15: 0000000000000001
-[  167.997158] FS:  00007f6a1428c740(0000) GS:ffff88839b000000(0000) knlGS:0000000000000000
-[  167.998238] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  167.999025] CR2: 00007f6a140716c8 CR3: 0000000133216000 CR4: 00000000000006e0
-[  167.999987] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  168.000944] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  168.001899] Call Trace:
-[  168.002235]  <TASK>
-[  168.007167]  ext4_bread+0xd/0x53
-[  168.007612]  ext4_quota_write+0x20c/0x5c0
-[  168.010457]  write_blk+0x100/0x220
-[  168.010944]  remove_free_dqentry+0x1c6/0x440
-[  168.011525]  free_dqentry.isra.0+0x565/0x830
-[  168.012133]  remove_tree+0x318/0x6d0
-[  168.014744]  remove_tree+0x1eb/0x6d0
-[  168.017346]  remove_tree+0x1eb/0x6d0
-[  168.019969]  remove_tree+0x1eb/0x6d0
-[  168.022128]  qtree_release_dquot+0x291/0x340
-[  168.023297]  v2_release_dquot+0xce/0x120
-[  168.023847]  dquot_release+0x197/0x3e0
-[  168.024358]  ext4_release_dquot+0x22a/0x2d0
-[  168.024932]  dqput.part.0+0x1c9/0x900
-[  168.025430]  __dquot_drop+0x120/0x190
-[  168.025942]  ext4_clear_inode+0x86/0x220
-[  168.026472]  ext4_evict_inode+0x9e8/0xa22
-[  168.028200]  evict+0x29e/0x4f0
-[  168.028625]  dispose_list+0x102/0x1f0
-[  168.029148]  evict_inodes+0x2c1/0x3e0
-[  168.030188]  generic_shutdown_super+0xa4/0x3b0
-[  168.030817]  kill_block_super+0x95/0xd0
-[  168.031360]  deactivate_locked_super+0x85/0xd0
-[  168.031977]  cleanup_mnt+0x2bc/0x480
-[  168.033062]  task_work_run+0xd1/0x170
-[  168.033565]  do_exit+0xa4f/0x2b50
-[  168.037155]  do_group_exit+0xef/0x2d0
-[  168.037666]  __x64_sys_exit_group+0x3a/0x50
-[  168.038237]  do_syscall_64+0x3b/0x90
-[  168.038751]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+In function enable_stream_features(), the variable "old_downspread.raw"
+could be uninitialized if core_link_read_dpcd() fails, however, it is
+used in the later if statement, and further, core_link_write_dpcd()
+may write random value, which is potentially unsafe.
 
-In order to reproduce this problem, the following conditions need to be met:
-1. Ext4 filesystem with no journal;
-2. Filesystem image with incorrect quota data;
-3. Abort filesystem forced by user;
-4. umount filesystem;
-
-As in ext4_quota_write:
-...
-         if (EXT4_SB(sb)->s_journal && !handle) {
-                 ext4_msg(sb, KERN_WARNING, "Quota write (off=%llu, len=%llu)"
-                         " cancelled because transaction is not started",
-                         (unsigned long long)off, (unsigned long long)len);
-                 return -EIO;
-         }
-...
-We only check handle if NULL when filesystem has journal. There is need
-check handle if NULL even when filesystem has no journal.
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20211223015506.297766-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+Fixes: 6016cd9dba0f ("drm/amd/display: add helper for enabling mst stream features")
+Cc: stable@vger.kernel.org
+Signed-off-by: Yizhuo Zhai <yzhai003@ucr.edu>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_link.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -6479,7 +6479,7 @@ static ssize_t ext4_quota_write(struct s
- 	struct buffer_head *bh;
- 	handle_t *handle = journal_current_handle();
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
+@@ -1844,6 +1844,8 @@ static void enable_stream_features(struc
+ 		union down_spread_ctrl old_downspread;
+ 		union down_spread_ctrl new_downspread;
  
--	if (EXT4_SB(sb)->s_journal && !handle) {
-+	if (!handle) {
- 		ext4_msg(sb, KERN_WARNING, "Quota write (off=%llu, len=%llu)"
- 			" cancelled because transaction is not started",
- 			(unsigned long long)off, (unsigned long long)len);
++		memset(&old_downspread, 0, sizeof(old_downspread));
++
+ 		core_link_read_dpcd(link, DP_DOWNSPREAD_CTRL,
+ 				&old_downspread.raw, sizeof(old_downspread));
+ 
 
 
