@@ -2,39 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AAE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D58A3C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232444AbiAXTYE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:24:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44216 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348182AbiAXTPA (ORCPT
+        id S237344AbiAXTYQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:24:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40326 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348225AbiAXTPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:15:00 -0500
+        Mon, 24 Jan 2022 14:15:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1DED60917;
-        Mon, 24 Jan 2022 19:14:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FB3CC340E5;
-        Mon, 24 Jan 2022 19:14:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D9E9B8121A;
+        Mon, 24 Jan 2022 19:15:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9400C340E5;
+        Mon, 24 Jan 2022 19:15:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051699;
-        bh=iGX1mZJhwUEK5jqknqNU7KydGA/VgXiua29cyCulylc=;
+        s=korg; t=1643051702;
+        bh=C/D2h9OZPFVVIfo9DacnrUoGpxJYsOFF0b8+7wbpPCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=veKbQTb1tHPnnymKJK6OAzB67i0EO0Fxa7+E0cYkobkE7FhDrSf8NxBkU13qG8bM/
-         QRa9eg1orF+U5hPIXX+fTKWVRR4FXGIDEI4ZwZdyeUR+1DHAoCMgakNvj8bmafe/6D
-         7r3ZbPQ2erqoXVKTHCqWVSnZTB4hTE/bB5yca8iQ=
+        b=nt6A8gjDkrTmtkIuyIznDf0/p/PjInc+3Ep2X13TOEvDvXrGlm9Tp1oTl/p8D3x0R
+         E5iwQ0IRQHz1pKa9zReNAeqw2uRfjRQXx4XVv5bMFsIQmpWRiqh+eBAtO+9QhD14LW
+         3tLXgKUiSxgMqVxvCJQVuMV+iX0E38lk03ZUSN0s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        stable@vger.kernel.org, Suresh Udipi <sudipi@jp.adit-jv.com>,
+        Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>,
+        Michael Rodin <mrodin@de.adit-jv.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 058/239] tty: serial: atmel: Call dma_async_issue_pending()
-Date:   Mon, 24 Jan 2022 19:41:36 +0100
-Message-Id: <20220124183944.981674331@linuxfoundation.org>
+Subject: [PATCH 4.19 059/239] media: rcar-csi2: Correct the selection of hsfreqrange
+Date:   Mon, 24 Jan 2022 19:41:37 +0100
+Message-Id: <20220124183945.017599609@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -46,48 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Suresh Udipi <sudipi@jp.adit-jv.com>
 
-[ Upstream commit 4f4b9b5895614eb2e2b5f4cab7858f44bd113e1b ]
+[ Upstream commit cee44d4fbacbbdfe62697ec94e76c6e4f726c5df ]
 
-The driver wrongly assummed that tx_submit() will start the transfer,
-which is not the case, now that the at_xdmac driver is fixed. tx_submit
-is supposed to push the current transaction descriptor to a pending queue,
-waiting for issue_pending to be called. issue_pending must start the
-transfer, not tx_submit.
+hsfreqrange should be chosen based on the calculated mbps which
+is closer to the default bit rate  and within the range as per
+table[1]. But current calculation always selects first value which
+is greater than or equal to the calculated mbps which may lead
+to chosing a wrong range in some cases.
 
-Fixes: 34df42f59a60 ("serial: at91: add rx dma support")
-Fixes: 08f738be88bb ("serial: at91: add tx dma support")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211125090028.786832-4-tudor.ambarus@microchip.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+For example for 360 mbps for H3/M3N
+Existing logic selects
+Calculated value 360Mbps : Default 400Mbps Range [368.125 -433.125 mbps]
+
+This hsfreqrange is out of range.
+
+The logic is changed to get the default value which is closest to the
+calculated value [1]
+
+Calculated value 360Mbps : Default 350Mbps  Range [320.625 -380.625 mpbs]
+
+[1] specs r19uh0105ej0200-r-car-3rd-generation.pdf [Table 25.9]
+
+Please note that According to Renesas in Table 25.9 the range for
+220 default value is corrected as below
+
+ |Range (Mbps)     |  Default  Bit rate (Mbps) |
+ -----------------------------------------------
+ | 197.125-244.125 |     220                   |
+ -----------------------------------------------
+
+Fixes: 769afd212b16 ("media: rcar-csi2: add Renesas R-Car MIPI CSI-2 receiver driver")
+Signed-off-by: Suresh Udipi <sudipi@jp.adit-jv.com>
+Signed-off-by: Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>
+Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
+Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/atmel_serial.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/media/platform/rcar-vin/rcar-csi2.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index f6287d76b2984..3ba9ed36d6362 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -923,6 +923,8 @@ static void atmel_tx_dma(struct uart_port *port)
- 				atmel_port->cookie_tx);
- 			return;
- 		}
-+
-+		dma_async_issue_pending(chan);
+diff --git a/drivers/media/platform/rcar-vin/rcar-csi2.c b/drivers/media/platform/rcar-vin/rcar-csi2.c
+index 23f55514b002a..bdcddc48e2f08 100644
+--- a/drivers/media/platform/rcar-vin/rcar-csi2.c
++++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
+@@ -416,16 +416,23 @@ static int rcsi2_wait_phy_start(struct rcar_csi2 *priv)
+ static int rcsi2_set_phypll(struct rcar_csi2 *priv, unsigned int mbps)
+ {
+ 	const struct rcsi2_mbps_reg *hsfreq;
++	const struct rcsi2_mbps_reg *hsfreq_prev = NULL;
+ 
+-	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++)
++	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++) {
+ 		if (hsfreq->mbps >= mbps)
+ 			break;
++		hsfreq_prev = hsfreq;
++	}
+ 
+ 	if (!hsfreq->mbps) {
+ 		dev_err(priv->dev, "Unsupported PHY speed (%u Mbps)", mbps);
+ 		return -ERANGE;
  	}
  
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-@@ -1187,6 +1189,8 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 		goto chan_err;
- 	}
- 
-+	dma_async_issue_pending(atmel_port->chan_rx);
++	if (hsfreq_prev &&
++	    ((mbps - hsfreq_prev->mbps) <= (hsfreq->mbps - mbps)))
++		hsfreq = hsfreq_prev;
 +
+ 	rcsi2_write(priv, PHYPLL_REG, PHYPLL_HSFREQRANGE(hsfreq->reg));
+ 
  	return 0;
- 
- chan_err:
 -- 
 2.34.1
 
