@@ -2,132 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1214BC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A958C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2368917AbiAYAAd (ORCPT
+        id S2369030AbiAYAAr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:00:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847692AbiAXXUX (ORCPT
+        Mon, 24 Jan 2022 19:00:47 -0500
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:43529 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1847818AbiAXXUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:20:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1523C028C33;
-        Mon, 24 Jan 2022 13:28:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7003761583;
-        Mon, 24 Jan 2022 21:28:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55749C340EC;
-        Mon, 24 Jan 2022 21:28:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059704;
-        bh=dXBOlCuoOPukKy5ijeo0ko66jl0mtrClLVGnUYITNaU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Lb6tpTZ09g38vloY7V9Uv0X9S458Gjse6J0F+D4l1++2kau3ynChQJB0Cwtg1psg
-         /2k9ssOUCUzvHCNPGNKSBsAVpMWSRsdhUXgFNbKaYIWtPG6saemMfHop8VzABQzlxZ
-         cUIZmLoxDEW2p3P/E6VNJOZO4bGa+6G53wEXQjpw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0706/1039] ACPI: battery: Add the ThinkPad "Not Charging" quirk
-Date:   Mon, 24 Jan 2022 19:41:35 +0100
-Message-Id: <20220124184149.069081921@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 18:20:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643066443; x=1674602443;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=2wr8SGhJDgwc1rii8kTEvDvFvWDeC6rw0Za8FEAfY5c=;
+  b=wuMn6jikAHoC7ajV0Pyy/XREitzsoptc7LFzBcune5vw8ZGU9IrMRwQd
+   tzaqKjAQNqF8050A0hNdlB0zjQIZJR+Faue8wF3MUfraheNPIkmTykAif
+   4Bs3cjel+hKbsD2N9MCxeKHNROmrYGr33kNIK7l32ZSQ+ek9ZR9M/GOLS
+   Y=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Jan 2022 15:20:42 -0800
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 15:20:42 -0800
+Received: from collinsd-linux.qualcomm.com (10.80.80.8) by
+ nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 24 Jan 2022 15:20:41 -0800
+From:   David Collins <quic_collinsd@quicinc.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        <devicetree@vger.kernel.org>
+CC:     David Collins <quic_collinsd@quicinc.com>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        "Subbaraman Narayanamurthy" <quic_subbaram@quicinc.com>
+Subject: [RESEND PATCH 1/2] dt-bindings: firmware: arm,scmi: define support for name based regulators
+Date:   Mon, 24 Jan 2022 15:20:01 -0800
+Message-ID: <2d78b0f19991f8028d9be913be0a5aefd7d1ee17.1639099631.git.quic_collinsd@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1639099631.git.quic_collinsd@quicinc.com>
+References: <cover.1639099631.git.quic_collinsd@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220124232001.LhbfVHtPpEJh9I7iFbqd5tiNtGThxZLDRdRGf1yavTg@z>
 
-From: Thomas Weißschuh <linux@weissschuh.net>
+Allow SCMI regulator subnodes to be specified either by ID using
+the "reg" property or by name using the "regulator-name" property.
 
-[ Upstream commit e96c1197aca628f7d2480a1cc3214912b40b3414 ]
+Name based SCMI regulator specification helps ensure that an SCMI
+agent doesn't need to be aware of the numbering scheme used for
+Voltage Domains by the SCMI platform.  It also ensures that the
+correct Voltage Domain is selected for a given physical regulator.
+This cannot be guaranteed with numeric Voltage Domain IDs alone.
 
-The EC/ACPI firmware on Lenovo ThinkPads used to report a status
-of "Unknown" when the battery is between the charge start and
-charge stop thresholds. On Windows, it reports "Not Charging"
-so the quirk has been added to also report correctly.
-
-Now the "status" attribute returns "Not Charging" when the
-battery on ThinkPads is not physicaly charging.
-
-Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: David Collins <quic_collinsd@quicinc.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/acpi/battery.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ .../devicetree/bindings/firmware/arm,scmi.yaml        | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
-index 8afa85d6eb6a7..ead0114f27c9f 100644
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -53,6 +53,7 @@ static int battery_bix_broken_package;
- static int battery_notification_delay_ms;
- static int battery_ac_is_broken;
- static int battery_check_pmic = 1;
-+static int battery_quirk_notcharging;
- static unsigned int cache_time = 1000;
- module_param(cache_time, uint, 0644);
- MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
-@@ -217,6 +218,8 @@ static int acpi_battery_get_property(struct power_supply *psy,
- 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
- 		else if (acpi_battery_is_charged(battery))
- 			val->intval = POWER_SUPPLY_STATUS_FULL;
-+		else if (battery_quirk_notcharging)
-+			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
- 		else
- 			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
- 		break;
-@@ -1111,6 +1114,12 @@ battery_do_not_check_pmic_quirk(const struct dmi_system_id *d)
- 	return 0;
- }
+diff --git a/Documentation/devicetree/bindings/firmware/arm,scmi.yaml b/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+index 5c4c6782e052..bc4a84fe25d2 100644
+--- a/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
++++ b/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+@@ -155,7 +155,7 @@ properties:
+           The list of all regulators provided by this SCMI controller.
  
-+static int __init battery_quirk_not_charging(const struct dmi_system_id *d)
-+{
-+	battery_quirk_notcharging = 1;
-+	return 0;
-+}
+         patternProperties:
+-          '^regulators@[0-9a-f]+$':
++          '^regulator.+$':
+             type: object
+             $ref: "../regulator/regulator.yaml#"
+ 
+@@ -164,8 +164,13 @@ properties:
+                 maxItems: 1
+                 description: Identifier for the voltage regulator.
+ 
+-            required:
+-              - reg
++              regulator-name: true
 +
- static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 	{
- 		/* NEC LZ750/LS */
-@@ -1155,6 +1164,19 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo MIIX 320-10ICR"),
- 		},
- 	},
-+	{
-+		/*
-+		 * On Lenovo ThinkPads the BIOS specification defines
-+		 * a state when the bits for charging and discharging
-+		 * are both set to 0. That state is "Not Charging".
-+		 */
-+		.callback = battery_quirk_not_charging,
-+		.ident = "Lenovo ThinkPad",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
-+		},
-+	},
- 	{},
- };
++            anyOf:
++              - required:
++                  - reg
++              - required:
++                  - regulator-name
+ 
+ additionalProperties: false
  
 -- 
-2.34.1
-
-
+2.17.1
 
