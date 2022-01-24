@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF4E7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD46FC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348714AbiAXTTe (ORCPT
+        id S1348692AbiAXTTc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:19:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40054 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347555AbiAXTKq (ORCPT
+        Mon, 24 Jan 2022 14:19:32 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37040 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347480AbiAXTKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:10:46 -0500
+        Mon, 24 Jan 2022 14:10:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 391DC61226;
-        Mon, 24 Jan 2022 19:10:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2836AC340E7;
-        Mon, 24 Jan 2022 19:10:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CBA1B8121C;
+        Mon, 24 Jan 2022 19:10:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D68C340E5;
+        Mon, 24 Jan 2022 19:10:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051445;
-        bh=SqqKlmrkJD2ajJiHT7F53gMvsqqsiJfdubXqh3QjyAo=;
+        s=korg; t=1643051434;
+        bh=bhP8cYmcF+oa1LaEN1EYwyqQkc2Wenjwi4rB4DKehC8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xfGPjlQmqLaKhdRnm1yNMxK8KIBeXVZb1qhkYaN9iBCJiVWh1abTYir/tyQYoM7Jm
-         WrJJEIDKhd95MpEphc1ojeqSwcQSMIYu/SjeJRQA2fGtZGlW/O40sbQneDFOfoYgX7
-         c9C1wc8+n/Jw8fYngZBbtBQ9acAsFrVXGkQHahzQ=
+        b=UvANOJRingdiHjjywDkjJtUivzT/gB0Qt9dVHz2qWgvnwwBYn0HM/B0wdYj/y2Rn7
+         ThNxCvNCFLQ44Tgnj1472pnL0Zroblvc/RPVGZbyQnNACjOCvVIC2DHTrIq7S77MLN
+         NojF7TvJJvMi11KacYf0RXMoqw6rxgcc0BDfLYp8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 164/186] powerpc/fsl/dts: Enable WA for erratum A-009885 on fman3l MDIO buses
-Date:   Mon, 24 Jan 2022 19:43:59 +0100
-Message-Id: <20220124183942.393451196@linuxfoundation.org>
+        stable@vger.kernel.org, Yixing Liu <liuyixing1@huawei.com>,
+        Wenpeng Liang <liangwenpeng@huawei.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 4.14 161/186] RDMA/hns: Modify the mapping attribute of doorbell to device
+Date:   Mon, 24 Jan 2022 19:43:56 +0100
+Message-Id: <20220124183942.275906961@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -46,38 +47,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com>
+From: Yixing Liu <liuyixing1@huawei.com>
 
-commit 0d375d610fa96524e2ee2b46830a46a7bfa92a9f upstream.
+commit 39d5534b1302189c809e90641ffae8cbdc42a8fc upstream.
 
-This block is used in (at least) T1024 and T1040, including their
-variants like T1023 etc.
+It is more general for ARM device drivers to use the device attribute to
+map PCI BAR spaces.
 
-Fixes: d55ad2967d89 ("powerpc/mpc85xx: Create dts components for the FSL QorIQ DPAA FMan")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
+Link: https://lore.kernel.org/r/20211206133652.27476-1-liangwenpeng@huawei.com
+Signed-off-by: Yixing Liu <liuyixing1@huawei.com>
+Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/infiniband/hw/hns/hns_roce_main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
-@@ -78,6 +78,7 @@ fman0: fman@400000 {
- 		#size-cells = <0>;
- 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
- 		reg = <0xfc000 0x1000>;
-+		fsl,erratum-a009885;
- 	};
+--- a/drivers/infiniband/hw/hns/hns_roce_main.c
++++ b/drivers/infiniband/hw/hns/hns_roce_main.c
+@@ -377,7 +377,7 @@ static int hns_roce_mmap(struct ib_ucont
+ 		return -EINVAL;
  
- 	xmdio0: mdio@fd000 {
-@@ -85,6 +86,7 @@ fman0: fman@400000 {
- 		#size-cells = <0>;
- 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
- 		reg = <0xfd000 0x1000>;
-+		fsl,erratum-a009885;
- 	};
- 
- 	ptp_timer0: ptp-timer@fe000 {
+ 	if (vma->vm_pgoff == 0) {
+-		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
++		vma->vm_page_prot = pgprot_device(vma->vm_page_prot);
+ 		if (io_remap_pfn_range(vma, vma->vm_start,
+ 				       to_hr_ucontext(context)->uar.pfn,
+ 				       PAGE_SIZE, vma->vm_page_prot))
 
 
