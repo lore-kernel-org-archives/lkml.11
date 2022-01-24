@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36FA8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56169C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3420553AbiAYCYt (ORCPT
+        id S3420720AbiAYCZL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:24:49 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40126 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347621AbiAXTKw (ORCPT
+        Mon, 24 Jan 2022 21:25:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349532AbiAXTUz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:10:52 -0500
+        Mon, 24 Jan 2022 14:20:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8DA3C061787;
+        Mon, 24 Jan 2022 11:07:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A5FD60918;
-        Mon, 24 Jan 2022 19:10:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C045C340E5;
-        Mon, 24 Jan 2022 19:10:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02BCEB811F9;
+        Mon, 24 Jan 2022 19:07:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1793BC340E5;
+        Mon, 24 Jan 2022 19:07:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051451;
-        bh=sGOvretFgauqF2/LGbvj1iZr7JxVo+3umuYUrti16Ho=;
+        s=korg; t=1643051267;
+        bh=1WH8nMsyTmBCT0CINOhWGaYMGMaXc0HjjN3TTcQlxqI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TYqTILZ42sV7UVoXUiEbiM/hb10pYKDSFc99PSvnFCtOfqqtE+/7VLoTVZh2rQ5Sx
-         4/tx89p4eO3+6UaiHX91wLYPtnEmNen9+HjOsTkfsAXCgQgGrhXBGOHgChzQqgj2l3
-         PUrTs5ZWoRZ54tKaea1UilxMhWNjsYo7+wCxV6YU=
+        b=w64wgXtc6Ur//qozsHpjAV5SjFdGI9XoHGCCsXRHRTkXSj3rJIW4jsoZJit9qypVF
+         Gxwf7o8QDOuF9wwSgxCOHk5e8KiBH4aQGXsYk/y43ozBy8vuded8aHp4JuuU0LaGQl
+         /HTMk/75mL1f6KN3vEx2IB4KWcIQM4WZsrvctc4Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 4.14 166/186] parisc: pdc_stable: Fix memory leak in pdcs_register_pathentries
-Date:   Mon, 24 Jan 2022 19:44:01 +0100
-Message-Id: <20220124183942.454961631@linuxfoundation.org>
+        stable@vger.kernel.org, Bixuan Cui <cuibixuan@linux.alibaba.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 074/186] ALSA: oss: fix compile error when OSS_DEBUG is enabled
+Date:   Mon, 24 Jan 2022 19:42:29 +0100
+Message-Id: <20220124183939.504425996@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -46,39 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Bixuan Cui <cuibixuan@linux.alibaba.com>
 
-commit d24846a4246b6e61ecbd036880a4adf61681d241 upstream.
+[ Upstream commit 8e7daf318d97f25e18b2fc7eb5909e34cd903575 ]
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()：
+Fix compile error when OSS_DEBUG is enabled:
+    sound/core/oss/pcm_oss.c: In function 'snd_pcm_oss_set_trigger':
+    sound/core/oss/pcm_oss.c:2055:10: error: 'substream' undeclared (first
+    use in this function); did you mean 'csubstream'?
+      pcm_dbg(substream->pcm, "pcm_oss: trigger = 0x%x\n", trigger);
+              ^
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
-
-Fix memory leak by calling kobject_put().
-
-Fixes: 73f368cf679b ("Kobject: change drivers/parisc/pdc_stable.c to use kobject_init_and_add")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 61efcee8608c ("ALSA: oss: Use standard printk helpers")
+Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
+Link: https://lore.kernel.org/r/1638349134-110369-1-git-send-email-cuibixuan@linux.alibaba.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/parisc/pdc_stable.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ sound/core/oss/pcm_oss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/parisc/pdc_stable.c
-+++ b/drivers/parisc/pdc_stable.c
-@@ -992,8 +992,10 @@ pdcs_register_pathentries(void)
- 		entry->kobj.kset = paths_kset;
- 		err = kobject_init_and_add(&entry->kobj, &ktype_pdcspath, NULL,
- 					   "%s", entry->name);
--		if (err)
-+		if (err) {
-+			kobject_put(&entry->kobj);
- 			return err;
-+		}
+diff --git a/sound/core/oss/pcm_oss.c b/sound/core/oss/pcm_oss.c
+index b092f257c1c69..87806dab321a3 100644
+--- a/sound/core/oss/pcm_oss.c
++++ b/sound/core/oss/pcm_oss.c
+@@ -2070,7 +2070,7 @@ static int snd_pcm_oss_set_trigger(struct snd_pcm_oss_file *pcm_oss_file, int tr
+ 	int err, cmd;
  
- 		/* kobject is now registered */
- 		write_lock(&entry->rw_lock);
+ #ifdef OSS_DEBUG
+-	pcm_dbg(substream->pcm, "pcm_oss: trigger = 0x%x\n", trigger);
++	pr_debug("pcm_oss: trigger = 0x%x\n", trigger);
+ #endif
+ 	
+ 	psubstream = pcm_oss_file->streams[SNDRV_PCM_STREAM_PLAYBACK];
+-- 
+2.34.1
+
 
 
