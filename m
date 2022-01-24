@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE31FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2922CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575819AbiAXVwd (ORCPT
+        id S1575836AbiAXVwf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50056 "EHLO
+        Mon, 24 Jan 2022 16:52:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376425AbiAXVTe (ORCPT
+        with ESMTP id S1353546AbiAXVTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:19:34 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03384C06F8ED;
-        Mon, 24 Jan 2022 12:13:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B338C06F8E7;
+        Mon, 24 Jan 2022 12:13:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 953EA61028;
-        Mon, 24 Jan 2022 20:13:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A470C340E5;
-        Mon, 24 Jan 2022 20:13:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88AF66091B;
+        Mon, 24 Jan 2022 20:13:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C900C340E5;
+        Mon, 24 Jan 2022 20:13:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055218;
-        bh=qfAGAbyPTg3olyE7z+5FG/FBdquTGx9E7vNPDPs2aZI=;
+        s=korg; t=1643055215;
+        bh=lDnMZdm1qIoBNi8zGpb9L19ogrWHp8r6Rf4WFn0gvus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yXNV7GeZslVamN2y2f2a0z2vQ9LHJyk+UPyMt9oKAhX6seiiVXEjb814m5g5bR9sM
-         axyJ31ak/nU0GYWXKBf7+hqYSIBqAM0ImRZ/T/uB6FTSljYnybuVZ5djB1knYb8nVe
-         4VP5ssJunEWwRbdPcu9YwTXhLACfH6v+D79X1c7k=
+        b=M+6ESDUo093kBD8l48XEdNZ+ubjOmt5c5gsKiLRtQRj1YvpdD2nlaxZAP29IZSC5x
+         hXVBoihfxJTYYqPd2lkJqw3lcDKgThg+UmmlmlbdOctCAfPW6jueeerT4nvNSQHMDG
+         YNECwBj/1VbKYBocC8LhkSeANrtW5gdWKdobobYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.15 046/846] media: cpia2: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:32:43 +0100
-Message-Id: <20220124184102.538367716@linuxfoundation.org>
+Subject: [PATCH 5.15 045/846] media: em28xx: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:32:42 +0100
+Message-Id: <20220124184102.506700391@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,40 +52,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Johan Hovold <johan@kernel.org>
 
-commit 10729be03327f53258cb196362015ad5c6eabe02 upstream.
+commit d9b7e8df3aa9b8c10708aab60e72e79ac08237e4 upstream.
 
 USB control-message timeouts are specified in milliseconds and should
 specifically not vary with CONFIG_HZ.
 
-Fixes: ab33d5071de7 ("V4L/DVB (3376): Add cpia2 camera support")
-Cc: stable@vger.kernel.org      # 2.6.17
+Fixes: a6c2ba283565 ("[PATCH] v4l: 716: support for em28xx board family")
+Cc: stable@vger.kernel.org      # 2.6.16
 Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/cpia2/cpia2_usb.c |    4 ++--
+ drivers/media/usb/em28xx/em28xx-core.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/media/usb/cpia2/cpia2_usb.c
-+++ b/drivers/media/usb/cpia2/cpia2_usb.c
-@@ -550,7 +550,7 @@ static int write_packet(struct usb_devic
- 			       0,	/* index */
- 			       buf,	/* buffer */
- 			       size,
--			       HZ);
-+			       1000);
+--- a/drivers/media/usb/em28xx/em28xx-core.c
++++ b/drivers/media/usb/em28xx/em28xx-core.c
+@@ -89,7 +89,7 @@ int em28xx_read_reg_req_len(struct em28x
+ 	mutex_lock(&dev->ctrl_urb_lock);
+ 	ret = usb_control_msg(udev, pipe, req,
+ 			      USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			      0x0000, reg, dev->urb_buf, len, HZ);
++			      0x0000, reg, dev->urb_buf, len, 1000);
+ 	if (ret < 0) {
+ 		em28xx_regdbg("(pipe 0x%08x): IN:  %02x %02x %02x %02x %02x %02x %02x %02x  failed with error %i\n",
+ 			      pipe,
+@@ -158,7 +158,7 @@ int em28xx_write_regs_req(struct em28xx
+ 	memcpy(dev->urb_buf, buf, len);
+ 	ret = usb_control_msg(udev, pipe, req,
+ 			      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			      0x0000, reg, dev->urb_buf, len, HZ);
++			      0x0000, reg, dev->urb_buf, len, 1000);
+ 	mutex_unlock(&dev->ctrl_urb_lock);
  
- 	kfree(buf);
- 	return ret;
-@@ -582,7 +582,7 @@ static int read_packet(struct usb_device
- 			       0,	/* index */
- 			       buf,	/* buffer */
- 			       size,
--			       HZ);
-+			       1000);
- 
- 	if (ret >= 0)
- 		memcpy(registers, buf, size);
+ 	if (ret < 0) {
 
 
