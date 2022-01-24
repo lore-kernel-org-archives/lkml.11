@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44597C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79548C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390492AbiAXUpc (ORCPT
+        id S1390523AbiAXUpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:45:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382937AbiAXU0c (ORCPT
+        Mon, 24 Jan 2022 15:45:40 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51850 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382738AbiAXU0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:26:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94260C07E32E;
-        Mon, 24 Jan 2022 11:41:32 -0800 (PST)
+        Mon, 24 Jan 2022 15:26:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52461B8121A;
-        Mon, 24 Jan 2022 19:41:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4799C340E5;
-        Mon, 24 Jan 2022 19:41:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36531614E2;
+        Mon, 24 Jan 2022 20:26:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A7B7C340E5;
+        Mon, 24 Jan 2022 20:26:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053290;
-        bh=Q3d16Erybi8ks3P6I31MKaCH6TV11ACxsCvMgjcQY2M=;
+        s=korg; t=1643055975;
+        bh=dK3hIHSJOFGdVBAyhBXTzS2yjHybOl79EpD320zhCR4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bvYTvkpFZ/QlxS159i2MpHNGjNGcu5akkQpNqqmGguT+4C5kKDwTn0UVDEewPMtT4
-         7cJYm/QdoOMTRcm0GiZ1xN21+anzpepo6WN+yMwQsofwGyWBlTaOhyhU6qdVbI9ZDO
-         izrh7l0Wn3/FWTX3CXTVqh/yK2pfMS+pCRSU2B08=
+        b=gN1njHKjjVITb6ykXkYIxLhz8yvJRNYipZy7PvH6DxBePxCj4V6HGnmxjQx+5W5CK
+         3P0e0druT/5H06sOzgagriqspbedyaZ9gX8EKJuNPU6Bt6mhmw6/b8dpvPyIAb1j0v
+         3wD/2bHc280HTBHMgvFXmcjW5aA+vL0XlvczUiiU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Nobuhiro Iwamatsu <iwamatsu@nigauri.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.10 018/563] rtc: cmos: take rtc_lock while reading from CMOS
-Date:   Mon, 24 Jan 2022 19:36:23 +0100
-Message-Id: <20220124184025.048026288@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 295/846] crypto: octeontx2 - prevent underflow in get_cores_bmap()
+Date:   Mon, 24 Jan 2022 19:36:52 +0100
+Message-Id: <20220124184111.092181928@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,46 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Jończyk <mat.jonczyk@o2.pl>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 454f47ff464325223129b9b5b8d0b61946ec704d upstream.
+[ Upstream commit 10371b6212bb682f13247733d6b76b91b2b80f9a ]
 
-Reading from the CMOS involves writing to the index register and then
-reading from the data register. Therefore access to the CMOS has to be
-serialized with rtc_lock. This invocation of CMOS_READ was not
-serialized, which could cause trouble when other code is accessing CMOS
-at the same time.
+If we're going to cap "eng_grp->g->engs_num" upper bounds then we should
+cap the lower bounds as well.
 
-Use spin_lock_irq() like the rest of the function.
-
-Nothing in kernel modifies the RTC_DM_BINARY bit, so there could be a
-separate pair of spin_lock_irq() / spin_unlock_irq() before doing the
-math.
-
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Reviewed-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210200131.153887-2-mat.jonczyk@o2.pl
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 43ac0b824f1c ("crypto: octeontx2 - load microcode and create engine groups")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-cmos.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/rtc/rtc-cmos.c
-+++ b/drivers/rtc/rtc-cmos.c
-@@ -463,7 +463,10 @@ static int cmos_set_alarm(struct device
- 	min = t->time.tm_min;
- 	sec = t->time.tm_sec;
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
+index dff34b3ec09e1..7c1b92aaab398 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
+@@ -29,7 +29,8 @@ static struct otx2_cpt_bitmap get_cores_bmap(struct device *dev,
+ 	bool found = false;
+ 	int i;
  
-+	spin_lock_irq(&rtc_lock);
- 	rtc_control = CMOS_READ(RTC_CONTROL);
-+	spin_unlock_irq(&rtc_lock);
-+
- 	if (!(rtc_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD) {
- 		/* Writing 0xff means "don't care" or "match all".  */
- 		mon = (mon <= 12) ? bin2bcd(mon) : 0xff;
+-	if (eng_grp->g->engs_num > OTX2_CPT_MAX_ENGINES) {
++	if (eng_grp->g->engs_num < 0 ||
++	    eng_grp->g->engs_num > OTX2_CPT_MAX_ENGINES) {
+ 		dev_err(dev, "unsupported number of engines %d on octeontx2\n",
+ 			eng_grp->g->engs_num);
+ 		return bmap;
+-- 
+2.34.1
+
 
 
