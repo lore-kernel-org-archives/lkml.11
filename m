@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB6D1C35274
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD70C47081
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445840AbiAXVFD (ORCPT
+        id S1445882AbiAXVFF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:05:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42308 "EHLO
+        Mon, 24 Jan 2022 16:05:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358023AbiAXUnA (ORCPT
+        with ESMTP id S1358760AbiAXUnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:43:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1172EC019B2B;
-        Mon, 24 Jan 2022 11:53:26 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9B0C019B28;
+        Mon, 24 Jan 2022 11:53:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFDCAB8122F;
-        Mon, 24 Jan 2022 19:53:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 097C8C340E5;
-        Mon, 24 Jan 2022 19:53:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C6B260B4E;
+        Mon, 24 Jan 2022 19:53:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36289C340E5;
+        Mon, 24 Jan 2022 19:53:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054003;
-        bh=81xl3sgM260UXnSFz+zCoNVTk3dN1gWBm6MwUjmOT7A=;
+        s=korg; t=1643054000;
+        bh=SJHZKZITEzpGaG9cSq85dVyeEN1YWr4QBwoeChZ5/jo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jjLuGwQTbfL7qXzMfJMQ4qc1jz+WRbPAGZ8xBpXf/XLYkTlhvBPwxGa+0TfF7k6Bn
-         +gTBNztk3Tpf/Y+vZQ1MHMCRQyEFSTi8LVReBd+sxZt+R89rtzbHzKPkprpS2rMnuz
-         671wwAPEXuwqjZiJ5G2acF4Vid0ilrkE0/Ghr1iY=
+        b=OhBxBrR3BeUyH+jGm1b98aATxWxIIRBW8ikyWE02P7vARdUxpmXbGPCK67vzIclRe
+         qqLBlMlDt+By/4RX+Humpup7DtE3hhDVD9F74jRN1Fi/UGLqG+KLK6DRD+q1qbUXJN
+         wp9xxTkN6B1RBYTjTmMJlj5neQ7SRShFEesFlMT4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 214/563] usb: dwc3: qcom: Fix NULL vs IS_ERR checking in dwc3_qcom_probe
-Date:   Mon, 24 Jan 2022 19:39:39 +0100
-Message-Id: <20220124184031.855228474@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Abel Vesa <abel.vesa@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 245/563] clk: imx8mn: Fix imx8mn_clko1_sels
+Date:   Mon, 24 Jan 2022 19:40:10 +0100
+Message-Id: <20220124184032.897969484@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,42 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit b52fe2dbb3e655eb1483000adfab68a219549e13 ]
+[ Upstream commit 570727e9acfac1c2330a01dd5e1272e9c3acec08 ]
 
-Since the acpi_create_platform_device() function may return error
-pointers, dwc3_qcom_create_urs_usb_platdev() function may return error
-pointers too. Using IS_ERR_OR_NULL() to check the return value to fix this.
+When attempting to use sys_pll1_80m as the parent for clko1, the
+system hangs.  This is due to the fact that the source select
+for sys_pll1_80m was incorrectly pointing to m7_alt_pll_clk, which
+doesn't yet exist.
 
-Fixes: c25c210f590e ("usb: dwc3: qcom: add URS Host support for sdm845 ACPI boot")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20211222111823.22887-1-linmq006@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+According to Rev 3 of the TRM, The imx8mn_clko1_sels also incorrectly
+references an osc_27m which does not exist, nor does an entry for
+source select bits 010b.  Fix both by inserting a dummy clock into
+the missing space in the table and renaming the incorrectly name clock
+with dummy.
+
+Fixes: 96d6392b54db ("clk: imx: Add support for i.MX8MN clock driver")
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Link: https://lore.kernel.org/r/20211117133202.775633-1-aford173@gmail.com
+Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/dwc3-qcom.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/clk/imx/clk-imx8mn.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
-index 2a29e2f681fe6..504f8af4d0f80 100644
---- a/drivers/usb/dwc3/dwc3-qcom.c
-+++ b/drivers/usb/dwc3/dwc3-qcom.c
-@@ -764,9 +764,12 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
+diff --git a/drivers/clk/imx/clk-imx8mn.c b/drivers/clk/imx/clk-imx8mn.c
+index 33a7ddc23cd24..db122d94db583 100644
+--- a/drivers/clk/imx/clk-imx8mn.c
++++ b/drivers/clk/imx/clk-imx8mn.c
+@@ -274,9 +274,9 @@ static const char * const imx8mn_pdm_sels[] = {"osc_24m", "sys_pll2_100m", "audi
  
- 		if (qcom->acpi_pdata->is_urs) {
- 			qcom->urs_usb = dwc3_qcom_create_urs_usb_platdev(dev);
--			if (!qcom->urs_usb) {
-+			if (IS_ERR_OR_NULL(qcom->urs_usb)) {
- 				dev_err(dev, "failed to create URS USB platdev\n");
--				return -ENODEV;
-+				if (!qcom->urs_usb)
-+					return -ENODEV;
-+				else
-+					return PTR_ERR(qcom->urs_usb);
- 			}
- 		}
- 	}
+ static const char * const imx8mn_dram_core_sels[] = {"dram_pll_out", "dram_alt_root", };
+ 
+-static const char * const imx8mn_clko1_sels[] = {"osc_24m", "sys_pll1_800m", "osc_27m",
+-						 "sys_pll1_200m", "audio_pll2_out", "vpu_pll",
+-						 "sys_pll1_80m", };
++static const char * const imx8mn_clko1_sels[] = {"osc_24m", "sys_pll1_800m", "dummy",
++						 "sys_pll1_200m", "audio_pll2_out", "sys_pll2_500m",
++						 "dummy", "sys_pll1_80m", };
+ static const char * const imx8mn_clko2_sels[] = {"osc_24m", "sys_pll2_200m", "sys_pll1_400m",
+ 						 "sys_pll2_166m", "sys_pll3_out", "audio_pll1_out",
+ 						 "video_pll1_out", "osc_32k", };
 -- 
 2.34.1
 
