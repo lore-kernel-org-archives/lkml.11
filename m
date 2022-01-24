@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC262C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 106A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:19:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582928AbiAXWQL (ORCPT
+        id S1582946AbiAXWQO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:16:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453887AbiAXVbI (ORCPT
+        Mon, 24 Jan 2022 17:16:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39110 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1441926AbiAXVZI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:31:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304CCC0AD1AD;
-        Mon, 24 Jan 2022 12:20:00 -0800 (PST)
+        Mon, 24 Jan 2022 16:25:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9822B811F9;
-        Mon, 24 Jan 2022 20:19:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07AF6C340E5;
-        Mon, 24 Jan 2022 20:19:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C393B8121C;
+        Mon, 24 Jan 2022 21:25:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 776FAC340E4;
+        Mon, 24 Jan 2022 21:25:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055598;
-        bh=vHsytlRuhEniNKYDf87eMNzzcRoTpH3g1LK1qlpI8Lw=;
+        s=korg; t=1643059504;
+        bh=ogVrOynjJInkjAmfKe6hnKYsopbVCDm3RpXJSJ1b72Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IkJK1YTAszWW44OV2qJss/MjH3RAadO1t/2rbK1XXw3US1SLbwD9Uvd0RuGWGkB7p
-         9U6yPO9g5sbUcjBAPyQWu36ZNl7SVqktHqhhzrF1yY4Krif/qFUJx7upwgECNWAyqb
-         SpPXeeEuMJmyUYj4dbx0a1IjWYTCyk6uVJ6Uy6uQ=
+        b=iGsW5KXwOI7h5ycHBEcdk5m3XwKoXgzNqh/OUwj2dWw07BtUNXQxbu5BulO56iVH1
+         ASmUbh/Pq3bjiOnIbzL1ppNcItM+Qk0jc8egeC2xlx9IjmH/FNarg2xaWsmdx51saY
+         WUHxsIEjVrLw0ww3sUZx+MprpMwCWHgGO477tCJ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Jagan Teki <jagan@amarulasolutions.com>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 203/846] bpf: Remove config check to enable bpf support for branch records
-Date:   Mon, 24 Jan 2022 19:35:20 +0100
-Message-Id: <20220124184107.938110220@linuxfoundation.org>
+Subject: [PATCH 5.16 0637/1039] arm64: dts: rockchip: Fix Bluetooth on ROCK Pi 4 boards
+Date:   Mon, 24 Jan 2022 19:40:26 +0100
+Message-Id: <20220124184146.756351667@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,94 +47,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kajol Jain <kjain@linux.ibm.com>
+From: Jagan Teki <jagan@amarulasolutions.com>
 
-[ Upstream commit db52f57211b4e45f0ebb274e2c877b211dc18591 ]
+[ Upstream commit f471b1b2db0819917c54099ab68349ad6a7e9e19 ]
 
-Branch data available to BPF programs can be very useful to get stack traces
-out of userspace application.
+This patch fixes the Bluetooth on ROCK Pi 4 boards.
 
-Commit fff7b64355ea ("bpf: Add bpf_read_branch_records() helper") added BPF
-support to capture branch records in x86. Enable this feature also for other
-architectures as well by removing checks specific to x86.
+ROCK Pi 4 boards has BCM4345C5 and now it is supported
+on Mainline Linux, brcm,bcm43438-bt still working but
+observed the BT Audio issues with latest test.
 
-If an architecture doesn't support branch records, bpf_read_branch_records()
-still has appropriate checks and it will return an -EINVAL in that scenario.
-Based on UAPI helper doc in include/uapi/linux/bpf.h, unsupported architectures
-should return -ENOENT in such case. Hence, update the appropriate check to
-return -ENOENT instead.
+So, use the BCM4345C5 compatible and its associated
+properties like clock-names as lpo and max-speed.
 
-Selftest 'perf_branches' result on power9 machine which has the branch stacks
-support:
+Attach vbat and vddio supply rails as well.
 
- - Before this patch:
-
-  [command]# ./test_progs -t perf_branches
-   #88/1 perf_branches/perf_branches_hw:FAIL
-   #88/2 perf_branches/perf_branches_no_hw:OK
-   #88 perf_branches:FAIL
-  Summary: 0/1 PASSED, 0 SKIPPED, 1 FAILED
-
- - After this patch:
-
-  [command]# ./test_progs -t perf_branches
-   #88/1 perf_branches/perf_branches_hw:OK
-   #88/2 perf_branches/perf_branches_no_hw:OK
-   #88 perf_branches:OK
-  Summary: 1/2 PASSED, 0 SKIPPED, 0 FAILED
-
-Selftest 'perf_branches' result on power9 machine which doesn't have branch
-stack report:
-
- - After this patch:
-
-  [command]# ./test_progs -t perf_branches
-   #88/1 perf_branches/perf_branches_hw:SKIP
-   #88/2 perf_branches/perf_branches_no_hw:OK
-   #88 perf_branches:OK
-  Summary: 1/1 PASSED, 1 SKIPPED, 0 FAILED
-
-Fixes: fff7b64355eac ("bpf: Add bpf_read_branch_records() helper")
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20211206073315.77432-1-kjain@linux.ibm.com
+Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
+Link: https://lore.kernel.org/r/20211112142359.320798-1-jagan@amarulasolutions.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/bpf_trace.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b-plus.dts | 7 +++++--
+ arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b.dts      | 7 +++++--
+ arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4c.dts      | 7 +++++--
+ 3 files changed, 15 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 6c1038526d1fc..5a18b861fcf75 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1322,9 +1322,6 @@ static const struct bpf_func_proto bpf_perf_prog_read_value_proto = {
- BPF_CALL_4(bpf_read_branch_records, struct bpf_perf_event_data_kern *, ctx,
- 	   void *, buf, u32, size, u64, flags)
- {
--#ifndef CONFIG_X86
--	return -ENOENT;
--#else
- 	static const u32 br_entry_size = sizeof(struct perf_branch_entry);
- 	struct perf_branch_stack *br_stack = ctx->data->br_stack;
- 	u32 to_copy;
-@@ -1333,7 +1330,7 @@ BPF_CALL_4(bpf_read_branch_records, struct bpf_perf_event_data_kern *, ctx,
- 		return -EINVAL;
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b-plus.dts b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b-plus.dts
+index dfad13d2ab249..5bd2b8db3d51a 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b-plus.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b-plus.dts
+@@ -35,13 +35,16 @@
+ 	status = "okay";
  
- 	if (unlikely(!br_stack))
--		return -EINVAL;
-+		return -ENOENT;
+ 	bluetooth {
+-		compatible = "brcm,bcm43438-bt";
++		compatible = "brcm,bcm4345c5";
+ 		clocks = <&rk808 1>;
+-		clock-names = "ext_clock";
++		clock-names = "lpo";
+ 		device-wakeup-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_HIGH>;
+ 		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
+ 		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
++		max-speed = <1500000>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&bt_host_wake_l &bt_wake_l &bt_enable_h>;
++		vbat-supply = <&vcc3v3_sys>;
++		vddio-supply = <&vcc_1v8>;
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b.dts b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b.dts
+index 6c63e617063c9..cf48746a3ad81 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b.dts
+@@ -34,13 +34,16 @@
+ 	status = "okay";
  
- 	if (flags & BPF_F_GET_BRANCH_RECORDS_SIZE)
- 		return br_stack->nr * br_entry_size;
-@@ -1345,7 +1342,6 @@ BPF_CALL_4(bpf_read_branch_records, struct bpf_perf_event_data_kern *, ctx,
- 	memcpy(buf, br_stack->entries, to_copy);
+ 	bluetooth {
+-		compatible = "brcm,bcm43438-bt";
++		compatible = "brcm,bcm4345c5";
+ 		clocks = <&rk808 1>;
+-		clock-names = "ext_clock";
++		clock-names = "lpo";
+ 		device-wakeup-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_HIGH>;
+ 		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
+ 		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
++		max-speed = <1500000>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&bt_host_wake_l &bt_wake_l &bt_enable_h>;
++		vbat-supply = <&vcc3v3_sys>;
++		vddio-supply = <&vcc_1v8>;
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4c.dts b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4c.dts
+index 99169bcd51c03..57ddf55ee6930 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4c.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4c.dts
+@@ -35,14 +35,17 @@
+ 	status = "okay";
  
- 	return to_copy;
--#endif
- }
+ 	bluetooth {
+-		compatible = "brcm,bcm43438-bt";
++		compatible = "brcm,bcm4345c5";
+ 		clocks = <&rk808 1>;
+-		clock-names = "ext_clock";
++		clock-names = "lpo";
+ 		device-wakeup-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_HIGH>;
+ 		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
+ 		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
++		max-speed = <1500000>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&bt_host_wake_l &bt_wake_l &bt_enable_h>;
++		vbat-supply = <&vcc3v3_sys>;
++		vddio-supply = <&vcc_1v8>;
+ 	};
+ };
  
- static const struct bpf_func_proto bpf_read_branch_records_proto = {
 -- 
 2.34.1
 
