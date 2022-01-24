@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 211D8C3527A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B2CC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383521AbiAXXFw (ORCPT
+        id S1383689AbiAXXF5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:05:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36144 "EHLO
+        Mon, 24 Jan 2022 18:05:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583669AbiAXWTY (ORCPT
+        with ESMTP id S1583666AbiAXWTY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:19:24 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D27C0619C2;
-        Mon, 24 Jan 2022 12:49:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8E2C06125A;
+        Mon, 24 Jan 2022 12:49:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 910BA60C19;
-        Mon, 24 Jan 2022 20:49:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72111C340E5;
-        Mon, 24 Jan 2022 20:49:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F05FE60C19;
+        Mon, 24 Jan 2022 20:49:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C90D9C340E5;
+        Mon, 24 Jan 2022 20:49:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057362;
-        bh=c2qXLrMSjxDS76K9hZdCjkLK1zTrQr41ndm8rdt8eUA=;
+        s=korg; t=1643057352;
+        bh=vtrHks515mWWDB8VUuf53R07+1bjr6PyWKO1q/bUdAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t3NCnk4IRDDr5hsj+zac+FY0Dj9HCQClW/0jaREVfjmtdRRqkKnmBr07ubCCBLnvM
-         2luZE7aR0zZ1I5GL1aJzA7/+ZKpZ/REgfF2N991KsFxZu/o6mDKImyK4p220YaNos3
-         zf1ewVaul8v8Ab+ATXc06GsZWuhgneVnXdWs1dsI=
+        b=XuYn9ko7T1riLHUCNxGTQx8tifdek2T39IJNT0CEODfrQp3UgBQTfHM+mpmNhndph
+         tHuYpKayrJFR521rwcUhVGsLFKK8GV6dVSd9vDhFlTWjnmSpKWkKxBT8gsJjdtb2Sl
+         FJ7tlJWKfEUO9KdVgSXzPB5CxIzSnXmPPd+FAFss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Subject: [PATCH 5.15 786/846] clk: si5341: Fix clock HW provider cleanup
-Date:   Mon, 24 Jan 2022 19:45:03 +0100
-Message-Id: <20220124184128.070367352@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.15 783/846] crypto: octeontx2 - uninitialized variable in kvf_limits_store()
+Date:   Mon, 24 Jan 2022 19:45:00 +0100
+Message-Id: <20220124184127.968997311@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,34 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 49a8f2bc8d88702783c7e163ec84374e9a022f71 upstream.
+commit 0ea275df84c389e910a3575a9233075118c173ee upstream.
 
-The call to of_clk_add_hw_provider was not undone on remove or on probe
-failure, which could cause an oops on a subsequent attempt to retrieve
-clocks for the removed device. Switch to the devm version of the
-function to avoid this issue.
+If kstrtoint() fails then "lfs_num" is uninitialized and the warning
+doesn't make any sense.  Just delete it.
 
-Fixes: 3044a860fd09 ("clk: Add Si5341/Si5340 driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220112203816.1784610-1-robert.hancock@calian.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: 8ec8015a3168 ("crypto: octeontx2 - add support to process the crypto request")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/clk-si5341.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/drivers/clk/clk-si5341.c
-+++ b/drivers/clk/clk-si5341.c
-@@ -1740,7 +1740,7 @@ static int si5341_probe(struct i2c_clien
- 			clk_prepare(data->clk[i].hw.clk);
- 	}
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
+@@ -494,12 +494,11 @@ static ssize_t kvf_limits_store(struct d
+ {
+ 	struct otx2_cptpf_dev *cptpf = dev_get_drvdata(dev);
+ 	int lfs_num;
++	int ret;
  
--	err = of_clk_add_hw_provider(client->dev.of_node, of_clk_si5341_get,
-+	err = devm_of_clk_add_hw_provider(&client->dev, of_clk_si5341_get,
- 			data);
- 	if (err) {
- 		dev_err(&client->dev, "unable to add clk provider\n");
+-	if (kstrtoint(buf, 0, &lfs_num)) {
+-		dev_err(dev, "lfs count %d must be in range [1 - %d]\n",
+-			lfs_num, num_online_cpus());
+-		return -EINVAL;
+-	}
++	ret = kstrtoint(buf, 0, &lfs_num);
++	if (ret)
++		return ret;
+ 	if (lfs_num < 1 || lfs_num > num_online_cpus()) {
+ 		dev_err(dev, "lfs count %d must be in range [1 - %d]\n",
+ 			lfs_num, num_online_cpus());
 
 
