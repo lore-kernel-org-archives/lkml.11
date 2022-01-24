@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 493B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839007AbiAXW4j (ORCPT
+        id S1839813AbiAXW4s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:56:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
+        Mon, 24 Jan 2022 17:56:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458030AbiAXVzG (ORCPT
+        with ESMTP id S1457807AbiAXVzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:55:06 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF27C07E2A1;
-        Mon, 24 Jan 2022 12:36:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9D1C07E2A2;
+        Mon, 24 Jan 2022 12:36:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4048FB8121A;
-        Mon, 24 Jan 2022 20:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E370C340E5;
-        Mon, 24 Jan 2022 20:36:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49FBEB81218;
+        Mon, 24 Jan 2022 20:36:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5398BC340E5;
+        Mon, 24 Jan 2022 20:36:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056580;
-        bh=c7/XBWzsaYmWU+H2uCUZADGkTpa6wfvO5HYwbEXPfCU=;
+        s=korg; t=1643056583;
+        bh=mMVMuisXCIt+zCi8F5XYc+fsmSAixmNaldXMRbfRe4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lKKDyrGbG/6rAXWwEProfEBcWSqwbMLW7zzAOwlRo7YNh8RqORu92RTU9I9KxXh+d
-         6m4t6Rq8S+6rbN4S+YTZw/v5K/ElzTJuD4ncNjIsKqiSL4GfqMTsjessE3BuoCiWxj
-         36byYMG2C19s2KaXWAueMgLmyJNTJDtiYx92uutY=
+        b=SID9gG1ZDoqa/AEt+26SAJ2NAqNuZDSk6Su3LMRrym0h8oMas+Z+3CMtz6ZiFQCsV
+         tQzvvly/LeFJ7RMukg+WTF3K7/eQ7sODrAAQtNqpYZWCCxQ80SvG3ZDAvJEnXEMLJ2
+         hgbnv0bBWc84BcKYtIolHowzL2SDT+aPwMw+Mywk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shaul Triebitz <shaul.triebitz@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 531/846] iwlwifi: mvm: avoid clearing a just saved session protection id
-Date:   Mon, 24 Jan 2022 19:40:48 +0100
-Message-Id: <20220124184119.319040568@linuxfoundation.org>
+Subject: [PATCH 5.15 505/846] mwifiex: Fix skb_over_panic in mwifiex_usb_recv()
+Date:   Mon, 24 Jan 2022 19:40:22 +0100
+Message-Id: <20220124184118.453270302@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,57 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaul Triebitz <shaul.triebitz@intel.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 8e967c137df3b236d2075f9538cb888129425d1a ]
+[ Upstream commit 04d80663f67ccef893061b49ec8a42ff7045ae84 ]
 
-When scheduling a session protection the id is saved but
-then it may be cleared when calling iwl_mvm_te_clear_data
-(if a previous session protection is currently active).
-Fix it by saving the id after calling iwl_mvm_te_clear_data.
+Currently, with an unknown recv_type, mwifiex_usb_recv
+just return -1 without restoring the skb. Next time
+mwifiex_usb_rx_complete is invoked with the same skb,
+calling skb_put causes skb_over_panic.
 
-Signed-off-by: Shaul Triebitz <shaul.triebitz@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204130722.b0743a588d14.I098fef6677d0dab3ef1b6183ed206a10bab01eb2@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+The bug is triggerable with a compromised/malfunctioning
+usb device. After applying the patch, skb_over_panic
+no longer shows up with the same input.
+
+Attached is the panic report from fuzzing.
+skbuff: skb_over_panic: text:000000003bf1b5fa
+ len:2048 put:4 head:00000000dd6a115b data:000000000a9445d8
+ tail:0x844 end:0x840 dev:<NULL>
+kernel BUG at net/core/skbuff.c:109!
+invalid opcode: 0000 [#1] SMP KASAN NOPTI
+CPU: 0 PID: 198 Comm: in:imklog Not tainted 5.6.0 #60
+RIP: 0010:skb_panic+0x15f/0x161
+Call Trace:
+ <IRQ>
+ ? mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ skb_put.cold+0x24/0x24
+ mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __hrtimer_run_queues+0x316/0x740
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ irq_exit+0x114/0x140
+ smp_apic_timer_interrupt+0xde/0x380
+ apic_timer_interrupt+0xf/0x20
+ </IRQ>
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YX4CqjfRcTa6bVL+@Zekuns-MBP-16.fios-router.home
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/time-event.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-index f93f15357a3f8..b8c645b9880fc 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-@@ -1167,15 +1167,10 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
- 			cpu_to_le32(FW_CMD_ID_AND_COLOR(mvmvif->id,
- 							mvmvif->color)),
- 		.action = cpu_to_le32(FW_CTXT_ACTION_ADD),
-+		.conf_id = cpu_to_le32(SESSION_PROTECT_CONF_ASSOC),
- 		.duration_tu = cpu_to_le32(MSEC_TO_TU(duration)),
- 	};
- 
--	/* The time_event_data.id field is reused to save session
--	 * protection's configuration.
--	 */
--	mvmvif->time_event_data.id = SESSION_PROTECT_CONF_ASSOC;
--	cmd.conf_id = cpu_to_le32(mvmvif->time_event_data.id);
--
- 	lockdep_assert_held(&mvm->mutex);
- 
- 	spin_lock_bh(&mvm->time_event_lock);
-@@ -1189,6 +1184,11 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
- 	}
- 
- 	iwl_mvm_te_clear_data(mvm, te_data);
-+	/*
-+	 * The time_event_data.id field is reused to save session
-+	 * protection's configuration.
-+	 */
-+	te_data->id = le32_to_cpu(cmd.conf_id);
- 	te_data->duration = le32_to_cpu(cmd.duration_tu);
- 	te_data->vif = vif;
- 	spin_unlock_bh(&mvm->time_event_lock);
+diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
+index 9736aa0ab7fd4..8f01fcbe93961 100644
+--- a/drivers/net/wireless/marvell/mwifiex/usb.c
++++ b/drivers/net/wireless/marvell/mwifiex/usb.c
+@@ -130,7 +130,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
+ 		default:
+ 			mwifiex_dbg(adapter, ERROR,
+ 				    "unknown recv_type %#x\n", recv_type);
+-			return -1;
++			ret = -1;
++			goto exit_restore_skb;
+ 		}
+ 		break;
+ 	case MWIFIEX_USB_EP_DATA:
 -- 
 2.34.1
 
