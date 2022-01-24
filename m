@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A20FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2A6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359744AbiAXUAI (ORCPT
+        id S1359790AbiAXUAL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:00:08 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39434 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355810AbiAXToB (ORCPT
+        Mon, 24 Jan 2022 15:00:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59656 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244292AbiAXTks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:44:01 -0500
+        Mon, 24 Jan 2022 14:40:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EAB961551;
-        Mon, 24 Jan 2022 19:44:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B611C340E5;
-        Mon, 24 Jan 2022 19:43:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DCABB8122F;
+        Mon, 24 Jan 2022 19:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A95C340E5;
+        Mon, 24 Jan 2022 19:40:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053439;
-        bh=6QMkhBO2A5xRflXt1DL3EZsmSg63ySjvEOpDd53WQDI=;
+        s=korg; t=1643053245;
+        bh=yrC4/59bDpg4P6F8ntcpYsVINcsebGMtT4MPqprAZJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=00//uaMMfHT9pOlNg+UzgBTfkhWXJkjkG/NTcFR0piyPQCBZcmjq6BhJaytBRkzgp
-         QfmTbegaLXEZigDycrYOg17cPKfMIULqhksedhbDYUzfW+NKCvhG0ZJqBZDnnvKIkn
-         CnIufwUDDFqN3w34wbfZoeTyIHlefjP9WNvqgOrE=
+        b=pK1ofs0520J8kjpQszfKATeTEB9Bh7a2BkN0BgBHhXjBhNotDo7AK3BcCmLSlR/JM
+         squ456ijwLqHHWwpJ+hJlLlR/S8uh9/rIQFyVLkQjL81CdTGgvPbfzG1pgmvhqKWge
+         7TFf2qVJh3xkGsKFjGX+FcAi3+CEtVK7jzodozts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 064/563] media: videobuf2: Fix the size printk format
-Date:   Mon, 24 Jan 2022 19:37:09 +0100
-Message-Id: <20220124184026.623024397@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 313/320] net: ethernet: mtk_eth_soc: fix error checking in mtk_mac_config()
+Date:   Mon, 24 Jan 2022 19:44:57 +0100
+Message-Id: <20220124184004.582592928@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,50 +46,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dillon Min <dillon.minfei@gmail.com>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit c9ee220d76775e42f35d634479c978d9350077d3 ]
+commit 214b3369ab9b0a6f28d6c970220c209417edbc65 upstream.
 
-Since the type of parameter size is unsigned long,
-it should printk by %lu, instead of %ld, fix it.
+Clang static analysis reports this problem
+mtk_eth_soc.c:394:7: warning: Branch condition evaluates
+  to a garbage value
+                if (err)
+                    ^~~
 
-Fixes: 7952be9b6ece ("media: drivers/media/common/videobuf2: rename from videobuf")
-Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+err is not initialized and only conditionally set.
+So intitialize err.
+
+Fixes: 7e538372694b ("net: ethernet: mediatek: Re-add support SGMII")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/common/videobuf2/videobuf2-dma-contig.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-index 2f3a5996d3fc9..fe626109ef4db 100644
---- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-+++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-@@ -150,7 +150,7 @@ static void *vb2_dc_alloc(struct device *dev, unsigned long attrs,
- 	buf->cookie = dma_alloc_attrs(dev, size, &buf->dma_addr,
- 					GFP_KERNEL | gfp_flags, buf->attrs);
- 	if (!buf->cookie) {
--		dev_err(dev, "dma_alloc_coherent of size %ld failed\n", size);
-+		dev_err(dev, "dma_alloc_coherent of size %lu failed\n", size);
- 		kfree(buf);
- 		return ERR_PTR(-ENOMEM);
- 	}
-@@ -196,9 +196,9 @@ static int vb2_dc_mmap(void *buf_priv, struct vm_area_struct *vma)
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -215,7 +215,7 @@ static void mtk_mac_config(struct phylin
+ 					   phylink_config);
+ 	struct mtk_eth *eth = mac->hw;
+ 	u32 mcr_cur, mcr_new, sid, i;
+-	int val, ge_mode, err;
++	int val, ge_mode, err = 0;
  
- 	vma->vm_ops->open(vma);
- 
--	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %ld\n",
--		__func__, (unsigned long)buf->dma_addr, vma->vm_start,
--		buf->size);
-+	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %lu\n",
-+		 __func__, (unsigned long)buf->dma_addr, vma->vm_start,
-+		 buf->size);
- 
- 	return 0;
- }
--- 
-2.34.1
-
+ 	/* MT76x8 has no hardware settings between for the MAC */
+ 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
 
 
