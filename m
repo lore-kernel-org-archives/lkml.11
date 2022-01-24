@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8228EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E381FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:43:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382012AbiAXWnE (ORCPT
+        id S1837224AbiAXWnP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:43:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51242 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456632AbiAXVjl (ORCPT
+        Mon, 24 Jan 2022 17:43:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456529AbiAXVj3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:41 -0500
+        Mon, 24 Jan 2022 16:39:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74889C0613A2;
+        Mon, 24 Jan 2022 12:24:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3612EB811A2;
-        Mon, 24 Jan 2022 21:39:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D679C340E7;
-        Mon, 24 Jan 2022 21:39:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB06BB811F9;
+        Mon, 24 Jan 2022 20:24:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F452C340E5;
+        Mon, 24 Jan 2022 20:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060379;
-        bh=NXbbOAqjxfM9TnfaMkieLXY3+VHi8vLOfRI3YaR4YCk=;
+        s=korg; t=1643055871;
+        bh=WXG9DE4l41tkq1K1dZtis6c/+68uvRHriGktdbzlswM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uZ7fi2g/B+UxNdkQU96oFS4+OGp+nBeohKR4rbsFPi4ih703pgCFWGR3oW9tYDALx
-         1zS0R1aeNroBq9xIokTtpz5GWIEwpWO37NxfRsWtV7/w8KH25bLJmZZf7BkMeuMSWu
-         EOq+Zyo8ANi+wpsOiNRxAW+L/0tCA04o5AisC6mY=
+        b=xnC70p8SzntVtehnCq3SxWPWmdNRlk+7TaFV9/NqYrn/X2URjQVZwvm7vUcJ42P7o
+         tIeWhjHTUiRL160rMSl4qQrTSpCY0m4Lz1E16dZFJwaBsJ3cgEJEVcvhDGrZKlaV/3
+         kyMbGFI1jYChKAJYzbtNku1G3ykZ7tZ3kXhM0UV0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 0928/1039] Revert "net/mlx5: Add retry mechanism to the command entry index allocation"
-Date:   Mon, 24 Jan 2022 19:45:17 +0100
-Message-Id: <20220124184156.482053296@linuxfoundation.org>
+        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 260/846] xfrm: state and policy should fail if XFRMA_IF_ID 0
+Date:   Mon, 24 Jan 2022 19:36:17 +0100
+Message-Id: <20220124184109.892793038@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,62 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Antony Antony <antony.antony@secunet.com>
 
-commit 4f6626b0e140867fd6d5a2e9d4ceaef97f10f46a upstream.
+[ Upstream commit 68ac0f3810e76a853b5f7b90601a05c3048b8b54 ]
 
-This reverts commit 410bd754cd73c4a2ac3856d9a03d7b08f9c906bf.
+xfrm ineterface does not allow xfrm if_id = 0
+fail to create or update xfrm state and policy.
 
-The reverted commit had added a retry mechanism to the command entry
-index allocation. The previous patch ensures that there is a free
-command entry index once the command work handler holds the command
-semaphore. Thus the retry mechanism is not needed.
+With this commit:
+ ip xfrm policy add src 192.0.2.1 dst 192.0.2.2 dir out if_id 0
+ RTNETLINK answers: Invalid argument
 
-Fixes: 410bd754cd73 ("net/mlx5: Add retry mechanism to the command entry index allocation")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ ip xfrm state add src 192.0.2.1 dst 192.0.2.2 proto esp spi 1 \
+            reqid 1 mode tunnel aead 'rfc4106(gcm(aes))' \
+            0x1111111111111111111111111111111111111111 96 if_id 0
+ RTNETLINK answers: Invalid argument
+
+v1->v2 change:
+ - add Fixes: tag
+
+Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
+Signed-off-by: Antony Antony <antony.antony@secunet.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c |   21 +--------------------
- 1 file changed, 1 insertion(+), 20 deletions(-)
+ net/xfrm/xfrm_user.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-@@ -904,25 +904,6 @@ static bool opcode_allowed(struct mlx5_c
- 	return cmd->allowed_opcode == opcode;
- }
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index 11574314de09f..5ad7530f65457 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -621,8 +621,13 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
  
--static int cmd_alloc_index_retry(struct mlx5_cmd *cmd)
--{
--	unsigned long alloc_end = jiffies + msecs_to_jiffies(1000);
--	int idx;
--
--retry:
--	idx = cmd_alloc_index(cmd);
--	if (idx < 0 && time_before(jiffies, alloc_end)) {
--		/* Index allocation can fail on heavy load of commands. This is a temporary
--		 * situation as the current command already holds the semaphore, meaning that
--		 * another command completion is being handled and it is expected to release
--		 * the entry index soon.
--		 */
--		cpu_relax();
--		goto retry;
--	}
--	return idx;
--}
--
- bool mlx5_cmd_is_down(struct mlx5_core_dev *dev)
- {
- 	return pci_channel_offline(dev->pdev) ||
-@@ -950,7 +931,7 @@ static void cmd_work_handler(struct work
- 	sem = ent->page_queue ? &cmd->pages_sem : &cmd->sem;
- 	down(sem);
- 	if (!ent->page_queue) {
--		alloc_ret = cmd_alloc_index_retry(cmd);
-+		alloc_ret = cmd_alloc_index(cmd);
- 		if (alloc_ret < 0) {
- 			mlx5_core_err_rl(dev, "failed to allocate command entry\n");
- 			if (ent->callback) {
+ 	xfrm_smark_init(attrs, &x->props.smark);
+ 
+-	if (attrs[XFRMA_IF_ID])
++	if (attrs[XFRMA_IF_ID]) {
+ 		x->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
++		if (!x->if_id) {
++			err = -EINVAL;
++			goto error;
++		}
++	}
+ 
+ 	err = __xfrm_init_state(x, false, attrs[XFRMA_OFFLOAD_DEV]);
+ 	if (err)
+@@ -1413,8 +1418,13 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 
+ 	mark = xfrm_mark_get(attrs, &m);
+ 
+-	if (attrs[XFRMA_IF_ID])
++	if (attrs[XFRMA_IF_ID]) {
+ 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
++		if (!if_id) {
++			err = -EINVAL;
++			goto out_noput;
++		}
++	}
+ 
+ 	if (p->info.seq) {
+ 		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
+@@ -1727,8 +1737,13 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net, struct xfrm_us
+ 
+ 	xfrm_mark_get(attrs, &xp->mark);
+ 
+-	if (attrs[XFRMA_IF_ID])
++	if (attrs[XFRMA_IF_ID]) {
+ 		xp->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
++		if (!xp->if_id) {
++			err = -EINVAL;
++			goto error;
++		}
++	}
+ 
+ 	return xp;
+  error:
+-- 
+2.34.1
+
 
 
