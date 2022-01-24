@@ -2,252 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 693EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB98EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455445AbiAXVfZ (ORCPT
+        id S1455492AbiAXVfa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:35:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44078 "EHLO
+        Mon, 24 Jan 2022 16:35:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441922AbiAXUwX (ORCPT
+        with ESMTP id S1392305AbiAXUvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:52:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82F0C054334;
-        Mon, 24 Jan 2022 11:58:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C49AB810AF;
-        Mon, 24 Jan 2022 19:58:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1621C340E5;
-        Mon, 24 Jan 2022 19:58:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054320;
-        bh=4S6W1uH/DBQDhbPbfljwz+7E5vLaJ+gnyilWru1NEOo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mzIE8TiMxPOTMPYD7D4ulXsuOU8N50Xens2vCfWBdoNCbRd8KyU2mAUxUqy4GGnLw
-         mtnVRrrovb+IlPGpddBn0bt1akFb6Fy3aNrqYC2sUbtfjmp/U/GqklSjFqED2eShZy
-         53I6Zzey5PbGmZn4/0cQTVDv+mkR3X9mwM8C3r78=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 349/563] ath11k: avoid deadlock by change ieee80211_queue_work for regd_update_work
-Date:   Mon, 24 Jan 2022 19:41:54 +0100
-Message-Id: <20220124184036.472877665@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 15:51:02 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C5DC05430A
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:58:14 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id w190so10888069pfw.7
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:58:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ccbVMq565aJHY14D23rObCZOomhJYVRFWJcYpQW3YiI=;
+        b=L6aVelYoBwUsEMQV68jC/J8hXE+7yzpPLCsKpB0/qN2rx2fG2Vyn0VFdFA4oQnlPhq
+         k1b72vnTeIBzP2HvL0IVkadDs7/xVHPcMpb7xAnV/x6F9atjMFugU69loAMK5qoUT0Bh
+         VmWeXKxgsCUvUBl/yfDifMZGQGNVu7xkR6JqH0hjHwta7m2PIjDC3GI5oTca80MOOhJe
+         93ml7bjoBC9r816N8kChpXXE+toVcyrSi+S96w9NJZerG3VisS3w8AWOuxi0bO7GcIdQ
+         +cPYG3pPsg8bbebQaox1lRtedDVKQ+lKnZ4izwZxxwIsAUbyUX8R/vh0uQ4al4dgjGoD
+         olsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=ccbVMq565aJHY14D23rObCZOomhJYVRFWJcYpQW3YiI=;
+        b=UvxWlo1A+q+/Uv+Al2y37FtBEI+JlFq86kuYe0Ealdgz10BxAflG3WMNCQeC6R06hZ
+         d/LiJ1MSm1SbUSPezMXPrztCULVz6VsOVhxh102kxlLWSaRdyjO3uGohGsYU6MYSJYSb
+         rmsuI9TXUZHk+rAhLdRXhs7OZqxDnAG4KH25On2pumSpYpwdlUFtypMWGyk95mSI2hIz
+         pNtFJuXsCL7RdRyqqGn5CpevG+YJY4CAFQpxewimoY9fCdJfarkjZkBl0n58TLDdNWrI
+         FZPXJHU7iaacYzlFURkD9eFuBGNIkk5/ZDLX4ZkcE+MabPObyVX+Kd9MtnCSNZpaioy3
+         9yPQ==
+X-Gm-Message-State: AOAM532c4Dn52wXrB0So1rfUP3EhL3UfHokaZGLIoopkM/ihnr9tU4/x
+        M5RFyKZ7ckPc5b7yHj6+KKI=
+X-Google-Smtp-Source: ABdhPJzsC0HFPKdb0Jx+CR+SjK0VUTDdt8giuxugqexI44AsXT4KObNAkzOV95Pk8MQgp31JIWu2Bg==
+X-Received: by 2002:aa7:988b:0:b0:4c8:b982:d4fa with SMTP id r11-20020aa7988b000000b004c8b982d4famr7871751pfl.14.1643054293804;
+        Mon, 24 Jan 2022 11:58:13 -0800 (PST)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:1baf:f671:4eb6:e10c])
+        by smtp.gmail.com with ESMTPSA id j11sm141048pjf.53.2022.01.24.11.58.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 11:58:13 -0800 (PST)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>, Marco Elver <elver@google.com>
+Subject: [PATCH v4] perf/core: Fix cgroup event list management
+Date:   Mon, 24 Jan 2022 11:58:08 -0800
+Message-Id: <20220124195808.2252071-1-namhyung@kernel.org>
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+The active cgroup events are managed in the per-cpu cgrp_cpuctx_list.
+This list is only accessed from current cpu and not protected by any
+locks.  But from the commit ef54c1a476ae ("perf: Rework
+perf_event_exit_event()"), it's possible to access (actually modify)
+the list from another cpu.
 
-[ Upstream commit ed05c7cf1286d7e31e7623bce55ff135723591bf ]
+In the perf_remove_from_context(), it can remove an event from the
+context without an IPI when the context is not active.  This is not
+safe with cgroup events which can have some active events in the
+context even if ctx->is_active is 0 at the moment.  The target cpu
+might be in the middle of list iteration at the same time.
 
-When enable debug config, it print below warning while shut down wlan
-interface shuh as run "ifconfig wlan0 down".
+If the event is enabled when it's about to be closed, it might call
+perf_cgroup_event_disable() and list_del() with the cgrp_cpuctx_list
+on a different cpu.
 
-The reason is because ar->regd_update_work is ran once, and it is will
-call wiphy_lock(ar->hw->wiphy) in function ath11k_regd_update() which
-is running in workqueue of ieee80211_local queued by ieee80211_queue_work().
-Another thread from "ifconfig wlan0 down" will also accuqire the lock
-by wiphy_lock(sdata->local->hw.wiphy) in function ieee80211_stop(), and
-then it call ieee80211_stop_device() to flush_workqueue(local->workqueue),
-this will wait the workqueue of ieee80211_local finished. Then deadlock
-will happen easily if the two thread run meanwhile.
+This resulted in a crash due to an invalid list pointer access during
+the cgroup list traversal on the cpu which the event belongs to.
 
-Below warning disappeared after this change.
+Let's fallback to IPI to access the cgrp_cpuctx_list from that cpu.
+Similarly, perf_install_in_context() should use IPI for the cgroup
+events too.
 
-[  914.088798] ath11k_pci 0000:05:00.0: mac remove interface (vdev 0)
-[  914.088806] ath11k_pci 0000:05:00.0: mac stop 11d scan
-[  914.088810] ath11k_pci 0000:05:00.0: mac stop 11d vdev id 0
-[  914.088827] ath11k_pci 0000:05:00.0: htc ep 2 consumed 1 credits (total 0)
-[  914.088841] ath11k_pci 0000:05:00.0: send 11d scan stop vdev id 0
-[  914.088849] ath11k_pci 0000:05:00.0: htc insufficient credits ep 2 required 1 available 0
-[  914.088856] ath11k_pci 0000:05:00.0: htc insufficient credits ep 2 required 1 available 0
-[  914.096434] ath11k_pci 0000:05:00.0: rx ce pipe 2 len 16
-[  914.096442] ath11k_pci 0000:05:00.0: htc ep 2 got 1 credits (total 1)
-[  914.096481] ath11k_pci 0000:05:00.0: htc ep 2 consumed 1 credits (total 0)
-[  914.096491] ath11k_pci 0000:05:00.0: WMI vdev delete id 0
-[  914.111598] ath11k_pci 0000:05:00.0: rx ce pipe 2 len 16
-[  914.111628] ath11k_pci 0000:05:00.0: htc ep 2 got 1 credits (total 1)
-[  914.114659] ath11k_pci 0000:05:00.0: rx ce pipe 2 len 20
-[  914.114742] ath11k_pci 0000:05:00.0: htc rx completion ep 2 skb         pK-error
-[  914.115977] ath11k_pci 0000:05:00.0: vdev delete resp for vdev id 0
-[  914.116685] ath11k_pci 0000:05:00.0: vdev 00:03:7f:29:61:11 deleted, vdev_id 0
-
-[  914.117583] ======================================================
-[  914.117592] WARNING: possible circular locking dependency detected
-[  914.117600] 5.16.0-rc1-wt-ath+ #1 Tainted: G           OE
-[  914.117611] ------------------------------------------------------
-[  914.117618] ifconfig/2805 is trying to acquire lock:
-[  914.117628] ffff9c00a62bb548 ((wq_completion)phy0){+.+.}-{0:0}, at: flush_workqueue+0x87/0x470
-[  914.117674]
-               but task is already holding lock:
-[  914.117682] ffff9c00baea07d0 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: ieee80211_stop+0x38/0x180 [mac80211]
-[  914.117872]
-               which lock already depends on the new lock.
-
-[  914.117880]
-               the existing dependency chain (in reverse order) is:
-[  914.117888]
-               -> #3 (&rdev->wiphy.mtx){+.+.}-{4:4}:
-[  914.117910]        __mutex_lock+0xa0/0x9c0
-[  914.117930]        mutex_lock_nested+0x1b/0x20
-[  914.117944]        reg_process_self_managed_hints+0x3a/0xb0 [cfg80211]
-[  914.118093]        wiphy_regulatory_register+0x47/0x80 [cfg80211]
-[  914.118229]        wiphy_register+0x84f/0x9c0 [cfg80211]
-[  914.118353]        ieee80211_register_hw+0x6b1/0xd90 [mac80211]
-[  914.118486]        ath11k_mac_register+0x6af/0xb60 [ath11k]
-[  914.118550]        ath11k_core_qmi_firmware_ready+0x383/0x4a0 [ath11k]
-[  914.118598]        ath11k_qmi_driver_event_work+0x347/0x4a0 [ath11k]
-[  914.118656]        process_one_work+0x228/0x670
-[  914.118669]        worker_thread+0x4d/0x440
-[  914.118680]        kthread+0x16d/0x1b0
-[  914.118697]        ret_from_fork+0x22/0x30
-[  914.118714]
-               -> #2 (rtnl_mutex){+.+.}-{4:4}:
-[  914.118736]        __mutex_lock+0xa0/0x9c0
-[  914.118751]        mutex_lock_nested+0x1b/0x20
-[  914.118767]        rtnl_lock+0x17/0x20
-[  914.118783]        ath11k_regd_update+0x15a/0x260 [ath11k]
-[  914.118841]        ath11k_regd_update_work+0x15/0x20 [ath11k]
-[  914.118897]        process_one_work+0x228/0x670
-[  914.118909]        worker_thread+0x4d/0x440
-[  914.118920]        kthread+0x16d/0x1b0
-[  914.118934]        ret_from_fork+0x22/0x30
-[  914.118948]
-               -> #1 ((work_completion)(&ar->regd_update_work)){+.+.}-{0:0}:
-[  914.118972]        process_one_work+0x1fa/0x670
-[  914.118984]        worker_thread+0x4d/0x440
-[  914.118996]        kthread+0x16d/0x1b0
-[  914.119010]        ret_from_fork+0x22/0x30
-[  914.119023]
-               -> #0 ((wq_completion)phy0){+.+.}-{0:0}:
-[  914.119045]        __lock_acquire+0x146d/0x1cf0
-[  914.119057]        lock_acquire+0x19b/0x360
-[  914.119067]        flush_workqueue+0xae/0x470
-[  914.119084]        ieee80211_stop_device+0x3b/0x50 [mac80211]
-[  914.119260]        ieee80211_do_stop+0x5d7/0x830 [mac80211]
-[  914.119409]        ieee80211_stop+0x45/0x180 [mac80211]
-[  914.119557]        __dev_close_many+0xb3/0x120
-[  914.119573]        __dev_change_flags+0xc3/0x1d0
-[  914.119590]        dev_change_flags+0x29/0x70
-[  914.119605]        devinet_ioctl+0x653/0x810
-[  914.119620]        inet_ioctl+0x193/0x1e0
-[  914.119631]        sock_do_ioctl+0x4d/0xf0
-[  914.119649]        sock_ioctl+0x262/0x340
-[  914.119665]        __x64_sys_ioctl+0x96/0xd0
-[  914.119678]        do_syscall_64+0x3d/0xd0
-[  914.119694]        entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  914.119709]
-               other info that might help us debug this:
-
-[  914.119717] Chain exists of:
-                 (wq_completion)phy0 --> rtnl_mutex --> &rdev->wiphy.mtx
-
-[  914.119745]  Possible unsafe locking scenario:
-
-[  914.119752]        CPU0                    CPU1
-[  914.119758]        ----                    ----
-[  914.119765]   lock(&rdev->wiphy.mtx);
-[  914.119778]                                lock(rtnl_mutex);
-[  914.119792]                                lock(&rdev->wiphy.mtx);
-[  914.119807]   lock((wq_completion)phy0);
-[  914.119819]
-                *** DEADLOCK ***
-
-[  914.119827] 2 locks held by ifconfig/2805:
-[  914.119837]  #0: ffffffffba3dc010 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock+0x17/0x20
-[  914.119872]  #1: ffff9c00baea07d0 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: ieee80211_stop+0x38/0x180 [mac80211]
-[  914.120039]
-               stack backtrace:
-[  914.120048] CPU: 0 PID: 2805 Comm: ifconfig Tainted: G           OE     5.16.0-rc1-wt-ath+ #1
-[  914.120064] Hardware name: LENOVO 418065C/418065C, BIOS 83ET63WW (1.33 ) 07/29/2011
-[  914.120074] Call Trace:
-[  914.120084]  <TASK>
-[  914.120094]  dump_stack_lvl+0x73/0xa4
-[  914.120119]  dump_stack+0x10/0x12
-[  914.120135]  print_circular_bug.isra.44+0x221/0x2e0
-[  914.120165]  check_noncircular+0x106/0x150
-[  914.120203]  __lock_acquire+0x146d/0x1cf0
-[  914.120215]  ? __lock_acquire+0x146d/0x1cf0
-[  914.120245]  lock_acquire+0x19b/0x360
-[  914.120259]  ? flush_workqueue+0x87/0x470
-[  914.120286]  ? lockdep_init_map_type+0x6b/0x250
-[  914.120310]  flush_workqueue+0xae/0x470
-[  914.120327]  ? flush_workqueue+0x87/0x470
-[  914.120344]  ? lockdep_hardirqs_on+0xd7/0x150
-[  914.120391]  ieee80211_stop_device+0x3b/0x50 [mac80211]
-[  914.120565]  ? ieee80211_stop_device+0x3b/0x50 [mac80211]
-[  914.120736]  ieee80211_do_stop+0x5d7/0x830 [mac80211]
-[  914.120906]  ieee80211_stop+0x45/0x180 [mac80211]
-[  914.121060]  __dev_close_many+0xb3/0x120
-[  914.121081]  __dev_change_flags+0xc3/0x1d0
-[  914.121109]  dev_change_flags+0x29/0x70
-[  914.121131]  devinet_ioctl+0x653/0x810
-[  914.121149]  ? __might_fault+0x77/0x80
-[  914.121179]  inet_ioctl+0x193/0x1e0
-[  914.121194]  ? inet_ioctl+0x193/0x1e0
-[  914.121218]  ? __might_fault+0x77/0x80
-[  914.121238]  ? _copy_to_user+0x68/0x80
-[  914.121266]  sock_do_ioctl+0x4d/0xf0
-[  914.121283]  ? inet_stream_connect+0x60/0x60
-[  914.121297]  ? sock_do_ioctl+0x4d/0xf0
-[  914.121329]  sock_ioctl+0x262/0x340
-[  914.121347]  ? sock_ioctl+0x262/0x340
-[  914.121362]  ? exit_to_user_mode_prepare+0x13b/0x280
-[  914.121388]  ? syscall_enter_from_user_mode+0x20/0x50
-[  914.121416]  __x64_sys_ioctl+0x96/0xd0
-[  914.121430]  ? br_ioctl_call+0x90/0x90
-[  914.121445]  ? __x64_sys_ioctl+0x96/0xd0
-[  914.121465]  do_syscall_64+0x3d/0xd0
-[  914.121482]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  914.121497] RIP: 0033:0x7f0ed051737b
-[  914.121513] Code: 0f 1e fa 48 8b 05 15 3b 0d 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e5 3a 0d 00 f7 d8 64 89 01 48
-[  914.121527] RSP: 002b:00007fff7be38b98 EFLAGS: 00000202 ORIG_RAX: 0000000000000010
-[  914.121544] RAX: ffffffffffffffda RBX: 00007fff7be38ba0 RCX: 00007f0ed051737b
-[  914.121555] RDX: 00007fff7be38ba0 RSI: 0000000000008914 RDI: 0000000000000004
-[  914.121566] RBP: 00007fff7be38c60 R08: 000000000000000a R09: 0000000000000001
-[  914.121576] R10: 0000000000000000 R11: 0000000000000202 R12: 00000000fffffffe
-[  914.121586] R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
-[  914.121620]  </TASK>
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
-
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20211201071745.17746-2-quic_wgong@quicinc.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ef54c1a476ae ("perf: Rework perf_event_exit_event()")
+Cc: Marco Elver <elver@google.com>
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+* rebased to tip/perf/urgent
+* add Fixes tag
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index acf1641ce88fd..53846dc9a5c5a 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -5422,7 +5422,7 @@ static int ath11k_reg_chan_list_event(struct ath11k_base *ab, struct sk_buff *sk
- 		ar = ab->pdevs[pdev_idx].ar;
- 		kfree(ab->new_regd[pdev_idx]);
- 		ab->new_regd[pdev_idx] = regd;
--		ieee80211_queue_work(ar->hw, &ar->regd_update_work);
-+		queue_work(ab->workqueue, &ar->regd_update_work);
- 	} else {
- 		/* This regd would be applied during mac registration and is
- 		 * held constant throughout for regd intersection purpose
+ kernel/events/core.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 479c9e672ec4..3ad549fdec3b 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -2462,7 +2462,11 @@ static void perf_remove_from_context(struct perf_event *event, unsigned long fla
+ 	 * event_function_call() user.
+ 	 */
+ 	raw_spin_lock_irq(&ctx->lock);
+-	if (!ctx->is_active) {
++	/*
++	 * Cgroup events are per-cpu events, and must IPI because of
++	 * cgrp_cpuctx_list.
++	 */
++	if (!ctx->is_active && !is_cgroup_event(event)) {
+ 		__perf_remove_from_context(event, __get_cpu_context(ctx),
+ 					   ctx, (void *)flags);
+ 		raw_spin_unlock_irq(&ctx->lock);
+@@ -2895,11 +2899,14 @@ perf_install_in_context(struct perf_event_context *ctx,
+ 	 * perf_event_attr::disabled events will not run and can be initialized
+ 	 * without IPI. Except when this is the first event for the context, in
+ 	 * that case we need the magic of the IPI to set ctx->is_active.
++	 * Similarly, cgroup events for the context also needs the IPI to
++	 * manipulate the cgrp_cpuctx_list.
+ 	 *
+ 	 * The IOC_ENABLE that is sure to follow the creation of a disabled
+ 	 * event will issue the IPI and reprogram the hardware.
+ 	 */
+-	if (__perf_effective_state(event) == PERF_EVENT_STATE_OFF && ctx->nr_events) {
++	if (__perf_effective_state(event) == PERF_EVENT_STATE_OFF &&
++	    ctx->nr_events && !is_cgroup_event(event)) {
+ 		raw_spin_lock_irq(&ctx->lock);
+ 		if (ctx->task == TASK_TOMBSTONE) {
+ 			raw_spin_unlock_irq(&ctx->lock);
 -- 
-2.34.1
-
-
+2.35.0.rc0.227.g00780c9af4-goog
 
