@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 061C5C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F058C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2372960AbiAYAMr (ORCPT
+        id S2372993AbiAYAMw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:12:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51988 "EHLO
+        Mon, 24 Jan 2022 19:12:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1849613AbiAXX0Q (ORCPT
+        with ESMTP id S1849668AbiAXX00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:26:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835BEC01D7E7;
-        Mon, 24 Jan 2022 13:30:25 -0800 (PST)
+        Mon, 24 Jan 2022 18:26:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A8EC06124D;
+        Mon, 24 Jan 2022 11:10:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2357761028;
-        Mon, 24 Jan 2022 21:30:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFFD9C340E4;
-        Mon, 24 Jan 2022 21:30:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F721B8122C;
+        Mon, 24 Jan 2022 19:10:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5895CC340E5;
+        Mon, 24 Jan 2022 19:10:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059824;
-        bh=e9qHwmWQeW+I8N/3hk78hKYr7tPj2scOY6Gr/oCbo4I=;
+        s=korg; t=1643051436;
+        bh=Qf6XnIzeElSZlaTPE0+w9iFReX52uTDmquC2axMPOMY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aaPhJ3NatLhxd4eWTlP9t+keC88q86wVpubGNn2gOtAJb5taosUKlP8nYQ/rRqnoR
-         /bDeuxV+8nlaRTvrjpXSnCkhPMuEfi7oQMLtokNMwSdVfTQ423Bvi+C/HQb5NOg9y7
-         wnvkZrTFXTv3maseHCmu9vgqCffIJwsJbt+AAKJQ=
+        b=WocURE3eWRNrxnKVYiJxrcBBNk6gO6EAENAlOHgJBynXoaml6IlUYVnlED8rjWJmE
+         B4xzPvrl0SW305yToEqrFUV71+z1XRAfDzuPjcOebdhv4oMif7zS+IlAXMdgiLVpui
+         iDC0wbFhY6gfs3gWWQSQ3Mbra9d1VktNrf9+xTyc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0746/1039] KVM: PPC: Book3S: Suppress failed alloc warning in H_COPY_TOFROM_GUEST
-Date:   Mon, 24 Jan 2022 19:42:15 +0100
-Message-Id: <20220124184150.408457509@linuxfoundation.org>
+Subject: [PATCH 4.14 144/186] MIPS: Octeon: Fix build errors using clang
+Date:   Mon, 24 Jan 2022 19:43:39 +0100
+Message-Id: <20220124183941.739616015@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,41 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
-[ Upstream commit 792020907b11c6f9246c21977cab3bad985ae4b6 ]
+[ Upstream commit 95339b70677dc6f9a2d669c4716058e71b8dc1c7 ]
 
-H_COPY_TOFROM_GUEST is an hcall for an upper level VM to access its nested
-VMs memory. The userspace can trigger WARN_ON_ONCE(!(gfp & __GFP_NOWARN))
-in __alloc_pages() by constructing a tiny VM which only does
-H_COPY_TOFROM_GUEST with a too big GPR9 (number of bytes to copy).
+A large number of the following errors is reported when compiling
+with clang:
 
-This silences the warning by adding __GFP_NOWARN.
+  cvmx-bootinfo.h:326:3: error: adding 'int' to a string does not append to the string [-Werror,-Wstring-plus-int]
+                  ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_NULL)
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  cvmx-bootinfo.h:321:20: note: expanded from macro 'ENUM_BRD_TYPE_CASE'
+          case x: return(#x + 16);        /* Skip CVMX_BOARD_TYPE_ */
+                         ~~~^~~~
+  cvmx-bootinfo.h:326:3: note: use array indexing to silence this warning
+  cvmx-bootinfo.h:321:20: note: expanded from macro 'ENUM_BRD_TYPE_CASE'
+          case x: return(#x + 16);        /* Skip CVMX_BOARD_TYPE_ */
+                          ^
 
-Spotted by syzkaller.
+Follow the prompts to use the address operator '&' to fix this error.
 
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20210901084550.1658699-1-aik@ozlabs.ru
+Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv_nested.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/include/asm/octeon/cvmx-bootinfo.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
-index ed8a2c9f56299..89295b52a97c3 100644
---- a/arch/powerpc/kvm/book3s_hv_nested.c
-+++ b/arch/powerpc/kvm/book3s_hv_nested.c
-@@ -582,7 +582,7 @@ long kvmhv_copy_tofrom_guest_nested(struct kvm_vcpu *vcpu)
- 	if (eaddr & (0xFFFUL << 52))
- 		return H_PARAMETER;
+diff --git a/arch/mips/include/asm/octeon/cvmx-bootinfo.h b/arch/mips/include/asm/octeon/cvmx-bootinfo.h
+index 62787765575ef..ce6e5fddce0bf 100644
+--- a/arch/mips/include/asm/octeon/cvmx-bootinfo.h
++++ b/arch/mips/include/asm/octeon/cvmx-bootinfo.h
+@@ -315,7 +315,7 @@ enum cvmx_chip_types_enum {
  
--	buf = kzalloc(n, GFP_KERNEL);
-+	buf = kzalloc(n, GFP_KERNEL | __GFP_NOWARN);
- 	if (!buf)
- 		return H_NO_MEM;
+ /* Functions to return string based on type */
+ #define ENUM_BRD_TYPE_CASE(x) \
+-	case x: return(#x + 16);	/* Skip CVMX_BOARD_TYPE_ */
++	case x: return (&#x[16]);	/* Skip CVMX_BOARD_TYPE_ */
+ static inline const char *cvmx_board_type_to_string(enum
+ 						    cvmx_board_types_enum type)
+ {
+@@ -404,7 +404,7 @@ static inline const char *cvmx_board_type_to_string(enum
+ }
  
+ #define ENUM_CHIP_TYPE_CASE(x) \
+-	case x: return(#x + 15);	/* Skip CVMX_CHIP_TYPE */
++	case x: return (&#x[15]);	/* Skip CVMX_CHIP_TYPE */
+ static inline const char *cvmx_chip_type_to_string(enum
+ 						   cvmx_chip_types_enum type)
+ {
 -- 
 2.34.1
 
