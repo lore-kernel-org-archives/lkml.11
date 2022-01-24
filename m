@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 468B3C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 834D8C35275
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378102AbiAXUOy (ORCPT
+        id S1380028AbiAXUPY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:14:54 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41764 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358158AbiAXTyg (ORCPT
+        Mon, 24 Jan 2022 15:15:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358595AbiAXTzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:54:36 -0500
+        Mon, 24 Jan 2022 14:55:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7967C08C5DA;
+        Mon, 24 Jan 2022 11:27:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA682B81229;
-        Mon, 24 Jan 2022 19:54:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18552C340E7;
-        Mon, 24 Jan 2022 19:54:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4579360917;
+        Mon, 24 Jan 2022 19:27:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BBBBC340E5;
+        Mon, 24 Jan 2022 19:27:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054071;
-        bh=Zf2oU5zgQQMODYzgwGbMC19Oupb+AxdNmqbbKp+TCUw=;
+        s=korg; t=1643052443;
+        bh=ARXYz2jQl5MOyRHxEx1WeK3kg2Npk3iDm2gJ+Z9K5rQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WD8Ki+t3wazPKsayV5p0ZbllDHSPGPEPJCe1biuDfRyfGCD9yLzWb/QwH1XogWoVR
-         C1l6C6lDcWBZfkaaB3RO6Xzs6NI7NCt9lO/64gRAzMRiA82qlDPxsX2QxHz1xxajG2
-         jKZc5GVDyWPOTggvy2PxrnqPXYrc90gvqwHIjPxc=
+        b=VNou791Ny8FiXwlTUC8N81zWyyKKvVpkBS44XAASyz5M58ROfPuoLISIVSijvoGaN
+         4gQIfTyZXgjGxGddJKoX7+wx6tgtQXYNZYWw81OgFmkq9SyZ1pGDLN9jhGuABLEP2E
+         LwhuHaZwDMBILv8VBU+W9L6NR4t5EV2RKBYn3f/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
-        Mark Zhang <markzhang@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 269/563] RDMA/cma: Let cma_resolve_ib_dev() continue search even after empty entry
-Date:   Mon, 24 Jan 2022 19:40:34 +0100
-Message-Id: <20220124184033.749989711@linuxfoundation.org>
+        stable@vger.kernel.org, Sam Bingner <sam@bingner.com>,
+        Yifeng Li <tomli@tomli.me>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Subject: [PATCH 5.4 028/320] PCI: Add function 1 DMA alias quirk for Marvell 88SE9125 SATA controller
+Date:   Mon, 24 Jan 2022 19:40:12 +0100
+Message-Id: <20220124183954.716090435@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,65 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Avihai Horon <avihaih@nvidia.com>
+From: Yifeng Li <tomli@tomli.me>
 
-[ Upstream commit 20679094a0161c94faf77e373fa3f7428a8e14bd ]
+commit e445375882883f69018aa669b67cbb37ec873406 upstream.
 
-Currently, when cma_resolve_ib_dev() searches for a matching GID it will
-stop searching after encountering the first empty GID table entry. This
-behavior is wrong since neither IB nor RoCE spec enforce tightly packed
-GID tables.
+Like other SATA controller chips in the Marvell 88SE91xx series, the
+Marvell 88SE9125 has the same DMA requester ID hardware bug that prevents
+it from working under IOMMU.  Add it to the list of devices that need the
+quirk.
 
-For example, when the matching valid GID entry exists at index N, and if a
-GID entry is empty at index N-1, cma_resolve_ib_dev() will fail to find
-the matching valid entry.
+Without this patch, device initialization fails with DMA errors:
 
-Fix it by making cma_resolve_ib_dev() continue searching even after
-encountering missing entries.
+  ata8: softreset failed (1st FIS failed)
+  DMAR: DRHD: handling fault status reg 2
+  DMAR: [DMA Write NO_PASID] Request device [03:00.1] fault addr 0xfffc0000 [fault reason 0x02] Present bit in context entry is clear
+  DMAR: DRHD: handling fault status reg 2
+  DMAR: [DMA Read NO_PASID] Request device [03:00.1] fault addr 0xfffc0000 [fault reason 0x02] Present bit in context entry is clear
 
-Fixes: f17df3b0dede ("RDMA/cma: Add support for AF_IB to rdma_resolve_addr()")
-Link: https://lore.kernel.org/r/b7346307e3bb396c43d67d924348c6c496493991.1639055490.git.leonro@nvidia.com
-Signed-off-by: Avihai Horon <avihaih@nvidia.com>
-Reviewed-by: Mark Zhang <markzhang@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+After applying the patch, the controller can be successfully initialized:
+
+  ata8: SATA link up 1.5 Gbps (SStatus 113 SControl 330)
+  ata8.00: ATAPI: PIONEER BD-RW   BDR-207M, 1.21, max UDMA/100
+  ata8.00: configured for UDMA/100
+  scsi 7:0:0:0: CD-ROM            PIONEER  BD-RW   BDR-207M 1.21 PQ: 0 ANSI: 5
+
+Link: https://lore.kernel.org/r/YahpKVR+McJVDdkD@work
+Reported-by: Sam Bingner <sam@bingner.com>
+Tested-by: Sam Bingner <sam@bingner.com>
+Tested-by: Yifeng Li <tomli@tomli.me>
+Signed-off-by: Yifeng Li <tomli@tomli.me>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/core/cma.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/pci/quirks.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
-index 8e54184566f7f..4d4ba09f6cf93 100644
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -775,6 +775,7 @@ static int cma_resolve_ib_dev(struct rdma_id_private *id_priv)
- 	unsigned int p;
- 	u16 pkey, index;
- 	enum ib_port_state port_state;
-+	int ret;
- 	int i;
- 
- 	cma_dev = NULL;
-@@ -793,9 +794,14 @@ static int cma_resolve_ib_dev(struct rdma_id_private *id_priv)
- 
- 			if (ib_get_cached_port_state(cur_dev->device, p, &port_state))
- 				continue;
--			for (i = 0; !rdma_query_gid(cur_dev->device,
--						    p, i, &gid);
--			     i++) {
-+
-+			for (i = 0; i < cur_dev->device->port_data[p].immutable.gid_tbl_len;
-+			     ++i) {
-+				ret = rdma_query_gid(cur_dev->device, p, i,
-+						     &gid);
-+				if (ret)
-+					continue;
-+
- 				if (!memcmp(&gid, dgid, sizeof(gid))) {
- 					cma_dev = cur_dev;
- 					sgid = gid;
--- 
-2.34.1
-
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4134,6 +4134,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_M
+ 			 quirk_dma_func1_alias);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9123,
+ 			 quirk_dma_func1_alias);
++/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c136 */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9125,
++			 quirk_dma_func1_alias);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9128,
+ 			 quirk_dma_func1_alias);
+ /* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c14 */
 
 
