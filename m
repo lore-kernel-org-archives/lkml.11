@@ -2,79 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 169AEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E500FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451292AbiAXVWh (ORCPT
+        id S1451277AbiAXVWf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:22:37 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48582 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442625AbiAXUzA (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:55:00 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0CAC60907;
-        Mon, 24 Jan 2022 20:54:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C08FC340E5;
-        Mon, 24 Jan 2022 20:54:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057699;
-        bh=es4VFNe9AaDnfs8Ou0sM7tYhD3qSg6+pBgcbz0bHUXs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eOFEioLRvKZRrpQVJTK6iY5yci28mjq6ud+kMPO9vQGMux3YZ8ujs5bM42JAPOFXR
-         i4nnPyomHNBljIhWzUbACq9+kw033RwNfgp0EYOti3JBwoqGrb+jzA4IjR6ckItuqg
-         rykPACYds5XvfDHAnu8cr9hlMQgUTwJ2bwR+qOA8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andreas Oetken <andreas.oetken@siemens-energy.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.16 0017/1039] mtd: Fixed breaking list in __mtd_del_partition.
-Date:   Mon, 24 Jan 2022 19:30:06 +0100
-Message-Id: <20220124184125.723087290@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 16:22:35 -0500
+Received: from mga17.intel.com ([192.55.52.151]:34488 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1358374AbiAXUwu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 15:52:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643057570; x=1674593570;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zk4FsO8id3AQmClLhfi5ct2JYeKgImL1nYfcJmgal4M=;
+  b=NVgagemPeVa8SVzPZLhl/OfEFP1BQOkY0g78Jg5gIVe6UtBVOEnut4VD
+   nbmhf8INY4eMt2b+IHf1M8rmm29izvDDzdVxAMVYUaoKzlQxDU6J+hH5m
+   KhfxUlOlYw1gJHwfMyzjpSe+3s9eT+AAgHg5TFrOnGY102iNG1VcKeGBr
+   9scEDhMJfd/LUgN6xaSkHjwWuWVU9u9sR5z7ZSweStY+ZQCYpJYChTiy7
+   9X30DGCCrkgqWdEs5HWaRH4n0SpxghRXyynbXC7dy5s3dq93HwJ4T1vVs
+   y0d2IJux3e516/kRCv09Phc5u8+wyUj6ZUQV+joLUqbKurZPIINNmNtbj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226818763"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="226818763"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 12:52:48 -0800
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="479226615"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 12:52:47 -0800
+Date:   Mon, 24 Jan 2022 12:52:42 -0800
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <Ye8RmmKpJT8brmDE@otcwcpicx3.sc.intel.com>
+References: <20211217220136.2762116-1-fenghua.yu@intel.com>
+ <20211217220136.2762116-6-fenghua.yu@intel.com>
+ <87ee4w6g1n.ffs@tglx>
+ <87bl006fdb.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87bl006fdb.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Oetken <ennoerlangen@gmail.com>
+Hi, Thomas,
 
-commit 2966daf7d253d9904b337b040dd7a43472858b8a upstream.
+On Mon, Jan 24, 2022 at 09:36:00PM +0100, Thomas Gleixner wrote:
+> On Mon, Jan 24 2022 at 21:21, Thomas Gleixner wrote:
+> >
+> > Hrm. This is odd.
+> >
+> >> +/* Associate a PASID with an mm_struct: */
+> >> +static inline void mm_pasid_get(struct mm_struct *mm, u32 pasid)
+> >> +{
+> >> +	mm->pasid = pasid;
+> >> +}
+> >
+> > This does not get anything. It sets the allocated PASID in the mm. The
+> > refcount on the PASID was already taken by the allocation. So this
+> > should be mm_pasid_set() or mm_pasid_install(), right?
+> 
+> And as a result of all this ioasid_get() is now left without users...
+> 
+> Thanks,
 
-Not the child partition should be removed from the partition list
-but the partition itself. Otherwise the partition list gets broken
-and any subsequent remove operations leads to a kernel panic.
+Ah. This patch should remove ioasid_get(). So I will change this patch
+as follows:
 
-Fixes: 46b5889cc2c5 ("mtd: implement proper partition handling")
-Signed-off-by: Andreas Oetken <andreas.oetken@siemens-energy.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211102172604.2921065-1-andreas.oetken@siemens-energy.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/mtd/mtdpart.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+1. Remove ioasid_get() because it's not used any more when IOASID's
+   refcount is set to 1 once the IOASID is allocated and is freed on mm exit.
+2. Change mm_pasid_get() to mm_pasid_set().
 
---- a/drivers/mtd/mtdpart.c
-+++ b/drivers/mtd/mtdpart.c
-@@ -312,7 +312,7 @@ static int __mtd_del_partition(struct mt
- 	if (err)
- 		return err;
- 
--	list_del(&child->part.node);
-+	list_del(&mtd->part.node);
- 	free_partition(mtd);
- 
- 	return 0;
+Will that work?
 
+Thanks.
 
+-Fenghua
