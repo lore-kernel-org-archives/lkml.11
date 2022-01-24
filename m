@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B6FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 363FBC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445463AbiAXVDh (ORCPT
+        id S1346839AbiAXVDm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:03:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388480AbiAXUjC (ORCPT
+        Mon, 24 Jan 2022 16:03:42 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35548 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1389236AbiAXUkn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:39:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46DEC02415F;
-        Mon, 24 Jan 2022 11:51:14 -0800 (PST)
+        Mon, 24 Jan 2022 15:40:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71C64B81142;
-        Mon, 24 Jan 2022 19:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98DFAC340E5;
-        Mon, 24 Jan 2022 19:51:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51CB561365;
+        Mon, 24 Jan 2022 20:40:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30B11C340E5;
+        Mon, 24 Jan 2022 20:40:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053872;
-        bh=Jqatb1L8yQjhbQy9UNMVpIvmVrX+KciqGzLn7FtNWoA=;
+        s=korg; t=1643056842;
+        bh=3w3V3ArjONE7l5UZiyh1UENmXpAEzIWTYG+g7uhb9YU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KfJ54gJol/zKCsvdzAWIRbMdaYRaUq4WBox/TSB64PSVUu02H2vI+sE8BQeSXxfiN
-         sxsCg3cGAPflfYuypp4MyxjYeJdj8fz5rq6UiimDLqZbiopMlBOrHvbfb7CqTFwXwz
-         U6Hb5sFz8WgavAMloBEcx1GL3KfWwPtZ+m9ECILY=
+        b=cq3Ls02Vni1x/QiDU4ckQjPgfdPaqRz6DpfCsC3kwYCEx3Akb4HZdTJW2uNlXSuiY
+         H29vnXIl4yQTyunxujp+6gBbA70IVPN8bcdDc+RGxwP2XNn8J9cZk/2fVjd/c8ArLg
+         uEbqxjX1sVY8SOdRHUxAw+1sMkmB4baH25P/fdZ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        stable@vger.kernel.org,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 177/563] arm64: dts: marvell: cn9130: add GPIO and SPI aliases
-Date:   Mon, 24 Jan 2022 19:39:02 +0100
-Message-Id: <20220124184030.536654813@linuxfoundation.org>
+Subject: [PATCH 5.15 619/846] can: flexcan: allow to change quirks at runtime
+Date:   Mon, 24 Jan 2022 19:42:16 +0100
+Message-Id: <20220124184122.388833602@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +48,253 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robert.marko@sartura.hr>
+From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
-[ Upstream commit effd42600b987c1e95f946b14fefc1c7639e7439 ]
+[ Upstream commit 01bb4dccd92b4dc21f6af3312e5696924e371111 ]
 
-CN9130 has one CP115 built in, which like the CP110 has 2 GPIO and 2 SPI
-controllers built-in.
+This is a preparation patch for the upcoming support to change the
+rx-rtr capability via the ethtool API.
 
-However, unlike the Armada 7k and 8k the SoC DTSI doesn't add the required
-aliases as both the Orion SPI driver and MVEBU GPIO drivers require the
-aliases to be present.
-
-So add the required aliases for GPIO and SPI controllers.
-
-Fixes: 6b8970bd8d7a ("arm64: dts: marvell: Add support for Marvell CN9130 SoC support")
-
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Link: https://lore.kernel.org/all/20220107193105.1699523-3-mkl@pengutronix.de
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/marvell/cn9130.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/can/flexcan.c | 54 +++++++++++++++++++--------------------
+ 1 file changed, 27 insertions(+), 27 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/marvell/cn9130.dtsi b/arch/arm64/boot/dts/marvell/cn9130.dtsi
-index a2b7e5ec979d3..71769ac7f0585 100644
---- a/arch/arm64/boot/dts/marvell/cn9130.dtsi
-+++ b/arch/arm64/boot/dts/marvell/cn9130.dtsi
-@@ -11,6 +11,13 @@
- 	model = "Marvell Armada CN9130 SoC";
- 	compatible = "marvell,cn9130", "marvell,armada-ap807-quad",
- 		     "marvell,armada-ap807";
-+
-+	aliases {
-+		gpio1 = &cp0_gpio1;
-+		gpio2 = &cp0_gpio2;
-+		spi1 = &cp0_spi0;
-+		spi2 = &cp0_spi1;
-+	};
- };
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index 7734229aa0788..3178557e40208 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -365,7 +365,7 @@ struct flexcan_priv {
  
- /*
+ 	struct clk *clk_ipg;
+ 	struct clk *clk_per;
+-	const struct flexcan_devtype_data *devtype_data;
++	struct flexcan_devtype_data devtype_data;
+ 	struct regulator *reg_xceiver;
+ 	struct flexcan_stop_mode stm;
+ 
+@@ -596,7 +596,7 @@ static inline int flexcan_enter_stop_mode(struct flexcan_priv *priv)
+ 	priv->write(reg_mcr, &regs->mcr);
+ 
+ 	/* enable stop request */
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW) {
+ 		ret = flexcan_stop_mode_enable_scfw(priv, true);
+ 		if (ret < 0)
+ 			return ret;
+@@ -615,7 +615,7 @@ static inline int flexcan_exit_stop_mode(struct flexcan_priv *priv)
+ 	int ret;
+ 
+ 	/* remove stop request */
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW) {
+ 		ret = flexcan_stop_mode_enable_scfw(priv, false);
+ 		if (ret < 0)
+ 			return ret;
+@@ -1018,7 +1018,7 @@ static struct sk_buff *flexcan_mailbox_read(struct can_rx_offload *offload,
+ 
+ 	mb = flexcan_get_mb(priv, n);
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
+ 		u32 code;
+ 
+ 		do {
+@@ -1083,7 +1083,7 @@ static struct sk_buff *flexcan_mailbox_read(struct can_rx_offload *offload,
+ 	}
+ 
+  mark_as_read:
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP)
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP)
+ 		flexcan_write64(priv, FLEXCAN_IFLAG_MB(n), &regs->iflag1);
+ 	else
+ 		priv->write(FLEXCAN_IFLAG_RX_FIFO_AVAILABLE, &regs->iflag1);
+@@ -1109,7 +1109,7 @@ static irqreturn_t flexcan_irq(int irq, void *dev_id)
+ 	enum can_state last_state = priv->can.state;
+ 
+ 	/* reception interrupt */
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
+ 		u64 reg_iflag_rx;
+ 		int ret;
+ 
+@@ -1169,7 +1169,7 @@ static irqreturn_t flexcan_irq(int irq, void *dev_id)
+ 
+ 	/* state change interrupt or broken error state quirk fix is enabled */
+ 	if ((reg_esr & FLEXCAN_ESR_ERR_STATE) ||
+-	    (priv->devtype_data->quirks & (FLEXCAN_QUIRK_BROKEN_WERR_STATE |
++	    (priv->devtype_data.quirks & (FLEXCAN_QUIRK_BROKEN_WERR_STATE |
+ 					   FLEXCAN_QUIRK_BROKEN_PERR_STATE)))
+ 		flexcan_irq_state(dev, reg_esr);
+ 
+@@ -1191,11 +1191,11 @@ static irqreturn_t flexcan_irq(int irq, void *dev_id)
+ 	 * (1): enabled if FLEXCAN_QUIRK_BROKEN_WERR_STATE is enabled
+ 	 */
+ 	if ((last_state != priv->can.state) &&
+-	    (priv->devtype_data->quirks & FLEXCAN_QUIRK_BROKEN_PERR_STATE) &&
++	    (priv->devtype_data.quirks & FLEXCAN_QUIRK_BROKEN_PERR_STATE) &&
+ 	    !(priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING)) {
+ 		switch (priv->can.state) {
+ 		case CAN_STATE_ERROR_ACTIVE:
+-			if (priv->devtype_data->quirks &
++			if (priv->devtype_data.quirks &
+ 			    FLEXCAN_QUIRK_BROKEN_WERR_STATE)
+ 				flexcan_error_irq_enable(priv);
+ 			else
+@@ -1423,13 +1423,13 @@ static int flexcan_rx_offload_setup(struct net_device *dev)
+ 	else
+ 		priv->mb_size = sizeof(struct flexcan_mb) + CAN_MAX_DLEN;
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_NR_MB_16)
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_NR_MB_16)
+ 		priv->mb_count = 16;
+ 	else
+ 		priv->mb_count = (sizeof(priv->regs->mb[0]) / priv->mb_size) +
+ 				 (sizeof(priv->regs->mb[1]) / priv->mb_size);
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP)
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP)
+ 		priv->tx_mb_reserved =
+ 			flexcan_get_mb(priv, FLEXCAN_TX_MB_RESERVED_OFF_TIMESTAMP);
+ 	else
+@@ -1441,7 +1441,7 @@ static int flexcan_rx_offload_setup(struct net_device *dev)
+ 
+ 	priv->offload.mailbox_read = flexcan_mailbox_read;
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
+ 		priv->offload.mb_first = FLEXCAN_RX_MB_OFF_TIMESTAMP_FIRST;
+ 		priv->offload.mb_last = priv->mb_count - 2;
+ 
+@@ -1506,7 +1506,7 @@ static int flexcan_chip_start(struct net_device *dev)
+ 	if (err)
+ 		goto out_chip_disable;
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SUPPORT_ECC)
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_SUPPORT_ECC)
+ 		flexcan_ram_init(dev);
+ 
+ 	flexcan_set_bittiming(dev);
+@@ -1535,7 +1535,7 @@ static int flexcan_chip_start(struct net_device *dev)
+ 	 * - disable for timestamp mode
+ 	 * - enable for FIFO mode
+ 	 */
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP)
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP)
+ 		reg_mcr &= ~FLEXCAN_MCR_FEN;
+ 	else
+ 		reg_mcr |= FLEXCAN_MCR_FEN;
+@@ -1586,7 +1586,7 @@ static int flexcan_chip_start(struct net_device *dev)
+ 	 * on most Flexcan cores, too. Otherwise we don't get
+ 	 * any error warning or passive interrupts.
+ 	 */
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_BROKEN_WERR_STATE ||
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_BROKEN_WERR_STATE ||
+ 	    priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING)
+ 		reg_ctrl |= FLEXCAN_CTRL_ERR_MSK;
+ 	else
+@@ -1599,7 +1599,7 @@ static int flexcan_chip_start(struct net_device *dev)
+ 	netdev_dbg(dev, "%s: writing ctrl=0x%08x", __func__, reg_ctrl);
+ 	priv->write(reg_ctrl, &regs->ctrl);
+ 
+-	if ((priv->devtype_data->quirks & FLEXCAN_QUIRK_ENABLE_EACEN_RRS)) {
++	if ((priv->devtype_data.quirks & FLEXCAN_QUIRK_ENABLE_EACEN_RRS)) {
+ 		reg_ctrl2 = priv->read(&regs->ctrl2);
+ 		reg_ctrl2 |= FLEXCAN_CTRL2_EACEN | FLEXCAN_CTRL2_RRS;
+ 		priv->write(reg_ctrl2, &regs->ctrl2);
+@@ -1631,7 +1631,7 @@ static int flexcan_chip_start(struct net_device *dev)
+ 		priv->write(reg_fdctrl, &regs->fdctrl);
+ 	}
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
+ 		for (i = priv->offload.mb_first; i <= priv->offload.mb_last; i++) {
+ 			mb = flexcan_get_mb(priv, i);
+ 			priv->write(FLEXCAN_MB_CODE_RX_EMPTY,
+@@ -1659,7 +1659,7 @@ static int flexcan_chip_start(struct net_device *dev)
+ 	priv->write(0x0, &regs->rx14mask);
+ 	priv->write(0x0, &regs->rx15mask);
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_DISABLE_RXFG)
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_DISABLE_RXFG)
+ 		priv->write(0x0, &regs->rxfgmask);
+ 
+ 	/* clear acceptance filters */
+@@ -1673,7 +1673,7 @@ static int flexcan_chip_start(struct net_device *dev)
+ 	 * This also works around errata e5295 which generates false
+ 	 * positive memory errors and put the device in freeze mode.
+ 	 */
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_DISABLE_MECR) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_DISABLE_MECR) {
+ 		/* Follow the protocol as described in "Detection
+ 		 * and Correction of Memory Errors" to write to
+ 		 * MECR register (step 1 - 5)
+@@ -1799,7 +1799,7 @@ static int flexcan_open(struct net_device *dev)
+ 	if (err)
+ 		goto out_can_rx_offload_disable;
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_NR_IRQ_3) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_NR_IRQ_3) {
+ 		err = request_irq(priv->irq_boff,
+ 				  flexcan_irq, IRQF_SHARED, dev->name, dev);
+ 		if (err)
+@@ -1845,7 +1845,7 @@ static int flexcan_close(struct net_device *dev)
+ 	netif_stop_queue(dev);
+ 	flexcan_chip_interrupts_disable(dev);
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_NR_IRQ_3) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_NR_IRQ_3) {
+ 		free_irq(priv->irq_err, dev);
+ 		free_irq(priv->irq_boff, dev);
+ 	}
+@@ -2051,9 +2051,9 @@ static int flexcan_setup_stop_mode(struct platform_device *pdev)
+ 
+ 	priv = netdev_priv(dev);
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW)
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW)
+ 		ret = flexcan_setup_stop_mode_scfw(pdev);
+-	else if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR)
++	else if (priv->devtype_data.quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR)
+ 		ret = flexcan_setup_stop_mode_gpr(pdev);
+ 	else
+ 		/* return 0 directly if doesn't support stop mode feature */
+@@ -2181,9 +2181,10 @@ static int flexcan_probe(struct platform_device *pdev)
+ 	dev->flags |= IFF_ECHO;
+ 
+ 	priv = netdev_priv(dev);
++	priv->devtype_data = *devtype_data;
+ 
+ 	if (of_property_read_bool(pdev->dev.of_node, "big-endian") ||
+-	    devtype_data->quirks & FLEXCAN_QUIRK_DEFAULT_BIG_ENDIAN) {
++	    priv->devtype_data.quirks & FLEXCAN_QUIRK_DEFAULT_BIG_ENDIAN) {
+ 		priv->read = flexcan_read_be;
+ 		priv->write = flexcan_write_be;
+ 	} else {
+@@ -2202,10 +2203,9 @@ static int flexcan_probe(struct platform_device *pdev)
+ 	priv->clk_ipg = clk_ipg;
+ 	priv->clk_per = clk_per;
+ 	priv->clk_src = clk_src;
+-	priv->devtype_data = devtype_data;
+ 	priv->reg_xceiver = reg_xceiver;
+ 
+-	if (devtype_data->quirks & FLEXCAN_QUIRK_NR_IRQ_3) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_NR_IRQ_3) {
+ 		priv->irq_boff = platform_get_irq(pdev, 1);
+ 		if (priv->irq_boff <= 0) {
+ 			err = -ENODEV;
+@@ -2218,7 +2218,7 @@ static int flexcan_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SUPPORT_FD) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_SUPPORT_FD) {
+ 		priv->can.ctrlmode_supported |= CAN_CTRLMODE_FD |
+ 			CAN_CTRLMODE_FD_NON_ISO;
+ 		priv->can.bittiming_const = &flexcan_fd_bittiming_const;
 -- 
 2.34.1
 
