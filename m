@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9813C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347725AbiAXU7S (ORCPT
+        id S1443883AbiAXU70 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:59:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60552 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386929AbiAXUgI (ORCPT
+        Mon, 24 Jan 2022 15:59:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1386944AbiAXUgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:36:08 -0500
+        Mon, 24 Jan 2022 15:36:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E3FC02B8C9;
+        Mon, 24 Jan 2022 11:49:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DD4061540;
-        Mon, 24 Jan 2022 20:36:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85476C340EB;
-        Mon, 24 Jan 2022 20:36:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C70FB8121A;
+        Mon, 24 Jan 2022 19:49:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACE39C340E5;
+        Mon, 24 Jan 2022 19:49:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056567;
-        bh=aXgAlWjFhuTYaGo0IQrs5NxFaBkHUtQAgDjh1OBwC9o=;
+        s=korg; t=1643053760;
+        bh=uWJ6f9HmEck56EkrCU4g63WGKcQ3HJigV9j5BtctmOw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eRDFt8ZChE/aVx24xQhSvrsG2lgkzOHdVgZYtgU6h+cRHaNrIzJSCbNh6La03XRod
-         9NJbZ0Zhkp+91aaEoQm77XXN7cnuwtP+UgV9pLd85Y4fIaUQZdBnFq+u7Q+yNFGSaa
-         kbusGGn81JLO5c5zS2kHKb047W/sDe2omT21okNU=
+        b=PjCX4VWuZ2I5RUzlywxDY5KCTAUdB5Re6SLfUWYHokECb/X07rVCP7a09hRLgMJww
+         8a2DmR848f0vWRZf8pM9WLp6kAvq2hjvbc2AenP9wB5cP14KzGdqUivA2/ctjll0O3
+         EiYPu4lvbcraHUNmDcIIUDTx315/lf6wzsuNftDY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, rkardell@mida.se,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Sricharan R <sricharan@codeaurora.org>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 527/846] media: m920x: dont use stack on USB reads
-Date:   Mon, 24 Jan 2022 19:40:44 +0100
-Message-Id: <20220124184119.182953737@linuxfoundation.org>
+Subject: [PATCH 5.10 168/563] arm64: dts: qcom: ipq6018: Fix gpio-ranges property
+Date:   Mon, 24 Jan 2022 19:38:53 +0100
+Message-Id: <20220124184030.219942235@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,57 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Baruch Siach <baruch@tkos.co.il>
 
-[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
+[ Upstream commit 72cb4c48a46a7cfa58eb5842c0d3672ddd5bd9ad ]
 
-Using stack-allocated pointers for USB message data don't work.
-This driver is almost OK with that, except for the I2C read
-logic.
+There must be three parameters in gpio-ranges property. Fixes this not
+very helpful error message:
 
-Fix it by using a temporary read buffer, just like on all other
-calls to m920x_read().
+  OF: /soc/pinctrl@1000000: (null) = 3 found 3
 
-Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
-Reported-by: rkardell@mida.se
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 1e8277854b49 ("arm64: dts: Add ipq6018 SoC and CP01 board support")
+Cc: Sricharan R <sricharan@codeaurora.org>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/8a744cfd96aff5754bfdcf7298d208ddca5b319a.1638862030.git.baruch@tkos.co.il
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
-index 4bb5b82599a79..691e05833db19 100644
---- a/drivers/media/usb/dvb-usb/m920x.c
-+++ b/drivers/media/usb/dvb-usb/m920x.c
-@@ -274,6 +274,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
- 			/* Should check for ack here, if we knew how. */
- 		}
- 		if (msg[i].flags & I2C_M_RD) {
-+			char *read = kmalloc(1, GFP_KERNEL);
-+			if (!read) {
-+				ret = -ENOMEM;
-+				kfree(read);
-+				goto unlock;
-+			}
-+
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction?
- 				 * Send STOP, otherwise send ACK. */
-@@ -281,9 +288,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index 9cb8f7a052df9..2a1f03cdb52c7 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -221,7 +221,7 @@
+ 			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
+ 			gpio-controller;
+ 			#gpio-cells = <2>;
+-			gpio-ranges = <&tlmm 0 80>;
++			gpio-ranges = <&tlmm 0 0 80>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
  
- 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
- 						      0x20 | stop,
--						      &msg[i].buf[j], 1)) != 0)
-+						      read, 1)) != 0)
- 					goto unlock;
-+				msg[i].buf[j] = read[0];
- 			}
-+
-+			kfree(read);
- 		} else {
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction? Then send STOP. */
 -- 
 2.34.1
 
