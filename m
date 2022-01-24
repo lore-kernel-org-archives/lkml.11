@@ -2,82 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D619C35274
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7751EC35273
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388105AbiAXUiK (ORCPT
+        id S1388034AbiAXUiD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:38:10 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:52438 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380874AbiAXURC (ORCPT
+        Mon, 24 Jan 2022 15:38:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42826 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380744AbiAXUQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:17:02 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 05F1A1C0B76; Mon, 24 Jan 2022 21:17:00 +0100 (CET)
-Date:   Mon, 24 Jan 2022 21:16:59 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, stable@vger.kernel.org
-Subject: Re: [PATCH 4.4 000/114] 4.4.300-rc1 review
-Message-ID: <20220124201659.GA16782@duo.ucw.cz>
-References: <20220124183927.095545464@linuxfoundation.org>
+        Mon, 24 Jan 2022 15:16:51 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CC686091A;
+        Mon, 24 Jan 2022 20:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 068BFC340E5;
+        Mon, 24 Jan 2022 20:16:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643055410;
+        bh=LXCnAdlwZsWaJMfvC9G5RI+dkOsFueE+RgYoeHYqS7c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AVAKlyiFwc3dfccxVeIck1ptZmzCoyRr1JPuEoh+lTjAaEYBjoMjzbe1mkfzGCAhx
+         DMO81/O6HdPHvAfSoRhqnHJ0NqywDWOdIjZiE3vqo5rabi6oFwgsWH+8aduvEbyLTz
+         iAmvFhEa/0IYaqPzrP0akHonkN39jyD621/Zs2ns=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Prasad Malisetty <pmaliset@codeaurora.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 141/846] arm64: dts: qcom: sc7280: Fix incorrect clock name
+Date:   Mon, 24 Jan 2022 19:34:18 +0100
+Message-Id: <20220124184105.850912402@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="ZGiS0Q5IWpPtfppv"
-Content-Disposition: inline
-In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Prasad Malisetty <pmaliset@codeaurora.org>
 
---ZGiS0Q5IWpPtfppv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[ Upstream commit fa09b2248714c64644576d8064e9bd292a504a0e ]
 
-Hi!
+Replace pcie_1_pipe-clk clock name with pcie_1_pipe_clk
+To match with dt binding.
 
-> This is the start of the stable review cycle for the 4.4.300 release.
-> There are 114 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+Fixes: ab7772de8612 ("arm64: dts: qcom: SC7280: Add rpmhcc clock controller node")
+Signed-off-by: Prasad Malisetty <pmaliset@codeaurora.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1637060508-30375-2-git-send-email-pmaliset@codeaurora.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-CIP testing did not find any problems here:                                =
-               =20
-                                                                           =
-               =20
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-4.4.y          =20
-                                                                           =
-               =20
-Tested-by: Pavel Machek (CIP) <pavel@denx.de>                              =
-               =20
-                                                                           =
-               =20
-Best regards,                                                              =
-               =20
-                                                                Pavel      =
-               =20
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index f58336536a92a..692973c4f4344 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -429,7 +429,7 @@
+ 				 <&rpmhcc RPMH_CXO_CLK_A>, <&sleep_clk>,
+ 				 <0>, <0>, <0>, <0>, <0>, <0>;
+ 			clock-names = "bi_tcxo", "bi_tcxo_ao", "sleep_clk",
+-				      "pcie_0_pipe_clk", "pcie_1_pipe-clk",
++				      "pcie_0_pipe_clk", "pcie_1_pipe_clk",
+ 				      "ufs_phy_rx_symbol_0_clk", "ufs_phy_rx_symbol_1_clk",
+ 				      "ufs_phy_tx_symbol_0_clk",
+ 				      "usb3_phy_wrapper_gcc_usb30_pipe_clk";
+-- 
+2.34.1
 
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
---ZGiS0Q5IWpPtfppv
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYe8JOwAKCRAw5/Bqldv6
-8tTFAJ0RB9+gLMlo8UssKOnqvKVvdmiD4QCcDgLqxv/m/i0VdmP9Fu59A9zHUuA=
-=0NoZ
------END PGP SIGNATURE-----
-
---ZGiS0Q5IWpPtfppv--
