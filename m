@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B5DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E86BC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390559AbiAXUpq (ORCPT
+        id S1390596AbiAXUpy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:45:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52164 "EHLO
+        Mon, 24 Jan 2022 15:45:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49444 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383146AbiAXU0w (ORCPT
+        with ESMTP id S1381767AbiAXUXe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:26:52 -0500
+        Mon, 24 Jan 2022 15:23:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AB0661232;
-        Mon, 24 Jan 2022 20:26:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75000C340E5;
-        Mon, 24 Jan 2022 20:26:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F13E861008;
+        Mon, 24 Jan 2022 20:23:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CED69C340E8;
+        Mon, 24 Jan 2022 20:23:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056011;
-        bh=FTQCc4MocSXU2wAfx29Kuc8VVQf193tjxyq6jgKJN38=;
+        s=korg; t=1643055808;
+        bh=7FuChzgMaV2OYhpaYWC7LUUS8H6TQwy/LwWyEKCH3tY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lZ78sYRX/zkphHPFMP55qREvdgUZaEywE25tz8rHkeeGmh48IWd8FpsXzDkVbPZ9j
-         eRW0ud6uT0t1loEMEdRVgbtJQ/vcKXv+W+DOiSZl+RGvz/0iRcIpCpBmkxNWRUGlGA
-         XQKRf+t5/iXAh96QoMFDeHBIVO7hJMKjOCCOwsmc=
+        b=2aBGdLHyrHETFtjmpXFlAnlIaWS3704E7VxUL1+TTlwsrZn8TSXJeFXMT04c7GsoD
+         98vlGn2Ei/50hRvPzJl9kYTJWUl/tAihu7+/b2FZOOmq8WrjVQiITeYNDMQHOB+OpP
+         b2HpFkrovSY1SefeG2gcXfX5PmqcrTQv/kXffVVQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 341/846] Revert "net/mlx5e: Block offload of outer header csum for GRE tunnel"
-Date:   Mon, 24 Jan 2022 19:37:38 +0100
-Message-Id: <20220124184112.683068344@linuxfoundation.org>
+Subject: [PATCH 5.15 255/846] gpu: host1x: select CONFIG_DMA_SHARED_BUFFER
+Date:   Mon, 24 Jan 2022 19:36:12 +0100
+Message-Id: <20220124184109.739731686@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,46 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 01c3fd113ef50490ffd43f78f347ef6bb008510b ]
+[ Upstream commit 6c7a388b62366f0de9936db3c1921d7f4e0011bc ]
 
-This reverts commit 54e1217b90486c94b26f24dcee1ee5ef5372f832.
+Linking fails when dma-buf is disabled:
 
-Although the NIC doesn't support offload of outer header CSUM, using
-gso_partial_features allows offloading the tunnel's segmentation. The
-driver relies on the stack CSUM calculation of the outer header. For
-this, NETIF_F_GSO_GRE_CSUM must be a member of the device's features.
+ld.lld: error: undefined symbol: dma_fence_release
+>>> referenced by fence.c
+>>>               gpu/host1x/fence.o:(host1x_syncpt_fence_enable_signaling) in archive drivers/built-in.a
+>>> referenced by fence.c
+>>>               gpu/host1x/fence.o:(host1x_fence_signal) in archive drivers/built-in.a
+>>> referenced by fence.c
+>>>               gpu/host1x/fence.o:(do_fence_timeout) in archive drivers/built-in.a
 
-Fixes: 54e1217b9048 ("net/mlx5e: Block offload of outer header csum for GRE tunnel")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 687db2207b1b ("gpu: host1x: Add DMA fence implementation")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Mikko Perttunen <mperttunen@nvidia.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/gpu/host1x/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index a0bf3d386b708..f075bb8ccd00d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4495,9 +4495,12 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
- 	}
- 
- 	if (mlx5e_tunnel_proto_supported_tx(mdev, IPPROTO_GRE)) {
--		netdev->hw_features     |= NETIF_F_GSO_GRE;
--		netdev->hw_enc_features |= NETIF_F_GSO_GRE;
--		netdev->gso_partial_features |= NETIF_F_GSO_GRE;
-+		netdev->hw_features     |= NETIF_F_GSO_GRE |
-+					   NETIF_F_GSO_GRE_CSUM;
-+		netdev->hw_enc_features |= NETIF_F_GSO_GRE |
-+					   NETIF_F_GSO_GRE_CSUM;
-+		netdev->gso_partial_features |= NETIF_F_GSO_GRE |
-+						NETIF_F_GSO_GRE_CSUM;
- 	}
- 
- 	if (mlx5e_tunnel_proto_supported_tx(mdev, IPPROTO_IPIP)) {
+diff --git a/drivers/gpu/host1x/Kconfig b/drivers/gpu/host1x/Kconfig
+index 6dab94adf25e5..6815b4db17c1b 100644
+--- a/drivers/gpu/host1x/Kconfig
++++ b/drivers/gpu/host1x/Kconfig
+@@ -2,6 +2,7 @@
+ config TEGRA_HOST1X
+ 	tristate "NVIDIA Tegra host1x driver"
+ 	depends on ARCH_TEGRA || (ARM && COMPILE_TEST)
++	select DMA_SHARED_BUFFER
+ 	select IOMMU_IOVA
+ 	help
+ 	  Driver for the NVIDIA Tegra host1x hardware.
 -- 
 2.34.1
 
