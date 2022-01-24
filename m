@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE34BC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A9FC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1313289AbiAYCsQ (ORCPT
+        id S1314522AbiAYCvL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:48:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355765AbiAXVDJ (ORCPT
+        Mon, 24 Jan 2022 21:51:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57696 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1445899AbiAXVFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:03:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED392C06B584;
-        Mon, 24 Jan 2022 12:03:00 -0800 (PST)
+        Mon, 24 Jan 2022 16:05:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 880DF6131E;
-        Mon, 24 Jan 2022 20:03:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 994DFC340E5;
-        Mon, 24 Jan 2022 20:02:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0356B8122A;
+        Mon, 24 Jan 2022 21:05:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7DF8C340E5;
+        Mon, 24 Jan 2022 21:05:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054580;
-        bh=etu1+QawpUz4kFPhtE4lzzUtDzxSXDESMys7UCF3mVU=;
+        s=korg; t=1643058306;
+        bh=VPdI+TVD86eHiCgBauoaGl9SJlHqgi95GTzmkIVc46U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hd1ACcFDUOzjzhLAUozl24JESmzXkjYdfGfxtVlZrDzwIs4ZUcBoXCeXq6YrSBCnO
-         Ab47ThMKXfXH4Ktzv7Vz7UTlt4Ee41QE2dSHLpRZdjShpqngFqROAB26t5hn5stBYs
-         53BftVH3ZYBoss7LbyUwpuOsTlY7yk48oXInzOo8=
+        b=Ji5ocejVTWbk28PUsfCJG3Qh58gU8F47onLnUJw5VkViF8aT1en6URwydPEFtwASu
+         2XqoG2FZ4IluDfnFN6nrZf537j+f5ItwG7BXBlFN65j4G7gd6NY7VcAZaRJAW4r+r7
+         mdQcCKnCsBly7fQc4l6zG/vqmikFSkzk47Zx/3+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Ricardo Ribalda <ribalda@chromium.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 436/563] scsi: sr: Dont use GFP_DMA
-Date:   Mon, 24 Jan 2022 19:43:21 +0100
-Message-Id: <20220124184039.521251314@linuxfoundation.org>
+Subject: [PATCH 5.16 0246/1039] media: uvcvideo: Avoid returning invalid controls
+Date:   Mon, 24 Jan 2022 19:33:55 +0100
+Message-Id: <20220124184133.593956076@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,59 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Ricardo Ribalda <ribalda@chromium.org>
 
-[ Upstream commit d94d94969a4ba07a43d62429c60372320519c391 ]
+[ Upstream commit 414d3b49d9fd4a0bb16a13d929027847fd094f3f ]
 
-The allocated buffers are used as a command payload, for which the block
-layer and/or DMA API do the proper bounce buffering if needed.
+If the memory where ctrl_found is placed has the value of uvc_ctrl and
+__uvc_find_control does not find the control we will return an invalid
+index.
 
-Link: https://lore.kernel.org/r/20211222090842.920724-1-hch@lst.de
-Reported-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 6350d6a4ed487 ("media: uvcvideo: Set error_idx during ctrl_commit errors")
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sr.c        | 2 +-
- drivers/scsi/sr_vendor.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/media/usb/uvc/uvc_ctrl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index 4cb4ab9c6137e..464418413ced0 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -917,7 +917,7 @@ static void get_capabilities(struct scsi_cd *cd)
+diff --git a/drivers/media/usb/uvc/uvc_ctrl.c b/drivers/media/usb/uvc/uvc_ctrl.c
+index 9a25d60292558..b4f6edf968bc0 100644
+--- a/drivers/media/usb/uvc/uvc_ctrl.c
++++ b/drivers/media/usb/uvc/uvc_ctrl.c
+@@ -1639,7 +1639,7 @@ static int uvc_ctrl_find_ctrl_idx(struct uvc_entity *entity,
+ 				  struct uvc_control *uvc_control)
+ {
+ 	struct uvc_control_mapping *mapping = NULL;
+-	struct uvc_control *ctrl_found;
++	struct uvc_control *ctrl_found = NULL;
+ 	unsigned int i;
  
- 
- 	/* allocate transfer buffer */
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer) {
- 		sr_printk(KERN_ERR, cd, "out of memory.\n");
- 		return;
-diff --git a/drivers/scsi/sr_vendor.c b/drivers/scsi/sr_vendor.c
-index 1f988a1b9166f..a61635326ae0a 100644
---- a/drivers/scsi/sr_vendor.c
-+++ b/drivers/scsi/sr_vendor.c
-@@ -131,7 +131,7 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
- 	if (cd->vendor == VENDOR_TOSHIBA)
- 		density = (blocklength > 2048) ? 0x81 : 0x83;
- 
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -179,7 +179,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
- 	if (cd->cdi.mask & CDC_MULTI_SESSION)
- 		return 0;
- 
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
+ 	if (!entity)
 -- 
 2.34.1
 
