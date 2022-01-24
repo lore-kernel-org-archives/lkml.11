@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADC1C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75054C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573735AbiAXVpn (ORCPT
+        id S1573765AbiAXVpv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60402 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446389AbiAXVIH (ORCPT
+        Mon, 24 Jan 2022 16:45:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1446317AbiAXVHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:08:07 -0500
+        Mon, 24 Jan 2022 16:07:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E767CC055AAC;
+        Mon, 24 Jan 2022 12:08:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 043B56141C;
-        Mon, 24 Jan 2022 21:08:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8425C340E5;
-        Mon, 24 Jan 2022 21:08:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 890CD6137C;
+        Mon, 24 Jan 2022 20:08:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A158C340E5;
+        Mon, 24 Jan 2022 20:08:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058485;
-        bh=R3GdNXfUaGyr8KHuooO/tDQGndAoZTEvXAMGEPVcDFc=;
+        s=korg; t=1643054899;
+        bh=mi8szNe7SyfcyY24P0ioZ15zE0DHpA/xXv6Ss/mPiA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mAC6FApmBj0yN6IWlbrksk8QfTsYuO9eKY7p1O56GhxT7snuUQfpkSQv696EqE3E7
-         ojivBOJjAPmqOYW+U3pAWA69zU/MMfP8PGtu3FQWLXKVIArsX7ZF0STrku7EUZIBPa
-         PMzVwxfPTSU3vWRme0qc15sJ2/yvXmlS9wcv1hAY=
+        b=D/VZefa/wvzrqxsSA+gHiFMJmTyxN8Vfr6UoGMvwNwRLsqg1c2/rlxiUTkbHCFJcu
+         wNnECNDhR0pPbcpvIdoVEiVUCtKYAdqp2x9BZNEH2CqllKJ1fPnIJl7zwXNTwFjMdo
+         MD7muXp5FbtECAW4QNve0hxbHeq852/OPNysz4Ek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernelbot <kernel-bot@kylinos.cn>,
-        Jackie Liu <liuyun01@kylinos.cn>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0261/1039] drm/msm/dp: displayPort driver need algorithm rational
-Date:   Mon, 24 Jan 2022 19:34:10 +0100
-Message-Id: <20220124184134.081001067@linuxfoundation.org>
+        stable@vger.kernel.org, "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.10 532/563] virtio_ring: mark ring unused on error
+Date:   Mon, 24 Jan 2022 19:44:57 +0100
+Message-Id: <20220124184042.850338561@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jackie Liu <liuyun01@kylinos.cn>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-[ Upstream commit 53d22794711ad630f40d59dd726bd260d77d585f ]
+commit 1861ba626ae9b98136f3e504208cdef6b29cd3ec upstream.
 
-Let's select RATIONAL with dp driver. avoid like:
+A recently added error path does not mark ring unused when exiting on
+OOM, which will lead to BUG on the next entry in debug builds.
 
-[...]
-x86_64-linux-gnu-ld: drivers/gpu/drm/msm/dp/dp_catalog.o: in function `dp_catalog_ctrl_config_msa':
-dp_catalog.c:(.text+0x57e): undefined reference to `rational_best_approximation'
+TODO: refactor code so we have START_USE and END_USE in the same function.
 
-Fixes: c943b4948b58 ("drm/msm/dp: add displayPort driver support")
-Reported-by: kernelbot <kernel-bot@kylinos.cn>
-Signed-off-by: Jackie Liu <liuyun01@kylinos.cn>
-Link: https://lore.kernel.org/r/20211110070950.3355597-2-liu.yun@linux.dev
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: fc6d70f40b3d ("virtio_ring: check desc == NULL when using indirect with packed")
+Cc: "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>
+Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/virtio/virtio_ring.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/Kconfig b/drivers/gpu/drm/msm/Kconfig
-index 39197b4beea78..1eae5a9645f41 100644
---- a/drivers/gpu/drm/msm/Kconfig
-+++ b/drivers/gpu/drm/msm/Kconfig
-@@ -65,6 +65,7 @@ config DRM_MSM_HDMI_HDCP
- config DRM_MSM_DP
- 	bool "Enable DisplayPort support in MSM DRM driver"
- 	depends on DRM_MSM
-+	select RATIONAL
- 	default y
- 	help
- 	  Compile in support for DP driver in MSM DRM driver. DP external
--- 
-2.34.1
-
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -1124,8 +1124,10 @@ static inline int virtqueue_add_packed(s
+ 	if (virtqueue_use_indirect(_vq, total_sg)) {
+ 		err = virtqueue_add_indirect_packed(vq, sgs, total_sg, out_sgs,
+ 						    in_sgs, data, gfp);
+-		if (err != -ENOMEM)
++		if (err != -ENOMEM) {
++			END_USE(vq);
+ 			return err;
++		}
+ 
+ 		/* fall back on direct */
+ 	}
 
 
