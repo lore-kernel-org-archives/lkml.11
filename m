@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EEB1C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D1FC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1312673AbiAYCnj (ORCPT
+        id S1312566AbiAYCn0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:43:39 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40088 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387468AbiAXUgw (ORCPT
+        Mon, 24 Jan 2022 21:43:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387488AbiAXUgw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:36:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A9AC061796;
+        Mon, 24 Jan 2022 11:49:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B12CB81057;
-        Mon, 24 Jan 2022 20:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4919EC340E7;
-        Mon, 24 Jan 2022 20:36:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F6F4B811F9;
+        Mon, 24 Jan 2022 19:49:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 766B8C340E5;
+        Mon, 24 Jan 2022 19:49:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056609;
-        bh=8KuTjmPp/MLiNT/2gsOcGUGShT0/jxdVaVHuNmTztTs=;
+        s=korg; t=1643053781;
+        bh=ipc7IAl6/w4aJnjz2NcJSJkZF0EoOSK7yODQSB9i+8k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iTg+/HAw3Ty5a/T5izrSvxuNxQ5RzCor5ISmjD8TgeTShZLI2O1VLOhuYQFs+zlco
-         L9o/WerCFujkHkoQb/7e4hwyZYEPkDWdX9ifjwozD4/hV/TP6sFP68Z4a5QAOSXrIA
-         592OFE4p+vC8Rx+u2iGwUg6X60mO5z6TFRd6HGq8=
+        b=WDs71H1Uvvk2ECfvxaTmYQ+xYe24cC6J7gpDmey41bITqFKwSDACfjyzTHdgPBVao
+         8hYJED8IdtU8PIcV1T6bppJt3rI/A4t+Ie4rZwXqBUK7Tnj7m4RXhOX+EGBy3rxXKk
+         C+87Os4UiTDmdCzF5tckbB9/gxNjwKFueSxNnDyI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sriram R <quic_srirrama@quicinc.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Robert Schlabbach <robert_s@gmx.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 508/846] ath11k: Avoid NULL ptr access during mgmt tx cleanup
-Date:   Mon, 24 Jan 2022 19:40:25 +0100
-Message-Id: <20220124184118.552061646@linuxfoundation.org>
+Subject: [PATCH 5.10 143/563] media: si2157: Fix "warm" tuner state detection
+Date:   Mon, 24 Jan 2022 19:38:28 +0100
+Message-Id: <20220124184029.349318252@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,117 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sriram R <quic_srirrama@quicinc.com>
+From: Robert Schlabbach <robert_s@gmx.net>
 
-[ Upstream commit a93789ae541c7d5c1c2a4942013adb6bcc5e2848 ]
+[ Upstream commit a6441ea29cb2c9314654e093a1cd8020b9b851c8 ]
 
-Currently 'ar' reference is not added in skb_cb during
-WMI mgmt tx. Though this is generally not used during tx completion
-callbacks, on interface removal the remaining idr cleanup callback
-uses the ar ptr from skb_cb from mgmt txmgmt_idr. Hence
-fill them during tx call for proper usage.
+Commit e955f959ac52 ("media: si2157: Better check for running tuner in
+init") completely broke the "warm" tuner detection of the si2157 driver
+due to a simple endian error: The Si2157 CRYSTAL_TRIM property code is
+0x0402 and needs to be transmitted LSB first. However, it was inserted
+MSB first, causing the warm detection to always fail and spam the kernel
+log with tuner initialization messages each time the DVB frontend
+device was closed and reopened:
 
-Also free the skb which is missing currently in these
-callbacks.
+[  312.215682] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
+[  312.264334] si2157 16-0060: firmware version: 3.0.5
+[  342.248593] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
+[  342.295743] si2157 16-0060: firmware version: 3.0.5
+[  372.328574] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
+[  372.385035] si2157 16-0060: firmware version: 3.0.5
 
-Crash_info:
+Also, the reinitializations were observed disturb _other_ tuners on
+multi-tuner cards such as the Hauppauge WinTV-QuadHD, leading to missed
+or errored packets when one of the other DVB frontend devices on that
+card was opened.
 
-[19282.489476] Unable to handle kernel NULL pointer dereference at virtual address 00000000
-[19282.489515] pgd = 91eb8000
-[19282.496702] [00000000] *pgd=00000000
-[19282.502524] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-[19282.783728] PC is at ath11k_mac_vif_txmgmt_idr_remove+0x28/0xd8 [ath11k]
-[19282.789170] LR is at idr_for_each+0xa0/0xc8
+Fix the order of the property code bytes to make the warm detection work
+again, also reducing the tuner initialization message in the kernel log
+to once per power-on, as well as fixing the interference with other
+tuners.
 
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-00729-QCAHKSWPL_SILICONZ-3 v2
-Signed-off-by: Sriram R <quic_srirrama@quicinc.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1637832614-13831-1-git-send-email-quic_srirrama@quicinc.com
+Link: https://lore.kernel.org/linux-media/trinity-2a86eb9d-6264-4387-95e1-ba7b79a4050f-1638392923493@3c-app-gmx-bap03
+
+Fixes: e955f959ac52 ("media: si2157: Better check for running tuner in init")
+Reported-by: Robert Schlabbach <robert_s@gmx.net>
+Signed-off-by: Robert Schlabbach <robert_s@gmx.net>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 35 +++++++++++++++------------
- 1 file changed, 20 insertions(+), 15 deletions(-)
+ drivers/media/tuners/si2157.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index f8f973ef150e2..3834be1587057 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: BSD-3-Clause-Clear
- /*
-  * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2021 Qualcomm Innovation Center, Inc. All rights reserved.
-  */
+diff --git a/drivers/media/tuners/si2157.c b/drivers/media/tuners/si2157.c
+index fefb2625f6558..75ddf7ed1faff 100644
+--- a/drivers/media/tuners/si2157.c
++++ b/drivers/media/tuners/si2157.c
+@@ -90,7 +90,7 @@ static int si2157_init(struct dvb_frontend *fe)
+ 	dev_dbg(&client->dev, "\n");
  
- #include <net/mac80211.h>
-@@ -4136,23 +4137,32 @@ static int __ath11k_set_antenna(struct ath11k *ar, u32 tx_ant, u32 rx_ant)
- 	return 0;
- }
- 
--int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx)
-+static void ath11k_mac_tx_mgmt_free(struct ath11k *ar, int buf_id)
- {
--	struct sk_buff *msdu = skb;
-+	struct sk_buff *msdu;
- 	struct ieee80211_tx_info *info;
--	struct ath11k *ar = ctx;
--	struct ath11k_base *ab = ar->ab;
- 
- 	spin_lock_bh(&ar->txmgmt_idr_lock);
--	idr_remove(&ar->txmgmt_idr, buf_id);
-+	msdu = idr_remove(&ar->txmgmt_idr, buf_id);
- 	spin_unlock_bh(&ar->txmgmt_idr_lock);
--	dma_unmap_single(ab->dev, ATH11K_SKB_CB(msdu)->paddr, msdu->len,
-+
-+	if (!msdu)
-+		return;
-+
-+	dma_unmap_single(ar->ab->dev, ATH11K_SKB_CB(msdu)->paddr, msdu->len,
- 			 DMA_TO_DEVICE);
- 
- 	info = IEEE80211_SKB_CB(msdu);
- 	memset(&info->status, 0, sizeof(info->status));
- 
- 	ieee80211_free_txskb(ar->hw, msdu);
-+}
-+
-+int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx)
-+{
-+	struct ath11k *ar = ctx;
-+
-+	ath11k_mac_tx_mgmt_free(ar, buf_id);
- 
- 	return 0;
- }
-@@ -4161,17 +4171,10 @@ static int ath11k_mac_vif_txmgmt_idr_remove(int buf_id, void *skb, void *ctx)
- {
- 	struct ieee80211_vif *vif = ctx;
- 	struct ath11k_skb_cb *skb_cb = ATH11K_SKB_CB((struct sk_buff *)skb);
--	struct sk_buff *msdu = skb;
- 	struct ath11k *ar = skb_cb->ar;
--	struct ath11k_base *ab = ar->ab;
- 
--	if (skb_cb->vif == vif) {
--		spin_lock_bh(&ar->txmgmt_idr_lock);
--		idr_remove(&ar->txmgmt_idr, buf_id);
--		spin_unlock_bh(&ar->txmgmt_idr_lock);
--		dma_unmap_single(ab->dev, skb_cb->paddr, msdu->len,
--				 DMA_TO_DEVICE);
--	}
-+	if (skb_cb->vif == vif)
-+		ath11k_mac_tx_mgmt_free(ar, buf_id);
- 
- 	return 0;
- }
-@@ -4186,6 +4189,8 @@ static int ath11k_mac_mgmt_tx_wmi(struct ath11k *ar, struct ath11k_vif *arvif,
- 	int buf_id;
- 	int ret;
- 
-+	ATH11K_SKB_CB(skb)->ar = ar;
-+
- 	spin_lock_bh(&ar->txmgmt_idr_lock);
- 	buf_id = idr_alloc(&ar->txmgmt_idr, skb, 0,
- 			   ATH11K_TX_MGMT_NUM_PENDING_MAX, GFP_ATOMIC);
+ 	/* Try to get Xtal trim property, to verify tuner still running */
+-	memcpy(cmd.args, "\x15\x00\x04\x02", 4);
++	memcpy(cmd.args, "\x15\x00\x02\x04", 4);
+ 	cmd.wlen = 4;
+ 	cmd.rlen = 4;
+ 	ret = si2157_cmd_execute(client, &cmd);
 -- 
 2.34.1
 
