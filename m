@@ -2,127 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11184C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 502BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244239AbiAXRQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 12:16:36 -0500
-Received: from mta-p6.oit.umn.edu ([134.84.196.206]:38836 "EHLO
-        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244671AbiAXRPL (ORCPT
+        id S244289AbiAXRQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 12:16:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244253AbiAXRQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:15:11 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 4JjGnq0MjRz9w6RF
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:15:11 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p6.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id p-akFQfq6MvS for <linux-kernel@vger.kernel.org>;
-        Mon, 24 Jan 2022 11:15:10 -0600 (CST)
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 4JjGnp5PrHz9w6RS
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:15:10 -0600 (CST)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p6.oit.umn.edu 4JjGnp5PrHz9w6RS
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p6.oit.umn.edu 4JjGnp5PrHz9w6RS
-Received: by mail-pl1-f198.google.com with SMTP id z11-20020a1709027e8b00b0014a642aacc6so3675902pla.10
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 09:15:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=390Z369C1NgAVDfHVFd06GPqJvUJJ6Covz6dC4YZpPs=;
-        b=bImcnXy8fZy7F4dnGzUsw02MV9/8DVIGzU96NqOUAJi+y0l/xzshbFH+OUYSHiuoWM
-         b9TwMoxjDBZjPQkqJ8p0HknNru4OYBFFbF7CmZ4ZRKIzBkSlX40S1pG7eEMu2lcBJF01
-         b+/yhpSulOi4tu6iTtBtXdWdnHCpCWziYn876IfwP2dGmmKLI2ANAdUeVC7SIQRk4zO9
-         9MZ5jaWkVw/OuhErY6Pve9OTyAufrUuaOC/89woviuBHLIkM6P4BLOaxrIvY+3rWWS1B
-         GPdm5BRDlQnlelJ6RAIEDHiP+bweofWbwrFc0cFBAspGEf8dE0nfzw6kdKCpYRlF44AA
-         I4MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=390Z369C1NgAVDfHVFd06GPqJvUJJ6Covz6dC4YZpPs=;
-        b=qvSwmG5QJZcqTyK8Sk8pAPHyjiisFk78dEKX5upvbR5n1YhdM1gwn4X2l94tRPWjH/
-         dg3Ewtr/t3HgZuMkl1zgeB64NDixb4EfR+oixy9sRMcGhSjpQilAVY+Rdi6dJPyp/X3E
-         8AMzY6bCoCQaud+nSBUph+1BU3VFjN5KXPF2EtmQV2GloCYwlAsmbJ8QBZIlkgq3Ljxm
-         mOCUVWuuUm02n8ZK9UK38Dpki2JDmfzjCHOtJe/aG6uvd4rK1xt0WDnfrwXZ4q66i34h
-         CZkmLDNKmI4190XEhwKaBRTbXducAghyN1Y2V1ACOuhZDcMTm25LRPj50VL7Msfo2rxI
-         QZ8Q==
-X-Gm-Message-State: AOAM5327xruzrFpYGats87Iwi8GPVa6DFAkiZGEitSaps2DyD4axJ+y2
-        LeLg1PR2zBlMQhryWGsArUBS4S/4eUogwi8no5YWOUDzZjlY4LzTJucHWBvQUUN2VSkpN8zPhsp
-        nTtDMSRndy58ny331CaIADUCnakVl
-X-Received: by 2002:a62:e210:0:b0:4c9:1cff:15cc with SMTP id a16-20020a62e210000000b004c91cff15ccmr2439276pfi.55.1643044509979;
-        Mon, 24 Jan 2022 09:15:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx84cDfl3K1Yzlm2R96/QreAAV4PPWN7pVVziLRsV/a1l3TVNWg71tyUX9SHuxKcq+2egH2Mw==
-X-Received: by 2002:a62:e210:0:b0:4c9:1cff:15cc with SMTP id a16-20020a62e210000000b004c91cff15ccmr2439258pfi.55.1643044509740;
-        Mon, 24 Jan 2022 09:15:09 -0800 (PST)
-Received: from zqy787-GE5S.lan ([36.4.61.248])
-        by smtp.gmail.com with ESMTPSA id 197sm462785pfz.152.2022.01.24.09.15.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 09:15:09 -0800 (PST)
-From:   Zhou Qingyang <zhou1615@umn.edu>
-To:     zhou1615@umn.edu
-Cc:     kjlu@umn.edu, Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] media: mtk-vcodec: media: mtk-vcodec: Fix a NULL pointer dereference in mtk_vcodec_fw_vpu_init()
-Date:   Tue, 25 Jan 2022 01:15:03 +0800
-Message-Id: <20220124171503.61098-1-zhou1615@umn.edu>
-X-Mailer: git-send-email 2.25.1
+        Mon, 24 Jan 2022 12:16:36 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7E7C06173B;
+        Mon, 24 Jan 2022 09:16:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=DSa7jeW9P4lNLLrfrfHT/zJUZL/sXm6OhiC7qNBM8w4=; b=NUBgWZujFXvoL7DzLqV7A+5FRa
+        xuK3c6RIvRpVEfkXWUflBmensb2bfz+/Gvmov/NjfsFEl0/GHaBuKKW4+iByQ4f0xGqLZsSrazXyZ
+        rHNhf5OncD+4efuucKMbf/9mMTGHcle4HAyDbU6oYPM4Y14TVwedjIAAB6VHVicUPprucaTw7e62r
+        0TCU2IfZp5FSL3+7tdgjeh2xWMJTS0OPsrwcHkgKuNwibsF9u6gvWoER4mxPp5iiFrReEOdHn5B2N
+        38h5Nx3mjaXlZ0cjkoPtUG0lWucqKNSEnUItr7exQCqNOlcgf+tsQKXFpZxAJA4Y9tkCrRxpiRjI0
+        49gQaoew==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nC2x2-003D8g-QG; Mon, 24 Jan 2022 17:16:20 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3FDF6300222;
+        Mon, 24 Jan 2022 18:16:19 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 28E652B54C677; Mon, 24 Jan 2022 18:16:19 +0100 (CET)
+Date:   Mon, 24 Jan 2022 18:16:19 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Liang, Kan" <kan.liang@linux.intel.com>
+Cc:     Kyle Huey <me@kylehuey.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        x86@kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Robert O'Callahan <rocallahan@gmail.com>,
+        Keno Fischer <keno@juliacomputing.com>,
+        Andi Kleen <ak@linux.intel.com>
+Subject: Re: [PATCH] x86/perf: Default freeze_on_smi on for Comet Lake and
+ later.
+Message-ID: <Ye7e49ln8mfCELqy@hirez.programming.kicks-ass.net>
+References: <20220122072644.92292-1-khuey@kylehuey.com>
+ <Ye6Z31keWVPrsNWU@hirez.programming.kicks-ass.net>
+ <3c35dc76-c187-8d3f-7fc9-75de32e7cbf6@linux.intel.com>
+ <Ye7UDFAV5/OPaE5N@hirez.programming.kicks-ass.net>
+ <3bfa617e-007c-ebc3-8c71-0bcb83b24794@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3bfa617e-007c-ebc3-8c71-0bcb83b24794@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In mtk_vcodec_fw_vpu_init(), devm_kzalloc() is assigned to fw and there is
-a dereference of it right after that, which could lead to NULL pointer
-dereference on failure of devm_kzalloc().
+On Mon, Jan 24, 2022 at 12:03:10PM -0500, Liang, Kan wrote:
+> 
+> 
+> On 1/24/2022 11:30 AM, Peter Zijlstra wrote:
+> > On Mon, Jan 24, 2022 at 11:00:56AM -0500, Liang, Kan wrote:
+> > > 
+> > > 
+> > > On 1/24/2022 7:21 AM, Peter Zijlstra wrote:
+> > > > On Fri, Jan 21, 2022 at 11:26:44PM -0800, Kyle Huey wrote:
+> > > > > Beginning in Comet Lake, Intel extended the concept of privilege rings to
+> > > > > SMM.[0] A side effect of this is that events caused by execution of code
+> > > > > in SMM are now visible to performance counters with IA32_PERFEVTSELx.USR
+> > > > > set.
+> > > > > 
+> > > > > rr[1] depends on exact counts of performance events for the user space
+> > > > > tracee, so this change in behavior is fatal for us. It is, however, easily
+> > > > > corrected by setting IA32_DEBUGCTL.FREEZE_WHILE_SMM to 1 (visible in sysfs
+> > > > > as /sys/devices/cpu/freeze_on_smi). While we can and will tell our users to
+> > > > > set freeze_on_smi manually when appropriate, because observing events in
+> > > > > SMM is rarely useful to anyone, we propose to change the default value of
+> > > > > this switch.
+> > > 
+> > > + Andi
+> > > 
+> > >  From we heard many times from sophisticated customers, they really hate
+> > > blind spots. They want to see everything. That's why we set freeze_on_smi to
+> > > 0 as default. I think the patch breaks the principle.
+> > 
+> > Well, USR really, as in *REALLY* should not be counting SMM. That's just
+> > plain broken.
+> > 
+> 
+> For the USR only case, the bit could be set.
+> 
+> > There's maybe an argument to include it in OS, but USR is ring-3.
+> 
+> But we don't have an option for the USR only case. The changing will impact
+> the SYS case as well. Personally, maybe it's better to let the user apace
+> app control the bit as needed rather than changing the default kernel value
+> for all cases.
 
-Fix this bug by adding a NULL check of fw.
-
-This bug was found by a static analyzer.
-
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 46233e91fa24 ("media: mtk-vcodec: move firmware implementations into their own files")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
----
-The analysis employs differential checking to identify inconsistent 
-security operations (e.g., checks or kfrees) between two code paths 
-and confirms that the inconsistent operations are not recovered in the
-current function or the callers, so they constitute bugs. 
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
- drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
-index cd27f637dbe7..33ae88a9f9da 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
-@@ -102,6 +102,9 @@ struct mtk_vcodec_fw *mtk_vcodec_fw_vpu_init(struct mtk_vcodec_dev *dev,
- 	vpu_wdt_reg_handler(fw_pdev, mtk_vcodec_vpu_reset_handler, dev, rst_id);
- 
- 	fw = devm_kzalloc(&dev->plat_dev->dev, sizeof(*fw), GFP_KERNEL);
-+	if (!fw)
-+		return ERR_PTR(-ENOMEM);
-+
- 	fw->type = VPU;
- 	fw->ops = &mtk_vcodec_vpu_msg;
- 	fw->pdev = fw_pdev;
--- 
-2.25.1
-
+The bit is system wide, you can't sanely control it per counter. The
+change that made USR include SMM is insane and broken.
