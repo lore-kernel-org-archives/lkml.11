@@ -2,129 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBFA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 16:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 397E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 16:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243434AbiAXQD3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 11:03:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
+        id S243292AbiAXQDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 11:03:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240993AbiAXQDV (ORCPT
+        with ESMTP id S235794AbiAXQDy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 11:03:21 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A55C06173B;
-        Mon, 24 Jan 2022 08:03:21 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id x11so50884812lfa.2;
-        Mon, 24 Jan 2022 08:03:20 -0800 (PST)
+        Mon, 24 Jan 2022 11:03:54 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA13EC06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 08:03:53 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id k25so22552398ejp.5
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 08:03:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vfS/F/Wf9bu+NmDqBxpkt9bmTl6S69QHI1qpficbqZk=;
-        b=BPJQ7SJ1V0lmwC4C01DIbifBg7ehy+WB5aIuFTp6EjdCDMMOsA6mfQfRV+4UTcrNdP
-         Tdhc3iHt54ivoyVnXU1mWG1lf0abJKqqCwnPElabBBzQHWByy7GqLaXpvkooORBA0tJt
-         xYnkY6QuTkwqjY1Bq0J75UrtLrn4urM2LojwoL00czhU7e+nAvLQmzUmfyTajF7xW+Jo
-         LHFCXOsg5Ey6JaFG3qSVGmym+Uw2qL3l2Zfy+x7yQN3k4k6G0RocYgNZpUiGv71dfVh5
-         E4ok0tjNlDPOlkhARkh29k7oFo+teAVcWsyeFpgRqTItoVxCUcVbdab0wfAsWctUpEts
-         LXEg==
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hHD1I6HBwWXdmu99NOtKXptCdvMp508sRo/7M3HfYGs=;
+        b=Z+EuI9Pi5ZDJTsvU0GJbe6u9iQbz09QiMO9lztGoX794vCmEhRU6hlhU9YSGbtQE5j
+         NSUsu2eCWgf+isH6LuoPiSSQlDOGV9ZfIbVVkpO+elQEUlHtqHS1E0OFBq7QUfQ0Nz6s
+         Qy0ENSro1a5UtnAQAsHkl/PgskYfs0fK29Dis=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vfS/F/Wf9bu+NmDqBxpkt9bmTl6S69QHI1qpficbqZk=;
-        b=f8gYXlwAuzLYA8wMmhHan2LIT1f2q9ziy2DUCvWfQdOMmnZ8NsFr0rxW6HQcXjD9PC
-         y9tIMP67i1btKsXwFSTedGF6fbGm+Bn5PSKTlwlfxMlyxmKTTnH/MuyNCkGkX5z3salK
-         gfQTh/T4AU2eh2rJ2omafZtY5jaApvKePRhT+wKQibKTwI39zueA2LDRZkGEo5Gl5KV8
-         ptcRj6I5FnAbrb5vds9whxbXuHjMt7i5KoNeOC9a1x/ewhl36MdJ07BH/locVBHo1cyJ
-         JSl1hWIXPgmbcIecu8YnTqTmvtyDT2E4uHrkBDUUfxnfuYa/+maO647pNtPL8zvjzQ09
-         xsCQ==
-X-Gm-Message-State: AOAM532M24WxxUoTqpu8DNIQ7zxUT3pRC8G8fvK6vUVndRcrISmGxXfJ
-        uIq/1T/39pif7ExKk4K9Aks=
-X-Google-Smtp-Source: ABdhPJxAfwvpekuz53Sh6fCrPpxNEfqZtyyPgqs42/pS7SEszF6KXyJ0UzyTB8S3DJyXgws5ehsBog==
-X-Received: by 2002:a05:6512:b84:: with SMTP id b4mr4711978lfv.652.1643040199237;
-        Mon, 24 Jan 2022 08:03:19 -0800 (PST)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id n21sm674187lji.18.2022.01.24.08.03.17
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=hHD1I6HBwWXdmu99NOtKXptCdvMp508sRo/7M3HfYGs=;
+        b=kqtifisY4cQbYQxl+1QgXD7omMMjRm2DyFLu2SRoXzonj84uberEdArA+LKOy8Nnkj
+         myxnBogCaVDfZSEqM+lzlnc1ZEvR40GbrYEoL9tH8ulWCIG5gcjsQxnB5kEw735yXqyY
+         3sKb8WVqgqGzVOdBTqqFiEO7J/SX5BMzibwTrUkDqi+pm7yMiHKuzmvRxl3lHociZVUh
+         oaNcWyPSLGQMXrMIZpSl+U11TSLt4j2J6WUuTHdB3ODuJbDWF5E7iDNNQVPyeXOploUp
+         Fjhf6CB/B6L6di5dwOS1Zg7ziQnHCXumnTS+vODBWj238CBdQRTlQNc0cMraIzbySZ0m
+         GHaA==
+X-Gm-Message-State: AOAM53081G7SSWbqinCBVOafCRQ8821rDevushBl6cpPs3DxfmHqIbwp
+        Berrw/diFhxKpZWl4se//q95bw==
+X-Google-Smtp-Source: ABdhPJxdVfkKMEYbXujqgWUpyR3+7qh2oP6uKoyQ37sTd705e0vRoEIcpmauPwpBhopTpK2j9FowlQ==
+X-Received: by 2002:a17:906:3089:: with SMTP id 9mr12877415ejv.97.1643040232290;
+        Mon, 24 Jan 2022 08:03:52 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id p21sm5051250ejj.156.2022.01.24.08.03.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 08:03:18 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH 3/3] nvmem: core: add cell name based matching of DT cell nodes
-Date:   Mon, 24 Jan 2022 17:03:00 +0100
-Message-Id: <20220124160300.25131-4-zajec5@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220124160300.25131-1-zajec5@gmail.com>
-References: <20220124160300.25131-1-zajec5@gmail.com>
+        Mon, 24 Jan 2022 08:03:51 -0800 (PST)
+Date:   Mon, 24 Jan 2022 17:03:50 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     ira.weiny@intel.com
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH V2 3/7] drm/gma: Remove calls to kmap()
+Message-ID: <Ye7N5ZrmVjOBo1RG@phenom.ffwll.local>
+Mail-Followup-To: ira.weiny@intel.com, David Airlie <airlied@linux.ie>,
+        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org
+References: <20220124015409.807587-1-ira.weiny@intel.com>
+ <20220124015409.807587-4-ira.weiny@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124015409.807587-4-ira.weiny@intel.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+On Sun, Jan 23, 2022 at 05:54:05PM -0800, ira.weiny@intel.com wrote:
+> From: Ira Weiny <ira.weiny@intel.com>
+> 
+> kmap() is being deprecated and these instances are easy to convert to
+> kmap_local_page().
+> 
+> Furthermore, in gma_crtc_cursor_set() use the memcpy_from_page() helper
+> instead of an open coded use of kmap_local_page().
+> 
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
-When adding NVMEM cells defined by driver it's important to match them
-with DT nodes that specify matching names. That way other bindings &
-drivers can reference such "dynamic" NVMEM cells.
+Applied to drm-misc-next, the others should all have full time maintainers
+to make sure the patches land. Pls holler if not.
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
- drivers/nvmem/core.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+Thanks, Daniel
 
-diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index 23a38dcf0fc4..9a1299a7f46a 100644
---- a/drivers/nvmem/core.c
-+++ b/drivers/nvmem/core.c
-@@ -499,6 +499,31 @@ static int nvmem_cell_info_to_nvmem_cell_entry(struct nvmem_device *nvmem,
- 	return 0;
- }
- 
-+/**
-+ * nvmem_find_cell_of_node() - Find DT node matching nvmem cell
-+ *
-+ * @nvmem: nvmem provider
-+ * @name: nvmem cell name
-+ *
-+ * Runtime created nvmem cells (those not coming from DT) may still need to be
-+ * referenced in DT. This function allows finding DT node referencing nvmem cell
-+ * by its name. Such a DT node can be then used by nvmem consumers.
-+ *
-+ * Return: NULL or pointer to DT node
-+ */
-+static struct device_node *nvmem_find_cell_of_node(struct nvmem_device *nvmem,
-+						   const char *name)
-+{
-+	struct device_node *child;
-+
-+	for_each_child_of_node(nvmem->dev.of_node, child) {
-+		if (!strcmp(child->name, name))
-+			return child;
-+	}
-+
-+	return NULL;
-+}
-+
- /**
-  * nvmem_add_cells() - Add cell information to an nvmem device
-  *
-@@ -532,6 +557,8 @@ static int nvmem_add_cells(struct nvmem_device *nvmem,
- 			goto err;
- 		}
- 
-+		cells[i]->np = nvmem_find_cell_of_node(nvmem, cells[i]->name);
-+
- 		nvmem_cell_entry_add(cells[i]);
- 	}
- 
+> ---
+>  drivers/gpu/drm/gma500/gma_display.c | 6 ++----
+>  drivers/gpu/drm/gma500/mmu.c         | 8 ++++----
+>  2 files changed, 6 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/gma500/gma_display.c b/drivers/gpu/drm/gma500/gma_display.c
+> index 99da3118131a..60ba7de59139 100644
+> --- a/drivers/gpu/drm/gma500/gma_display.c
+> +++ b/drivers/gpu/drm/gma500/gma_display.c
+> @@ -335,7 +335,7 @@ int gma_crtc_cursor_set(struct drm_crtc *crtc,
+>  	struct psb_gem_object *pobj;
+>  	struct psb_gem_object *cursor_pobj = gma_crtc->cursor_pobj;
+>  	struct drm_gem_object *obj;
+> -	void *tmp_dst, *tmp_src;
+> +	void *tmp_dst;
+>  	int ret = 0, i, cursor_pages;
+>  
+>  	/* If we didn't get a handle then turn the cursor off */
+> @@ -400,9 +400,7 @@ int gma_crtc_cursor_set(struct drm_crtc *crtc,
+>  		/* Copy the cursor to cursor mem */
+>  		tmp_dst = dev_priv->vram_addr + cursor_pobj->offset;
+>  		for (i = 0; i < cursor_pages; i++) {
+> -			tmp_src = kmap(pobj->pages[i]);
+> -			memcpy(tmp_dst, tmp_src, PAGE_SIZE);
+> -			kunmap(pobj->pages[i]);
+> +			memcpy_from_page(tmp_dst, pobj->pages[i], 0, PAGE_SIZE);
+>  			tmp_dst += PAGE_SIZE;
+>  		}
+>  
+> diff --git a/drivers/gpu/drm/gma500/mmu.c b/drivers/gpu/drm/gma500/mmu.c
+> index fe9ace2a7967..a70b01ccdf70 100644
+> --- a/drivers/gpu/drm/gma500/mmu.c
+> +++ b/drivers/gpu/drm/gma500/mmu.c
+> @@ -184,17 +184,17 @@ struct psb_mmu_pd *psb_mmu_alloc_pd(struct psb_mmu_driver *driver,
+>  		pd->invalid_pte = 0;
+>  	}
+>  
+> -	v = kmap(pd->dummy_pt);
+> +	v = kmap_local_page(pd->dummy_pt);
+>  	for (i = 0; i < (PAGE_SIZE / sizeof(uint32_t)); ++i)
+>  		v[i] = pd->invalid_pte;
+>  
+> -	kunmap(pd->dummy_pt);
+> +	kunmap_local(v);
+>  
+> -	v = kmap(pd->p);
+> +	v = kmap_local_page(pd->p);
+>  	for (i = 0; i < (PAGE_SIZE / sizeof(uint32_t)); ++i)
+>  		v[i] = pd->invalid_pde;
+>  
+> -	kunmap(pd->p);
+> +	kunmap_local(v);
+>  
+>  	clear_page(kmap(pd->dummy_page));
+>  	kunmap(pd->dummy_page);
+> -- 
+> 2.31.1
+> 
+
 -- 
-2.31.1
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
