@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53677C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF22C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234974AbiAXTV5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:21:57 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41504 "EHLO
+        id S1344895AbiAXTWF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:22:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41294 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345281AbiAXTN4 (ORCPT
+        with ESMTP id S1345871AbiAXTNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:13:56 -0500
+        Mon, 24 Jan 2022 14:13:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C54461320;
-        Mon, 24 Jan 2022 19:13:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6954CC340E5;
-        Mon, 24 Jan 2022 19:13:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B2D56131E;
+        Mon, 24 Jan 2022 19:13:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E27FEC340E5;
+        Mon, 24 Jan 2022 19:13:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051636;
-        bh=u7PT4VEBoCpl1z4UKdzURqBUvQQ7yDGByyBCzgv/Jh8=;
+        s=korg; t=1643051620;
+        bh=TKHdAe18EnCv1jjv/mi7ToHGM4RUPP9CaKAtUZa8NvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=py9OTItyD5c5AJsP+bJuSLZ/i75F+VcKxcBuOJg+ULZy6c1J2/nifW+arH1+emBoL
-         7fA9J3Cmw4WiztNlTlpaOZUeKcT3NN3+T7bm6dtYYFjky6UUC123K6zaSc90PRFT3R
-         6T+KiVU4132tx1wwMhPbmm6DoX8twEzo6lMl0Q5I=
+        b=NKK8D8YVxVBLYDkzJc9P0whTNBjapIAGCg1z3Lm3mRxczoqX+T4G5otD/Ab37dLq4
+         q6LlWUmPMRIeyA/Xxm6/LT8MLgexUNyR2HX31o+Ust0EF9dTRNMo5MPit4FmZU2dLF
+         zTXPwAhccnx7fPmZCEE4uVGik0ZrwRT5UrDclKys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        Aditya Garg <gargaditya08@live.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 4.19 006/239] mfd: intel-lpss: Fix too early PM enablement in the ACPI ->probe()
-Date:   Mon, 24 Jan 2022 19:40:44 +0100
-Message-Id: <20220124183943.317102196@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.19 032/239] media: mceusb: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:41:10 +0100
+Message-Id: <20220124183944.146935455@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -48,61 +47,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit c9e143084d1a602f829115612e1ec79df3727c8b upstream.
+commit 16394e998cbb050730536bdf7e89f5a70efbd974 upstream.
 
-The runtime PM callback may be called as soon as the runtime PM facility
-is enabled and activated. It means that ->suspend() may be called before
-we finish probing the device in the ACPI case. Hence, NULL pointer
-dereference:
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-  intel-lpss INT34BA:00: IRQ index 0 not found
-  BUG: kernel NULL pointer dereference, address: 0000000000000030
-  ...
-  Workqueue: pm pm_runtime_work
-  RIP: 0010:intel_lpss_suspend+0xb/0x40 [intel_lpss]
-
-To fix this, first try to register the device and only after that enable
-runtime PM facility.
-
-Fixes: 4b45efe85263 ("mfd: Add support for Intel Sunrisepoint LPSS devices")
-Reported-by: Orlando Chamberlain <redecorating@protonmail.com>
-Reported-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211101190008.86473-1-andriy.shevchenko@linux.intel.com
+Fixes: 66e89522aff7 ("V4L/DVB: IR: add mceusb IR receiver driver")
+Cc: stable@vger.kernel.org      # 2.6.36
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mfd/intel-lpss-acpi.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/media/rc/mceusb.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/mfd/intel-lpss-acpi.c
-+++ b/drivers/mfd/intel-lpss-acpi.c
-@@ -80,6 +80,7 @@ static int intel_lpss_acpi_probe(struct
- {
- 	struct intel_lpss_platform_info *info;
- 	const struct acpi_device_id *id;
-+	int ret;
+--- a/drivers/media/rc/mceusb.c
++++ b/drivers/media/rc/mceusb.c
+@@ -1367,7 +1367,7 @@ static void mceusb_gen1_init(struct mceu
+ 	 */
+ 	ret = usb_control_msg(ir->usbdev, usb_rcvctrlpipe(ir->usbdev, 0),
+ 			      USB_REQ_SET_ADDRESS, USB_TYPE_VENDOR, 0, 0,
+-			      data, USB_CTRL_MSG_SZ, HZ * 3);
++			      data, USB_CTRL_MSG_SZ, 3000);
+ 	dev_dbg(dev, "set address - ret = %d", ret);
+ 	dev_dbg(dev, "set address - data[0] = %d, data[1] = %d",
+ 						data[0], data[1]);
+@@ -1375,20 +1375,20 @@ static void mceusb_gen1_init(struct mceu
+ 	/* set feature: bit rate 38400 bps */
+ 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
+ 			      USB_REQ_SET_FEATURE, USB_TYPE_VENDOR,
+-			      0xc04e, 0x0000, NULL, 0, HZ * 3);
++			      0xc04e, 0x0000, NULL, 0, 3000);
  
- 	id = acpi_match_device(intel_lpss_acpi_ids, &pdev->dev);
- 	if (!id)
-@@ -93,10 +94,14 @@ static int intel_lpss_acpi_probe(struct
- 	info->mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	info->irq = platform_get_irq(pdev, 0);
+ 	dev_dbg(dev, "set feature - ret = %d", ret);
  
-+	ret = intel_lpss_probe(&pdev->dev, info);
-+	if (ret)
-+		return ret;
-+
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
+ 	/* bRequest 4: set char length to 8 bits */
+ 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
+ 			      4, USB_TYPE_VENDOR,
+-			      0x0808, 0x0000, NULL, 0, HZ * 3);
++			      0x0808, 0x0000, NULL, 0, 3000);
+ 	dev_dbg(dev, "set char length - retB = %d", ret);
  
--	return intel_lpss_probe(&pdev->dev, info);
-+	return 0;
- }
+ 	/* bRequest 2: set handshaking to use DTR/DSR */
+ 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
+ 			      2, USB_TYPE_VENDOR,
+-			      0x0000, 0x0100, NULL, 0, HZ * 3);
++			      0x0000, 0x0100, NULL, 0, 3000);
+ 	dev_dbg(dev, "set handshake  - retC = %d", ret);
  
- static int intel_lpss_acpi_remove(struct platform_device *pdev)
+ 	/* device resume */
 
 
