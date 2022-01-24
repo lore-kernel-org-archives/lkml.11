@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86034C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C34ADC35271
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581445AbiAXWLw (ORCPT
+        id S1581670AbiAXWMI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:11:52 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41684 "EHLO
+        Mon, 24 Jan 2022 17:12:08 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42630 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452683AbiAXV0M (ORCPT
+        with ESMTP id S1452982AbiAXV1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:26:12 -0500
+        Mon, 24 Jan 2022 16:27:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99D40B8105C;
-        Mon, 24 Jan 2022 21:26:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3D06C340E4;
-        Mon, 24 Jan 2022 21:26:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8864EB812A4;
+        Mon, 24 Jan 2022 21:27:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD833C340E4;
+        Mon, 24 Jan 2022 21:27:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059569;
-        bh=5l4Rfm2PSSLWqX7qktkfzNpaICyo5Ne2QJRlsa438hU=;
+        s=korg; t=1643059651;
+        bh=xsfclcnth22emOhXnExQDbZEHeQPjA9k8JwPqBUjW/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0ajETSFxKFWRHstAorkFtlX3JDZGxBrEXzQFs9b29q29T0m3Frl4HWe8zA0Oa8qOI
-         PpmrIirjLbiVCvlc83QD++WUX5jDJmm8oM38w0EMPKPthGaLe9qqiW6/Rc0IkQbwNI
-         CPGoYa9Qacv4xSPZvBYBjNNghXlBS+2rqypILYU4=
+        b=n4r861l2MbFnMSWcVg9r9tzjUx8+7+9LIk8QYvKHuYcbfeE639m06Cm+EarP8SV78
+         iQhbk0PeuekaaqQ1amkkZy8BICGj+NzNLzBOoPyQVaBcx4P/U0tXkT/eyr4CJZIi9r
+         AriZoxioNS523DF8MdXxsgwtN4uNXvc659WdVrws=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Hilliard <james.hilliard1@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Hector Martin <marcan@marcan.st>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0617/1039] media: uvcvideo: Increase UVC_CTRL_CONTROL_TIMEOUT to 5 seconds.
-Date:   Mon, 24 Jan 2022 19:40:06 +0100
-Message-Id: <20220124184146.073526798@linuxfoundation.org>
+Subject: [PATCH 5.16 0686/1039] mmc: sdhci-pci-gli: GL9755: Support for CD/WP inversion on OF platforms
+Date:   Mon, 24 Jan 2022 19:41:15 +0100
+Message-Id: <20220124184148.413659573@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,43 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Hilliard <james.hilliard1@gmail.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit c8ed7d2f614cd8b315981d116c7a2fb01829500d ]
+[ Upstream commit 189f1d9bc3a5ea3e442e119e4a5deda63da8c462 ]
 
-Some uvc devices appear to require the maximum allowed USB timeout
-for GET_CUR/SET_CUR requests.
+This is required on some Apple ARM64 laptops using this controller.
+As is typical on DT platforms, pull these quirks from the device tree
+using the standard mmc bindings.
 
-So lets just bump the UVC control timeout to 5 seconds which is the
-same as the usb ctrl get/set defaults:
-USB_CTRL_GET_TIMEOUT 5000
-USB_CTRL_SET_TIMEOUT 5000
+See Documentation/devicetree/bindings/mmc/mmc-controller.yaml
 
-It fixes the following runtime warnings:
-   Failed to query (GET_CUR) UVC control 11 on unit 2: -110 (exp. 1).
-   Failed to query (SET_CUR) UVC control 3 on unit 2: -110 (exp. 2).
-
-Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Link: https://lore.kernel.org/r/20211215161045.38843-2-marcan@marcan.st
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/uvc/uvcvideo.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/host/sdhci-pci-gli.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
-index 2e5366143b814..143230b3275b3 100644
---- a/drivers/media/usb/uvc/uvcvideo.h
-+++ b/drivers/media/usb/uvc/uvcvideo.h
-@@ -189,7 +189,7 @@
- /* Maximum status buffer size in bytes of interrupt URB. */
- #define UVC_MAX_STATUS_SIZE	16
+diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
+index 4fd99c1e82ba3..ad50f16658fe2 100644
+--- a/drivers/mmc/host/sdhci-pci-gli.c
++++ b/drivers/mmc/host/sdhci-pci-gli.c
+@@ -12,6 +12,7 @@
+ #include <linux/pci.h>
+ #include <linux/mmc/mmc.h>
+ #include <linux/delay.h>
++#include <linux/of.h>
+ #include "sdhci.h"
+ #include "sdhci-pci.h"
+ #include "cqhci.h"
+@@ -116,6 +117,8 @@
+ #define PCI_GLI_9755_PECONF   0x44
+ #define   PCI_GLI_9755_LFCLK    GENMASK(14, 12)
+ #define   PCI_GLI_9755_DMACLK   BIT(29)
++#define   PCI_GLI_9755_INVERT_CD  BIT(30)
++#define   PCI_GLI_9755_INVERT_WP  BIT(31)
  
--#define UVC_CTRL_CONTROL_TIMEOUT	500
-+#define UVC_CTRL_CONTROL_TIMEOUT	5000
- #define UVC_CTRL_STREAMING_TIMEOUT	5000
+ #define PCI_GLI_9755_CFG2          0x48
+ #define   PCI_GLI_9755_CFG2_L1DLY    GENMASK(28, 24)
+@@ -570,6 +573,14 @@ static void gl9755_hw_setting(struct sdhci_pci_slot *slot)
+ 	gl9755_wt_on(pdev);
  
- /* Maximum allowed number of control mappings per device */
+ 	pci_read_config_dword(pdev, PCI_GLI_9755_PECONF, &value);
++	/*
++	 * Apple ARM64 platforms using these chips may have
++	 * inverted CD/WP detection.
++	 */
++	if (of_property_read_bool(pdev->dev.of_node, "cd-inverted"))
++		value |= PCI_GLI_9755_INVERT_CD;
++	if (of_property_read_bool(pdev->dev.of_node, "wp-inverted"))
++		value |= PCI_GLI_9755_INVERT_WP;
+ 	value &= ~PCI_GLI_9755_LFCLK;
+ 	value &= ~PCI_GLI_9755_DMACLK;
+ 	pci_write_config_dword(pdev, PCI_GLI_9755_PECONF, value);
 -- 
 2.34.1
 
