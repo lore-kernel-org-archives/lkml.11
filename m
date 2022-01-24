@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44907C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:16:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 844E7C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379568AbiAXWOT (ORCPT
+        id S1577588AbiAXWOm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:14:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52492 "EHLO
+        Mon, 24 Jan 2022 17:14:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391084AbiAXV1j (ORCPT
+        with ESMTP id S1453010AbiAXV1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:27:39 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5D3C073237;
-        Mon, 24 Jan 2022 12:18:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F921C07323B;
+        Mon, 24 Jan 2022 12:18:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5E6CB8121A;
-        Mon, 24 Jan 2022 20:18:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18F2C340E7;
-        Mon, 24 Jan 2022 20:18:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8406B8121A;
+        Mon, 24 Jan 2022 20:18:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DE0C340E8;
+        Mon, 24 Jan 2022 20:18:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055515;
-        bh=NuK78AgEPPXwPDmJW6dh2JNWyYPSk501rOialbEenj0=;
+        s=korg; t=1643055518;
+        bh=c119dTtFJ/UsDiNJRoA+V53VfW8MDbBahmzYfXdX0aE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IGBsOVLBFRRNuPhvGFB/P54xQzy154eHUdN5R0JDJ2ntznbfEE3Qdt5Y5cFlzodAH
-         e2VNpfTRUUMNCk9RYc4jObv7qpdDGSMvVPgoPncSOx3o2bapETruy/5igDJIe5wJF3
-         KgH0zOjjwlthNQEAJsBwWKLo4tOcRwbjD0fRyHfE=
+        b=W6VVtflGs00qpVGfLhQwZSBzk1vio/DCHqT6mCSyhaR75yg70ObXsPpOdE/LjAV/n
+         UyFY1waa1332msbIjN4aDwJa93HIYiPOn6KhP9/4YguXgJd1o0PEyz2c1lKN9lNQor
+         ZlLTdpOBY38aWZ/iMkeeeHBSNrP7fFD+gLZFoNH8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marco Chiappero <marco.chiappero@intel.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Eirik Fuller <efuller@redhat.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 149/846] crypto: qat - remove unnecessary collision prevention step in PFVF
-Date:   Mon, 24 Jan 2022 19:34:26 +0100
-Message-Id: <20220124184106.128886461@linuxfoundation.org>
+Subject: [PATCH 5.15 176/846] powerpc: Avoid discarding flags in system_call_exception()
+Date:   Mon, 24 Jan 2022 19:34:53 +0100
+Message-Id: <20220124184107.044834827@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,58 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marco Chiappero <marco.chiappero@intel.com>
+From: Mark Rutland <mark.rutland@arm.com>
 
-[ Upstream commit e17f49bb244a281fe39bfdad0306a38b3a02e7bf ]
+[ Upstream commit 08b0af5b2affbe7419853e8dd1330e4b3fe27125 ]
 
-The initial version of the PFVF protocol included an initial "carrier
-sensing" to get ownership of the channel.
+Some thread flags can be set remotely, and so even when IRQs are disabled,
+the flags can change under our feet. Thus, when setting flags we must use
+an atomic operation rather than a plain read-modify-write sequence, as a
+plain read-modify-write may discard flags which are concurrently set by a
+remote thread, e.g.
 
-Collisions can happen anyway, the extra wait and test does not prevent
-collisions, it instead slows the communication down, so remove it.
+	// task A			// task B
+	tmp = A->thread_info.flags;
+					set_tsk_thread_flag(A, NEWFLAG_B);
+	tmp |= NEWFLAG_A;
+	A->thread_info.flags = tmp;
 
-Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
-Reviewed-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+arch/powerpc/kernel/interrupt.c's system_call_exception() sets
+_TIF_RESTOREALL in the thread info flags with a read-modify-write, which
+may result in other flags being discarded.
+
+Elsewhere in the file it uses clear_bits() to atomically remove flag bits,
+so use set_bits() here for consistency with those.
+
+There may be reasons (e.g. instrumentation) that prevent the use of
+set_thread_flag() and clear_thread_flag() here, which would otherwise be
+preferable.
+
+Fixes: ae7aaecc3f2f78b7 ("powerpc/64s: system call rfscv workaround for TM bugs")
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Eirik Fuller <efuller@redhat.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Link: https://lore.kernel.org/r/20211129130653.2037928-10-mark.rutland@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/qat/qat_common/adf_pf2vf_msg.c | 20 +------------------
- 1 file changed, 1 insertion(+), 19 deletions(-)
+ arch/powerpc/kernel/interrupt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c b/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
-index 5a41beb8f20f6..d3f6ff68d45d9 100644
---- a/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
-+++ b/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
-@@ -126,28 +126,10 @@ static int __adf_iov_putmsg(struct adf_accel_dev *accel_dev, u32 msg, u8 vf_nr)
- 		goto out;
- 	}
+diff --git a/arch/powerpc/kernel/interrupt.c b/arch/powerpc/kernel/interrupt.c
+index 835b626cd4760..df048e331cbfe 100644
+--- a/arch/powerpc/kernel/interrupt.c
++++ b/arch/powerpc/kernel/interrupt.c
+@@ -148,7 +148,7 @@ notrace long system_call_exception(long r3, long r4, long r5,
+ 	 */
+ 	if (IS_ENABLED(CONFIG_PPC_TRANSACTIONAL_MEM) &&
+ 			unlikely(MSR_TM_TRANSACTIONAL(regs->msr)))
+-		current_thread_info()->flags |= _TIF_RESTOREALL;
++		set_bits(_TIF_RESTOREALL, &current_thread_info()->flags);
  
--	/* Attempt to get ownership of PF2VF CSR */
- 	msg &= ~local_in_use_mask;
- 	msg |= local_in_use_pattern;
--	ADF_CSR_WR(pmisc_bar_addr, pf2vf_offset, msg);
- 
--	/* Wait in case remote func also attempting to get ownership */
--	msleep(ADF_IOV_MSG_COLLISION_DETECT_DELAY);
--
--	val = ADF_CSR_RD(pmisc_bar_addr, pf2vf_offset);
--	if ((val & local_in_use_mask) != local_in_use_pattern) {
--		dev_dbg(&GET_DEV(accel_dev),
--			"PF2VF CSR in use by remote - collision detected\n");
--		ret = -EBUSY;
--		goto out;
--	}
--
--	/*
--	 * This function now owns the PV2VF CSR.  The IN_USE_BY pattern must
--	 * remain in the PF2VF CSR for all writes including ACK from remote
--	 * until this local function relinquishes the CSR.  Send the message
--	 * by interrupting the remote.
--	 */
-+	/* Attempt to get ownership of the PF2VF CSR */
- 	ADF_CSR_WR(pmisc_bar_addr, pf2vf_offset, msg | int_bit);
- 
- 	/* Wait for confirmation from remote func it received the message */
+ 	/*
+ 	 * If the system call was made with a transaction active, doom it and
 -- 
 2.34.1
 
