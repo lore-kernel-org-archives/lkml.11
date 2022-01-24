@@ -2,39 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA6C0C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D14C35268
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357486AbiAXTuI (ORCPT
+        id S1357575AbiAXTuS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:50:08 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35146 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354991AbiAXTjr (ORCPT
+        Mon, 24 Jan 2022 14:50:18 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59098 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355137AbiAXTkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:39:47 -0500
+        Mon, 24 Jan 2022 14:40:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 348696148B;
-        Mon, 24 Jan 2022 19:39:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16BD5C340E5;
-        Mon, 24 Jan 2022 19:39:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC34BB8119D;
+        Mon, 24 Jan 2022 19:40:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5BECC340E5;
+        Mon, 24 Jan 2022 19:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053186;
-        bh=DthYjh+AUf6U0msGHmNsk3EuOaLtsWRn1QyFhfakDLQ=;
+        s=korg; t=1643053202;
+        bh=cAsgGxHRlMgNK0AryRN0I/ANz2aq81Z9fpR9OCPmRwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CjbyhamFZQ8AOKXP5vuEvNCnumpkhL5R3UJYrdHdmRAHMCfUaIUc3seyhGbBq2+pe
-         BZYlKiVacN2sf34PKmRFWo6h0CwKG2SBJMIjHb/BL7cFXZ7KjFn9ml4B2i/ClRn00O
-         ymDAxuTQvFnPrkN1mZGsUNtwLEmuVyEb0QUSyjoM=
+        b=o1ECqNOoFFdGX5NY9hfFnDwNycKEleid+y2cyDIMk86eAnm3/PJm4rLpRqrtrAX8k
+         W8PQQsWt6Lxz+9fqYSaM/RT7GRCvuSUZ4pjqc56c8oIhDc6lYbZFDS6/SQsvCHJ3ZX
+         +acYBbM2lYZSt62DzqM1OJ8ngDKTsoZ3POhQq9j0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 303/320] libcxgb: Dont accidentally set RTO_ONLINK in cxgb_find_route()
-Date:   Mon, 24 Jan 2022 19:44:47 +0100
-Message-Id: <20220124184004.256686805@linuxfoundation.org>
+        stable@vger.kernel.org, Suresh Udipi <sudipi@jp.adit-jv.com>,
+        Michael Rodin <mrodin@de.adit-jv.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.4 276/320] media: rcar-csi2: Optimize the selection PHTW register
+Date:   Mon, 24 Jan 2022 19:44:20 +0100
+Message-Id: <20220124184003.361849513@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,44 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Suresh Udipi <sudipi@jp.adit-jv.com>
 
-commit a915deaa9abe4fb3a440312c954253a6a733608e upstream.
+commit 549cc89cd09a85aaa16dc07ef3db811d5cf9bcb1 upstream.
 
-Mask the ECN bits before calling ip_route_output_ports(). The tos
-variable might be passed directly from an IPv4 header, so it may have
-the last ECN bit set. This interferes with the route lookup process as
-ip_route_output_key_hash() interpretes this bit specially (to restrict
-the route scope).
+PHTW register is selected based on default bit rate from Table[1].
+for the bit rates less than or equal to 250. Currently first
+value of default bit rate which is greater than or equal to
+the caculated mbps is selected. This selection can be further
+improved by selecting the default bit rate which is nearest to
+the calculated value.
 
-Found by code inspection, compile tested only.
+[1] specs r19uh0105ej0200-r-car-3rd-generation.pdf [Table 25.12]
 
-Fixes: 804c2f3e36ef ("libcxgb,iw_cxgb4,cxgbit: add cxgb_find_route()")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 769afd212b16 ("media: rcar-csi2: add Renesas R-Car MIPI CSI-2 receiver driver")
+Signed-off-by: Suresh Udipi <sudipi@jp.adit-jv.com>
+Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
+Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/media/platform/rcar-vin/rcar-csi2.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c
-+++ b/drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c
-@@ -32,6 +32,7 @@
+--- a/drivers/media/platform/rcar-vin/rcar-csi2.c
++++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
+@@ -911,10 +911,17 @@ static int rcsi2_phtw_write_mbps(struct
+ 				 const struct rcsi2_mbps_reg *values, u16 code)
+ {
+ 	const struct rcsi2_mbps_reg *value;
++	const struct rcsi2_mbps_reg *prev_value = NULL;
  
- #include <linux/tcp.h>
- #include <linux/ipv6.h>
-+#include <net/inet_ecn.h>
- #include <net/route.h>
- #include <net/ip6_route.h>
+-	for (value = values; value->mbps; value++)
++	for (value = values; value->mbps; value++) {
+ 		if (value->mbps >= mbps)
+ 			break;
++		prev_value = value;
++	}
++
++	if (prev_value &&
++	    ((mbps - prev_value->mbps) <= (value->mbps - mbps)))
++		value = prev_value;
  
-@@ -99,7 +100,7 @@ cxgb_find_route(struct cxgb4_lld_info *l
- 
- 	rt = ip_route_output_ports(&init_net, &fl4, NULL, peer_ip, local_ip,
- 				   peer_port, local_port, IPPROTO_TCP,
--				   tos, 0);
-+				   tos & ~INET_ECN_MASK, 0);
- 	if (IS_ERR(rt))
- 		return NULL;
- 	n = dst_neigh_lookup(&rt->dst, &peer_ip);
+ 	if (!value->mbps) {
+ 		dev_err(priv->dev, "Unsupported PHY speed (%u Mbps)", mbps);
 
 
