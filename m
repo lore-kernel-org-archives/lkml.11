@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DD08C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7565C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580825AbiAXWKs (ORCPT
+        id S1581010AbiAXWLH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:10:48 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41262 "EHLO
+        Mon, 24 Jan 2022 17:11:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34150 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452372AbiAXVZU (ORCPT
+        with ESMTP id S1449188AbiAXVPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:25:20 -0500
+        Mon, 24 Jan 2022 16:15:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AD90B8123A;
-        Mon, 24 Jan 2022 21:25:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4470AC340E4;
-        Mon, 24 Jan 2022 21:25:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D33BB81142;
+        Mon, 24 Jan 2022 21:15:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93C72C340E5;
+        Mon, 24 Jan 2022 21:14:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059515;
-        bh=IuUQk7EuyxnlKJabLJmOzkPUFtwzZ9odlbaCsWfgiVE=;
+        s=korg; t=1643058899;
+        bh=sSDFp/4Isibgx+viCawhWzXdWhERJeA4CwQLf+j1haA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tAdfmr43wc/r5SPylpvW8pYhciVMejra9Od7IA0tDZ+jUuHUTQa2dAkxl+6klo/DC
-         1b+wci6C6GNV3RJ42ZpKNpsTAgIs3GILC9zwPf4vZ93WhNRU4fkc4VgpQwAd1FVfL3
-         CVcDWKfM22y7BMqTytJTeGNXfN+A1o6MSXkmNrm4=
+        b=MmxxWRaBLW1EP7oynW0cNk2ETT9/es42GK4g9MWY3xj96QIr4g6prRS8JlKCushyr
+         BXGD/Q8FwRccdQDM3tJ2EmezlWE0+txwL4XgACb3auCah5jL9TsuKbAzzY+OzGAvqU
+         hb84dVtCuukFnlmxB00Uq1Y3THvec//5KBPka3v8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0641/1039] x86/mce: Prevent severity computation from being instrumented
-Date:   Mon, 24 Jan 2022 19:40:30 +0100
-Message-Id: <20220124184146.898030990@linuxfoundation.org>
+Subject: [PATCH 5.16 0437/1039] netfilter: egress: avoid a lockdep splat
+Date:   Mon, 24 Jan 2022 19:37:06 +0100
+Message-Id: <20220124184139.986966049@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,101 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 0a5b288e85bbef5227bb6397e31fcf1d7ba9142a ]
+[ Upstream commit 6316136ec6e3dd1c302f7e7289a9ee46ecc610ae ]
 
-Mark all the MCE severity computation logic noinstr and allow
-instrumentation when it "calls out".
+include/linux/netfilter_netdev.h:97 suspicious rcu_dereference_check() usage!
+2 locks held by sd-resolve/1100:
+ 0: ..(rcu_read_lock_bh){1:3}, at: ip_finish_output2
+ 1: ..(rcu_read_lock_bh){1:3}, at: __dev_queue_xmit
+ __dev_queue_xmit+0 ..
 
-Fixes
+The helper has two callers, one uses rcu_read_lock, the other
+rcu_read_lock_bh().  Annotate the dereference to reflect this.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xc5d: call to mce_severity() leaves .noinstr.text section
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-7-bp@alien8.de
+Fixes: 42df6e1d221dd ("netfilter: Introduce egress hook")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/severity.c | 30 +++++++++++++++++++++---------
- 1 file changed, 21 insertions(+), 9 deletions(-)
+ include/linux/netfilter_netdev.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/severity.c b/arch/x86/kernel/cpu/mce/severity.c
-index bb019a594a2c9..171a1495111b1 100644
---- a/arch/x86/kernel/cpu/mce/severity.c
-+++ b/arch/x86/kernel/cpu/mce/severity.c
-@@ -263,24 +263,36 @@ static bool is_copy_from_user(struct pt_regs *regs)
-  * distinguish an exception taken in user from from one
-  * taken in the kernel.
-  */
--static int error_context(struct mce *m, struct pt_regs *regs)
-+static noinstr int error_context(struct mce *m, struct pt_regs *regs)
- {
-+	int fixup_type;
-+	bool copy_user;
-+
- 	if ((m->cs & 3) == 3)
- 		return IN_USER;
-+
- 	if (!mc_recoverable(m->mcgstatus))
- 		return IN_KERNEL;
+diff --git a/include/linux/netfilter_netdev.h b/include/linux/netfilter_netdev.h
+index b71b57a83bb4f..b4dd96e4dc8dc 100644
+--- a/include/linux/netfilter_netdev.h
++++ b/include/linux/netfilter_netdev.h
+@@ -94,7 +94,7 @@ static inline struct sk_buff *nf_hook_egress(struct sk_buff *skb, int *rc,
+ 		return skb;
+ #endif
  
--	switch (ex_get_fixup_type(m->ip)) {
-+	/* Allow instrumentation around external facilities usage. */
-+	instrumentation_begin();
-+	fixup_type = ex_get_fixup_type(m->ip);
-+	copy_user  = is_copy_from_user(regs);
-+	instrumentation_end();
-+
-+	switch (fixup_type) {
- 	case EX_TYPE_UACCESS:
- 	case EX_TYPE_COPY:
--		if (!regs || !is_copy_from_user(regs))
-+		if (!regs || !copy_user)
- 			return IN_KERNEL;
- 		m->kflags |= MCE_IN_KERNEL_COPYIN;
- 		fallthrough;
-+
- 	case EX_TYPE_FAULT_MCE_SAFE:
- 	case EX_TYPE_DEFAULT_MCE_SAFE:
- 		m->kflags |= MCE_IN_KERNEL_RECOV;
- 		return IN_KERNEL_RECOV;
-+
- 	default:
- 		return IN_KERNEL;
- 	}
-@@ -317,8 +329,8 @@ static int mce_severity_amd_smca(struct mce *m, enum context err_ctx)
-  * See AMD Error Scope Hierarchy table in a newer BKDG. For example
-  * 49125_15h_Models_30h-3Fh_BKDG.pdf, section "RAS Features"
-  */
--static int mce_severity_amd(struct mce *m, struct pt_regs *regs, int tolerant,
--			    char **msg, bool is_excp)
-+static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, int tolerant,
-+				    char **msg, bool is_excp)
- {
- 	enum context ctx = error_context(m, regs);
+-	e = rcu_dereference(dev->nf_hooks_egress);
++	e = rcu_dereference_check(dev->nf_hooks_egress, rcu_read_lock_bh_held());
+ 	if (!e)
+ 		return skb;
  
-@@ -370,8 +382,8 @@ static int mce_severity_amd(struct mce *m, struct pt_regs *regs, int tolerant,
- 	return MCE_KEEP_SEVERITY;
- }
- 
--static int mce_severity_intel(struct mce *m, struct pt_regs *regs,
--			      int tolerant, char **msg, bool is_excp)
-+static noinstr int mce_severity_intel(struct mce *m, struct pt_regs *regs,
-+				      int tolerant, char **msg, bool is_excp)
- {
- 	enum exception excp = (is_excp ? EXCP_CONTEXT : NO_EXCP);
- 	enum context ctx = error_context(m, regs);
-@@ -407,8 +419,8 @@ static int mce_severity_intel(struct mce *m, struct pt_regs *regs,
- 	}
- }
- 
--int mce_severity(struct mce *m, struct pt_regs *regs, int tolerant, char **msg,
--		 bool is_excp)
-+int noinstr mce_severity(struct mce *m, struct pt_regs *regs, int tolerant, char **msg,
-+			 bool is_excp)
- {
- 	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
- 	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
 -- 
 2.34.1
 
