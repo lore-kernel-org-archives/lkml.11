@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD182C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D4D4C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447234AbiAXVKO (ORCPT
+        id S1446944AbiAXVJn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:10:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46710 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390720AbiAXUqG (ORCPT
+        Mon, 24 Jan 2022 16:09:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41672 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1389460AbiAXUkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:06 -0500
+        Mon, 24 Jan 2022 15:40:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5876C045926;
+        Mon, 24 Jan 2022 11:51:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31C84B81061;
-        Mon, 24 Jan 2022 20:46:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E2A1C340E5;
-        Mon, 24 Jan 2022 20:46:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93354B81142;
+        Mon, 24 Jan 2022 19:51:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFA2EC340E7;
+        Mon, 24 Jan 2022 19:51:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057163;
-        bh=1UkMZa/royLpHMxGh9IRPXpsoz9kl6dKbdO4wAyXQCA=;
+        s=korg; t=1643053911;
+        bh=jFAPDr8IEDpp7WV0gdkRVMZiZ9GFIrjnmNnKpTkCTy4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Pqtye1jbfVWluzV/MSxWVZLvYQ80GIYrpaeS3V/KSVGPzm0DxhMpPWfKDAoVeQVS
-         80Q4eYZ+2RV0RDJtVkWgtyKmjXz17LrK1MINnFo0IoM5jicNs8U8h/TeyfpepCt+JX
-         XpZU9IdafJUZosqmGroTkvony6pgrEvuQFiVovNQ=
+        b=cgd+4DDmj6b3G8BsTPVcx/s+unOd4thXzCA8PME753ePS5Pf7VsXvemWYl/5mTNkC
+         rBWH5fq41921d/LS8srUFZE8PMQhhIhaQDpp1b0I9YWeo/+JVt+vs6F+oynB0shvbD
+         z2PSfAMO7LMg0Rc5JD7bUF/OEhCTCApkHKtq89l8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.15 689/846] device property: Fix fwnode_graph_devcon_match() fwnode leak
-Date:   Mon, 24 Jan 2022 19:43:26 +0100
-Message-Id: <20220124184124.825727206@linuxfoundation.org>
+        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 174/563] xfrm: state and policy should fail if XFRMA_IF_ID 0
+Date:   Mon, 24 Jan 2022 19:38:59 +0100
+Message-Id: <20220124184030.428821480@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,41 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Antony Antony <antony.antony@secunet.com>
 
-commit 4a7f4110f79163fd53ea65438041994ed615e3af upstream.
+[ Upstream commit 68ac0f3810e76a853b5f7b90601a05c3048b8b54 ]
 
-For each endpoint it encounters, fwnode_graph_devcon_match() checks
-whether the endpoint's remote port parent device is available. If it is
-not, it ignores the endpoint but does not put the reference to the remote
-endpoint port parent fwnode. For available devices the fwnode handle
-reference is put as expected.
+xfrm ineterface does not allow xfrm if_id = 0
+fail to create or update xfrm state and policy.
 
-Put the reference for unavailable devices now.
+With this commit:
+ ip xfrm policy add src 192.0.2.1 dst 192.0.2.2 dir out if_id 0
+ RTNETLINK answers: Invalid argument
 
-Fixes: 637e9e52b185 ("device connection: Find device connections also from device graphs")
-Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ ip xfrm state add src 192.0.2.1 dst 192.0.2.2 proto esp spi 1 \
+            reqid 1 mode tunnel aead 'rfc4106(gcm(aes))' \
+            0x1111111111111111111111111111111111111111 96 if_id 0
+ RTNETLINK answers: Invalid argument
+
+v1->v2 change:
+ - add Fixes: tag
+
+Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
+Signed-off-by: Antony Antony <antony.antony@secunet.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/property.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/xfrm/xfrm_user.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
 
---- a/drivers/base/property.c
-+++ b/drivers/base/property.c
-@@ -1269,8 +1269,10 @@ fwnode_graph_devcon_match(struct fwnode_
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index 97f7ebf5324e7..ddf1b3a5f7c1f 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -621,8 +621,13 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
  
- 	fwnode_graph_for_each_endpoint(fwnode, ep) {
- 		node = fwnode_graph_get_remote_port_parent(ep);
--		if (!fwnode_device_is_available(node))
-+		if (!fwnode_device_is_available(node)) {
-+			fwnode_handle_put(node);
- 			continue;
+ 	xfrm_smark_init(attrs, &x->props.smark);
+ 
+-	if (attrs[XFRMA_IF_ID])
++	if (attrs[XFRMA_IF_ID]) {
+ 		x->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
++		if (!x->if_id) {
++			err = -EINVAL;
++			goto error;
 +		}
++	}
  
- 		ret = match(node, con_id, data);
- 		fwnode_handle_put(node);
+ 	err = __xfrm_init_state(x, false, attrs[XFRMA_OFFLOAD_DEV]);
+ 	if (err)
+@@ -1353,8 +1358,13 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 
+ 	mark = xfrm_mark_get(attrs, &m);
+ 
+-	if (attrs[XFRMA_IF_ID])
++	if (attrs[XFRMA_IF_ID]) {
+ 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
++		if (!if_id) {
++			err = -EINVAL;
++			goto out_noput;
++		}
++	}
+ 
+ 	if (p->info.seq) {
+ 		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
+@@ -1667,8 +1677,13 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net, struct xfrm_us
+ 
+ 	xfrm_mark_get(attrs, &xp->mark);
+ 
+-	if (attrs[XFRMA_IF_ID])
++	if (attrs[XFRMA_IF_ID]) {
+ 		xp->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
++		if (!xp->if_id) {
++			err = -EINVAL;
++			goto error;
++		}
++	}
+ 
+ 	return xp;
+  error:
+-- 
+2.34.1
+
 
 
