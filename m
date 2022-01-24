@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F44C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFBE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343959AbiAXSyW (ORCPT
+        id S1344338AbiAXSy1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:54:22 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51522 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343689AbiAXSwd (ORCPT
+        Mon, 24 Jan 2022 13:54:27 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51690 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236282AbiAXSwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:52:33 -0500
+        Mon, 24 Jan 2022 13:52:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E810B81227;
-        Mon, 24 Jan 2022 18:52:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D143C340E5;
-        Mon, 24 Jan 2022 18:52:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C514A614EC;
+        Mon, 24 Jan 2022 18:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CB7BC340E5;
+        Mon, 24 Jan 2022 18:52:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050351;
-        bh=i5PnfJ5ACF12zxhZM9oXbHuElB0dKR9hdwAK0CLrRJE=;
+        s=korg; t=1643050354;
+        bh=qtKkJMFmMPARKOd3X03qqmFD/4R6AL0N8Z/w7kj3lLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gsq8CSzOSFBF061eTlTuHIkxF5w5Lp0G2WyL1CMAlTjerF1t1x+s5qCXK5tYsHtX3
-         pW4Hgf7DOb+9quT/uWAcBTrwHsFFu5hzJtt7cQ2xb1VBfpGMCSEbzcSW63BzPNWRvU
-         t2AqLbvH+/2OoquszEMqP4eeoUpDhwKGdd2UKei4=
+        b=evSUhN1/wjx0RojmPt3msuMt54WzFH2avvDxM9oLw3ScE9fWiePCYElN/6rWOVdRw
+         9rXqImHreAF0BxyTZToSDqbKfQ+tJZ4QFQmM0KgPOd0yADf8S+pS9M8vji6SwoO1g2
+         1PaWwV5FQe82HNWkkQyJf/hScXRGzvC+zsO/53PA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 057/114] Bluetooth: Fix debugfs entry leak in hci_register_dev()
-Date:   Mon, 24 Jan 2022 19:42:32 +0100
-Message-Id: <20220124183928.865449135@linuxfoundation.org>
+Subject: [PATCH 4.4 048/114] char/mwave: Adjust io port register size
+Date:   Mon, 24 Jan 2022 19:42:23 +0100
+Message-Id: <20220124183928.587436790@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -47,38 +46,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
+[ Upstream commit f5912cc19acd7c24b2dbf65a6340bf194244f085 ]
 
-Fault injection test report debugfs entry leak as follows:
+Using MKWORD() on a byte-sized variable results in OOB read. Expand the
+size of the reserved area so both MKWORD and MKBYTE continue to work
+without overflow. Silences this warning on a -Warray-bounds build:
 
-debugfs: Directory 'hci0' with parent 'bluetooth' already present!
+drivers/char/mwave/3780i.h:346:22: error: array subscript 'short unsigned int[0]' is partly outside array bounds of 'DSP_ISA_SLAVE_CONTROL[1]' [-Werror=array-bounds]
+  346 | #define MKWORD(var) (*((unsigned short *)(&var)))
+      |                     ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/char/mwave/3780i.h:356:40: note: in definition of macro 'OutWordDsp'
+  356 | #define OutWordDsp(index,value)   outw(value,usDspBaseIO+index)
+      |                                        ^~~~~
+drivers/char/mwave/3780i.c:373:41: note: in expansion of macro 'MKWORD'
+  373 |         OutWordDsp(DSP_IsaSlaveControl, MKWORD(rSlaveControl));
+      |                                         ^~~~~~
+drivers/char/mwave/3780i.c:358:31: note: while referencing 'rSlaveControl'
+  358 |         DSP_ISA_SLAVE_CONTROL rSlaveControl;
+      |                               ^~~~~~~~~~~~~
 
-When register_pm_notifier() failed in hci_register_dev(), the debugfs
-create by debugfs_create_dir() do not removed in the error handing path.
-
-Add the remove debugfs code to fix it.
-
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20211203084206.3104326-1-keescook@chromium.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/mwave/3780i.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index eefaa10c74dbb..1cc78b88a0d9f 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3459,6 +3459,7 @@ int hci_register_dev(struct hci_dev *hdev)
- 	return id;
+diff --git a/drivers/char/mwave/3780i.h b/drivers/char/mwave/3780i.h
+index fba6ab1160ce8..b167163b18277 100644
+--- a/drivers/char/mwave/3780i.h
++++ b/drivers/char/mwave/3780i.h
+@@ -68,7 +68,7 @@ typedef struct {
+ 	unsigned char ClockControl:1;	/* RW: Clock control: 0=normal, 1=stop 3780i clocks */
+ 	unsigned char SoftReset:1;	/* RW: Soft reset 0=normal, 1=soft reset active */
+ 	unsigned char ConfigMode:1;	/* RW: Configuration mode, 0=normal, 1=config mode */
+-	unsigned char Reserved:5;	/* 0: Reserved */
++	unsigned short Reserved:13;	/* 0: Reserved */
+ } DSP_ISA_SLAVE_CONTROL;
  
- err_wqueue:
-+	debugfs_remove_recursive(hdev->debugfs);
- 	destroy_workqueue(hdev->workqueue);
- 	destroy_workqueue(hdev->req_workqueue);
- err:
+ 
 -- 
 2.34.1
 
