@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C53C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D97C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577714AbiAXWAz (ORCPT
+        id S1577970AbiAXWBV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:00:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51874 "EHLO
+        Mon, 24 Jan 2022 17:01:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451496AbiAXVXC (ORCPT
+        with ESMTP id S1451574AbiAXVXI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:23:02 -0500
+        Mon, 24 Jan 2022 16:23:08 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F642C0617AE;
-        Mon, 24 Jan 2022 12:17:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15111C09B055;
+        Mon, 24 Jan 2022 12:17:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 282A4B81218;
-        Mon, 24 Jan 2022 20:17:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AE40C340E5;
-        Mon, 24 Jan 2022 20:17:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0808B812A7;
+        Mon, 24 Jan 2022 20:17:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D231CC340E5;
+        Mon, 24 Jan 2022 20:17:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055450;
-        bh=LQFQXJKh8AgcmpSq95ncbAZc/m3gURnAWKojwDiSKVk=;
+        s=korg; t=1643055460;
+        bh=wCk2AXJ9tvWhIi/cMIJbL4Pixx4R3mqFsXGZLo+5u3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XNKiD9yCo3b6y7kVWetW80FyWWtEKPgi0ksiIU0cALBs5X64YhhyuetxmSqX0ZQKX
-         6AvPmht7SYtKo43u375ews+YfZBHpXg0Y5KwaFAfwrxMHdFyIJDEgbSirnTk1UxLRl
-         LumURbEy3r0T5u13n0SJbIYoIW8fZLxU1Nt8oFCc=
+        b=EoVGbnpI/PSL89nW4gZflT0SBiv4ZjV5cgLbaWUEu1Faddtu2JQ9lmeY8XtsiGgEc
+         aes+uH292qB/jLYQ+ZQMZgGRMo35h0vE1szrYQv6K1cdqQcQtC59aBvp63R+kq2NXH
+         TUAD3HzJB4xd67zMpVzIAl+CeG7ext9kaJqGlmrI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Lee Jones <lee.jones@linaro.org>,
+        stable@vger.kernel.org, Alan Maguire <alan.maguire@oracle.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 156/846] mfd: atmel-flexcom: Remove #ifdef CONFIG_PM_SLEEP
-Date:   Mon, 24 Jan 2022 19:34:33 +0100
-Message-Id: <20220124184106.371832184@linuxfoundation.org>
+Subject: [PATCH 5.15 159/846] libbpf: Silence uninitialized warning/error in btf_dump_dump_type_data
+Date:   Mon, 24 Jan 2022 19:34:36 +0100
+Message-Id: <20220124184106.471942756@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,52 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Alan Maguire <alan.maguire@oracle.com>
 
-[ Upstream commit 8c0fad75dcaa650e3f3145a2c35847bc6a65cb7f ]
+[ Upstream commit 43174f0d4597325cb91f1f1f55263eb6e6101036 ]
 
-Remove compilation flag and use __maybe_unused and pm_ptr instead.
+When compiling libbpf with gcc 4.8.5, we see:
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211028135138.3481166-2-claudiu.beznea@microchip.com
+  CC       staticobjs/btf_dump.o
+btf_dump.c: In function ‘btf_dump_dump_type_data.isra.24’:
+btf_dump.c:2296:5: error: ‘err’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
+  if (err < 0)
+     ^
+cc1: all warnings being treated as errors
+make: *** [staticobjs/btf_dump.o] Error 1
+
+While gcc 4.8.5 is too old to build the upstream kernel, it's possible it
+could be used to build standalone libbpf which suffers from the same problem.
+Silence the error by initializing 'err' to 0.  The warning/error seems to be
+a false positive since err is set early in the function.  Regardless we
+shouldn't prevent libbpf from building for this.
+
+Fixes: 920d16af9b42 ("libbpf: BTF dumper support for typed data")
+Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/1638180040-8037-1-git-send-email-alan.maguire@oracle.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mfd/atmel-flexcom.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ tools/lib/bpf/btf_dump.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mfd/atmel-flexcom.c b/drivers/mfd/atmel-flexcom.c
-index d2f5c073fdf31..962f66dc8813e 100644
---- a/drivers/mfd/atmel-flexcom.c
-+++ b/drivers/mfd/atmel-flexcom.c
-@@ -87,8 +87,7 @@ static const struct of_device_id atmel_flexcom_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, atmel_flexcom_of_match);
- 
--#ifdef CONFIG_PM_SLEEP
--static int atmel_flexcom_resume(struct device *dev)
-+static int __maybe_unused atmel_flexcom_resume(struct device *dev)
+diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+index e4b483f15fb99..8c9325802793b 100644
+--- a/tools/lib/bpf/btf_dump.c
++++ b/tools/lib/bpf/btf_dump.c
+@@ -2186,7 +2186,7 @@ static int btf_dump_dump_type_data(struct btf_dump *d,
+ 				   __u8 bits_offset,
+ 				   __u8 bit_sz)
  {
- 	struct atmel_flexcom *ddata = dev_get_drvdata(dev);
- 	int err;
-@@ -105,7 +104,6 @@ static int atmel_flexcom_resume(struct device *dev)
+-	int size, err;
++	int size, err = 0;
  
- 	return 0;
- }
--#endif
- 
- static SIMPLE_DEV_PM_OPS(atmel_flexcom_pm_ops, NULL,
- 			 atmel_flexcom_resume);
-@@ -114,7 +112,7 @@ static struct platform_driver atmel_flexcom_driver = {
- 	.probe	= atmel_flexcom_probe,
- 	.driver	= {
- 		.name		= "atmel_flexcom",
--		.pm		= &atmel_flexcom_pm_ops,
-+		.pm		= pm_ptr(&atmel_flexcom_pm_ops),
- 		.of_match_table	= atmel_flexcom_of_match,
- 	},
- };
+ 	size = btf_dump_type_data_check_overflow(d, t, id, data, bits_offset);
+ 	if (size < 0)
 -- 
 2.34.1
 
