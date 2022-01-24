@@ -2,42 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9DDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB9D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837605AbiAXWow (ORCPT
+        id S1837686AbiAXWpA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:44:52 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47836 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456752AbiAXVj7 (ORCPT
+        Mon, 24 Jan 2022 17:45:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456759AbiAXVj5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:59 -0500
+        Mon, 24 Jan 2022 16:39:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F926C07E303;
+        Mon, 24 Jan 2022 12:27:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 088C7B811A9;
-        Mon, 24 Jan 2022 21:39:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38CB3C340E4;
-        Mon, 24 Jan 2022 21:39:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D49C61383;
+        Mon, 24 Jan 2022 20:27:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAB9CC340E5;
+        Mon, 24 Jan 2022 20:27:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060394;
-        bh=nCkMqPq7aczurCyrAgJsTR6iIJRd5PJT1ENTZ16rmAY=;
+        s=korg; t=1643056040;
+        bh=O2Ysi3QOPVS30w94JiKKVKbDFHliCexu7E4GF6K1WiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UPtAo4FZCDwfOa8d/9kUqQJij8+/i5QSYszF5PUb+Gx8oKT53zvsrhzn5UD4x0tP9
-         EZ+2AZWdYeep6p0NjWs7QGYyEy//fZNsJ+GXNcb/UhpqSHzzGO4Lxg5Ur8igh3pWq7
-         M/VD0PziYRtDD/B44ZfaJ9wS1juOQ94nmqt4Pfis=
+        b=jrX0rqVRKUrGy2pCj6AGFzcKGvCjjXPWaI1dK+PzCrk6+pQ/ZSRA9ohCUGzfVjdMl
+         z0h+6tnH6QXsFIma8orthHClO25b1UhiNr8Q5PI59AzRHju8aObQ54Ge7DlNnSwOkL
+         LC6l/tcA0ioEo3+y1r91uzEMJTGtKUtlB5dIZPyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 0932/1039] block: Fix fsync always failed if once failed
-Date:   Mon, 24 Jan 2022 19:45:21 +0100
-Message-Id: <20220124184156.613988305@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 350/846] mptcp: fix a DSS option writing error
+Date:   Mon, 24 Jan 2022 19:37:47 +0100
+Message-Id: <20220124184113.027769675@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,62 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Geliang Tang <geliang.tang@suse.com>
 
-commit 8a7518931baa8ea023700987f3db31cb0a80610b upstream.
+[ Upstream commit 110b6d1fe98fd7af9893992459b651594d789293 ]
 
-We do test with inject error fault base on v4.19, after test some time we found
-sync /dev/sda always failed.
-[root@localhost] sync /dev/sda
-sync: error syncing '/dev/sda': Input/output error
+'ptr += 1;' was omitted in the original code.
 
-scsi log as follows:
-[19069.812296] sd 0:0:0:0: [sda] tag#64 Send: scmd 0x00000000d03a0b6b
-[19069.812302] sd 0:0:0:0: [sda] tag#64 CDB: Synchronize Cache(10) 35 00 00 00 00 00 00 00 00 00
-[19069.812533] sd 0:0:0:0: [sda] tag#64 Done: SUCCESS Result: hostbyte=DID_OK driverbyte=DRIVER_OK
-[19069.812536] sd 0:0:0:0: [sda] tag#64 CDB: Synchronize Cache(10) 35 00 00 00 00 00 00 00 00 00
-[19069.812539] sd 0:0:0:0: [sda] tag#64 scsi host busy 1 failed 0
-[19069.812542] sd 0:0:0:0: Notifying upper driver of completion (result 0)
-[19069.812546] sd 0:0:0:0: [sda] tag#64 sd_done: completed 0 of 0 bytes
-[19069.812549] sd 0:0:0:0: [sda] tag#64 0 sectors total, 0 bytes done.
-[19069.812564] print_req_error: I/O error, dev sda, sector 0
+If the DSS is the last option -- which is what we have most of the
+time -- that's not an issue. But it is if we need to send something else
+after like a RM_ADDR or an MP_PRIO.
 
-ftrace log as follows:
- rep-306069 [007] .... 19654.923315: block_bio_queue: 8,0 FWS 0 + 0 [rep]
- rep-306069 [007] .... 19654.923333: block_getrq: 8,0 FWS 0 + 0 [rep]
- kworker/7:1H-250   [007] .... 19654.923352: block_rq_issue: 8,0 FF 0 () 0 + 0 [kworker/7:1H]
- <idle>-0     [007] ..s. 19654.923562: block_rq_complete: 8,0 FF () 18446744073709551615 + 0 [0]
- <idle>-0     [007] d.s. 19654.923576: block_rq_complete: 8,0 WS () 0 + 0 [-5]
-
-As 8d6996630c03 introduce 'fq->rq_status', this data only update when 'flush_rq'
-reference count isn't zero. If flush request once failed and record error code
-in 'fq->rq_status'. If there is no chance to update 'fq->rq_status',then do fsync
-will always failed.
-To address this issue reset 'fq->rq_status' after return error code to upper layer.
-
-Fixes: 8d6996630c03("block: fix null pointer dereference in blk_mq_rq_timed_out()")
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20211129012659.1553733-1-yebin10@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1bff1e43a30e ("mptcp: optimize out option generation")
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-flush.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/mptcp/options.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/block/blk-flush.c
-+++ b/block/blk-flush.c
-@@ -235,8 +235,10 @@ static void flush_end_io(struct request
- 	 * avoiding use-after-free.
- 	 */
- 	WRITE_ONCE(flush_rq->state, MQ_RQ_IDLE);
--	if (fq->rq_status != BLK_STS_OK)
-+	if (fq->rq_status != BLK_STS_OK) {
- 		error = fq->rq_status;
-+		fq->rq_status = BLK_STS_OK;
-+	}
- 
- 	if (!q->elevator) {
- 		flush_rq->tag = BLK_MQ_NO_TAG;
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index f69a1cadb13fc..e515ba9ccb5d8 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -1321,6 +1321,7 @@ void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
+ 				put_unaligned_be32(mpext->data_len << 16 |
+ 						   TCPOPT_NOP << 8 | TCPOPT_NOP, ptr);
+ 			}
++			ptr += 1;
+ 		}
+ 	} else if ((OPTION_MPTCP_MPC_SYN | OPTION_MPTCP_MPC_SYNACK |
+ 		    OPTION_MPTCP_MPC_ACK) & opts->suboptions) {
+-- 
+2.34.1
+
 
 
