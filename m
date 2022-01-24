@@ -2,116 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28FB6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315896AbiAYCyw (ORCPT
+        id S1315961AbiAYCy5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:54:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
+        Mon, 24 Jan 2022 21:54:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3409749AbiAYA1S (ORCPT
+        with ESMTP id S3409762AbiAYA1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:27:18 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D0FC046E0D;
-        Mon, 24 Jan 2022 14:10:07 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id n6-20020a9d6f06000000b005a0750019a7so2596237otq.5;
-        Mon, 24 Jan 2022 14:10:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dfQ1Cr8MOGNWzImPgM3FPvJ3DRDIShXaWCzTw2fuiGo=;
-        b=Z+F0etylmIPRLfXkQxHrbCduqN93SYw7wl/ke/YpNeM4rPaukRCnKxTe71ymWVnYxP
-         7Vp4nnlA+M4Rm1eAhkuZw7yqe9BkTYhucCx+9Fsb6LaMeeQg6V2LonO6YxMnEKLTLNWf
-         ThtFvcc/fRFn4UZPlVRhL+vS5U3wQmnxEtFLUPWE3obBRz8H/TwYkyRptXqFHff3vgKB
-         jcy7q9coHrKyr3wha1pNcOuLmgUKjtbpCVRunpmpzDKtiFy4PTDQ6ZyeH6WC1swXj9wH
-         1gUQHxkh7d72RWBkcPCYm2r14IlbhITnuWDjv0rAlIdb7LUIu60GlZpkmIhgWB5EqtZk
-         o1eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dfQ1Cr8MOGNWzImPgM3FPvJ3DRDIShXaWCzTw2fuiGo=;
-        b=jIjGTjM2GDixBCvyqqZwMd4H8icOPehTYjUxp/co5i3uthLq3AYzK0AdICpvl6M7ij
-         0Mnm/flsHy7Dm88UbWW8A0XjrIKZ+lwSj4oouDGzTV0GecSYpfkDhHELYoi2FD5ObpEr
-         6yfsKzxoJ7drfxQw7FO6keR3x6i2SGFw6q+p3wXxte9XdUR0qxI/b3xWJlJ7M1IAYRCk
-         2XR66nVm8eb0vd6BzrnM6nHqlUX7hdwtz01dky/3MxroK9caHnMdXZTHm5P8UK0Iy8X2
-         3u73KKOdUegjLQnxdc7F6v7XtafHC/P07SyV3EIbRHi+G2aitSKJLPDYlSbEC/wfTMqv
-         W4fw==
-X-Gm-Message-State: AOAM530RfR2LQrZbhbBi/6Oryk/dMwA241tUfYKs2y2/Kw/Of2WHvf43
-        Ii/2bknvfs/Ned2YJJx0EYKsfm9GiT5P21RtgB4=
-X-Google-Smtp-Source: ABdhPJwvLyrL8/z3f3oeYcfh5RaeZB2rvDsalLA+HVQ+FDuwfMu1r9GNC9grwWebJSLxVHBZqstuKTAHNHQYm1JYjGE=
-X-Received: by 2002:a05:6830:1d90:: with SMTP id y16mr13147279oti.200.1643062206810;
- Mon, 24 Jan 2022 14:10:06 -0800 (PST)
+        Mon, 24 Jan 2022 19:27:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F736C0680B0;
+        Mon, 24 Jan 2022 12:08:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E4E76136F;
+        Mon, 24 Jan 2022 20:08:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA691C36AE3;
+        Mon, 24 Jan 2022 20:07:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643054880;
+        bh=sJTHRCOFGEKhCCSbR10rJRMVIOEL5CyPtm+xZ+Ap18c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PehiphV64z/Tea7jZN2NiOpJoDMLUiuf4ViTcdK4UEIT1JDvTTjt6JgQC5btZfyHl
+         qGL7O9jPw6wqV6BlD2DnaC3Dbi0KwlZZJXICgawKv55l7/WL1e6QuL8qK4JTp8eq1O
+         QooGDOkQ0movuZB0Goa4wPR86O3Vjz2S1D5Y0N3k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.10 501/563] Revert "net/mlx5: Add retry mechanism to the command entry index allocation"
+Date:   Mon, 24 Jan 2022 19:44:26 +0100
+Message-Id: <20220124184041.786100923@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220119224628.123084-1-colin.i.king@gmail.com> <CAKwvOdnMibw77AvvWw7seB2PPamS_OLMUarSjdsa4w4OP1isKg@mail.gmail.com>
-In-Reply-To: <CAKwvOdnMibw77AvvWw7seB2PPamS_OLMUarSjdsa4w4OP1isKg@mail.gmail.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Mon, 24 Jan 2022 17:09:55 -0500
-Message-ID: <CADnq5_P4F9MqfP2BHSzj7rgXBDxRPtiphh5sqF0+dW7NSTLFVA@mail.gmail.com>
-Subject: Re: [PATCH] drm/radeon: remove redundant assignment to reg
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Colin Ian King <colin.i.king@gmail.com>, llvm@lists.linux.dev,
-        David Airlie <airlied@linux.ie>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        kernel-janitors@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+From: Moshe Shemesh <moshe@nvidia.com>
 
-Alex
+commit 4f6626b0e140867fd6d5a2e9d4ceaef97f10f46a upstream.
 
-On Mon, Jan 24, 2022 at 3:21 PM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> On Wed, Jan 19, 2022 at 2:46 PM Colin Ian King <colin.i.king@gmail.com> wrote:
-> >
-> > The pointer reg is being assigned a value that is not read, the
-> > exit path via label 'out' never accesses it. The assignment is
-> > redundant and can be removed.
-> >
-> > Cleans up clang scan build warning:
-> > drivers/gpu/drm/radeon/radeon_object.c:570:3: warning: Value
-> > stored to 'reg' is never read [deadcode.DeadStores]
-> >
-> > Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
->
-> Thanks for the patch!
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
->
-> > ---
-> >  drivers/gpu/drm/radeon/radeon_object.c | 1 -
-> >  1 file changed, 1 deletion(-)
-> >
-> > diff --git a/drivers/gpu/drm/radeon/radeon_object.c b/drivers/gpu/drm/radeon/radeon_object.c
-> > index 56ede9d63b12..87536d205593 100644
-> > --- a/drivers/gpu/drm/radeon/radeon_object.c
-> > +++ b/drivers/gpu/drm/radeon/radeon_object.c
-> > @@ -567,7 +567,6 @@ int radeon_bo_get_surface_reg(struct radeon_bo *bo)
-> >                 return 0;
-> >
-> >         if (bo->surface_reg >= 0) {
-> > -               reg = &rdev->surface_regs[bo->surface_reg];
-> >                 i = bo->surface_reg;
-> >                 goto out;
-> >         }
-> > --
-> > 2.33.1
-> >
-> >
->
->
-> --
-> Thanks,
-> ~Nick Desaulniers
+This reverts commit 410bd754cd73c4a2ac3856d9a03d7b08f9c906bf.
+
+The reverted commit had added a retry mechanism to the command entry
+index allocation. The previous patch ensures that there is a free
+command entry index once the command work handler holds the command
+semaphore. Thus the retry mechanism is not needed.
+
+Fixes: 410bd754cd73 ("net/mlx5: Add retry mechanism to the command entry index allocation")
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c |   21 +--------------------
+ 1 file changed, 1 insertion(+), 20 deletions(-)
+
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+@@ -887,25 +887,6 @@ static bool opcode_allowed(struct mlx5_c
+ 	return cmd->allowed_opcode == opcode;
+ }
+ 
+-static int cmd_alloc_index_retry(struct mlx5_cmd *cmd)
+-{
+-	unsigned long alloc_end = jiffies + msecs_to_jiffies(1000);
+-	int idx;
+-
+-retry:
+-	idx = cmd_alloc_index(cmd);
+-	if (idx < 0 && time_before(jiffies, alloc_end)) {
+-		/* Index allocation can fail on heavy load of commands. This is a temporary
+-		 * situation as the current command already holds the semaphore, meaning that
+-		 * another command completion is being handled and it is expected to release
+-		 * the entry index soon.
+-		 */
+-		cpu_relax();
+-		goto retry;
+-	}
+-	return idx;
+-}
+-
+ bool mlx5_cmd_is_down(struct mlx5_core_dev *dev)
+ {
+ 	return pci_channel_offline(dev->pdev) ||
+@@ -930,7 +911,7 @@ static void cmd_work_handler(struct work
+ 	sem = ent->page_queue ? &cmd->pages_sem : &cmd->sem;
+ 	down(sem);
+ 	if (!ent->page_queue) {
+-		alloc_ret = cmd_alloc_index_retry(cmd);
++		alloc_ret = cmd_alloc_index(cmd);
+ 		if (alloc_ret < 0) {
+ 			mlx5_core_err_rl(dev, "failed to allocate command entry\n");
+ 			if (ent->callback) {
+
+
