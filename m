@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA7F9C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5661C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3408279AbiAYAWM (ORCPT
+        id S3408247AbiAYAWH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:22:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54800 "EHLO
+        Mon, 24 Jan 2022 19:22:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385240AbiAXXeJ (ORCPT
+        with ESMTP id S1381874AbiAXXeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:34:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D41A5C075976;
-        Mon, 24 Jan 2022 13:35:54 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC343C07596F;
+        Mon, 24 Jan 2022 13:35:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91195B80FA1;
-        Mon, 24 Jan 2022 21:35:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1C92C340E4;
-        Mon, 24 Jan 2022 21:35:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C0A1612D6;
+        Mon, 24 Jan 2022 21:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 313BFC340E4;
+        Mon, 24 Jan 2022 21:35:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060152;
-        bh=MzcL8GWYYD6H5MMCitI0DGJpbooKvMyxYFu1QudjLBk=;
+        s=korg; t=1643060136;
+        bh=lwmo3Kp9Lf9a9yqto9dD7w/To7cLK85iygXK9u4mjjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V7OuUnigMwIjtJkFAF9AAOk7K7CebLDpFA+QcGCFZtUkArrSLZpw38KeUHb1tKMCO
-         /ZKLu+t7wvGgNFH2N6D0owgXfxbnfvKCuqXtIxjmzUEJY4z+aG35eKohELPiq1KgDN
-         bh5sEeRbhJrtnS0itRy1KrmouKbMduKv0tDGLrVY=
+        b=iGncU4nnstaW734ZP1+sROy4zT2ybnsOkCfADf6BbMCjS6q+lBRk3Gj+VmgIU7CjR
+         9CJQ+4Wrx6zn8sNseO+bZ63mLxRfuv5M3ohB5qYCvNBR4/BmBIRIa818gqVsC67fon
+         RZ7aUKL8Psu4V93n4pRFPnI28EktljofFTzcd9/U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>
-Subject: [PATCH 5.16 0856/1039] iwlwifi: mvm: Increase the scan timeout guard to 30 seconds
-Date:   Mon, 24 Jan 2022 19:44:05 +0100
-Message-Id: <20220124184154.056088405@linuxfoundation.org>
+        stable@vger.kernel.org, Andrey Ryabinin <arbn@yandex-team.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Daniel Jordan <daniel.m.jordan@oracle.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.16 0851/1039] sched/cpuacct: Fix user/system in shown cpuacct.usage*
+Date:   Mon, 24 Jan 2022 19:44:00 +0100
+Message-Id: <20220124184153.885119284@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,40 +51,212 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Andrey Ryabinin <arbn@yandex-team.com>
 
-commit ced50f1133af12f7521bb777fcf4046ca908fb77 upstream.
+commit dd02d4234c9a2214a81c57a16484304a1a51872a upstream.
 
-With the introduction of 6GHz channels the scan guard timeout should
-be adjusted to account for the following extreme case:
+cpuacct has 2 different ways of accounting and showing user
+and system times.
 
-- All 6GHz channels are scanned passively: 58 channels.
-- The scan is fragmented with the following parameters: 3 fragments,
-  95 TUs suspend time, 44 TUs maximal out of channel time.
+The first one uses cpuacct_account_field() to account times
+and cpuacct.stat file to expose them. And this one seems to work ok.
 
-The above would result with scan time of more than 24 seconds. Thus,
-set the timeout to 30 seconds.
+The second one is uses cpuacct_charge() function for accounting and
+set of cpuacct.usage* files to show times. Despite some attempts to
+fix it in the past it still doesn't work. Sometimes while running KVM
+guest the cpuacct_charge() accounts most of the guest time as
+system time. This doesn't match with user&system times shown in
+cpuacct.stat or proc/<pid>/stat.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211210090244.3c851b93aef5.I346fa2e1d79220a6770496e773c6f87a2ad9e6c4@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Demonstration:
+ # git clone https://github.com/aryabinin/kvmsample
+ # make
+ # mkdir /sys/fs/cgroup/cpuacct/test
+ # echo $$ > /sys/fs/cgroup/cpuacct/test/tasks
+ # ./kvmsample &
+ # for i in {1..5}; do cat /sys/fs/cgroup/cpuacct/test/cpuacct.usage_sys; sleep 1; done
+ 1976535645
+ 2979839428
+ 3979832704
+ 4983603153
+ 5983604157
+
+Use cpustats accounted in cpuacct_account_field() as the source
+of user/sys times for cpuacct.usage* files. Make cpuacct_charge()
+to account only summary execution time.
+
+Fixes: d740037fac70 ("sched/cpuacct: Split usage accounting into user_usage and sys_usage")
+Signed-off-by: Andrey Ryabinin <arbn@yandex-team.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Daniel Jordan <daniel.m.jordan@oracle.com>
+Acked-by: Tejun Heo <tj@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20211115164607.23784-3-arbn@yandex-team.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sched/cpuacct.c |   79 +++++++++++++++++++------------------------------
+ 1 file changed, 32 insertions(+), 47 deletions(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -2495,7 +2495,7 @@ static int iwl_mvm_check_running_scans(s
- 	return -EIO;
+--- a/kernel/sched/cpuacct.c
++++ b/kernel/sched/cpuacct.c
+@@ -21,15 +21,11 @@ static const char * const cpuacct_stat_d
+ 	[CPUACCT_STAT_SYSTEM] = "system",
+ };
+ 
+-struct cpuacct_usage {
+-	u64	usages[CPUACCT_STAT_NSTATS];
+-};
+-
+ /* track CPU usage of a group of tasks and its child groups */
+ struct cpuacct {
+ 	struct cgroup_subsys_state	css;
+ 	/* cpuusage holds pointer to a u64-type object on every CPU */
+-	struct cpuacct_usage __percpu	*cpuusage;
++	u64 __percpu	*cpuusage;
+ 	struct kernel_cpustat __percpu	*cpustat;
+ };
+ 
+@@ -49,7 +45,7 @@ static inline struct cpuacct *parent_ca(
+ 	return css_ca(ca->css.parent);
  }
  
--#define SCAN_TIMEOUT 20000
-+#define SCAN_TIMEOUT 30000
+-static DEFINE_PER_CPU(struct cpuacct_usage, root_cpuacct_cpuusage);
++static DEFINE_PER_CPU(u64, root_cpuacct_cpuusage);
+ static struct cpuacct root_cpuacct = {
+ 	.cpustat	= &kernel_cpustat,
+ 	.cpuusage	= &root_cpuacct_cpuusage,
+@@ -68,7 +64,7 @@ cpuacct_css_alloc(struct cgroup_subsys_s
+ 	if (!ca)
+ 		goto out;
  
- void iwl_mvm_scan_timeout_wk(struct work_struct *work)
+-	ca->cpuusage = alloc_percpu(struct cpuacct_usage);
++	ca->cpuusage = alloc_percpu(u64);
+ 	if (!ca->cpuusage)
+ 		goto out_free_ca;
+ 
+@@ -99,7 +95,8 @@ static void cpuacct_css_free(struct cgro
+ static u64 cpuacct_cpuusage_read(struct cpuacct *ca, int cpu,
+ 				 enum cpuacct_stat_index index)
  {
+-	struct cpuacct_usage *cpuusage = per_cpu_ptr(ca->cpuusage, cpu);
++	u64 *cpuusage = per_cpu_ptr(ca->cpuusage, cpu);
++	u64 *cpustat = per_cpu_ptr(ca->cpustat, cpu)->cpustat;
+ 	u64 data;
+ 
+ 	/*
+@@ -115,14 +112,17 @@ static u64 cpuacct_cpuusage_read(struct
+ 	raw_spin_rq_lock_irq(cpu_rq(cpu));
+ #endif
+ 
+-	if (index == CPUACCT_STAT_NSTATS) {
+-		int i = 0;
+-
+-		data = 0;
+-		for (i = 0; i < CPUACCT_STAT_NSTATS; i++)
+-			data += cpuusage->usages[i];
+-	} else {
+-		data = cpuusage->usages[index];
++	switch (index) {
++	case CPUACCT_STAT_USER:
++		data = cpustat[CPUTIME_USER] + cpustat[CPUTIME_NICE];
++		break;
++	case CPUACCT_STAT_SYSTEM:
++		data = cpustat[CPUTIME_SYSTEM] + cpustat[CPUTIME_IRQ] +
++			cpustat[CPUTIME_SOFTIRQ];
++		break;
++	case CPUACCT_STAT_NSTATS:
++		data = *cpuusage;
++		break;
+ 	}
+ 
+ #ifndef CONFIG_64BIT
+@@ -132,10 +132,14 @@ static u64 cpuacct_cpuusage_read(struct
+ 	return data;
+ }
+ 
+-static void cpuacct_cpuusage_write(struct cpuacct *ca, int cpu, u64 val)
++static void cpuacct_cpuusage_write(struct cpuacct *ca, int cpu)
+ {
+-	struct cpuacct_usage *cpuusage = per_cpu_ptr(ca->cpuusage, cpu);
+-	int i;
++	u64 *cpuusage = per_cpu_ptr(ca->cpuusage, cpu);
++	u64 *cpustat = per_cpu_ptr(ca->cpustat, cpu)->cpustat;
++
++	/* Don't allow to reset global kernel_cpustat */
++	if (ca == &root_cpuacct)
++		return;
+ 
+ #ifndef CONFIG_64BIT
+ 	/*
+@@ -143,9 +147,10 @@ static void cpuacct_cpuusage_write(struc
+ 	 */
+ 	raw_spin_rq_lock_irq(cpu_rq(cpu));
+ #endif
+-
+-	for (i = 0; i < CPUACCT_STAT_NSTATS; i++)
+-		cpuusage->usages[i] = val;
++	*cpuusage = 0;
++	cpustat[CPUTIME_USER] = cpustat[CPUTIME_NICE] = 0;
++	cpustat[CPUTIME_SYSTEM] = cpustat[CPUTIME_IRQ] = 0;
++	cpustat[CPUTIME_SOFTIRQ] = 0;
+ 
+ #ifndef CONFIG_64BIT
+ 	raw_spin_rq_unlock_irq(cpu_rq(cpu));
+@@ -196,7 +201,7 @@ static int cpuusage_write(struct cgroup_
+ 		return -EINVAL;
+ 
+ 	for_each_possible_cpu(cpu)
+-		cpuacct_cpuusage_write(ca, cpu, 0);
++		cpuacct_cpuusage_write(ca, cpu);
+ 
+ 	return 0;
+ }
+@@ -243,25 +248,10 @@ static int cpuacct_all_seq_show(struct s
+ 	seq_puts(m, "\n");
+ 
+ 	for_each_possible_cpu(cpu) {
+-		struct cpuacct_usage *cpuusage = per_cpu_ptr(ca->cpuusage, cpu);
+-
+ 		seq_printf(m, "%d", cpu);
+-
+-		for (index = 0; index < CPUACCT_STAT_NSTATS; index++) {
+-#ifndef CONFIG_64BIT
+-			/*
+-			 * Take rq->lock to make 64-bit read safe on 32-bit
+-			 * platforms.
+-			 */
+-			raw_spin_rq_lock_irq(cpu_rq(cpu));
+-#endif
+-
+-			seq_printf(m, " %llu", cpuusage->usages[index]);
+-
+-#ifndef CONFIG_64BIT
+-			raw_spin_rq_unlock_irq(cpu_rq(cpu));
+-#endif
+-		}
++		for (index = 0; index < CPUACCT_STAT_NSTATS; index++)
++			seq_printf(m, " %llu",
++				   cpuacct_cpuusage_read(ca, cpu, index));
+ 		seq_puts(m, "\n");
+ 	}
+ 	return 0;
+@@ -339,16 +329,11 @@ static struct cftype files[] = {
+ void cpuacct_charge(struct task_struct *tsk, u64 cputime)
+ {
+ 	struct cpuacct *ca;
+-	int index = CPUACCT_STAT_SYSTEM;
+-	struct pt_regs *regs = get_irq_regs() ? : task_pt_regs(tsk);
+-
+-	if (regs && user_mode(regs))
+-		index = CPUACCT_STAT_USER;
+ 
+ 	rcu_read_lock();
+ 
+ 	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
+-		__this_cpu_add(ca->cpuusage->usages[index], cputime);
++		__this_cpu_add(*ca->cpuusage, cputime);
+ 
+ 	rcu_read_unlock();
+ }
 
 
