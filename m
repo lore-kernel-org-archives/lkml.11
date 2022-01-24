@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B650DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345492AbiAXTMt (ORCPT
+        id S1346854AbiAXTMx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:12:49 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33906 "EHLO
+        Mon, 24 Jan 2022 14:12:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34852 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345514AbiAXTDo (ORCPT
+        with ESMTP id S1345669AbiAXTEa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:03:44 -0500
+        Mon, 24 Jan 2022 14:04:30 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 494AE60BB7;
-        Mon, 24 Jan 2022 19:03:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0608EC340E5;
-        Mon, 24 Jan 2022 19:03:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA50660BFB;
+        Mon, 24 Jan 2022 19:04:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5BC1C340E8;
+        Mon, 24 Jan 2022 19:04:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051022;
-        bh=APWsZhwa5pVHhTAULT9fAjfDNrVdk3v3541Ngoypbog=;
+        s=korg; t=1643051069;
+        bh=Xd1d9E2W2oLl5/hSvALHK3QW8GbMXU+W17RMmgqOxnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iIjd7gCgcro2wAkd6anhXkk/pOrMB9v3b31HOAKViH+yi7NedquXQx+2L7I57XFLh
-         9C0NAI6IRpcySfDojlvsPBqSy2IEVbc6qUJEf7h4J22eqtFb9Gh/WtbrOwNbVd7T7B
-         Xbtv3Fp5uL+y8I8aqakfAP6EXyIIGyhLHLwGwJjs=
+        b=PUCe8dkfWF6SFTbN6Zc8LuHmQKwnOXpuNb39/3ToOckGHnRr1aQGF28EX/K8TROjL
+         bxjsabq+JR3r4l4C3Flfv0RnRv2JHH/kMwLScXveiwXi0oIlcDOZfUpSwx076HKDQb
+         JGhDUnZOJAFJ/3Y1OuBhTgLPTnsdg/Xe84Pru9HU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.14 029/186] media: stk1160: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:41:44 +0100
-Message-Id: <20220124183938.057625168@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 045/186] arm64: dts: qcom: msm8916: fix MMC controller aliases
+Date:   Mon, 24 Jan 2022 19:42:00 +0100
+Message-Id: <20220124183938.581354232@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,42 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-commit 6aa6e70cdb5b863a57bad61310bf89b6617a5d2d upstream.
+[ Upstream commit b0293c19d42f6d6951c2fab9a47fed50baf2c14d ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+Change sdhcN aliases to mmcN to make them actually work. Currently the
+board uses non-standard aliases sdhcN, which do not work, resulting in
+mmc0 and mmc1 hosts randomly changing indices between boots.
 
-Fixes: 9cb2173e6ea8 ("[media] media: Add stk1160 new driver (easycap replacement)")
-Cc: stable@vger.kernel.org      # 3.7
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c4da5a561627 ("arm64: dts: qcom: Add msm8916 sdhci configuration nodes")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211201020559.1611890-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/stk1160/stk1160-core.c |    4 ++--
+ arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/media/usb/stk1160/stk1160-core.c
-+++ b/drivers/media/usb/stk1160/stk1160-core.c
-@@ -75,7 +75,7 @@ int stk1160_read_reg(struct stk1160 *dev
- 		return -ENOMEM;
- 	ret = usb_control_msg(dev->udev, pipe, 0x00,
- 			USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
--			0x00, reg, buf, sizeof(u8), HZ);
-+			0x00, reg, buf, sizeof(u8), 1000);
- 	if (ret < 0) {
- 		stk1160_err("read failed on reg 0x%x (%d)\n",
- 			reg, ret);
-@@ -95,7 +95,7 @@ int stk1160_write_reg(struct stk1160 *de
+diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+index 94697bab3805f..a961b81060004 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+@@ -26,8 +26,8 @@
+ 	#size-cells = <2>;
  
- 	ret =  usb_control_msg(dev->udev, pipe, 0x01,
- 			USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
--			value, reg, NULL, 0, HZ);
-+			value, reg, NULL, 0, 1000);
- 	if (ret < 0) {
- 		stk1160_err("write failed on reg 0x%x (%d)\n",
- 			reg, ret);
+ 	aliases {
+-		sdhc1 = &sdhc_1; /* SDC1 eMMC slot */
+-		sdhc2 = &sdhc_2; /* SDC2 SD card slot */
++		mmc0 = &sdhc_1; /* SDC1 eMMC slot */
++		mmc1 = &sdhc_2; /* SDC2 SD card slot */
+ 	};
+ 
+ 	chosen { };
+-- 
+2.34.1
+
 
 
