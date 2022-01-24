@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2C2C3526F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BACC2C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576830AbiAXV4d (ORCPT
+        id S1576815AbiAXV4b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:56:33 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38478 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449926AbiAXVRc (ORCPT
+        Mon, 24 Jan 2022 16:56:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450885AbiAXVVm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:17:32 -0500
+        Mon, 24 Jan 2022 16:21:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871D8C0617AB;
+        Mon, 24 Jan 2022 12:16:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D18676148B;
-        Mon, 24 Jan 2022 21:17:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AED41C340E4;
-        Mon, 24 Jan 2022 21:17:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25865611CD;
+        Mon, 24 Jan 2022 20:16:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0822EC340E5;
+        Mon, 24 Jan 2022 20:16:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059051;
-        bh=OVzwfhHa7Q06DLO2v8bPDfakvQ8TrsmIfo76CKfzYyg=;
+        s=korg; t=1643055389;
+        bh=lvp0Le3VVEXhImapXju5LURgBY2c/1oUn9iXm9ZTrnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aIRL7IYY7/mrZpAy2dRHZQKDKlYRKTN/Ayn4OycD+OJ7/aEF2jP7CiA35umidDtI5
-         7wqqzItyiO74VATmizBgZtk4v+Mi7nwnhRWUtOvTgGH0S1SqLh4UsqyBnvB7Rej0Cp
-         kt5XqLfRq+Noce/GFQ0Kq+kD/dcPUfugrecWIS7I=
+        b=wX9tjvi4ij94AxpEV8naTsfQ1Q1q8+W4yiTGA+gCVA9rOBBwuXbL1/UPZmPYPqzIs
+         hZh7zPgLDIrdQj0AJ/U6sOlyIjIlW/yaTL5fz6+kIEyyra9O3DXPSUo7NtGyNSgD5/
+         FlIFYGj+KMh2BeYhCXL1mvXA1RM9l5teMmTFkBlc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0489/1039] clk: stm32: Fix ltdcs clock turn off by clk_disable_unused() after system enter shell
-Date:   Mon, 24 Jan 2022 19:37:58 +0100
-Message-Id: <20220124184141.704984135@linuxfoundation.org>
+Subject: [PATCH 5.15 135/846] arm64: dts: renesas: cat875: Add rx/tx delays
+Date:   Mon, 24 Jan 2022 19:34:12 +0100
+Message-Id: <20220124184105.654897363@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,72 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dillon Min <dillon.minfei@gmail.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit 6fc058a72f3b7b07fc4de6d66ad1f68951b00f6e ]
+[ Upstream commit e1a9faddffe7e555304dc2e3284c84fbee0679ee ]
 
-stm32's clk driver register two ltdc gate clk to clk core by
-clk_hw_register_gate() and clk_hw_register_composite()
+The CAT875 sub board from Silicon Linux uses a Realtek PHY.
 
-first: 'stm32f429_gates[]', clk name is 'ltdc', which no user to use.
-second: 'stm32f429_aux_clk[]', clk name is 'lcd-tft', used by ltdc driver
+The phy driver commit bbc4d71d63549bcd003 ("net: phy: realtek: fix
+rtl8211e rx/tx delay config") introduced NFS mount failures.  Now it
+needs both rx/tx delays for the NFS mount to work.
 
-both of them point to the same offset of stm32's RCC register. after
-kernel enter console, clk core turn off ltdc's clk as 'stm32f429_gates[]'
-is no one to use. but, actually 'stm32f429_aux_clk[]' is in use.
+This patch fixes the NFS mount failure issue by adding "rgmii-id" mode
+to the avb device node.
 
-stm32f469/746/769 have the same issue, fix it.
-
-Fixes: daf2d117cbca ("clk: stm32f4: Add lcd-tft clock")
-Link: https://lore.kernel.org/linux-arm-kernel/1590564453-24499-7-git-send-email-dillon.minfei@gmail.com/
-Link: https://lore.kernel.org/lkml/CAPTRvHkf0cK_4ZidM17rPo99gWDmxgqFt4CDUjqFFwkOeQeFDg@mail.gmail.com/
-Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
-Acked-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Link: https://lore.kernel.org/r/1635232282-3992-10-git-send-email-dillon.minfei@gmail.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Fixes: bbc4d71d63549bcd ("net: phy: realtek: fix rtl8211e rx/tx delay config")
+Link: https://lore.kernel.org/r/20211115142830.12651-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk-stm32f4.c | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/arm64/boot/dts/renesas/cat875.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clk/clk-stm32f4.c b/drivers/clk/clk-stm32f4.c
-index af46176ad0539..473dfe632cc57 100644
---- a/drivers/clk/clk-stm32f4.c
-+++ b/drivers/clk/clk-stm32f4.c
-@@ -129,7 +129,6 @@ static const struct stm32f4_gate_data stm32f429_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 20,	"spi5",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- };
+diff --git a/arch/arm64/boot/dts/renesas/cat875.dtsi b/arch/arm64/boot/dts/renesas/cat875.dtsi
+index 801ea54b027c4..20f8adc635e72 100644
+--- a/arch/arm64/boot/dts/renesas/cat875.dtsi
++++ b/arch/arm64/boot/dts/renesas/cat875.dtsi
+@@ -18,6 +18,7 @@
+ 	pinctrl-names = "default";
+ 	renesas,no-ether-link;
+ 	phy-handle = <&phy0>;
++	phy-mode = "rgmii-id";
+ 	status = "okay";
  
- static const struct stm32f4_gate_data stm32f469_gates[] __initconst = {
-@@ -211,7 +210,6 @@ static const struct stm32f4_gate_data stm32f469_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 20,	"spi5",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- };
- 
- static const struct stm32f4_gate_data stm32f746_gates[] __initconst = {
-@@ -286,7 +284,6 @@ static const struct stm32f4_gate_data stm32f746_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 23,	"sai2",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- };
- 
- static const struct stm32f4_gate_data stm32f769_gates[] __initconst = {
-@@ -364,7 +361,6 @@ static const struct stm32f4_gate_data stm32f769_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 23,	"sai2",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 30,	"mdio",		"apb2_div" },
- };
- 
+ 	phy0: ethernet-phy@0 {
 -- 
 2.34.1
 
