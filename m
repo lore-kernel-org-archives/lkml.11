@@ -2,39 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23812C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4FFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343861AbiAXSxk (ORCPT
+        id S1344131AbiAXSxm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:53:40 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51220 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343823AbiAXSwJ (ORCPT
+        Mon, 24 Jan 2022 13:53:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245480AbiAXSwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:52:09 -0500
+        Mon, 24 Jan 2022 13:52:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD4BC061774;
+        Mon, 24 Jan 2022 10:52:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF5E0B81235;
-        Mon, 24 Jan 2022 18:52:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD2F7C340E8;
-        Mon, 24 Jan 2022 18:52:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 757A4B81235;
+        Mon, 24 Jan 2022 18:52:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 984A7C340E5;
+        Mon, 24 Jan 2022 18:51:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050326;
-        bh=mOa3viRnCiyugN9lsjwtjitWUVuvU+gNzpDpjLjWNzE=;
+        s=korg; t=1643050320;
+        bh=m3dT+BwIryTLHf0an/Okp1ItP323n1YSAxKneotYt5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=at53GGcWgI0wNYCSpoRMg5z+51aTIAv1moiu4nAxIA4UD00rFu7bIVv5xnybDkfGA
-         zHJcouBhWUIuGC3x1UVHwMw/bqOAeReTLJ++kQ3Rh8he3MYsnpvV+qmAJc6mHrVD5Q
-         33Y/rQK9yK1NIS8fk70f7Wx63865+Z38Pvz8cjLk=
+        b=yt6IKtSjvrHGd9jDqe+YBcI7lBw7iModgcbS/gEZS++pN7ABEYTtBEXEbrUh4Z4F8
+         +b8VKlGw6Rrxi7AMIgXIuKy7dlp8Yysey4eAiHH2cS1jvO6tMdqpMlFpFYYcR7ygjV
+         2efcSFq5NLTDGhyUPZeqyW9CqYz4ZyeP5cy7PbO8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
-        Lukas Wunner <lukas@wunner.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 081/114] serial: pl010: Drop CR register reset on set_termios
-Date:   Mon, 24 Jan 2022 19:42:56 +0100
-Message-Id: <20220124183929.610093670@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Thornber <ejt@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 079/114] dm btree: add a defensive bounds check to insert_at()
+Date:   Mon, 24 Jan 2022 19:42:54 +0100
+Message-Id: <20220124183929.535984756@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -46,56 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Joe Thornber <ejt@redhat.com>
 
-[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
+[ Upstream commit 85bca3c05b6cca31625437eedf2060e846c4bbad ]
 
-pl010_set_termios() briefly resets the CR register to zero.
+Corrupt metadata could trigger an out of bounds write.
 
-Where does this register write come from?
-
-The PL010 driver's IRQ handler ambauart_int() originally modified the CR
-register without holding the port spinlock.  ambauart_set_termios() also
-modified that register.  To prevent concurrent read-modify-writes by the
-IRQ handler and to prevent transmission while changing baudrate,
-ambauart_set_termios() had to disable interrupts.  That is achieved by
-writing zero to the CR register.
-
-However in 2004 the PL010 driver was amended to acquire the port
-spinlock in the IRQ handler, obviating the need to disable interrupts in
-->set_termios():
-https://git.kernel.org/history/history/c/157c0342e591
-
-That rendered the CR register write obsolete.  Drop it.
-
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Joe Thornber <ejt@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/amba-pl010.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/md/persistent-data/dm-btree.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 5d41d5b92619a..7f4ba92739663 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -465,14 +465,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & CREAD) == 0)
- 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
+diff --git a/drivers/md/persistent-data/dm-btree.c b/drivers/md/persistent-data/dm-btree.c
+index fa9039a53ae5c..23b1d22f693c1 100644
+--- a/drivers/md/persistent-data/dm-btree.c
++++ b/drivers/md/persistent-data/dm-btree.c
+@@ -83,14 +83,16 @@ void inc_children(struct dm_transaction_manager *tm, struct btree_node *n,
+ }
  
--	/* first, disable everything */
- 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
+ static int insert_at(size_t value_size, struct btree_node *node, unsigned index,
+-		      uint64_t key, void *value)
+-		      __dm_written_to_disk(value)
++		     uint64_t key, void *value)
++	__dm_written_to_disk(value)
+ {
+ 	uint32_t nr_entries = le32_to_cpu(node->header.nr_entries);
++	uint32_t max_entries = le32_to_cpu(node->header.max_entries);
+ 	__le64 key_le = cpu_to_le64(key);
  
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		old_cr |= UART010_CR_MSIE;
- 
--	writel(0, uap->port.membase + UART010_CR);
--
- 	/* Set baud rate */
- 	quot -= 1;
- 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
+ 	if (index > nr_entries ||
+-	    index >= le32_to_cpu(node->header.max_entries)) {
++	    index >= max_entries ||
++	    nr_entries >= max_entries) {
+ 		DMERR("too many entries in btree node for insert");
+ 		__dm_unbless_for_disk(value);
+ 		return -ENOMEM;
 -- 
 2.34.1
 
