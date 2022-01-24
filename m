@@ -2,45 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C15F6C3527A
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0749BC3527C
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3409797AbiAYA11 (ORCPT
+        id S3409856AbiAYA1i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:27:27 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53888 "EHLO
+        Mon, 24 Jan 2022 19:27:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48184 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573266AbiAXVor (ORCPT
+        with ESMTP id S1389762AbiAXVgg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:44:47 -0500
+        Mon, 24 Jan 2022 16:36:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EA90B811FB;
-        Mon, 24 Jan 2022 21:44:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0017C340E4;
-        Mon, 24 Jan 2022 21:44:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9AF0B8121C;
+        Mon, 24 Jan 2022 21:36:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC4D0C340E4;
+        Mon, 24 Jan 2022 21:36:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060684;
-        bh=CBSmpTy8BQRuv+gcU8xAePtBCAbRQFnKYA0/kmR6vTo=;
+        s=korg; t=1643060193;
+        bh=llqmotql0dU1BNpAsfO0Bt9goMpDGsF/FGV07efugkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IOa/ro2p9kjvdz7ZuBU4yItXnf2WIhEUymHBUHS57v/aZvaTrewL37zmMex0DhIyU
-         NK38b4KtvxWfEFHwFFFj9EV5aMOIJN8YNsDDy6WHyHvMDA8Ewe9EtghzWqWu5HHpJv
-         h9GdhZocXEQVW6U6rokdA0zjvCcQHw/DOtM2p6jE=
+        b=i9qnq/lDhbb59LbB5CmK6zDdxBbqt7rFN3ifeTA35257P33Cs6RpA8voh8gg7WoSv
+         abaGI6EY5gZxOCmV8qobdSmy7SEY8OKNuozcM76veOqGo1pMK5MZC+kra2HaszvlLi
+         LQ0sWk6wH40nC/HC5xa8YarfwttrNErDZ6I0lNew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, Zi Yan <ziy@nvidia.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 1029/1039] mm/hmm.c: allow VM_MIXEDMAP to work with hmm_range_fault
-Date:   Mon, 24 Jan 2022 19:46:58 +0100
-Message-Id: <20220124184159.879804543@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Li <Meng.Li@windriver.com>,
+        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.16 0838/1039] crypto: caam - replace this_cpu_ptr with raw_cpu_ptr
+Date:   Mon, 24 Jan 2022 19:43:47 +0100
+Message-Id: <20220124184153.461557090@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,147 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alistair Popple <apopple@nvidia.com>
+From: Meng Li <Meng.Li@windriver.com>
 
-commit 87c01d57fa23de82fff593a7d070933d08755801 upstream.
+commit efd21e10fc3bf4c6da122470a5ae89ec4ed8d180 upstream.
 
-hmm_range_fault() can be used instead of get_user_pages() for devices
-which allow faulting however unlike get_user_pages() it will return an
-error when used on a VM_MIXEDMAP range.
+When enable the kernel debug config, there is below calltrace detected:
+BUG: using smp_processor_id() in preemptible [00000000] code: cryptomgr_test/339
+caller is debug_smp_processor_id+0x20/0x30
+CPU: 9 PID: 339 Comm: cryptomgr_test Not tainted 5.10.63-yocto-standard #1
+Hardware name: NXP Layerscape LX2160ARDB (DT)
+Call trace:
+ dump_backtrace+0x0/0x1a0
+ show_stack+0x24/0x30
+ dump_stack+0xf0/0x13c
+ check_preemption_disabled+0x100/0x110
+ debug_smp_processor_id+0x20/0x30
+ dpaa2_caam_enqueue+0x10c/0x25c
+ ......
+ cryptomgr_test+0x38/0x60
+ kthread+0x158/0x164
+ ret_from_fork+0x10/0x38
+According to the comment in commit ac5d15b4519f("crypto: caam/qi2
+ - use affine DPIOs "), because preemption is no longer disabled
+while trying to enqueue an FQID, it might be possible to run the
+enqueue on a different CPU(due to migration, when in process context),
+however this wouldn't be a functionality issue. But there will be
+above calltrace when enable kernel debug config. So, replace this_cpu_ptr
+with raw_cpu_ptr to avoid above call trace.
 
-To make hmm_range_fault() more closely match get_user_pages() remove
-this restriction.  This requires dealing with the !ARCH_HAS_PTE_SPECIAL
-case in hmm_vma_handle_pte().  Rather than replicating the logic of
-vm_normal_page() call it directly and do a check for the zero pfn
-similar to what get_user_pages() currently does.
-
-Also add a test to hmm selftest to verify functionality.
-
-Link: https://lkml.kernel.org/r/20211104012001.2555676-1-apopple@nvidia.com
-Fixes: da4c3c735ea4 ("mm/hmm/mirror: helper to snapshot CPU page table")
-Signed-off-by: Alistair Popple <apopple@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Jerome Glisse <jglisse@redhat.com>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Cc: Ralph Campbell <rcampbell@nvidia.com>
-Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: ac5d15b4519f ("crypto: caam/qi2 - use affine DPIOs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Meng Li <Meng.Li@windriver.com>
+Reviewed-by: Horia Geantă <horia.geanta@nxp.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/test_hmm.c                         |   24 ++++++++++++++++++
- mm/hmm.c                               |    5 ++-
- tools/testing/selftests/vm/hmm-tests.c |   42 +++++++++++++++++++++++++++++++++
- 3 files changed, 69 insertions(+), 2 deletions(-)
+ drivers/crypto/caam/caamalg_qi2.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/lib/test_hmm.c
-+++ b/lib/test_hmm.c
-@@ -1086,9 +1086,33 @@ static long dmirror_fops_unlocked_ioctl(
- 	return 0;
- }
+--- a/drivers/crypto/caam/caamalg_qi2.c
++++ b/drivers/crypto/caam/caamalg_qi2.c
+@@ -5470,7 +5470,7 @@ int dpaa2_caam_enqueue(struct device *de
+ 	dpaa2_fd_set_len(&fd, dpaa2_fl_get_len(&req->fd_flt[1]));
+ 	dpaa2_fd_set_flc(&fd, req->flc_dma);
  
-+static int dmirror_fops_mmap(struct file *file, struct vm_area_struct *vma)
-+{
-+	unsigned long addr;
-+
-+	for (addr = vma->vm_start; addr < vma->vm_end; addr += PAGE_SIZE) {
-+		struct page *page;
-+		int ret;
-+
-+		page = alloc_page(GFP_KERNEL | __GFP_ZERO);
-+		if (!page)
-+			return -ENOMEM;
-+
-+		ret = vm_insert_page(vma, addr, page);
-+		if (ret) {
-+			__free_page(page);
-+			return ret;
-+		}
-+		put_page(page);
-+	}
-+
-+	return 0;
-+}
-+
- static const struct file_operations dmirror_fops = {
- 	.open		= dmirror_fops_open,
- 	.release	= dmirror_fops_release,
-+	.mmap		= dmirror_fops_mmap,
- 	.unlocked_ioctl = dmirror_fops_unlocked_ioctl,
- 	.llseek		= default_llseek,
- 	.owner		= THIS_MODULE,
---- a/mm/hmm.c
-+++ b/mm/hmm.c
-@@ -300,7 +300,8 @@ static int hmm_vma_handle_pte(struct mm_
- 	 * Since each architecture defines a struct page for the zero page, just
- 	 * fall through and treat it like a normal page.
- 	 */
--	if (pte_special(pte) && !pte_devmap(pte) &&
-+	if (!vm_normal_page(walk->vma, addr, pte) &&
-+	    !pte_devmap(pte) &&
- 	    !is_zero_pfn(pte_pfn(pte))) {
- 		if (hmm_pte_need_fault(hmm_vma_walk, pfn_req_flags, 0)) {
- 			pte_unmap(ptep);
-@@ -518,7 +519,7 @@ static int hmm_vma_walk_test(unsigned lo
- 	struct hmm_range *range = hmm_vma_walk->range;
- 	struct vm_area_struct *vma = walk->vma;
- 
--	if (!(vma->vm_flags & (VM_IO | VM_PFNMAP | VM_MIXEDMAP)) &&
-+	if (!(vma->vm_flags & (VM_IO | VM_PFNMAP)) &&
- 	    vma->vm_flags & VM_READ)
- 		return 0;
- 
---- a/tools/testing/selftests/vm/hmm-tests.c
-+++ b/tools/testing/selftests/vm/hmm-tests.c
-@@ -1251,6 +1251,48 @@ TEST_F(hmm, anon_teardown)
- /*
-  * Test memory snapshot without faulting in pages accessed by the device.
-  */
-+TEST_F(hmm, mixedmap)
-+{
-+	struct hmm_buffer *buffer;
-+	unsigned long npages;
-+	unsigned long size;
-+	unsigned char *m;
-+	int ret;
-+
-+	npages = 1;
-+	size = npages << self->page_shift;
-+
-+	buffer = malloc(sizeof(*buffer));
-+	ASSERT_NE(buffer, NULL);
-+
-+	buffer->fd = -1;
-+	buffer->size = size;
-+	buffer->mirror = malloc(npages);
-+	ASSERT_NE(buffer->mirror, NULL);
-+
-+
-+	/* Reserve a range of addresses. */
-+	buffer->ptr = mmap(NULL, size,
-+			   PROT_READ | PROT_WRITE,
-+			   MAP_PRIVATE,
-+			   self->fd, 0);
-+	ASSERT_NE(buffer->ptr, MAP_FAILED);
-+
-+	/* Simulate a device snapshotting CPU pagetables. */
-+	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_SNAPSHOT, buffer, npages);
-+	ASSERT_EQ(ret, 0);
-+	ASSERT_EQ(buffer->cpages, npages);
-+
-+	/* Check what the device saw. */
-+	m = buffer->mirror;
-+	ASSERT_EQ(m[0], HMM_DMIRROR_PROT_READ);
-+
-+	hmm_buffer_free(buffer);
-+}
-+
-+/*
-+ * Test memory snapshot without faulting in pages accessed by the device.
-+ */
- TEST_F(hmm2, snapshot)
- {
- 	struct hmm_buffer *buffer;
+-	ppriv = this_cpu_ptr(priv->ppriv);
++	ppriv = raw_cpu_ptr(priv->ppriv);
+ 	for (i = 0; i < (priv->dpseci_attr.num_tx_queues << 1); i++) {
+ 		err = dpaa2_io_service_enqueue_fq(ppriv->dpio, ppriv->req_fqid,
+ 						  &fd);
 
 
