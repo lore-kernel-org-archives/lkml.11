@@ -2,72 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 607E7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6415C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:24:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356117AbiAXWYB (ORCPT
+        id S1583852AbiAXWYO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:24:01 -0500
-Received: from ip-15.mailobj.net ([213.182.54.15]:38054 "EHLO msg-4.mailo.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1452803AbiAXV0m (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:26:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
-        t=1643059590; bh=B0piSC9qtUYLnw/vHlf3uG2RVSjyvLZbXc9kETb2dps=;
-        h=X-EA-Auth:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding;
-        b=gfe7PiSufHSaBsOk+YCqIwSZvSARFCUvijL64FrI9oGwOKaUH4EiXZq9TPatU8kKq
-         ablfX+nM1oa+XZNE2E4SaRCPuA6FCnHvZCMOq9Yur1MKrHzTD6veYO+rcmlUzYeGmE
-         x3SkY0cMPh102JxL5CZ2zH3bzZvV6kav1VKvSkX8=
-Received: by b-5.in.mailobj.net [192.168.90.15] with ESMTP
-        via proxy.mailoo.org [213.182.55.207]
-        Mon, 24 Jan 2022 22:26:30 +0100 (CET)
-X-EA-Auth: XxMD6+jMWUuyMYNiDJ1/Eaj50WF3RUbsR9ZoRQaZanMZFItAGQf1ZXqB4kpfpysTNLhgScStCAMkwqBzQTJc2DOHWCTytv9uVrm0o4434rk=
-From:   Vincent Knecht <vincent.knecht@mailoo.org>
-To:     dmitry.torokhov@gmail.com, stephan@gerhold.net
-Cc:     linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Vincent Knecht <vincent.knecht@mailoo.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 2/5] dt-bindings: input: touchscreen: msg2638: Document msg2138 support
-Date:   Mon, 24 Jan 2022 22:26:08 +0100
-Message-Id: <20220124212611.752603-3-vincent.knecht@mailoo.org>
+        Mon, 24 Jan 2022 17:24:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442669AbiAXVZK (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 16:25:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266F1C0A1CEE;
+        Mon, 24 Jan 2022 12:18:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3EBAB81255;
+        Mon, 24 Jan 2022 20:17:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08814C36AE7;
+        Mon, 24 Jan 2022 20:17:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643055478;
+        bh=fntRpshkPH1kBf19IZiQRtlhXjIeJ4hCEiSlfehiMwY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JI9WtABl8eZx5lJDdtvI5wsjER8U264XrPbGfeHPa8hWHjL8Ua4DMhoQejmvOWPKg
+         +PdRXeBL9M1E3VntH/BNX6amYh5HuiJ1LUWkhMMbqUBxKowFUHjE5qln0bzMwgXRyP
+         47uf2u4KboCuzKm3DzTaXZHGwlrmIoOKoNR+xxlg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 165/846] media: si470x-i2c: fix possible memory leak in si470x_i2c_probe()
+Date:   Mon, 24 Jan 2022 19:34:42 +0100
+Message-Id: <20220124184106.668730319@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124212611.752603-1-vincent.knecht@mailoo.org>
-References: <20220124212611.752603-1-vincent.knecht@mailoo.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document msg2138 support by adding mstar,msg2138 compatible.
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-Acked-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Vincent Knecht <vincent.knecht@mailoo.org>
----
-v2:
-- picked up Rob's Ack
----
- .../devicetree/bindings/input/touchscreen/mstar,msg2638.yaml  | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+[ Upstream commit ef054e345ed8c79ce1121a3599b5a2dfd78e57a0 ]
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/mstar,msg2638.yaml b/Documentation/devicetree/bindings/input/touchscreen/mstar,msg2638.yaml
-index 3a42c23faf6f..2fb7e01bb65a 100644
---- a/Documentation/devicetree/bindings/input/touchscreen/mstar,msg2638.yaml
-+++ b/Documentation/devicetree/bindings/input/touchscreen/mstar,msg2638.yaml
-@@ -14,7 +14,9 @@ allOf:
+n the 'radio->hdl.error' error handling, ctrl handler allocated by
+v4l2_ctrl_new_std() does not released, and caused memory leak as
+follows:
+
+unreferenced object 0xffff888033d54200 (size 256):
+  comm "i2c-si470x-19", pid 909, jiffies 4294914203 (age 8.072s)
+  hex dump (first 32 bytes):
+    e8 69 11 03 80 88 ff ff 00 46 d5 33 80 88 ff ff  .i.......F.3....
+    10 42 d5 33 80 88 ff ff 10 42 d5 33 80 88 ff ff  .B.3.....B.3....
+  backtrace:
+    [<00000000086bd4ed>] __kmalloc_node+0x1eb/0x360
+    [<00000000bdb68871>] kvmalloc_node+0x66/0x120
+    [<00000000fac74e4c>] v4l2_ctrl_new+0x7b9/0x1c60 [videodev]
+    [<00000000693bf940>] v4l2_ctrl_new_std+0x19b/0x270 [videodev]
+    [<00000000c0cb91bc>] si470x_i2c_probe+0x2d3/0x9a0 [radio_si470x_i2c]
+    [<0000000056a6f01f>] i2c_device_probe+0x4d8/0xbe0
+
+Fix the error handling path to avoid memory leak.
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: 8c081b6f9a9b ("media: radio: Critical v4l2 registration...")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/radio/si470x/radio-si470x-i2c.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/media/radio/si470x/radio-si470x-i2c.c b/drivers/media/radio/si470x/radio-si470x-i2c.c
+index a972c0705ac79..76d39e2e87706 100644
+--- a/drivers/media/radio/si470x/radio-si470x-i2c.c
++++ b/drivers/media/radio/si470x/radio-si470x-i2c.c
+@@ -368,7 +368,7 @@ static int si470x_i2c_probe(struct i2c_client *client)
+ 	if (radio->hdl.error) {
+ 		retval = radio->hdl.error;
+ 		dev_err(&client->dev, "couldn't register control\n");
+-		goto err_dev;
++		goto err_all;
+ 	}
  
- properties:
-   compatible:
--    const: mstar,msg2638
-+    enum:
-+      - mstar,msg2138
-+      - mstar,msg2638
- 
-   reg:
-     const: 0x26
+ 	/* video device initialization */
+@@ -463,7 +463,6 @@ static int si470x_i2c_probe(struct i2c_client *client)
+ 	return 0;
+ err_all:
+ 	v4l2_ctrl_handler_free(&radio->hdl);
+-err_dev:
+ 	v4l2_device_unregister(&radio->v4l2_dev);
+ err_initial:
+ 	return retval;
 -- 
 2.34.1
 
