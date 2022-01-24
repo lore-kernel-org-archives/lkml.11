@@ -2,86 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6FF3C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9098AC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1320898AbiAYDPE (ORCPT
+        id S1320420AbiAYDMq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:15:04 -0500
-Received: from mga01.intel.com ([192.55.52.88]:63761 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1318491AbiAYDGC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:06:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643079962; x=1674615962;
-  h=cc:subject:to:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=by9ZO+ZTDaK468UmSn4Yi/q3n6O9rPWIIHQ/Z6V2Pus=;
-  b=V1sZsfiyN8T4D944xM4WGXhYmpEpZDUx1MqHjV+E8/dhd55TXlVZnezd
-   IaWQA+xtkppwDTeO2pcMY+va2psU4czhhIk5WwyLELn4KoVy/u9s7c92h
-   I6IHjDsNboQq8SfJ5jiWUV0JLRgNopb8jZ+0urexY1eRu+3b36iVKmsgc
-   Ku5idTD8/91QNevRrQvGrnrf2Hs3/QG74B0tce8sZmNUOsei+e7ANeZRY
-   LyyEIPj6/wpy/w3eyYf8gFEJduryPxBDTkhdyKExBwtiiLJKDwpo7Mf4F
-   Qjm6fhxHOv74kjHDHEE9iWKV9BswPxVO7T85ezbJWOW33E6GFgvtxITzN
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="270647151"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="270647151"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 19:02:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="534531392"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by orsmga008.jf.intel.com with ESMTP; 24 Jan 2022 19:02:03 -0800
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/7] iommu: Use right way to retrieve iommu_ops
-To:     Christoph Hellwig <hch@infradead.org>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-7-baolu.lu@linux.intel.com>
- <Ye5yHejpaAnJQYeR@infradead.org>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <f59b5cf7-0275-b979-1d57-a629fd81450a@linux.intel.com>
-Date:   Tue, 25 Jan 2022 11:01:03 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 24 Jan 2022 22:12:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3415687AbiAYC4w (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 21:56:52 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50DBC0E532B
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:44:37 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id j5-20020a05600c1c0500b0034d2e956aadso434064wms.4
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:44:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7znmcaDRDi4XBN93/6yXaX6uBsi3TKnQRGE8o8aEMJU=;
+        b=6NrmZXRPLdTEvLqS3ppSEX5eWHDYIGuQfgP+OmoRc9nX4bQYf6Jc+vK8VwVvGC0reW
+         YpD083sS6XzF3mD2x3Q6yx2gLLg56RiTdTTPdvEEqediDTbdenAFJeHqICEDuv+/Zubj
+         BfTtwNHZxFcf6gIxCZDN/jFFR4r5+FwNGUVP+XFPjhm6Zmlpr+meHkUGeJuPRNIBhB+s
+         JQwHBvsiBFiv326bYrkQh5gYUXHzaPHc2q5Xlpo9YBG9E5oaD5qM+1DmA/8d/ZY8cTif
+         8X4bHgLpIL3sjvtJr81nb8eUzkA9Eq6E3D0TjA//coBqxuxn2wMKklIxCHk7zs3XGh5Y
+         cCsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7znmcaDRDi4XBN93/6yXaX6uBsi3TKnQRGE8o8aEMJU=;
+        b=o3+5aPV0fmyVBU3t8S5iLy+hO9OITGEm0iYiBCmUxn+YCGtrnzm4G35LUzq08q3vI/
+         VEuirPFErx64qaVWsLms6F9F6NZ4zH6486b/83hN2Hm46mv/HQaeC6JbvaiNHSGT7YMR
+         zKlNAADYNQiZNEiZNnxCDbZJYOj7xqQP3l7/nbhh2l/RvUjAjrE2qXAwNdvv7aI5wmC/
+         RV+FSUPxgsA93byU/KzqgYJYF1Bq3zDgwjDcGgDWMofAC6USTX8M24Ek/v+n7Yagl8wo
+         ESfjEKRIVruylEmcFvCUx9ZozGpQw9I4Cs/iINT90orCAsHL3VCY8z5izox8jFiThTu5
+         E6RQ==
+X-Gm-Message-State: AOAM533umawTPyW+ggIwhxQfTVsJsJo8K2zpgGNXl/sScEElZ1E53rLt
+        m4se5oX+8dZKZYLdl7CB/xrsGg==
+X-Google-Smtp-Source: ABdhPJwbcicGgogM0TZZeXSpHymAph9CrVa/BQqjNDo7r1juFnFPlm1dFX+XORwvjCEQhpNJ5GbSGQ==
+X-Received: by 2002:a1c:a7c2:: with SMTP id q185mr378882wme.3.1643064276529;
+        Mon, 24 Jan 2022 14:44:36 -0800 (PST)
+Received: from localhost.localdomain (d.f.5.e.6.6.b.1.e.6.2.7.e.5.c.8.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0:8c5e:726e:1b66:e5fd])
+        by smtp.gmail.com with ESMTPSA id i3sm15010613wru.33.2022.01.24.14.44.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 14:44:36 -0800 (PST)
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     gregkh@linuxfoundation.org
+Cc:     dan.carpenter@oracle.com, Larry.Finger@lwfinger.net,
+        straube.linux@gmail.com, martin@kaiser.cx,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        paskripkin@gmail.com
+Subject: [PATCH 07/10] staging: r8188eu: remove DBG_88E call from include/usb_ops.h
+Date:   Mon, 24 Jan 2022 22:44:12 +0000
+Message-Id: <20220124224415.831-8-phil@philpotter.co.uk>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124224415.831-1-phil@philpotter.co.uk>
+References: <20220124224415.831-1-phil@philpotter.co.uk>
 MIME-Version: 1.0
-In-Reply-To: <Ye5yHejpaAnJQYeR@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/24/22 5:32 PM, Christoph Hellwig wrote:
-> On Mon, Jan 24, 2022 at 03:11:01PM +0800, Lu Baolu wrote:
->> The common iommu_ops is hooked to both device and domain. When a helper
->> has both device and domain pointer, the way to get the iommu_ops looks
->> messy in iommu core. This sorts out the way to get iommu_ops. The device
->> related helpers go through device pointer, while the domain related ones
->> go through domain pointer.
-> 
-> Ugg. This really sounds like we should have a different structures for
-> each set of ops?
->
+Remove DBG_88E call from include/usb_ops.h, as it does not conform to
+kernel coding standards and is superfluous. This will allow the eventual
+removal of the DBG_88E macro itself.
 
-Yes. Do this in the following patch.
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+---
+ drivers/staging/r8188eu/include/usb_ops.h | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-Best regards,
-baolu
+diff --git a/drivers/staging/r8188eu/include/usb_ops.h b/drivers/staging/r8188eu/include/usb_ops.h
+index 0a1155bbc7b8..2b1d50d2b2f2 100644
+--- a/drivers/staging/r8188eu/include/usb_ops.h
++++ b/drivers/staging/r8188eu/include/usb_ops.h
+@@ -30,11 +30,8 @@ static inline int rtw_inc_and_chk_continual_urb_error(struct dvobj_priv *dvobj)
+ 	int ret = false;
+ 	int value;
+ 	value = atomic_inc_return(&dvobj->continual_urb_error);
+-	if (value > MAX_CONTINUAL_URB_ERR) {
+-		DBG_88E("[dvobj:%p][ERROR] continual_urb_error:%d > %d\n",
+-			dvobj, value, MAX_CONTINUAL_URB_ERR);
++	if (value > MAX_CONTINUAL_URB_ERR)
+ 		ret = true;
+-	}
+ 	return ret;
+ }
+ 
+-- 
+2.34.1
+
