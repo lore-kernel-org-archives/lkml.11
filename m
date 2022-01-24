@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D8FEC4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C7BC35273
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380658AbiAXUQl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53960 "EHLO
+        id S241569AbiAXURc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 15:17:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56978 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348223AbiAXT5e (ORCPT
+        with ESMTP id S1349062AbiAXUAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:57:34 -0500
+        Mon, 24 Jan 2022 15:00:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E493360B56;
-        Mon, 24 Jan 2022 19:57:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0CB3C340E5;
-        Mon, 24 Jan 2022 19:57:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A837611C8;
+        Mon, 24 Jan 2022 20:00:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F422C340E5;
+        Mon, 24 Jan 2022 20:00:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054253;
-        bh=cN3Y0NOmEgjX6lY6HpwrG6edABhYWBCKcpqZwy82Zp0=;
+        s=korg; t=1643054438;
+        bh=BwrD9v9Ae2aInMK3LbZeEEzNTK56stm9l1eBv1Y1hG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rsnaQV913iIOPQKVZvUWai+Mb8I2cYfqYGyugZLpNRV/eDlHqopS69BYadCsbgKfR
-         e0TnhAHHTMoIggt8k7PhxDnGbgZO8DacR2loS98g7m3NqZecKMZSGRFnYdr78DKUUq
-         NLJ5zFTXPmTXKLaKg+/Q4zSm39LKBQ7r1tzZPVeY=
+        b=pX61aExvxv8/0k4SH9QqLxUUyc93bSpOnE/WDLYVz6uET5bol6dgBldOlsP5UzfoZ
+         0sIG+LCgoBGV1RScjX/EyvOv7bsRxgPhVIxZDibU79B8yIg+7sEjKgPoZctkSK/pCI
+         tFkiBsH5YJh7jcpp/dUI1MUcAmWV0A9r66NHx5ds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
-        Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+        Bob Moore <robert.moore@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 329/563] rsi: Fix use-after-free in rsi_rx_done_handler()
-Date:   Mon, 24 Jan 2022 19:41:34 +0100
-Message-Id: <20220124184035.812021706@linuxfoundation.org>
+Subject: [PATCH 5.10 388/563] ACPICA: Fix wrong interpretation of PCC address
+Date:   Mon, 24 Jan 2022 19:42:33 +0100
+Message-Id: <20220124184037.849909483@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,86 +47,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Sudeep Holla <sudeep.holla@arm.com>
 
-[ Upstream commit b07e3c6ebc0c20c772c0f54042e430acec2945c3 ]
+[ Upstream commit 9a3b8655db1ada31c82189ae13f40eb25da48c35 ]
 
-When freeing rx_cb->rx_skb, the pointer is not set to NULL,
-a later rsi_rx_done_handler call will try to read the freed
-address.
-This bug will very likley lead to double free, although
-detected early as use-after-free bug.
+ACPICA commit 41be6afacfdaec2dba3a5ed368736babc2a7aa5c
 
-The bug is triggerable with a compromised/malfunctional usb
-device. After applying the patch, the same input no longer
-triggers the use-after-free.
+With the PCC Opregion in the firmware and we are hitting below kernel crash:
 
-Attached is the kasan report from fuzzing.
+-->8
+Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+ Workqueue: pm pm_runtime_work
+ pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+ pc : __memcpy+0x54/0x260
+ lr : acpi_ex_write_data_to_field+0xb8/0x194
+ Call trace:
+  __memcpy+0x54/0x260
+  acpi_ex_store_object_to_node+0xa4/0x1d4
+  acpi_ex_store+0x44/0x164
+  acpi_ex_opcode_1A_1T_1R+0x25c/0x508
+  acpi_ds_exec_end_op+0x1b4/0x44c
+  acpi_ps_parse_loop+0x3a8/0x614
+  acpi_ps_parse_aml+0x90/0x2f4
+  acpi_ps_execute_method+0x11c/0x19c
+  acpi_ns_evaluate+0x1ec/0x2b0
+  acpi_evaluate_object+0x170/0x2b0
+  acpi_device_set_power+0x118/0x310
+  acpi_dev_suspend+0xd4/0x180
+  acpi_subsys_runtime_suspend+0x28/0x38
+  __rpm_callback+0x74/0x328
+  rpm_suspend+0x2d8/0x624
+  pm_runtime_work+0xa4/0xb8
+  process_one_work+0x194/0x25c
+  worker_thread+0x260/0x49c
+  kthread+0x14c/0x30c
+  ret_from_fork+0x10/0x20
+ Code: f9000006 f81f80a7 d65f03c0 361000c2 (b9400026)
+ ---[ end trace 24d8a032fa77b68a ]---
 
-BUG: KASAN: use-after-free in rsi_rx_done_handler+0x354/0x430 [rsi_usb]
-Read of size 4 at addr ffff8880188e5930 by task modprobe/231
-Call Trace:
- <IRQ>
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
- ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
- __kasan_report.cold+0x37/0x7c
- ? dma_direct_unmap_page+0x90/0x110
- ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
- kasan_report+0xe/0x20
- rsi_rx_done_handler+0x354/0x430 [rsi_usb]
- __usb_hcd_giveback_urb+0x1e4/0x380
- usb_giveback_urb_bh+0x241/0x4f0
- ? __usb_hcd_giveback_urb+0x380/0x380
- ? apic_timer_interrupt+0xa/0x20
- tasklet_action_common.isra.0+0x135/0x330
- __do_softirq+0x18c/0x634
- ? handle_irq_event+0xcd/0x157
- ? handle_edge_irq+0x1eb/0x7b0
- irq_exit+0x114/0x140
- do_IRQ+0x91/0x1e0
- common_interrupt+0xf/0xf
- </IRQ>
+The reason for the crash is that the PCC channel index passed via region.address
+in acpi_ex_store_object_to_node is interpreted as the channel subtype
+incorrectly.
 
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXxQL/vIiYcZUu/j@10-18-43-117.dynapool.wireless.nyu.edu
+Assuming the PCC op_region support is not used by any other type, let us
+remove the subtype check as the AML has no access to the subtype information.
+Once we remove it, the kernel crash disappears and correctly complains about
+missing PCC Opregion handler.
+
+ACPI Error: No handler for Region [PFRM] ((____ptrval____)) [PCC] (20210730/evregion-130)
+ACPI Error: Region PCC (ID=10) has no handler (20210730/exfldio-261)
+ACPI Error: Aborting method \_SB.ETH0._PS3 due to previous error (AE_NOT_EXIST) (20210730/psparse-531)
+
+Link: https://github.com/acpica/acpica/commit/41be6afa
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/rsi/rsi_91x_usb.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/acpi/acpica/exfield.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
-index d881df9ebd0c3..7f34148c7dfe5 100644
---- a/drivers/net/wireless/rsi/rsi_91x_usb.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
-@@ -269,8 +269,12 @@ static void rsi_rx_done_handler(struct urb *urb)
- 	struct rsi_91x_usbdev *dev = (struct rsi_91x_usbdev *)rx_cb->data;
- 	int status = -EINVAL;
+diff --git a/drivers/acpi/acpica/exfield.c b/drivers/acpi/acpica/exfield.c
+index 3323a2ba6a313..b3230e511870a 100644
+--- a/drivers/acpi/acpica/exfield.c
++++ b/drivers/acpi/acpica/exfield.c
+@@ -326,12 +326,7 @@ acpi_ex_write_data_to_field(union acpi_operand_object *source_desc,
+ 		       obj_desc->field.base_byte_offset,
+ 		       source_desc->buffer.pointer, data_length);
  
-+	if (!rx_cb->rx_skb)
-+		return;
-+
- 	if (urb->status) {
- 		dev_kfree_skb(rx_cb->rx_skb);
-+		rx_cb->rx_skb = NULL;
- 		return;
- 	}
+-		if ((obj_desc->field.region_obj->region.address ==
+-		     PCC_MASTER_SUBSPACE
+-		     && MASTER_SUBSPACE_COMMAND(obj_desc->field.
+-						base_byte_offset))
+-		    || GENERIC_SUBSPACE_COMMAND(obj_desc->field.
+-						base_byte_offset)) {
++		if (MASTER_SUBSPACE_COMMAND(obj_desc->field.base_byte_offset)) {
  
-@@ -294,8 +298,10 @@ out:
- 	if (rsi_rx_urb_submit(dev->priv, rx_cb->ep_num, GFP_ATOMIC))
- 		rsi_dbg(ERR_ZONE, "%s: Failed in urb submission", __func__);
+ 			/* Perform the write */
  
--	if (status)
-+	if (status) {
- 		dev_kfree_skb(rx_cb->rx_skb);
-+		rx_cb->rx_skb = NULL;
-+	}
- }
- 
- static void rsi_rx_urb_kill(struct rsi_hw *adapter, u8 ep_num)
 -- 
 2.34.1
 
