@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40113C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BB9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238122AbiAXOYy convert rfc822-to-8bit (ORCPT
+        id S237828AbiAXOY5 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:24:54 -0500
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:53974 "EHLO
+        Mon, 24 Jan 2022 09:24:57 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:20616 "EHLO
         us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238192AbiAXOYk (ORCPT
+        by vger.kernel.org with ESMTP id S238111AbiAXOYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:24:40 -0500
+        Mon, 24 Jan 2022 09:24:39 -0500
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-624-e_ljM9I4OtK-40tQjdMCZA-1; Mon, 24 Jan 2022 09:24:38 -0500
-X-MC-Unique: e_ljM9I4OtK-40tQjdMCZA-1
+ us-mta-433-RsgB6JPWNyKzfZgGuJqN6g-1; Mon, 24 Jan 2022 09:24:35 -0500
+X-MC-Unique: RsgB6JPWNyKzfZgGuJqN6g-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CB073100CCC6;
-        Mon, 24 Jan 2022 14:24:37 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 23ED41923B80;
+        Mon, 24 Jan 2022 14:24:34 +0000 (UTC)
 Received: from x1.com (unknown [10.22.32.253])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 53F98798C1;
-        Mon, 24 Jan 2022 14:24:36 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 00925798B2;
+        Mon, 24 Jan 2022 14:24:32 +0000 (UTC)
 From:   Daniel Bristot de Oliveira <bristot@kernel.org>
 To:     Steven Rostedt <rostedt@goodmis.org>
 Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
         linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
-Subject: [PATCH 8/8] rtla/trace: Error message fixup
-Date:   Mon, 24 Jan 2022 15:24:11 +0100
-Message-Id: <a93c01023602ac087dd3e3c60a4d1020de1d601a.1643033113.git.bristot@kernel.org>
+Subject: [PATCH 6/8] rtla/timerlat_hist: Fix segmentation fault when failing to enable -t
+Date:   Mon, 24 Jan 2022 15:24:09 +0100
+Message-Id: <78b201bfbeabdb8c55fcd51d76e0475c437175ed.1643033113.git.bristot@kernel.org>
 In-Reply-To: <cover.1643033113.git.bristot@kernel.org>
 References: <cover.1643033113.git.bristot@kernel.org>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=bristot@kernel.org
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: kernel.org
 Content-Transfer-Encoding: 8BIT
@@ -47,51 +45,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use capital and change "tracer %s" to "%s tracer".
+rtla timerlat hist is causing a segmentation fault when running with
+the --trace option on a kernel that does not support multiple
+instances. For example:
 
-No functional change.
+    [root@f34 rtla]# rtla timerlat hist -t
+    failed to enable the tracer timerlat
+    Could not enable osnoiser tracer for tracing
+    Failed to enable the trace instance
+    Segmentation fault (core dumped)
 
-Fixes: b1696371d865 ("rtla: Helper functions for rtla")
+This error happens because the exit code of the tools is trying
+to destroy the trace instance that failed to be created.
+
+Rearrange the order in which trace instances are destroyed to avoid
+this problem.
+
+Fixes: (1eeb6328e8b3 "rtla/timerlat: Add timerlat hist mode")
 Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
 Cc: Steven Rostedt <rostedt@goodmis.org>
 Cc: linux-kernel@vger.kernel.org
 Cc: linux-trace-devel@vger.kernel.org
 Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 ---
- tools/tracing/rtla/src/trace.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ tools/tracing/rtla/src/timerlat_hist.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/tools/tracing/rtla/src/trace.c b/tools/tracing/rtla/src/trace.c
-index 107a0c6387f7..83de259abcc1 100644
---- a/tools/tracing/rtla/src/trace.c
-+++ b/tools/tracing/rtla/src/trace.c
-@@ -20,14 +20,14 @@ int enable_tracer_by_name(struct tracefs_instance *inst, const char *tracer_name
+diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
+index 235f9620ef3d..74ccb6351ad2 100644
+--- a/tools/tracing/rtla/src/timerlat_hist.c
++++ b/tools/tracing/rtla/src/timerlat_hist.c
+@@ -792,7 +792,7 @@ int timerlat_hist_main(int argc, char *argv[])
+ 						    trace);
+ 		if (retval < 0) {
+ 			err_msg("Error iterating on events\n");
+-			goto out_hist;
++			goto out_trace;
+ 		}
  
- 	tracer = TRACEFS_TRACER_CUSTOM;
- 
--	debug_msg("enabling %s tracer\n", tracer_name);
-+	debug_msg("Enabling %s tracer\n", tracer_name);
- 
- 	retval = tracefs_tracer_set(inst, tracer, tracer_name);
- 	if (retval < 0) {
- 		if (errno == ENODEV)
--			err_msg("tracer %s not found!\n", tracer_name);
-+			err_msg("Tracer %s not found!\n", tracer_name);
- 
--		err_msg("failed to enable the tracer %s\n", tracer_name);
-+		err_msg("Failed to enable the %s tracer\n", tracer_name);
- 		return -1;
+ 		if (!tracefs_trace_is_on(trace->inst))
+@@ -811,11 +811,12 @@ int timerlat_hist_main(int argc, char *argv[])
+ 		}
  	}
  
-@@ -44,7 +44,7 @@ void disable_tracer(struct tracefs_instance *inst)
- 
- 	retval = tracefs_tracer_set(inst, t);
- 	if (retval < 0)
--		err_msg("oops, error disabling tracer\n");
-+		err_msg("Oops, error disabling tracer\n");
- }
- 
- /*
++out_trace:
++	if (params->trace_output)
++		osnoise_destroy_tool(record);
+ out_hist:
+ 	timerlat_free_histogram(tool->data);
+ 	osnoise_destroy_tool(tool);
+-	if (params->trace_output)
+-		osnoise_destroy_tool(record);
+ 	free(params);
+ out_exit:
+ 	exit(return_value);
 -- 
 2.34.1
 
