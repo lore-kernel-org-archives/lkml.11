@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1094AC35268
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB96C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357611AbiAXTvE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:51:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
+        id S233592AbiAXTvM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:51:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344690AbiAXTkg (ORCPT
+        with ESMTP id S1345601AbiAXTkg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:40:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB1B8C07A966;
-        Mon, 24 Jan 2022 11:19:22 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C17C0613DE;
+        Mon, 24 Jan 2022 11:19:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 707BDB81232;
-        Mon, 24 Jan 2022 19:19:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99063C340E5;
-        Mon, 24 Jan 2022 19:19:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 316B2612F3;
+        Mon, 24 Jan 2022 19:19:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E850FC340E5;
+        Mon, 24 Jan 2022 19:19:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051961;
-        bh=vvYjAPxxL+ZjqcEidLvpz0cKF/e03ciPhpXnnDJYgtQ=;
+        s=korg; t=1643051973;
+        bh=Yl19xK2S3Yrf+HDHivDr1Qg8Bb/pOf54XZ1Z8dK3gjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cmh+Ceo3l2mFIYF7+bvm5LNHjLPGXXOZb1Ad06pYUB66RVO39VZH5xN5WWlqZo8Au
-         BcBh3Wy/h82vcxdYkpu9pgj19eIBIUShmghVYC7Z79/CRvpZtaa99kwdiFKAuSWzne
-         Olx8HkTlZwAdnr4jnFhU6NJsRSGu3U78e1dsQ5gw=
+        b=r/hOYHoPlyrKbNPul/AbPfHTWi191C6dC8symJckAEkzyRvX2x2ht+ySynNYBJEp+
+         p6x7Ms9++Cok2xxz07iJDQizdQ+3mJ50XzIO2oljU3tM/mUT9mwGOS1r87FzX96CJL
+         kJYYgNPICz59AY2LiLTnEf6LJETku5xBsLGxS7TI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
-        Mark Zhang <markzhang@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 110/239] RDMA/core: Let ib_find_gid() continue search even after empty entry
-Date:   Mon, 24 Jan 2022 19:42:28 +0100
-Message-Id: <20220124183946.600613206@linuxfoundation.org>
+Subject: [PATCH 4.19 114/239] ASoC: mediatek: Check for error clk pointer
+Date:   Mon, 24 Jan 2022 19:42:32 +0100
+Message-Id: <20220124183946.729470383@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -52,45 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Avihai Horon <avihaih@nvidia.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 483d805191a23191f8294bbf9b4e94836f5d92e4 ]
+[ Upstream commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e ]
 
-Currently, ib_find_gid() will stop searching after encountering the first
-empty GID table entry. This behavior is wrong since neither IB nor RoCE
-spec enforce tightly packed GID tables.
+Yes, you are right and now the return code depending on the
+init_clks().
 
-For example, when a valid GID entry exists at index N, and if a GID entry
-is empty at index N-1, ib_find_gid() will fail to find the valid entry.
-
-Fix it by making ib_find_gid() continue searching even after encountering
-missing entries.
-
-Fixes: 5eb620c81ce3 ("IB/core: Add helpers for uncached GID and P_Key searches")
-Link: https://lore.kernel.org/r/e55d331b96cecfc2cf19803d16e7109ea966882d.1639055490.git.leonro@nvidia.com
-Signed-off-by: Avihai Horon <avihaih@nvidia.com>
-Reviewed-by: Mark Zhang <markzhang@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 6078c651947a ("soc: mediatek: Refine scpsys to support multiple platform")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20211222015157.1025853-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/device.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/soc/mediatek/mtk-scpsys.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
-index 6a585c3e21923..ffd0f43e2129f 100644
---- a/drivers/infiniband/core/device.c
-+++ b/drivers/infiniband/core/device.c
-@@ -1039,7 +1039,8 @@ int ib_find_gid(struct ib_device *device, union ib_gid *gid,
- 		for (i = 0; i < device->port_immutable[port].gid_tbl_len; ++i) {
- 			ret = rdma_query_gid(device, port, i, &tmp_gid);
- 			if (ret)
--				return ret;
-+				continue;
+diff --git a/drivers/soc/mediatek/mtk-scpsys.c b/drivers/soc/mediatek/mtk-scpsys.c
+index ef54f1638d207..01fcad7c8fae8 100644
+--- a/drivers/soc/mediatek/mtk-scpsys.c
++++ b/drivers/soc/mediatek/mtk-scpsys.c
+@@ -341,12 +341,17 @@ out:
+ 	return ret;
+ }
+ 
+-static void init_clks(struct platform_device *pdev, struct clk **clk)
++static int init_clks(struct platform_device *pdev, struct clk **clk)
+ {
+ 	int i;
+ 
+-	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
++	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
+ 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
++		if (IS_ERR(clk[i]))
++			return PTR_ERR(clk[i]);
++	}
 +
- 			if (!memcmp(&tmp_gid, gid, sizeof *gid)) {
- 				*port_num = port;
- 				if (index)
++	return 0;
+ }
+ 
+ static struct scp *init_scp(struct platform_device *pdev,
+@@ -356,7 +361,7 @@ static struct scp *init_scp(struct platform_device *pdev,
+ {
+ 	struct genpd_onecell_data *pd_data;
+ 	struct resource *res;
+-	int i, j;
++	int i, j, ret;
+ 	struct scp *scp;
+ 	struct clk *clk[CLK_MAX];
+ 
+@@ -411,7 +416,9 @@ static struct scp *init_scp(struct platform_device *pdev,
+ 
+ 	pd_data->num_domains = num;
+ 
+-	init_clks(pdev, clk);
++	ret = init_clks(pdev, clk);
++	if (ret)
++		return ERR_PTR(ret);
+ 
+ 	for (i = 0; i < num; i++) {
+ 		struct scp_domain *scpd = &scp->domains[i];
 -- 
 2.34.1
 
