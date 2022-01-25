@@ -2,106 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EAE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE45CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376802AbiAYGvX (ORCPT
+        id S1377529AbiAYGyJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:51:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42062 "EHLO
+        Tue, 25 Jan 2022 01:54:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359494AbiAYGsI (ORCPT
+        with ESMTP id S1376456AbiAYGuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 01:48:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98927C09F4A9;
-        Mon, 24 Jan 2022 21:10:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34EDB6141C;
-        Tue, 25 Jan 2022 05:10:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54C3CC340E0;
-        Tue, 25 Jan 2022 05:10:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643087440;
-        bh=BEVe+YavO8Zvh19/8pYvNnZ7t8RCY/gLna1go7/ya14=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bCrIjJQS7hpNgbkV+rEqW37A/jDyaOuhYRuE3KqX4NCEcl75D2235fbUzjjg4LN0D
-         iZL/m2epkCPYw+JfZB+RiWgRe1kc/RC3Tw2LnUhSCN1hX63Rd43ZLeh9ric/ZL/Rml
-         kznwICzXU62GNSs1CeJt91XZKO64DB8HmIGHtvgCh4aTVvxIOhz+jtpmGTCXTOTNOO
-         EVoTkSHKMg55xTmaEWVQXpy/kuMIxR1dsUA9J2mlfcDzBX49nVv4uj37x3uaIbaGZB
-         9nKV9OAHKRt0YxL9PUGw7470WHrmMo9XBFaZzuMtHLJw2I1FBNqhKeZ+r7imaSk4d8
-         IMaLIFZ+84UaQ==
-Date:   Mon, 24 Jan 2022 21:10:38 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, axboe@kernel.dk, hch@lst.de,
-        martin.petersen@oracle.com, colyli@suse.de, arnd@arndb.de
-Subject: Re: [RFC 3/7] lib: add rocksoft model crc64
-Message-ID: <Ye+GTkrZ5YMe5qGt@sol.localdomain>
-References: <20220124160107.1683901-1-kbusch@kernel.org>
- <20220124160107.1683901-4-kbusch@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124160107.1683901-4-kbusch@kernel.org>
+        Tue, 25 Jan 2022 01:50:13 -0500
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B7DC06B59C
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:17:58 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id q21-20020a170902edd500b0014ae79cc6d5so4550101plk.18
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:17:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Ocy1f8e8l5tnDktp3A5HwcgpUMQpU1wPRyfhdTDw5M8=;
+        b=VeHwN5GkQbTg4xXyCkEkUwiJWbtdR+uqWnLLC+h4ovZG0cDZTJcvgJIH2cBuR1bq/z
+         k+hrJ7P+DlciIwsI/fEaKDEwZan3zTiRMxn5AE3MW2Kqp8OauhOn/pkI0mA1UjkWnTFm
+         diE1GSsMVdImczBIfjkOnOLAiUiVdFxrWlAMOgJprfvVLmsaVyZD8LBDJp/J6+QWxfFA
+         EEAqgOVm7jfqtvD5PS8JkwyHDco7E32xgfm85lhcGhUajCeP4FVyE64zuCKLKG7TytbE
+         pYakrcdz72KFPOKsz1d3RJsonbFJVmLkvYDsdmqW4rNRDr20wfwybVVPUZsZUKe4TUfd
+         gSEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Ocy1f8e8l5tnDktp3A5HwcgpUMQpU1wPRyfhdTDw5M8=;
+        b=08AJXVYaMCPYjnJL9Fx43nC+j/t5r53wr103EPqveVtxRr4povO7g8ArXJhsQ7saR6
+         DAl+JCBM0HsrMmjm1dE4Nf+xA8nUQLI0YcVzMPIYZ5f4TrgLfmqd5Ko0G5L5SpHpEqJA
+         hURlgec0+tuQVhRFgBZLwXiFsWRxP66UOBT7MrtRoSSvXFRRSn842sKWcQXq5ci6J6s9
+         Sd3r2DkTLejPoIRwfhUFR8BkfndnHj2PpPwLXIn7GyK7GPmm5UAsVE/vW3SfZOlQII5O
+         ZJFTud9Fo4WyZEougb7l3pmuIsSVYxt/xJ92xmMfvGtpB1beoUl5Wd5DtPAw7EA6uq3S
+         iTAQ==
+X-Gm-Message-State: AOAM5328iv96UQaGfsQfX58kgo+zDNtNg9HzwlhKWHpEZfrLCa9EQFZt
+        qeYUQc/9Rcsh3S9SFbJspGpe94Y4gbbNng==
+X-Google-Smtp-Source: ABdhPJxe8AfKsCPhuglY9hr0mXjNrX0aldbMm31sCb7LADfE3npZOHRYWdmErVF1V2X6jR/3AHWfOJIeO4t9vQ==
+X-Received: from shakeelb.svl.corp.google.com ([2620:15c:2cd:202:276f:dcd0:a2cf:ec4c])
+ (user=shakeelb job=sendgmr) by 2002:a17:902:ab82:b0:14a:188a:cd1f with SMTP
+ id f2-20020a170902ab8200b0014a188acd1fmr17395057plr.44.1643087878415; Mon, 24
+ Jan 2022 21:17:58 -0800 (PST)
+Date:   Mon, 24 Jan 2022 21:17:36 -0800
+Message-Id: <20220125051736.2981459-1-shakeelb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+Subject: [PATCH] mm: io_uring: allow oom-killer from io_uring_setup
+From:   Shakeel Butt <shakeelb@google.com>
+To:     Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, io-uring@vger.kernel.org,
+        Shakeel Butt <shakeelb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 08:01:03AM -0800, Keith Busch wrote:
-> Since this model reflects inputs and outputs, a helper table and
-> function are added to reverse bits of 8 and 64 bit values.
+On an overcommitted system which is running multiple workloads of
+varying priorities, it is preferred to trigger an oom-killer to kill a
+low priority workload than to let the high priority workload receiving
+ENOMEMs. On our memory overcommitted systems, we are seeing a lot of
+ENOMEMs instead of oom-kills because io_uring_setup callchain is using
+__GFP_NORETRY gfp flag which avoids the oom-killer. Let's remove it and
+allow the oom-killer to kill a lower priority job.
 
-That's a silly way to do a bit-reflected CRC.  The proper way to do it is to
-reflect the bytes too, so that the bits and bytes are ordered consistently, so
-explicitly reflecting the bits isn't needed.  Most CRC-32's are bit-reflected,
-and they are usually implemented this way.  E.g., see crc32_le() in lib/crc32.c.
+Signed-off-by: Shakeel Butt <shakeelb@google.com>
+---
+ fs/io_uring.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Here's a Python script that shows that the Rocksoft CRC-64 can be computed
-without explicitly reversing the bits.  It passes the tests from your patch 4:
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index e54c4127422e..d9eeb202363c 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -8928,10 +8928,9 @@ static void io_mem_free(void *ptr)
+ 
+ static void *io_mem_alloc(size_t size)
+ {
+-	gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | __GFP_NOWARN | __GFP_COMP |
+-				__GFP_NORETRY | __GFP_ACCOUNT;
++	gfp_t gfp = GFP_KERNEL_ACCOUNT | __GFP_ZERO | __GFP_NOWARN | __GFP_COMP;
+ 
+-	return (void *) __get_free_pages(gfp_flags, get_order(size));
++	return (void *) __get_free_pages(gfp, get_order(size));
+ }
+ 
+ static unsigned long rings_size(unsigned sq_entries, unsigned cq_entries,
+-- 
+2.35.0.rc0.227.g00780c9af4-goog
 
-
-COEFFS = [63, 61, 59, 58, 56, 55, 52, 49, 48, 47, 46, 44, 41, 37, 36, 34, 32,
-          31, 28, 26, 23, 22, 19, 16, 13, 12, 10, 9, 6, 4, 3, 0]
-POLY = sum(1 << (63 - coeff) for coeff in COEFFS)
-
-# Generate the table.
-table = [0] * 256
-for i in range(256):
-    crc = 0
-    byte = i
-    for j in range(8):
-        if ((crc ^ (byte >> j)) & 1) == 1:
-            crc = (crc >> 1) ^ POLY
-        else:
-            crc = crc >> 1
-    table[i] = crc
-
-# Compute the CRC-64 one byte at a time using the table.
-def crc64_rocksoft(data):
-    crc = 0xffffffffffffffff
-    for byte in data:
-        crc = (crc >> 8) ^ table[(crc & 0xff) ^ byte]
-    return crc ^ 0xffffffffffffffff
-
-# Tests
-assert crc64_rocksoft(bytearray([0] * 4096)) == 0x6482D367EB22B64E
-assert crc64_rocksoft(bytearray([255] * 4096)) == 0xC0DDBA7302ECA3AC
-assert crc64_rocksoft(bytearray([i % 256 for i in range(4096)])) == 0x3E729F5F6750449C
-assert crc64_rocksoft(bytearray([(255-i) % 256 for i in range(4096)])) == 0x9A2DF64B8E9E517E
-
-# Print the table.
-print(f'#define CRC64_ROCKSOFT_POLY 0x{POLY:016x}ULL')
-print('')
-print('static const u64 crc64_rocksoft_tab[] = {')
-for i in range(0, 256, 2):
-    print('\t', end='')
-    for j in range(i, i + 2):
-        print(f'0x{table[j]:016x}ULL,', end='')
-        if j != 1:
-            print(' ', end='')
-    print('')
-print('};')
