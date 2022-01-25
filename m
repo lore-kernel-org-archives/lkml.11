@@ -2,85 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:41:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D386C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447814AbiAYIlO (ORCPT
+        id S1449920AbiAYIly (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:41:14 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4490 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451456AbiAYIis (ORCPT
+        Tue, 25 Jan 2022 03:41:54 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:17808 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236886AbiAYIji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:38:48 -0500
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JjgGr2qtRz6H7cN;
+        Tue, 25 Jan 2022 03:39:38 -0500
+Received: from kwepemi100018.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JjgGr2YR5z9sJ5;
         Tue, 25 Jan 2022 16:38:12 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ kwepemi100018.china.huawei.com (7.221.188.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 09:38:34 +0100
-Received: from [10.47.84.133] (10.47.84.133) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 25 Jan
- 2022 08:38:33 +0000
-Subject: Re: [PATCH 5.16 1026/1039] blk-mq: fix tag_get wait task cant be
- awakened
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <stable@vger.kernel.org>, Ming Lei <ming.lei@redhat.com>,
-        Laibin Qiu <qiulaibin@huawei.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jens Axboe <axboe@kernel.dk>, <alex_y_xu@yahoo.ca>
-References: <20220124184125.121143506@linuxfoundation.org>
- <20220124184159.785093232@linuxfoundation.org>
-From:   John Garry <john.garry@huawei.com>
-Message-ID: <e8558aeb-7343-da56-88bb-14c1a27d099c@huawei.com>
-Date:   Tue, 25 Jan 2022 08:38:01 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+ 15.1.2308.21; Tue, 25 Jan 2022 16:39:31 +0800
+Received: from linux-lmwb.huawei.com (10.175.103.112) by
+ kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 16:39:30 +0800
+From:   Zou Wei <zou_wei@huawei.com>
+To:     <zhenyuw@linux.intel.com>, <zhi.a.wang@intel.com>,
+        <jani.nikula@linux.intel.com>, <joonas.lahtinen@linux.intel.com>,
+        <rodrigo.vivi@intel.com>, <tvrtko.ursulin@linux.intel.com>,
+        <airlied@linux.ie>, <daniel@ffwll.ch>
+CC:     <intel-gvt-dev@lists.freedesktop.org>,
+        <intel-gfx@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        Zou Wei <zou_wei@huawei.com>
+Subject: [PATCH -next] drm/i915/gvt: Convert list_for_each to entry variant
+Date:   Tue, 25 Jan 2022 16:39:24 +0800
+Message-ID: <1643099964-13905-1-git-send-email-zou_wei@huawei.com>
+X-Mailer: git-send-email 2.6.2
 MIME-Version: 1.0
-In-Reply-To: <20220124184159.785093232@linuxfoundation.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.84.133]
-X-ClientProxiedBy: lhreml727-chm.china.huawei.com (10.201.108.78) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
+Content-Type: text/plain
+X-Originating-IP: [10.175.103.112]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/01/2022 18:46, Greg Kroah-Hartman wrote:
-> From: Laibin Qiu<qiulaibin@huawei.com>
-> 
-> commit 180dccb0dba4f5e84a4a70c1be1d34cbb6528b32 upstream.
-> 
-> In case of shared tags, there might be more than one hctx which
-> allocates from the same tags, and each hctx is limited to allocate at
-> most:
->          hctx_max_depth = max((bt->sb.depth + users - 1) / users, 4U);
-> 
-> tag idle detection is lazy, and may be delayed for 30sec, so there
-> could be just one real active hctx(queue) but all others are actually
-> idle and still accounted as active because of the lazy idle detection.
-> Then if wake_batch is > hctx_max_depth, driver tag allocation may wait
-> forever on this real active hctx.
-> 
-> Fix this by recalculating wake_batch when inc or dec active_queues.
-> 
-> Fixes: 0d2602ca30e41 ("blk-mq: improve support for shared tags maps")
-> Suggested-by: Ming Lei<ming.lei@redhat.com>
-> Suggested-by: John Garry<john.garry@huawei.com>
-> Signed-off-by: Laibin Qiu<qiulaibin@huawei.com>
-> Reviewed-by: Andy Shevchenko<andriy.shevchenko@linux.intel.com>
-> Link:https://lore.kernel.org/r/20220113025536.1479653-1-qiulaibin@huawei.com
-> Signed-off-by: Jens Axboe<axboe@kernel.dk>
-> Signed-off-by: Greg Kroah-Hartman<gregkh@linuxfoundation.org>
+convert list_for_each() to list_for_each_entry() where
+applicable.
 
-JFYI, Somebody reported a hang with this commit:
-https://lore.kernel.org/linux-block/78cafe94-a787-e006-8851-69906f0c2128@huawei.com/T/#t
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zou Wei <zou_wei@huawei.com>
+---
+ drivers/gpu/drm/i915/gvt/dmabuf.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-Thanks,
-John
+diff --git a/drivers/gpu/drm/i915/gvt/dmabuf.c b/drivers/gpu/drm/i915/gvt/dmabuf.c
+index 8882843..1f0721d 100644
+--- a/drivers/gpu/drm/i915/gvt/dmabuf.c
++++ b/drivers/gpu/drm/i915/gvt/dmabuf.c
+@@ -350,13 +350,11 @@ static struct intel_vgpu_dmabuf_obj *
+ pick_dmabuf_by_info(struct intel_vgpu *vgpu,
+ 		    struct intel_vgpu_fb_info *latest_info)
+ {
+-	struct list_head *pos;
+ 	struct intel_vgpu_fb_info *fb_info;
+ 	struct intel_vgpu_dmabuf_obj *dmabuf_obj = NULL;
+ 	struct intel_vgpu_dmabuf_obj *ret = NULL;
+ 
+-	list_for_each(pos, &vgpu->dmabuf_obj_list_head) {
+-		dmabuf_obj = list_entry(pos, struct intel_vgpu_dmabuf_obj, list);
++	list_for_each_entry(dmabuf_obj, &vgpu->dmabuf_obj_list_head, list) {
+ 		if (!dmabuf_obj->info)
+ 			continue;
+ 
+@@ -379,12 +377,10 @@ pick_dmabuf_by_info(struct intel_vgpu *vgpu,
+ static struct intel_vgpu_dmabuf_obj *
+ pick_dmabuf_by_num(struct intel_vgpu *vgpu, u32 id)
+ {
+-	struct list_head *pos;
+ 	struct intel_vgpu_dmabuf_obj *dmabuf_obj = NULL;
+ 	struct intel_vgpu_dmabuf_obj *ret = NULL;
+ 
+-	list_for_each(pos, &vgpu->dmabuf_obj_list_head) {
+-		dmabuf_obj = list_entry(pos, struct intel_vgpu_dmabuf_obj, list);
++	list_for_each_entry(dmabuf_obj, &vgpu->dmabuf_obj_list_head, list) {
+ 		if (dmabuf_obj->dmabuf_id == id) {
+ 			ret = dmabuf_obj;
+ 			break;
+-- 
+2.6.2
+
