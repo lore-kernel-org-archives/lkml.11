@@ -2,134 +2,970 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C44C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C98E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357347AbiAYOcl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:32:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1579565AbiAYO3T (ORCPT
+        id S237426AbiAYOeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 09:34:10 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:40670 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230007AbiAYOaI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:29:19 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8947C061770
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:26:30 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id b13so63515874edn.0
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:26:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=uLYc4GfafSgmS5JKXh594CfMmA35aGk/ExImBcGXGtA=;
-        b=BPZNM5pbakpa9qw5XOCXOKrlaT4P9JONtPfzzI/7EDuxL4xpG+WKl+4zQnPUjLHZsT
-         Fv0+hgvomdk5YBgw5iGdrwsHBVadEjSJEmB8Ybq8xUdddfzTFwbyQrGOC/gJsq5gGvua
-         LSKmSiGeq+Q1vdI+h3FiVdMSdh0v41mU/BFs65s3NTwyxy2r45gZO8LGNVPgxgRmoCAc
-         MrM2MpHuU7VY1NedoW3dxukCX9kjDguDEhYU3NRjc71Z8RIdTIrxt5SfXkse6EWM/9iu
-         TxKfm5uo2Mp80h02QawdPVsIjPXF2SIoCYQdjR5k4kKYddR2vfaMhmY4DiV901Tf0beq
-         82ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=uLYc4GfafSgmS5JKXh594CfMmA35aGk/ExImBcGXGtA=;
-        b=XA1QHSQBZlaKOJRhDoE/+cFiMYcxC/OFJ2+Qyms2NhAS4kKmu2413RMWW8vnWPy56T
-         Qq5P6+LgVHko9jGuD+EJtegp51Lh/JsoTzd9mNcenFkg/CC/8FqzxYbj50IpkIxFH0Xh
-         hgi85UR0mcrY3Vw+rcYGRQwJHJrV/BTyi7ZqlG52JUV0APyLnU+rHQYGPeyWXu44a6vE
-         L69fn/aKl/9ewnNPDcLVFwF7rwuz5ZpPQ3gtt+VyHy0/ci5jmoZ22gMi7ito2k1sAMXk
-         3KPjxrUpu0Yda7uSumWuyIgoLPe2XwwChnKZw5MyIZljDao6xly/rJcvP60aela3EYl3
-         7NxA==
-X-Gm-Message-State: AOAM533H9BA5PwIPDxpLZyzivwwIZ8/paHNSDwKRYijsQtFh3RJ1hKcH
-        w1CNjCxdgEeNsyu41m/p8/3Trsg7bI0d0E8sepGEdQ==
-X-Google-Smtp-Source: ABdhPJweYum/ZG0CXLwcWx/cLh6hSzOrvhiqGj8hBYQ0eR5iW7lIA8q2idFX0Mg3J25eq6LZ46gmxJ6XpwWSSMv5SQs=
-X-Received: by 2002:a17:906:c116:: with SMTP id do22mr16628213ejc.592.1643120789060;
- Tue, 25 Jan 2022 06:26:29 -0800 (PST)
+        Tue, 25 Jan 2022 09:30:08 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 7C7E11F381;
+        Tue, 25 Jan 2022 14:30:02 +0000 (UTC)
+Received: from adalid.arch.suse.de (adalid.arch.suse.de [10.161.8.13])
+        by relay2.suse.de (Postfix) with ESMTP id 6E654A3B87;
+        Tue, 25 Jan 2022 14:30:02 +0000 (UTC)
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] MIPS: Fix build error due to PTR used in more places
+Date:   Tue, 25 Jan 2022 15:19:44 +0100
+Message-Id: <20220125141946.54114-1-tsbogend@alpha.franken.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-References: <20220124150209.22202-1-bgeffon@google.com> <20220124151434.GB20331@agk-cloud1.hosts.prod.upshift.rdu2.redhat.com>
- <CADyq12ykDCswWZw05OdyYfP-zT6afuhXbckii1m1egQ2fSwB4w@mail.gmail.com> <20220125002025.GA21887@agk-cloud1.hosts.prod.upshift.rdu2.redhat.com>
-In-Reply-To: <20220125002025.GA21887@agk-cloud1.hosts.prod.upshift.rdu2.redhat.com>
-From:   Brian Geffon <bgeffon@google.com>
-Date:   Tue, 25 Jan 2022 09:25:52 -0500
-Message-ID: <CADyq12zS5ZP+0DBdiVWq0_kt4-n0ykdwH_Nw=kJj0V7oF=3OdQ@mail.gmail.com>
-Subject: Re: [PATCH] dm: introduce a no open flag for deferred remove
-To:     Brian Geffon <bgeffon@google.com>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 7:21 PM Alasdair G Kergon <agk@redhat.com> wrote:
->
-> On Mon, Jan 24, 2022 at 10:25:47AM -0500, Brian Geffon wrote:
-> > Thank you for looking at this. There are a few reasons this might be
-> > useful, the first is if you're trying to speed up a graceful teardown
-> > of the device by informing userspace that this device is going to be
-> > removed in the near future. Another might be on systems where it might
-> > be worthwhile to not have users with CAP_DAC_OVERRIDE be able to open
-> > the device. The logic on this second case is that, suppose you have a
-> > dm-crypt block device which is backing swap, the data on this device
-> > is ephemeral so a flow might be to setup swap followed by dmsetup
-> > remove --deferred /dev/mapper/encrypted-swap. This will guarantee that
-> > as soon as swap is torn down the encrypted block device is dropped,
-> > additionally with this new flag you'll be guaranteed that there can be
-> > no further opens on it.
->
-> And is that the reason you propose this?
-> - You want a special exclusive 'one time open' device that
->   self-destructs when closed?
+Use PTR_WD instead of PTR to avoid clashes with other parts.
 
-Yes, this is the primary reason I'm exploring this. I tried to find an
-implementation that might be useful in other situations which is why I
-landed on this approach.
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+---
+ arch/mips/include/asm/asm.h            |   4 +-
+ arch/mips/include/asm/ftrace.h         |   4 +-
+ arch/mips/include/asm/r4kcache.h       |   4 +-
+ arch/mips/include/asm/unaligned-emul.h | 176 ++++++++++++-------------
+ arch/mips/kernel/mips-r2-to-r6-emul.c  | 104 +++++++--------
+ arch/mips/kernel/r2300_fpu.S           |   6 +-
+ arch/mips/kernel/r4k_fpu.S             |   2 +-
+ arch/mips/kernel/relocate_kernel.S     |  22 ++--
+ arch/mips/kernel/scall32-o32.S         |  10 +-
+ arch/mips/kernel/scall64-n32.S         |   2 +-
+ arch/mips/kernel/scall64-n64.S         |   2 +-
+ arch/mips/kernel/scall64-o32.S         |  10 +-
+ arch/mips/kernel/syscall.c             |   8 +-
+ arch/mips/lib/csum_partial.S           |   4 +-
+ arch/mips/lib/memcpy.S                 |   4 +-
+ arch/mips/lib/memset.S                 |   2 +-
+ arch/mips/lib/strncpy_user.S           |   4 +-
+ arch/mips/lib/strnlen_user.S           |   2 +-
+ 18 files changed, 185 insertions(+), 185 deletions(-)
 
->
-> > No, this is fully backwards compatible with the current deferred
-> > remove behavior, it's not required. Additionally, since on the actual
-> > remove userspace would receive an -ENXIO already once the remove
-> > process has started it seems reasonable to return -ENXIO in the
-> > deferred remove case when this flag is enabled.
->
-> Well I feel it does break existing semantics which is why we wrote
-> the code the way we did.  The state can be long-lived, the code
-> that has it open might legitimately want to open it again in
-> parallel etc. - in general this seems a bad idea.
+diff --git a/arch/mips/include/asm/asm.h b/arch/mips/include/asm/asm.h
+index 6ffdd4b5e1d0..336ac9b65235 100644
+--- a/arch/mips/include/asm/asm.h
++++ b/arch/mips/include/asm/asm.h
+@@ -285,7 +285,7 @@ symbol		=	value
+ 
+ #define PTR_SCALESHIFT	2
+ 
+-#define PTR		.word
++#define PTR_WD		.word
+ #define PTRSIZE		4
+ #define PTRLOG		2
+ #endif
+@@ -310,7 +310,7 @@ symbol		=	value
+ 
+ #define PTR_SCALESHIFT	3
+ 
+-#define PTR		.dword
++#define PTR_WD		.dword
+ #define PTRSIZE		8
+ #define PTRLOG		3
+ #endif
+diff --git a/arch/mips/include/asm/ftrace.h b/arch/mips/include/asm/ftrace.h
+index b463f2aa5a61..db497a8167da 100644
+--- a/arch/mips/include/asm/ftrace.h
++++ b/arch/mips/include/asm/ftrace.h
+@@ -32,7 +32,7 @@ do {							\
+ 		".previous\n"				\
+ 							\
+ 		".section\t__ex_table,\"a\"\n\t"	\
+-		STR(PTR) "\t1b, 3b\n\t"			\
++		STR(PTR_WD) "\t1b, 3b\n\t"		\
+ 		".previous\n"				\
+ 							\
+ 		: [tmp_dst] "=&r" (dst), [tmp_err] "=r" (error)\
+@@ -54,7 +54,7 @@ do {						\
+ 		".previous\n"			\
+ 						\
+ 		".section\t__ex_table,\"a\"\n\t"\
+-		STR(PTR) "\t1b, 3b\n\t"		\
++		STR(PTR_WD) "\t1b, 3b\n\t"	\
+ 		".previous\n"			\
+ 						\
+ 		: [tmp_err] "=r" (error)	\
+diff --git a/arch/mips/include/asm/r4kcache.h b/arch/mips/include/asm/r4kcache.h
+index af3788589ee6..431a1c9d53fc 100644
+--- a/arch/mips/include/asm/r4kcache.h
++++ b/arch/mips/include/asm/r4kcache.h
+@@ -119,7 +119,7 @@ static inline void flush_scache_line(unsigned long addr)
+ 	"	j	2b			\n"		\
+ 	"	.previous			\n"		\
+ 	"	.section __ex_table,\"a\"	\n"		\
+-	"	"STR(PTR)" 1b, 3b		\n"		\
++	"	"STR(PTR_WD)" 1b, 3b		\n"		\
+ 	"	.previous"					\
+ 	: "+r" (__err)						\
+ 	: "i" (op), "r" (addr), "i" (-EFAULT));			\
+@@ -142,7 +142,7 @@ static inline void flush_scache_line(unsigned long addr)
+ 	"	j	2b			\n"		\
+ 	"	.previous			\n"		\
+ 	"	.section __ex_table,\"a\"	\n"		\
+-	"	"STR(PTR)" 1b, 3b		\n"		\
++	"	"STR(PTR_WD)" 1b, 3b		\n"		\
+ 	"	.previous"					\
+ 	: "+r" (__err)						\
+ 	: "i" (op), "r" (addr), "i" (-EFAULT));			\
+diff --git a/arch/mips/include/asm/unaligned-emul.h b/arch/mips/include/asm/unaligned-emul.h
+index 2022b18944b9..9af0f4d3d288 100644
+--- a/arch/mips/include/asm/unaligned-emul.h
++++ b/arch/mips/include/asm/unaligned-emul.h
+@@ -20,8 +20,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=&r" (value), "=r" (res)         \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -41,8 +41,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=&r" (value), "=r" (res)         \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -74,10 +74,10 @@ do {                                                \
+ 		"j\t10b\n\t"			    \
+ 		".previous\n\t"			    \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 11b\n\t"		    \
+-		STR(PTR)"\t2b, 11b\n\t"		    \
+-		STR(PTR)"\t3b, 11b\n\t"		    \
+-		STR(PTR)"\t4b, 11b\n\t"		    \
++		STR(PTR_WD)"\t1b, 11b\n\t"	    \
++		STR(PTR_WD)"\t2b, 11b\n\t"	    \
++		STR(PTR_WD)"\t3b, 11b\n\t"	    \
++		STR(PTR_WD)"\t4b, 11b\n\t"	    \
+ 		".previous"			    \
+ 		: "=&r" (value), "=r" (res)	    \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -102,8 +102,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=&r" (value), "=r" (res)         \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -125,8 +125,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=&r" (value), "=r" (res)         \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -145,8 +145,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=&r" (value), "=r" (res)         \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -178,10 +178,10 @@ do {                                                \
+ 		"j\t10b\n\t"			    \
+ 		".previous\n\t"			    \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 11b\n\t"		    \
+-		STR(PTR)"\t2b, 11b\n\t"		    \
+-		STR(PTR)"\t3b, 11b\n\t"		    \
+-		STR(PTR)"\t4b, 11b\n\t"		    \
++		STR(PTR_WD)"\t1b, 11b\n\t"	    \
++		STR(PTR_WD)"\t2b, 11b\n\t"	    \
++		STR(PTR_WD)"\t3b, 11b\n\t"	    \
++		STR(PTR_WD)"\t4b, 11b\n\t"	    \
+ 		".previous"			    \
+ 		: "=&r" (value), "=r" (res)	    \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -223,14 +223,14 @@ do {                                                \
+ 		"j\t10b\n\t"			    \
+ 		".previous\n\t"			    \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 11b\n\t"		    \
+-		STR(PTR)"\t2b, 11b\n\t"		    \
+-		STR(PTR)"\t3b, 11b\n\t"		    \
+-		STR(PTR)"\t4b, 11b\n\t"		    \
+-		STR(PTR)"\t5b, 11b\n\t"		    \
+-		STR(PTR)"\t6b, 11b\n\t"		    \
+-		STR(PTR)"\t7b, 11b\n\t"		    \
+-		STR(PTR)"\t8b, 11b\n\t"		    \
++		STR(PTR_WD)"\t1b, 11b\n\t"	    \
++		STR(PTR_WD)"\t2b, 11b\n\t"	    \
++		STR(PTR_WD)"\t3b, 11b\n\t"	    \
++		STR(PTR_WD)"\t4b, 11b\n\t"	    \
++		STR(PTR_WD)"\t5b, 11b\n\t"	    \
++		STR(PTR_WD)"\t6b, 11b\n\t"	    \
++		STR(PTR_WD)"\t7b, 11b\n\t"	    \
++		STR(PTR_WD)"\t8b, 11b\n\t"	    \
+ 		".previous"			    \
+ 		: "=&r" (value), "=r" (res)	    \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -255,8 +255,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"              \
+-		STR(PTR)"\t2b, 4b\n\t"              \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=r" (res)                        \
+ 		: "r" (value), "r" (addr), "i" (-EFAULT));\
+@@ -276,8 +276,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=r" (res)                                \
+ 		: "r" (value), "r" (addr), "i" (-EFAULT));  \
+@@ -296,8 +296,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=r" (res)                                \
+ 		: "r" (value), "r" (addr), "i" (-EFAULT));  \
+@@ -325,10 +325,10 @@ do {                                                \
+ 		"j\t10b\n\t"			    \
+ 		".previous\n\t"			    \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 11b\n\t"		    \
+-		STR(PTR)"\t2b, 11b\n\t"		    \
+-		STR(PTR)"\t3b, 11b\n\t"		    \
+-		STR(PTR)"\t4b, 11b\n\t"		    \
++		STR(PTR_WD)"\t1b, 11b\n\t"	    \
++		STR(PTR_WD)"\t2b, 11b\n\t"	    \
++		STR(PTR_WD)"\t3b, 11b\n\t"	    \
++		STR(PTR_WD)"\t4b, 11b\n\t"	    \
+ 		".previous"			    \
+ 		: "=&r" (res)				    \
+ 		: "r" (value), "r" (addr), "i" (-EFAULT)    \
+@@ -365,14 +365,14 @@ do {                                                \
+ 		"j\t10b\n\t"			    \
+ 		".previous\n\t"			    \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 11b\n\t"		    \
+-		STR(PTR)"\t2b, 11b\n\t"		    \
+-		STR(PTR)"\t3b, 11b\n\t"		    \
+-		STR(PTR)"\t4b, 11b\n\t"		    \
+-		STR(PTR)"\t5b, 11b\n\t"		    \
+-		STR(PTR)"\t6b, 11b\n\t"		    \
+-		STR(PTR)"\t7b, 11b\n\t"		    \
+-		STR(PTR)"\t8b, 11b\n\t"		    \
++		STR(PTR_WD)"\t1b, 11b\n\t"	    \
++		STR(PTR_WD)"\t2b, 11b\n\t"	    \
++		STR(PTR_WD)"\t3b, 11b\n\t"	    \
++		STR(PTR_WD)"\t4b, 11b\n\t"	    \
++		STR(PTR_WD)"\t5b, 11b\n\t"	    \
++		STR(PTR_WD)"\t6b, 11b\n\t"	    \
++		STR(PTR_WD)"\t7b, 11b\n\t"	    \
++		STR(PTR_WD)"\t8b, 11b\n\t"	    \
+ 		".previous"			    \
+ 		: "=&r" (res)				    \
+ 		: "r" (value), "r" (addr), "i" (-EFAULT)    \
+@@ -398,8 +398,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=&r" (value), "=r" (res)         \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -419,8 +419,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=&r" (value), "=r" (res)         \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -452,10 +452,10 @@ do {                                                \
+ 		"j\t10b\n\t"			    \
+ 		".previous\n\t"			    \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 11b\n\t"		    \
+-		STR(PTR)"\t2b, 11b\n\t"		    \
+-		STR(PTR)"\t3b, 11b\n\t"		    \
+-		STR(PTR)"\t4b, 11b\n\t"		    \
++		STR(PTR_WD)"\t1b, 11b\n\t"	    \
++		STR(PTR_WD)"\t2b, 11b\n\t"	    \
++		STR(PTR_WD)"\t3b, 11b\n\t"	    \
++		STR(PTR_WD)"\t4b, 11b\n\t"	    \
+ 		".previous"			    \
+ 		: "=&r" (value), "=r" (res)	    \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -481,8 +481,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=&r" (value), "=r" (res)         \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -504,8 +504,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=&r" (value), "=r" (res)         \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -524,8 +524,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=&r" (value), "=r" (res)         \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -557,10 +557,10 @@ do {                                                \
+ 		"j\t10b\n\t"			    \
+ 		".previous\n\t"			    \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 11b\n\t"		    \
+-		STR(PTR)"\t2b, 11b\n\t"		    \
+-		STR(PTR)"\t3b, 11b\n\t"		    \
+-		STR(PTR)"\t4b, 11b\n\t"		    \
++		STR(PTR_WD)"\t1b, 11b\n\t"	    \
++		STR(PTR_WD)"\t2b, 11b\n\t"	    \
++		STR(PTR_WD)"\t3b, 11b\n\t"	    \
++		STR(PTR_WD)"\t4b, 11b\n\t"	    \
+ 		".previous"			    \
+ 		: "=&r" (value), "=r" (res)	    \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -602,14 +602,14 @@ do {                                                \
+ 		"j\t10b\n\t"			    \
+ 		".previous\n\t"			    \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 11b\n\t"		    \
+-		STR(PTR)"\t2b, 11b\n\t"		    \
+-		STR(PTR)"\t3b, 11b\n\t"		    \
+-		STR(PTR)"\t4b, 11b\n\t"		    \
+-		STR(PTR)"\t5b, 11b\n\t"		    \
+-		STR(PTR)"\t6b, 11b\n\t"		    \
+-		STR(PTR)"\t7b, 11b\n\t"		    \
+-		STR(PTR)"\t8b, 11b\n\t"		    \
++		STR(PTR_WD)"\t1b, 11b\n\t"	    \
++		STR(PTR_WD)"\t2b, 11b\n\t"	    \
++		STR(PTR_WD)"\t3b, 11b\n\t"	    \
++		STR(PTR_WD)"\t4b, 11b\n\t"	    \
++		STR(PTR_WD)"\t5b, 11b\n\t"	    \
++		STR(PTR_WD)"\t6b, 11b\n\t"	    \
++		STR(PTR_WD)"\t7b, 11b\n\t"	    \
++		STR(PTR_WD)"\t8b, 11b\n\t"	    \
+ 		".previous"			    \
+ 		: "=&r" (value), "=r" (res)	    \
+ 		: "r" (addr), "i" (-EFAULT));       \
+@@ -632,8 +632,8 @@ do {                                                 \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=r" (res)                        \
+ 		: "r" (value), "r" (addr), "i" (-EFAULT));\
+@@ -653,8 +653,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=r" (res)                                \
+ 		: "r" (value), "r" (addr), "i" (-EFAULT));  \
+@@ -673,8 +673,8 @@ do {                                                \
+ 		"j\t3b\n\t"                         \
+ 		".previous\n\t"                     \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 4b\n\t"               \
+-		STR(PTR)"\t2b, 4b\n\t"               \
++		STR(PTR_WD)"\t1b, 4b\n\t"           \
++		STR(PTR_WD)"\t2b, 4b\n\t"           \
+ 		".previous"                         \
+ 		: "=r" (res)                                \
+ 		: "r" (value), "r" (addr), "i" (-EFAULT));  \
+@@ -703,10 +703,10 @@ do {                                                \
+ 		"j\t10b\n\t"			    \
+ 		".previous\n\t"			    \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 11b\n\t"		    \
+-		STR(PTR)"\t2b, 11b\n\t"		    \
+-		STR(PTR)"\t3b, 11b\n\t"		    \
+-		STR(PTR)"\t4b, 11b\n\t"		    \
++		STR(PTR_WD)"\t1b, 11b\n\t"	    \
++		STR(PTR_WD)"\t2b, 11b\n\t"	    \
++		STR(PTR_WD)"\t3b, 11b\n\t"	    \
++		STR(PTR_WD)"\t4b, 11b\n\t"	    \
+ 		".previous"			    \
+ 		: "=&r" (res)				    \
+ 		: "r" (value), "r" (addr), "i" (-EFAULT)    \
+@@ -743,14 +743,14 @@ do {                                                \
+ 		"j\t10b\n\t"			    \
+ 		".previous\n\t"			    \
+ 		".section\t__ex_table,\"a\"\n\t"    \
+-		STR(PTR)"\t1b, 11b\n\t"		    \
+-		STR(PTR)"\t2b, 11b\n\t"		    \
+-		STR(PTR)"\t3b, 11b\n\t"		    \
+-		STR(PTR)"\t4b, 11b\n\t"		    \
+-		STR(PTR)"\t5b, 11b\n\t"		    \
+-		STR(PTR)"\t6b, 11b\n\t"		    \
+-		STR(PTR)"\t7b, 11b\n\t"		    \
+-		STR(PTR)"\t8b, 11b\n\t"		    \
++		STR(PTR_WD)"\t1b, 11b\n\t"	    \
++		STR(PTR_WD)"\t2b, 11b\n\t"	    \
++		STR(PTR_WD)"\t3b, 11b\n\t"	    \
++		STR(PTR_WD)"\t4b, 11b\n\t"	    \
++		STR(PTR_WD)"\t5b, 11b\n\t"	    \
++		STR(PTR_WD)"\t6b, 11b\n\t"	    \
++		STR(PTR_WD)"\t7b, 11b\n\t"	    \
++		STR(PTR_WD)"\t8b, 11b\n\t"	    \
+ 		".previous"			    \
+ 		: "=&r" (res)				    \
+ 		: "r" (value), "r" (addr), "i" (-EFAULT)    \
+diff --git a/arch/mips/kernel/mips-r2-to-r6-emul.c b/arch/mips/kernel/mips-r2-to-r6-emul.c
+index a39ec755e4c2..750fe569862b 100644
+--- a/arch/mips/kernel/mips-r2-to-r6-emul.c
++++ b/arch/mips/kernel/mips-r2-to-r6-emul.c
+@@ -1258,10 +1258,10 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"	j	10b\n"
+ 			"	.previous\n"
+ 			"	.section	__ex_table,\"a\"\n"
+-			STR(PTR) " 1b,8b\n"
+-			STR(PTR) " 2b,8b\n"
+-			STR(PTR) " 3b,8b\n"
+-			STR(PTR) " 4b,8b\n"
++			STR(PTR_WD) " 1b,8b\n"
++			STR(PTR_WD) " 2b,8b\n"
++			STR(PTR_WD) " 3b,8b\n"
++			STR(PTR_WD) " 4b,8b\n"
+ 			"	.previous\n"
+ 			"	.set	pop\n"
+ 			: "+&r"(rt), "=&r"(rs),
+@@ -1333,10 +1333,10 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"	j	10b\n"
+ 			"       .previous\n"
+ 			"	.section	__ex_table,\"a\"\n"
+-			STR(PTR) " 1b,8b\n"
+-			STR(PTR) " 2b,8b\n"
+-			STR(PTR) " 3b,8b\n"
+-			STR(PTR) " 4b,8b\n"
++			STR(PTR_WD) " 1b,8b\n"
++			STR(PTR_WD) " 2b,8b\n"
++			STR(PTR_WD) " 3b,8b\n"
++			STR(PTR_WD) " 4b,8b\n"
+ 			"	.previous\n"
+ 			"	.set	pop\n"
+ 			: "+&r"(rt), "=&r"(rs),
+@@ -1404,10 +1404,10 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"	j	9b\n"
+ 			"	.previous\n"
+ 			"	.section        __ex_table,\"a\"\n"
+-			STR(PTR) " 1b,8b\n"
+-			STR(PTR) " 2b,8b\n"
+-			STR(PTR) " 3b,8b\n"
+-			STR(PTR) " 4b,8b\n"
++			STR(PTR_WD) " 1b,8b\n"
++			STR(PTR_WD) " 2b,8b\n"
++			STR(PTR_WD) " 3b,8b\n"
++			STR(PTR_WD) " 4b,8b\n"
+ 			"	.previous\n"
+ 			"	.set	pop\n"
+ 			: "+&r"(rt), "=&r"(rs),
+@@ -1474,10 +1474,10 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"	j	9b\n"
+ 			"	.previous\n"
+ 			"	.section        __ex_table,\"a\"\n"
+-			STR(PTR) " 1b,8b\n"
+-			STR(PTR) " 2b,8b\n"
+-			STR(PTR) " 3b,8b\n"
+-			STR(PTR) " 4b,8b\n"
++			STR(PTR_WD) " 1b,8b\n"
++			STR(PTR_WD) " 2b,8b\n"
++			STR(PTR_WD) " 3b,8b\n"
++			STR(PTR_WD) " 4b,8b\n"
+ 			"	.previous\n"
+ 			"	.set	pop\n"
+ 			: "+&r"(rt), "=&r"(rs),
+@@ -1589,14 +1589,14 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"	j	9b\n"
+ 			"	.previous\n"
+ 			"	.section        __ex_table,\"a\"\n"
+-			STR(PTR) " 1b,8b\n"
+-			STR(PTR) " 2b,8b\n"
+-			STR(PTR) " 3b,8b\n"
+-			STR(PTR) " 4b,8b\n"
+-			STR(PTR) " 5b,8b\n"
+-			STR(PTR) " 6b,8b\n"
+-			STR(PTR) " 7b,8b\n"
+-			STR(PTR) " 0b,8b\n"
++			STR(PTR_WD) " 1b,8b\n"
++			STR(PTR_WD) " 2b,8b\n"
++			STR(PTR_WD) " 3b,8b\n"
++			STR(PTR_WD) " 4b,8b\n"
++			STR(PTR_WD) " 5b,8b\n"
++			STR(PTR_WD) " 6b,8b\n"
++			STR(PTR_WD) " 7b,8b\n"
++			STR(PTR_WD) " 0b,8b\n"
+ 			"	.previous\n"
+ 			"	.set	pop\n"
+ 			: "+&r"(rt), "=&r"(rs),
+@@ -1708,14 +1708,14 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"	j      9b\n"
+ 			"	.previous\n"
+ 			"	.section        __ex_table,\"a\"\n"
+-			STR(PTR) " 1b,8b\n"
+-			STR(PTR) " 2b,8b\n"
+-			STR(PTR) " 3b,8b\n"
+-			STR(PTR) " 4b,8b\n"
+-			STR(PTR) " 5b,8b\n"
+-			STR(PTR) " 6b,8b\n"
+-			STR(PTR) " 7b,8b\n"
+-			STR(PTR) " 0b,8b\n"
++			STR(PTR_WD) " 1b,8b\n"
++			STR(PTR_WD) " 2b,8b\n"
++			STR(PTR_WD) " 3b,8b\n"
++			STR(PTR_WD) " 4b,8b\n"
++			STR(PTR_WD) " 5b,8b\n"
++			STR(PTR_WD) " 6b,8b\n"
++			STR(PTR_WD) " 7b,8b\n"
++			STR(PTR_WD) " 0b,8b\n"
+ 			"	.previous\n"
+ 			"	.set    pop\n"
+ 			: "+&r"(rt), "=&r"(rs),
+@@ -1827,14 +1827,14 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"	j	9b\n"
+ 			"	.previous\n"
+ 			"	.section        __ex_table,\"a\"\n"
+-			STR(PTR) " 1b,8b\n"
+-			STR(PTR) " 2b,8b\n"
+-			STR(PTR) " 3b,8b\n"
+-			STR(PTR) " 4b,8b\n"
+-			STR(PTR) " 5b,8b\n"
+-			STR(PTR) " 6b,8b\n"
+-			STR(PTR) " 7b,8b\n"
+-			STR(PTR) " 0b,8b\n"
++			STR(PTR_WD) " 1b,8b\n"
++			STR(PTR_WD) " 2b,8b\n"
++			STR(PTR_WD) " 3b,8b\n"
++			STR(PTR_WD) " 4b,8b\n"
++			STR(PTR_WD) " 5b,8b\n"
++			STR(PTR_WD) " 6b,8b\n"
++			STR(PTR_WD) " 7b,8b\n"
++			STR(PTR_WD) " 0b,8b\n"
+ 			"	.previous\n"
+ 			"	.set	pop\n"
+ 			: "+&r"(rt), "=&r"(rs),
+@@ -1945,14 +1945,14 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"       j	9b\n"
+ 			"       .previous\n"
+ 			"       .section        __ex_table,\"a\"\n"
+-			STR(PTR) " 1b,8b\n"
+-			STR(PTR) " 2b,8b\n"
+-			STR(PTR) " 3b,8b\n"
+-			STR(PTR) " 4b,8b\n"
+-			STR(PTR) " 5b,8b\n"
+-			STR(PTR) " 6b,8b\n"
+-			STR(PTR) " 7b,8b\n"
+-			STR(PTR) " 0b,8b\n"
++			STR(PTR_WD) " 1b,8b\n"
++			STR(PTR_WD) " 2b,8b\n"
++			STR(PTR_WD) " 3b,8b\n"
++			STR(PTR_WD) " 4b,8b\n"
++			STR(PTR_WD) " 5b,8b\n"
++			STR(PTR_WD) " 6b,8b\n"
++			STR(PTR_WD) " 7b,8b\n"
++			STR(PTR_WD) " 0b,8b\n"
+ 			"       .previous\n"
+ 			"       .set	pop\n"
+ 			: "+&r"(rt), "=&r"(rs),
+@@ -2007,7 +2007,7 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"j	2b\n"
+ 			".previous\n"
+ 			".section        __ex_table,\"a\"\n"
+-			STR(PTR) " 1b,3b\n"
++			STR(PTR_WD) " 1b,3b\n"
+ 			".previous\n"
+ 			: "=&r"(res), "+&r"(err)
+ 			: "r"(vaddr), "i"(SIGSEGV)
+@@ -2065,7 +2065,7 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"j	2b\n"
+ 			".previous\n"
+ 			".section        __ex_table,\"a\"\n"
+-			STR(PTR) " 1b,3b\n"
++			STR(PTR_WD) " 1b,3b\n"
+ 			".previous\n"
+ 			: "+&r"(res), "+&r"(err)
+ 			: "r"(vaddr), "i"(SIGSEGV));
+@@ -2126,7 +2126,7 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"j	2b\n"
+ 			".previous\n"
+ 			".section        __ex_table,\"a\"\n"
+-			STR(PTR) " 1b,3b\n"
++			STR(PTR_WD) " 1b,3b\n"
+ 			".previous\n"
+ 			: "=&r"(res), "+&r"(err)
+ 			: "r"(vaddr), "i"(SIGSEGV)
+@@ -2189,7 +2189,7 @@ int mipsr2_decoder(struct pt_regs *regs, u32 inst, unsigned long *fcr31)
+ 			"j	2b\n"
+ 			".previous\n"
+ 			".section        __ex_table,\"a\"\n"
+-			STR(PTR) " 1b,3b\n"
++			STR(PTR_WD) " 1b,3b\n"
+ 			".previous\n"
+ 			: "+&r"(res), "+&r"(err)
+ 			: "r"(vaddr), "i"(SIGSEGV));
+diff --git a/arch/mips/kernel/r2300_fpu.S b/arch/mips/kernel/r2300_fpu.S
+index cbf6db98cfb3..2748c55820c2 100644
+--- a/arch/mips/kernel/r2300_fpu.S
++++ b/arch/mips/kernel/r2300_fpu.S
+@@ -23,14 +23,14 @@
+ #define EX(a,b)							\
+ 9:	a,##b;							\
+ 	.section __ex_table,"a";				\
+-	PTR	9b,fault;					\
++	PTR_WD	9b,fault;					\
+ 	.previous
+ 
+ #define EX2(a,b)						\
+ 9:	a,##b;							\
+ 	.section __ex_table,"a";				\
+-	PTR	9b,fault;					\
+-	PTR	9b+4,fault;					\
++	PTR_WD	9b,fault;					\
++	PTR_WD	9b+4,fault;					\
+ 	.previous
+ 
+ 	.set	mips1
+diff --git a/arch/mips/kernel/r4k_fpu.S b/arch/mips/kernel/r4k_fpu.S
+index b91e91106475..2e687c60bc4f 100644
+--- a/arch/mips/kernel/r4k_fpu.S
++++ b/arch/mips/kernel/r4k_fpu.S
+@@ -31,7 +31,7 @@
+ .ex\@:	\insn	\reg, \src
+ 	.set	pop
+ 	.section __ex_table,"a"
+-	PTR	.ex\@, fault
++	PTR_WD	.ex\@, fault
+ 	.previous
+ 	.endm
+ 
+diff --git a/arch/mips/kernel/relocate_kernel.S b/arch/mips/kernel/relocate_kernel.S
+index f3c908abdbb8..cfde14b48fd8 100644
+--- a/arch/mips/kernel/relocate_kernel.S
++++ b/arch/mips/kernel/relocate_kernel.S
+@@ -147,10 +147,10 @@ LEAF(kexec_smp_wait)
+ 
+ kexec_args:
+ 	EXPORT(kexec_args)
+-arg0:	PTR		0x0
+-arg1:	PTR		0x0
+-arg2:	PTR		0x0
+-arg3:	PTR		0x0
++arg0:	PTR_WD		0x0
++arg1:	PTR_WD		0x0
++arg2:	PTR_WD		0x0
++arg3:	PTR_WD		0x0
+ 	.size	kexec_args,PTRSIZE*4
+ 
+ #ifdef CONFIG_SMP
+@@ -161,10 +161,10 @@ arg3:	PTR		0x0
+  */
+ secondary_kexec_args:
+ 	EXPORT(secondary_kexec_args)
+-s_arg0: PTR		0x0
+-s_arg1: PTR		0x0
+-s_arg2: PTR		0x0
+-s_arg3: PTR		0x0
++s_arg0: PTR_WD		0x0
++s_arg1: PTR_WD		0x0
++s_arg2: PTR_WD		0x0
++s_arg3: PTR_WD		0x0
+ 	.size	secondary_kexec_args,PTRSIZE*4
+ kexec_flag:
+ 	LONG		0x1
+@@ -173,17 +173,17 @@ kexec_flag:
+ 
+ kexec_start_address:
+ 	EXPORT(kexec_start_address)
+-	PTR		0x0
++	PTR_WD		0x0
+ 	.size		kexec_start_address, PTRSIZE
+ 
+ kexec_indirection_page:
+ 	EXPORT(kexec_indirection_page)
+-	PTR		0
++	PTR_WD		0
+ 	.size		kexec_indirection_page, PTRSIZE
+ 
+ relocate_new_kernel_end:
+ 
+ relocate_new_kernel_size:
+ 	EXPORT(relocate_new_kernel_size)
+-	PTR		relocate_new_kernel_end - relocate_new_kernel
++	PTR_WD		relocate_new_kernel_end - relocate_new_kernel
+ 	.size		relocate_new_kernel_size, PTRSIZE
+diff --git a/arch/mips/kernel/scall32-o32.S b/arch/mips/kernel/scall32-o32.S
+index b1b2e106f711..9bfce5f75f60 100644
+--- a/arch/mips/kernel/scall32-o32.S
++++ b/arch/mips/kernel/scall32-o32.S
+@@ -72,10 +72,10 @@ loads_done:
+ 	.set	pop
+ 
+ 	.section __ex_table,"a"
+-	PTR	load_a4, bad_stack_a4
+-	PTR	load_a5, bad_stack_a5
+-	PTR	load_a6, bad_stack_a6
+-	PTR	load_a7, bad_stack_a7
++	PTR_WD	load_a4, bad_stack_a4
++	PTR_WD	load_a5, bad_stack_a5
++	PTR_WD	load_a6, bad_stack_a6
++	PTR_WD	load_a7, bad_stack_a7
+ 	.previous
+ 
+ 	lw	t0, TI_FLAGS($28)	# syscall tracing enabled?
+@@ -216,7 +216,7 @@ einval: li	v0, -ENOSYS
+ #endif /* CONFIG_MIPS_MT_FPAFF */
+ 
+ #define __SYSCALL_WITH_COMPAT(nr, native, compat)	__SYSCALL(nr, native)
+-#define __SYSCALL(nr, entry) 	PTR entry
++#define __SYSCALL(nr, entry) 	PTR_WD entry
+ 	.align	2
+ 	.type	sys_call_table, @object
+ EXPORT(sys_call_table)
+diff --git a/arch/mips/kernel/scall64-n32.S b/arch/mips/kernel/scall64-n32.S
+index f650c55a17dc..97456b2ca7dc 100644
+--- a/arch/mips/kernel/scall64-n32.S
++++ b/arch/mips/kernel/scall64-n32.S
+@@ -101,7 +101,7 @@ not_n32_scall:
+ 
+ 	END(handle_sysn32)
+ 
+-#define __SYSCALL(nr, entry)	PTR entry
++#define __SYSCALL(nr, entry)	PTR_WD entry
+ 	.type	sysn32_call_table, @object
+ EXPORT(sysn32_call_table)
+ #include <asm/syscall_table_n32.h>
+diff --git a/arch/mips/kernel/scall64-n64.S b/arch/mips/kernel/scall64-n64.S
+index 5d7bfc65e4d0..5f6ed4b4c399 100644
+--- a/arch/mips/kernel/scall64-n64.S
++++ b/arch/mips/kernel/scall64-n64.S
+@@ -109,7 +109,7 @@ illegal_syscall:
+ 	j	n64_syscall_exit
+ 	END(handle_sys64)
+ 
+-#define __SYSCALL(nr, entry)	PTR entry
++#define __SYSCALL(nr, entry)	PTR_WD entry
+ 	.align	3
+ 	.type	sys_call_table, @object
+ EXPORT(sys_call_table)
+diff --git a/arch/mips/kernel/scall64-o32.S b/arch/mips/kernel/scall64-o32.S
+index cedc8bd88804..d3c2616cba22 100644
+--- a/arch/mips/kernel/scall64-o32.S
++++ b/arch/mips/kernel/scall64-o32.S
+@@ -73,10 +73,10 @@ load_a7: lw	a7, 28(t0)		# argument #8 from usp
+ loads_done:
+ 
+ 	.section __ex_table,"a"
+-	PTR	load_a4, bad_stack_a4
+-	PTR	load_a5, bad_stack_a5
+-	PTR	load_a6, bad_stack_a6
+-	PTR	load_a7, bad_stack_a7
++	PTR_WD	load_a4, bad_stack_a4
++	PTR_WD	load_a5, bad_stack_a5
++	PTR_WD	load_a6, bad_stack_a6
++	PTR_WD	load_a7, bad_stack_a7
+ 	.previous
+ 
+ 	li	t1, _TIF_WORK_SYSCALL_ENTRY
+@@ -214,7 +214,7 @@ einval: li	v0, -ENOSYS
+ 	END(sys32_syscall)
+ 
+ #define __SYSCALL_WITH_COMPAT(nr, native, compat)	__SYSCALL(nr, compat)
+-#define __SYSCALL(nr, entry)	PTR entry
++#define __SYSCALL(nr, entry)	PTR_WD entry
+ 	.align	3
+ 	.type	sys32_call_table,@object
+ EXPORT(sys32_call_table)
+diff --git a/arch/mips/kernel/syscall.c b/arch/mips/kernel/syscall.c
+index 5512cd586e6e..ae93a607ddf7 100644
+--- a/arch/mips/kernel/syscall.c
++++ b/arch/mips/kernel/syscall.c
+@@ -122,8 +122,8 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
+ 		"	j	3b					\n"
+ 		"	.previous					\n"
+ 		"	.section __ex_table,\"a\"			\n"
+-		"	"STR(PTR)"	1b, 4b				\n"
+-		"	"STR(PTR)"	2b, 4b				\n"
++		"	"STR(PTR_WD)"	1b, 4b				\n"
++		"	"STR(PTR_WD)"	2b, 4b				\n"
+ 		"	.previous					\n"
+ 		"	.set	pop					\n"
+ 		: [old] "=&r" (old),
+@@ -152,8 +152,8 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
+ 		"	j	3b					\n"
+ 		"	.previous					\n"
+ 		"	.section __ex_table,\"a\"			\n"
+-		"	"STR(PTR)"	1b, 5b				\n"
+-		"	"STR(PTR)"	2b, 5b				\n"
++		"	"STR(PTR_WD)"	1b, 5b				\n"
++		"	"STR(PTR_WD)"	2b, 5b				\n"
+ 		"	.previous					\n"
+ 		"	.set	pop					\n"
+ 		: [old] "=&r" (old),
+diff --git a/arch/mips/lib/csum_partial.S b/arch/mips/lib/csum_partial.S
+index a46db0807195..7767137c3e49 100644
+--- a/arch/mips/lib/csum_partial.S
++++ b/arch/mips/lib/csum_partial.S
+@@ -347,7 +347,7 @@ EXPORT_SYMBOL(csum_partial)
+ 	.if \mode == LEGACY_MODE;		\
+ 9:		insn reg, addr;			\
+ 		.section __ex_table,"a";	\
+-		PTR	9b, .L_exc;		\
++		PTR_WD	9b, .L_exc;		\
+ 		.previous;			\
+ 	/* This is enabled in EVA mode */	\
+ 	.else;					\
+@@ -356,7 +356,7 @@ EXPORT_SYMBOL(csum_partial)
+ 		    ((\to == USEROP) && (type == ST_INSN));	\
+ 9:			__BUILD_EVA_INSN(insn##e, reg, addr);	\
+ 			.section __ex_table,"a";		\
+-			PTR	9b, .L_exc;			\
++			PTR_WD	9b, .L_exc;			\
+ 			.previous;				\
+ 		.else;						\
+ 			/* EVA without exception */		\
+diff --git a/arch/mips/lib/memcpy.S b/arch/mips/lib/memcpy.S
+index 277c32296636..18a43f2e29c8 100644
+--- a/arch/mips/lib/memcpy.S
++++ b/arch/mips/lib/memcpy.S
+@@ -116,7 +116,7 @@
+ 	.if \mode == LEGACY_MODE;				\
+ 9:		insn reg, addr;					\
+ 		.section __ex_table,"a";			\
+-		PTR	9b, handler;				\
++		PTR_WD	9b, handler;				\
+ 		.previous;					\
+ 	/* This is assembled in EVA mode */			\
+ 	.else;							\
+@@ -125,7 +125,7 @@
+ 		    ((\to == USEROP) && (type == ST_INSN));	\
+ 9:			__BUILD_EVA_INSN(insn##e, reg, addr);	\
+ 			.section __ex_table,"a";		\
+-			PTR	9b, handler;			\
++			PTR_WD	9b, handler;			\
+ 			.previous;				\
+ 		.else;						\
+ 			/*					\
+diff --git a/arch/mips/lib/memset.S b/arch/mips/lib/memset.S
+index b0baa3c79fad..0b342bae9a98 100644
+--- a/arch/mips/lib/memset.S
++++ b/arch/mips/lib/memset.S
+@@ -52,7 +52,7 @@
+ 9:		___BUILD_EVA_INSN(insn, reg, addr);	\
+ 	.endif;						\
+ 	.section __ex_table,"a";			\
+-	PTR	9b, handler;				\
++	PTR_WD	9b, handler;				\
+ 	.previous
+ 
+ 	.macro	f_fill64 dst, offset, val, fixup, mode
+diff --git a/arch/mips/lib/strncpy_user.S b/arch/mips/lib/strncpy_user.S
+index 556acf684d7b..13aaa9927ad1 100644
+--- a/arch/mips/lib/strncpy_user.S
++++ b/arch/mips/lib/strncpy_user.S
+@@ -15,7 +15,7 @@
+ #define EX(insn,reg,addr,handler)			\
+ 9:	insn	reg, addr;				\
+ 	.section __ex_table,"a";			\
+-	PTR	9b, handler;				\
++	PTR_WD	9b, handler;				\
+ 	.previous
+ 
+ /*
+@@ -59,7 +59,7 @@ LEAF(__strncpy_from_user_asm)
+ 	jr		ra
+ 
+ 	.section	__ex_table,"a"
+-	PTR		1b, .Lfault
++	PTR_WD		1b, .Lfault
+ 	.previous
+ 
+ 	EXPORT_SYMBOL(__strncpy_from_user_asm)
+diff --git a/arch/mips/lib/strnlen_user.S b/arch/mips/lib/strnlen_user.S
+index 92b63f20ec05..6de31b616f9c 100644
+--- a/arch/mips/lib/strnlen_user.S
++++ b/arch/mips/lib/strnlen_user.S
+@@ -14,7 +14,7 @@
+ #define EX(insn,reg,addr,handler)			\
+ 9:	insn	reg, addr;				\
+ 	.section __ex_table,"a";			\
+-	PTR	9b, handler;				\
++	PTR_WD	9b, handler;				\
+ 	.previous
+ 
+ /*
+-- 
+2.29.2
 
-Thanks for explaining and providing that context.
-
->
-> But if the reason for this is basically "make it harder for
-> anything else to access my encrypted swap" and to deliberately
-> prevent access, then let's approach the requirement from that angle.
-> Are there alternative implementations with interventions at different
-> points?
-
-Absolutely, we could perhaps create a new ioctl which allows the
-caller to specify the maximum open count, and when the open count hits
-that value it fails any new opens with -EBUSY. Perhaps this would be
-enforced in dm_get_device? This type of behavior could theoretically
-mimic the patch I mailed when used in conjunction with deferred
-removal. Is this an approach you think might make more sense with the
-existing design? Are there any implementation points you believe might
-make more sense for such a feature?
-
->  Are there similar requirements for devices that don't need
-> deferred remove?
-
-I cannot immediately think of a situation where you'd do this without
-deferred removal.
-
->  If this is indeed the best place to insert this type
-> of restriction, then we should label it and document it accordingly so
-> people don't mistakenly use it for the 'normal' case.  (We always keep
-> libdevmapper and dmsetup in sync with kernel interface extensions, so
-> we'd seek a tiny patch to do that too.)
-
-Yes, absolutely. I'll happily send patches for userspace libraries,
-applications, and documentation once we converge on an acceptable
-approach.
-
-Thanks again for spending your time discussing this,
-Brian
