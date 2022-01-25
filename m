@@ -2,64 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4152C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C11C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1320020AbiAYDL3 (ORCPT
+        id S1320245AbiAYDMJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:11:29 -0500
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:55103 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1316070AbiAYCzI (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:55:08 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V2oDQXH_1643079303;
-Received: from 30.225.24.84(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V2oDQXH_1643079303)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 25 Jan 2022 10:55:04 +0800
-Message-ID: <15447ce9-d842-6aca-c179-c2f0a4897cdf@linux.alibaba.com>
-Date:   Tue, 25 Jan 2022 10:55:02 +0800
+        Mon, 24 Jan 2022 22:12:09 -0500
+Received: from out1.migadu.com ([91.121.223.63]:54341 "EHLO out1.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1381110AbiAYC4Q (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 21:56:16 -0500
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1643079371;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6AetOp+8FdkUYbmk8I3HLjqKFozMoot/fWYEIyFqQAQ=;
+        b=clbsC5NJNdlePMqHXL4s852FIg7vc3ItTIg6HrAVwLXwvTRNoLA+YHvKj1XnwO7fJGTJv1
+        Zvxk/7eprV2L9uimJkHH3tqmNEFBxjmjW0YfS+3j7TRSLDnThAFUu22eyicUA7tiYOzy+Y
+        3W0nXra8eT2O8jCCEW/rfpf5mIvR14A=
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1] mm, hwpoison: remove obsolete comment
+Date:   Tue, 25 Jan 2022 11:56:01 +0900
+Message-Id: <20220125025601.3054511-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [PATCH v2 00/20] fscache,erofs: fscache-based demand-read
- semantics
-Content-Language: en-US
-To:     David Howells <dhowells@redhat.com>
-Cc:     linux-cachefs@redhat.com, xiang@kernel.org, chao@kernel.org,
-        linux-erofs@lists.ozlabs.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org
-References: <20220118131216.85338-1-jefflexu@linux.alibaba.com>
- <2351231.1643044980@warthog.procyon.org.uk>
-From:   JeffleXu <jefflexu@linux.alibaba.com>
-In-Reply-To: <2351231.1643044980@warthog.procyon.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
+With the introduction of mf_mutex, most of memory error handling
+process is mutually exclusive, so the in-line comment about
+subtlety about double-checking PageHWPoison is no more correct.
+So remove it.
 
-On 1/25/22 1:23 AM, David Howells wrote:
-> Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
-> 
->> You could start a quick test by
->> https://github.com/lostjeffle/demand-read-cachefilesd
-> 
-> Can you pull this up to v5.17-rc1 or my netfs-lib branch?
-> 
-> 	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=netfs-lib
-> 
+Suggested-by: Mike Kravetz <mike.kravetz@oracle.com>
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+---
+ mm/memory-failure.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-Hi, you can check this kernel patch set on the following branch, which
-has been rebased to v5.17-rc1.
-
-	https://github.com/lostjeffle/linux/commits/master
-
-
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 4c9bd1d37301..a6a1e02759e7 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -2146,12 +2146,6 @@ static int __soft_offline_page(struct page *page)
+ 		.gfp_mask = GFP_USER | __GFP_MOVABLE | __GFP_RETRY_MAYFAIL,
+ 	};
+ 
+-	/*
+-	 * Check PageHWPoison again inside page lock because PageHWPoison
+-	 * is set by memory_failure() outside page lock. Note that
+-	 * memory_failure() also double-checks PageHWPoison inside page lock,
+-	 * so there's no race between soft_offline_page() and memory_failure().
+-	 */
+ 	lock_page(page);
+ 	if (!PageHuge(page))
+ 		wait_on_page_writeback(page);
 -- 
-Thanks,
-Jeffle
+2.25.1
+
