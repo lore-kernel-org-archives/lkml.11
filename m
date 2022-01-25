@@ -2,176 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AEBCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E87C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573040AbiAYMxz (ORCPT
+        id S1573667AbiAYMyZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:53:55 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:32119 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384060AbiAYMuv (ORCPT
+        Tue, 25 Jan 2022 07:54:25 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:59100 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1384313AbiAYMvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:50:51 -0500
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Jjmpw0gvVz8wNC;
-        Tue, 25 Jan 2022 20:47:52 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 20:50:48 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <jarkko.nikula@linux.intel.com>,
-        <andriy.shevchenko@linux.intel.com>,
-        <mika.westerberg@linux.intel.com>, <wsa@kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <yangyicong@hisilicon.com>, <prime.zeng@hisilicon.com>,
-        <linuxarm@huawei.com>
-Subject: [PATCH 1/2] i2c: hisi: Add generic GPIO bus recovery support
-Date:   Tue, 25 Jan 2022 20:49:29 +0800
-Message-ID: <20220125124930.50369-2-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220125124930.50369-1-yangyicong@hisilicon.com>
-References: <20220125124930.50369-1-yangyicong@hisilicon.com>
+        Tue, 25 Jan 2022 07:51:16 -0500
+X-UUID: b67cbdc283cd4b23861d28af727d9119-20220125
+X-UUID: b67cbdc283cd4b23861d28af727d9119-20220125
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <johnson.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1320030013; Tue, 25 Jan 2022 20:51:10 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 25 Jan 2022 20:51:09 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 Jan 2022 20:51:09 +0800
+Message-ID: <cb048ff99e4bd20eb8b3b70de13baf5a27f52138.camel@mediatek.com>
+Subject: Re: [PATCH v2 1/2] soc: mediatek: pwrap: add pwrap driver for
+ MT8186 SoC
+From:   Johnson Wang <johnson.wang@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>, <robh+dt@kernel.org>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 25 Jan 2022 20:51:09 +0800
+In-Reply-To: <f5486d12-b048-c062-e571-cf39da7e4c1b@gmail.com>
+References: <20220107104633.7500-1-johnson.wang@mediatek.com>
+         <20220107104633.7500-2-johnson.wang@mediatek.com>
+         <9949a1f7-1ed5-a137-c7b9-2ef8d8e1caf8@gmail.com>
+         <544f5085fc8597ce9ce3eb7dc1b5d08fb1ac8755.camel@mediatek.com>
+         <f5486d12-b048-c062-e571-cf39da7e4c1b@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add generic GPIO bus recovery support for i2c-hisi driver
-by registering the recovery information with core provided
-i2c_generic_scl_recovery() method.
+Hi Matthias,
 
-As the SCL/SDA pins are multiplexed with GPIO, we need to
-switch the pins mux to GPIO before recovery and switch back
-after recovery. It's implemented by the ACPI method in
-the i2c_bus_recovery_info->{prepare,unprepare}_recovery()
-method.
+On Tue, 2022-01-18 at 14:17 +0100, Matthias Brugger wrote:
+> 
+> On 18/01/2022 10:25, Johnson Wang wrote:
+> > Hi Matthias,
+> > 
+> > On Fri, 2022-01-14 at 16:46 +0100, Matthias Brugger wrote:
+> > > 
+> > > On 07/01/2022 11:46, Johnson Wang wrote:
+> > > > MT8186 are highly integrated SoC and use PMIC_MT6366 for
+> > > > power management. This patch adds pwrap master driver to
+> > > > access PMIC_MT6366.
+> > > > 
+> > > 
+> > > It seems this new arbiter is significantly different from the
+> > > version
+> > > 1. Please
+> > > explain that in the commit message.
+> > > 
+> > > > Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> > > > ---
+> > > >    drivers/soc/mediatek/mtk-pmic-wrap.c | 72
+> > > > ++++++++++++++++++++++++++++
+> > > >    1 file changed, 72 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c
+> > > > b/drivers/soc/mediatek/mtk-pmic-wrap.c
+> > > > index 952bc554f443..78866ebf7f04 100644
+> > > > --- a/drivers/soc/mediatek/mtk-pmic-wrap.c
+> > > > +++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
+> > > > @@ -30,6 +30,7 @@
+> > > >    #define PWRAP_GET_WACS_REQ(x)		(((x) >> 19) &
+> > > > 0x00000001)
+> > > >    #define PWRAP_STATE_SYNC_IDLE0		BIT(20)
+> > > >    #define PWRAP_STATE_INIT_DONE0		BIT(21)
+> > > > +#define PWRAP_STATE_INIT_DONE0_V2	BIT(22)
+> > > 
+> > > That's a strange name, does it come from the datasheet
+> > > description?
+> > 
+> > Thanks for your review.
+> > 
+> > No, there is only PWRAP_STATE_INIT_DONE0 in MT8186 datasheet.
+> > However, it's the 22nd bit in MT8186 and the 21st bit in other
+> > SoCs.
+> > So we changed its name to avoid redefinition of
+> > PWRAP_STATE_INIT_DONE0.
+> > 
+> > Could you give us some suggestion on proper definition naming?
+> > Do you think PWRAP_STATE_INIT_DONE0_MT8186 will be a better choice?
+> > 
+> 
+> Is this a difference that only will show up on the PMIC-wrapper of
+> MT8186 or 
+> will other SoCs include the same IP? If not, then
+> PWRAP_STATE_INIT_DONE0_MT8186 
+> should be fine. Otherwise we would need a better name.
+> 
 
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
----
- drivers/i2c/busses/i2c-hisi.c | 78 +++++++++++++++++++++++++++++++++++
- 1 file changed, 78 insertions(+)
+In fact, we don't know whether following SoCs will include
+the same IP in the future.
 
-diff --git a/drivers/i2c/busses/i2c-hisi.c b/drivers/i2c/busses/i2c-hisi.c
-index acf394812061..ffc495f426e9 100644
---- a/drivers/i2c/busses/i2c-hisi.c
-+++ b/drivers/i2c/busses/i2c-hisi.c
-@@ -5,9 +5,11 @@
-  * Copyright (c) 2021 HiSilicon Technologies Co., Ltd.
-  */
- 
-+#include <linux/acpi.h>
- #include <linux/bits.h>
- #include <linux/bitfield.h>
- #include <linux/completion.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
-@@ -106,6 +108,9 @@ struct hisi_i2c_controller {
- 	struct i2c_timings t;
- 	u32 clk_rate_khz;
- 	u32 spk_len;
-+
-+	/* Bus recovery method */
-+	struct i2c_bus_recovery_info rinfo;
- };
- 
- static void hisi_i2c_enable_int(struct hisi_i2c_controller *ctlr, u32 mask)
-@@ -424,6 +429,77 @@ static void hisi_i2c_configure_bus(struct hisi_i2c_controller *ctlr)
- 	writel(reg, ctlr->iobase + HISI_I2C_FIFO_CTRL);
- }
- 
-+#ifdef CONFIG_ACPI
-+#define HISI_I2C_PIN_MUX_METHOD	"PMUX"
-+
-+/**
-+ * i2c_dw_acpi_pin_mux_change - Change the I2C controller's pin mux through ACPI
-+ * @dev: device owns the SCL/SDA pin
-+ * @to_gpio: true to switch to GPIO, false to switch to SCL/SDA
-+ *
-+ * The function invokes the specific ACPI method "PMUX" for changing the
-+ * pin mux of I2C controller between SCL/SDA and GPIO in order to help on
-+ * the generic GPIO recovery process.
-+ */
-+static void i2c_hisi_pin_mux_change(struct device *dev, bool to_gpio)
-+{
-+	acpi_handle handle = ACPI_HANDLE(dev);
-+	struct acpi_object_list arg_list;
-+	unsigned long long data;
-+	union acpi_object arg;
-+
-+	arg.type = ACPI_TYPE_INTEGER;
-+	arg.integer.value = to_gpio;
-+	arg_list.count = 1;
-+	arg_list.pointer = &arg;
-+
-+	acpi_evaluate_integer(handle, HISI_I2C_PIN_MUX_METHOD, &arg_list, &data);
-+}
-+
-+static void i2c_hisi_prepare_recovery(struct i2c_adapter *adap)
-+{
-+	struct hisi_i2c_controller *ctlr = i2c_get_adapdata(adap);
-+
-+	i2c_hisi_pin_mux_change(ctlr->dev, true);
-+}
-+
-+static void i2c_hisi_unprepare_recovery(struct i2c_adapter *adap)
-+{
-+	struct hisi_i2c_controller *ctlr = i2c_get_adapdata(adap);
-+
-+	i2c_hisi_pin_mux_change(ctlr->dev, false);
-+}
-+
-+static void hisi_i2c_init_recovery_info(struct hisi_i2c_controller *ctlr)
-+{
-+	struct i2c_bus_recovery_info *rinfo = &ctlr->rinfo;
-+	struct acpi_device *adev = ACPI_COMPANION(ctlr->dev);
-+	struct gpio_desc *gpio;
-+
-+	if (!acpi_has_method(adev->handle, HISI_I2C_PIN_MUX_METHOD))
-+		return;
-+
-+	gpio = devm_gpiod_get_optional(ctlr->dev, "scl", GPIOD_OUT_HIGH);
-+	if (IS_ERR_OR_NULL(gpio))
-+		return;
-+
-+	rinfo->scl_gpiod = gpio;
-+
-+	gpio = devm_gpiod_get_optional(ctlr->dev, "sda", GPIOD_IN);
-+	if (IS_ERR(gpio))
-+		return;
-+
-+	rinfo->sda_gpiod = gpio;
-+	rinfo->recover_bus = i2c_generic_scl_recovery;
-+	rinfo->prepare_recovery =  i2c_hisi_prepare_recovery;
-+	rinfo->unprepare_recovery = i2c_hisi_unprepare_recovery;
-+
-+	ctlr->adapter.bus_recovery_info = rinfo;
-+}
-+#else
-+static inline void hisi_i2c_init_recovery_info(struct hisi_i2c_controller *ctlr) { }
-+#endif /* CONFIG_ACPI */
-+
- static int hisi_i2c_probe(struct platform_device *pdev)
- {
- 	struct hisi_i2c_controller *ctlr;
-@@ -473,6 +549,8 @@ static int hisi_i2c_probe(struct platform_device *pdev)
- 	adapter->dev.parent = dev;
- 	i2c_set_adapdata(adapter, ctlr);
- 
-+	hisi_i2c_init_recovery_info(ctlr);
-+
- 	ret = devm_i2c_add_adapter(dev, adapter);
- 	if (ret)
- 		return ret;
--- 
-2.24.0
+Can we just replace _V2 with _MT8186 this time or
+please give us some suggestion on it. 
+
+Thanks for your response.
+
+> > > 
+> > > >    #define PWRAP_STATE_INIT_DONE1		BIT(15)
+> > > >    
+> > > >    /* macro for WACS FSM */
+> > > > @@ -77,6 +78,8 @@
+> > > >    #define PWRAP_CAP_INT1_EN	BIT(3)
+> > > >    #define PWRAP_CAP_WDT_SRC1	BIT(4)
+> > > >    #define PWRAP_CAP_ARB		BIT(5)
+> > > > +#define PWRAP_CAP_MONITOR_V2	BIT(6)
+> > > 
+> > > Not used capability, please delete.
+> > > 
+> > > 
+> > > Regards,
+> > > Matthias
+> > 
+> > PWRAP_CAP_MONITOR_V2 is not used right now.
+> > We can remove it in next version.
+> > But this capability will be added when we need it.
+> > 
+> 
+> That's OK, we should add capability definitions once they are added
+> to the 
+> driver, not before that.
+> 
+> Thanks,
+> Matthias
 
