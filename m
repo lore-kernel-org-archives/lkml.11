@@ -2,237 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 419DBC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5451BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456020AbiAYJIA (ORCPT
+        id S1356209AbiAYJIX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:08:00 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:37960 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1454602AbiAYJC0 (ORCPT
+        Tue, 25 Jan 2022 04:08:23 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:30302 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455056AbiAYJCb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:02:26 -0500
-X-UUID: 089594734954453985adea28b154e097-20220125
-X-UUID: 089594734954453985adea28b154e097-20220125
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 741491565; Tue, 25 Jan 2022 17:00:27 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 25 Jan 2022 17:00:25 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 25 Jan 2022 17:00:24 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v4 27/35] iommu/mediatek: Remove mtk_iommu.h
-Date:   Tue, 25 Jan 2022 16:56:26 +0800
-Message-ID: <20220125085634.17972-28-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220125085634.17972-1-yong.wu@mediatek.com>
-References: <20220125085634.17972-1-yong.wu@mediatek.com>
+        Tue, 25 Jan 2022 04:02:31 -0500
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Jjgnr4cngzbkG3;
+        Tue, 25 Jan 2022 17:01:36 +0800 (CST)
+Received: from huawei.com (10.67.175.31) by dggpemm500024.china.huawei.com
+ (7.185.36.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 25 Jan
+ 2022 17:02:26 +0800
+From:   GUO Zihua <guozihua@huawei.com>
+To:     <corbet@lwn.net>, <zohar@linux.ibm.com>
+CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <roberto.sassu@huawei.com>, <wangweiyang2@huawei.com>,
+        <xiujianfeng@huawei.com>, <linux-integrity@vger.kernel.org>,
+        <guozihua@huawei.com>
+Subject: [RESEND][PATCH] Documentation: added order requirement for ima_hash=
+Date:   Tue, 25 Jan 2022 17:02:37 +0800
+Message-ID: <20220125090237.120357-1-guozihua@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
-X-MTK:  N
+X-Originating-IP: [10.67.175.31]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500024.china.huawei.com (7.185.36.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently there is only compare_of/release_of/a suspend structure in the
-header file. I think it is no need to keep a header file only for these.
-Move these into the c file and rm this header file.
+From: Guo Zihua <guozihua@huawei.com>
 
-I think there should be a common helper for compare_of and release_of.
-There is many copy in drm, it should be another topic.
+Commandline parameter ima_hash= and ima_template= has order requirement
+for them to work correctly together. Namely ima_hash= must be
+specified after ima_template=, otherwise ima_template= will be ignored.
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+The reason is that when handling ima_hash=, ima template would be set to
+the default value if it has not been initialized already, and that value
+cannot be changed afterwards by ima_template=.
+
+This patch adds this limitation to the documentation.
+
+Reviewed-by: Roberto Sassu <roberto.sassu@huawei.com>
+Signed-off-by: Guo Zihua <guozihua@huawei.com>
 ---
- drivers/iommu/mtk_iommu.c    | 25 ++++++++++++++++++++-
- drivers/iommu/mtk_iommu.h    | 42 ------------------------------------
- drivers/iommu/mtk_iommu_v1.c | 21 +++++++++++++++---
- 3 files changed, 42 insertions(+), 46 deletions(-)
- delete mode 100644 drivers/iommu/mtk_iommu.h
+ Documentation/admin-guide/kernel-parameters.txt | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 80c1e5a75868..f88c7bb235bf 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -14,6 +14,7 @@
- #include <linux/io.h>
- #include <linux/iommu.h>
- #include <linux/iopoll.h>
-+#include <linux/io-pgtable.h>
- #include <linux/list.h>
- #include <linux/mfd/syscon.h>
- #include <linux/module.h>
-@@ -30,7 +31,7 @@
- #include <asm/barrier.h>
- #include <soc/mediatek/smi.h>
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index f5a27f067db9..1b5aa6ca65f8 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1843,6 +1843,10 @@
+ 			The list of supported hash algorithms is defined
+ 			in crypto/hash_info.h.
  
--#include "mtk_iommu.h"
-+#include <dt-bindings/memory/mtk-memory-port.h>
- 
- #define REG_MMU_PT_BASE_ADDR			0x000
- #define MMU_PT_ADDR_MASK			GENMASK(31, 7)
-@@ -166,6 +167,17 @@ struct mtk_iommu_iova_region {
- 	unsigned long long	size;
- };
- 
-+struct mtk_iommu_suspend_reg {
-+	u32			misc_ctrl;
-+	u32			dcm_dis;
-+	u32			ctrl_reg;
-+	u32			int_control0;
-+	u32			int_main_control;
-+	u32			ivrp_paddr;
-+	u32			vld_pa_rng;
-+	u32			wr_len_ctrl;
-+};
++			This parameter must be specified after ima_template=,
++			as it would set the default template and that cannot be
++			changed by ima_template= afterwards.
 +
- struct mtk_iommu_plat_data {
- 	enum mtk_iommu_plat			m4u_plat;
- 	u32					flags;
-@@ -219,6 +231,17 @@ struct mtk_iommu_domain {
- 	struct mutex			mutex; /* Protect "data" in this structure */
- };
+ 	ima_policy=	[IMA]
+ 			The builtin policies to load during IMA setup.
+ 			Format: "tcb | appraise_tcb | secure_boot |
+@@ -1879,6 +1883,9 @@
+ 			Formats: { "ima" | "ima-ng" | "ima-sig" }
+ 			Default: "ima-ng"
  
-+/* TODO: A common helper is expected. */
-+static inline int compare_of(struct device *dev, void *data)
-+{
-+	return dev->of_node == data;
-+}
++			This parameter must be specified before ima_hash=.
++			Please refer to ima_hash= for further explanation.
 +
-+static inline void release_of(struct device *dev, void *data)
-+{
-+	of_node_put(data);
-+}
-+
- static inline int mtk_iommu_bind(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-deleted file mode 100644
-index d332f9769f83..000000000000
---- a/drivers/iommu/mtk_iommu.h
-+++ /dev/null
-@@ -1,42 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * Copyright (c) 2015-2016 MediaTek Inc.
-- * Author: Honghui Zhang <honghui.zhang@mediatek.com>
-- */
--
--#ifndef _MTK_IOMMU_H_
--#define _MTK_IOMMU_H_
--
--#include <linux/device.h>
--#include <linux/io.h>
--#include <linux/io-pgtable.h>
--#include <linux/iommu.h>
--#include <linux/spinlock.h>
--#include <soc/mediatek/smi.h>
--#include <dt-bindings/memory/mtk-memory-port.h>
--
--struct mtk_iommu_suspend_reg {
--	union {
--		u32			standard_axi_mode;/* v1 */
--		u32			misc_ctrl;/* v2 */
--	};
--	u32				dcm_dis;
--	u32				ctrl_reg;
--	u32				int_control0;
--	u32				int_main_control;
--	u32				ivrp_paddr;
--	u32				vld_pa_rng;
--	u32				wr_len_ctrl;
--};
--
--static inline int compare_of(struct device *dev, void *data)
--{
--	return dev->of_node == data;
--}
--
--static inline void release_of(struct device *dev, void *data)
--{
--	of_node_put(data);
--}
--
--#endif
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index b762a05328d4..23c3bc175153 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -7,7 +7,6 @@
-  *
-  * Based on driver/iommu/mtk_iommu.c
-  */
--#include <linux/memblock.h>
- #include <linux/bug.h>
- #include <linux/clk.h>
- #include <linux/component.h>
-@@ -28,10 +27,9 @@
- #include <linux/spinlock.h>
- #include <asm/barrier.h>
- #include <asm/dma-iommu.h>
--#include <linux/init.h>
-+#include <dt-bindings/memory/mtk-memory-port.h>
- #include <dt-bindings/memory/mt2701-larb-port.h>
- #include <soc/mediatek/smi.h>
--#include "mtk_iommu.h"
- 
- #define REG_MMU_PT_BASE_ADDR			0x000
- 
-@@ -87,6 +85,13 @@
-  */
- #define M2701_IOMMU_PGT_SIZE			SZ_4M
- 
-+struct mtk_iommu_suspend_reg {
-+	u32			standard_axi_mode;
-+	u32			dcm_dis;
-+	u32			ctrl_reg;
-+	u32			int_control0;
-+};
-+
- struct mtk_iommu_data {
- 	void __iomem			*base;
- 	int				irq;
-@@ -110,6 +115,16 @@ struct mtk_iommu_domain {
- 	struct mtk_iommu_data		*data;
- };
- 
-+static inline int compare_of(struct device *dev, void *data)
-+{
-+	return dev->of_node == data;
-+}
-+
-+static inline void release_of(struct device *dev, void *data)
-+{
-+	of_node_put(data);
-+}
-+
- static inline int mtk_iommu_bind(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+ 	ima_template_fmt=
+ 			[IMA] Define a custom template format.
+ 			Format: { "field1|...|fieldN" }
 -- 
-2.18.0
+2.17.1
 
