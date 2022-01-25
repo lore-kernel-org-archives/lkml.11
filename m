@@ -2,100 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5818C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE4DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:39:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357163AbiAYPfQ (ORCPT
+        id S1390871AbiAYPhb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 10:35:16 -0500
-Received: from foss.arm.com ([217.140.110.172]:50810 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356120AbiAYPc7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:32:59 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4A113D6E;
-        Tue, 25 Jan 2022 07:23:25 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [10.57.1.45])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D69FC3F793;
-        Tue, 25 Jan 2022 07:23:23 -0800 (PST)
-Date:   Tue, 25 Jan 2022 15:23:20 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Evgenii Stepanov <eugenis@google.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: extable: fix null deref in load_unaligned_zeropad.
-Message-ID: <YfAV6FTN5g6jZGj7@FVFF77S0Q05N>
-References: <20220122023447.1480995-1-eugenis@google.com>
+        Tue, 25 Jan 2022 10:37:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50243 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1354013AbiAYPet (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 10:34:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643124889;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QjyE7wz6cil8LO6HiDitf7P9QNfNrKVet24hXy+TY64=;
+        b=CVLTX1Ir3t+M5d+UitgvJFTzsmDEzQsNnQJTBU2CKtPC2MscPIWnTiZVm3gQhtSJEz1bEx
+        8mxKqqcCK6qy50zX++d1IfQsJNYErWedz77+fZ4GmZJqJK2FPfUyNVmwLGL7GSpPEGoPjp
+        ocxuVmoNszm74XND0fji25NoeQHCg1U=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-224-5MdDGyFQNUC_uojbNYtUKg-1; Tue, 25 Jan 2022 10:34:45 -0500
+X-MC-Unique: 5MdDGyFQNUC_uojbNYtUKg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 06D8C84B9A7;
+        Tue, 25 Jan 2022 15:34:44 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 210947DE2F;
+        Tue, 25 Jan 2022 15:34:32 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220118131216.85338-12-jefflexu@linux.alibaba.com>
+References: <20220118131216.85338-12-jefflexu@linux.alibaba.com> <20220118131216.85338-1-jefflexu@linux.alibaba.com>
+To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 11/20] erofs: add cookie context helper functions
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220122023447.1480995-1-eugenis@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2812798.1643124872.1@warthog.procyon.org.uk>
+Date:   Tue, 25 Jan 2022 15:34:32 +0000
+Message-ID: <2812799.1643124872@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 06:34:47PM -0800, Evgenii Stepanov wrote:
-> ex_handler_load_unaligned_zeropad extracts the source and data register
-> numbers from the wrong field of the exception table.
+Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
 
-Ouch. Did you find this by inspection, or did this show up in testing?
+> +static int erofs_fscahce_init_ctx(struct erofs_fscache_context *ctx,
 
-Sorry about this.
+fscahce => fscache?
 
-I think we should be a little more explicit as to exactly what goes wrong. How
-about:
+David
 
-| In ex_handler_load_unaligned_zeropad() we erroneously extract the data and
-| addr register indices from ex->type rather than ex->data. As ex->type will
-| contain EX_TYPE_LOAD_UNALIGNED_ZEROPAD (i.e. 4):
-| 
-| * We'll always treat X0 as the address register, since EX_DATA_REG_ADDR is
-|   extracted from bits [9:5]. Thus, we may attempt to dereference an arbitrary
-|   address as X0 may hold an arbitary value.
-| 
-| * We'll always treat X4 as the data register, since EX_DATA_REG_DATA is
-|   extracted from bits [4:0]. Thus we will corrupt X4 and cause arbitrary
-|   behaviour within load_unaligned_zeropad() and its caller.
-| 
-| Fix this by extracting both values from ex->data as originally intended.
-
-> Fixes: 753b3236
-
-That should be expanded, e.g.
-
-  Fixes: 753b32368705c396 ("arm64: extable: add load_unaligned_zeropad() handler")
-
-With those changes:
-
-Reviewed-by: Mark Rutland <mark.rutland@arm.com>
-
-Thanks,
-Mark.
-
-> Signed-off-by: Evgenii Stepanov <eugenis@google.com>
-> ---
->  arch/arm64/mm/extable.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
-> index c0181e60cc98..489455309695 100644
-> --- a/arch/arm64/mm/extable.c
-> +++ b/arch/arm64/mm/extable.c
-> @@ -40,8 +40,8 @@ static bool
->  ex_handler_load_unaligned_zeropad(const struct exception_table_entry *ex,
->  				  struct pt_regs *regs)
->  {
-> -	int reg_data = FIELD_GET(EX_DATA_REG_DATA, ex->type);
-> -	int reg_addr = FIELD_GET(EX_DATA_REG_ADDR, ex->type);
-> +	int reg_data = FIELD_GET(EX_DATA_REG_DATA, ex->data);
-> +	int reg_addr = FIELD_GET(EX_DATA_REG_ADDR, ex->data);
->  	unsigned long data, addr, offset;
->  
->  	addr = pt_regs_read_reg(regs, reg_addr);
-> -- 
-> 2.35.0.rc0.227.g00780c9af4-goog
-> 
