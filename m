@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C070FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDDC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582763AbiAYPzr (ORCPT
+        id S1582636AbiAYP7Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 10:55:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58060 "EHLO
+        Tue, 25 Jan 2022 10:59:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54350 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1582698AbiAYPxd (ORCPT
+        by vger.kernel.org with ESMTP id S1379459AbiAYP5S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:53:33 -0500
+        Tue, 25 Jan 2022 10:57:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643126008;
+        s=mimecast20190719; t=1643126231;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bNm6xJMnoq6zW3mNekeLpnh8KifXaMMeaJAVDRk+IBI=;
-        b=ScMmfZClB2HUkfVTdsyhZwEnXPElkniKNx9kRQbinrX66Aq808keCPqRgMmj3fJ4faN9XS
-        bEnH0t3aSihfJIpyLwqptCR6RBX5D1V2I+IDRLsTuoR2Pt5kn0w4VMM9sQBhtfMKxkZIl9
-        4WUoefVJXa5t6zl0OutUD+WISaIpbew=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=EOuF9uHjmu6EB+RqEY9DRd/3karDS0G1/LHvYVm6MBE=;
+        b=Xo7kztOvDJvPuWt9RvEClrpENYSVeAiPrtD/LHQG3T+EZOz3AYx1sYkqe1ucDTyfj+q766
+        fpkWphMGpKcvuKBD4lD0RQM1gs+jjOFgMGpDb0pDsFKG3C94OPBMyL904K0g9zZdAh7pe+
+        pyuECelXoEWMfz+dynrp5udNF+PzQ0c=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-606-K4fDiOY3O5W2XmFacmuoZA-1; Tue, 25 Jan 2022 10:53:27 -0500
-X-MC-Unique: K4fDiOY3O5W2XmFacmuoZA-1
-Received: by mail-ej1-f70.google.com with SMTP id b12-20020a17090630cc00b006a7190bdfbaso3595512ejb.18
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 07:53:26 -0800 (PST)
+ us-mta-542-jr7nDmt-N-G_cRfU0vwTNA-1; Tue, 25 Jan 2022 10:57:08 -0500
+X-MC-Unique: jr7nDmt-N-G_cRfU0vwTNA-1
+Received: by mail-ej1-f72.google.com with SMTP id v2-20020a170906292200b006a94a27f903so3599513ejd.8
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 07:57:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=bNm6xJMnoq6zW3mNekeLpnh8KifXaMMeaJAVDRk+IBI=;
-        b=ISUcP6IUKDWVBHq8EMu109t+KyZvZI9/FEmdjDB2p3mj9KC7rGJ6ZwEK++dODJmnvP
-         neZrLX9/ypmoF6A/gej0AkqfPGNz5I8yROV195muLo39SCrtO9VAKFovlTtnwqLJNy7c
-         fId7AzRJVOdiabuR3+f6+AZS29/ww+0Mg5WBaxuH2auvkIo/mTrN2hywa2jtXfpO3jz4
-         0Mta+7FUPRVMJYtE0CSY9r81WhMIDWpZruD4cCFucbBouhvxWdKhttp0t2MHy8n6sn/q
-         PXyFleEmC3V91hoMcFxxHX1uNuzyT/bYpE1rDw8MkHlhnXk3qnvDzMITz2QcHBa3hhdx
-         4+KQ==
-X-Gm-Message-State: AOAM532UfK4Erfuf4P5O0/bgbZXy7uog6yI+KB3u7x7KnKCGfwHeCzOA
-        nbvyPLAGclu+CPe4xwJ1ztCBCqwZy8wJP6NpK0TsLPbTk/d3kHlMdUbOsrzGAteqQTYBn7TIf1O
-        HHMNDFs12c04PPoXqEiyPFVp4
-X-Received: by 2002:a17:907:20ad:: with SMTP id pw13mr16398321ejb.73.1643126005535;
-        Tue, 25 Jan 2022 07:53:25 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz7y8BjckoEZ7cIu9yG4/V2ksHmeMid11visjnsyfjxuoipmJpu/7QfnaghrmqM09p9GLazZA==
-X-Received: by 2002:a17:907:20ad:: with SMTP id pw13mr16398296ejb.73.1643126005168;
-        Tue, 25 Jan 2022 07:53:25 -0800 (PST)
+        bh=EOuF9uHjmu6EB+RqEY9DRd/3karDS0G1/LHvYVm6MBE=;
+        b=XnY2LxtoJLWF8qNnV3MPA9w1mB2K30u9eeLwFS4j1OzqzfSDDMVMkHqWj7xtpIGYcd
+         MogeXRoPlHIDiElFNKxDKmzBXhNUczpIQPxtBlhMPW8Te8EfZc+S+T+KrLGErIQPA0nc
+         cMhqXEzQKyPtaEYdKQMGbJJBGbx64Kc7Obd2puUsurEdmaWB+iZ777jkXJ1X+27dD6C6
+         y5mWva+yIaPJiEsmkLZa6Bpay46h8AoGZURzzBXJJDpAHx44sD+v9lifBf9ubd4Wnko2
+         ZG5xQYAZvvNv3aasW4shekBdbeoA7nYHPv1eE4HBM6u6IyfGyl+pkn8ecvvgA6YJzPGU
+         Uk9A==
+X-Gm-Message-State: AOAM532KPPIzMYqRPzJMMpFIuQ8qSvehpi2ltyrekPYKV4uZL8NtRrA7
+        RxsVi5ENrksi4Ws9FpN/g17XqQCO+HshI48DmijRzBU6dHNfzrjloEK6gY6yH3EoOkHXZd8zMbI
+        iCwsdEUZ+dZXMreZLNd0ZoEWt
+X-Received: by 2002:a17:906:560c:: with SMTP id f12mr17417349ejq.197.1643126227118;
+        Tue, 25 Jan 2022 07:57:07 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxNe7yqYzq/tN13zpUzE8HyivuSwsjoWYJAYE+e8EPE8nGSTY0zvG86PwdV/oTDtJSYJxpJng==
+X-Received: by 2002:a17:906:560c:: with SMTP id f12mr17417340ejq.197.1643126226886;
+        Tue, 25 Jan 2022 07:57:06 -0800 (PST)
 Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id z8sm6351431ejc.151.2022.01.25.07.53.23
+        by smtp.googlemail.com with ESMTPSA id ec7sm8453751edb.62.2022.01.25.07.57.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 07:53:24 -0800 (PST)
-Message-ID: <efc05e35-b37f-5d9b-d00e-f4f2edc0441b@redhat.com>
-Date:   Tue, 25 Jan 2022 16:53:22 +0100
+        Tue, 25 Jan 2022 07:57:06 -0800 (PST)
+Message-ID: <21da89ed-fe72-f824-902c-a7c4999a908e@redhat.com>
+Date:   Tue, 25 Jan 2022 16:57:05 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.0
-Subject: Re: [PATCH 2/5] KVM: SVM: hyper-v: Enable Enlightened MSR-Bitmap
- support for real
+Subject: Re: [PATCH 1/5] KVM: SVM: Drop stale comment from
+ svm_hv_vmcb_dirty_nested_enlightenments()
 Content-Language: en-US
 To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -70,9 +70,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Vineeth Pillai <viremana@linux.microsoft.com>,
         linux-kernel@vger.kernel.org
 References: <20211220152139.418372-1-vkuznets@redhat.com>
- <20211220152139.418372-3-vkuznets@redhat.com>
+ <20211220152139.418372-2-vkuznets@redhat.com>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20211220152139.418372-3-vkuznets@redhat.com>
+In-Reply-To: <20211220152139.418372-2-vkuznets@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -80,35 +80,61 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 12/20/21 16:21, Vitaly Kuznetsov wrote:
-> Commit c4327f15dfc7 ("KVM: SVM: hyper-v: Enlightened MSR-Bitmap support")
-> introduced enlightened MSR-Bitmap support for KVM-on-Hyper-V but it didn't
-> actually enable the support. Similar to enlightened NPT TLB flush and
-> direct TLB flush features, the guest (KVM) has to tell L0 (Hyper-V) that
-> it's using the feature by setting the appropriate feature fit in VMCB
-> control area (sw reserved fields).
+> Commit 3fa5e8fd0a0e4 ("KVM: SVM: delay svm_vcpu_init_msrpm after
+> svm->vmcb is initialized") re-arranged svm_vcpu_init_msrpm() call in
+> svm_create_vcpu() making the comment about vmcb being NULL
+> obsolete. Drop it.
 > 
-> Fixes: c4327f15dfc7 ("KVM: SVM: hyper-v: Enlightened MSR-Bitmap support")
+> While on it, drop superfluous vmcb_is_clean() check: vmcb_mark_dirty()
+> is a bit flip, an extra check is unlikely to bring any performance gain.
+> Drop now-unneeded vmcb_is_clean() helper as well.
+> 
+> Fixes: 3fa5e8fd0a0e4 ("KVM: SVM: delay svm_vcpu_init_msrpm after svm->vmcb is initialized")
 > Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->   arch/x86/kvm/svm/svm_onhyperv.h | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/svm/svm_onhyperv.h b/arch/x86/kvm/svm/svm_onhyperv.h
-> index cdbcfc63d171..489ca56212c6 100644
-> --- a/arch/x86/kvm/svm/svm_onhyperv.h
-> +++ b/arch/x86/kvm/svm/svm_onhyperv.h
-> @@ -46,6 +46,9 @@ static inline void svm_hv_init_vmcb(struct vmcb *vmcb)
->   	if (npt_enabled &&
->   	    ms_hyperv.nested_features & HV_X64_NESTED_ENLIGHTENED_TLB)
->   		hve->hv_enlightenments_control.enlightened_npt_tlb = 1;
-> +
-> +	if (ms_hyperv.nested_features & HV_X64_NESTED_MSR_BITMAP)
-> +		hve->hv_enlightenments_control.msr_bitmap = 1;
->   }
->   
->   static inline void svm_hv_hardware_setup(void)
 
-Queued this one for now.
+Queued, but with subject changed to "KVM: SVM: clean up beginning of 
+svm_hv_vmcb_dirty_nested_enlightenments()".
 
 Paolo
+
+>   arch/x86/kvm/svm/svm.h          | 5 -----
+>   arch/x86/kvm/svm/svm_onhyperv.h | 9 +--------
+>   2 files changed, 1 insertion(+), 13 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+> index daa8ca84afcc..5d197aae3a19 100644
+> --- a/arch/x86/kvm/svm/svm.h
+> +++ b/arch/x86/kvm/svm/svm.h
+> @@ -305,11 +305,6 @@ static inline void vmcb_mark_all_clean(struct vmcb *vmcb)
+>   			       & ~VMCB_ALWAYS_DIRTY_MASK;
+>   }
+>   
+> -static inline bool vmcb_is_clean(struct vmcb *vmcb, int bit)
+> -{
+> -	return (vmcb->control.clean & (1 << bit));
+> -}
+> -
+>   static inline void vmcb_mark_dirty(struct vmcb *vmcb, int bit)
+>   {
+>   	vmcb->control.clean &= ~(1 << bit);
+> diff --git a/arch/x86/kvm/svm/svm_onhyperv.h b/arch/x86/kvm/svm/svm_onhyperv.h
+> index c53b8bf8d013..cdbcfc63d171 100644
+> --- a/arch/x86/kvm/svm/svm_onhyperv.h
+> +++ b/arch/x86/kvm/svm/svm_onhyperv.h
+> @@ -83,14 +83,7 @@ static inline void svm_hv_vmcb_dirty_nested_enlightenments(
+>   	struct hv_enlightenments *hve =
+>   		(struct hv_enlightenments *)vmcb->control.reserved_sw;
+>   
+> -	/*
+> -	 * vmcb can be NULL if called during early vcpu init.
+> -	 * And its okay not to mark vmcb dirty during vcpu init
+> -	 * as we mark it dirty unconditionally towards end of vcpu
+> -	 * init phase.
+> -	 */
+> -	if (vmcb_is_clean(vmcb, VMCB_HV_NESTED_ENLIGHTENMENTS) &&
+> -	    hve->hv_enlightenments_control.msr_bitmap)
+> +	if (hve->hv_enlightenments_control.msr_bitmap)
+>   		vmcb_mark_dirty(vmcb, VMCB_HV_NESTED_ENLIGHTENMENTS);
+>   }
+>   
 
