@@ -2,133 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C67CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E45C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451623AbiAYMke (ORCPT
+        id S1452138AbiAYMlG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:40:34 -0500
-Received: from tkylinode-sdnproxy-1.icoremail.net ([139.162.70.28]:31060 "HELO
-        tkylinode-sdnproxy-1.icoremail.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S1383594AbiAYMhq (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:37:46 -0500
-X-Greylist: delayed 8427 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jan 2022 07:37:43 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=5DkymplUnV
-        DC1/piM6/QMhUWW1mHUHUppZ58TGWb3dg=; b=bnrHS/FKJAFTn75dCaC+LA5d8J
-        FNJ6UnDnZK6X9/o3TESX2usNuPAQNJNvsP+iqPsvBYADkhMo1EjgL2Qc67QA9Xzx
-        iKMz+5VGecpvjkT1DIElhUkV9ffVa2TeSOLYlhq4QiqymunF2VRVtX2DhQIdPBo0
-        3Upir0cb/Sk72ODe4=
-Received: from localhost.localdomain (unknown [111.192.165.103])
-        by app2 (Coremail) with SMTP id XQUFCgC3v_cr7u9hhAZlAA--.2538S4;
-        Tue, 25 Jan 2022 20:34:00 +0800 (CST)
-From:   Xin Xiong <xiongx18@fudan.edu.cn>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        linux-mtd@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     yuanxzhang@fudan.edu.cn, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>
-Subject: [PATCH] mtd: rawnand: atmel: fix refcount leaks in atmel_nand_controller_init
-Date:   Tue, 25 Jan 2022 20:31:56 +0800
-Message-Id: <20220125123155.36891-1-xiongx18@fudan.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 25 Jan 2022 07:41:06 -0500
+Received: from mail.skyhub.de ([5.9.137.197]:51206 "EHLO mail.skyhub.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1383593AbiAYMhn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 07:37:43 -0500
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 968B81EC0535;
+        Tue, 25 Jan 2022 13:37:22 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1643114242;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=XOfcXG5D0BWs6riYAWX/iHVHCXWqsmpsqiMz41YIXWo=;
+        b=UiQegtUMv/LtTTUXUPq7/b+JSe2nB68D2N8gRr+1V2n0nm44SbOCSEt6PjAykaVKQzE/TI
+        hNYY1kL5oy2GGQ77DxwIrl+2J7U2ihZQKIR+549K1B5pTOVyYTZk+wRttN9jC+tNO7nxs2
+        G4z/J8Gw1ffTCt/pN41O22FpWEnB1i0=
+Date:   Tue, 25 Jan 2022 13:37:17 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Shuai Xue <xueshuai@linux.alibaba.com>
+Cc:     rric@kernel.org, mchehab@kernel.org, tony.luck@intel.com,
+        james.morse@arm.com, ardb@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        zhangliguang@linux.alibaba.com, zhuo.song@linux.alibaba.com
+Subject: Re: [RESEND PATCH v3 1/2] efi/cper: add cper_mem_err_status_str to
+ decode error description
+Message-ID: <Ye/u/UNqXr1/WUXH@zn.tnic>
+References: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
+ <20220124024759.19176-2-xueshuai@linux.alibaba.com>
+ <Ye8XMvfXCetzJLTH@zn.tnic>
+ <98aae382-ac38-8811-f147-d00b953f608d@linux.alibaba.com>
+ <Ye/PLDlOBhYmGb5D@zn.tnic>
+ <0e156b79-6343-72b2-47fb-baa29ffe60fd@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: XQUFCgC3v_cr7u9hhAZlAA--.2538S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zw47ZF4xJrW3Xw4xCFWxJFb_yoW8ury5pF
-        WUt3y3Zw4UtFsxZF9FgayxuFyFva4kJFyUJ39Iqa4kZ3ZxX3WUK345tr10qFyUCFWfuF13
-        ZF47t3W8CF45AFUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUB014x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r
-        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
-        648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK67AK6ryUMxAIw28IcxkI7VAKI4
-        8JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xv
-        wVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjx
-        v20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20E
-        Y4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I
-        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUepB-DUUUU
-X-CM-SenderInfo: arytiiqsuqiimz6i3vldqovvfxof0/1tbiAg4REFKp2ii5hwABs7
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <0e156b79-6343-72b2-47fb-baa29ffe60fd@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reference counting issue happens in several error handling paths
-on a refcounted object "nc->dmac". In these paths, the function simply
-returns the error code, forgetting to balance the reference count
-increased earlier by dma_request_channel(), which may cause refcount
-leaks. What's more, the "nc->mck" object also needs to be handled
-correctly.
+On Tue, Jan 25, 2022 at 07:49:41PM +0800, Shuai Xue wrote:
+> I am sorry if you feel the RESEND tag is pushing you.
 
-Fix it by adding specific error handling code in those error paths.
+It is not pushing me - there are rules, simply. Rules you should read
+first before sending patches.
 
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
----
- drivers/mtd/nand/raw/atmel/nand-controller.c | 22 +++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+How about I start flooding you a patchset every day?
 
-diff --git a/drivers/mtd/nand/raw/atmel/nand-controller.c b/drivers/mtd/nand/raw/atmel/nand-controller.c
-index f3276ee9e..b3801ebd2 100644
---- a/drivers/mtd/nand/raw/atmel/nand-controller.c
-+++ b/drivers/mtd/nand/raw/atmel/nand-controller.c
-@@ -2060,13 +2060,15 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	nc->mck = of_clk_get(dev->parent->of_node, 0);
- 	if (IS_ERR(nc->mck)) {
- 		dev_err(dev, "Failed to retrieve MCK clk\n");
--		return PTR_ERR(nc->mck);
-+		ret = PTR_ERR(nc->mck);
-+		goto out_release_dma;
- 	}
- 
- 	np = of_parse_phandle(dev->parent->of_node, "atmel,smc", 0);
- 	if (!np) {
- 		dev_err(dev, "Missing or invalid atmel,smc property\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto out_put_clk;
- 	}
- 
- 	nc->smc = syscon_node_to_regmap(np);
-@@ -2074,10 +2076,24 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	if (IS_ERR(nc->smc)) {
- 		ret = PTR_ERR(nc->smc);
- 		dev_err(dev, "Could not get SMC regmap (err = %d)\n", ret);
--		return ret;
-+		goto out_put_clk;
- 	}
- 
- 	return 0;
-+
-+out_put_clk:
-+	clk_put(nc->mck);
-+	nc->mck = NULL;
-+
-+out_release_dma:
-+	if (nc->caps->has_dma && !atmel_nand_avoid_dma) {
-+		if (!IS_ERR_OR_NULL(nc->dmac)) {
-+			dma_release_channel(nc->dmac);
-+			nc->dmac = NULL;
-+		}
-+	}
-+
-+	return ret;
- }
- 
- static int
+Also, please do not top-post. That's also explained in that
+documentation directory I mentioned. Read about it too pls.
+
 -- 
-2.25.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
