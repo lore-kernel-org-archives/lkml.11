@@ -2,95 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E78C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B67A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451804AbiAYMnb (ORCPT
+        id S1383927AbiAYMpW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:43:31 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45572 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451482AbiAYMk2 (ORCPT
+        Tue, 25 Jan 2022 07:45:22 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:55266 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1452800AbiAYMmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:40:28 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 25 Jan 2022 07:42:09 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id E39101F380;
+        Tue, 25 Jan 2022 12:42:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1643114524; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YLtlKuPoADWCEZcM/RaMVq/xOpaxcT6tevD1Rm+nUYA=;
+        b=RpTppQc4leOl0T0HMyo5gixVuROCn5E/wZm/UJ3ydVYLXpETYI5XxkPWN8iGeYGvk6V54D
+        NzTIVRjBTDVvht330nSPUP5ZudYliwjY9xILG9GIngoY3Lrhi/6ex4RUsLinCGc95O5u2d
+        Sowt7oZFbRzjOLBJ158+QkuzD0chcjg=
+Received: from suse.cz (unknown [10.100.216.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C56DA612ED;
-        Tue, 25 Jan 2022 12:40:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D710C340E0;
-        Tue, 25 Jan 2022 12:40:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643114425;
-        bh=mx0DvKjnIC23tbm60JZ4vLXJ/iDWJTXgRGeNJfsdvAA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u/M/F7ubhrQBBuDUhuLKW7zh1WRd4gU+oIyFQYCVjdbqHSyryEXJBM6JEUJP/na2m
-         tFK3q3v+HXxJgEUj+1vlMgazK30TCUVzaHItF/3GDzgUWYKhB7f6vJFWREHXVVRf6X
-         fcTDe3dI9vB3TcIMAjhad1SAi7me8sfS+fmDHrro=
-Date:   Tue, 25 Jan 2022 13:40:22 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Christian Gmeiner <christian.gmeiner@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, stable@vger.kernel.org
-Subject: Re: [PATCH 4.14 000/186] 4.14.263-rc1 review
-Message-ID: <Ye/vtmYtku6yna4X@kroah.com>
-References: <20220124183937.101330125@linuxfoundation.org>
- <CA+G9fYshfJ-WCB141=ha8uf0-FhE9Pim6hd5BWAVxDpvHhTR0w@mail.gmail.com>
- <CA+G9fYvPfpq+ptuzEW7S4S3o_vGxVGus4n0xAFxLoMzaH+Jnxw@mail.gmail.com>
+        by relay2.suse.de (Postfix) with ESMTPS id 9DB02A3B81;
+        Tue, 25 Jan 2022 12:42:04 +0000 (UTC)
+Date:   Tue, 25 Jan 2022 13:42:03 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Stephen Brennan <stephen.s.brennan@oracle.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] printk: disable optimistic spin during panic
+Message-ID: <Ye/wG5IsIYer7akH@alley>
+References: <20220121190222.572694-1-stephen.s.brennan@oracle.com>
+ <20220121190222.572694-3-stephen.s.brennan@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+G9fYvPfpq+ptuzEW7S4S3o_vGxVGus4n0xAFxLoMzaH+Jnxw@mail.gmail.com>
+In-Reply-To: <20220121190222.572694-3-stephen.s.brennan@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 05:42:18PM +0530, Naresh Kamboju wrote:
-> On Tue, 25 Jan 2022 at 16:58, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
-> >
-> > On Tue, 25 Jan 2022 at 00:34, Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > This is the start of the stable review cycle for the 4.14.263 release.
-> > > There are 186 patches in this series, all will be posted as a response
-> > > to this one.  If anyone has any issues with these being applied, please
-> > > let me know.
-> > >
-> > > Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
-> > > Anything received after that time might be too late.
-> > >
-> > > The whole patch series can be found in one patch at:
-> > >         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.263-rc1.gz
-> > > or in the git tree and branch at:
-> > >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
-> > > and the diffstat can be found below.
-> > >
-> > > thanks,
-> > >
-> > > greg k-h
-> >
-> > Following patch caused build failures on arm imx_v6_v7_defconfig
-> >
-> > > Lucas Stach <l.stach@pengutronix.de>
-> > >     drm/etnaviv: limit submit sizes
+On Fri 2022-01-21 11:02:20, Stephen Brennan wrote:
+> A CPU executing with console lock spinning enabled might be halted
+> during a panic. Before the panicking CPU calls console_flush_on_panic(),
+> it may call console_trylock(), which attempts to optimistically spin,
+> deadlocking the panic CPU:
 > 
-> The following patch might be missing,
+> CPU 0 (panic CPU)             CPU 1
+> -----------------             ------
+>                               printk() {
+>                                 vprintk_func() {
+>                                   vprintk_default() {
+>                                     vprintk_emit() {
+>                                       console_unlock() {
+>                                         console_lock_spinning_enable();
+>                                         ... printing to console ...
+> panic() {
+>   crash_smp_send_stop() {
+>     NMI  -------------------> HALT
+>   }
+>   atomic_notifier_call_chain() {
+>     printk() {
+>       ...
+>       console_trylock_spinnning() {
+>         // optimistic spin infinitely
 > 
-> commit 05916bed11b6d4c61b473a76220151a7d0547164
-> Christian Gmeiner <christian.gmeiner@gmail.com>
->  drm/etnaviv: add uapi for perfmon feature
+> This hang during panic can be induced when a kdump kernel is loaded, and
+> crash_kexec_post_notifiers=1 is present on the kernel command line. The
+> following script which concurrently writes to /dev/kmsg, and triggers a
+> panic, can result in this hang:
 > 
+>     #!/bin/bash
+>     date
+>     # 991 chars (based on log buffer size):
+>     chars="$(printf 'a%.0s' {1..991})"
+>     while :; do
+>         echo $chars > /dev/kmsg
+>     done &
+>     echo c > /proc/sysrq-trigger &
+>     date
+>     exit
 > 
+> To avoid this deadlock, ensure that console_trylock_spinning() does not
+> allow spinning once a panic has begun.
+> 
+> Fixes: dbdda842fe96 ("printk: Add console owner and waiter logic to load balance console writes")
+> 
+> Suggested-by: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
 
-Thanks, I'll drop the limit commit from 4.14 and older as it doesn't
-seem like this option is present on kernels older than 4.15.
+Looks good to me:
 
-thanks,
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-greg k-h
+Best Regards,
+Petr
