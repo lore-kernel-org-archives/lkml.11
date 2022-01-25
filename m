@@ -2,400 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C39AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D55C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1319070AbiAYDHt (ORCPT
+        id S1319133AbiAYDIA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:07:49 -0500
-Received: from mga11.intel.com ([192.55.52.93]:6524 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S3420053AbiAYCW0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:22:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643077346; x=1674613346;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UgZ+QsqPyJXG3NxK7ItmM8AuUepDhmYCaG7lwkR5rKU=;
-  b=YEtz7fAvgXT6Gn1TOFpQVNS6E0+5UllRdB5Ja3Jxr/Anu5zHeNkUFhGC
-   hdqy44tF4rJ8rajS49bq3cr0BAwPswWvaaOvljkOnAJ3A4SQeVjPXcyYT
-   ay/klTW4IyZO8LMgNXhH+4+xqxUoP7A6E+Klub1tkAMVFedgf9peIuB88
-   o4SL8fJ8yvrVMFDcEJow3wmt7UfZgrAOv1hXvfI10NOnpwRgOmpd3ByqB
-   O6JJWdBk9cIS7WGCYIqWZ+jXLEealsjJxThXqMFR11Av0+krQXn1MNwo1
-   GSILQVKUFppMIMdfIuJhdpaSmKyoos0Rytb/sxnNcXBM57Z23WAyJPcJk
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="243788320"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="243788320"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:14:38 -0800
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="768859952"
-Received: from kerguder-mobl.ger.corp.intel.com (HELO localhost) ([10.249.158.133])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:14:31 -0800
-From:   Iwona Winiarska <iwona.winiarska@intel.com>
-To:     linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Borislav Petkov <bp@alien8.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Zev Weiss <zweiss@equinix.com>,
-        David Muller <d.mueller@elsoft.ch>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Billy Tsai <billy_tsai@aspeedtech.com>,
-        Iwona Winiarska <iwona.winiarska@intel.com>
-Subject: [PATCH v6 06/13] peci: Add device detection
-Date:   Tue, 25 Jan 2022 02:10:57 +0100
-Message-Id: <20220125011104.2480133-7-iwona.winiarska@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220125011104.2480133-1-iwona.winiarska@intel.com>
-References: <20220125011104.2480133-1-iwona.winiarska@intel.com>
+        Mon, 24 Jan 2022 22:08:00 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39442 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384630AbiAYCWP (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 21:22:15 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C029DB81619;
+        Tue, 25 Jan 2022 02:22:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22BB8C340E4;
+        Tue, 25 Jan 2022 02:22:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643077328;
+        bh=ppR/AYsgW9y0/lBa8Psg2sMOYuXPJPZT3SUUjYtczno=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=CfIYFV92Vc/SCEINZZPRFMwWlVRwwuPILutJgRzq5q3Xo9a/ihgQepw0xrwGK9oL9
+         ZwYB0uPILRq4KGHysS3cSwR2KpHEkUrkxjtRm2kBD49N68R5HolMZbpr8y8Rk/axqT
+         TpWdKYeWbJEw83s3s4kkx/UYLAwyTwSUL3OBQzeWpMMKAKvyCC4mZFk4fwrAY5n5ee
+         13dBa+M5YenMClzE9L6wwcG+OtHtDOBFhj6KY3W7WVE8kUlyekaq1bVxNEUzxlilnF
+         OysgSJt3s7PqQ2FfUIyiVK6IK+tmLm0CsVVy35m0Ne9EUmp2ahLQkFj2T5ZnLDMiD1
+         l6LRazeoK6b0w==
+Message-ID: <3c56cf70-2557-2e9c-4694-588ddaa91220@kernel.org>
+Date:   Tue, 25 Jan 2022 10:22:04 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH 4.19 026/239] f2fs: fix to do sanity check in is_alive()
+Content-Language: en-US
+To:     Pavel Machek <pavel@denx.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Jaegeuk Kim <jaegeuk@kernel.org>
+References: <20220124183943.102762895@linuxfoundation.org>
+ <20220124183943.957395248@linuxfoundation.org>
+ <20220124203637.GA19321@duo.ucw.cz>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <20220124203637.GA19321@duo.ucw.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since PECI devices are discoverable, we can dynamically detect devices
-that are actually available in the system.
+On 2022/1/25 4:36, Pavel Machek wrote:
+> Hi!
+> 
+>> From: Chao Yu <chao@kernel.org>
+>>
+>> commit 77900c45ee5cd5da63bd4d818a41dbdf367e81cd upstream.
+>>
+>> In fuzzed image, SSA table may indicate that a data block belongs to
+>> invalid node, which node ID is out-of-range (0, 1, 2 or max_nid), in
+>> order to avoid migrating inconsistent data in such corrupted image,
+>> let's do sanity check anyway before data block migration.
+> 
+> This may be good idea, but AFAICT this leads to leak of page reference.
 
-This change complements the earlier implementation by rescanning PECI
-bus to detect available devices. For this purpose, it also introduces the
-minimal API for PECI requests.
+Hi Pavel,
 
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
----
- drivers/peci/Makefile   |   2 +-
- drivers/peci/core.c     |  33 +++++++++++
- drivers/peci/device.c   | 120 ++++++++++++++++++++++++++++++++++++++++
- drivers/peci/internal.h |  14 +++++
- drivers/peci/request.c  |  55 ++++++++++++++++++
- include/linux/peci.h    |   2 +
- 6 files changed, 225 insertions(+), 1 deletion(-)
- create mode 100644 drivers/peci/device.c
- create mode 100644 drivers/peci/request.c
+Oops, you're right, my bad.
 
-diff --git a/drivers/peci/Makefile b/drivers/peci/Makefile
-index 926d8df15cbd..c5f9d3fe21bb 100644
---- a/drivers/peci/Makefile
-+++ b/drivers/peci/Makefile
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- 
- # Core functionality
--peci-y := core.o
-+peci-y := core.o request.o device.o
- obj-$(CONFIG_PECI) += peci.o
- 
- # Hardware specific bus drivers
-diff --git a/drivers/peci/core.c b/drivers/peci/core.c
-index 73ad0a47fa9d..c3361e6e043a 100644
---- a/drivers/peci/core.c
-+++ b/drivers/peci/core.c
-@@ -29,6 +29,20 @@ struct device_type peci_controller_type = {
- 	.release	= peci_controller_dev_release,
- };
- 
-+static int peci_controller_scan_devices(struct peci_controller *controller)
-+{
-+	int ret;
-+	u8 addr;
-+
-+	for (addr = PECI_BASE_ADDR; addr < PECI_BASE_ADDR + PECI_DEVICE_NUM_MAX; addr++) {
-+		ret = peci_device_create(controller, addr);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static struct peci_controller *peci_controller_alloc(struct device *dev,
- 						     struct peci_controller_ops *ops)
- {
-@@ -64,10 +78,23 @@ static struct peci_controller *peci_controller_alloc(struct device *dev,
- 	return ERR_PTR(ret);
- }
- 
-+static int unregister_child(struct device *dev, void *dummy)
-+{
-+	peci_device_destroy(to_peci_device(dev));
-+
-+	return 0;
-+}
-+
- static void unregister_controller(void *_controller)
- {
- 	struct peci_controller *controller = _controller;
- 
-+	/*
-+	 * Detach any active PECI devices. This can't fail, thus we do not
-+	 * check the returned value.
-+	 */
-+	device_for_each_child_reverse(&controller->dev, NULL, unregister_child);
-+
- 	device_unregister(&controller->dev);
- 
- 	fwnode_handle_put(controller->dev.fwnode);
-@@ -113,6 +140,12 @@ struct peci_controller *devm_peci_controller_add(struct device *dev,
- 	if (ret)
- 		return ERR_PTR(ret);
- 
-+	/*
-+	 * Ignoring retval since failures during scan are non-critical for
-+	 * controller itself.
-+	 */
-+	peci_controller_scan_devices(controller);
-+
- 	return controller;
- 
- err_fwnode:
-diff --git a/drivers/peci/device.c b/drivers/peci/device.c
-new file mode 100644
-index 000000000000..2b3a2d893aaf
---- /dev/null
-+++ b/drivers/peci/device.c
-@@ -0,0 +1,120 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+// Copyright (c) 2018-2021 Intel Corporation
-+
-+#include <linux/peci.h>
-+#include <linux/slab.h>
-+
-+#include "internal.h"
-+
-+/*
-+ * PECI device can be removed using sysfs, but the removal can also happen as
-+ * a result of controller being removed.
-+ * Mutex is used to protect PECI device from being double-deleted.
-+ */
-+static DEFINE_MUTEX(peci_device_del_lock);
-+
-+static int peci_detect(struct peci_controller *controller, u8 addr)
-+{
-+	/*
-+	 * PECI Ping is a command encoded by tx_len = 0, rx_len = 0.
-+	 * We expect correct Write FCS if the device at the target address
-+	 * is able to respond.
-+	 */
-+	struct peci_request req = { 0 };
-+	int ret;
-+
-+	mutex_lock(&controller->bus_lock);
-+	ret = controller->ops->xfer(controller, addr, &req);
-+	mutex_unlock(&controller->bus_lock);
-+
-+	return ret;
-+}
-+
-+static bool peci_addr_valid(u8 addr)
-+{
-+	return addr >= PECI_BASE_ADDR && addr < PECI_BASE_ADDR + PECI_DEVICE_NUM_MAX;
-+}
-+
-+static int peci_dev_exists(struct device *dev, void *data)
-+{
-+	struct peci_device *device = to_peci_device(dev);
-+	u8 *addr = data;
-+
-+	if (device->addr == *addr)
-+		return -EBUSY;
-+
-+	return 0;
-+}
-+
-+int peci_device_create(struct peci_controller *controller, u8 addr)
-+{
-+	struct peci_device *device;
-+	int ret;
-+
-+	if (!peci_addr_valid(addr))
-+		return -EINVAL;
-+
-+	/* Check if we have already detected this device before. */
-+	ret = device_for_each_child(&controller->dev, &addr, peci_dev_exists);
-+	if (ret)
-+		return 0;
-+
-+	ret = peci_detect(controller, addr);
-+	if (ret) {
-+		/*
-+		 * Device not present or host state doesn't allow successful
-+		 * detection at this time.
-+		 */
-+		if (ret == -EIO || ret == -ETIMEDOUT)
-+			return 0;
-+
-+		return ret;
-+	}
-+
-+	device = kzalloc(sizeof(*device), GFP_KERNEL);
-+	if (!device)
-+		return -ENOMEM;
-+
-+	device_initialize(&device->dev);
-+
-+	device->addr = addr;
-+	device->dev.parent = &controller->dev;
-+	device->dev.bus = &peci_bus_type;
-+	device->dev.type = &peci_device_type;
-+
-+	ret = dev_set_name(&device->dev, "%d-%02x", controller->id, device->addr);
-+	if (ret)
-+		goto err_put;
-+
-+	ret = device_add(&device->dev);
-+	if (ret)
-+		goto err_put;
-+
-+	return 0;
-+
-+err_put:
-+	put_device(&device->dev);
-+
-+	return ret;
-+}
-+
-+void peci_device_destroy(struct peci_device *device)
-+{
-+	mutex_lock(&peci_device_del_lock);
-+	if (!device->deleted) {
-+		device_unregister(&device->dev);
-+		device->deleted = true;
-+	}
-+	mutex_unlock(&peci_device_del_lock);
-+}
-+
-+static void peci_device_release(struct device *dev)
-+{
-+	struct peci_device *device = to_peci_device(dev);
-+
-+	kfree(device);
-+}
-+
-+struct device_type peci_device_type = {
-+	.release	= peci_device_release,
-+};
-diff --git a/drivers/peci/internal.h b/drivers/peci/internal.h
-index 918dea745a86..57d11a902c5d 100644
---- a/drivers/peci/internal.h
-+++ b/drivers/peci/internal.h
-@@ -8,6 +8,20 @@
- #include <linux/types.h>
- 
- struct peci_controller;
-+struct peci_device;
-+struct peci_request;
-+
-+/* PECI CPU address range 0x30-0x37 */
-+#define PECI_BASE_ADDR		0x30
-+#define PECI_DEVICE_NUM_MAX	8
-+
-+struct peci_request *peci_request_alloc(struct peci_device *device, u8 tx_len, u8 rx_len);
-+void peci_request_free(struct peci_request *req);
-+
-+extern struct device_type peci_device_type;
-+
-+int peci_device_create(struct peci_controller *controller, u8 addr);
-+void peci_device_destroy(struct peci_device *device);
- 
- extern struct bus_type peci_bus_type;
- 
-diff --git a/drivers/peci/request.c b/drivers/peci/request.c
-new file mode 100644
-index 000000000000..7dee51c50dd2
---- /dev/null
-+++ b/drivers/peci/request.c
-@@ -0,0 +1,55 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+// Copyright (c) 2021 Intel Corporation
-+
-+#include <linux/export.h>
-+#include <linux/peci.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+
-+#include "internal.h"
-+
-+/**
-+ * peci_request_alloc() - allocate &struct peci_requests
-+ * @device: PECI device to which request is going to be sent
-+ * @tx_len: TX length
-+ * @rx_len: RX length
-+ *
-+ * Return: A pointer to a newly allocated &struct peci_request on success or NULL otherwise.
-+ */
-+struct peci_request *peci_request_alloc(struct peci_device *device, u8 tx_len, u8 rx_len)
-+{
-+	struct peci_request *req;
-+
-+	/*
-+	 * TX and RX buffers are fixed length members of peci_request, this is
-+	 * just a warn for developers to make sure to expand the buffers (or
-+	 * change the allocation method) if we go over the current limit.
-+	 */
-+	if (WARN_ON_ONCE(tx_len > PECI_REQUEST_MAX_BUF_SIZE || rx_len > PECI_REQUEST_MAX_BUF_SIZE))
-+		return NULL;
-+	/*
-+	 * PECI controllers that we are using now don't support DMA, this
-+	 * should be converted to DMA API once support for controllers that do
-+	 * allow it is added to avoid an extra copy.
-+	 */
-+	req = kzalloc(sizeof(*req), GFP_KERNEL);
-+	if (!req)
-+		return NULL;
-+
-+	req->device = device;
-+	req->tx.len = tx_len;
-+	req->rx.len = rx_len;
-+
-+	return req;
-+}
-+EXPORT_SYMBOL_NS_GPL(peci_request_alloc, PECI);
-+
-+/**
-+ * peci_request_free() - free peci_request
-+ * @req: the PECI request to be freed
-+ */
-+void peci_request_free(struct peci_request *req)
-+{
-+	kfree(req);
-+}
-+EXPORT_SYMBOL_NS_GPL(peci_request_free, PECI);
-diff --git a/include/linux/peci.h b/include/linux/peci.h
-index 26e0a4e73b50..7e35673f3786 100644
---- a/include/linux/peci.h
-+++ b/include/linux/peci.h
-@@ -60,6 +60,7 @@ static inline struct peci_controller *to_peci_controller(void *d)
-  * @dev: device object to register PECI device to the device model
-  * @controller: manages the bus segment hosting this PECI device
-  * @addr: address used on the PECI bus connected to the parent controller
-+ * @deleted: indicates that PECI device was already deleted
-  *
-  * A peci_device identifies a single device (i.e. CPU) connected to a PECI bus.
-  * The behaviour exposed to the rest of the system is defined by the PECI driver
-@@ -68,6 +69,7 @@ static inline struct peci_controller *to_peci_controller(void *d)
- struct peci_device {
- 	struct device dev;
- 	u8 addr;
-+	bool deleted;
- };
- 
- static inline struct peci_device *to_peci_device(struct device *d)
--- 
-2.31.1
+> 
+>> +++ b/fs/f2fs/gc.c
+>> @@ -589,6 +589,9 @@ static bool is_alive(struct f2fs_sb_info
+>>   		set_sbi_flag(sbi, SBI_NEED_FSCK);
+>>   	}
+>>   
+>> +	if (f2fs_check_nid_range(sbi, dni->ino))
+>> +		return false;
+>> +
+>>   	*nofs = ofs_of_node(node_page);
+>>   	source_blkaddr = datablock_addr(NULL, node_page, ofs_in_node);
+>>   	f2fs_put_page(node_page, 1);
+> 
+> AFAICT f2fs_put_page() needs to be done in the error path, too.
+> 
+> (Problem seems to exist in mainline, too).
+> 
+> Something like this?
 
+Could you please send a formal patch to f2fs mailing list for better review?
+
+Anyway, thanks a lot for the report and the patch!
+
+Thanks,
+
+> 
+> Signed-off-by: Pavel Machek <pavel@denx.de>
+> 
+> Best regards,
+> 								Pavel
+> 
+> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+> index ee308a8de432..e020804f7b07 100644
+> --- a/fs/f2fs/gc.c
+> +++ b/fs/f2fs/gc.c
+> @@ -1038,8 +1038,10 @@ static bool is_alive(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
+>   		set_sbi_flag(sbi, SBI_NEED_FSCK);
+>   	}
+>   
+> -	if (f2fs_check_nid_range(sbi, dni->ino))
+> +	if (f2fs_check_nid_range(sbi, dni->ino)) {
+> +		f2fs_put_page(node_page, 1);
+>   		return false;
+> +	}
+>   
+>   	*nofs = ofs_of_node(node_page);
+>   	source_blkaddr = data_blkaddr(NULL, node_page, ofs_in_node);
+> 
+> 
