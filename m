@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5661C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE92C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380219AbiAYQd7 (ORCPT
+        id S1583786AbiAYQd5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 11:33:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        Tue, 25 Jan 2022 11:33:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380367AbiAYQ3z (ORCPT
+        with ESMTP id S1380265AbiAYQ3x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 11:29:55 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA905C061401
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:29:53 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id n8so17430979lfq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:29:53 -0800 (PST)
+        Tue, 25 Jan 2022 11:29:53 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02E5C06173D
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:29:51 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id z19so21134767lfq.13
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:29:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pgbuyREKxRWIfTIAFEtNz/Yq0ul97hjkI0IhbisIr/U=;
-        b=cHuTR4DKjeBcJy11i8A9aForxT/P00FHrJCpe4v7r4O+8PoSIsYcVBuLCzKdImExMz
-         1RKwx1NN4FVDHYy+fUEAae7a+hQbRB5kc2wwK6ROIUuM7/xKaSHtATVpjUlM6yH2bcYQ
-         V+WVGfzwPo+zClgkvmqQ36qdaSfkbibN3pKd7PPh52+VHI5e/MRwyTtgcGSBbgWjmDf+
-         A1g8uVvD6G2rwtM4pdh3/PjaJL36lLjxSSuQdgxVH3MhWRg425ZOeZOj41++ZYooAm7a
-         jzN2Sxr8H2oyOP2bWkP7GMbKOhmJT4TG3yqnisBE9Sdc7S3oBySwQI+76FntGlWsVay+
-         ENKg==
+        bh=mk0QTrWYNIqMlNlaNA65JGxOsyQCSgimX0tBW3zJXss=;
+        b=LmmgL/1aURYVTtEYN5pNx73DgANsAbgEUxs1+wrS3ZJ5TOO73SvgiinlxiWVSFEqlP
+         s/qKLYcLnZY8ubW03RsYu7Ah7znaex874EvRzoMUIP/IVC7oK01rIue64kjL5RprYcz/
+         EiSYIeKDIYNZe6f3QalvKUnLgC7SDdZwqFdb6/jVazLafsJd9kZDHpuGsKh57/MynfrA
+         4L/0u9Bf4IYecPz2WzYcxMsWiwxDrQUJTtmRzBBoo3dAOFk3uh6WFm5g5rHfVqJ/Iley
+         c0orredreKRB9fHns7UVnW3HUPvDWxAOb79K5R53W/vd3YszyE8kJolNOt4BA91Np3QC
+         Mxhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pgbuyREKxRWIfTIAFEtNz/Yq0ul97hjkI0IhbisIr/U=;
-        b=HkcWOj9KTOPNQD5gdS0XeZIP4+P0XuWaSHR/xZ+d+XeJAMOgjfh4fpfmd943CS7mzM
-         e44pmhFBM+i+DhyhoWX9R5+gZWGyISGaApuv+6HCHDI2z6ju/yGIPd71/Bqo9hc7nWHF
-         oei6G8XLo2z/VJ5mJSVgd2WhNxiN+3nYLdPnx8vTF2IaSUMIA8EwzVCPAFHRBVVPDXRS
-         7KtxPWmNjheFxjpSehGqcT2n6stXaRR+GwmT2A9yulI72/TfwuBHMsLMS5fb6XyH2UHB
-         Xe2ogg+Vxo93/op16EKEp7AbqVwXA70rPPK8mA06zTvahgxVLZPXIRaiTTOjAdgBZBqi
-         DQNA==
-X-Gm-Message-State: AOAM5338E8is/CPnNtjY3g5XXno0D7h6nWWgXpm5rJ9xoYZ48BCBQLHa
-        QrA0Upp4xV4eRbBkEE56ABZOvn0MhlwIsw==
-X-Google-Smtp-Source: ABdhPJwviYDQH/W6jNC6XbAdwPmKiyIyjq/11j+PrxEtVEPEVjTksLgE8t2mVtbhXH7lAx+5U5nbhw==
-X-Received: by 2002:a05:6512:2355:: with SMTP id p21mr6242068lfu.402.1643128191848;
-        Tue, 25 Jan 2022 08:29:51 -0800 (PST)
+        bh=mk0QTrWYNIqMlNlaNA65JGxOsyQCSgimX0tBW3zJXss=;
+        b=DR5El9hW62wvUNPIRz7FjEuJ8X3/VYl19HVAM79LUW4sBZhkDc+SA2jfjnVSap3YiH
+         eUY+VQ3NkgG1PRtS8AJ6zSWtFV7ZPb3f3kkovmg8eRTIYpp11Hmlu2onK+81IkWutWHW
+         nt7glSMI5TF5TtB8cI6Ls9BFKaaA1UsB5TTQsPiH9KunAkTELxDU/iTgO4vcd00AuNR4
+         P5+m+tZEuY40iVNWSFbQvPdpMy91c4VQykweMQ5eS3op/aYKgl7xKlc47EHxDNGP94O9
+         ipQrjSpjRN2q9X8UZqaxmEap5XqRPoWwH7msMooAI6hlrC6rS5TMLHNpnABSeX8d/+59
+         Oamw==
+X-Gm-Message-State: AOAM530muYS7wdvAp/4rEslxWJW1tBI5XMwNhpbk4N5W7Zt0ocSUSpc3
+        F+T1V18mYMaL7+y3HuBCrZDsnJuikKTY7Q==
+X-Google-Smtp-Source: ABdhPJxFFP7xggwp2DMnmKWSUS61mQ19sNA/YqSj9l8XkcG1gO03OOlHGYlIDBM2BAu9wuFMN+Z8OQ==
+X-Received: by 2002:a05:6512:3085:: with SMTP id z5mr807533lfd.216.1643128189296;
+        Tue, 25 Jan 2022 08:29:49 -0800 (PST)
 Received: from jade.urgonet (h-94-254-48-165.A175.priv.bahnhof.se. [94.254.48.165])
-        by smtp.gmail.com with ESMTPSA id d13sm536240lfq.75.2022.01.25.08.29.50
+        by smtp.gmail.com with ESMTPSA id d13sm536240lfq.75.2022.01.25.08.29.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 08:29:51 -0800 (PST)
+        Tue, 25 Jan 2022 08:29:48 -0800 (PST)
 From:   Jens Wiklander <jens.wiklander@linaro.org>
 To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
 Cc:     Sumit Garg <sumit.garg@linaro.org>,
@@ -58,9 +58,9 @@ Cc:     Sumit Garg <sumit.garg@linaro.org>,
         David Howells <dhowells@redhat.com>,
         Tyler Hicks <tyhicks@linux.microsoft.com>,
         Jens Wiklander <jens.wiklander@linaro.org>
-Subject: [PATCH v3 06/12] optee: add driver private tee_context
-Date:   Tue, 25 Jan 2022 17:29:32 +0100
-Message-Id: <20220125162938.838382-7-jens.wiklander@linaro.org>
+Subject: [PATCH v3 04/12] tee: simplify shm pool handling
+Date:   Tue, 25 Jan 2022 17:29:30 +0100
+Message-Id: <20220125162938.838382-5-jens.wiklander@linaro.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220125162938.838382-1-jens.wiklander@linaro.org>
 References: <20220125162938.838382-1-jens.wiklander@linaro.org>
@@ -70,280 +70,843 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds a driver private tee_context by moving the tee_context in struct
-optee_notif to struct optee. This tee_context is used when doing
-internal calls to secure world to deliver notification and later also
-when sharing driver private memory with secure world.
+Replaces the shared memory pool based on two pools with a single pool.
+The alloc() function pointer in struct tee_shm_pool_ops gets another
+parameter, align. This makes it possible to make less than page aligned
+allocations from the optional reserved shared memory pool while still
+making user space allocations page aligned. With in practice unchanged
+behaviour using only a single pool for bookkeeping.
+
+The allocation algorithm in the static OP-TEE shared memory pool is
+changed from best-fit to first-fit since only the latter supports an
+alignment parameter. The best-fit algorithm was previously the default
+choice and not a conscious one.
+
+The optee and amdtee drivers are updated as needed to work with this
+changed pool handling.
+
+This also removes OPTEE_SHM_NUM_PRIV_PAGES which becomes obsolete with
+this change as the private pages can be mixed with the payload pages.
 
 Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
 ---
- drivers/tee/optee/core.c          |  1 +
- drivers/tee/optee/ffa_abi.c       | 61 ++++++++++++++++++-------------
- drivers/tee/optee/optee_private.h |  5 ++-
- drivers/tee/optee/smc_abi.c       | 40 ++++++--------------
- 4 files changed, 51 insertions(+), 56 deletions(-)
+ drivers/tee/amdtee/shm_pool.c     |  55 +++++-----------
+ drivers/tee/optee/Kconfig         |   8 ---
+ drivers/tee/optee/core.c          |  11 ++--
+ drivers/tee/optee/ffa_abi.c       |  55 ++++------------
+ drivers/tee/optee/optee_private.h |   4 +-
+ drivers/tee/optee/smc_abi.c       | 100 ++++++----------------------
+ drivers/tee/tee_private.h         |  11 ----
+ drivers/tee/tee_shm.c             |  29 ++++-----
+ drivers/tee/tee_shm_pool.c        | 104 ++++++++++--------------------
+ include/linux/tee_drv.h           |  58 ++++++-----------
+ 10 files changed, 126 insertions(+), 309 deletions(-)
 
-diff --git a/drivers/tee/optee/core.c b/drivers/tee/optee/core.c
-index 2a369e346b85..f4bccb5f0e93 100644
---- a/drivers/tee/optee/core.c
-+++ b/drivers/tee/optee/core.c
-@@ -161,6 +161,7 @@ void optee_remove_common(struct optee *optee)
- 	optee_unregister_devices();
+diff --git a/drivers/tee/amdtee/shm_pool.c b/drivers/tee/amdtee/shm_pool.c
+index 065854e2db18..f87f96a291c9 100644
+--- a/drivers/tee/amdtee/shm_pool.c
++++ b/drivers/tee/amdtee/shm_pool.c
+@@ -8,13 +8,17 @@
+ #include <linux/psp-sev.h>
+ #include "amdtee_private.h"
  
- 	optee_notif_uninit(optee);
-+	teedev_close_context(optee->ctx);
- 	/*
- 	 * The two devices have to be unregistered before we can free the
- 	 * other resources.
-diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
-index d71880ede6d6..954e88866968 100644
---- a/drivers/tee/optee/ffa_abi.c
-+++ b/drivers/tee/optee/ffa_abi.c
-@@ -765,7 +765,9 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
+-static int pool_op_alloc(struct tee_shm_pool_mgr *poolm, struct tee_shm *shm,
+-			 size_t size)
++static int pool_op_alloc(struct tee_shm_pool *pool, struct tee_shm *shm,
++			 size_t size, size_t align)
  {
- 	const struct ffa_dev_ops *ffa_ops;
- 	unsigned int rpc_arg_count;
-+	struct tee_shm_pool *pool;
- 	struct tee_device *teedev;
-+	struct tee_context *ctx;
- 	struct optee *optee;
+ 	unsigned int order = get_order(size);
+ 	unsigned long va;
  	int rc;
  
-@@ -785,12 +787,12 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
++	/*
++	 * Ignore alignment since this is already going to be page aligned
++	 * and there's no need for any larger alignment.
++	 */
+ 	va = __get_free_pages(GFP_KERNEL | __GFP_ZERO, order);
+ 	if (!va)
+ 		return -ENOMEM;
+@@ -34,7 +38,7 @@ static int pool_op_alloc(struct tee_shm_pool_mgr *poolm, struct tee_shm *shm,
+ 	return 0;
+ }
+ 
+-static void pool_op_free(struct tee_shm_pool_mgr *poolm, struct tee_shm *shm)
++static void pool_op_free(struct tee_shm_pool *pool, struct tee_shm *shm)
+ {
+ 	/* Unmap the shared memory from TEE */
+ 	amdtee_unmap_shmem(shm);
+@@ -42,52 +46,25 @@ static void pool_op_free(struct tee_shm_pool_mgr *poolm, struct tee_shm *shm)
+ 	shm->kaddr = NULL;
+ }
+ 
+-static void pool_op_destroy_poolmgr(struct tee_shm_pool_mgr *poolm)
++static void pool_op_destroy_pool(struct tee_shm_pool *pool)
+ {
+-	kfree(poolm);
++	kfree(pool);
+ }
+ 
+-static const struct tee_shm_pool_mgr_ops pool_ops = {
++static const struct tee_shm_pool_ops pool_ops = {
+ 	.alloc = pool_op_alloc,
+ 	.free = pool_op_free,
+-	.destroy_poolmgr = pool_op_destroy_poolmgr,
++	.destroy_pool = pool_op_destroy_pool,
+ };
+ 
+-static struct tee_shm_pool_mgr *pool_mem_mgr_alloc(void)
+-{
+-	struct tee_shm_pool_mgr *mgr = kzalloc(sizeof(*mgr), GFP_KERNEL);
+-
+-	if (!mgr)
+-		return ERR_PTR(-ENOMEM);
+-
+-	mgr->ops = &pool_ops;
+-
+-	return mgr;
+-}
+-
+ struct tee_shm_pool *amdtee_config_shm(void)
+ {
+-	struct tee_shm_pool_mgr *priv_mgr;
+-	struct tee_shm_pool_mgr *dmabuf_mgr;
+-	void *rc;
++	struct tee_shm_pool *pool = kzalloc(sizeof(*pool), GFP_KERNEL);
+ 
+-	rc = pool_mem_mgr_alloc();
+-	if (IS_ERR(rc))
+-		return rc;
+-	priv_mgr = rc;
+-
+-	rc = pool_mem_mgr_alloc();
+-	if (IS_ERR(rc)) {
+-		tee_shm_pool_mgr_destroy(priv_mgr);
+-		return rc;
+-	}
+-	dmabuf_mgr = rc;
++	if (!pool)
++		return ERR_PTR(-ENOMEM);
+ 
+-	rc = tee_shm_pool_alloc(priv_mgr, dmabuf_mgr);
+-	if (IS_ERR(rc)) {
+-		tee_shm_pool_mgr_destroy(priv_mgr);
+-		tee_shm_pool_mgr_destroy(dmabuf_mgr);
+-	}
++	pool->ops = &pool_ops;
+ 
+-	return rc;
++	return pool;
+ }
+diff --git a/drivers/tee/optee/Kconfig b/drivers/tee/optee/Kconfig
+index 3ca71e3812ed..f121c224e682 100644
+--- a/drivers/tee/optee/Kconfig
++++ b/drivers/tee/optee/Kconfig
+@@ -7,11 +7,3 @@ config OPTEE
+ 	help
+ 	  This implements the OP-TEE Trusted Execution Environment (TEE)
+ 	  driver.
+-
+-config OPTEE_SHM_NUM_PRIV_PAGES
+-	int "Private Shared Memory Pages"
+-	default 1
+-	depends on OPTEE
+-	help
+-	  This sets the number of private shared memory pages to be
+-	  used by OP-TEE TEE driver.
+diff --git a/drivers/tee/optee/core.c b/drivers/tee/optee/core.c
+index 1ca320885fad..2a369e346b85 100644
+--- a/drivers/tee/optee/core.c
++++ b/drivers/tee/optee/core.c
+@@ -18,8 +18,8 @@
+ #include <linux/workqueue.h>
+ #include "optee_private.h"
+ 
+-int optee_pool_op_alloc_helper(struct tee_shm_pool_mgr *poolm,
+-			       struct tee_shm *shm, size_t size,
++int optee_pool_op_alloc_helper(struct tee_shm_pool *pool, struct tee_shm *shm,
++			       size_t size, size_t align,
+ 			       int (*shm_register)(struct tee_context *ctx,
+ 						   struct tee_shm *shm,
+ 						   struct page **pages,
+@@ -30,6 +30,10 @@ int optee_pool_op_alloc_helper(struct tee_shm_pool_mgr *poolm,
+ 	struct page *page;
+ 	int rc = 0;
+ 
++	/*
++	 * Ignore alignment since this is already going to be page aligned
++	 * and there's no need for any larger alignment.
++	 */
+ 	page = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
+ 	if (!page)
+ 		return -ENOMEM;
+@@ -51,7 +55,6 @@ int optee_pool_op_alloc_helper(struct tee_shm_pool_mgr *poolm,
+ 		for (i = 0; i < nr_pages; i++)
+ 			pages[i] = page + i;
+ 
+-		shm->flags |= TEE_SHM_REGISTER;
+ 		rc = shm_register(shm->ctx, shm, pages, nr_pages,
+ 				  (unsigned long)shm->kaddr);
+ 		kfree(pages);
+@@ -62,7 +65,7 @@ int optee_pool_op_alloc_helper(struct tee_shm_pool_mgr *poolm,
+ 	return 0;
+ 
+ err:
+-	__free_pages(page, order);
++	free_pages((unsigned long)shm->kaddr, order);
+ 	return rc;
+ }
+ 
+diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
+index 20a1b1a3d965..e690d9420966 100644
+--- a/drivers/tee/optee/ffa_abi.c
++++ b/drivers/tee/optee/ffa_abi.c
+@@ -369,14 +369,14 @@ static int optee_ffa_shm_unregister_supp(struct tee_context *ctx,
+  * The main function is optee_ffa_shm_pool_alloc_pages().
+  */
+ 
+-static int pool_ffa_op_alloc(struct tee_shm_pool_mgr *poolm,
+-			     struct tee_shm *shm, size_t size)
++static int pool_ffa_op_alloc(struct tee_shm_pool *pool,
++			     struct tee_shm *shm, size_t size, size_t align)
+ {
+-	return optee_pool_op_alloc_helper(poolm, shm, size,
++	return optee_pool_op_alloc_helper(pool, shm, size, align,
+ 					  optee_ffa_shm_register);
+ }
+ 
+-static void pool_ffa_op_free(struct tee_shm_pool_mgr *poolm,
++static void pool_ffa_op_free(struct tee_shm_pool *pool,
+ 			     struct tee_shm *shm)
+ {
+ 	optee_ffa_shm_unregister(shm->ctx, shm);
+@@ -384,15 +384,15 @@ static void pool_ffa_op_free(struct tee_shm_pool_mgr *poolm,
+ 	shm->kaddr = NULL;
+ }
+ 
+-static void pool_ffa_op_destroy_poolmgr(struct tee_shm_pool_mgr *poolm)
++static void pool_ffa_op_destroy_pool(struct tee_shm_pool *pool)
+ {
+-	kfree(poolm);
++	kfree(pool);
+ }
+ 
+-static const struct tee_shm_pool_mgr_ops pool_ffa_ops = {
++static const struct tee_shm_pool_ops pool_ffa_ops = {
+ 	.alloc = pool_ffa_op_alloc,
+ 	.free = pool_ffa_op_free,
+-	.destroy_poolmgr = pool_ffa_op_destroy_poolmgr,
++	.destroy_pool = pool_ffa_op_destroy_pool,
+ };
+ 
+ /**
+@@ -401,16 +401,16 @@ static const struct tee_shm_pool_mgr_ops pool_ffa_ops = {
+  * This pool is used with OP-TEE over FF-A. In this case command buffers
+  * and such are allocated from kernel's own memory.
+  */
+-static struct tee_shm_pool_mgr *optee_ffa_shm_pool_alloc_pages(void)
++static struct tee_shm_pool *optee_ffa_shm_pool_alloc_pages(void)
+ {
+-	struct tee_shm_pool_mgr *mgr = kzalloc(sizeof(*mgr), GFP_KERNEL);
++	struct tee_shm_pool *pool = kzalloc(sizeof(*pool), GFP_KERNEL);
+ 
+-	if (!mgr)
++	if (!pool)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	mgr->ops = &pool_ffa_ops;
++	pool->ops = &pool_ffa_ops;
+ 
+-	return mgr;
++	return pool;
+ }
+ 
+ /*
+@@ -691,33 +691,6 @@ static bool optee_ffa_exchange_caps(struct ffa_device *ffa_dev,
+ 	return true;
+ }
+ 
+-static struct tee_shm_pool *optee_ffa_config_dyn_shm(void)
+-{
+-	struct tee_shm_pool_mgr *priv_mgr;
+-	struct tee_shm_pool_mgr *dmabuf_mgr;
+-	void *rc;
+-
+-	rc = optee_ffa_shm_pool_alloc_pages();
+-	if (IS_ERR(rc))
+-		return rc;
+-	priv_mgr = rc;
+-
+-	rc = optee_ffa_shm_pool_alloc_pages();
+-	if (IS_ERR(rc)) {
+-		tee_shm_pool_mgr_destroy(priv_mgr);
+-		return rc;
+-	}
+-	dmabuf_mgr = rc;
+-
+-	rc = tee_shm_pool_alloc(priv_mgr, dmabuf_mgr);
+-	if (IS_ERR(rc)) {
+-		tee_shm_pool_mgr_destroy(priv_mgr);
+-		tee_shm_pool_mgr_destroy(dmabuf_mgr);
+-	}
+-
+-	return rc;
+-}
+-
+ static void optee_ffa_get_version(struct tee_device *teedev,
+ 				  struct tee_ioctl_version_data *vers)
+ {
+@@ -813,7 +786,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
  	if (!optee)
  		return -ENOMEM;
  
--	optee->pool = optee_ffa_shm_pool_alloc_pages();
--	if (IS_ERR(optee->pool)) {
--		rc = PTR_ERR(optee->pool);
--		optee->pool = NULL;
--		goto err;
-+	pool = optee_ffa_shm_pool_alloc_pages();
-+	if (IS_ERR(pool)) {
-+		rc = PTR_ERR(pool);
-+		goto err_free_optee;
- 	}
-+	optee->pool = pool;
- 
- 	optee->ops = &optee_ffa_ops;
- 	optee->ffa.ffa_dev = ffa_dev;
-@@ -801,7 +803,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
- 				  optee);
- 	if (IS_ERR(teedev)) {
- 		rc = PTR_ERR(teedev);
--		goto err;
-+		goto err_free_pool;
- 	}
- 	optee->teedev = teedev;
- 
-@@ -809,50 +811,57 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
- 				  optee);
- 	if (IS_ERR(teedev)) {
- 		rc = PTR_ERR(teedev);
--		goto err;
-+		goto err_unreg_teedev;
- 	}
- 	optee->supp_teedev = teedev;
- 
- 	rc = tee_device_register(optee->teedev);
- 	if (rc)
--		goto err;
-+		goto err_unreg_supp_teedev;
- 
- 	rc = tee_device_register(optee->supp_teedev);
- 	if (rc)
--		goto err;
-+		goto err_unreg_supp_teedev;
- 
- 	rc = rhashtable_init(&optee->ffa.global_ids, &shm_rhash_params);
- 	if (rc)
--		goto err;
-+		goto err_unreg_supp_teedev;
- 	mutex_init(&optee->ffa.mutex);
- 	mutex_init(&optee->call_queue.mutex);
- 	INIT_LIST_HEAD(&optee->call_queue.waiters);
- 	optee_supp_init(&optee->supp);
- 	ffa_dev_set_drvdata(ffa_dev, optee);
-+	ctx = teedev_open(optee->teedev);
-+	if (IS_ERR(ctx))
-+		goto err_rhashtable_free;
-+	optee->ctx = ctx;
- 	rc = optee_notif_init(optee, OPTEE_DEFAULT_MAX_NOTIF_VALUE);
--	if (rc) {
--		optee_ffa_remove(ffa_dev);
--		return rc;
--	}
-+	if (rc)
-+		goto err_close_ctx;
- 
- 	rc = optee_enumerate_devices(PTA_CMD_GET_DEVICES);
--	if (rc) {
--		optee_ffa_remove(ffa_dev);
--		return rc;
--	}
-+	if (rc)
-+		goto err_unregister_devices;
- 
- 	pr_info("initialized driver\n");
- 	return 0;
--err:
--	/*
--	 * tee_device_unregister() is safe to call even if the
--	 * devices hasn't been registered with
--	 * tee_device_register() yet.
--	 */
-+
-+err_unregister_devices:
-+	optee_unregister_devices();
-+	optee_notif_uninit(optee);
-+err_close_ctx:
-+	teedev_close_context(ctx);
-+err_rhashtable_free:
-+	rhashtable_free_and_destroy(&optee->ffa.global_ids, rh_free_fn, NULL);
-+	optee_supp_uninit(&optee->supp);
-+	mutex_destroy(&optee->call_queue.mutex);
-+err_unreg_supp_teedev:
- 	tee_device_unregister(optee->supp_teedev);
-+err_unreg_teedev:
- 	tee_device_unregister(optee->teedev);
--	if (optee->pool)
--		tee_shm_pool_free(optee->pool);
-+err_free_pool:
-+	tee_shm_pool_free(pool);
-+err_free_optee:
- 	kfree(optee);
- 	return rc;
- }
+-	optee->pool = optee_ffa_config_dyn_shm();
++	optee->pool = optee_ffa_shm_pool_alloc_pages();
+ 	if (IS_ERR(optee->pool)) {
+ 		rc = PTR_ERR(optee->pool);
+ 		optee->pool = NULL;
 diff --git a/drivers/tee/optee/optee_private.h b/drivers/tee/optee/optee_private.h
-index df2450921464..df3a483bbf46 100644
+index 46f74ab07c7e..df2450921464 100644
 --- a/drivers/tee/optee/optee_private.h
 +++ b/drivers/tee/optee/optee_private.h
-@@ -53,7 +53,6 @@ struct optee_call_queue {
+@@ -228,8 +228,8 @@ int optee_cancel_req(struct tee_context *ctx, u32 cancel_id, u32 session);
+ int optee_enumerate_devices(u32 func);
+ void optee_unregister_devices(void);
  
- struct optee_notif {
- 	u_int max_key;
--	struct tee_context *ctx;
- 	/* Serializes access to the elements below in this struct */
- 	spinlock_t lock;
- 	struct list_head db;
-@@ -134,9 +133,10 @@ struct optee_ops {
- /**
-  * struct optee - main service struct
-  * @supp_teedev:	supplicant device
-+ * @teedev:		client device
-  * @ops:		internal callbacks for different ways to reach secure
-  *			world
-- * @teedev:		client device
-+ * @ctx:		driver internal TEE context
-  * @smc:		specific to SMC ABI
-  * @ffa:		specific to FF-A ABI
-  * @call_queue:		queue of threads waiting to call @invoke_fn
-@@ -152,6 +152,7 @@ struct optee {
- 	struct tee_device *supp_teedev;
- 	struct tee_device *teedev;
- 	const struct optee_ops *ops;
-+	struct tee_context *ctx;
- 	union {
- 		struct optee_smc smc;
- 		struct optee_ffa ffa;
+-int optee_pool_op_alloc_helper(struct tee_shm_pool_mgr *poolm,
+-			       struct tee_shm *shm, size_t size,
++int optee_pool_op_alloc_helper(struct tee_shm_pool *pool, struct tee_shm *shm,
++			       size_t size, size_t align,
+ 			       int (*shm_register)(struct tee_context *ctx,
+ 						   struct tee_shm *shm,
+ 						   struct page **pages,
 diff --git a/drivers/tee/optee/smc_abi.c b/drivers/tee/optee/smc_abi.c
-index 66d5d1b56b95..b1082a34cda2 100644
+index 449d6a72d289..b679037ea794 100644
 --- a/drivers/tee/optee/smc_abi.c
 +++ b/drivers/tee/optee/smc_abi.c
-@@ -952,57 +952,34 @@ static irqreturn_t notif_irq_thread_fn(int irq, void *dev_id)
+@@ -42,8 +42,6 @@
+  * 6. Driver initialization.
+  */
+ 
+-#define OPTEE_SHM_NUM_PRIV_PAGES	CONFIG_OPTEE_SHM_NUM_PRIV_PAGES
+-
+ /*
+  * 1. Convert between struct tee_param and struct optee_msg_param
+  *
+@@ -532,20 +530,21 @@ static int optee_shm_unregister_supp(struct tee_context *ctx,
+  * The main function is optee_shm_pool_alloc_pages().
+  */
+ 
+-static int pool_op_alloc(struct tee_shm_pool_mgr *poolm,
+-			 struct tee_shm *shm, size_t size)
++static int pool_op_alloc(struct tee_shm_pool *pool,
++			 struct tee_shm *shm, size_t size, size_t align)
  {
- 	struct optee *optee = dev_id;
+ 	/*
+ 	 * Shared memory private to the OP-TEE driver doesn't need
+ 	 * to be registered with OP-TEE.
+ 	 */
+ 	if (shm->flags & TEE_SHM_PRIV)
+-		return optee_pool_op_alloc_helper(poolm, shm, size, NULL);
++		return optee_pool_op_alloc_helper(pool, shm, size, align, NULL);
  
--	optee_smc_do_bottom_half(optee->notif.ctx);
-+	optee_smc_do_bottom_half(optee->ctx);
- 
- 	return IRQ_HANDLED;
+-	return optee_pool_op_alloc_helper(poolm, shm, size, optee_shm_register);
++	return optee_pool_op_alloc_helper(pool, shm, size, align,
++					  optee_shm_register);
  }
  
- static int optee_smc_notif_init_irq(struct optee *optee, u_int irq)
+-static void pool_op_free(struct tee_shm_pool_mgr *poolm,
++static void pool_op_free(struct tee_shm_pool *pool,
+ 			 struct tee_shm *shm)
  {
--	struct tee_context *ctx;
- 	int rc;
+ 	if (!(shm->flags & TEE_SHM_PRIV))
+@@ -555,15 +554,15 @@ static void pool_op_free(struct tee_shm_pool_mgr *poolm,
+ 	shm->kaddr = NULL;
+ }
  
--	ctx = teedev_open(optee->teedev);
--	if (IS_ERR(ctx))
--		return PTR_ERR(ctx);
+-static void pool_op_destroy_poolmgr(struct tee_shm_pool_mgr *poolm)
++static void pool_op_destroy_pool(struct tee_shm_pool *pool)
+ {
+-	kfree(poolm);
++	kfree(pool);
+ }
+ 
+-static const struct tee_shm_pool_mgr_ops pool_ops = {
++static const struct tee_shm_pool_ops pool_ops = {
+ 	.alloc = pool_op_alloc,
+ 	.free = pool_op_free,
+-	.destroy_poolmgr = pool_op_destroy_poolmgr,
++	.destroy_pool = pool_op_destroy_pool,
+ };
+ 
+ /**
+@@ -572,16 +571,16 @@ static const struct tee_shm_pool_mgr_ops pool_ops = {
+  * This pool is used when OP-TEE supports dymanic SHM. In this case
+  * command buffers and such are allocated from kernel's own memory.
+  */
+-static struct tee_shm_pool_mgr *optee_shm_pool_alloc_pages(void)
++static struct tee_shm_pool *optee_shm_pool_alloc_pages(void)
+ {
+-	struct tee_shm_pool_mgr *mgr = kzalloc(sizeof(*mgr), GFP_KERNEL);
++	struct tee_shm_pool *pool = kzalloc(sizeof(*pool), GFP_KERNEL);
+ 
+-	if (!mgr)
++	if (!pool)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	mgr->ops = &pool_ops;
++	pool->ops = &pool_ops;
+ 
+-	return mgr;
++	return pool;
+ }
+ 
+ /*
+@@ -1174,33 +1173,6 @@ static bool optee_msg_exchange_capabilities(optee_invoke_fn *invoke_fn,
+ 	return true;
+ }
+ 
+-static struct tee_shm_pool *optee_config_dyn_shm(void)
+-{
+-	struct tee_shm_pool_mgr *priv_mgr;
+-	struct tee_shm_pool_mgr *dmabuf_mgr;
+-	void *rc;
 -
--	optee->notif.ctx = ctx;
- 	rc = request_threaded_irq(irq, notif_irq_handler,
- 				  notif_irq_thread_fn,
- 				  0, "optee_notification", optee);
- 	if (rc)
--		goto err_close_ctx;
-+		return rc;
- 
- 	optee->smc.notif_irq = irq;
- 
- 	return 0;
+-	rc = optee_shm_pool_alloc_pages();
+-	if (IS_ERR(rc))
+-		return rc;
+-	priv_mgr = rc;
 -
--err_close_ctx:
--	teedev_close_context(optee->notif.ctx);
--	optee->notif.ctx = NULL;
+-	rc = optee_shm_pool_alloc_pages();
+-	if (IS_ERR(rc)) {
+-		tee_shm_pool_mgr_destroy(priv_mgr);
+-		return rc;
+-	}
+-	dmabuf_mgr = rc;
+-
+-	rc = tee_shm_pool_alloc(priv_mgr, dmabuf_mgr);
+-	if (IS_ERR(rc)) {
+-		tee_shm_pool_mgr_destroy(priv_mgr);
+-		tee_shm_pool_mgr_destroy(dmabuf_mgr);
+-	}
 -
 -	return rc;
- }
- 
- static void optee_smc_notif_uninit_irq(struct optee *optee)
- {
--	if (optee->notif.ctx) {
--		optee_smc_stop_async_notif(optee->notif.ctx);
-+	if (optee->smc.sec_caps & OPTEE_SMC_SEC_CAP_ASYNC_NOTIF) {
-+		optee_smc_stop_async_notif(optee->ctx);
- 		if (optee->smc.notif_irq) {
- 			free_irq(optee->smc.notif_irq, optee);
- 			irq_dispose_mapping(optee->smc.notif_irq);
- 		}
+-}
 -
--		/*
--		 * The thread normally working with optee->notif.ctx was
--		 * stopped with free_irq() above.
--		 *
--		 * Note we're not using teedev_close_context() or
--		 * tee_client_close_context() since we have already called
--		 * tee_device_put() while initializing to avoid a circular
--		 * reference counting.
--		 */
--		teedev_close_context(optee->notif.ctx);
+ static struct tee_shm_pool *
+ optee_config_shm_memremap(optee_invoke_fn *invoke_fn, void **memremaped_shm)
+ {
+@@ -1214,10 +1186,7 @@ optee_config_shm_memremap(optee_invoke_fn *invoke_fn, void **memremaped_shm)
+ 	phys_addr_t begin;
+ 	phys_addr_t end;
+ 	void *va;
+-	struct tee_shm_pool_mgr *priv_mgr;
+-	struct tee_shm_pool_mgr *dmabuf_mgr;
+ 	void *rc;
+-	const int sz = OPTEE_SHM_NUM_PRIV_PAGES * PAGE_SIZE;
+ 
+ 	invoke_fn(OPTEE_SMC_GET_SHM_CONFIG, 0, 0, 0, 0, 0, 0, 0, &res.smccc);
+ 	if (res.result.status != OPTEE_SMC_RETURN_OK) {
+@@ -1235,11 +1204,6 @@ optee_config_shm_memremap(optee_invoke_fn *invoke_fn, void **memremaped_shm)
+ 	paddr = begin;
+ 	size = end - begin;
+ 
+-	if (size < 2 * OPTEE_SHM_NUM_PRIV_PAGES * PAGE_SIZE) {
+-		pr_err("too small shared memory area\n");
+-		return ERR_PTR(-EINVAL);
+-	}
+-
+ 	va = memremap(paddr, size, MEMREMAP_WB);
+ 	if (!va) {
+ 		pr_err("shared memory ioremap failed\n");
+@@ -1247,35 +1211,13 @@ optee_config_shm_memremap(optee_invoke_fn *invoke_fn, void **memremaped_shm)
  	}
+ 	vaddr = (unsigned long)va;
+ 
+-	rc = tee_shm_pool_mgr_alloc_res_mem(vaddr, paddr, sz,
+-					    3 /* 8 bytes aligned */);
+-	if (IS_ERR(rc))
+-		goto err_memunmap;
+-	priv_mgr = rc;
+-
+-	vaddr += sz;
+-	paddr += sz;
+-	size -= sz;
+-
+-	rc = tee_shm_pool_mgr_alloc_res_mem(vaddr, paddr, size, PAGE_SHIFT);
++	rc = tee_shm_pool_alloc_res_mem(vaddr, paddr, size,
++					9 /* 512 bytes aligned */);
+ 	if (IS_ERR(rc))
+-		goto err_free_priv_mgr;
+-	dmabuf_mgr = rc;
+-
+-	rc = tee_shm_pool_alloc(priv_mgr, dmabuf_mgr);
+-	if (IS_ERR(rc))
+-		goto err_free_dmabuf_mgr;
+-
+-	*memremaped_shm = va;
+-
+-	return rc;
++		memunmap(va);
++	else
++		*memremaped_shm = va;
+ 
+-err_free_dmabuf_mgr:
+-	tee_shm_pool_mgr_destroy(dmabuf_mgr);
+-err_free_priv_mgr:
+-	tee_shm_pool_mgr_destroy(priv_mgr);
+-err_memunmap:
+-	memunmap(va);
+ 	return rc;
  }
  
-@@ -1307,6 +1284,7 @@ static int optee_probe(struct platform_device *pdev)
- 	struct optee *optee = NULL;
- 	void *memremaped_shm = NULL;
- 	struct tee_device *teedev;
-+	struct tee_context *ctx;
- 	u32 max_notif_value;
- 	u32 sec_caps;
+@@ -1396,7 +1338,7 @@ static int optee_probe(struct platform_device *pdev)
+ 	 * Try to use dynamic shared memory if possible
+ 	 */
+ 	if (sec_caps & OPTEE_SMC_SEC_CAP_DYNAMIC_SHM)
+-		pool = optee_config_dyn_shm();
++		pool = optee_shm_pool_alloc_pages();
+ 
+ 	/*
+ 	 * If dynamic shared memory is not available or failed - try static one
+diff --git a/drivers/tee/tee_private.h b/drivers/tee/tee_private.h
+index e09c8aa5d967..7265f47c6d8e 100644
+--- a/drivers/tee/tee_private.h
++++ b/drivers/tee/tee_private.h
+@@ -12,17 +12,6 @@
+ #include <linux/mutex.h>
+ #include <linux/types.h>
+ 
+-/**
+- * struct tee_shm_pool - shared memory pool
+- * @private_mgr:	pool manager for shared memory only between kernel
+- *			and secure world
+- * @dma_buf_mgr:	pool manager for shared memory exported to user space
+- */
+-struct tee_shm_pool {
+-	struct tee_shm_pool_mgr *private_mgr;
+-	struct tee_shm_pool_mgr *dma_buf_mgr;
+-};
+-
+ #define TEE_DEVICE_FLAG_REGISTERED	0x1
+ #define TEE_MAX_DEV_NAME_LEN		32
+ 
+diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
+index 7e7e762fc1de..f0a9cccd2f2c 100644
+--- a/drivers/tee/tee_shm.c
++++ b/drivers/tee/tee_shm.c
+@@ -31,14 +31,7 @@ static void release_registered_pages(struct tee_shm *shm)
+ static void tee_shm_release(struct tee_device *teedev, struct tee_shm *shm)
+ {
+ 	if (shm->flags & TEE_SHM_POOL) {
+-		struct tee_shm_pool_mgr *poolm;
+-
+-		if (shm->flags & TEE_SHM_DMA_BUF)
+-			poolm = teedev->pool->dma_buf_mgr;
+-		else
+-			poolm = teedev->pool->private_mgr;
+-
+-		poolm->ops->free(poolm, shm);
++		teedev->pool->ops->free(teedev->pool, shm);
+ 	} else if (shm->flags & TEE_SHM_REGISTER) {
+ 		int rc = teedev->desc->ops->shm_unregister(shm->ctx, shm);
+ 
+@@ -59,8 +52,8 @@ static void tee_shm_release(struct tee_device *teedev, struct tee_shm *shm)
+ struct tee_shm *tee_shm_alloc(struct tee_context *ctx, size_t size, u32 flags)
+ {
+ 	struct tee_device *teedev = ctx->teedev;
+-	struct tee_shm_pool_mgr *poolm = NULL;
+ 	struct tee_shm *shm;
++	size_t align;
+ 	void *ret;
  	int rc;
-@@ -1387,9 +1365,13 @@ static int optee_probe(struct platform_device *pdev)
- 	optee->pool = pool;
  
- 	platform_set_drvdata(pdev, optee);
-+	ctx = teedev_open(optee->teedev);
-+	if (IS_ERR(ctx))
-+		goto err_supp_uninit;
-+	optee->ctx = ctx;
- 	rc = optee_notif_init(optee, max_notif_value);
- 	if (rc)
--		goto err_supp_uninit;
-+		goto err_close_ctx;
+@@ -93,12 +86,18 @@ struct tee_shm *tee_shm_alloc(struct tee_context *ctx, size_t size, u32 flags)
+ 	refcount_set(&shm->refcount, 1);
+ 	shm->flags = flags | TEE_SHM_POOL;
+ 	shm->ctx = ctx;
+-	if (flags & TEE_SHM_DMA_BUF)
+-		poolm = teedev->pool->dma_buf_mgr;
+-	else
+-		poolm = teedev->pool->private_mgr;
++	if (flags & TEE_SHM_DMA_BUF) {
++		align = PAGE_SIZE;
++		/*
++		 * Request to register the shm in the pool allocator below
++		 * if supported.
++		 */
++		shm->flags |= TEE_SHM_REGISTER;
++	} else {
++		align = 2 * sizeof(long);
++	}
  
- 	if (sec_caps & OPTEE_SMC_SEC_CAP_ASYNC_NOTIF) {
- 		unsigned int irq;
-@@ -1437,6 +1419,8 @@ static int optee_probe(struct platform_device *pdev)
- 	optee_unregister_devices();
- err_notif_uninit:
- 	optee_notif_uninit(optee);
-+err_close_ctx:
-+	teedev_close_context(ctx);
- err_supp_uninit:
- 	optee_supp_uninit(&optee->supp);
- 	mutex_destroy(&optee->call_queue.mutex);
+-	rc = poolm->ops->alloc(poolm, shm, size);
++	rc = teedev->pool->ops->alloc(teedev->pool, shm, size, align);
+ 	if (rc) {
+ 		ret = ERR_PTR(rc);
+ 		goto err_kfree;
+@@ -118,7 +117,7 @@ struct tee_shm *tee_shm_alloc(struct tee_context *ctx, size_t size, u32 flags)
+ 
+ 	return shm;
+ err_pool_free:
+-	poolm->ops->free(poolm, shm);
++	teedev->pool->ops->free(teedev->pool, shm);
+ err_kfree:
+ 	kfree(shm);
+ err_dev_put:
+diff --git a/drivers/tee/tee_shm_pool.c b/drivers/tee/tee_shm_pool.c
+index 0e460347138a..71e0f8ae69aa 100644
+--- a/drivers/tee/tee_shm_pool.c
++++ b/drivers/tee/tee_shm_pool.c
+@@ -9,14 +9,16 @@
+ #include <linux/tee_drv.h>
+ #include "tee_private.h"
+ 
+-static int pool_op_gen_alloc(struct tee_shm_pool_mgr *poolm,
+-			     struct tee_shm *shm, size_t size)
++static int pool_op_gen_alloc(struct tee_shm_pool *pool, struct tee_shm *shm,
++			     size_t size, size_t align)
+ {
+ 	unsigned long va;
+-	struct gen_pool *genpool = poolm->private_data;
+-	size_t s = roundup(size, 1 << genpool->min_alloc_order);
++	struct gen_pool *genpool = pool->private_data;
++	size_t a = max_t(size_t, align, BIT(genpool->min_alloc_order));
++	struct genpool_data_align data = { .align = a };
++	size_t s = roundup(size, a);
+ 
+-	va = gen_pool_alloc(genpool, s);
++	va = gen_pool_alloc_algo(genpool, s, gen_pool_first_fit_align, &data);
+ 	if (!va)
+ 		return -ENOMEM;
+ 
+@@ -24,107 +26,67 @@ static int pool_op_gen_alloc(struct tee_shm_pool_mgr *poolm,
+ 	shm->kaddr = (void *)va;
+ 	shm->paddr = gen_pool_virt_to_phys(genpool, va);
+ 	shm->size = s;
++	/*
++	 * This is from a static shared memory pool so no need to register
++	 * each chunk, and no need to unregister later either.
++	 */
++	shm->flags &= ~TEE_SHM_REGISTER;
+ 	return 0;
+ }
+ 
+-static void pool_op_gen_free(struct tee_shm_pool_mgr *poolm,
+-			     struct tee_shm *shm)
++static void pool_op_gen_free(struct tee_shm_pool *pool, struct tee_shm *shm)
+ {
+-	gen_pool_free(poolm->private_data, (unsigned long)shm->kaddr,
++	gen_pool_free(pool->private_data, (unsigned long)shm->kaddr,
+ 		      shm->size);
+ 	shm->kaddr = NULL;
+ }
+ 
+-static void pool_op_gen_destroy_poolmgr(struct tee_shm_pool_mgr *poolm)
++static void pool_op_gen_destroy_pool(struct tee_shm_pool *pool)
+ {
+-	gen_pool_destroy(poolm->private_data);
+-	kfree(poolm);
++	gen_pool_destroy(pool->private_data);
++	kfree(pool);
+ }
+ 
+-static const struct tee_shm_pool_mgr_ops pool_ops_generic = {
++static const struct tee_shm_pool_ops pool_ops_generic = {
+ 	.alloc = pool_op_gen_alloc,
+ 	.free = pool_op_gen_free,
+-	.destroy_poolmgr = pool_op_gen_destroy_poolmgr,
++	.destroy_pool = pool_op_gen_destroy_pool,
+ };
+ 
+-struct tee_shm_pool_mgr *tee_shm_pool_mgr_alloc_res_mem(unsigned long vaddr,
+-							phys_addr_t paddr,
+-							size_t size,
+-							int min_alloc_order)
++struct tee_shm_pool *tee_shm_pool_alloc_res_mem(unsigned long vaddr,
++						phys_addr_t paddr, size_t size,
++						int min_alloc_order)
+ {
+ 	const size_t page_mask = PAGE_SIZE - 1;
+-	struct tee_shm_pool_mgr *mgr;
++	struct tee_shm_pool *pool;
+ 	int rc;
+ 
+ 	/* Start and end must be page aligned */
+ 	if (vaddr & page_mask || paddr & page_mask || size & page_mask)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	mgr = kzalloc(sizeof(*mgr), GFP_KERNEL);
+-	if (!mgr)
++	pool = kzalloc(sizeof(*pool), GFP_KERNEL);
++	if (!pool)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	mgr->private_data = gen_pool_create(min_alloc_order, -1);
+-	if (!mgr->private_data) {
++	pool->private_data = gen_pool_create(min_alloc_order, -1);
++	if (!pool->private_data) {
+ 		rc = -ENOMEM;
+ 		goto err;
+ 	}
+ 
+-	gen_pool_set_algo(mgr->private_data, gen_pool_best_fit, NULL);
+-	rc = gen_pool_add_virt(mgr->private_data, vaddr, paddr, size, -1);
++	rc = gen_pool_add_virt(pool->private_data, vaddr, paddr, size, -1);
+ 	if (rc) {
+-		gen_pool_destroy(mgr->private_data);
++		gen_pool_destroy(pool->private_data);
+ 		goto err;
+ 	}
+ 
+-	mgr->ops = &pool_ops_generic;
++	pool->ops = &pool_ops_generic;
+ 
+-	return mgr;
++	return pool;
+ err:
+-	kfree(mgr);
++	kfree(pool);
+ 
+ 	return ERR_PTR(rc);
+ }
+-EXPORT_SYMBOL_GPL(tee_shm_pool_mgr_alloc_res_mem);
+-
+-static bool check_mgr_ops(struct tee_shm_pool_mgr *mgr)
+-{
+-	return mgr && mgr->ops && mgr->ops->alloc && mgr->ops->free &&
+-		mgr->ops->destroy_poolmgr;
+-}
+-
+-struct tee_shm_pool *tee_shm_pool_alloc(struct tee_shm_pool_mgr *priv_mgr,
+-					struct tee_shm_pool_mgr *dmabuf_mgr)
+-{
+-	struct tee_shm_pool *pool;
+-
+-	if (!check_mgr_ops(priv_mgr) || !check_mgr_ops(dmabuf_mgr))
+-		return ERR_PTR(-EINVAL);
+-
+-	pool = kzalloc(sizeof(*pool), GFP_KERNEL);
+-	if (!pool)
+-		return ERR_PTR(-ENOMEM);
+-
+-	pool->private_mgr = priv_mgr;
+-	pool->dma_buf_mgr = dmabuf_mgr;
+-
+-	return pool;
+-}
+-EXPORT_SYMBOL_GPL(tee_shm_pool_alloc);
+-
+-/**
+- * tee_shm_pool_free() - Free a shared memory pool
+- * @pool:	The shared memory pool to free
+- *
+- * There must be no remaining shared memory allocated from this pool when
+- * this function is called.
+- */
+-void tee_shm_pool_free(struct tee_shm_pool *pool)
+-{
+-	if (pool->private_mgr)
+-		tee_shm_pool_mgr_destroy(pool->private_mgr);
+-	if (pool->dma_buf_mgr)
+-		tee_shm_pool_mgr_destroy(pool->dma_buf_mgr);
+-	kfree(pool);
+-}
+-EXPORT_SYMBOL_GPL(tee_shm_pool_free);
++EXPORT_SYMBOL_GPL(tee_shm_pool_alloc_res_mem);
+diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
+index 975500b2553e..ed641dc314bd 100644
+--- a/include/linux/tee_drv.h
++++ b/include/linux/tee_drv.h
+@@ -221,62 +221,39 @@ struct tee_shm {
+ };
+ 
+ /**
+- * struct tee_shm_pool_mgr - shared memory manager
++ * struct tee_shm_pool - shared memory pool
+  * @ops:		operations
+  * @private_data:	private data for the shared memory manager
+  */
+-struct tee_shm_pool_mgr {
+-	const struct tee_shm_pool_mgr_ops *ops;
++struct tee_shm_pool {
++	const struct tee_shm_pool_ops *ops;
+ 	void *private_data;
+ };
+ 
+ /**
+- * struct tee_shm_pool_mgr_ops - shared memory pool manager operations
++ * struct tee_shm_pool_ops - shared memory pool operations
+  * @alloc:		called when allocating shared memory
+  * @free:		called when freeing shared memory
+- * @destroy_poolmgr:	called when destroying the pool manager
++ * @destroy_pool:	called when destroying the pool
+  */
+-struct tee_shm_pool_mgr_ops {
+-	int (*alloc)(struct tee_shm_pool_mgr *poolmgr, struct tee_shm *shm,
+-		     size_t size);
+-	void (*free)(struct tee_shm_pool_mgr *poolmgr, struct tee_shm *shm);
+-	void (*destroy_poolmgr)(struct tee_shm_pool_mgr *poolmgr);
++struct tee_shm_pool_ops {
++	int (*alloc)(struct tee_shm_pool *pool, struct tee_shm *shm,
++		     size_t size, size_t align);
++	void (*free)(struct tee_shm_pool *pool, struct tee_shm *shm);
++	void (*destroy_pool)(struct tee_shm_pool *pool);
+ };
+ 
+-/**
+- * tee_shm_pool_alloc() - Create a shared memory pool from shm managers
+- * @priv_mgr:	manager for driver private shared memory allocations
+- * @dmabuf_mgr:	manager for dma-buf shared memory allocations
+- *
+- * Allocation with the flag TEE_SHM_DMA_BUF set will use the range supplied
+- * in @dmabuf, others will use the range provided by @priv.
+- *
+- * @returns pointer to a 'struct tee_shm_pool' or an ERR_PTR on failure.
+- */
+-struct tee_shm_pool *tee_shm_pool_alloc(struct tee_shm_pool_mgr *priv_mgr,
+-					struct tee_shm_pool_mgr *dmabuf_mgr);
+-
+ /*
+- * tee_shm_pool_mgr_alloc_res_mem() - Create a shm manager for reserved
+- * memory
++ * tee_shm_pool_alloc_res_mem() - Create a shm manager for reserved memory
+  * @vaddr:	Virtual address of start of pool
+  * @paddr:	Physical address of start of pool
+  * @size:	Size in bytes of the pool
+  *
+- * @returns pointer to a 'struct tee_shm_pool_mgr' or an ERR_PTR on failure.
+- */
+-struct tee_shm_pool_mgr *tee_shm_pool_mgr_alloc_res_mem(unsigned long vaddr,
+-							phys_addr_t paddr,
+-							size_t size,
+-							int min_alloc_order);
+-
+-/**
+- * tee_shm_pool_mgr_destroy() - Free a shared memory manager
++ * @returns pointer to a 'struct tee_shm_pool' or an ERR_PTR on failure.
+  */
+-static inline void tee_shm_pool_mgr_destroy(struct tee_shm_pool_mgr *poolm)
+-{
+-	poolm->ops->destroy_poolmgr(poolm);
+-}
++struct tee_shm_pool *tee_shm_pool_alloc_res_mem(unsigned long vaddr,
++						phys_addr_t paddr, size_t size,
++						int min_alloc_order);
+ 
+ /**
+  * tee_shm_pool_free() - Free a shared memory pool
+@@ -285,7 +262,10 @@ static inline void tee_shm_pool_mgr_destroy(struct tee_shm_pool_mgr *poolm)
+  * The must be no remaining shared memory allocated from this pool when
+  * this function is called.
+  */
+-void tee_shm_pool_free(struct tee_shm_pool *pool);
++static inline void tee_shm_pool_free(struct tee_shm_pool *pool)
++{
++	pool->ops->destroy_pool(pool);
++}
+ 
+ /**
+  * tee_get_drvdata() - Return driver_data pointer
 -- 
 2.31.1
 
