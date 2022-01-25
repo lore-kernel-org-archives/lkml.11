@@ -2,78 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34807C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 22:28:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 22:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233812AbiAYW2A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 17:28:00 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37110 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233794AbiAYW15 (ORCPT
+        id S233841AbiAYW3b convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 17:29:31 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:54456 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233824AbiAYW3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 17:27:57 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EF566184A;
-        Tue, 25 Jan 2022 22:27:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B7F5C340E0;
-        Tue, 25 Jan 2022 22:27:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643149676;
-        bh=21Wcgn1j9relNyi3Uz6u2QsAkpxOeBhxGiQVPqE19R4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Gj0nd8JJzBg2ACxpoOnKSAcoEBiYNetMzpqhFkBlB8pUui+yl2xZdzXiV5bfg2hAI
-         +5U2cQKH2/DUpwIyfrjcJN1c03InGAJ1p9eHpF0s/Xr0bhM4maFEqYz0jlWHSg03cG
-         VYwqPX9XEImDw0ojzIzhtfsULg80yFT5FVCsneauZoKgyXw2vJDngxmgbSyUJxZL6m
-         iaKD10QhK4Ua9NCiZdZzw4dvh31PsatVTyw3Lre0S9lVL8OB2MHjq+6MqjSG8ra0iq
-         n0k1NuRBz2HY0bJQ3savB8v6LJuRnFOSl8JJMXooLF+2enassriW2Q91Vvx8FtP3nW
-         Q1tLdEbmK/kxw==
-Date:   Tue, 25 Jan 2022 16:34:43 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     David Kershner <david.kershner@unisys.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] staging: unisys: visorinput: Use struct_size() helper
- in kzalloc()
-Message-ID: <20220125223443.GA76937@embeddedor>
+        Tue, 25 Jan 2022 17:29:30 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-312-9uUIQKOKPQeq0Z4xvNcZPA-1; Tue, 25 Jan 2022 22:29:28 +0000
+X-MC-Unique: 9uUIQKOKPQeq0Z4xvNcZPA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Tue, 25 Jan 2022 22:29:26 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Tue, 25 Jan 2022 22:29:26 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jessica Clarke' <jrtc27@jrtc27.com>,
+        Atish Patra <atishp@rivosinc.com>
+CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Anup Patel <anup@brainfault.org>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        "Paul Walmsley" <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: RE: [PATCH v3 6/6] RISC-V: Do not use cpumask data structure for
+ hartid bitmap
+Thread-Topic: [PATCH v3 6/6] RISC-V: Do not use cpumask data structure for
+ hartid bitmap
+Thread-Index: AQHYEjqOgNf2MUyCekGjzXIezYRolax0US8A
+Date:   Tue, 25 Jan 2022 22:29:26 +0000
+Message-ID: <63b1a64fc25d44dabab777bf1f247863@AcuMS.aculab.com>
+References: <20220120090918.2646626-1-atishp@rivosinc.com>
+ <20220120090918.2646626-7-atishp@rivosinc.com>
+ <1AA3005C-E9C8-4E4B-900D-DD48B37CEA41@jrtc27.com>
+In-Reply-To: <1AA3005C-E9C8-4E4B-900D-DD48B37CEA41@jrtc27.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make use of the struct_size() helper instead of an open-coded version,
-in order to avoid any potential type mistakes or integer overflows that,
-in the worst scenario, could lead to heap overflows.
+> On 20 Jan 2022, at 09:09, Atish Patra <atishp@rivosinc.com> wrote:
+> >
+> > Currently, SBI APIs accept a hartmask that is generated from struct
+> > cpumask. Cpumask data structure can hold upto NR_CPUs value. Thus, it
+> > is not the correct data structure for hartids as it can be higher
+> > than NR_CPUs for platforms with sparse or discontguous hartids.
+> >
+> > Remove all association between hartid mask and struct cpumask.
+....
+> > -static int __sbi_rfence_v01(int fid, const unsigned long *hart_mask,
+> > +static int __sbi_rfence_v01(int fid, const struct cpumask *cpu_mask,
+> > 			    unsigned long start, unsigned long size,
+> > 			    unsigned long arg4, unsigned long arg5)
+> > {
+> > 	int result = 0;
+> > +	unsigned long hart_mask;
+> > +
+> > +	if (!cpu_mask)
+> > +		cpu_mask = cpu_online_mask;
+> > +	hart_mask = __sbi_v01_cpumask_to_hartmask(cpu_mask);
+> >
+> > 	/* v0.2 function IDs are equivalent to v0.1 extension IDs */
+> > 	switch (fid) {
+> > 	case SBI_EXT_RFENCE_REMOTE_FENCE_I:
+> > 		sbi_ecall(SBI_EXT_0_1_REMOTE_FENCE_I, 0,
+> > -			  (unsigned long)hart_mask, 0, 0, 0, 0, 0);
+> > +			  (unsigned long)&hart_mask, 0, 0, 0, 0, 0);
 
-Also, address the following sparse warnings:
-drivers/staging/unisys/visorinput/visorinput.c:409:27: warning: using sizeof on a flexible structure
+You don't need the cast.
 
-Link: https://github.com/KSPP/linux/issues/174
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/staging/unisys/visorinput/visorinput.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+	David
 
-diff --git a/drivers/staging/unisys/visorinput/visorinput.c b/drivers/staging/unisys/visorinput/visorinput.c
-index 426deab22d62..dffa71ac3cc5 100644
---- a/drivers/staging/unisys/visorinput/visorinput.c
-+++ b/drivers/staging/unisys/visorinput/visorinput.c
-@@ -406,7 +406,8 @@ static struct visorinput_devdata *devdata_create(struct visor_device *dev,
- 	if (dtype == visorinput_keyboard)
- 		/* allocate room for devdata->keycode_table, filled in below */
- 		extra_bytes = KEYCODE_TABLE_BYTES * 2;
--	devdata = kzalloc(sizeof(*devdata) + extra_bytes, GFP_KERNEL);
-+	devdata = kzalloc(struct_size(devdata, keycode_table, extra_bytes),
-+			  GFP_KERNEL);
- 	if (!devdata)
- 		return NULL;
- 	mutex_init(&devdata->lock_visor_dev);
--- 
-2.27.0
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
