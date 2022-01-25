@@ -2,200 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D64BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:22:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 450EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578953AbiAYOVy (ORCPT
+        id S1579008AbiAYOWZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:21:54 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:18178 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1357292AbiAYORA (ORCPT
+        Tue, 25 Jan 2022 09:22:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1578343AbiAYOSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:17:00 -0500
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20PDkY4s003547;
-        Tue, 25 Jan 2022 14:16:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=mYq5JDg13uDsrZMP6NRJGD5L60XAYIdStHtqqnfdoso=;
- b=q2EVJvRKgpdGLIUfrjffDmfUWyXv3z7UUZopsE4K6qSIDhX7Gd9LzXQn49CxP6HkAhZm
- nGmk7Uic4KWR3EkstIiInmA84WuutxN9XL4ELVDpD6KcPLgAgq2HaQKGZyoNztgt5BVg
- +R4/3AuCouregyIg5veCctWn+MAloPJyAf1SnDAPdqpucKkjLa6cADwpOPx79FL/aIs4
- 7URgIRHKUDEaY2Syero83k3x53wcGIvpIwUsFEJVbrVTg1sSk58yc7afzA3FJyc80TKq
- gcHVGF17su4ElvMtCDJ+er8PAr1JYUU1L7iVlbhTOEkHZoxQMMnMjA88rsUHK6FzxOdq Lw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dtjcwrs0s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 14:16:56 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20PDxF4p023352;
-        Tue, 25 Jan 2022 14:16:56 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dtjcwrs0f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 14:16:56 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20PEDXRL001736;
-        Tue, 25 Jan 2022 14:16:55 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma01dal.us.ibm.com with ESMTP id 3dr9jau4ep-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 14:16:55 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20PEGrYM14746196
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 25 Jan 2022 14:16:53 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 965E1C6057;
-        Tue, 25 Jan 2022 14:16:53 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B8058C6059;
-        Tue, 25 Jan 2022 14:16:51 +0000 (GMT)
-Received: from [9.163.21.206] (unknown [9.163.21.206])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue, 25 Jan 2022 14:16:51 +0000 (GMT)
-Message-ID: <5f3797f7-e127-7de0-dc96-4b04e5ff839a@linux.ibm.com>
-Date:   Tue, 25 Jan 2022 09:16:51 -0500
+        Tue, 25 Jan 2022 09:18:49 -0500
+X-Greylist: delayed 134 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 25 Jan 2022 06:18:48 PST
+Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4DBC061759;
+        Tue, 25 Jan 2022 06:18:48 -0800 (PST)
+Received: from cap.home.8bytes.org (p549ad610.dip0.t-ipconnect.de [84.154.214.16])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by theia.8bytes.org (Postfix) with ESMTPSA id 23C58870;
+        Tue, 25 Jan 2022 15:16:34 +0100 (CET)
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH v6 6/7] KVM: SVM: Add support for Hypervisor Feature support MSR protocol
+Date:   Tue, 25 Jan 2022 15:16:25 +0100
+Message-Id: <20220125141626.16008-7-joro@8bytes.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220125141626.16008-1-joro@8bytes.org>
+References: <20220125141626.16008-1-joro@8bytes.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v2 26/30] vfio-pci/zdev: wire up zPCI adapter interrupt
- forwarding support
-Content-Language: en-US
-To:     Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
- <20220114203145.242984-27-mjrosato@linux.ibm.com>
- <75c74f80-0a74-40dc-6797-473522ef2803@linux.ibm.com>
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <75c74f80-0a74-40dc-6797-473522ef2803@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: b4LTNCYgYA8sIBFki02fcmAy9HooTZ1l
-X-Proofpoint-ORIG-GUID: ShlgW-cZmxT6p6N-TXtYw82vyYmY-keJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-25_02,2022-01-25_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=999
- phishscore=0 malwarescore=0 adultscore=0 lowpriorityscore=0
- priorityscore=1501 impostorscore=0 suspectscore=0 clxscore=1015 mlxscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201250092
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/25/22 7:36 AM, Pierre Morel wrote:
-> 
-> 
-> On 1/14/22 21:31, Matthew Rosato wrote:
->> Introduce support for VFIO_DEVICE_FEATURE_ZPCI_AIF, which is a new
->> VFIO_DEVICE_FEATURE ioctl.  This interface is used to indicate that an
->> s390x vfio-pci device wishes to enable/disable zPCI adapter interrupt
->> forwarding, which allows underlying firmware to deliver interrupts
->> directly to the associated kvm guest.
->>
->> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->> ---
->>   arch/s390/include/asm/kvm_pci.h  |  2 +
->>   drivers/vfio/pci/vfio_pci_core.c |  2 +
->>   drivers/vfio/pci/vfio_pci_zdev.c | 98 +++++++++++++++++++++++++++++++-
->>   include/linux/vfio_pci_core.h    | 10 ++++
->>   include/uapi/linux/vfio.h        |  7 +++
->>   include/uapi/linux/vfio_zdev.h   | 20 +++++++
->>   6 files changed, 138 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/s390/include/asm/kvm_pci.h 
->> b/arch/s390/include/asm/kvm_pci.h
->> index dc00c3f27a00..dbab349a4a75 100644
->> --- a/arch/s390/include/asm/kvm_pci.h
->> +++ b/arch/s390/include/asm/kvm_pci.h
->> @@ -36,6 +36,8 @@ struct kvm_zdev {
->>       struct zpci_fib fib;
->>       struct notifier_block nb;
->>       bool interp;
->> +    bool aif;
->> +    bool fhost;
-> 
-> Can we please have a comment on these booleans? > Can we have explicit naming to be able to follow their usage more easily?
-> May be aif_float and aif_host to match with the VFIO feature?
+From: Brijesh Singh <brijesh.singh@amd.com>
 
-Sure, rename would be fine.
+Version 2 of the GHCB specification introduced advertisement of
+supported Hypervisor SEV features. This request is required to support
+a the GHCB version 2 protocol.
 
-As for a comment, maybe something like
+Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/include/uapi/asm/svm.h |  1 +
+ arch/x86/kvm/svm/sev.c          | 22 ++++++++++++++++++++++
+ 2 files changed, 23 insertions(+)
 
-bool aif_float; /* Enabled for floating interrupt assist */
-bool aif_host;  /* Require host delivery */
-
-...
-
->> diff --git a/include/uapi/linux/vfio_zdev.h 
->> b/include/uapi/linux/vfio_zdev.h
->> index 575f0410dc66..c574e23f9385 100644
->> --- a/include/uapi/linux/vfio_zdev.h
->> +++ b/include/uapi/linux/vfio_zdev.h
->> @@ -90,4 +90,24 @@ struct vfio_device_zpci_interp {
->>       __u32 fh;        /* Host device function handle */
->>   };
->> +/**
->> + * VFIO_DEVICE_FEATURE_ZPCI_AIF
->> + *
->> + * This feature is used for enabling forwarding of adapter interrupts 
->> directly
->> + * from firmware to the guest.  When setting this feature, the flags 
->> indicate
->> + * whether to enable/disable the feature and the structure defined 
->> below is
->> + * used to setup the forwarding structures.  When getting this 
->> feature, only
->> + * the flags are used to indicate the current state.
->> + */
->> +struct vfio_device_zpci_aif {
->> +    __u64 flags;
->> +#define VFIO_DEVICE_ZPCI_FLAG_AIF_FLOAT 1
->> +#define VFIO_DEVICE_ZPCI_FLAG_AIF_HOST 2
-> 
-> I think we need more information on these flags.
-> What does AIF_FLOAT and what does AIF_HOST ?
-> 
-
-You actually asked for this already on Jan 19 :), here's a copy of that 
-response inline here:
-
-I can add a small line comment for each, like:
-
-  AIF_FLOAT 1 /* Floating interrupts enabled */
-  AIF_HOST 2  /* Host delivery forced */
-
-But here's a bit more detail:
-
-On SET:
-AIF_FLOAT = 1 means enable the interrupt forwarding assist for floating 
-interrupt delivery
-AIF_FLOAT = 0 means to disable it.
-AIF_HOST = 1 means the assist will always deliver the interrupt to the 
-host and let the host inject it
-AIF_HOST = 0 host only gets interrupts when firmware can't deliver
-
-on GET, we just indicate the current settings from the most recent SET, 
-meaning:
-AIF_FLOAT = 1 interrupt forwarding assist is currently active
-AIF_FLOAT = 0 interrupt forwarding assist is not currently active
-AIF_HOST = 1 interrupt forwarding will always go through host
-AIF_HOST = 0 interrupt forwarding will only go through the host when 
-necessary
-
-My thought would be add the line comments in this patch and then the 
-additional detail in a follow-on patch that adds vfio zPCI to 
-Documentation/S390
+diff --git a/arch/x86/include/uapi/asm/svm.h b/arch/x86/include/uapi/asm/svm.h
+index efa969325ede..67cf153fe580 100644
+--- a/arch/x86/include/uapi/asm/svm.h
++++ b/arch/x86/include/uapi/asm/svm.h
+@@ -108,6 +108,7 @@
+ #define SVM_VMGEXIT_AP_JUMP_TABLE		0x80000005
+ #define SVM_VMGEXIT_SET_AP_JUMP_TABLE		0
+ #define SVM_VMGEXIT_GET_AP_JUMP_TABLE		1
++#define SVM_VMGEXIT_HYPERVISOR_FEATURES		0x8000fffd
+ #define SVM_VMGEXIT_UNSUPPORTED_EVENT		0x8000ffff
+ 
+ /* Exit code reserved for hypervisor/software use */
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 1219c1771895..403f24498020 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -2452,6 +2452,7 @@ static bool sev_es_validate_vmgexit(struct vcpu_svm *svm)
+ 	case SVM_VMGEXIT_AP_HLT_LOOP:
+ 	case SVM_VMGEXIT_AP_JUMP_TABLE:
+ 	case SVM_VMGEXIT_UNSUPPORTED_EVENT:
++	case SVM_VMGEXIT_HYPERVISOR_FEATURES:
+ 		break;
+ 	default:
+ 		reason = GHCB_ERR_INVALID_EVENT;
+@@ -2689,6 +2690,19 @@ static int sev_emulate_ap_reset_hold(struct vcpu_svm *svm, u64 hold_type)
+ 				  KVM_MP_STATE_AP_RESET_HOLD, KVM_EXIT_AP_RESET_HOLD) && ret;
+ }
+ 
++/* Hypervisor GHCB Features supported by KVM */
++#define KVM_SUPPORTED_GHCB_HV_FEATURES		0UL
++
++static u64 ghcb_msr_hv_feat_resp(void)
++{
++	u64 msr;
++
++	msr  = GHCB_MSR_HV_FT_RESP;
++	msr |= (KVM_SUPPORTED_GHCB_HV_FEATURES << GHCB_DATA_LOW);
++
++	return msr;
++}
++
+ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+ {
+ 	struct vmcb_control_area *control = &svm->vmcb->control;
+@@ -2738,6 +2752,9 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+ 	case GHCB_MSR_AP_RESET_HOLD_REQ:
+ 		ret = sev_emulate_ap_reset_hold(svm, GHCB_MSR_AP_RESET_HOLD_REQ);
+ 		break;
++	case GHCB_MSR_HV_FT_REQ:
++		svm->vmcb->control.ghcb_gpa = ghcb_msr_hv_feat_resp();
++		break;
+ 	case GHCB_MSR_TERM_REQ: {
+ 		u64 reason_set, reason_code;
+ 
+@@ -2851,6 +2868,11 @@ int sev_handle_vmgexit(struct kvm_vcpu *vcpu)
+ 
+ 		break;
+ 	}
++	case SVM_VMGEXIT_HYPERVISOR_FEATURES:
++		ghcb_set_sw_exit_info_2(ghcb, KVM_SUPPORTED_GHCB_HV_FEATURES);
++
++		ret = 1;
++		break;
+ 	case SVM_VMGEXIT_UNSUPPORTED_EVENT:
+ 		vcpu_unimpl(vcpu,
+ 			    "vmgexit: unsupported event - exit_info_1=%#llx, exit_info_2=%#llx\n",
+-- 
+2.34.1
 
