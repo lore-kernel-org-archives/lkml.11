@@ -2,173 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 945F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:41:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:41:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579999AbiAYOla (ORCPT
+        id S1579778AbiAYOlm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:41:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:32802 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232614AbiAYOhR (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:37:17 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25D99B8180E;
-        Tue, 25 Jan 2022 14:37:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B83CC340E0;
-        Tue, 25 Jan 2022 14:37:04 +0000 (UTC)
-Date:   Tue, 25 Jan 2022 09:37:02 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Yang Shi <shy828301@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>, linux-block@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: Re: [Patch v3] block: introduce block_rq_error tracepoint
-Message-ID: <20220125093702.3ffdb721@gandalf.local.home>
-In-Reply-To: <CAHbLzkoUmhPbnt=yMfBSFs2G6r2S5ggD6AkYQvg0zxBAqQK2fA@mail.gmail.com>
-References: <20200203053650.8923-1-xiyou.wangcong@gmail.com>
-        <CAHbLzkoUmhPbnt=yMfBSFs2G6r2S5ggD6AkYQvg0zxBAqQK2fA@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Tue, 25 Jan 2022 09:41:42 -0500
+Received: from foss.arm.com ([217.140.110.172]:47544 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1579753AbiAYOig (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 09:38:36 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E8FF8D6E;
+        Tue, 25 Jan 2022 06:38:34 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.42.158])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1493E3F793;
+        Tue, 25 Jan 2022 06:38:31 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64/mm: Consolidate TCR_EL1 fields
+Date:   Tue, 25 Jan 2022 20:08:33 +0530
+Message-Id: <1643121513-21854-1-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 24 Jan 2022 12:54:01 -0800
-Yang Shi <shy828301@gmail.com> wrote:
+This renames and moves SYS_TCR_EL1_TCMA1 and SYS_TCR_EL1_TCMA0 definitions
+into pgtable-hwdef.h thus consolidating all TCR fields in a single header.
+This does not cause any functional change.
 
-> Hi folks,
-> 
-> I think the problems fixed by this patch still exist and we do need
-> this patch to make disk error handling in rasdaemon easier. I saw
-> Steven already gave his reviewed-by, I'm wondering why this patch was
-> not merged to upstream? I didn't see any unsolved comments.
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+This applies on v5.17-rc1
 
-Maybe I did that prematurely, as I think I found a mistake in the tracing
-below.
+This was earlier posted with FEAT_LPA2 series.
 
-> 
-> If it looks fine, would Jens (I guess it should go with block tree)
-> please merge this patch upstream? The latest kernel moved
-> blk_update_request() to blk-mq.c, if it is ok to move forward, I could
-> prepare a new version.
-> 
-> Thanks,
-> Yang
-> 
-> On Sun, Feb 2, 2020 at 11:15 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > Currently, rasdaemon uses the existing tracepoint block_rq_complete
-> > and filters out non-error cases in order to capture block disk errors.
-> >
-> > But there are a few problems with this approach:
-> >
-> > 1. Even kernel trace filter could do the filtering work, there is
-> >    still some overhead after we enable this tracepoint.
-> >
-> > 2. The filter is merely based on errno, which does not align with kernel
-> >    logic to check the errors for print_req_error().
-> >
-> > 3. block_rq_complete only provides dev major and minor to identify
-> >    the block device, it is not convenient to use in user-space.
-> >
-> > So introduce a new tracepoint block_rq_error just for the error case
-> > and provides the device name for convenience too. With this patch,
-> > rasdaemon could switch to block_rq_error.
-> >
-> > Cc: Jens Axboe <axboe@kernel.dk>
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-> > ---
-> >  block/blk-core.c             |  4 +++-
-> >  include/trace/events/block.h | 41 ++++++++++++++++++++++++++++++++++++
-> >  2 files changed, 44 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/block/blk-core.c b/block/blk-core.c
-> > index 089e890ab208..0c7ad70d06be 100644
-> > --- a/block/blk-core.c
-> > +++ b/block/blk-core.c
-> > @@ -1450,8 +1450,10 @@ bool blk_update_request(struct request *req, blk_status_t error,
-> >  #endif
-> >
-> >         if (unlikely(error && !blk_rq_is_passthrough(req) &&
-> > -                    !(req->rq_flags & RQF_QUIET)))
-> > +                    !(req->rq_flags & RQF_QUIET))) {
-> > +               trace_block_rq_error(req, blk_status_to_errno(error), nr_bytes);
-> >                 print_req_error(req, error, __func__);
-> > +       }
-> >
-> >         blk_account_io_completion(req, nr_bytes);
-> >
-> > diff --git a/include/trace/events/block.h b/include/trace/events/block.h
-> > index 81b43f5bdf23..575054e7cfa0 100644
-> > --- a/include/trace/events/block.h
-> > +++ b/include/trace/events/block.h
-> > @@ -145,6 +145,47 @@ TRACE_EVENT(block_rq_complete,
-> >                   __entry->nr_sector, __entry->error)
-> >  );
-> >
-> > +/**
-> > + * block_rq_error - block IO operation error reported by device driver
-> > + * @rq: block operations request
-> > + * @error: status code
-> > + * @nr_bytes: number of completed bytes
-> > + *
-> > + * The block_rq_error tracepoint event indicates that some portion
-> > + * of operation request has failed as reported by the device driver.
-> > + */
-> > +TRACE_EVENT(block_rq_error,
-> > +
-> > +       TP_PROTO(struct request *rq, int error, unsigned int nr_bytes),
-> > +
-> > +       TP_ARGS(rq, error, nr_bytes),
-> > +
-> > +       TP_STRUCT__entry(
-> > +               __field(  dev_t,        dev                     )
-> > +               __string( name,         rq->rq_disk ? rq->rq_disk->disk_name : "?")
-> > +               __field(  sector_t,     sector                  )
-> > +               __field(  unsigned int, nr_sector               )
-> > +               __field(  int,          error                   )
-> > +               __array(  char,         rwbs,   RWBS_LEN        )
+https://lore.kernel.org/all/1632998116-11552-3-git-send-email-anshuman.khandual@arm.com/
 
-Why is the above not "__string" ?
+ arch/arm64/include/asm/pgtable-hwdef.h | 2 ++
+ arch/arm64/include/asm/sysreg.h        | 4 ----
+ arch/arm64/mm/proc.S                   | 2 +-
+ 3 files changed, 3 insertions(+), 5 deletions(-)
 
-> > +       ),
-> > +
-> > +       TP_fast_assign(
-> > +               __entry->dev       = rq->rq_disk ? disk_devt(rq->rq_disk) : 0;
-> > +               __assign_str(name,   rq->rq_disk ? rq->rq_disk->disk_name : "?");
-
-__assign_str() will not work on an __array() type. It only works here
-because you added it at the end, but it's just shear luck that it didn't
-crash.
-
--- Steve
-
-
-> > +               __entry->sector    = blk_rq_pos(rq);
-> > +               __entry->nr_sector = nr_bytes >> 9;
-> > +               __entry->error     = error;
-> > +
-> > +               blk_fill_rwbs(__entry->rwbs, rq->cmd_flags, nr_bytes);
-> > +       ),
-> > +
-> > +       TP_printk("%d,%d %s %s %llu + %u [%d]",
-> > +                 MAJOR(__entry->dev), MINOR(__entry->dev),
-> > +                 __get_str(name), __entry->rwbs,
-> > +                 (unsigned long long)__entry->sector,
-> > +                 __entry->nr_sector, __entry->error)
-> > +);
-> > +
-> >  DECLARE_EVENT_CLASS(block_rq,
-> >
-> >         TP_PROTO(struct request_queue *q, struct request *rq),
-> > --
-> > 2.21.1
-> >  
+diff --git a/arch/arm64/include/asm/pgtable-hwdef.h b/arch/arm64/include/asm/pgtable-hwdef.h
+index 40085e53f573..66671ff05183 100644
+--- a/arch/arm64/include/asm/pgtable-hwdef.h
++++ b/arch/arm64/include/asm/pgtable-hwdef.h
+@@ -273,6 +273,8 @@
+ #define TCR_NFD1		(UL(1) << 54)
+ #define TCR_E0PD0		(UL(1) << 55)
+ #define TCR_E0PD1		(UL(1) << 56)
++#define TCR_TCMA0		(UL(1) << 57)
++#define TCR_TCMA1		(UL(1) << 58)
+ 
+ /*
+  * TTBR.
+diff --git a/arch/arm64/include/asm/sysreg.h b/arch/arm64/include/asm/sysreg.h
+index 898bee0004ae..34800d264f69 100644
+--- a/arch/arm64/include/asm/sysreg.h
++++ b/arch/arm64/include/asm/sysreg.h
+@@ -1101,10 +1101,6 @@
+ #define CPACR_EL1_ZEN_EL0EN	(BIT(17)) /* enable EL0 access, if EL1EN set */
+ #define CPACR_EL1_ZEN		(CPACR_EL1_ZEN_EL1EN | CPACR_EL1_ZEN_EL0EN)
+ 
+-/* TCR EL1 Bit Definitions */
+-#define SYS_TCR_EL1_TCMA1	(BIT(58))
+-#define SYS_TCR_EL1_TCMA0	(BIT(57))
+-
+ /* GCR_EL1 Definitions */
+ #define SYS_GCR_EL1_RRND	(BIT(16))
+ #define SYS_GCR_EL1_EXCL_MASK	0xffffUL
+diff --git a/arch/arm64/mm/proc.S b/arch/arm64/mm/proc.S
+index d35c90d2e47a..50bbed947bec 100644
+--- a/arch/arm64/mm/proc.S
++++ b/arch/arm64/mm/proc.S
+@@ -46,7 +46,7 @@
+ #endif
+ 
+ #ifdef CONFIG_KASAN_HW_TAGS
+-#define TCR_MTE_FLAGS SYS_TCR_EL1_TCMA1 | TCR_TBI1 | TCR_TBID1
++#define TCR_MTE_FLAGS TCR_TCMA1 | TCR_TBI1 | TCR_TBID1
+ #else
+ /*
+  * The mte_zero_clear_page_tags() implementation uses DC GZVA, which relies on
+-- 
+2.20.1
 
