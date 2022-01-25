@@ -2,91 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A843C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:30:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D3AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232284AbiAYSa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 13:30:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
+        id S232421AbiAYScB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 13:32:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232180AbiAYSal (ORCPT
+        with ESMTP id S232107AbiAYSbb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 13:30:41 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1D0C06176E
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:30:30 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id z5so6281801plg.8
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:30:30 -0800 (PST)
+        Tue, 25 Jan 2022 13:31:31 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5567FC06173E
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:31:30 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id j14so16487685lja.3
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:31:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=eO8s9hLwvlJikQeaCFAseyCvqgT6glPinZZVsLgmEJ4=;
-        b=LTWIcnLPrfXn5U+QfEuIuT1peV6PBIumjl2Cbu8KOQP1cCt4nj3H0R3sTk13y/okh4
-         QpuKIN2pWtYQKfhf2OnIy+6LSSwLFbYrH68BCajh/QODUERa5bQ3p14H0DJdXdd3oWve
-         mYr0kiUadFKm7vTuZNqAL0ZsDnnBMKB1fGBabKMIhddsDDxqdjZ/50VQ7Bx9jPfwp3gg
-         3QEkHBG1ZdFxvddC2qjkTreF/VXz/tTcmvFWNDCN/NPtzx0m2vxAs+Wj+FogV4MjMzu7
-         ElFs3c3545NWIYS/faJaP5vdOe8+t3/bjdZcwR7Rwirz3/WduKqpbVv0b8wB4u7VPhcD
-         0IXA==
+        bh=OlIBnpkTLBL6sH3W/KXcb2UEgw4pfOFIKhtFEyjrjXg=;
+        b=FHIOwTMrIgkrHCmEbk0yOERz2+rKuWBQWNsU9Bdktyt5XpnW0LjleS/S/XQi8l6uGt
+         03IeHKCGxGw3Z2tJ+ssmZQ1cYVVmWjsy1nkE+VjZ05Z2g72yZzSO71lefk/36q2L6mzr
+         xTIGThNJw8EZz6dd2bLNK4Ff0Ldq05vSwJfrqAbSZZC9ZiVSDst1JBVgRK8NzvPmeesx
+         wS5tJg+xaEBIZvhZjhW09UY20gQwlM5hTIMMfQsZ3dAwsXcoXPosqfRdPTez5qd4bwnb
+         ZAeTPRaeVVKnqOQ17BoV5KavTeCb+WralSZgGk2fkjEpIpHBTAQnaRlVZxtBzSzEFJuz
+         PQ1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=eO8s9hLwvlJikQeaCFAseyCvqgT6glPinZZVsLgmEJ4=;
-        b=AU9oDpOJFFOQCF5TVY2Z5DGinvLvm6beJVmFEuMyUANvLqS0oOUdCO8FFhfkJ+S17Q
-         T9av7QkHGsxTM50QcG6dFZV2nbIH8uX71EWu4EfMzfDQMfpOLc4w9XAJ+gQoI1vtvLUR
-         2hakUnMhjr2SMhbtmwxkCp0g4RO0vMFlVeh9QGoK223b46bMyhpz9cwBUZq0WxhysunK
-         4iCf1pXJpD8Pels/KhTaoChegBme3FCqiED5SWM6m6oblA8834m+nqS2lJT+7rDYqzIn
-         1OxRhf4c2F2S5Jgf9aNdyyZZZ7Wa0XRFJvtIkkD1/HBLJ5tRRYf0fV+WLXZtifCf8RWP
-         xUoQ==
-X-Gm-Message-State: AOAM532nwOOqEqwklub7nB7vW1RQfSW0wiNMgt5Gw5FYeYhUJTobc2Xk
-        i4j9aUiRjxHlp1JpXUVlbTtspw==
-X-Google-Smtp-Source: ABdhPJyonBUrisE+StCuHL1cAmqPKeo62DpRUoacVUkai5sip9Owqzt4TRWKVqC8kPm0saNKv+Pb2Q==
-X-Received: by 2002:a17:902:ba81:b0:14b:75c1:573f with SMTP id k1-20020a170902ba8100b0014b75c1573fmr3877179pls.128.1643135430210;
-        Tue, 25 Jan 2022 10:30:30 -0800 (PST)
-Received: from [192.168.254.17] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id h6sm9565861pfc.35.2022.01.25.10.30.29
+        bh=OlIBnpkTLBL6sH3W/KXcb2UEgw4pfOFIKhtFEyjrjXg=;
+        b=uP4hvTeUAh8rCZ7nsX0KUDPrjSGpL7HYL7/Fh9YdTgy3IZw8AgHtfl+J7hf6j15YPN
+         gDwVEb4G7DY1B5ptHLnkVTWOPa2gZOnVfPa3QXhiMTJxa4lGS2om063udud9K8MaNNCc
+         D3QF2aXmTds5oguSwe8XsolgW7EYfscAiln9eb4OfSs530Xy5RiCyRq0Di46Cteg0hio
+         U4hta8IOwOMdHQ7+lmg6r8dGYddmwrbYoN6wIYd43JBd+D5+bZ0Saok87zJpTFmR3frN
+         +UFmC3qCN9ckZ79NWh8JQ29t/1HsQNZ/zsO0+zLQKJMMjvpYQQSG2666xxC9Oim3IpOE
+         3eYQ==
+X-Gm-Message-State: AOAM533kIJqjdOxRg5gBeg3Z8ONYu6RDLVkgcvAxzTQdjKZfUR+W0dzu
+        R/Lh9ZToEfVomEPwbyaouSM=
+X-Google-Smtp-Source: ABdhPJzMETM7h/HoAr3mua4MEe+7OlBNZZ024HhjTIEUx+vZgj5sSn7S1MbNXwqVzy/XYnwYAxHWgQ==
+X-Received: by 2002:a2e:80cb:: with SMTP id r11mr6131870ljg.359.1643135488614;
+        Tue, 25 Jan 2022 10:31:28 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.227.208])
+        by smtp.gmail.com with ESMTPSA id h6sm490020ljg.58.2022.01.25.10.31.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 10:30:29 -0800 (PST)
-Message-ID: <8eaaffe1-f6aa-4d8f-bbc7-0a57002d1729@linaro.org>
-Date:   Tue, 25 Jan 2022 10:30:29 -0800
+        Tue, 25 Jan 2022 10:31:28 -0800 (PST)
+Message-ID: <f766f910-4f7c-d3b5-d7a8-4d0d9de33a66@gmail.com>
+Date:   Tue, 25 Jan 2022 21:31:27 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v2] sched/fair: Fix fault in reweight_entity
+Subject: Re: [PATCH 03/10] staging: r8188eu: remove DBG_88E calls from
+ core/rtw_mlme_ext.c
 Content-Language: en-US
-To:     Vincent Guittot <vincent.guittot@linaro.org>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>
-Cc:     peterz@infradead.org, Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
-References: <20220120200139.118978-1-tadeusz.struk@linaro.org>
- <20220125011804.mhlhdenbjluzqkgf@oracle.com>
- <CAKfTPtB7UvUG3C_xiHL-V6eDfDOAkpzFWa0_QQeeRAQG7PovXQ@mail.gmail.com>
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-In-Reply-To: <CAKfTPtB7UvUG3C_xiHL-V6eDfDOAkpzFWa0_QQeeRAQG7PovXQ@mail.gmail.com>
+To:     Phillip Potter <phil@philpotter.co.uk>, gregkh@linuxfoundation.org
+Cc:     dan.carpenter@oracle.com, Larry.Finger@lwfinger.net,
+        straube.linux@gmail.com, martin@kaiser.cx,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220124224415.831-1-phil@philpotter.co.uk>
+ <20220124224415.831-4-phil@philpotter.co.uk>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220124224415.831-4-phil@philpotter.co.uk>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/25/22 01:14, Vincent Guittot wrote:
-> Could we use :
-> set_load_weight(p, !(p->__state & TASK_NEW));
-> instead of
-> set_load_weight(p, true);
-> in set_user_nice and __setscheduler_params.
+Hi Phillip,
 
-Wouldn't that require READ_ONCE() and rmb() after the read?
+On 1/25/22 01:44, Phillip Potter wrote:
+> Remove all DBG_88E calls from core/rtw_mlme_ext.c, including the commented
+> one, as they do not conform to kernel coding standards and are
+> superfluous. Also restructure where appropriate to remove no longer needed
+> code left behind by removal of these calls. This will allow the eventual
+> removal of the DBG_88E macro itself.
+> 
+> Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+> ---
 
--- 
-Thanks,
-Tadeusz
+[code snip]
+
+>   static u8 chk_ap_is_alive(struct adapter *padapter, struct sta_info *psta)
+> @@ -7141,18 +6905,11 @@ static u8 chk_ap_is_alive(struct adapter *padapter, struct sta_info *psta)
+>   static void rtl8188e_sreset_linked_status_check(struct adapter *padapter)
+>   {
+>   	u32 rx_dma_status =  rtw_read32(padapter, REG_RXDMA_STATUS);
+> -	u8 fw_status;
+>   
+> -	if (rx_dma_status != 0x00) {
+> -		DBG_88E("%s REG_RXDMA_STATUS:0x%08x\n", __func__, rx_dma_status);
+> +	if (rx_dma_status != 0x00)
+>   		rtw_write32(padapter, REG_RXDMA_STATUS, rx_dma_status);
+> -	}
+>   
+> -	fw_status = rtw_read8(padapter, REG_FMETHR);
+> -	if (fw_status == 1)
+> -		DBG_88E("%s REG_FW_STATUS (0x%02x), Read_Efuse_Fail !!\n", __func__, fw_status);
+> -	else if (fw_status == 2)
+> -		DBG_88E("%s REG_FW_STATUS (0x%02x), Condition_No_Match !!\n", __func__, fw_status);
+> +	rtw_read8(padapter, REG_FMETHR);
+>   }
+
+Unused read. Can be dropped
+
+
+
+With regards,
+Pavel Skripkin
