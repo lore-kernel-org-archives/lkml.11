@@ -2,79 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0F1C3526F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5481C3526E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1317819AbiAYDDJ (ORCPT
+        id S1317666AbiAYDCi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:03:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56092 "EHLO
+        Mon, 24 Jan 2022 22:02:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3415505AbiAYBrG (ORCPT
+        with ESMTP id S3415398AbiAYBqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 20:47:06 -0500
+        Mon, 24 Jan 2022 20:46:03 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759ADC01D7C8;
-        Mon, 24 Jan 2022 17:27:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D363C01D7C4;
+        Mon, 24 Jan 2022 17:26:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13E4361214;
-        Tue, 25 Jan 2022 01:27:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7807CC340E5;
-        Tue, 25 Jan 2022 01:26:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 951406091F;
+        Tue, 25 Jan 2022 01:26:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF017C340E4;
+        Tue, 25 Jan 2022 01:26:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643074019;
-        bh=jHdoOJoEuHZBeA+OwrUqeObi/wvxQlAIyr5XxNX6914=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VqDOV0m3mR3XjIf70NBI/GUkCqpGemEz98EzNc3qyUJgVPHRt/iPbs3IEibvfG2ey
-         UcRFAKDHCk3631inXq+kwKELB+IDWWx5sey0IWYLiNoA9pWjmPgFFTVfLYI48q+RsD
-         nXTUhYnAVSMu4yvSdSll6OjeCivkKrakLvDsuACeStnfAVDjLmV5Wly+y64Twssekz
-         R+teu/QpJ/Lnza0K2OuzKNBhBXHLC3lnIRroAG7UbAP/2BtnKlPl+Z6B/mq3fPSYgG
-         rTGWj5V0glQivlccxyYYVFv8G2J9i21MFqVk2CbQJ45cssPUG7PAgOSPZ99EGBTokZ
-         UXXwdyM1l9mLQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5F51BF60799;
-        Tue, 25 Jan 2022 01:26:59 +0000 (UTC)
+        s=k20201202; t=1643074006;
+        bh=DKZpPmTZIetqIDVYlUryUPp3fLyRnrqt6nngfQ3lB4Y=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=IqDkS1IjYRpBOf/mkV0kT/Yus3trXD82kifFYwhBxcIyr88lFNDaJ70F3M0p7cN/8
+         CMTBlUaSfjPy3N1FU/LmcYcQFS+S9yZfYvgqQhgOY/O/2tkeJwg9BDel74/W+ISHNo
+         YN0wpf4mNq4A+aFu8exQeNPp9GfNrVJjLUDJsLCRypEX5vRvMrRlPo6bug8ocSPTGm
+         e68zhBrKSo5LmHoNJ5eMuPOkFukY1nNjY9oDLGS3mOKP1FrXkGqUg5yrhTJvlt/D8B
+         RbsX8jRL+PFJFbcSGxQhM+rq87UmcnP9cCzVJQ1anGVOAQ9j1iMPtt+Uxfi4BtoHqG
+         9VhyFtFfzHI5A==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: fec_ptp: remove redundant initialization of variable val
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164307401938.21160.8256923052141890317.git-patchwork-notify@kernel.org>
-Date:   Tue, 25 Jan 2022 01:26:59 +0000
-References: <20220123184936.113486-1-colin.i.king@gmail.com>
-In-Reply-To: <20220123184936.113486-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     qiangqing.zhang@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220120175902.2165958-1-sboyd@kernel.org>
+References: <20220120175902.2165958-1-sboyd@kernel.org>
+Subject: Re: [PATCH v3] clk: gate: Add some kunit test suites
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        kunit-dev@googlegroups.com
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Date:   Mon, 24 Jan 2022 17:26:44 -0800
+User-Agent: alot/0.10
+Message-Id: <20220125012645.EF017C340E4@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sun, 23 Jan 2022 18:49:36 +0000 you wrote:
-> Variable val is being initialized with a value that is never read,
-> it is being re-assigned later. The assignment is redundant and
-> can be removed.
-> 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Quoting Stephen Boyd (2022-01-20 09:59:02)
+> Test various parts of the clk gate implementation with the kunit testing
+> framework.
+>=20
+> Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+> Acked-by: Daniel Latypov <dlatypov@google.com>
+> Cc: <kunit-dev@googlegroups.com>
+> Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 > ---
->  drivers/net/ethernet/freescale/fec_ptp.c | 1 -
->  1 file changed, 1 deletion(-)
 
-Here is the summary with links:
-  - net: fec_ptp: remove redundant initialization of variable val
-    https://git.kernel.org/netdev/net-next/c/6e667749271e
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Applied to clk-next
