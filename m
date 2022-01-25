@@ -2,101 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 245FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:21:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 394BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:21:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231824AbiAYUVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 15:21:31 -0500
-Received: from vps-vb.mhejs.net ([37.28.154.113]:58180 "EHLO vps-vb.mhejs.net"
+        id S231946AbiAYUVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 15:21:42 -0500
+Received: from mga18.intel.com ([134.134.136.126]:32383 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231669AbiAYUVX (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 15:21:23 -0500
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nCSJ4-0006nf-3P; Tue, 25 Jan 2022 21:20:46 +0100
-Message-ID: <a121e766-900d-2135-1516-e1d3ba716834@maciej.szmigiero.name>
-Date:   Tue, 25 Jan 2022 21:20:39 +0100
+        id S229565AbiAYUVZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 15:21:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643142085; x=1674678085;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=6zue4ppucen/ANYQA3c/xAkoOYydv3PMPDvmLNWSzoI=;
+  b=fMS+0UxDVKq//sO/sdRxpq48Q8rVPiOX9LD+IVeW/mHte5hE71TX20ms
+   AX8SJhHaQIUDbI9coQ5+orYdnD59rOO1dI2lvIXCI9477/592ZgXAWKiZ
+   mUhwAswuWDEFHQLV7tyqWM2fny061Jdk13GG5c1DletZItgVDFMxx3gZV
+   Bowk0JHhPh0LFFb4uFmkBRscKLYBpxe8D3xDz3GZwfcpnTIb6JJiyW57F
+   eXTMWMlTYuJZS605ZQN52ttN4Y7uHvB1fP92DJHEsJlPyJI2CeIMy+EmK
+   qhJVCLwGNljiehqqyaJKeMOmwoJps9DVWB64FGD8Nm1nfuFMl8qOJSNOP
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="229983923"
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="229983923"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 12:21:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="495130326"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 25 Jan 2022 12:21:09 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 67655B9; Tue, 25 Jan 2022 22:21:22 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Carlis <zhangxuezhi1@yulong.com>, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Cc:     Michael Hennerich <michael.hennerich@analog.com>,
+        Helge Deller <deller@gmx.de>, Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH v1 1/4] fbtft: Unorphan the driver
+Date:   Tue, 25 Jan 2022 22:21:14 +0200
+Message-Id: <20220125202118.63362-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
+References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-US
-To:     Chao Peng <chao.p.peng@linux.intel.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, kvm@vger.kernel.org,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, qemu-devel@nongnu.org
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
- <20220118132121.31388-13-chao.p.peng@linux.intel.com>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Subject: Re: [PATCH v4 12/12] KVM: Expose KVM_MEM_PRIVATE
-In-Reply-To: <20220118132121.31388-13-chao.p.peng@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18.01.2022 14:21, Chao Peng wrote:
-> KVM_MEM_PRIVATE is not exposed by default but architecture code can turn
-> on it by implementing kvm_arch_private_memory_supported().
-> 
-> Also private memslot cannot be movable and the same file+offset can not
-> be mapped into different GFNs.
-> 
-> Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
-> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> ---
-(..)
->   
->   static bool kvm_check_memslot_overlap(struct kvm_memslots *slots, int id,
-> -				      gfn_t start, gfn_t end)
-> +				      struct file *file,
-> +				      gfn_t start, gfn_t end,
-> +				      loff_t start_off, loff_t end_off)
->   {
->   	struct kvm_memslot_iter iter;
-> +	struct kvm_memory_slot *slot;
-> +	struct inode *inode;
-> +	int bkt;
->   
->   	kvm_for_each_memslot_in_gfn_range(&iter, slots, start, end) {
->   		if (iter.slot->id != id)
->   			return true;
->   	}
->   
-> +	/* Disallow mapping the same file+offset into multiple gfns. */
-> +	if (file) {
-> +		inode = file_inode(file);
-> +		kvm_for_each_memslot(slot, bkt, slots) {
-> +			if (slot->private_file &&
-> +			     file_inode(slot->private_file) == inode &&
-> +			     !(end_off <= slot->private_offset ||
-> +			       start_off >= slot->private_offset
-> +					     + (slot->npages >> PAGE_SHIFT)))
-> +				return true;
-> +		}
-> +	}
+Let's maintain occasional fixes to the fbtft driver.
 
-That's a linear scan of all memslots on each CREATE (and MOVE) operation
-with a fd - we just spent more than a year rewriting similar linear scans
-into more efficient operations in KVM.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ MAINTAINERS | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Thanks,
-Maciej
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ea3e6c914384..16e614606ac1 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7372,9 +7372,11 @@ F:	Documentation/fault-injection/
+ F:	lib/fault-inject.c
+ 
+ FBTFT Framebuffer drivers
++M:	Andy Shevchenko <andy@kernel.org>
+ L:	dri-devel@lists.freedesktop.org
+ L:	linux-fbdev@vger.kernel.org
+-S:	Orphan
++S:	Maintained
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/andy/linux-fbtft.git
+ F:	drivers/staging/fbtft/
+ 
+ FC0011 TUNER DRIVER
+-- 
+2.34.1
+
