@@ -2,125 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B421C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:39:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383550AbiAYMjK (ORCPT
+        id S1350610AbiAYMjZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:39:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39394 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383382AbiAYMeq (ORCPT
+        Tue, 25 Jan 2022 07:39:25 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4509 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383416AbiAYMfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:34:46 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE3AC06176C;
-        Tue, 25 Jan 2022 04:34:42 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id w11so7448883wra.4;
-        Tue, 25 Jan 2022 04:34:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7KQ9zYLdW+k4aKNdv2IbRYPTwBUiRRe1pTBMQGoDkYs=;
-        b=fWWE2KtG+RYLfi/zSpVoSjx9LzMWqpmeU8l/xXBfj3fDeXKdF2DnYo9XUdRzF3r0kB
-         d43p02IIrfGE6IQKdXWzXpoZgKeOJYGlghHdGVN3mGLbuOsg0a6DCtTi3B1xE3Sy/4mJ
-         7T6Jf6gvcH4V4W8EZ/Yngt7lLja9evs/+mFgrhUXK2ojo6YWOKos/Q47TaL2gcrX11rH
-         yVAHduKiVtAUI765sh/B9inAVtHDhxOdnsC2bgYgA5r+NozA1KckQsgeMC3aS+H9Q9mR
-         xYznYL8Y8oh/nbNIwabY4MV2MuPVvKjL7YIhhyAe8E6Is9P0mHouRicJ4lkgRXRBQ0LJ
-         BviQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7KQ9zYLdW+k4aKNdv2IbRYPTwBUiRRe1pTBMQGoDkYs=;
-        b=f8CPOtB9Py0G6eaqm3+ZtFLkVRHS/TUi5KJgDvf11RHKXB/wqc7Bxdor+G1v+1t4XS
-         GPNYYkaOIEQHU34KV3Oktg3wOIbbYXrAXCQDKTSiQjINibl5IY+zWj2oGQTBKR+dd9gn
-         tHlpjlipQfyoKsRhzirskIw9ZChZ6HA1iTqD5PJ8MpgjRiHqOjKozIy06oAJOTYY+jcs
-         VAPtL52R7rSzzacazPe08iY62r0VlywCO5jQpyl01CeRYhLWoC/HkCv15UOwn8Y4bVK5
-         p6HxL/uFiom3attIXCCWLAMOT2H8yHgNvml67qutsQ9ewsbr3PWg1SHslcyzc/p0HoIt
-         hJ1w==
-X-Gm-Message-State: AOAM531zE2+o2pHEYBhnps+J8FEDOjh/vEGs6aqdMdlcNmBK+pvcu+1p
-        wuwh06yn8PX4IQSQuPcYfvaR8ztOqMM=
-X-Google-Smtp-Source: ABdhPJyzZP4+E2xWuSCnFYnHmJMyTjNijsc2IK5BN1bQTczUgycsgCjn2bRkcJyxBkSMLHp+m7v0aQ==
-X-Received: by 2002:a5d:6d04:: with SMTP id e4mr8301944wrq.398.1643114081426;
-        Tue, 25 Jan 2022 04:34:41 -0800 (PST)
-Received: from heron.intern.cm-ag (p200300dc6f046a000000000000000fd2.dip0.t-ipconnect.de. [2003:dc:6f04:6a00::fd2])
-        by smtp.gmail.com with ESMTPSA id e10sm1558633wrq.53.2022.01.25.04.34.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 04:34:40 -0800 (PST)
-From:   Max Kellermann <max.kellermann@gmail.com>
-To:     linux-pwm@vger.kernel.org, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, andrey@lebedev.lt,
-        Max Kellermann <max.kellermann@gmail.com>,
-        stable@vger.kernel.org
-Subject: [PATCH 3/3] pwm-sun4i: calculate the delay without rounding down to jiffies
-Date:   Tue, 25 Jan 2022 13:34:29 +0100
-Message-Id: <20220125123429.3490883-3-max.kellermann@gmail.com>
-X-Mailer: git-send-email 2.34.0
-In-Reply-To: <20220125123429.3490883-1-max.kellermann@gmail.com>
-References: <20220125123429.3490883-1-max.kellermann@gmail.com>
+        Tue, 25 Jan 2022 07:35:06 -0500
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JjmRz52k3z687Zg;
+        Tue, 25 Jan 2022 20:31:27 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 13:34:52 +0100
+Received: from [10.47.95.36] (10.47.95.36) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 25 Jan
+ 2022 12:34:51 +0000
+Subject: Re: [PATCHv3 0/4] perf tools: Add support for user defined metric
+To:     Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+CC:     lkml <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Joe Mario <jmario@redhat.com>, Andi Kleen <ak@linux.intel.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        "liuqi (BA)" <liuqi115@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Zhangshaokun <zhangshaokun@hisilicon.com>,
+        "irogers@google.com" <irogers@google.com>
+References: <20200511205307.3107775-1-jolsa@kernel.org>
+From:   John Garry <john.garry@huawei.com>
+Message-ID: <2e2da73a-7085-b488-4764-705adbff70cc@huawei.com>
+Date:   Tue, 25 Jan 2022 12:34:19 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200511205307.3107775-1-jolsa@kernel.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.95.36]
+X-ClientProxiedBy: lhreml744-chm.china.huawei.com (10.201.108.194) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This fixes a problem that was supposed to be addressed by commit
-6eefb79d6f5bc ("pwm: sun4i: Remove erroneous else branch") - backlight
-could not be switched off on some Allwinner A20.  The commit was
-correct, but was not a reliable fix for the problem, which was timing
-related.
+On 11/05/2020 21:53, Jiri Olsa wrote:
 
-The real problem for the backlight switching problem was that sleeping
-for a full period did not work, because delay_us is always zero.
++
 
-It is zero because the period (plus 1 microsecond) is rounded down to
-the next "jiffies", but the period is less than one jiffy.
+Hi jirka,
 
-On my Cubieboard 2, the period is 5ms, and 1 jiffy (at the default
-HZ=100) is 10ms, so nsecs_to_jiffies(10ms+1us)=0.
+Did you a plan to continue to work? I don't think that this support was 
+ever merged.
 
-The roundtrip from nanoseconds to jiffies and back to microseconds is
-an unnecessary loss of precision; always rounding down (via
-nsecs_to_jiffies()) then causes the breakage.
+We have a requirement to be able to tune parameters of metrics, and 
+support here seems suitable.
 
-This patch eliminates this roundtrip, and directly converts from
-nanoseconds to microseconds (for usleep_range()), using
-DIV_ROUND_UP_ULL() to force rounding up.  This way, the sleep time is
-never zero, and after the sleep, we are guaranteed to be in a
-different period, and the device is ready for another control command
-for sure.
+Thanks,
+John
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Max Kellermann <max.kellermann@gmail.com>
----
- drivers/pwm/pwm-sun4i.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index b44deececb8b..8527a655034c 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -234,7 +234,6 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct pwm_state cstate;
- 	u32 ctrl, duty = 0, period = 0, val;
- 	int ret;
--	unsigned int delay_jiffies;
- 	unsigned int delay_us, prescaler = 0;
- 	bool bypass;
- 
-@@ -302,8 +301,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		return 0;
- 
- 	/* We need a full period to elapse before disabling the channel. */
--	delay_jiffies = nsecs_to_jiffies(cstate.period + 1000);
--	delay_us = jiffies_to_usecs(delay_jiffies);
-+	delay_us = DIV_ROUND_UP_ULL(cstate.period, NSEC_PER_USEC);
- 	if ((delay_us / 500) > MAX_UDELAY_MS)
- 		msleep(delay_us / 1000 + 1);
- 	else
--- 
-2.34.0
+> hi,
+> Joe asked for possibility to add user defined metrics. Given that
+> we already have metrics support, I added --metrics-file option that
+> allows to specify custom metrics.
+> 
+>    $ cat metrics
+>    # IPC
+>    mine1 = instructions / cycles;
+>    /* DECODED_ICACHE_UOPS% */
+>    mine2 = 100 * (idq.dsb_uops / \ (idq.ms_uops + idq.mite_uops + idq.dsb_uops + lsd.uops));
+> 
+>    $ sudo perf stat --metrics-file ./metrics -M mine1,mine2 --metric-only -a -I 1000
+>    #           time       insn per cycle                mine1                mine2
+>         1.000536263                0.71                   0.7                 41.4
+>         2.002069025                0.31                   0.3                 14.1
+>         3.003427684                0.27                   0.3                 14.8
+>         4.004807132                0.25                   0.2                 12.1
+>    ...
+> 
+> v3 changes:
+>    - added doc for metrics file in perf stat man page
+>    - reporting error line number now
+>    - changed '#' style comment to C way with '//'
+> 
+> v2 changes:
+>    - add new --metrics-file option
+>    - rebased on current perf/core expression bison/flex enhancements
+> 
+> Also available in:
+>    git://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+>    perf/metric
+> 
+> thanks,
+> jirka
+> 
+> 
+> ---
+> Jiri Olsa (4):
+>        perf expr: Add parsing support for multiple expressions
+>        perf expr: Allow comments in custom metric file
+>        perf stat: Add --metrics-file option
+>        perf expr: Report line number with error
+> 
+>   tools/perf/Documentation/perf-stat.txt | 77 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>   tools/perf/builtin-stat.c              |  7 +++++--
+>   tools/perf/tests/expr.c                | 18 ++++++++++++++++++
+>   tools/perf/util/expr.c                 |  6 ++++++
+>   tools/perf/util/expr.h                 | 21 +++++++++++++++++++--
+>   tools/perf/util/expr.l                 | 34 ++++++++++++++++++++++++++++++++++
+>   tools/perf/util/expr.y                 | 21 +++++++++++++++++----
+>   tools/perf/util/metricgroup.c          | 70 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------
+>   tools/perf/util/metricgroup.h          |  3 ++-
+>   tools/perf/util/stat.h                 |  1 +
+>   10 files changed, 242 insertions(+), 16 deletions(-)
+> 
+> .
+> 
 
