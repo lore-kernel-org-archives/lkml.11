@@ -2,195 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96779C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E59C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315696AbiAYCyA (ORCPT
+        id S1315812AbiAYCyV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:54:00 -0500
-Received: from foss.arm.com ([217.140.110.172]:59140 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2375567AbiAYAUi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:20:38 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0BB891FB;
-        Mon, 24 Jan 2022 16:20:33 -0800 (PST)
-Received: from [10.57.68.26] (unknown [10.57.68.26])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6E31B3F793;
-        Mon, 24 Jan 2022 16:20:30 -0800 (PST)
-Message-ID: <363b8f7d-5459-0d19-c1ac-a2c6bce9d26f@arm.com>
-Date:   Tue, 25 Jan 2022 00:20:26 +0000
+        Mon, 24 Jan 2022 21:54:21 -0500
+Received: from mail-ot1-f46.google.com ([209.85.210.46]:34791 "EHLO
+        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3409082AbiAYAYz (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 19:24:55 -0500
+Received: by mail-ot1-f46.google.com with SMTP id m8-20020a9d4c88000000b00592bae7944bso24618688otf.1;
+        Mon, 24 Jan 2022 16:24:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hKgu9rmUk95J97wO8FZCJYIlIG/PvU+dGhgzBVkVwN8=;
+        b=MZE5ndUCCOr/b4NI4VHdNhqVZNbcnfNVW+pUDQlubdmhX9/QaRvzE1/y6iiu5Kr/a0
+         NbYQPtaQPHFxKq2RPmErQsxnl/ur1plF+nnuPyA7HnGTOm4Vurflsqrvtbt2NO0qQs26
+         d0pj8unzscOwT1TKYeqbKyBD8BI7I7HC5ZOrExMbGN8ORAeTa4CPVl7QG1ivPvz2a7yh
+         CK0HLgtFgFZHhr8+3ysq6JiHwv8AnkbjR8Frte41Oh5ZSSYhMsSJlyEwkhgPcrkkGclS
+         +2oMOy6k4xTyOWkdIaTYGlPP+UFUudAT/mJoGuRxLvwsmibBlbH5r6AnIZnkb1Nh3WLv
+         EUCQ==
+X-Gm-Message-State: AOAM531oUs1mqAOcvcdIDosnWbAY5WmN6j6q2ZEx5AE3dHR7brRSihDT
+        wQcoL//ydUwFDYNYDfxFbQ==
+X-Google-Smtp-Source: ABdhPJwBQlZsDWkm3dE9/hvTrL4jN/68Lxk+HhTDBRoQqFgYwJwB6VNNcUYx1ZcvnXNEAfY0RZ18Zg==
+X-Received: by 2002:a9d:5c86:: with SMTP id a6mr7103969oti.163.1643070291812;
+        Mon, 24 Jan 2022 16:24:51 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id a19sm2751280otf.27.2022.01.24.16.24.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 16:24:51 -0800 (PST)
+Received: (nullmailer pid 809305 invoked by uid 1000);
+        Tue, 25 Jan 2022 00:24:50 -0000
+Date:   Mon, 24 Jan 2022 18:24:50 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC 5/6] ASoC: dt-bindings: samsung,snow: convert to dtschema
+Message-ID: <Ye9DUjVGWDmhvPtu@robh.at.kernel.org>
+References: <20220124170336.164320-1-krzysztof.kozlowski@canonical.com>
+ <20220124170336.164320-5-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 6/7] iommu: Use right way to retrieve iommu_ops
-Content-Language: en-GB
-To:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>
-Cc:     David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
-        iommu@lists.linux-foundation.org,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-7-baolu.lu@linux.intel.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220124071103.2097118-7-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124170336.164320-5-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-24 07:11, Lu Baolu wrote:
-> The common iommu_ops is hooked to both device and domain. When a helper
-> has both device and domain pointer, the way to get the iommu_ops looks
-> messy in iommu core. This sorts out the way to get iommu_ops. The device
-> related helpers go through device pointer, while the domain related ones
-> go through domain pointer.
+On Mon, Jan 24, 2022 at 06:03:35PM +0100, Krzysztof Kozlowski wrote:
+> Convert the audio complex on Google Snow boards with Samsung Exynos SoC
+> to DT schema format.
 > 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> 
 > ---
->   include/linux/iommu.h |  8 ++++++++
->   drivers/iommu/iommu.c | 25 ++++++++++++++-----------
->   2 files changed, 22 insertions(+), 11 deletions(-)
 > 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index aa5486243892..111b3e9c79bb 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -385,6 +385,14 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
->   	};
->   }
->   
-> +static inline const struct iommu_ops *dev_iommu_ops_get(struct device *dev)
-> +{
-> +	if (dev && dev->iommu && dev->iommu->iommu_dev)
-> +		return dev->iommu->iommu_dev->ops;
+> TODO: The DTS do not pass cleanly. cpu/sound-dai should be fixed.
+> ---
+>  .../bindings/sound/samsung,snow.yaml          | 78 +++++++++++++++++++
+>  .../devicetree/bindings/sound/snow.txt        | 31 --------
+>  2 files changed, 78 insertions(+), 31 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/sound/samsung,snow.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/sound/snow.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/sound/samsung,snow.yaml b/Documentation/devicetree/bindings/sound/samsung,snow.yaml
+> new file mode 100644
+> index 000000000000..df969b384839
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/sound/samsung,snow.yaml
+> @@ -0,0 +1,78 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/sound/samsung,snow.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +	return NULL;
-
-This probably warrants at least a WARN, but it's arguable to just assume 
-that valid ops must be installed if iommu_probe_device() has succeeded. 
-The device ops are essentially for internal use within the IOMMU 
-subsystem itself, so we should be able to trust ourselves not to misuse 
-the helper.
-
-> +}
+> +title: Google Snow audio complex with MAX9809x codec
 > +
->   #define IOMMU_BUS_NOTIFY_PRIORITY		0
->   #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
->   #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 5230c6d90ece..6631e2ea44df 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -764,6 +764,7 @@ EXPORT_SYMBOL_GPL(iommu_group_set_name);
->   static int iommu_create_device_direct_mappings(struct iommu_group *group,
->   					       struct device *dev)
->   {
-> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
->   	struct iommu_domain *domain = group->default_domain;
->   	struct iommu_resv_region *entry;
->   	struct list_head mappings;
-> @@ -785,8 +786,8 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
->   		dma_addr_t start, end, addr;
->   		size_t map_size = 0;
->   
-> -		if (domain->ops->apply_resv_region)
-> -			domain->ops->apply_resv_region(dev, domain, entry);
-> +		if (ops->apply_resv_region)
-> +			ops->apply_resv_region(dev, domain, entry);
-
-Strictly I think this was a domain op, as it was about reserving the 
-IOVA range in the given DMA domain. Also taking the domain as an 
-argument is a bit of a giveaway. However it's now just dead code either 
-way since there are no remaining implementations, and no reason for any 
-new ones.
-
->   
->   		start = ALIGN(entry->start, pg_size);
->   		end   = ALIGN(entry->start + entry->length, pg_size);
-> @@ -831,8 +832,10 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
->   static bool iommu_is_attach_deferred(struct iommu_domain *domain,
->   				     struct device *dev)
->   {
-> -	if (domain->ops->is_attach_deferred)
-> -		return domain->ops->is_attach_deferred(domain, dev);
-> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
+> +maintainers:
+> +  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> +  - Sylwester Nawrocki <s.nawrocki@samsung.com>
 > +
-> +	if (ops->is_attach_deferred)
-> +		return ops->is_attach_deferred(domain, dev);
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - google,snow-audio-max98090
+> +      - google,snow-audio-max98091
+> +      - google,snow-audio-max98095
+> +
+> +  codec:
+> +    type: object
+> +    properties:
+> +      sound-dai:
+> +        description: List of phandles to the CODEC and HDMI IP nodes.
+> +        $ref: /schemas/types.yaml#/definitions/phandle-array
+> +        items:
+> +          - description: Phandle to the MAX98090, MAX98091 or MAX98095 CODEC.
+> +          - description: Phandle to the HDMI IP block node.
 
-Similarly if this takes a domain as its first argument then it's de 
-facto a domain method. However, I'd concur that logically it *is* a 
-device op, so let's drop that (unused) domain argument if we're cleaning up.
+Thinking about this and the issue you raised some more, we should make 
+sure there's a common definition for sound-dai. And then here, it should 
+just be the number of entries ('maxItems: 1').
 
-Maybe there's even an argument for factoring this out to a standard flag 
-in dev_iommu rather than an op at all?
-
-The others covered here look OK - we can blame PCI for page response 
-being weirdly device-centric - however could we also convert all the 
-feasible instances of dev->bus->iommu_ops to dev_iommu_ops() as well? 
-(Subtly implying that I'm also not a fan of having "_get" in the name 
-for a non-refcounted lookup...) Obviously iommu_probe_device() and 
-iommmu_domain_alloc() still need bus ops at this point, but I'm working 
-on that... :)
-
-Thanks,
-Robin.
-
->   	return false;
->   }
-> @@ -1251,10 +1254,10 @@ int iommu_page_response(struct device *dev,
->   	struct iommu_fault_event *evt;
->   	struct iommu_fault_page_request *prm;
->   	struct dev_iommu *param = dev->iommu;
-> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
->   	bool has_pasid = msg->flags & IOMMU_PAGE_RESP_PASID_VALID;
-> -	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->   
-> -	if (!domain || !domain->ops->page_response)
-> +	if (!ops || !ops->page_response)
->   		return -ENODEV;
->   
->   	if (!param || !param->fault_param)
-> @@ -1295,7 +1298,7 @@ int iommu_page_response(struct device *dev,
->   			msg->pasid = 0;
->   		}
->   
-> -		ret = domain->ops->page_response(dev, evt, msg);
-> +		ret = ops->page_response(dev, evt, msg);
->   		list_del(&evt->list);
->   		kfree(evt);
->   		break;
-> @@ -1758,10 +1761,10 @@ static int __iommu_group_dma_attach(struct iommu_group *group)
->   
->   static int iommu_group_do_probe_finalize(struct device *dev, void *data)
->   {
-> -	struct iommu_domain *domain = data;
-> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
->   
-> -	if (domain->ops->probe_finalize)
-> -		domain->ops->probe_finalize(dev);
-> +	if (ops->probe_finalize)
-> +		ops->probe_finalize(dev);
->   
->   	return 0;
->   }
-> @@ -2020,7 +2023,7 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
->   
->   int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
->   {
-> -	const struct iommu_ops *ops = domain->ops;
-> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
->   
->   	if (ops->is_attach_deferred && ops->is_attach_deferred(domain, dev))
->   		return __iommu_attach_device(domain, dev);
+Rob
