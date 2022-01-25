@@ -2,97 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 388D2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B64C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315982AbiAYCy6 (ORCPT
+        id S1316001AbiAYCzA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:54:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3409802AbiAYA11 (ORCPT
+        Mon, 24 Jan 2022 21:55:00 -0500
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:6356 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S3409895AbiAYA1v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:27:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6315FC0680B1;
-        Mon, 24 Jan 2022 12:08:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 018CE6091B;
-        Mon, 24 Jan 2022 20:08:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C943DC340E5;
-        Mon, 24 Jan 2022 20:08:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054883;
-        bh=jWDHRme/ITQfZrL35IpdVL6ftOshaIh0+geEM+S1LeU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QYDJn6mPgNyP0hC43XGOE2lp75rrkExxH4i0JnOfncOoi+UGuZ7k0hxucCxZwyf6R
-         glRZVl7p0vvDDkz0a12rRtmN2lScqHdjEi3jR1cY5ow+aNncVfTkTU+aHbzJ4JlOzp
-         Lb6JnVhFGmoSvHfx5L2T077XrZFFIzGVGinpzNr8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.10 502/563] powerpc/cell: Fix clang -Wimplicit-fallthrough warning
-Date:   Mon, 24 Jan 2022 19:44:27 +0100
-Message-Id: <20220124184041.826719761@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 19:27:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643070471; x=1674606471;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=muJislQo56JK8jPw5RkQCrGtoGCd3t6/rtkh2XIwz6w=;
+  b=iNIssaEPb42D4keptZxI2lMZU9kDig7VFiMcNPE8l3EbK07jfgeonbXK
+   YoScnIPdfqK3DIsA5RIeq3znFMfEVANhQOqz6Gc8PVcvVJulVfFWUqFbz
+   ZPU6Jbh9wsWtUGWZqaVCbvdLzt7xZBzFq6qUS7Hvsk7M7VX3GJ3h3nSsI
+   U=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Jan 2022 16:27:50 -0800
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 16:27:49 -0800
+Received: from collinsd-linux.qualcomm.com (10.80.80.8) by
+ nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 24 Jan 2022 16:27:49 -0800
+From:   David Collins <quic_collinsd@quicinc.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        <devicetree@vger.kernel.org>
+CC:     David Collins <quic_collinsd@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        "Subbaraman Narayanamurthy" <quic_subbaram@quicinc.com>
+Subject: [RESEND PATCH 0/2] regulator: scmi: add support for registering SCMI regulators by name
+Date:   Mon, 24 Jan 2022 16:27:34 -0800
+Message-ID: <cover.1643069954.git.quic_collinsd@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+Add support to register SCMI regulator subnodes based on an SCMI
+Voltage Domain name specified via the 'regulator-name' device tree
+property.  In doing so, make the 'reg' property optional with the
+constraint that at least one of 'reg' or 'regulator-name' must be
+specified.  If both are specified, then both must match the
+Voltage Domain data exposed by the SCMI platform.
 
-commit e89257e28e844f5d1d39081bb901d9f1183a7705 upstream.
+Name based SCMI regulator registration helps ensure that an SCMI
+agent doesn't need to be aware of the numbering scheme used for
+Voltage Domains by the SCMI platform.  It also ensures that the
+correct Voltage Domain is selected for a given physical regulator.
+This cannot be guaranteed with numeric Voltage Domain IDs alone.
 
-Clang warns:
+David Collins (2):
+  dt-bindings: firmware: arm,scmi: define support for name based
+    regulators
+  regulator: scmi: add support for registering SCMI regulators by name
 
-arch/powerpc/platforms/cell/pervasive.c:81:2: error: unannotated fall-through between switch labels
-        case SRR1_WAKEEE:
-        ^
-arch/powerpc/platforms/cell/pervasive.c:81:2: note: insert 'break;' to avoid fall-through
-        case SRR1_WAKEEE:
-        ^
-        break;
-1 error generated.
+ .../bindings/firmware/arm,scmi.yaml           | 11 +++-
+ drivers/regulator/scmi-regulator.c            | 57 ++++++++++++++++++-
+ 2 files changed, 62 insertions(+), 6 deletions(-)
 
-Clang is more pedantic than GCC, which does not warn when failing
-through to a case that is just break or return. Clang's version is more
-in line with the kernel's own stance in deprecated.rst. Add athe missing
-break to silence the warning.
-
-Fixes: 6e83985b0f6e ("powerpc/cbe: Do not process external or decremeter interrupts from sreset")
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211207110228.698956-1-anders.roxell@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/powerpc/platforms/cell/pervasive.c |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/arch/powerpc/platforms/cell/pervasive.c
-+++ b/arch/powerpc/platforms/cell/pervasive.c
-@@ -77,6 +77,7 @@ static int cbe_system_reset_exception(st
- 	switch (regs->msr & SRR1_WAKEMASK) {
- 	case SRR1_WAKEDEC:
- 		set_dec(1);
-+		break;
- 	case SRR1_WAKEEE:
- 		/*
- 		 * Handle these when interrupts get re-enabled and we take
-
+-- 
+2.17.1
 
