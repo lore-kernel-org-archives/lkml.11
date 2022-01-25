@@ -2,223 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B50C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:51:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2474C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378036AbiAYKu4 (ORCPT
+        id S1378498AbiAYKvc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:50:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43368 "EHLO
+        Tue, 25 Jan 2022 05:51:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376709AbiAYKrr (ORCPT
+        with ESMTP id S1377101AbiAYKse (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:47:47 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158ECC061773;
-        Tue, 25 Jan 2022 02:47:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=k6IRqDL20I9/iZr4XnUVcjDnXG5tq+iBxynWuS6ogdg=; b=sdd4cTeba7EfOnTUHsQgRgl0Lv
-        eIss2FIPzU3hfEPkDFpHRm2xCR3QcmnLDXmalTGNvTpiD/E3/LgDpd+HtX48Ru88P3pYxE1y9tjcs
-        a/3TeB9NXCiocertZo0e6m3v86japXVQaYTAUPWR1Cnn2wV/obfZ1uq5ai0FATcmxciOTnr7B0SQy
-        gHNrl6Dz8k6fChu8LkKltP17m7/yEpIlExGMDXu3RxR8rQUQRvsqAFfHHDZJI4egePfIAn1R9GeSr
-        KMTx/UjupI9BrCuuOsrJAfAKvrd2OvQvxb6fGLYX4Q0x8NCJaGPQPG1GHsXdrH2h9u5uhTIBgW+95
-        lkRdC2VQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nCJM0-002Z23-Tx; Tue, 25 Jan 2022 10:47:13 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7A02C300296;
-        Tue, 25 Jan 2022 11:47:11 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 2F515201A0863; Tue, 25 Jan 2022 11:47:11 +0100 (CET)
-Date:   Tue, 25 Jan 2022 11:47:11 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Mathias Nyman <mathias.nyman@linux.intel.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>
-Subject: Re: earlyprintk=xdbc seems broken
-Message-ID: <Ye/VL4b1PUCsCeds@hirez.programming.kicks-ass.net>
-References: <c2b5c9bb-1b75-bf56-3754-b5b18812d65e@linux.intel.com>
- <YbyWuxoBSicFBGuv@hirez.programming.kicks-ass.net>
- <YcGhIm7yqYPk4Nuu@hirez.programming.kicks-ass.net>
- <YeE4rtq6t73OxOi+@hirez.programming.kicks-ass.net>
- <cd534ff9-e500-c7ea-426a-347ac2b0830b@linux.intel.com>
- <YeLxE3zQ7Vexk3gv@hirez.programming.kicks-ass.net>
- <dfb311e3-1a83-31a2-3c82-fd982c0757f6@linux.intel.com>
- <Ye7WLM+NyVQlEMXN@hirez.programming.kicks-ass.net>
- <Ye7X5I4lm8gtRaBv@hirez.programming.kicks-ass.net>
- <6e2700c4-07dd-76ac-cd8f-d9e5b9b24e74@linux.intel.com>
+        Tue, 25 Jan 2022 05:48:34 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D8D8C061755
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:48:34 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id x11so55966421lfa.2
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:48:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kempniu.pl; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=d9xG9ybZ2bk07KpDBvmq82bns44VBsEgiEAlMx6te1s=;
+        b=eTJDRtWMkEvwumN/PwbV2huigDmLkT28unqbUV95ieTvhEIBFIBcQmS5F3rAP4iw0T
+         u2NLpilk2JA7ikJHhtF8x48nDW44SgBjQq1lwptwzdVZ3DekZna5erMk1hsHWGC0Z6Xe
+         vWakmhEdOvQ+Y5hDQHdKBPfF9FUoH3rmjwS+c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=d9xG9ybZ2bk07KpDBvmq82bns44VBsEgiEAlMx6te1s=;
+        b=Pt3Btzv1nYVLCKhBHJc19N9wWwfIzG/KCSRcJq1HmQv2X0R6FNIUmMIg9PtmBPBjs1
+         Uujc2HCeaL/gsyLOyG5rxbe1hRy6FK/xZFKv08cNbpEdpOqvREq8ZMWAsRr4Xq7op5XG
+         xV3KoSfyRiHf1JeMc9zoPGytdaA0znvlUKEejKU65vZrYqepNn92jCxlLIp9CXrlKCW+
+         8K/vcqphhNZgOnj0njtU6gI6ewS3PRT3lUCnqUgUuMYO73bzvsDabW8Y/P9zddv7t+sI
+         1b5Kde1qKaHy79Nzrwv1/CYCP8ex5DoTJM72kirQx+lTF1/0gIsEE1PmXYc7UPv6y5HU
+         Olvw==
+X-Gm-Message-State: AOAM533uPqxhzgDlOPFTq92AnQ1Pg9jmobbVgmny7fzm0bsm4aXAyCtC
+        8jF3G030RjkNRo0BVH24nVSqVA==
+X-Google-Smtp-Source: ABdhPJyPoI4pr0FWAy7hwPYul1Esicj+vsWk1Mau25ZduQKEDQHI+lXIprhR4ONeMk6RTCJceyebzg==
+X-Received: by 2002:a19:500c:: with SMTP id e12mr8091350lfb.18.1643107712251;
+        Tue, 25 Jan 2022 02:48:32 -0800 (PST)
+Received: from larwa.hq.kempniu.pl ([2001:470:64df:111::221])
+        by smtp.gmail.com with ESMTPSA id d16sm461896ljj.74.2022.01.25.02.48.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 02:48:31 -0800 (PST)
+From:   =?UTF-8?q?Micha=C5=82=20K=C4=99pie=C5=84?= <kernel@kempniu.pl>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Cc:     Boris Brezillon <boris.brezillon@collabora.com>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/4] mtd: track maximum number of bitflips for each read request
+Date:   Tue, 25 Jan 2022 11:48:19 +0100
+Message-Id: <20220125104822.8420-2-kernel@kempniu.pl>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220125104822.8420-1-kernel@kempniu.pl>
+References: <20220125104822.8420-1-kernel@kempniu.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6e2700c4-07dd-76ac-cd8f-d9e5b9b24e74@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 10:51:00AM +0200, Mathias Nyman wrote:
-> On 24.1.2022 18.46, Peter Zijlstra wrote:
+mtd_read_oob() callers are currently oblivious to the details of ECC
+errors detected during the read operation - they only learn (through the
+return value) whether any corrected bitflips or uncorrectable errors
+occurred.  More detailed ECC information can be useful to user-space
+applications for making better-informed choices about moving data
+around.
 
-> > FYI, I'm thinking early_xdbc_parse_parameter should've now given
-> > dpgp_num: 1 ?
-> > 
-> 
-> Yes, it should. 
-> 
-> Looks like there's a parsing issue.
-> "earlyprintk=xdbc1,keep" fails on our Tigerlake as well.
->   
-> Without the "keep" option it works for me:
-> 
-> [    0.000000] Command line: console=ttyS0,115200n8 buildroot_hostname=tgl04 earlyprintk=xdbc1 dmi_entry_point=0x74374000
-> [    0.000000] xhci_dbc:early_xdbc_parse_parameter: dbgp_num: 1
+Extend struct mtd_oob_ops with a pointer to a newly-introduced struct
+mtd_req_stats and set its 'max_bitflips' field to the maximum number of
+bitflips found in a single ECC step during the read operation performed
+by mtd_read_oob(). This is a prerequisite for ultimately passing that
+value back to user space.
 
-[    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-5.16.0+ root=UUID=a652986c-fbc6-4341-85c3-b4ad4402f130 ro debug ignore_loglevel sysrq_always_enabled usbcore.autosuspend=-1 earlyprintk=xdbc1,keep force_early_printk sched_verbose ft
-race=nop mitigations=off nokaslr
-
-[    0.000000] xhci_dbc:early_xdbc_parse_parameter: dbgp_num: 1
-
-[    0.399988] xhci_dbc:xdbc_start: DbC is running now, control 0x8d000003 port ID 15
-[    0.399998] xhci_dbc:xdbc_handle_port_status: connect status change event
-[    0.399999] xhci_dbc:xdbc_handle_port_status: port reset change event
-[    0.431217] printk: console [earlyxdbc0] enabled
-
-Success!! I'll go submit proper patches for this then.
-
+Suggested-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Michał Kępień <kernel@kempniu.pl>
 ---
+ drivers/mtd/mtdcore.c   | 5 +++++
+ include/linux/mtd/mtd.h | 5 +++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/arch/x86/kernel/early_printk.c b/arch/x86/kernel/early_printk.c
-index d3c531d3b244..68b38925a74f 100644
---- a/arch/x86/kernel/early_printk.c
-+++ b/arch/x86/kernel/early_printk.c
-@@ -387,7 +387,7 @@ static int __init setup_early_printk(char *buf)
- #endif
- #ifdef CONFIG_EARLY_PRINTK_USB_XDBC
- 		if (!strncmp(buf, "xdbc", 4))
--			early_xdbc_parse_parameter(buf + 4);
-+			early_xdbc_parse_parameter(buf + 4, keep);
- #endif
+diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
+index 70f492dce158..9423af6db385 100644
+--- a/drivers/mtd/mtdcore.c
++++ b/drivers/mtd/mtdcore.c
+@@ -1575,6 +1575,9 @@ int mtd_read_oob(struct mtd_info *mtd, loff_t from, struct mtd_oob_ops *ops)
+ 	if (!master->_read_oob && (!master->_read || ops->oobbuf))
+ 		return -EOPNOTSUPP;
  
- 		buf++;
-diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index a698196377be..9bf3872895ab 100644
---- a/arch/x86/kernel/tsc.c
-+++ b/arch/x86/kernel/tsc.c
-@@ -1505,6 +1505,7 @@ void __init tsc_early_init(void)
- 	loops_per_jiffy = get_loops_per_jiffy();
- 
- 	tsc_enable_sched_clock();
-+	use_tsc_delay();
++	if (ops->stats)
++		memset(ops->stats, 0, sizeof(*ops->stats));
++
+ 	if (mtd->flags & MTD_SLC_ON_MLC_EMULATION)
+ 		ret_code = mtd_io_emulated_slc(mtd, from, true, ops);
+ 	else
+@@ -1592,6 +1595,8 @@ int mtd_read_oob(struct mtd_info *mtd, loff_t from, struct mtd_oob_ops *ops)
+ 		return ret_code;
+ 	if (mtd->ecc_strength == 0)
+ 		return 0;	/* device lacks ecc */
++	if (ops->stats)
++		ops->stats->max_bitflips = ret_code;
+ 	return ret_code >= mtd->bitflip_threshold ? -EUCLEAN : 0;
  }
+ EXPORT_SYMBOL_GPL(mtd_read_oob);
+diff --git a/include/linux/mtd/mtd.h b/include/linux/mtd/mtd.h
+index 1ffa933121f6..f976aabcb378 100644
+--- a/include/linux/mtd/mtd.h
++++ b/include/linux/mtd/mtd.h
+@@ -40,6 +40,10 @@ struct mtd_erase_region_info {
+ 	unsigned long *lockmap;		/* If keeping bitmap of locks */
+ };
  
- void __init tsc_init(void)
-diff --git a/drivers/usb/early/xhci-dbc.c b/drivers/usb/early/xhci-dbc.c
-index 4502108069cd..a40db9618e8e 100644
---- a/drivers/usb/early/xhci-dbc.c
-+++ b/drivers/usb/early/xhci-dbc.c
-@@ -29,11 +29,15 @@
- static struct xdbc_state xdbc;
- static bool early_console_keep;
++struct mtd_req_stats {
++	unsigned int max_bitflips;
++};
++
+ /**
+  * struct mtd_oob_ops - oob operation operands
+  * @mode:	operation mode
+@@ -70,6 +74,7 @@ struct mtd_oob_ops {
+ 	uint32_t	ooboffs;
+ 	uint8_t		*datbuf;
+ 	uint8_t		*oobbuf;
++	struct mtd_req_stats *stats;
+ };
  
-+#if 0
- #ifdef XDBC_TRACE
- #define	xdbc_trace	trace_printk
- #else
- static inline void xdbc_trace(const char *fmt, ...) { }
- #endif /* XDBC_TRACE */
-+#else
-+#define xdbc_trace	pr_err
-+#endif
- 
- static void __iomem * __init xdbc_map_pci_mmio(u32 bus, u32 dev, u32 func)
- {
-@@ -417,9 +421,11 @@ static void xdbc_ring_doorbell(int target)
- 
- static int xdbc_start(void)
- {
-+	bool first_try = true;
- 	u32 ctrl, status;
- 	int ret;
- 
-+retry:
- 	ctrl = readl(&xdbc.xdbc_reg->control);
- 	writel(ctrl | CTRL_DBC_ENABLE | CTRL_PORT_ENABLE, &xdbc.xdbc_reg->control);
- 	ret = handshake(&xdbc.xdbc_reg->control, CTRL_DBC_ENABLE, CTRL_DBC_ENABLE, 100000, 100);
-@@ -429,13 +435,21 @@ static int xdbc_start(void)
- 	}
- 
- 	/* Reset port to avoid bus hang: */
--	if (xdbc.vendor == PCI_VENDOR_ID_INTEL)
-+	if (xdbc.vendor == PCI_VENDOR_ID_INTEL && first_try)
- 		xdbc_reset_debug_port();
- 
- 	/* Wait for port connection: */
- 	ret = handshake(&xdbc.xdbc_reg->portsc, PORTSC_CONN_STATUS, PORTSC_CONN_STATUS, 5000000, 100);
- 	if (ret) {
--		xdbc_trace("waiting for connection timed out\n");
-+		xdbc_trace("waiting for connection timed out, DCPORTSC:0x%x\n",
-+				readl(&xdbc.xdbc_reg->portsc));
-+		if (first_try) {
-+			first_try = false;
-+			/* Toggle DCE and retry without port reset */
-+			writel(0, &xdbc.xdbc_reg->control);
-+			handshake(&xdbc.xdbc_reg->control, CTRL_DBC_ENABLE, 0, 100000, 10);
-+			goto retry;
-+		}
- 		return ret;
- 	}
- 
-@@ -599,23 +631,26 @@ static int __init xdbc_early_setup(void)
- 	return 0;
- }
- 
--int __init early_xdbc_parse_parameter(char *s)
-+int __init early_xdbc_parse_parameter(char *s, int keep_early)
- {
- 	unsigned long dbgp_num = 0;
- 	u32 bus, dev, func, offset;
-+	char *e;
- 	int ret;
- 
- 	if (!early_pci_allowed())
- 		return -EPERM;
- 
--	if (strstr(s, "keep"))
--		early_console_keep = true;
-+	early_console_keep = keep_early;
- 
- 	if (xdbc.xdbc_reg)
- 		return 0;
- 
--	if (*s && kstrtoul(s, 0, &dbgp_num))
--		dbgp_num = 0;
-+	if (*s) {
-+	       dbgp_num = simple_strtoul(s, &e, 10);
-+	       if (s == e)
-+		       dbgp_num = 0;
-+	}
- 
- 	pr_notice("dbgp_num: %lu\n", dbgp_num);
- 
-diff --git a/include/linux/usb/xhci-dbgp.h b/include/linux/usb/xhci-dbgp.h
-index 0a37f1283bf0..01fe768873f9 100644
---- a/include/linux/usb/xhci-dbgp.h
-+++ b/include/linux/usb/xhci-dbgp.h
-@@ -15,7 +15,7 @@
- #define __LINUX_XHCI_DBGP_H
- 
- #ifdef CONFIG_EARLY_PRINTK_USB_XDBC
--int __init early_xdbc_parse_parameter(char *s);
-+int __init early_xdbc_parse_parameter(char *s, int keep_early);
- int __init early_xdbc_setup_hardware(void);
- void __init early_xdbc_register_console(void);
- #else
+ /**
+-- 
+2.34.1
+
