@@ -2,130 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:44:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8211C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231367AbiAYToG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 14:44:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
+        id S231147AbiAYTrG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 14:47:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230352AbiAYTmn (ORCPT
+        with ESMTP id S230435AbiAYTqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 14:42:43 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF3FFC061744;
-        Tue, 25 Jan 2022 11:42:42 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id c9so20366778plg.11;
-        Tue, 25 Jan 2022 11:42:42 -0800 (PST)
+        Tue, 25 Jan 2022 14:46:25 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C27C061749
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 11:46:14 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id c15so12616331ljf.11
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 11:46:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0cB0U/qTfVrjxCk13SDAIYBFzvkQfg0+clBVJtK1GVQ=;
-        b=V+4pHlEgFyQF/CyHl5QAShWssnm5bfbswQeFfGT9QiSmf/Qgpw8lPXaoSqd6e+3ddM
-         GqJgXOrwSUOSGjYrn6Fteap+nOwM04d65keB+ADBqbSsrKEiNNvrenMFrYS8U1Abec1o
-         Vzl/v4gHk7E3hwJoeaF66ut9hy6Rw3p+VHD5tDfCahzM4SkOir325efKHkb3nqobkgW7
-         hhVCN+DdQ9Tjx8cQ+ns8/y006xj9qcDi0rfncmLtX0X/MzIYhZoG09XUWo2Hqkv6I0Ia
-         jA9qTh1/9+X+1WaE8wCpw7JRzvl7Xlh6jIOjgIKP9bJHmmVKwknut5CqhTfEQiNoJ1hv
-         fLpA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1ikFUcN/tVzW0fMx/FxScW5ahceyJ22Tp7p5x3rRO04=;
+        b=CWv1dcqS9d6z8NlzDMCXj6rpH318FLRdFz5BY/i0Nq/W+uFGbdiDpgTdTCnQt14tXc
+         reNilqW32iAwQTb8YsYUb4vNhVJH1SSSAygrjtDqnfZ9pv+fmYv/jsy9H45TAtbH1Rb8
+         u1XrRhQNg7V3PFsCNcIJPKXLqcPvCELeDeQcMP1sTlEKik2PSk9IaMt+5zBCkR/Pp/5Y
+         FDhUw9nr9lkJnqJMmpRYpSthLjAJhyTzt3VBy3PNb3AnxYLljB2JHuyZ1LIam45cKkPs
+         vxsO038RSEQ7K/hsYfx0kh0Y6yT1j8o0NFtUOBSQbg1TJBgwBWbJzbkQGZypFtR19Fhx
+         zLpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0cB0U/qTfVrjxCk13SDAIYBFzvkQfg0+clBVJtK1GVQ=;
-        b=qKt1hGWR/R7lLsGqQufDkHcM1mr+L2ANx+/iz7UzjIuONlPFdUlL4DqxN05xtE4Ycr
-         Y6d+CXm3VzgcCuJLcCn9+kEgXRp74+JeG500Jts5Xx0+ttuejL7kH8ztJY3nbH1R+ml4
-         jAoh/+LMbgWGQHyaypdtNyvNFjN5T9xs7iaST8noMeq1b62djs4uqItyEsIH9RD9J24V
-         qn+QCM38058b7lu6b5Ky2yth4A3Q8rF/C/0AKeLAwzx/OtcRrHXR+TkO0MHfIYRm2N/f
-         Cy64MyDTnCwFdr61S/6rd8JaHTtu8rk0I5BGO1H+N0PqPiD9abBDxAPAoUrS4r+pcGaM
-         QaJA==
-X-Gm-Message-State: AOAM5326jgpllLwtNjtsjs01+IVzokFedFMQoumkycXUh6flIxAsUYcf
-        uUgwXyLcijYfcZ0KgGmzRF0JGozHwZY=
-X-Google-Smtp-Source: ABdhPJyekVzvln7kXoeVQzAkLY24+tcynbgAQ2yyphguimJ9BZzjFLPBkvCJwNKUW8IVXgNuPz+ivQ==
-X-Received: by 2002:a17:902:6a8b:b0:149:82bb:560a with SMTP id n11-20020a1709026a8b00b0014982bb560amr19852322plk.158.1643139762131;
-        Tue, 25 Jan 2022 11:42:42 -0800 (PST)
-Received: from 7YHHR73.igp.broadcom.net (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id a1sm15087343pgm.83.2022.01.25.11.42.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 11:42:41 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     stable@vger.kernel.org
-Cc:     Phil Elwell <phil@raspberrypi.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jan Kiszka <jan.kiszka@web.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM
-        BCM281XX/BCM11XXX/BCM216XX ARM ARCHITE...),
-        Eric Anholt <eric@anholt.net>,
-        Stefan Wahren <wahrenst@gmx.net>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list),
-        linux-gpio@vger.kernel.org (open list:PIN CONTROL SUBSYSTEM),
-        linux-rpi-kernel@lists.infradead.org (moderated list:BROADCOM
-        BCM2711/BCM2835 ARM ARCHITECTURE),
-        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM
-        BCM2711/BCM2835 ARM ARCHITECTURE)
-Subject: [PATCH stable 5.4 7/7] ARM: dts: gpio-ranges property is now required
-Date:   Tue, 25 Jan 2022 11:42:22 -0800
-Message-Id: <20220125194222.12783-8-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220125194222.12783-1-f.fainelli@gmail.com>
-References: <20220125194222.12783-1-f.fainelli@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1ikFUcN/tVzW0fMx/FxScW5ahceyJ22Tp7p5x3rRO04=;
+        b=KJ3UN4acjpAkuY2fC0xg+++ZRZR6VRBxiJAaPf2mVu5SMve4Q7h/ahCDkux+e7VWTQ
+         Uwx+qjztltbS7l1P/Ci7L6Z6mPaSFkJ/+Zc8iVGRCoNo36jFsAsNiFDeD5tiwijU6QCF
+         GHn1vCjiaCezM0asYeHdPjT/VMUqDAVNjRtkwmXDamknaFWiO4aeTbLqOevwOzA/o4DC
+         7iTjQ7J9PMG/IYTqTNKG/JH1j+JmZ1/RysOkSMf2dhLszCbGIA2zc/nj7Z5HXqaWxUP/
+         tc4apTjzMRWMA7OJU05tEk78ccgZkeJKFwDHlBfKA6rEj7p/goTG8os2C2DpA8KRI3hN
+         pxvg==
+X-Gm-Message-State: AOAM530V5g8DMpCndCufh7zuNvrBTiQcdIp6YZm37R8lTd+WHbIx8JU0
+        3+K7rhWB2SECXqsrE0EQgD1QV3qhpaYqmWOaeCnw2Q==
+X-Google-Smtp-Source: ABdhPJzPuKCgEjEjJHS0X0O6pfg/Jc6Cj92bekA8cLL6QcjUutztZ41ZgQaRpvglGyC6VvuyAkF9v2v6ZwHcD0s1n4E=
+X-Received: by 2002:a2e:9610:: with SMTP id v16mr7963140ljh.339.1643139973065;
+ Tue, 25 Jan 2022 11:46:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220125141422.32655-1-cgzones@googlemail.com> <20220125141422.32655-9-cgzones@googlemail.com>
+In-Reply-To: <20220125141422.32655-9-cgzones@googlemail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 25 Jan 2022 11:46:00 -0800
+Message-ID: <CAKwvOdmkfSQrLL2+fbjnRoY3wiRfpxLUU4YwP+XaiCwNrbi9ww@mail.gmail.com>
+Subject: Re: [PATCH 1/9] selinux: check return value of sel_make_avc_files
+To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
+Cc:     selinux@vger.kernel.org, Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Jeff Vander Stoep <jeffv@google.com>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+On Tue, Jan 25, 2022 at 6:15 AM Christian G=C3=B6ttsche
+<cgzones@googlemail.com> wrote:
+>
+> sel_make_avc_files() might fail and return a negative errno value on
+> memory allocation failures. Re-add the check of the return value,
+> dropped in 66f8e2f03c02.
+>
+> Reported by clang-analyzer:
+>
+>     security/selinux/selinuxfs.c:2129:2: warning: Value stored to 'ret' i=
+s never read [deadcode.DeadStores]
+>             ret =3D sel_make_avc_files(dentry);
+>             ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+>
+> Fixes: 66f8e2f03c02 ("selinux: sidtab reverse lookup hash table")
+> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
 
-commit c8013355ead68dce152cf426686f8a5f80d88b40 upstream
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Since [1], added in 5.7, the absence of a gpio-ranges property has
-prevented GPIOs from being restored to inputs when released.
-Add those properties for BCM283x and BCM2711 devices.
+> ---
+>  security/selinux/selinuxfs.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/security/selinux/selinuxfs.c b/security/selinux/selinuxfs.c
+> index e4cd7cb856f3..f2f6203e0fff 100644
+> --- a/security/selinux/selinuxfs.c
+> +++ b/security/selinux/selinuxfs.c
+> @@ -2127,6 +2127,8 @@ static int sel_fill_super(struct super_block *sb, s=
+truct fs_context *fc)
+>         }
+>
+>         ret =3D sel_make_avc_files(dentry);
+> +       if (ret)
+> +               goto err;
+>
+>         dentry =3D sel_make_dir(sb->s_root, "ss", &fsi->last_ino);
+>         if (IS_ERR(dentry)) {
+> --
+> 2.34.1
+>
 
-[1] commit 2ab73c6d8323 ("gpio: Support GPIO controllers without
-    pin-ranges")
 
-Link: https://lore.kernel.org/r/20220104170247.956760-1-linus.walleij@linaro.org
-Fixes: 2ab73c6d8323 ("gpio: Support GPIO controllers without pin-ranges")
-Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
-Reported-by: Stefan Wahren <stefan.wahren@i2se.com>
-Reported-by: Florian Fainelli <f.fainelli@gmail.com>
-Reported-by: Jan Kiszka <jan.kiszka@web.de>
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20211206092237.4105895-3-phil@raspberrypi.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Olof Johansson <olof@lixom.net>
-[florian: Remove bcm2711.dtsi hunk which does not exist in 5.4]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- arch/arm/boot/dts/bcm283x.dtsi | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
-index 50c64146d492..af81f386793c 100644
---- a/arch/arm/boot/dts/bcm283x.dtsi
-+++ b/arch/arm/boot/dts/bcm283x.dtsi
-@@ -183,6 +183,7 @@
- 
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
-+			gpio-ranges = <&gpio 0 0 54>;
- 
- 			/* Defines pin muxing groups according to
- 			 * BCM2835-ARM-Peripherals.pdf page 102.
--- 
-2.25.1
-
+--=20
+Thanks,
+~Nick Desaulniers
