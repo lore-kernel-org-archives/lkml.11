@@ -2,103 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48124C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF1EC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456930AbiAYJNh (ORCPT
+        id S1456982AbiAYJOD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:13:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455319AbiAYJEH (ORCPT
+        Tue, 25 Jan 2022 04:14:03 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:58964 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1455297AbiAYJEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 25 Jan 2022 04:04:07 -0500
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B49CC061344
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:23 -0800 (PST)
-Received: by mail-lj1-x244.google.com with SMTP id a25so11788408lji.9
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oUbvyNj5dnaM8qXXPaaN3calf58RmDrlF6ofRRGF5q8=;
-        b=30zRHP3cawR9fo/gEqHpAmA2Q78/yKunsBnxe6QD4YYv2dV+ZUH16nD9lEUozhnFLi
-         nHYLbBGOmgFfFBCvtZJX7kuVEvBu4m2+9ms9+7pTOTgRtfMzxt9YVEANSGx/w7I4cGpC
-         jw3p/2FY/utquahuDCkPXVf9cP3dMXh1ALo00N0iSNlmm5xLEruBjkjf+/iYCKkWgFNS
-         nstYMxpGvhRqCzKyuj3KxC4h/xGy312OnG1vehytswq716BF3P9bMbZeGDgSYjV9wyX6
-         cy63f40FQeAPdxgeXgEgCLnSMUkFb/BH97zBfi7vKsVuAPm6i8bghcJniZYkJcjOpML/
-         5gnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oUbvyNj5dnaM8qXXPaaN3calf58RmDrlF6ofRRGF5q8=;
-        b=CAx6jqCuO8EfJNdFWpwbew4pxFKfv7AOLtYv7edRrvW2DzDa6SUGNzsKEiGO2xEdcu
-         UP3WMItQBUrlceWgZoYdzAFReDqUSnO1EfXiDOtMdFUtM17GamN3SO0tNyv/EdGmwhPN
-         1+Bhjou0i5jls4cfwdbsYWHac0+ZTxkAAUm7rYTnpDzoK2ttNcgw3/HucI1GLdmUw/Il
-         UM9PNQsPhIRW6t8zgwmr+pnrea7BB18pcSuMj8qkByXF65iryyjo1GAtlUIAv5Um4uDM
-         lgYifh1JxAl8FBCtck8PBO0uszALDO0zDJyA0W/EISfeNXEdD3ieyTSP4Vq0ZQ/9mC3f
-         91vA==
-X-Gm-Message-State: AOAM530bJepBCN5Vg8vcKQ9bUn5qFK6SWlCXFDGEo/bkb9I3Kx0NcR8q
-        bQYAtjukoLOzPwNUvkuU+CigCA==
-X-Google-Smtp-Source: ABdhPJxmuLUFKp9der5dVvy/11NTxMaDlAPxrJvNLiMLIAlXxg1yxjfnkjVt3mTw9T6dl7CBTLbrbA==
-X-Received: by 2002:a05:651c:b2a:: with SMTP id b42mr13381928ljr.168.1643100440664;
-        Tue, 25 Jan 2022 00:47:20 -0800 (PST)
-Received: from navi.cosmonova.net.ua ([95.67.24.131])
-        by smtp.gmail.com with ESMTPSA id q5sm1418944lfe.279.2022.01.25.00.47.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 00:47:20 -0800 (PST)
-From:   Andrew Melnychenko <andrew@daynix.com>
-To:     davem@davemloft.net, kuba@kernel.org, mst@redhat.com,
-        jasowang@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     yuri.benditovich@daynix.com, yan@daynix.com
-Subject: [RFC PATCH 0/5] TUN/VirtioNet USO features support.
-Date:   Tue, 25 Jan 2022 10:46:57 +0200
-Message-Id: <20220125084702.3636253-1-andrew@daynix.com>
-X-Mailer: git-send-email 2.34.1
+X-UUID: cb539689a5d24496baee2d4944c5e0da-20220125
+X-UUID: cb539689a5d24496baee2d4944c5e0da-20220125
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 952828097; Tue, 25 Jan 2022 17:01:19 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 25 Jan 2022 17:01:17 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 Jan 2022 17:01:16 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
+        "AngeloGioacchino Del Regno" 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
+Subject: [PATCH v4 35/35] iommu/mediatek: mt8195: Enable multi banks for infra iommu
+Date:   Tue, 25 Jan 2022 16:56:34 +0800
+Message-ID: <20220125085634.17972-36-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220125085634.17972-1-yong.wu@mediatek.com>
+References: <20220125085634.17972-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
-Technically they enable NETIF_F_GSO_UDP_L4
-(and only if USO4 & USO6 are set simultaneously).
-It allows to transmission of large UDP packets.
+Enable the multi-bank functions for infra-iommu. We put PCIE in bank0
+and USB in the last bank(bank4). and we don't use the other banks
+currently, disable them.
 
-Different features USO4 and USO6 are required for qemu where Windows guests can
-enable disable USO receives for IPv4 and IPv6 separately.
-On the other side, Linux can't really differentiate USO4 and USO6, for now.
-For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
-In the future, there would be a mechanism to control UDP_L4 GSO separately.
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+---
+ drivers/iommu/mtk_iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Test it WIP Qemu https://github.com/daynix/qemu/tree/Dev_USOv2
-
-New types for VirtioNet already on mailing:
-https://lists.oasis-open.org/archives/virtio-comment/202110/msg00010.html
-
-Also, there is a known issue with transmitting packages between two guests.
-Without hacks with skb's GSO - packages are still segmented on the host's postrouting.
-
-Andrew Melnychenko (5):
-  uapi/linux/if_tun.h: Added new ioctl for tun/tap.
-  driver/net/tun: Added features for USO.
-  uapi/linux/virtio_net.h: Added USO types.
-  linux/virtio_net.h: Added Support for GSO_UDP_L4 offload.
-  drivers/net/virtio_net.c: Added USO support.
-
- drivers/net/tap.c               | 18 ++++++++++++++++--
- drivers/net/tun.c               | 15 ++++++++++++++-
- drivers/net/virtio_net.c        | 22 ++++++++++++++++++----
- include/linux/virtio_net.h      | 11 +++++++++++
- include/uapi/linux/if_tun.h     |  3 +++
- include/uapi/linux/virtio_net.h |  4 ++++
- 6 files changed, 66 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index a17610434868..be36e73e4bcc 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -1421,8 +1421,11 @@ static const struct mtk_iommu_plat_data mt8195_data_infra = {
+ 			    MTK_IOMMU_TYPE_INFRA | IFA_IOMMU_PCIE_SUPPORT,
+ 	.pericfg_comp_str = "mediatek,mt8195-pericfg_ao",
+ 	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
+-	.banks_num        = 1,
+-	.banks_enable     = {true},
++	.banks_num	  = 5,
++	.banks_enable     = {true, false, false, false, true},
++	.banks_portmsk    = {[0] = GENMASK(19, 16),     /* PCIe */
++			     [4] = GENMASK(31, 20),     /* USB */
++			    },
+ 	.iova_region      = single_domain,
+ 	.iova_region_nr   = ARRAY_SIZE(single_domain),
+ };
 -- 
-2.34.1
+2.18.0
 
