@@ -2,142 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 188AAC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E6EC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454140AbiAYI5r (ORCPT
+        id S1454207AbiAYI6J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:57:47 -0500
-Received: from mail-eopbgr70100.outbound.protection.outlook.com ([40.107.7.100]:23208
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        Tue, 25 Jan 2022 03:58:09 -0500
+Received: from mail-dm6nam10on2044.outbound.protection.outlook.com ([40.107.93.44]:13921
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1453285AbiAYIxK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:53:10 -0500
+        id S1453047AbiAYIvs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 03:51:48 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e1zjE538EDv9gxupGIJJgqDIMPO3WnSPDezKQoQpMBAVARofYyjYy7trL2lwxY4fh9oI2q+FIqws+iFd+xNcPqlvL7fVL++HA0Is9AgIdACUHtdeX14ujoUcnY3ZXPTOp85t7J9N2e5lgHLmHtBV3vwXywMfq6HWaA/5WRMMIEQjT/Jql7XfUGsYqpzubXgzvOnmJ2G1tcXb7lKe/V0jvhS/KQBqFzhopDENAZthFXPT/1goAJG4yP5ha4NEErgIQSaUlCRLdRptgjvcZ8B89TSb/mvNTC5ly1dMALK7nDaB+cjRoFcyV2zvsESlsKQAu1auq4DhIJEgIPjR6qwa1Q==
+ b=B3VzHD9hzu+6UrBssZB1wwoEihpAzWnopEnX37W3wJfzXKmw/2cc4Bg/HSiOxkUs8WvJte1V6ODRZVg2vxzs+a+nQlTIdUJsiP97t4l5g3SSb7OyODLMmPnMnsw6jiIEQxEGIk/GRYq9R12vte0gFPH1vwVfYiSTgqafv3Maehr/XFFpell0GYtsklgjIe8E9w0JYIFq2Omr3BG7d+Be1vfsYuY1pnpobwDlw3VXmVvyOQ4sQ/V8KrwP9rdu8JlBmM4oPzmEIc4D7oPQxQAQAf50iJqjp9lCd088e2vwQ0N9u/bJsxKIX/BTkbYA8+8iTB9jOr0/XkgTaA2ZO88LIQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ByWN0Qk3Ljn5cedVXgSfce3ekHQs1g4SygzOZcN87rM=;
- b=ch571LYBhFbohsV4j5BdR1FuIt3xpc07JodL8E0+a5ZHP9VXTn3mzQVVFeDLrC4UmQ9SBEIoS9zqYOPJcHvRw7aCDSuqJiH3JTQjgw9nhFydoA/R+aQVziNsD00lvlH7VYkRfDZJDFpAMHgBSCUES3Sc+xNbr8/RwIvq7ULBY559NAhSYySwz3sad6pX1ZxDwcLVONYIBSHWEyhkYL6/YuFWntwvO4jRqfMhLIzUUO5KV8eqaKXc2Q1ZICY8dch0RtjE+j5mO3Wv/Y6vGxnItefmhIqIoEVSgjEkpmbSizNOILla5GX4ysNzvRnyNf+se8X6xV6MvhPZkomf5YcxqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 217.111.95.66) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=arri.de;
- dmarc=none action=none header.from=arri.de; dkim=none (message not signed);
- arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=arrigroup.onmicrosoft.com; s=selector1-arrigroup-onmicrosoft-com;
+ bh=piKaVNgi3La+hreHQbg1ourx3dit7Yxq7IZAOlArQeU=;
+ b=iCeP3HGBarYf2UCSvhC7Se8oMPPVmv0b7mbrv2zTqsm+Rs2KPmULcas0jCtOwqk/FJY6ri761A2ydX0CS/BN4/prns/g/GU60xOook5K3OoUp0cNEKnVAZmIapGEY+0Z2Rj88JaAC4rRS8Eqj1H7DarkbI5vW2Mk//fDfAGVVviKhZBFNZ76ReNtRCo/vUY47LOT9r6JUmEN0wxL4RdzUZirxz0ygc1cdfC5Fj8DO3OdTcU3MPVuYWqSm1XkqbcYZVW/gu6KVE9CLxIvFFk8gA5JLVZkzcrGvdX1aLLOjo4YjkR+7SZ/K1ya0/W1QlaP+vs2ZaOVt6BoAHPKbBS7XQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ByWN0Qk3Ljn5cedVXgSfce3ekHQs1g4SygzOZcN87rM=;
- b=BDSild98m+Jycxejpf/bntoOg2ntD8Lr1F2GUIMaA1mwjVWq8/l8LczVSCrmeaSWtWBhubRBpHvgCZR7s7VJ3ZsLw3YFiaVkuKL+06wQEbe9k8xFGt8xkRGCd2sO0vjDMwCa6elzBF92vJKrNYjbZ/wcN2JFzPaPRbflTNb3RAM=
-Received: from AS8P250CA0005.EURP250.PROD.OUTLOOK.COM (2603:10a6:20b:330::10)
- by AM0PR0702MB3697.eurprd07.prod.outlook.com (2603:10a6:208:18::17) with
+ bh=piKaVNgi3La+hreHQbg1ourx3dit7Yxq7IZAOlArQeU=;
+ b=pYuHboQq9Y3Ev7bcWjvPZtCXR0JtZeBx5BUFUdC3Vwgo/zLdaom7RorwuHHZZLRfAKyTMFI3S+fmXyHyNuyEpH+Cihd2EVBOlsof4wkONkqRQWl0yT/j60NvnU3ZYIBXjyPgA6RwOXiFVb+YXhnsVDL57GOQHa8d/CXf+NDC8IV0l8v6bj62oZd6/p1aCTyKGrkpVw3nJ024BMkw5s1Ow3UuAZCiiyiseuCCPNhOv6mQCWGRCVwSMQdc4082367c5fzSN2zu85+HxOj74MQX7OUCprMoahhMFgmOyrqp1YuWxX7h2yY77O5UM+hkuAEC++l42Ou4P/67R3L5DRzWPw==
+Received: from BN6PR19CA0075.namprd19.prod.outlook.com (2603:10b6:404:133::13)
+ by BN6PR12MB1585.namprd12.prod.outlook.com (2603:10b6:405:9::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.4; Tue, 25 Jan
- 2022 08:53:08 +0000
-Received: from VE1EUR02FT007.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:330:cafe::45) by AS8P250CA0005.outlook.office365.com
- (2603:10a6:20b:330::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.19 via Frontend
- Transport; Tue, 25 Jan 2022 08:53:08 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 217.111.95.66)
- smtp.mailfrom=arri.de; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=arri.de;
-Received-SPF: Fail (protection.outlook.com: domain of arri.de does not
- designate 217.111.95.66 as permitted sender) receiver=protection.outlook.com;
- client-ip=217.111.95.66; helo=mta.arri.de;
-Received: from mta.arri.de (217.111.95.66) by
- VE1EUR02FT007.mail.protection.outlook.com (10.152.12.133) with Microsoft SMTP
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Tue, 25 Jan
+ 2022 08:51:41 +0000
+Received: from BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:133:cafe::31) by BN6PR19CA0075.outlook.office365.com
+ (2603:10b6:404:133::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.17 via Frontend
+ Transport; Tue, 25 Jan 2022 08:51:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ BN8NAM11FT011.mail.protection.outlook.com (10.13.176.140) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4909.7 via Frontend Transport; Tue, 25 Jan 2022 08:53:07 +0000
-Received: from localhost.de (192.168.54.129) by mta.arri.de (192.168.100.104)
- with Microsoft SMTP Server (TLS) id 14.3.498.0; Tue, 25 Jan 2022 09:53:06
- +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     Abel Vesa <abel.vesa@nxp.com>
-CC:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Stefan Riedmueller <s.riedmueller@phytec.de>,
-        Christian Eggers <ceggers@arri.de>
-Subject: [PATCH 4/6] clk: imx6q: enforce gating of gpmi_io clock
-Date:   Tue, 25 Jan 2022 09:52:04 +0100
-Message-ID: <20220125085206.8508-5-ceggers@arri.de>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220125085206.8508-1-ceggers@arri.de>
-References: <20220125085206.8508-1-ceggers@arri.de>
+ 15.20.4909.7 via Frontend Transport; Tue, 25 Jan 2022 08:51:41 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 25 Jan
+ 2022 08:51:40 +0000
+Received: from [172.27.12.100] (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 25 Jan 2022
+ 00:51:35 -0800
+Message-ID: <d0afa956-6852-2749-fce8-2a3e06cae556@nvidia.com>
+Date:   Tue, 25 Jan 2022 10:51:32 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [192.168.54.129]
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v9] net: bonding: Add support for IPV6 ns/na to
+ balance-alb/balance-tlb mode
+Content-Language: en-US
+To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, <j.vosburgh@gmail.com>,
+        <vfalico@gmail.com>, <andy@greyhouse.net>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <jay.vosburgh@canonical.com>, <huyd12@chinatelecom.cn>
+References: <20220125023755.94837-1-sunshouxin@chinatelecom.cn>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+In-Reply-To: <20220125023755.94837-1-sunshouxin@chinatelecom.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: drhqmail202.nvidia.com (10.126.190.181) To
+ rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ee5c9276-81db-4932-3b55-08d9dfe01b87
-X-MS-TrafficTypeDiagnostic: AM0PR0702MB3697:EE_
-X-Microsoft-Antispam-PRVS: <AM0PR0702MB369789D8DD6229DB5D4DDAA4BF5F9@AM0PR0702MB3697.eurprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:190;
+X-MS-Office365-Filtering-Correlation-Id: 6475981e-8b65-45d9-05a6-08d9dfdfe847
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1585:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB1585C8D26C94692B9281A4BDDF5F9@BN6PR12MB1585.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sIRLTqctqu4/Q3ufd/A8ZefpMsIEjEhRNu2KeZvN89Jy8b9Df3KtyyBXkN7h3NZV09SM292GkwtU+1DSWwaDW/7hb3diyC7b+v3FrglrBI9MKddAyw9WxvQ5t01gQcNMGFfv7byt40hUIuNVaBb1dKHsG9jrTuuoJEBqF7QQkiHAqZjAwPpb/z3LxzNYoUyIOHkmiZ582Bp7bTgYEfttt1nZkohhAom7D27PlYMGwdef0aS8WNyNTGYAOzAtbrn5rRA9hrzLzm9UFMMuDRfShc7DkUKD+bcylyq3XmP/p223py+yN4ni+5KEpn+egUv06ejyJqKBWQPpBjyo4e6n4jnqFeRhDX/0kdV0vEA9c2MJOuXW87GDjo17kbIAfRk5X4JgOqE+VI2xPtczegrTPWHJyFkaRyGMvF07oxbdjqena7LzBHKouX3T0viMFg12IxWDnn3H12HvdcmYIChRNYmhyRBJep72FWeBrooBvyJjy12OVngHndpKuuW3bMs0ibqzcx8qB2zVjE1e6ZiLbVod4PdmL//+L74ieXSnE0cZTIvOP2A8H8jSthtfvosQvarn9mwF2L9wFMoaA++JoC6VM3oPS4z7PPDp1ogYC8mydv5+h1NRwQ1kCxKMj3ZapNIOlmQQ02WuA+y0UvJ4x/POZjczIBiiho6O8LnuHWd7NDhEgI5l7Lr0ZHP6+u9KfU1qAab56jfxU1hSKdaw+T/eeyJWAYeSsCWOFczXHUv1OnTsrzBwiP+TviXYF2xmqgw7ILZUO0AnO9dxciJUT01T2uEc+aQyUTk+A2sEZhM=
-X-Forefront-Antispam-Report: CIP:217.111.95.66;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mta.arri.de;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(4326008)(83380400001)(36756003)(5660300002)(316002)(86362001)(70586007)(107886003)(26005)(82310400004)(426003)(186003)(336012)(8676002)(16526019)(6862004)(70206006)(54906003)(2906002)(2616005)(1076003)(8936002)(47076005)(40460700003)(508600001)(356005)(36860700001)(81166007)(32563001)(36900700001)(20210929001);DIR:OUT;SFP:1102;
-X-OriginatorOrg: arri.de
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 08:53:07.4665
+X-Microsoft-Antispam-Message-Info: zLTqNJxXRb2w3yIJmII7RLvu0xEn+dgmhkoNCWnsJuPOJPo5xa1BtI/qLiaFuneBe4QPq9j6XgPdPj7AWbxKtmundAjxSCYPX8UjrYBh6zFtph8mDUTZk5YU26edfR7QPDK6aKqZ6GT/5X++vsRg7vrQW4jjHRsG2voUpKB07JyKkolTztBKGlDTi1Tfs279zbLHIvXl6LOQrSArfa2VPOjambY3OYCmW7OpZyfvIF49fwAyw+zZH56jgP9csnVfPyNRFjtgJqMjKMjgyNEX25c3bLsgzCqluxTN+HrsC7AedhdZgVL4aXqLjUN0TFLgAHuO0Z68Lj5rXOCMXEwR7GrQndGtMdzqOmVwKuhjs4sxk4lGFZoDC0yv48XS0sPU2K8iQAiGlcdzHuOn7XIfB+LsYjxxmkFlsGLeE9Ywfz2Dbs/obtQZ9FFGQd5Rfy13aUeEuaXI5x9rfiz6XGDzDHSwgfDFRqX0Z1UjkseSTQVucc9Xg2OdG1A9qKftQeMi0RTC9Ktv95bayJaA3ORcI+dbFdVpnm/k9/P9olMcE/VHo8xSzvD3KbNsfvs3bQBh5ppV9EI/PI31Dk3Irht6pspG7b/K/EUI6jxWwfY9dSbk0NXrYs1pk4ya1oODhPttAxvdIiQItAoYeg/re37Uk1lueSL7TZ/XfUQSsu6njmktryapskki8z7bBe4bblRGEhj0t1BDHHyfxYJSnrA5BE3Yqpx7fq7+zS0SZUTNmHJNgiT7MziC1lsCtk7dnu0jTfBXMajZCOqOUk0YW56fCGoNsltvCLj6Rv3TQE8Kk1+2xktvjiTzVLzVe8+5uSYHfZGOmemrYK4RJnQ3YUXwGA==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(40470700004)(47076005)(54906003)(86362001)(82310400004)(53546011)(31696002)(356005)(83380400001)(31686004)(316002)(110136005)(16576012)(36860700001)(40460700003)(70206006)(4326008)(336012)(2616005)(426003)(7416002)(36756003)(26005)(8936002)(8676002)(5660300002)(16526019)(6666004)(2906002)(508600001)(186003)(70586007)(81166007)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 08:51:41.5430
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ee5c9276-81db-4932-3b55-08d9dfe01b87
-X-MS-Exchange-CrossTenant-Id: e6a73a5a-614d-4c51-b3e3-53b660a9433a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e6a73a5a-614d-4c51-b3e3-53b660a9433a;Ip=[217.111.95.66];Helo=[mta.arri.de]
-X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT007.eop-EUR02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6475981e-8b65-45d9-05a6-08d9dfdfe847
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0702MB3697
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1585
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clock parent and divider changes are both glitchy for enfc_clock_root.
-Enforce that the child clock is gated.
+On 25/01/2022 04:37, Sun Shouxin wrote:
+> Since ipv6 neighbor solicitation and advertisement messages
+> isn't handled gracefully in bond6 driver, we can see packet
+> drop due to inconsistency between mac address in the option
+> message and source MAC .
+> 
+> Another examples is ipv6 neighbor solicitation and advertisement
+> messages from VM via tap attached to host bridge, the src mac
+> might be changed through balance-alb mode, but it is not synced
+> with Link-layer address in the option message.
+> 
+> The patch implements bond6's tx handle for ipv6 neighbor
+> solicitation and advertisement messages.
+> 
+> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+> ---
+>  drivers/net/bonding/bond_alb.c | 38 +++++++++++++++++++++++++++++++++-
+>  1 file changed, 37 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
+> index 533e476988f2..ba7cc1a9bf6c 100644
+> --- a/drivers/net/bonding/bond_alb.c
+> +++ b/drivers/net/bonding/bond_alb.c
+> @@ -1269,6 +1269,34 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
+>  	return res;
+>  }
+>  
+> +/* determine if the packet is NA or NS */
+> +static bool __alb_determine_nd(struct icmp6hdr *hdr)
+> +{
+> +	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
+> +	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
+> +		return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
+> +{
+> +	struct ipv6hdr *ip6hdr;
+> +	struct icmp6hdr *hdr;
+> +
+> +	ip6hdr = ipv6_hdr(skb);
 
-Signed-off-by: Christian Eggers <ceggers@arri.de>
----
- drivers/clk/imx/clk-imx6q.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+You can't do this in bond_xmit_tlb_slave_get(), there's no check if the IPv6 header
+is in the linear part before calling alb_determine_nd() there. You can combine
+bond_xmit_alb_slave_get's IPv6 header pull with alb_determine_nd's, just please leave
+a comment above the call in bond_xmit_alb_slave_get() that the IPv6 header is pulled by
+alb_determine_nd.
 
-diff --git a/drivers/clk/imx/clk-imx6q.c b/drivers/clk/imx/clk-imx6q.c
-index fd5c37095ed0..390566fca054 100644
---- a/drivers/clk/imx/clk-imx6q.c
-+++ b/drivers/clk/imx/clk-imx6q.c
-@@ -674,7 +674,7 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
- 		hws[IMX6QDL_CLK_USDHC2_SEL]       = imx_clk_hw_mux("usdhc2_sel", base + 0x1c, 17, 1, usdhc_sels,        ARRAY_SIZE(usdhc_sels));
- 		hws[IMX6QDL_CLK_USDHC3_SEL]       = imx_clk_hw_mux("usdhc3_sel", base + 0x1c, 18, 1, usdhc_sels,        ARRAY_SIZE(usdhc_sels));
- 		hws[IMX6QDL_CLK_USDHC4_SEL]       = imx_clk_hw_mux("usdhc4_sel", base + 0x1c, 19, 1, usdhc_sels,        ARRAY_SIZE(usdhc_sels));
--		hws[IMX6QDL_CLK_ENFC_SEL]         = imx_clk_hw_mux("enfc_sel",         base + 0x2c, 15, 3, enfc_sels_2,         ARRAY_SIZE(enfc_sels_2));
-+		hws[IMX6QDL_CLK_ENFC_SEL]         = imx_clk_hw_mux_flags("enfc_sel",         base + 0x2c, 15, 3, enfc_sels_2,         ARRAY_SIZE(enfc_sels_2), CLK_SET_PARENT_GATE);
- 		hws[IMX6QDL_CLK_EIM_SEL]          = imx_clk_hw_mux("eim_sel",      base + 0x1c, 27, 2, eim_sels,        ARRAY_SIZE(eim_sels));
- 		hws[IMX6QDL_CLK_EIM_SLOW_SEL]     = imx_clk_hw_mux("eim_slow_sel", base + 0x1c, 29, 2, eim_slow_sels,   ARRAY_SIZE(eim_slow_sels));
- 		hws[IMX6QDL_CLK_PRE_AXI]	  = imx_clk_hw_mux("pre_axi",	base + 0x18, 1,  1, pre_axi_sels,    ARRAY_SIZE(pre_axi_sels));
-@@ -864,7 +864,7 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
- 	hws[IMX6QDL_CLK_PWM4]         = imx_clk_hw_gate2("pwm4",          "ipg_per",           base + 0x78, 22);
- 	hws[IMX6QDL_CLK_GPMI_BCH_APB] = imx_clk_hw_gate2("gpmi_bch_apb",  "usdhc3",            base + 0x78, 24);
- 	hws[IMX6QDL_CLK_GPMI_BCH]     = imx_clk_hw_gate2("gpmi_bch",      "usdhc4",            base + 0x78, 26);
--	hws[IMX6QDL_CLK_GPMI_IO]      = imx_clk_hw_gate2("gpmi_io",       "enfc",              base + 0x78, 28);
-+	hws[IMX6QDL_CLK_GPMI_IO]      = imx_clk_hw_gate2_flags("gpmi_io",       "enfc",              base + 0x78, 28, CLK_SET_RATE_GATE);
- 	hws[IMX6QDL_CLK_GPMI_APB]     = imx_clk_hw_gate2("gpmi_apb",      "usdhc3",            base + 0x78, 30);
- 	hws[IMX6QDL_CLK_ROM]          = imx_clk_hw_gate2_flags("rom",     "ahb",               base + 0x7c, 0, CLK_IS_CRITICAL);
- 	hws[IMX6QDL_CLK_SATA]         = imx_clk_hw_gate2("sata",          "ahb",               base + 0x7c, 4);
--- 
-Christian Eggers
-Embedded software developer
+> +	if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
+> +		if (!pskb_may_pull(skb, sizeof(struct ipv6hdr) + sizeof(struct icmp6hdr)))
+> +			return true;
 
-Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
-Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
-Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
+This could invalidate current pointers to skb data, more below...
+
+> +
+> +		hdr = icmp6_hdr(skb);
+> +		return __alb_determine_nd(hdr);
+> +	}
+> +
+> +	return false;
+> +}
+> +
+>  /************************ exported alb functions ************************/
+>  
+>  int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+> @@ -1348,8 +1376,11 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
+>  	/* Do not TX balance any multicast or broadcast */
+>  	if (!is_multicast_ether_addr(eth_data->h_dest)) {
+>  		switch (skb->protocol) {
+> -		case htons(ETH_P_IP):
+>  		case htons(ETH_P_IPV6):
+> +			if (alb_determine_nd(skb, bond))
+> +				break;
+> +			fallthrough;
+> +		case htons(ETH_P_IP):
+>  			hash_index = bond_xmit_hash(bond, skb);
+>  			if (bond->params.tlb_dynamic_lb) {
+>  				tx_slave = tlb_choose_channel(bond,
+> @@ -1446,6 +1477,11 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
+>  			break;
+>  		}
+>  
+> +		if (alb_determine_nd(skb, bond)) {
+> +			do_tx_balance = false;
+> +			break;
+> +		}
+> +
+>  		hash_start = (char *)&ip6hdr->daddr;
+>  		hash_size = sizeof(ip6hdr->daddr);
+
+... here you have to reload ip6hdr, but that can be avoided in a few different ways.
+I.e. you could move alb_determine_nd() before the assignment of that ptr.
+
+>  		break;
+> 
+> base-commit: dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
 
