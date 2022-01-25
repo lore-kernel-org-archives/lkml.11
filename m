@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 301D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 354F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:08:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442182AbiAYHIe (ORCPT
+        id S1353794AbiAYHIn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:08:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46426 "EHLO
+        Tue, 25 Jan 2022 02:08:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378294AbiAYHEg (ORCPT
+        with ESMTP id S1392027AbiAYHEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:04:36 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58972C041880
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:43:56 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id y27so14352203pfa.0
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:43:56 -0800 (PST)
+        Tue, 25 Jan 2022 02:04:42 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE57C041893
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:44:21 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id p37so18475349pfh.4
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:44:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ventanamicro.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0e9yogaMLiWmOvC9vxOUuPR1xHD22ef7smp5tanFg+4=;
-        b=JdjRBwA2ItC7x0XF8RUVHHfxzCxU1kMYhD6JAiAK4X1ZK/YVkC41CJ+dEp+zaG6MJQ
-         Q4MxXzgel3SyV06z9ylbKff9jbTBYKtAVzoW/XHVqEAo7sG1iDDymGM/liKP46p5IuTf
-         CE6LdggyIu3fHhOgeL9jofga7qXco/xs1JJjTHD1BZU9wICkTYUycnBMqRDhhkfpJ2mG
-         aQ1eFN+HcDK69CWs42a63Gry5MqDCrzW9Q1nCNc+cHVGrBs5Me7W+yNheC6JKNW4RIyP
-         Rdiw/1zqVLC9XUuPX5lyVylwTVu/14fOMxrPSwaXOz98UsaNb9Vie6OcTqEpvvOxOM7n
-         f2ew==
+        bh=64Kf1jBnaPXE7HWaq/CWbgAlm0Fq5kx6l/oMdBTVwE8=;
+        b=LO862MGLZ98yDMJuhIxpC+uCv5HOIsIT2XWQzc4wEOD+YhgYfLo3fi4T5OMdr3NyZ7
+         A8O4BNSuvPu2biUcI3i/RduDrb4T2uoieId0tDlckIQLE7exdUA495AHhNsTdiLkj/ZA
+         bPj5q1SQmtzslwSTrAV4I9sb/APKJ82aqoPaPoh1P2wQemDGCOWt4QkPVQ6YPLXG90si
+         civyFeqF5H3+kSujPucwrJjcE7ob0yyNVvuTUZxZskPKqFlAn32Ox7BIHCXv4Fty7coZ
+         G66E3Fkh4CHX6tgmcvl0Nai5KSgDK6QHja5vJ6dzqluNdDCvnltpiW7v4zsp2yc1iAIM
+         p18g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0e9yogaMLiWmOvC9vxOUuPR1xHD22ef7smp5tanFg+4=;
-        b=PTneUwbiuZGFkgpAF9LdaMbL9BuEsGdr0Cm6RyZmSQJtmLYLmIDAt2LZ4GWzrH0baX
-         5/khvW4t3hUlrs9ZKu+ou3RG+SMjKpy/+CxGg6nniuLYWVCj5RJ3r13O6ZW4qYSS0jMG
-         Ysj/KW2SLtWTJg3WedjUTHKmKGd9ZZgrMA676Rx2qNXWtrB+MDlfM5orI9JrLCor1KJp
-         5M6T7yrBV/Oy1sgjBaC1kwX8YtL0XDYyPDsJeC4DKdfICYmVzKiviAV4o8bH3yKiOr6q
-         FJvnDZSAnXnjpW4k7t1yXtB3eS6V5WRkqwUz0+M4uIVvJwJgsJWhao2jjy5xYhA8FNTy
-         mrgQ==
-X-Gm-Message-State: AOAM533aJAxIXv+X5WSncjzdxLpxzsA6hp7O/8xJdNJBo7isPKQhFDoH
-        fmGk4OPC8fFUzjHfUJmktY0RDg==
-X-Google-Smtp-Source: ABdhPJwK3m1JgrMY4NThERVx9U54lSUa4lAfAW78tm/S+5/b0ojZID3Q2xcUGyh6aGHE08T6WnKLbQ==
-X-Received: by 2002:a05:6a00:180e:b0:4c8:f0b8:2382 with SMTP id y14-20020a056a00180e00b004c8f0b82382mr8832309pfa.59.1643089435789;
-        Mon, 24 Jan 2022 21:43:55 -0800 (PST)
+        bh=64Kf1jBnaPXE7HWaq/CWbgAlm0Fq5kx6l/oMdBTVwE8=;
+        b=Z5Nztcs05vP0Z57JA9KzokJPhwzK8n1SGJehXBUz6hyGHKHYpwZNYkpHF1U9q/cHWk
+         8fCqmQ4wDhdwYORZhctCbd2BMG2qVNWiRCCUHG7Asx6z5ihMwZCIpbrpP+tZnlBmzyTZ
+         ZkdyXPd3JHEPyHtTWtCkqN4UYw4CQWpxu8zR3wMtzOEAYoFoFoSfIPaXlqK56UYNORtL
+         96E5l9tnp57hmzqrMw+NRbBlo/4vQlUD1TH8JM9umIVwD3yzh7p1As0BNFXLOdRsqf4+
+         4QpYz2tMlBtkW0KiQia6bYmy+vrvv6F/c8Ckcen0ttfFrjNvvtaCXNkqgHsPTt1IF05k
+         pStQ==
+X-Gm-Message-State: AOAM530CTIpIRQ+xPu8wsA6DVxNwQsunIB/gl55uk0phbSUKdlvJy+pZ
+        j5+tfoXPnSBCBtyh/kI5NSPjeQ==
+X-Google-Smtp-Source: ABdhPJzphGPGqBO0jlMxyVd+9rd16Zr9VCh1WBhVt4TakprQyTunIWpOtLENkHSXyjkQ5cHwI/DeaQ==
+X-Received: by 2002:a05:6a00:124b:b0:4c7:4d6d:7c88 with SMTP id u11-20020a056a00124b00b004c74d6d7c88mr15604002pfi.85.1643089460806;
+        Mon, 24 Jan 2022 21:44:20 -0800 (PST)
 Received: from localhost.localdomain ([122.179.14.218])
-        by smtp.gmail.com with ESMTPSA id c6sm19524508pfl.200.2022.01.24.21.43.50
+        by smtp.gmail.com with ESMTPSA id c6sm19524508pfl.200.2022.01.24.21.44.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 21:43:55 -0800 (PST)
+        Mon, 24 Jan 2022 21:44:20 -0800 (PST)
 From:   Anup Patel <apatel@ventanamicro.com>
 To:     Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
@@ -60,11 +60,10 @@ Cc:     Atish Patra <atishp@atishpatra.org>,
         Alistair Francis <Alistair.Francis@wdc.com>,
         Anup Patel <anup@brainfault.org>,
         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>,
-        Bin Meng <bmeng.cn@gmail.com>
-Subject: [PATCH 1/6] RISC-V: Clear SIP bit only when using SBI IPI operations
-Date:   Tue, 25 Jan 2022 11:12:12 +0530
-Message-Id: <20220125054217.383482-2-apatel@ventanamicro.com>
+        Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH 6/6] RISC-V: Use IPIs for remote icache flush when possible
+Date:   Tue, 25 Jan 2022 11:12:17 +0530
+Message-Id: <20220125054217.383482-7-apatel@ventanamicro.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220125054217.383482-1-apatel@ventanamicro.com>
 References: <20220125054217.383482-1-apatel@ventanamicro.com>
@@ -74,50 +73,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The software interrupt pending (i.e. [M|S]SIP) bit is writeable for
-S-mode but read-only for M-mode so we clear this bit only when using
-SBI IPI operations.
+If IPI calls are injected using SBI IPI calls then remote icache flush
+using SBI RFENCE calls is much faster because using IPIs for remote
+icache flush would still endup as SBI IPI calls with extra processing
+on the kernel side.
+
+It is now possible to have specialized hardware (such as RISC-V AIA
+and RISC-V ACLINT) which allows S-mode software to directly inject
+IPIs without any assistance from M-mode runtime firmware.
+
+This patch extends remote icache flush functions to use IPIs whenever
+underlying IPI operations are suitable for remote FENCEs.
 
 Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-Reviewed-by: Bin Meng <bmeng.cn@gmail.com>
 ---
- arch/riscv/kernel/sbi.c | 8 +++++++-
- arch/riscv/kernel/smp.c | 2 --
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ arch/riscv/mm/cacheflush.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/riscv/kernel/sbi.c b/arch/riscv/kernel/sbi.c
-index f72527fcb347..9786fc641436 100644
---- a/arch/riscv/kernel/sbi.c
-+++ b/arch/riscv/kernel/sbi.c
-@@ -621,8 +621,14 @@ static void sbi_send_cpumask_ipi(const struct cpumask *target)
- 	sbi_send_ipi(target);
- }
- 
-+static void sbi_ipi_clear(void)
-+{
-+	csr_clear(CSR_IP, IE_SIE);
-+}
-+
- static const struct riscv_ipi_ops sbi_ipi_ops = {
--	.ipi_inject = sbi_send_cpumask_ipi
-+	.ipi_inject = sbi_send_cpumask_ipi,
-+	.ipi_clear = sbi_ipi_clear
- };
- 
- void __init sbi_init(void)
-diff --git a/arch/riscv/kernel/smp.c b/arch/riscv/kernel/smp.c
-index b5d30ea92292..6fd8b3cbec1b 100644
---- a/arch/riscv/kernel/smp.c
-+++ b/arch/riscv/kernel/smp.c
-@@ -89,8 +89,6 @@ void riscv_clear_ipi(void)
+diff --git a/arch/riscv/mm/cacheflush.c b/arch/riscv/mm/cacheflush.c
+index 6cb7d96ad9c7..7c7e44aaf791 100644
+--- a/arch/riscv/mm/cacheflush.c
++++ b/arch/riscv/mm/cacheflush.c
+@@ -18,7 +18,7 @@ void flush_icache_all(void)
  {
- 	if (ipi_ops && ipi_ops->ipi_clear)
- 		ipi_ops->ipi_clear();
--
--	csr_clear(CSR_IP, IE_SIE);
- }
- EXPORT_SYMBOL_GPL(riscv_clear_ipi);
+ 	local_flush_icache_all();
  
+-	if (IS_ENABLED(CONFIG_RISCV_SBI))
++	if (IS_ENABLED(CONFIG_RISCV_SBI) && !riscv_use_ipi_for_rfence())
+ 		sbi_remote_fence_i(NULL);
+ 	else
+ 		on_each_cpu(ipi_remote_fence_i, NULL, 1);
+@@ -66,7 +66,8 @@ void flush_icache_mm(struct mm_struct *mm, bool local)
+ 		 * with flush_icache_deferred().
+ 		 */
+ 		smp_mb();
+-	} else if (IS_ENABLED(CONFIG_RISCV_SBI)) {
++	} else if (IS_ENABLED(CONFIG_RISCV_SBI) &&
++		   !riscv_use_ipi_for_rfence()) {
+ 		sbi_remote_fence_i(&others);
+ 	} else {
+ 		on_each_cpu_mask(&others, ipi_remote_fence_i, NULL, 1);
 -- 
 2.25.1
 
