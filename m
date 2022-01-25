@@ -2,70 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE1FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:40:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 561D0C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351499AbiAYPj0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 10:39:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377400AbiAYPfq (ORCPT
+        id S237697AbiAYPjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 10:39:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46462 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378931AbiAYPgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:35:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD6BC061797
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 07:33:17 -0800 (PST)
+        Tue, 25 Jan 2022 10:36:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A685616E1
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 15:33:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD70FC340E0;
-        Tue, 25 Jan 2022 15:33:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643124796;
-        bh=gHVxOv13aYes0ARGGaSYnRjF6hXkSucB+sDl7T24GrA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bnWFTSrSkU+J57CeUkaAbggOvz/fA5UK1mXbQ74fD29E6RBmcSudwItit9UDbIpWx
-         I2A8Rryv/R6PJXdhYvJDJZc+sdE/quLsa7f/t17d8a6ngSLn76Q8MF6k6x/SKemvDB
-         F51m/zH7qtOS2b9YhS8a5emolpxEMqNQtIUsEBz0=
-Date:   Tue, 25 Jan 2022 16:33:13 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Phillip Potter <phil@philpotter.co.uk>
-Cc:     dan.carpenter@oracle.com, Larry.Finger@lwfinger.net,
-        straube.linux@gmail.com, martin@kaiser.cx,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        paskripkin@gmail.com
-Subject: Re: [PATCH 00/10] Cleanup and removal of DBG_88E macro
-Message-ID: <YfAYOVY7jFDubwc5@kroah.com>
-References: <20220124224415.831-1-phil@philpotter.co.uk>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67268616ED;
+        Tue, 25 Jan 2022 15:36:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 259B7C340E0;
+        Tue, 25 Jan 2022 15:36:09 +0000 (UTC)
+Date:   Tue, 25 Jan 2022 10:36:07 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Trond Myklebust <trondmy@gmail.com>,
+        NFS Mailing List <linux-nfs@vger.kernel.org>
+Subject: Re: linux-next: runtime warning in next-20220125
+Message-ID: <20220125103607.2dc307e2@gandalf.local.home>
+In-Reply-To: <20220125100138.0d19c8ca@gandalf.local.home>
+References: <20220125160505.068dbb52@canb.auug.org.au>
+        <20220125162146.13872bdb@canb.auug.org.au>
+        <20220125100138.0d19c8ca@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124224415.831-1-phil@philpotter.co.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 10:44:05PM +0000, Phillip Potter wrote:
-> This series does a few things in order to effect the removal of the
-> DBG_88E macro:
+On Tue, 25 Jan 2022 10:01:38 -0500
+Steven Rostedt <rostedt@goodmis.org> wrote:
+
+> On Tue, 25 Jan 2022 16:21:46 +1100
+> Stephen Rothwell <sfr@canb.auug.org.au> wrote:
 > 
-> (1) It removes previously converted calls for consistency.
-> (2) It removes all current DBG_88E calls.
-> (3) It removes all aliased DBG_88E calls.
-> (4) It removes the GlobalDebugLevel flag and the file that defines it.
+> > Hi all,
+> > 
+> > On Tue, 25 Jan 2022 16:05:05 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:  
+> > >
+> > > My qemu boot test of a powerpc pseries_le_defconfig kernel produces the
+> > > following trace:
+> > > 
+> > > ------------[ cut here ]------------
+> > > WARNING: CPU: 0 PID: 0 at kernel/trace/trace_events.c:417 trace_event_raw_init+0x194/0x730
+> > > Modules linked in:
+> > > CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc1 #2
+> > > NIP:  c0000000002bdbb4 LR: c0000000002bdcb0 CTR: c0000000002bdb70
+> > > 
+> > > I have no idea what has caused this :-(  Maybe commit
+> > > 
+> > >   5544d5318802 ("SUNRPC: Same as SVC_RQST_ENDPOINT, but without the xid")    
+> > 
+> > Actually, reverting commits
+> > 
+> >   6ff851d98af8 ("SUNRPC: Improve sockaddr handling in the svc_xprt_create_error trace point")
+> >   5544d5318802 ("SUNRPC: Same as SVC_RQST_ENDPOINT, but without the xid")
+> >   e2d3613db12a ("SUNRPC: Record endpoint information in trace log")
+> > 
+> > makes the warning go away.
+> >   
 > 
-> By its very nature, it is a large patchset, so I've tried to group as
-> appropriate. I went by file as I did the work, which led to over 40
-> patches originally, so I've listed the largest C files as their own
-> patches and then grouped everything else by subdir which gives closer
-> sizes for the other patches.
+> We added a new way to save items on the ring buffer, but did not update the
+> safety checks to know about them. I'll fix this shortly.
+> 
 
-Can you rebase this on my staging-testing branch?  It no longer applies
-:(
+This should fix it:
 
-thanks,
+I'll make it a real patch and start running it through my tests.
 
-greg k-h
+-- Steve
+
+
+diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
+index 3147614c1812..f527ae807e77 100644
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -384,6 +384,12 @@ static void test_event_printk(struct trace_event_call *call)
+ 			if (!(dereference_flags & (1ULL << arg)))
+ 				goto next_arg;
+ 
++			/* Check for __get_sockaddr */;
++			if (str_has_prefix(fmt + i, "__get_sockaddr(")) {
++				dereference_flags &= ~(1ULL << arg);
++				goto next_arg;
++			}
++
+ 			/* Find the REC-> in the argument */
+ 			c = strchr(fmt + i, ',');
+ 			r = strstr(fmt + i, "REC->");
