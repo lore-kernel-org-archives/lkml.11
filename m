@@ -2,294 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D40AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA0FC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573032AbiAYJSk (ORCPT
+        id S1456772AbiAYJSo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:18:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49294 "EHLO
+        Tue, 25 Jan 2022 04:18:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457010AbiAYJNw (ORCPT
+        with ESMTP id S1456303AbiAYJKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:13:52 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F848C061756;
-        Tue, 25 Jan 2022 01:07:02 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id k18so18505705wrg.11;
-        Tue, 25 Jan 2022 01:07:02 -0800 (PST)
+        Tue, 25 Jan 2022 04:10:33 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92B1C0604F0;
+        Tue, 25 Jan 2022 00:58:08 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id z19so18685238lfq.13;
+        Tue, 25 Jan 2022 00:58:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=iwmoJT9J3KW1qHLuBB0lUUWGzwPfXFvj7N2whex8G5A=;
-        b=blOqohD34M+Eu3szMq32ApG8R02FFfQ9RdaG6nOKomGRDSBl++Gy+q0Vl22yaM8ejZ
-         Q4nlCN/+D8x3GNlOCdSzhbyCCe/E+x1xX1z680e16Hg+MRvjIMQ8WCphrK/ON5hxIkMA
-         4p+j7cg6ujm1XQtwNZclsMBXgq21ZdnIFyd9tr0L+Rvfbg8x/LWI+B67WoRECPvl+nVZ
-         vBMqsmP4+0hDs3SPwRltS+SmFpP9ZFVsHdcSRpt3UnwJ2T/htlWWoCLIUeUvcSV8RHyX
-         T7nIfihtO50u6qI5A0A7PXjjzLJPi2nODIDist2I7pOBmzJfdAxKgl+TkjJG1MmJNEOu
-         ga6w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8Z89KhtPznBNKbInalcABWm1t5bnSwvzS/YGLbYIzIk=;
+        b=JlsbwdQUfJ2fHuxZTa0t5iwlQrlvXvi3lpYI+EOBqdB532tYrU+6r0OZbzO+974csc
+         oZQDCFGrseqGNYBbCBXrcT/JRw5fzTLLASPeZy8fWSOt7Lo2HDXggKQSmbW6vhuNguoL
+         vYbbTwn1QcdJwkSZc21fUDXKrWXI4FBxTih9aEQbJIHZ2tlvnKm5BWgHRJW43h7cjWJJ
+         EOHVg1Npv8aWs26D/F2eEICYXimjKJ2cructMq3mbObHhoxHwIzAFZFXwygdSnjlEHAo
+         IhaFdon42UMY8RY5OulPhcaVpJhdvjukFtPnnazzhWgIEODKwBiIipdMZK+OAygSZBkp
+         xE5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=iwmoJT9J3KW1qHLuBB0lUUWGzwPfXFvj7N2whex8G5A=;
-        b=w2UVqj0zemDUKTv4+iVpNarOvsWBF2Vmo9X62AXcqiOVyfORNWhP1QKSuzED4XRHYL
-         9YXRcjk5Q8cLtu1/KoC6+L8xmf8TvrX8Smgr9JpRKvx3cv7LNQEKCA/e3XcYJ3g3O/a0
-         X7cTSsRZCtomLipTTbUWqXE/CeoPIJDz0GllBJ9V4lmH+M44eEUcqmLLS3zMOd8HP0Qp
-         TOPzCREDIz+KIf1aOA/5PikLOtkJjihNjz5xRtLg6g0tVUF1/PjpXygo16Y/nWDnyL32
-         3XKkvRJpToRA8U1mE5VbCVJ7tQ4YKnyfHCyHThUr7nHdhJqhoaWeu340W90gl7K8myii
-         gjXQ==
-X-Gm-Message-State: AOAM5314hLkajZC92vz92pYxbvy3KWQYOisLANBUvt2w+OJL8th6/AiH
-        +WPImXBYV2pmbhNbBfSolJs=
-X-Google-Smtp-Source: ABdhPJzhLxpgI40CqB6uKpmEMH5Xy3E0lAekUjQG/OHxmTB0Mqggo/e8zioXHddQWarG7hy0OXEV+Q==
-X-Received: by 2002:adf:edcb:: with SMTP id v11mr17321618wro.257.1643101620589;
-        Tue, 25 Jan 2022 01:07:00 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f4d:2b00:5c73:9a8b:4a19:9778? (p200300ea8f4d2b005c739a8b4a199778.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:5c73:9a8b:4a19:9778])
-        by smtp.googlemail.com with ESMTPSA id p13sm1120278wrx.86.2022.01.25.01.06.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 01:07:00 -0800 (PST)
-Message-ID: <bc9a18d7-3250-ce2e-bc54-7600f3b83e28@gmail.com>
-Date:   Tue, 25 Jan 2022 10:06:51 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8Z89KhtPznBNKbInalcABWm1t5bnSwvzS/YGLbYIzIk=;
+        b=kC6vX3UbBmbZts012zSuB2N4zA9tA6zjKQXKOwplUg4fuHKeFukbMB13ziaGM4f1qH
+         beFE/FiUDpZx/jyL8MBmjZhXTk5VX9Q3bHEwarM0ywAW+V+re41w4UU49DDDtV65Xf3I
+         cMaBOSIq0R1n9FHcOnL+DCZ33XL4vs6Q0i2SPYKmXNBWyAk3iQnT2F0JrsgFoTqwxhh5
+         3dF8+QuiV/DCWM7tC+OjJmqy5jT+uPO60hnSzPaN614XTvjPcLOIbeW7f0bdc3y2N+Z3
+         wEVUmD4AAb8PPi0IjeKy9HftSC4MBx8nfpu2rPHXGn13YQhjwvl4+Aqj3pwaROLX9N6A
+         xLNg==
+X-Gm-Message-State: AOAM531YPKfx5iSrwDRJzS2yrQ9Zipm+Hm4XNnAx9wageBDcPLjEFgFY
+        BfTnaxk6YAKLBQqhKcRabLo47A997XZaGW7ClL4=
+X-Google-Smtp-Source: ABdhPJyOILQHlqdzitxnFdBsSDDOr/ZlRBG0ulVpUBvrs8nFF0Hc5eetsP65cmQNFCZbAMmYGHuZ1Hljkhl+lVCM8v0=
+X-Received: by 2002:a05:6512:374f:: with SMTP id a15mr16184719lfs.571.1643101086848;
+ Tue, 25 Jan 2022 00:58:06 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Content-Language: en-US
-To:     Hau <hau@realtek.com>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "grundler@chromium.org" <grundler@chromium.org>
-References: <20220124181937.6331-1-hau@realtek.com>
- <b71ee3d2-5ecd-e4ee-d6ca-25bf017920cd@gmail.com>
- <1f089edfb1824b19bbf87b2ce725ce50@realtek.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-In-Reply-To: <1f089edfb1824b19bbf87b2ce725ce50@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220125085041.49175-1-lizhijian@cn.fujitsu.com>
+In-Reply-To: <20220125085041.49175-1-lizhijian@cn.fujitsu.com>
+From:   Zhu Yanjun <zyjzyj2000@gmail.com>
+Date:   Tue, 25 Jan 2022 16:57:55 +0800
+Message-ID: <CAD=hENcPq1HPAE0DSbVa8N3NKuP0DjC=JoyQsvfwp4u1KPEpjw@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 0/9] RDMA/rxe: Add RDMA FLUSH operation
+To:     Li Zhijian <lizhijian@cn.fujitsu.com>
+Cc:     RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, aharonl@nvidia.com,
+        Leon Romanovsky <leon@kernel.org>, tom@talpey.com,
+        tomasz.gromadzki@intel.com, LKML <linux-kernel@vger.kernel.org>,
+        mbloch@nvidia.com, liangwenpeng@huawei.com,
+        Xiao Yang <yangx.jy@fujitsu.com>, y-goto@fujitsu.com,
+        Bob Pearson <rpearsonhpe@gmail.com>, dan.j.williams@intel.com,
+        Xiao Yang <yangx.jy@cn.fujitsu.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.01.2022 09:51, Hau wrote:
->> On 24.01.2022 19:19, Chunhao Lin wrote:
->>> This patch will enable RTL8125 ASPM L1.2 on the platforms that have
->>> tested RTL8125 with ASPM L1.2 enabled.
->>> Register mac ocp 0xc0b2 will help to identify if RTL8125 has been
->>> tested on L1.2 enabled platform. If it is, this register will be set to 0xf.
->>> If not, this register will be default value 0.
->>>
->> Who and what defines which value this register has? The BIOS? ACPI?
->> Mainboard vendors test and can control the flagging? How about add-on
->> cards and systems with other boot loaders, e.g. SBC's with RTL8125 like
->> Odroid H2+?
->>
->    Soc vendor can opt-in to enable these bits to enable L1.2 through programming tool/bios/uboot.
->    Right now, there is no plan for set these bits for add-on card.
-> 
->> What is actually the critical component that makes L1.2 work or not with
->> RTL8125 on a particular system? The chipset? Or electrical characteristics?
->>
->    RTL8125 can support L1.2, but it disabled by r8169. So we create an option
->    to let soc vendor can opn-in to enabled L1.2 with r8169.
->    
+On Tue, Jan 25, 2022 at 4:45 PM Li Zhijian <lizhijian@cn.fujitsu.com> wrote=
+:
+>
+> Hey folks,
+>
+> I wanna thank all of you for the kind feedback in my previous RFC.
+> Recently, i have tried my best to do some updates as per your comments.
+> Indeed, not all comments have been addressed for some reasons, i still
+> wish to post this new one to start a new discussion.
+>
+> Outstanding issues:
+> - iova_to_addr() without any kmap/kmap_local_page flows might not always
+>   work. # existing issue.
+> - responder should reply error to requested side when it requests a
+>   persistence placement type to DRAM ?
+> -------
+>
+> These patches are going to implement a *NEW* RDMA opcode "RDMA FLUSH".
+> In IB SPEC 1.5[1][2], 2 new opcodes, ATOMIC WRITE and RDMA FLUSH were
+> added in the MEMORY PLACEMENT EXTENSIONS section.
+>
+> FLUSH is used by the requesting node to achieve guarantees on the data
+> placement within the memory subsystem of preceding accesses to a
+> single memory region, such as those performed by RDMA WRITE, Atomics
+> and ATOMIC WRITE requests.
+>
+> The operation indicates the virtual address space of a destination node
+> and where the guarantees should apply. This range must be contiguous
+> in the virtual space of the memory key but it is not necessarily a
+> contiguous range of physical memory.
+>
+> FLUSH packets carry FLUSH extended transport header (see below) to
+> specify the placement type and the selectivity level of the operation
+> and RDMA extended header (RETH, see base document RETH definition) to
+> specify the R_Key VA and Length associated with this request following
+> the BTH in RC, RDETH in RD and XRCETH in XRC.
 
-Thanks, Hau. Still the question is open what's the root cause of L1.2 not working
-with RTL8125 on *some* systems. I can't imagine that it just by chance works or not.
-If we know which component conflicts with RTL8125 then maybe a PCI quirk could
-be used.
+Thanks. Would you like to add some test cases in the latest rdma-core
+about this RDMA FLUSH operation?
 
->> The difference in power consumption between L1.1 and L1.2 is a few mW
->> ([0]).
->> So I wonder whether it's worth it to add this flagging mechanism.
->> Or does it also impact reaching certain package power saving states?
->>
->    Upstream port also can save power when rtl8125 L1.2 is enabled.
-> 
->> [0] https://pcisig.com/making-most-pcie%C2%AE-low-power-features
->>
->>> Signed-off-by: Chunhao Lin <hau@realtek.com>
->>> ---
->>>  drivers/net/ethernet/realtek/r8169_main.c | 99
->>> ++++++++++++++++++-----
->>>  1 file changed, 79 insertions(+), 20 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c
->>> b/drivers/net/ethernet/realtek/r8169_main.c
->>> index 19e2621e0645..b1e013969d4c 100644
->>> --- a/drivers/net/ethernet/realtek/r8169_main.c
->>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->>> @@ -2238,21 +2238,6 @@ static void rtl_wol_enable_rx(struct
->> rtl8169_private *tp)
->>>  			AcceptBroadcast | AcceptMulticast |
->> AcceptMyPhys);  }
->>>
->>> -static void rtl_prepare_power_down(struct rtl8169_private *tp) -{
->>> -	if (tp->dash_type != RTL_DASH_NONE)
->>> -		return;
->>> -
->>> -	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
->>> -	    tp->mac_version == RTL_GIGA_MAC_VER_33)
->>> -		rtl_ephy_write(tp, 0x19, 0xff64);
->>> -
->>> -	if (device_may_wakeup(tp_to_dev(tp))) {
->>> -		phy_speed_down(tp->phydev, false);
->>> -		rtl_wol_enable_rx(tp);
->>> -	}
->>> -}
->>> -
->>>  static void rtl_init_rxcfg(struct rtl8169_private *tp)  {
->>>  	switch (tp->mac_version) {
->>> @@ -2650,6 +2635,34 @@ static void rtl_pcie_state_l2l3_disable(struct
->> rtl8169_private *tp)
->>>  	RTL_W8(tp, Config3, RTL_R8(tp, Config3) & ~Rdy_to_L23);  }
->>>
->>> +static void rtl_disable_exit_l1(struct rtl8169_private *tp) {
->>
->> Why is this function needed? The chip should be quiet anyway.
->> IOW: What could be the impact of not having this function currently?
->> If it fixes something then it should be a separate patch.
->>
-This question would still be open.
+Thanks a lot.
+Zhu Yanjun
 
->>> +	/* Bits control which events trigger ASPM L1 exit:
->>> +	 * Bit 12: rxdv
->>> +	 * Bit 11: ltr_msg
->>> +	 * Bit 10: txdma_poll
->>> +	 * Bit  9: xadm
->>> +	 * Bit  8: pktavi
->>> +	 * Bit  7: txpla
->>> +	 */
->>> +	switch (tp->mac_version) {
->>> +	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_36:
->>> +		rtl_eri_clear_bits(tp, 0xd4, 0x1f00);
->>> +		break;
->>> +	case RTL_GIGA_MAC_VER_37 ... RTL_GIGA_MAC_VER_38:
->>> +		rtl_eri_clear_bits(tp, 0xd4, 0x0c00);
->>> +		break;
->>> +	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
->>> +		rtl_eri_clear_bits(tp, 0xd4, 0x1f80);
->>> +		break;
->>> +	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
->>> +		r8168_mac_ocp_modify(tp, 0xc0ac, 0x1f80, 0);
->>> +		break;
->>> +	default:
->>> +		break;
->>> +	}
->>> +}
->>> +
->>>  static void rtl_enable_exit_l1(struct rtl8169_private *tp)  {
->>>  	/* Bits control which events trigger ASPM L1 exit:
->>> @@ -2692,6 +2705,33 @@ static void rtl_hw_aspm_clkreq_enable(struct
->> rtl8169_private *tp, bool enable)
->>>  	udelay(10);
->>>  }
->>>
->>> +static void rtl_hw_aspm_l12_enable(struct rtl8169_private *tp, bool
->>> +enable) {
->>
->> I assume this code works on RTL8125 only. Then this should be reflected in
->> the function naming, like we do it for other version-specific functions.
->>
->>> +	/* Don't enable L1.2 in the chip if OS can't control ASPM */
->>> +	if (enable && tp->aspm_manageable) {
->>> +		r8168_mac_ocp_modify(tp, 0xe094, 0xff00, 0);
->>> +		r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, BIT(2));
->>> +	} else {
->>> +		r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, 0);
->>> +	}
->>> +}
->>> +
->>> +static void rtl_prepare_power_down(struct rtl8169_private *tp) {
->>> +	if (tp->dash_type != RTL_DASH_NONE)
->>> +		return;
->>> +
->>> +	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
->>> +	    tp->mac_version == RTL_GIGA_MAC_VER_33)
->>> +		rtl_ephy_write(tp, 0x19, 0xff64);
->>> +
->>> +	if (device_may_wakeup(tp_to_dev(tp))) {
->>> +		rtl_disable_exit_l1(tp);
->>> +		phy_speed_down(tp->phydev, false);
->>> +		rtl_wol_enable_rx(tp);
->>> +	}
->>> +}
->>> +
->>>  static void rtl_set_fifo_size(struct rtl8169_private *tp, u16 rx_stat,
->>>  			      u16 tx_stat, u16 rx_dyn, u16 tx_dyn)  { @@ -
->> 3675,6 +3715,7
->>> @@ static void rtl_hw_start_8125b(struct rtl8169_private *tp)
->>>  	rtl_ephy_init(tp, e_info_8125b);
->>>  	rtl_hw_start_8125_common(tp);
->>>
->>> +	rtl_hw_aspm_l12_enable(tp, true);
->>>  	rtl_hw_aspm_clkreq_enable(tp, true);  }
->>>
->>> @@ -5255,6 +5296,20 @@ static void rtl_init_mac_address(struct
->> rtl8169_private *tp)
->>>  	rtl_rar_set(tp, mac_addr);
->>>  }
->>>
->>> +/* mac ocp 0xc0b2 will help to identify if RTL8125 has been tested
->>> + * on L1.2 enabled platform. If it is, this register will be set to 0xf.
->>> + * If not, this register will be default value 0.
->>> + */
->>> +static bool rtl_platform_l12_enabled(struct rtl8169_private *tp) {
->>
->> The function name is misleading. It could be read as checking whether the
->> platform supports L1.2.
->>
->>> +	switch (tp->mac_version) {
->>> +	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
->>> +		return (r8168_mac_ocp_read(tp, 0xc0b2) & 0xf) ? true : false;
->>> +	default:
->>> +		return false;
->>> +	}
->>> +}
->>> +
->>>  static int rtl_init_one(struct pci_dev *pdev, const struct
->>> pci_device_id *ent)  {
->>>  	struct rtl8169_private *tp;
->>> @@ -5333,11 +5388,15 @@ static int rtl_init_one(struct pci_dev *pdev,
->> const struct pci_device_id *ent)
->>>  	 * Chips from RTL8168h partially have issues with L1.2, but seem
->>>  	 * to work fine with L1 and L1.1.
->>>  	 */
->>> -	if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
->>> -		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
->>> -	else
->>> -		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
->>> -	tp->aspm_manageable = !rc;
->>> +	if (!rtl_platform_l12_enabled(tp)) {
->>> +		if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
->>> +			rc = pci_disable_link_state(pdev,
->> PCIE_LINK_STATE_L1_2);
->>> +		else
->>> +			rc = pci_disable_link_state(pdev,
->> PCIE_LINK_STATE_L1);
->>> +		tp->aspm_manageable = !rc;
->>> +	} else {
->>> +		tp->aspm_manageable = pcie_aspm_enabled(pdev);
->>> +	}
->>>
->>
->> Better readable may be the following:
->>
->> if (rtl_platform_l12_enabled(tp)) {
->> 	tp->aspm_manageable = pcie_aspm_enabled(pdev); } else if (tp-
->>> mac_version >= RTL_GIGA_MAC_VER_45) {
->> 	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
->> 	tp->aspm_manageable = !rc;
->> } else {
->> 	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
->> 	tp->aspm_manageable = !rc;
->> }
->>
->>>  	tp->dash_type = rtl_check_dash(tp);
->>>
->>
->> ------Please consider the environment before printing this e-mail.
-
+>
+> RC FLUSH:
+> +----+------+------+
+> |BTH | FETH | RETH |
+> +----+------+------+
+>
+> RD FLUSH:
+> +----+------+------+------+
+> |BTH | RDETH| FETH | RETH |
+> +----+------+------+------+
+>
+> XRC FLUSH:
+> +----+-------+------+------+
+> |BTH | XRCETH| FETH | RETH |
+> +----+-------+------+------+
+>
+> Currently, we introduce RC and RD services only, since XRC has not been
+> implemented by rxe yet.
+> NOTE: only RC service is tested now, and since other HCAs have not
+> added/implemented FLUSH yet, we can only test FLUSH operation in both
+> SoftRoCE/rxe devices.
+>
+> The corresponding rdma-core and FLUSH example are available on:
+> https://github.com/zhijianli88/rdma-core/tree/rfc
+> Can access the kernel source in:
+> https://github.com/zhijianli88/linux/tree/rdma-flush
+>
+> - We introduce is_pmem attribute to MR(memory region)
+> - We introduce FLUSH placement type attributes to HCA
+> - We introduce FLUSH access flags that users are able to register with
+> Below figure shows the valid access flags uses can register with:
+> +------------------------+------------------+--------------+
+> | HCA attributes         |    register access flags        |
+> |        and             +-----------------+---------------+
+> | MR attribute(is_pmem)  |global visibility |  persistence |
+> |------------------------+------------------+--------------+
+> | global visibility(DRAM)|        O         |      X       |
+> |------------------------+------------------+--------------+
+> | global visibility(PMEM)|        O         |      X       |
+> |------------------------+------------------+--------------+
+> | persistence(DRAM)      |        X         |      X       |
+> |------------------------+------------------+--------------+
+> | persistence(PMEM)      |        X         |      O       |
+> +------------------------+------------------+--------------+
+> O: allow to register such access flag
+>
+> In order to make placement guarentees, we currently reject requesting a
+> persistent flush to a non-pmem.
+> The responder will check the remote requested placement types by checking
+> the registered access flags.
+> +------------------------+------------------+--------------+
+> |                        |     registered flags            |
+> | remote requested types +------------------+--------------+
+> |                        |global visibility |  persistence |
+> |------------------------+------------------+--------------+
+> | global visibility      |        O         |      x       |
+> +------------------------+------------------+--------------+
+> | persistence            |        X         |      O       |
+> +------------------------+------------------+--------------+
+> O: allow to request such placement type
+>
+> Below list some details about FLUSH transport packet:
+>
+> A FLUSH message is built upon FLUSH request packet and is responded
+> successfully by RDMA READ response of zero size.
+>
+> oA19-2: FLUSH shall be single packet message and shall have no payload.
+> oA19-5: FLUSH BTH shall hold the Opcode =3D 0x1C
+>
+> FLUSH Extended Transport Header(FETH)
+> +-----+-----------+------------------------+----------------------+
+> |Bits |   31-6    |          5-4           |        3-0           |
+> +-----+-----------+------------------------+----------------------+
+> |     | Reserved  | Selectivity Level(SEL) | Placement Type(PLT)  |
+> +-----+-----------+------------------------+----------------------+
+>
+> Selectivity Level (SEL) =E2=80=93 defines the memory region scope the FLU=
+SH
+> should apply on. Values are as follows:
+> =E2=80=A2 b=E2=80=9900 - Memory Region Range: FLUSH applies for all prece=
+ding memory
+>          updates to the RETH range on this QP. All RETH fields shall be
+>          valid in this selectivity mode. RETH:DMALen field shall be
+>          between zero and (2 31 -1) bytes (inclusive).
+> =E2=80=A2 b=E2=80=9901 - Memory Region: FLUSH applies for all preceding m=
+emory up-
+>          dates to RETH.R_key on this QP. RETH:DMALen and RETH:VA
+>          shall be ignored in this mode.
+> =E2=80=A2 b'10 - Reserved.
+> =E2=80=A2 b'11 - Reserved.
+>
+> Placement Type (PLT) =E2=80=93 Defines the memory placement guarantee of
+> this FLUSH. Multiple bits may be set in this field. Values are as follows=
+:
+> =E2=80=A2 Bit 0 if set to '1' indicated that the FLUSH should guarantee G=
+lobal
+>   Visibility.
+> =E2=80=A2 Bit 1 if set to '1' indicated that the FLUSH should guarantee
+>   Persistence.
+> =E2=80=A2 Bits 3:2 are reserved
+>
+> [1]: https://www.infinibandta.org/ibta-specification/ # login required
+> [2]: https://www.infinibandta.org/wp-content/uploads/2021/08/IBTA-Overvie=
+w-of-IBTA-Volume-1-Release-1.5-and-MPE-2021-08-17-Secure.pptx
+>
+> CC: yangx.jy@cn.fujitsu.com
+> CC: y-goto@fujitsu.com
+> CC: Jason Gunthorpe <jgg@ziepe.ca>
+> CC: Zhu Yanjun <zyjzyj2000@gmail.com
+> CC: Leon Romanovsky <leon@kernel.org>
+> CC: Bob Pearson <rpearsonhpe@gmail.com>
+> CC: Mark Bloch <mbloch@nvidia.com>
+> CC: Wenpeng Liang <liangwenpeng@huawei.com>
+> CC: Aharon Landau <aharonl@nvidia.com>
+> CC: Tom Talpey <tom@talpey.com>
+> CC: "Gromadzki, Tomasz" <tomasz.gromadzki@intel.com>
+> CC: Dan Williams <dan.j.williams@intel.com>
+> CC: linux-rdma@vger.kernel.org
+> CC: linux-kernel@vger.kernel.org
+>
+> V1:
+> https://lore.kernel.org/lkml/050c3183-2fc6-03a1-eecd-258744750972@fujitsu=
+.com/T/
+> or https://github.com/zhijianli88/linux/tree/rdma-flush-rfcv1
+>
+> Changes log
+> V2:
+> https://github.com/zhijianli88/linux/tree/rdma-flush
+> RDMA: mr: Introduce is_pmem
+>   check 1st byte to avoid crossing page boundary
+>   new scheme to check is_pmem # Dan
+>
+> RDMA: Allow registering MR with flush access flags
+>   combine with [03/10] RDMA/rxe: Allow registering FLUSH flags for suppor=
+ted device only to this patch # Jason
+>   split RDMA_FLUSH to 2 capabilities
+>
+> RDMA/rxe: Allow registering persistent flag for pmem MR only
+>   update commit message, get rid of confusing ib_check_flush_access_flags=
+() # Tom
+>
+> RDMA/rxe: Implement RC RDMA FLUSH service in requester side
+>   extend flush to include length field. # Tom and Tomasz
+>
+> RDMA/rxe: Implement flush execution in responder side
+>   adjust start for WHOLE MR level # Tom
+>   don't support DMA mr for flush # Tom
+>   check flush return value
+>
+> RDMA/rxe: Enable RDMA FLUSH capability for rxe device
+>   adjust patch's order. move it here from [04/10]
+>
+> Li Zhijian (9):
+>   RDMA: mr: Introduce is_pmem
+>   RDMA: Allow registering MR with flush access flags
+>   RDMA/rxe: Allow registering persistent flag for pmem MR only
+>   RDMA/rxe: Implement RC RDMA FLUSH service in requester side
+>   RDMA/rxe: Set BTH's SE to zero for FLUSH packet
+>   RDMA/rxe: Implement flush execution in responder side
+>   RDMA/rxe: Implement flush completion
+>   RDMA/rxe: Enable RDMA FLUSH capability for rxe device
+>   RDMA/rxe: Add RD FLUSH service support
+>
+>  drivers/infiniband/core/uverbs_cmd.c    |  17 +++
+>  drivers/infiniband/sw/rxe/rxe_comp.c    |   4 +-
+>  drivers/infiniband/sw/rxe/rxe_hdr.h     |  52 +++++++++
+>  drivers/infiniband/sw/rxe/rxe_loc.h     |   2 +
+>  drivers/infiniband/sw/rxe/rxe_mr.c      |  37 ++++++-
+>  drivers/infiniband/sw/rxe/rxe_opcode.c  |  35 +++++++
+>  drivers/infiniband/sw/rxe/rxe_opcode.h  |   3 +
+>  drivers/infiniband/sw/rxe/rxe_param.h   |   4 +-
+>  drivers/infiniband/sw/rxe/rxe_req.c     |  19 +++-
+>  drivers/infiniband/sw/rxe/rxe_resp.c    | 133 +++++++++++++++++++++++-
+>  include/rdma/ib_pack.h                  |   3 +
+>  include/rdma/ib_verbs.h                 |  30 +++++-
+>  include/uapi/rdma/ib_user_ioctl_verbs.h |   2 +
+>  include/uapi/rdma/ib_user_verbs.h       |  19 ++++
+>  include/uapi/rdma/rdma_user_rxe.h       |   7 ++
+>  15 files changed, 355 insertions(+), 12 deletions(-)
+>
+> --
+> 2.31.1
+>
+>
+>
