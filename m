@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 723E3C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3824C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239063AbiAYKDb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:03:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
+        id S239098AbiAYKDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:03:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238382AbiAYJ7Z (ORCPT
+        with ESMTP id S238413AbiAYJ72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:59:25 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4C2C061401;
-        Tue, 25 Jan 2022 01:59:22 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id d5so17022438pjk.5;
-        Tue, 25 Jan 2022 01:59:22 -0800 (PST)
+        Tue, 25 Jan 2022 04:59:28 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C105BC06173D;
+        Tue, 25 Jan 2022 01:59:27 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id 133so17875929pgb.0;
+        Tue, 25 Jan 2022 01:59:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zds+6NGj4r5Cgf49TNd0ICEUzlDMHJlb5d/51ngIGcY=;
-        b=FPq9Vcjqt0nTW+XIHcP+SFASqW+hp1tbi/NDSAy5DGJNynrClbaVord3oKGHXwgk0e
-         y1yov5feI2dwoI5FcjI0YIXpZJhLWRyf2vT1R/KvWLhNaNk6FHVAMofkk/UxEbwAw6fh
-         r5IsdNml1hDxTvdyJ+Iv4Yf6Wcjud8kQ4DEwdXWtsxrumZKgzFwgbSv4Gi+7Zk8KA7kV
-         3YrhRRtt98L2nrt4AYjLwG1MyTex+0YqaVtOCkAG0xVNwORhZDrIgP2A61Ysd3fVO72Q
-         Xww2Jf2mMfK+6gXVbmOopE3KHM0UpPP9j8cAU2QzgPtekl0fFrH3KWw5GsnEuf7YMI9+
-         UrqA==
+        bh=zKa7O9jly0TmC+XlGqqr6BfbIZ5VWJb9uLLAbrIft7I=;
+        b=N0bWDnPVNDhPyw9vRxjj9dkZtaXUb2VFb7HUs8semTHvhI/1Hd7Hpg9GNm+ML1uuwr
+         /FzSQSLrx8UnlpyDh9fGJnm+T/jKcqPZ1TlPV6NPXlcNlOE9Ifq8SpaPajGGZJ0vK3Lg
+         2EkE3at11G5IuzfQxA+PrPspn/zspzLS4od1dsKl9icgvhPUbxk9E5LitonWzPMO6r6w
+         zbDEaKJx0+g7AyHm0WEN20Na4//L6325eQK50QbABBAgupk9CPC8MQpbiKtlUp7BtSSy
+         PgQmaJzaTlnDbd9LZGUBwuoKMUpZi13MmsbwOnn5HMipT9iwSh+kmYUFd8QRB9QINgB+
+         E5iA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zds+6NGj4r5Cgf49TNd0ICEUzlDMHJlb5d/51ngIGcY=;
-        b=p5jAt7ihPfBADiJyFsdF/7R2IARyniBlBEcSjKHzbaqWsQk40vGa+u957/7lN4MV5l
-         yyRkwhYSdFbY612CbX1aHb0NCIeTXkJnDGiNoY2f2vWktIyxj5T+mvMElIHt7F09dFif
-         j0uuwxYoLOJs1LfK7kRKRhNaa9EGa2AEppXS1+UrPV8C4C9ZV1efucGSNWckwdW534ir
-         vYJGfiNIlaAfSU1xkxfLYQg4oNW5NgvdGXigsMCDR4F9RBgIU7hXQ53nnZngPZhbxVtW
-         RscCGBJQtRz5bdFTZI2EnzrscORp8Rb+RoJhvhTDfDTaoUYC8vpzgGiemt2AHMc/LjJT
-         cY4Q==
-X-Gm-Message-State: AOAM531jlWWrGM6gKODj+MulQ6e3LI2m7t7TB2H+Sv3+YEK7ZtZW3Y2A
-        FE1qmkywuIFU3tncXLLdJ/A=
-X-Google-Smtp-Source: ABdhPJyJ/kfuWDn6T2bse0t/3zBL2P2KyOlJhtUHjbpznQcxoh4DcmAlrs6pIXWssTrGtABK9yzabA==
-X-Received: by 2002:a17:903:24d:b0:149:b68f:579 with SMTP id j13-20020a170903024d00b00149b68f0579mr18675922plh.1.1643104762396;
-        Tue, 25 Jan 2022 01:59:22 -0800 (PST)
+        bh=zKa7O9jly0TmC+XlGqqr6BfbIZ5VWJb9uLLAbrIft7I=;
+        b=HIlUmhcsfVrpAusqrGzqDwFLYBjg7xOG/fovGz4Nj5as6/8ik04NE09gDzAs7As5ry
+         r6Y2WGK1MJHmQ2DQJzmnx5jPh3NylQhaxJbPSZ1a7RlkGDIuv7xA4vXodaGLSnzpf9NU
+         RWGaVsR/Dz+B5Mc7HP3YHl/Ld/XxJZ68Cdx8MuGQkIEDOGS6PE/UuOcesMDe+yE4Mqbq
+         jl4jLA2YTnFhs9a20Nz3P0eszbW/m/UU7Mh12Xiv9ECm6ycoB76mxPBBUgOdzwaQP1FN
+         Tw7C1PhHuYgf4MOsI7S2+SFahiunuIVkJzX/eMafDDdmCiGnqCWJbA1n5QR4JbhpU+Qa
+         m+mw==
+X-Gm-Message-State: AOAM532a62sHQ6MJo0iiteiIDwgtmkw4FOs+G3BoPn1cxS4lg9t7leFV
+        jEXNc9KhbE/81cEhU/0hlAk=
+X-Google-Smtp-Source: ABdhPJy1jcF+7YUEA9nKFYorWmaFH66iBFZi30z3MGYnvjZXwMqhEynxgPjjUUDaHaNR6SnlbPmDRg==
+X-Received: by 2002:a63:f452:: with SMTP id p18mr14741473pgk.545.1643104767312;
+        Tue, 25 Jan 2022 01:59:27 -0800 (PST)
 Received: from CLOUDLIANG-MB0.tencent.com ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id mq3sm201606pjb.4.2022.01.25.01.59.20
+        by smtp.gmail.com with ESMTPSA id mq3sm201606pjb.4.2022.01.25.01.59.25
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jan 2022 01:59:22 -0800 (PST)
+        Tue, 25 Jan 2022 01:59:27 -0800 (PST)
 From:   Jinrong Liang <ljr.kernel@gmail.com>
 X-Google-Original-From: Jinrong Liang <cloudliang@tencent.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
@@ -58,9 +58,9 @@ Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
         Wanpeng Li <wanpengli@tencent.com>,
         Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 02/19] KVM: x86/mmu: Remove unused "kvm" of __rmap_write_protect()
-Date:   Tue, 25 Jan 2022 17:58:52 +0800
-Message-Id: <20220125095909.38122-3-cloudliang@tencent.com>
+Subject: [PATCH 04/19] KVM: x86/tdp_mmu: Remove unused "kvm" of kvm_tdp_mmu_get_root()
+Date:   Tue, 25 Jan 2022 17:58:54 +0800
+Message-Id: <20220125095909.38122-5-cloudliang@tencent.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20220125095909.38122-1-cloudliang@tencent.com>
 References: <20220125095909.38122-1-cloudliang@tencent.com>
@@ -72,55 +72,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jinrong Liang <cloudliang@tencent.com>
 
-The "struct kvm *kvm" parameter of __rmap_write_protect()
-is not used, so remove it. No functional change intended.
+The "struct kvm *kvm" parameter of kvm_tdp_mmu_get_root() is not used,
+so remove it. No functional change intended.
 
 Signed-off-by: Jinrong Liang <cloudliang@tencent.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c | 4 ++--
+ arch/x86/kvm/mmu/tdp_mmu.h | 3 +--
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 305aa0c5026f..bb9791564ca9 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -1229,8 +1229,7 @@ static bool spte_write_protect(u64 *sptep, bool pt_protect)
- 	return mmu_spte_update(sptep, spte);
- }
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index bc9e3553fba2..d0c85d114574 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -121,7 +121,7 @@ static struct kvm_mmu_page *tdp_mmu_next_root(struct kvm *kvm,
+ 		next_root = list_first_or_null_rcu(&kvm->arch.tdp_mmu_roots,
+ 						   typeof(*next_root), link);
  
--static bool __rmap_write_protect(struct kvm *kvm,
--				 struct kvm_rmap_head *rmap_head,
-+static bool __rmap_write_protect(struct kvm_rmap_head *rmap_head,
- 				 bool pt_protect)
- {
- 	u64 *sptep;
-@@ -1311,7 +1310,7 @@ static void kvm_mmu_write_protect_pt_masked(struct kvm *kvm,
- 	while (mask) {
- 		rmap_head = gfn_to_rmap(slot->base_gfn + gfn_offset + __ffs(mask),
- 					PG_LEVEL_4K, slot);
--		__rmap_write_protect(kvm, rmap_head, false);
-+		__rmap_write_protect(rmap_head, false);
+-	while (next_root && !kvm_tdp_mmu_get_root(kvm, next_root))
++	while (next_root && !kvm_tdp_mmu_get_root(next_root))
+ 		next_root = list_next_or_null_rcu(&kvm->arch.tdp_mmu_roots,
+ 				&next_root->link, typeof(*next_root), link);
  
- 		/* clear the first set bit */
- 		mask &= mask - 1;
-@@ -1410,7 +1409,7 @@ bool kvm_mmu_slot_gfn_write_protect(struct kvm *kvm,
- 	if (kvm_memslots_have_rmaps(kvm)) {
- 		for (i = min_level; i <= KVM_MAX_HUGEPAGE_LEVEL; ++i) {
- 			rmap_head = gfn_to_rmap(gfn, i, slot);
--			write_protected |= __rmap_write_protect(kvm, rmap_head, true);
-+			write_protected |= __rmap_write_protect(rmap_head, true);
- 		}
+@@ -203,7 +203,7 @@ hpa_t kvm_tdp_mmu_get_vcpu_root_hpa(struct kvm_vcpu *vcpu)
+ 	/* Check for an existing root before allocating a new one. */
+ 	for_each_tdp_mmu_root(kvm, root, kvm_mmu_role_as_id(role)) {
+ 		if (root->role.word == role.word &&
+-		    kvm_tdp_mmu_get_root(kvm, root))
++		    kvm_tdp_mmu_get_root(root))
+ 			goto out;
  	}
  
-@@ -5802,7 +5801,7 @@ static bool slot_rmap_write_protect(struct kvm *kvm,
- 				    struct kvm_rmap_head *rmap_head,
- 				    const struct kvm_memory_slot *slot)
- {
--	return __rmap_write_protect(kvm, rmap_head, false);
-+	return __rmap_write_protect(rmap_head, false);
- }
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.h b/arch/x86/kvm/mmu/tdp_mmu.h
+index 3899004a5d91..599714de67c3 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.h
++++ b/arch/x86/kvm/mmu/tdp_mmu.h
+@@ -7,8 +7,7 @@
  
- void kvm_mmu_slot_remove_write_access(struct kvm *kvm,
+ hpa_t kvm_tdp_mmu_get_vcpu_root_hpa(struct kvm_vcpu *vcpu);
+ 
+-__must_check static inline bool kvm_tdp_mmu_get_root(struct kvm *kvm,
+-						     struct kvm_mmu_page *root)
++__must_check static inline bool kvm_tdp_mmu_get_root(struct kvm_mmu_page *root)
+ {
+ 	if (root->role.invalid)
+ 		return false;
 -- 
 2.33.1
 
