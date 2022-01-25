@@ -2,247 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1541C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577810AbiAYNtD (ORCPT
+        id S1352119AbiAYNvY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:49:03 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:39848 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577673AbiAYNpd (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 08:45:33 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id C598621114;
-        Tue, 25 Jan 2022 13:45:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643118322; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I6CqmgtJFWuTScfRpyaz1bBj03rUu9663Hrdm0JPgEk=;
-        b=AwS3ZFlJVZMdUHBuQKFbGXfiksWKZOKM5vBTIPH2AYHvWizntc2h15eaTBTOzIdjsbAINK
-        kVb5qIU3fTNuyvtY8X0yCZ70L6DJgJhZmzHZNrDazhOFr2NVkq3mc4+YHesA6oUlnGubqr
-        K/Dx7NWrhiubxDixQpDzbB15hxfZOSM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643118322;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I6CqmgtJFWuTScfRpyaz1bBj03rUu9663Hrdm0JPgEk=;
-        b=TO1pvBk2l4LxEbsWO+rfYVZ4Y2YhKkq9h4HXZ4c4zq+tRVvIVg/svdbiC7UxPMpPOznJwp
-        0/Oe9xjS7+8j2eAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0CB9E13DEF;
-        Tue, 25 Jan 2022 13:45:22 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 84KrAPL+72FyVQAAMHmgww
-        (envelope-from <jdelvare@suse.de>); Tue, 25 Jan 2022 13:45:22 +0000
-Date:   Tue, 25 Jan 2022 14:45:20 +0100
-From:   Jean Delvare <jdelvare@suse.de>
-To:     Terry Bowman <terry.bowman@amd.com>
-Cc:     <linux@roeck-us.net>, <linux-watchdog@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <wsa@kernel.org>,
-        <andy.shevchenko@gmail.com>, <rafael.j.wysocki@intel.com>,
-        <linux-kernel@vger.kernel.org>, <wim@linux-watchdog.org>,
-        <rrichter@amd.com>, <thomas.lendacky@amd.com>,
-        <Nehal-bakulchandra.Shah@amd.com>, <Basavaraj.Natikar@amd.com>,
-        <Shyam-sundar.S-k@amd.com>, <Mario.Limonciello@amd.com>
-Subject: Re: [PATCH v3 2/4] Watchdog: sp5100_tco: Refactor MMIO base address
- initialization
-Message-ID: <20220125144520.17a220bc@endymion>
-In-Reply-To: <20220118202234.410555-3-terry.bowman@amd.com>
-References: <20220118202234.410555-1-terry.bowman@amd.com>
-        <20220118202234.410555-3-terry.bowman@amd.com>
-Organization: SUSE Linux
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        Tue, 25 Jan 2022 08:51:24 -0500
+Received: from mail-tycjpn01on2139.outbound.protection.outlook.com ([40.107.114.139]:51983
+        "EHLO JPN01-TYC-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1577788AbiAYNs5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 08:48:57 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CKMpYG8cr82mneH11qUchvRZQYLLbYGvIg0zf/A/dOLX7zYHAaOwseHXGkFGH4plikCSxOxfnLzpFCyvdQSKBzX7fKrKI9YseZnCk1VwFPfxFG80sNY0s1zO0QFp4o9Pau97FvfEkNyz2Ei/cv62qkRf1Jni5C1bFMrP3en2b0kyP1IvudNcErIA+yAH7/2SxSM6dczWxWFKsi42ZReP4x09X6WVkJOV0ss/vTeCNPoUJWyFi0Nq2OVRrQlExVONOlg1E6gmDMlq9NzKRhp7ka3GWiaDga9qI3ZJf7uDc+/UlCFGKkvklxs1Opz7E95FYvkgM/kNXDOASmoAc0i/RQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TJpB6sURq4ygGdjQEFOr5uAX2AaxU0WpOGkkLSpJm4U=;
+ b=fcUdfwUsQnOSOAM9zIvR5LraAd8gejvjU3hs8GaMV1C5QUF50LfIDX7cyvByZhsDHvNO4bOxMXRLqj+dgfRstdcVJpFtYjvORCfZvRLTGlMzuB7wtj6GuUU465bwzhREX+xZcXpuXgDngutBhmZUpNc4V8hJHr1nRpF0MPCpdYmCvnQGDl3TyjapkV5cfA3EoY1jyOSfkfpvAGNMj9aZmaBTHv7ak0Qp1pzXYXri+dJOfJbvalkSnynB0Ub2eEOV8SSOo0iZ8oFFP0J1bL+VuGk9Ud3T1JoChUT8eum5Wi7CMbT5Nq2fXChyFSKgrt1Ib699VmMffCDOj1wRfnSuDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TJpB6sURq4ygGdjQEFOr5uAX2AaxU0WpOGkkLSpJm4U=;
+ b=ezIJRPrtPYZNVNz1xB8UQ0QrtDlaehSHjIvaqF6cFJ3KTdUZOCKAGxVMrqW1eZa9fAlBhCUQvzDwS57Ht9YuzMpmx+doZcaWoF+4PheRMmbj20pcDRF7WjBPDjHBoWSvMjCMdAwhiw9TwLViv/4A6dcWHfExno1hbnLU256bPwc=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by TYCPR01MB8342.jpnprd01.prod.outlook.com (2603:1096:400:15f::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Tue, 25 Jan
+ 2022 13:48:53 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::3847:4115:3fbe:619]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::3847:4115:3fbe:619%7]) with mapi id 15.20.4909.019; Tue, 25 Jan 2022
+ 13:48:53 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        Pavel Machek <pavel@denx.de>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: RE: [PATCH 3/3] ASoC: sh: rz-ssi: Remove duplicate macros
+Thread-Topic: [PATCH 3/3] ASoC: sh: rz-ssi: Remove duplicate macros
+Thread-Index: AQHYEe8ASm7GHUanHkaN/pCBI2EqGaxzwDJQ
+Date:   Tue, 25 Jan 2022 13:48:53 +0000
+Message-ID: <OS0PR01MB5922EAE24C481973BC55DC40865F9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20220125132457.14984-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220125132457.14984-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220125132457.14984-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 490e5788-b1bf-42d8-3adf-08d9e0096cd8
+x-ms-traffictypediagnostic: TYCPR01MB8342:EE_
+x-microsoft-antispam-prvs: <TYCPR01MB8342117E68CDB64D3061FA4B865F9@TYCPR01MB8342.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2887;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /3C6fwqTDYLMFA1sufb/Ja5OI/hO/7O952eJBBKS3mIU4j0T5Qg5zg8fq+OBx4OvfL3KiJGCfi/xVpSFy7X9iddej4lW42PNz5S0NACZePlXIn5Ka2x2LtP7evmPoRCQhXE5pJ70q32t7VN6FPvp1mR2+CaVOPkd/8jYZx8L8ja84z7wa6j/EZSSHAFnLc+C0lJKbwJY8Tz45SOGl3SiAOcia9G3bzm1hv9VeZuu5pPwi5wLXcBq1IfLKZIzwnQ2AzSCoxRY9KZxRkr177s/hGTcRt78/o10Tdaz1aAaHRrxH9tdZPZnTtjYh55wzuC8Aoge5b8UPLeS+W25nQajzav5sibc40c9CreamXwRjb6tnrdN/6C9G8BHxoHteSsmg3HmlCkWuffT3aPkJN21s1UNXkH1PcpN8mFGSDAD4VOc1yKgeZk5i8Mer4o3Jzz7Qfz70JEblCkUC5neeMSzABcuTQY3lhKhU4X15adiPcD+u/hUPRKdKDLpvsR1U6ZApH+aQ0eQih9X4eV1Hm4sAZZ03lQ8SL8qAZ4VwPT6AIxq0NXBTpnpAYwIX85e83/g56K0XO6gOair7C/Rqe6PfLWOnwWbtvYTZ1NQ/XbSpBuaqjA3aQMQI+vCe/7HJa9De7UEgsAnnq4+BA19t+RwLyAdt3PPWM2C0V/I1ekE5J6d/BH1uUmizaouKi4rI8V2+Kls2ChgMWXMo1OKoLReJw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(508600001)(54906003)(110136005)(71200400001)(186003)(316002)(33656002)(26005)(64756008)(66946007)(76116006)(66476007)(66556008)(66446008)(38070700005)(53546011)(122000001)(7696005)(6506007)(9686003)(52536014)(4326008)(8676002)(5660300002)(38100700002)(8936002)(107886003)(55016003)(2906002)(86362001)(20210929001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?2qbkQfN/pyqcUXS3ZAbvxDGhd/iSlatIlp8lac2PSbEziglapw56E0TIKx8W?=
+ =?us-ascii?Q?A1lmtZPmT7OolzI+9b5+vSSEAGhw7kR3stYOrbunxv2tzaHES9jH30A0geyt?=
+ =?us-ascii?Q?BW73BtPpYWrtGVLiwX+HJFdKhyc1ujNSNhVqf5p40H0o1JTUwe2uXcA4iY6F?=
+ =?us-ascii?Q?UgKZTDQ284CUZ6dJxXpU6ep3v81Zih+OiHlEVnX7uoSvyEOAhywf1f9OxEy0?=
+ =?us-ascii?Q?RAHMwZpvO3QjgPibALu6eoJ2cM6CvKam76yNSbP2Hv3qXWWIkY6dfY0mq5NC?=
+ =?us-ascii?Q?mEoT+G+fbi8PSZmUU/gvfnPMLMb9y+igevqDS8wUdm09hd31d9ZsjiDitAYO?=
+ =?us-ascii?Q?AhweAQNhX9E1YUzivufVhE4RIp5e8udt+z5hF8NyNSIGroVUAWZLDG5OQQXa?=
+ =?us-ascii?Q?XWhK9ORfIuq37kENCVbd8QOMPcU+RrZT5ZGyGEjOaI+C4unvMfcseRV3lEaI?=
+ =?us-ascii?Q?4pLKzfpIrhwHt5NnCCBL3eHtyrXyLorXHJ3cy13JTesyZRqBLhUkdqdZ3DwM?=
+ =?us-ascii?Q?5P00nT+3CPOE++2cquAoJPKmg0bVYBrhAj+DvvIX6kF8CCNsZemNj6hTRYo9?=
+ =?us-ascii?Q?KgpgJ95opA8Clac5+N5BYx7Q3v5RB7c5Xc3G5PdbnY0CESje12nUsjsaKNjR?=
+ =?us-ascii?Q?Ay1b+l/ClxHAz11oy20Y84Q79T34domdeGfZi/7cO4jLREgIt+Rd5CgSiEUz?=
+ =?us-ascii?Q?OUgBoszoAQ2Mm+pZFHLx5ImMuCkxJDZWBdHurSw1YuUonE6WEykAl6Udf3qm?=
+ =?us-ascii?Q?+FQVafv0dGgWsS7BSX++q7rLC9+CB4OYPrUWCE2UmfD/lCQSXnpEJwgLw81/?=
+ =?us-ascii?Q?RIogTn0ARP5DpL3b0IZFcnA+S+RQwe6XK3c5WHduYXInIsFioPXpHaYZl0ZE?=
+ =?us-ascii?Q?KVS6eQmnGh+o145ejlo6xRIp0wzkNCP/SIGpf/flfww0IDq+GWbCn9KOIM3O?=
+ =?us-ascii?Q?SGT6VUVZ9SQKx+i5+LVgYwVlYR+qqUSbp/AzV+DAMrDa5lmCzNwp7grJZR7E?=
+ =?us-ascii?Q?XpDD8NV9wHm43VFH1HJ0ClgmIa9tMMyaTOTqmV86S9zZ+aZdfmW141ast1R1?=
+ =?us-ascii?Q?j8V9lQnhyDl+VO4Ccn1/YULbBADuo9XSEzaHgFF71OLvmVQPj8MjilNm6C/e?=
+ =?us-ascii?Q?kVixEX+gJot/Y5ruKwCPnb0TX/ptc3dEDE010zH4PHdkBYuver5wwFFfm3Gt?=
+ =?us-ascii?Q?1QmE2d+dIDVnmBe+A3Y9CsEyRx77WZ4ITdAqpkXBda8mkuek8VDgtNbgkbW8?=
+ =?us-ascii?Q?rrH6aY99c5D6U230WM+obv0Z8OF79h8QuwAEJ0fIGCiQvHgRrDvrgxKL+NBb?=
+ =?us-ascii?Q?GTCoaznnQh6iWlF7q2WS4ncaDU840aquJz0jb0RcEkZmB0x4A4pvU8w2MCtX?=
+ =?us-ascii?Q?4N+LAqcGty+iFCHkE7OUm0jJqpdhq2GEsvLcHjFOvkHJ7I2RfcsU96+9ksTo?=
+ =?us-ascii?Q?eVNq1c+aBSvLrvCxLQqkzjSEFoEJMgiGfEr9qKDl/HAA1E89JO1GRi5F3U0K?=
+ =?us-ascii?Q?oaKwZWwkylfBq/eBVUJSEe9WE1ZaXH0Za+2R9dAa97gCaFshiNJQn2rfMsTM?=
+ =?us-ascii?Q?ggUPG+iAXeOdW8Fi3M0M2FvuFhbvNasgxPcR08dV34zAq8wpXO+o3P4qlEgh?=
+ =?us-ascii?Q?p+cv1vPdJ+LCuGhR8trKZKYIr5JZa+paycGD+bGGUF4PFVBG11KASWwurbd/?=
+ =?us-ascii?Q?oAXSNg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 490e5788-b1bf-42d8-3adf-08d9e0096cd8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2022 13:48:53.4448
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 1FicbNRqjfQCysZE1AquFsyoQfllNSOmboj6G5axLNFMo1eK2d67WyiIrsRodDGEIoieUX9gOr/TqmhDR7YjAMMoAaDeiEDJGNuBgHx37Lw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB8342
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Terry,
+Hi Prabhakar,
 
-Sorry for the late review, I hope you did not send an updated series
-already.
+Thanks for the patch
 
-On Tue, 18 Jan 2022 14:22:32 -0600, Terry Bowman wrote:
-> Combine MMIO base address and alternate base address detection. Combine
-> based on layout type. This will simplify the function by eliminating
-> a switch case.
-> 
-> Move existing request/release code into functions. This currently only
-> supports port I/O request/release. The move into a separate function
-> will make it ready for adding MMIO region support.
-> 
-> (...)
-> +static int __sp5100_tco_prepare_base(struct sp5100_tco *tco,
-> +				     u32 mmio_addr,
-> +				     const char *dev_name)
-> +{
-> +	struct device *dev = tco->wdd.parent;
-> +	int ret = 0;
-> +
-> +	if (!mmio_addr)
-> +		return -ENOMEM;
+> -----Original Message-----
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Sent: 25 January 2022 13:25
+> To: Mark Brown <broonie@kernel.org>; Liam Girdwood <lgirdwood@gmail.com>;
+> Jaroslav Kysela <perex@perex.cz>; Takashi Iwai <tiwai@suse.com>; alsa-
+> devel@alsa-project.org; Pavel Machek <pavel@denx.de>
+> Cc: linux-kernel@vger.kernel.org; linux-renesas-soc@vger.kernel.org; Biju
+> Das <biju.das.jz@bp.renesas.com>; Prabhakar <prabhakar.csengg@gmail.com>;
+> Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Subject: [PATCH 3/3] ASoC: sh: rz-ssi: Remove duplicate macros
+>=20
+> Remove SSICR_MST and SSICR_CKDV macros which are defined more than once.
+>=20
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Can this actually happen? If it does, is -ENOMEM really the best error
-value?
+Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 
-And if it can happen, I think I would prefer if you would simply not
-call this function, knowing it can only fail. In other words, I'd go
-for something like the following in the function below:
+Cheers,
+Biju
 
-	/* Check MMIO address conflict */
-	if (mmio_addr)
-		ret = __sp5100_tco_prepare_base(tco, mmio_addr, dev_name);
+> ---
+>  sound/soc/sh/rz-ssi.c | 2 --
+>  1 file changed, 2 deletions(-)
+>=20
+> diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c index
+> 1a46c9f3c4e5..e8edaed05d4c 100644
+> --- a/sound/soc/sh/rz-ssi.c
+> +++ b/sound/soc/sh/rz-ssi.c
+> @@ -28,8 +28,6 @@
+>  /* SSI REGISTER BITS */
+>  #define SSICR_DWL(x)		(((x) & 0x7) << 19)
+>  #define SSICR_SWL(x)		(((x) & 0x7) << 16)
+> -#define SSICR_MST		BIT(14)
+> -#define SSICR_CKDV(x)		(((x) & 0xf) << 4)
+>=20
+>  #define SSICR_CKS		BIT(30)
+>  #define SSICR_TUIEN		BIT(29)
+> --
+> 2.17.1
 
-The intention is clearer and execution is faster too.
-
-> +
-> +	if (!devm_request_mem_region(dev, mmio_addr,
-> +				    SP5100_WDT_MEM_MAP_SIZE,
-> +				    dev_name)) {
-> +		dev_dbg(dev, "MMIO address 0x%08x already in use\n",
-> +			mmio_addr);
-> +		return -EBUSY;
-> +	}
-> +
-> +	tco->tcobase = devm_ioremap(dev, mmio_addr,
-> +				    SP5100_WDT_MEM_MAP_SIZE);
-> +	if (!tco->tcobase) {
-> +		dev_dbg(dev, "MMIO address 0x%08x failed mapping.\n",
-> +			mmio_addr);
-
-Remove trailing dot for consistency with the other messages.
-
-> +		devm_release_mem_region(dev, mmio_addr,
-> +					SP5100_WDT_MEM_MAP_SIZE);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	dev_info(dev, "Using 0x%08x for watchdog MMIO address\n",
-> +		 mmio_addr);
-> +
-> +	return ret;
-> +}
-> +
-> +static int sp5100_tco_prepare_base(struct sp5100_tco *tco,
-> +				   u32 mmio_addr,
-> +				   u32 alt_mmio_addr,
-> +				   const char *dev_name)
-> +{
-> +	struct device *dev = tco->wdd.parent;
-> +	int ret = 0;
-> +
-> +	dev_dbg(dev, "Got 0x%08x from SBResource_MMIO register\n",
-> +		mmio_addr);
-> +
-> +	/* Check MMIO address conflict */
-> +	ret = __sp5100_tco_prepare_base(tco, mmio_addr, dev_name);
-> +
-> +	/* Check alternate MMIO address conflict */
-> +	if (ret)
-> +		ret = __sp5100_tco_prepare_base(tco, alt_mmio_addr,
-> +						dev_name);
-> +
-> +	if (ret)
-> +		dev_err(dev, "Failed to reserve-map MMIO (%X) and alternate MMIO (%X) regions. ret=%X",
-> +			mmio_addr, alt_mmio_addr, ret);
-
-Format for the addresses is inconsistent with the other messages above,
-please use 0x%08x for consistency. As for the return value (which
-should be preceded by a comma rather than a dot), it should be printed
-as a decimal, not hexadecimal, value.
-
-(And nitpicking: I'd split after "dev," so as to not make the line
-longer than needed.
-
-> +
-> +	return ret;
-> +}
-> +
->  static int sp5100_tco_timer_init(struct sp5100_tco *tco)
->  {
->  	struct watchdog_device *wdd = &tco->wdd;
-> @@ -264,6 +324,7 @@ static int sp5100_tco_setupdevice(struct device *dev,
->  	struct sp5100_tco *tco = watchdog_get_drvdata(wdd);
->  	const char *dev_name;
->  	u32 mmio_addr = 0, val;
-> +	u32 alt_mmio_addr = 0;
->  	int ret;
->  
->  	/* Request the IO ports used by this driver */
-> @@ -282,11 +343,35 @@ static int sp5100_tco_setupdevice(struct device *dev,
->  		dev_name = SP5100_DEVNAME;
->  		mmio_addr = sp5100_tco_read_pm_reg32(SP5100_PM_WATCHDOG_BASE) &
->  								0xfffffff8;
-> +
-> +		/*
-> +		 * Secondly, Find the watchdog timer MMIO address
-> +		 * from SBResource_MMIO register.
-> +		 */
-> +		/* Read SBResource_MMIO from PCI config(PCI_Reg: 9Ch) */
-> +		pci_read_config_dword(sp5100_tco_pci,
-> +				      SP5100_SB_RESOURCE_MMIO_BASE,
-> +				      &alt_mmio_addr);
-> +		if (alt_mmio_addr & ((SB800_ACPI_MMIO_DECODE_EN |
-> +				      SB800_ACPI_MMIO_SEL) !=
-> +				     SB800_ACPI_MMIO_DECODE_EN)) {
-> +			alt_mmio_addr &= ~0xFFF;
-> +			alt_mmio_addr += SB800_PM_WDT_MMIO_OFFSET;
-> +		}
->  		break;
->  	case sb800:
->  		dev_name = SB800_DEVNAME;
->  		mmio_addr = sp5100_tco_read_pm_reg32(SB800_PM_WATCHDOG_BASE) &
->  								0xfffffff8;
-> +		/* Read SBResource_MMIO from AcpiMmioEn(PM_Reg: 24h) */
-> +		alt_mmio_addr =
-> +			sp5100_tco_read_pm_reg32(SB800_PM_ACPI_MMIO_EN);
-> +		if (!(alt_mmio_addr & (((SB800_ACPI_MMIO_DECODE_EN |
-> +				       SB800_ACPI_MMIO_SEL)) !=
-> +		      SB800_ACPI_MMIO_DECODE_EN))) {
-
-The condition is the opposite of the sp5100 case above, which looks
-quite suspicious. As far as I can see, that wasn't the case in the
-original code. Please double check. In any case, please avoid double
-negations, they are too easy to get wrong.
-
-> +			alt_mmio_addr &= ~0xFFF;
-> +			alt_mmio_addr += SB800_PM_WDT_MMIO_OFFSET;
-> +		}
->  		break;
->  	case efch:
->  		dev_name = SB800_DEVNAME;
-> @@ -305,87 +390,24 @@ static int sp5100_tco_setupdevice(struct device *dev,
->  		val = sp5100_tco_read_pm_reg8(EFCH_PM_DECODEEN);
->  		if (val & EFCH_PM_DECODEEN_WDT_TMREN)
->  			mmio_addr = EFCH_PM_WDT_ADDR;
-> +
-> +		val = sp5100_tco_read_pm_reg8(EFCH_PM_ISACONTROL);
-> +		if (val & EFCH_PM_ISACONTROL_MMIOEN)
-> +			alt_mmio_addr = EFCH_PM_ACPI_MMIO_ADDR +
-> +				EFCH_PM_ACPI_MMIO_WDT_OFFSET;
->  		break;
->  	default:
->  		return -ENODEV;
->  	}
-> (...)
-
-Rest looks OK to me.
-
--- 
-Jean Delvare
-SUSE L3 Support
