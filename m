@@ -2,122 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 245FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:21:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231793AbiAYUV3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 15:21:29 -0500
-Received: from mga04.intel.com ([192.55.52.120]:36582 "EHLO mga04.intel.com"
+        id S231824AbiAYUVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 15:21:31 -0500
+Received: from vps-vb.mhejs.net ([37.28.154.113]:58180 "EHLO vps-vb.mhejs.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231707AbiAYUVU (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 15:21:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643142080; x=1674678080;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=irQ3/6gwBL9yizU5uUBclawuANglylnqeXDX3dUW+3M=;
-  b=G9HHXI4g5N0BXoa51DwKu3YN3CzLGPTl1U4laIYCOwfVKz6VIhIH8KRW
-   fdSFRgwFrL17kNjl5hdoDC9Lkxho5cjlx5LImZsSQ5EMBMIU7uiG3HVQV
-   NKbRW89mx3wr2kZTRJvOx4scjTsrn+3j7pMyjVNxT8KLcr82YHFx9Tlqd
-   mhgqIIbMRLaJESyVPkGJb8fqD2MgPrqPUAq/X+ukn9sSuJgjwUkbAmpyW
-   l0oAFgwUs848r0aftlSUUKUci8tSv90qQiaPzkBKnb1BfcSi37+f6wFoD
-   /y8tzBM5L58CC2BWCQaYSlFpef5wqBxwEBuLnNICnKpDbBkWOGxm4KLUV
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="245242271"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="245242271"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 12:21:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="477249112"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 25 Jan 2022 12:21:09 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7A8921F1; Tue, 25 Jan 2022 22:21:22 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Carlis <zhangxuezhi1@yulong.com>, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Cc:     Michael Hennerich <michael.hennerich@analog.com>,
-        Helge Deller <deller@gmx.de>, Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 3/4] fbtft: Kill outdated documentation
-Date:   Tue, 25 Jan 2022 22:21:16 +0200
-Message-Id: <20220125202118.63362-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
+        id S231669AbiAYUVX (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 15:21:23 -0500
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1nCSJ4-0006nf-3P; Tue, 25 Jan 2022 21:20:46 +0100
+Message-ID: <a121e766-900d-2135-1516-e1d3ba716834@maciej.szmigiero.name>
+Date:   Tue, 25 Jan 2022 21:20:39 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Chao Peng <chao.p.peng@linux.intel.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, kvm@vger.kernel.org,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, qemu-devel@nongnu.org
+References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
+ <20220118132121.31388-13-chao.p.peng@linux.intel.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [PATCH v4 12/12] KVM: Expose KVM_MEM_PRIVATE
+In-Reply-To: <20220118132121.31388-13-chao.p.peng@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver is in maintenance mode, i.e. no new drivers will be accepted,
-and for a long time it is part of the kernel, means no need to clone any
-separate sources.
+On 18.01.2022 14:21, Chao Peng wrote:
+> KVM_MEM_PRIVATE is not exposed by default but architecture code can turn
+> on it by implementing kvm_arch_private_memory_supported().
+> 
+> Also private memslot cannot be movable and the same file+offset can not
+> be mapped into different GFNs.
+> 
+> Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> ---
+(..)
+>   
+>   static bool kvm_check_memslot_overlap(struct kvm_memslots *slots, int id,
+> -				      gfn_t start, gfn_t end)
+> +				      struct file *file,
+> +				      gfn_t start, gfn_t end,
+> +				      loff_t start_off, loff_t end_off)
+>   {
+>   	struct kvm_memslot_iter iter;
+> +	struct kvm_memory_slot *slot;
+> +	struct inode *inode;
+> +	int bkt;
+>   
+>   	kvm_for_each_memslot_in_gfn_range(&iter, slots, start, end) {
+>   		if (iter.slot->id != id)
+>   			return true;
+>   	}
+>   
+> +	/* Disallow mapping the same file+offset into multiple gfns. */
+> +	if (file) {
+> +		inode = file_inode(file);
+> +		kvm_for_each_memslot(slot, bkt, slots) {
+> +			if (slot->private_file &&
+> +			     file_inode(slot->private_file) == inode &&
+> +			     !(end_off <= slot->private_offset ||
+> +			       start_off >= slot->private_offset
+> +					     + (slot->npages >> PAGE_SHIFT)))
+> +				return true;
+> +		}
+> +	}
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/video/fbtft/README | 32 --------------------------------
- drivers/video/fbtft/TODO   |  3 ---
- 2 files changed, 35 deletions(-)
- delete mode 100644 drivers/video/fbtft/README
- delete mode 100644 drivers/video/fbtft/TODO
+That's a linear scan of all memslots on each CREATE (and MOVE) operation
+with a fd - we just spent more than a year rewriting similar linear scans
+into more efficient operations in KVM.
 
-diff --git a/drivers/video/fbtft/README b/drivers/video/fbtft/README
-deleted file mode 100644
-index ba4c74c92e4c..000000000000
---- a/drivers/video/fbtft/README
-+++ /dev/null
-@@ -1,32 +0,0 @@
--  FBTFT
--=========
--
--Linux Framebuffer drivers for small TFT LCD display modules.
--The module 'fbtft' makes writing drivers for some of these displays very easy.
--
--Development is done on a Raspberry Pi running the Raspbian "wheezy" distribution.
--
--INSTALLATION
--  Download kernel sources
--
--  From Linux 3.15
--    cd drivers/video/fbdev/fbtft
--    git clone https://github.com/notro/fbtft.git
--
--    Add to drivers/video/fbdev/Kconfig:   source "drivers/video/fbdev/fbtft/Kconfig"
--    Add to drivers/video/fbdev/Makefile:  obj-y += fbtft/
--
--  Before Linux 3.15
--    cd drivers/video
--    git clone https://github.com/notro/fbtft.git
--
--    Add to drivers/video/Kconfig:   source "drivers/video/fbtft/Kconfig"
--    Add to drivers/video/Makefile:  obj-y += fbtft/
--
--  Enable driver(s) in menuconfig and build the kernel
--
--
--See wiki for more information: https://github.com/notro/fbtft/wiki
--
--
--Source: https://github.com/notro/fbtft/
-diff --git a/drivers/video/fbtft/TODO b/drivers/video/fbtft/TODO
-deleted file mode 100644
-index e72a08bf221c..000000000000
---- a/drivers/video/fbtft/TODO
-+++ /dev/null
-@@ -1,3 +0,0 @@
--* convert all these over to drm_simple_display_pipe and submit for inclusion
--  into the DRM subsystem under drivers/gpu/drm - fbdev doesn't take any new
--  drivers anymore.
--- 
-2.34.1
-
+Thanks,
+Maciej
