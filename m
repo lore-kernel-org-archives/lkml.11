@@ -2,269 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0AC1C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBEEDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347149AbiAYKg5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:36:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
+        id S244835AbiAYKjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:39:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245357AbiAYKeY (ORCPT
+        with ESMTP id S1355376AbiAYKf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:34:24 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95094C06175D
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:34:22 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nCJ5B-0002PJ-4T; Tue, 25 Jan 2022 11:29:49 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nCJ4S-00CKAP-U5; Tue, 25 Jan 2022 11:29:04 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nCJ4R-001HhT-Dx; Tue, 25 Jan 2022 11:29:03 +0100
-Date:   Tue, 25 Jan 2022 11:29:03 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
-        Claudius Heine <ch@denx.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Nanyong Sun <sunnanyong@huawei.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        dri-devel@lists.freedesktop.org, Jaroslav Kysela <perex@perex.cz>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Pavel Machek <pavel@ucw.cz>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        linux-clk@vger.kernel.org,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Sidong Yang <realwakka@gmail.com>,
-        libertas-dev@lists.infradead.org, linux-omap@vger.kernel.org,
-        Antti Palosaari <crope@iki.fi>,
-        Jean Delvare <jdelvare@suse.com>, linux-serial@vger.kernel.org,
-        =?utf-8?Q?=C5=81ukasz?= Stelmach <l.stelmach@samsung.com>,
-        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
-        James Schulman <james.schulman@cirrus.com>,
-        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        kernel@pengutronix.de, linux-mtd@lists.infradead.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-wpan@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dan Robertson <dan@dlrobertson.com>,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        David Airlie <airlied@linux.ie>,
-        linux-wireless@vger.kernel.org,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Solomon Peachy <pizza@shaftnet.org>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        dingsenjie <dingsenjie@yulong.com>, Heiko Schocher <hs@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Matt Kline <matt@bitbashing.io>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Ronald =?utf-8?B?VHNjaGFsw6Ry?= <ronald@innovation.ch>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>, linux-can@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Davidlohr Bueso <dbueso@suse.de>, UNGLinuxDriver@microchip.com,
-        linux-usb@vger.kernel.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-integrity@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-staging@lists.linux.dev, linux-iio@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        alsa-devel@alsa-project.org,
-        Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-        netdev@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
-        linux-rtc@vger.kernel.org,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        wengjianfeng <wengjianfeng@yulong.com>,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Mark Gross <markgross@kernel.org>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        linux-fbdev@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        linux-hwmon@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-mmc@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        patches@opensource.cirrus.com, Kent Gustavsson <kent@minoris.se>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Jiri Prchal <jiri.prchal@aksignal.cz>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Emma Anholt <emma@anholt.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
-        Lee Jones <lee.jones@linaro.org>, linux-leds@vger.kernel.org,
-        Eric Piel <eric.piel@tremplin-utc.net>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Richard Weinberger <richard@nod.at>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        platform-driver-x86@vger.kernel.org,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Xue Liu <liuxuenetmail@gmail.com>,
-        David Lechner <david@lechnology.com>,
-        Will Deacon <will@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Yang Shen <shenyang39@huawei.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Takashi Iwai <tiwai@suse.com>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Colin Ian King <colin.king@intel.com>,
-        Helge Deller <deller@gmx.de>, Alan Ott <alan@signal11.us>
-Subject: Re: [PATCH 5/5] spi: make remove callback a void function
-Message-ID: <20220125102903.werurj56umtglcue@pengutronix.de>
-References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
- <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
- <20220125094759.000019c5@Huawei.com>
+        Tue, 25 Jan 2022 05:35:28 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3F8C061779
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:35:27 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id r82-20020a1c4455000000b0034e043aaac7so857035wma.5
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:35:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uYdg+h4xUgFlS4VbgtGVuleOkynWItCXXdRK+L0ak6M=;
+        b=GTubB8hv4bF/W8pl5G1QRyju+3fXfWPO83WqGYnDfxz6ak26wEZCcfjVnpmxnNX3W/
+         H3A7PbnHfrdr/KHcapPP25NzGTUtX/g8yvTo/Ymjhi1hs0/b0BmLSFqfrE9o+Dz5rn5b
+         K11DjI6yKNdBviS54JKQaHIiqEs5XumCs6PnIwStMPoLmVuMIqaX+CksR4xicdeivJuu
+         893R0XyAXbei5Ap5+nv+TsJkY/0Ziu9ykV1bslhHNJgE2MvHrum0sTeANEEy9PplecCQ
+         /Xjl0YKmNzPJFLLa7kyHEhD8MRvuie+dzmguYI4ITtNen3QTekXrFltTK6rBIgJUhyhU
+         B3hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uYdg+h4xUgFlS4VbgtGVuleOkynWItCXXdRK+L0ak6M=;
+        b=rzwdUGNnUisjML/lsLB9KgN01VMiUA9WEhFYtDDHbjYL9kKcb5KYLUKX+s+Rtr+EDt
+         46GlxZuxh02y8gLJQNGR65r/7FdvprXXMr6ycpzW3avlCLQne5ewoQ6CizHn0/JSfyAj
+         IGlnyMN9ZaV0dGAI3FRz/nWJjQ9NutoK7pzQiGUPl0AW6CZqOXwNgrWlOInYchIAb5U3
+         fdkjok0B4MDJRcl2KA0RwaDHTPFwOzXIE3CExb0URNdvHe6pNU6578zrayw/WAp8UqRo
+         bQSPvWbPX18TE3YWtjFwAo+zU03jj2rv9rp0jRqBLU46Vn3zhhOXrrsMHl7YP67uNaQm
+         UtXg==
+X-Gm-Message-State: AOAM5326h4Noyoqcsb+W2MFLqtyn2yqMD41gB/TL6QsR4exw0ZHBxLJY
+        i6tB8r4z2fvL9qvvbb8aVa7oQQ==
+X-Google-Smtp-Source: ABdhPJx+w8z5aGYxT5A5QKy6zwet2VVfvd21nx8U+IbtSeToofaDduOXQkk2XZ3Di33nkZhxepnP/g==
+X-Received: by 2002:a7b:c3c5:: with SMTP id t5mr2340963wmj.168.1643106926197;
+        Tue, 25 Jan 2022 02:35:26 -0800 (PST)
+Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id v124sm155335wme.30.2022.01.25.02.35.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 02:35:25 -0800 (PST)
+Message-ID: <11caff0e-6bf3-9d66-6312-c2c2a6fc862a@linaro.org>
+Date:   Tue, 25 Jan 2022 10:35:24 +0000
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="f3kckhw255f5ljnt"
-Content-Disposition: inline
-In-Reply-To: <20220125094759.000019c5@Huawei.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/5] nvmem: core: Remove unused devm_nvmem_unregister()
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Cc:     Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Michael Jamet <michael.jamet@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>
+References: <20220124180040.50660-1-andriy.shevchenko@linux.intel.com>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <20220124180040.50660-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Thanks Andy for the cleanup,
 
---f3kckhw255f5ljnt
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 24/01/2022 18:00, Andy Shevchenko wrote:
+> There are no users and seems no will come of the devm_nvmem_unregister().
+> Remove the function and remove the unused devm_nvmem_match() along with it.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[Dropped a few people from Cc that are not reachable (Harry Morris,
-Charles-Antoine Couret, Marco Felsch)]
 
-On Tue, Jan 25, 2022 at 09:47:59AM +0000, Jonathan Cameron wrote:
-> On Sun, 23 Jan 2022 18:52:01 +0100
-> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> wrote:
->=20
-> > The value returned by an spi driver's remove function is mostly ignored.
-> > (Only an error message is printed if the value is non-zero that the
-> > error is ignored.)
-> >=20
-> > So change the prototype of the remove function to return no value. This
-> > way driver authors are not tempted to assume that passing an error to
-> > the upper layer is a good idea. All drivers are adapted accordingly.
-> > There is no intended change of behaviour, all callbacks were prepared to
-> > return 0 before.
-> >=20
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
->=20
-> For iio drivers.
->=20
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->=20
-> As you mention in the cover letter we'll be wanting an immutable
-> branch somewhere to pull into subsystem trees.
->=20
-> Soon is good if possible as otherwise we'll end up with a bunch of merge
-> conflicts getting resolved in next.
+Applied 1/5, 2/5 and 3/5 patches.
 
-Yes, I considered creating a tag to pull already when sending out this
-series, but I guessed delaying that a little bit to give people the
-opportunity to ack would be a good idea.
+Others can go via there own subsystems as I do not see any dependencies.
 
-@broonie: Do you think this change is a good idea? Would you require
-some more acks for the preparatory patches? I had hoped to get Acks from
-the corresponding maintainers, maybe they are busy and missed this
-series as I put them on Cc: only. I promoted them to To: in this mail.
-
-Or is it too ambitious to get this in during the next merge window?
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---f3kckhw255f5ljnt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHv0OwACgkQwfwUeK3K
-7AkwFgf/cvC/vOA1oS3kc72Sd8C1LyQHcuopONW8p32pISnzT5iekmQ30JqAKXUo
-gYYFlK5nfLHIm1fYZ1WRJHtupkslUM3aSSSaJ5aYxSpyV9BrfcYs6HZWs2hYlBDW
-YCYJmCIIr6DSDGEzoXxgZLaxgT1Tey1Dd4ibvvp/NatXvyNaV7ct0xAI9nCjbMY0
-1EiaOvq8p6Kl9AnXjcIeXL6NpYehHRyZQ4A7V5CsKSUssgKRBtQz8AJrbMTC2nwB
-m+l2NEaLkGNdMQ+bhmqNk7lOZPDrfXvqUuU6KwGKdK5ZSMfpGdSzzoHt4yw7X44w
-2CoQ9riN0BgZI5Ri36N0pdZxlEB8kA==
-=Ckzr
------END PGP SIGNATURE-----
-
---f3kckhw255f5ljnt--
+--srini
+> ---
+> v2: removed unused devm_nvmem_match() (lkp)
+>   drivers/nvmem/core.c           | 22 ----------------------
+>   include/linux/nvmem-provider.h |  8 --------
+>   2 files changed, 30 deletions(-)
+> 
+> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+> index 23a38dcf0fc4..1a70b3bdb71d 100644
+> --- a/drivers/nvmem/core.c
+> +++ b/drivers/nvmem/core.c
+> @@ -945,28 +945,6 @@ struct nvmem_device *devm_nvmem_register(struct device *dev,
+>   }
+>   EXPORT_SYMBOL_GPL(devm_nvmem_register);
+>   
+> -static int devm_nvmem_match(struct device *dev, void *res, void *data)
+> -{
+> -	struct nvmem_device **r = res;
+> -
+> -	return *r == data;
+> -}
+> -
+> -/**
+> - * devm_nvmem_unregister() - Unregister previously registered managed nvmem
+> - * device.
+> - *
+> - * @dev: Device that uses the nvmem device.
+> - * @nvmem: Pointer to previously registered nvmem device.
+> - *
+> - * Return: Will be negative on error or zero on success.
+> - */
+> -int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
+> -{
+> -	return devres_release(dev, devm_nvmem_release, devm_nvmem_match, nvmem);
+> -}
+> -EXPORT_SYMBOL(devm_nvmem_unregister);
+> -
+>   static struct nvmem_device *__nvmem_device_get(void *data,
+>   			int (*match)(struct device *dev, const void *data))
+>   {
+> diff --git a/include/linux/nvmem-provider.h b/include/linux/nvmem-provider.h
+> index 98efb7b5660d..99c01c43d7a8 100644
+> --- a/include/linux/nvmem-provider.h
+> +++ b/include/linux/nvmem-provider.h
+> @@ -133,8 +133,6 @@ void nvmem_unregister(struct nvmem_device *nvmem);
+>   struct nvmem_device *devm_nvmem_register(struct device *dev,
+>   					 const struct nvmem_config *cfg);
+>   
+> -int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem);
+> -
+>   void nvmem_add_cell_table(struct nvmem_cell_table *table);
+>   void nvmem_del_cell_table(struct nvmem_cell_table *table);
+>   
+> @@ -153,12 +151,6 @@ devm_nvmem_register(struct device *dev, const struct nvmem_config *c)
+>   	return nvmem_register(c);
+>   }
+>   
+> -static inline int
+> -devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
+> -{
+> -	return -EOPNOTSUPP;
+> -}
+> -
+>   static inline void nvmem_add_cell_table(struct nvmem_cell_table *table) {}
+>   static inline void nvmem_del_cell_table(struct nvmem_cell_table *table) {}
+>   
