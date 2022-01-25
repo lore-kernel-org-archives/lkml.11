@@ -2,101 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF36C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B62C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447893AbiAYIAS (ORCPT
+        id S1357732AbiAYIBi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:00:18 -0500
-Received: from mga11.intel.com ([192.55.52.93]:27451 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354992AbiAYH5m (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:57:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643097461; x=1674633461;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ZSMu/ePfONg2z+5dsk9SdCvB9LvYb8I+0DJ/pkBK04w=;
-  b=k5N8cI2sYTMwf9xQnJR0KG5aJQujSl/ukqWUH9zujWeuX0wvpzT9eVd4
-   hx2JUlOOHNLlCqVOf5PImtExxYDsjZj3dOaF0/cl2B470powNmHuxhzJk
-   1oHyiNjx5Hchd2YfYRb4dOnacb68qDdaQAZ0Xh13jctgCZeU5UqNx7nT/
-   Huv64kEqRkRj6TvevdTkQxtb4FA/ICRcVAKXxK88uRQpuObpqHm8bNC53
-   tc4ZNfAqXpJ+ijV1FzN/5oxOeJeHg+PB3HOo7TVQ+R90eyhxDSBJ1OwH+
-   MY5+xLpUYyUJgLRS/U64rAU/WoCytcM65j7306vtb3jPWjpgi8bWyxqeb
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="243845297"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="243845297"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 23:57:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="617531111"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 24 Jan 2022 23:57:31 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCGhm-000JYO-GJ; Tue, 25 Jan 2022 07:57:30 +0000
-Date:   Tue, 25 Jan 2022 15:56:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Stephane Eranian <eranian@google.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: arch/x86/events/rapl.c:540:59: sparse: sparse: Using plain integer
- as NULL pointer
-Message-ID: <202201251514.ZEiF0Q7N-lkp@intel.com>
+        Tue, 25 Jan 2022 03:01:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357852AbiAYH7I (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 02:59:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF43FC0544EE;
+        Mon, 24 Jan 2022 22:40:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB3F1B8162C;
+        Tue, 25 Jan 2022 06:40:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A039C340E0;
+        Tue, 25 Jan 2022 06:40:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643092844;
+        bh=Lwx8mO5mMqVbKGdRGLJ5Wq0V96nxImmH2K5npNDXyPo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aDYbJ54OdpYQH01sLWo6acgjo8qZxxsj5hf0BEz/3pM17AdmYDd79I60lzTIhUpBK
+         tZ/Zd0fkpj1zZVVnwb8BY7KdPS6sn/d8iGvu3AGEeoa8s5JGpLsc/+8QoBTSn5sy4K
+         87ue1vH1zG2J+UYhwUx8uABQlsy4hNN5IXf1XY2azdir6SF+kaA/SlosgGa2efuaF1
+         dIS+zic5ikcm9DkMo/w3YJOlOas99uUHjhYpq45XLImKkrP2s48ipbUuHkqZ+T5XT0
+         RNiRAINIfyy47CjENgEG8forPLg5AJ7Rng/PFlnhr63dgLAxKNdpQ53/wntdqWq2Oa
+         QILBRw3Jb5mgA==
+Date:   Mon, 24 Jan 2022 22:40:42 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev, Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: Re: [PATCH v2] lib/crypto: blake2s: avoid indirect calls to
+ compression function for Clang CFI
+Message-ID: <Ye+bam3aSIjz8n9E@sol.localdomain>
+References: <20220119135450.564115-1-Jason@zx2c4.com>
+ <20220124192849.14755-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220124192849.14755-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
-commit: 0036fb00a756a2f6e360d44e2e3d2200a8afbc9b perf/x86/rapl: fix AMD event handling
-date:   7 days ago
-config: i386-randconfig-s001-20220124 (https://download.01.org/0day-ci/archive/20220125/202201251514.ZEiF0Q7N-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0036fb00a756a2f6e360d44e2e3d2200a8afbc9b
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 0036fb00a756a2f6e360d44e2e3d2200a8afbc9b
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/events/
+On Mon, Jan 24, 2022 at 08:28:49PM +0100, Jason A. Donenfeld wrote:
+> blake2s_compress_generic is weakly aliased by blake2s_generic. The
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Don't you mean "weakly aliased by blake2s_compress"?
 
+> Fixes: 6048fdcc5f26 ("lib/crypto: blake2s: include as built-in")
+> Reported-by: Miles Chen <miles.chen@mediatek.com>
+> Tested-by: Miles Chen <miles.chen@mediatek.com>
+> Tested-by: Nathan Chancellor <nathan@kernel.org>
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1567
+> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> Cc: Sami Tolvanen <samitolvanen@google.com>
+> Cc: Ard Biesheuvel <ardb@kernel.org>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
 
-sparse warnings: (new ones prefixed by >>)
->> arch/x86/events/rapl.c:540:59: sparse: sparse: Using plain integer as NULL pointer
-   arch/x86/events/rapl.c:542:59: sparse: sparse: Using plain integer as NULL pointer
-   arch/x86/events/rapl.c:543:59: sparse: sparse: Using plain integer as NULL pointer
-   arch/x86/events/rapl.c:544:59: sparse: sparse: Using plain integer as NULL pointer
+Otherwise this looks fine, though it's unfortunate this is needed.  You can add:
 
-vim +540 arch/x86/events/rapl.c
+	Reviewed-by: Eric Biggers <ebiggers@google.com>
 
-   533	
-   534	/*
-   535	 * Force to PERF_RAPL_MAX size due to:
-   536	 * - perf_msr_probe(PERF_RAPL_MAX)
-   537	 * - want to use same event codes across both architectures
-   538	 */
-   539	static struct perf_msr amd_rapl_msrs[] = {
- > 540		[PERF_RAPL_PP0]  = { 0, &rapl_events_cores_group, 0, false, 0 },
-   541		[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr, false, RAPL_MSR_MASK },
-   542		[PERF_RAPL_RAM]  = { 0, &rapl_events_ram_group,   0, false, 0 },
-   543		[PERF_RAPL_PP1]  = { 0, &rapl_events_gpu_group,   0, false, 0 },
-   544		[PERF_RAPL_PSYS] = { 0, &rapl_events_psys_group,  0, false, 0 },
-   545	};
-   546	
+> Changes v1->v2:
+> - Wrapped columns at 80 for Eric.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+It is the recommended coding style, so not just for me :-)
+
+- Eric
