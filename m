@@ -2,112 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E75FAC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C5FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454469AbiAYRTU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:19:20 -0500
-Received: from mga11.intel.com ([192.55.52.93]:16098 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1453635AbiAYRPh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:15:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643130937; x=1674666937;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=veCZt3yQfTYBk3+GU00z9OZ21bMHmTBnTb5ztruHxPg=;
-  b=InZJhdZ8h/rTgZAng4zAvgPPOxOIYUdsBTyj+fZhOlTEjgwwWVQEmyN/
-   mChuqpKxs5FvXyAxIlJI1gyK/Y7QQDKkOTRywTXb2wboEjniD5VqYBaRN
-   mil6iXBqEnpVNfe2314Eyx7ak5juYnCTRo/8Smt7+jGYVyPoEKsIEfxoI
-   s1l6NB6V37lsFm4TBmQtPlyRrvmK6+3eo9WvnJvEezIJNkrYVla0xySS6
-   +rTIix+gbWWfd3smRQf4z8bEr/v5gBZZm6bvwo6vCI+Vmgpg2fBclujey
-   +ani0HDY3D3gCt8+GvJYyQWOnylpHrvjlbipGC2vWZH0IZn0yoRpgQ3mL
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="243951946"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="243951946"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 09:11:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="563104854"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga001.jf.intel.com with ESMTP; 25 Jan 2022 09:11:33 -0800
-To:     Sven Schnelle <svens@linux.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>
-References: <Yao35lElOkwtBYEb@kroah.com>
- <c2b5c9bb-1b75-bf56-3754-b5b18812d65e@linux.intel.com>
- <YbyWuxoBSicFBGuv@hirez.programming.kicks-ass.net>
- <YcGhIm7yqYPk4Nuu@hirez.programming.kicks-ass.net>
- <YeE4rtq6t73OxOi+@hirez.programming.kicks-ass.net>
- <cd534ff9-e500-c7ea-426a-347ac2b0830b@linux.intel.com>
- <YeLxE3zQ7Vexk3gv@hirez.programming.kicks-ass.net>
- <dfb311e3-1a83-31a2-3c82-fd982c0757f6@linux.intel.com>
- <Ye/w/lOf4f8+8fDt@hirez.programming.kicks-ass.net>
- <yt9dbl00rmgx.fsf@linux.ibm.com>
- <YfAA+age1zo3lxIB@hirez.programming.kicks-ass.net>
- <yt9dh79rnccf.fsf@linux.ibm.com>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: earlyprintk=xdbc seems broken
-Message-ID: <f1ac3163-d005-9b0b-b9f1-f4e98b9798d5@linux.intel.com>
-Date:   Tue, 25 Jan 2022 19:13:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        id S239741AbiAYRTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 12:19:32 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:55146
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231483AbiAYRPd (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 12:15:33 -0500
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id C95073F1E6
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 17:12:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643130724;
+        bh=cRuWMxrPXr7Db37oGINTnI2Imc+mdGIhRauTmNnjcco=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=oi9HT76hgwgTZmqgO5+70sfRhubYBtLTfY8aDwFP9tLpxnEEef7gPfvvGwFekbCmv
+         rejQa6MOfJHq1ingAyglF/IOStrwF/ekZqmycHoh58yNdBObHL7QYZbohnShEy3pfC
+         uwX8RMhsIpK5TSbRuxpAAsSMV4e7jFMxYdORQZxK9bZ35oQyaabGijysLydqYl5rtQ
+         i1Es5BsMzz2K5Qn6KNF7i9R9k92/UYwpUP2jDqZTJ1rDIRiuqaps2FBYLtamxyk9nb
+         61yylDGTwnvM5H78jv0UeI3AEj+dFEJSS1DdOH/PMOCbwDJnd7SRbN9bR3RrOld3gf
+         4kCRD2TF6E2Nw==
+Received: by mail-wm1-f71.google.com with SMTP id a3-20020a05600c348300b0034a0dfc86aaso1435396wmq.6
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:12:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cRuWMxrPXr7Db37oGINTnI2Imc+mdGIhRauTmNnjcco=;
+        b=o6X97iXsFJuETLRShW5ekxOW0MZbfiXFbxN2Js8T2oPqqieAztbI7x7dD1k4mngfS+
+         CYnAP1vG57UxUpilRNPcrVTbXOVMNspS+VMTn7Mh+rvCOcWNyBUo0T4lhbef58sj3T0E
+         YwfJ7gCXKzmMAX1EkNBWGLxy2XXOJ6J1yda6BpS0k7YnFH/QH4LDQhnvvx3VJOhfn1Qt
+         A432Advj675emaZiSzQx9JqMk1EJUCKpnrU/bRpl5iQwduzJSJBbSNm88dUAOpBJtlvg
+         EVd8R5e3dh6jl72N+FzffjribmYVmqohrNbTjFBTyRrCs1rZUAzQz5fjI/DPTWe79KWY
+         TMoQ==
+X-Gm-Message-State: AOAM533xTgnXmRUaxCjyzg+J/7XqYsypBjktLO1cBXPIbxiov1D30FaJ
+        vfo3D+jA+XA14ZpYpASYS5wqYEwNfXR0a5pqAKJSR5L2qAjDAWh39jClIq2z9NKQjnLtbzBoHdM
+        dTmoTr2Ge4hrIZunrY2TR7ONXPGtcxETfQwYR4r52KQ==
+X-Received: by 2002:a5d:59ac:: with SMTP id p12mr1764868wrr.437.1643130724393;
+        Tue, 25 Jan 2022 09:12:04 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyn63lsxsGyIy8w2Zle5UfHDf5Cg31gXP3K6sfp7qWzheNoBd+PgghdMtFEcamrKebOUlq3QQ==
+X-Received: by 2002:a5d:59ac:: with SMTP id p12mr1764836wrr.437.1643130724154;
+        Tue, 25 Jan 2022 09:12:04 -0800 (PST)
+Received: from [192.168.0.59] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id u3sm7390429wrs.55.2022.01.25.09.12.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 09:12:03 -0800 (PST)
+Message-ID: <d9682f16-13b7-b6dc-5afd-b2d319143de5@canonical.com>
+Date:   Tue, 25 Jan 2022 18:12:02 +0100
 MIME-Version: 1.0
-In-Reply-To: <yt9dh79rnccf.fsf@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5 00/16] Add support for Tesla Full Self-Driving (FSD)
+ SoC
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+To:     Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, olof@lixom.net, arnd@arndb.de,
+        linus.walleij@linaro.org, catalin.marinas@arm.com,
+        robh+dt@kernel.org, s.nawrocki@samsung.com,
+        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
+        sboyd@kernel.org
+References: <CGME20220124142850epcas5p2f82243b87386b3d49a9302c87e015d6b@epcas5p2.samsung.com>
+ <20220124141644.71052-1-alim.akhtar@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220124141644.71052-1-alim.akhtar@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.1.2022 16.01, Sven Schnelle wrote:
-> Peter Zijlstra <peterz@infradead.org> writes:
+On 24/01/2022 15:16, Alim Akhtar wrote:
+> Adds basic support for the Tesla Full Self-Driving (FSD)
+> SoC. This SoC contains three clusters of four Cortex-A72 CPUs,
+> as well as several IPs.
 > 
->> On Tue, Jan 25, 2022 at 02:09:18PM +0100, Sven Schnelle wrote:
->>> Peter Zijlstra <peterz@infradead.org> writes:
->>>
->>>> Now the documentation states we need this super speed A<->A cable, but
->>>> could you also update the documentation for usb-c ? There's a fair
->>>> number of usb-c only devices out there now.
->>>
->>> Stupid beginners question: Would every USB3 A-A cable work, or are the
->>> debug cables special? I've read the RX/TX pairs have to be swapped, but
->>> to me it looks like that's always the case?
->>
->> I'm using a random USB3 A-A cable (it came with an HDMI frame grabber of
->> of AliExpress). The official one has a wire missing I think, to avoid
->> ground loops or something like that.
->>
->> The easiest thing to do is try the runtime DBC option:
->>
->>   echo enable > /sys/bus/pci/devices/0000:00:14.0/dbc
->>
->> If that works you can see what it takes to make the earlyprintk one
->> working. This thread seems to have much of that covered.
+> Patches 1 to 9 provide support for the clock controller
+> (which is designed similarly to Exynos SoCs).
 > 
-> Thanks, the sysfs test works for me. I have two A-A cables, one is from
-> a cheap PCI-e extender, the other one from a KVM switch. Both work,
-> which is great. So i assume that most A-A cable would work. I'm building
-> a new kernel now with the patch on top, lets see.
+> The remaining changes provide pinmux support, initial device tree support.
+> 
+> - Changes since v4
+> * fixed 'make dtbs_check' warnings on patch 14/16
+> 
+> - Changes since v3
+> * Addressed Stefen's review comments on patch 14/16
+> * Fixed kernel test robot warning on patch 04/16
+> * rebsaed this series on Krzysztof's pinmux new binding schema work [1]
+> 
+> - Changes since v2
+> * Addressed Krzysztof's and Stephen's review comments
+> * Added Reviewed-by and Acked-by tags
+> * Rebased on next-20220120
+> 
+> - Changes since v1
+> * fixed make dt_binding_check error as pointed by Rob
+> * Addressed Krzysztof's and Rob's review comments
+> * Added Reviewed-by and Acked-by tags
+> * Dropped SPI, MCT and ADC from this series (to be posted in small sets)
+> 
+> NOTE: These patches are based on Krzysztof's pinmux for-next branch
+> commit 832ae134ccc1 ("pinctrl: samsung: add support for Exynos850 and ExynosAutov9 wake-ups") 
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/pinctrl/samsung.git/log/?h=for-next
+> 
 > 
 
-I enabled runtime dbc on a Tigerlake 0000:00:0d.0 xhci, and connected the
-USB-C port to a host using a USB-C to A adapter, and a cheap USB3 A-to-A cable.
-Worked for me, but can't make any official recommendation.
+Thanks, applied DTS/soc and pinctrl patches.
 
-I'm guessing the USB-C port works as long as the USB-C TX/RX pins are muxed
-to a xhci.
+I expect Sylwester will pick up the clock ones. Otherwise please let me
+know to pick it up as well.
 
-With additional dbc patches it's possible to have dbc connected on both xhci
-controllers at the same time (runtime via sysfs).
 
--Mathias
+Best regards,
+Krzysztof
