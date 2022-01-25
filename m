@@ -2,136 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD5FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FAA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:40:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232288AbiAYUkL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 15:40:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37472 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232253AbiAYUkJ (ORCPT
+        id S232299AbiAYUka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 15:40:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232290AbiAYUk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 15:40:09 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31E03B81A29;
-        Tue, 25 Jan 2022 20:40:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6D09C340E0;
-        Tue, 25 Jan 2022 20:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643143206;
-        bh=RUJ918iEX3MuMXSIBIgjXfg8HKd6kX+Z35rkfk4Qzu4=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=Q7vG8ygrYGGJegIsF9SmIe9kkWW5NLPEhrvS3NPHY/kS2AeEU3CxqMtsYCTUK0WAb
-         vluUuVzaaiJmZEc6BMhswBhF8P+HD95ViXZs4HEv9+4MSJWTjxS0WTidG2iXKGHRDd
-         LtKz+0YVPc+QD5MI1n4PML4NPA8NaAb/tWyeBSPiJoUtCzXeEdXuNGbFOoOlTar3ca
-         Jz2FajMn+Aw6sbGo8iGxqQVfCZFGKT4rAkYLiCsWrFCti4Z3hdKPvNEqLzfyHAhZz6
-         FpzNgiv5ipkOXz85BL/3hVRnYLJyEfiYIBK9D4D/DWe8WP6wqxtV2Jco1aa+YioEh8
-         Fauz5GV/pixOA==
-Content-Type: text/plain; charset="utf-8"
+        Tue, 25 Jan 2022 15:40:28 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60299C06173B
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:40:28 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id i62so9490298ioa.1
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:40:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TobNMKU240Fj7f7MVAjfzomITTx2vGGl8ugxKX/S6BE=;
+        b=CCPGuSm797PuQtUaHM9EKwIp/9sJqcwDjoWyuLCcLdvttr6bBokT7dxuyvK09meDOm
+         5NPuDCf53GtbDCISAw2vgQB0ND9EPAUkKVlErS9XAn4Hp1aJiqrJ0+qNRuSbsfLdISXn
+         ZFvRXmu0ir8JFtcPOfoV22y0wxZy/CRBMAKZQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TobNMKU240Fj7f7MVAjfzomITTx2vGGl8ugxKX/S6BE=;
+        b=jC7ZsPSO1y7JQB/VLBechFekMKefFO4Gu2AcvTIt9TU7GKm990BZ0TLlsWqQ1CvJMW
+         cnluHQ/1VW0VhDGyO5Nc28YfgxIbA+QH2K02uVDYCaujg94vCeJ6fk08YL2Z8JgAL6Do
+         sXDVzSJTJuua0b0I0ztWPV33FouHWcBw0+adZ2ywLSwtKX3+mPVQ4wAFVqdSTBvPBAVM
+         dufcMDN3TPVwPrIewHRUGwhCxcbrfEWaMG28csSmHAuIiWdX2S8+mozaL6MWbX4RDr70
+         OFACzEG6UQGhC8W4tVtmjE4/1eJKRWNVV0xm+z7j2oHRT40/voz5B/sdz/WoZ8yAzH7e
+         RMiA==
+X-Gm-Message-State: AOAM533nfM8wjcJ3rtAXGCMC+FPTp4yKUKCicL1S4MHnw1c9d1knMQJX
+        kDAJV7DHNNzK5c6X0mw/Nv9nDQ==
+X-Google-Smtp-Source: ABdhPJxDUt8PW94HBYYCkH6kK+Bn4St/ddjA5pSr7jZlBibsvFxWlk1D7AxUwQXlWExN6/fD15N+xA==
+X-Received: by 2002:a05:6602:2d09:: with SMTP id c9mr12115862iow.142.1643143227806;
+        Tue, 25 Jan 2022 12:40:27 -0800 (PST)
+Received: from ?IPv6:2601:282:8200:4c:4ef8:d404:554b:9671? ([2601:282:8200:4c:4ef8:d404:554b:9671])
+        by smtp.gmail.com with ESMTPSA id q8sm374818ilj.12.2022.01.25.12.40.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 12:40:27 -0800 (PST)
+Subject: Re: [PATCH 3/3] selftests/zram: Adapt the situation that /dev/zram0
+ is being used
+To:     Yang Xu <xuyang2018.jy@fujitsu.com>,
+        linux-kselftest@vger.kernel.org, shuah@kernel.org
+Cc:     linux-kernel@vger.kernel.org, naresh.kamboju@linaro.org,
+        aleksei.kodanev@bell-sw.com, Shuah Khan <skhan@linuxfoundation.org>
+References: <1639562171-4434-1-git-send-email-xuyang2018.jy@fujitsu.com>
+ <1639562171-4434-3-git-send-email-xuyang2018.jy@fujitsu.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <7ec24b9a-4b98-ca31-9862-4b2d2df4b50e@linuxfoundation.org>
+Date:   Tue, 25 Jan 2022 13:40:25 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220120092641.o4ffzeyakhuuf3c7@pali>
-References: <20211015093701.pfvkighxsndj4ujg@pali> <20211016064210.7ahqfqcvf66wtt66@pali> <20220115080213.0CCAFC36AE3@smtp.kernel.org> <20220115115018.he4hnnhlvrb6kann@pali> <20220115130509.4a240730@thinkpad> <20220115122618.plhiqnjh2755bv5h@pali> <20220119231655.EFFF3C004E1@smtp.kernel.org> <20220120000651.in7s6nazif5qjkme@pali> <20220120060149.0FF24C340E0@smtp.kernel.org> <20220120092641.o4ffzeyakhuuf3c7@pali>
-Subject: Re: [PATCH v7 3/6] dt-bindings: mvebu-uart: document DT bindings for marvell,armada-3700-uart-clock
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Marek =?utf-8?q?Beh=C3=BAn?= <kabel@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Vladimir Vid <vladimir.vid@sartura.hr>,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org
-To:     Pali =?utf-8?q?Roh=C3=A1r?= <pali@kernel.org>
-Date:   Tue, 25 Jan 2022 12:40:04 -0800
-User-Agent: alot/0.10
-Message-Id: <20220125204006.A6D09C340E0@smtp.kernel.org>
+In-Reply-To: <1639562171-4434-3-git-send-email-xuyang2018.jy@fujitsu.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Pali Roh=C3=A1r (2022-01-20 01:26:41)
-> On Wednesday 19 January 2022 22:01:47 Stephen Boyd wrote:
-> > >=20
-> > > Ok, now I see what you mean.
-> > >=20
-> > > But problem is that this is not backward compatible change. And would
-> > > not work per existing DT bindings definitions, which defines how
-> > > bootloader should set configured clocks.
-> > >=20
-> > > As I wrote in emails 3 months ago, this new "proposed" DTS definition=
- is
-> > > something which I would have chosen if I had designed this driver and
-> > > bindings in past. But that did not happen and different approach is
-> > > already widely in used.
-> > >=20
-> > > To support existing DTS definitions and bootloaders, it is really
-> > > required to have current structure backward compatible like it is
-> > > defined in current DT bindings document. And my changes in this patch
-> > > series are backward compatible.
-> >=20
-> > I'm lost. Is the bootloader the one that's expecting some particular
-> > serial node format and updating something? What is the bootloader doing?
->=20
-> If bootloader uses or configures UART to different clock it needs to
-> update "clocks" property in DT. Otherwise UART would be unusable and
-> there would be no dmesg output.
+On 12/15/21 2:56 AM, Yang Xu wrote:
+> On some linux distributions, if it used /dev/zram0 as default by zram-generate
+> service, then this case will fail or report EBUSY.
+> 
+> To fix this, use hot_add/hot_remove interface. Also, move module check code into
+> zram_load from zram.sh. We can use /sys/class/zram-control to detect the
+> module whether existed.
+> 
+> After this patch, we still run case pass even /dev/zram0 is being used.
+> 
+> Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+> ---
+>   tools/testing/selftests/zram/zram.sh     | 16 +----
+>   tools/testing/selftests/zram/zram01.sh   |  2 +-
+>   tools/testing/selftests/zram/zram_lib.sh | 75 ++++++++++++------------
+>   3 files changed, 41 insertions(+), 52 deletions(-)
+> 
 
-Got it! I didn't see that part mentioned anywhere in the commit text
-though. To the uninformed reviewer like me it is hard to know about this
-bootloader design unless the commit text explains that there's no other
-way to do this.
+This patch looks good to me. A few checkpatch warns to fix and also
+it probably depends on the other two patches in this series.
 
->=20
-> A3720 heavily depends that bootloader patches at boot time DTB file to
-> the layout of the current hardware.
->=20
-> > >=20
-> > > To change DTS structure, it would be needed to provide uart nodes in =
-DTS
-> > > files two times: once in old style (the current one) and second time =
-in
-> > > this new style.
-> >=20
-> > That's not a good idea. Why do we need to support both at the same time?
->=20
-> Because old bootloaders do not and will never support this new style. It
-> is not only linux kernel project who provides DTB files. Also bootloader
-> itself has own DTB files and use it for booting (e.g kernel). For some
-> boards is in-kernel-tree DTS file only as a reference. So it is
-> important that kernel can use and support DTS files from old version and
-> also from the new patched version. Gregory (A3720 DTS files maintainer)
-> always ask me what happens if I try to boot new patched kernel drivers
-> with old unmodified DTS files and wants to know if nothing is broken by
-> introduced changed.
->=20
-> > >=20
-> > > But such thing would even more complicate updating driver and it needs
-> > > to be implemented.
-> > >=20
-> > > Plus this would open a question how to define default stdout-path if
-> > > there would be 4 serial nodes, where one pair would describe old style
-> > > and second pair new style; meaning that 2 cross nodes would describe
-> > > same define.
-> >=20
-> > Huh? We shouldn't have both bindings present in the DTB.
->=20
-> Ideally yes, I would like to see to prevent it. But for backward
-> compatibility we really need old bindings still present (as explained
-> above).
->=20
-> So really I see two options here: Make changes in patches backward
-> compatible (old nodes stay in DT and also kernel would be able to use
-> old DT). Or let old bindings untouched in DT and new backward
-> incompatible definitions would have to be in separate nodes.
+Please fix and send v2 for all 3 patches.
 
-Ok I understand now. We have to keep both the serial nodes because the
-bootloader is patching them. To make matters worse, one or the other
-node may be disabled so we can't even add the new bits to the uart1
-node. Can you update the commit text to record this sad state of affairs
-and indicate that the only way to support this is to make a new node in
-DT that the bootloader doesn't know about?
+thanks,
+-- Shuah
