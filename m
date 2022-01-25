@@ -2,86 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 413E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B351C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389020AbiAYOon (ORCPT
+        id S1580191AbiAYOpN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:44:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1579870AbiAYOkn (ORCPT
+        Tue, 25 Jan 2022 09:45:13 -0500
+Received: from mail-yb1-f179.google.com ([209.85.219.179]:38844 "EHLO
+        mail-yb1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1389262AbiAYOkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:40:43 -0500
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2D6C061781
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:40:41 -0800 (PST)
-Received: by mail-qk1-x733.google.com with SMTP id s12so24709061qkg.6
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:40:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gtrPmzwuc49PRDcKSoMWbGgV3vDQg/A9aITmSjuzp5c=;
-        b=g1fQpKeNAHgn9G8Omr0cljidyKQ3ENNVBrAJmALmgqehDrb40DaX8BQY+PzqLEJeq9
-         8Ju+pVg6yx3/nYZnsCiCAKOgJpFO/o081p79KVhTcRQvnPfVGP/YOgiFLNt49d8W5kO1
-         UACjHga4PuMhduxst5D7SG1SwibPnayMnti2RB3KciYWwdVKcemFTgb9ptcd6jMVmT46
-         HsQjEm6PGHOjarzAf1htN0pDGqxw728n7mhMAHtU1PnquagyK4d9aFCLHTASS7YSFnX/
-         PTSKGqGAi1nGvMcgALpHVkDsxVp6eLJ17WuWrI59bAFNYAyqjaylr9Sq99tHNG9rY+mH
-         ifpg==
+        Tue, 25 Jan 2022 09:40:19 -0500
+Received: by mail-yb1-f179.google.com with SMTP id i62so15962560ybg.5;
+        Tue, 25 Jan 2022 06:40:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gtrPmzwuc49PRDcKSoMWbGgV3vDQg/A9aITmSjuzp5c=;
-        b=L46CRVo8NMyYi44F0PWEYl0Jf25pfBwvRa1FV0i6owPKHO1u+I9WLgnrdYm6bhKC9v
-         Tszzf9JE3jLTm2b7Yixe5gISDxiSsDyNBO4NZPmpc4pjmOLJTuqSaPIQJ2C62937yDbh
-         sFnrWuQwaqKeOZO3wsk2y6GbUIaDNXvt/P9GJltzY12ExJRuqTjBu08tRGHthzTUOxaU
-         7JVIZnRvP+lce3wvw/oV1Rpiige1ArA8ZShofJ3z5AcZY4rbM/LaskN8NQsYCvtrJNk+
-         2m3LTwtbQ6SC9iIbGdJ4miPsg4PNpjO1HcXQ26MU8QCZgh1g5C8/AkelKwIrFphRGwNT
-         2FpA==
-X-Gm-Message-State: AOAM5303ZwceaGZGQbOwTdEBaHfhQ91cG+BydN0RanxZalRJpPybI9wP
-        dYpFBgqVLENlZhpLeorY8AqiQcS5utmLzA==
-X-Google-Smtp-Source: ABdhPJyRZolfkQavX9zknwnVBh+FWcx40CHIQtmwXZZ7myvC9M8hi9kfamtRYMhgnfy90nzpnZEcsQ==
-X-Received: by 2002:a05:620a:56a:: with SMTP id p10mr1893232qkp.102.1643121640735;
-        Tue, 25 Jan 2022 06:40:40 -0800 (PST)
-Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
-        by smtp.gmail.com with ESMTPSA id h10sm9606707qko.90.2022.01.25.06.40.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 06:40:40 -0800 (PST)
-Date:   Tue, 25 Jan 2022 09:40:39 -0500
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Huangzhaoyang <huangzhaoyang@gmail.com>
-Cc:     Suren Baghdasaryan <surenb@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Zhaoyang Huang <zhaoyang.huang@unisoc.com>,
-        Ingo Molnar <mingo@redhat.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv4] psi: fix possible trigger missing in the window
-Message-ID: <YfAL55Xydar/jKrl@cmpxchg.org>
-References: <1643093818-19835-1-git-send-email-huangzhaoyang@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qmXgH7zvCKX7VHBhpaIeJiGEHk4KUYcP0Ex/yLKpPRw=;
+        b=6H9+F/nMrttzgBGtZU3fM2qnAlAR7KVAXR+P0s5h/nqDNTjZafFa8k+A0docFREHBo
+         v+UNaAppgBLuEzJ0Zw3kM/P0nZeSfWx0xBGdL3jdNaZrrsSrFaHl52JrsuaqlnpG+wUO
+         qkilZta4eSlvWl9Wcq6CgxGHHwLNwLY7CGAEPrzOCt090tH99Dn056Ql86bc8qlyhPju
+         Pn9lyTcNtzuSDspgA8UungONARLYR4T9cXyYwNjAx9g53ohnVf/CZSV3B5XW49rPtWGj
+         orfn9tAy5VYJk8GOADDbb9/DiuF8actN2z/1vwsIYPDmeLmP9fPgWFQNX9mkL8WtLcrf
+         ZWAQ==
+X-Gm-Message-State: AOAM5312sBf6MilPQnB3HJ81awEeW9Q7/18jy/PC+qbX2SA6xO4ApbB7
+        qObpEtJ7QHLPLM4bZMCjThF8FQH3gvTWEGgbbloc49nu
+X-Google-Smtp-Source: ABdhPJyf4NeSGDSjgs2JLUl9Ym4PFBwT201JLgx/QXUQCHDWtDkDZoHe8Rmk0nWCImELThqsOUzv2R/oSJ1fmxEwliY=
+X-Received: by 2002:a5b:5c7:: with SMTP id w7mr30536273ybp.343.1643121613569;
+ Tue, 25 Jan 2022 06:40:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1643093818-19835-1-git-send-email-huangzhaoyang@gmail.com>
+References: <20220120000409.2706549-1-rajatja@google.com> <20220121214117.GA1154852@bhelgaas>
+ <Ye5GvQbFKo+CFtRb@lahna> <Ye/X7E2dKb+zem34@lahna>
+In-Reply-To: <Ye/X7E2dKb+zem34@lahna>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 25 Jan 2022 15:40:01 +0100
+Message-ID: <CAJZ5v0gii3z=DfFbGvubyg=f3t+74eNFdtpJDauwzH4roL-dAQ@mail.gmail.com>
+Subject: Re: [PATCH] PCI: ACPI: Allow internal devices to be marked as untrusted
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Rajat Jain <rajatja@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rajat Jain <rajatxjain@gmail.com>,
+        Dmitry Torokhov <dtor@google.com>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Pavel Machek <pavel@denx.de>,
+        "Oliver O'Halloran" <oohall@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 02:56:58PM +0800, Huangzhaoyang wrote:
-> From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
-> 
-> When a new threshold breaching stall happens after a psi event was
-> generated and within the window duration, the new event is not
-> generated because the events are rate-limited to one per window. If
-> after that no new stall is recorded then the event will not be
-> generated even after rate-limiting duration has passed. This is
-> happening because with no new stall, window_update will not be called
-> even though threshold was previously breached. To fix this, record
-> threshold breaching occurrence and generate the event once window
-> duration is passed.
-> 
-> Suggested-by: Suren Baghdasaryan <surenb@google.com>
-> Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+On Tue, Jan 25, 2022 at 11:59 AM Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
+>
+> On Mon, Jan 24, 2022 at 08:27:17AM +0200, Mika Westerberg wrote:
+> > > > This patch introduces a new "UntrustedDevice" property that can be used
+> > > > by the firmware to mark any device as untrusted.
+> >
+> > I think this new property should be documented somewhere too (also
+> > explain when to use it instead of ExternalFacingPort). If not in the
+> > next ACPI spec or some supplemental doc then perhaps in the DT bindings
+> > under Documentation/devicetree/bindings.
+>
+> Actually Microsoft has similar already:
+>
+> https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-internal-pcie-ports-accessible-to-users-and-requiring-dma-protection
+>
+> I think we should use that too here.
 
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Agreed.
+
+This is what the platform firmware will need to use anyway for Windows
+compatibility and OEMs may not care about running Linux on their
+platforms.
