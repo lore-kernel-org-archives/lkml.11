@@ -2,193 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B62C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE20EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573938AbiAYJac (ORCPT
+        id S1573991AbiAYJa6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:30:32 -0500
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:48570 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1572950AbiAYJS3 (ORCPT
+        Tue, 25 Jan 2022 04:30:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1573003AbiAYJSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:18:29 -0500
+        Tue, 25 Jan 2022 04:18:36 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95541C06174E
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:14:54 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id q22so7068267ljh.7
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:14:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643102309; x=1674638309;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=WCMvfojpGnDDo8OwfSsHCxCIjz0cLdSHACcu8tv3ne8=;
-  b=u7BL6raKVH4FwjsXKh9ua5fsPiKXpfBM82QrlcdI0VeMcGM2c2d1HIbw
-   rpIXO6gPhLy8PwjYlQJpn1jT5yoJEAoGndmC27tbmWu5etRyJPO1ds2Jl
-   5zHH8RrscTuxbnbGQaNYYanvMcqQuGGPeK9frLPZIrdRRf9XRHhlXSPBv
-   A=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 25 Jan 2022 01:18:06 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 01:18:06 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 25 Jan 2022 01:18:06 -0800
-Received: from [10.216.59.162] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 25 Jan
- 2022 01:18:02 -0800
-Message-ID: <601cdc74-392f-dd4f-7ea0-8e65c6b6d7e2@quicinc.com>
-Date:   Tue, 25 Jan 2022 14:47:59 +0530
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qrgiZGQ6iDovOpvrU32QRk7eljkxoPWyGy5MexT9X4I=;
+        b=Yz2JeNHhq5XcFshwTR7g5n40VgZtU4lRAtDEj/GojdZK5RxjDf23wQ/pzu5acf+Dy8
+         2Ugx0biQWhmmP2vWA7xGO7oOFi+maeNvwfeVrjg6zFJhNpWMw5y46Pbrvs8pcI7UPkcO
+         mmuYSf03AAL49jlQiQXGb7HK2595dtPejQBGbHBaVmpuN+2sXyWTC3EdB2UMZlOIKtNi
+         aNz9lN7EEAVxXmBlCi4zbmNEJPG+weJ+ejVUm3QStQzw+lzV3u+badZWBTwf+qEtIuxl
+         IxB2VpHQMu/pMR/3KXXRX0UjZ8qsInINtLA4+1c8J0nvMvn02/1Nt5VVEUCBzwuORlDH
+         /PrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qrgiZGQ6iDovOpvrU32QRk7eljkxoPWyGy5MexT9X4I=;
+        b=RruedDxceHfTeh1bq3hp+EzMA/h850DPu43pBoK8VD1ZWKnWIlEeEBsKz05rJhnJrZ
+         y1bnQ+CiUybkW8LTIpxIj6Q02TXgv9k/JtPRxCjqDqxXV9C64almb2rvVpuyhv+XWLyE
+         Omwvo53e89JbiFOnvzpRFj/rN8Qr22GTbotVRbMAWCKu1e0CJVmzGO7l2KVsYTLqQhE7
+         DtQZrWIJF8yMzvjtbsNI8cJKsUuIMG12gEkqmyn4QZ6CuRV63PW3IpArLcnjSXuCxRnZ
+         SZrwG/JWl86Xm1JM+Bn34hc1aL0VeGfXpFRciJWKkeHBB58XHUbr0I6gcZ/+5ah7MbkU
+         +1Iw==
+X-Gm-Message-State: AOAM531n9DjW6ct7R9m0Q+h8BAh4H82Ym7RJg3Izzd72yZHLaFJBfDOa
+        ymADG/BRmW4DklUza0D514ayP35EgLiYMrriTJ6e9w==
+X-Google-Smtp-Source: ABdhPJzeq/FzwGiCeBTJHEg6r95G1ZdhTdmrdSjD6Yutu6gLbJJWNcXh4b7oAOFsB95LEsMJlk6By0jWGzJ/zBOV8kg=
+X-Received: by 2002:a2e:6a13:: with SMTP id f19mr8258334ljc.365.1643102092835;
+ Tue, 25 Jan 2022 01:14:52 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v10 6/6] usb: dwc3: qcom: Enable the interrupts during
- probe
-Content-Language: en-US
-From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-To:     Pavan Kondeti <quic_pkondeti@quicinc.com>,
-        Steev Klimaszewski <steev@kali.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_ppratap@quicinc.com>
-References: <1642398248-21753-1-git-send-email-quic_c_sanm@quicinc.com>
- <1642398248-21753-7-git-send-email-quic_c_sanm@quicinc.com>
- <93b68251-7e7e-ac92-fb47-346c410744b2@kali.org>
- <20220118095255.GB11385@hu-pkondeti-hyd.qualcomm.com>
- <78c90e46-666b-bc9b-235d-ae4c69e19929@quicinc.com>
-In-Reply-To: <78c90e46-666b-bc9b-235d-ae4c69e19929@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220120200139.118978-1-tadeusz.struk@linaro.org> <20220125011804.mhlhdenbjluzqkgf@oracle.com>
+In-Reply-To: <20220125011804.mhlhdenbjluzqkgf@oracle.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Tue, 25 Jan 2022 10:14:41 +0100
+Message-ID: <CAKfTPtB7UvUG3C_xiHL-V6eDfDOAkpzFWa0_QQeeRAQG7PovXQ@mail.gmail.com>
+Subject: Re: [PATCH v2] sched/fair: Fix fault in reweight_entity
+To:     Daniel Jordan <daniel.m.jordan@oracle.com>
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>, peterz@infradead.org,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Steev,
+On Tue, 25 Jan 2022 at 02:18, Daniel Jordan <daniel.m.jordan@oracle.com> wrote:
+>
+> Hi,
+>
+> On Thu, Jan 20, 2022 at 12:01:39PM -0800, Tadeusz Struk wrote:
+> > Syzbot found a GPF in reweight_entity(). This has been bisected to commit
+> > 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
+> >
+> > There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
+> > within a thread group that causes a null-ptr-deref in reweight_entity()
+> > in CFS. The scenario is that the main process spawns number of new
+> > threads, which then call setpriority(PRIO_PGRP, 0, prio), wait, and exit.
+> > For each of the new threads the copy_process() gets invoked, which adds
+> > the new task_struct to the group, and eventually calls sched_post_fork() for it.
+> >
+> > In the above scenario there is a possibility that setpriority(PRIO_PGRP)
+> > and set_one_prio() will be called for a thread in the group that is just
+> > being created by copy_process(), and for which the sched_post_fork() has
+> > not been executed yet. This will trigger a null pointer dereference in
+> > reweight_entity(), as it will try to access the run queue pointer, which
+> > hasn't been set.
+>
+> It's kinda strange that p->se.cfs_rq is NULLed in __sched_fork().
+> AFAICT, that lets set_task_rq_fair() distinguish between fork and other
+> paths per ad936d8658fd, but it's causing this problem now and it's not
+> the only way that set_task_rq_fair() could tell the difference.
+>
+> We might be able to get rid of the NULL assignment instead of adding
+> code to detect it.  Maybe something like this, against today's mainline?
+> set_task_rq_fair() would rely on TASK_NEW instead of NULL.
+>
+> Haven't thought it all the way through, so could be missing something.
+> Will think more
 
-On 1/20/2022 10:52 AM, Sandeep Maheswaram wrote:
-> Hi Pavan,
->
-> On 1/18/2022 3:22 PM, Pavan Kondeti wrote:
->> On Tue, Jan 18, 2022 at 12:12:30AM -0600, Steev Klimaszewski wrote:
->>> On 1/16/22 11:44 PM, Sandeep Maheswaram wrote:
->>>> Enable the interrupts during probe and remove the disable interrupts
->>>> function.
->>>>
->>>> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
->>>> ---
->>>>   drivers/usb/dwc3/dwc3-qcom.c | 28 ++++------------------------
->>>>   1 file changed, 4 insertions(+), 24 deletions(-)
->>>>
->>>> diff --git a/drivers/usb/dwc3/dwc3-qcom.c 
->>>> b/drivers/usb/dwc3/dwc3-qcom.c
->>>> index 54dc3d3..7c5e636 100644
->>>> --- a/drivers/usb/dwc3/dwc3-qcom.c
->>>> +++ b/drivers/usb/dwc3/dwc3-qcom.c
->>>> @@ -306,25 +306,7 @@ static void dwc3_qcom_enable_wakeup_irq(int irq)
->>>>       enable_irq_wake(irq);
->>>>   }
->>>> -static void dwc3_qcom_disable_wakeup_irq(int irq)
->>>> -{
->>>> -    if (!irq)
->>>> -        return;
->>>> -
->>>> -    disable_irq_wake(irq);
->>>> -    disable_irq_nosync(irq);
->>>> -}
->>>> -static void dwc3_qcom_disable_interrupts(struct dwc3_qcom *qcom)
->>>> -{
->>>> -    dwc3_qcom_disable_wakeup_irq(qcom->hs_phy_irq);
->>>> -
->>>> -    dwc3_qcom_disable_wakeup_irq(qcom->dp_hs_phy_irq);
->>>> -
->>>> -    dwc3_qcom_disable_wakeup_irq(qcom->dm_hs_phy_irq);
->>>> -
->>>> -    dwc3_qcom_disable_wakeup_irq(qcom->ss_phy_irq);
->>>> -}
->>>>   static void dwc3_qcom_enable_interrupts(struct dwc3_qcom *qcom)
->>>>   {
->>>> @@ -356,9 +338,6 @@ static int dwc3_qcom_suspend(struct dwc3_qcom 
->>>> *qcom)
->>>>       if (ret)
->>>>           dev_warn(qcom->dev, "failed to disable interconnect: 
->>>> %d\n", ret);
->>>> -    if (device_may_wakeup(qcom->dev))
->>>> -        dwc3_qcom_enable_interrupts(qcom);
->>>> -
->>>>       qcom->is_suspended = true;
->>>>       return 0;
->>>> @@ -372,9 +351,6 @@ static int dwc3_qcom_resume(struct dwc3_qcom 
->>>> *qcom)
->>>>       if (!qcom->is_suspended)
->>>>           return 0;
->>>> -    if (device_may_wakeup(qcom->dev))
->>>> -        dwc3_qcom_disable_interrupts(qcom);
->>>> -
->>>>       for (i = 0; i < qcom->num_clocks; i++) {
->>>>           ret = clk_prepare_enable(qcom->clks[i]);
->>>>           if (ret < 0) {
->>>> @@ -832,6 +808,10 @@ static int dwc3_qcom_probe(struct 
->>>> platform_device *pdev)
->>>>       genpd->flags |= GENPD_FLAG_ALWAYS_ON;
->>>>       device_init_wakeup(&pdev->dev, 1);
->>>> +
->>>> +    if (device_may_wakeup(qcom->dev))
->>>> +        dwc3_qcom_enable_interrupts(qcom);
->>>> +
->>>>       qcom->is_suspended = false;
->>>>       pm_runtime_set_active(dev);
->>>>       pm_runtime_enable(dev);
->>> Hi Sandeep,
->>>
->>> I was testing this series on my Lenovo Yoga C630, and with this 
->>> patch in
->>> particular applied, my system will no longer boot. Unfortunately I 
->>> don't get
->>> any sort of good output at all, I just get hung tasks when trying to 
->>> probe
->>> things it would seem.
->>>
->>>
->>> With the other 5 patches in the series applied, the system still 
->>> boots and
->>> works correctly.
->>>
->>>
->> Sandeep,
->>
->> Enable DP/DM interrupts all the time might be creating a storm of 
->> interrupts.
->> calling enable_irq_wake() during probe is okay, but not the 
->> enable_irq().
->>
->> Did you verify your change with a Highspeed/Fullspeed device connected?
->>
->> Thanks,
->> Pavan
->
-> I didn't face any such issue with devices connected.
->
-> I think this is because I used IRQ_TYPE_EDGE_BOTH in device tree and 
-> Steev has IRQ_TYPE_LEVEL_HIGH in his device tree.
->
-> When i changed to IRQ_TYPE_LEVEL_HIGH I also observed a storm of 
-> interrupts in my device though it booted .
->
-> Regards
->
-> Sandeep
->
-Can you try with IRQ_TYPE_EDGE_BOTH in your device tree and see if you 
-are getting the issue.
+Could we use :
+set_load_weight(p, !(p->__state & TASK_NEW));
+instead of
+set_load_weight(p, true);
+in set_user_nice and __setscheduler_params.
 
-Regards
+The current always true value forces the update of the weight of the
+cfs_rq of the task which is not already set in this case
 
-Sandeep
-
+>
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index 848eaa0efe0ea..9a5b264c5dc10 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -4241,10 +4241,6 @@ static void __sched_fork(unsigned long clone_flags, struct task_struct *p)
+>         p->se.vruntime                  = 0;
+>         INIT_LIST_HEAD(&p->se.group_node);
+>
+> -#ifdef CONFIG_FAIR_GROUP_SCHED
+> -       p->se.cfs_rq                    = NULL;
+> -#endif
+> -
+>  #ifdef CONFIG_SCHEDSTATS
+>         /* Even if schedstat is disabled, there should not be garbage */
+>         memset(&p->stats, 0, sizeof(p->stats));
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index 5146163bfabb9..7aff3b603220d 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -3339,15 +3339,19 @@ static inline void update_tg_load_avg(struct cfs_rq *cfs_rq)
+>   * caller only guarantees p->pi_lock is held; no other assumptions,
+>   * including the state of rq->lock, should be made.
+>   */
+> -void set_task_rq_fair(struct sched_entity *se,
+> -                     struct cfs_rq *prev, struct cfs_rq *next)
+> +void set_task_rq_fair(struct task_struct *p, struct cfs_rq *next)
+>  {
+> +       struct sched_entity *se = &p->se;
+> +       struct cfs_rq *prev = se->cfs_rq;
+>         u64 p_last_update_time;
+>         u64 n_last_update_time;
+>
+>         if (!sched_feat(ATTACH_AGE_LOAD))
+>                 return;
+>
+> +       if (p->__state == TASK_NEW)
+> +               return;
+> +
+>         /*
+>          * We are supposed to update the task to "current" time, then its up to
+>          * date and ready to go to new CPU/cfs_rq. But we have difficulty in
+> @@ -3355,7 +3359,7 @@ void set_task_rq_fair(struct sched_entity *se,
+>          * time. This will result in the wakee task is less decayed, but giving
+>          * the wakee more load sounds not bad.
+>          */
+> -       if (!(se->avg.last_update_time && prev))
+> +       if (!se->avg.last_update_time)
+>                 return;
+>
+>  #ifndef CONFIG_64BIT
+> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+> index de53be9057390..a6f749f136ee1 100644
+> --- a/kernel/sched/sched.h
+> +++ b/kernel/sched/sched.h
+> @@ -514,11 +514,10 @@ extern int sched_group_set_shares(struct task_group *tg, unsigned long shares);
+>  extern int sched_group_set_idle(struct task_group *tg, long idle);
+>
+>  #ifdef CONFIG_SMP
+> -extern void set_task_rq_fair(struct sched_entity *se,
+> -                            struct cfs_rq *prev, struct cfs_rq *next);
+> +extern void set_task_rq_fair(struct task_struct *p, struct cfs_rq *next);
+>  #else /* !CONFIG_SMP */
+> -static inline void set_task_rq_fair(struct sched_entity *se,
+> -                            struct cfs_rq *prev, struct cfs_rq *next) { }
+> +static inline void set_task_rq_fair(struct task_struct *p,
+> +                                   struct cfs_rq *next) {}
+>  #endif /* CONFIG_SMP */
+>  #endif /* CONFIG_FAIR_GROUP_SCHED */
+>
+> @@ -1910,7 +1909,7 @@ static inline void set_task_rq(struct task_struct *p, unsigned int cpu)
+>  #endif
+>
+>  #ifdef CONFIG_FAIR_GROUP_SCHED
+> -       set_task_rq_fair(&p->se, p->se.cfs_rq, tg->cfs_rq[cpu]);
+> +       set_task_rq_fair(p, tg->cfs_rq[cpu]);
+>         p->se.cfs_rq = tg->cfs_rq[cpu];
+>         p->se.parent = tg->se[cpu];
+>  #endif
