@@ -2,112 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8204CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 841C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241291AbiAYEtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:49:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35448 "EHLO
+        id S241435AbiAYEuK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 23:50:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S250369AbiAYEQs (ORCPT
+        with ESMTP id S251072AbiAYEU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 23:16:48 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48817C036BF1
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 18:47:43 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id x11so54004178lfa.2
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 18:47:43 -0800 (PST)
+        Mon, 24 Jan 2022 23:20:27 -0500
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EB7C061747;
+        Mon, 24 Jan 2022 18:51:21 -0800 (PST)
+Received: by mail-ua1-x933.google.com with SMTP id b16so34851796uaq.4;
+        Mon, 24 Jan 2022 18:51:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WSgw+Bai9akIbsNX8qE1iDGkZDqwpur2u3wwvUxZaos=;
-        b=oh0ZGUYdJjwb/WULwnJIpti/MED7HLmMZVHOk9IKD0rr8P1tHXUBsy0GnBK6ZwnYIh
-         tJCowFsUgGAVBBYLsw4BFJPAXHTlcoHxc6pkhKCwUUiyLK18hTNYa8EkrIiEUCK30f7+
-         e9B86H6+E5jHBxNituWhdgYulf+E1Pmn2NoWGyUzDcZqU09ii/UfH4aWOc4QYjXOagRL
-         nIKlAMTUw4RY6LRQmrof23eAD/aSAyNlQuygygGFJf+hwTpZPljRaWoVquCojr6YlrO8
-         3vjCDFb1uGUKdCHRnXgGSUZMUGealQRlTR0nNvT522GnnVDptIvCHG88NDdprW0RNcVK
-         mqbw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=P6LscLp3E2WiwXwgZ3WD+U4l8G1jH7CQCRwujnNFTjc=;
+        b=C6roxTp7cIEMMOzhn5NzBDFNFNYpPNPbj+Bmw5Wm5qzD+W1emZSbnLEbF/eoHGn3hj
+         yOeZEeKK0g45s2eepfhK/i3TjW/9/jtvnxRvUVYnIJA5fDWOoQrDFmq+nmYxCD5w68xd
+         L/TvsEImBtY658ga1Pocieu6WwJNP5Gd0hG44lkGY9pgvKfzADfp/DIqyiJWZ2J4uK38
+         v6vqAWmwxzWJ+ITi/XOK3DcQ8mTIzOOtKk8xD0EB/mIaP0a3KJ3T60Gr76ojmyQ9mxES
+         Pwu/4XbBMcuFH/oDj7sA0VO+r/XLoUM87AOPuYHSQiALZsyDD1ZCwD4+LGlrZz1ZY0jh
+         1nAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=WSgw+Bai9akIbsNX8qE1iDGkZDqwpur2u3wwvUxZaos=;
-        b=6pRuZhmm58hKb3cwaBUeKQ1xLFUM/aDwe68JC/txPmlUcbPbK8DcWDEbgKjzu+0DW1
-         2FlBzWuZ5ANkf+qZTucMF4WTgSSLsZrO56dv5sogrgAbzoDamqSluppe88UzuJZle1jb
-         noTwULXIkOcuotY+wPA4v4fnHsSv+s+uFVxNIB1tghzRpZ1QOD5BOA63kJAtUoy7a6wK
-         +beEFCtIhq33PWsm3fO+ft0F/Y4XjWgSDPCkLT5kh/UrbfplIsTf9njsec2SzVDjz1e/
-         kBQcrsajhSfxNACubMgC/9KcQlYyCKBliJHpGrd6M8gpNe18Dq1In1ZEcUbUxPRAVsL1
-         xpAQ==
-X-Gm-Message-State: AOAM530aHE89xumur1WEKFC3BSVPv1PgJfaDWvd4GVnQdM/JvUZ1E9pI
-        2Kmz+Z7i+Y8xzqa6SW2N/QtrUtxEYXw6NQ==
-X-Google-Smtp-Source: ABdhPJw/HdOl+VUK3mcD6a1INueBqbK59eArLJlh5fV2q6DjMOQxtjwEObG+XzPUSBGydBKpE5XwKw==
-X-Received: by 2002:a19:640c:: with SMTP id y12mr5522574lfb.245.1643078861686;
-        Mon, 24 Jan 2022 18:47:41 -0800 (PST)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id u1sm1065629lfc.98.2022.01.24.18.47.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 18:47:40 -0800 (PST)
-Message-ID: <4d9fa340-19fd-ee0f-0244-15ded5e66c67@linaro.org>
-Date:   Tue, 25 Jan 2022 05:47:40 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=P6LscLp3E2WiwXwgZ3WD+U4l8G1jH7CQCRwujnNFTjc=;
+        b=cB82EcZ7xmlIUITyhudMVKb03D7DPp8oapAzKDa93eI97YCyvYD3+jrccfUPUEcXZG
+         y2GwWUWhjmeRShphHcT31f6kPzxRII3gbC8mLUJZewatSYbjWjeVlWSjGXqivItFp0FC
+         +jx3iLrCCN5w9YXS9JbamqxmxqTy1e2esrKuaMBIQY3FCqRTFBAW8Xr57Jp/jkrIc/rS
+         kl42UgN+mxkLjuaGOUDs1FR1GroGfZinZHIBPeUq4dSfuHLRr+0/GjJCzXS7xmhB3eT6
+         7siWjTpw6wC4yj5QDbag8zTJfzp6yCw69gO3FZxu04aIbtZtCp9dPAJWu7eInr1DORKU
+         jlNQ==
+X-Gm-Message-State: AOAM531UbvCKqXwujFhCZrwGtjyVnH4Qlh6xn2E8lAMtYZts7pr4/Kv/
+        GFAtfLIbugOjJyuZwhSIuT23PH9fPE5DmIkq4Rg=
+X-Google-Smtp-Source: ABdhPJySuvGbS5oFtYEekeKllgHwzNZ+MK9av1jtitp922jy95mnp/l3oDyWun9G86XHmtfmKGQa6XGOf2NXuGo96Qw=
+X-Received: by 2002:a67:b807:: with SMTP id i7mr6423171vsf.52.1643079080652;
+ Mon, 24 Jan 2022 18:51:20 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] drm/msm/a6xx: Add missing suspend_count increment
-Content-Language: en-GB
-To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
-Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Rob Clark <robdclark@chromium.org>,
-        Danylo Piliaiev <dpiliaiev@igalia.com>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
-        Eric Anholt <eric@anholt.net>,
-        Douglas Anderson <dianders@chromium.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220113163215.215367-1-robdclark@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220113163215.215367-1-robdclark@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <CAAhV-H4BTAKdRwv+Wq7QRfMQRajQYzz3CqjvoGTrKujn47F3Yg@mail.gmail.com>
+ <20220106162058.GA284940@bhelgaas>
+In-Reply-To: <20220106162058.GA284940@bhelgaas>
+From:   Huacai Chen <chenhuacai@gmail.com>
+Date:   Tue, 25 Jan 2022 10:51:15 +0800
+Message-ID: <CAAhV-H4GAgKh4HBeWQ+LGf2x_uKy_T5MaMv0dNcYXFKVGAZEzw@mail.gmail.com>
+Subject: Re: [PATCH v8 04/10] vgaarb: Move framebuffer detection to ADD_DEVICE path
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?Q?Bruno_Pr=C3=A9mont?= <bonbons@linux-vserver.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/01/2022 19:32, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
-> 
-> Reported-by: Danylo Piliaiev <dpiliaiev@igalia.com>
-> Fixes: 3ab1c5cc3939 ("drm/msm: Add param for userspace to query suspend count")
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
+Hi, Bjorn,
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Why this series still missing in 5.17-rc1? :(
 
-> ---
->   drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> index 51b83776951b..17cfad6424db 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> @@ -1560,6 +1560,8 @@ static int a6xx_pm_suspend(struct msm_gpu *gpu)
->   		for (i = 0; i < gpu->nr_rings; i++)
->   			a6xx_gpu->shadow[i] = 0;
->   
-> +	gpu->suspend_count++;
-> +
->   	return 0;
->   }
->   
+Huacai
 
-
--- 
-With best wishes
-Dmitry
+On Fri, Jan 7, 2022 at 12:21 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Thu, Jan 06, 2022 at 02:44:42PM +0800, Huacai Chen wrote:
+> > On Thu, Jan 6, 2022 at 8:07 AM Bjorn Helgaas <helgaas@kernel.org> wrote=
+:
+> > > Previously we selected a device that owns the boot framebuffer as the
+> > > default device in vga_arb_select_default_device().  This was only don=
+e in
+> > > the vga_arb_device_init() subsys_initcall, so devices enumerated late=
+r,
+> > > e.g., by pcibios_init(), were not eligible.
+> > >
+> > > Fix this by moving the framebuffer device selection from
+> > > vga_arb_select_default_device() to vga_arbiter_add_pci_device(), whic=
+h is
+> > > called after every PCI device is enumerated, either by the
+> > > vga_arb_device_init() subsys_initcall or as an ADD_DEVICE notifier.
+> > >
+> > > Note that if vga_arb_select_default_device() found a device owning th=
+e boot
+> > > framebuffer, it unconditionally set it to be the default VGA device, =
+and no
+> > > subsequent device could replace it.
+> > >
+> > > Link: https://lore.kernel.org/r/20211015061512.2941859-7-chenhuacai@l=
+oongson.cn
+> > > Based-on-patch-by: Huacai Chen <chenhuacai@loongson.cn>
+> > > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> > > Cc: Bruno Pr=C3=A9mont <bonbons@linux-vserver.org>
+> > > ---
+> > >  drivers/gpu/vga/vgaarb.c | 37 +++++++++++++++++--------------------
+> > >  1 file changed, 17 insertions(+), 20 deletions(-)
+> > >
+> > > diff --git a/drivers/gpu/vga/vgaarb.c b/drivers/gpu/vga/vgaarb.c
+> > > index b0ae0f177c6f..aefa4f406f7d 100644
+> > > --- a/drivers/gpu/vga/vgaarb.c
+> > > +++ b/drivers/gpu/vga/vgaarb.c
+> > > @@ -72,6 +72,7 @@ struct vga_device {
+> > >         unsigned int io_norm_cnt;       /* normal IO count */
+> > >         unsigned int mem_norm_cnt;      /* normal MEM count */
+> > >         bool bridge_has_one_vga;
+> > > +       bool is_framebuffer;    /* BAR covers firmware framebuffer */
+> > >         unsigned int (*set_decode)(struct pci_dev *pdev, bool decode)=
+;
+> > >  };
+> > >
+> > > @@ -565,10 +566,9 @@ void vga_put(struct pci_dev *pdev, unsigned int =
+rsrc)
+> > >  }
+> > >  EXPORT_SYMBOL(vga_put);
+> > >
+> > > -static void __init vga_select_framebuffer_device(struct pci_dev *pde=
+v)
+> > > +static bool vga_is_framebuffer_device(struct pci_dev *pdev)
+> > >  {
+> > >  #if defined(CONFIG_X86) || defined(CONFIG_IA64)
+> > > -       struct device *dev =3D &pdev->dev;
+> > >         u64 base =3D screen_info.lfb_base;
+> > >         u64 size =3D screen_info.lfb_size;
+> > >         u64 limit;
+> > > @@ -583,15 +583,6 @@ static void __init vga_select_framebuffer_device=
+(struct pci_dev *pdev)
+> > >
+> > >         limit =3D base + size;
+> > >
+> > > -       /*
+> > > -        * Override vga_arbiter_add_pci_device()'s I/O based detectio=
+n
+> > > -        * as it may take the wrong device (e.g. on Apple system unde=
+r
+> > > -        * EFI).
+> > > -        *
+> > > -        * Select the device owning the boot framebuffer if there is
+> > > -        * one.
+> > > -        */
+> > > -
+> > >         /* Does firmware framebuffer belong to us? */
+> > >         for (i =3D 0; i < DEVICE_COUNT_RESOURCE; i++) {
+> > >                 flags =3D pci_resource_flags(pdev, i);
+> > > @@ -608,13 +599,10 @@ static void __init vga_select_framebuffer_devic=
+e(struct pci_dev *pdev)
+> > >                 if (base < start || limit >=3D end)
+> > >                         continue;
+> > >
+> > > -               if (!vga_default_device())
+> > > -                       vgaarb_info(dev, "setting as boot device\n");
+> > > -               else if (pdev !=3D vga_default_device())
+> > > -                       vgaarb_info(dev, "overriding boot device\n");
+> > > -               vga_set_default_device(pdev);
+> > > +               return true;
+> > >         }
+> > >  #endif
+> > > +       return false;
+> > >  }
+> > >
+> > >  static bool vga_arb_integrated_gpu(struct device *dev)
+> > > @@ -635,6 +623,7 @@ static bool vga_arb_integrated_gpu(struct device =
+*dev)
+> > >  static bool vga_is_boot_device(struct vga_device *vgadev)
+> > >  {
+> > >         struct vga_device *boot_vga =3D vgadev_find(vga_default_devic=
+e());
+> > > +       struct pci_dev *pdev =3D vgadev->pdev;
+> > >
+> > >         /*
+> > >          * We select the default VGA device in this order:
+> > > @@ -645,6 +634,18 @@ static bool vga_is_boot_device(struct vga_device=
+ *vgadev)
+> > >          *   Other device (see vga_arb_select_default_device())
+> > >          */
+> > >
+> > > +       /*
+> > > +        * We always prefer a firmware framebuffer, so if we've alrea=
+dy
+> > > +        * found one, there's no need to consider vgadev.
+> > > +        */
+> > > +       if (boot_vga && boot_vga->is_framebuffer)
+> > > +               return false;
+> > > +
+> > > +       if (vga_is_framebuffer_device(pdev)) {
+> > > +               vgadev->is_framebuffer =3D true;
+> > > +               return true;
+> > > +       }
+> > Maybe it is better to rename vga_is_framebuffer_device() to
+> > vga_is_firmware_device() and rename is_framebuffer to
+> > is_fw_framebuffer?
+>
+> That's a great point, thanks!
+>
+> The "framebuffer" term is way too generic.  *All* VGA devices have a
+> framebuffer, so it adds no information.  This is really about finding
+> the device that was used by firmware.
+>
+> I renamed:
+>
+>   vga_is_framebuffer_device() -> vga_is_firmware_default()
+>   vga_device.is_framebuffer   -> vga_device.is_firmware_default
+>
+> I updated my local branch and pushed it to:
+> https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git/log/?h=3D=
+pci/vga
+> with head 0f4caffa1297 ("vgaarb: Replace full MIT license text with
+> SPDX identifier").
+>
+> I don't maintain drivers/gpu/vga/vgaarb.c, so this branch is just for
+> reference.  It'll ultimately be up to the DRM folks to handle this.
+>
+> I'll wait for any other comments or testing reports before reposting.
+>
+> > >         /*
+> > >          * A legacy VGA device has MEM and IO enabled and any bridges
+> > >          * leading to it have PCI_BRIDGE_CTL_VGA enabled so the legac=
+y
+> > > @@ -1531,10 +1532,6 @@ static void __init vga_arb_select_default_devi=
+ce(void)
+> > >         struct pci_dev *pdev, *found =3D NULL;
+> > >         struct vga_device *vgadev;
+> > >
+> > > -       list_for_each_entry(vgadev, &vga_list, list) {
+> > > -               vga_select_framebuffer_device(vgadev->pdev);
+> > > -       }
+> > > -
+> > >         if (!vga_default_device()) {
+> > >                 list_for_each_entry_reverse(vgadev, &vga_list, list) =
+{
+> > >                         struct device *dev =3D &vgadev->pdev->dev;
+> > > --
+> > > 2.25.1
+> > >
