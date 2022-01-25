@@ -2,105 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B67A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E315BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:46:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383927AbiAYMpW (ORCPT
+        id S1384143AbiAYMpn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:45:22 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:55266 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452800AbiAYMmJ (ORCPT
+        Tue, 25 Jan 2022 07:45:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453413AbiAYMmq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:42:09 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id E39101F380;
-        Tue, 25 Jan 2022 12:42:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1643114524; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YLtlKuPoADWCEZcM/RaMVq/xOpaxcT6tevD1Rm+nUYA=;
-        b=RpTppQc4leOl0T0HMyo5gixVuROCn5E/wZm/UJ3ydVYLXpETYI5XxkPWN8iGeYGvk6V54D
-        NzTIVRjBTDVvht330nSPUP5ZudYliwjY9xILG9GIngoY3Lrhi/6ex4RUsLinCGc95O5u2d
-        Sowt7oZFbRzjOLBJ158+QkuzD0chcjg=
-Received: from suse.cz (unknown [10.100.216.66])
+        Tue, 25 Jan 2022 07:42:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A06C06175B;
+        Tue, 25 Jan 2022 04:42:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9DB02A3B81;
-        Tue, 25 Jan 2022 12:42:04 +0000 (UTC)
-Date:   Tue, 25 Jan 2022 13:42:03 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Stephen Brennan <stephen.s.brennan@oracle.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] printk: disable optimistic spin during panic
-Message-ID: <Ye/wG5IsIYer7akH@alley>
-References: <20220121190222.572694-1-stephen.s.brennan@oracle.com>
- <20220121190222.572694-3-stephen.s.brennan@oracle.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D9DAB817EC;
+        Tue, 25 Jan 2022 12:42:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B20F7C340E0;
+        Tue, 25 Jan 2022 12:42:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643114561;
+        bh=drfRGxtX945E9LywqF2BdAvCq/4n0zak1aeId/8+nvA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UYGDEHALKbPJJU1QPz3Ta4Xik5t871DdBZpR0LXUzBVfrwUN55xIEwsC1baLAK98A
+         cdTk/yuXs05WWf38NTPQF40E587kDUKFT8RYUghKj3ZaCpKU6vypW3CBUGQVfVV3AF
+         4b67gUhp1KWToPi9FAtAnt4siEQXgm8ftb6170Xg=
+Date:   Tue, 25 Jan 2022 13:42:38 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Theodore Tso <tytso@mit.edu>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lukas Wunner <lukas@wunner.de>
+Subject: Re: [PATCH 5.16 0873/1039] PCI: pciehp: Use
+ down_read/write_nested(reset_lock) to fix lockdep errors
+Message-ID: <Ye/wPpOrCfmKYCEj@kroah.com>
+References: <20220124184154.642601971@linuxfoundation.org>
+ <20220125122323.GA1597465@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220121190222.572694-3-stephen.s.brennan@oracle.com>
+In-Reply-To: <20220125122323.GA1597465@bhelgaas>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-01-21 11:02:20, Stephen Brennan wrote:
-> A CPU executing with console lock spinning enabled might be halted
-> during a panic. Before the panicking CPU calls console_flush_on_panic(),
-> it may call console_trylock(), which attempts to optimistically spin,
-> deadlocking the panic CPU:
+On Tue, Jan 25, 2022 at 06:23:23AM -0600, Bjorn Helgaas wrote:
+> On Mon, Jan 24, 2022 at 07:44:22PM +0100, Greg Kroah-Hartman wrote:
+> > From: Hans de Goede <hdegoede@redhat.com>
+> > 
+> > commit 085a9f43433f30cbe8a1ade62d9d7827c3217f4d upstream.
 > 
-> CPU 0 (panic CPU)             CPU 1
-> -----------------             ------
->                               printk() {
->                                 vprintk_func() {
->                                   vprintk_default() {
->                                     vprintk_emit() {
->                                       console_unlock() {
->                                         console_lock_spinning_enable();
->                                         ... printing to console ...
-> panic() {
->   crash_smp_send_stop() {
->     NMI  -------------------> HALT
->   }
->   atomic_notifier_call_chain() {
->     printk() {
->       ...
->       console_trylock_spinnning() {
->         // optimistic spin infinitely
+> I would hold off on backporting the pciehp changes until we resolve
+> this regression in v5.17-rc1:
 > 
-> This hang during panic can be induced when a kdump kernel is loaded, and
-> crash_kexec_post_notifiers=1 is present on the kernel command line. The
-> following script which concurrently writes to /dev/kmsg, and triggers a
-> panic, can result in this hang:
-> 
->     #!/bin/bash
->     date
->     # 991 chars (based on log buffer size):
->     chars="$(printf 'a%.0s' {1..991})"
->     while :; do
->         echo $chars > /dev/kmsg
->     done &
->     echo c > /proc/sysrq-trigger &
->     date
->     exit
-> 
-> To avoid this deadlock, ensure that console_trylock_spinning() does not
-> allow spinning once a panic has begun.
-> 
-> Fixes: dbdda842fe96 ("printk: Add console owner and waiter logic to load balance console writes")
-> 
-> Suggested-by: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+>   https://bugzilla.kernel.org/show_bug.cgi?id=215525
 
-Looks good to me:
+Thanks, I will drop it from all queues now.  If it gets resolved, please
+email stable@vger and we will be glad to add it back, along with the
+fix.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+thanks,
 
-Best Regards,
-Petr
+greg k-h
