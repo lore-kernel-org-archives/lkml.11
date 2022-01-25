@@ -2,109 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E6CC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 22:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D06EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 22:51:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234399AbiAYWvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 17:51:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40694 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234640AbiAYWuY (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 17:50:24 -0500
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D48C06175F;
-        Tue, 25 Jan 2022 14:50:18 -0800 (PST)
-Received: by mail-qv1-xf32.google.com with SMTP id s6so19745638qvv.11;
-        Tue, 25 Jan 2022 14:50:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=MRyo4b0CIjGUTTXoXk9MtlW6BaLnv9yE3LtTb5OwcVs=;
-        b=OYZQQsV6WQK79JUg5fG+wh4gQTLA9/hdLuTH6VLPFb5W2MNAFhplA8Cz+FtlzEIYqw
-         4Eclya+UfSXKATCT5ITJKovTwes6FdBrl+UU8JARvgxH/+DE9JTXRyg42hHL5NzkcEn5
-         rwRzJDDESr2cT6xNh+IYrkW386JiHueFy3Tss7RwOgiNxgUMQz5Rj6vBFDweoSGUuFMa
-         5ntLTTXyOVJlYoeQrQTGhlA/sDAE0WZqQMDHoq1HICzAGU0PVw0wQOm1fC0Aab2axdVf
-         LT20yL1stwvnDGgsA6eQnlPvYny5ov+721Jc0zQvMJgWDHFrOYlg4p9Zo78s2WFN0Yxa
-         QCZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=MRyo4b0CIjGUTTXoXk9MtlW6BaLnv9yE3LtTb5OwcVs=;
-        b=E0B48fI7LBiMh10P+toB/iqqv7GKf/FsU3HrlyCCZyUh7K7KOVhbRieZImIvVe6ZLS
-         dNZtw0Oi1y8CzJXVUxaj+IobGqDT3ji6uarFF99eIMRM6jnnMdxO07JHQ0DtEthBMDA+
-         nNtTE4ky+dEhAZ6SXpKYjxexXtbHk2Y7Py3iz7Y/O0ktcblY+1jzya3V3vKGzrRp3EHc
-         ptA3bufU4pF5GMXCi4gelxO2LbR0/AV5hxz1p3L3uyhz6+SxcIOaKGhnGlZ2HfKWU9sn
-         jGhqljryGDXE9Ysl9ye+/F/4Rie907IbAv64cc5GwdhXjvuXf/T3yb5yhkLChqYEe5Yr
-         5YRw==
-X-Gm-Message-State: AOAM5332vqkfGy2WpXLqC26Ehgi5cnpuArDHJQfBLldf5MQX3g2neZ1P
-        vlhliY06U6S3j6DSoLbJ/mDl9dlXMa4=
-X-Google-Smtp-Source: ABdhPJzluCa3czawjx4QlOjJOGVnXBoEAiK8VbFTScmM3nMvScxlMVAAWqgGoSNdbHQhbwWEwp0aHw==
-X-Received: by 2002:ad4:5aab:: with SMTP id u11mr15031153qvg.42.1643151017412;
-        Tue, 25 Jan 2022 14:50:17 -0800 (PST)
-Received: from [10.139.255.254] ([89.187.171.240])
-        by smtp.gmail.com with ESMTPSA id r2sm5193133qtu.57.2022.01.25.14.50.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 14:50:16 -0800 (PST)
-Message-ID: <c8a616e4-26a6-af51-212c-31dca0e265cd@gmail.com>
-Date:   Tue, 25 Jan 2022 17:50:14 -0500
+        id S234210AbiAYWvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 17:51:06 -0500
+Received: from elvis.franken.de ([193.175.24.41]:40123 "EHLO elvis.franken.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234546AbiAYWuZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 17:50:25 -0500
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nCUdn-00055K-00; Tue, 25 Jan 2022 23:50:19 +0100
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id C55C2C10E8; Tue, 25 Jan 2022 20:05:31 +0100 (CET)
+Date:   Tue, 25 Jan 2022 20:05:31 +0100
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>, linux-mips@vger.kernel.org
+Subject: Re: [PATCH 38/54] arch/mips: replace cpumask_weight with
+ cpumask_weight_{eq, ...} where appropriate
+Message-ID: <20220125190531.GA31998@alpha.franken.de>
+References: <20220123183925.1052919-1-yury.norov@gmail.com>
+ <20220123183925.1052919-39-yury.norov@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>, selinux@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <4df50e95-6173-4ed1-9d08-3c1c4abab23f@gmail.com>
- <CAHC9VhSjTqT-4TMxBnQOQHkj+djONihfeoPVyy1egrZY2t10XA@mail.gmail.com>
-From:   Demi Marie Obenour <demiobenour@gmail.com>
-Subject: Re: [PATCH] SELinux: Always allow FIOCLEX and FIONCLEX
-In-Reply-To: <CAHC9VhSjTqT-4TMxBnQOQHkj+djONihfeoPVyy1egrZY2t10XA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220123183925.1052919-39-yury.norov@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/25/22 17:27, Paul Moore wrote:
-> On Tue, Jan 25, 2022 at 4:34 PM Demi Marie Obenour
-> <demiobenour@gmail.com> wrote:
->>
->> These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
->> always allows too.  Furthermore, a failed FIOCLEX could result in a file
->> descriptor being leaked to a process that should not have access to it.
->>
->> Signed-off-by: Demi Marie Obenour <demiobenour@gmail.com>
->> ---
->>  security/selinux/hooks.c | 5 +++++
->>  1 file changed, 5 insertions(+)
+On Sun, Jan 23, 2022 at 10:39:09AM -0800, Yury Norov wrote:
+> Mips code uses calls cpumask_weight() to compare the weight of
+> cpumask with a given number. We can do it more efficiently with
+> cpumask_weight_{eq, ...} because conditional cpumask_weight may stop
+> traversing the cpumask earlier, as soon as condition is met.
 > 
-> I'm not convinced that these two ioctls should be exempt from SELinux
-> policy control, can you explain why allowing these ioctls with the
-> file:ioctl permission is not sufficient for your use case?  Is it a
-> matter of granularity?
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+>  arch/mips/cavium-octeon/octeon-irq.c | 4 ++--
+>  arch/mips/kernel/crash.c             | 2 +-
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/mips/cavium-octeon/octeon-irq.c b/arch/mips/cavium-octeon/octeon-irq.c
+> index 844f882096e6..914871f15fb7 100644
+> --- a/arch/mips/cavium-octeon/octeon-irq.c
+> +++ b/arch/mips/cavium-octeon/octeon-irq.c
+> @@ -763,7 +763,7 @@ static void octeon_irq_cpu_offline_ciu(struct irq_data *data)
+>  	if (!cpumask_test_cpu(cpu, mask))
+>  		return;
+>  
+> -	if (cpumask_weight(mask) > 1) {
+> +	if (cpumask_weight_gt(mask, 1)) {
+>  		/*
+>  		 * It has multi CPU affinity, just remove this CPU
+>  		 * from the affinity set.
+> @@ -795,7 +795,7 @@ static int octeon_irq_ciu_set_affinity(struct irq_data *data,
+>  	 * This removes the need to do locking in the .ack/.eoi
+>  	 * functions.
+>  	 */
+> -	if (cpumask_weight(dest) != 1)
+> +	if (!cpumask_weight_eq(dest, 1))
+>  		return -EINVAL;
+>  
+>  	if (!enable_one)
+> diff --git a/arch/mips/kernel/crash.c b/arch/mips/kernel/crash.c
+> index 81845ba04835..5b690d52491f 100644
+> --- a/arch/mips/kernel/crash.c
+> +++ b/arch/mips/kernel/crash.c
+> @@ -72,7 +72,7 @@ static void crash_kexec_prepare_cpus(void)
+>  	 */
+>  	pr_emerg("Sending IPI to other cpus...\n");
+>  	msecs = 10000;
+> -	while ((cpumask_weight(&cpus_in_crash) < ncpus) && (--msecs > 0)) {
+> +	while (cpumask_weight_lt(&cpus_in_crash, ncpus) && (--msecs > 0)) {
+>  		cpu_relax();
+>  		mdelay(1);
+>  	}
+> -- 
+> 2.30.2
 
-FIOCLEX and FIONCLEX are applicable to *all* file descriptors, not just
-files.  If I want to allow them with SELinux policy, I have to grant
-*:ioctl to all processes and use xperm rules to determine what ioctls
-are actually allowed.  That is incompatible with existing policies and
-needs frequent maintenance when new ioctls are added.
+Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 
-Furthermore, these ioctls do not allow one to do anything that cannot
-already be done by fcntl(F_SETFD), and (unless I have missed something)
-SELinux unconditionally allows that.  Therefore, blocking these ioctls
-does not improve security, but does risk breaking userspace programs.
-The risk is especially great because in the absence of SELinux, I
-believe FIOCLEX and FIONCLEX *will* always succeed, and userspace
-programs may rely on this.  Worse, if a failure of FIOCLEX is ignored,
-a file descriptor can be leaked to a child process that should not have
-access to it, but which SELinux allows access to.  Userspace
-SELinux-naive sandboxes are one way this could happen.  Therefore,
-blocking FIOCLEX may *create* a security issue, and it cannot solve one.
 -- 
-Sincerely,
-Demi Marie Obenour (she/her/hers)
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
