@@ -2,151 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241754AbiAYEwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:52:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3420817AbiAYEmD (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 23:42:03 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A626C061765
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:22:44 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id h20-20020a17090adb9400b001b518bf99ffso900006pjv.1
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:22:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Oqh/QrylE3qwclVle0OxUKedqq6NnQXFDpCsoYWtHv0=;
-        b=QUB65Uqx37uyu0GYgnR9XW/AwBHHIv4vcjG8rlbOI8stWM2l4x3WKE+peh/69VAT48
-         l9dXCc3DFcMAjl8scbF8q4LPrNb+3zfQdaahKpxPkykVUlMLLHFXjDmwIYpPxKlILxaQ
-         DKIYWaOCQeaxYrTUhOfYnTc+jyg3baVViUqXs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Oqh/QrylE3qwclVle0OxUKedqq6NnQXFDpCsoYWtHv0=;
-        b=HEu69MBIOhqpwJUILE7xJPQ0stDVknQVsfnZ2xKxLl3vAseAWLxupj8T/aTE6k9ZFF
-         W74NnW+oC3hlbUf0sZKKgkBEjveuBDnjIG7KJHUTBAX14w/Hz6r+Qh/9n6sKCOawkkop
-         2l7jLKraW117Rz4maYgqKbuGriZOeydzxOdqvw4/sOYvIK0VZbCDONoUlkeSDO15DJpl
-         WhcldSVqUK4PB6x2O5zCqjnqHbp7n94570iwb4kpacXlbBifxDu/fisNhMromtwruw7N
-         qV02+TGSCy0d+o19AKn7CJsK9JrRtcJE3DP+S3jAfsuumhu6QCSHu/QIvPPAbU0TxD/u
-         yKzQ==
-X-Gm-Message-State: AOAM531DuPNVPBx/X112BVUUnTPhW4D1abNfoNlJggk3vZey5VMfkRd5
-        BRKAPzTZ1fMoAyUuJ/P6tIRjOg==
-X-Google-Smtp-Source: ABdhPJx6e05OQGJ+QZT0qastZmt3AkKAO2UcDJDt2uvjX/kPJTwsy5i1vlifmWG83l1eX6EOt4md1A==
-X-Received: by 2002:a17:90a:2b85:: with SMTP id u5mr1429319pjd.77.1643080963342;
-        Mon, 24 Jan 2022 19:22:43 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id kk17sm717517pjb.21.2022.01.24.19.22.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 19:22:42 -0800 (PST)
-Date:   Mon, 24 Jan 2022 19:22:42 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Edmund Dea <edmund.j.dea@intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Anitha Chrisanthus <anitha.chrisanthus@intel.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
+        id S248669AbiAYExN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 23:53:13 -0500
+Received: from mga02.intel.com ([134.134.136.20]:56207 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1325657AbiAYEn4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 23:43:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643085836; x=1674621836;
+  h=cc:subject:to:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=ePB8x5wsn46fcq0gstZC9w5tmuRZOJRLGU6KysgfNoE=;
+  b=WqqCtDqH5DNkEa6FYxhKPyQ9RApBxIMMbkvlJkSLSnS9j7iw4dLsd3FR
+   66dHYB4LVAR36U16XsYRPsBYiYwHC897pws24zV5FVteeUsA9+AEiA9tS
+   mDF8muX1JeumUSbzED+hVFjx83Ff62gHzE7Z30Ymj6CHALRumkFdF/R4/
+   5iGNKPkIvEqpj6o262Q5wQZ8bhdsrzOeyT3ELrUcngYkMe3VWboIakkBa
+   LSajQ/LF+WUPLKYrRa9HjitF4LHSO98JU9IKQau9odszOaDW68bg/rPXb
+   s3IFewZhVvdZwLRr2dSDnatNdicn83jGr25f3XP+8BVJWZlAjHaEJ+yO0
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="233585515"
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="233585515"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 20:43:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="534559224"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by orsmga008.jf.intel.com with ESMTP; 24 Jan 2022 20:43:50 -0800
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: Re: linux-next: build failure after merge of the kspp tree
-Message-ID: <202201241918.D63B75BCF1@keescook>
-References: <20220125135546.1a2e1d6b@canb.auug.org.au>
- <20220125140221.5c1f4640@canb.auug.org.au>
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
+To:     Christoph Hellwig <hch@infradead.org>
+References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+ <20220124071103.2097118-8-baolu.lu@linux.intel.com>
+ <Ye5zUapC/YcZs7kl@infradead.org>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <62b47e7f-8704-24b1-2a94-bc456e7ad3a0@linux.intel.com>
+Date:   Tue, 25 Jan 2022 12:42:50 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125140221.5c1f4640@canb.auug.org.au>
+In-Reply-To: <Ye5zUapC/YcZs7kl@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 02:02:21PM +1100, Stephen Rothwell wrote:
-> Hi all,
+On 1/24/22 5:37 PM, Christoph Hellwig wrote:
+> On Mon, Jan 24, 2022 at 03:11:02PM +0800, Lu Baolu wrote:
+>> Add a domain specific callback set, domain_ops, for vendor iommu driver
+>> to provide domain specific operations. Move domain-specific callbacks
+>> from iommu_ops to the domain_ops and hook them when a domain is allocated.
 > 
-> On Tue, 25 Jan 2022 13:55:46 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > After merging the kspp tree, today's linux-next build (powerpc
-> > allyesconfig) failed like this:
-> > 
-> > drivers/gpu/drm/kmb/kmb_plane.c: In function 'kmb_plane_atomic_disable':
-> > drivers/gpu/drm/kmb/kmb_plane.c:165:34: error: array subscript 3 is above array bounds of 'struct layer_status[2]' [-Werror=array-bounds]
-> >   165 |                 kmb->plane_status[plane_id].ctrl = LCD_CTRL_GL2_ENABLE;
-> >       |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
-> > In file included from drivers/gpu/drm/kmb/kmb_plane.c:17:
-> > drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_status'
-> >    61 |         struct layer_status             plane_status[KMB_MAX_PLANES];
-> >       |                                         ^~~~~~~~~~~~
-> > drivers/gpu/drm/kmb/kmb_plane.c:162:34: error: array subscript 2 is above array bounds of 'struct layer_status[2]' [-Werror=array-bounds]
-> >   162 |                 kmb->plane_status[plane_id].ctrl = LCD_CTRL_GL1_ENABLE;
-> >       |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
-> > In file included from drivers/gpu/drm/kmb/kmb_plane.c:17:
-> > drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_status'
-> >    61 |         struct layer_status             plane_status[KMB_MAX_PLANES];
-> >       |                                         ^~~~~~~~~~~~
-> > 
-> > Exposed by commit
-> > 
-> >   4ba545781e20 ("Makefile: Enable -Warray-bounds")
-> > 
-> > Originally introduced by commmit
-> > 
-> >   7f7b96a8a0a1 ("drm/kmb: Add support for KeemBay Display")
-> > 
-> > Maybe should have been fixed by
-> > 
-> >   c026565fe9be ("drm/kmb: Enable alpha blended second plane")
-
-Yeah, that had fixed it at some point. :(
-
-> > 
-> > I have applied the following hack for now.
+> Ah, that's what I meant earlier.  Perfect!
 > 
-> Actually, this one:
+> Nit:  I don't think vendor is the right term here.
 > 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Tue, 25 Jan 2022 13:45:26 +1100
-> Subject: [PATCH] hack for building with -Warray-bounds
+> Maybe something like:
 > 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  drivers/gpu/drm/kmb/kmb_plane.c | 2 ++
->  1 file changed, 2 insertions(+)
+> iommut: split struct iommu_ops
 > 
-> diff --git a/drivers/gpu/drm/kmb/kmb_plane.c b/drivers/gpu/drm/kmb/kmb_plane.c
-> index 00404ba4126d..b54197920712 100644
-> --- a/drivers/gpu/drm/kmb/kmb_plane.c
-> +++ b/drivers/gpu/drm/kmb/kmb_plane.c
-> @@ -158,12 +158,14 @@ static void kmb_plane_atomic_disable(struct drm_plane *plane,
->  	case LAYER_1:
->  		kmb->plane_status[plane_id].ctrl = LCD_CTRL_VL2_ENABLE;
->  		break;
-> +#if 0
->  	case LAYER_2:
->  		kmb->plane_status[plane_id].ctrl = LCD_CTRL_GL1_ENABLE;
->  		break;
->  	case LAYER_3:
->  		kmb->plane_status[plane_id].ctrl = LCD_CTRL_GL2_ENABLE;
->  		break;
-> +#endif
->  	}
->  
->  	kmb->plane_status[plane_id].disable = true;
+> Move the domain specific operations out of struct iommu_ops into a new
+> structure that only has domain specific operations.  This solves
+> the problem of needing to know if the method vector for a given
+> operation needs to be retreived from the device or th domain.
 
-Thanks!
+Sure. Will use above description.
 
-The prior thread about this was here:
-https://lore.kernel.org/lkml/20210825181807.1138053-1-keescook@chromium.org/
+> 
+>> +struct domain_ops {
+> 
+> This needs to keep an iommu in the name, i.e. iommu_domain_ops.
 
--Kees
+Sure.
 
--- 
-Kees Cook
+> 
+>> +	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+> 
+> Overly long line.
+
+./scripts/checkpatch.pl --strict *.patch
+
+didn't give me a WARN or CHECK. I will make it short anyway.
+
+> 
+>> +static inline void iommu_domain_set_ops(struct iommu_domain *domain,
+>> +					const struct domain_ops *ops)
+>> +{
+>> +	domain->ops = ops;
+>> +}
+> 
+> Do we really need this helper?
+
+Unnecessary. I can set the pointer directly in the drivers.
+
+> 
+>> +static const struct domain_ops amd_domain_ops;
+> 
+> Can we avoid these forward declarations or would that cause too much
+> churn?
+> 
+
+I don't like this either. But it's common to put the ops at the bottom
+of the file in almost all iommu drivers.
+
+Best regards,
+baolu
