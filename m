@@ -2,112 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:19:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385565AbiAYNTT (ORCPT
+        id S1575965AbiAYNTs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:19:19 -0500
-Received: from azure-sdnproxy.icoremail.net ([52.237.72.81]:40987 "HELO
-        azure-sdnproxy-1.icoremail.net" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with SMTP id S1575844AbiAYNNL (ORCPT
+        Tue, 25 Jan 2022 08:19:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27816 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1575901AbiAYNNs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 08:13:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=KQ8E+I5jgn
-        dpekEIjuxuetI480OK8imxCoO0iKH46S4=; b=iGmegbYJKl0TTCJ9UVfVlywkjU
-        y4hAUgS3gUbn9eo5PyMUqZCJAje+hMTB1fB1EsLdyse43KwUDDPJj/QP7U+Mfpeg
-        1E/ECXjuN3Y8gbnzIdYk83UOxCMutLG0oBS2tQMhCgnPiFfrBPFjH1QaVR6WuWTe
-        lH3gIHkHgIcP6UYtQ=
-Received: from localhost.localdomain (unknown [111.192.165.103])
-        by app1 (Coremail) with SMTP id XAUFCgD3_sIO9+9hW39lAA--.12450S4;
-        Tue, 25 Jan 2022 21:11:48 +0800 (CST)
-From:   Xin Xiong <xiongx18@fudan.edu.cn>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     yuanxzhang@fudan.edu.cn, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>
-Subject: [PATCH] NFSv4.2: fix reference count leaks in _nfs42_proc_copy_notify()
-Date:   Tue, 25 Jan 2022 21:10:45 +0800
-Message-Id: <20220125131045.37342-1-xiongx18@fudan.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 25 Jan 2022 08:13:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643116426;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6LhuCKNpl5Mr5FmOdMXfKw0fCGKJWmNXvJmUdv5fZjE=;
+        b=RVDF6DULdY8r6g5HTqqmUUq+/RAR51+Sd5l3N2brPpgGoLUDz4POYjd87EaJrkUxsqwT7C
+        PLl7z+VoUmvq7uQK9s7SEw3VPQTn9VleF58pAsd6eAiHyLzZQuunM+oKQd+RheWgcK8RqU
+        ojPaTw/9IjtIFOphdGBdTakbC3Z+ujA=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-626-3YIkMigAPGOs9wD8C0Qhrg-1; Tue, 25 Jan 2022 08:13:45 -0500
+X-MC-Unique: 3YIkMigAPGOs9wD8C0Qhrg-1
+Received: by mail-ot1-f69.google.com with SMTP id e110-20020a9d01f7000000b0059ecb99d288so5369188ote.12
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 05:13:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6LhuCKNpl5Mr5FmOdMXfKw0fCGKJWmNXvJmUdv5fZjE=;
+        b=1HOo7bVxt3PZ28Tvlf8qUc+gvtlxQC+00G1pnRS6i2z5hZUecj44RuzOjDYv1uI0jB
+         CL5vyxlxhRiWR6pUTIuL+jabIlqBhMgtYtaGEvjGxQ+8BXy8ltzG2uNljsH6b4rooTWl
+         vK23m4NuevLtOMuT872MEhwDcM0KHvn+mGjiqculWDkTs20nFnLNJTQlTUKlpGd3xzUw
+         2v4/ej7KNbk8fV81cXFHx9OxuHbfpHE/Xa4xuuAR5zngrTCKqWsJq0f8mcLg4gUmK75q
+         huxGZ3xSTpMn2H7W9aOyWbXoigfeZQDM5bfpDQcq9IP1apoTpLN5afumfsxK3AsRsPhh
+         dsfg==
+X-Gm-Message-State: AOAM532n0pCgE7lR1RtJvPyMeqJXBOsRf+OTl9abxRq1tUIvvd/CssOS
+        oPrMCznax4lO0yMcYg/4/UKBBz5E511fA7cEoEN6iYi7ZMxmG2msLEng2u+4n3mc96ttsA/uD6g
+        e5cJUFpMZOQG2bMYSJWEXwyPh
+X-Received: by 2002:a9d:7cc9:: with SMTP id r9mr14981848otn.202.1643116424266;
+        Tue, 25 Jan 2022 05:13:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy3GCBYRnmoVjmAeeOLFh58KLE5ElzDvK61FBrcsepiQ8dGKOKmIx17szD8N7OkhaOHVyXWbw==
+X-Received: by 2002:a9d:7cc9:: with SMTP id r9mr14981840otn.202.1643116424079;
+        Tue, 25 Jan 2022 05:13:44 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id s3sm3168988otg.67.2022.01.25.05.13.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 05:13:43 -0800 (PST)
+From:   trix@redhat.com
+To:     viro@zeniv.linux.org.uk
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] namei: cleanup double word in comment
+Date:   Tue, 25 Jan 2022 05:13:40 -0800
+Message-Id: <20220125131340.1109125-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: XAUFCgD3_sIO9+9hW39lAA--.12450S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7Cw1rGFW5Gr1rKr4DKFyxuFg_yoW8Aryxpa
-        yrCrWUAF95KF18JFZIyayv93W3uFZ5tryUGF9293y7uF9xX3s8GF1Yyr1Y9r17JrW8X398
-        XF1DKF4UZanYvF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r
-        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
-        648v4I1lc2xSY4AK67AK6ry8MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r
-        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
-        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
-        x0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
-        nxnUUI43ZEXa7VUboa0DUUUUU==
-X-CM-SenderInfo: arytiiqsuqiimz6i3vldqovvfxof0/1tbiAg0REFKp2ijNzAAAsG
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reference counting issue happens in two error paths in the
-function _nfs42_proc_copy_notify(). In both error paths, the function
-simply returns the error code and forgets to balance the refcount of
-object `ctx`, bumped by get_nfs_open_context() earlier, which may
-cause refcount leaks.
+From: Tom Rix <trix@redhat.com>
 
-Fix it by balancing refcount of the `ctx` object before the function
-returns in both error paths.
+Remove the second 'to'.
 
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- fs/nfs/nfs42proc.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ fs/namei.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfs/nfs42proc.c b/fs/nfs/nfs42proc.c
-index 8b21ff1be..438de4f93 100644
---- a/fs/nfs/nfs42proc.c
-+++ b/fs/nfs/nfs42proc.c
-@@ -592,8 +592,10 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
- 
- 	ctx = get_nfs_open_context(nfs_file_open_context(src));
- 	l_ctx = nfs_get_lock_context(ctx);
--	if (IS_ERR(l_ctx))
--		return PTR_ERR(l_ctx);
-+	if (IS_ERR(l_ctx)) {
-+		status = PTR_ERR(l_ctx);
-+		goto out;
-+	}
- 
- 	status = nfs4_set_rw_stateid(&args->cna_src_stateid, ctx, l_ctx,
- 				     FMODE_READ);
-@@ -601,7 +603,7 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
- 	if (status) {
- 		if (status == -EAGAIN)
- 			status = -NFS4ERR_BAD_STATEID;
--		return status;
-+		goto out;
- 	}
- 
- 	status = nfs4_call_sync(src_server->client, src_server, &msg,
-@@ -610,6 +612,7 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
- 	if (status == -ENOTSUPP)
- 		src_server->caps &= ~NFS_CAP_COPY_NOTIFY;
- 
-+out:
- 	put_nfs_open_context(nfs_file_open_context(src));
- 	return status;
- }
+diff --git a/fs/namei.c b/fs/namei.c
+index fa9be370c6702..61c87d4cdc5cd 100644
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -797,7 +797,7 @@ static bool try_to_unlazy(struct nameidata *nd)
+  * @seq: seq number to check @dentry against
+  * Returns: true on success, false on failure
+  *
+- * Similar to to try_to_unlazy(), but here we have the next dentry already
++ * Similar to try_to_unlazy(), but here we have the next dentry already
+  * picked by rcu-walk and want to legitimize that in addition to the current
+  * nd->path and nd->root for ref-walk mode.  Must be called from rcu-walk context.
+  * Nothing should touch nameidata between try_to_unlazy_next() failure and
 -- 
-2.25.1
+2.26.3
 
