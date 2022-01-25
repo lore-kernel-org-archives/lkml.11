@@ -2,206 +2,383 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA32C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:55:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453724AbiAYIzg (ORCPT
+        id S1453796AbiAYIzs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:55:36 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:34700 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385092AbiAYIvn (ORCPT
+        Tue, 25 Jan 2022 03:55:48 -0500
+Received: from mail.cn.fujitsu.com ([183.91.158.132]:27831 "EHLO
+        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1452538AbiAYIth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:51:43 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20P8p3q75014370, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20P8p3q75014370
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 25 Jan 2022 16:51:03 +0800
-Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 25 Jan 2022 16:51:03 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 00:51:02 -0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
- RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
- 15.01.2308.020; Tue, 25 Jan 2022 16:51:02 +0800
-From:   Hau <hau@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-CC:     nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "grundler@chromium.org" <grundler@chromium.org>
-Subject: RE: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-Thread-Topic: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-Thread-Index: AQHYEU71utwpaLacm0G/vN72YItAmaxyIU6AgAFI+7A=
-Date:   Tue, 25 Jan 2022 08:51:02 +0000
-Message-ID: <1f089edfb1824b19bbf87b2ce725ce50@realtek.com>
-References: <20220124181937.6331-1-hau@realtek.com>
- <b71ee3d2-5ecd-e4ee-d6ca-25bf017920cd@gmail.com>
-In-Reply-To: <b71ee3d2-5ecd-e4ee-d6ca-25bf017920cd@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.129]
-x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEvMjUg5LiK5Y2IIDA2OjA4OjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Tue, 25 Jan 2022 03:49:37 -0500
+IronPort-Data: =?us-ascii?q?A9a23=3A/hCi+KmCBoZfjuN3Ixque4To5gyOJ0RdPkR7XQ2?=
+ =?us-ascii?q?eYbTBsI5bp2EDzGpOUD2HPKveNDake95wao6ypB8DvMTSndA1GwZq+CA2RRqmi?=
+ =?us-ascii?q?+KfW43BcR2Y0wB+jyH7ZBs+qZ1YM7EsFehsJpPnjkrrYuiJQUVUj/nSHOKlUrO?=
+ =?us-ascii?q?cY0ideCc/IMsfoUM68wIGqt4w6TSJK1vlVeLa+6UzCnf8s9JHGj58B5a4lf9al?=
+ =?us-ascii?q?K+aVAX0EbAJTasjUFf2zxH5BX+ETE27ByOQroJ8RoZWSwtfpYxV8F81/z91Yj+?=
+ =?us-ascii?q?kur39NEMXQL/OJhXIgX1TM0SgqkEa4HVsjeBgb7xBAatUo2zhc9RZzNRftZ2yS?=
+ =?us-ascii?q?A4vFqPRmuUBSAQeGCZ7VUFD0OadeSjk4JfMliUqdFOpmZ2CFnoeJ5UV8/xsBmd?=
+ =?us-ascii?q?O7fEwJzUEbxTFjOWzqJqpW+t+l8Z5dJGzFIwas3BkizreCJ4ORZHKRarV6NlA0?=
+ =?us-ascii?q?TE/rsBTFOnTZowSbj8HRBjJZVtNfEgWDJY/leKzrnj5bzBc7lmSoMIf/2/WxRd?=
+ =?us-ascii?q?jlrf3N9/cds6JRO1UmFqVoiTN+GGRKhUXM9q3yjef9H+owOjVkkvTUYIbDrq+8?=
+ =?us-ascii?q?tZsnlyfx2VVAxoTPXO+q/2+gU6WXcxeJ00dvCEpqMAa6EuuZsX0WwW1sTiPuRt?=
+ =?us-ascii?q?0c95RFfAqrQKA0KzZ5y6HCWUeCD1MctorsIkxXzNC/luImc75QCZjtbS9V32Q7?=
+ =?us-ascii?q?PGXoCm0NCxTKnUNDQcGQgQt8djuuIx1hRunczrJOMZZlfWsQXepnW/M93N42t0?=
+ =?us-ascii?q?uYQcw//3T1Tj6b/iE+vAlljII2zg=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AKz9m3K2Lf5XxNemaLdEfcQqjBI4kLtp133Aq?=
+ =?us-ascii?q?2lEZdPU1SL39qynKppkmPHDP5gr5J0tLpTntAsi9qBDnhPtICOsqTNSftWDd0Q?=
+ =?us-ascii?q?PGEGgI1/qB/9SPIU3D398Y/aJhXow7M9foEGV95PyQ3CCIV/om3/mLmZrFudvj?=
+X-IronPort-AV: E=Sophos;i="5.88,314,1635177600"; 
+   d="scan'208";a="120839371"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 25 Jan 2022 16:44:32 +0800
+Received: from G08CNEXMBPEKD06.g08.fujitsu.local (unknown [10.167.33.206])
+        by cn.fujitsu.com (Postfix) with ESMTP id CB8E84D146E6;
+        Tue, 25 Jan 2022 16:44:29 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD06.g08.fujitsu.local (10.167.33.206) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Tue, 25 Jan 2022 16:44:27 +0800
+Received: from localhost.localdomain (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Tue, 25 Jan 2022 16:44:26 +0800
+From:   Li Zhijian <lizhijian@cn.fujitsu.com>
+To:     <linux-rdma@vger.kernel.org>, <zyjzyj2000@gmail.com>,
+        <jgg@ziepe.ca>, <aharonl@nvidia.com>, <leon@kernel.org>,
+        <tom@talpey.com>, <tomasz.gromadzki@intel.com>
+CC:     <linux-kernel@vger.kernel.org>, <mbloch@nvidia.com>,
+        <liangwenpeng@huawei.com>, <yangx.jy@fujitsu.com>,
+        <y-goto@fujitsu.com>, <rpearsonhpe@gmail.com>,
+        <dan.j.williams@intel.com>, Li Zhijian <lizhijian@cn.fujitsu.com>
+Subject: [RFC PATCH v2 4/9] RDMA/rxe: Implement RC RDMA FLUSH service in requester side
+Date:   Tue, 25 Jan 2022 16:50:36 +0800
+Message-ID: <20220125085041.49175-5-lizhijian@cn.fujitsu.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220125085041.49175-1-lizhijian@cn.fujitsu.com>
+References: <20220125085041.49175-1-lizhijian@cn.fujitsu.com>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-yoursite-MailScanner-ID: CB8E84D146E6.A1495
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBPbiAyNC4wMS4yMDIyIDE5OjE5LCBDaHVuaGFvIExpbiB3cm90ZToNCj4gPiBUaGlzIHBhdGNo
-IHdpbGwgZW5hYmxlIFJUTDgxMjUgQVNQTSBMMS4yIG9uIHRoZSBwbGF0Zm9ybXMgdGhhdCBoYXZl
-DQo+ID4gdGVzdGVkIFJUTDgxMjUgd2l0aCBBU1BNIEwxLjIgZW5hYmxlZC4NCj4gPiBSZWdpc3Rl
-ciBtYWMgb2NwIDB4YzBiMiB3aWxsIGhlbHAgdG8gaWRlbnRpZnkgaWYgUlRMODEyNSBoYXMgYmVl
-bg0KPiA+IHRlc3RlZCBvbiBMMS4yIGVuYWJsZWQgcGxhdGZvcm0uIElmIGl0IGlzLCB0aGlzIHJl
-Z2lzdGVyIHdpbGwgYmUgc2V0IHRvIDB4Zi4NCj4gPiBJZiBub3QsIHRoaXMgcmVnaXN0ZXIgd2ls
-bCBiZSBkZWZhdWx0IHZhbHVlIDAuDQo+ID4NCj4gV2hvIGFuZCB3aGF0IGRlZmluZXMgd2hpY2gg
-dmFsdWUgdGhpcyByZWdpc3RlciBoYXM/IFRoZSBCSU9TPyBBQ1BJPw0KPiBNYWluYm9hcmQgdmVu
-ZG9ycyB0ZXN0IGFuZCBjYW4gY29udHJvbCB0aGUgZmxhZ2dpbmc/IEhvdyBhYm91dCBhZGQtb24N
-Cj4gY2FyZHMgYW5kIHN5c3RlbXMgd2l0aCBvdGhlciBib290IGxvYWRlcnMsIGUuZy4gU0JDJ3Mg
-d2l0aCBSVEw4MTI1IGxpa2UNCj4gT2Ryb2lkIEgyKz8NCj4NCiAgIFNvYyB2ZW5kb3IgY2FuIG9w
-dC1pbiB0byBlbmFibGUgdGhlc2UgYml0cyB0byBlbmFibGUgTDEuMiB0aHJvdWdoIHByb2dyYW1t
-aW5nIHRvb2wvYmlvcy91Ym9vdC4NCiAgIFJpZ2h0IG5vdywgdGhlcmUgaXMgbm8gcGxhbiBmb3Ig
-c2V0IHRoZXNlIGJpdHMgZm9yIGFkZC1vbiBjYXJkLg0KDQo+IFdoYXQgaXMgYWN0dWFsbHkgdGhl
-IGNyaXRpY2FsIGNvbXBvbmVudCB0aGF0IG1ha2VzIEwxLjIgd29yayBvciBub3Qgd2l0aA0KPiBS
-VEw4MTI1IG9uIGEgcGFydGljdWxhciBzeXN0ZW0/IFRoZSBjaGlwc2V0PyBPciBlbGVjdHJpY2Fs
-IGNoYXJhY3RlcmlzdGljcz8NCj4NCiAgIFJUTDgxMjUgY2FuIHN1cHBvcnQgTDEuMiwgYnV0IGl0
-IGRpc2FibGVkIGJ5IHI4MTY5LiBTbyB3ZSBjcmVhdGUgYW4gb3B0aW9uDQogICB0byBsZXQgc29j
-IHZlbmRvciBjYW4gb3BuLWluIHRvIGVuYWJsZWQgTDEuMiB3aXRoIHI4MTY5Lg0KICAgDQo+IFRo
-ZSBkaWZmZXJlbmNlIGluIHBvd2VyIGNvbnN1bXB0aW9uIGJldHdlZW4gTDEuMSBhbmQgTDEuMiBp
-cyBhIGZldyBtVw0KPiAoWzBdKS4NCj4gU28gSSB3b25kZXIgd2hldGhlciBpdCdzIHdvcnRoIGl0
-IHRvIGFkZCB0aGlzIGZsYWdnaW5nIG1lY2hhbmlzbS4NCj4gT3IgZG9lcyBpdCBhbHNvIGltcGFj
-dCByZWFjaGluZyBjZXJ0YWluIHBhY2thZ2UgcG93ZXIgc2F2aW5nIHN0YXRlcz8NCj4gDQogICBV
-cHN0cmVhbSBwb3J0IGFsc28gY2FuIHNhdmUgcG93ZXIgd2hlbiBydGw4MTI1IEwxLjIgaXMgZW5h
-YmxlZC4NCg0KPiBbMF0gaHR0cHM6Ly9wY2lzaWcuY29tL21ha2luZy1tb3N0LXBjaWUlQzIlQUUt
-bG93LXBvd2VyLWZlYXR1cmVzDQo+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IENodW5oYW8gTGluIDxo
-YXVAcmVhbHRlay5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L3JlYWx0
-ZWsvcjgxNjlfbWFpbi5jIHwgOTkNCj4gPiArKysrKysrKysrKysrKysrKystLS0tLQ0KPiA+ICAx
-IGZpbGUgY2hhbmdlZCwgNzkgaW5zZXJ0aW9ucygrKSwgMjAgZGVsZXRpb25zKC0pDQo+ID4NCj4g
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVhbHRlay9yODE2OV9tYWluLmMN
-Cj4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5jDQo+ID4gaW5k
-ZXggMTllMjYyMWUwNjQ1Li5iMWUwMTM5NjlkNGMgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9u
-ZXQvZXRoZXJuZXQvcmVhbHRlay9yODE2OV9tYWluLmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9yZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+IEBAIC0yMjM4LDIxICsyMjM4LDYgQEAg
-c3RhdGljIHZvaWQgcnRsX3dvbF9lbmFibGVfcngoc3RydWN0DQo+IHJ0bDgxNjlfcHJpdmF0ZSAq
-dHApDQo+ID4gIAkJCUFjY2VwdEJyb2FkY2FzdCB8IEFjY2VwdE11bHRpY2FzdCB8DQo+IEFjY2Vw
-dE15UGh5cyk7ICB9DQo+ID4NCj4gPiAtc3RhdGljIHZvaWQgcnRsX3ByZXBhcmVfcG93ZXJfZG93
-bihzdHJ1Y3QgcnRsODE2OV9wcml2YXRlICp0cCkgLXsNCj4gPiAtCWlmICh0cC0+ZGFzaF90eXBl
-ICE9IFJUTF9EQVNIX05PTkUpDQo+ID4gLQkJcmV0dXJuOw0KPiA+IC0NCj4gPiAtCWlmICh0cC0+
-bWFjX3ZlcnNpb24gPT0gUlRMX0dJR0FfTUFDX1ZFUl8zMiB8fA0KPiA+IC0JICAgIHRwLT5tYWNf
-dmVyc2lvbiA9PSBSVExfR0lHQV9NQUNfVkVSXzMzKQ0KPiA+IC0JCXJ0bF9lcGh5X3dyaXRlKHRw
-LCAweDE5LCAweGZmNjQpOw0KPiA+IC0NCj4gPiAtCWlmIChkZXZpY2VfbWF5X3dha2V1cCh0cF90
-b19kZXYodHApKSkgew0KPiA+IC0JCXBoeV9zcGVlZF9kb3duKHRwLT5waHlkZXYsIGZhbHNlKTsN
-Cj4gPiAtCQlydGxfd29sX2VuYWJsZV9yeCh0cCk7DQo+ID4gLQl9DQo+ID4gLX0NCj4gPiAtDQo+
-ID4gIHN0YXRpYyB2b2lkIHJ0bF9pbml0X3J4Y2ZnKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRw
-KSAgew0KPiA+ICAJc3dpdGNoICh0cC0+bWFjX3ZlcnNpb24pIHsNCj4gPiBAQCAtMjY1MCw2ICsy
-NjM1LDM0IEBAIHN0YXRpYyB2b2lkIHJ0bF9wY2llX3N0YXRlX2wybDNfZGlzYWJsZShzdHJ1Y3QN
-Cj4gcnRsODE2OV9wcml2YXRlICp0cCkNCj4gPiAgCVJUTF9XOCh0cCwgQ29uZmlnMywgUlRMX1I4
-KHRwLCBDb25maWczKSAmIH5SZHlfdG9fTDIzKTsgIH0NCj4gPg0KPiA+ICtzdGF0aWMgdm9pZCBy
-dGxfZGlzYWJsZV9leGl0X2wxKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwKSB7DQo+IA0KPiBX
-aHkgaXMgdGhpcyBmdW5jdGlvbiBuZWVkZWQ/IFRoZSBjaGlwIHNob3VsZCBiZSBxdWlldCBhbnl3
-YXkuDQo+IElPVzogV2hhdCBjb3VsZCBiZSB0aGUgaW1wYWN0IG9mIG5vdCBoYXZpbmcgdGhpcyBm
-dW5jdGlvbiBjdXJyZW50bHk/DQo+IElmIGl0IGZpeGVzIHNvbWV0aGluZyB0aGVuIGl0IHNob3Vs
-ZCBiZSBhIHNlcGFyYXRlIHBhdGNoLg0KPiANCj4gPiArCS8qIEJpdHMgY29udHJvbCB3aGljaCBl
-dmVudHMgdHJpZ2dlciBBU1BNIEwxIGV4aXQ6DQo+ID4gKwkgKiBCaXQgMTI6IHJ4ZHYNCj4gPiAr
-CSAqIEJpdCAxMTogbHRyX21zZw0KPiA+ICsJICogQml0IDEwOiB0eGRtYV9wb2xsDQo+ID4gKwkg
-KiBCaXQgIDk6IHhhZG0NCj4gPiArCSAqIEJpdCAgODogcGt0YXZpDQo+ID4gKwkgKiBCaXQgIDc6
-IHR4cGxhDQo+ID4gKwkgKi8NCj4gPiArCXN3aXRjaCAodHAtPm1hY192ZXJzaW9uKSB7DQo+ID4g
-KwljYXNlIFJUTF9HSUdBX01BQ19WRVJfMzQgLi4uIFJUTF9HSUdBX01BQ19WRVJfMzY6DQo+ID4g
-KwkJcnRsX2VyaV9jbGVhcl9iaXRzKHRwLCAweGQ0LCAweDFmMDApOw0KPiA+ICsJCWJyZWFrOw0K
-PiA+ICsJY2FzZSBSVExfR0lHQV9NQUNfVkVSXzM3IC4uLiBSVExfR0lHQV9NQUNfVkVSXzM4Og0K
-PiA+ICsJCXJ0bF9lcmlfY2xlYXJfYml0cyh0cCwgMHhkNCwgMHgwYzAwKTsNCj4gPiArCQlicmVh
-azsNCj4gPiArCWNhc2UgUlRMX0dJR0FfTUFDX1ZFUl80MCAuLi4gUlRMX0dJR0FfTUFDX1ZFUl81
-MzoNCj4gPiArCQlydGxfZXJpX2NsZWFyX2JpdHModHAsIDB4ZDQsIDB4MWY4MCk7DQo+ID4gKwkJ
-YnJlYWs7DQo+ID4gKwljYXNlIFJUTF9HSUdBX01BQ19WRVJfNjAgLi4uIFJUTF9HSUdBX01BQ19W
-RVJfNjM6DQo+ID4gKwkJcjgxNjhfbWFjX29jcF9tb2RpZnkodHAsIDB4YzBhYywgMHgxZjgwLCAw
-KTsNCj4gPiArCQlicmVhazsNCj4gPiArCWRlZmF1bHQ6DQo+ID4gKwkJYnJlYWs7DQo+ID4gKwl9
-DQo+ID4gK30NCj4gPiArDQo+ID4gIHN0YXRpYyB2b2lkIHJ0bF9lbmFibGVfZXhpdF9sMShzdHJ1
-Y3QgcnRsODE2OV9wcml2YXRlICp0cCkgIHsNCj4gPiAgCS8qIEJpdHMgY29udHJvbCB3aGljaCBl
-dmVudHMgdHJpZ2dlciBBU1BNIEwxIGV4aXQ6DQo+ID4gQEAgLTI2OTIsNiArMjcwNSwzMyBAQCBz
-dGF0aWMgdm9pZCBydGxfaHdfYXNwbV9jbGtyZXFfZW5hYmxlKHN0cnVjdA0KPiBydGw4MTY5X3By
-aXZhdGUgKnRwLCBib29sIGVuYWJsZSkNCj4gPiAgCXVkZWxheSgxMCk7DQo+ID4gIH0NCj4gPg0K
-PiA+ICtzdGF0aWMgdm9pZCBydGxfaHdfYXNwbV9sMTJfZW5hYmxlKHN0cnVjdCBydGw4MTY5X3By
-aXZhdGUgKnRwLCBib29sDQo+ID4gK2VuYWJsZSkgew0KPiANCj4gSSBhc3N1bWUgdGhpcyBjb2Rl
-IHdvcmtzIG9uIFJUTDgxMjUgb25seS4gVGhlbiB0aGlzIHNob3VsZCBiZSByZWZsZWN0ZWQgaW4N
-Cj4gdGhlIGZ1bmN0aW9uIG5hbWluZywgbGlrZSB3ZSBkbyBpdCBmb3Igb3RoZXIgdmVyc2lvbi1z
-cGVjaWZpYyBmdW5jdGlvbnMuDQo+IA0KPiA+ICsJLyogRG9uJ3QgZW5hYmxlIEwxLjIgaW4gdGhl
-IGNoaXAgaWYgT1MgY2FuJ3QgY29udHJvbCBBU1BNICovDQo+ID4gKwlpZiAoZW5hYmxlICYmIHRw
-LT5hc3BtX21hbmFnZWFibGUpIHsNCj4gPiArCQlyODE2OF9tYWNfb2NwX21vZGlmeSh0cCwgMHhl
-MDk0LCAweGZmMDAsIDApOw0KPiA+ICsJCXI4MTY4X21hY19vY3BfbW9kaWZ5KHRwLCAweGUwOTIs
-IDB4MDBmZiwgQklUKDIpKTsNCj4gPiArCX0gZWxzZSB7DQo+ID4gKwkJcjgxNjhfbWFjX29jcF9t
-b2RpZnkodHAsIDB4ZTA5MiwgMHgwMGZmLCAwKTsNCj4gPiArCX0NCj4gPiArfQ0KPiA+ICsNCj4g
-PiArc3RhdGljIHZvaWQgcnRsX3ByZXBhcmVfcG93ZXJfZG93bihzdHJ1Y3QgcnRsODE2OV9wcml2
-YXRlICp0cCkgew0KPiA+ICsJaWYgKHRwLT5kYXNoX3R5cGUgIT0gUlRMX0RBU0hfTk9ORSkNCj4g
-PiArCQlyZXR1cm47DQo+ID4gKw0KPiA+ICsJaWYgKHRwLT5tYWNfdmVyc2lvbiA9PSBSVExfR0lH
-QV9NQUNfVkVSXzMyIHx8DQo+ID4gKwkgICAgdHAtPm1hY192ZXJzaW9uID09IFJUTF9HSUdBX01B
-Q19WRVJfMzMpDQo+ID4gKwkJcnRsX2VwaHlfd3JpdGUodHAsIDB4MTksIDB4ZmY2NCk7DQo+ID4g
-Kw0KPiA+ICsJaWYgKGRldmljZV9tYXlfd2FrZXVwKHRwX3RvX2Rldih0cCkpKSB7DQo+ID4gKwkJ
-cnRsX2Rpc2FibGVfZXhpdF9sMSh0cCk7DQo+ID4gKwkJcGh5X3NwZWVkX2Rvd24odHAtPnBoeWRl
-diwgZmFsc2UpOw0KPiA+ICsJCXJ0bF93b2xfZW5hYmxlX3J4KHRwKTsNCj4gPiArCX0NCj4gPiAr
-fQ0KPiA+ICsNCj4gPiAgc3RhdGljIHZvaWQgcnRsX3NldF9maWZvX3NpemUoc3RydWN0IHJ0bDgx
-NjlfcHJpdmF0ZSAqdHAsIHUxNiByeF9zdGF0LA0KPiA+ICAJCQkgICAgICB1MTYgdHhfc3RhdCwg
-dTE2IHJ4X2R5biwgdTE2IHR4X2R5bikgIHsgQEAgLQ0KPiAzNjc1LDYgKzM3MTUsNw0KPiA+IEBA
-IHN0YXRpYyB2b2lkIHJ0bF9od19zdGFydF84MTI1YihzdHJ1Y3QgcnRsODE2OV9wcml2YXRlICp0
-cCkNCj4gPiAgCXJ0bF9lcGh5X2luaXQodHAsIGVfaW5mb184MTI1Yik7DQo+ID4gIAlydGxfaHdf
-c3RhcnRfODEyNV9jb21tb24odHApOw0KPiA+DQo+ID4gKwlydGxfaHdfYXNwbV9sMTJfZW5hYmxl
-KHRwLCB0cnVlKTsNCj4gPiAgCXJ0bF9od19hc3BtX2Nsa3JlcV9lbmFibGUodHAsIHRydWUpOyAg
-fQ0KPiA+DQo+ID4gQEAgLTUyNTUsNiArNTI5NiwyMCBAQCBzdGF0aWMgdm9pZCBydGxfaW5pdF9t
-YWNfYWRkcmVzcyhzdHJ1Y3QNCj4gcnRsODE2OV9wcml2YXRlICp0cCkNCj4gPiAgCXJ0bF9yYXJf
-c2V0KHRwLCBtYWNfYWRkcik7DQo+ID4gIH0NCj4gPg0KPiA+ICsvKiBtYWMgb2NwIDB4YzBiMiB3
-aWxsIGhlbHAgdG8gaWRlbnRpZnkgaWYgUlRMODEyNSBoYXMgYmVlbiB0ZXN0ZWQNCj4gPiArICog
-b24gTDEuMiBlbmFibGVkIHBsYXRmb3JtLiBJZiBpdCBpcywgdGhpcyByZWdpc3RlciB3aWxsIGJl
-IHNldCB0byAweGYuDQo+ID4gKyAqIElmIG5vdCwgdGhpcyByZWdpc3RlciB3aWxsIGJlIGRlZmF1
-bHQgdmFsdWUgMC4NCj4gPiArICovDQo+ID4gK3N0YXRpYyBib29sIHJ0bF9wbGF0Zm9ybV9sMTJf
-ZW5hYmxlZChzdHJ1Y3QgcnRsODE2OV9wcml2YXRlICp0cCkgew0KPiANCj4gVGhlIGZ1bmN0aW9u
-IG5hbWUgaXMgbWlzbGVhZGluZy4gSXQgY291bGQgYmUgcmVhZCBhcyBjaGVja2luZyB3aGV0aGVy
-IHRoZQ0KPiBwbGF0Zm9ybSBzdXBwb3J0cyBMMS4yLg0KPiANCj4gPiArCXN3aXRjaCAodHAtPm1h
-Y192ZXJzaW9uKSB7DQo+ID4gKwljYXNlIFJUTF9HSUdBX01BQ19WRVJfNjAgLi4uIFJUTF9HSUdB
-X01BQ19WRVJfNjM6DQo+ID4gKwkJcmV0dXJuIChyODE2OF9tYWNfb2NwX3JlYWQodHAsIDB4YzBi
-MikgJiAweGYpID8gdHJ1ZSA6IGZhbHNlOw0KPiA+ICsJZGVmYXVsdDoNCj4gPiArCQlyZXR1cm4g
-ZmFsc2U7DQo+ID4gKwl9DQo+ID4gK30NCj4gPiArDQo+ID4gIHN0YXRpYyBpbnQgcnRsX2luaXRf
-b25lKHN0cnVjdCBwY2lfZGV2ICpwZGV2LCBjb25zdCBzdHJ1Y3QNCj4gPiBwY2lfZGV2aWNlX2lk
-ICplbnQpICB7DQo+ID4gIAlzdHJ1Y3QgcnRsODE2OV9wcml2YXRlICp0cDsNCj4gPiBAQCAtNTMz
-MywxMSArNTM4OCwxNSBAQCBzdGF0aWMgaW50IHJ0bF9pbml0X29uZShzdHJ1Y3QgcGNpX2RldiAq
-cGRldiwNCj4gY29uc3Qgc3RydWN0IHBjaV9kZXZpY2VfaWQgKmVudCkNCj4gPiAgCSAqIENoaXBz
-IGZyb20gUlRMODE2OGggcGFydGlhbGx5IGhhdmUgaXNzdWVzIHdpdGggTDEuMiwgYnV0IHNlZW0N
-Cj4gPiAgCSAqIHRvIHdvcmsgZmluZSB3aXRoIEwxIGFuZCBMMS4xLg0KPiA+ICAJICovDQo+ID4g
-LQlpZiAodHAtPm1hY192ZXJzaW9uID49IFJUTF9HSUdBX01BQ19WRVJfNDUpDQo+ID4gLQkJcmMg
-PSBwY2lfZGlzYWJsZV9saW5rX3N0YXRlKHBkZXYsIFBDSUVfTElOS19TVEFURV9MMV8yKTsNCj4g
-PiAtCWVsc2UNCj4gPiAtCQlyYyA9IHBjaV9kaXNhYmxlX2xpbmtfc3RhdGUocGRldiwgUENJRV9M
-SU5LX1NUQVRFX0wxKTsNCj4gPiAtCXRwLT5hc3BtX21hbmFnZWFibGUgPSAhcmM7DQo+ID4gKwlp
-ZiAoIXJ0bF9wbGF0Zm9ybV9sMTJfZW5hYmxlZCh0cCkpIHsNCj4gPiArCQlpZiAodHAtPm1hY192
-ZXJzaW9uID49IFJUTF9HSUdBX01BQ19WRVJfNDUpDQo+ID4gKwkJCXJjID0gcGNpX2Rpc2FibGVf
-bGlua19zdGF0ZShwZGV2LA0KPiBQQ0lFX0xJTktfU1RBVEVfTDFfMik7DQo+ID4gKwkJZWxzZQ0K
-PiA+ICsJCQlyYyA9IHBjaV9kaXNhYmxlX2xpbmtfc3RhdGUocGRldiwNCj4gUENJRV9MSU5LX1NU
-QVRFX0wxKTsNCj4gPiArCQl0cC0+YXNwbV9tYW5hZ2VhYmxlID0gIXJjOw0KPiA+ICsJfSBlbHNl
-IHsNCj4gPiArCQl0cC0+YXNwbV9tYW5hZ2VhYmxlID0gcGNpZV9hc3BtX2VuYWJsZWQocGRldik7
-DQo+ID4gKwl9DQo+ID4NCj4gDQo+IEJldHRlciByZWFkYWJsZSBtYXkgYmUgdGhlIGZvbGxvd2lu
-ZzoNCj4gDQo+IGlmIChydGxfcGxhdGZvcm1fbDEyX2VuYWJsZWQodHApKSB7DQo+IAl0cC0+YXNw
-bV9tYW5hZ2VhYmxlID0gcGNpZV9hc3BtX2VuYWJsZWQocGRldik7IH0gZWxzZSBpZiAodHAtDQo+
-ID5tYWNfdmVyc2lvbiA+PSBSVExfR0lHQV9NQUNfVkVSXzQ1KSB7DQo+IAlyYyA9IHBjaV9kaXNh
-YmxlX2xpbmtfc3RhdGUocGRldiwgUENJRV9MSU5LX1NUQVRFX0wxXzIpOw0KPiAJdHAtPmFzcG1f
-bWFuYWdlYWJsZSA9ICFyYzsNCj4gfSBlbHNlIHsNCj4gCXJjID0gcGNpX2Rpc2FibGVfbGlua19z
-dGF0ZShwZGV2LCBQQ0lFX0xJTktfU1RBVEVfTDEpOw0KPiAJdHAtPmFzcG1fbWFuYWdlYWJsZSA9
-ICFyYzsNCj4gfQ0KPiANCj4gPiAgCXRwLT5kYXNoX3R5cGUgPSBydGxfY2hlY2tfZGFzaCh0cCk7
-DQo+ID4NCj4gDQo+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQgYmVmb3Jl
-IHByaW50aW5nIHRoaXMgZS1tYWlsLg0K
+a RC FLUSH packet consists of:
++----+------+------+
+|BTH | FETH | RETH |
++----+------+------+
+
+oA19-2: FLUSH shall be single packet message and shall have no payload.
+oA19-5: FLUSH BTH shall hold the Opcode = 0x1C
+
+FLUSH Extended Transport Header(FETH)
++-----+-----------+------------------------+----------------------+
+|Bits |   31-6    |          5-4           |        3-0           |
++-----+-----------+------------------------+----------------------+
+|     | Reserved  | Selectivity Level(SEL) | Placement Type(PLT)  |
++-----+-----------+------------------------+----------------------+
+
+Selectivity Level (SEL) – defines the memory region scope the FLUSH
+should apply on. Values are as follows:
+• b’00 - Memory Region Range: FLUSH applies for all preceding memory
+         updates to the RETH range on this QP. All RETH fields shall be
+         valid in this selectivity mode. RETH:DMALen field shall be between
+         zero and (2 31 -1) bytes (inclusive).
+• b’01 - Memory Region: FLUSH applies for all preceding memory updates
+         to RETH.R_key on this QP. RETH:DMALen and RETH:VA shall be
+         ignored in this mode.
+• b'10 - Reserved.
+• b'11 - Reserved.
+
+Placement Type (PLT) – Defines the memory placement guarantee of
+this FLUSH. Multiple bits may be set in this field. Values are as follows:
+• Bit 0 if set to '1' indicated that the FLUSH should guarantee Global
+  Visibility.
+• Bit 1 if set to '1' indicated that the FLUSH should guarantee
+  Persistence.
+• Bits 3:2 are reserved
+
+Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
+---
+V2: extend flush to include length field.
+---
+ drivers/infiniband/core/uverbs_cmd.c   | 17 +++++++++++++++++
+ drivers/infiniband/sw/rxe/rxe_hdr.h    | 24 ++++++++++++++++++++++++
+ drivers/infiniband/sw/rxe/rxe_opcode.c | 15 +++++++++++++++
+ drivers/infiniband/sw/rxe/rxe_opcode.h |  3 +++
+ drivers/infiniband/sw/rxe/rxe_req.c    | 15 ++++++++++++++-
+ include/rdma/ib_pack.h                 |  2 ++
+ include/rdma/ib_verbs.h                | 10 ++++++++++
+ include/uapi/rdma/ib_user_verbs.h      |  8 ++++++++
+ include/uapi/rdma/rdma_user_rxe.h      |  7 +++++++
+ 9 files changed, 100 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/infiniband/core/uverbs_cmd.c b/drivers/infiniband/core/uverbs_cmd.c
+index 6b6393176b3c..632e1747fb60 100644
+--- a/drivers/infiniband/core/uverbs_cmd.c
++++ b/drivers/infiniband/core/uverbs_cmd.c
+@@ -2080,6 +2080,23 @@ static int ib_uverbs_post_send(struct uverbs_attr_bundle *attrs)
+ 			rdma->rkey = user_wr->wr.rdma.rkey;
+ 
+ 			next = &rdma->wr;
++		} else if (user_wr->opcode == IB_WR_RDMA_FLUSH) {
++			struct ib_flush_wr *flush;
++
++			next_size = sizeof(*flush);
++			flush = alloc_wr(next_size, user_wr->num_sge);
++			if (!flush) {
++				ret = -ENOMEM;
++				goto out_put;
++			}
++
++			flush->remote_addr = user_wr->wr.flush.remote_addr;
++			flush->length = user_wr->wr.flush.length;
++			flush->rkey = user_wr->wr.flush.rkey;
++			flush->type = user_wr->wr.flush.type;
++			flush->level = user_wr->wr.flush.level;
++
++			next = &flush->wr;
+ 		} else if (user_wr->opcode == IB_WR_ATOMIC_CMP_AND_SWP ||
+ 			   user_wr->opcode == IB_WR_ATOMIC_FETCH_AND_ADD) {
+ 			struct ib_atomic_wr *atomic;
+diff --git a/drivers/infiniband/sw/rxe/rxe_hdr.h b/drivers/infiniband/sw/rxe/rxe_hdr.h
+index e432f9e37795..e37aa1944b18 100644
+--- a/drivers/infiniband/sw/rxe/rxe_hdr.h
++++ b/drivers/infiniband/sw/rxe/rxe_hdr.h
+@@ -607,6 +607,29 @@ static inline void reth_set_len(struct rxe_pkt_info *pkt, u32 len)
+ 		rxe_opcode[pkt->opcode].offset[RXE_RETH], len);
+ }
+ 
++/*
++ * FLUSH Extended Transport Header(FETH)
++ * +-----+-----------+------------------------+----------------------+
++ * |Bits |   31-6    |          5-4           |        3-0           |
++ * +-----+-----------+------------------------+----------------------+
++ *       | Reserved  | Selectivity Level(SEL) | Placement Type(PLT)  |
++ * +-----+-----------+------------------------+----------------------+
++ */
++#define FETH_PLT_SHIFT 0UL
++#define FETH_SEL_SHIFT 4UL
++#define FETH_RESERVED_SHIFT 6UL
++#define FETH_PLT_MASK ((1UL << FETH_SEL_SHIFT) - 1UL)
++#define FETH_SEL_MASK (~FETH_PLT_MASK & ((1UL << FETH_RESERVED_SHIFT) - 1UL))
++
++static inline void feth_init(struct rxe_pkt_info *pkt, u32 type, u32 level)
++{
++	u32 *p = (u32 *)(pkt->hdr + rxe_opcode[pkt->opcode].offset[RXE_FETH]);
++	u32 feth = ((level << FETH_SEL_SHIFT) & FETH_SEL_MASK) |
++		   ((type << FETH_PLT_SHIFT) & FETH_PLT_MASK);
++
++	*p = cpu_to_be32(feth);
++}
++
+ /******************************************************************************
+  * Atomic Extended Transport Header
+  ******************************************************************************/
+@@ -910,6 +933,7 @@ enum rxe_hdr_length {
+ 	RXE_ATMETH_BYTES	= sizeof(struct rxe_atmeth),
+ 	RXE_IETH_BYTES		= sizeof(struct rxe_ieth),
+ 	RXE_RDETH_BYTES		= sizeof(struct rxe_rdeth),
++	RXE_FETH_BYTES		= sizeof(u32),
+ };
+ 
+ static inline size_t header_size(struct rxe_pkt_info *pkt)
+diff --git a/drivers/infiniband/sw/rxe/rxe_opcode.c b/drivers/infiniband/sw/rxe/rxe_opcode.c
+index df596ba7527d..adea6c16dfb5 100644
+--- a/drivers/infiniband/sw/rxe/rxe_opcode.c
++++ b/drivers/infiniband/sw/rxe/rxe_opcode.c
+@@ -316,6 +316,21 @@ struct rxe_opcode_info rxe_opcode[RXE_NUM_OPCODE] = {
+ 					  RXE_AETH_BYTES,
+ 		}
+ 	},
++	[IB_OPCODE_RC_RDMA_FLUSH]			= {
++		.name	= "IB_OPCODE_RC_RDMA_FLUSH",
++		.mask	= RXE_FETH_MASK | RXE_RETH_MASK | RXE_FLUSH_MASK |
++			  RXE_START_MASK | RXE_END_MASK | RXE_REQ_MASK,
++		.length = RXE_BTH_BYTES + RXE_FETH_BYTES + RXE_RETH_BYTES,
++		.offset = {
++			[RXE_BTH]	= 0,
++			[RXE_FETH]	= RXE_BTH_BYTES,
++			[RXE_RETH]	= RXE_BTH_BYTES +
++					  RXE_FETH_BYTES,
++			[RXE_PAYLOAD]	= RXE_BTH_BYTES +
++					  RXE_FETH_BYTES +
++					  RXE_RETH_BYTES,
++		}
++	},
+ 	[IB_OPCODE_RC_ATOMIC_ACKNOWLEDGE]			= {
+ 		.name	= "IB_OPCODE_RC_ATOMIC_ACKNOWLEDGE",
+ 		.mask	= RXE_AETH_MASK | RXE_ATMACK_MASK | RXE_ACK_MASK |
+diff --git a/drivers/infiniband/sw/rxe/rxe_opcode.h b/drivers/infiniband/sw/rxe/rxe_opcode.h
+index 8f9aaaf260f2..dbc2eca8a92c 100644
+--- a/drivers/infiniband/sw/rxe/rxe_opcode.h
++++ b/drivers/infiniband/sw/rxe/rxe_opcode.h
+@@ -48,6 +48,7 @@ enum rxe_hdr_type {
+ 	RXE_DETH,
+ 	RXE_IMMDT,
+ 	RXE_PAYLOAD,
++	RXE_FETH,
+ 	NUM_HDR_TYPES
+ };
+ 
+@@ -63,6 +64,7 @@ enum rxe_hdr_mask {
+ 	RXE_IETH_MASK		= BIT(RXE_IETH),
+ 	RXE_RDETH_MASK		= BIT(RXE_RDETH),
+ 	RXE_DETH_MASK		= BIT(RXE_DETH),
++	RXE_FETH_MASK		= BIT(RXE_FETH),
+ 	RXE_PAYLOAD_MASK	= BIT(RXE_PAYLOAD),
+ 
+ 	RXE_REQ_MASK		= BIT(NUM_HDR_TYPES + 0),
+@@ -80,6 +82,7 @@ enum rxe_hdr_mask {
+ 	RXE_END_MASK		= BIT(NUM_HDR_TYPES + 10),
+ 
+ 	RXE_LOOPBACK_MASK	= BIT(NUM_HDR_TYPES + 12),
++	RXE_FLUSH_MASK		= BIT(NUM_HDR_TYPES + 13),
+ 
+ 	RXE_READ_OR_ATOMIC_MASK	= (RXE_READ_MASK | RXE_ATOMIC_MASK),
+ 	RXE_WRITE_OR_SEND_MASK	= (RXE_WRITE_MASK | RXE_SEND_MASK),
+diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
+index 5eb89052dd66..708138117136 100644
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -220,6 +220,9 @@ static int next_opcode_rc(struct rxe_qp *qp, u32 opcode, int fits)
+ 				IB_OPCODE_RC_SEND_ONLY_WITH_IMMEDIATE :
+ 				IB_OPCODE_RC_SEND_FIRST;
+ 
++	case IB_WR_RDMA_FLUSH:
++		return IB_OPCODE_RC_RDMA_FLUSH;
++
+ 	case IB_WR_RDMA_READ:
+ 		return IB_OPCODE_RC_RDMA_READ_REQUEST;
+ 
+@@ -413,11 +416,18 @@ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
+ 
+ 	/* init optional headers */
+ 	if (pkt->mask & RXE_RETH_MASK) {
+-		reth_set_rkey(pkt, ibwr->wr.rdma.rkey);
++		if (pkt->mask & RXE_FETH_MASK)
++			reth_set_rkey(pkt, ibwr->wr.flush.rkey);
++		else
++			reth_set_rkey(pkt, ibwr->wr.rdma.rkey);
+ 		reth_set_va(pkt, wqe->iova);
+ 		reth_set_len(pkt, wqe->dma.resid);
+ 	}
+ 
++	/* Fill Flush Extension Transport Header */
++	if (pkt->mask & RXE_FETH_MASK)
++		feth_init(pkt, ibwr->wr.flush.type, ibwr->wr.flush.level);
++
+ 	if (pkt->mask & RXE_IMMDT_MASK)
+ 		immdt_set_imm(pkt, ibwr->ex.imm_data);
+ 
+@@ -477,6 +487,9 @@ static int finish_packet(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
+ 
+ 			memset(pad, 0, bth_pad(pkt));
+ 		}
++	} else if (pkt->mask & RXE_FLUSH_MASK) {
++		// oA19-2: shall have no payload.
++		wqe->dma.resid = 0;
+ 	}
+ 
+ 	return 0;
+diff --git a/include/rdma/ib_pack.h b/include/rdma/ib_pack.h
+index a9162f25beaf..d19edb502de6 100644
+--- a/include/rdma/ib_pack.h
++++ b/include/rdma/ib_pack.h
+@@ -84,6 +84,7 @@ enum {
+ 	/* opcode 0x15 is reserved */
+ 	IB_OPCODE_SEND_LAST_WITH_INVALIDATE         = 0x16,
+ 	IB_OPCODE_SEND_ONLY_WITH_INVALIDATE         = 0x17,
++	IB_OPCODE_RDMA_FLUSH                        = 0x1C,
+ 
+ 	/* real constants follow -- see comment about above IB_OPCODE()
+ 	   macro for more details */
+@@ -112,6 +113,7 @@ enum {
+ 	IB_OPCODE(RC, FETCH_ADD),
+ 	IB_OPCODE(RC, SEND_LAST_WITH_INVALIDATE),
+ 	IB_OPCODE(RC, SEND_ONLY_WITH_INVALIDATE),
++	IB_OPCODE(RC, RDMA_FLUSH),
+ 
+ 	/* UC */
+ 	IB_OPCODE(UC, SEND_FIRST),
+diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
+index 7f5905180636..d8555b6e4eba 100644
+--- a/include/rdma/ib_verbs.h
++++ b/include/rdma/ib_verbs.h
+@@ -1299,6 +1299,7 @@ struct ib_qp_attr {
+ enum ib_wr_opcode {
+ 	/* These are shared with userspace */
+ 	IB_WR_RDMA_WRITE = IB_UVERBS_WR_RDMA_WRITE,
++	IB_WR_RDMA_FLUSH = IB_UVERBS_WR_RDMA_FLUSH,
+ 	IB_WR_RDMA_WRITE_WITH_IMM = IB_UVERBS_WR_RDMA_WRITE_WITH_IMM,
+ 	IB_WR_SEND = IB_UVERBS_WR_SEND,
+ 	IB_WR_SEND_WITH_IMM = IB_UVERBS_WR_SEND_WITH_IMM,
+@@ -1393,6 +1394,15 @@ struct ib_atomic_wr {
+ 	u32			rkey;
+ };
+ 
++struct ib_flush_wr {
++	struct ib_send_wr	wr;
++	u64			remote_addr;
++	u32			length;
++	u32			rkey;
++	u8			type;
++	u8			level;
++};
++
+ static inline const struct ib_atomic_wr *atomic_wr(const struct ib_send_wr *wr)
+ {
+ 	return container_of(wr, struct ib_atomic_wr, wr);
+diff --git a/include/uapi/rdma/ib_user_verbs.h b/include/uapi/rdma/ib_user_verbs.h
+index 7ee73a0652f1..c4131913ef6a 100644
+--- a/include/uapi/rdma/ib_user_verbs.h
++++ b/include/uapi/rdma/ib_user_verbs.h
+@@ -784,6 +784,7 @@ enum ib_uverbs_wr_opcode {
+ 	IB_UVERBS_WR_RDMA_READ_WITH_INV = 11,
+ 	IB_UVERBS_WR_MASKED_ATOMIC_CMP_AND_SWP = 12,
+ 	IB_UVERBS_WR_MASKED_ATOMIC_FETCH_AND_ADD = 13,
++	IB_UVERBS_WR_RDMA_FLUSH = 14,
+ 	/* Review enum ib_wr_opcode before modifying this */
+ };
+ 
+@@ -797,6 +798,13 @@ struct ib_uverbs_send_wr {
+ 		__u32 invalidate_rkey;
+ 	} ex;
+ 	union {
++		struct {
++			__aligned_u64 remote_addr;
++			__u32 length;
++			__u32 rkey;
++			__u8 type;
++			__u8 level;
++		} flush;
+ 		struct {
+ 			__aligned_u64 remote_addr;
+ 			__u32 rkey;
+diff --git a/include/uapi/rdma/rdma_user_rxe.h b/include/uapi/rdma/rdma_user_rxe.h
+index f09c5c9e3dd5..3de56ed5c24f 100644
+--- a/include/uapi/rdma/rdma_user_rxe.h
++++ b/include/uapi/rdma/rdma_user_rxe.h
+@@ -82,6 +82,13 @@ struct rxe_send_wr {
+ 		__u32		invalidate_rkey;
+ 	} ex;
+ 	union {
++		struct {
++			__aligned_u64 remote_addr;
++			__u32	length;
++			__u32	rkey;
++			__u8	type;
++			__u8	level;
++		} flush;
+ 		struct {
+ 			__aligned_u64 remote_addr;
+ 			__u32	rkey;
+-- 
+2.31.1
+
+
+
