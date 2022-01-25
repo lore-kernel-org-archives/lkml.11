@@ -2,305 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87004C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96779C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315624AbiAYCxy (ORCPT
+        id S1315696AbiAYCyA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:53:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2374229AbiAYAQe (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:16:34 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777ECC038AF2
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:01:42 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: detlev)
-        with ESMTPSA id BBDCF1F438FC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1643061701;
-        bh=+7cPrbiU8TJpfXjaGc/vh7CRwWbkf2jwRVocsTyTrPQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QhvfcdEVjoT+8k17zEvFWcCpUXqCH4XWJSZ7GhafQigYzyLamdM9RYfoqp5LldIe1
-         NSiXpPVshDmf3CLjjfNSoz+R+dicjX6mzlpPlWcU3fy5/AeC8xBt35JyjrL2nnyI0F
-         AD0Llsnkq8S8LPJw02j1xB5hHPRmxEBy/fMl6nCyoD3+1WF8IVm6VHEbtO4jx3Scu8
-         lxW9A7CCdl9HTOne1xz4Nxax44s0SGbCy38jvi/b/d8pXhk0CIS8eh0rdk5FthKteI
-         jqD4KRdSsOQ2BUP3isqgMi+Ge03BO90eleLazsdkjT4gy7LdqOepWY6/axmwK0+Qvc
-         rsmcUpqXWbh4Q==
-From:   Detlev Casanova <detlev.casanova@collabora.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Detlev Casanova <detlev.casanova@collabora.com>
-Subject: [PATCH v3 3/9] regulator: rpi-panel: Serialise operations.
-Date:   Mon, 24 Jan 2022 17:01:23 -0500
-Message-Id: <20220124220129.158891-4-detlev.casanova@collabora.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124220129.158891-1-detlev.casanova@collabora.com>
-References: <20220124220129.158891-1-detlev.casanova@collabora.com>
+        Mon, 24 Jan 2022 21:54:00 -0500
+Received: from foss.arm.com ([217.140.110.172]:59140 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2375567AbiAYAUi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 19:20:38 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0BB891FB;
+        Mon, 24 Jan 2022 16:20:33 -0800 (PST)
+Received: from [10.57.68.26] (unknown [10.57.68.26])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6E31B3F793;
+        Mon, 24 Jan 2022 16:20:30 -0800 (PST)
+Message-ID: <363b8f7d-5459-0d19-c1ac-a2c6bce9d26f@arm.com>
+Date:   Tue, 25 Jan 2022 00:20:26 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 6/7] iommu: Use right way to retrieve iommu_ops
+Content-Language: en-GB
+To:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>
+Cc:     David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>
+References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+ <20220124071103.2097118-7-baolu.lu@linux.intel.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220124071103.2097118-7-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+On 2022-01-24 07:11, Lu Baolu wrote:
+> The common iommu_ops is hooked to both device and domain. When a helper
+> has both device and domain pointer, the way to get the iommu_ops looks
+> messy in iommu core. This sorts out the way to get iommu_ops. The device
+> related helpers go through device pointer, while the domain related ones
+> go through domain pointer.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>   include/linux/iommu.h |  8 ++++++++
+>   drivers/iommu/iommu.c | 25 ++++++++++++++-----------
+>   2 files changed, 22 insertions(+), 11 deletions(-)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index aa5486243892..111b3e9c79bb 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -385,6 +385,14 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
+>   	};
+>   }
+>   
+> +static inline const struct iommu_ops *dev_iommu_ops_get(struct device *dev)
+> +{
+> +	if (dev && dev->iommu && dev->iommu->iommu_dev)
+> +		return dev->iommu->iommu_dev->ops;
+> +
+> +	return NULL;
 
-The driver was using the regmap lock to serialise the
-individual accesses, but we really need to protect the
-timings of enabling the regulators, including any communication
-with the Atmel.
+This probably warrants at least a WARN, but it's arguable to just assume 
+that valid ops must be installed if iommu_probe_device() has succeeded. 
+The device ops are essentially for internal use within the IOMMU 
+subsystem itself, so we should be able to trust ourselves not to misuse 
+the helper.
 
-Use a mutex within the driver to control overall accesses to
-the Atmel, instead of the regmap lock.
+> +}
+> +
+>   #define IOMMU_BUS_NOTIFY_PRIORITY		0
+>   #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
+>   #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 5230c6d90ece..6631e2ea44df 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -764,6 +764,7 @@ EXPORT_SYMBOL_GPL(iommu_group_set_name);
+>   static int iommu_create_device_direct_mappings(struct iommu_group *group,
+>   					       struct device *dev)
+>   {
+> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
+>   	struct iommu_domain *domain = group->default_domain;
+>   	struct iommu_resv_region *entry;
+>   	struct list_head mappings;
+> @@ -785,8 +786,8 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
+>   		dma_addr_t start, end, addr;
+>   		size_t map_size = 0;
+>   
+> -		if (domain->ops->apply_resv_region)
+> -			domain->ops->apply_resv_region(dev, domain, entry);
+> +		if (ops->apply_resv_region)
+> +			ops->apply_resv_region(dev, domain, entry);
 
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
----
- .../regulator/rpi-panel-attiny-regulator.c    | 91 ++++++++++++++++---
- 1 file changed, 80 insertions(+), 11 deletions(-)
+Strictly I think this was a domain op, as it was about reserving the 
+IOVA range in the given DMA domain. Also taking the domain as an 
+argument is a bit of a giveaway. However it's now just dead code either 
+way since there are no remaining implementations, and no reason for any 
+new ones.
 
-diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
-index 00fb69efcfa2..a4af7adad2b5 100644
---- a/drivers/regulator/rpi-panel-attiny-regulator.c
-+++ b/drivers/regulator/rpi-panel-attiny-regulator.c
-@@ -27,18 +27,28 @@
- #define REG_POWERON	0x85
- #define REG_PWM		0x86
- 
-+struct attiny_lcd {
-+	/* lock to serialise overall accesses to the Atmel */
-+	struct mutex	lock;
-+	struct regmap	*regmap;
-+};
-+
- static const struct regmap_config attiny_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
-+	.disable_locking = 1,
- 	.max_register = REG_PWM,
- 	.cache_type = REGCACHE_NONE,
- };
- 
- static int attiny_lcd_power_enable(struct regulator_dev *rdev)
- {
-+	struct mutex *lock = rdev_get_drvdata(rdev);
- 	unsigned int data;
- 	int ret, i;
- 
-+	mutex_lock(lock);
-+
- 	regmap_write(rdev->regmap, REG_POWERON, 1);
- 	msleep(80);
- 
-@@ -63,33 +73,49 @@ static int attiny_lcd_power_enable(struct regulator_dev *rdev)
- 	 */
- 	regmap_write(rdev->regmap, REG_PORTA, BIT(2));
- 
-+	mutex_unlock(lock);
-+
- 	return 0;
- }
- 
- static int attiny_lcd_power_disable(struct regulator_dev *rdev)
- {
-+	struct mutex *lock = rdev_get_drvdata(rdev);
-+
-+	mutex_lock(lock);
-+
- 	regmap_write(rdev->regmap, REG_PWM, 0);
- 	regmap_write(rdev->regmap, REG_POWERON, 0);
- 	msleep(30);
-+
-+	mutex_unlock(lock);
-+
- 	return 0;
- }
- 
- static int attiny_lcd_power_is_enabled(struct regulator_dev *rdev)
- {
-+	struct mutex *lock = rdev_get_drvdata(rdev);
- 	unsigned int data;
- 	int ret, i;
- 
-+	mutex_lock(lock);
-+
- 	for (i = 0; i < 10; i++) {
- 		ret = regmap_read(rdev->regmap, REG_POWERON, &data);
- 		if (!ret)
- 			break;
- 		usleep_range(10000, 12000);
- 	}
--	if (ret < 0)
-+	if (ret < 0) {
-+		mutex_unlock(lock);
- 		return ret;
-+	}
- 
--	if (!(data & BIT(0)))
-+	if (!(data & BIT(0))) {
-+		mutex_unlock(lock);
- 		return 0;
-+	}
- 
- 	for (i = 0; i < 10; i++) {
- 		ret = regmap_read(rdev->regmap, REG_PORTB, &data);
-@@ -98,6 +124,8 @@ static int attiny_lcd_power_is_enabled(struct regulator_dev *rdev)
- 		usleep_range(10000, 12000);
- 	}
- 
-+	mutex_unlock(lock);
-+
- 	if (ret < 0)
- 		return ret;
- 
-@@ -125,10 +153,13 @@ static const struct regulator_desc attiny_regulator = {
- 
- static int attiny_update_status(struct backlight_device *bl)
- {
--	struct regmap *regmap = bl_get_data(bl);
-+	struct attiny_lcd *state = bl_get_data(bl);
-+	struct regmap *regmap = state->regmap;
- 	int brightness = bl->props.brightness;
- 	int ret, i;
- 
-+	mutex_lock(&state->lock);
-+
- 	if (bl->props.power != FB_BLANK_UNBLANK ||
- 	    bl->props.fb_blank != FB_BLANK_UNBLANK)
- 		brightness = 0;
-@@ -139,20 +170,27 @@ static int attiny_update_status(struct backlight_device *bl)
- 			break;
- 	}
- 
-+	mutex_unlock(&state->lock);
-+
- 	return ret;
- }
- 
- static int attiny_get_brightness(struct backlight_device *bl)
- {
--	struct regmap *regmap = bl_get_data(bl);
-+	struct attiny_lcd *state = bl_get_data(bl);
-+	struct regmap *regmap = state->regmap;
- 	int ret, brightness, i;
- 
-+	mutex_lock(&state->lock);
-+
- 	for (i = 0; i < 10; i++) {
- 		ret = regmap_read(regmap, REG_PWM, &brightness);
- 		if (!ret)
- 			break;
- 	}
- 
-+	mutex_unlock(&state->lock);
-+
- 	if (ret)
- 		return ret;
- 
-@@ -174,22 +212,30 @@ static int attiny_i2c_probe(struct i2c_client *i2c,
- 	struct regulator_config config = { };
- 	struct backlight_device *bl;
- 	struct regulator_dev *rdev;
-+	struct attiny_lcd *state;
- 	struct regmap *regmap;
- 	unsigned int data;
- 	int ret;
- 
-+	state = devm_kzalloc(&i2c->dev, sizeof(*state), GFP_KERNEL);
-+	if (!state)
-+		return -ENOMEM;
-+
-+	mutex_init(&state->lock);
-+	i2c_set_clientdata(i2c, state);
-+
- 	regmap = devm_regmap_init_i2c(i2c, &attiny_regmap_config);
- 	if (IS_ERR(regmap)) {
- 		ret = PTR_ERR(regmap);
- 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
- 			ret);
--		return ret;
-+		goto error;
- 	}
- 
- 	ret = regmap_read(regmap, REG_ID, &data);
- 	if (ret < 0) {
- 		dev_err(&i2c->dev, "Failed to read REG_ID reg: %d\n", ret);
--		return ret;
-+		goto error;
- 	}
- 
- 	switch (data) {
-@@ -198,7 +244,8 @@ static int attiny_i2c_probe(struct i2c_client *i2c,
- 		break;
- 	default:
- 		dev_err(&i2c->dev, "Unknown Atmel firmware revision: 0x%02x\n", data);
--		return -ENODEV;
-+		ret = -ENODEV;
-+		goto error;
- 	}
- 
- 	regmap_write(regmap, REG_POWERON, 0);
-@@ -208,23 +255,44 @@ static int attiny_i2c_probe(struct i2c_client *i2c,
- 	config.regmap = regmap;
- 	config.of_node = i2c->dev.of_node;
- 	config.init_data = &attiny_regulator_default;
-+	config.driver_data = &state->lock;
- 
- 	rdev = devm_regulator_register(&i2c->dev, &attiny_regulator, &config);
- 	if (IS_ERR(rdev)) {
- 		dev_err(&i2c->dev, "Failed to register ATTINY regulator\n");
--		return PTR_ERR(rdev);
-+		ret = PTR_ERR(rdev);
-+		goto error;
- 	}
- 
- 	props.type = BACKLIGHT_RAW;
- 	props.max_brightness = 0xff;
-+
-+	state->regmap = regmap;
-+
- 	bl = devm_backlight_device_register(&i2c->dev, dev_name(&i2c->dev),
--					    &i2c->dev, regmap, &attiny_bl,
-+					    &i2c->dev, state, &attiny_bl,
- 					    &props);
--	if (IS_ERR(bl))
--		return PTR_ERR(bl);
-+	if (IS_ERR(bl)) {
-+		ret = PTR_ERR(bl);
-+		goto error;
-+	}
- 
- 	bl->props.brightness = 0xff;
- 
-+	return 0;
-+
-+error:
-+	mutex_destroy(&state->lock);
-+
-+	return ret;
-+}
-+
-+static int attiny_i2c_remove(struct i2c_client *client)
-+{
-+	struct attiny_lcd *state = i2c_get_clientdata(client);
-+
-+	mutex_destroy(&state->lock);
-+
- 	return 0;
- }
- 
-@@ -240,6 +308,7 @@ static struct i2c_driver attiny_regulator_driver = {
- 		.of_match_table = of_match_ptr(attiny_dt_ids),
- 	},
- 	.probe = attiny_i2c_probe,
-+	.remove	= attiny_i2c_remove,
- };
- 
- module_i2c_driver(attiny_regulator_driver);
--- 
-2.34.1
+>   
+>   		start = ALIGN(entry->start, pg_size);
+>   		end   = ALIGN(entry->start + entry->length, pg_size);
+> @@ -831,8 +832,10 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
+>   static bool iommu_is_attach_deferred(struct iommu_domain *domain,
+>   				     struct device *dev)
+>   {
+> -	if (domain->ops->is_attach_deferred)
+> -		return domain->ops->is_attach_deferred(domain, dev);
+> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
+> +
+> +	if (ops->is_attach_deferred)
+> +		return ops->is_attach_deferred(domain, dev);
 
+Similarly if this takes a domain as its first argument then it's de 
+facto a domain method. However, I'd concur that logically it *is* a 
+device op, so let's drop that (unused) domain argument if we're cleaning up.
+
+Maybe there's even an argument for factoring this out to a standard flag 
+in dev_iommu rather than an op at all?
+
+The others covered here look OK - we can blame PCI for page response 
+being weirdly device-centric - however could we also convert all the 
+feasible instances of dev->bus->iommu_ops to dev_iommu_ops() as well? 
+(Subtly implying that I'm also not a fan of having "_get" in the name 
+for a non-refcounted lookup...) Obviously iommu_probe_device() and 
+iommmu_domain_alloc() still need bus ops at this point, but I'm working 
+on that... :)
+
+Thanks,
+Robin.
+
+>   	return false;
+>   }
+> @@ -1251,10 +1254,10 @@ int iommu_page_response(struct device *dev,
+>   	struct iommu_fault_event *evt;
+>   	struct iommu_fault_page_request *prm;
+>   	struct dev_iommu *param = dev->iommu;
+> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
+>   	bool has_pasid = msg->flags & IOMMU_PAGE_RESP_PASID_VALID;
+> -	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+>   
+> -	if (!domain || !domain->ops->page_response)
+> +	if (!ops || !ops->page_response)
+>   		return -ENODEV;
+>   
+>   	if (!param || !param->fault_param)
+> @@ -1295,7 +1298,7 @@ int iommu_page_response(struct device *dev,
+>   			msg->pasid = 0;
+>   		}
+>   
+> -		ret = domain->ops->page_response(dev, evt, msg);
+> +		ret = ops->page_response(dev, evt, msg);
+>   		list_del(&evt->list);
+>   		kfree(evt);
+>   		break;
+> @@ -1758,10 +1761,10 @@ static int __iommu_group_dma_attach(struct iommu_group *group)
+>   
+>   static int iommu_group_do_probe_finalize(struct device *dev, void *data)
+>   {
+> -	struct iommu_domain *domain = data;
+> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
+>   
+> -	if (domain->ops->probe_finalize)
+> -		domain->ops->probe_finalize(dev);
+> +	if (ops->probe_finalize)
+> +		ops->probe_finalize(dev);
+>   
+>   	return 0;
+>   }
+> @@ -2020,7 +2023,7 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
+>   
+>   int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+>   {
+> -	const struct iommu_ops *ops = domain->ops;
+> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
+>   
+>   	if (ops->is_attach_deferred && ops->is_attach_deferred(domain, dev))
+>   		return __iommu_attach_device(domain, dev);
