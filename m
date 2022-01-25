@@ -2,121 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83743C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08018C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1319196AbiAYDIH (ORCPT
+        id S1319286AbiAYDIZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:08:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3420425AbiAYCYS (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:24:18 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D94C067A7C;
-        Mon, 24 Jan 2022 18:03:58 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id s185so11715860oie.3;
-        Mon, 24 Jan 2022 18:03:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4d+4TLddh1iILo0iPjAzyUaE64ZZAAUgPh4mjdb7zyo=;
-        b=Lc6oqAUSjft7lGStVs9/NSozsAJW50sCPctsh1WZEziI2d7idluVCBhxfWMtC4L+Xf
-         tJs6hIdkf0JYxQns/LWb5BY0wbYYlW0mKkO5jTLB5Ws0bkdVsFvHP7loaqNJ4UImpAiP
-         Wx2c+a7Lz5/KzDYHNuZYG3k3QZI4isAMvit2ZHbIJQPtc80o/3orwfySWrp2s5gwsHxF
-         b2TR/BLTP3VB6A4t95aAv4T4tWQIK1a2bKqPBRqt6akvXFT80rHAODYKpqOp/XxX/6pf
-         sOKzAV3aXcAZH/u6yTpvRxn+Qc4SbMhcK6NzBgEs16ukXtuaCPJIsQ06oak1Ldgieo6/
-         kIkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=4d+4TLddh1iILo0iPjAzyUaE64ZZAAUgPh4mjdb7zyo=;
-        b=FifHe7NuResyxzRfa0v/LGdH61a3n7A0FbR+LuUy8jLUD64JP96Cfcv9on84+jSVGc
-         jc0peTPbQEK657GBcQ7e7NGFsBpSHZ77DfLKejd3XsmePuk2x1nktWpxO0Bo3relHbkL
-         pkRE9/D9HbEwa82vZFnelubOHdSovLt5ZDGUh9oD4XHlojNJbYE7jBuEVPt0RcwVTGLm
-         YqMtiZCf9u8Y+FhTWXW+2O6HEmEEAxJCVQXpFDCrlY6Qu336F1koKUNCIYPdLCUPd6gX
-         1B+MYTV3hr5eFJ/C/HfMKQo1kfYBYWy2i2SVCrl7Ms3l6FchauAmGT6LCoXZ/VRsSoNj
-         R0Jw==
-X-Gm-Message-State: AOAM530hP6fWNdQiYTqmwreVqPtJ6YDcSAg+d2ENmmn8gx4FffoCZq2b
-        +MNHJCF2Maqzoc8ns0UrzeledMCXOBU=
-X-Google-Smtp-Source: ABdhPJxdUJEVns1KUuKUlAhBTewdl4UDYa5y5d4AWRYG9z57CPRk+j1G9ysAd0X250DH74alCBHGcg==
-X-Received: by 2002:aca:eb88:: with SMTP id j130mr3721074oih.75.1643076238238;
-        Mon, 24 Jan 2022 18:03:58 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id j4sm737292oon.8.2022.01.24.18.03.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 18:03:57 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 24 Jan 2022 18:03:55 -0800
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Luiz Sampaio <sampaio.ime@gmail.com>
-Cc:     Jean Delvare <jdelvare@suse.com>, linux-kernel@vger.kernel.org,
-        linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH 03/31] hwmon: pmbus: changing LED_* from enum
- led_brightness to actual value
-Message-ID: <20220125020355.GA355320@roeck-us.net>
-References: <20220121165436.30956-1-sampaio.ime@gmail.com>
- <20220121165436.30956-4-sampaio.ime@gmail.com>
+        Mon, 24 Jan 2022 22:08:25 -0500
+Received: from mga11.intel.com ([192.55.52.93]:6524 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S3419730AbiAYCUX (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 21:20:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643077221; x=1674613221;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=rwSaZOvgjEYNihsUxTQuQbbaaF/mpVFCYt9+EG/w7dU=;
+  b=O66mnj+Ls9YzLexf0cCcelyx/tiZ/SGDhA+SmdLcUm8EOoMRhpnEqWmn
+   0Sl2L0iw1Rp6BcsEzKu+jM2X/0nOJt8kzrX8AkOghyEo7jO+e7893sAZf
+   JPhGpQRenYWPk2AwNL+20plSbQrAtUkAEJVLnKdiGDbJDX5OO+aq2QPqs
+   lledvFGZIg25mBNoEjjSZbPIP4hNr5ilNQkhByrVz+KTZ7rI75bJsbEbJ
+   VF+VcbP4lDdwJENQ0zkQ9caBPgovFOHrFo3jVH6EuvWjlBNWpyWEJXvYV
+   IbRvngakxslzCUhIfAptEk9ZPydUTuzyV7EecqE/gnC6tGWP/5Kw6G2tz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="243788128"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="243788128"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:12:54 -0800
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="695633596"
+Received: from kerguder-mobl.ger.corp.intel.com (HELO localhost) ([10.249.158.133])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:12:42 -0800
+From:   Iwona Winiarska <iwona.winiarska@intel.com>
+To:     linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Borislav Petkov <bp@alien8.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Zev Weiss <zweiss@equinix.com>,
+        David Muller <d.mueller@elsoft.ch>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Billy Tsai <billy_tsai@aspeedtech.com>,
+        Iwona Winiarska <iwona.winiarska@intel.com>,
+        Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+Subject: [PATCH v6 03/13] ARM: dts: aspeed: Add PECI controller nodes
+Date:   Tue, 25 Jan 2022 02:10:54 +0100
+Message-Id: <20220125011104.2480133-4-iwona.winiarska@intel.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220125011104.2480133-1-iwona.winiarska@intel.com>
+References: <20220125011104.2480133-1-iwona.winiarska@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121165436.30956-4-sampaio.ime@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 01:54:08PM -0300, Luiz Sampaio wrote:
-> The enum led_brightness, which contains the declaration of LED_OFF,
-> LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
-> max_brightness.
+Add PECI controller nodes with all required information.
 
-There is no Signed-off-by:, so this is not not a valid/acceptable patch.
+Co-developed-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+Signed-off-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+---
+ arch/arm/boot/dts/aspeed-g4.dtsi | 11 +++++++++++
+ arch/arm/boot/dts/aspeed-g5.dtsi | 11 +++++++++++
+ arch/arm/boot/dts/aspeed-g6.dtsi | 11 +++++++++++
+ 3 files changed, 33 insertions(+)
 
-> ---
->  drivers/hwmon/pmbus/ibm-cffps.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/hwmon/pmbus/ibm-cffps.c b/drivers/hwmon/pmbus/ibm-cffps.c
-> index e3294a1a54bb..cc20a70c723b 100644
-> --- a/drivers/hwmon/pmbus/ibm-cffps.c
-> +++ b/drivers/hwmon/pmbus/ibm-cffps.c
-> @@ -382,10 +382,10 @@ static int ibm_cffps_led_brightness_set(struct led_classdev *led_cdev,
->  	u8 next_led_state;
->  	struct ibm_cffps *psu = container_of(led_cdev, struct ibm_cffps, led);
->  
-> -	if (brightness == LED_OFF) {
-> +	if (brightness == 0) {
->  		next_led_state = CFFPS_LED_OFF;
->  	} else {
-> -		brightness = LED_FULL;
-> +		brightness = 255;
+diff --git a/arch/arm/boot/dts/aspeed-g4.dtsi b/arch/arm/boot/dts/aspeed-g4.dtsi
+index f14dace34c5a..fa8b581c3d6c 100644
+--- a/arch/arm/boot/dts/aspeed-g4.dtsi
++++ b/arch/arm/boot/dts/aspeed-g4.dtsi
+@@ -392,6 +392,17 @@ uart_routing: uart-routing@9c {
+ 				};
+ 			};
+ 
++			peci0: peci-controller@1e78b000 {
++				compatible = "aspeed,ast2400-peci";
++				reg = <0x1e78b000 0x60>;
++				interrupts = <15>;
++				clocks = <&syscon ASPEED_CLK_GATE_REFCLK>;
++				resets = <&syscon ASPEED_RESET_PECI>;
++				cmd-timeout-ms = <1000>;
++				clock-frequency = <1000000>;
++				status = "disabled";
++			};
++
+ 			uart2: serial@1e78d000 {
+ 				compatible = "ns16550a";
+ 				reg = <0x1e78d000 0x20>;
+diff --git a/arch/arm/boot/dts/aspeed-g5.dtsi b/arch/arm/boot/dts/aspeed-g5.dtsi
+index 7495f93c5069..4147b397c883 100644
+--- a/arch/arm/boot/dts/aspeed-g5.dtsi
++++ b/arch/arm/boot/dts/aspeed-g5.dtsi
+@@ -516,6 +516,17 @@ ibt: ibt@140 {
+ 				};
+ 			};
+ 
++			peci0: peci-controller@1e78b000 {
++				compatible = "aspeed,ast2500-peci";
++				reg = <0x1e78b000 0x60>;
++				interrupts = <15>;
++				clocks = <&syscon ASPEED_CLK_GATE_REFCLK>;
++				resets = <&syscon ASPEED_RESET_PECI>;
++				cmd-timeout-ms = <1000>;
++				clock-frequency = <1000000>;
++				status = "disabled";
++			};
++
+ 			uart2: serial@1e78d000 {
+ 				compatible = "ns16550a";
+ 				reg = <0x1e78d000 0x20>;
+diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
+index c32e87fad4dc..3d5ce9da42c3 100644
+--- a/arch/arm/boot/dts/aspeed-g6.dtsi
++++ b/arch/arm/boot/dts/aspeed-g6.dtsi
+@@ -512,6 +512,17 @@ wdt4: watchdog@1e7850c0 {
+ 				status = "disabled";
+ 			};
+ 
++			peci0: peci-controller@1e78b000 {
++				compatible = "aspeed,ast2600-peci";
++				reg = <0x1e78b000 0x100>;
++				interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
++				clocks = <&syscon ASPEED_CLK_GATE_REF0CLK>;
++				resets = <&syscon ASPEED_RESET_PECI>;
++				cmd-timeout-ms = <1000>;
++				clock-frequency = <1000000>;
++				status = "disabled";
++			};
++
+ 			lpc: lpc@1e789000 {
+ 				compatible = "aspeed,ast2600-lpc-v2", "simple-mfd", "syscon";
+ 				reg = <0x1e789000 0x1000>;
+-- 
+2.31.1
 
-If the LED subsystem no longer likes defines, we should have local constants
-instead and not just use magic numbers. At the same time, this LED only supports
-two states, off or on. There will have to be an explanation why the full range of
-0..255 is still used and not just 0/1.
-
->  
->  		if (psu->led_state != CFFPS_LED_BLINK)
->  			next_led_state = CFFPS_LED_ON;
-> @@ -426,7 +426,7 @@ static int ibm_cffps_led_blink_set(struct led_classdev *led_cdev,
->  		return rc;
->  
->  	psu->led_state = CFFPS_LED_BLINK;
-> -	led_cdev->brightness = LED_FULL;
-> +	led_cdev->brightness = 255;
->  	*delay_on = CFFPS_BLINK_RATE_MS;
->  	*delay_off = CFFPS_BLINK_RATE_MS;
->  
-> @@ -442,7 +442,7 @@ static void ibm_cffps_create_led_class(struct ibm_cffps *psu)
->  	snprintf(psu->led_name, sizeof(psu->led_name), "%s-%02x", client->name,
->  		 client->addr);
->  	psu->led.name = psu->led_name;
-> -	psu->led.max_brightness = LED_FULL;
-> +	psu->led.max_brightness = 255;
->  	psu->led.brightness_set_blocking = ibm_cffps_led_brightness_set;
->  	psu->led.blink_set = ibm_cffps_led_blink_set;
->  
