@@ -2,193 +2,413 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3961C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D4F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586778AbiAYQv6 (ORCPT
+        id S1586796AbiAYQv7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 11:51:58 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:55240 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1586339AbiAYQs7 (ORCPT
+        Tue, 25 Jan 2022 11:51:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41228 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1586493AbiAYQtm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 11:48:59 -0500
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20PF4BGi000357;
-        Tue, 25 Jan 2022 16:48:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=pp1; bh=AMeUWw9QE5S+iubtCjgVF4UNwJUctJS/odXW19bAR58=;
- b=L5vQnd5mr+RwR5kDLUc7Gu1Y7zid5tj+xUnhc9WDF4bIHsoaqG6w8Ywt8tAyjZeVidFz
- 9EwZRVydlfAAT8BQU652Y2bWwQ2r1BwGBe2/KsLZA4g55gKZQUHzb6rDIvNARqEva/4s
- Xvvn9W1WkI8AcbSyOcVta4Y3tO5X7v9PuOADZOiivWApm/EHXb3mwA48dh1B1zpSGwWW
- LZgA9Ze6GWMZQ4gMQS47T38CeMCYuOyTpnEHaz4kYGWI+MIQZu194k5euKGgNtQAofaF
- q2uMAiQtd1shzrerS7bg0Kg1dQ89DDgZpjTovmBkCWoLYODatIInmQboN6sIhGXHwaC3 yg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dtjcxvwj2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 16:48:59 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20PFtiFZ002040;
-        Tue, 25 Jan 2022 16:48:58 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dtjcxvwhc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 16:48:58 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20PGlS6T017888;
-        Tue, 25 Jan 2022 16:48:56 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3dr9j988kt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 16:48:56 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20PGmsB223396794
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 25 Jan 2022 16:48:54 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EFB10A4060;
-        Tue, 25 Jan 2022 16:48:53 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3F498A405B;
-        Tue, 25 Jan 2022 16:48:53 +0000 (GMT)
-Received: from localhost (unknown [9.43.56.228])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 25 Jan 2022 16:48:52 +0000 (GMT)
-Date:   Tue, 25 Jan 2022 22:18:51 +0530
-From:   Ritesh Harjani <riteshh@linux.ibm.com>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Miklos Szeredi <mszeredi@redhat.com>
-Subject: Re: [PATCH] bad_inode: add missing i_op initializers for
- fileattr_get/_set
-Message-ID: <20220125164851.m2p3glqlsdpnvdjg@riteshh-domain>
-References: <4bdc14fd6bf5cbe17bebeea2165840a2af6c4cf8.1642002262.git.riteshh@linux.ibm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4bdc14fd6bf5cbe17bebeea2165840a2af6c4cf8.1642002262.git.riteshh@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: kMJ33tApT7rCzvGNnahs5B09sBOtVuCn
-X-Proofpoint-ORIG-GUID: 5N6lm9wCoexO0XZ2SJvgNg5_YVaIVheh
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 25 Jan 2022 11:49:42 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A871C06179A
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:47:46 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id t14so16165352ljh.8
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:47:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZxKHsTlFPD/WqwTFCjR7TPuaLt90R4mNRogm3Hute3M=;
+        b=S6WTHqWgA4KZAfJnWX7ED9KyhLUHjqy9o3jta+6fKhjpJGLUNyLpVNy0Y6dNu6NBtt
+         Dif9jvPwXGLoAx8u9emNC1UdxK4/UL57mzQs4JfrU+rT1G9aAZzYmkLCHy9Nbw7i0pVB
+         XObdbOFr1tvU5Ok/GVDS8jriv9fwETEpQqNTGD8dt0LDODOO0MuhjT3F9wjioSyaOrit
+         px06CHsk7ucc0z6gJoedXSRpeCpJWZZ3K7tn9NfWnoWscEWNUQcyzoazXR3kDM6y6zGo
+         +aDD/gCUmoYvn+27DiBliPWCpfT6SfD8gAMKO0oXGplCD+ITt8Mutot89QcmkP+koLTS
+         1jbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZxKHsTlFPD/WqwTFCjR7TPuaLt90R4mNRogm3Hute3M=;
+        b=CmeW7l9X80hIHa35uHh39QRU7z7BoJ8FaVdLm8QtO4VNJe+VBrHsya7wEBCoUclicA
+         NAEArN/DRjRWyYz1BHxO5jq2ClgVe1FppgZJw9jvi9osGaKltsUZ1c09US9fpTI8bcet
+         8wi46EfwgXsYCRJCU2B8PUTnpkGRdC9ENHDtipNZlAOPwcBxjCvOMVEzBsNvJvgPLe0A
+         t6CFC24MD0AeiiI9BV/XdjQhHpQTYgV3krrltAa/6AnYCZ5i2TKU2VxlG9ZFst9KR6M7
+         icnUh+oahHq5aTmLJfPIBg7AUEHmTWTi39K2g0C1tL+l8XoCADMTsbGEM/nH9Fbea7ZX
+         P01w==
+X-Gm-Message-State: AOAM531nvp6jv5V9BqkGXBB7Wpyt3CUiHxuTXx01xUSVfwwm/XunVo0C
+        5EfF2tR/ak7TpOwmqwAsIr97CYB7qT2Y1O/5YPEVJw==
+X-Google-Smtp-Source: ABdhPJwL3cj7hQT4SmKfZmXQLdgggc6MixizD5vULDnBU3FU20x8IpccQmyKjholb5Fn4/1OE1Y9DRv/Tgk3kEad/Is=
+X-Received: by 2002:a2e:7a10:: with SMTP id v16mr9329790ljc.426.1643129264138;
+ Tue, 25 Jan 2022 08:47:44 -0800 (PST)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-25_03,2022-01-25_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- mlxlogscore=999 mlxscore=0 lowpriorityscore=0 adultscore=0 phishscore=0
- clxscore=1015 bulkscore=0 impostorscore=0 spamscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2201250105
+References: <20220118110621.62462-1-nikunj@amd.com> <20220118110621.62462-4-nikunj@amd.com>
+In-Reply-To: <20220118110621.62462-4-nikunj@amd.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Tue, 25 Jan 2022 09:47:32 -0700
+Message-ID: <CAMkAt6rxeGZ3SpF9UoSW0U5XWmTNe-iSMc5jgCmOLP587J03Aw@mail.gmail.com>
+Subject: Re: [RFC PATCH 3/6] KVM: SVM: Implement demand page pinning
+To:     Nikunj A Dadhania <nikunj@amd.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Gentle Ping!!
-
-On 22/01/12 09:20PM, Ritesh Harjani wrote:
-> Let's bring inode_operations in sync for bad_inode_ops.
-> Some of the reasons are listed here [1]. But mostly it is
-> just for completeness sake I think.
+On Tue, Jan 18, 2022 at 4:07 AM Nikunj A Dadhania <nikunj@amd.com> wrote:
 >
-> This patch also removes some of the whitespaces at the end of line
-> which is due to my editor config settings for kernel work.
+> Use the memslot metadata to store the pinned data along with the pfns.
+> This improves the SEV guest startup time from O(n) to a constant by
+> deferring guest page pinning until the pages are used to satisfy nested
+> page faults. The page reference will be dropped in the memslot free
+> path.
 >
-> [1]: https://lore.kernel.org/lkml/1473708559-12714-2-git-send-email-mszeredi@redhat.com/
+> Remove the enc_region structure definition and the code which did
+> upfront pinning, as they are no longer needed in view of the demand
+> pinning support.
 >
-> Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+> Leave svm_register_enc_region() and svm_unregister_enc_region() as stubs
+> since qemu is dependent on this API.
+>
+> Signed-off-by: Nikunj A Dadhania <nikunj@amd.com>
 > ---
->  fs/bad_inode.c | 30 +++++++++++++++++++++---------
->  1 file changed, 21 insertions(+), 9 deletions(-)
+>  arch/x86/kvm/svm/sev.c | 208 ++++++++++++++++-------------------------
+>  arch/x86/kvm/svm/svm.c |   1 +
+>  arch/x86/kvm/svm/svm.h |   3 +-
+>  3 files changed, 81 insertions(+), 131 deletions(-)
 >
-> diff --git a/fs/bad_inode.c b/fs/bad_inode.c
-> index 12b8fdcc445b..08d5e44316cc 100644
-> --- a/fs/bad_inode.c
-> +++ b/fs/bad_inode.c
-> @@ -160,6 +160,17 @@ static int bad_inode_set_acl(struct user_namespace *mnt_userns,
->  	return -EIO;
+> diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+> index d972ab4956d4..a962bed97a0b 100644
+> --- a/arch/x86/kvm/svm/sev.c
+> +++ b/arch/x86/kvm/svm/sev.c
+> @@ -66,14 +66,6 @@ static unsigned int nr_asids;
+>  static unsigned long *sev_asid_bitmap;
+>  static unsigned long *sev_reclaim_asid_bitmap;
+>
+> -struct enc_region {
+> -       struct list_head list;
+> -       unsigned long npages;
+> -       struct page **pages;
+> -       unsigned long uaddr;
+> -       unsigned long size;
+> -};
+> -
+>  /* Called with the sev_bitmap_lock held, or on shutdown  */
+>  static int sev_flush_asids(int min_asid, int max_asid)
+>  {
+> @@ -257,8 +249,6 @@ static int sev_guest_init(struct kvm *kvm, struct kvm_sev_cmd *argp)
+>         if (ret)
+>                 goto e_free;
+>
+> -       INIT_LIST_HEAD(&sev->regions_list);
+> -
+>         return 0;
+>
+>  e_free:
+> @@ -1637,8 +1627,6 @@ static void sev_migrate_from(struct kvm_sev_info *dst,
+>         src->handle = 0;
+>         src->pages_locked = 0;
+>         src->enc_context_owner = NULL;
+> -
+> -       list_cut_before(&dst->regions_list, &src->regions_list, &src->regions_list);
+
+I think we need to move the pinned SPTE entries into the target, and
+repin the pages in the target here. Otherwise the pages will be
+unpinned when the source is cleaned up. Have you thought about how
+this could be done?
+
 >  }
 >
-> +static int bad_inode_fileattr_set(struct user_namespace *mnt_userns,
-> +			struct dentry *dentry, struct fileattr *fa)
-> +{
-> +	return -EIO;
-> +}
-> +
-> +static int bad_inode_fileattr_get(struct dentry *dentry, struct fileattr *fa)
-> +{
-> +	return -EIO;
-> +}
-> +
->  static const struct inode_operations bad_inode_ops =
+>  static int sev_es_migrate_from(struct kvm *dst, struct kvm *src)
+> @@ -1861,115 +1849,13 @@ int svm_mem_enc_op(struct kvm *kvm, void __user *argp)
+>  int svm_register_enc_region(struct kvm *kvm,
+>                             struct kvm_enc_region *range)
 >  {
->  	.create		= bad_inode_create,
-> @@ -183,18 +194,19 @@ static const struct inode_operations bad_inode_ops =
->  	.atomic_open	= bad_inode_atomic_open,
->  	.tmpfile	= bad_inode_tmpfile,
->  	.set_acl	= bad_inode_set_acl,
-> +	.fileattr_set	= bad_inode_fileattr_set,
-> +	.fileattr_get	= bad_inode_fileattr_get,
+> -       struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
+> -       struct enc_region *region;
+> -       int ret = 0;
+> -
+> -       if (!sev_guest(kvm))
+> -               return -ENOTTY;
+> -
+> -       /* If kvm is mirroring encryption context it isn't responsible for it */
+> -       if (is_mirroring_enc_context(kvm))
+> -               return -EINVAL;
+> -
+> -       if (range->addr > ULONG_MAX || range->size > ULONG_MAX)
+> -               return -EINVAL;
+> -
+> -       region = kzalloc(sizeof(*region), GFP_KERNEL_ACCOUNT);
+> -       if (!region)
+> -               return -ENOMEM;
+> -
+> -       mutex_lock(&kvm->lock);
+> -       region->pages = sev_pin_memory(kvm, range->addr, range->size, &region->npages, 1);
+> -       if (IS_ERR(region->pages)) {
+> -               ret = PTR_ERR(region->pages);
+> -               mutex_unlock(&kvm->lock);
+> -               goto e_free;
+> -       }
+> -
+> -       region->uaddr = range->addr;
+> -       region->size = range->size;
+> -
+> -       list_add_tail(&region->list, &sev->regions_list);
+> -       mutex_unlock(&kvm->lock);
+> -
+> -       /*
+> -        * The guest may change the memory encryption attribute from C=0 -> C=1
+> -        * or vice versa for this memory range. Lets make sure caches are
+> -        * flushed to ensure that guest data gets written into memory with
+> -        * correct C-bit.
+> -        */
+> -       sev_clflush_pages(region->pages, region->npages);
+> -
+> -       return ret;
+> -
+> -e_free:
+> -       kfree(region);
+> -       return ret;
+> -}
+> -
+> -static struct enc_region *
+> -find_enc_region(struct kvm *kvm, struct kvm_enc_region *range)
+> -{
+> -       struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
+> -       struct list_head *head = &sev->regions_list;
+> -       struct enc_region *i;
+> -
+> -       list_for_each_entry(i, head, list) {
+> -               if (i->uaddr == range->addr &&
+> -                   i->size == range->size)
+> -                       return i;
+> -       }
+> -
+> -       return NULL;
+> -}
+> -
+> -static void __unregister_enc_region_locked(struct kvm *kvm,
+> -                                          struct enc_region *region)
+> -{
+> -       sev_unpin_memory(kvm, region->pages, region->npages);
+> -       list_del(&region->list);
+> -       kfree(region);
+> +       return 0;
+>  }
+>
+>  int svm_unregister_enc_region(struct kvm *kvm,
+>                               struct kvm_enc_region *range)
+>  {
+> -       struct enc_region *region;
+> -       int ret;
+> -
+> -       /* If kvm is mirroring encryption context it isn't responsible for it */
+> -       if (is_mirroring_enc_context(kvm))
+> -               return -EINVAL;
+> -
+> -       mutex_lock(&kvm->lock);
+> -
+> -       if (!sev_guest(kvm)) {
+> -               ret = -ENOTTY;
+> -               goto failed;
+> -       }
+> -
+> -       region = find_enc_region(kvm, range);
+> -       if (!region) {
+> -               ret = -EINVAL;
+> -               goto failed;
+> -       }
+> -
+> -       /*
+> -        * Ensure that all guest tagged cache entries are flushed before
+> -        * releasing the pages back to the system for use. CLFLUSH will
+> -        * not do this, so issue a WBINVD.
+> -        */
+> -       wbinvd_on_all_cpus();
+> -
+> -       __unregister_enc_region_locked(kvm, region);
+> -
+> -       mutex_unlock(&kvm->lock);
+>         return 0;
+> -
+> -failed:
+> -       mutex_unlock(&kvm->lock);
+> -       return ret;
+>  }
+>
+>  int svm_vm_copy_asid_from(struct kvm *kvm, unsigned int source_fd)
+> @@ -2018,7 +1904,6 @@ int svm_vm_copy_asid_from(struct kvm *kvm, unsigned int source_fd)
+>         mirror_sev->fd = source_sev->fd;
+>         mirror_sev->es_active = source_sev->es_active;
+>         mirror_sev->handle = source_sev->handle;
+> -       INIT_LIST_HEAD(&mirror_sev->regions_list);
+>         ret = 0;
+>
+>         /*
+> @@ -2038,8 +1923,6 @@ int svm_vm_copy_asid_from(struct kvm *kvm, unsigned int source_fd)
+>  void sev_vm_destroy(struct kvm *kvm)
+>  {
+>         struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
+> -       struct list_head *head = &sev->regions_list;
+> -       struct list_head *pos, *q;
+>
+>         WARN_ON(sev->num_mirrored_vms);
+>
+> @@ -2066,18 +1949,6 @@ void sev_vm_destroy(struct kvm *kvm)
+>          */
+>         wbinvd_on_all_cpus();
+>
+> -       /*
+> -        * if userspace was terminated before unregistering the memory regions
+> -        * then lets unpin all the registered memory.
+> -        */
+> -       if (!list_empty(head)) {
+> -               list_for_each_safe(pos, q, head) {
+> -                       __unregister_enc_region_locked(kvm,
+> -                               list_entry(pos, struct enc_region, list));
+> -                       cond_resched();
+> -               }
+> -       }
+> -
+>         sev_unbind_asid(kvm, sev->handle);
+>         sev_asid_free(sev);
+>  }
+> @@ -2946,13 +2817,90 @@ void sev_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector)
+>         ghcb_set_sw_exit_info_2(svm->sev_es.ghcb, 1);
+>  }
+>
+> +void sev_pin_spte(struct kvm *kvm, gfn_t gfn, enum pg_level level,
+> +                 kvm_pfn_t pfn)
+> +{
+> +       struct kvm_arch_memory_slot *aslot;
+> +       struct kvm_memory_slot *slot;
+> +       gfn_t rel_gfn, pin_pfn;
+> +       unsigned long npages;
+> +       kvm_pfn_t old_pfn;
+> +       int i;
+> +
+> +       if (!sev_guest(kvm))
+> +               return;
+> +
+> +       if (WARN_ON_ONCE(is_error_noslot_pfn(pfn) || kvm_is_reserved_pfn(pfn)))
+> +               return;
+> +
+> +       /* Tested till 1GB pages */
+> +       if (KVM_BUG_ON(level > PG_LEVEL_1G, kvm))
+> +               return;
+> +
+> +       slot = gfn_to_memslot(kvm, gfn);
+> +       if (!slot || !slot->arch.pfns)
+> +               return;
+> +
+> +       /*
+> +        * Use relative gfn index within the memslot for the bitmap as well as
+> +        * the pfns array
+> +        */
+> +       rel_gfn = gfn - slot->base_gfn;
+> +       aslot = &slot->arch;
+> +       pin_pfn = pfn;
+> +       npages = KVM_PAGES_PER_HPAGE(level);
+> +
+> +       /* Pin the page, KVM doesn't yet support page migration. */
+> +       for (i = 0; i < npages; i++, rel_gfn++, pin_pfn++) {
+> +               if (test_bit(rel_gfn, aslot->pinned_bitmap)) {
+> +                       old_pfn = aslot->pfns[rel_gfn];
+> +                       if (old_pfn == pin_pfn)
+> +                               continue;
+> +
+> +                       put_page(pfn_to_page(old_pfn));
+> +               }
+> +
+> +               set_bit(rel_gfn, aslot->pinned_bitmap);
+> +               aslot->pfns[rel_gfn] = pin_pfn;
+> +               get_page(pfn_to_page(pin_pfn));
+> +       }
+> +
+> +       /*
+> +        * Flush any cached lines of the page being added since "ownership" of
+> +        * it will be transferred from the host to an encrypted guest.
+> +        */
+> +       clflush_cache_range(__va(pfn << PAGE_SHIFT), page_level_size(level));
+> +}
+> +
+>  void sev_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
+>  {
+>         struct kvm_arch_memory_slot *aslot = &slot->arch;
+> +       kvm_pfn_t *pfns;
+> +       gfn_t gfn;
+> +       int i;
+>
+>         if (!sev_guest(kvm))
+>                 return;
+>
+> +       if (!aslot->pinned_bitmap || !slot->arch.pfns)
+> +               goto out;
+> +
+> +       pfns = aslot->pfns;
+> +
+> +       /*
+> +        * Iterate the memslot to find the pinned pfn using the bitmap and drop
+> +        * the pfn stored.
+> +        */
+> +       for (i = 0, gfn = slot->base_gfn; i < slot->npages; i++, gfn++) {
+> +               if (test_and_clear_bit(i, aslot->pinned_bitmap)) {
+> +                       if (WARN_ON(!pfns[i]))
+> +                               continue;
+> +
+> +                       put_page(pfn_to_page(pfns[i]));
+> +               }
+> +       }
+> +
+> +out:
+>         if (aslot->pinned_bitmap) {
+>                 kvfree(aslot->pinned_bitmap);
+>                 aslot->pinned_bitmap = NULL;
+> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> index 3fb19974f719..22535c680b3f 100644
+> --- a/arch/x86/kvm/svm/svm.c
+> +++ b/arch/x86/kvm/svm/svm.c
+> @@ -4743,6 +4743,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
+>
+>         .alloc_memslot_metadata = sev_alloc_memslot_metadata,
+>         .free_memslot = sev_free_memslot,
+> +       .pin_spte = sev_pin_spte,
 >  };
 >
-> -
->  /*
->   * When a filesystem is unable to read an inode due to an I/O error in
->   * its read_inode() function, it can call make_bad_inode() to return a
-> - * set of stubs which will return EIO errors as required.
-> + * set of stubs which will return EIO errors as required.
->   *
->   * We only need to do limited initialisation: all other fields are
->   * preinitialised to zero automatically.
->   */
-> -
-> +
->  /**
->   *	make_bad_inode - mark an inode bad due to an I/O error
->   *	@inode: Inode to mark bad
-> @@ -203,7 +215,7 @@ static const struct inode_operations bad_inode_ops =
->   *	failure this function makes the inode "bad" and causes I/O operations
->   *	on it to fail from this point on.
->   */
-> -
-> +
->  void make_bad_inode(struct inode *inode)
->  {
->  	remove_inode_hash(inode);
-> @@ -211,9 +223,9 @@ void make_bad_inode(struct inode *inode)
->  	inode->i_mode = S_IFREG;
->  	inode->i_atime = inode->i_mtime = inode->i_ctime =
->  		current_time(inode);
-> -	inode->i_op = &bad_inode_ops;
-> +	inode->i_op = &bad_inode_ops;
->  	inode->i_opflags &= ~IOP_XATTR;
-> -	inode->i_fop = &bad_file_ops;
-> +	inode->i_fop = &bad_file_ops;
->  }
->  EXPORT_SYMBOL(make_bad_inode);
+>  static struct kvm_x86_init_ops svm_init_ops __initdata = {
+> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+> index b2f8b3b52680..c731bc91ea8f 100644
+> --- a/arch/x86/kvm/svm/svm.h
+> +++ b/arch/x86/kvm/svm/svm.h
+> @@ -77,7 +77,6 @@ struct kvm_sev_info {
+>         unsigned int handle;    /* SEV firmware handle */
+>         int fd;                 /* SEV device fd */
+>         unsigned long pages_locked; /* Number of pages locked */
+> -       struct list_head regions_list;  /* List of registered regions */
+>         u64 ap_jump_table;      /* SEV-ES AP Jump Table address */
+>         struct kvm *enc_context_owner; /* Owner of copied encryption context */
+>         unsigned long num_mirrored_vms; /* Number of VMs sharing this ASID */
+> @@ -648,5 +647,7 @@ int sev_alloc_memslot_metadata(struct kvm *kvm,
+>                                struct kvm_memory_slot *new);
+>  void sev_free_memslot(struct kvm *kvm,
+>                       struct kvm_memory_slot *slot);
+> +void sev_pin_spte(struct kvm *kvm, gfn_t gfn, enum pg_level level,
+> +                 kvm_pfn_t pfn);
 >
-> @@ -222,17 +234,17 @@ EXPORT_SYMBOL(make_bad_inode);
->   * &bad_inode_ops to cover the case of invalidated inodes as well as
->   * those created by make_bad_inode() above.
->   */
-> -
-> +
->  /**
->   *	is_bad_inode - is an inode errored
->   *	@inode: inode to test
->   *
->   *	Returns true if the inode in question has been marked as bad.
->   */
-> -
-> +
->  bool is_bad_inode(struct inode *inode)
->  {
-> -	return (inode->i_op == &bad_inode_ops);
-> +	return (inode->i_op == &bad_inode_ops);
->  }
->
->  EXPORT_SYMBOL(is_bad_inode);
+>  #endif
 > --
-> 2.31.1
+> 2.32.0
 >
