@@ -2,151 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C586C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8204CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390339AbiAYEtA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:49:00 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:31185 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S249456AbiAYEIz (ORCPT
+        id S241291AbiAYEtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 23:49:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35448 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S250369AbiAYEQs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 23:08:55 -0500
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JjYDh5yLsz8wX5;
-        Tue, 25 Jan 2022 12:05:56 +0800 (CST)
-Received: from dggpemm500004.china.huawei.com (7.185.36.219) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 12:08:52 +0800
-Received: from [10.174.177.69] (10.174.177.69) by
- dggpemm500004.china.huawei.com (7.185.36.219) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 12:08:51 +0800
-Content-Type: multipart/mixed;
-        boundary="------------F0Ms0Bgpgimwe3x0FCyWuKwt"
-Message-ID: <78cafe94-a787-e006-8851-69906f0c2128@huawei.com>
-Date:   Tue, 25 Jan 2022 12:08:51 +0800
+        Mon, 24 Jan 2022 23:16:48 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48817C036BF1
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 18:47:43 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id x11so54004178lfa.2
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 18:47:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WSgw+Bai9akIbsNX8qE1iDGkZDqwpur2u3wwvUxZaos=;
+        b=oh0ZGUYdJjwb/WULwnJIpti/MED7HLmMZVHOk9IKD0rr8P1tHXUBsy0GnBK6ZwnYIh
+         tJCowFsUgGAVBBYLsw4BFJPAXHTlcoHxc6pkhKCwUUiyLK18hTNYa8EkrIiEUCK30f7+
+         e9B86H6+E5jHBxNituWhdgYulf+E1Pmn2NoWGyUzDcZqU09ii/UfH4aWOc4QYjXOagRL
+         nIKlAMTUw4RY6LRQmrof23eAD/aSAyNlQuygygGFJf+hwTpZPljRaWoVquCojr6YlrO8
+         3vjCDFb1uGUKdCHRnXgGSUZMUGealQRlTR0nNvT522GnnVDptIvCHG88NDdprW0RNcVK
+         mqbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WSgw+Bai9akIbsNX8qE1iDGkZDqwpur2u3wwvUxZaos=;
+        b=6pRuZhmm58hKb3cwaBUeKQ1xLFUM/aDwe68JC/txPmlUcbPbK8DcWDEbgKjzu+0DW1
+         2FlBzWuZ5ANkf+qZTucMF4WTgSSLsZrO56dv5sogrgAbzoDamqSluppe88UzuJZle1jb
+         noTwULXIkOcuotY+wPA4v4fnHsSv+s+uFVxNIB1tghzRpZ1QOD5BOA63kJAtUoy7a6wK
+         +beEFCtIhq33PWsm3fO+ft0F/Y4XjWgSDPCkLT5kh/UrbfplIsTf9njsec2SzVDjz1e/
+         kBQcrsajhSfxNACubMgC/9KcQlYyCKBliJHpGrd6M8gpNe18Dq1In1ZEcUbUxPRAVsL1
+         xpAQ==
+X-Gm-Message-State: AOAM530aHE89xumur1WEKFC3BSVPv1PgJfaDWvd4GVnQdM/JvUZ1E9pI
+        2Kmz+Z7i+Y8xzqa6SW2N/QtrUtxEYXw6NQ==
+X-Google-Smtp-Source: ABdhPJw/HdOl+VUK3mcD6a1INueBqbK59eArLJlh5fV2q6DjMOQxtjwEObG+XzPUSBGydBKpE5XwKw==
+X-Received: by 2002:a19:640c:: with SMTP id y12mr5522574lfb.245.1643078861686;
+        Mon, 24 Jan 2022 18:47:41 -0800 (PST)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id u1sm1065629lfc.98.2022.01.24.18.47.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 18:47:40 -0800 (PST)
+Message-ID: <4d9fa340-19fd-ee0f-0244-15ded5e66c67@linaro.org>
+Date:   Tue, 25 Jan 2022 05:47:40 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: "blk-mq: fix tag_get wait task can't be awakened" causes hangs
-Content-Language: en-US
-To:     "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>, <axboe@kernel.dk>,
-        "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-        <linux-block@vger.kernel.org>
-CC:     <john.garry@huawei.com>, <ming.lei@redhat.com>,
-        <martin.petersen@oracle.com>, <hare@suse.de>,
-        <akpm@linux-foundation.org>, <bvanassche@acm.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1643040870.3bwvk3sis4.none.ref@localhost>
- <1643040870.3bwvk3sis4.none@localhost>
-From:   QiuLaibin <qiulaibin@huawei.com>
-In-Reply-To: <1643040870.3bwvk3sis4.none@localhost>
-X-Originating-IP: [10.174.177.69]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500004.china.huawei.com (7.185.36.219)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] drm/msm/a6xx: Add missing suspend_count increment
+Content-Language: en-GB
+To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@chromium.org>,
+        Danylo Piliaiev <dpiliaiev@igalia.com>,
+        Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+        Eric Anholt <eric@anholt.net>,
+        Douglas Anderson <dianders@chromium.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220113163215.215367-1-robdclark@gmail.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220113163215.215367-1-robdclark@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---------------F0Ms0Bgpgimwe3x0FCyWuKwt
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-
-Hi Alex
-
-1、Please help to import this structure:
-
-blk_mq_tags <= request_queue->blk_mq_hw_ctx->blk_mq_tags
-
-If there is no kernel dump, help to see the value of
-
-cat /sys/block/sda/mq/0/nr_tags
-                __ <= Change it to the problem device
-
-And how many block devices in total by lsblk.
-
-2、Please describe in detail how to reproduce the issue,
-
-And what type of USB device?
-
-3、Please help to try the attachment patch and see if it can be reproduced.
-
-Thanks.
-
-On 2022/1/25 0:24, Alex Xu (Hello71) wrote:
-> Hi,
+On 13/01/2022 19:32, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
 > 
-> Recently on torvalds master, I/O on USB flash drives started hanging
-> here:
-> 
-> task:systemd-udevd   state:D stack:    0 pid:  374 ppid:   347 flags:0x00004000
-> Call Trace:
->   <TASK>
->   ? __schedule+0x319/0x4a0
->   ? schedule+0x77/0xa0
->   ? io_schedule+0x43/0x60
->   ? blk_mq_get_tag+0x175/0x2b0
->   ? mempool_alloc+0x33/0x170
->   ? init_wait_entry+0x30/0x30
->   ? __blk_mq_alloc_requests+0x1b4/0x220
->   ? blk_mq_submit_bio+0x213/0x490
->   ? submit_bio_noacct+0x22c/0x270
->   ? xa_load+0x48/0x80
->   ? mpage_readahead+0x114/0x130
->   ? blkdev_fallocate+0x170/0x170
->   ? read_pages+0x48/0x1d0
->   ? page_cache_ra_unbounded+0xee/0x1f0
->   ? force_page_cache_ra+0x68/0xc0
->   ? filemap_read+0x18c/0x9a0
->   ? blkdev_read_iter+0x4e/0x120
->   ? vfs_read+0x265/0x2d0
->   ? ksys_read+0x50/0xa0
->   ? do_syscall_64+0x62/0x90
->   ? do_user_addr_fault+0x271/0x3c0
->   ? asm_exc_page_fault+0x8/0x30
->   ? exc_page_fault+0x58/0x80
->   ? entry_SYSCALL_64_after_hwframe+0x44/0xae
->   </TASK>
-> 
-> mount(8) hangs with a similar backtrace, making the device effectively
-> unusable. It does not seem to affect NVMe or SATA attached drives. The
-> affected drive does not support UAS. I don't currently have UAS drives
-> to test with. The default I/O scheduler is set to noop.
-> 
-> I found that reverting 180dccb0dba4 ("blk-mq: fix tag_get wait
-> task can't be awakened") appears to resolve the issue.
-> 
-> Let me know what other information is needed.
-> 
-> Cheers,
-> Alex.
-> .
-> 
+> Reported-by: Danylo Piliaiev <dpiliaiev@igalia.com>
+> Fixes: 3ab1c5cc3939 ("drm/msm: Add param for userspace to query suspend count")
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
 
-BR
-Laibin
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
---------------F0Ms0Bgpgimwe3x0FCyWuKwt
-Content-Type: text/plain; charset="UTF-8"; name="fix_hang.patch"
-Content-Disposition: attachment; filename="fix_hang.patch"
-Content-Transfer-Encoding: base64
+> ---
+>   drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> index 51b83776951b..17cfad6424db 100644
+> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> @@ -1560,6 +1560,8 @@ static int a6xx_pm_suspend(struct msm_gpu *gpu)
+>   		for (i = 0; i < gpu->nr_rings; i++)
+>   			a6xx_gpu->shadow[i] = 0;
+>   
+> +	gpu->suspend_count++;
+> +
+>   	return 0;
+>   }
+>   
 
-ZGlmZiAtLWdpdCBhL2xpYi9zYml0bWFwLmMgYi9saWIvc2JpdG1hcC5jCmluZGV4IDYyMjBm
-YTY3ZmI3ZS4uMDlkMjkzYzMwZmQyIDEwMDY0NAotLS0gYS9saWIvc2JpdG1hcC5jCisrKyBi
-L2xpYi9zYml0bWFwLmMKQEAgLTQ4OCw5ICs0ODgsMTMgQEAgdm9pZCBzYml0bWFwX3F1ZXVl
-X3JlY2FsY3VsYXRlX3dha2VfYmF0Y2goc3RydWN0IHNiaXRtYXBfcXVldWUgKnNicSwKIAkJ
-CQkJICAgIHVuc2lnbmVkIGludCB1c2VycykKIHsKIAl1bnNpZ25lZCBpbnQgd2FrZV9iYXRj
-aDsKKwl1bnNpZ25lZCBpbnQgbWluX2JhdGNoOworCXVuc2lnbmVkIGludCBkZXB0aCA9IChz
-YnEtPnNiLmRlcHRoICsgdXNlcnMgLSAxKSAvIHVzZXJzOwogCi0Jd2FrZV9iYXRjaCA9IGNs
-YW1wX3ZhbCgoc2JxLT5zYi5kZXB0aCArIHVzZXJzIC0gMSkgLwotCQkJdXNlcnMsIDQsIFNC
-UV9XQUtFX0JBVENIKTsKKwltaW5fYmF0Y2ggPSBzYnEtPnNiLmRlcHRoID49ICg0ICogU0JR
-X1dBSVRfUVVFVUVTKSA/IDQgOiAxOworCisJd2FrZV9iYXRjaCA9IGNsYW1wX3ZhbChkZXB0
-aCAvIFNCUV9XQUlUX1FVRVVFUywKKwkJCW1pbl9iYXRjaCwgU0JRX1dBS0VfQkFUQ0gpOwog
-CV9fc2JpdG1hcF9xdWV1ZV91cGRhdGVfd2FrZV9iYXRjaChzYnEsIHdha2VfYmF0Y2gpOwog
-fQogRVhQT1JUX1NZTUJPTF9HUEwoc2JpdG1hcF9xdWV1ZV9yZWNhbGN1bGF0ZV93YWtlX2Jh
-dGNoKTsK
---------------F0Ms0Bgpgimwe3x0FCyWuKwt--
+
+-- 
+With best wishes
+Dmitry
