@@ -2,153 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 246DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3999CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1316201AbiAYCz0 (ORCPT
+        id S1316261AbiAYCzi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:55:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3412585AbiAYAhQ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:37:16 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A48C04A2EB
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:20:00 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id z22so58939962edd.12
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:19:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eEy59pkxkuOQH3FeW+pSfh3uQlALKWQv5HMjnvMU5rg=;
-        b=DQwAVK1iR3fLgmXYXEfL7+7cLKX03sBRjER8fTgucQYkrJNUWacuLJM2YnsodGggbU
-         e21TjvZqBRoT9nS5oWjuI8nC5b0SGohIAKgtlU6LYkBfEqrrL0UYlIscsJh+fv1aMMod
-         AiiwUTWTxp3o67D2YG91nlfEAi6w57aHkyTfs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=eEy59pkxkuOQH3FeW+pSfh3uQlALKWQv5HMjnvMU5rg=;
-        b=iVCrkG+oYTxuobhNjjIeP3UUatzwNnvZw3MjDXoLC9QRCxqRVBGoIO0QMRB8yUKv8g
-         8HLVpAukyMK8sgDcYeIE5hnByIHOIzaNsqgdxd5cSqyVJlHSLQN4I+eLXmE9G+P+ANj0
-         u1NpK/3vHWZ8oic+gr3xNSLVtXi4iNLQonPWdHWqUgRBS2H8hr9wMCTbtpiZvxuAJl1k
-         QT278wHbQVomtSEfKxkBA43wcBUaNGM4vc2YO/PJVJZbDaTXwENXigTd4kk4mpeOaaXy
-         43C5NkBaOHH+OeoYbAP2kMvp1fEcq3HrfUVodSfDygm6ypLRtUKggh3lUWaSKNuX59oJ
-         spxA==
-X-Gm-Message-State: AOAM533lVTbY1Gl42Jn/AOEw90K4Qm8wFZ4/GM2MDIrX05D+hbTMpf1Q
-        BOR+r7y1qL0IRLS1wxXFe9VSbg==
-X-Google-Smtp-Source: ABdhPJyTlhbl2apt+k2wVRRqmfZTzbLvqudlvHMLRnIH7f9F66oC+tM4Wg6VWcmjXE8/cwmhAEcyxw==
-X-Received: by 2002:aa7:d55a:: with SMTP id u26mr17368585edr.265.1643062798593;
-        Mon, 24 Jan 2022 14:19:58 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id w22sm5362604ejj.64.2022.01.24.14.19.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 14:19:58 -0800 (PST)
-Date:   Mon, 24 Jan 2022 23:19:56 +0100
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Helge Deller <deller@gmx.de>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sven Schnelle <svens@stackframe.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Claudio Suarez <cssk@net-c.es>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v2 0/2] Fix regression introduced by disabling
- accelerated scrolling in fbcon
-Message-ID: <Ye8mDFcWSiXoRJbD@phenom.ffwll.local>
-Mail-Followup-To: Helge Deller <deller@gmx.de>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sven Schnelle <svens@stackframe.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Claudio Suarez <cssk@net-c.es>, Gerd Hoffmann <kraxel@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <20220124210319.325512-1-deller@gmx.de>
+        Mon, 24 Jan 2022 21:55:38 -0500
+Received: from mga07.intel.com ([134.134.136.100]:1109 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S3412899AbiAYAh7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 19:37:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643071079; x=1674607079;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xADFYjtp43qyO+CIOIsghZgbI9d5poWSqca6xjSn2SY=;
+  b=NNZz/p+MmoWb5lB9hh+E2K2UhBj0Ygfxwf33KBz/fjuKxdgrgjEC0t6Q
+   fTLLv9QTjcvUTCh+7obvuHDm25abLKTglqKew7n+dIyr2VAocVloaiQ/N
+   gekoYeJ6ShioxbhHvxvluxT/dC2oRxD7M521mkNuTBFVFhaatHkCGIQNI
+   bPIjhKSAmu0OXvNsQoo4PTBiSr8mVz7KQHH86HqvouuOOyGvKRsZ9+sn4
+   FCafDe7WFQBQwQ3NFn7VbWmq6zLak+PFxLACHY51o1BbK5+G3vEqINYy/
+   Rlj8RlGrv8jBLcSZb/AOdwaWY8uCCKKoDG1Hj1CAPtNtmqVEZykLTs81I
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="309501730"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="309501730"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 16:27:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="580573139"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 24 Jan 2022 16:27:14 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nC9g2-000J6t-CL; Tue, 25 Jan 2022 00:27:14 +0000
+Date:   Tue, 25 Jan 2022 08:26:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Stephen Dickey <quic_dickey@quicinc.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Todd Kjos <tkjos@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
+ 2898/2936] kernel/sched/sched.h:1553:15: error: must use 'struct' tag to
+ refer to type 'rq'
+Message-ID: <202201250831.PBiV30bo-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220124210319.325512-1-deller@gmx.de>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 10:03:17PM +0100, Helge Deller wrote:
-> This series reverts two patches which disabled scrolling acceleration in
-> fbcon/fbdev. Those patches introduced a regression for fbdev-supported graphic
-> cards because of the performance penalty by doing screen scrolling by software
-> instead of using existing 2D hardware acceleration.
-> 
-> This series has been discussed on linux-fbdev, dri-devel and linux-kernel
-> mailing lists. The consensus is that they will be reverted, but in addition
-> it's being worked on to find a solution which allows to disable parts of the
-> classic fbdev hardware acceleration code which isn't needed in DRM-only
-> configurations.
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
+head:   b7e4947b29bb8d0351c581d9365780d9b6f4d702
+commit: 50f5345c8756129044a3246800f51f04ae2f55b0 [2898/2936] ANDROID: __migrate_task header
+config: arm-randconfig-r003-20220124 (https://download.01.org/0day-ci/archive/20220125/202201250831.PBiV30bo-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 2e58a18910867ba6795066e044293e6daf89edf5)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/ammarfaizi2/linux-block/commit/50f5345c8756129044a3246800f51f04ae2f55b0
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
+        git checkout 50f5345c8756129044a3246800f51f04ae2f55b0
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash kernel/
 
-That's not my take at least.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> The patchset is planned to be kept in fbdev's for-next git branch and later
-> pushed into kernel v5.18 if no issues are found until then.
+All errors (new ones prefixed by >>):
 
-Neither this. I don't think we've resovled maintainership of fbdev core
-code and fbcon yet. That is the part that drm folks very much still
-maintained, as a quick git shortlog will show.
+   In file included from kernel/sched/core.c:13:
+>> kernel/sched/sched.h:1553:15: error: must use 'struct' tag to refer to type 'rq'
+   static inline rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
+                 ^
+                 struct 
+   1 error generated.
+--
+   In file included from kernel/sched/fair.c:23:
+>> kernel/sched/sched.h:1553:15: error: must use 'struct' tag to refer to type 'rq'
+   static inline rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
+                 ^
+                 struct 
+   kernel/sched/fair.c:628:5: warning: no previous prototype for function 'sched_update_scaling' [-Wmissing-prototypes]
+   int sched_update_scaling(void)
+       ^
+   kernel/sched/fair.c:628:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int sched_update_scaling(void)
+   ^
+   static 
+   kernel/sched/fair.c:4494:6: warning: no previous prototype for function 'set_next_entity' [-Wmissing-prototypes]
+   void set_next_entity(struct cfs_rq *cfs_rq, struct sched_entity *se)
+        ^
+   kernel/sched/fair.c:4494:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void set_next_entity(struct cfs_rq *cfs_rq, struct sched_entity *se)
+   ^
+   static 
+   2 warnings and 1 error generated.
+--
+   In file included from kernel/sched/rt.c:6:
+>> kernel/sched/sched.h:1553:15: error: must use 'struct' tag to refer to type 'rq'
+   static inline rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
+                 ^
+                 struct 
+   kernel/sched/rt.c:677:6: warning: no previous prototype for function 'sched_rt_bandwidth_account' [-Wmissing-prototypes]
+   bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
+        ^
+   kernel/sched/rt.c:677:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
+   ^
+   static 
+   1 warning and 1 error generated.
 
-Maintaining these parts outside of drm trees just doesn't make sense,
-since none of the other graphics relevant development happens outside of
-drm.
--Daniel
 
-> 
-> Helge
-> 
-> ---
-> Changes in v2 compared to v1:
-> - adjusted the stable tags (one v5.10+, the other v5.16+)
-> - moved the analysis and reasoning why those should be reverted into
->   the commit message. That simplifies to analyze later why they were
->   reverted.
-> - resorted the To an Cc mail recipient lists
-> 
-> Helge Deller (2):
->   Revert "fbdev: Garbage collect fbdev scrolling acceleration, part 1
->     (from TODO list)"
->   Revert "fbcon: Disable accelerated scrolling"
-> 
->  Documentation/gpu/todo.rst              |  24 --
->  drivers/video/fbdev/core/bitblit.c      |  16 +
->  drivers/video/fbdev/core/fbcon.c        | 540 +++++++++++++++++++++++-
->  drivers/video/fbdev/core/fbcon.h        |  59 +++
->  drivers/video/fbdev/core/fbcon_ccw.c    |  28 +-
->  drivers/video/fbdev/core/fbcon_cw.c     |  28 +-
->  drivers/video/fbdev/core/fbcon_rotate.h |   9 +
->  drivers/video/fbdev/core/fbcon_ud.c     |  37 +-
->  drivers/video/fbdev/core/tileblit.c     |  16 +
->  drivers/video/fbdev/skeletonfb.c        |  12 +-
->  include/linux/fb.h                      |   2 +-
->  11 files changed, 703 insertions(+), 68 deletions(-)
-> 
-> -- 
-> 2.31.1
-> 
+vim +1553 kernel/sched/sched.h
 
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+  1548	
+  1549	#ifdef CONFIG_SMP
+  1550	extern struct rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
+  1551					 struct task_struct *p, int dest_cpu);
+  1552	#else /* !CONFIG_SMP */
+> 1553	static inline rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
+  1554					 struct task_struct *p, int dest_cpu) { return rq; }
+  1555	#endif
+  1556	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
