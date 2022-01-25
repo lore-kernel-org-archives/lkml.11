@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F545C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2DE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578677AbiAYOUx (ORCPT
+        id S1578741AbiAYOVG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:20:53 -0500
-Received: from 8bytes.org ([81.169.241.247]:46252 "EHLO theia.8bytes.org"
+        Tue, 25 Jan 2022 09:21:06 -0500
+Received: from 8bytes.org ([81.169.241.247]:46324 "EHLO theia.8bytes.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1452451AbiAYOQs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:16:48 -0500
+        id S1452917AbiAYOQx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 09:16:53 -0500
 Received: from cap.home.8bytes.org (p549ad610.dip0.t-ipconnect.de [84.154.214.16])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by theia.8bytes.org (Postfix) with ESMTPSA id D4108106;
-        Tue, 25 Jan 2022 15:16:31 +0100 (CET)
+        by theia.8bytes.org (Postfix) with ESMTPSA id E77526AE;
+        Tue, 25 Jan 2022 15:16:32 +0100 (CET)
 From:   Joerg Roedel <joro@8bytes.org>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -27,10 +27,12 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Brijesh Singh <brijesh.singh@amd.com>,
         Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH v6 0/7] KVM: SVM: Add initial GHCB protocol version 2 support
-Date:   Tue, 25 Jan 2022 15:16:19 +0100
-Message-Id: <20220125141626.16008-1-joro@8bytes.org>
+Subject: [PATCH v6 3/7] KVM: SVM: Move kvm_emulate_ap_reset_hold() to AMD specific code
+Date:   Tue, 25 Jan 2022 15:16:22 +0100
+Message-Id: <20220125141626.16008-4-joro@8bytes.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220125141626.16008-1-joro@8bytes.org>
+References: <20220125141626.16008-1-joro@8bytes.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -39,65 +41,95 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Hi,
+The function is only used by the kvm-amd module. Move it to the AMD
+specific part of the code and name it sev_emulate_ap_reset_hold().
 
-here is a small set of patches which I originally took from the
-pending SEV-SNP patch-sets to enable basic support for GHCB protocol
-version 2. Meanwhile a couple of other patches from Sean
-Christopherson have been added.
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/include/asm/kvm_host.h |  2 +-
+ arch/x86/kvm/svm/sev.c          | 10 +++++++++-
+ arch/x86/kvm/x86.c              | 12 ++----------
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-When SEV-SNP is not supported, only two new MSR protocol VMGEXIT calls
-are required:
-
-	- MSR-based AP-reset-hold
-	- MSR-based HV-feature-request
-
-These calls are implemented here and then the protocol is lifted to
-version 2.
-
-This is submitted separately because the MSR-based AP-reset-hold call
-is required to support kexec/kdump in SEV-ES guests.
-
-The previous version can be found here:
-
-	https://lore.kernel.org/kvm/20211020124416.24523-1-joro@8bytes.org/
-
-Regards,
-
-	Joerg
-
-Changes v5->v6:
-
-	- Rebased to v5.17-rc1
-	- Added changes requested by Sean Christopherson
-
-Brijesh Singh (2):
-  KVM: SVM: Add support for Hypervisor Feature support MSR protocol
-  KVM: SVM: Increase supported GHCB protocol version
-
-Joerg Roedel (2):
-  KVM: SVM: Get rid of set_ghcb_msr() and *ghcb_msr_bits() functions
-  KVM: SVM: Move kvm_emulate_ap_reset_hold() to AMD specific code
-
-Sean Christopherson (2):
-  KVM: SVM: Add helper to generate GHCB MSR verson info, and drop macro
-  KVM: SVM: Set "released" on INIT-SIPI iff SEV-ES vCPU was in AP reset
-    hold
-
-Tom Lendacky (1):
-  KVM: SVM: Add support to handle AP reset MSR protocol
-
- arch/x86/include/asm/kvm_host.h   |   2 +-
- arch/x86/include/asm/sev-common.h |  18 ++--
- arch/x86/include/uapi/asm/svm.h   |   1 +
- arch/x86/kvm/svm/sev.c            | 169 ++++++++++++++++++++----------
- arch/x86/kvm/svm/svm.c            |  13 ++-
- arch/x86/kvm/svm/svm.h            |  10 +-
- arch/x86/kvm/x86.c                |  12 +--
- 7 files changed, 137 insertions(+), 88 deletions(-)
-
-
-base-commit: e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 1384517d7709..9a1591878ff4 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1701,7 +1701,7 @@ int kvm_fast_pio(struct kvm_vcpu *vcpu, int size, unsigned short port, int in);
+ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu);
+ int kvm_emulate_halt(struct kvm_vcpu *vcpu);
+ int kvm_emulate_halt_noskip(struct kvm_vcpu *vcpu);
+-int kvm_emulate_ap_reset_hold(struct kvm_vcpu *vcpu);
++int __kvm_emulate_halt(struct kvm_vcpu *vcpu, int state, int reason);
+ int kvm_emulate_wbinvd(struct kvm_vcpu *vcpu);
+ 
+ void kvm_get_segment(struct kvm_vcpu *vcpu, struct kvm_segment *var, int seg);
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index d6147137a7da..bec5b6f4f75d 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -2656,6 +2656,14 @@ static u64 ghcb_msr_version_info(void)
+ 	return msr;
+ }
+ 
++static int sev_emulate_ap_reset_hold(struct vcpu_svm *svm)
++{
++	int ret = kvm_skip_emulated_instruction(&svm->vcpu);
++
++	return __kvm_emulate_halt(&svm->vcpu,
++				  KVM_MP_STATE_AP_RESET_HOLD, KVM_EXIT_AP_RESET_HOLD) && ret;
++}
++
+ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+ {
+ 	struct vmcb_control_area *control = &svm->vmcb->control;
+@@ -2792,7 +2800,7 @@ int sev_handle_vmgexit(struct kvm_vcpu *vcpu)
+ 		ret = svm_invoke_exit_handler(vcpu, SVM_EXIT_IRET);
+ 		break;
+ 	case SVM_VMGEXIT_AP_HLT_LOOP:
+-		ret = kvm_emulate_ap_reset_hold(vcpu);
++		ret = sev_emulate_ap_reset_hold(svm);
+ 		break;
+ 	case SVM_VMGEXIT_AP_JUMP_TABLE: {
+ 		struct kvm_sev_info *sev = &to_kvm_svm(vcpu->kvm)->sev_info;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 9e43d756312f..c9cb89b2136b 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8814,7 +8814,7 @@ void kvm_arch_exit(void)
+ #endif
+ }
+ 
+-static int __kvm_emulate_halt(struct kvm_vcpu *vcpu, int state, int reason)
++int __kvm_emulate_halt(struct kvm_vcpu *vcpu, int state, int reason)
+ {
+ 	/*
+ 	 * The vCPU has halted, e.g. executed HLT.  Update the run state if the
+@@ -8832,6 +8832,7 @@ static int __kvm_emulate_halt(struct kvm_vcpu *vcpu, int state, int reason)
+ 		return 0;
+ 	}
+ }
++EXPORT_SYMBOL_GPL(__kvm_emulate_halt);
+ 
+ int kvm_emulate_halt_noskip(struct kvm_vcpu *vcpu)
+ {
+@@ -8850,15 +8851,6 @@ int kvm_emulate_halt(struct kvm_vcpu *vcpu)
+ }
+ EXPORT_SYMBOL_GPL(kvm_emulate_halt);
+ 
+-int kvm_emulate_ap_reset_hold(struct kvm_vcpu *vcpu)
+-{
+-	int ret = kvm_skip_emulated_instruction(vcpu);
+-
+-	return __kvm_emulate_halt(vcpu, KVM_MP_STATE_AP_RESET_HOLD,
+-					KVM_EXIT_AP_RESET_HOLD) && ret;
+-}
+-EXPORT_SYMBOL_GPL(kvm_emulate_ap_reset_hold);
+-
+ #ifdef CONFIG_X86_64
+ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
+ 			        unsigned long clock_type)
 -- 
 2.34.1
 
