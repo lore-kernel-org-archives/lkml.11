@@ -2,131 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC86C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 05:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0F3C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 05:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234736AbiAYFgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 00:36:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234143AbiAYFdq (ORCPT
+        id S235922AbiAYFnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 00:43:22 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:38194 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235454AbiAYFlB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 00:33:46 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97584C06E01F;
-        Mon, 24 Jan 2022 19:55:01 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id c9so17905467plg.11;
-        Mon, 24 Jan 2022 19:55:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=nnMW+oRu4DVxVHkHPaguOniEjD4jPCA0ZR9hQdtETnc=;
-        b=TL9TVAyK+MLuQCyGB3q+JDujoNxa48HahZSSiKFGi856DfVwSMIHz6O/rSgGzJt3+w
-         qPFda++lJxb0CWbcSppe9Aq8DxpRj3slu2RBB+Aki14zYXX0qPaC/c3oeZpckDsAZ9Y/
-         ei6sddRLsjm5pzEg44lKnvLCtYOaF2UJxLrlz5lGHJekLHogMzO7kEgSEockpTEYL3PP
-         ox1VW8fusiGMQeP+mNX6zPqxh8eq1u10nSV1aK6zSoFVaNYJprPAIZB6Q4mAmKg8NGwk
-         HuMdMkar0ePyQSoI9Jgx8TCqQqn6dLDnFouYAl0Xr08kWRkyiThEoMS+YeEicLjzzVpq
-         KhDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nnMW+oRu4DVxVHkHPaguOniEjD4jPCA0ZR9hQdtETnc=;
-        b=wZTavnKUKHbf1g/rydP0RX2lYVGGS6Pn18xfughqxYPRwoqyHXrH9f/VxuzXd1rtyA
-         fTh1H+7V+T7v6MIgYajPLEAVEEotpd3nJzoZuz7WB5bT+jdts0F/uD3bVqxGZmVBELnL
-         UR0TLLJ/MM8gj6exGvo0hQj9iVABPDdMrC5dPIaXUMbWzeu+Hp7uV0BIFcq8zjPsEPtv
-         yhv0LHp+G3xYtv23Oqb8H9++sgSsIOLorX4KNWthzTiKResdBYT/a5ufJCBteauWzBXp
-         2gtZOIn9eLeUJFKfo2Ww2Grr56J71COEu6y5Yb3ufArFqnCE6KA+2TvwL/DF0H/zYLwi
-         sbWg==
-X-Gm-Message-State: AOAM533YpqoMDBM2S10OVBU99/imuOeVCTq4dO62XEtckBdijcx+KH6A
-        q0x25vWQxO8yVlEx0Hzx8IQ=
-X-Google-Smtp-Source: ABdhPJzed9KGNQAqFKexv+5574X1JYThuPt97H/wcHkIGwuoucIUEJSvN0FgsYjnN4o+6z74CMmPPw==
-X-Received: by 2002:a17:902:d712:b0:14a:d880:f20 with SMTP id w18-20020a170902d71200b0014ad8800f20mr17460544ply.41.1643082900979;
-        Mon, 24 Jan 2022 19:55:00 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id s12sm4935544pfk.65.2022.01.24.19.54.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 19:55:00 -0800 (PST)
-Message-ID: <67b47645-016c-2d23-4710-b3743b073766@gmail.com>
-Date:   Mon, 24 Jan 2022 19:54:58 -0800
+        Tue, 25 Jan 2022 00:41:01 -0500
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20P3dvCY005584;
+        Tue, 25 Jan 2022 05:40:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=sqUvDyA5YZpT3JndOpFnDDOz6wZ/rAgG1aiM+F3xWkw=;
+ b=jNEqIROOHq1GO38MVEs+E355KnwUxH+p10clWeFAny7QontAFAuekw+h0v3NfBKfQ/6P
+ gqWVyTgyez7JZJWIE2rs89INNMjtwH0DDpvvk1xG3UWQnwFB+sCU/v3KtBaTE6qF7aQH
+ eOjENlBDA5SaEALno7c4/Uqwf53p0kq1op1l80xsf9qNGzOP5cW6aSKbnYaCyTVZcrzf
+ ONBjQOakNLoLq1r31/UfBTAW+dMrTyVn/NSovkCjvn4Jppq4diOrrPzCQUzL8L0nPPsr
+ 4iE/lOKEvMK8TFpyGMFR6ioKMMAjX9U9DkfWprOf2qsCDOzgUj06+dri3pP0OsMlLvYu iQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dswh9j7ta-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Jan 2022 05:40:57 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20P5eu1b181678;
+        Tue, 25 Jan 2022 05:40:56 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 3dr71x1sj0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Jan 2022 05:40:56 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 20P5embg181395;
+        Tue, 25 Jan 2022 05:40:50 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by userp3030.oracle.com with ESMTP id 3dr71x1sgc-2;
+        Tue, 25 Jan 2022 05:40:50 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     Anil Gurumurthy <anil.gurumurthy@qlogic.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Sudarsana Kalluru <sudarsana.kalluru@qlogic.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] scsi: bfa: Remove useless DMA-32 fallback configuration
+Date:   Tue, 25 Jan 2022 00:40:38 -0500
+Message-Id: <164308671272.32373.2478043846712410369.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <5663cef9b54004fa56cca7ce65f51eadfc3ecddb.1642238127.git.christophe.jaillet@wanadoo.fr>
+References: <5663cef9b54004fa56cca7ce65f51eadfc3ecddb.1642238127.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5.10 000/563] 5.10.94-rc1 review
-Content-Language: en-US
-To:     =?UTF-8?Q?Daniel_D=c3=adaz?= <daniel.diaz@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        sudipm.mukherjee@gmail.com, stable@vger.kernel.org
-References: <20220124184024.407936072@linuxfoundation.org>
- <12c8fd1e-431e-9a59-9e7a-e8d856c088b9@linaro.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <12c8fd1e-431e-9a59-9e7a-e8d856c088b9@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: p6Xh9rVRl8eC5dSOorwm0j2goN3zjn6h
+X-Proofpoint-GUID: p6Xh9rVRl8eC5dSOorwm0j2goN3zjn6h
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sat, 15 Jan 2022 10:15:41 +0100, Christophe JAILLET wrote:
 
+> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+> dev->dma_mask is non-NULL.
+> So, if it fails, the 32 bits case will also fail for the same reason.
+> 
+> Simplify code and remove some dead code accordingly.
+> 
+> [1]: https://lore.kernel.org/linux-kernel/YL3vSPK5DXTNvgdx@infradead.org/#t
+> 
+> [...]
 
-On 1/24/2022 3:00 PM, Daniel Díaz wrote:
-> Hello!
-> 
-> On 1/24/22 12:36, Greg Kroah-Hartman wrote:
->> This is the start of the stable review cycle for the 5.10.94 release.
->> There are 563 patches in this series, all will be posted as a response
->> to this one.  If anyone has any issues with these being applied, please
->> let me know.
->>
->> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
->> Anything received after that time might be too late.
->>
->> The whole patch series can be found in one patch at:
->>     https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.94-rc1.gz 
->>
->> or in the git tree and branch at:
->>     git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git 
->> linux-5.10.y
->> and the diffstat can be found below.
->>
->> thanks,
->>
->> greg k-h
-> 
-> Regressions detected on arm, arm64, i386, x86.
-> 
-> This is from arm64:
->    /builds/linux/arch/arm64/mm/extable.c: In function 'fixup_exception':
->    /builds/linux/arch/arm64/mm/extable.c:17:13: error: implicit 
-> declaration of function 'in_bpf_jit' 
-> [-Werror=implicit-function-declaration]
->       17 |         if (in_bpf_jit(regs))
->          |             ^~~~~~~~~~
->    cc1: some warnings being treated as errors
->    make[3]: *** [/builds/linux/scripts/Makefile.build:280: 
-> arch/arm64/mm/extable.o] Error 1
-> 
-> And from Perf on arm, arm64, i386, x86:
->    libbpf.c: In function 'bpf_object__elf_collect':
->    libbpf.c:2873:31: error: invalid type argument of '->' (have 
-> 'GElf_Shdr' {aka 'Elf64_Shdr'})
->     2873 |                         if (sh->sh_type != SHT_PROGBITS)
->          |                               ^~
->    libbpf.c:2877:31: error: invalid type argument of '->' (have 
-> 'GElf_Shdr' {aka 'Elf64_Shdr'})
->     2877 |                         if (sh->sh_type != SHT_PROGBITS)
->          |                               ^~
->    make[4]: *** [/builds/linux/tools/build/Makefile.build:97: 
-> /home/tuxbuild/.cache/tuxmake/builds/current/staticobjs/libbpf.o] Error 1
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Applied to 5.17/scsi-fixes, thanks!
 
-Same here.
+[1/1] scsi: bfa: Remove useless DMA-32 fallback configuration
+      https://git.kernel.org/mkp/scsi/c/012d98dae453
+
 -- 
-Florian
+Martin K. Petersen	Oracle Linux Engineering
