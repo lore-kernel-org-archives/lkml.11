@@ -2,108 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4978CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A01C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384403AbiAYNvs (ORCPT
+        id S1386645AbiAYNxL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:51:48 -0500
-Received: from mail.skyhub.de ([5.9.137.197]:32900 "EHLO mail.skyhub.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1577805AbiAYNtD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 08:49:03 -0500
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 376201EC01B7;
-        Tue, 25 Jan 2022 14:48:56 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1643118536;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=JQN8XD6k6puvlSUuf8A5aQx4ew310N7RwtnuTiZnHb8=;
-        b=EBAYLLI8ZKdEmazAnudhSelafx11VzBXAhRuc9nYJyQhp2LpsI0UmGGAOdRz66aFffbETc
-        hCkJcMLrjFST9eUShtGEQdgddvtR0BF2inaRz6BebGta3+5aTH7+CKm3Dp4uIM8Y6HCT4A
-        SbwvPtfNj63BrzWM1xMA1pzgCEGYiwE=
-Date:   Tue, 25 Jan 2022 14:48:51 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v8 33/40] x86/compressed/64: add identity mapping for
- Confidential Computing blob
-Message-ID: <Ye//w6Qm4P6HX870@zn.tnic>
-References: <20211210154332.11526-1-brijesh.singh@amd.com>
- <20211210154332.11526-34-brijesh.singh@amd.com>
+        Tue, 25 Jan 2022 08:53:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57020 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385439AbiAYNug (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 08:50:36 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1585C06173D;
+        Tue, 25 Jan 2022 05:50:34 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id e17so3726114ljk.5;
+        Tue, 25 Jan 2022 05:50:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZLnOYuyorYTwARzIwCYtX0Y+DVUCcs21qO0uQgIbKpg=;
+        b=nKtJRYwHPJ3u+LD6RcTpyIaViq8Bz0Tj9KkubsjRTAjjJJlJ16FaKZJm2P6BZE7+8G
+         oZ+peKp2Fm3zhcbUcBQYp3oOshMHyjjIB0S4FyWk973NDHiwAlXXrkV6j1skbEb3fCAV
+         154+v4NL7waMORsJFXw/adSqEoj8SA3pVl+IPXT7BCvQCN3x3xbpp6ZBzl1KClVu16IR
+         F1zTLLd+7RRxTOcGpViGuasvehc+o2o1/WdrfsruUSad5maxyVb9Caq1nrJzA7xkou1K
+         nzJ606HJUFbBkAZgy7xbSnlOuA0kvpPC/xNaGJybJ9V1CAywSVN5xlRhFVHen2PzJIUU
+         XVfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZLnOYuyorYTwARzIwCYtX0Y+DVUCcs21qO0uQgIbKpg=;
+        b=phQUas4a3i2zVnyhW3h5Et8m2Oejiw5BUO+K9EHVTB/SzrWVgD4iBK+EGUn5Cgx0H8
+         z0ei/r38xpcid3dCcLDG1UqdJ/7sSkgS5BkkNWD97lpEu2p6UpIAUoPpjGzQMlL18LRm
+         7xgiH4zTPvj6Y7O6CuswVGWluQxgUu/V4oL7V2NT0X3DnoOlmWYn+5EpYYEHQihYFcxw
+         dET7xVkCxuqtPnhb0y2dITxEDa3iLPYJXdVemIqUt5wHBJ1fAX9hYgKw5vCBoN0M8Eoa
+         ZyKVSRtz/KdMACETynM5qHsjAggYd2ATzzMeU6WUhvHoDRv/GowR6r1iB1sek8mePB2H
+         K/gA==
+X-Gm-Message-State: AOAM533Q0/1czQjiw8UCDB8PVLWFOsMM8hx5NjyRu6gIZN8ObG2tk8HR
+        jn3L6dEcG1qZosCNOxJBWEo=
+X-Google-Smtp-Source: ABdhPJx8g8xdesMNoGVTzuT3XagRj5LAaufkKUYbo6VUO/Xk/HZpzkHbh9B46nJmAsZXzEC0QizUKg==
+X-Received: by 2002:a2e:9e02:: with SMTP id e2mr14661066ljk.502.1643118633404;
+        Tue, 25 Jan 2022 05:50:33 -0800 (PST)
+Received: from [192.168.8.103] (m91-129-103-86.cust.tele2.ee. [91.129.103.86])
+        by smtp.gmail.com with ESMTPSA id h23sm1206582ljk.4.2022.01.25.05.50.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 05:50:32 -0800 (PST)
+Message-ID: <bad34ba9-eacf-f325-7ebc-6fdd43414945@gmail.com>
+Date:   Tue, 25 Jan 2022 15:50:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211210154332.11526-34-brijesh.singh@amd.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] net: ena: Do not waste napi skb cache
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Shay Agroskin <shayagr@amazon.com>
+Cc:     netdev@vger.kernel.org, Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-kernel@vger.kernel.org
+References: <20220123115623.94843-1-42.hyeyoo@gmail.com>
+ <f835cbb3-a028-1daf-c038-516dd47ce47c@gmail.com>
+ <5cca8bdd-bed0-f26a-6c96-d18947d3a50b@gmail.com>
+ <pj41zlmtjk7t9a.fsf@u570694869fb251.ant.amazon.com>
+ <Ye/EQgqCBogZR87T@ip-172-31-19-208.ap-northeast-1.compute.internal>
+From:   Julian Wiedmann <jwiedmann.dev@gmail.com>
+In-Reply-To: <Ye/EQgqCBogZR87T@ip-172-31-19-208.ap-northeast-1.compute.internal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 09:43:25AM -0600, Brijesh Singh wrote:
-> +static void sev_prep_identity_maps(void)
-> +{
-> +	/*
-> +	 * The ConfidentialComputing blob is used very early in uncompressed
-> +	 * kernel to find the in-memory cpuid table to handle cpuid
-> +	 * instructions. Make sure an identity-mapping exists so it can be
-> +	 * accessed after switchover.
-> +	 */
-> +	if (sev_snp_enabled()) {
-> +		struct cc_blob_sev_info *cc_info =
-> +			(void *)(unsigned long)boot_params->cc_blob_address;
-> +
-> +		add_identity_map((unsigned long)cc_info,
-> +				 (unsigned long)cc_info + sizeof(*cc_info));
-> +		add_identity_map((unsigned long)cc_info->cpuid_phys,
-> +				 (unsigned long)cc_info->cpuid_phys + cc_info->cpuid_len);
-> +	}
-> +
-> +	sev_verify_cbit(top_level_pgt);
-> +}
-> +
+On 25.01.22 11:34, Hyeonggon Yoo wrote:
+> On Mon, Jan 24, 2022 at 10:50:05PM +0200, Shay Agroskin wrote:
+>>
 
-Also, that function can just as well live in compressed/sev.c and
-you can export add_identity_map() instead.
+[...]
 
-That latter function calls kernel_ident_mapping_init() which is
-already exported. add_identity_map() doesn't do anything special
-and it is limited to the decompressor kernel so nothing stands in
-the way of exporting it in a pre-patch and renaming it there to
-kernel_add_identity_map() or so...
+>>
+>> I agree that the netdev_alloc_skb_ip_align() can become napi_alloc_skb().
+>> Hyeonggon Yoo, can you please apply this change as well to this patch?
+>>
+> 
+> Okay. I'll update and test it again.
+> 
+> BTW, It seems netdev_alloc_skb_ip_align() is used to make some fields
+> be aligned. It's okay to just ignore this?
+> 
 
-Thx.
+napi_alloc_skb() adds NET_IP_ALIGN internally, so you end up with the same alignment as before.
 
--- 
-Regards/Gruss,
-    Boris.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+> Thanks,
+> Hyeonggon.
+> 
+>> Thanks,
+>> Shay
+>>
+>>
+>>>>>  	else
+>>>>> -		skb = build_skb(first_frag, ENA_PAGE_SIZE);
+>>>>> +		skb = napi_build_skb(first_frag, ENA_PAGE_SIZE);
+>>>>>  	if (unlikely(!skb)) {
+>>>>>  		ena_increase_stat(&rx_ring->rx_stats.skb_alloc_fail,  1,
+>>>>
+
