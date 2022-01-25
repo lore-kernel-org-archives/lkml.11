@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C4BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A984DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237255AbiAYKGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:06:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
+        id S241662AbiAYKHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:07:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238530AbiAYJ7r (ORCPT
+        with ESMTP id S238553AbiAYJ7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:59:47 -0500
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02508C06175F;
-        Tue, 25 Jan 2022 01:59:47 -0800 (PST)
-Received: by mail-pl1-x642.google.com with SMTP id c9so18743507plg.11;
-        Tue, 25 Jan 2022 01:59:46 -0800 (PST)
+        Tue, 25 Jan 2022 04:59:54 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C12C061759;
+        Tue, 25 Jan 2022 01:59:54 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id h23so17807615pgk.11;
+        Tue, 25 Jan 2022 01:59:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xy58X9ZqsU+Q+x1fD7dGP98jr1M3OQ5O7hFyw/uTpBo=;
-        b=K1csWq0YFWq17jyYUVKdjSWRmI9iFTTulrCS8E81NVmcF5tVCX3tYwOWDkjGG9uDgZ
-         S71g6dScNDDK2kJIyb2zRwlBRLJTTbhLWCO645QTYytf+zmY+jUpVtCGl+Y8+mNl/Ood
-         VEWfj0YcCnbZkgUh/bExJckvquMNY6e0BUEhYRgi3aCmG/rJR4Bsy6kjcYzIWKOYd7sO
-         LWHfi6ey9ev+O5OGhH0gHOWYUP4Hf7rJclBZMvxDrfO8llYsi7P+3se3Q4I/RACKbTXL
-         uZULM8kNpohHbIkOhTDcHenEGFdd9PhcwuvOSi+qILGzQMK5+N1h27WtT3Q5kTqIHBJm
-         8vFw==
+        bh=CubPfo8X6E6cLCRQ+9YQFpgd03CzrlDLAlSclXyiqwM=;
+        b=TYu2hzxhyUdjSdW4KzB0PgKW9Qz71gcHjEYoVWvjdSBfpPlHxw+0PXC3VLvLMHIFK2
+         a/j+0xzi533KhtP5gZ2w+vyWVf6354B3agubc74M5PlKNK4Tobp0/tSCK303cMHbLMfn
+         shESi3Aq3g/9NY8RhCzvqHCcQTB7DK6JdosachSbNEr/s/XSoYUSuwOW4h7tO9sFwijT
+         nvO8sYjQa1brA8xJLIc8dHlMo/mTdGLOASpxM0LUA0r4ctZPplYRzQXhUC+gkClZrlRD
+         XgRtg2S94K6Oww8Ks5nj434KY4EsDg7N+BpWEutSU/Q8ICBZePIVh97sPlevCORJhh5J
+         Z0uQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xy58X9ZqsU+Q+x1fD7dGP98jr1M3OQ5O7hFyw/uTpBo=;
-        b=lfbgLCbeZ9xJ757YWtxo6wX5QOjd/D+dzSslWolgFweSfBMn3fXEasblRvoGlrB3wg
-         r7OODd4b/zvIMCJbFfrb44gmzqB+WOT7Nj4fU87pYy+UsuK0AmX7AzSUThYWqPIQIX0m
-         YUV0zGra2otcOfW5cOFSixbAqRRAE9QZUx8xhCiiscX63Tw7ItAvKsbaONRzZRkYWK9d
-         QW0K0vIHhBXBIFv29LIaIXiQpljrYxCE4t5k5PfEdNOq1aPmIfy22gWrdBfq8Iqt7bYP
-         osmr/gOkiNQOI3oLxSuvNbIfAzTkprH4EFZPn01K/Hz13MdpRl1nrvWgmp/bU3LSbLJa
-         bONw==
-X-Gm-Message-State: AOAM532eDyDas/kOPoDztzgBMD5q0OdZtQLoWh22WulDMa7g6MTyzCBS
-        rUJzfqCN5qKir0edeUVxB2Q=
-X-Google-Smtp-Source: ABdhPJzhUcAag9bH49+qyomod77yB4zrMr6c2mVnNwikP5K8xDfXGKVEcCyL1nqCdpa2kl1JeFxt0g==
-X-Received: by 2002:a17:90a:5503:: with SMTP id b3mr2630839pji.187.1643104786499;
-        Tue, 25 Jan 2022 01:59:46 -0800 (PST)
+        bh=CubPfo8X6E6cLCRQ+9YQFpgd03CzrlDLAlSclXyiqwM=;
+        b=BVfCIhqgRncsrU11mybbMqQdHKF5Gk1GZPCZziRT1bJbShnddOZE67V6LOKbMelCbV
+         SZsyaTi/TT/wnJa/l6mjW27QUFWPHzRb386pg69JbFsURbrDGPgTbbJrVl0l9JMRQ4vD
+         klOkDBB0qautA5CTRTDqiMr1OXjL/UHK57vEpVaqqd0whwH1etAz9xMb5+DKxq9mQozH
+         odl5bGYTMvYyEdcjVQrhbbJN2YIQrooNh1qqQ4w3DdHyBM+y6zK7j30cAXb8FfOJxuzU
+         tjsQUlE+5OlT/kFyEfryhvHz1sX4zjj5ABpNZKJDcKNcLuLCmO/JRGaP0goFzXph7b1F
+         h3nQ==
+X-Gm-Message-State: AOAM531c9/hzQFl1+08UYqEv/SA2QwtNGgn1ZZ7QQ2JMmDkN5Nvy2Bw4
+        QO21d1ZNPsfAzKZL8FuCjUs=
+X-Google-Smtp-Source: ABdhPJz9mzW3DR7bpfB4++1k/wQOade45pfCyNWq75tTufotEG/+KFC05x9/DGi+H0VIlfK+eR8Eaw==
+X-Received: by 2002:a05:6a00:15ce:b0:4ca:5090:dbe6 with SMTP id o14-20020a056a0015ce00b004ca5090dbe6mr4828275pfu.84.1643104793842;
+        Tue, 25 Jan 2022 01:59:53 -0800 (PST)
 Received: from CLOUDLIANG-MB0.tencent.com ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id mq3sm201606pjb.4.2022.01.25.01.59.44
+        by smtp.gmail.com with ESMTPSA id mq3sm201606pjb.4.2022.01.25.01.59.51
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jan 2022 01:59:46 -0800 (PST)
+        Tue, 25 Jan 2022 01:59:53 -0800 (PST)
 From:   Jinrong Liang <ljr.kernel@gmail.com>
 X-Google-Original-From: Jinrong Liang <cloudliang@tencent.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
@@ -58,9 +58,9 @@ Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
         Wanpeng Li <wanpengli@tencent.com>,
         Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 12/19] KVM: x86/i8259: Remove unused "addr" of elcr_ioport_{read,write}()
-Date:   Tue, 25 Jan 2022 17:59:02 +0800
-Message-Id: <20220125095909.38122-13-cloudliang@tencent.com>
+Subject: [PATCH 15/19] KVM: x86/emulate: Remove unused "ctxt" of task_switch_{16, 32}()
+Date:   Tue, 25 Jan 2022 17:59:05 +0800
+Message-Id: <20220125095909.38122-16-cloudliang@tencent.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20220125095909.38122-1-cloudliang@tencent.com>
 References: <20220125095909.38122-1-cloudliang@tencent.com>
@@ -72,52 +72,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jinrong Liang <cloudliang@tencent.com>
 
-The "u32 addr" parameter of elcr_ioport_write() and elcr_ioport_read()
+The "struct x86_emulate_ctxt *ctxt" parameter of task_switch_{16, 32}()
 is not used, so remove it. No functional change intended.
 
 Signed-off-by: Jinrong Liang <cloudliang@tencent.com>
 ---
- arch/x86/kvm/i8259.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/kvm/emulate.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/kvm/i8259.c b/arch/x86/kvm/i8259.c
-index 814064d06016..be99dc86293d 100644
---- a/arch/x86/kvm/i8259.c
-+++ b/arch/x86/kvm/i8259.c
-@@ -437,13 +437,13 @@ static u32 pic_ioport_read(void *opaque, u32 addr)
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index c2d9fe6449c2..9e4a00d04532 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -3020,8 +3020,7 @@ static int load_state_from_tss16(struct x86_emulate_ctxt *ctxt,
+ 	return X86EMUL_CONTINUE;
+ }
+ 
+-static int task_switch_16(struct x86_emulate_ctxt *ctxt,
+-			  u16 tss_selector, u16 old_tss_sel,
++static int task_switch_16(struct x86_emulate_ctxt *ctxt, u16 old_tss_sel,
+ 			  ulong old_tss_base, struct desc_struct *new_desc)
+ {
+ 	struct tss_segment_16 tss_seg;
+@@ -3159,8 +3158,7 @@ static int load_state_from_tss32(struct x86_emulate_ctxt *ctxt,
  	return ret;
  }
  
--static void elcr_ioport_write(void *opaque, u32 addr, u32 val)
-+static void elcr_ioport_write(void *opaque, u32 val)
+-static int task_switch_32(struct x86_emulate_ctxt *ctxt,
+-			  u16 tss_selector, u16 old_tss_sel,
++static int task_switch_32(struct x86_emulate_ctxt *ctxt, u16 old_tss_sel,
+ 			  ulong old_tss_base, struct desc_struct *new_desc)
  {
- 	struct kvm_kpic_state *s = opaque;
- 	s->elcr = val & s->elcr_mask;
- }
+ 	struct tss_segment_32 tss_seg;
+@@ -3268,10 +3266,9 @@ static int emulator_do_task_switch(struct x86_emulate_ctxt *ctxt,
+ 		old_tss_sel = 0xffff;
  
--static u32 elcr_ioport_read(void *opaque, u32 addr1)
-+static u32 elcr_ioport_read(void *opaque)
- {
- 	struct kvm_kpic_state *s = opaque;
- 	return s->elcr;
-@@ -474,7 +474,7 @@ static int picdev_write(struct kvm_pic *s,
- 	case 0x4d0:
- 	case 0x4d1:
- 		pic_lock(s);
--		elcr_ioport_write(&s->pics[addr & 1], addr, data);
-+		elcr_ioport_write(&s->pics[addr & 1], data);
- 		pic_unlock(s);
- 		break;
- 	default:
-@@ -505,7 +505,7 @@ static int picdev_read(struct kvm_pic *s,
- 	case 0x4d0:
- 	case 0x4d1:
- 		pic_lock(s);
--		*data = elcr_ioport_read(&s->pics[addr & 1], addr);
-+		*data = elcr_ioport_read(&s->pics[addr & 1]);
- 		pic_unlock(s);
- 		break;
- 	default:
+ 	if (next_tss_desc.type & 8)
+-		ret = task_switch_32(ctxt, tss_selector, old_tss_sel,
+-				     old_tss_base, &next_tss_desc);
++		ret = task_switch_32(ctxt, old_tss_sel, old_tss_base, &next_tss_desc);
+ 	else
+-		ret = task_switch_16(ctxt, tss_selector, old_tss_sel,
++		ret = task_switch_16(ctxt, old_tss_sel,
+ 				     old_tss_base, &next_tss_desc);
+ 	if (ret != X86EMUL_CONTINUE)
+ 		return ret;
 -- 
 2.33.1
 
