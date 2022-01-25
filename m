@@ -2,143 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A04B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E395FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233572AbiAYObT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:31:19 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.226]:59430 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1387622AbiAYOZN (ORCPT
+        id S238825AbiAYObb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 09:31:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30914 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1578999AbiAYO0Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:25:13 -0500
-HMM_SOURCE_IP: 172.18.0.218:50342.2129814880
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.38 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id DE498280029;
-        Tue, 25 Jan 2022 22:25:04 +0800 (CST)
-X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id 96b1da56bd6d47aca05ac245d0694740 for j.vosburgh@gmail.com;
-        Tue, 25 Jan 2022 22:25:07 CST
-X-Transaction-ID: 96b1da56bd6d47aca05ac245d0694740
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.218
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jay.vosburgh@canonical.com, nikolay@nvidia.com,
-        huyd12@chinatelecom.cn
-Subject: [PATCH v10] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
-Date:   Tue, 25 Jan 2022 09:24:18 -0500
-Message-Id: <20220125142418.96167-1-sunshouxin@chinatelecom.cn>
-X-Mailer: git-send-email 2.27.0
+        Tue, 25 Jan 2022 09:26:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643120777;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dLtIFJjgUtOUVDA99ng5/AGYu7PV8wK1w9Iei4rx6Qg=;
+        b=eN7cCiL1RTWtEPi+pCzfJ+JeAsLx6NWd0J5Na1+geEwjo27YSHQEDvWWsZiLz3D3najCzu
+        8xR4bJyDHUJY9wHmILqbObrtt4jmu1FWwOZSNFLonykallljz5qs0W8+7yfJNDfhmKs2V7
+        NXERGBqOAoE8SD+x1hqZ+/hmL64Is8w=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-454-488mywHbN5SQtNDqinftjg-1; Tue, 25 Jan 2022 09:26:16 -0500
+X-MC-Unique: 488mywHbN5SQtNDqinftjg-1
+Received: by mail-ed1-f72.google.com with SMTP id h21-20020aa7c955000000b0040390b2bfc5so15035001edt.15
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:26:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dLtIFJjgUtOUVDA99ng5/AGYu7PV8wK1w9Iei4rx6Qg=;
+        b=qgySIFMEfkIE5WOzF7dup0PI1gwZILzMyh5r61s+BPb9iiVOI7ZbLR3Lrg18bQqkRl
+         aRIX9wG0akZ0Gkyra5PSYGzscA8L4WFqtl4C/5VAQ7QFxVTs9dv9GhvuLv9c0bdFefLt
+         rk/Yf7CjrRT5e18/3cjgKm9uKbArYCeMnioQlZYxSfhk6vMxgl6wDNRdFWGESvEADn8e
+         FiabCDTIzmwHWF/D14xr3K18Jdq5SqaBiRkECs89PNE6kAcMZ61FiYYowWOtEe/FFvcI
+         T/uWhpog+M1rMk8HivYfrjRJiRZI4DmXmLYpQ/ulAnuSX4FPcoaFg2lHuOaOXZ+yyKR6
+         9lUA==
+X-Gm-Message-State: AOAM530/UrBtJbLd4Tc30WsKCjzFJN30y6JN4Y/JRmziG0dVb1bdrSVN
+        8fygi3DHe8odpbprbJjQCVyr9AsORI4M8o5+px47BQgY11ie/b0PfvbcjotPN9jPh/D670GElsF
+        dmVZvId0EAGQlMHdjMV7NwerbUblHyH+19YruAzrs
+X-Received: by 2002:a17:906:1f15:: with SMTP id w21mr16253527ejj.205.1643120774973;
+        Tue, 25 Jan 2022 06:26:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz9O9o4wfs8N1leHAikkbwJT29Az/OoR2DjwNtoJWQuQqqvtGNb1WTEw1Hy2QO4rGn2JAk000qaKRVjx7pfKF8=
+X-Received: by 2002:a17:906:1f15:: with SMTP id w21mr16253499ejj.205.1643120774706;
+ Tue, 25 Jan 2022 06:26:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211222112831.1968392-1-wander@redhat.com> <20211222112831.1968392-2-wander@redhat.com>
+ <Ye/1+Z8mEzbKbrqG@linutronix.de> <CAAq0SUmdGinqdWXrHztx8g9hb+5UF5rDJJjVeVMj3CQ=Fw3kJg@mail.gmail.com>
+ <YfAFAcYmJ+Zrontd@linutronix.de>
+In-Reply-To: <YfAFAcYmJ+Zrontd@linutronix.de>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Tue, 25 Jan 2022 11:26:03 -0300
+Message-ID: <CAAq0SUkuG2uyouBhT5yDiq_KbOGUCO=9ondq6dkt1QZLN_C4uA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] tty: serial: Use fifo in 8250 console driver
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Wander Lairson Costa <wander@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since ipv6 neighbor solicitation and advertisement messages
-isn't handled gracefully in bond6 driver, we can see packet
-drop due to inconsistency between mac address in the option
-message and source MAC .
+On Tue, Jan 25, 2022 at 11:11 AM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+>
+> On 2022-01-25 10:15:04 [-0300], Wander Costa wrote:
+> > There is another thread[1] reporting some issues with this patch.
+> > There, this diff seems to fix the problems, could you please try and
+> > report if it works for you too?
+>
+> Nope. Still there.
 
-Another examples is ipv6 neighbor solicitation and advertisement
-messages from VM via tap attached to host bridge, the src mac
-might be changed through balance-alb mode, but it is not synced
-with Link-layer address in the option message.
-
-The patch implements bond6's tx handle for ipv6 neighbor
-solicitation and advertisement messages.
-
-Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
----
-v9->v10:
-- add IPv6 header pull in alb_determine_nd.
-- combine bond_xmit_alb_slave_get's IPv6 header
-pull with alb_determine_nd's
----
- drivers/net/bonding/bond_alb.c | 40 ++++++++++++++++++++++++++++++++--
- 1 file changed, 38 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 533e476988f2..d9da6eb7f5c2 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -1269,6 +1269,37 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
- 	return res;
- }
- 
-+/* determine if the packet is NA or NS */
-+static bool __alb_determine_nd(struct icmp6hdr *hdr)
-+{
-+	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
-+	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
-+{
-+	struct ipv6hdr *ip6hdr;
-+	struct icmp6hdr *hdr;
-+
-+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr)))
-+		return true;
-+
-+	ip6hdr = ipv6_hdr(skb);
-+	if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
-+		if (!pskb_may_pull(skb, sizeof(*ip6hdr) + sizeof(*hdr)))
-+			return true;
-+
-+		hdr = icmp6_hdr(skb);
-+		return __alb_determine_nd(hdr);
-+	}
-+
-+	return false;
-+}
-+
- /************************ exported alb functions ************************/
- 
- int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
-@@ -1348,8 +1379,11 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
- 	/* Do not TX balance any multicast or broadcast */
- 	if (!is_multicast_ether_addr(eth_data->h_dest)) {
- 		switch (skb->protocol) {
--		case htons(ETH_P_IP):
- 		case htons(ETH_P_IPV6):
-+			if (alb_determine_nd(skb, bond))
-+				break;
-+			fallthrough;
-+		case htons(ETH_P_IP):
- 			hash_index = bond_xmit_hash(bond, skb);
- 			if (bond->params.tlb_dynamic_lb) {
- 				tx_slave = tlb_choose_channel(bond,
-@@ -1432,10 +1466,12 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 			break;
- 		}
- 
--		if (!pskb_network_may_pull(skb, sizeof(*ip6hdr))) {
-+		if (alb_determine_nd(skb, bond)) {
- 			do_tx_balance = false;
- 			break;
- 		}
-+
-+		/* The IPv6 header is pulled by alb_determine_nd */
- 		/* Additionally, DAD probes should not be tx-balanced as that
- 		 * will lead to false positives for duplicate addresses and
- 		 * prevent address configuration from working.
-
-base-commit: dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
--- 
-2.27.0
+I will check on my side if I see something similar. Do you still get
+lines lost as well?
 
