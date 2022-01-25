@@ -2,85 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB511C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244651AbiAYGTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:19:49 -0500
-Received: from mga12.intel.com ([192.55.52.136]:19009 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1391793AbiAYFKj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 00:10:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643087439; x=1674623439;
-  h=cc:subject:to:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=V9CYJ2kCUBsupqpOKFqBBwFqKIJsJUlTvgIb6c/puoE=;
-  b=T7CiCInR6GEr1rc7oRsrGhQTgZGmqXUbbgK22Faz7/PYWgcNbIsxj0eV
-   JrkD34/An/jqzKaIR3LX3YU1Swm5CyFjdTwoK5zgLkh48HuRL8l6u2Sx1
-   +7dCi5jT+YnV58pl21+Cs2GZCRpQHdyvZPos/A8hmJkucaUkQ1YRg3+a9
-   LWVultPjdpkJ5Xba9PG61XKzLz/MDaycRJQIbWy5wP1YQ5Z7ODQV1qjnm
-   JE2tjuGeQFEPdIN7GuNjIrJkIN9XAha5nPp3jTmc6fVBRf6jy51LFtALk
-   M1rq/JjlWBMT2Q3L8ewabqYpZVRs3Ix8lj1GnYZZUvY/9jI8CZ/eagVFe
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226198648"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="226198648"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 21:05:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="534564947"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by orsmga008.jf.intel.com with ESMTP; 24 Jan 2022 21:05:43 -0800
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-8-baolu.lu@linux.intel.com>
- <20220124175542.GA987164@nvidia.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <6fd81c95-6fd6-d678-b7df-f2f747e2b10c@linux.intel.com>
-Date:   Tue, 25 Jan 2022 13:04:43 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S244745AbiAYGUB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 01:20:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S254372AbiAYFOF (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 00:14:05 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4265DC0612FE
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:42:02 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id w7so22170301ioj.5
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:42:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TUk8vRb1/TEpI4p3BEManRMgUagR/L5zFts1s2DKOAU=;
+        b=i0BK/0cSd5ql/xvy9Y2DcbaWQl5ucael2ytCi27aBvxFMayD9HBIEsOJLSGcqtlV+w
+         QBI1KgX2fbtxohV7KwVaGWzNib17c208bD/Z4FSLc2mwhP6d1ueS20DTqNqQUIaUCJ74
+         XOypZqctX3ZZAL6j2Sm2cnpX1HcOUHxiKQOfM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TUk8vRb1/TEpI4p3BEManRMgUagR/L5zFts1s2DKOAU=;
+        b=steqKtAWOfBqoUpSi8xn6mPE+GUELFgqwAGxDKkzvQwA00AHXUpqHECmY0nvNgyDh7
+         rE+wGjDVbmkWZziGQa6hKaDYlNS+/q/oKsdpJjSz/3c3smVLG5uKUHHwE0BBhZlB8THu
+         /6zLuUskCzC8aGTheFTyLAy8s3NFFFV207/91q5erZTvLlV6frqlZLA/eUZcXfTJByjo
+         Wm1B3aX7BkITpzbZ5T1Zshnkn6HGXmBsiQkIkxBGKvSkd39Is076CIeXo6C1vv+SajqJ
+         yS5af859feRO7v54ne3TQYaJ63WpGHe6H2WYrhQvqCq6PW5T56NGl2shYiktqXd4j6TF
+         hhWA==
+X-Gm-Message-State: AOAM531LUbmREs3cximNMLEf+8JLxlDYHezakIWVEcNtgxXSQmwpHwMg
+        xJD3NrQGvbCqrWc8M7RfoqN5Imb/T7ZUy8b6diawbA==
+X-Google-Smtp-Source: ABdhPJzaBMEOBhwghU89luomCIh9naT22YMmxOhZ04LUV562x/5upFLl+PZPpk/4aTF1+FNa5qr433TsbzRPRd+nYxk=
+X-Received: by 2002:a05:6638:3009:: with SMTP id r9mr8180868jak.262.1643082121708;
+ Mon, 24 Jan 2022 19:42:01 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220124175542.GA987164@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220105031242.287751-1-dustin@howett.net> <20220105031242.287751-2-dustin@howett.net>
+In-Reply-To: <20220105031242.287751-2-dustin@howett.net>
+From:   Tzung-Bi Shih <tzungbi@chromium.org>
+Date:   Tue, 25 Jan 2022 11:41:51 +0800
+Message-ID: <CALtnz62fQbyK+WEE=8zSQpuDuaVO=A6PTBEdrYJ+nrSuphpi7Q@mail.gmail.com>
+Subject: Re: [PATCH 1/2] platform/chrome: cros-ec: detect the Framework Laptop
+To:     "Dustin L. Howett" <dustin@howett.net>
+Cc:     linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Tzung-Bi Shih <tzungbi@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/25/22 1:55 AM, Jason Gunthorpe wrote:
-> On Mon, Jan 24, 2022 at 03:11:02PM +0800, Lu Baolu wrote:
->> -	int (*enable_nesting)(struct iommu_domain *domain);
-> 
-> 
-> Lu, there is an implementation in the Intel driver here, is it usable
-> at all?
-
-It's useless and I have cleaned it up in this series.
-
-> 
-> Jason
-> 
-
-Best regards,
-baolu
+On Tue, Jan 25, 2022 at 9:35 AM Dustin L. Howett <dustin@howett.net> wrote:
+>
+> The Framework Laptop identifies itself in DMI with manufacturer
+> "Framework" and product "Laptop".
+>
+> Signed-off-by: Dustin L. Howett <dustin@howett.net>
+> ---
+>  drivers/platform/chrome/cros_ec_lpc.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrome/cros_ec_lpc.c
+> index d6306d2a096f..458eb59db2ff 100644
+> --- a/drivers/platform/chrome/cros_ec_lpc.c
+> +++ b/drivers/platform/chrome/cros_ec_lpc.c
+> @@ -500,6 +500,14 @@ static const struct dmi_system_id cros_ec_lpc_dmi_table[] __initconst = {
+>                         DMI_MATCH(DMI_PRODUCT_NAME, "Glimmer"),
+>                 },
+>         },
+> +       /* A small number of non-Chromebook/box machines also use the ChromeOS EC */
+> +       {
+> +               /* the Framework Laptop */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Framework"),
+> +                       DMI_MATCH(DMI_PRODUCT_NAME, "Laptop"),
+> +               },
+> +       },
+>         { /* sentinel */ }
+>  };
+>  MODULE_DEVICE_TABLE(dmi, cros_ec_lpc_dmi_table);
+> --
+> 2.34.1
+>
+>
