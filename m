@@ -2,105 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BE7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E05A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:51:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452872AbiAYIu4 (ORCPT
+        id S1452894AbiAYIvD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:50:56 -0500
-Received: from mail-ua1-f51.google.com ([209.85.222.51]:46606 "EHLO
-        mail-ua1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452282AbiAYIru (ORCPT
+        Tue, 25 Jan 2022 03:51:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1451896AbiAYIsO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:47:50 -0500
-Received: by mail-ua1-f51.google.com with SMTP id c36so36002122uae.13
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AlenwNbrW3HyQCtaJwFpWckVmU5Z8Lu18+yoa5O/tis=;
-        b=t0ELgdYkuDJUTGewOeuFYsF+wWL+u/6fk+iBldOEdgdqUAZSB7bF0Ikmdv2DF9Ner9
-         BrhDlp1bMlk753Wkb36t63N0dHSFlxQ0psnnfBSmdAfgLJqrD/duu49CXoOB9kWpGUo0
-         /RcZBY1UWpkNXp09x05GIqgofHr8ZyleWfnT1yeAa69PyFU8qgyth7SyFWy9UiMY8lk1
-         XC1bUUI3LUJAz8RtWgwmuuGeWlZbhsUWLHSDD37e1CsG+yhSrBOElQJKfOBx8EPx81c6
-         dJAKtOOUkGU6WaIGJaZVzgzezAtnWKzYo2fMOJWQf4xEVxyW/hE7MTffrmB8sfKvVPBP
-         uKmQ==
-X-Gm-Message-State: AOAM531Y4L/42v09NPXvP6oABShbjIkQL6gLh9L70oq5v6cnLJNhnEkZ
-        2ti3N7rxhWuzkwdi29OEAZI+D7vyXQOC1Q==
-X-Google-Smtp-Source: ABdhPJwkgUvQRUgs3FL6ZUYhxpnLU0hC7s0dZKtWZ5l5CodJkUHfj9yMfN+KuaeuSib9EOWAgMISIw==
-X-Received: by 2002:a9f:2ace:: with SMTP id d14mr6918837uaj.141.1643100468172;
-        Tue, 25 Jan 2022 00:47:48 -0800 (PST)
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
-        by smtp.gmail.com with ESMTPSA id b26sm3936258uam.6.2022.01.25.00.47.47
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 00:47:48 -0800 (PST)
-Received: by mail-ua1-f52.google.com with SMTP id l1so34178618uap.8
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:47 -0800 (PST)
-X-Received: by 2002:a67:b009:: with SMTP id z9mr3762032vse.57.1643100467677;
- Tue, 25 Jan 2022 00:47:47 -0800 (PST)
+        Tue, 25 Jan 2022 03:48:14 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E73C06E013;
+        Mon, 24 Jan 2022 23:25:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=75fjvxkpcCo4jL8p3FdjfOk5GEVHgIS93fZ4qZc8bNA=; b=b/iOn8Hoyg1wUS7Qh2nzBKg7np
+        6I3neoUO8FFrYnLwuI7F5FFB6D/zq/RE9H+RYoI5cJXZ9EoEJSEF5ZeNr2ZGqb46CIrAiOtQQ+sfZ
+        zhUdDlgEsHqyrNffazit08rwIRlViWqKuGaZZ2iwEtkCpVWyed/VByG0wf8bVjwrk4RA51O3XmsY3
+        dNdUp5UEgwEK2uirQ49eGBy71/067s9j1j5cn1SguthPSwQcSibgj3JLW3zEmVuTdguSjZ2/jK6Zx
+        CyU8VxYpajC6sQIEu7evljbtW6LL5Y0FDh6lNbKAWu7fxeKXlHHkFi90ANg13efiK5ZjqQeh5xmDl
+        /CfAUpeQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nCGCq-006iFh-V8; Tue, 25 Jan 2022 07:25:32 +0000
+Date:   Mon, 24 Jan 2022 23:25:32 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-mmc@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Hannes Reinecke <hare@suse.de>
+Subject: Re: [PATCH v4 1/3] block: simplify calling convention of
+ elv_unregister_queue()
+Message-ID: <Ye+l7K4peViBTOkX@infradead.org>
+References: <20220124215938.2769-1-ebiggers@kernel.org>
+ <20220124215938.2769-2-ebiggers@kernel.org>
 MIME-Version: 1.0
-References: <20220125073137.1.83124@7e6451f583e7>
-In-Reply-To: <20220125073137.1.83124@7e6451f583e7>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 25 Jan 2022 09:47:36 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVYhwpP0vSK4LT+50ZqB9opD8gcm-2aor8wAc49=GR+-w@mail.gmail.com>
-Message-ID: <CAMuHMdVYhwpP0vSK4LT+50ZqB9opD8gcm-2aor8wAc49=GR+-w@mail.gmail.com>
-Subject: Re: kisskb: FAILED linux-next/m68k-allmodconfig/m68k-gcc8 Tue Jan 25, 18:24
-To:     linux-m68k <linux-m68k@lists.linux-m68k.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124215938.2769-2-ebiggers@kernel.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 8:31 AM <noreply@ellerman.id.au> wrote:
-> FAILED linux-next/m68k-allmodconfig/m68k-gcc8 Tue Jan 25, 18:24
->
-> http://kisskb.ellerman.id.au/kisskb/buildresult/14688953/
->
-> Commit:   Add linux-next specific files for 20220125
->           d25ee88530253138d0b20d43511ca5acbda4e9f7
-> Compiler: m68k-linux-gcc (GCC) 8.1.0 / GNU ld (GNU Binutils) 2.30
->
-> Possible errors
-> ---------------
->
-> arch/m68k/include/asm/bitops.h:329:20: error: array subscript 2 is above array bounds of 'long unsigned int[1]' [-Werror=array-bounds]
-> cc1: all warnings being treated as errors
-> make[4]: *** [scripts/Makefile.build:289: drivers/net/ipa/ipa_mem.o] Error 1
-> make[3]: *** [scripts/Makefile.build:572: drivers/net/ipa] Error 2
-> make[2]: *** [scripts/Makefile.build:572: drivers/net] Error 2
-> make[1]: *** [Makefile:1965: drivers] Error 2
-> make: *** [Makefile:226: __sub-make] Error 2
->
-> No warnings found in log.
+On Mon, Jan 24, 2022 at 01:59:36PM -0800, Eric Biggers wrote:
+> From: Eric Biggers <ebiggers@google.com>
+> 
+> Make elv_unregister_queue() a no-op if q->elevator is NULL or is not
+> registered.
+> 
+> This simplifies the existing callers, as well as the future caller in
+> the error path of blk_register_queue().
+> 
+> Also don't bother checking whether q is NULL, since it never is.
+> 
+> Reviewed-by: Hannes Reinecke <hare@suse.de>
+> Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+> Signed-off-by: Eric Biggers <ebiggers@google.com>
 
-The code that causes this is drivers/net/ipa/ipa_mem.c:ipa_mem_valid():
+Looks good,
 
-        DECLARE_BITMAP(regions, IPA_MEM_COUNT) = { };
-        ...
-        for_each_clear_bit(mem_id, regions, IPA_MEM_COUNT) {
-                if (ipa_mem_id_required(ipa, mem_id))
-                        dev_err(dev, "required memory region %u missing\n",
-                                mem_id);
-        }
-
-This only happens with gcc-8, not with gcc-9, so it might be a
-compiler bug. I don't see anything wrong with c:ipa_mem_valid()
-nor with m68k's find_first_zero_bit().
-
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Reviewed-by: Christoph Hellwig <hch@lst.de>
