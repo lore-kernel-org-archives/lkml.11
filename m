@@ -2,93 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C7FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB62C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587561AbiAYRUM (ORCPT
+        id S1587826AbiAYRUR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:20:12 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:51456
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344459AbiAYRNe (ORCPT
+        Tue, 25 Jan 2022 12:20:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1587568AbiAYRSZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:13:34 -0500
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 632EA402F3
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 17:11:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643130717;
-        bh=LvBwPzZuQYg1sk1AcEyVLVG7UxYbxMueMK9OojLw1Q4=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version:Content-Type;
-        b=CY7PK8+b4bB9aoCAUW0tERxpxzO0v2nWOQ0fzR7bvxf0uuXmbre7Zc06Vd/PnuyS0
-         O8uBlpcNoiSNJOquriY5l5fBTFqrJhKrDQXqd/BtaNpn7lUcg3dxRYtP6ZI62MgtNR
-         CkCfJuKdyLVJwA2pEo58ykbTMKNophQQJGFncYp4vV6TOd3JShy5Il1XiCbXKMueo8
-         OvhTk5ChHAZ9Hx+RkjVtBR1OFBkIodANZahKQrmEjfYTpY5+lao3+BJYmcGFAZeggB
-         8YX2YBKG1WBJ+I3DFeTMIVGzLGb2Dyu3qNvnkArmMgIjA90gdO9aVDwEK2l18aaWNb
-         MTmNZlV+AtUcg==
-Received: by mail-wm1-f72.google.com with SMTP id l16-20020a7bcf10000000b0034ffdd81e7aso1783551wmg.4
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:11:57 -0800 (PST)
+        Tue, 25 Jan 2022 12:18:25 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CA0C06175C
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:18:21 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id c23so5500032wrb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:18:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r5mFzd7DvgqAHtEGdNhKrSA7iqlVt7Wcb1H8I+i732Y=;
+        b=T4Rxal21LhPN5/dmpXnWEduyScRqg/rryykYOzKIQ/fEm8ad8RN8xao+Z4GywZpqD8
+         KgQg9Jg4cZiv7VfwHcWApGqCVlWdde7oEfF6IWGWe3xCB16sMnM/kkyM93H5AfpdisZP
+         +JAsLnV3w6I2tFDrCtq6E8/xI/yiw6uLz/UpEdQRCkNCG194MYB4qLDUczzRw6OgCSit
+         UoIb6Ru1FBD1J2cxFQUEvOT7etQYftJgWZySxtDWvtZBZ2GxEzraA4h0kWwqIFxEsRQx
+         yRVJsxAilc4v6rQCMfydEfs7K2J/mpT5/73/ZgTPGomSLpTeOVrKGtFvcR5vjJD82GvU
+         VYwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LvBwPzZuQYg1sk1AcEyVLVG7UxYbxMueMK9OojLw1Q4=;
-        b=MrOeekPimSb7BkihNE8sYp6xEClAZMPtlV2fHCggOl3082u8Ydhkya0NfgbLNyhKXG
-         7Dgvmq66zJUMsJ/aKzXZQpfUN3ID7iDtIttogSLrV+m59eSuJlvuDTI+RI+s6eolDYD7
-         TcJ56kwGmzzG5hdMpDRToT4oxt58rKJOuEcvu3Wuzdxf8U5RMbHtfiRNXm/B8ARcrjZR
-         axhl2HFhSSN7JJ3gWpJvQ6K75nqq3OTC9TysG8Efsao4CPDg4cpFTFF2B/kYqdNrOQmQ
-         j8bcTtz0SUjsnwBXQZ5P2JQUO21UU9pYcmJNfFTpfnfztp/puATuKjjEqTgGiX1Z7yKw
-         +6iA==
-X-Gm-Message-State: AOAM532RPkJng8ru6ik77daYOwd3NJALvzK2msB4AcmIVnqI936vDTb6
-        g28s+pqAi/M2n8phEDdPq38TnrNHgpJ71UUx3CbFZ2J8dikTQjQNJLcz65AEODR0bg2upCXYD5u
-        dLJoCaZ5M/iSBzIvxHGm9hUpXVB2sLwMI0RgYG6AmcQ==
-X-Received: by 2002:a05:600c:4b95:: with SMTP id e21mr3819817wmp.106.1643130716928;
-        Tue, 25 Jan 2022 09:11:56 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwfP17LMlnVHGMliQrz4/SA8fpjZEApa5SVjlONjtvltbKWP+dIusViDktiO3K5mmPtxTR73g==
-X-Received: by 2002:a05:600c:4b95:: with SMTP id e21mr3819792wmp.106.1643130716796;
-        Tue, 25 Jan 2022 09:11:56 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id f8sm1185826wmg.44.2022.01.25.09.11.55
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r5mFzd7DvgqAHtEGdNhKrSA7iqlVt7Wcb1H8I+i732Y=;
+        b=1EnO9I1La3GVzUlx1rQxezzq7l9qTWfN2gyt8cXxo0ngArqLAMBNVzd6EDobxn7qdN
+         fZNNt41MHKAJjcyy0cxfSOECr0zCpy6c88zAWf4sp11tj/z470GkM+O9sK5cnyrIlv9B
+         YVdr8pM5jdwDhkm/zKiXStPyaZz8JCcvFX1ueKlHT04Tcwc0UMinqCcB5RB6jC3olP1K
+         mImeDsIt4QfkdR0Nk9SWdfABaYQ3AQsdbstRudXyd5y26sc37Oa/8nasLiqJ24pavEh2
+         S2xSkjqm3Njp9xcXz34NuOycE0RTJ+YIKjh4XqLf1Vg95UdJghG0O2cGw9WrIz6XfR11
+         9z1A==
+X-Gm-Message-State: AOAM5314xCQZymUqjihV+nirCfur5GWnB20fQVPuXzK/cTSR+vWI8Ppx
+        +m47HIUvImflPQN56xT/NP9mAw==
+X-Google-Smtp-Source: ABdhPJz8iisKAmEQZfGCdwSA1fIN4zu6Ez8xWTyGjVID3fzGuK5l8/zCSUV9Fk99PhhcbmTaQ6AKrg==
+X-Received: by 2002:a05:6000:1091:: with SMTP id y17mr19039430wrw.310.1643131100164;
+        Tue, 25 Jan 2022 09:18:20 -0800 (PST)
+Received: from localhost.localdomain ([2a01:e34:ed2f:f020:f589:cf7d:b2ee:bb5e])
+        by smtp.gmail.com with ESMTPSA id t18sm17561901wri.34.2022.01.25.09.18.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 09:11:55 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     linux-arm-kernel@lists.infradead.org,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linus.walleij@linaro.org, linux-fsd@tesla.com,
-        devicetree@vger.kernel.org, olof@lixom.net, soc@kernel.org,
-        sboyd@kernel.org, linux-clk@vger.kernel.org, arnd@arndb.de,
-        linux-samsung-soc@vger.kernel.org, catalin.marinas@arm.com,
-        robh+dt@kernel.org, pankaj.dubey@samsung.com,
-        s.nawrocki@samsung.com
-Subject: Re: (subset) [PATCH v5 16/16] arm64: defconfig: Enable Tesla FSD SoC
-Date:   Tue, 25 Jan 2022 18:11:07 +0100
-Message-Id: <164313065136.81319.934364321640879263.b4-ty@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220124141644.71052-17-alim.akhtar@samsung.com>
-References: <20220124141644.71052-1-alim.akhtar@samsung.com> <CGME20220124143005epcas5p103598aa358ac35fe5e1ee762faf508b0@epcas5p1.samsung.com> <20220124141644.71052-17-alim.akhtar@samsung.com>
+        Tue, 25 Jan 2022 09:18:19 -0800 (PST)
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+To:     daniel.lezcano@linaro.org, rjw@rjwysocki.net
+Cc:     robh@kernel.org, lukasz.luba@arm.com, heiko@sntech.de,
+        arnd@linaro.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH v7 0/6] powercap/drivers/dtpm: Create the dtpm hierarchy
+Date:   Tue, 25 Jan 2022 18:18:04 +0100
+Message-Id: <20220125171809.1273269-1-daniel.lezcano@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 24 Jan 2022 19:46:44 +0530, Alim Akhtar wrote:
-> This patch enables the Tesla FSD SoC in arm64 defconfig.
-> 
-> 
+The DTPM hierarchy is the base to build on top of it a power budget allocator.
+It reflects the power consumption of the group of devices and allows to cap
+their power.
 
-Applied, thanks!
+The core code is there but there is no way to describe the desired hierarchy
+yet.
 
-[16/16] arm64: defconfig: Enable Tesla FSD SoC
-        commit: aeb62e360c0fffd9cf218a314647d0c7254becbe
+A first proposal introduced the description through configfs [1] but was
+rejected [2].
 
-Best regards,
+A second proposal based on the device tree with a binding similar to the power
+domains [3] was proposed but finally rejected [4].
+
+This version delegates the hierarchy creation to the SoC with a specific and
+self-encapsulated code using an array to describe the tree. The SoC DTPM driver
+defines an array of nodes pointing to their parents.  The hierarchy description
+can integrate a DT node and in the future a SCMI node, that means the
+description can mix different type of nodes.
+
+As the DTPM tree depends on different devices which could be modules, the SoC
+specific description must always be compiled as a module and describe the
+module softdeps in order to let the userspace to handle proper loading
+ordering.
+
+In addition to the hierarchy creation, the devfreq dtpm support is also
+integrated into this series.
+
+This series was tested on a rock960 (revision B - rk3399 based) and a db845c
+(Qualcomm sdm845 based).
+
+[1] https://lore.kernel.org/all/20210401183654.27214-1-daniel.lezcano@linaro.org/
+[2] https://lore.kernel.org/all/YGYg6ZeZ1181%2FpXk@kroah.com/
+[3] https://lore.kernel.org/all/20211205231558.779698-1-daniel.lezcano@linaro.org/
+[4] https://lore.kernel.org/all/YbfFapsmsjs4qnsg@robh.at.kernel.org/
+
+Changelog:
+   V7:
+   - Added a couple of comments if a node in the hierarchy fails to create
+   - Fixed a double free in dtpm_devfreq in the error path
+
+   V6:
+   - Switched the init table to a subsystem arrays
+   - Checked 'setup' function is set before calling it
+   - Moved out of the loop the 'of_node_put'
+   - Explicitely add DTPM_NODE_VIRTUAL in documentation
+   - Moved powercap_register_control_type() into the hierarchy creation function
+   - Removed the sdm845 description
+   - Made rk3399 always as a module and added module softdeps
+
+   V5:
+   - Remove DT bindings
+   - Added description with an array
+   - Added simple description for rk3399 and sdm845
+   - Moved dtpm table to the data section
+
+   V4:
+   - Added missing powerzone-cells
+   - Changed powerzone name to comply with the pattern property
+
+   V3:
+   - Remove GPU section as no power is available (yet)
+   - Remove '#powerzone-cells' conforming to the bindings change
+   - Removed required property 'compatible'
+   - Removed powerzone-cells from the topmost node
+   - Removed powerzone-cells from cpus 'consumers' in example
+   - Set additionnal property to false
+
+   V2:
+   - Added pattern properties and stick to powerzone-*
+   - Added required property compatible and powerzone-cells
+   - Added additionnal property
+   - Added compatible
+   - Renamed to 'powerzones'
+   - Added missing powerzone-cells to the topmost node
+   - Fixed errors reported by 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+   - Move description in the SoC dtsi specific file
+   - Fixed missing prototype warning reported by lkp@
+
+   V1: Initial post
+
+Daniel Lezcano (5):
+  powercap/drivers/dtpm: Convert the init table section to a simple
+    array
+  powercap/drivers/dtpm: Add hierarchy creation
+  powercap/drivers/dtpm: Add CPU DT initialization support
+  powercap/drivers/dtpm: Add dtpm devfreq with energy model support
+  rockchip/soc/drivers: Add DTPM description for rk3399
+
+ drivers/powercap/Kconfig          |   8 ++
+ drivers/powercap/Makefile         |   1 +
+ drivers/powercap/dtpm.c           | 192 +++++++++++++++++++++++++++-
+ drivers/powercap/dtpm_cpu.c       |  41 ++++--
+ drivers/powercap/dtpm_devfreq.c   | 203 ++++++++++++++++++++++++++++++
+ drivers/powercap/dtpm_subsys.h    |  22 ++++
+ drivers/soc/rockchip/Kconfig      |   8 ++
+ drivers/soc/rockchip/Makefile     |   1 +
+ drivers/soc/rockchip/dtpm.c       |  59 +++++++++
+ include/asm-generic/vmlinux.lds.h |  11 --
+ include/linux/dtpm.h              |  33 +++--
+ 11 files changed, 540 insertions(+), 39 deletions(-)
+ create mode 100644 drivers/powercap/dtpm_devfreq.c
+ create mode 100644 drivers/powercap/dtpm_subsys.h
+ create mode 100644 drivers/soc/rockchip/dtpm.c
+
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+2.25.1
+
