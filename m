@@ -2,105 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A518AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:55:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453655AbiAYIzV (ORCPT
+        id S1453685AbiAYIz1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:55:21 -0500
-Received: from mail.cn.fujitsu.com ([183.91.158.132]:36081 "EHLO
-        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1452893AbiAYIvG (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:51:06 -0500
-IronPort-Data: =?us-ascii?q?A9a23=3AlMS+laNFpauTd1jvrR2qlsFynXyQoLVcMsFnjC/?=
- =?us-ascii?q?WdQC51mh20D1SmGtJWjjTMvjcYGOkct1xatm08x9TvZ/cm99gGjLY11k3ESsS9?=
- =?us-ascii?q?pCt6fd1j6vIF3rLaJWFFSqL1u1GAjX7BJ1yHi+0SiuFaOC79yElj/zQH9IQNca?=
- =?us-ascii?q?fUsxPbV49IMseoUI78wIJqtYAbemRW2thi/uryyHsEAPNNwpPD44hw/nrRCWDE?=
- =?us-ascii?q?xjFkGhwUlQWPZintbJF/pUfJMp3yaqZdxMUTmTId9NWSdovzJnhlo/Y1xwrTN2?=
- =?us-ascii?q?4kLfnaVBMSbnXVeSMoiMOHfH83V4Z/Wpvuko4HKN0hUN/jzSbn9FzydxLnZKtS?=
- =?us-ascii?q?wY1JbCKk+MYO/VdO3gkZf0dqeSYfBBTtuTWlSUqaUDE2e1jBVstOosY4utfDmR?=
- =?us-ascii?q?H9PheIzcIBjiRluCk0bDhErE0rssmJcjveogYvxlIyTDQC/k5TJbbTqPFzd9F1?=
- =?us-ascii?q?Sg9h4ZFGvO2T8YQb3xtKgvBZxlOM1IMIJM4gOqswHL4dlVwtFWQrLElpWfJywl?=
- =?us-ascii?q?43KruMfLUfMCHQYNemUPwjmbL+GLRARwAMtGbjz2f/RqEj+/GhyT9XKoUCry09?=
- =?us-ascii?q?/csi1qWrkQWAhkRXluTp+e4hk+3HdlYLiQ85i0rhbQ78FSmX5/2WBjQiHqFuAM?=
- =?us-ascii?q?MHtldCes37CmTxafOpQWUHG4JSnhGctNOnMs3QyE6k0WFmtrBGzNiqvuWRGib+?=
- =?us-ascii?q?7PSqim9UQAXImAqdy4JVQZD6NCLnW2ZpnojVf46SOjs0IKzQmq2nli3QOEFr+1?=
- =?us-ascii?q?7paY2O2+TpDgrWw6Rm6U=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3ACDEwF67iLoDlwIlBJAPXwPTXdLJyesId70hD?=
- =?us-ascii?q?6qkRc20wTiX8ra2TdZsguyMc9wx6ZJhNo7G90cq7MBbhHPxOkOos1N6ZNWGIhI?=
- =?us-ascii?q?LCFvAB0WKN+V3dMhy73utc+IMlSKJmFeD3ZGIQse/KpCW+DPYsqePqzJyV?=
-X-IronPort-AV: E=Sophos;i="5.88,314,1635177600"; 
-   d="scan'208";a="120839375"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 25 Jan 2022 16:44:35 +0800
-Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
-        by cn.fujitsu.com (Postfix) with ESMTP id 0D84B4D146E6;
-        Tue, 25 Jan 2022 16:44:33 +0800 (CST)
-Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
- G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Tue, 25 Jan 2022 16:44:33 +0800
-Received: from localhost.localdomain (10.167.225.141) by
- G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Tue, 25 Jan 2022 16:44:30 +0800
-From:   Li Zhijian <lizhijian@cn.fujitsu.com>
-To:     <linux-rdma@vger.kernel.org>, <zyjzyj2000@gmail.com>,
-        <jgg@ziepe.ca>, <aharonl@nvidia.com>, <leon@kernel.org>,
-        <tom@talpey.com>, <tomasz.gromadzki@intel.com>
-CC:     <linux-kernel@vger.kernel.org>, <mbloch@nvidia.com>,
-        <liangwenpeng@huawei.com>, <yangx.jy@fujitsu.com>,
-        <y-goto@fujitsu.com>, <rpearsonhpe@gmail.com>,
-        <dan.j.williams@intel.com>, Li Zhijian <lizhijian@cn.fujitsu.com>
-Subject: [RFC PATCH v2 8/9] RDMA/rxe: Enable RDMA FLUSH capability for rxe device
-Date:   Tue, 25 Jan 2022 16:50:40 +0800
-Message-ID: <20220125085041.49175-9-lizhijian@cn.fujitsu.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220125085041.49175-1-lizhijian@cn.fujitsu.com>
-References: <20220125085041.49175-1-lizhijian@cn.fujitsu.com>
+        Tue, 25 Jan 2022 03:55:27 -0500
+Received: from mga06.intel.com ([134.134.136.31]:11130 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1453029AbiAYIvn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 03:51:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643100701; x=1674636701;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=M2IjP5NhFFTYV177dnTaULkwxfpoBSIPm3gj+/hKLuw=;
+  b=eRWsJJ/02jzu1BxDXqtOOMmCjUcyBaDOY1PWqMgVQjx++xqVG5o0T8cJ
+   7h5/V/8D04vUA9db0Womc8TXjpR/Q35JSL8goYI9OlUFpB5CMPMgphX4V
+   64DL/HJVxeuyDygH+z1EIFyuzQ4GkJfo9K4d1talueJzaMXOAGY93k0to
+   75hLSVH8bC1Fg1lN23JQlO/PaQDxGLT9JkJt1FlZTPbkbIg01SjUVxPpD
+   6Bks7adlUOFo5wymHoEAsvUQVxamhRa1V4JowgD9LxlzsdQPOY/JE56fG
+   eTWvezL13nuQ83IjMpkQzPe9rQ34VE3MautxbUp/TAIa43cRJnMHzjHVJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="306972288"
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="306972288"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 00:49:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="562969177"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga001.jf.intel.com with ESMTP; 25 Jan 2022 00:49:30 -0800
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>
+References: <972a0e28-ad63-9766-88da-02743f80181b@intel.com>
+ <Yao35lElOkwtBYEb@kroah.com>
+ <c2b5c9bb-1b75-bf56-3754-b5b18812d65e@linux.intel.com>
+ <YbyWuxoBSicFBGuv@hirez.programming.kicks-ass.net>
+ <YcGhIm7yqYPk4Nuu@hirez.programming.kicks-ass.net>
+ <YeE4rtq6t73OxOi+@hirez.programming.kicks-ass.net>
+ <cd534ff9-e500-c7ea-426a-347ac2b0830b@linux.intel.com>
+ <YeLxE3zQ7Vexk3gv@hirez.programming.kicks-ass.net>
+ <dfb311e3-1a83-31a2-3c82-fd982c0757f6@linux.intel.com>
+ <Ye7WLM+NyVQlEMXN@hirez.programming.kicks-ass.net>
+ <Ye7X5I4lm8gtRaBv@hirez.programming.kicks-ass.net>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: earlyprintk=xdbc seems broken
+Message-ID: <6e2700c4-07dd-76ac-cd8f-d9e5b9b24e74@linux.intel.com>
+Date:   Tue, 25 Jan 2022 10:51:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <Ye7X5I4lm8gtRaBv@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-yoursite-MailScanner-ID: 0D84B4D146E6.ACB2E
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: lizhijian@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A19.4.3.1 HCA RESOURCES
-This Annex introduces the following new HCA attributes:
-• Ability to support Memory Placement Extensions
-a) Ability to support FLUSH
- i) Ability to support FLUSH with PLT Global Visibility
- ii) Ability to support FLUSH with PLT Persistence
+On 24.1.2022 18.46, Peter Zijlstra wrote:
+> On Mon, Jan 24, 2022 at 05:39:08PM +0100, Peter Zijlstra wrote:
+>> On Mon, Jan 24, 2022 at 04:55:22PM +0200, Mathias Nyman wrote:
+>>>  
+>>>> [    0.000000] xhci_dbc:early_xdbc_parse_parameter: dbgp_num: 0
+>>>> [    4.984106] xhci_dbc:xdbc_start: waiting for connection timed out, DCPORTSC:0xa0
+>>>> [    9.946159] xhci_dbc:xdbc_start: waiting for connection timed out, DCPORTSC:0xa0
+>>>> [    9.946163] xhci_dbc:early_xdbc_setup_hardware: failed to setup the connection to host
+>>>>
+>>>> [   12.818364] xhci_hcd 0000:00:0d.0: xHCI Host Controller
+>>>> [   12.818373] xhci_hcd 0000:00:0d.0: new USB bus registered, assigned bus number 1
+>>>> [   12.820360] xhci_hcd 0000:00:0d.0: xHCI Host Controller
+>>>> [   12.820363] xhci_hcd 0000:00:0d.0: new USB bus registered, assigned bus number 2
+>>>> [   12.821036] xhci_hcd 0000:00:14.0: xHCI Host Controller
+>>>> [   12.821040] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 3
+>>>> [   12.823451] xhci_hcd 0000:00:14.0: xHCI Host Controller
+>>>> [   12.823453] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 4
+>>>> [   17.115089] usb usb4-port4: Cannot enable. Maybe the USB cable is bad?
+>>>> [   17.115163] usb usb4-port4: config error
+>>>
+>>> Ok, I see it now.
+>>> Your setup has two xhci controllers, earlypringk=dbc enables dbc on the first xhci
+>>> it finds, which would be at 0000:00:0d.0.
+>>> Your cable is connected to the second xhci host at 0000:00:14.0
+>>>
+>>> does using "earlyprintk=xdbc1" work?
+>>
+>> Very quick testing says it don't work.. but I'll try again later, need
+>> to go cook dinner now.
+> 
+> FYI, I'm thinking early_xdbc_parse_parameter should've now given
+> dpgp_num: 1 ?
+> 
 
-Now we are ready to enable RDMA FLUSH capability for RXE.
+Yes, it should. 
 
-Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
----
-V2: adjust patch's order. move it here from [04/10]
-    update comments, add referring to SPEC
----
- drivers/infiniband/sw/rxe/rxe_param.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Looks like there's a parsing issue.
+"earlyprintk=xdbc1,keep" fails on our Tigerlake as well.
+  
+Without the "keep" option it works for me:
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_param.h b/drivers/infiniband/sw/rxe/rxe_param.h
-index 918270e34a35..281e1977b147 100644
---- a/drivers/infiniband/sw/rxe/rxe_param.h
-+++ b/drivers/infiniband/sw/rxe/rxe_param.h
-@@ -53,7 +53,9 @@ enum rxe_device_param {
- 					| IB_DEVICE_ALLOW_USER_UNREG
- 					| IB_DEVICE_MEM_WINDOW
- 					| IB_DEVICE_MEM_WINDOW_TYPE_2A
--					| IB_DEVICE_MEM_WINDOW_TYPE_2B,
-+					| IB_DEVICE_MEM_WINDOW_TYPE_2B
-+					| IB_DEVICE_PLT_GLOBAL_VISIBILITY
-+					| IB_DEVICE_PLT_PERSISTENT,
- 	RXE_MAX_SGE			= 32,
- 	RXE_MAX_WQE_SIZE		= sizeof(struct rxe_send_wqe) +
- 					  sizeof(struct ib_sge) * RXE_MAX_SGE,
--- 
-2.31.1
+[    0.000000] Command line: console=ttyS0,115200n8 buildroot_hostname=tgl04 earlyprintk=xdbc1 dmi_entry_point=0x74374000
+[    0.000000] xhci_dbc:early_xdbc_parse_parameter: dbgp_num: 1
 
-
-
+-Mathias
