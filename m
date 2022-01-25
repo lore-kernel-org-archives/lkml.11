@@ -2,154 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B957BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F07C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451387AbiAYQeq (ORCPT
+        id S1583890AbiAYQeu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 11:34:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37388 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380642AbiAYQ34 (ORCPT
+        Tue, 25 Jan 2022 11:34:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52928 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1381030AbiAYQ34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 25 Jan 2022 11:29:56 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A57C06173B
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:29:55 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id x23so10844288lfc.0
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:29:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wM1CGdwosWr/o/zdNTKI7CddYVnDP6JJ4xL8rpa+Aas=;
-        b=czVsqeDAcTn5kRJ27t75r4cQgrJ0ojxkSDuTanEeKiRZ1UYWagh7myXcwNZtEEplV1
-         rTXiNc5wgrEdembulrWLk9Wdyfts3k8asT3bzaG0yRvOUBtl5tx1wwLyKo8cgRk2o6rS
-         rbw15vDLHlO/ZD9rBE8B7AhLGKEaBuyuPSMBJq+76yTnEeXbpo+e9d3Qam6UhfathHzO
-         BPmO5Q1BiPC37Y8kSnuTkvYuDurAcRYPCYr77bm4FjUdh6rlrXOx+ix4QD6YWuRncbHx
-         esbChIXhWpkDPjMZRZtuHSgHYDb8cHwZ3+VMvV+LS9VG/8lOzCqFZsouCS3DhpZ7NIow
-         Spzw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643128195;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fm9WWu0faiQMFXbo4MXjVv/GAy+IAbLvYczCrakEplo=;
+        b=bLOZPIAgGI9W8saSP8DVYlG04H4YNyjqJtK06wFXriZJx8hMpsMsS0c226A6uOv+EZHQlh
+        TQUknxP89cyymIBt38CJC3Kv9BPZ+DTAJw3NiGJ9iotBYjaTOoETc8u70i07xg/Ko+bS99
+        3ZA5+tdStRFlshwtWYfGzOcGuF3jVqI=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-612-WUkrgPdgPZS0pApgdXOfrA-1; Tue, 25 Jan 2022 11:29:54 -0500
+X-MC-Unique: WUkrgPdgPZS0pApgdXOfrA-1
+Received: by mail-ej1-f72.google.com with SMTP id r18-20020a17090609d200b006a6e943d09eso3638787eje.20
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:29:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wM1CGdwosWr/o/zdNTKI7CddYVnDP6JJ4xL8rpa+Aas=;
-        b=hebWEzZQJn8RuZWINx0POBd4842qENw2lGd/20zEkafQ8nY4kL9lxM6SZQoHUihBl5
-         c0D1yRXrcKTxdWA2QYhKDJiowYypbAtSEny6rzwu6wL8u9PJW8WlYQtkBEC+0Y19drx7
-         9bqY9VWkbv7ykFl0l+ILEhZHvmqNVFPUPj1nIIVo9orbslEcXeB3I9bB5LuXJU7t6pJf
-         ZBtFAFtUQi7B2EW/9i7MmE0LltfGLgRbGNrOBvFu2MM2+74M6OOOBVgamc5G8cpNbuoE
-         aUSphiDtxs08emojwvvrpxPuEyQtSlO74s9hjxDqg+/LQMjfk1/uMm1TRrvP1QlmbmPb
-         aWeQ==
-X-Gm-Message-State: AOAM530visMherKtdQo9MGhnWGfb8aMdSLo4rxBCjnQAOz/AGKCLImTW
-        A6sl17luA2XoeWvJF2ClDroksi9gi1S1nQ==
-X-Google-Smtp-Source: ABdhPJwQC8ZpuWD/gnJYu1zep0OIKJMceUdl1vKx0nHl35vObk1PDkyOhBH2dXNB94I2vxEAeZSFCw==
-X-Received: by 2002:a05:6512:11d0:: with SMTP id h16mr16878548lfr.307.1643128194030;
-        Tue, 25 Jan 2022 08:29:54 -0800 (PST)
-Received: from jade.urgonet (h-94-254-48-165.A175.priv.bahnhof.se. [94.254.48.165])
-        by smtp.gmail.com with ESMTPSA id d13sm536240lfq.75.2022.01.25.08.29.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fm9WWu0faiQMFXbo4MXjVv/GAy+IAbLvYczCrakEplo=;
+        b=Ot7kkQ6LJRme+AtHITnoJHAY4iMg+3gy7DqEwHv9Jm8kmXpTVC2xABced/9LgaKOrt
+         Dn+zTuTlwzC1NOpb9ZLGlBTUm8Xk/f8YTz6b7RjTpw/x7DiEKEVpcrj/+UptJlD+fVu0
+         jv6d7gNpnsy2dA88eAmvebfdngYNv5yLUg93WzBZbz3NT3cs16zrVgMOFwQEKmxhcmU7
+         VhRKZbqwrdbU5IVPuPlT1r6g4OmMDVC45FpHorZhAnMCfz8EaIJ6N9V8UtYz4TrgaPXP
+         riE9ecS0V14Q3NQWzfFfWKzA3WOPA3WK7pFmTe4iCo72kPGvMfoMssbWXupIuDL+d6Gt
+         Vieg==
+X-Gm-Message-State: AOAM533//WmBGa3UZYSWnJcHpEiE//ICB/ZDsYHLYTyHbeHmCMJLqgaD
+        V/T3Tgv/Fpv/zYZadZzJeGxQT8ajbm9ymRgaB6VvDP/GGrnQXx2F0EmKaXf9pWCP4mSrRzPOAL3
+        KpeF3bXOi1Cua0xf80WwY7n5p
+X-Received: by 2002:a17:907:3e88:: with SMTP id hs8mr12853788ejc.743.1643128193294;
         Tue, 25 Jan 2022 08:29:53 -0800 (PST)
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
-Cc:     Sumit Garg <sumit.garg@linaro.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
-        Rijo Thomas <Rijo-john.Thomas@amd.com>,
-        David Howells <dhowells@redhat.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Jens Wiklander <jens.wiklander@linaro.org>
-Subject: [PATCH v3 08/12] optee: add optee_pool_op_free_helper()
-Date:   Tue, 25 Jan 2022 17:29:34 +0100
-Message-Id: <20220125162938.838382-9-jens.wiklander@linaro.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220125162938.838382-1-jens.wiklander@linaro.org>
-References: <20220125162938.838382-1-jens.wiklander@linaro.org>
+X-Google-Smtp-Source: ABdhPJyKwNpvtqJA38vo20uXzUC0Uj8KV4HXRnzIcI2KroYnv/40og58KYBI7L/8kTZg74P+SxrLVQ==
+X-Received: by 2002:a17:907:3e88:: with SMTP id hs8mr12853771ejc.743.1643128193100;
+        Tue, 25 Jan 2022 08:29:53 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id 5sm8803972edx.32.2022.01.25.08.29.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 08:29:52 -0800 (PST)
+Message-ID: <e76ee516-4438-295d-5e1e-698644374d87@redhat.com>
+Date:   Tue, 25 Jan 2022 17:29:50 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 15/19] KVM: x86/emulate: Remove unused "ctxt" of
+ task_switch_{16, 32}()
+Content-Language: en-US
+To:     Jinrong Liang <ljr.kernel@gmail.com>
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Jim Mattson <jmattson@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220125095909.38122-1-cloudliang@tencent.com>
+ <20220125095909.38122-16-cloudliang@tencent.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220125095909.38122-16-cloudliang@tencent.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds a common helper function to free a tee_shm allocated using the
-helper function optee_pool_op_alloc_helper().
+On 1/25/22 10:59, Jinrong Liang wrote:
+> From: Jinrong Liang <cloudliang@tencent.com>
+> 
+> The "struct x86_emulate_ctxt *ctxt" parameter of task_switch_{16, 32}()
+> is not used, so remove it. No functional change intended.
 
-Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
-Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
----
- drivers/tee/optee/core.c          | 10 ++++++++++
- drivers/tee/optee/ffa_abi.c       |  4 +---
- drivers/tee/optee/optee_private.h |  3 +++
- drivers/tee/optee/smc_abi.c       |  7 +++----
- 4 files changed, 17 insertions(+), 7 deletions(-)
+This is actually removing tss_selector, but it's okay.
 
-diff --git a/drivers/tee/optee/core.c b/drivers/tee/optee/core.c
-index f4bccb5f0e93..daf947e98d14 100644
---- a/drivers/tee/optee/core.c
-+++ b/drivers/tee/optee/core.c
-@@ -69,6 +69,16 @@ int optee_pool_op_alloc_helper(struct tee_shm_pool *pool, struct tee_shm *shm,
- 	return rc;
- }
- 
-+void optee_pool_op_free_helper(struct tee_shm_pool *pool, struct tee_shm *shm,
-+			       int (*shm_unregister)(struct tee_context *ctx,
-+						     struct tee_shm *shm))
-+{
-+	if (shm_unregister)
-+		shm_unregister(shm->ctx, shm);
-+	free_pages((unsigned long)shm->kaddr, get_order(shm->size));
-+	shm->kaddr = NULL;
-+}
-+
- static void optee_bus_scan(struct work_struct *work)
- {
- 	WARN_ON(optee_enumerate_devices(PTA_CMD_GET_DEVICES_SUPP));
-diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
-index fb7345941024..8cd9c70a9268 100644
---- a/drivers/tee/optee/ffa_abi.c
-+++ b/drivers/tee/optee/ffa_abi.c
-@@ -379,9 +379,7 @@ static int pool_ffa_op_alloc(struct tee_shm_pool *pool,
- static void pool_ffa_op_free(struct tee_shm_pool *pool,
- 			     struct tee_shm *shm)
- {
--	optee_ffa_shm_unregister(shm->ctx, shm);
--	free_pages((unsigned long)shm->kaddr, get_order(shm->size));
--	shm->kaddr = NULL;
-+	optee_pool_op_free_helper(pool, shm, optee_ffa_shm_unregister);
- }
- 
- static void pool_ffa_op_destroy_pool(struct tee_shm_pool *pool)
-diff --git a/drivers/tee/optee/optee_private.h b/drivers/tee/optee/optee_private.h
-index df3a483bbf46..e77765c78878 100644
---- a/drivers/tee/optee/optee_private.h
-+++ b/drivers/tee/optee/optee_private.h
-@@ -236,6 +236,9 @@ int optee_pool_op_alloc_helper(struct tee_shm_pool *pool, struct tee_shm *shm,
- 						   struct page **pages,
- 						   size_t num_pages,
- 						   unsigned long start));
-+void optee_pool_op_free_helper(struct tee_shm_pool *pool, struct tee_shm *shm,
-+			       int (*shm_unregister)(struct tee_context *ctx,
-+						     struct tee_shm *shm));
- 
- 
- void optee_remove_common(struct optee *optee);
-diff --git a/drivers/tee/optee/smc_abi.c b/drivers/tee/optee/smc_abi.c
-index 0dc383c974a3..9c1c9cfb7488 100644
---- a/drivers/tee/optee/smc_abi.c
-+++ b/drivers/tee/optee/smc_abi.c
-@@ -548,10 +548,9 @@ static void pool_op_free(struct tee_shm_pool *pool,
- 			 struct tee_shm *shm)
- {
- 	if (!(shm->flags & TEE_SHM_PRIV))
--		optee_shm_unregister(shm->ctx, shm);
--
--	free_pages((unsigned long)shm->kaddr, get_order(shm->size));
--	shm->kaddr = NULL;
-+		optee_pool_op_free_helper(pool, shm, optee_shm_unregister);
-+	else
-+		optee_pool_op_free_helper(pool, shm, NULL);
- }
- 
- static void pool_op_destroy_pool(struct tee_shm_pool *pool)
--- 
-2.31.1
+Paolo
+
+> Signed-off-by: Jinrong Liang <cloudliang@tencent.com>
+> ---
+>   arch/x86/kvm/emulate.c | 11 ++++-------
+>   1 file changed, 4 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+> index c2d9fe6449c2..9e4a00d04532 100644
+> --- a/arch/x86/kvm/emulate.c
+> +++ b/arch/x86/kvm/emulate.c
+> @@ -3020,8 +3020,7 @@ static int load_state_from_tss16(struct x86_emulate_ctxt *ctxt,
+>   	return X86EMUL_CONTINUE;
+>   }
+>   
+> -static int task_switch_16(struct x86_emulate_ctxt *ctxt,
+> -			  u16 tss_selector, u16 old_tss_sel,
+> +static int task_switch_16(struct x86_emulate_ctxt *ctxt, u16 old_tss_sel,
+>   			  ulong old_tss_base, struct desc_struct *new_desc)
+>   {
+>   	struct tss_segment_16 tss_seg;
+> @@ -3159,8 +3158,7 @@ static int load_state_from_tss32(struct x86_emulate_ctxt *ctxt,
+>   	return ret;
+>   }
+>   
+> -static int task_switch_32(struct x86_emulate_ctxt *ctxt,
+> -			  u16 tss_selector, u16 old_tss_sel,
+> +static int task_switch_32(struct x86_emulate_ctxt *ctxt, u16 old_tss_sel,
+>   			  ulong old_tss_base, struct desc_struct *new_desc)
+>   {
+>   	struct tss_segment_32 tss_seg;
+> @@ -3268,10 +3266,9 @@ static int emulator_do_task_switch(struct x86_emulate_ctxt *ctxt,
+>   		old_tss_sel = 0xffff;
+>   
+>   	if (next_tss_desc.type & 8)
+> -		ret = task_switch_32(ctxt, tss_selector, old_tss_sel,
+> -				     old_tss_base, &next_tss_desc);
+> +		ret = task_switch_32(ctxt, old_tss_sel, old_tss_base, &next_tss_desc);
+>   	else
+> -		ret = task_switch_16(ctxt, tss_selector, old_tss_sel,
+> +		ret = task_switch_16(ctxt, old_tss_sel,
+>   				     old_tss_base, &next_tss_desc);
+>   	if (ret != X86EMUL_CONTINUE)
+>   		return ret;
 
