@@ -2,96 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8ADC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D1CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457843AbiAYJRL (ORCPT
+        id S1457909AbiAYJRW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:17:11 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:35864 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449145AbiAYJJD (ORCPT
+        Tue, 25 Jan 2022 04:17:22 -0500
+Received: from mail.trueanalyze24.com ([149.154.157.156]:59512 "EHLO
+        mail.trueanalyze24.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456437AbiAYJLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:09:03 -0500
-Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JjgxM0YnMzccdv;
-        Tue, 25 Jan 2022 17:08:07 +0800 (CST)
-Received: from localhost.localdomain (10.175.127.227) by
- dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Tue, 25 Jan 2022 17:08:55 +0800
-From:   Zhang Wensheng <zhangwensheng5@huawei.com>
-To:     <axboe@kernel.dk>
-CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] block: update io_ticks when io hang
-Date:   Tue, 25 Jan 2022 17:19:38 +0800
-Message-ID: <20220125091938.1799001-1-zhangwensheng5@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 25 Jan 2022 04:11:42 -0500
+Received: by mail.trueanalyze24.com (Postfix, from userid 1001)
+        id 3F74D41233; Tue, 25 Jan 2022 09:59:44 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trueanalyze24.com;
+        s=mail; t=1643101792;
+        bh=EGenFkmmv/iHCwB4AbTzX8IXCMu1xRW+9eep7HJGZMM=;
+        h=Date:From:To:Subject:From;
+        b=R6bFG2RkfA565JyXlJtS64IAGnm+qYgPFpwpT7GfVXmIA7+rQpoJh1fnLSYQ4NEpb
+         /0OkRzb62HockSl0AO/p41zhO62zp7BoQkdvJlaSwjq5qH5oLCkKqpRFru/h0JjR2L
+         mkWwYYh/qbe+YT6C0dvWTiC0bK9Lifigs27LOJdJ1CBaGLDoXHKd145Q8wVDORniwu
+         /KYcIOKXgTqgtFiclugpOlhOlj3N/vPzvKSVwRMZrp3z8mWhilXLBXHMZ772C6v293
+         uUvkIdAdYzlDMvy2qpfLy91pXADwSGFwBHsLCsPCS1IdlVKtFVafZ4TOncIQJvAmmS
+         IHKDiXyOC3HIA==
+Received: by mail.trueanalyze24.com for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:57:25 GMT
+Message-ID: <20220125084505-0.1.1b.e7sf.0.t0kjpxrb9e@trueanalyze24.com>
+Date:   Tue, 25 Jan 2022 08:57:25 GMT
+From:   "Mateusz Talaga" <mateusz.talaga@trueanalyze24.com>
+To:     <linux-kernel@vger.kernel.org>
+Subject: Prezentacja
+X-Mailer: mail.trueanalyze24.com
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggeme756-chm.china.huawei.com (10.3.19.102)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the inflight IOs are slow and no new IOs are issued, we expect
-iostat could manifest the IO hang problem. However after
-commit 5b18b5a73760 ("block: delete part_round_stats and switch to less
-precise counting"), io_tick and time_in_queue will not be updated until
-the end of IO, and the avgqu-sz and %util columns of iostat will be zero.
+Dzie=C5=84 dobry!
 
-Because it has using stat.nsecs accumulation to express time_in_queue
-which is not suitable to change, and may %util will express the status
-better when io hang occur. To fix io_ticks, we use update_io_ticks and
-inflight to update io_ticks when diskstats_show and part_stat_show
-been called.
+Czy m=C3=B3g=C5=82bym przedstawi=C4=87 rozwi=C4=85zanie, kt=C3=B3re umo=C5=
+=BCliwia monitoring ka=C5=BCdego auta w czasie rzeczywistym w tym jego po=
+zycj=C4=99, zu=C5=BCycie paliwa i przebieg?
 
-Fixes: 5b18b5a73760 ("block: delete part_round_stats and switch to less precise counting")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
----
- block/genhd.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Dodatkowo nasze narz=C4=99dzie minimalizuje koszty utrzymania samochod=C3=
+=B3w, skraca czas przejazd=C3=B3w, a tak=C5=BCe tworzenie planu tras czy =
+dostaw.
 
-diff --git a/block/genhd.c b/block/genhd.c
-index 626c8406f21a..df0656ffb4ad 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -913,12 +913,14 @@ ssize_t part_stat_show(struct device *dev,
- 	struct disk_stats stat;
- 	unsigned int inflight;
- 
--	part_stat_read_all(bdev, &stat);
- 	if (queue_is_mq(q))
- 		inflight = blk_mq_in_flight(q, bdev);
- 	else
- 		inflight = part_in_flight(bdev);
- 
-+	if (inflight)
-+		update_io_ticks(bdev, jiffies, true);
-+	part_stat_read_all(bdev, &stat);
- 	return sprintf(buf,
- 		"%8lu %8lu %8llu %8u "
- 		"%8lu %8lu %8llu %8u "
-@@ -1174,12 +1176,14 @@ static int diskstats_show(struct seq_file *seqf, void *v)
- 	xa_for_each(&gp->part_tbl, idx, hd) {
- 		if (bdev_is_partition(hd) && !bdev_nr_sectors(hd))
- 			continue;
--		part_stat_read_all(hd, &stat);
- 		if (queue_is_mq(gp->queue))
- 			inflight = blk_mq_in_flight(gp->queue, hd);
- 		else
- 			inflight = part_in_flight(hd);
- 
-+		if (inflight)
-+			update_io_ticks(hd, jiffies, true);
-+		part_stat_read_all(hd, &stat);
- 		seq_printf(seqf, "%4d %7d %pg "
- 			   "%lu %lu %lu %u "
- 			   "%lu %lu %lu %u "
--- 
-2.31.1
+Z naszej wiedzy i do=C5=9Bwiadczenia korzysta ju=C5=BC ponad 49 tys. Klie=
+nt=C3=B3w. Monitorujemy 809 000 pojazd=C3=B3w na ca=C5=82ym =C5=9Bwiecie,=
+ co jest nasz=C4=85 najlepsz=C4=85 wizyt=C3=B3wk=C4=85.
 
+Bardzo prosz=C4=99 o e-maila zwrotnego, je=C5=9Bli mogliby=C5=9Bmy wsp=C3=
+=B3lnie om=C3=B3wi=C4=87 potencja=C5=82 wykorzystania takiego rozwi=C4=85=
+zania w Pa=C5=84stwa firmie.
+
+
+Z powa=C5=BCaniem,
+Mateusz Talaga
