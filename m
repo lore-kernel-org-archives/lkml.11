@@ -2,185 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 212AFC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5646DC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457344AbiAYJPC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:15:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455346AbiAYJE0 (ORCPT
+        id S237237AbiAYJPe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 04:15:34 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:58610 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1454336AbiAYJBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:04:26 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4739BC061348
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:24 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id t7so7671105ljc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Dl66e2A4mF2Qyvn7/VEBHhQt84ZUbQKV7qGHfbulC4U=;
-        b=Gsrzm15/kayF28SoC7sRkEvuny/rjuR0K2X1Z7cSFVnnayBUfiP4EzS1A2SOjEc6Hh
-         C7NTMRcc88pn/KoPjs2YMzKWjRjxmLg0jXOGRjhWVct3Tl0qq1V+JEFL75IbM/JUmsAM
-         tdrhqfsQXJCR4egAsQInQ8ZLP4VBZf3T+/bTepIzfgGapjSy+Jo9RjHYdxGOCkEOjvFf
-         7GZXD2q/iwvTy3FaLt/ZtdI8FpA7ZZInUvR4qxCp0oTiIr2xfzOySbV8bMt607oC1SfJ
-         7DsCIcTW0+tQfr3RglcbTYg/Mljf71FeLFk4M675o6azUTmUSWS9oipD0pox74oQEFRr
-         JN7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Dl66e2A4mF2Qyvn7/VEBHhQt84ZUbQKV7qGHfbulC4U=;
-        b=YGKZ0MSUnRk32Gmhkiq9/N2bsn1XAxHRpNQNJn33btwloep+rlLGc8MQsOEnvIoUig
-         ni33HHygMq0WxU/dMB7cdp6AfB1tYgO0ratd+EItZq2ghP3hwvOc5RJ52gZwNd/1X2Ru
-         VFgnSqnEkFxvRaHEDlke+KL9//RZAHGQVGqlZISr/rN3XaAMi1NpyjxsxgHGR5+QpyUX
-         bhtU8gahdaZaOp179CYYRfkagZYoTS9DjM7hekRUPoCEzknZzr/gONUp07/I54S1zeqc
-         +WqWZ1fZ6QPeZ2cFsEkfH3DCd0GeoHpfCPFic4LmBTK1e6ILasC87mMfrBiCLb1yXB+U
-         r44w==
-X-Gm-Message-State: AOAM532APJHVrK4Bt0ya8kmLJ5l3M/WtUfb4CSeDiUNPY0DbHf6rYVAT
-        4xZLlOWHjN6+bneTBykII6I5pA==
-X-Google-Smtp-Source: ABdhPJzCfueNt7EGxpjgAvt/Euq5JGSCE+aooEIdd/EgvAx3MMRVq/2nZFYCCNX0MnqsmbFtQII1ig==
-X-Received: by 2002:a05:651c:210c:: with SMTP id a12mr14427072ljq.285.1643100442603;
-        Tue, 25 Jan 2022 00:47:22 -0800 (PST)
-Received: from navi.cosmonova.net.ua ([95.67.24.131])
-        by smtp.gmail.com with ESMTPSA id q5sm1418944lfe.279.2022.01.25.00.47.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 00:47:22 -0800 (PST)
-From:   Andrew Melnychenko <andrew@daynix.com>
-To:     davem@davemloft.net, kuba@kernel.org, mst@redhat.com,
-        jasowang@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     yuri.benditovich@daynix.com, yan@daynix.com
-Subject: [RFC PATCH 2/5] driver/net/tun: Added features for USO.
-Date:   Tue, 25 Jan 2022 10:46:59 +0200
-Message-Id: <20220125084702.3636253-3-andrew@daynix.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220125084702.3636253-1-andrew@daynix.com>
-References: <20220125084702.3636253-1-andrew@daynix.com>
+        Tue, 25 Jan 2022 04:01:38 -0500
+X-UUID: a649eec57ec0422e98cfc5dc7e2efa75-20220125
+X-UUID: a649eec57ec0422e98cfc5dc7e2efa75-20220125
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 430274721; Tue, 25 Jan 2022 16:59:58 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 25 Jan 2022 16:59:56 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 Jan 2022 16:59:55 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
+        "AngeloGioacchino Del Regno" 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
+Subject: [PATCH v4 22/35] iommu/mediatek: Add PCIe support
+Date:   Tue, 25 Jan 2022 16:56:21 +0800
+Message-ID: <20220125085634.17972-23-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220125085634.17972-1-yong.wu@mediatek.com>
+References: <20220125085634.17972-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added support for USO4 and USO6, also added code for new ioctl TUNGETSUPPORTEDOFFLOADS.
-For now, to "enable" USO, it's required to set both USO4 and USO6 simultaneously.
-USO enables NETIF_F_GSO_UDP_L4.
+Currently the code for of_iommu_configure_dev_id is like this:
 
-Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+static int of_iommu_configure_dev_id(struct device_node *master_np,
+                                     struct device *dev,
+                                     const u32 *id)
+{
+       struct of_phandle_args iommu_spec = { .args_count = 1 };
+
+       err = of_map_id(master_np, *id, "iommu-map",
+                       "iommu-map-mask", &iommu_spec.np,
+                       iommu_spec.args);
+...
+}
+
+It supports only one id output. BUT our PCIe HW has two ID(one is for
+writing, the other is for reading). I'm not sure if we should change
+of_map_id to support output MAX_PHANDLE_ARGS.
+
+Here add the solution in ourselve drivers. If it's pcie case, enable one
+more bit.
+
+Not all infra iommu support PCIe, thus add a PCIe support flag here.
+
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/net/tap.c | 18 ++++++++++++++++--
- drivers/net/tun.c | 15 ++++++++++++++-
- 2 files changed, 30 insertions(+), 3 deletions(-)
+ drivers/iommu/mtk_iommu.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-index 8e3a28ba6b28..82d742ba78b1 100644
---- a/drivers/net/tap.c
-+++ b/drivers/net/tap.c
-@@ -940,6 +940,10 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
- 			if (arg & TUN_F_TSO6)
- 				feature_mask |= NETIF_F_TSO6;
- 		}
-+
-+		/* TODO: for now USO4 and USO6 should work simultaneously */
-+		if (arg & (TUN_F_USO4 | TUN_F_USO6) == (TUN_F_USO4 | TUN_F_USO6))
-+			features |= NETIF_F_GSO_UDP_L4;
- 	}
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 7176c212037f..fe3da530f77e 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -20,6 +20,7 @@
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
++#include <linux/pci.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+@@ -134,6 +135,7 @@
+ #define MTK_IOMMU_TYPE_MASK		(0x3 << 13)
+ /* PM and clock always on. e.g. infra iommu */
+ #define PM_CLK_AO			BIT(15)
++#define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
  
- 	/* tun/tap driver inverts the usage for TSO offloads, where
-@@ -950,7 +954,8 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
- 	 * When user space turns off TSO, we turn off GSO/LRO so that
- 	 * user-space will not receive TSO frames.
- 	 */
--	if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6))
-+	if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6) ||
-+	    feature_mask & (TUN_F_USO4 | TUN_F_USO6) == (TUN_F_USO4 | TUN_F_USO6))
- 		features |= RX_OFFLOADS;
- 	else
- 		features &= ~RX_OFFLOADS;
-@@ -979,6 +984,7 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
- 	unsigned short u;
- 	int __user *sp = argp;
- 	struct sockaddr sa;
-+	unsigned int supported_offloads;
- 	int s;
- 	int ret;
+ #define MTK_IOMMU_HAS_FLAG(pdata, _x)	(!!(((pdata)->flags) & (_x)))
  
-@@ -1074,7 +1080,8 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
- 	case TUNSETOFFLOAD:
- 		/* let the user check for future flags */
- 		if (arg & ~(TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
--			    TUN_F_TSO_ECN | TUN_F_UFO))
-+			    TUN_F_TSO_ECN | TUN_F_UFO |
-+			    TUN_F_USO4 | TUN_F_USO6))
- 			return -EINVAL;
+@@ -420,8 +422,11 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+ 				larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
+ 		} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA)) {
+ 			peri_mmuen_msk = BIT(portid);
+-			peri_mmuen = enable ? peri_mmuen_msk : 0;
++			/* PCI dev has only one output id, enable the next writing bit for PCIe */
++			if (dev_is_pci(dev))
++				peri_mmuen_msk |= BIT(portid + 1);
  
- 		rtnl_lock();
-@@ -1082,6 +1089,13 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
- 		rtnl_unlock();
- 		return ret;
- 
-+	case TUNGETSUPPORTEDOFFLOADS:
-+		supported_offloads = TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
-+						TUN_F_TSO_ECN | TUN_F_UFO | TUN_F_USO4 | TUN_F_USO6;
-+		if (copy_to_user(&arg, &supported_offloads, sizeof(supported_offloads)))
-+			return -EFAULT;
-+		return 0;
-+
- 	case SIOCGIFHWADDR:
- 		rtnl_lock();
- 		tap = tap_get_tap_dev(q);
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index fed85447701a..4f2105d1e6f1 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -185,7 +185,7 @@ struct tun_struct {
- 	struct net_device	*dev;
- 	netdev_features_t	set_features;
- #define TUN_USER_FEATURES (NETIF_F_HW_CSUM|NETIF_F_TSO_ECN|NETIF_F_TSO| \
--			  NETIF_F_TSO6)
-+			  NETIF_F_TSO6 | NETIF_F_GSO_UDP_L4)
- 
- 	int			align;
- 	int			vnet_hdr_sz;
-@@ -2821,6 +2821,12 @@ static int set_offload(struct tun_struct *tun, unsigned long arg)
- 		}
- 
- 		arg &= ~TUN_F_UFO;
-+
-+		/* TODO: for now USO4 and USO6 should work simultaneously */
-+		if (arg & TUN_F_USO4 && arg & TUN_F_USO6) {
-+			features |= NETIF_F_GSO_UDP_L4;
-+			arg &= ~(TUN_F_USO4 | TUN_F_USO6);
++			peri_mmuen = enable ? peri_mmuen_msk : 0;
+ 			ret = regmap_update_bits(data->pericfg, PERICFG_IOMMU_1,
+ 						 peri_mmuen_msk, peri_mmuen);
+ 			if (ret)
+@@ -1013,6 +1018,15 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		ret = component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
+ 		if (ret)
+ 			goto out_bus_set_null;
++	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
++		   MTK_IOMMU_HAS_FLAG(data->plat_data, IFA_IOMMU_PCIE_SUPPORT)) {
++#ifdef CONFIG_PCI
++		if (!iommu_present(&pci_bus_type)) {
++			ret = bus_set_iommu(&pci_bus_type, &mtk_iommu_ops);
++			if (ret) /* PCIe fail don't affect platform_bus. */
++				goto out_list_del;
 +		}
++#endif
  	}
+ 	return ret;
  
- 	/* This gives the user a way to test for new features in future by
-@@ -2991,6 +2997,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
- 	int sndbuf;
- 	int vnet_hdr_sz;
- 	int le;
-+	unsigned int supported_offloads;
- 	int ret;
- 	bool do_notify = false;
- 
-@@ -3154,6 +3161,12 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
- 	case TUNSETOFFLOAD:
- 		ret = set_offload(tun, arg);
- 		break;
-+	case TUNGETSUPPORTEDOFFLOADS:
-+		supported_offloads = TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
-+				TUN_F_TSO_ECN | TUN_F_UFO | TUN_F_USO4 | TUN_F_USO6;
-+		if (copy_to_user(&arg, &supported_offloads, sizeof(supported_offloads)))
-+			ret = -EFAULT;
-+		break;
- 
- 	case TUNSETTXFILTER:
- 		/* Can be set only for TAPs */
+@@ -1043,6 +1057,11 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
+ 		device_link_remove(data->smicomm_dev, &pdev->dev);
+ 		component_master_del(&pdev->dev, &mtk_iommu_com_ops);
++	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
++		   MTK_IOMMU_HAS_FLAG(data->plat_data, IFA_IOMMU_PCIE_SUPPORT)) {
++#ifdef CONFIG_PCI
++		bus_set_iommu(&pci_bus_type, NULL);
++#endif
+ 	}
+ 	pm_runtime_disable(&pdev->dev);
+ 	devm_free_irq(&pdev->dev, data->irq, data);
 -- 
-2.34.1
+2.18.0
 
