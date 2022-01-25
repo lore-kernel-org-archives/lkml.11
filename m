@@ -2,103 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C91DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8860BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385827AbiAYSCH (ORCPT
+        id S1386517AbiAYSCT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 13:02:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57934 "EHLO
+        Tue, 25 Jan 2022 13:02:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386967AbiAYR7x (ORCPT
+        with ESMTP id S1347605AbiAYSAp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:59:53 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34B4C061753
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:59:52 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id t9so6215666lji.12
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:59:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lFjB3Wm/k6WQfraTITgg2GtwyUa0VJgZe+4Lv6O2Co4=;
-        b=XC5zj1EbYhH7i02SUszkuxdEq0CFUvpTJK9gm5UwhigE44rfmwdE6x6nljyc4wBmr8
-         +9gzi8AOlUFfPFKEFqIwj+klWB2qDZbQlAPOxGka+SkqcGN9CjTVC/vwS1V1i/oD0S3+
-         S8hPQ3oIKDhd1uMCbsp5GLhly7UnWipGCxHLSRRYGY8TEOKQGZgJPMj5E+YcrG3H7ut5
-         7mFlRRRHYV3rnD9QBRZtPiCyULiclVVv7bpi9AsacwAYK3p7HDPXTtboG07mH0LllT/Y
-         nGLk5GMhdQNROjEBLCxP4tUiMaaqyA9Dy065MJcIDkpo5ihz6CFmqFHJiUd1/eegzCxE
-         pVrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lFjB3Wm/k6WQfraTITgg2GtwyUa0VJgZe+4Lv6O2Co4=;
-        b=7GMlMER7TNkYZEFRyO2YR1AAJrBVw+rzbf2B3zTFRHOOgSMFH5IJ+s/eOZmVCBnKuX
-         WTCWnBcyXORJH0/OaNpxSC0uJCdIV/bJEIBQmLDyWMp9nDOQhH6NI+C50d5zChzvTpZa
-         JrmDEyySWDrO/c7Wj2I8+PJSfpsPyI/ri0QknyG4OePjTVBnyPVP8vRD9DQNLxFvosH0
-         25Y46QF76lkjYgEmOpyzGQ5z2Q7B59+fxpbZ5dO1OMV707CCgRlzQeDdy1SV+dJFo97h
-         FUwGHXqV46RzoRXNIUGUeQsiRI/OeDIm+8mMvKxsmawtZgZDD+GyVjwe34ldQb1+8+2q
-         31vw==
-X-Gm-Message-State: AOAM532djfaQ+FNW+x7FBZjJa6oDVFs8FoMHr6I1QZ+ujp5nig5CfLBP
-        YDuzJBlSp0AWsa4jMKVXza5fSufI/dKcxi+kTIDXDg==
-X-Google-Smtp-Source: ABdhPJxQ9nD4vwnn29xZGWj3D6iRwIXJNsR5YJoMUhf3PKdCUcgDUmQUmPwG7N4/S9I9QoC2u/Aky+rHtMS1l9BwtgY=
-X-Received: by 2002:a2e:8e73:: with SMTP id t19mr3579753ljk.132.1643133590805;
- Tue, 25 Jan 2022 09:59:50 -0800 (PST)
+        Tue, 25 Jan 2022 13:00:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04404C06173D;
+        Tue, 25 Jan 2022 10:00:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0CF2B819FC;
+        Tue, 25 Jan 2022 18:00:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 794B6C340E0;
+        Tue, 25 Jan 2022 18:00:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643133640;
+        bh=thPgkn5bU/soMVjidYH0tOpgluG55pEiEr9+5W6b6MA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=kMOAaP29cN/sKal92kvYcKRpaaVQR4woLTyXvu0H3WnJAXlvnTeku2Y+Qo3SwWvId
+         XooGFP6FJhJV+hIQCAjglcY3x5ZCYD310nmZ/mdKPp4PEtQYUWZ57dLc02OR/s2HS7
+         7xKD1CgJd1vYll6gbSdTm5TE9WSsjP728fiamu4EkJnB+Vnx0qFnVHVhHnDsf+TqvV
+         cJ/+rlEBk4qB6WGRIHUwOzL7PYHyaXajCEbhww6UQFdrrOmQlqS89B5Kk9P7e4N8Fe
+         DPVQUOyC2HwNoFwO2lKld9FQNmwLirB0m77loI20BSsMdiQyN3RiKibz0c0l5F/uAt
+         XtFWAtYAzqKZg==
+Date:   Tue, 25 Jan 2022 12:07:26 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] drm/i915/guc: Use struct_size() helper in kmalloc()
+Message-ID: <20220125180726.GA68646@embeddedor>
 MIME-Version: 1.0
-References: <20220118110621.62462-1-nikunj@amd.com> <20220118110621.62462-4-nikunj@amd.com>
- <CAMkAt6rxeGZ3SpF9UoSW0U5XWmTNe-iSMc5jgCmOLP587J03Aw@mail.gmail.com> <04698792-95b8-f5b6-5b2c-375806626de6@amd.com>
-In-Reply-To: <04698792-95b8-f5b6-5b2c-375806626de6@amd.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Tue, 25 Jan 2022 10:59:39 -0700
-Message-ID: <CAMkAt6rCU3K-dk7edxa9iKrOZ0uh5442K0U5Fbux=js0q6qQ+g@mail.gmail.com>
-Subject: Re: [RFC PATCH 3/6] KVM: SVM: Implement demand page pinning
-To:     "Nikunj A. Dadhania" <nikunj@amd.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bharata B Rao <bharata@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 10:49 AM Nikunj A. Dadhania <nikunj@amd.com> wrote:
->
-> Hi Peter
->
-> On 1/25/2022 10:17 PM, Peter Gonda wrote:
-> >> @@ -1637,8 +1627,6 @@ static void sev_migrate_from(struct kvm_sev_info *dst,
-> >>         src->handle = 0;
-> >>         src->pages_locked = 0;
-> >>         src->enc_context_owner = NULL;
-> >> -
-> >> -       list_cut_before(&dst->regions_list, &src->regions_list, &src->regions_list);
-> > I think we need to move the pinned SPTE entries into the target, and
-> > repin the pages in the target here. Otherwise the pages will be
-> > unpinned when the source is cleaned up. Have you thought about how
-> > this could be done?
-> >
-> I am testing migration with pinned_list, I see that all the guest pages are
-> transferred/pinned on the other side during migration. I think that there is
-> assumption that all private pages needs to be moved.
->
-> QEMU: target/i386/sev.c:bool sev_is_gfn_in_unshared_region(unsigned long gfn)
->
-> Will dig more on this.
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worst scenario, could lead to heap overflows.
 
-The code you linked appears to be for a remote migration. This
-function is for an "intra-host" migration meaning we are just moving
-the VMs memory and state to a new userspace VMM on the same not an
-entirely new host.
+Also, address the following sparse warnings:
+drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c:792:23: warning: using sizeof on a flexible structure
 
->
-> Regards
-> Nikunj
+Link: https://github.com/KSPP/linux/issues/174
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c
+index aa6dd6415202..e352a1aad228 100644
+--- a/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c
++++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c
+@@ -789,7 +789,7 @@ static struct ct_incoming_msg *ct_alloc_msg(u32 num_dwords)
+ {
+ 	struct ct_incoming_msg *msg;
+ 
+-	msg = kmalloc(sizeof(*msg) + sizeof(u32) * num_dwords, GFP_ATOMIC);
++	msg = kmalloc(struct_size(msg, msg, num_dwords), GFP_ATOMIC);
+ 	if (msg)
+ 		msg->size = num_dwords;
+ 	return msg;
+-- 
+2.27.0
+
