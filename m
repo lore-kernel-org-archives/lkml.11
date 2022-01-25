@@ -2,99 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2723C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93531C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S254950AbiAYExj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:53:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3412751AbiAYEmD (ORCPT
+        id S255006AbiAYEx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 23:53:59 -0500
+Received: from out162-62-57-87.mail.qq.com ([162.62.57.87]:34847 "EHLO
+        out162-62-57-87.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1357922AbiAYEl2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 23:42:03 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CC0C061756;
-        Mon, 24 Jan 2022 19:21:56 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id p125so17203776pga.2;
-        Mon, 24 Jan 2022 19:21:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dRYUZ3M7rYppnI+hr0K9I96s0E7Snr+RM+8KvNOCFtU=;
-        b=VD8oeGdqW09JSIqWe22HlKYenwRDp2U8WB+CnjY9QLzalkATlxubrBmgjYYpfW6yCY
-         1n07L6NKNOdq6J5J+VoxM0dHKSLcYBwSHN1OUYe2tsN889Jw9me66zKLHFVus7BiiWUw
-         RLkkqAtHIvkBY32Zec94woTaIa0mYUIvOEzYAQzbiU2k4Q4nJwMcuLPd3DDGGEMxpdRR
-         dIeGhMe0j2TWZUIW20y/3h0vUAStXPE1oj0nGC5Klr7KclyeFrKIZKGaoLDP+jx4ZAuQ
-         IF9XsGGcHnzSbDikDNG3Lq27ObcBgORcGhKZfLNzpKtXqKo6rbyACvIgwmpFVyAmvJrA
-         N+4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dRYUZ3M7rYppnI+hr0K9I96s0E7Snr+RM+8KvNOCFtU=;
-        b=7TtkTlHWL/GsEi1zsoQyXJikadWnbkvlZb9A4CSyc2CilJ+X34/rEjZ02W/Ec79o1V
-         TkHGX9w9WmTRoASan8r9h6D19IMvYlZ1GVTW2wht56uvySeh7Z3Gp6ZEDpr0AZhdTZs/
-         Rxpy7bSOW3y4WQW8jXUMUuHqPJHtlTNnvgqjdUqPTS2+Nm4iwBzCuKwNH3BM/8XIyzJc
-         +YeccKAooOtLpDYQC8c/DxOT63lajz7zsgRRvkp+AVYuegg2OLFFvA5PHHI9817QBlti
-         5NI8tIgs4xu7OGGFhq90ZcqjAc1Ajza+x96/OK1jTFWejNyhpSHB1eug5YVFkO85ojbV
-         DxaQ==
-X-Gm-Message-State: AOAM5304+GLtwtkmSaNWCHTuRKtB9mTrarJsLmEnkrA+0zg0VLnpsz8u
-        XYeVADl1v+O2UjX6+BUCTQffnIZKqPLmBIVZ0cQdfBfGkEE=
-X-Google-Smtp-Source: ABdhPJywmScDK7JzNLK/WwmQPFrg9zEjpJrbDmlinzZCQUfw9Uu/CfMyBOT1zd0fMVAprCPY+u6ivYkhqGRTbivhBTk=
-X-Received: by 2002:aa7:88d4:0:b0:4ca:a670:d05f with SMTP id
- k20-20020aa788d4000000b004caa670d05fmr2460464pff.38.1643080915561; Mon, 24
- Jan 2022 19:21:55 -0800 (PST)
+        Mon, 24 Jan 2022 23:41:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1643085678;
+        bh=7945bRSZNev1fxXSkPlWshLRauTragynEtURS2/Qcwk=;
+        h=From:To:Cc:Subject:Date;
+        b=iWTUipZzfnLiwCESfjSfwEnRhmbz67xL6xZXn0xyobZjOiSINFDSP17azsg/J1WBL
+         fA3RUhFyJDh5Q1TaUaAp+Gt9BijY77qkYemPSQuz86P4y1u97QzV1lLkn4dFymzbCX
+         BTsAixSxJff1DPbsg/h/imOV8+TAxZDDiN9rGugc=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
+        id 1F808456; Tue, 25 Jan 2022 12:07:56 +0800
+X-QQ-mid: xmsmtpt1643083676t5wn7vuix
+Message-ID: <tencent_C52895FD37802832A3E5B272D05008866F0A@qq.com>
+X-QQ-XMAILINFO: ObFHHlrAm440WFqxXpfy2OMEFUwmcfhEw6FCfS53x9Jq1IXUo3IRffNwG19du7
+         RFda4CCqLn7tKxMtg2r4ZJlfK7OIeRj8PxwhqhTsYLjMrvmT+MpphFrU/HqwQoDS0qF0zkUT/QkN
+         KK5rzw6P+UCzGljmG/7iTSDvk9KDtHciHw5m72OPt4Km1W+9P7u5+nidc9lPCSgEE9ZjEWOHZxRb
+         i0BrVbOiS3CgeXPIi4L+sbaYVmagqZJiFEh6WMkGdF+zpprInFxd7QnSGbh98lC8HHq7nSCYU13M
+         mFZMCRO5uTFH8E5FivSS+wgpbvLGHwMaBTYk33rLEm1gEa8lDrnJniLpKa35d0CbhSceO2/XCjL7
+         DJBdlnambp7sstXFU+BQcEbGYFVRw8+OkGjUvqwB/hZKvDFMwGjmNY2UOPRAV8u8sSNZZCtvLuJk
+         t4CUMtf6QRjubs+2wyFj0IvDjiJC8BaTbUMNt8SgGKogKbq2iowQJJm1hEjB5vjbKvnYs2ygIqL7
+         /tQ8Yj1mzOfFSnOdSkXI8yr+nU6+5gQJaJHk0+24sjaGcVvILs7RutH3/RBaYL3pRemjyYNbxX5L
+         9RW2Ioe6bOeGFXFWnXmqIT7S4b+QGgwcUHd06ddWva2yXCDw4xDcFTVfuzOHsadjOWreFNPeewQX
+         CecQp7hb/LaoETFR3g2G9k9+egWCTZqr8jjijNhQVL5yNwkt46gp200NHjq0j9R54ZzyeBSJ3hBX
+         dr4cX7sNgJXFQ7j8PPq9HGdoFVOmPiDVH5CxN1DwTrkO5xjzvrxCXi9Q+mGFk+RX2TozD3uBTDc6
+         h8FBPgylsNJcRegAdtdloJgc7HwD8CVZY4Q4t19sryAvDCERYE0N7KtLjRwwQd07xrlmvj94RgB1
+         O1QYkBEkBO4vV0Hpj8AAJfVtaa6HnTzkBJLPS0EJ5sKgA6gwPcOlCqfx2l3zlXpA==
+From:   xkernel.wang@foxmail.com
+To:     rostedt@goodmis.org, mingo@redhat.com
+Cc:     linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] tracing/histogram: fix a potential memory leak for kstrdup()
+Date:   Tue, 25 Jan 2022 12:07:15 +0800
+X-OQ-MSGID: <20220125040715.2057-1-xkernel.wang@foxmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 MIME-Version: 1.0
-References: <20220104171058.22580-1-avagin@gmail.com>
-In-Reply-To: <20220104171058.22580-1-avagin@gmail.com>
-From:   Andrei Vagin <avagin@gmail.com>
-Date:   Mon, 24 Jan 2022 19:21:44 -0800
-Message-ID: <CANaxB-x83ZUSw493feutgF4_sBD7Uj_p0VwNxpmaq1u7eMsq-w@mail.gmail.com>
-Subject: Re: [PATCH] fs/pipe: use kvcalloc to allocate a pipe_buffer array
-To:     LKML <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 4, 2022 at 9:11 AM Andrei Vagin <avagin@gmail.com> wrote:
->
-> Right now, kcalloc is used to allocate a pipe_buffer array.  The size of
-> the pipe_buffer struct is 40 bytes. kcalloc allows allocating reliably
-> chunks with sizes less or equal to PAGE_ALLOC_COSTLY_ORDER (3). It means
-> that the maximum pipe size is 3.2MB in this case.
->
-> In CRIU, we use pipes to dump processes memory. CRIU freezes a target
-> process, injects a parasite code into it and then this code splices
-> memory into pipes. If a maximum pipe size is small, we need to
-> do many iterations or create many pipes.
->
-> kvcalloc attempt to allocate physically contiguous memory, but upon
-> failure, fall back to non-contiguous (vmalloc) allocation and so it
-> isn't limited by PAGE_ALLOC_COSTLY_ORDER.
->
-> The maximum pipe size for non-root users is limited by
-> the /proc/sys/fs/pipe-max-size sysctl that is 1MB by default, so only
-> the root user will be able to trigger vmalloc allocations.
->
-> Cc: Dmitry Safonov <0x7f454c46@gmail.com>
-> Signed-off-by: Andrei Vagin <avagin@gmail.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Alexander and Andrew,
+kfree() is missing on an error path to free the memory allocated by
+kstrdup():
+> p = param = kstrdup(data->params[i], GFP_KERNEL);
+So it is better to free it via kfree(p).
 
-Do you have any objections? Could you merge this patch?
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ kernel/trace/trace_events_hist.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Dmitry's comments have been addressed in the separate patch:
-https://lkml.org/lkml/2022/1/6/463
-
-BTW: I found that fuse already uses kvmalloc to allocate pipe buffers
-(e. g. fuse_dev_splice_read).
-
-Thanks,
-Andrei
+diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+index f01e442..1fac14c 100644
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -3578,6 +3578,7 @@ static int trace_action_create(struct hist_trigger_data *hist_data,
+ 
+ 			var_ref_idx = find_var_ref_idx(hist_data, var_ref);
+ 			if (WARN_ON(var_ref_idx < 0)) {
++				kfree(p);
+ 				ret = var_ref_idx;
+ 				goto err;
+ 			}
+-- 
