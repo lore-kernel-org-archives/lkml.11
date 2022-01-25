@@ -2,160 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08872C63686
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 23:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A90C5AC75
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 23:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234913AbiAYXga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 18:36:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234898AbiAYXgV (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 18:36:21 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3706C061747
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 15:36:20 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id u24so20112174eds.11
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 15:36:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pYNA1CVJ1M6lrfRYYmGpOXg9P7wsf14wwNEYFVpQGRg=;
-        b=xU6QF2/+7XDapkHCfliHO7u2D33hB0Ch0R0zZzdpTzTPvC1Y047yhrhmDkYlG1ppFH
-         gDW0mIb8aCXFh74WuQjozBdZq/rhW8qM4AQxx9Gc6cVqBnmsb9EmIUcnS26wJDDqHOQE
-         4RVbKQUT85I+CGWgw00+JSAS9l7zZbLAvWCSkp0DwQEc28JTxoc6BwlKJtyHRa/RVTa6
-         S+l/jyHJzEXW6dG/nQAPWnAFvDC15uCBPbvWQTLdw3Fa4dbM3ZEkZYQ3dBcqLrLQPlaV
-         ak8bOHgCGnKCoRhPjerDD31SgD47NnYfjU2UmhwWxXlWNCd5yuiuBTidOBnJO35Ij32W
-         gZNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pYNA1CVJ1M6lrfRYYmGpOXg9P7wsf14wwNEYFVpQGRg=;
-        b=tPcmHyPJlr6rWlJ87JJt7RXJwxajo0UMgvnozHUEK/f5kWupta3c2ZT5jHCS3hjFq5
-         H+lFQfeZUUJ0nSuissThNld/T/fsjwKr2ES60PNfPrHLdEtZm70h6xuQRPQobMZfrkcI
-         yLV4H5DJcjppu/XhWpwdeeX4taThKLyck50u+y0qSIJQ3kPz+OeMTk/FH55aLHOA+tXY
-         DjUWEtS++i0Fd9zuF820xo1M18qgSJqsVx6pY5Z34aHX943UIVYqSiDbqrr0/rmfESsI
-         PFP5N8sKg7fQ11dJ1zjPr9hM4EOOkZqlyNjZrl7BA6IW3g93Px9+OR9WpH5QyjVLW/+3
-         3nmw==
-X-Gm-Message-State: AOAM532yGWZ/0XivjJ5S8cFjZZbpVWboRFlITYdSDwtcF3qc0cQRbvW9
-        nUBYNJpXLu/Yc2PhUtzop5E7yslsJkJyZ1qSp9yU
-X-Google-Smtp-Source: ABdhPJzyKxTfCZQvgfVyP8WAgYiBXBKlAsCF/r32JYcD5TCu4aPsnLVRGgfZiEjWYbgBZ/IJQhgPdfZ0kOdvDMZdfEE=
-X-Received: by 2002:aa7:d407:: with SMTP id z7mr22532317edq.331.1643153779366;
- Tue, 25 Jan 2022 15:36:19 -0800 (PST)
-MIME-Version: 1.0
-References: <018a9bb4-accb-c19a-5b0a-fde22f4bc822.ref@schaufler-ca.com>
- <018a9bb4-accb-c19a-5b0a-fde22f4bc822@schaufler-ca.com> <20211012103243.xumzerhvhklqrovj@wittgenstein>
- <d15f9647-f67e-2d61-d7bd-c364f4288287@schaufler-ca.com> <CAHC9VhT=dZbWzhst0hMLo0n7=UzWC5OYTMY=0x=LZ97HwG0UsA@mail.gmail.com>
- <e046ab1e-0e59-afb2-ae28-fafa17ea8ddd@schaufler-ca.com>
-In-Reply-To: <e046ab1e-0e59-afb2-ae28-fafa17ea8ddd@schaufler-ca.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 25 Jan 2022 18:36:08 -0500
-Message-ID: <CAHC9VhRA5HN6zaq=oAfT-RR+FC9v018Y_Am5xcridYj3h3JN-g@mail.gmail.com>
-Subject: Re: [PATCH] LSM: general protection fault in legacy_parse_param
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
-        Christian Brauner <christian@brauner.io>,
-        James Morris <jmorris@namei.org>,
-        Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzbot <syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        selinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S234929AbiAYXjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 18:39:35 -0500
+Received: from gate.crashing.org ([63.228.1.57]:54754 "EHLO gate.crashing.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234898AbiAYXjb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 18:39:31 -0500
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 20PNVUiB032739;
+        Tue, 25 Jan 2022 17:31:30 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 20PNVSKH032738;
+        Tue, 25 Jan 2022 17:31:28 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Tue, 25 Jan 2022 17:31:28 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        x86@kernel.org, llvm@lists.linux.dev, linux-sparse@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: [PATCH] objtool: prefer memory clobber & %= to volatile & __COUNTER__
+Message-ID: <20220125233128.GT614@gate.crashing.org>
+References: <20220114010526.1776605-1-ndesaulniers@google.com> <YeQei0xNzMq7bFdg@zn.tnic> <20220118192256.jzk5dnceeusq7x7u@treble> <20220118230120.pivvson7qekfiqic@treble> <CAKwvOdmLzwz=02ypt0_1324_5-7i3Az7HizFaDMqZv__-D99uA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdmLzwz=02ypt0_1324_5-7i3Az7HizFaDMqZv__-D99uA@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 6:30 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
->
-> On 1/25/2022 2:18 PM, Paul Moore wrote:
-> > On Tue, Oct 12, 2021 at 10:27 AM Casey Schaufler <casey@schaufler-ca.com> wrote:
-> >> On 10/12/2021 3:32 AM, Christian Brauner wrote:
-> >>> On Mon, Oct 11, 2021 at 03:40:22PM -0700, Casey Schaufler wrote:
-> >>>> The usual LSM hook "bail on fail" scheme doesn't work for cases where
-> >>>> a security module may return an error code indicating that it does not
-> >>>> recognize an input.  In this particular case Smack sees a mount option
-> >>>> that it recognizes, and returns 0. A call to a BPF hook follows, which
-> >>>> returns -ENOPARAM, which confuses the caller because Smack has processed
-> >>>> its data.
-> >>>>
-> >>>> Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
-> >>>> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-> >>>> ---
-> >>> Thanks!
-> >>> Note, I think that we still have the SELinux issue we discussed in the
-> >>> other thread:
-> >>>
-> >>>        rc = selinux_add_opt(opt, param->string, &fc->security);
-> >>>        if (!rc) {
-> >>>                param->string = NULL;
-> >>>                rc = 1;
-> >>>        }
-> >>>
-> >>> SELinux returns 1 not the expected 0. Not sure if that got fixed or is
-> >>> queued-up for -next. In any case, this here seems correct independent of
-> >>> that:
-> >> The aforementioned SELinux change depends on this patch. As the SELinux
-> >> code is today it blocks the problem seen with Smack, but introduces a
-> >> different issue. It prevents the BPF hook from being called.
-> >>
-> >> So the question becomes whether the SELinux change should be included
-> >> here, or done separately. Without the security_fs_context_parse_param()
-> >> change the selinux_fs_context_parse_param() change results in messy
-> >> failures for SELinux mounts.
-> > FWIW, this patch looks good to me, so:
-> >
-> > Acked-by: Paul Moore <paul@paul-moore.com>
-> >
-> > ... and with respect to the SELinux hook implementation returning 1 on
-> > success, I don't have a good answer and looking through my inbox I see
-> > David Howells hasn't responded either.  I see nothing in the original
-> > commit explaining why, so I'm going to say let's just change it to
-> > zero and be done with it; the good news is that if we do it now we've
-> > got almost a full cycle in linux-next to see what falls apart.  As far
-> > as the question of one vs two patches, it might be good to put both
-> > changes into a single patch just so that folks who do backports don't
-> > accidentally skip one and create a bad kernel build.  Casey, did you
-> > want to respin this patch or would you prefer me to submit another
-> > version?
->
-> I can create a single patch. I tried the combination on Fedora
-> and it worked just fine. I'll rebase and resend.
+Hi!
 
-Great, thank you.
+On Mon, Jan 24, 2022 at 03:26:36PM -0800, Nick Desaulniers wrote:
+> I noticed in that report and
+> https://lore.kernel.org/lkml/202201190702.XNSXrMTK-lkp@intel.com/
+> that gcc-9 was used.  I wonder if %= has been fixed in gcc-10+? Have
+> there been other reports with gcc-10+ for my patch?
 
-> >>> Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-> >>>
-> >>>>   security/security.c | 14 +++++++++++++-
-> >>>>   1 file changed, 13 insertions(+), 1 deletion(-)
-> >>>>
-> >>>> diff --git a/security/security.c b/security/security.c
-> >>>> index 09533cbb7221..3cf0faaf1c5b 100644
-> >>>> --- a/security/security.c
-> >>>> +++ b/security/security.c
-> >>>> @@ -885,7 +885,19 @@ int security_fs_context_dup(struct fs_context *fc, struct fs_context *src_fc)
-> >>>>
-> >>>>   int security_fs_context_parse_param(struct fs_context *fc, struct fs_parameter *param)
-> >>>>   {
-> >>>> -    return call_int_hook(fs_context_parse_param, -ENOPARAM, fc, param);
-> >>>> +    struct security_hook_list *hp;
-> >>>> +    int trc;
-> >>>> +    int rc = -ENOPARAM;
-> >>>> +
-> >>>> +    hlist_for_each_entry(hp, &security_hook_heads.fs_context_parse_param,
-> >>>> +                         list) {
-> >>>> +            trc = hp->hook.fs_context_parse_param(fc, param);
-> >>>> +            if (trc == 0)
-> >>>> +                    rc = 0;
-> >>>> +            else if (trc != -ENOPARAM)
-> >>>> +                    return trc;
-> >>>> +    }
-> >>>> +    return rc;
-> >>>>   }
+None of the %= code (which is trivial) has been changed since 1992.
 
--- 
-paul-moore.com
+> If this is fixed in gcc-10, then we can probably add a comment with a
+> FIXME link to the issue or commit to replace __COUNTER__ with %= one
+> day.  If not, then we can probably come up with a reduced test case
+> for the GCC devs to take a look at, then add the FIXME comment to
+> kernel sources.
+
+Please open a PR?
+
+> I'm more confident that we can remove the `volatile` keyword (I was
+> thinking about adding a new diagnostic to clang to warn that volatile
+> is redundate+implied for asm goto or inline asm that doesn't have
+> outputs) though that's not the problem here and will probably generate
+> some kernel wide cleanup before we could enable such a flag.
+
+Its main value is that it would discourage users from thinking volatile
+is magic.  Seriously worth some pain!
+
+> Perhaps
+> there are known compiler versions that still require the keyword for
+> those cases for some reason.
+
+It was removed from compiler-gcc.h in 3347acc6fcd4 (which changed the
+minimum required GCC version to GCC 5).
+
+
+Segher
