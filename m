@@ -2,125 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D7FC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:45:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BEDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1585903AbiAYQpg (ORCPT
+        id S1586049AbiAYQqo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 11:45:36 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:39300 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584416AbiAYQjG (ORCPT
+        Tue, 25 Jan 2022 11:46:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53804 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379609AbiAYQoi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 11:39:06 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Tue, 25 Jan 2022 11:44:38 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 10F7E1F381;
-        Tue, 25 Jan 2022 16:39:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643128742; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8rtmaWBIZkB4evzRWl/a+elxNpDHBMDViK3dm7DyrXY=;
-        b=jxCcb+UNxJm3RN5zJlC+KAxIvdePBPr0TyxuVat1JdtTU21NDpEz0xd3jvyemLmDF9Com+
-        oESd2xPq40JT5HDgw2pwGRLpcJR7w8QVzzXuP60WyuXDQB4joWg+llMgEdhgQGhm2FIwdK
-        yMsRsFnZGWjfdKKPCoS+cMpBkC+P9sE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643128742;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8rtmaWBIZkB4evzRWl/a+elxNpDHBMDViK3dm7DyrXY=;
-        b=X8KDMnPUGIm1FS5WM8OLQ2cGYl9Jd+wwiQpg86/UnAgxr49UA840E/z1Q5bU8sqL9ga7mY
-        gMgfPHMaMTmzhPAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3CD4513E4B;
-        Tue, 25 Jan 2022 16:39:01 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id hCxwDKUn8GGzOQAAMHmgww
-        (envelope-from <jdelvare@suse.de>); Tue, 25 Jan 2022 16:39:01 +0000
-Date:   Tue, 25 Jan 2022 17:38:57 +0100
-From:   Jean Delvare <jdelvare@suse.de>
-To:     Terry Bowman <Terry.Bowman@amd.com>
-Cc:     linux@roeck-us.net, linux-watchdog@vger.kernel.org,
-        linux-i2c@vger.kernel.org, wsa@kernel.org,
-        andy.shevchenko@gmail.com, rafael.j.wysocki@intel.com,
-        linux-kernel@vger.kernel.org, wim@linux-watchdog.org,
-        rrichter@amd.com, thomas.lendacky@amd.com,
-        Nehal-bakulchandra.Shah@amd.com, Basavaraj.Natikar@amd.com,
-        Shyam-sundar.S-k@amd.com, Mario.Limonciello@amd.com
-Subject: Re: [PATCH v3 2/4] Watchdog: sp5100_tco: Refactor MMIO base address
- initialization
-Message-ID: <20220125173857.1c85fddc@endymion>
-In-Reply-To: <a55ca093-d8d1-6821-1cb9-18343c6f1fd0@amd.com>
-References: <20220118202234.410555-1-terry.bowman@amd.com>
-        <20220118202234.410555-3-terry.bowman@amd.com>
-        <20220125144520.17a220bc@endymion>
-        <a55ca093-d8d1-6821-1cb9-18343c6f1fd0@amd.com>
-Organization: SUSE Linux
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62B6A6178E;
+        Tue, 25 Jan 2022 16:44:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE532C340F5;
+        Tue, 25 Jan 2022 16:44:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643129067;
+        bh=H5RYWVHLEF7hBelXtGAmQjOOxTr3ZKC1AcfdG0LUWzQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=R47mX52drvUrlL7Q4Y1Xr/wgrPFoMWxfnAVyTwN8ZPMCrjei5okuL+nvvnTE7ZV1o
+         jFYDNH9Nj3wF2y9utevaVkPsJwxcOOphtSbFpHHjd8uCRudn3bYQtXSX/qGoJtb8yG
+         8XnxU/QomCPTJs0vq1Vgsx9wyOwmAX1VrHFGn1KacteXhtqCWF6AuYXyKOu/Ma5eoT
+         XTO59/RhXsDPs88sGwJtLSUwOFCBsP6heBGrZKjRBKb6W1+CritisMTBtYLhEEK+Ud
+         eWkKfmpxMYUKN3pJBE2ZQnnVw3JvlpEnzSxwMR1JH29bVDbOYHZS5Tt3pJtr5Wabe2
+         hVArpzFshBJaA==
+Received: by mail-ej1-f50.google.com with SMTP id jx6so31814314ejb.0;
+        Tue, 25 Jan 2022 08:44:27 -0800 (PST)
+X-Gm-Message-State: AOAM532bbNpwBdnuQdHtEuAeiLigyZ8hB0Z5s1ugCOYEg3Qb3ChDNbzl
+        qmxbKgkhkr5KbavI/LhQWq86f1esFKTuG3mwoQ==
+X-Google-Smtp-Source: ABdhPJxZ+7OI1k1HlLK70kQOOUHF/t4avWi15FYddefD8ktBIzegy6VbLiDBFPwtobYR8uak011eNfvkJALGQFkgLvs=
+X-Received: by 2002:a17:906:4785:: with SMTP id cw5mr11543421ejc.406.1643129066032;
+ Tue, 25 Jan 2022 08:44:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220112150133.11275-1-jitao.shi@mediatek.com>
+In-Reply-To: <20220112150133.11275-1-jitao.shi@mediatek.com>
+From:   Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Date:   Wed, 26 Jan 2022 00:44:14 +0800
+X-Gmail-Original-Message-ID: <CAAOTY_8v6UvcVcLL2ba-pOXD2UwF=qoTNNk9FNtK7CYDBQOfhQ@mail.gmail.com>
+Message-ID: <CAAOTY_8v6UvcVcLL2ba-pOXD2UwF=qoTNNk9FNtK7CYDBQOfhQ@mail.gmail.com>
+Subject: Re: [PATCH] drm/mediatek: DP HPD Detect with debounce
+To:     Jitao Shi <jitao.shi@mediatek.com>
+Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        CK Hu <ck.hu@mediatek.com>, stonea168@163.com,
+        huijuan.xie@mediatek.com, Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        shuijing.li@mediatek.com, Rob Herring <robh+dt@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Guillaume Ranquet <granquet@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 09:18:59 -0600, Terry Bowman wrote:
-> On 1/25/22 7:45 AM, Jean Delvare wrote:
-> > On Tue, 18 Jan 2022 14:22:32 -0600, Terry Bowman wrote:  
-> >> +static int __sp5100_tco_prepare_base(struct sp5100_tco *tco,
-> >> +				     u32 mmio_addr,
-> >> +				     const char *dev_name)
-> >> +{
-> >> +	struct device *dev = tco->wdd.parent;
-> >> +	int ret = 0;
-> >> +
-> >> +	if (!mmio_addr)
-> >> +		return -ENOMEM;  
-> > 
-> > Can this actually happen? If it does, is -ENOMEM really the best error
-> > value?
-> 
-> This can happen if mmio_addr is not assigned in sp5100_tco_setupdevice_mmio() 
-> before calling sp5100_tco_prepare_base() and __sp5100_tco_prepare_base().
+Hi, Jitao:
 
-Ah yes, I can see it now.
+Jitao Shi <jitao.shi@mediatek.com> =E6=96=BC 2022=E5=B9=B41=E6=9C=8812=E6=
+=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=8811:01=E5=AF=AB=E9=81=93=EF=BC=
+=9A
+>
+> DP Spec 1.4a 3.3 requires dp detect the hpd with debounce.
+>
+> Upstream implementations should implement HPD signal de-bouncing on
+> an external connection. A period of 100ms should be used for
+> detecting an HPD connect event (i.e., the event, =E2=80=9CHPD high,=E2=80=
+=9D is
+> confirmed only after HPD has been continuously asserted for 100ms).
+> Care should be taken to not implement de-bouncing on an IRQ_HPD and
+> on a downstream device-generated pair of HPD disconnect/reconnect
+> events (typically HPD shall be de-asserted for more than 2ms, but
+> less than 100ms in this case). To cover these cases, HPD de-bounce
+> should be implemented only after HPD low has been detected for 100ms.
+>  Timing requirements in this Standard related to the detection of
+> HPD high are to be interpreted as applying from the completion of an
+> implementation-dependent de-bounce period.
+>
+> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> ---
 
-> I can move the NULL check out of __sp5100_tco_prepare_base() and into
-> sp5100_tco_prepare_base() before calling __sp5100_tco_prepare_base().
-> As you describe below.
-> 
-> The ENOMEM return value should be interpreted as the mmio_addr is not 
-> available. EBUSY does not describe the failure correctly because EBUSY 
-> implies the resource is present and normally available but not available 
-> at this time. Do you have a return value preference ?
+mtk dp driver has not been upstreamed yet. This patch seems depend on
+another series [1]. Please describe the dependency information here.
 
-Well, if one mmio_addr isn't set, you shouldn't call
-__sp5100_tco_prepare_base() for it so there's no error to return. If
-neither mmio_addr is set then the hardware is simply not configured to
-be used, so that would be a -NODEV returned by
-sp5100_tco_prepare_base() I suppose?
+[1] https://patchwork.kernel.org/project/linux-mediatek/list/?series=3D5974=
+85
 
-BTW...
- 
-> >> (...)
-> >> +	if (ret)
-> >> +		dev_err(dev, "Failed to reserve-map MMIO (%X) and alternate MMIO (%X) regions. ret=%X",
-> >> +			mmio_addr, alt_mmio_addr, ret);  
+Regards,
+Chun-Kuang.
 
-... I think that should be a "or" rather than "and", and singular
-"region", in this error message? I mean, the plan was never to
-reserve-map both of them, if I understand correctly.
-
--- 
-Jean Delvare
-SUSE L3 Support
+>  drivers/gpu/drm/mediatek/mtk_dp.c | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek=
+/mtk_dp.c
+> index a256d55346a2..05f401a024a4 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dp.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
+> @@ -193,6 +193,8 @@ struct mtk_dp {
+>         struct mutex eld_lock;
+>         u8 connector_eld[MAX_ELD_BYTES];
+>         struct drm_connector *conn;
+> +       bool need_debounce;
+> +       struct timer_list debounce_timer;
+>  };
+>
+>  enum mtk_dp_sdp_type {
+> @@ -2217,6 +2219,9 @@ static irqreturn_t mtk_dp_hpd_event_thread(int hpd,=
+ void *dev)
+>         if (event < 0)
+>                 return IRQ_HANDLED;
+>
+> +       if (mtk_dp->need_debounce && mtk_dp->train_info.cable_plugged_in)
+> +               msleep(100);
+> +
+>         if (mtk_dp->drm_dev) {
+>                 dev_info(mtk_dp->dev, "drm_helper_hpd_irq_event\n");
+>                 drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
+> @@ -2296,6 +2301,14 @@ static irqreturn_t mtk_dp_hpd_isr_handler(struct m=
+tk_dp *mtk_dp)
+>                 mtk_dp->train_state =3D MTK_DP_TRAIN_STATE_STARTUP;
+>         }
+>         train_info->cable_state_change =3D true;
+> +
+> +       if (train_info->cable_state_change) {
+> +               if (!train_info->cable_plugged_in) {
+> +                       mod_timer(&mtk_dp->debounce_timer, jiffies + msec=
+s_to_jiffies(100) - 1);
+> +                       mtk_dp->need_debounce =3D false;
+> +               }
+> +       }
+> +
+>         return IRQ_WAKE_THREAD;
+>  }
+>
+> @@ -2903,6 +2916,13 @@ static int mtk_dp_register_audio_driver(struct dev=
+ice *dev)
+>         return 0;
+>  }
+>
+> +static void mtk_dp_debounce_timer(struct timer_list *t)
+> +{
+> +       struct mtk_dp *mtk_dp =3D from_timer(mtk_dp, t, debounce_timer);
+> +
+> +       mtk_dp->need_debounce =3D true;
+> +}
+> +
+>  static int mtk_dp_probe(struct platform_device *pdev)
+>  {
+>         struct mtk_dp *mtk_dp;
+> @@ -2990,6 +3010,9 @@ static int mtk_dp_probe(struct platform_device *pde=
+v)
+>         else
+>                 mtk_dp->bridge.type =3D DRM_MODE_CONNECTOR_DisplayPort;
+>
+> +       mtk_dp->need_debounce =3D true;
+> +       timer_setup(&mtk_dp->debounce_timer, mtk_dp_debounce_timer, 0);
+> +
+>         mtk_dp->bridge.ops =3D
+>                 DRM_BRIDGE_OP_DETECT | DRM_BRIDGE_OP_EDID | DRM_BRIDGE_OP=
+_HPD;
+>         drm_bridge_add(&mtk_dp->bridge);
+> @@ -3008,6 +3031,7 @@ static int mtk_dp_remove(struct platform_device *pd=
+ev)
+>
+>         mtk_dp_video_mute(mtk_dp, true);
+>         mtk_dp_audio_mute(mtk_dp, true);
+> +       del_timer_sync(&mtk_dp->debounce_timer);
+>
+>         pm_runtime_disable(&pdev->dev);
+>
+> --
+> 2.12.5
+>
