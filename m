@@ -2,279 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1425C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E51A7C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:10:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1317367AbiAYDBl (ORCPT
+        id S1317601AbiAYDC0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:01:41 -0500
-Received: from mga09.intel.com ([134.134.136.24]:16189 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S3415308AbiAYBkJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 20:40:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643074809; x=1674610809;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ltiCJCo8pMi8Z3TpeCeoiPuf/ypSwEPDWPZkr99jflM=;
-  b=WYNrIabZNGBxJLrNm/pbZz+SMjHOZF9p0vBVZSTbGNQmqGqfGRd8iCuW
-   lyagTEn0DgyqI53U0PuvxTZx6uvYiUt/Ta146Ki3UOrSRaAbtXk6qwINV
-   pwDVeVhX0FLPoofrqkjeZPG1g3euDKGirbaqP68fW3lenIHoh1rm0XsT6
-   NpJc6txKuIx7Sqzboib+mlk/jpAl/5ntGVoi6eDxcu5mFMaM8BK20000d
-   gYvwQ1AhaQMvbxLzwocV3XfdmgzMfeIfEb8HnEfqd90eynuRmYmZOldV6
-   bjB40sr9KVFWaioLrvGaHbOYgCx7mkiQ9OvhntIDhrHzguNkohaWZqngc
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="245971822"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="245971822"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:17:36 -0800
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="479302453"
-Received: from kerguder-mobl.ger.corp.intel.com (HELO localhost) ([10.249.158.133])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:17:27 -0800
-From:   Iwona Winiarska <iwona.winiarska@intel.com>
-To:     linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Borislav Petkov <bp@alien8.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Zev Weiss <zweiss@equinix.com>,
-        David Muller <d.mueller@elsoft.ch>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Billy Tsai <billy_tsai@aspeedtech.com>,
-        Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>,
-        Iwona Winiarska <iwona.winiarska@intel.com>
-Subject: [PATCH v6 12/13] docs: hwmon: Document PECI drivers
-Date:   Tue, 25 Jan 2022 02:11:03 +0100
-Message-Id: <20220125011104.2480133-13-iwona.winiarska@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220125011104.2480133-1-iwona.winiarska@intel.com>
-References: <20220125011104.2480133-1-iwona.winiarska@intel.com>
+        Mon, 24 Jan 2022 22:02:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3415365AbiAYBpr (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 20:45:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C65BC01D7C1;
+        Mon, 24 Jan 2022 17:25:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9EE561212;
+        Tue, 25 Jan 2022 01:25:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCA3EC340E4;
+        Tue, 25 Jan 2022 01:25:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643073943;
+        bh=UqSazjT8UyPJQUEShMssyVrpCVBuSCCA0ELCO1ImzW0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nSPlo4OqUozVEIEmdVIKHI2ituuKy/T67z+vMSJCANyJDo1i9UEiHVgcXdaJoBb21
+         +IC0jCGd4z2K5cmdJUAkNCvBoTKpcxOvRb+O123AGD3pN8xGq8H0a/DQyblEniCliv
+         gtH/07yXTnvS1+f83chvkucTrBmANoikqXruRDY3xfeTXVa03CP9CIWD/RsawFtVpo
+         CqX9i6NOSAl076Tuw/3zvh8I5Snjvr6YUoXlCJ2Qra2fUcDiAn0NPIu/l6xnbMLcC6
+         JQWCGI2K9x6Y7d+/g8JDPyoXeHjCb3M4siP7I9HQ5el5tcKlyczpH+9l9gHSnduBps
+         48S3SKGI/lWOQ==
+Date:   Mon, 24 Jan 2022 18:25:39 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH 1/2] MIPS: Loongson64: Clean up use of cc-ifversion
+Message-ID: <Ye9Rk4y9Ck7Bg5pv@dev-arch.archlinux-ax161>
+References: <20220120214001.1879469-1-nathan@kernel.org>
+ <CAKwvOd=4QBW5uFLM7zbHfG+5499tT_zqBTaZQgzqegmuq_5+MQ@mail.gmail.com>
+ <c88b0d87-b238-4889-b033-226bed85bb01@www.fastmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <c88b0d87-b238-4889-b033-226bed85bb01@www.fastmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+On Tue, Jan 25, 2022 at 12:03:32AM +0000, Jiaxun Yang wrote:
+> 
+> 
+> 在2022年1月24日一月 下午8:31，Nick Desaulniers写道：
+> > On Thu, Jan 20, 2022 at 1:40 PM Nathan Chancellor <nathan@kernel.org> wrote:
+> >>
+> >> This Makefile checks that GCC is 4.9 or newer, which is redundant after
+> >> commit 76ae847497bc ("Documentation: raise minimum supported version of
+> >> GCC to 5.1"), so cc-option can be removed.
+> >>
+> >> Clang does not support -march=loongson3a so it needs to continue to use
+> >> -march=mips64r2, along with binutils less than 2.25, so check that both
+> >> GCC and binutils 2.25 or newer are being used before using
+> >> -march=loongson3a. These flags do not need to be checked with cc-option
+> >> anymore because all GCC versions support -march=loongson3a and
+> >> -march=mips64r2 and all clang versions support -march=mips64r2.
+> >>
+> >> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> >
+> > Thanks for the patch. I wonder why `_MIPS_ISA` only seems to be set at
+> > all for `-march=loongson3a` AFAICT, though that question is orthogonal
+> > to this patch. Perhaps the Loongson or MIPS maintainers know more?
+> > Otherwise seems like most uses of _MIPS_ISA can either be deleted or
+> > simplified now.
+> 
+> This is because earlier GCC mistakenly set loongson3a to MIPS64 not MIPS64R2.
+> 
+> But given that it's earlier than the minimal requirement GCC of kernel today, I think it should be safe to just move the whole logic.
+> 
+> Thanks.
 
-Add documentation for peci-cputemp driver that provides DTS thermal
-readings for CPU packages and CPU cores, and peci-dimmtemp driver that
-provides Temperature Sensor on DIMM readings.
+So something like this (completely untested)?
 
-Signed-off-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
-Co-developed-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Acked-by: Guenter Roeck <linux@roeck-us.net>
----
- Documentation/hwmon/index.rst         |  2 +
- Documentation/hwmon/peci-cputemp.rst  | 90 +++++++++++++++++++++++++++
- Documentation/hwmon/peci-dimmtemp.rst | 57 +++++++++++++++++
- MAINTAINERS                           |  2 +
- 4 files changed, 151 insertions(+)
- create mode 100644 Documentation/hwmon/peci-cputemp.rst
- create mode 100644 Documentation/hwmon/peci-dimmtemp.rst
-
-diff --git a/Documentation/hwmon/index.rst b/Documentation/hwmon/index.rst
-index df20022c741f..f387f661e1d7 100644
---- a/Documentation/hwmon/index.rst
-+++ b/Documentation/hwmon/index.rst
-@@ -161,6 +161,8 @@ Hardware Monitoring Kernel Drivers
-    pcf8591
-    pim4328
-    pm6764tr
-+   peci-cputemp
-+   peci-dimmtemp
-    pmbus
-    powr1220
-    pxe1610
-diff --git a/Documentation/hwmon/peci-cputemp.rst b/Documentation/hwmon/peci-cputemp.rst
-new file mode 100644
-index 000000000000..fe0422248dc5
---- /dev/null
-+++ b/Documentation/hwmon/peci-cputemp.rst
-@@ -0,0 +1,90 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+Kernel driver peci-cputemp
-+==========================
-+
-+Supported chips:
-+	One of Intel server CPUs listed below which is connected to a PECI bus.
-+		* Intel Xeon E5/E7 v3 server processors
-+			Intel Xeon E5-14xx v3 family
-+			Intel Xeon E5-24xx v3 family
-+			Intel Xeon E5-16xx v3 family
-+			Intel Xeon E5-26xx v3 family
-+			Intel Xeon E5-46xx v3 family
-+			Intel Xeon E7-48xx v3 family
-+			Intel Xeon E7-88xx v3 family
-+		* Intel Xeon E5/E7 v4 server processors
-+			Intel Xeon E5-16xx v4 family
-+			Intel Xeon E5-26xx v4 family
-+			Intel Xeon E5-46xx v4 family
-+			Intel Xeon E7-48xx v4 family
-+			Intel Xeon E7-88xx v4 family
-+		* Intel Xeon Scalable server processors
-+			Intel Xeon D family
-+			Intel Xeon Bronze family
-+			Intel Xeon Silver family
-+			Intel Xeon Gold family
-+			Intel Xeon Platinum family
-+
-+	Datasheet: Available from http://www.intel.com/design/literature.htm
-+
-+Author: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
-+
-+Description
-+-----------
-+
-+This driver implements a generic PECI hwmon feature which provides Digital
-+Thermal Sensor (DTS) thermal readings of the CPU package and CPU cores that are
-+accessible via the processor PECI interface.
-+
-+All temperature values are given in millidegree Celsius and will be measurable
-+only when the target CPU is powered on.
-+
-+Sysfs interface
-+-------------------
-+
-+======================= =======================================================
-+temp1_label		"Die"
-+temp1_input		Provides current die temperature of the CPU package.
-+temp1_max		Provides thermal control temperature of the CPU package
-+			which is also known as Tcontrol.
-+temp1_crit		Provides shutdown temperature of the CPU package which
-+			is also known as the maximum processor junction
-+			temperature, Tjmax or Tprochot.
-+temp1_crit_hyst		Provides the hysteresis value from Tcontrol to Tjmax of
-+			the CPU package.
-+
-+temp2_label		"DTS"
-+temp2_input		Provides current temperature of the CPU package scaled
-+			to match DTS thermal profile.
-+temp2_max		Provides thermal control temperature of the CPU package
-+			which is also known as Tcontrol.
-+temp2_crit		Provides shutdown temperature of the CPU package which
-+			is also known as the maximum processor junction
-+			temperature, Tjmax or Tprochot.
-+temp2_crit_hyst		Provides the hysteresis value from Tcontrol to Tjmax of
-+			the CPU package.
-+
-+temp3_label		"Tcontrol"
-+temp3_input		Provides current Tcontrol temperature of the CPU
-+			package which is also known as Fan Temperature target.
-+			Indicates the relative value from thermal monitor trip
-+			temperature at which fans should be engaged.
-+temp3_crit		Provides Tcontrol critical value of the CPU package
-+			which is same to Tjmax.
-+
-+temp4_label		"Tthrottle"
-+temp4_input		Provides current Tthrottle temperature of the CPU
-+			package. Used for throttling temperature. If this value
-+			is allowed and lower than Tjmax - the throttle will
-+			occur and reported at lower than Tjmax.
-+
-+temp5_label		"Tjmax"
-+temp5_input		Provides the maximum junction temperature, Tjmax of the
-+			CPU package.
-+
-+temp[6-N]_label		Provides string "Core X", where X is resolved core
-+			number.
-+temp[6-N]_input		Provides current temperature of each core.
-+
-+======================= =======================================================
-diff --git a/Documentation/hwmon/peci-dimmtemp.rst b/Documentation/hwmon/peci-dimmtemp.rst
-new file mode 100644
-index 000000000000..e562aed620de
---- /dev/null
-+++ b/Documentation/hwmon/peci-dimmtemp.rst
-@@ -0,0 +1,57 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+Kernel driver peci-dimmtemp
-+===========================
-+
-+Supported chips:
-+	One of Intel server CPUs listed below which is connected to a PECI bus.
-+		* Intel Xeon E5/E7 v3 server processors
-+			Intel Xeon E5-14xx v3 family
-+			Intel Xeon E5-24xx v3 family
-+			Intel Xeon E5-16xx v3 family
-+			Intel Xeon E5-26xx v3 family
-+			Intel Xeon E5-46xx v3 family
-+			Intel Xeon E7-48xx v3 family
-+			Intel Xeon E7-88xx v3 family
-+		* Intel Xeon E5/E7 v4 server processors
-+			Intel Xeon E5-16xx v4 family
-+			Intel Xeon E5-26xx v4 family
-+			Intel Xeon E5-46xx v4 family
-+			Intel Xeon E7-48xx v4 family
-+			Intel Xeon E7-88xx v4 family
-+		* Intel Xeon Scalable server processors
-+			Intel Xeon D family
-+			Intel Xeon Bronze family
-+			Intel Xeon Silver family
-+			Intel Xeon Gold family
-+			Intel Xeon Platinum family
-+
-+	Datasheet: Available from http://www.intel.com/design/literature.htm
-+
-+Author: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
-+
-+Description
-+-----------
-+
-+This driver implements a generic PECI hwmon feature which provides
-+Temperature sensor on DIMM readings that are accessible via the processor PECI interface.
-+
-+All temperature values are given in millidegree Celsius and will be measurable
-+only when the target CPU is powered on.
-+
-+Sysfs interface
-+-------------------
-+
-+======================= =======================================================
-+
-+temp[N]_label		Provides string "DIMM CI", where C is DIMM channel and
-+			I is DIMM index of the populated DIMM.
-+temp[N]_input		Provides current temperature of the populated DIMM.
-+temp[N]_max		Provides thermal control temperature of the DIMM.
-+temp[N]_crit		Provides shutdown temperature of the DIMM.
-+
-+======================= =======================================================
-+
-+Note:
-+	DIMM temperature attributes will appear when the client CPU's BIOS
-+	completes memory training and testing.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 369ac3524f33..d821aeaaa2d3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15103,6 +15103,8 @@ PECI HARDWARE MONITORING DRIVERS
- M:	Iwona Winiarska <iwona.winiarska@intel.com>
- L:	linux-hwmon@vger.kernel.org
- S:	Supported
-+F:	Documentation/hwmon/peci-cputemp.rst
-+F:	Documentation/hwmon/peci-dimmtemp.rst
- F:	drivers/hwmon/peci/
+diff --git a/arch/mips/loongson64/Platform b/arch/mips/loongson64/Platform
+index 3e660d6d3c2b..36ab2fe00835 100644
+--- a/arch/mips/loongson64/Platform
++++ b/arch/mips/loongson64/Platform
+@@ -5,24 +5,9 @@
  
- PECI SUBSYSTEM
--- 
-2.31.1
+ cflags-$(CONFIG_CPU_LOONGSON64)	+= -Wa,--trap
+ 
+-#
+-# binutils from v2.25 on and gcc starting from v4.9.0 treat -march=loongson3a
+-# as MIPS64 R2; older versions as just R1.  This leaves the possibility open
+-# that GCC might generate R2 code for -march=loongson3a which then is rejected
+-# by GAS.  The cc-option can't probe for this behaviour so -march=loongson3a
+-# can't easily be used safely within the kbuild framework.
+-#
+-ifeq ($(call cc-ifversion, -ge, 0409, y), y)
+-  ifeq ($(call ld-ifversion, -ge, 22500, y), y)
+-    cflags-$(CONFIG_CPU_LOONGSON64)  += \
+-      $(call cc-option,-march=loongson3a -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64)
+-  else
+-    cflags-$(CONFIG_CPU_LOONGSON64)  += \
+-      $(call cc-option,-march=mips64r2,-mips64r2 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64)
+-  endif
+-else
+-    cflags-$(CONFIG_CPU_LOONGSON64)  += \
+-      $(call cc-option,-march=mips64r2,-mips64r2 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64)
++ifdef CONFIG_CPU_LOONGSON64
++cflags-$(CONFIG_CC_IS_CLANG) += -march=mips64r2
++cflags-$(CONFIG_CC_IS_GCC) += -march=loongson3a
+ endif
+ 
+ # Some -march= flags enable MMI instructions, and GCC complains about that
 
+> >
+> > Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> >
+> >> ---
+> >>  arch/mips/loongson64/Platform | 13 +++----------
+> >>  1 file changed, 3 insertions(+), 10 deletions(-)
+> >>
+> >> diff --git a/arch/mips/loongson64/Platform b/arch/mips/loongson64/Platform
+> >> index 3e660d6d3c2b..981d3abc150e 100644
+> >> --- a/arch/mips/loongson64/Platform
+> >> +++ b/arch/mips/loongson64/Platform
+> >> @@ -12,17 +12,10 @@ cflags-$(CONFIG_CPU_LOONGSON64)     += -Wa,--trap
+> >>  # by GAS.  The cc-option can't probe for this behaviour so -march=loongson3a
+> >>  # can't easily be used safely within the kbuild framework.
+> >>  #
+> >> -ifeq ($(call cc-ifversion, -ge, 0409, y), y)
+> >> -  ifeq ($(call ld-ifversion, -ge, 22500, y), y)
+> >> -    cflags-$(CONFIG_CPU_LOONGSON64)  += \
+> >> -      $(call cc-option,-march=loongson3a -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64)
+> >> -  else
+> >> -    cflags-$(CONFIG_CPU_LOONGSON64)  += \
+> >> -      $(call cc-option,-march=mips64r2,-mips64r2 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64)
+> >> -  endif
+> >> +ifeq ($(CONFIG_CC_IS_GCC)$(call ld-ifversion, -ge, 22500, y), yy)
+> >> +  cflags-$(CONFIG_CPU_LOONGSON64) += -march=loongson3a -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64
+> >>  else
+> >> -    cflags-$(CONFIG_CPU_LOONGSON64)  += \
+> >> -      $(call cc-option,-march=mips64r2,-mips64r2 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64)
+> >> +  cflags-$(CONFIG_CPU_LOONGSON64) += -march=mips64r2
+> >>  endif
+> >>
+> >>  # Some -march= flags enable MMI instructions, and GCC complains about that
+> >>
+> >> base-commit: 2c271fe77d52a0555161926c232cd5bc07178b39
+> >> --
+> >> 2.34.1
+> >>
+> >
+> >
+> > -- 
+> > Thanks,
+> > ~Nick Desaulniers
+> 
+> -- 
+> - Jiaxun
