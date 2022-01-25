@@ -2,131 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 283B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E80C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583008AbiAYQAf (ORCPT
+        id S1356810AbiAYQD5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 11:00:35 -0500
-Received: from foss.arm.com ([217.140.110.172]:52452 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1582888AbiAYP7C (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:59:02 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A30AA1FB;
-        Tue, 25 Jan 2022 07:58:57 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [10.57.1.45])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 63F883F793;
-        Tue, 25 Jan 2022 07:58:55 -0800 (PST)
-Date:   Tue, 25 Jan 2022 15:58:51 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        acme@redhat.com, Borislav Petkov <bp@alien8.de>,
-        Mark Brown <broonie@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v2 0/7] linkage: better symbol aliasing
-Message-ID: <YfAeO+8R+XiYtr8l@FVFF77S0Q05N>
-References: <20220125113200.3829108-1-mark.rutland@arm.com>
- <CAMj1kXGCFFHzZAqhfmJthGCe6uhFsrHwzK0QyOfrGw7_kNbjWQ@mail.gmail.com>
- <YfAbMY6U4UpyrerB@FVFF77S0Q05N>
- <CAMj1kXEyzNMWiQFiZW1_QTApmuHfot82USC=Q8nP27sVm+WMMw@mail.gmail.com>
+        Tue, 25 Jan 2022 11:03:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38664 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1358985AbiAYQCi (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 11:02:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643126557;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IcXE3mGr5yfM3UtM9LVtuUY7Hip9fv9Bn5lXnjAC8TA=;
+        b=AFeATuYBBXKvC9Sxk9NcXPiFT9k47o3kyso1nMXrDMZM7lq63lJOWlZASM3e14rdyx84DI
+        DScLfPTMzd9O4MdmNwHHEnVM+fYMqYXJHevQ7sSc+hVTV2Dq1hNa+wbncm4o/xTkb20PeN
+        2qg37ssQu9jclC+3zOGv1tHz9nFDVJg=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-12-Qze3TO59OGC5xTp9eXjLmA-1; Tue, 25 Jan 2022 11:02:35 -0500
+X-MC-Unique: Qze3TO59OGC5xTp9eXjLmA-1
+Received: by mail-ed1-f69.google.com with SMTP id el8-20020a056402360800b00403bbdcef64so15262103edb.14
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:02:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IcXE3mGr5yfM3UtM9LVtuUY7Hip9fv9Bn5lXnjAC8TA=;
+        b=s4U2rC5s8EfENGDB9eDhloTYww4Fbn77TApflIu4ei8T39a4VV/XuTL/XHvzWYznWo
+         MvGw+LLBL4xfHPXn8ZiX7T5KEH0SQmBzxB69TuZmPAoHAutb0mE9q7ixLsjMu2UFYXDm
+         l82KVsuOnTpxO0aeOb3Vqn+SS6nrBLRIrRWjVtJ5G+2e1g6filU6/gsNdegA5XuWvI42
+         o7bvyBks/2G17iHEt+ZPxXUZgmR5dN2sYrSS9QYrWV3kNjRcdPLDvA9b/duwhgUvMpdU
+         CysjY7whEEJt5t6esmTfn6dQlO1glaopPt4Y2+jqB5QWeTqEhpasVW73QOVeeDSj2gTj
+         RkkA==
+X-Gm-Message-State: AOAM530dcIVZErgSicb2GcH4auB4wg9oD3WX5yw+PA9cF9BHbh7dYIGw
+        LGzjS04Bmat695172VkChxSQw5pJ0K5+fWfvi9XWQwz0ItPqkSwk+hkAvMmSei41P5C3owSPoKP
+        i9pc+FWmCOmxpCoKoiNlUmH7b
+X-Received: by 2002:a17:907:72c4:: with SMTP id du4mr8767055ejc.243.1643126552085;
+        Tue, 25 Jan 2022 08:02:32 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwU53k0R46hrB5fKDfPkTXRr1Nq6+8sBmzHPfHo09CnOTd5BXa/VXr/nYQ7KlVvTDXEMsvf5Q==
+X-Received: by 2002:a17:907:72c4:: with SMTP id du4mr8767031ejc.243.1643126551881;
+        Tue, 25 Jan 2022 08:02:31 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id g8sm6445025ejt.26.2022.01.25.08.02.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 08:02:31 -0800 (PST)
+Message-ID: <e2e1c0bd-1a7e-7e21-2c38-99414e8a7cab@redhat.com>
+Date:   Tue, 25 Jan 2022 17:02:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXEyzNMWiQFiZW1_QTApmuHfot82USC=Q8nP27sVm+WMMw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 07/19] KVM: x86/svm: Remove unused "vcpu" of
+ nested_svm_check_tlb_ctl()
+Content-Language: en-US
+To:     Jinrong Liang <ljr.kernel@gmail.com>
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Jim Mattson <jmattson@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220125095909.38122-1-cloudliang@tencent.com>
+ <20220125095909.38122-8-cloudliang@tencent.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220125095909.38122-8-cloudliang@tencent.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 04:49:03PM +0100, Ard Biesheuvel wrote:
-> On Tue, 25 Jan 2022 at 16:46, Mark Rutland <mark.rutland@arm.com> wrote:
-> >
-> > On Tue, Jan 25, 2022 at 04:28:11PM +0100, Ard Biesheuvel wrote:
-> > > On Tue, 25 Jan 2022 at 12:32, Mark Rutland <mark.rutland@arm.com> wrote:
-> > > >
-> > > > This series aims to make symbol aliasing simpler and more consistent.
-> > > > The basic idea is to replace SYM_FUNC_START_ALIAS(alias) and
-> > > > SYM_FUNC_END_ALIAS(alias) with a new SYM_FUNC_ALIAS(alias, name), so
-> > > > that e.g.
-> > > >
-> > > >     SYM_FUNC_START(func)
-> > > >     SYM_FUNC_START_ALIAS(alias1)
-> > > >     SYM_FUNC_START_ALIAS(alias2)
-> > > >         ... asm insns ...
-> > > >     SYM_FUNC_END(func)
-> > > >     SYM_FUNC_END_ALIAS(alias1)
-> > > >     SYM_FUNC_END_ALIAS(alias2)
-> > > >     EXPORT_SYMBOL(alias1)
-> > > >     EXPORT_SYMBOL(alias2)
-> > > >
-> > > > ... can become:
-> > > >
-> > > >     SYM_FUNC_START(name)
-> > > >         ... asm insns ...
-> > > >     SYM_FUNC_END(name)
-> > > >
-> > > >     SYM_FUNC_ALIAS(alias1, func)
-> > > >     EXPORT_SYMBOL(alias1)
-> > > >
-> > > >     SYM_FUNC_ALIAS(alias2, func)
-> > > >     EXPORT_SYMBOL(alias2)
-> > > >
-> > > > This avoids repetition and hopefully make it easier to ensure
-> > > > consistency (e.g. so each function has a single canonical name and
-> > > > associated metadata).
-> > > >
-> > >
-> > > I take it this affects the sizes of the alias ELF symbols? Does that matter?
-> >
-> > The alias should be given the same size as the original symbol, unless I've
-> > made an error. If you look at patch 3:
-> >
-> > * In SYM_FUNC_START(name), via SYM_ENTRY_AT(name, ...), we create a local label
-> >   for the start of the function: .L____sym_entry__##name
-> >
-> > * In SYM_FUNC_END(name), via SYM_END_AT(name, ...), we create a local label for
-> >   the end of the function: .L____sym_end__##name
-> >
-> > * In SYM_FUNC_ALIAS*(alias,name), we define the start and end of the alias as
-> >   the start and end of the original symbol using those local labels, e.g.
-> >
-> >   | #define SYM_FUNC_ALIAS(alias, name)                                     \
-> >   |         SYM_START_AT(alias, .L____sym_entry__##name, SYM_L_GLOBAL)      \
-> >   |         SYM_END_AT(alias, .L____sym_end__##name, SYM_T_FUNC)
-> >
-> > Note that:
-> >
-> > * SYM_FUNC_START() uses SYM_START(), which uses SYM_ENTRY_AT()
-> > * SYM_FUNC_END() uses SYM_END(), which uses SYM_END_AT()
-> >
-> > ... so the definition of tha alias is ultimately structurally identical to the
-> > definition of the canoncial name, at least for now.
-> >
+On 1/25/22 10:58, Jinrong Liang wrote:
+> From: Jinrong Liang <cloudliang@tencent.com>
 > 
-> Ah right, apologies for not looking more carefully - I assumed the
-> changed placement implied that the aliases had zero size.
+> The "struct kvm_vcpu *vcpu" parameter of nested_svm_check_tlb_ctl()
+> is not used, so remove it. No functional change intended.
+> 
+> Signed-off-by: Jinrong Liang <cloudliang@tencent.com>
 
-NP; I didn't make that clear in the cover letter, and now it's written up and
-archived for future reference. :)
+This might be useful later if the code needs to check guest CPUID bits. 
+  Leaving it in for now.
 
-> And ultimately, I don't think there is an obviously correct answer
-> anyway, it's just the [apparently non-existent] change in behavior I
-> was curious about.
+Paolo
 
-FWIW, I hadn't really considered whether we actually need that for the aliases;
-it was jsut the path of least resistance implementation-wise, and I'd like to
-be able to use the local labls for the bounds in future for other annotations
-and sanity-checks.
+> ---
+>   arch/x86/kvm/svm/nested.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+> index cf206855ebf0..5a1a2678a2b1 100644
+> --- a/arch/x86/kvm/svm/nested.c
+> +++ b/arch/x86/kvm/svm/nested.c
+> @@ -209,7 +209,7 @@ static bool nested_svm_check_bitmap_pa(struct kvm_vcpu *vcpu, u64 pa, u32 size)
+>   	    kvm_vcpu_is_legal_gpa(vcpu, addr + size - 1);
+>   }
+>   
+> -static bool nested_svm_check_tlb_ctl(struct kvm_vcpu *vcpu, u8 tlb_ctl)
+> +static bool nested_svm_check_tlb_ctl(u8 tlb_ctl)
+>   {
+>   	/* Nested FLUSHBYASID is not supported yet.  */
+>   	switch(tlb_ctl) {
+> @@ -240,7 +240,7 @@ static bool __nested_vmcb_check_controls(struct kvm_vcpu *vcpu,
+>   					   IOPM_SIZE)))
+>   		return false;
+>   
+> -	if (CC(!nested_svm_check_tlb_ctl(vcpu, control->tlb_ctl)))
+> +	if (CC(!nested_svm_check_tlb_ctl(control->tlb_ctl)))
+>   		return false;
+>   
+>   	return true;
 
-Thanks,
-Mark.
