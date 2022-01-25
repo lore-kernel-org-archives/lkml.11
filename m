@@ -2,88 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E395FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:31:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A61C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238825AbiAYObb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:31:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30914 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1578999AbiAYO0Y (ORCPT
+        id S240921AbiAYOcD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 09:32:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1579375AbiAYO1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:26:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643120777;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dLtIFJjgUtOUVDA99ng5/AGYu7PV8wK1w9Iei4rx6Qg=;
-        b=eN7cCiL1RTWtEPi+pCzfJ+JeAsLx6NWd0J5Na1+geEwjo27YSHQEDvWWsZiLz3D3najCzu
-        8xR4bJyDHUJY9wHmILqbObrtt4jmu1FWwOZSNFLonykallljz5qs0W8+7yfJNDfhmKs2V7
-        NXERGBqOAoE8SD+x1hqZ+/hmL64Is8w=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-454-488mywHbN5SQtNDqinftjg-1; Tue, 25 Jan 2022 09:26:16 -0500
-X-MC-Unique: 488mywHbN5SQtNDqinftjg-1
-Received: by mail-ed1-f72.google.com with SMTP id h21-20020aa7c955000000b0040390b2bfc5so15035001edt.15
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:26:15 -0800 (PST)
+        Tue, 25 Jan 2022 09:27:13 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F1FC061755
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:25:33 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id c6so62194983ybk.3
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:25:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lFnSDupuYaQ1MQejso8mT1I5AQneR3nub9bSmJN8qsM=;
+        b=Byf4Ud2Ux5oawS5IIueddrkK9fhvRtMk6ntgz9b7jSl2gVLjeV49ZS86Xo68ZceTKe
+         SxwfCzE9AnTtQ0NmdpOZqlPTAn4Rg//G+lBk2mNOuiXFfQ7aRbKlDHvEh+T9ACDBfyqF
+         wJkjNzSFW6XITY8jPHGjE1StTuJ5RzjK5tUbDk2GKM3wBeWmEmVCeA+jNFl5XG0UhTZv
+         t5DJApD5A4i6vUJP03oprjbWgg7SfijRUskCiqgvAehg1q7dVv+t5hEtfxWCsoxrGsLc
+         p4+/hUIYLmlp0BZRC/tn0/J99/s8EMDIOu53U+xHGOwirlbSQgD3RJkHvspmMza6m7DC
+         6J5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dLtIFJjgUtOUVDA99ng5/AGYu7PV8wK1w9Iei4rx6Qg=;
-        b=qgySIFMEfkIE5WOzF7dup0PI1gwZILzMyh5r61s+BPb9iiVOI7ZbLR3Lrg18bQqkRl
-         aRIX9wG0akZ0Gkyra5PSYGzscA8L4WFqtl4C/5VAQ7QFxVTs9dv9GhvuLv9c0bdFefLt
-         rk/Yf7CjrRT5e18/3cjgKm9uKbArYCeMnioQlZYxSfhk6vMxgl6wDNRdFWGESvEADn8e
-         FiabCDTIzmwHWF/D14xr3K18Jdq5SqaBiRkECs89PNE6kAcMZ61FiYYowWOtEe/FFvcI
-         T/uWhpog+M1rMk8HivYfrjRJiRZI4DmXmLYpQ/ulAnuSX4FPcoaFg2lHuOaOXZ+yyKR6
-         9lUA==
-X-Gm-Message-State: AOAM530/UrBtJbLd4Tc30WsKCjzFJN30y6JN4Y/JRmziG0dVb1bdrSVN
-        8fygi3DHe8odpbprbJjQCVyr9AsORI4M8o5+px47BQgY11ie/b0PfvbcjotPN9jPh/D670GElsF
-        dmVZvId0EAGQlMHdjMV7NwerbUblHyH+19YruAzrs
-X-Received: by 2002:a17:906:1f15:: with SMTP id w21mr16253527ejj.205.1643120774973;
-        Tue, 25 Jan 2022 06:26:14 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz9O9o4wfs8N1leHAikkbwJT29Az/OoR2DjwNtoJWQuQqqvtGNb1WTEw1Hy2QO4rGn2JAk000qaKRVjx7pfKF8=
-X-Received: by 2002:a17:906:1f15:: with SMTP id w21mr16253499ejj.205.1643120774706;
- Tue, 25 Jan 2022 06:26:14 -0800 (PST)
+        bh=lFnSDupuYaQ1MQejso8mT1I5AQneR3nub9bSmJN8qsM=;
+        b=NmGpXufddsf20jwh79Yr0RmYAiyJs1QQBz/ICQCtn6+efikALR+qO5VIh4RCz4lWHk
+         iLfJoSkZ/cYxYydVZB3asGwU1d5EyPgbCgfZy0dnTmr1ZcBIVWhS2H4VD4xo5XwAHWbP
+         FxLoUZH5qugWxBuNhyahGAnAOQYd84U/SZaElkVMMfHKL/0ZYnG2CHqlTFr82Js7P55j
+         IYdWpQGNfa1MwHXENtFPa+fBvwFYJFbAjGhezza8kV5/wdKk0+ecd1cJmWgarsUHHu2G
+         xipif9kUAAzAU99XbByUVL3lXRB5o4vKswTC7PuyvaIUJaf5x5Wxi3W1GsWfH3A4ZEm0
+         yu1A==
+X-Gm-Message-State: AOAM533MQE+PjWbYFeCVvXJdwahnofah51uRo27XvUrK6279zWdXHkud
+        dNz5c67kbIf/hdYCG/6l2sumv7VR5kUXtvJ1k0Otjw==
+X-Google-Smtp-Source: ABdhPJxELYtJvtY502AMwplDdVTZkQ1wElvFurJ537bcOYFxpfhh9Q1yIm5DMfTGoFH7if2ZoPOMjTmFVcQbHOiaZVY=
+X-Received: by 2002:a25:ab6b:: with SMTP id u98mr28752508ybi.523.1643120732730;
+ Tue, 25 Jan 2022 06:25:32 -0800 (PST)
 MIME-Version: 1.0
-References: <20211222112831.1968392-1-wander@redhat.com> <20211222112831.1968392-2-wander@redhat.com>
- <Ye/1+Z8mEzbKbrqG@linutronix.de> <CAAq0SUmdGinqdWXrHztx8g9hb+5UF5rDJJjVeVMj3CQ=Fw3kJg@mail.gmail.com>
- <YfAFAcYmJ+Zrontd@linutronix.de>
-In-Reply-To: <YfAFAcYmJ+Zrontd@linutronix.de>
-From:   Wander Costa <wcosta@redhat.com>
-Date:   Tue, 25 Jan 2022 11:26:03 -0300
-Message-ID: <CAAq0SUkuG2uyouBhT5yDiq_KbOGUCO=9ondq6dkt1QZLN_C4uA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] tty: serial: Use fifo in 8250 console driver
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Wander Lairson Costa <wander@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
+References: <20220125124833.39718-1-linmiaohe@huawei.com>
+In-Reply-To: <20220125124833.39718-1-linmiaohe@huawei.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Tue, 25 Jan 2022 22:24:56 +0800
+Message-ID: <CAMZfGtUjFOayWco-5yF=BvTpQ5-Bv3qUq3N5_b8dBU6vo8ZFHw@mail.gmail.com>
+Subject: Re: [PATCH] mm/hmm.c: remove unneeded local variable ret
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, jglisse@redhat.com,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 11:11 AM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
+On Tue, Jan 25, 2022 at 8:52 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
 >
-> On 2022-01-25 10:15:04 [-0300], Wander Costa wrote:
-> > There is another thread[1] reporting some issues with this patch.
-> > There, this diff seems to fix the problems, could you please try and
-> > report if it works for you too?
+> The local variable ret is always 0. Remove it to make code more tight.
 >
-> Nope. Still there.
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-I will check on my side if I see something similar. Do you still get
-lines lost as well?
-
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
