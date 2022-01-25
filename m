@@ -2,179 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E70C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353501AbiAYEkI (ORCPT
+        id S1357648AbiAYEk2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:40:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51640 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381709AbiAYD0R (ORCPT
+        Mon, 24 Jan 2022 23:40:28 -0500
+Received: from mailout1.samsung.com ([203.254.224.24]:10292 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1323468AbiAYD2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:26:17 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4542CC06174E
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 15:16:50 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id s5so25711048ejx.2
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 15:16:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amacapital-net.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QxPfP8pNdiwhYtTaz9f4lBwxupGy0qqIDwxrF8YmvL4=;
-        b=0lvwqQR2eMER7dNpywxJaMiUqn32TykDwHsFXQbk9QtjkddJz2JxMGMZ7vUIn8qNts
-         b4NnCXXnk++9wRjgnjBoj/H8wwHQbeMEeOeFiXKEz1Ghgw9sUe15oV7MQf5g0moLeSDr
-         HHQwzSZxyKgDcTjLe+gQyBxqKouzz3a6ZOqPPGvmFR0kxoZSQmhWErOkToPMsq+H6Ece
-         e8LzxFG2GXvbEYwqdSuTihLXeFvh6lNrlYwiULzPCsV35seif51vYRYesGdEkjf9RRvZ
-         2xcpPXV1xP8ARGPHNtdSNmtDF9vk4RSO4pz23LKFXsjvYns3rjQCRe8CcKkLqLnQCHtZ
-         h1MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QxPfP8pNdiwhYtTaz9f4lBwxupGy0qqIDwxrF8YmvL4=;
-        b=cTlXoWTXix8G1xcWkamwKEnJE7jgLt64I0ketvkY5kejfjgeSyc6EmjRjVrRktQEQW
-         FAnrTBoE2YmyV4dvNlbnQvl7y6P2b+1JX3aB5nBBCIu+e3ckwryrzaSVu9j3P4i5bqKy
-         Go/p2uOoB7fPuZ4eGWu9wQfIRVNrpPmyrFDiUBJJ9vmxdI6WjV7l7AGhQFyeHsfM2oke
-         kgswD50l7X5jCATJWgWgkfNvk4+EiQpm+UktX4Dz2x8LyoLeoheAAB2Az0vIUDkHnDto
-         fS73Rq0tGRZQGO0jlVaLwpem0OZOeJgTUHN5LXvHgNsmXn67jidsbXDade4SrEF6TAFd
-         /8+w==
-X-Gm-Message-State: AOAM5326TevcBnqOCKgCw8hM9pHy5pMwa6Mqxx5neLc1RPpZTKFCIKFu
-        tenXbIWPXNLsCbHrsKAoIzUhKc9XajpJawxmMWG/Rw==
-X-Google-Smtp-Source: ABdhPJw5ZrUO3qCzeWxUtnf+ow/Ga2rQet7PkkHrJWNYwOkFrn2Bn5jHHu8lm5LUBgrkablnldXJANswKhLcg+kcvBE=
-X-Received: by 2002:a17:906:e15:: with SMTP id l21mr13841455eji.675.1643066208803;
- Mon, 24 Jan 2022 15:16:48 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1642526745.git.khalid.aziz@oracle.com> <YevrGs3WE7ywB+lH@kernel.org>
- <4d333527-391f-fe6b-eb2d-123d67242d2c@oracle.com> <CALCETrVNrcsLvFwTER8LmgZZdy0Mye7EJXyuOaS5yVQvB5UNpA@mail.gmail.com>
- <e26d2bfd-adbf-16ab-76d4-949f0ebb86cf@oracle.com>
-In-Reply-To: <e26d2bfd-adbf-16ab-76d4-949f0ebb86cf@oracle.com>
-From:   Andy Lutomirski <luto@amacapital.net>
-Date:   Mon, 24 Jan 2022 15:16:26 -0800
-Message-ID: <CALCETrXjxoEmhyPdtkankPPaKp0r=oYqhnzL1A7rnQEj6xWSig@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
-To:     Khalid Aziz <khalid.aziz@oracle.com>
-Cc:     Mike Rapoport <rppt@kernel.org>, akpm@linux-foundation.org,
-        willy@infradead.org, longpeng2@huawei.com, arnd@arndb.de,
-        dave.hansen@linux.intel.com, david@redhat.com, surenb@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-api@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 24 Jan 2022 22:28:38 -0500
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220125032829epoutp0174cc9347ecc46d580062f5e8145468b5~NZb7quWuh2072120721epoutp01x
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 03:28:29 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220125032829epoutp0174cc9347ecc46d580062f5e8145468b5~NZb7quWuh2072120721epoutp01x
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1643081309;
+        bh=V1zBLXm/UJPgvDIjwL8ACY/O218Opqari+8Gh8BGZ7g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=h9WYl9ean5Z+wnolJR3PoCZ5m3VJ+hGqbeF5RJWJoJtiUMEjXQhX5SLgoH/42eC5O
+         qEfHeXnAxgTMrhif3CkMXNfZ0LD5vED9vnoLjRpj0loAeXuM4cbT3/OvVPwsDzrFDv
+         5b3WltDmt1apwuKARWQ0zBv7PcYQ7FlraX9SviFo=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20220125032829epcas5p463ed13dc3fdc457f49bce93c99ce0bb8~NZb7NCZXU1924019240epcas5p4m;
+        Tue, 25 Jan 2022 03:28:29 +0000 (GMT)
+Received: from epsmges5p2new.samsung.com (unknown [182.195.38.181]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4JjXPL4Dhvz4x9QJ; Tue, 25 Jan
+        2022 03:28:22 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        1B.08.46822.1EC6FE16; Tue, 25 Jan 2022 12:22:09 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220125032821epcas5p128c99ca3654fce0ec046943c90211849~NZb0dhrF01313413134epcas5p1-;
+        Tue, 25 Jan 2022 03:28:21 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220125032821epsmtrp1ff7fd6850e9ee747b393a5be6ce1a16d~NZb0ctn0_0576205762epsmtrp1R;
+        Tue, 25 Jan 2022 03:28:21 +0000 (GMT)
+X-AuditID: b6c32a4a-de5ff7000000b6e6-78-61ef6ce1a54e
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        A7.68.29871.55E6FE16; Tue, 25 Jan 2022 12:28:21 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220125032817epsmtip19e47296f384470582f757a9c255c41b5~NZbwA7U9L0280902809epsmtip17;
+        Tue, 25 Jan 2022 03:28:17 +0000 (GMT)
+From:   Alim Akhtar <alim.akhtar@samsung.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linus.walleij@linaro.org,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
+        broonie@kernel.org, andi@etezian.org, linux-spi@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>, linux-fsd@tesla.com,
+        Adithya K V <adithya.kv@samsung.com>
+Subject: [PATCH v3 1/3] spi: dt-bindings: samsung: Add fsd spi compatible
+Date:   Tue, 25 Jan 2022 08:46:02 +0530
+Message-Id: <20220125031604.76009-2-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220125031604.76009-1-alim.akhtar@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpkk+LIzCtJLcpLzFFi42LZdlhTQ/dhzvtEgyUz9S0OTHjFavFg3jY2
+        i8U/njNZTH34hM1i/pFzrBYb3/5gspjyZzmTxabH11gtHr4Kt7i8aw6bxYzz+5gsGj/eZLdY
+        tPULu0Xr3iPsDnwesxp62TyuL/nE7LFpVSebx51re9g8Ni+p9+jbsorR41/TXHaPz5vkAjii
+        sm0yUhNTUosUUvOS81My89JtlbyD453jTc0MDHUNLS3MlRTyEnNTbZVcfAJ03TJzgM5WUihL
+        zCkFCgUkFhcr6dvZFOWXlqQqZOQXl9gqpRak5BSYFOgVJ+YWl+al6+WlllgZGhgYmQIVJmRn
+        bHt8laXgI3vF8bMnWRoYj7F1MXJySAiYSFzofcvYxcjFISSwm1Hiyu6ZrCAJIYFPjBL7HolB
+        JL4xSvz7MZsFpmPRnT/MEIm9jBJHpu1jgXBamCT2XroP1s4moC1xd/oWJhBbRMBN4kZjBxNI
+        EbPATSaJ3w2vwZYLC3hKfGi8BdbAIqAqsfPSMmYQm1fARmLutx5WiHXyEqs3HACKc3BwCthK
+        NE/gAJkjITCRQ+Jb0xZGiBoXiRW33kM9JCzx6vgWdghbSuJlfxs7SK+EQLZEzy5jiHCNxNJ5
+        x6C+sZc4cGUOC0gJs4CmxPpd+iBhZgE+id7fT5ggOnklOtqEIKpVJZrfXYXqlJaY2N0NdaSH
+        xOmJ3xkhATeBUWLZa7EJjLKzEIYuYGRcxSiZWlCcm55abFpglJdaDo+m5PzcTYzgtKjltYPx
+        4YMPeocYmTgYDzFKcDArifD+936fKMSbklhZlVqUH19UmpNafIjRFBhgE5mlRJPzgYk5ryTe
+        0MTSwMTMzMzE0tjMUEmc93T6hkQhgfTEktTs1NSC1CKYPiYOTqkGppWM6xO1tj6NU+8wqLUX
+        +XPH7vKbgIJH7gtuVU2dcnM5w291XtMvKZOvXHnuu3CFVbJvUCq/4M3o/Nwld0wn9+s3MN4x
+        uSPzvXpRKPv20812+1bMsF2sJb6qXZlrW7MLl9zvm9fPSVss3Nupo84V05NyJj9szYat77Vn
+        6C4oe5O9z9TLI6blqsyhTf6RZhGm3xKqN6lfcIle4eqx8tb+w8eevdvxWXCdZcyBsCl6vU9E
+        XnlH3kkNf/PHiC9zScA++SXuvSnbPbOPfC3Rv8g2lXHbNVm+xn1HL1+pkfK5IWZ1LsXfVW5e
+        1g3RbpZkzmLlfbE29sfndVXMfelVrlCr8jlNzvl4TKhziNcGxRX2SizFGYmGWsxFxYkAitGp
+        FBQEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrGLMWRmVeSWpSXmKPExsWy7bCSnG5o3vtEg8aXRhYHJrxitXgwbxub
+        xeIfz5kspj58wmYx/8g5VouNb38wWUz5s5zJYtPja6wWD1+FW1zeNYfNYsb5fUwWjR9vslss
+        2vqF3aJ17xF2Bz6PWQ29bB7Xl3xi9ti0qpPN4861PWwem5fUe/RtWcXo8a9pLrvH501yARxR
+        XDYpqTmZZalF+nYJXBnbHl9lKfjIXnH87EmWBsZjbF2MnBwSAiYSi+78Ye5i5OIQEtjNKPFz
+        9mwmiIS0xPWNE9ghbGGJlf+es0MUNTFJPL36D6yITUBb4u70LWC2iICHRNu/e2CTmAWeMklc
+        udHGCJIQFvCU+NB4ixXEZhFQldh5aRkziM0rYCMx91sPK8QGeYnVGw4AxTk4OAVsJZoncICY
+        QkAl7xdpTGDkW8DIsIpRMrWgODc9t9iwwDAvtVyvODG3uDQvXS85P3cTIziotTR3MG5f9UHv
+        ECMTB+MhRgkOZiUR3v/e7xOFeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCeWJKanZpa
+        kFoEk2Xi4JRqYGpYlsLL1yyW1/SrW0X70catMpIHPF6H8TBL7teuWns1I6bky3WBJ7JzuFdM
+        myXzZ3Jl5V0+1+D3m09ezs9NOPhT8dGJef8fHL8lYJqfOclqgeL+57L7VhwKffz60ZWia70C
+        CxTCvN6v/CkXetWL59mxH9LmEYYzdkYcWO7P9fnB5/X3tv0+dNDCwS/j4I8LfqZsu43nONqb
+        Vfif4VtmfbZFc/mzpfujahV/CP0WXd1tfX3d4fwg0Z2RV4xnye3SPFoeWDDru2HphBb+CZ9t
+        PjImc52IOOsjPPHJrudbLt6fPSclmu2rX0CyiKjQVa5dLy9lcJhbnvv6tOZKXMydmjXxkq/v
+        tfwwaZX7Np/B/+l9JZbijERDLeai4kQAq4Bl5tkCAAA=
+X-CMS-MailID: 20220125032821epcas5p128c99ca3654fce0ec046943c90211849
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220125032821epcas5p128c99ca3654fce0ec046943c90211849
+References: <20220125031604.76009-1-alim.akhtar@samsung.com>
+        <CGME20220125032821epcas5p128c99ca3654fce0ec046943c90211849@epcas5p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 2:34 PM Khalid Aziz <khalid.aziz@oracle.com> wrote:
->
-> On 1/24/22 12:45, Andy Lutomirski wrote:
-> > On Mon, Jan 24, 2022 at 10:54 AM Khalid Aziz <khalid.aziz@oracle.com> wrote:
-> >>
-> >> On 1/22/22 04:31, Mike Rapoport wrote:
-> >>> (added linux-api)
-> >>>
-> >>> On Tue, Jan 18, 2022 at 02:19:12PM -0700, Khalid Aziz wrote:
-> >>>> Page tables in kernel consume some of the memory and as long as
-> >>>> number of mappings being maintained is small enough, this space
-> >>>> consumed by page tables is not objectionable. When very few memory
-> >>>> pages are shared between processes, the number of page table entries
-> >>>> (PTEs) to maintain is mostly constrained by the number of pages of
-> >>>> memory on the system. As the number of shared pages and the number
-> >>>> of times pages are shared goes up, amount of memory consumed by page
-> >>>> tables starts to become significant.
-> >>>>
-> >>>> Some of the field deployments commonly see memory pages shared
-> >>>> across 1000s of processes. On x86_64, each page requires a PTE that
-> >>>> is only 8 bytes long which is very small compared to the 4K page
-> >>>> size. When 2000 processes map the same page in their address space,
-> >>>> each one of them requires 8 bytes for its PTE and together that adds
-> >>>> up to 8K of memory just to hold the PTEs for one 4K page. On a
-> >>>> database server with 300GB SGA, a system carsh was seen with
-> >>>> out-of-memory condition when 1500+ clients tried to share this SGA
-> >>>> even though the system had 512GB of memory. On this server, in the
-> >>>> worst case scenario of all 1500 processes mapping every page from
-> >>>> SGA would have required 878GB+ for just the PTEs. If these PTEs
-> >>>> could be shared, amount of memory saved is very significant.
-> >>>>
-> >>>> This is a proposal to implement a mechanism in kernel to allow
-> >>>> userspace processes to opt into sharing PTEs. The proposal is to add
-> >>>> a new system call - mshare(), which can be used by a process to
-> >>>> create a region (we will call it mshare'd region) which can be used
-> >>>> by other processes to map same pages using shared PTEs. Other
-> >>>> process(es), assuming they have the right permissions, can then make
-> >>>> the mashare() system call to map the shared pages into their address
-> >>>> space using the shared PTEs.  When a process is done using this
-> >>>> mshare'd region, it makes a mshare_unlink() system call to end its
-> >>>> access. When the last process accessing mshare'd region calls
-> >>>> mshare_unlink(), the mshare'd region is torn down and memory used by
-> >>>> it is freed.
-> >>>>
-> >>>>
-> >>>> API Proposal
-> >>>> ============
-> >>>>
-> >>>> The mshare API consists of two system calls - mshare() and mshare_unlink()
-> >>>>
-> >>>> --
-> >>>> int mshare(char *name, void *addr, size_t length, int oflags, mode_t mode)
-> >>>>
-> >>>> mshare() creates and opens a new, or opens an existing mshare'd
-> >>>> region that will be shared at PTE level. "name" refers to shared object
-> >>>> name that exists under /sys/fs/mshare. "addr" is the starting address
-> >>>> of this shared memory area and length is the size of this area.
-> >>>> oflags can be one of:
-> >>>>
-> >>>> - O_RDONLY opens shared memory area for read only access by everyone
-> >>>> - O_RDWR opens shared memory area for read and write access
-> >>>> - O_CREAT creates the named shared memory area if it does not exist
-> >>>> - O_EXCL If O_CREAT was also specified, and a shared memory area
-> >>>>     exists with that name, return an error.
-> >>>>
-> >>>> mode represents the creation mode for the shared object under
-> >>>> /sys/fs/mshare.
-> >>>>
-> >>>> mshare() returns an error code if it fails, otherwise it returns 0.
-> >>>
-> >>> Did you consider returning a file descriptor from mshare() system call?
-> >>> Then there would be no need in mshare_unlink() as close(fd) would work.
-> >>
-> >> That is an interesting idea. It could work and eliminates the need for a new system call. It could be confusing though
-> >> for application writers. A close() call with a side-effect of deleting shared mapping would be odd. One of the use cases
-> >> for having files for mshare'd regions is to allow for orphaned mshare'd regions to be cleaned up by calling
-> >> mshare_unlink() with region name. This can require calling mshare_unlink() multiple times in current implementation to
-> >> bring the refcount for mshare'd region to 0 when mshare_unlink() finally cleans up the region. This would be problematic
-> >> with a close() semantics though unless there was another way to force refcount to 0. Right?
-> >>
-> >
-> > I'm not sure I understand the problem.  If you're sharing a portion of
-> > an mm and the mm goes away, then all that should be left are some
-> > struct files that are no longer useful.  They'll go away when their
-> > refcount goes to zero.
-> >
-> > --Andy
-> >
->
-> The mm that holds shared PTEs is a separate mm not tied to a task. I started out by sharing portion of the donor process
-> initially but that necessitated keeping the donor process alive. If the donor process dies, its mm and the mshare'd
-> portion go away.
->
-> One of the requirements I have is the process that creates mshare'd region can terminate, possibly involuntarily, but
-> the mshare'd region persists and rest of the consumer processes continue without hiccup. So I create a separate mm to
-> hold shared PTEs and that mm is cleaned up when all references to mshare'd region go away. Each call to mshare()
-> increments the refcount and each call to mshare_unlink() decrements the refcount.
+Adds spi controller dt-binding compatible information for
+Tesla Full Self-Driving (FSD) SoC.
 
-In general, objects which are kept alive by name tend to be quite
-awkward. Things like network namespaces essentially have to work that
-way and end up with awkward APIs.  Things like shared memory don't
-actually have to be kept alive by name, and the cases that do keep
-them alive by name (tmpfs, shmget) can end up being so awkward that
-people invent nameless variants like memfd.
+Cc: linux-fsd@tesla.com
+Signed-off-by: Adithya K V <adithya.kv@samsung.com>
+Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Andi Shyti <andi@etezian.org>
+---
+ Documentation/devicetree/bindings/spi/samsung,spi.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-So I would strongly suggest you see how the design works out with no
-names and no external keep-alive mechanism.  Either have the continued
-existence of *any* fd keep the whole thing alive or make it be a pair
-of struct files, one that controls the region (and can map things into
-it, etc) and one that can map it.  SCM_RIGHTS is pretty good for
-passing objects like this around.
+diff --git a/Documentation/devicetree/bindings/spi/samsung,spi.yaml b/Documentation/devicetree/bindings/spi/samsung,spi.yaml
+index 61c77088e8ee..bf9a76d931d2 100644
+--- a/Documentation/devicetree/bindings/spi/samsung,spi.yaml
++++ b/Documentation/devicetree/bindings/spi/samsung,spi.yaml
+@@ -21,6 +21,7 @@ properties:
+           - samsung,s3c6410-spi
+           - samsung,s5pv210-spi # for S5PV210 and S5PC110
+           - samsung,exynos5433-spi
++          - tesla,fsd-spi
+       - const: samsung,exynos7-spi
+         deprecated: true
+ 
+-- 
+2.25.1
 
---Andy
