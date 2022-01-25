@@ -2,91 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1282CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345959AbiAYG11 (ORCPT
+        id S1346037AbiAYG3h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:27:27 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:49780 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344098AbiAYGXv (ORCPT
+        Tue, 25 Jan 2022 01:29:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37494 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345667AbiAYG0l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 01:23:51 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 064461F380;
-        Tue, 25 Jan 2022 06:23:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643091827; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SxB22q2urXIdsrmoPoT22ET5VLL7DY5GwQTRZaWBW4k=;
-        b=zzHOzRVpDg59xKWbExTM2/HqgZWsRi4itrBoEkpBmycht04q+RJ8l1Qi1laURT8PHz4Oab
-        LHsGRuS21D2Njw5+Rhxv2AEFlyFZnN9TPzzMn/dKmksWvxMze7T/UsO5biJ0hYg+D0/lxJ
-        ABZ+HQkBmjrYGLC8E1Rc0wWyiwYzVKw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643091827;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SxB22q2urXIdsrmoPoT22ET5VLL7DY5GwQTRZaWBW4k=;
-        b=r5M9bjkVQyRw9A8wG8mbR8CjiorcPAjhdDcb4urtIt5x1C1NZ/0/s0Hv3QDrLBkE6xzwhc
-        ZyzLjlvANPU60DCQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D81F113D7B;
-        Tue, 25 Jan 2022 06:23:46 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id kQk5NHKX72GxdgAAMHmgww
-        (envelope-from <osalvador@suse.de>); Tue, 25 Jan 2022 06:23:46 +0000
+        Tue, 25 Jan 2022 01:26:41 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB66C08B4C9
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 20:49:14 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id a28so24255836lfl.7
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 20:49:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=t5Fu4TSCbARG2mLm13zGvdTuvUr0QZW1RLiG8C79TO4=;
+        b=ALObGffeoHvxkSiwET8Xu/lyNFq4JRJID+mFveG6Bc3LlZS7pd3L1dMGJe4ZNRLSpH
+         /pM8asQ76V2Iz+fdIUVR5NDb4SsLSmXBjCf+LHc54fNOBxXOzFIUFB/leJNVPFy6q2jC
+         LJq3AErof5GERCLLq3x6fM4W221i1NIwaZsvk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t5Fu4TSCbARG2mLm13zGvdTuvUr0QZW1RLiG8C79TO4=;
+        b=fsQPeYlCzBCYyOXl04tIBOS9+NJqHiQ2KhyfpxN0ByfsBApTdlqRLfwv6K8meAXI3v
+         9CJDpAvcTsl3k6pHQ5+6yCu6B/IQQQve7NdPAszMhO5l9hyTzUYI/i33Ef5KMfCFujpV
+         Gl4xnQgGRG+B/SK/nAqSKdYzjlzI3CewDMuHfoPo7Po4K3DlmqmAtnjq8I0nnpjkAFdj
+         ht9ZtDla8OYtaTytXAy7TFBjaM4Ijl0JpvLBYdW3G7AiEbDZ61ZtGyX0i2QefxvWAohd
+         elMbaElH8Qh00S2dOrVynm31zucotAvnWZC7Q4dIiid7pTYklG8eQNADuT1eomM5gBfa
+         ALAw==
+X-Gm-Message-State: AOAM530bCJaYnQe5X+sk5N7FvYQhPDjahc2c3bt+66PpJUEUNH00iaC0
+        Nrhf8uWsaNiGsJVFHUTpwinJsxPByjg8U5POx+wQ5Q==
+X-Google-Smtp-Source: ABdhPJw+fQ0ckcKc3qv7ppFk2Xk6/Um2Yoc2Zv9iQG2zxzejOFnaWR7Al/D6yLftIA4t1oRd32TQpjupUhg8yfOZ3rY=
+X-Received: by 2002:a05:6512:1288:: with SMTP id u8mr524232lfs.443.1643086152391;
+ Mon, 24 Jan 2022 20:49:12 -0800 (PST)
 MIME-Version: 1.0
-Date:   Tue, 25 Jan 2022 07:23:46 +0100
-From:   Oscar Salvador <osalvador@suse.de>
-To:     Zi Yan <ziy@nvidia.com>
-Cc:     David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org,
-        iommu@lists.linux-foundation.org, Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>
-Subject: Re: [PATCH v4 2/7] mm: page_isolation: move has_unmovable_pages() to
- mm/page_isolation.c
-In-Reply-To: <20220119190623.1029355-3-zi.yan@sent.com>
-References: <20220119190623.1029355-1-zi.yan@sent.com>
- <20220119190623.1029355-3-zi.yan@sent.com>
-User-Agent: Roundcube Webmail
-Message-ID: <d8809f69b4e813f981a2f13d81849b7b@suse.de>
-X-Sender: osalvador@suse.de
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+References: <1639587963-22503-1-git-send-email-bgodavar@codeaurora.org>
+ <164036941060.3935440.13095761506560620701.b4-ty@linaro.org> <CAD=FV=Vdjw-6GytO=Rpt==OYbnrNon3pYQnrZtUT4vX11S6ykw@mail.gmail.com>
+In-Reply-To: <CAD=FV=Vdjw-6GytO=Rpt==OYbnrNon3pYQnrZtUT4vX11S6ykw@mail.gmail.com>
+From:   Miao-chen Chou <mcchou@chromium.org>
+Date:   Mon, 24 Jan 2022 20:49:01 -0800
+Message-ID: <CABmPvSGOLRKX20WO21P_qvtvDo812QGDr4nYOWE04pjoSGDGcw@mail.gmail.com>
+Subject: Re: [PATCH v4] arm64: dts: qcom: sc7280: Add bluetooth node on SC7280
+ IDP boards
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Balakrishna Godavarthi <bgodavar@codeaurora.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>, rjliao@codeaurora.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        saluvala@codeaurora.org, LKML <linux-kernel@vger.kernel.org>,
+        hbandi@codeaurora.org, BlueZ <linux-bluetooth@vger.kernel.org>,
+        hemantg@codeaurora.org, Matthias Kaehlcke <mka@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-19 20:06, Zi Yan wrote:
-> From: Zi Yan <ziy@nvidia.com>
-> 
-> has_unmovable_pages() is only used in mm/page_isolation.c. Move it from
-> mm/page_alloc.c and make it static.
-> 
-> Signed-off-by: Zi Yan <ziy@nvidia.com>
+Hi,
 
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Following up on this patch, this patch didn't seem to land anywhere,
+what is the plan to land this?
 
--- 
-Oscar Salvador
-SUSE Labs
+Thanks,
+Miao
+
+On Thu, Jan 13, 2022 at 3:59 PM Doug Anderson <dianders@chromium.org> wrote:
+>
+> Hi,
+>
+> On Fri, Dec 24, 2021 at 10:10 AM Bjorn Andersson
+> <bjorn.andersson@linaro.org> wrote:
+> >
+> > On Wed, 15 Dec 2021 22:36:03 +0530, Balakrishna Godavarthi wrote:
+> > > Add bluetooth SoC WCN6750 node for SC7280 IDP boards.
+> > >
+> > >
+> >
+> > Applied, thanks!
+> >
+> > [1/1] arm64: dts: qcom: sc7280: Add bluetooth node on SC7280 IDP boards
+> >       commit: 3a89ff3087c03c2295250c07234efa75873c7b51
+>
+> Just to confirm, this later got dropped, right? I don't see it in the
+> Qualcomm git tree, so presumably it'll land once the merge window
+> closes.
+>
+> -Doug
