@@ -2,89 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF1EC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00244C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456982AbiAYJOD (ORCPT
+        id S1457136AbiAYJO3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:14:03 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:58964 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1455297AbiAYJEH (ORCPT
+        Tue, 25 Jan 2022 04:14:29 -0500
+Received: from gateway34.websitewelcome.com ([192.185.148.104]:28230 "EHLO
+        gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1453538AbiAYIyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:04:07 -0500
-X-UUID: cb539689a5d24496baee2d4944c5e0da-20220125
-X-UUID: cb539689a5d24496baee2d4944c5e0da-20220125
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 952828097; Tue, 25 Jan 2022 17:01:19 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 25 Jan 2022 17:01:17 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 25 Jan 2022 17:01:16 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v4 35/35] iommu/mediatek: mt8195: Enable multi banks for infra iommu
-Date:   Tue, 25 Jan 2022 16:56:34 +0800
-Message-ID: <20220125085634.17972-36-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220125085634.17972-1-yong.wu@mediatek.com>
-References: <20220125085634.17972-1-yong.wu@mediatek.com>
+        Tue, 25 Jan 2022 03:54:47 -0500
+X-Greylist: delayed 1206 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jan 2022 03:54:47 EST
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id 03AFCA680FD
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:34:38 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id CHGknnGspXvvJCHGknyI2l; Tue, 25 Jan 2022 02:33:38 -0600
+X-Authority-Reason: nr=8
+Received: from host-79-47-126-144.retail.telecomitalia.it ([79.47.126.144]:33426 helo=[10.0.0.238])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1nCHGj-0017BZ-SE; Tue, 25 Jan 2022 02:33:38 -0600
+Message-ID: <1c2fe9ac-804e-2068-0800-2cee012b96d3@kernel.org>
+Date:   Tue, 25 Jan 2022 09:33:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] docs: Hook the RTLA documents into the kernel docs build
+Content-Language: en-US
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+References: <877dau555q.fsf@meer.lwn.net>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <877dau555q.fsf@meer.lwn.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 79.47.126.144
+X-Source-L: No
+X-Exim-ID: 1nCHGj-0017BZ-SE
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-79-47-126-144.retail.telecomitalia.it ([10.0.0.238]) [79.47.126.144]:33426
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 4
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the multi-bank functions for infra-iommu. We put PCIE in bank0
-and USB in the last bank(bank4). and we don't use the other banks
-currently, disable them.
+On 1/21/22 01:00, Jonathan Corbet wrote:
+> The RTLA documents were added to Documentation/ but never hooked into the
+> rest of the docs build, leading to a bunch of warnings like:
+> 
+>   Documentation/tools/rtla/rtla-osnoise.rst: WARNING: document isn't included in any toctree
+> 
+> Add some basic glue to wire these documents into the build so that they are
+> available with the rest of the rendered docs.  No attempt has been made to
+> turn the RTLA docs into proper RST files rather than warmed-over man pages;
+> that is an exercise for the future.
+> 
+> Fixes: d40d48e1f1f2 ("rtla: Add Documentation")
+> Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index a17610434868..be36e73e4bcc 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1421,8 +1421,11 @@ static const struct mtk_iommu_plat_data mt8195_data_infra = {
- 			    MTK_IOMMU_TYPE_INFRA | IFA_IOMMU_PCIE_SUPPORT,
- 	.pericfg_comp_str = "mediatek,mt8195-pericfg_ao",
- 	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
--	.banks_num        = 1,
--	.banks_enable     = {true},
-+	.banks_num	  = 5,
-+	.banks_enable     = {true, false, false, false, true},
-+	.banks_portmsk    = {[0] = GENMASK(19, 16),     /* PCIe */
-+			     [4] = GENMASK(31, 20),     /* USB */
-+			    },
- 	.iova_region      = single_domain,
- 	.iova_region_nr   = ARRAY_SIZE(single_domain),
- };
--- 
-2.18.0
+Thanks, Jon!
 
+-- Daniel
