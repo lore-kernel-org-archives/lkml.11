@@ -2,117 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7978CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8959C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1316058AbiAYCzG (ORCPT
+        id S1316162AbiAYCzV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:55:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3410181AbiAYA2o (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:28:44 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FAAC046E0E
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:12:07 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id s185so10999907oie.3
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:12:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qNPdZuTMGpmraXauVfaM+U1iXWmXev7WNI2qlgKJIbg=;
-        b=nRgyGzE6AxLpCKZz2UD75e4pkIds0FuUBfoftvvaRhjfZ3obN3fcNgGyXjDJ1FUNJK
-         yscYMaxHJNoZuehn/9plEiPHQFli9uS+MiJVAsTYc7Y99J1X0VTPX8pwP4RMy6O9k6+4
-         kmTz3t+nLjdXXoCfa5UIMs3JrxhHUwTvO/wnbllxBZHFWKvHFdDSqzYnYfi5wMKkIAko
-         CwscV3NQuKIuyYsBpzRL4/W9WqMLcbHXkBfF3T4ehrmsnRXNvJKOjJxbrHMGClil0sQ3
-         8cft5Kx4N+nlQwz/ypXl/Q62QRdHGpUMGu/LmmubbtqWbXziTQ6bDV7ZifJNxOpW95Qj
-         qGMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qNPdZuTMGpmraXauVfaM+U1iXWmXev7WNI2qlgKJIbg=;
-        b=jRBAHhZflViyEkTn+68Rs8MbOgj0tQfNiIhfloMubrrXQvcXlGUcEAaWUtHuuPwUST
-         AlGxMFp/c4IS3HgJ/QlT9/AWkLb6OWdGbwl8Pt8+H6vmVL9qjNLIAtiBot4/dY56SE2/
-         GwN4pNZ3m0K4gYAnULKYzzTiqmD+0PNFuEw2ogztWdvvoMDLg5LnjF0qU9acSI/O/24R
-         kQz4y1oe+BDEZOvK6hIx/nwiGZMw8QCMrjCm8ARFFwPIDM004jp4nlniEdE8+Poe5eZ8
-         NZjXSscFQz7fFzqul78CFxkl06Kh5M6c6AUyXzjWaf0djxWYUcJlHLJrL3fkYAhs5LtL
-         sM1A==
-X-Gm-Message-State: AOAM530HxcO0Xhsq22CDvvATUNMKOX6NuNBXOiGUTdzv0fUkfYyjmT9M
-        9GpM2IwHWUzOwdUMQ4FJtG64DnXF9pYRDuVv/NI=
-X-Google-Smtp-Source: ABdhPJyR03hrjLm79a0g6SkQdoHpkJeL3qMSV6vOsoHri99vsAcedey3FSY1h0XpwgmbhXH5wNFcoPGwNC5355tPXio=
-X-Received: by 2002:a05:6808:300b:: with SMTP id ay11mr3244011oib.120.1643062326701;
- Mon, 24 Jan 2022 14:12:06 -0800 (PST)
+        Mon, 24 Jan 2022 21:55:21 -0500
+Received: from mga02.intel.com ([134.134.136.20]:4654 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1350876AbiAYAeD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 19:34:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643070843; x=1674606843;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=BS5IDXDe8XnXPVJucjLc+CPuOafY6g9M7d/3D9gVmzU=;
+  b=RllhXgpcYRO0wCFtKhUUTvzEI9GFvwrDSmrMgThjQRMSthqfMLUgy3o8
+   qRCWxSjTlTf1MSj3ezx1GQxVZS/f+ASNSNtuPlBqEUZoeUrwmEuLdTvhN
+   RI0tsde22/aolYDTd/qT4eLuIjOfdKBGuCdAkDaRkLCocK34nLBEF794N
+   KmQ+NFYH4Xfp61BD1UcWL5zLqJRO4yKmCbUl1CA76gyoHq14mgVkX9+Gu
+   Yvn1r+aUv4Retbj2aljVEZvOcMsCZVL53URysK2zuWw7taGGHARiqkCvK
+   e0tYvyT5sZLmKS/m8PoIr6I5VNWjfR5pb6wd/MZfVXmSD4lHGDvQrm42p
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="233548771"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="233548771"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 16:27:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="479288857"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 24 Jan 2022 16:27:14 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nC9g2-000J6k-7j; Tue, 25 Jan 2022 00:27:14 +0000
+Date:   Tue, 25 Jan 2022 08:26:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Eric Biggers <ebiggers@google.com>
+Subject: kernel/sched/psi.c:1193:6: warning: no previous prototype for
+ 'psi_trigger_destroy'
+Message-ID: <202201250818.178Aw4sD-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220122012343.32540-1-rdunlap@infradead.org> <fca36168-d66b-c914-a5c6-fb8d495238ad@amd.com>
-In-Reply-To: <fca36168-d66b-c914-a5c6-fb8d495238ad@amd.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Mon, 24 Jan 2022 17:11:55 -0500
-Message-ID: <CADnq5_OMhZ38b-N=UVC6ckcrzRkh=xBHEMe0UqP2DbqW6-g59Q@mail.gmail.com>
-Subject: Re: [PATCH -next] drm/amd/display: don't use /** for non-kernel-doc comments
-To:     Harry Wentland <harry.wentland@amd.com>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
+commit: a06247c6804f1a7c86a2e5398a4c1f1db1471848 psi: Fix uaf issue when psi trigger is destroyed while being polled
+date:   7 days ago
+config: sh-randconfig-r012-20220124 (https://download.01.org/0day-ci/archive/20220125/202201250818.178Aw4sD-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a06247c6804f1a7c86a2e5398a4c1f1db1471848
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout a06247c6804f1a7c86a2e5398a4c1f1db1471848
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sh SHELL=/bin/bash kernel/sched/
 
-Alex
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-On Mon, Jan 24, 2022 at 10:25 AM Harry Wentland <harry.wentland@amd.com> wrote:
->
-> On 2022-01-21 20:23, Randy Dunlap wrote:
-> > Change a static function's comment from "/**" (indicating kernel-doc
-> > notation) to "/*" (indicating a regular C language comment).
-> > This prevents multiple kernel-doc warnings:
-> >
-> >   drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:4343: warning: Function parameter or member 'max_supported_frl_bw_in_kbps' not described in 'intersect_frl_link_bw_support'
-> >   drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:4343: warning: Function parameter or member 'hdmi_encoded_link_bw' not described in 'intersect_frl_link_bw_support'
-> >   drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:4343: warning: expecting prototype for Return PCON's post FRL link training supported BW if its non(). Prototype was for intersect_frl_link_bw_support() instead
-> >
-> > Fixes: c022375ae095 ("drm/amd/display: Add DP-HDMI FRL PCON Support in DC")
-> > Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-> > Cc: Alex Deucher <alexander.deucher@amd.com>
-> > Cc: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-> > Cc: Harry Wentland <harry.wentland@amd.com>
-> > Cc: Leo Li <sunpeng.li@amd.com>
-> > Cc: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-> > Cc: amd-gfx@lists.freedesktop.org
-> > Cc: dri-devel@lists.freedesktop.org
->
-> Reviewed-by: Harry Wentland <harry.wentland@amd.com>
->
-> Harry
->
-> > ---
-> >  drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c |    2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > --- linux-next-20220121.orig/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-> > +++ linux-next-20220121/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-> > @@ -4970,7 +4970,7 @@ uint32_t dc_link_bw_kbps_from_raw_frl_li
-> >       return 0;
-> >  }
-> >
-> > -/**
-> > +/*
-> >   * Return PCON's post FRL link training supported BW if its non-zero, otherwise return max_supported_frl_bw.
-> >   */
-> >  static uint32_t intersect_frl_link_bw_support(
->
+All warnings (new ones prefixed by >>):
+
+   kernel/sched/psi.c:1123:21: warning: no previous prototype for 'psi_trigger_create' [-Wmissing-prototypes]
+    1123 | struct psi_trigger *psi_trigger_create(struct psi_group *group,
+         |                     ^~~~~~~~~~~~~~~~~~
+>> kernel/sched/psi.c:1193:6: warning: no previous prototype for 'psi_trigger_destroy' [-Wmissing-prototypes]
+    1193 | void psi_trigger_destroy(struct psi_trigger *t)
+         |      ^~~~~~~~~~~~~~~~~~~
+   kernel/sched/psi.c:1260:10: warning: no previous prototype for 'psi_trigger_poll' [-Wmissing-prototypes]
+    1260 | __poll_t psi_trigger_poll(void **trigger_ptr,
+         |          ^~~~~~~~~~~~~~~~
+
+
+vim +/psi_trigger_destroy +1193 kernel/sched/psi.c
+
+  1192	
+> 1193	void psi_trigger_destroy(struct psi_trigger *t)
+  1194	{
+  1195		struct psi_group *group;
+  1196		struct task_struct *task_to_destroy = NULL;
+  1197	
+  1198		/*
+  1199		 * We do not check psi_disabled since it might have been disabled after
+  1200		 * the trigger got created.
+  1201		 */
+  1202		if (!t)
+  1203			return;
+  1204	
+  1205		group = t->group;
+  1206		/*
+  1207		 * Wakeup waiters to stop polling. Can happen if cgroup is deleted
+  1208		 * from under a polling process.
+  1209		 */
+  1210		wake_up_interruptible(&t->event_wait);
+  1211	
+  1212		mutex_lock(&group->trigger_lock);
+  1213	
+  1214		if (!list_empty(&t->node)) {
+  1215			struct psi_trigger *tmp;
+  1216			u64 period = ULLONG_MAX;
+  1217	
+  1218			list_del(&t->node);
+  1219			group->nr_triggers[t->state]--;
+  1220			if (!group->nr_triggers[t->state])
+  1221				group->poll_states &= ~(1 << t->state);
+  1222			/* reset min update period for the remaining triggers */
+  1223			list_for_each_entry(tmp, &group->triggers, node)
+  1224				period = min(period, div_u64(tmp->win.size,
+  1225						UPDATES_PER_WINDOW));
+  1226			group->poll_min_period = period;
+  1227			/* Destroy poll_task when the last trigger is destroyed */
+  1228			if (group->poll_states == 0) {
+  1229				group->polling_until = 0;
+  1230				task_to_destroy = rcu_dereference_protected(
+  1231						group->poll_task,
+  1232						lockdep_is_held(&group->trigger_lock));
+  1233				rcu_assign_pointer(group->poll_task, NULL);
+  1234				del_timer(&group->poll_timer);
+  1235			}
+  1236		}
+  1237	
+  1238		mutex_unlock(&group->trigger_lock);
+  1239	
+  1240		/*
+  1241		 * Wait for psi_schedule_poll_work RCU to complete its read-side
+  1242		 * critical section before destroying the trigger and optionally the
+  1243		 * poll_task.
+  1244		 */
+  1245		synchronize_rcu();
+  1246		/*
+  1247		 * Stop kthread 'psimon' after releasing trigger_lock to prevent a
+  1248		 * deadlock while waiting for psi_poll_work to acquire trigger_lock
+  1249		 */
+  1250		if (task_to_destroy) {
+  1251			/*
+  1252			 * After the RCU grace period has expired, the worker
+  1253			 * can no longer be found through group->poll_task.
+  1254			 */
+  1255			kthread_stop(task_to_destroy);
+  1256		}
+  1257		kfree(t);
+  1258	}
+  1259	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
