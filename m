@@ -2,129 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E69C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:40:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236105AbiAYJj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:39:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574598AbiAYJfZ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:35:25 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF4FC0613EC
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:35:25 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id t9so4094618lji.12
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:35:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Ds7Vt/tFNVx1HfjRDYOvcP2J7EyY9TlFxYDikA7nbJ0=;
-        b=qbcQnPQQ2zXFB+OtbktgbOTcYl45D+Hu8HRufY3rYgzbZVIeWHxdg2bv6C6eNjMbKI
-         Zpmq23qIrrxaH/lb6lFd8+EsA4NYaKH6kTZdBvNH8MfGBKlOvpSviQH2DqH7IvPehpQK
-         HozEjAWjVZ1E+kjWAH3gSQM4bFxtr6y8TY7KZUJXt+5o4ngpb3d9mUm5Muw5oB5Rx24q
-         0EEEdAmE9+L15lOXx6rndJcCMpddOKG8hCYfcW5IzMSx9fEiYS5Zf/8A3EnPFVYyrvKU
-         nw5NiErF9wJF+0RujXrRZZEy449AmS5ufFYJbM8XY3p3jBViceYTUeNldsAq3LWJXpXK
-         rgXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ds7Vt/tFNVx1HfjRDYOvcP2J7EyY9TlFxYDikA7nbJ0=;
-        b=bSfiBvl9Ej9kfavW8N1RY42Ewl4BFlWtfsArFX2wna05eBB+Hewc6TpDeGWoTodr2U
-         WgkBGTYHbvK/uSz8WQDJI1myJAHjT/iyJJh3lMZnsDpadW6fpak0Ff2MBCiCduLww3km
-         15foa9qxUruIctCHozv8fxCoiG/Zjn1hEPqEb4LfyIpyOstym5biEp27AESYUQZryFUE
-         wb9QxS+bTrK4oIFKcu+s67PWZYD7zjrGWsC0lGGpymtaDXn51uYEqXR2tr9NS3378Hgz
-         lOyo8aptfo84SwsbE9kuguYhQZde1+Ojypj48UgXdnDvanyDbEbXWw/2NqndbWnHMYKc
-         SIhg==
-X-Gm-Message-State: AOAM530UirQZ9LsF0eGIAKlKGXF+90YI5OeyMMIYZpk1qS9ryZHyYI/E
-        PbO/Y/O0ZnKFisS3Jy//kEJgSA==
-X-Google-Smtp-Source: ABdhPJx3bagG4o8dfiP2tuzEmgv0sHDRPbmKATo01+IryqyUsHfd0gbOBfqDjquWLls8b8Tc3+w8mg==
-X-Received: by 2002:a2e:9217:: with SMTP id k23mr13723170ljg.229.1643103323585;
-        Tue, 25 Jan 2022 01:35:23 -0800 (PST)
-Received: from [192.168.112.17] (nikaet.starlink.ru. [94.141.168.29])
-        by smtp.gmail.com with ESMTPSA id i9sm1431729lfj.32.2022.01.25.01.35.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 01:35:23 -0800 (PST)
-Message-ID: <a7a6ddd2-9d40-3ac2-2b7f-bb521c8d3728@cogentembedded.com>
-Date:   Tue, 25 Jan 2022 12:35:22 +0300
+        id S236254AbiAYJkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 04:40:04 -0500
+Received: from foss.arm.com ([217.140.110.172]:58436 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1456108AbiAYJfy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 04:35:54 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 35552D6E;
+        Tue, 25 Jan 2022 01:35:53 -0800 (PST)
+Received: from [10.57.40.103] (unknown [10.57.40.103])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 347053F793;
+        Tue, 25 Jan 2022 01:35:51 -0800 (PST)
+Subject: Re: [PATCH] perf session: check for null pointer before derefernce
+To:     Ameer Hamza <amhamza.mgc@gmail.com>
+Cc:     German Gomez <german.gomez@arm.com>, peterz@infradead.org,
+        mingo@redhat.com, acme@kernel.org, rickyman7@gmail.com,
+        alexey.v.bayduraev@linux.intel.com, adrian.hunter@intel.com,
+        leo.yan@linaro.org, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
+        namhyung@kernel.org
+References: <20220124150001.93145-1-amhamza.mgc@gmail.com>
+ <7c068167-e8bb-74f3-97d9-dd0c5858ee19@arm.com>
+ <20220124202907.GA5741@hamza-OptiPlex-7040>
+From:   James Clark <james.clark@arm.com>
+Message-ID: <8983b963-2139-ecb3-3a31-b5e225db389c@arm.com>
+Date:   Tue, 25 Jan 2022 09:35:49 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] drivers: irqchip: add irq-type-changer
+In-Reply-To: <20220124202907.GA5741@hamza-OptiPlex-7040>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>,
-        linux-kernel@vger.kernel.org
-References: <20220124095652.522099-1-nikita.yoush@cogentembedded.com>
- <878rv58ghy.wl-maz@kernel.org>
- <a179c80c-7ce8-da1a-f344-5d72b65c3da4@cogentembedded.com>
- <874k5s8a32.wl-maz@kernel.org>
-From:   Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-In-Reply-To: <874k5s8a32.wl-maz@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>> I also don't see why you model this as the actual device that triggers
->>> the interrupt.
+
+
+On 24/01/2022 20:29, Ameer Hamza wrote:
+> On Mon, Jan 24, 2022 at 03:30:17PM +0000, James Clark wrote:
 >>
->> Well, that somehow matches the physical reality. In the case of wl18xx
->> on KF, physically the interrupt signal indeed originates from the
->> intermediate chip - the inverting level-shifter.
-> 
-> Reality? By allowing something like an edge-to-level conversion? How
-> can that work?
-
-Edge to level can be problematic, but level to edge does not cause any difficulties, nor in generating 
-nor in handling.
-
->> In contrary, an abstraction of intermediate entity that does a static
->> conversion of the trigger type and does not need any software control,
->> looks sane. And, hardware designers do strange things sometimes, I
->> won't be surprised observing a change from level to edge one day.
-> 
-> If you think that it can happen without a HW register that latches the
-> edge and requires an ack, you need to question your understanding of
-> an interrupt life cycle, and of the properties of the various trigger
-> types.
-
-There are plenty of devices capable to signal both level and edge interrupts, configurable by a 
-register. Basic handling is always the same, and involves masking the interrupt at interrupt controller 
-while IRQs disabled, then enabling IRQs, then programming the device to clear the interrupt condition, 
-then unmasking the interrupt at interrupt controller. If the trigger type is level or edge, is only 
-interesting to interrupt controller driver, but not to a wider scope.
-
-Nothing stops hw designers from doing all sort of strange things with interrupt signals. Right now I 
-have a board on my desk where interrupt signals from several chips are wired to inputs of a logical AND 
-element and the output of that is wired to SoC's gpio. I don't see what stops them tomorrow from setting 
-up their CPLDs to issue a short impulse at output in return to a level change on input. And that will be 
-a level to edge converter.
-
->> In driver's init, I only call of_irq_parse_one() for interrupt defined
->> in the changer's node. This does not create a mapping for it. The
->> mapping is only created when changer's "interrupt-child" creates a
->> mapping for their interrupt - then changer's alloc() routine calls
->> irq_domain_alloc_irqs_parent() in the same way as all other
->> hierarchical irqchips do.
 >>
->> I don't see where double mapping can appear here. Please explain.
+>> On 24/01/2022 15:00, Ameer Hamza wrote:
+>>> Move null pointer check before dereferncing the variable
+>>>
+>>> Addresses-Coverity: 1497622 ("Derereference before null check")
+>>>
+>>> Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
+>>> ---
+>>>  tools/perf/util/session.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
+>>> index f19348dddd55..e1014ab62c10 100644
+>>> --- a/tools/perf/util/session.c
+>>> +++ b/tools/perf/util/session.c
+>>> @@ -1503,11 +1503,11 @@ static int machines__deliver_event(struct machines *machines,
+>>>  			++evlist->stats.nr_unknown_id;
+>>>  			return 0;
+>>>  		}
+>>> -		dump_sample(evsel, event, sample, perf_env__arch(machine->env));
+>>>  		if (machine == NULL) {
+>>>  			++evlist->stats.nr_unprocessable_samples;
+>>>  			return 0;
+>>>  		}
+>>> +		dump_sample(evsel, event, sample, perf_env__arch(machine->env));
+>>>  		return evlist__deliver_sample(evlist, tool, event, sample, evsel, machine);
+>>>  	case PERF_RECORD_MMAP:
+>>>  		return tool->mmap(tool, event, sample, machine);
+>>>
+>>
+>> Hi Ameer,
+>>
+>> This mistake was made recently, but I don't think your change is the desired behavior.
+>>
+>> It should be possible to dump stuff if machine is null. null or an empty string
+>> should be passed to dump_sample(). It looks like some of the printfs still attempt to
+>> show something in this case, although I didn't check them all.
 > 
-> Just look at your code. You start probing a device that has an
-> 'interrupts' property. This triggers the allocation of an interrupt.
+> Hi James,
+> 
+> Thank you for your response. I understand your point.
+> 
+> Do you think following changes would be ok?
 
-Where does it trigger it?
+Yep looks good. With that change:
 
-And what is this "allocation", after all? Is it allocation of virq number? That allocation happens when 
-irq_create_fwspec_mapping() calls irq_domain_alloc_irqs(). But this path does not necessary gets 
-executed in probing. In the current irq_tyoe_changer driver, it is not.
+Reviewed-by: James Clark <james.clark@arm.com>
 
-
-Nikita
+> 
+> diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
+> index f19348dddd55..210eeee3dd70 100644
+> --- a/tools/perf/util/session.c
+> +++ b/tools/perf/util/session.c
+> @@ -1503,11 +1503,12 @@ static int machines__deliver_event(struct machines *machines,
+>                         ++evlist->stats.nr_unknown_id;
+>                         return 0;
+>                 }
+> -               dump_sample(evsel, event, sample, perf_env__arch(machine->env));
+>                 if (machine == NULL) {
+>                         ++evlist->stats.nr_unprocessable_samples;
+> +                       dump_sample(evsel, event, sample, perf_env__arch(NULL));
+>                         return 0;
+>                 }
+> +               dump_sample(evsel, event, sample, perf_env__arch(machine->env));
+>                 return evlist__deliver_sample(evlist, tool, event, sample, evsel, machine);
+>         case PERF_RECORD_MMAP:
+>                 return tool->mmap(tool, event, sample, machine);
+> 
+> Thanks,
+> Hamza
+> 
