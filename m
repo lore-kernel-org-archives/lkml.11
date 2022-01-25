@@ -2,100 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A04C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C08C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386313AbiAYNcs (ORCPT
+        id S1387415AbiAYNed (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:32:48 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42296 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348654AbiAYN3t (ORCPT
+        Tue, 25 Jan 2022 08:34:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381875AbiAYNbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 08:29:49 -0500
+        Tue, 25 Jan 2022 08:31:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA780C061401
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 05:31:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 683C2614A1;
-        Tue, 25 Jan 2022 13:29:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A86B9C340E0;
-        Tue, 25 Jan 2022 13:29:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2A73B81808
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 13:31:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57BFFC340E0;
+        Tue, 25 Jan 2022 13:31:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643117386;
-        bh=G9+jbEdgn6dqtJ1KUO5cKlCRbG9bB4kcC0JiROCSfAc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Lq5JRw21XJ3ellYkVHi+Euv3EhrSWzaQYKcF67rTLnyD8zzt/TJGIryT63bMGcqRR
-         2mezgv1hSW4XOH7d8OKnSnTlKgPLj4A8H6D7J2g8XKxb9gugPI1XYgYH10By0XAFCe
-         dYjNuV37OZGBRAamlDYhnlTKuVyCJIkwhfio9UE8FlQN/itN9Gnh+e/uGshha2IfHm
-         2tyRviIUI+qkS4Q3U5/h1X0o6fQcFPws5clh4PzE0ZyM6hYXQngQxdO2oyBtvUtoPs
-         yVxp5P2t0howyqjtECf03Nbou74Xo8xIBFCgC2oso+j/JdaJouZLxkpe33iZDrTP4O
-         Ij4CkRTHiD7xw==
-Date:   Tue, 25 Jan 2022 14:29:42 +0100
-From:   Christian Brauner <brauner@kernel.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] vfs: Pre-allocate superblock in sget_fc() if !test
-Message-ID: <20220125132942.o7rnqwvqx5w6ifz4@wittgenstein>
-References: <20220124161006.141323-1-longman@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220124161006.141323-1-longman@redhat.com>
+        s=k20201202; t=1643117500;
+        bh=VFFdhBpsOtOA9gLsN7npiOLz+ztAhun2ZxBpU+Q5C64=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kC2Xu95kvANS/QX2cmpTb2ymReoAJy0TIn8BhL+cSLQmbNUu7Ug5q9QvMNLV/ttix
+         Gg3LEhnG9TraPICGKuAQUMDeXVsFgQGpq/0v9UfGvFjn3zvF27JPAGxf3/fvPisbWK
+         5KPywb2bwEXeWcYd4welhKPUfFpP8ridVFWk9PM+Hk+/0CYLQLmqmTO/gj887LI45D
+         nT4E5Qg/656ewOFWjfXjzO7El5UxbJlrnphj6Zrcezre3zmtlIixFOfjd3WgJMvTCI
+         x8G+Okb7nq5Gba33paDMkYJzs2c65ZXh8rRk+0QALBhStNNAq7skPsxJ7iV7YjbPlp
+         a3PDNNbLv/bmw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nCLv8-002uqs-C5; Tue, 25 Jan 2022 13:31:38 +0000
+Date:   Tue, 25 Jan 2022 13:31:38 +0000
+Message-ID: <87sftc6ix1.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Cc:     <tglx@linutronix.de>, <linux-kernel@vger.kernel.org>,
+        <guohanjun@huawei.com>, John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH] irqchip/gic-v3-its: Select housekeeping CPUs preferentially for managed IRQs
+In-Reply-To: <12ac7447-34dc-8497-b608-ada5a2ba17c4@huawei.com>
+References: <20220124073440.88598-1-wangxiongfeng2@huawei.com>
+        <87a6fl8jgb.wl-maz@kernel.org>
+        <12ac7447-34dc-8497-b608-ada5a2ba17c4@huawei.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: wangxiongfeng2@huawei.com, tglx@linutronix.de, linux-kernel@vger.kernel.org, guohanjun@huawei.com, john.garry@huawei.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 11:10:06AM -0500, Waiman Long wrote:
-> When the test function is not defined in sget_fc(), we always need
-> to allocate a new superblock. So there is no point in acquiring the
-> sb_lock twice in this case. Optimize the !test case by pre-allocating
-> the superblock first before acquring the lock.
+On Tue, 25 Jan 2022 12:49:20 +0000,
+Xiongfeng Wang <wangxiongfeng2@huawei.com> wrote:
 > 
-> Signed-off-by: Waiman Long <longman@redhat.com>
-> ---
->  fs/super.c | 3 +++
->  1 file changed, 3 insertions(+)
+> Hi Marc,
 > 
-> diff --git a/fs/super.c b/fs/super.c
-> index a6405d44d4ca..6601267f6fe0 100644
-> --- a/fs/super.c
-> +++ b/fs/super.c
-> @@ -520,6 +520,8 @@ struct super_block *sget_fc(struct fs_context *fc,
->  	struct user_namespace *user_ns = fc->global ? &init_user_ns : fc->user_ns;
->  	int err;
->  
-> +	if (!test)
-> +		goto prealloc;
+> On 2022/1/24 19:24, Marc Zyngier wrote:
+> > + John Garry, as he was reporting issues around the same piece of code[1]
+> > 
+> > On Mon, 24 Jan 2022 07:34:40 +0000,
+> > Xiongfeng Wang <wangxiongfeng2@huawei.com> wrote:
+> >>
+> >> When using kernel parameter 'isolcpus=managed_irq,xxxx' to bind the
+> >> managed IRQs to housekeeping CPUs, the effective_affinity sometimes
+> >> still contains the non-housekeeping CPUs.
+> >>
+> >> irq_do_set_affinity() passes the housekeeping cpumask to
+> >> chip->irq_set_affinity(), but ITS driver select CPU according to
+> >> irq_common_data->affinity. While 'irq_common_data->affinity' is updated
+> >> after chip->irq_set_affinity() is called in irq_do_set_affinity(). Also
+> >> 'irq_common_data->affinity' may contains non-housekeeping CPUs. I found
+> >> the below link explaining the reason.
+> >>   https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg2267032.html
+> >>
+> >> To modify CPU selecting logic to prefer housekeeping CPUs, select CPU
+> >> from the input cpumask parameter first. If none of it is online, then
+> >> select CPU from 'irq_common_data->affinity'.
+> >>
+> >> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+> >> ---
+> >>  drivers/irqchip/irq-gic-v3-its.c | 5 ++++-
+> >>  1 file changed, 4 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+> >> index d25b7a864bbb..17c15d3b2784 100644
+> >> --- a/drivers/irqchip/irq-gic-v3-its.c
+> >> +++ b/drivers/irqchip/irq-gic-v3-its.c
+> >> @@ -1624,7 +1624,10 @@ static int its_select_cpu(struct irq_data *d,
+> >>  
+> >>  		cpu = cpumask_pick_least_loaded(d, tmpmask);
+> >>  	} else {
+> >> -		cpumask_and(tmpmask, irq_data_get_affinity_mask(d), cpu_online_mask);
+> >> +		cpumask_and(tmpmask, aff_mask, cpu_online_mask);
+> >> +		if (cpumask_empty(tmpmask))
+> >> +			cpumask_and(tmpmask, irq_data_get_affinity_mask(d),
+> >> +				    cpu_online_mask);
+> > 
+> > I think that the online_cpu_mask logical and is a bit wrong. A managed
+> > interrupt should be able to target an offline CPU:
+> > 
+> > diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+> > index eb0882d15366..0cea46bdaf99 100644
+> > --- a/drivers/irqchip/irq-gic-v3-its.c
+> > +++ b/drivers/irqchip/irq-gic-v3-its.c
+> > @@ -1620,7 +1620,7 @@ static int its_select_cpu(struct irq_data *d,
+> >  
+> >  		cpu = cpumask_pick_least_loaded(d, tmpmask);
+> >  	} else {
+> > -		cpumask_and(tmpmask, irq_data_get_affinity_mask(d), cpu_online_mask);
+> > +		cpumask_copy(tmpmask, aff_mask);
+> >  
+> >  		/* If we cannot cross sockets, limit the search to that node */
+> >  		if ((its_dev->its->flags & ITS_FLAGS_WORKAROUND_CAVIUM_23144) &&
+> 
+> I have tested the above modification with 'maxcpus=1' kernel parameter and got
+> the following CallTrace.
+> 
+> [   14.679493][    T5] pstate: 204000c9 (nzCv daIF +PAN -UAO -TCO -DIT -SSBS
+> BTYPE=--)
+> [   14.687114][    T5] pc : lpi_update_config+0xe0/0x300
+> [   14.692146][    T5] lr : lpi_update_config+0x3c/0x300
 
-I mean, now its another goto in there that adds to the confusion.
-sget_fc() could _probably_ benefit if it were split into
-__sget_test_fc() and __sget_independent_fc() with both ending up being
-called from sget_fc() dending on whether or not test is NULL ofc.
+That's a problem similar to what John was seeing: the CPU isn't there,
+and a lot of stuff goes very wrong in the absence of a CPU targeted by
+a managed interrupt.
 
-This way the test and non-test cases would stop being mangled together
-possibly making the logic easier to follow. Would probably also require
-to move the common initialization part into a helper callable from both
-__sget_independent_fc() and __sget_test_fc() sm like idk:
+> > We still have an issue when the system hasn't booted with all its
+> > CPUs, as the corresponding collections aren't initialised and we
+> > end-up in a rather bad place.
+> 
+> Shall we fix this 'effective CPU of managed IRQs is not housekeeping
+> CPU' issue first, or we will wait until the 'maxcpus=1' issue is
+> fixed.
 
-static struct super_block *__finish_init_super(........)
-{
-	s->s_fs_info = fc->s_fs_info;
-	err = set(s, fc);
-	if (err) {
-		s->s_fs_info = NULL;
-		spin_unlock(&sb_lock);
-		destroy_unused_super(s);
-		return ERR_PTR(err);
-	}
-	fc->s_fs_info = NULL;
-	s->s_type = fc->fs_type;
-	s->s_iflags |= fc->s_iflags;
-	strlcpy(s->s_id, s->s_type->name, sizeof(s->s_id));
-	list_add_tail(&s->s_list, &super_blocks);
-	hlist_add_head(&s->s_instances, &s->s_type->fs_supers);
-	spin_unlock(&sb_lock);
-	get_filesystem(s->s_type);
-	register_shrinker_prepared(&s->s_shrink);
-	return s;
-}
+I this we need to address this first. There is no point in only half
+fixing it.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
