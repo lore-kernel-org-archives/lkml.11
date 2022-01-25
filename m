@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E22BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387820AbiAYHZj (ORCPT
+        id S1445086AbiAYH0B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:25:39 -0500
-Received: from esa1.hc1455-7.c3s2.iphmx.com ([207.54.90.47]:58051 "EHLO
+        Tue, 25 Jan 2022 02:26:01 -0500
+Received: from esa1.hc1455-7.c3s2.iphmx.com ([207.54.90.47]:58061 "EHLO
         esa1.hc1455-7.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1443900AbiAYHVu (ORCPT
+        by vger.kernel.org with ESMTP id S1443458AbiAYHV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:21:50 -0500
-X-Greylist: delayed 444 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jan 2022 02:21:42 EST
-IronPort-SDR: Tt5KRiiNzwRLEImD11muCHZO8uJGCcRjIgpU3Rwcryhj7nP7t6x0HRskhPamZinmuHd4Kjgg/u
- 8lu6ru5ztH3x/K+CV1Dtw9jFea2j59LvPJuvqT6AgWtXZJEizCE8ZaFOsSXrdIQ+pzFSUHKQoG
- CAMdFqum2rAu8PVLkULQLmLsxIQ0/GbhN1oEoOgjJ/lkU1xMpNN8mB/rwuegN5h3HVDVdVRnli
- 2zJnUdlA9A+FZj3w26BPW25+MeCwI4MZYDgQRGCFl7jS0hmGRFWqf0S7+5lSYU6T3LRuxvY0HM
- ff1Q+xnzfH3Ak4kM2r6ncq3m
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="60525454"
+        Tue, 25 Jan 2022 02:21:57 -0500
+IronPort-SDR: ZM928DjHdUPW+d/4tYWCvExLyaJLLvIP+7FMuC9Ds4zd9uLq7fKI+VXqJeafAtVa5fTZuW2TIv
+ 3FmWhMyjx9b6VV+7ulWFWAFMjLibhb4ZC6dwUOsG80H1k3A6+k9kWw3/pfxw5dkhRlB7h1sOoQ
+ XqzfC3s9wqlKjkWjjZ9Wv+qdH/D5sUJPvdvt4Ax6l/qc14E8sTmlH6SOrUYbwaV42jVWhzl78x
+ x2dXnaD9/Rds0YZe325O+Y8Acs9/ii+S5va/90iCkJH6GFLi3bOmXAKRSx9O0+2AWFR9sbq07J
+ WW+KJg1JV+LN85vghjAVXI3b
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="60525469"
 X-IronPort-AV: E=Sophos;i="5.88,314,1635174000"; 
-   d="scan'208";a="60525454"
-Received: from unknown (HELO yto-r3.gw.nic.fujitsu.com) ([218.44.52.219])
-  by esa1.hc1455-7.c3s2.iphmx.com with ESMTP; 25 Jan 2022 16:14:12 +0900
-Received: from yto-m4.gw.nic.fujitsu.com (yto-nat-yto-m4.gw.nic.fujitsu.com [192.168.83.67])
-        by yto-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id 4D1FAE3E10
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 16:14:11 +0900 (JST)
+   d="scan'208";a="60525469"
+Received: from unknown (HELO oym-r1.gw.nic.fujitsu.com) ([210.162.30.89])
+  by esa1.hc1455-7.c3s2.iphmx.com with ESMTP; 25 Jan 2022 16:14:19 +0900
+Received: from oym-m4.gw.nic.fujitsu.com (oym-nat-oym-m4.gw.nic.fujitsu.com [192.168.87.61])
+        by oym-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id 05DDAE8FF8
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 16:14:18 +0900 (JST)
 Received: from yto-om4.fujitsu.com (yto-om4.o.css.fujitsu.com [10.128.89.165])
-        by yto-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 6E565EA178
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 16:14:10 +0900 (JST)
+        by oym-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 31FD819826
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 16:14:17 +0900 (JST)
 Received: from localhost.localdomain (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by yto-om4.fujitsu.com (Postfix) with ESMTP id 357744007ED6C;
-        Tue, 25 Jan 2022 16:14:10 +0900 (JST)
+        by yto-om4.fujitsu.com (Postfix) with ESMTP id DB25C4007ED6C;
+        Tue, 25 Jan 2022 16:14:16 +0900 (JST)
 From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
 To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, hpa@zytor.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     tarumizu.kohei@fujitsu.com
-Subject: [PATCH 1/8] drivers: base: Add hardware prefetch control core driver
-Date:   Tue, 25 Jan 2022 16:14:07 +0900
-Message-Id: <20220125071414.811344-2-tarumizu.kohei@fujitsu.com>
+Subject: [PATCH 3/8] arm64: Add hardware prefetch control support for ARM64
+Date:   Tue, 25 Jan 2022 16:14:09 +0900
+Message-Id: <20220125071414.811344-4-tarumizu.kohei@fujitsu.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220125071414.811344-1-tarumizu.kohei@fujitsu.com>
 References: <20220125071414.811344-1-tarumizu.kohei@fujitsu.com>
@@ -52,620 +51,350 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This driver provides a register/unregister function to create the
-sysfs interface with an attribute file named "prefetch_control" in
-every CPU's cache/index[0,2] directory.
+This adds module init/exit code, and creates sysfs attribute files for
+"prefetch_control". This driver works only if part number is
+FUJITSU_CPU_PART_A64FX at this point. The details of the registers to
+be read and written in this patch are described below.
 
-If the architecture has control of the CPU's hardware prefetcher
-behavior, use this function to create sysfs. When registering, it is
-necessary to provide what type of hardware prefetcher is supported
-and how to read/write to the register.
-
-Following patches add support for ARM64 and x86.
+"https://github.com/fujitsu/A64FX/tree/master/doc/"
+    A64FX_Specification_HPC_Extension_v1_EN.pdf
 
 Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
 ---
- drivers/base/pfctl.c  | 541 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/pfctl.h |  42 ++++
- 2 files changed, 583 insertions(+)
- create mode 100644 drivers/base/pfctl.c
- create mode 100644 include/linux/pfctl.h
+ arch/arm64/kernel/pfctl.c | 324 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 324 insertions(+)
+ create mode 100644 arch/arm64/kernel/pfctl.c
 
-diff --git a/drivers/base/pfctl.c b/drivers/base/pfctl.c
+diff --git a/arch/arm64/kernel/pfctl.c b/arch/arm64/kernel/pfctl.c
 new file mode 100644
-index 000000000000..4bc3c2826d69
+index 000000000000..14f4b8248280
 --- /dev/null
-+++ b/drivers/base/pfctl.c
-@@ -0,0 +1,541 @@
++++ b/arch/arm64/kernel/pfctl.c
+@@ -0,0 +1,324 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright 2022 FUJITSU LIMITED
 + *
-+ * This driver provides tunable sysfs interface for Hardware Prefetch Control.
-+ * See Documentation/ABI/testing/sysfs-devices-system-cpu for more information.
-+ *
-+ * This code provides architecture-independent functions such as create and
-+ * remove attribute file.
-+ * The implementation of reads and writes to the Hardware Prefetch Control
-+ * register is architecture-dependent. Therefore, each architecture register
-+ * a callback to read and write the register via pfctl_register_driver().
++ * ARM64 Hardware Prefetch Control support
 + */
 +
++#include <asm/cputype.h>
++#include <linux/bitfield.h>
 +#include <linux/cacheinfo.h>
-+#include <linux/cpu.h>
-+#include <linux/device.h>
++#include <linux/module.h>
 +#include <linux/pfctl.h>
 +#include <linux/parser.h>
-+#include <linux/slab.h>
 +
-+#ifdef pr_fmt
-+#undef pr_fmt
-+#endif
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++struct pfctl_driver arm64_pfctl_driver;
 +
-+enum {
-+	OPT_HWPF_ENABLE,
-+	OPT_IPPF_ENABLE,
-+	OPT_ACLPF_ENABLE,
-+	OPT_SDPF_ENABLE,
-+	OPT_SDPF_DIST,
-+	OPT_SDPF_DIST_AUTO,
-+	OPT_SDPF_STRONG,
-+	OPT_ERR,
++/**************************************
++ * FUJITSU A64FX support
++ **************************************/
++
++/*
++ * Constants for these add the "A64FX_SDPF" prefix to the name described in
++ * section "1.3.4.2. IMP_PF_STREAM_DETECT_CTRL_EL0" of "A64FX specification".
++ * (https://github.com/fujitsu/A64FX/tree/master/doc/A64FX_Specification_HPC_Extension_v1_EN.pdf")
++ * See this document for register specification details.
++ */
++#define A64FX_SDPF_IMP_PF_STREAM_DETECT_CTRL_EL0	sys_reg(3, 3, 11, 4, 0)
++#define A64FX_SDPF_V					BIT_ULL(63)
++#define A64FX_SDPF_L1PF_DIS				BIT_ULL(59)
++#define A64FX_SDPF_L2PF_DIS				BIT_ULL(58)
++#define A64FX_SDPF_L1W					BIT_ULL(55)
++#define A64FX_SDPF_L2W					BIT_ULL(54)
++#define A64FX_SDPF_L1_DIST				GENMASK_ULL(27, 24)
++#define A64FX_SDPF_L2_DIST				GENMASK_ULL(19, 16)
++
++#define A64FX_SDPF_MIN_DIST_L1				256
++#define A64FX_SDPF_MIN_DIST_L2				1024
++
++struct a64fx_read_info {
++	struct prefetcher_options *opts;
++	unsigned int level;
++	int ret;
 +};
 +
-+static const char hwpf_enable_fmt[]	= "hardware_prefetcher_enable=%s";
-+static const char ippf_enable_fmt[]	= "ip_prefetcher_enable=%s";
-+static const char aclpf_enable_fmt[]	=
-+	"adjacent_cache_line_prefetcher_enable=%s";
-+static const char sdpf_enable_fmt[]	= "stream_detect_prefetcher_enable=%s";
-+static const char sdpf_dist_fmt[]	= "stream_detect_prefetcher_dist=%d";
-+static const char sdpf_dist_auto_fmt[]	= "stream_detect_prefetcher_dist=%s";
-+static const char sdpf_strong_fmt[]	= "stream_detect_prefetcher_strong=%s";
-+
-+static const match_table_t pfctl_opt_tokens = {
-+	{OPT_HWPF_ENABLE,	hwpf_enable_fmt},
-+	{OPT_IPPF_ENABLE,	ippf_enable_fmt},
-+	{OPT_ACLPF_ENABLE,	aclpf_enable_fmt},
-+	{OPT_SDPF_ENABLE,	sdpf_enable_fmt},
-+	{OPT_SDPF_DIST,		sdpf_dist_fmt},
-+	{OPT_SDPF_DIST_AUTO,	sdpf_dist_auto_fmt},
-+	{OPT_SDPF_STRONG,	sdpf_strong_fmt},
-+	{OPT_ERR,		NULL},
++struct a64fx_write_info {
++	struct prefetcher_options *opts;
++	unsigned int level;
++	int ret;
 +};
 +
-+static DEFINE_PER_CPU(struct device *, cache_device_pcpu);
-+#define per_cpu_cache_device(cpu) (per_cpu(cache_device_pcpu, cpu))
-+
-+struct pfctl_driver *pdriver;
-+enum cpuhp_state hp_online;
-+
-+static bool prefetcher_is_available(unsigned int level, enum cache_type type,
-+				    int prefetcher)
++static int a64fx_get_sdpf_enable(u64 reg, unsigned int level)
 +{
-+	if ((level == 1) && (type == CACHE_TYPE_DATA))
-+		if (pdriver->supported_l1d_prefetcher & prefetcher)
-+			return true;
-+		else
-+			return false;
-+	else if ((level == 2) &&
-+		 (type == CACHE_TYPE_UNIFIED))
-+		if (pdriver->supported_l2_prefetcher & prefetcher)
-+			return true;
-+		else
-+			return false;
-+	else
-+		return false;
++	switch (level) {
++	case 1:
++		return FIELD_GET(A64FX_SDPF_L1PF_DIS, reg);
++	case 2:
++		return FIELD_GET(A64FX_SDPF_L2PF_DIS, reg);
++	default:
++		return -EINVAL;
++	}
 +}
 +
-+static int parse_prefetch_options(struct prefetcher_options *opts,
-+				  const char *buf, unsigned int level,
-+				  enum cache_type type)
++static int a64fx_modify_sdpf_enable(u64 *reg, unsigned int level, int val)
 +{
-+	char *options, *sep_opt, *p;
-+	substring_t args[MAX_OPT_ARGS];
-+	int opt_mask = 0;
-+	int token;
-+	int ret = 0;
-+
-+	options = kstrdup(buf, GFP_KERNEL);
-+	if (!options)
-+		return -ENOMEM;
-+
-+	sep_opt = strstrip(options);
-+	while ((p = strsep(&sep_opt, " ")) != NULL) {
-+		unsigned int val;
-+
-+		if (!*p)
-+			continue;
-+
-+		token = match_token(p, pfctl_opt_tokens, args);
-+		opt_mask |= token;
-+
-+		switch (token) {
-+		case OPT_HWPF_ENABLE:
-+			if (!prefetcher_is_available(level, type, HWPF)) {
-+				pr_err("Unsupported parameter: '%s'\n", p);
-+				ret = -EINVAL;
-+				goto out;
-+			}
-+
-+			p = match_strdup(args);
-+			if (!p) {
-+				ret = -ENOMEM;
-+				goto out;
-+			}
-+
-+			if (!strcmp(p, "enable")) {
-+				opts->hwpf_enable = PFCTL_ENABLE_VAL;
-+			} else if (!strcmp(p, "disable")) {
-+				opts->hwpf_enable = PFCTL_DISABLE_VAL;
-+			} else {
-+				pr_err("Invalid value: '%s'\n", p);
-+				ret = -EINVAL;
-+				kfree(p);
-+				goto out;
-+			}
-+
-+			kfree(p);
-+			break;
-+		case OPT_IPPF_ENABLE:
-+			if (!prefetcher_is_available(level, type, IPPF)) {
-+				pr_err("Unsupported parameter: '%s'\n", p);
-+				ret = -EINVAL;
-+				goto out;
-+			}
-+
-+			p = match_strdup(args);
-+			if (!p) {
-+				ret = -ENOMEM;
-+				goto out;
-+			}
-+
-+			if (!strcmp(p, "enable")) {
-+				opts->ippf_enable = PFCTL_ENABLE_VAL;
-+			} else if (!strcmp(p, "disable")) {
-+				opts->ippf_enable = PFCTL_DISABLE_VAL;
-+			} else {
-+				pr_err("Invalid value: '%s'\n", p);
-+				ret = -EINVAL;
-+				kfree(p);
-+				goto out;
-+			}
-+
-+			kfree(p);
-+			break;
-+		case OPT_ACLPF_ENABLE:
-+			if (!prefetcher_is_available(level, type, ACLPF)) {
-+				pr_err("Unsupported parameter: '%s'\n", p);
-+				ret = -EINVAL;
-+				goto out;
-+			}
-+
-+			p = match_strdup(args);
-+			if (!p) {
-+				ret = -ENOMEM;
-+				goto out;
-+			}
-+
-+			if (!strcmp(p, "enable")) {
-+				opts->aclpf_enable = PFCTL_ENABLE_VAL;
-+			} else if (!strcmp(p, "disable")) {
-+				opts->aclpf_enable = PFCTL_DISABLE_VAL;
-+			} else {
-+				pr_err("Invalid value: '%s'\n", p);
-+				ret = -EINVAL;
-+				kfree(p);
-+				goto out;
-+			}
-+
-+			kfree(p);
-+			break;
-+		case OPT_SDPF_ENABLE:
-+			if (!prefetcher_is_available(level, type, SDPF)) {
-+				pr_err("Unsupported parameter: '%s'\n", p);
-+				ret = -EINVAL;
-+				goto out;
-+			}
-+
-+			p = match_strdup(args);
-+			if (!p) {
-+				ret = -ENOMEM;
-+				goto out;
-+			}
-+
-+			if (!strcmp(p, "enable")) {
-+				opts->sdpf_enable = PFCTL_ENABLE_VAL;
-+			} else if (!strcmp(p, "disable")) {
-+				opts->sdpf_enable = PFCTL_DISABLE_VAL;
-+			} else {
-+				pr_err("Invalid value: '%s'\n", p);
-+				ret = -EINVAL;
-+				kfree(p);
-+				goto out;
-+			}
-+
-+			kfree(p);
-+			break;
-+		case OPT_SDPF_DIST:
-+			if (!prefetcher_is_available(level, type, SDPF)) {
-+				pr_err("Unsupported parameter: '%s'\n", p);
-+				ret = -EINVAL;
-+				goto out;
-+			}
-+			ret = match_uint(args, &val);
-+			if (ret < 0) {
-+				pr_err("Invalid value: '%s'\n", p);
-+				goto out;
-+			}
-+
-+			opts->sdpf_dist = val;
-+			break;
-+		case OPT_SDPF_DIST_AUTO:
-+			if (!prefetcher_is_available(level, type, SDPF)) {
-+				pr_err("Unsupported parameter: '%s'\n", p);
-+				ret = -EINVAL;
-+				goto out;
-+			}
-+			p = match_strdup(args);
-+			if (!p) {
-+				ret = -ENOMEM;
-+				goto out;
-+			}
-+
-+			if (!strcmp(p, "auto")) {
-+				opts->sdpf_dist = PFCTL_DIST_AUTO_VAL;
-+			} else {
-+				pr_err("Invalid value: '%s'\n", p);
-+				ret = -EINVAL;
-+				kfree(p);
-+				goto out;
-+			}
-+
-+			kfree(p);
-+			break;
-+		case OPT_SDPF_STRONG:
-+			if (!prefetcher_is_available(level, type, SDPF)) {
-+				pr_err("Unsupported parameter: '%s'\n", p);
-+				ret = -EINVAL;
-+				goto out;
-+			}
-+			p = match_strdup(args);
-+			if (!p) {
-+				ret = -ENOMEM;
-+				goto out;
-+			}
-+
-+			if (!strcmp(p, "strong")) {
-+				opts->sdpf_strong = PFCTL_STRONG_VAL;
-+			} else if (!strcmp(p, "weak")) {
-+				opts->sdpf_strong = PFCTL_WEAK_VAL;
-+			} else {
-+				pr_err("Invalid value: '%s'\n", p);
-+				ret = -EINVAL;
-+				kfree(p);
-+				goto out;
-+			}
-+
-+			kfree(p);
-+			break;
-+		default:
-+			pr_err("Unknown parameter or missing value '%s'\n", p);
-+			ret = -EINVAL;
-+			goto out;
-+		}
++	switch (level) {
++	case 1:
++		*reg &= ~A64FX_SDPF_L1PF_DIS;
++		*reg |= FIELD_PREP(A64FX_SDPF_L1PF_DIS, val);
++		break;
++	case 2:
++		*reg &= ~A64FX_SDPF_L2PF_DIS;
++		*reg |= FIELD_PREP(A64FX_SDPF_L2PF_DIS, val);
++		break;
++	default:
++		return -EINVAL;
 +	}
 +
-+out:
-+	kfree(options);
-+	return ret;
++	return 0;
 +}
 +
-+static ssize_t prefetch_control_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
++static int a64fx_get_sdpf_dist(u64 reg, unsigned int level)
++{
++	switch (level) {
++	case 1:
++		return FIELD_GET(A64FX_SDPF_L1_DIST, reg) *
++			A64FX_SDPF_MIN_DIST_L1;
++	case 2:
++		return FIELD_GET(A64FX_SDPF_L2_DIST, reg) *
++			A64FX_SDPF_MIN_DIST_L2;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int a64fx_modify_sdpf_dist(u64 *reg, unsigned int level, int val)
++{
++	switch (level) {
++	case 1:
++		val = roundup(val, A64FX_SDPF_MIN_DIST_L1) /
++			A64FX_SDPF_MIN_DIST_L1;
++		if (!FIELD_FIT(A64FX_SDPF_L1_DIST, val))
++			return -EINVAL;
++		*reg &= ~A64FX_SDPF_L1_DIST;
++		*reg |= FIELD_PREP(A64FX_SDPF_L1_DIST, val);
++		break;
++	case 2:
++		val = roundup(val, A64FX_SDPF_MIN_DIST_L2) /
++			A64FX_SDPF_MIN_DIST_L2;
++		if (!FIELD_FIT(A64FX_SDPF_L2_DIST, val))
++			return -EINVAL;
++		*reg &= ~A64FX_SDPF_L2_DIST;
++		*reg |= FIELD_PREP(A64FX_SDPF_L2_DIST, val);
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int a64fx_get_sdpf_strong(u64 reg, unsigned int level)
++{
++	switch (level) {
++	case 1:
++		return FIELD_GET(A64FX_SDPF_L1W, reg);
++	case 2:
++		return FIELD_GET(A64FX_SDPF_L2W, reg);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int a64fx_modify_sdpf_strong(u64 *reg, unsigned int level, int val)
++{
++	switch (level) {
++	case 1:
++		*reg &= ~A64FX_SDPF_L1W;
++		*reg |= FIELD_PREP(A64FX_SDPF_L1W, val);
++		break;
++	case 2:
++		*reg &= ~A64FX_SDPF_L2W;
++		*reg |= FIELD_PREP(A64FX_SDPF_L2W, val);
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static void a64fx_enable_sdpf_verify(u64 *reg)
++{
++	*reg &= ~A64FX_SDPF_V;
++	*reg |= FIELD_PREP(A64FX_SDPF_V, 1);
++}
++
++static int a64fx_get_sdpf_params(struct prefetcher_options *opts, u64 reg,
++			    unsigned int level)
 +{
 +	int ret;
-+	unsigned int cpu;
-+	ssize_t len = 0;
-+	struct prefetcher_options opts;
-+	struct cacheinfo *this_leaf = dev_get_drvdata(dev);
 +
-+	cpu = dev->parent->parent->id;
-+
-+	ret = pdriver->read_pfreg(cpu, this_leaf->level, &opts);
++	ret = a64fx_get_sdpf_enable(reg, level);
 +	if (ret < 0)
 +		return ret;
++	opts->sdpf_enable = ret;
 +
-+	if (prefetcher_is_available(this_leaf->level, this_leaf->type, HWPF)) {
-+		if (opts.hwpf_enable == PFCTL_ENABLE_VAL)
-+			len += sysfs_emit_at(buf, len, hwpf_enable_fmt,
-+					     "enable");
-+		else
-+			len += sysfs_emit_at(buf, len, hwpf_enable_fmt,
-+					     "disable");
-+		len += sysfs_emit_at(buf, len, "\n");
-+	}
++	ret = a64fx_get_sdpf_dist(reg, level);
++	if (ret < 0)
++		return ret;
++	opts->sdpf_dist = ret;
 +
-+	if (prefetcher_is_available(this_leaf->level, this_leaf->type, IPPF)) {
-+		if (opts.ippf_enable == PFCTL_ENABLE_VAL)
-+			len += sysfs_emit_at(buf, len, ippf_enable_fmt,
-+					     "enable");
-+		else
-+			len += sysfs_emit_at(buf, len, ippf_enable_fmt,
-+					     "disable");
-+		len += sysfs_emit_at(buf, len, "\n");
-+	}
++	ret = a64fx_get_sdpf_strong(reg, level);
++	if (ret < 0)
++		return ret;
++	opts->sdpf_strong = ret;
 +
-+	if (prefetcher_is_available(this_leaf->level, this_leaf->type, ACLPF)) {
-+		if (opts.aclpf_enable == PFCTL_ENABLE_VAL)
-+			len += sysfs_emit_at(buf, len, aclpf_enable_fmt,
-+					     "enable");
-+		else
-+			len += sysfs_emit_at(buf, len, aclpf_enable_fmt,
-+					     "disable");
-+		len += sysfs_emit_at(buf, len, "\n");
-+	}
-+
-+	if (prefetcher_is_available(this_leaf->level, this_leaf->type, SDPF)) {
-+		if (opts.sdpf_enable == PFCTL_ENABLE_VAL)
-+			len += sysfs_emit_at(buf, len, sdpf_enable_fmt,
-+					     "enable");
-+		else
-+			len += sysfs_emit_at(buf, len, sdpf_enable_fmt,
-+					     "disable");
-+		len += sysfs_emit_at(buf, len, "\n");
-+
-+		if (opts.sdpf_dist == PFCTL_DIST_AUTO_VAL)
-+			len += sysfs_emit_at(buf, len, sdpf_dist_auto_fmt,
-+					     "auto");
-+		else
-+			len += sysfs_emit_at(buf, len, sdpf_dist_fmt,
-+					     opts.sdpf_dist);
-+		len += sysfs_emit_at(buf, len, "\n");
-+
-+		if (opts.sdpf_strong == PFCTL_STRONG_VAL)
-+			len += sysfs_emit_at(buf, len, sdpf_strong_fmt,
-+					     "strong");
-+		else
-+			len += sysfs_emit_at(buf, len, sdpf_strong_fmt,
-+					     "weak");
-+		len += sysfs_emit_at(buf, len, "\n");
-+	}
-+
-+	return len;
++	return 0;
 +}
 +
-+static ssize_t prefetch_control_store(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf, size_t count)
++static int a64fx_modify_pfreg_val(u64 *reg, struct prefetcher_options *opts,
++			 unsigned int level)
 +{
 +	int ret;
-+	unsigned int cpu;
-+	struct cacheinfo *this_leaf = dev_get_drvdata(dev);
-+	struct prefetcher_options opts = {
-+		.hwpf_enable	= PFCTL_PARAM_UNSET,
-+		.ippf_enable	= PFCTL_PARAM_UNSET,
-+		.aclpf_enable	= PFCTL_PARAM_UNSET,
-+		.sdpf_enable	= PFCTL_PARAM_UNSET,
-+		.sdpf_dist	= PFCTL_PARAM_UNSET,
-+		.sdpf_strong	= PFCTL_PARAM_UNSET,
++
++	if (opts->sdpf_enable != PFCTL_PARAM_UNSET) {
++		ret = a64fx_modify_sdpf_enable(reg, level, opts->sdpf_enable);
++		if (ret < 0)
++			return ret;
++	}
++
++	if (opts->sdpf_dist != PFCTL_PARAM_UNSET) {
++		ret = a64fx_modify_sdpf_dist(reg, level, opts->sdpf_dist);
++		if (ret < 0)
++			return ret;
++	}
++
++	if (opts->sdpf_strong != PFCTL_PARAM_UNSET) {
++		ret = a64fx_modify_sdpf_strong(reg, level, opts->sdpf_strong);
++		if (ret < 0)
++			return ret;
++	}
++
++	a64fx_enable_sdpf_verify(reg);
++
++	return 0;
++}
++
++static void _a64fx_read_pfreg(void *info)
++{
++	u64 reg;
++	struct a64fx_read_info *rinfo = info;
++
++	reg = read_sysreg_s(A64FX_SDPF_IMP_PF_STREAM_DETECT_CTRL_EL0);
++
++	rinfo->ret = a64fx_get_sdpf_params(rinfo->opts, reg, rinfo->level);
++}
++
++static int a64fx_read_pfreg(unsigned int cpu, unsigned int level,
++		      struct prefetcher_options *opt)
++{
++	struct a64fx_read_info info = {
++		.level = level,
++		.opts = opt,
 +	};
 +
-+	cpu = dev->parent->parent->id;
-+
-+	ret = parse_prefetch_options(&opts, buf, this_leaf->level,
-+				     this_leaf->type);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = pdriver->write_pfreg(cpu, this_leaf->level, &opts);
-+	if (ret < 0)
-+		return ret;
-+
-+	return count;
++	smp_call_function_single(cpu, _a64fx_read_pfreg, &info, true);
++	return info.ret;
 +}
 +
-+static DEVICE_ATTR_ADMIN_RW(prefetch_control);
-+
-+static int find_cache_device(unsigned int cpu)
-+{
-+	struct device *cpu_dev = get_cpu_device(cpu);
-+	struct device *cache_dev;
-+
-+	cache_dev = device_find_child_by_name(cpu_dev, "cache");
-+	if (!cache_dev)
-+		return -ENODEV;
-+	per_cpu_cache_device(cpu) = cache_dev;
-+
-+	return 0;
-+}
-+
-+static int _create_pfctl_attr(struct device *dev, void *data)
++static void _a64fx_write_pfreg(void *info)
 +{
 +	int ret;
-+	struct cacheinfo *leaf = dev_get_drvdata(dev);
++	u64 reg;
++	struct a64fx_write_info *winfo = info;
 +
-+	if (!prefetcher_is_available(leaf->level, leaf->type, ANYPF))
-+		return 0;
++	reg = read_sysreg_s(A64FX_SDPF_IMP_PF_STREAM_DETECT_CTRL_EL0);
 +
-+	ret = sysfs_create_file(&dev->kobj, &dev_attr_prefetch_control.attr);
++	ret = a64fx_modify_pfreg_val(&reg, winfo->opts, winfo->level);
 +	if (ret < 0) {
-+		pr_err("sysfs_create_file failed: %d\n", ret);
-+		return ret;
++		winfo->ret = ret;
++		return;
++	}
++
++	write_sysreg_s(reg, A64FX_SDPF_IMP_PF_STREAM_DETECT_CTRL_EL0);
++
++	winfo->ret = 0;
++}
++
++static int a64fx_write_pfreg(unsigned int cpu, unsigned int level,
++		       struct prefetcher_options *opt)
++{
++	struct a64fx_write_info info = {
++		.level = level,
++		.opts = opt,
++	};
++
++	smp_call_function_single(cpu, _a64fx_write_pfreg, &info, true);
++	return info.ret;
++}
++
++/***** end of FUJITSU A64FX support *****/
++
++/*
++ * This driver returns a negative value if it does not support the Hardware
++ * Prefetch Control or if it is running on a VM guest.
++ */
++static int __init setup_pfctl_driver_params(void)
++{
++	unsigned long implementor = read_cpuid_implementor();
++	unsigned long part_number = read_cpuid_part_number();
++
++	if (!is_kernel_in_hyp_mode())
++		return -EINVAL;
++
++	switch (implementor) {
++	case ARM_CPU_IMP_FUJITSU:
++		switch (part_number) {
++		case FUJITSU_CPU_PART_A64FX:
++			/* A64FX register requires EL2 access */
++			if (!has_vhe())
++				return -EINVAL;
++
++			arm64_pfctl_driver.supported_l1d_prefetcher = SDPF;
++			arm64_pfctl_driver.supported_l2_prefetcher = SDPF;
++			arm64_pfctl_driver.read_pfreg = a64fx_read_pfreg;
++			arm64_pfctl_driver.write_pfreg = a64fx_write_pfreg;
++			break;
++		default:
++			return -ENODEV;
++		}
++		break;
++	default:
++		return -ENODEV;
 +	}
 +
 +	return 0;
 +}
 +
-+static int create_pfctl_attr(unsigned int cpu)
++static int __init arm64_pfctl_init(void)
 +{
 +	int ret;
-+	struct device *cache_dev = per_cpu_cache_device(cpu);
 +
-+	if (!cache_dev)
-+		return -ENODEV;
++	ret = setup_pfctl_driver_params();
++	if (ret < 0)
++		return ret;
 +
-+	ret = device_for_each_child(cache_dev, NULL, _create_pfctl_attr);
++	ret = pfctl_register_driver(&arm64_pfctl_driver);
 +	if (ret < 0)
 +		return ret;
 +
 +	return 0;
 +}
 +
-+static int _remove_pfctl_attr(struct device *dev, void *data)
++static void __exit arm64_pfctl_exit(void)
 +{
-+	struct cacheinfo *leaf = dev_get_drvdata(dev);
-+
-+	if (!prefetcher_is_available(leaf->level, leaf->type, ANYPF))
-+		return 0;
-+
-+	sysfs_remove_file(&dev->kobj, &dev_attr_prefetch_control.attr);
-+
-+	return 0;
++	pfctl_unregister_driver(&arm64_pfctl_driver);
 +}
 +
-+static void remove_pfctl_attr(unsigned int cpu)
-+{
-+	struct device *cache_dev = per_cpu_cache_device(cpu);
++late_initcall(arm64_pfctl_init);
++module_exit(arm64_pfctl_exit);
 +
-+	if (!cache_dev)
-+		return;
-+
-+	device_for_each_child(cache_dev, NULL, _remove_pfctl_attr);
-+}
-+
-+static int pfctl_online(unsigned int cpu)
-+{
-+	int ret;
-+
-+	ret = find_cache_device(cpu);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = create_pfctl_attr(cpu);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int pfctl_prepare_down(unsigned int cpu)
-+{
-+	remove_pfctl_attr(cpu);
-+
-+	return 0;
-+}
-+
-+/**
-+ * pfctl_register_driver - register a Hardware Prefetch Control driver
-+ * @driver_data: struct pfctl_driver must contain the supported prefetcher type
-+ *               and function pointer for reading and writing hardware prefetch
-+ *               register. If these are not defined this function return error.
-+ *
-+ * Note: This function must be called after the cache device is initialized
-+ * because it requires access to the cache device.
-+ * (e.g. Call at the late_initcall)
-+ *
-+ * Context: Any context.
-+ * Return: 0 on success, negative error code on failure.
-+ */
-+int pfctl_register_driver(struct pfctl_driver *driver_data)
-+{
-+	int ret;
-+
-+	if (pdriver)
-+		return -EEXIST;
-+
-+	if ((driver_data->supported_l1d_prefetcher == 0) &&
-+	    (driver_data->supported_l2_prefetcher == 0))
-+		return -EINVAL;
-+
-+	if (!driver_data->read_pfreg || !driver_data->write_pfreg)
-+		return -EINVAL;
-+
-+	pdriver = driver_data;
-+
-+	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "base/pfctl:online",
-+				pfctl_online, pfctl_prepare_down);
-+	if (ret < 0) {
-+		pr_err("failed to register hotplug callbacks\n");
-+		pdriver = NULL;
-+		return ret;
-+	}
-+
-+	hp_online = ret;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(pfctl_register_driver);
-+
-+/**
-+ * pfctl_unregister_driver - unregister the Hardware Prefetch Control driver
-+ * @driver_data: Used to verify that this function is called by the driver that
-+ *               called pfctl_register_driver by determining if driver_data is
-+ *               the same.
-+ *
-+ * Context: Any context.
-+ * Return: nothing.
-+ */
-+void pfctl_unregister_driver(struct pfctl_driver *driver_data)
-+{
-+	if (!pdriver || (driver_data != pdriver))
-+		return;
-+
-+	cpuhp_remove_state(hp_online);
-+
-+	pdriver = NULL;
-+}
-+EXPORT_SYMBOL_GPL(pfctl_unregister_driver);
-diff --git a/include/linux/pfctl.h b/include/linux/pfctl.h
-new file mode 100644
-index 000000000000..7a05e2f4a4f7
---- /dev/null
-+++ b/include/linux/pfctl.h
-@@ -0,0 +1,42 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_PFCTL_H
-+#define _LINUX_PFCTL_H
-+
-+#define PFCTL_ENABLE_VAL		0
-+#define PFCTL_DISABLE_VAL		1
-+#define PFCTL_DIST_AUTO_VAL		0
-+#define PFCTL_STRONG_VAL		0
-+#define PFCTL_WEAK_VAL			1
-+#define PFCTL_PARAM_UNSET		-1
-+
-+struct prefetcher_options {
-+	int hwpf_enable;
-+	int ippf_enable;
-+	int aclpf_enable;
-+	int sdpf_enable;
-+	int sdpf_dist;
-+	int sdpf_strong;
-+};
-+
-+enum prefetcher {
-+	HWPF	= BIT(0), /* Hardware Prefetcher */
-+	IPPF	= BIT(1), /* IP Prefetcher */
-+	ACLPF	= BIT(2), /* Adjacent Cache Line Prefetcher */
-+	SDPF	= BIT(3), /* Stream Detect Prefetcher */
-+	ANYPF	= HWPF|IPPF|ACLPF|SDPF,
-+};
-+
-+struct pfctl_driver {
-+	unsigned int supported_l1d_prefetcher;
-+	unsigned int supported_l2_prefetcher;
-+
-+	int (*read_pfreg)(unsigned int cpu, unsigned int level,
-+			  struct prefetcher_options *opt);
-+	int (*write_pfreg)(unsigned int cpu, unsigned int level,
-+			   struct prefetcher_options *opt);
-+};
-+
-+int pfctl_register_driver(struct pfctl_driver *driver_data);
-+void pfctl_unregister_driver(struct pfctl_driver *driver_data);
-+
-+#endif
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("FUJITSU LIMITED");
++MODULE_DESCRIPTION("ARM64 Prefetch Control Driver");
 -- 
 2.27.0
 
