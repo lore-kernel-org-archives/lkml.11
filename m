@@ -2,111 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F46C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2986C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387975AbiAYOFz (ORCPT
+        id S1387125AbiAYOGJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:05:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385713AbiAYODV (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:03:21 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C361FC061753
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:03:19 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id n8so25394934wmk.3
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:03:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OJrQ9ObzNlNozSIKWvdHvhQL2KbmeMWXNOVyepscZoU=;
-        b=uk3M1RCXBTWUdrrRAHUzNJ8CKFsVVN0hhoVPaMae8S2ApdbeKVVAccs0m+wRZx0pyO
-         E3XvpOBk193CoEFlB2BQSdJZUVVPfjfDX1UOkbWLhHO55xKhQcnF/BWxaw5ei2oeibwP
-         Q1C7aioUvBSRgL78TlCZV1lfjjim6aDegCP5y6njccvXFKeIeY5uTU6LhIOXV8XMFDRJ
-         sw3vhc6xgSFgLDJB7vVFW7wBaQj2DeKipmV7E711TqCj7dLA2CVX7wPJJrbYaaQE3n1g
-         NsjQGxLP+okw6xRt9hEO5oeMS9pDy68aO9MyOxDyqxhhChiHB4uJdUpzeJDQFfDMFM8Q
-         4i4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OJrQ9ObzNlNozSIKWvdHvhQL2KbmeMWXNOVyepscZoU=;
-        b=6CXfkyoht/IdCoUHzyJmqfag9Dy1cksraf3FTcNhqsGiRWvpR/FbCpwanXI92xx7hM
-         49YurSQrxXXkTOUB5i3n2hGU7yFYnMH061GnM9kKkuIN6doEQuZB3xIxakTDLER4UJij
-         r26+aFHhPD5h2NcGWI9Bl6yDkUUJVAXqaMM2GcXFoIi92unnSWbdxuAuipy6vGhWV4gP
-         5AGq1NyN260mSlOk3SJg6gs6B8xfHHrkWRsfxy7aYUHBaFFh0pesLniAPTTeLm//fQQd
-         NOEJ4/qoUBVDzTWiZqNjjIvN07PHp/I8pwfw9hnZiB82/tzhje7ndl4DqFCYDEfdqiz6
-         iKoA==
-X-Gm-Message-State: AOAM533h1m0AjA/nEcxGQvP1gv8R9T0oPkpChgAqB/wx7Jd30qPm9b6y
-        NYEIF63nZIhbyRTEyyPajuxBgsGJZXFkwg==
-X-Google-Smtp-Source: ABdhPJwHpmjb2qYXif/OsOg/To0gQCQz+kE5P8sis36QRCZ/5mTp4L6vQkW2ZAO5ytfKolW6heO63A==
-X-Received: by 2002:a1c:a7c2:: with SMTP id q185mr3150534wme.3.1643119398321;
-        Tue, 25 Jan 2022 06:03:18 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id j15sm598178wmq.19.2022.01.25.06.03.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 06:03:17 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     arnd@arndb.de, clemens@ladisch.de, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH] hpet: fix style issue about braces and alignment
-Date:   Tue, 25 Jan 2022 14:03:11 +0000
-Message-Id: <20220125140311.4084998-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 25 Jan 2022 09:06:09 -0500
+Received: from mga17.intel.com ([192.55.52.151]:12204 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1387856AbiAYODn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 09:03:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643119423; x=1674655423;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tFnuLuY9oElKJDCq2VE/qinMRbQq/Wj5fuO0jaXmt2g=;
+  b=GqH8McwTltsCz6wF7REFuaq1IUelQXr+5v9RZel+1fBBPFzORO+Snbih
+   ojXuuU4yqhqsMEPcaxH6cvTs5ZRKrVjcSNSsY6RXrK9z9q1vERZVELXVX
+   94R4WYX864BLWsD6BmyY98EYcG6n/sWwHTHXkz73xGRVPj983Y9Wv6pUu
+   d6jaYwwufFBj5A8WUgb13ZwXe0dlEQpDDhXnZMc8MQFB9oqb09rw03uua
+   cxCl/87Qw1fXuWuQ/Nt9RhupDrVSJ2VEWvX4T5G2+IvguQCRU1GX0ZprR
+   ql+ltYVP16NJ9x8uc5fUIlCZAGKC5b/S6IL4202KN0K6oUOGo12JP//qU
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226972497"
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="226972497"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 05:57:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="597129564"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga004.fm.intel.com with ESMTP; 25 Jan 2022 05:57:12 -0800
+Received: from [10.209.56.163] (bdobabaa-mobl.amr.corp.intel.com [10.209.56.163])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 58D86580808;
+        Tue, 25 Jan 2022 05:57:10 -0800 (PST)
+Message-ID: <7ef1bf66-4184-7f5b-c0bd-351ec743d4e9@linux.intel.com>
+Date:   Tue, 25 Jan 2022 08:57:09 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] x86/perf: Default freeze_on_smi on for Comet Lake and
+ later.
+Content-Language: en-US
+To:     Kyle Huey <me@kylehuey.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Robert O'Callahan <rocallahan@gmail.com>,
+        Keno Fischer <keno@juliacomputing.com>,
+        Andi Kleen <ak@linux.intel.com>
+References: <20220122072644.92292-1-khuey@kylehuey.com>
+ <Ye6Z31keWVPrsNWU@hirez.programming.kicks-ass.net>
+ <3c35dc76-c187-8d3f-7fc9-75de32e7cbf6@linux.intel.com>
+ <CAP045ArbX7cYKyv0H4X2SxUJWycB1VoLZWLME=_RXttBFBfP3A@mail.gmail.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <CAP045ArbX7cYKyv0H4X2SxUJWycB1VoLZWLME=_RXttBFBfP3A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fix all style issue for braces and alignment
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- drivers/char/hpet.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/char/hpet.c b/drivers/char/hpet.c
-index 55bd63c97d00..ee71376f174b 100644
---- a/drivers/char/hpet.c
-+++ b/drivers/char/hpet.c
-@@ -253,9 +253,9 @@ static int hpet_open(struct inode *inode, struct file *file)
- 
- 	for (devp = NULL, hpetp = hpets; hpetp && !devp; hpetp = hpetp->hp_next)
- 		for (i = 0; i < hpetp->hp_ntimer; i++)
--			if (hpetp->hp_dev[i].hd_flags & HPET_OPEN)
-+			if (hpetp->hp_dev[i].hd_flags & HPET_OPEN) {
- 				continue;
--			else {
-+			} else {
- 				devp = &hpetp->hp_dev[i];
- 				break;
- 			}
-@@ -302,9 +302,9 @@ hpet_read(struct file *file, char __user *buf, size_t count, loff_t * ppos)
- 		devp->hd_irqdata = 0;
- 		spin_unlock_irq(&hpet_lock);
- 
--		if (data)
-+		if (data) {
- 			break;
--		else if (file->f_flags & O_NONBLOCK) {
-+		} else if (file->f_flags & O_NONBLOCK) {
- 			retval = -EAGAIN;
- 			goto out;
- 		} else if (signal_pending(current)) {
-@@ -967,7 +967,8 @@ static acpi_status hpet_resources(struct acpi_resource *res, void *data)
- 				break;
- 
- 			irq = acpi_register_gsi(NULL, irqp->interrupts[i],
--				      irqp->triggering, irqp->polarity);
-+						irqp->triggering,
-+						irqp->polarity);
- 			if (irq < 0)
- 				return AE_ERROR;
- 
--- 
-2.34.1
+On 1/24/2022 9:59 PM, Kyle Huey wrote:
+> On Mon, Jan 24, 2022 at 8:01 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
+>>
+>>
+>>
+>> On 1/24/2022 7:21 AM, Peter Zijlstra wrote:
+>>> On Fri, Jan 21, 2022 at 11:26:44PM -0800, Kyle Huey wrote:
+>>>> Beginning in Comet Lake, Intel extended the concept of privilege rings to
+>>>> SMM.[0] A side effect of this is that events caused by execution of code
+>>>> in SMM are now visible to performance counters with IA32_PERFEVTSELx.USR
+>>>> set.
+>>>>
+>>>> rr[1] depends on exact counts of performance events for the user space
+>>>> tracee, so this change in behavior is fatal for us. It is, however, easily
+>>>> corrected by setting IA32_DEBUGCTL.FREEZE_WHILE_SMM to 1 (visible in sysfs
+>>>> as /sys/devices/cpu/freeze_on_smi). While we can and will tell our users to
+>>>> set freeze_on_smi manually when appropriate, because observing events in
+>>>> SMM is rarely useful to anyone, we propose to change the default value of
+>>>> this switch.
+>>
+>> + Andi
+>>
+>>   From we heard many times from sophisticated customers, they really hate
+>> blind spots. They want to see everything. That's why we set
+>> freeze_on_smi to 0 as default. I think the patch breaks the principle.
+> 
+> The default kernel settings for perf events prioritize preventing
+> information leaks to less privileged code. perf_event_paranoid
+> defaults to 2, preventing unprivileged users from observing kernel
+> space. If "sophisticated customers" want to see everything they have
+> already needed privileges (or an explicit opt-in through decreasing
+> perf_event_paranoid) for some time.
+> 
+> The current situation on Comet Lake+ where an unprivileged user
+> *cannot* observe kernel code due to security concerns but
+> simultaneously *must* observe SMM code seems rather absurd.
+>
 
+I see. I was thought the unprivileged user can observe the SMM code on 
+the previous platforms. The CML+ change only makes part of the SMM code 
+CPL0. Seems I'm wrong. The change looks like changing the previous CPL0 
+code to CPL3 code. If so, yes, I think we should prevent the information 
+leaks for the unprivileged user.
+
+>> I don't think there is a way to notify all the users that the default
+>> kernel value will be changed. (Yes, the end user can always check the
+>> /sys/devices/cpu/freeze_on_smi to get the latest value. But in practice,
+>> no one checks it unless some errors found.) I think it may bring
+>> troubles to the users if they rely on the counts in SMM.
+> 
+> Unfortunately the new hardware has already changed the behavior
+> without notifying users, no matter what we do here.
+> 
+>> The patch only changes the default values for some platforms, not all
+>> platforms. The default value is not consistent among platforms anymore.
+>> It can bring confusion.
+> 
+> I don't personally object to changing freeze_on_smi for all platforms
+> :) I was merely trying to limit the changes.
+
+
+Changing it to all platforms seems a too big hammer. I agree we should 
+limit it to the impacted platforms.
+
+I've contacted the author of the white paper. I was told that the change 
+is for the client vPro platforms. They are not sure whether it impacts 
+Server platform or Atom platforms. I'm still working on it. I will let 
+you and Peter know once I get more information.
+
+Thanks,
+Kan
