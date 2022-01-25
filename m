@@ -2,103 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8549BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:26:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB037C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587587AbiAYRS3 (ORCPT
+        id S1381524AbiAYRZj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:18:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242224AbiAYRNh (ORCPT
+        Tue, 25 Jan 2022 12:25:39 -0500
+Received: from relay036.a.hostedemail.com ([64.99.140.36]:63973 "EHLO
+        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1587860AbiAYRXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:13:37 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B38C061788;
-        Tue, 25 Jan 2022 09:12:25 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id d3so17388009ilr.10;
-        Tue, 25 Jan 2022 09:12:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WrtH5ghaKPN4zPq0sPHDAur3BisSAdvDShbVq3dIejA=;
-        b=qfiSSeIxefWvWW91HY1bM17R0N/s6o0+Yjh0p4BV/GcxYzIkNnorxVtPITTcwXvpI9
-         TLcDMfDF+wuNR5qhQUpsq2OOvaJ3QX+ase3dO7BliS2YLsm//qPllzUxk1yGEbhooRhO
-         i5U3KuLFBMsUzdAmQeMyD3aBKR/oaCtzEXjdcCwYf/zjkcyzDfZjLrnBnqtnlzwv0/Hy
-         AF0d+nV/lEjuL2TtWvolLPHu/Kt70emVwZQ2nmvHSTrvlzbt62kqHevDG5RHvfXTG8F3
-         Bp+FyZRL79jGpWuBhI6bp02kkU5zwaNlAA/fxQ/7+iw/TDCGgd5BIokiJwShQ1jDX1nB
-         exbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WrtH5ghaKPN4zPq0sPHDAur3BisSAdvDShbVq3dIejA=;
-        b=8MCGij8k/Cn4j664RWvg36AlE0uwWDK47QUstH+teNAHehoTxwm4USUFInO4xuGu8u
-         dmoARyZZw7jwVKk/SDrw1jck6FmzJnosPIBZTiDTPE2A2GuQmlKkzvk7mrNU+hVL/xk8
-         ROxmqOTuiU9gC3uphMa5/ysfIaKouU5mvKfxQle/kxkBF/mC01Yufc+woZcCA6gqiNUY
-         npXqawUVQ9QQWnt+vvpNRmeZrA4/XzrG+fjOYz/gXhnWzPOg/nzH53xR32+7kKOJ6QGK
-         tZx/BpTwlMX8UU42KbhGMqHQJAEqgO3s3JKnib7YIYgsVuFo+FKxMM7kP9auuq/DX75t
-         Sy5w==
-X-Gm-Message-State: AOAM532Ne8CYxAcB10XdoDwAc6RxrUdUJAA2LYaY3QfBxA33USS/w4VF
-        V5davxaEyrK+XxIz8rTCVZLwPm5yjm0=
-X-Google-Smtp-Source: ABdhPJzkxyIibb1FGTbKN+rTHBAFQa3lU1Qx2tprXS7p7+K9mSBL7V22s7wjlfzr5Avd5Q1iORjH7A==
-X-Received: by 2002:a05:6e02:12ca:: with SMTP id i10mr11495329ilm.284.1643130743930;
-        Tue, 25 Jan 2022 09:12:23 -0800 (PST)
-Received: from aford-IdeaCentre-A730.lan ([2601:448:8400:9e8:6592:b6fe:71b1:9f4c])
-        by smtp.gmail.com with ESMTPSA id m14sm8090291iov.0.2022.01.25.09.12.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 09:12:22 -0800 (PST)
-From:   Adam Ford <aford173@gmail.com>
-To:     linux-media@vger.kernel.org
-Cc:     aford@beaconembedded.com, cphealy@gmail.com,
-        Adam Ford <aford173@gmail.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Subject: [PATCH V4 01/11] arm64: dts: imx8mq-tqma8mq: Remove redundant vpu reference
-Date:   Tue, 25 Jan 2022 11:11:18 -0600
-Message-Id: <20220125171129.472775-2-aford173@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220125171129.472775-1-aford173@gmail.com>
-References: <20220125171129.472775-1-aford173@gmail.com>
+        Tue, 25 Jan 2022 12:23:02 -0500
+Received: from omf11.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay09.hostedemail.com (Postfix) with ESMTP id A81D8226FE;
+        Tue, 25 Jan 2022 17:22:57 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf11.hostedemail.com (Postfix) with ESMTPA id 356BA20037;
+        Tue, 25 Jan 2022 17:22:51 +0000 (UTC)
+Message-ID: <b40820130b12bedce168f70886b9ff9dd98d2b08.camel@perches.com>
+Subject: Re: [Patch  1/3] Staging: rtl8723bs: Placing opening { braces in
+ previous line
+From:   Joe Perches <joe@perches.com>
+To:     Jagath Jog J <jagathjog1996@gmail.com>, gregkh@linuxfoundation.org,
+        hdegoede@redhat.com, Larry.Finger@lwfinger.net
+Cc:     fabioaiuto83@gmail.com, dan.carpenter@oracle.com,
+        marcocesati@gmail.com, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 25 Jan 2022 09:22:53 -0800
+In-Reply-To: <20220124034456.8665-2-jagathjog1996@gmail.com>
+References: <20220124034456.8665-1-jagathjog1996@gmail.com>
+         <20220124034456.8665-2-jagathjog1996@gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: ujaimyencnwmrey7kj7okky61fr7khfu
+X-Rspamd-Server: rspamout01
+X-Rspamd-Queue-Id: 356BA20037
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+cER3feRAnHr9g8xb3BJva3Bfg7EsAbUc=
+X-HE-Tag: 1643131371-237344
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The vpu is enabled by default, so there is no need to manually
-enable it.
+On Mon, 2022-01-24 at 09:14 +0530, Jagath Jog J wrote:
+> Fix following checkpatch.pl error by placing opening {
+> braces in previous line
+> ERROR: that open brace { should be on the previous line
+[]
+> diff --git a/drivers/staging/rtl8723bs/os_dep/ioctl_cfg80211.c b/drivers/staging/rtl8723bs/os_dep/ioctl_cfg80211.c
+[]
+> @@ -113,13 +113,10 @@ static struct ieee80211_supported_band *rtw_spt_band_alloc(
+>  	struct ieee80211_supported_band *spt_band = NULL;
+>  	int n_channels, n_bitrates;
+>  
+> -	if (band == NL80211_BAND_2GHZ)
+> -	{
+> +	if (band == NL80211_BAND_2GHZ) {
+>  		n_channels = RTW_2G_CHANNELS_NUM;
+>  		n_bitrates = RTW_G_RATES_NUM;
+> -	}
+> -	else
+> -	{
+> +	} else {
+>  		goto exit;
+>  	}
 
-Signed-off-by: Adam Ford <aford173@gmail.com>
+Reversing the test would be less indented and simpler code:
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mq-tqma8mq.dtsi b/arch/arm64/boot/dts/freescale/imx8mq-tqma8mq.dtsi
-index 8aedcddfeab8..38ffcd145b33 100644
---- a/arch/arm64/boot/dts/freescale/imx8mq-tqma8mq.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mq-tqma8mq.dtsi
-@@ -272,10 +272,6 @@ &usdhc1 {
- 	status = "okay";
- };
- 
--&vpu {
--	status = "okay";
--};
--
- /* Attention: wdog reset forcing POR needs baseboard support */
- &wdog1 {
- 	status = "okay";
--- 
-2.32.0
+	if (band != NL80211_BAND_2GHZ)
+		goto exit;
+
+	n_channels = RTW_2G_CHANNELS_NUM;
+	n_bitrates = RTW_G_RATES_NUM;
+
+etc...
+
 
