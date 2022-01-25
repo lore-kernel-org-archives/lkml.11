@@ -2,63 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF458C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:06:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B74CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234538AbiAYSF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 13:05:59 -0500
-Received: from mail-qv1-f52.google.com ([209.85.219.52]:36745 "EHLO
-        mail-qv1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379751AbiAYSED (ORCPT
+        id S241573AbiAYSIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 13:08:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22569 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242561AbiAYSHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 13:04:03 -0500
-Received: by mail-qv1-f52.google.com with SMTP id g11so20012067qvu.3
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:04:02 -0800 (PST)
+        Tue, 25 Jan 2022 13:07:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643134062;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=wZ/YYJLB72Hf5p1POA1A36FlHc2x/OwYWfFRBmTnCrc=;
+        b=HKHME8k3gUBg4vRPtQ7gsCqfKuWVUX2VNcW27a3v7xO7S27ex+0uAWYNqoFyhXEYYbV+tF
+        Dx5RbvJLtVPPc/InhyQ1x/eKLF71p/OhvHGg8z2wOf/nCeB/oWUpjk/fdcONohb5n2Nd7U
+        MSRfY/vA04nBm6xCXI2L5+xduCPhbFM=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-302-SwrammPyPWyBILg_zfRWeA-1; Tue, 25 Jan 2022 13:07:40 -0500
+X-MC-Unique: SwrammPyPWyBILg_zfRWeA-1
+Received: by mail-ot1-f72.google.com with SMTP id h36-20020a9d2f27000000b0059e33f1f8a0so7124470otb.19
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:07:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=X5xSUtxbeAyvevWZK2Q3SF/O/W53Q2kYKgU9lvVdnVw=;
-        b=ZCsoCj879E40RA6oRgMW0IgUOr/D/cYb0GAFhzgKOzVtEVmM90UZIDWvHoBa6XAEMl
-         aJ3CPQqvnmd8gMsKVd1yLFfsnWAWmVALYJJnnxPskQ3ivHxjNym12A0q1stxU5SDIgZS
-         rwLrYCH9VLXFdiOoPC6at9EHPTNCsgT4GT5NTAfcccdrcXaen3/JftIYvbB8J3I/DUVl
-         mRISfy2Bf+zHrOJ+/KLQW/y+D3U+KiUuZ2W6tgwqgdDCoAlrynzEcdzD5M8DKQlIrBGq
-         Bxgz2XMoFwMrZLezWRGICpmKiw3q2cZOzf1wnEMAIe0Z/F5uGO8Z5Yfqn/jeWuh45+uY
-         fKxg==
-X-Gm-Message-State: AOAM530klkJt3oW1UCFgb+EB+bys1jwhT0F5RyQJXCBxGGwVdlArE8cl
-        PEf27OodzQWsv3QQKwWK6ZSrDki6Bz+ig2tYPmpN+KhHgaSldILA
-X-Google-Smtp-Source: ABdhPJx5vps6qWlHIMdeB0kIJjfk262CwxPlat/2wfRnKvBQWUWMZKhrnbFB+rIhUhbtD9NcZC5K0JzW1Icr1Se3Dpw=
-X-Received: by 2002:ad4:4eef:: with SMTP id dv15mr20898852qvb.52.1643133841803;
- Tue, 25 Jan 2022 10:04:01 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wZ/YYJLB72Hf5p1POA1A36FlHc2x/OwYWfFRBmTnCrc=;
+        b=ZNAWM54ZhE6xlVl8rD3RqRbLZ71FyfvHoZbE8231mSxEmMT3MVLDqVxRqP0XD34ysX
+         F02sk99t+AY9afYfDpZqfE1AW0X5nNpwiWldyfLhHsdd1wLbNJhU+NaIiHPzzejmkhs3
+         8osWQZk+giwi4f4K7vjZeZrIzn2TS5uXvZshsA8rd8b2xErL2otEN6cttVI4puEPMQCO
+         72s6N1lASXXNupY9XfELdExxXdFkL0wwYR/VtyHWx+fyI+ulePL/KCQUK7z9q0S1ZVKl
+         ZwCtQxqM4aZjGut6vBYScHgpiCNFPdGK8dzO3WyqHrYmBpYqwG93YFeCuItZMsSa3jpw
+         o1mQ==
+X-Gm-Message-State: AOAM531EOufgB69r8CS+nMJVfRPog/87sOJDfs6d0vfBmUK+hX7oSWXl
+        xC5bCbAqm2cjwgxvYvLoWWWugFl3PLbNkZ880DKBac3s4eFB0ovD1Sr7WPelk/jdJpFlrJFmmUB
+        o6aYvqgpw8jpGCPhXxYn+Reyi
+X-Received: by 2002:a4a:b24b:: with SMTP id i11mr13990794ooo.17.1643134059524;
+        Tue, 25 Jan 2022 10:07:39 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJytoZMto/EuCrZnClcVErOkFB+/iGYfaRy6xZsTw6FNztkIPZWSOmFtpqPAHITjsWBX+8FnfQ==
+X-Received: by 2002:a4a:b24b:: with SMTP id i11mr13990785ooo.17.1643134059351;
+        Tue, 25 Jan 2022 10:07:39 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id a2sm8369284oiw.33.2022.01.25.10.07.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 10:07:38 -0800 (PST)
+From:   trix@redhat.com
+To:     johannes@sipsolutions.net
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] ieee80211: cleanup double word in comment
+Date:   Tue, 25 Jan 2022 10:07:35 -0800
+Message-Id: <20220125180735.1123792-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-From:   Aleksey Senin <aleksey-linux-kernel@senin.name>
-Date:   Tue, 25 Jan 2022 12:03:51 -0600
-Message-ID: <CAM=k+5qEfxHOFkiXfobJERr=gMQ9jgcxgpydnkJx3ed3uPPsQg@mail.gmail.com>
-Subject: Using memcpy instead of copy_to_user. xprtrdma code.
-To:     linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This specific patch -  - implements using memcpy instead of
-copy_to_user. Why is it considered to be safe in this specific case?
-All readings about how to copy data are mentioning to use
-copy_to_user/copy_from_user. Why use direct copy here? What prevents
-the kernel from failure if the page is not present or doesn't have
-required access rights?
+From: Tom Rix <trix@redhat.com>
 
-@@ -103,8 +102,8 @@ static int read_reset_stat(struct ctl_table
-*table, int write,
-                len -= *ppos;
-                if (len > *lenp)
-                        len = *lenp;
--               if (len && copy_to_user(buffer, str_buf, len))
--                       return -EFAULT;
-+               if (len)
-+                       memcpy(buffer, str_buf, len);
+Remove the second 'that'.
 
-Reference to the specific patch in the services of commits:
-https://lkml.org/lkml/2020/4/17/60
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ include/linux/ieee80211.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Commit itself:
-32927393dc1ccd60fb2bdc05b9e8e88753761469
+diff --git a/include/linux/ieee80211.h b/include/linux/ieee80211.h
+index 559b6c6449384..5475383936f8b 100644
+--- a/include/linux/ieee80211.h
++++ b/include/linux/ieee80211.h
+@@ -467,7 +467,7 @@ static inline bool ieee80211_is_data_qos(__le16 fc)
+ static inline bool ieee80211_is_data_present(__le16 fc)
+ {
+ 	/*
+-	 * mask with 0x40 and test that that bit is clear to only return true
++	 * mask with 0x40 and test that bit is clear to only return true
+ 	 * for the data-containing substypes.
+ 	 */
+ 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | 0x40)) ==
+-- 
+2.26.3
+
