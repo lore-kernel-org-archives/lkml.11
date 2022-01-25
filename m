@@ -2,107 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A870CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C47B7C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346018AbiAYNqX (ORCPT
+        id S1577720AbiAYNsd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:46:23 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:36176 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383903AbiAYNny (ORCPT
+        Tue, 25 Jan 2022 08:48:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1577601AbiAYNpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 08:43:54 -0500
-Received: from [192.168.254.32] (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 5E17F20B6C61;
-        Tue, 25 Jan 2022 05:43:52 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5E17F20B6C61
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1643118233;
-        bh=pNSTEP0TRPy0j5oEkFezTz31lZK+4Yx3qQJpktHhUjs=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=QH0fuY0YhBO7vXSfmXGWSFbzJOgdLCyFhrYhzV8LZtGzmrvNybYSgEzDhld46vZ+q
-         3KFYbxmbPXOQpmp5poOJK6Zb3Z2CU8rDW0ls7Xbl21fxkAsCTS7zXbISNDna+eunUc
-         fzB0vE6t+hQelwlPCl4tEIT/f0a90+dP2KsEDVMY=
-Message-ID: <825b8b72-c746-ba24-7142-3fff481e82d6@linux.microsoft.com>
-Date:   Tue, 25 Jan 2022 07:43:51 -0600
+        Tue, 25 Jan 2022 08:45:21 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F4CC06175E;
+        Tue, 25 Jan 2022 05:45:18 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id t7so8851641ljc.10;
+        Tue, 25 Jan 2022 05:45:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=dmTRZQPuRO8f++oWDROLMKejn3nl3Z1SGKdLjvl7gws=;
+        b=BEWDGMMoMtROBzr8EOGbxyLugIK9SlaF4xB8o2GIIWKYTgUO5ifb3+PzatsOVDsiW4
+         jts2Q8yi8DTDCnKzLfUtm21nKsYYZdvvN3H4STmJ1T4fnB+dwlbroyvI/9TByhB+nkQ6
+         yl8p5oggELsaBPWLBh8v6lK8+UOaV4NzfJrtRKNBHQDkPEUc2HdMYfQfShLepvFL/dq+
+         +5suF/LKHu0OGxHZmviEQrtLScqqL50GrVBK2uNVTZSF7uvxGuFKO6O+2q6eY7MPT63G
+         Eo1b7WmAiqUVJS0moI3cK+yddSe4bzmcNNS35iQ+XLRqKcsbBfFlkFxM8ziurOhHER+e
+         /JxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dmTRZQPuRO8f++oWDROLMKejn3nl3Z1SGKdLjvl7gws=;
+        b=v3qdwxIz68a2h0CXHYuSzCwKW0ekfIEETxyoPOyzHlfpUpTDYc2wYcCnhGDe651qQ7
+         s/ZbknnkvQskA5FNuJUsD2TqHUbj/uRRk5jJH8/k1kAvgXXTo2u8OFdN8RQXRy7z6QhG
+         tLy4Wwra02VwsuABVj1/5Jqc99Tcp9gfEaFoVUB+Mwd24Ylmz9uRp9xGbHVp/KsG2jyZ
+         uJK03SvTV+uNA/rRMMNOk/4Aw0jNeslJANVHSRJKqTTLc7UqGeyF7xGRyZ8OdYfVgqqP
+         ORod7Ic5VgjC0V1TaJM3EWl6BnzSvS9Mo2JN98fMLUgPfZR3uBHKizaIwoSh4NSFOMl0
+         j8YQ==
+X-Gm-Message-State: AOAM531SRvLm9Ojncvo+DmU9jXMsV0946i466y6xjRpsGElx7Y4KgJns
+        qMrxB9EI3XNT8CbtydjVvYFRwcm21fWt2w==
+X-Google-Smtp-Source: ABdhPJx08G3qqyQaY61R2yVb7Y4EUNSulWJAmHB8Z5lo0lAdRk90RX5MGqRpEOLUGDZoH8qyGv9zVw==
+X-Received: by 2002:a2e:9cd4:: with SMTP id g20mr10157727ljj.116.1643118316756;
+        Tue, 25 Jan 2022 05:45:16 -0800 (PST)
+Received: from [192.168.8.103] (m91-129-103-86.cust.tele2.ee. [91.129.103.86])
+        by smtp.gmail.com with ESMTPSA id q12sm1224461ljh.16.2022.01.25.05.45.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 05:45:16 -0800 (PST)
+Message-ID: <564ae11c-24fb-a9ad-f8f4-c9d80b7307b3@gmail.com>
+Date:   Tue, 25 Jan 2022 15:45:13 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v13 11/11] arm64: Select HAVE_RELIABLE_STACKTRACE
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] net: ena: Do not waste napi skb cache
 Content-Language: en-US
-To:     "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        "sjitindarsingh@gmail.com" <sjitindarsingh@gmail.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220117145608.6781-1-madvenka@linux.microsoft.com>
- <20220117145608.6781-12-madvenka@linux.microsoft.com>
- <TY2PR01MB5257518B8EB381E16D52B244855F9@TY2PR01MB5257.jpnprd01.prod.outlook.com>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <TY2PR01MB5257518B8EB381E16D52B244855F9@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+To:     Shay Agroskin <shayagr@amazon.com>
+Cc:     Hyeonggon Yoo <42.hyeyoo@gmail.com>, netdev@vger.kernel.org,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sameeh Jubran <sameehj@amazon.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-kernel@vger.kernel.org
+References: <20220123115623.94843-1-42.hyeyoo@gmail.com>
+ <f835cbb3-a028-1daf-c038-516dd47ce47c@gmail.com>
+ <5cca8bdd-bed0-f26a-6c96-d18947d3a50b@gmail.com>
+ <pj41zlmtjk7t9a.fsf@u570694869fb251.ant.amazon.com>
+From:   Julian Wiedmann <jwiedmann.dev@gmail.com>
+In-Reply-To: <pj41zlmtjk7t9a.fsf@u570694869fb251.ant.amazon.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have not seen any activity on that in a long time. IIRC, Julien quit RedHat.
-I don't know if anyone else has taken over this work in RedHat.
-
-Sorry, I don't have any more information.
-
-Madhavan
-
-On 1/24/22 23:21, nobuta.keiya@fujitsu.com wrote:
-> Hi Madhavan,
+On 24.01.22 22:50, Shay Agroskin wrote:
 > 
->> Select HAVE_RELIABLE_STACKTRACE in arm64/Kconfig to allow
->> arch_stack_walk_reliable() to be used.
+> Julian Wiedmann <jwiedmann.dev@gmail.com> writes:
+> 
+>> On 24.01.22 10:57, Julian Wiedmann wrote:
+>>> On 23.01.22 13:56, Hyeonggon Yoo wrote:
+>>>> By profiling, discovered that ena device driver allocates skb by
+>>>> build_skb() and frees by napi_skb_cache_put(). Because the driver
+>>>> does not use napi skb cache in allocation path, napi skb cache is
+>>>> periodically filled and flushed. This is waste of napi skb cache.
+>>>>
+>>>> As ena_alloc_skb() is called only in napi, Use napi_build_skb()
+>>>> instead of build_skb() to when allocating skb.
+>>>>
+>>>> This patch was tested on aws a1.metal instance.
+>>>>
+>>>> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+>>>> ---
+>>>>  drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 +-
+>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>>> index c72f0c7ff4aa..2c67fb1703c5 100644
+>>>> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>>> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>>> @@ -1407,7 +1407,7 @@ static struct sk_buff *ena_alloc_skb(struct ena_ring *rx_ring, void *first_frag)
+>>>>          skb = netdev_alloc_skb_ip_align(rx_ring->netdev,
+>>>>                          rx_ring->rx_copybreak);
+>>>
+>>> To keep things consistent, this should then also be napi_alloc_skb().
+>>>
 >>
->> Note that this is conditional upon STACK_VALIDATION which will be added when frame pointer validation is implemented (say
->> via objtool).
+>> And on closer look, this copybreak path also looks buggy. If rx_copybreak
+>> gets reduced _while_ receiving a frame, the allocated skb can end up too
+>> small to take all the data.
+>>
+>> @ ena maintainers: can you please fix this?
+>>
 > 
-> I know that Julien Thierry published objtool support for arm64 [1], but I'm not
-> sure if it has been updated. Could you tell me other threads if you know?
+> Updating the copybreak value is done through ena_ethtool.c (ena_set_tunable()) which updates `adapter->rx_copybreak`.
+> The adapter->rx_copybreak value is "propagated back" to the ring local attributes (rx_ring->rx_copybreak) only after an interface toggle which stops the napi routine first.
 > 
-> [1] https://lore.kernel.org/linux-arm-kernel/20210303170932.1838634-1-jthierry@redhat.com/
+
+That's unfortunate. ena_get_tunable() returns the updated adapter->rx_copybreak, how would a user know that their update isn't actually live yet?
+
+> Unless I'm missing something here I don't think the bug you're describing exists.
 > 
+
+ack, thanks for double-checking!
+
+> I agree that the netdev_alloc_skb_ip_align() can become napi_alloc_skb(). Hyeonggon Yoo, can you please apply this change as well to this patch?
 > 
 > Thanks,
-> Keiya
-> 
->>
->> Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
->> ---
->>  arch/arm64/Kconfig | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig index f6e333b59314..bc7b3514b563 100644
->> --- a/arch/arm64/Kconfig
->> +++ b/arch/arm64/Kconfig
->> @@ -223,6 +223,7 @@ config ARM64
->>  	select THREAD_INFO_IN_TASK
->>  	select HAVE_ARCH_USERFAULTFD_MINOR if USERFAULTFD
->>  	select TRACE_IRQFLAGS_SUPPORT
->> +	select HAVE_RELIABLE_STACKTRACE if FRAME_POINTER && STACK_VALIDATION
->>  	help
->>  	  ARM 64-bit (AArch64) Linux support.
->>
->> --
->> 2.25.1
+> Shay
 > 
 > 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>>>>      else
+>>>> -        skb = build_skb(first_frag, ENA_PAGE_SIZE);
+>>>> +        skb = napi_build_skb(first_frag, ENA_PAGE_SIZE);
+>>>>  
+>>>>      if (unlikely(!skb)) {
+>>>>          ena_increase_stat(&rx_ring->rx_stats.skb_alloc_fail,  1,
+>>>
+
