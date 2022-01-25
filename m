@@ -2,115 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7855C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451388AbiAYIhy (ORCPT
+        id S1378880AbiAYIiC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:37:54 -0500
-Received: from mga07.intel.com ([134.134.136.100]:16141 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1450276AbiAYIc6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:32:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643099578; x=1674635578;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PJYavozYdAkdPl4SALbJVcV0klynjxDcedKqP+BV1no=;
-  b=OL3WshurAOgS+G3BIMyyWaVpKXioeLTaRMTOn/JnoZZYFZujZXAfTykT
-   x2QqHZIu9epNkpMNGdY4eMhwOVV9Po37jPbeBXRkrPnc2KUsVrKeWObTy
-   EqzYLVpntcHzcXF7ucMEdzPpiTxn+knxV/cTwUrqpPHY3yNRsbCxR5RQr
-   FNoK5+3cSMISokQWPJ7AaxuYNvITjxozIb51+T3C/GlJYYBCwvg6+R/YA
-   +MBRttXTT6UmadeM++DBzLKbgX/h/KStH69wkabMF5s9lODc+heDA9i2V
-   wRSyQ6ENDVQgla74rOuftaMmQjAK9K3NFpt3gX+iMycddZHo987tBFPss
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="309570663"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="309570663"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 00:28:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="479409002"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 25 Jan 2022 00:28:31 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCHBn-000JZc-7p; Tue, 25 Jan 2022 08:28:31 +0000
-Date:   Tue, 25 Jan 2022 16:27:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Phillip Potter <phil@philpotter.co.uk>, gregkh@linuxfoundation.org
-Cc:     kbuild-all@lists.01.org, dan.carpenter@oracle.com,
-        Larry.Finger@lwfinger.net, straube.linux@gmail.com,
-        martin@kaiser.cx, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, paskripkin@gmail.com
-Subject: Re: [PATCH 04/10] staging: r8188eu: remove all DBG_88E calls from
- hal dir
-Message-ID: <202201251642.5tYQO4Fb-lkp@intel.com>
-References: <20220124224415.831-5-phil@philpotter.co.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124224415.831-5-phil@philpotter.co.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Tue, 25 Jan 2022 03:38:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450719AbiAYIdN (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 03:33:13 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4EEC0612AF
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 22:57:18 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id d1so18303976plh.10
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 22:57:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id;
+        bh=BCtqKKKae1nbJrnhJrOTwrukfpxsmoJefws7zuhcAHw=;
+        b=SSF72/QjjYdyWJdBXKYhYAc8iQHn5Y8zWNSlDi9SMHxnF4VLhtwGVXfqxwNBdantFd
+         L0VliNgqgt1dRmPK7YvWx2eZf4W3iYHMDRgfxa5qYShBhSRJEj7ZcFuv/vp2MUXyygYB
+         qwrvhfSB9pD/rxwAydIzj3jIymkNMMhB2vseOArds+jRlk9CahLSkA0MYJlWExOPH1+u
+         px385Af+ZE3Fq4JQGkeWCpIF+1KCFSZoBYnSbugtS5WG7khPHl19/XQohFJ4oz6Xiq5Z
+         j7n7sZW4x4oj/3PXfSH/EGrCWNcgg0rpnNBG9TcVlDprFqSmJFbvoUZRpY/cRSG/ebyd
+         byDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=BCtqKKKae1nbJrnhJrOTwrukfpxsmoJefws7zuhcAHw=;
+        b=dgjeyu7+1cJ5tMiK4rIHg7GUIAD/3LTUeR/ZskJkbakDU8DYxtKwdqjRsP36cgKN0B
+         JKotLhs2I33I5qyiFkEWZGAkEk5ZNuhZh6akJm7MnmKmEPHyHMh16vbLorQOKonqKBkl
+         CIQhBEmOcBt5oNE/FkrQ88v981RoWCxokW9hAidXCrh9QvBTkMT48YANgYXyB/M7JUVe
+         i8fDys0gfS8lgSfFjD2FukZ3hHqolTJHE1DFaoGcsWYI2nFzE5r2e+BSN4bW71pmIuxK
+         PTkoJ//IPQ3+Rv77H87VhuwuZiT8xFJuCMNAYzZr0wNdMX7sH4a7fwYLV7EsaqnN2oZE
+         k38A==
+X-Gm-Message-State: AOAM532Li5hLOto9WTvvsuOzxwO/Y9p3bPrx5l6D8O435457zkGZKAm5
+        eUwbu+oLYOu9d6VjdEU/Y8g=
+X-Google-Smtp-Source: ABdhPJx0nX+TrHs0Ymc7uNiOGdLtM+qgjTddinHZrO8cpYA+uKxfTQvhvGCPnU+OsALRyc7mEO+bxQ==
+X-Received: by 2002:a17:902:e5c5:b0:14b:1bbb:9f5 with SMTP id u5-20020a170902e5c500b0014b1bbb09f5mr16983715plf.62.1643093837548;
+        Mon, 24 Jan 2022 22:57:17 -0800 (PST)
+Received: from bj03382pcu.spreadtrum.com ([117.18.48.102])
+        by smtp.gmail.com with ESMTPSA id o18sm18941565pfu.45.2022.01.24.22.57.13
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 24 Jan 2022 22:57:16 -0800 (PST)
+From:   Huangzhaoyang <huangzhaoyang@gmail.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Zhaoyang Huang <zhaoyang.huang@unisoc.com>,
+        Ingo Molnar <mingo@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCHv4] psi: fix possible trigger missing in the window
+Date:   Tue, 25 Jan 2022 14:56:58 +0800
+Message-Id: <1643093818-19835-1-git-send-email-huangzhaoyang@gmail.com>
+X-Mailer: git-send-email 1.7.9.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Phillip,
+From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
 
-I love your patch! Perhaps something to improve:
+When a new threshold breaching stall happens after a psi event was
+generated and within the window duration, the new event is not
+generated because the events are rate-limited to one per window. If
+after that no new stall is recorded then the event will not be
+generated even after rate-limiting duration has passed. This is
+happening because with no new stall, window_update will not be called
+even though threshold was previously breached. To fix this, record
+threshold breaching occurrence and generate the event once window
+duration is passed.
 
-[auto build test WARNING on staging/staging-testing]
-[also build test WARNING on v5.17-rc1 next-20220124]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Phillip-Potter/Cleanup-and-removal-of-DBG_88E-macro/20220125-125206
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git fa783154524a71ab74e293cd8251155e5971952b
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220125/202201251642.5tYQO4Fb-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/041fe115dad9245f83646e7674341f28094d62a5
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Phillip-Potter/Cleanup-and-removal-of-DBG_88E-macro/20220125-125206
-        git checkout 041fe115dad9245f83646e7674341f28094d62a5
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/staging/r8188eu/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/staging/r8188eu/hal/rtl8188e_cmd.c: In function 'rtl8188e_set_FwMediaStatus_cmd':
->> drivers/staging/r8188eu/hal/rtl8188e_cmd.c:195:20: warning: variable 'macid' set but not used [-Wunused-but-set-variable]
-     195 |         u8 opmode, macid;
-         |                    ^~~~~
->> drivers/staging/r8188eu/hal/rtl8188e_cmd.c:195:12: warning: variable 'opmode' set but not used [-Wunused-but-set-variable]
-     195 |         u8 opmode, macid;
-         |            ^~~~~~
-
-
-vim +/macid +195 drivers/staging/r8188eu/hal/rtl8188e_cmd.c
-
-8cd574e6af5463 Phillip Potter 2021-07-28  192  
-8cd574e6af5463 Phillip Potter 2021-07-28  193  void rtl8188e_set_FwMediaStatus_cmd(struct adapter *adapt, __le16 mstatus_rpt)
-8cd574e6af5463 Phillip Potter 2021-07-28  194  {
-8cd574e6af5463 Phillip Potter 2021-07-28 @195  	u8 opmode, macid;
-8cd574e6af5463 Phillip Potter 2021-07-28  196  	u16 mst_rpt = le16_to_cpu(mstatus_rpt);
-8cd574e6af5463 Phillip Potter 2021-07-28  197  	opmode = (u8)mst_rpt;
-8cd574e6af5463 Phillip Potter 2021-07-28  198  	macid = (u8)(mst_rpt >> 8);
-8cd574e6af5463 Phillip Potter 2021-07-28  199  
-8cd574e6af5463 Phillip Potter 2021-07-28  200  	FillH2CCmd_88E(adapt, H2C_COM_MEDIA_STATUS_RPT, sizeof(mst_rpt), (u8 *)&mst_rpt);
-8cd574e6af5463 Phillip Potter 2021-07-28  201  }
-8cd574e6af5463 Phillip Potter 2021-07-28  202  
-
+Suggested-by: Suren Baghdasaryan <surenb@google.com>
+Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+v2: modify the logic according to Suren's suggestion
+v3: update commit message
+v4: update variable name and comments
+---
+---
+ include/linux/psi_types.h |  3 +++
+ kernel/sched/psi.c        | 46 ++++++++++++++++++++++++++++++----------------
+ 2 files changed, 33 insertions(+), 16 deletions(-)
+
+diff --git a/include/linux/psi_types.h b/include/linux/psi_types.h
+index 0a23300..e0ec129 100644
+--- a/include/linux/psi_types.h
++++ b/include/linux/psi_types.h
+@@ -132,6 +132,9 @@ struct psi_trigger {
+ 
+ 	/* Refcounting to prevent premature destruction */
+ 	struct kref refcount;
++
++	/* Deferred event(s) from previous ratelimit window */
++	bool pending_event;
+ };
+ 
+ struct psi_group {
+diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
+index 1652f2b..dd80bd2 100644
+--- a/kernel/sched/psi.c
++++ b/kernel/sched/psi.c
+@@ -515,7 +515,7 @@ static void init_triggers(struct psi_group *group, u64 now)
+ static u64 update_triggers(struct psi_group *group, u64 now)
+ {
+ 	struct psi_trigger *t;
+-	bool new_stall = false;
++	bool update_total = false;
+ 	u64 *total = group->total[PSI_POLL];
+ 
+ 	/*
+@@ -524,24 +524,35 @@ static u64 update_triggers(struct psi_group *group, u64 now)
+ 	 */
+ 	list_for_each_entry(t, &group->triggers, node) {
+ 		u64 growth;
++		bool new_stall;
+ 
+-		/* Check for stall activity */
+-		if (group->polling_total[t->state] == total[t->state])
+-			continue;
++		new_stall = group->polling_total[t->state] != total[t->state];
+ 
++		/* Check for stall activity or a previous threshold breach */
++		if (!new_stall && !t->pending_event)
++			continue;
+ 		/*
+-		 * Multiple triggers might be looking at the same state,
+-		 * remember to update group->polling_total[] once we've
+-		 * been through all of them. Also remember to extend the
+-		 * polling time if we see new stall activity.
++		 * Check for new stall activity, as well as deferred
++		 * events that occurred in the last window after the
++		 * trigger had already fired (we want to ratelimit
++		 * events without dropping any).
+ 		 */
+-		new_stall = true;
+-
+-		/* Calculate growth since last update */
+-		growth = window_update(&t->win, now, total[t->state]);
+-		if (growth < t->threshold)
+-			continue;
+-
++		if (new_stall) {
++			/*
++			 * Multiple triggers might be looking at the same state,
++			 * remember to update group->polling_total[] once we've
++			 * been through all of them. Also remember to extend the
++			 * polling time if we see new stall activity.
++			 */
++			update_total = true;
++
++			/* Calculate growth since last update */
++			growth = window_update(&t->win, now, total[t->state]);
++			if (growth < t->threshold)
++				continue;
++
++			t->pending_event = true;
++		}
+ 		/* Limit event signaling to once per window */
+ 		if (now < t->last_event_time + t->win.size)
+ 			continue;
+@@ -550,9 +561,11 @@ static u64 update_triggers(struct psi_group *group, u64 now)
+ 		if (cmpxchg(&t->event, 0, 1) == 0)
+ 			wake_up_interruptible(&t->event_wait);
+ 		t->last_event_time = now;
++		/* Reset threshold breach flag once event got generated */
++		t->pending_event = false;
+ 	}
+ 
+-	if (new_stall)
++	if (update_total)
+ 		memcpy(group->polling_total, total,
+ 				sizeof(group->polling_total));
+ 
+@@ -1152,6 +1165,7 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
+ 	t->last_event_time = 0;
+ 	init_waitqueue_head(&t->event_wait);
+ 	kref_init(&t->refcount);
++	t->pending_event = false;
+ 
+ 	mutex_lock(&group->trigger_lock);
+ 
+-- 
+1.9.1
+
