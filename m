@@ -2,133 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C18FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81205C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451605AbiAYItr (ORCPT
+        id S1452609AbiAYItz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:49:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452376AbiAYIql (ORCPT
+        Tue, 25 Jan 2022 03:49:55 -0500
+Received: from mail.cn.fujitsu.com ([183.91.158.132]:7819 "EHLO
+        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1379401AbiAYIq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:46:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961EDC055A8C;
-        Mon, 24 Jan 2022 23:21:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FFE161307;
-        Tue, 25 Jan 2022 07:21:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5A75C340E8;
-        Tue, 25 Jan 2022 07:21:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643095289;
-        bh=/7vav1tP1IFHJLsPaTScBMjyW/1YdDoF34LK07MnAaw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=O2BCshx+Gvniy0Y60rn1m43b24EsUlYsOT6aMKgW8HlxYziOQZJiE79PEhUYG0ISg
-         pCph+I+WK0BwuVIcqeEODNwzEfgOWgjPdVAqI3kPxC0340goLtbFMAyh8GFGX5c7tb
-         jjEttOxIEKlFt8LZRUWRh6yJaMrMAkD3jLqFUoBekbt8FY7iwye7gNQXe9zmIQwsDS
-         bjnLAS/424xi2N9ry4FETJlYKAsRCoEmHrjs3T2PWZzNIjlYG/EympisqdFXttfH7z
-         Q6nKFMH7wnju6NVVBzuMelO4G/VlXRxiWQuwUIg6ouGrwX2BLtjT59DYRUHMcJPh2F
-         Ld2dDFkb5pLkA==
-Received: by mail-yb1-f177.google.com with SMTP id k17so3718029ybk.6;
-        Mon, 24 Jan 2022 23:21:29 -0800 (PST)
-X-Gm-Message-State: AOAM533pIRDiaHX8ID7cV64He8OZZRp5OnPNuiVNYONZN13Vsqr83Oqm
-        xKMBz/rlfLamP1AmA5C5wFQzbvoB+9XjT6tm0M0=
-X-Google-Smtp-Source: ABdhPJyqYR4DFbAGWIBtoB383m5E/+ETS5HAwrtiClUKnfSskVUeJQfarucshkcm6G/i3SfpNfQq1VBWaHCevUsDBfw=
-X-Received: by 2002:a5b:c01:: with SMTP id f1mr27513023ybq.47.1643095288812;
- Mon, 24 Jan 2022 23:21:28 -0800 (PST)
+        Tue, 25 Jan 2022 03:46:57 -0500
+IronPort-Data: =?us-ascii?q?A9a23=3AEAVSWKxtiYQKq8RaqpJ6t+c4xyrEfRIJ4+MujC/?=
+ =?us-ascii?q?XYbTApD4l1TwOnWcaX22HOqyLMGL3eNB2bIyw9B5XsZeBm4BjHQtv/xmBbVoQ9?=
+ =?us-ascii?q?5OdWo7xwmQcns+qBpSaChohtq3yU/GYRCwPZiKa9kfF3oTJ9yEmj/nRHOekUYY?=
+ =?us-ascii?q?oBwgqLeNaYHZ44f5cs75h6mJYqYDR7zKl4bsekeWGULOW82Ic3lYv1k62gEgHU?=
+ =?us-ascii?q?MIeF98vlgdWifhj5DcynpSOZX4VDfnZw3DQGuG4EgMmLtsvwo1V/kuBl/ssIti?=
+ =?us-ascii?q?j1LjmcEwWWaOUNg+L4pZUc/H6xEEc+WppieBmXBYfQR4/ZzGhm9FjyNRPtJW2Y?=
+ =?us-ascii?q?Qk0PKzQg/lbWB5de817FfQcoO+ccCPh4aR/yGWDKRMA2c5GFlk7NJcD/eB3GWx?=
+ =?us-ascii?q?m+vkRKTRLZReG78qk0bCpW+s23px7BMbuNYIb/HpnyFnxCfcvR5/cTqPS6NlX9?=
+ =?us-ascii?q?Dctj99DHLDVYM9xQTZmalLCJQJOPlMWAZcltOaumnT7NTZfrTq9ua0y6nPBigN?=
+ =?us-ascii?q?r173kPMjWe/SLQ9lYmgCToWeu12D0BRcyN9GFzzeBtHW2iYfnlCPyQoUUEJW+6?=
+ =?us-ascii?q?P9mgVTVzWsWYDUTX1+8qvmRjFC/V9NWbUcT/0IGsa833FCiSsHwTluzp3vslho?=
+ =?us-ascii?q?dXcdAVu438geAzoLK7AuDQGsJVDhMbJohrsBebTgr0EKZ2snlADVHrrKYUzSe+?=
+ =?us-ascii?q?62SoDf0PjIaRUcAaiAsXwoI+9Slq4hbs/5lZr6PC4bs1pusR262mGvM8UADa3w?=
+ =?us-ascii?q?opZZj/82GEZrv2FpAfqT0czM=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AGsMTuqwNnWWonhJYnjO2KrPwEL1zdoMgy1kn?=
+ =?us-ascii?q?xilNoH1uA6ilfqWV8cjzuiWbtN9vYhsdcLy7WZVoIkmskKKdg7NhXotKNTOO0A?=
+ =?us-ascii?q?SVxepZnOnfKlPbexHWx6p00KdMV+xEAsTsMF4St63HyTj9P9E+4NTvysyVuds?=
+ =?us-ascii?q?=3D?=
+X-IronPort-AV: E=Sophos;i="5.88,314,1635177600"; 
+   d="scan'208";a="120839368"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 25 Jan 2022 16:44:29 +0800
+Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
+        by cn.fujitsu.com (Postfix) with ESMTP id D10854D169C7;
+        Tue, 25 Jan 2022 16:44:28 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Tue, 25 Jan 2022 16:44:29 +0800
+Received: from localhost.localdomain (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Tue, 25 Jan 2022 16:44:26 +0800
+From:   Li Zhijian <lizhijian@cn.fujitsu.com>
+To:     <linux-rdma@vger.kernel.org>, <zyjzyj2000@gmail.com>,
+        <jgg@ziepe.ca>, <aharonl@nvidia.com>, <leon@kernel.org>,
+        <tom@talpey.com>, <tomasz.gromadzki@intel.com>
+CC:     <linux-kernel@vger.kernel.org>, <mbloch@nvidia.com>,
+        <liangwenpeng@huawei.com>, <yangx.jy@fujitsu.com>,
+        <y-goto@fujitsu.com>, <rpearsonhpe@gmail.com>,
+        <dan.j.williams@intel.com>, Li Zhijian <lizhijian@cn.fujitsu.com>
+Subject: [RFC PATCH v2 3/9] RDMA/rxe: Allow registering persistent flag for pmem MR only
+Date:   Tue, 25 Jan 2022 16:50:35 +0800
+Message-ID: <20220125085041.49175-4-lizhijian@cn.fujitsu.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220125085041.49175-1-lizhijian@cn.fujitsu.com>
+References: <20220125085041.49175-1-lizhijian@cn.fujitsu.com>
 MIME-Version: 1.0
-References: <20220121194926.1970172-1-song@kernel.org> <20220121194926.1970172-7-song@kernel.org>
- <CAADnVQK6+gWTUDo2z1H6AE5_DtuBBetW+VTwwKz03tpVdfuoHA@mail.gmail.com>
- <7393B983-3295-4B14-9528-B7BD04A82709@fb.com> <CAADnVQJLHXaU7tUJN=EM-Nt28xtu4vw9+Ox_uQsjh-E-4VNKoA@mail.gmail.com>
- <5407DA0E-C0F8-4DA9-B407-3DE657301BB2@fb.com> <CAADnVQLOpgGG9qfR4EAgzrdMrfSg9ftCY=9psR46GeBWP7aDvQ@mail.gmail.com>
- <5F4DEFB2-5F5A-4703-B5E5-BBCE05CD3651@fb.com> <CAADnVQLXGu_eF8VT6NmxKVxOHmfx7C=mWmmWF8KmsjFXg6P5OA@mail.gmail.com>
- <5E70BF53-E3FB-4F7A-B55D-199C54A8FDCA@fb.com> <adec88f9-b3e6-bfe4-c09e-54825a60f45d@linux.ibm.com>
- <2AAC8B8C-96F1-400F-AFA6-D4AF41EC82F4@fb.com> <CAADnVQKgdMMeONmjUhbq_3X39t9HNQWteDuyWVfcxmTerTnaMw@mail.gmail.com>
-In-Reply-To: <CAADnVQKgdMMeONmjUhbq_3X39t9HNQWteDuyWVfcxmTerTnaMw@mail.gmail.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 24 Jan 2022 23:21:17 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW4AXLirZwjH4YfJLYj1VUU2muQx1wTkkUpeBBH9kvw2Ag@mail.gmail.com>
-Message-ID: <CAPhsuW4AXLirZwjH4YfJLYj1VUU2muQx1wTkkUpeBBH9kvw2Ag@mail.gmail.com>
-Subject: Re: [PATCH v6 bpf-next 6/7] bpf: introduce bpf_prog_pack allocator
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: D10854D169C7.ADA3F
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 9:21 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Mon, Jan 24, 2022 at 10:27 AM Song Liu <songliubraving@fb.com> wrote:
-> > >
-> > > Are arches expected to allocate rw buffers in different ways? If not,
-> > > I would consider putting this into the common code as well. Then
-> > > arch-specific code would do something like
-> > >
-> > >  header = bpf_jit_binary_alloc_pack(size, &prg_buf, &prg_addr, ...);
-> > >  ...
-> > >  /*
-> > >   * Generate code into prg_buf, the code should assume that its first
-> > >   * byte is located at prg_addr.
-> > >   */
-> > >  ...
-> > >  bpf_jit_binary_finalize_pack(header, prg_buf);
-> > >
-> > > where bpf_jit_binary_finalize_pack() would copy prg_buf to header and
-> > > free it.
->
-> It feels right, but bpf_jit_binary_finalize_pack() sounds 100% arch
-> dependent. The only thing it will do is perform a copy via text_poke.
-> What else?
->
-> > I think this should work.
-> >
-> > We will need an API like: bpf_arch_text_copy, which uses text_poke_copy()
-> > for x86_64 and s390_kernel_write() for x390. We will use bpf_arch_text_copy
-> > to
-> >   1) write header->size;
-> >   2) do finally copy in bpf_jit_binary_finalize_pack().
->
-> we can combine all text_poke operations into one.
->
-> Can we add an 'image' pointer into struct bpf_binary_header ?
+Memory region should support 2 placement types: IB_ACCESS_FLUSH_PERSISTENT
+and IB_ACCESS_FLUSH_GLOBAL_VISIBILITY, and only pmem/nvdimm has ability to
+persist data(IB_ACCESS_FLUSH_PERSISTENT).
 
-There is a 4-byte hole in bpf_binary_header. How about we put
-image_offset there? Actually we only need 2 bytes for offset.
+It prevents local user from registering a persistent access flag to
+a non-pmem MR.
 
-> Then do:
-> int bpf_jit_binary_alloc_pack(size, &ro_hdr, &rw_hdr);
->
-> ro_hdr->image would be the address used to compute offsets by JIT.
++------------------------+------------------+--------------+
+| HCA attributes         |    register access flags        |
+|        and             +-----------------+---------------+
+| MR attribute(is_pmem)  |global visibility |  persistence |
+|------------------------+------------------+--------------+
+| global visibility(DRAM)|        O         |      X       |
+|------------------------+------------------+--------------+
+| global visibility(PMEM)|        O         |      X       |
+|------------------------+------------------+--------------+
+| persistence(DRAM)      |        X         |      X       |
+|------------------------+------------------+--------------+
+| persistence(PMEM)      |        X         |      O       |
++------------------------+------------------+--------------+
+PMEM: is_pmem is true
+DRAM: is_pmem is false
+O: allow to register such access flag
+X: otherwise
 
-If we only do one text_poke(), we cannot write ro_hdr->image yet. We
-can use ro_hdr + rw_hdr->image_offset instead.
+Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
+---
+V2: update commit message, get rid of confusing ib_check_flush_access_flags() # Tom
+---
+ drivers/infiniband/sw/rxe/rxe_mr.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-> rw_hdr->image would point to kvmalloc-ed area for emitting insns.
-> rw_hdr->size would already be populated.
->
-> The JITs would write insns into rw_hdr->image including 'int 3' insns.
-> At the end the JIT will do text_poke_copy(ro_hdr, rw_hdr, rw_hdr->size);
-> That would be the only copy that will transfer everything into final
-> location.
-> Then kvfree(rw_hdr)
+diff --git a/drivers/infiniband/sw/rxe/rxe_mr.c b/drivers/infiniband/sw/rxe/rxe_mr.c
+index 0427baea8c06..89a3bb4e8b71 100644
+--- a/drivers/infiniband/sw/rxe/rxe_mr.c
++++ b/drivers/infiniband/sw/rxe/rxe_mr.c
+@@ -258,7 +258,15 @@ int rxe_mr_init_user(struct rxe_pd *pd, u64 start, u64 length, u64 iova,
+ 	set->offset = ib_umem_offset(umem);
+ 
+ 	// iova_in_pmem() must be called after set is updated
+-	mr->ibmr.is_pmem = iova_in_pmem(mr, iova, length);
++	if (iova_in_pmem(mr, iova, length))
++		mr->ibmr.is_pmem = true;
++	else if (access & IB_ACCESS_FLUSH_PERSISTENT) {
++		pr_warn("Cannot register IB_ACCESS_FLUSH_PERSISTENT for non-pmem memory\n");
++		mr->state = RXE_MR_STATE_INVALID;
++		mr->umem = NULL;
++		err = -EINVAL;
++		goto err_release_umem;
++	}
+ 
+ 	return 0;
+ 
+-- 
+2.31.1
 
-The only problem is the asymmetry of allocating rw_hdr from bpf/core.c,
-and freeing it from arch/bpf_jit_comp.c. But it doesn't bother me too much.
 
-Thanks,
-Song
+
