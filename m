@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E64C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F5DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455022AbiAYJCV (ORCPT
+        id S1455115AbiAYJC5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:02:21 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:35282 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1454375AbiAYI7W (ORCPT
+        Tue, 25 Jan 2022 04:02:57 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:58610 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1453989AbiAYI7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:59:22 -0500
-X-UUID: 0ce1cb300b4142469599f7f4483f9679-20220125
-X-UUID: 0ce1cb300b4142469599f7f4483f9679-20220125
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        Tue, 25 Jan 2022 03:59:30 -0500
+X-UUID: 7f37688ce62c48e7a03d0721c4ee35bc-20220125
+X-UUID: 7f37688ce62c48e7a03d0721c4ee35bc-20220125
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
         (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 448279544; Tue, 25 Jan 2022 16:58:14 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 701540767; Tue, 25 Jan 2022 16:58:43 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 25 Jan 2022 16:58:12 +0800
+ Tue, 25 Jan 2022 16:58:42 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 25 Jan 2022 16:58:11 +0800
+ Transport; Tue, 25 Jan 2022 16:58:40 +0800
 From:   Yong Wu <yong.wu@mediatek.com>
 To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
         "Matthias Brugger" <matthias.bgg@gmail.com>,
@@ -45,9 +45,9 @@ CC:     Robin Murphy <robin.murphy@arm.com>,
         <angelogioacchino.delregno@collabora.com>,
         <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
         <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v4 10/35] iommu/mediatek: Add 12G~16G support for multi domains
-Date:   Tue, 25 Jan 2022 16:56:09 +0800
-Message-ID: <20220125085634.17972-11-yong.wu@mediatek.com>
+Subject: [PATCH v4 13/35] iommu/mediatek: Remove the granule in the tlb flush
+Date:   Tue, 25 Jan 2022 16:56:12 +0800
+Message-ID: <20220125085634.17972-14-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220125085634.17972-1-yong.wu@mediatek.com>
 References: <20220125085634.17972-1-yong.wu@mediatek.com>
@@ -58,41 +58,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In mt8192, we preassign 0-4G; 4G-8G; 8G-12G for different multimedia
-engines. This depends on the "dma-ranges=" in the iommu consumer's dtsi
-node.
-
-Adds 12G-16G region here. and reword the previous comment. we don't limit
-which master locate in which region.
-
-CCU still is 8G-12G. Don't change it here.
+The MediaTek IOMMU don't care about granule when tlb flushing.
+Remove this variable.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/iommu/mtk_iommu.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iommu/mtk_iommu.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 1712f5fcdcab..4a24977274e3 100644
+index 80d8333797fd..028b2192c414 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -180,10 +180,12 @@ static const struct mtk_iommu_iova_region single_domain[] = {
- };
+@@ -219,7 +219,6 @@ static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
+ }
  
- static const struct mtk_iommu_iova_region mt8192_multi_dom[] = {
--	{ .iova_base = 0x0,		.size = SZ_4G},		/* disp: 0 ~ 4G */
-+	{ .iova_base = 0x0,		.size = SZ_4G},		/* 0 ~ 4G */
- 	#if IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT)
--	{ .iova_base = SZ_4G,		.size = SZ_4G},		/* vdec: 4G ~ 8G */
--	{ .iova_base = SZ_4G * 2,	.size = SZ_4G},		/* CAM/MDP: 8G ~ 12G */
-+	{ .iova_base = SZ_4G,		.size = SZ_4G},		/* 4G ~ 8G */
-+	{ .iova_base = SZ_4G * 2,	.size = SZ_4G},		/* 8G ~ 12G */
-+	{ .iova_base = SZ_4G * 3,	.size = SZ_4G},		/* 12G ~ 16G */
-+
- 	{ .iova_base = 0x240000000ULL,	.size = 0x4000000},	/* CCU0 */
- 	{ .iova_base = 0x244000000ULL,	.size = 0x4000000},	/* CCU1 */
- 	#endif
+ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+-					   size_t granule,
+ 					   struct mtk_iommu_data *data)
+ {
+ 	struct list_head *head = data->hw_list;
+@@ -541,8 +540,7 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	size_t length = gather->end - gather->start + 1;
+ 
+-	mtk_iommu_tlb_flush_range_sync(gather->start, length, gather->pgsize,
+-				       dom->data);
++	mtk_iommu_tlb_flush_range_sync(gather->start, length, dom->data);
+ }
+ 
+ static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
+@@ -550,7 +548,7 @@ static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
+ {
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 
+-	mtk_iommu_tlb_flush_range_sync(iova, size, size, dom->data);
++	mtk_iommu_tlb_flush_range_sync(iova, size, dom->data);
+ }
+ 
+ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
 -- 
 2.18.0
 
