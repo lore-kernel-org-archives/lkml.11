@@ -2,169 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEEA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5872AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580317AbiAYOru (ORCPT
+        id S1580475AbiAYOuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:47:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55155 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1579081AbiAYOoN (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:44:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643121845;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rENnptulbHCfDS4+95Um4dqwijjfumjVEPP1UeTIm6E=;
-        b=ZQdc3zUB2sCjeZhOUm1rvstaqT+sD6hvO1ANDEXk8sVs1fxYpFZKTMS4DcNjvxwyZYWTyz
-        HpisUEmNZTy5Q4pXU8IK0WZUW/Zu84VFv7uNP6GY5WMG2YGWn4KNDpIn9F0AKsYXNpX3lq
-        wkSZ8v6njXAUWt1j53Pakw+Le9WFyJQ=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-60-1yJl8RCzN3W-Ne0BqulD7A-1; Tue, 25 Jan 2022 09:44:03 -0500
-X-MC-Unique: 1yJl8RCzN3W-Ne0BqulD7A-1
-Received: by mail-ed1-f72.google.com with SMTP id p17-20020aa7c891000000b004052d1936a5so10763928eds.7
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:44:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rENnptulbHCfDS4+95Um4dqwijjfumjVEPP1UeTIm6E=;
-        b=05kf0NAS6amHM4F7i7iO/IJz00KGc56Kg15J4W74WnfjPj3R+6RdjivlOKeHTBPsiC
-         igzDrwohrZ3L5LsxnTCIZP2zJsRRrCrmsOxWKX3cApC1hTZggnP4W5VqKQuuga7lkZQo
-         WNeOmuvLqEBjI985z3tW0xXl2mMqm59JunD+SiCbeS25rnY3svPpujhfxZ/3If+pv7JV
-         L2FlA4tgbDJ5uOGW/H1vf//e1VMIaYqZRRX6/JWTclSHS8g+a/a9RCwVL9+HFIS962Ek
-         xREaZEEYSFbwDNo8IjgxkmbA4YVPyCfJJxm0QjwwbIexZrwjBdRYtWqPynKYeV3TXnK1
-         CPWA==
-X-Gm-Message-State: AOAM532ol7N1pEj7+peOhyT3/HBpA0lddaKqT5PT5mfl64jXa6clpDA/
-        5dSsxJwvDgJVoLE+b/jF/KdvTtpkwxgO9Qd36NQU4CwoFh2VaeYt6npHWzXq0ltSYO5v7ROKo6N
-        MCMti1BqC5Ia0qV6pkm8ZTW86
-X-Received: by 2002:a17:907:3f20:: with SMTP id hq32mr7856862ejc.613.1643121842602;
-        Tue, 25 Jan 2022 06:44:02 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzEJL6wCGgsczKUNeWJNSRDK85H0EGdelC3UINNqMmijJmdpawYhtQs9uaKEzdWA7vIIicoCQ==
-X-Received: by 2002:a17:907:3f20:: with SMTP id hq32mr7856840ejc.613.1643121842297;
-        Tue, 25 Jan 2022 06:44:02 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id j20sm6211747eje.81.2022.01.25.06.44.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 06:44:01 -0800 (PST)
-Message-ID: <89857bde-f9c8-4d5f-0e3f-a53829520284@redhat.com>
-Date:   Tue, 25 Jan 2022 15:44:00 +0100
+        Tue, 25 Jan 2022 09:50:17 -0500
+Received: from mail-eopbgr60092.outbound.protection.outlook.com ([40.107.6.92]:23918
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1579949AbiAYOpB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 09:45:01 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ixNNiH+nd1DE1b51Y4Dg47/fk53b0z2TfJfEkp633CCj384ZFi1EXKigw2XEmpRUKMizkF0fAv128taNy23tvZ8Yr+wzEGENu5M/N6K2EB9+kTLkdd9b+uFFJApgi4hrd0W/C5QmOCpwT4W7Tu5mv9OrRTeFS5PtOfmPNzpVAyMyDY4MaA8GTNw8X79Ip9CFCJSoRY9GHq+5Gs7CA9NuNC71CilHFgko44M5irkih7fo4rR7zoiJSlmpIL/CfCYqLd08yl3v9Y7NrruJASQktOlD1L+0f9esYjsmkWnrecvN3gnP1+861jkzuoJSZ62beo9O3RT3NFhQntnLej26YQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=95tvLBYtNx6EZinWxIaRXkWwHcP0exDvIX5U712Wm0U=;
+ b=baVB8Z6tQlRjIKBhTdqm95Viz/ImxtQy2ZTQ58J53DVPS9oW4cSS0Bqjmzu+gm9TDXlqE03+TnwgivE0Sq+5R9IOwYdj/lK4iZTV8Tzb7IOUysNVKGRm+OpehVhGAZK0hzaAeUVGnFmqzv815N9cfU7gG9wPCW2h/Wg4G1V4qwnAZtK8eXrj/Da9vtucjQrv1WFDpYQBWnSD0aLgL7k9Qu8JsdqDI8skeRkbu0QsG+D2hzxPSq3DUV0ry5k2wdMpSrALZSSFN9fNIeKMeAw62kj3eS29KFQ/p6nPo0cBMXNs87jRRvoemVZ7t/y+NevVr+xey1nhQ8kcu9azbXNQTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 217.111.95.66) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=arri.de;
+ dmarc=none action=none header.from=arri.de; dkim=none (message not signed);
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=arrigroup.onmicrosoft.com; s=selector1-arrigroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=95tvLBYtNx6EZinWxIaRXkWwHcP0exDvIX5U712Wm0U=;
+ b=s5jgq3EkR1rcsnWU5oq7YCF+zc9J+0HnBeKRJFkVbB7eCdtMwANRioyP+apUtgIleWKcoSiP41GNuUsXxy3UanFcr7RLrqNuqOKQGmFNRiAujw8aFBhZ8i3INi2qIRB81BjI4ezf6ZkpOb2JflMQF5J2svPzvwngLjQCzQp80t8=
+Received: from AM5PR0701CA0013.eurprd07.prod.outlook.com
+ (2603:10a6:203:51::23) by PR3PR07MB8097.eurprd07.prod.outlook.com
+ (2603:10a6:102:170::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.9; Tue, 25 Jan
+ 2022 14:44:52 +0000
+Received: from VE1EUR02FT018.eop-EUR02.prod.protection.outlook.com
+ (2603:10a6:203:51:cafe::f7) by AM5PR0701CA0013.outlook.office365.com
+ (2603:10a6:203:51::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15 via Frontend
+ Transport; Tue, 25 Jan 2022 14:44:52 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 217.111.95.66)
+ smtp.mailfrom=arri.de; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=arri.de;
+Received-SPF: Fail (protection.outlook.com: domain of arri.de does not
+ designate 217.111.95.66 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.111.95.66; helo=mta.arri.de;
+Received: from mta.arri.de (217.111.95.66) by
+ VE1EUR02FT018.mail.protection.outlook.com (10.152.12.67) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4909.7 via Frontend Transport; Tue, 25 Jan 2022 14:44:51 +0000
+Received: from localhost.de (192.168.54.129) by mta.arri.de (192.168.100.104)
+ with Microsoft SMTP Server (TLS) id 14.3.498.0; Tue, 25 Jan 2022 15:44:50
+ +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Abel Vesa <abel.vesa@nxp.com>
+CC:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Stefan Riedmueller <s.riedmueller@phytec.de>, <ceggers@arri.de>
+Subject: [PATCH RESEND 1/6] clk: imx6ul: disable gpmi_io clock before changing parent clock
+Date:   Tue, 25 Jan 2022 15:44:36 +0100
+Message-ID: <20220125144441.17750-2-ceggers@arri.de>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220125144441.17750-1-ceggers@arri.de>
+References: <20220125144441.17750-1-ceggers@arri.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v2] KVM: x86/cpuid: Exclude unpermitted xfeatures sizes at
- KVM_GET_SUPPORTED_CPUID
-Content-Language: en-US
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     Tian Kevin <kevin.tian@intel.com>,
-        Jim Mattson <jmattson@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220125115223.33707-1-likexu@tencent.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220125115223.33707-1-likexu@tencent.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [192.168.54.129]
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9ef2385d-fe42-4621-b69a-08d9e0113e98
+X-MS-TrafficTypeDiagnostic: PR3PR07MB8097:EE_
+X-Microsoft-Antispam-PRVS: <PR3PR07MB8097F6431BB3A99EBE1F6555BF5F9@PR3PR07MB8097.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8Kvn5/hRFSHxHYn15kkvMty9n6pkyfCnh4UINWNaHK5Gcr705fhFQK2iS7WpjFfB+YY7PrfjVRv8gk5d64c5ZTJLt9ssYhMBBgDQH77PAHrjwV1ZP+yYBtjCwuBc08LD6/SiZHxQTmzyjTELI64bsiZQEtB1P+pn3KHXT6gedvEDb/xOQb57ZFovNA+AgATP/uBQZN6xJ/FaSsv7aGCspSEDpYXbwkTH+saAG3PmVOxnp4j8tvoP9XaEY1+2JytKnMs7Q60XmeJVM+7bEqYW7OdM0dh2RaNZ0LWVEnHeeNUgtKMUtsp1WhYHi5+RmbJ710FPa8NXdU7gMZpsHxrHkP8J6H+elhT3YG4F65kuZWdY2XPLT7y7xWOc1lKI6i8ClkH7Taorj0nomsZyDdvNBawmb61q9Vzgd7p8VVuBA9N7fAMqfkvoRMfdU+qQ53MgEQpgEKdkDhOkbzU0NdQx+gTQcbkbLQwZcJAVAhAtx8iaEiuw2AD1Tv37K6j+8GSMH6OPHUII2rwWAtOcqxN6kHUYMVYewpDtgqXmTsZGaZ5DfcKotF5D5ADetMzuq/FSZ917Za3LupHK6zsU68OOd2jCY8u9GRXuN56yS5aqUOd6ARiX22wfQtA9tjE4NmTmwdVTCHo/mXRwsvun8dLDHM4Gf6gZU7uaqHXq8tzz3J+rs1KVvd+KtAJbSw2l4xqC77lsmWSPbu7ooGXkUMWf75GgV0iNqOC3ZepiVUtwlcAJTrpn8F733RPuHhS85K5zRuEwMMEUZauWJgVdcMQ3bg==
+X-Forefront-Antispam-Report: CIP:217.111.95.66;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mta.arri.de;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(316002)(6666004)(86362001)(81166007)(2906002)(356005)(82310400004)(26005)(36756003)(4326008)(1076003)(40460700003)(83380400001)(508600001)(8676002)(70586007)(70206006)(36860700001)(54906003)(426003)(186003)(2616005)(6862004)(336012)(8936002)(47076005)(16526019)(107886003)(5660300002)(32563001)(36900700001)(20210929001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: arri.de
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 14:44:51.6397
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ef2385d-fe42-4621-b69a-08d9e0113e98
+X-MS-Exchange-CrossTenant-Id: e6a73a5a-614d-4c51-b3e3-53b660a9433a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e6a73a5a-614d-4c51-b3e3-53b660a9433a;Ip=[217.111.95.66];Helo=[mta.arri.de]
+X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT018.eop-EUR02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR07MB8097
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/25/22 12:52, Like Xu wrote:
-> From: Like Xu <likexu@tencent.com>
-> 
-> With the help of xstate_get_guest_group_perm(), KVM can exclude unpermitted
-> xfeatures in cpuid.0xd.0.eax, in which case the corresponding xfeatures
-> sizes should also be matched to the permitted xfeatures.
-> 
-> To fix this inconsistency, the permitted_xcr0 and permitted_xss are defined
-> consistently, which implies 'supported' plus certain permissions for this
-> task, and it also fixes cpuid.0xd.1.ebx and later leaf-by-leaf queries.
-> 
-> Fixes: 445ecdf79be0 ("kvm: x86: Exclude unpermitted xfeatures at KVM_GET_SUPPORTED_CPUID")
-> Signed-off-by: Like Xu <likexu@tencent.com>
-> ---
-> v1 -> v2 Changelog:
-> - Drop the use of shadow variable; (Paolo)
-> - Define permitted_xss consistently; (Kevin)
-> 
-> Previous:
-> https://lore.kernel.org/kvm/20220124080251.60558-1-likexu@tencent.com/
-> 
->   arch/x86/kvm/cpuid.c | 25 +++++++++++++------------
->   1 file changed, 13 insertions(+), 12 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index 3902c28fb6cb..07844d15dfdf 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -887,13 +887,14 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
->   		}
->   		break;
->   	case 0xd: {
-> -		u64 guest_perm = xstate_get_guest_group_perm();
-> +		u64 permitted_xcr0 = supported_xcr0 & xstate_get_guest_group_perm();
-> +		u64 permitted_xss = supported_xss;
->   
-> -		entry->eax &= supported_xcr0 & guest_perm;
-> -		entry->ebx = xstate_required_size(supported_xcr0, false);
-> +		entry->eax &= permitted_xcr0;
-> +		entry->ebx = xstate_required_size(permitted_xcr0, false);
->   		entry->ecx = entry->ebx;
-> -		entry->edx &= (supported_xcr0 & guest_perm) >> 32;
-> -		if (!supported_xcr0)
-> +		entry->edx &= permitted_xcr0 >> 32;
-> +		if (!permitted_xcr0)
->   			break;
->   
->   		entry = do_host_cpuid(array, function, 1);
-> @@ -902,20 +903,20 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
->   
->   		cpuid_entry_override(entry, CPUID_D_1_EAX);
->   		if (entry->eax & (F(XSAVES)|F(XSAVEC)))
-> -			entry->ebx = xstate_required_size(supported_xcr0 | supported_xss,
-> +			entry->ebx = xstate_required_size(permitted_xcr0 | permitted_xss,
->   							  true);
->   		else {
-> -			WARN_ON_ONCE(supported_xss != 0);
-> +			WARN_ON_ONCE(permitted_xss != 0);
->   			entry->ebx = 0;
->   		}
-> -		entry->ecx &= supported_xss;
-> -		entry->edx &= supported_xss >> 32;
-> +		entry->ecx &= permitted_xss;
-> +		entry->edx &= permitted_xss >> 32;
->   
->   		for (i = 2; i < 64; ++i) {
->   			bool s_state;
-> -			if (supported_xcr0 & BIT_ULL(i))
-> +			if (permitted_xcr0 & BIT_ULL(i))
->   				s_state = false;
-> -			else if (supported_xss & BIT_ULL(i))
-> +			else if (permitted_xss & BIT_ULL(i))
->   				s_state = true;
->   			else
->   				continue;
-> @@ -929,7 +930,7 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
->   			 * invalid sub-leafs.  Only valid sub-leafs should
->   			 * reach this point, and they should have a non-zero
->   			 * save state size.  Furthermore, check whether the
-> -			 * processor agrees with supported_xcr0/supported_xss
-> +			 * processor agrees with permitted_xcr0/permitted_xss
->   			 * on whether this is an XCR0- or IA32_XSS-managed area.
->   			 */
->   			if (WARN_ON_ONCE(!entry->eax || (entry->ecx & 0x1) != s_state)) {
+gpmi_io clock may have been enabled by the boot loader. All children of
+enfc_clk_root must be gated in order to prevent glitches during parent
+change.
 
-Queued, thanks.
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+---
+ drivers/clk/imx/clk-imx6ul.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Paolo
+diff --git a/drivers/clk/imx/clk-imx6ul.c b/drivers/clk/imx/clk-imx6ul.c
+index 520b100bff4b..f599ae50dd9f 100644
+--- a/drivers/clk/imx/clk-imx6ul.c
++++ b/drivers/clk/imx/clk-imx6ul.c
+@@ -514,6 +514,15 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
+ 	else if (clk_on_imx6ull())
+ 		clk_set_parent(hws[IMX6ULL_CLK_EPDC_PRE_SEL]->clk, hws[IMX6UL_CLK_PLL3_PFD2]->clk);
+ 
++	/*
++	 * gpmi_io clock may have been enabled by the boot loader. All children of
++	 * enfc_clk_root must be gated in order to prevent glitches during parent
++	 * change. The task of re-enabling is left to the gpmi-nand driver.
++	 */
++	if (clk_hw_is_enabled(hws[IMX6UL_CLK_GPMI_IO])) {
++		clk_prepare_enable(hws[IMX6UL_CLK_GPMI_IO]->clk);
++		clk_disable_unprepare(hws[IMX6UL_CLK_GPMI_IO]->clk);
++	}
+ 	clk_set_parent(hws[IMX6UL_CLK_ENFC_SEL]->clk, hws[IMX6UL_CLK_PLL2_PFD2]->clk);
+ }
+ 
+-- 
+Christian Eggers
+Embedded software developer
+
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
 
