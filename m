@@ -2,95 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26194C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B0A4C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:16:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1320574AbiAYDNZ (ORCPT
+        id S1320612AbiAYDNc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:13:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3415911AbiAYDAy (ORCPT
+        Mon, 24 Jan 2022 22:13:32 -0500
+Received: from gandalf.ozlabs.org ([150.107.74.76]:55213 "EHLO
+        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1317576AbiAYDCZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:00:54 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836CBC0E5330
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:44:40 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id i2so16366289wrb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:44:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=h/tZwH09eYlURsU9ovNUrKKrqJAZOzfkUhLGHlZxAp8=;
-        b=ptFZ/MGN5iTUclqldWK8yRdVKiYO5Un+VcwO4DgjfA4TluzTbiidROQZmsG52CfD4N
-         zgBB1PAlpLRfC3/ROysfGEI3GxYrvKwuHCFwtlPHE1OOVfsGMqFVLUy8HvdUUsojS08Y
-         TLSQX4jFe0cQ/X25xRj+VN1yPe3I9BsW4jvjW9f95YxO/y9HieedO3WH5Svr4ZD1UGxI
-         Zs2pgqldHOgojdp59t8YJRkEPCHLuiSpUqKlhQzAy3PrvPXUEqLOYi7lUmMuuXedjbgz
-         dk5S4dDyHzDgZrae0Pyavcb5JDrfys/pYexWxeuHqQuEUV+BNxYf9qZtmbRuXSoKGID7
-         hI2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=h/tZwH09eYlURsU9ovNUrKKrqJAZOzfkUhLGHlZxAp8=;
-        b=X4650NNLijEFtwfT5S/xKYLlwotE4OBG2UTjzDIKLAbrGNBD6Oo/nuXEj2Hmh3otqD
-         9n/p3qPoP052cc0qR2LCNi4zNxLkAo8L61Z5lz5QAsnHmOGl/SZJLDgRecSxCaDazeUy
-         LI1nPk08BNfJZdhNI1sWERu+dDqJiZBaH2m+yq20OBLk+M1e4NNOHF2tBUI2wOh2W/XD
-         Qtz+OXgrpmS2w9auFafp4LAgRZ7CJ7YKn0Hxk+xkM7OzOfRhqsSNXWFjWJ3BzsC8K4JQ
-         cGFKA16XLKrTx/nkP6NMg2SkHvGSVJeKhvwpcd7jqem74BlXRC7MW/NvK+PqT2MmyEIh
-         4A4w==
-X-Gm-Message-State: AOAM533n2SgvtQLEn8eIm5SL8K4GxNU5t70AUwJTVJAZqxoteSrkqe9u
-        iNJkzWLRZih112z3TQ5IiO4uoQ==
-X-Google-Smtp-Source: ABdhPJy5PWoq5xnwSnDuR+TdcNRfbKgEO02CCgU6iLz39soj9kdjN4AaH8rBrMGny2wziNhoXFQV5g==
-X-Received: by 2002:a5d:5046:: with SMTP id h6mr15929372wrt.167.1643064279187;
-        Mon, 24 Jan 2022 14:44:39 -0800 (PST)
-Received: from localhost.localdomain (d.f.5.e.6.6.b.1.e.6.2.7.e.5.c.8.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0:8c5e:726e:1b66:e5fd])
-        by smtp.gmail.com with ESMTPSA id i3sm15010613wru.33.2022.01.24.14.44.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 14:44:38 -0800 (PST)
-From:   Phillip Potter <phil@philpotter.co.uk>
-To:     gregkh@linuxfoundation.org
-Cc:     dan.carpenter@oracle.com, Larry.Finger@lwfinger.net,
-        straube.linux@gmail.com, martin@kaiser.cx,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        paskripkin@gmail.com
-Subject: [PATCH 09/10] staging: r8188eu: remove DBG_88E macro definition
-Date:   Mon, 24 Jan 2022 22:44:14 +0000
-Message-Id: <20220124224415.831-10-phil@philpotter.co.uk>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124224415.831-1-phil@philpotter.co.uk>
-References: <20220124224415.831-1-phil@philpotter.co.uk>
+        Mon, 24 Jan 2022 22:02:25 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JjWqL1B89z4yCK;
+        Tue, 25 Jan 2022 14:02:22 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1643079743;
+        bh=TvDJrkrqUKutpB4iDmLWYqvoeUHMikzPzXuaP881VMM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BQXNgbl3V8MHe/t7kUpggFKVC1K56HQMdvb4uOvYomfBBIZ8hCHn8oshvVkdpKddu
+         3ThCOsmvhkWPBvdkqtoMZdCN9l3FKDJY9R9lawxMMDrSy5SF0F0qdRsznvHPfC+p/+
+         dlfgL6qRIcIObUxxG3FrS38YsRKV+RuGe4AZp7VaFxokRq6zdERcGe1XqqRpeCervG
+         z2FvIgTbuYCEYIsrWL/ycQ1ci9WyxH1Hbnc0Asp+3FWZgXVQK9YNI58B6a6mOeE0Uz
+         02hH01pl+BGDZ85nPM2lhxZ8264/elWKItJJQ8ZiUxSiSpPmSfgy1SEZwIeqz+px4x
+         ef1ZZAulYjquA==
+Date:   Tue, 25 Jan 2022 14:02:21 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Edmund Dea <edmund.j.dea@intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Anitha Chrisanthus <anitha.chrisanthus@intel.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Subject: Re: linux-next: build failure after merge of the kspp tree
+Message-ID: <20220125140221.5c1f4640@canb.auug.org.au>
+In-Reply-To: <20220125135546.1a2e1d6b@canb.auug.org.au>
+References: <20220125135546.1a2e1d6b@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/cnjjE1VOxX+DM8Z37u7_5St";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove DBG_88E macro definition as it has no remaining callers within
-the driver. This is part of the ongoing effort to cleanup the driver to
-use standard debug mechanisms where appropriate.
+--Sig_/cnjjE1VOxX+DM8Z37u7_5St
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Hi all,
+
+On Tue, 25 Jan 2022 13:55:46 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> After merging the kspp tree, today's linux-next build (powerpc
+> allyesconfig) failed like this:
+>=20
+> drivers/gpu/drm/kmb/kmb_plane.c: In function 'kmb_plane_atomic_disable':
+> drivers/gpu/drm/kmb/kmb_plane.c:165:34: error: array subscript 3 is above=
+ array bounds of 'struct layer_status[2]' [-Werror=3Darray-bounds]
+>   165 |                 kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL2=
+_ENABLE;
+>       |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+> In file included from drivers/gpu/drm/kmb/kmb_plane.c:17:
+> drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_statu=
+s'
+>    61 |         struct layer_status             plane_status[KMB_MAX_PLAN=
+ES];
+>       |                                         ^~~~~~~~~~~~
+> drivers/gpu/drm/kmb/kmb_plane.c:162:34: error: array subscript 2 is above=
+ array bounds of 'struct layer_status[2]' [-Werror=3Darray-bounds]
+>   162 |                 kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL1=
+_ENABLE;
+>       |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+> In file included from drivers/gpu/drm/kmb/kmb_plane.c:17:
+> drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_statu=
+s'
+>    61 |         struct layer_status             plane_status[KMB_MAX_PLAN=
+ES];
+>       |                                         ^~~~~~~~~~~~
+>=20
+> Exposed by commit
+>=20
+>   4ba545781e20 ("Makefile: Enable -Warray-bounds")
+>=20
+> Originally introduced by commmit
+>=20
+>   7f7b96a8a0a1 ("drm/kmb: Add support for KeemBay Display")
+>=20
+> Maybe should have been fixed by
+>=20
+>   c026565fe9be ("drm/kmb: Enable alpha blended second plane")
+>=20
+> I have applied the following hack for now.
+
+Actually, this one:
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Tue, 25 Jan 2022 13:45:26 +1100
+Subject: [PATCH] hack for building with -Warray-bounds
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
- drivers/staging/r8188eu/include/rtw_debug.h | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/gpu/drm/kmb/kmb_plane.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/staging/r8188eu/include/rtw_debug.h b/drivers/staging/r8188eu/include/rtw_debug.h
-index 311051757715..959fb6bd25ca 100644
---- a/drivers/staging/r8188eu/include/rtw_debug.h
-+++ b/drivers/staging/r8188eu/include/rtw_debug.h
-@@ -54,10 +54,4 @@
- 
- extern u32 GlobalDebugLevel;
- 
--#define DBG_88E(...)							\
--	do {								\
--		if (_drv_err_ <= GlobalDebugLevel)			\
--			pr_info(DRIVER_PREFIX __VA_ARGS__);		\
--	} while (0)
--
- #endif	/* __RTW_DEBUG_H__ */
--- 
+diff --git a/drivers/gpu/drm/kmb/kmb_plane.c b/drivers/gpu/drm/kmb/kmb_plan=
+e.c
+index 00404ba4126d..b54197920712 100644
+--- a/drivers/gpu/drm/kmb/kmb_plane.c
++++ b/drivers/gpu/drm/kmb/kmb_plane.c
+@@ -158,12 +158,14 @@ static void kmb_plane_atomic_disable(struct drm_plane=
+ *plane,
+ 	case LAYER_1:
+ 		kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_VL2_ENABLE;
+ 		break;
++#if 0
+ 	case LAYER_2:
+ 		kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL1_ENABLE;
+ 		break;
+ 	case LAYER_3:
+ 		kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL2_ENABLE;
+ 		break;
++#endif
+ 	}
+=20
+ 	kmb->plane_status[plane_id].disable =3D true;
+--=20
 2.34.1
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/cnjjE1VOxX+DM8Z37u7_5St
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHvaD0ACgkQAVBC80lX
+0GzIlwf/YbfmBUupjdnZLXT6He7H2h+ikh6AHDDlE5lgPdRvOoZUPh0rYidLl5gG
+taH43NaDTc1z8mth7cQafT3S/r8K0+499FC1lKFmI4AeGj61DJg9hiyBRZvjuKvA
+IYb9TV1Ba/3SMFG4PE1w8uMlW3VPvUXXhp/AkX4u6/S+vgPr6DzyC63uv1dD5F9a
+XVAO9c72Xua/Z0wMVadKsjd7jsXgxl+XyQqZLPumAi1fOixvXb8Z3y03Xp0qjvHx
+AH89s9PVfD9NAdwnTt755ankalaqeT+YDWg5ytK6xX3X3P8GPy/6tgFRN+hWBai5
+TZ8d+WOMJ8DTYUQqkMOA/5MBmeAMWQ==
+=KboG
+-----END PGP SIGNATURE-----
+
+--Sig_/cnjjE1VOxX+DM8Z37u7_5St--
