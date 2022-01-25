@@ -2,104 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDADC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E55C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232597AbiAYUv5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 15:51:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
+        id S232634AbiAYUwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 15:52:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232620AbiAYUvc (ORCPT
+        with ESMTP id S232611AbiAYUw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 15:51:32 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14792C061744
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:51:32 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id q204so10661330iod.8
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:51:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=T8xWDu4VUa1KMmhWTT9ApCS91QssIS1sg0FGU1r8EdQ=;
-        b=fPq3W1qMhDmrc3O/H8jdKQejjyFMQcM1Nf2I2cWXLB9x+cYe7GtZ0SOc+D8gTv3JC9
-         px3drDlrNv8oN6Vd4UkFmJDaixRaMa1Z/7xVc3/TNd1u7J0OmTKAhVvt2X3h8qtXvhvg
-         LM9w+SFq8dO7kFkvlcUUZV3xdeaARAZFjuobc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=T8xWDu4VUa1KMmhWTT9ApCS91QssIS1sg0FGU1r8EdQ=;
-        b=PtnaB+VszxISB1dpuXYWD3nICc9PWpwYZTccHCFrBY2Mpo69XdGVjzCAldGr7KG3sN
-         BKrX4kYD6LNXlb7pigiK8Wfji0xlhGUanupAwNpKfw8ktBV0s9TRSIwdNo2O4viCto+g
-         VTn8sqbZjbqaVmWIZmFv23mgdTi61QvRn1kog5rdBxmlemA3iuBubcgrrBuLZ8OCsVKY
-         hWCxURXq56y3GxrcanYW8MdgsddDyz+aNT8R0x6sTXMa/8OpwO83DEg6dCpbP1r6HXUc
-         rTG2CAq1SjyuogpaTehsXahxZ/yVZRUfaQXPmQdeIcYRhNzCPA9dHnIQXZQCsAltn6fO
-         dDCw==
-X-Gm-Message-State: AOAM533tCLrclte5WBzSPElfgfqf5qLlFyNw0HmejC05bWTX/4nR4li8
-        Qtgfc+xs/o4aMyuDrekXsi2wYA==
-X-Google-Smtp-Source: ABdhPJx/5kXDAPM3pl1xICZm6MAV5zSuAmwkrZES9NWzUNvjzNE6hLuNOCqo1WYWsXaDO98YHEW5og==
-X-Received: by 2002:a05:6638:31e:: with SMTP id w30mr5046563jap.57.1643143891513;
-        Tue, 25 Jan 2022 12:51:31 -0800 (PST)
-Received: from ?IPv6:2601:282:8200:4c:4ef8:d404:554b:9671? ([2601:282:8200:4c:4ef8:d404:554b:9671])
-        by smtp.gmail.com with ESMTPSA id e5sm9374160ilq.9.2022.01.25.12.51.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 12:51:31 -0800 (PST)
-Subject: Re: [PATCH] selftests: cpufreq: Write test output to stdout as well
-To:     Viresh Kumar <viresh.kumar@linaro.org>,
-        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>
-Cc:     Shuah Khan <shuah@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, Shuah Khan <skhan@linuxfoundation.org>
-References: <20220114232126.92043-1-nfraprado@collabora.com>
- <20220117064144.bovae2r4wnln7g7k@vireshk-i7>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <31ebfa0a-5e2d-332c-cbe1-22bdfeee8cd9@linuxfoundation.org>
-Date:   Tue, 25 Jan 2022 13:51:29 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 25 Jan 2022 15:52:26 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86120C061744;
+        Tue, 25 Jan 2022 12:52:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=UtdWMxSaDfBxA1q0kzgQMgUK1HA1XhmJT8E1djQS6r0=; b=HvBznvMJXXQ5wCjccOuoxDI4Xg
+        B0ZgQhBeJBmlYaz0y3xOyJWjufMCOjIM51mEjGkrr468wyWeSIOC43+MhGGsLj0jiiBhZv2e4Xdrf
+        +q1DgDWnxd2xFJGSszFC7FuHnN9Mxm8KNIboDx6XMtU3qtEuUFEwEB/s4iPlLDNci5nVimutWqHGB
+        A0b5yTakxCAwyfm2xzNWv89jmW51ynCxKa90P9QYpZioBsFtxa9XICM/efvmtx9FK/vauxcEYCJRi
+        +vp6Euhll5yx1btYLyamKdkUd9M2VV0FZ0KeBgSBM7HtBeJhTozULpcBES/kSQKEzuds+h57qbxof
+        BnNEe57g==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nCSnd-009Xxc-Os; Tue, 25 Jan 2022 20:52:21 +0000
+Date:   Tue, 25 Jan 2022 12:52:21 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Jessica Yu <jeyu@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "kgdb-bugreport@lists.sourceforge.net" 
+        <kgdb-bugreport@lists.sourceforge.net>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>
+Subject: Re: [PATCH 0/7] Allocate module text and data separately
+Message-ID: <YfBjBRFEbljfbrvx@bombadil.infradead.org>
+References: <cover.1643015752.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-In-Reply-To: <20220117064144.bovae2r4wnln7g7k@vireshk-i7>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1643015752.git.christophe.leroy@csgroup.eu>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/16/22 11:41 PM, Viresh Kumar wrote:
-> On 14-01-22, 18:21, Nícolas F. R. A. Prado wrote:
->> Use 'tee' to send the test output to stdout in addition to the current
->> output file. This makes the output easier to handle in automated test
->> systems and is superior to only later dumping the output file contents
->> to stdout, since this way the test output can be interleaved with other
->> log messages, like from the kernel, so that chronology is preserved,
->> making it easier to detect issues.
->>
->> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
->> ---
->>   tools/testing/selftests/cpufreq/main.sh | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/tools/testing/selftests/cpufreq/main.sh b/tools/testing/selftests/cpufreq/main.sh
->> index 31f8c9a76c5f..60ce18ed0666 100755
->> --- a/tools/testing/selftests/cpufreq/main.sh
->> +++ b/tools/testing/selftests/cpufreq/main.sh
->> @@ -194,5 +194,5 @@ prerequisite
->>   
->>   # Run requested functions
->>   clear_dumps $OUTFILE
->> -do_test >> $OUTFILE.txt
->> +do_test | tee -a $OUTFILE.txt
->>   dmesg_dumps $OUTFILE
+On Mon, Jan 24, 2022 at 09:22:11AM +0000, Christophe Leroy wrote:
+> This series allow architectures to request having modules data in
+> vmalloc area instead of module area.
 > 
-> Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+> This is required on powerpc book3s/32 in order to set data non
+> executable, because it is not possible to set executability on page
+> basis, this is done per 256 Mbytes segments. The module area has exec
+> right, vmalloc area has noexec.
 > 
+> This can also be useful on other powerpc/32 in order to maximize the
+> chance of code being close enough to kernel core to avoid branch
+> trampolines.
 
-Thank you. Applied to linux-kselftest fixes for rc2/3
+Am I understanding that this entire effort is for 32-bit powerpc?
+If so, why such an interest in 32-bit these days?
 
-thanks,
--- Shuah
+  Luis
