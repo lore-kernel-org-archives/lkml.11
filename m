@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D808C4707F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83526C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1321956AbiAYDUP (ORCPT
+        id S1322021AbiAYDUZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:20:15 -0500
-Received: from lgeamrelo12.lge.com ([156.147.23.52]:49047 "EHLO
+        Mon, 24 Jan 2022 22:20:25 -0500
+Received: from lgeamrelo13.lge.com ([156.147.23.53]:47061 "EHLO
         lgeamrelo11.lge.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1318653AbiAYDG5 (ORCPT
+        with ESMTP id S1318656AbiAYDG6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:06:57 -0500
+        Mon, 24 Jan 2022 22:06:58 -0500
 Received: from unknown (HELO lgeamrelo02.lge.com) (156.147.1.126)
-        by 156.147.23.52 with ESMTP; 25 Jan 2022 11:36:47 +0900
+        by 156.147.23.53 with ESMTP; 25 Jan 2022 11:36:46 +0900
 X-Original-SENDERIP: 156.147.1.126
 X-Original-MAILFROM: byungchul.park@lge.com
 Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.126 with ESMTP; 25 Jan 2022 11:36:47 +0900
+        by 156.147.1.126 with ESMTP; 25 Jan 2022 11:36:46 +0900
 X-Original-SENDERIP: 10.177.244.38
 X-Original-MAILFROM: byungchul.park@lge.com
 From:   Byungchul Park <byungchul.park@lge.com>
@@ -31,9 +31,9 @@ Cc:     peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
         tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
         amir73il@gmail.com, bfields@fieldses.org,
         gregkh@linuxfoundation.org, kernel-team@lge.com
-Subject: [RFC 08/14] dept: Apply Dept to seqlock
-Date:   Tue, 25 Jan 2022 11:36:38 +0900
-Message-Id: <1643078204-12663-9-git-send-email-byungchul.park@lge.com>
+Subject: [RFC 01/14] llist: Move llist_{head,node} definition to types.h
+Date:   Tue, 25 Jan 2022 11:36:31 +0900
+Message-Id: <1643078204-12663-2-git-send-email-byungchul.park@lge.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1643078204-12663-1-git-send-email-byungchul.park@lge.com>
 References: <1643078204-12663-1-git-send-email-byungchul.park@lge.com>
@@ -41,79 +41,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Makes Dept able to track dependencies by seqlock with adding wait
-annotation on read side of seqlock.
+llist_head and llist_node can be used by very primitives. For example,
+Dept for tracking dependency uses llist things in its header. To avoid
+header dependency, move those to types.h.
 
 Signed-off-by: Byungchul Park <byungchul.park@lge.com>
 ---
- include/linux/seqlock.h | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ include/linux/llist.h | 9 +--------
+ include/linux/types.h | 8 ++++++++
+ 2 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/seqlock.h b/include/linux/seqlock.h
-index cbfc78b..622267f 100644
---- a/include/linux/seqlock.h
-+++ b/include/linux/seqlock.h
-@@ -23,6 +23,13 @@
+diff --git a/include/linux/llist.h b/include/linux/llist.h
+index 2e9c721..e0c88d5 100644
+--- a/include/linux/llist.h
++++ b/include/linux/llist.h
+@@ -50,14 +50,7 @@
  
- #include <asm/processor.h>
+ #include <linux/atomic.h>
+ #include <linux/kernel.h>
+-
+-struct llist_head {
+-	struct llist_node *first;
+-};
+-
+-struct llist_node {
+-	struct llist_node *next;
+-};
++#include <linux/types.h>
  
-+#ifdef CONFIG_DEPT
-+#define DEPT_EVT_ALL		((1UL << DEPT_MAX_SUBCLASSES_EVT) - 1)
-+#define dept_seq_wait(m, ip)	dept_wait(m, DEPT_EVT_ALL, ip, __func__, 0)
-+#else
-+#define dept_seq_wait(m, ip)	do { } while (0)
-+#endif
+ #define LLIST_HEAD_INIT(name)	{ NULL }
+ #define LLIST_HEAD(name)	struct llist_head name = LLIST_HEAD_INIT(name)
+diff --git a/include/linux/types.h b/include/linux/types.h
+index a147977..0b058f5 100644
+--- a/include/linux/types.h
++++ b/include/linux/types.h
+@@ -187,6 +187,14 @@ struct hlist_node {
+ 	struct hlist_node *next, **pprev;
+ };
+ 
++struct llist_head {
++	struct llist_node *first;
++};
 +
- /*
-  * The seqlock seqcount_t interface does not prescribe a precise sequence of
-  * read begin/retry/end. For readers, typically there is a call to
-@@ -148,7 +155,7 @@ static inline void seqcount_lockdep_reader_access(const seqcount_t *s)
-  * This lock-unlock technique must be implemented for all of PREEMPT_RT
-  * sleeping locks.  See Documentation/locking/locktypes.rst
-  */
--#if defined(CONFIG_LOCKDEP) || defined(CONFIG_PREEMPT_RT)
-+#if defined(CONFIG_LOCKDEP) || defined(CONFIG_DEPT) || defined(CONFIG_PREEMPT_RT)
- #define __SEQ_LOCK(expr)	expr
- #else
- #define __SEQ_LOCK(expr)
-@@ -203,6 +210,12 @@ static inline void seqcount_lockdep_reader_access(const seqcount_t *s)
- 	__SEQ_LOCK(locktype	*lock);					\
- } seqcount_##lockname##_t;						\
- 									\
-+static __always_inline void						\
-+__seqprop_##lockname##_wait(const seqcount_##lockname##_t *s)		\
-+{									\
-+	__SEQ_LOCK(dept_seq_wait(&(lockmember)->dep_map.dmap, _RET_IP_));\
-+}									\
-+									\
- static __always_inline seqcount_t *					\
- __seqprop_##lockname##_ptr(seqcount_##lockname##_t *s)			\
- {									\
-@@ -271,6 +284,8 @@ static inline void __seqprop_assert(const seqcount_t *s)
- 	lockdep_assert_preemption_disabled();
- }
- 
-+static inline void __seqprop_wait(const seqcount_t *s) { }
++struct llist_node {
++	struct llist_node *next;
++};
 +
- #define __SEQ_RT	IS_ENABLED(CONFIG_PREEMPT_RT)
- 
- SEQCOUNT_LOCKNAME(raw_spinlock, raw_spinlock_t,  false,    s->lock,        raw_spin, raw_spin_lock(s->lock))
-@@ -311,6 +326,7 @@ static inline void __seqprop_assert(const seqcount_t *s)
- #define __seqcount_sequence(s)		__seqprop(s, sequence)
- #define __seqcount_lock_preemptible(s)	__seqprop(s, preemptible)
- #define __seqcount_assert_lock_held(s)	__seqprop(s, assert)
-+#define __seqcount_dept_wait(s)		__seqprop(s, wait)
- 
- /**
-  * __read_seqcount_begin() - begin a seqcount_t read section w/o barrier
-@@ -360,6 +376,7 @@ static inline void __seqprop_assert(const seqcount_t *s)
- #define read_seqcount_begin(s)						\
- ({									\
- 	seqcount_lockdep_reader_access(__seqcount_ptr(s));		\
-+	__seqcount_dept_wait(s);					\
- 	raw_read_seqcount_begin(s);					\
- })
- 
+ struct ustat {
+ 	__kernel_daddr_t	f_tfree;
+ 	__kernel_ino_t		f_tinode;
 -- 
 1.9.1
 
