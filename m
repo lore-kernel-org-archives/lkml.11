@@ -2,112 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C6CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 05:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D938DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 05:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392352AbiAYFVL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 00:21:11 -0500
-Received: from foss.arm.com ([217.140.110.172]:43848 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1391262AbiAYFE0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 00:04:26 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5A0441FB;
-        Mon, 24 Jan 2022 21:04:22 -0800 (PST)
-Received: from [10.163.42.113] (unknown [10.163.42.113])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0AC593F7D8;
-        Mon, 24 Jan 2022 21:04:17 -0800 (PST)
-Subject: Re: [RFC V1 02/11] arm64/perf: Add register definitions for BRBE
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        linux-perf-users@vger.kernel.org
-References: <1642998653-21377-1-git-send-email-anshuman.khandual@arm.com>
- <1642998653-21377-3-git-send-email-anshuman.khandual@arm.com>
- <877dap8c0o.wl-maz@kernel.org>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <165b3f65-c92e-75e3-9485-548e1c862ec4@arm.com>
-Date:   Tue, 25 Jan 2022 10:34:22 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S256352AbiAYFVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 00:21:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S251061AbiAYFNm (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 00:13:42 -0500
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B013C068084
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:39:08 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id s9so28742597oib.11
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:39:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=Oy9GFdQG+i/uy7nSZPfjNKex4OropmmdyXnqD6sHR7Q=;
+        b=Sr0MTFPKvLlYp1aCMiVa+wOnlhnvuGkKRot55/T5nlLy4fqG+mNDGW8e0qZCJkoGdJ
+         knYSq02ywWQ3VHX0t5grRit4Cjl26lMLUQPuRI3Zjvt1omCrTjPRHN/6QQPSkTVRdiOM
+         K9Ypb5BEaOSl8ZE5fq7a3zgp5YHtmYWZYlwvaZnBKL4wMRIqjSNXb+y7lYdFAsLZt6O7
+         gVMxaFT4JPaQUThOJjtwPn4fFv8o9fQGjVRXLdJ77RO0Ymc+Jyr19L5QrcMs6sgSnC0D
+         Fps8n1PrBwYUkJcTyDci4PdbXtYc7b5y4/2IlmwkIcAD5dwXs160NU3mwqDcH181LHLz
+         nsYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=Oy9GFdQG+i/uy7nSZPfjNKex4OropmmdyXnqD6sHR7Q=;
+        b=Wskkix2A7Z4XXlvc5oTST1d4DNT5cbNur28pE+D4A/Zr4Ye+bCF120TN99SrLwY6IL
+         brno/2KNFs5kgtsaMf3tS9pY0xjcSA8HuF/WPbzDtMqfMEKkWkQTa1auxwkS+9wD/Kp7
+         L3Qx1GRqbq/ZPt6W4ExiUnOffvbErpwoFK7PCkNNo2LeBdv1bBVta6c7C1L3TZO4+RK5
+         MrOQwhhj2oZTBfZwUpkI270KECJzx+mb3itpDWr3VNFqKFhux6S74mkGmx2kl8sELaRu
+         BKhsN9rHFzrJ4sB3j64u34b+DgMYGrLBvK25bqic1pLpmWFXE+wC6hU71q/98JVfojww
+         I2Eg==
+X-Gm-Message-State: AOAM532jGDVIx7Bsn6RFgogSIh4pGmq23UpmEBxnCxb6JUHCLFNf0ZcU
+        CgBQD1eS7A3S/B7odRBFqFHKYg==
+X-Google-Smtp-Source: ABdhPJyto1uQdv7ys+altyklBUbZNp6mhQQCGnrZM9FFHj3jlaxdl3P7sk5GXa6ZtjUz+Qf/ENUfdQ==
+X-Received: by 2002:aca:1c16:: with SMTP id c22mr3931833oic.83.1643081947335;
+        Mon, 24 Jan 2022 19:39:07 -0800 (PST)
+Received: from [192.168.17.16] ([189.219.72.83])
+        by smtp.gmail.com with ESMTPSA id l16sm5141685oop.45.2022.01.24.19.39.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 19:39:06 -0800 (PST)
+Message-ID: <ef6a4bcf-832b-3a5d-9643-827239293772@linaro.org>
+Date:   Mon, 24 Jan 2022 21:39:04 -0600
 MIME-Version: 1.0
-In-Reply-To: <877dap8c0o.wl-maz@kernel.org>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.15 000/846] 5.15.17-rc1 review
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From:   =?UTF-8?Q?Daniel_D=c3=adaz?= <daniel.diaz@linaro.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        stable@vger.kernel.org
+References: <20220124184100.867127425@linuxfoundation.org>
+ <374e9357-35eb-3555-3fe5-7b72c3a77a39@linaro.org>
+In-Reply-To: <374e9357-35eb-3555-3fe5-7b72c3a77a39@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello!
 
-
-On 1/24/22 7:35 PM, Marc Zyngier wrote:
-> On Mon, 24 Jan 2022 04:30:44 +0000,
-> Anshuman Khandual <anshuman.khandual@arm.com> wrote:
+On 1/24/22 16:50, Daniel Díaz wrote:
+> Hello!
+> 
+> On 1/24/22 12:31, Greg Kroah-Hartman wrote:
+>> This is the start of the stable review cycle for the 5.15.17 release.
+>> There are 846 patches in this series, all will be posted as a response
+>> to this one.  If anyone has any issues with these being applied, please
+>> let me know.
 >>
->> This adds BRBE related register definitions and various other related field
->> macros there in. These will be used subsequently in a BRBE driver which is
->> being added later on.
+>> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
+>> Anything received after that time might be too late.
 >>
->> Cc: Catalin Marinas <catalin.marinas@arm.com>
->> Cc: Will Deacon <will@kernel.org>
->> Cc: Marc Zyngier <maz@kernel.org>
->> Cc: linux-arm-kernel@lists.infradead.org
->> Cc: linux-kernel@vger.kernel.org
->> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
->> ---
->>  arch/arm64/include/asm/sysreg.h | 216 ++++++++++++++++++++++++++++++++
->>  1 file changed, 216 insertions(+)
+>> The whole patch series can be found in one patch at:
+>>     https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.17-rc1.gz
+>> or in the git tree and branch at:
+>>     git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+>> and the diffstat can be found below.
 >>
->> diff --git a/arch/arm64/include/asm/sysreg.h b/arch/arm64/include/asm/sysreg.h
->> index 898bee0004ae..d8fd7e806a47 100644
->> --- a/arch/arm64/include/asm/sysreg.h
->> +++ b/arch/arm64/include/asm/sysreg.h
->> @@ -141,6 +141,218 @@
->>  #define SYS_DBGDTRTX_EL0		sys_reg(2, 3, 0, 5, 0)
->>  #define SYS_DBGVCR32_EL2		sys_reg(2, 4, 0, 7, 0)
->>  
->> +/*
->> + * BRBINF<N>_EL1 Encoding: [2, 1, 8, CRm, op2]
->> + *
->> + * derived as <CRm> = c{N<3:0>} <op2> = (N<4>x4 + 0)
->> + */
->> +#define SYS_BRBINF0_EL1			sys_reg(2, 1, 8, 0, 0)
->> +#define SYS_BRBINF1_EL1			sys_reg(2, 1, 8, 1, 0)
->> +#define SYS_BRBINF2_EL1			sys_reg(2, 1, 8, 2, 0)
->> +#define SYS_BRBINF3_EL1			sys_reg(2, 1, 8, 3, 0)
->> +#define SYS_BRBINF4_EL1			sys_reg(2, 1, 8, 4, 0)
->> +#define SYS_BRBINF5_EL1			sys_reg(2, 1, 8, 5, 0)
->> +#define SYS_BRBINF6_EL1			sys_reg(2, 1, 8, 6, 0)
->> +#define SYS_BRBINF7_EL1			sys_reg(2, 1, 8, 7, 0)
->> +#define SYS_BRBINF8_EL1			sys_reg(2, 1, 8, 8, 0)
->> +#define SYS_BRBINF9_EL1			sys_reg(2, 1, 8, 9, 0)
+>> thanks,
+>>
+>> greg k-h
 > 
-> [snip]
+> Regressions detected on arm, arm64, i386, x86.
 > 
-> Since the architecture gives you the formula to build these, why do
-> you enumerate each and every register encoding? I'd rather see
-> something like:
-> 
-> #define __SYS_BRBINFO(n) sys_reg(2, 1, 8, ((n) & 0xf), (((n) & 0x10)) >> 2)
-> #define SYS_BRBINF0_EL1	__SYS_BRBINFO(0)
-> [...]
-> 
-> and something similar for all the new registers that come in packs of
-> 32... We already have similar things for AMU, PMU, GIC and co.
+> This is one from arm64:
+>    /builds/linux/arch/arm64/mm/extable.c: In function 'fixup_exception':
+>    /builds/linux/arch/arm64/mm/extable.c:17:13: error: implicit declaration of function 'in_bpf_jit' [-Werror=implicit-function-declaration]
+>       17 |         if (in_bpf_jit(regs))
+>          |             ^~~~~~~~~~
+>    cc1: some warnings being treated as errors
+>    make[3]: *** [/builds/linux/scripts/Makefile.build:277: arch/arm64/mm/extable.o] Error 1
 
-Sure, above method seems like a better idea indeed. I will create these
-constructs for BRBINF, BRBSRC and BRBTGT based registers set.
+Bisection here pointed to "arm64/bpf: Remove 128MB limit for BPF JIT programs". Reverting made the build succeed.
 
-> 
-> Thanks,
-> 
-> 	M.
-> 
-> 
+Greetings!
+
+Daniel Díaz
+daniel.diaz@linaro.org
+
