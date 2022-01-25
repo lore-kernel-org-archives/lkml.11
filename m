@@ -2,182 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC88C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF50C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356426AbiAYGH4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:07:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49994 "EHLO
+        id S244262AbiAYGSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 01:18:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S256035AbiAYFUM (ORCPT
+        with ESMTP id S251780AbiAYEXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 00:20:12 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D736C0E5315
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:43:46 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id i8so17159948pgt.13
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:43:46 -0800 (PST)
+        Mon, 24 Jan 2022 23:23:10 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4C6C036BC8;
+        Mon, 24 Jan 2022 18:57:19 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id x3so962467ilm.3;
+        Mon, 24 Jan 2022 18:57:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Hqb18lApb/EFs0zyR5xR3AKweon3zrpFVJcMur2wQdo=;
-        b=oO7BhMsRUneAngIb6wlqB5HdF/xeGN3DL6ZG/u6ECkSxMoHNPpOOfAxzqAVgDtaT4n
-         BqgVUmMg7H/tUSffs8I7Gu+5usatPhZmWCP6dwG5G66u/ppefFTP/PzhcbM+ahaNgq3m
-         buQUbZQoUcLRALeKNkHYbuTNLU9Dxu0PcIcBE=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QPv0H6Gq/32jL7217UDBjUXQqrhpURdnYoTd5Oz4t2U=;
+        b=nQfg3Sx5yGHHlzPJzKeLJBw1pU4pJLciq/rHxf7rrCd16hpXH/LVNJ/xVFvkGtWz/t
+         ZMS3lTXrssx0wK0h1xGWgRqUttYHjzpVnC/TvErfqOyh5WBbvO32/Co7ZsXPrfg/p5No
+         8KGFXH1WrZMJquI5lIAriM1U3WuF6E2RYJXxWYZ8f6VASsL1SpPhXHK6KmVjCVFktVv9
+         YrSBsJzesgzWcsMGBD9zqzB/jAWJPpIsQNxiSRwNTa+oLRhIt3YM6omawsZ9Vj91g291
+         L5R/nqUZ+SChXpXaJrMkyUbBfcbhBs2kbaJ01UOYXRRfyja5JSFeTvsrNcNQzR96Ytf5
+         Xmxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Hqb18lApb/EFs0zyR5xR3AKweon3zrpFVJcMur2wQdo=;
-        b=HYldWPkfqHr9UuOTfZU5ESKPRrf6uwzxPHPzqHg9CU7Gpm3Pyn/Byxuqb/2uyWvMHX
-         wrYf4JoO+wmNgDYgw9OtEJxDM23bf7opBq9cwwDWvaGbAowfB19N8IQzIxsMpVrK7mkm
-         W5cx9eDtSBrHsUusFY+1jsINKAH8FOFKKMPFGLAN1Uawh7rWChrpxd7EHckJOa/23rxM
-         g8kElVjEdm/jwgzkBHtQzXh4vPhdJ2Hz2AdRuJbUZGhRrqkNRPXsWq5JvFrSZltxzBnL
-         85uZDlg52wTP2p8aOP1GYaHG8R/AYUinmiemyS5bCkm/Mwo59EH8jZQ1hUKsZnZvW0YP
-         fMYg==
-X-Gm-Message-State: AOAM531hXcGqFxgENfFCZcbuQZ9dZ5EBwOZ8lpdDuEj2lnRc9dX3FoTH
-        IgIK8bY0f5+uZfieitMFPj3o3g==
-X-Google-Smtp-Source: ABdhPJwYG5x88nJPkog09GJ1OJns/HDR/CaUdlxBNhDCDDEWbRfi9mn7oaVXJoVP7XPSNW9ZK0FocA==
-X-Received: by 2002:aa7:8218:0:b0:4c7:ef9b:8151 with SMTP id k24-20020aa78218000000b004c7ef9b8151mr11663250pfi.77.1643082225441;
-        Mon, 24 Jan 2022 19:43:45 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p18sm19244628pfh.98.2022.01.24.19.43.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 19:43:45 -0800 (PST)
-Date:   Mon, 24 Jan 2022 19:43:44 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "Bryant G. Ly" <bryantly@linux.vnet.ibm.com>,
-        Michael Cyr <mikecyr@linux.vnet.ibm.com>,
-        Nicholas Bellinger <nab@linux-iscsi.org>,
-        Steven Royer <seroyer@linux.vnet.ibm.com>,
-        Tyrel Datwyler <tyreld@linux.vnet.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the kspp tree
-Message-ID: <202201241938.DA2AB1AB4@keescook>
-References: <20220125142430.75c3160e@canb.auug.org.au>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QPv0H6Gq/32jL7217UDBjUXQqrhpURdnYoTd5Oz4t2U=;
+        b=Mpn1nZBAhqrerf836d3YmjAHIoGKq/ByxNU8Q5IysWbLb9egFfYMooQahewHrUMRJH
+         PKG/n2eNWcqcLFziDaXzOt4uNivVPF8c1hZoXuEcAstQiB0SYNCRlrDT6nZPWNkK8cgC
+         Bca0EF253zqw2PYeg/oHu6xEdrzfOXFiYDrTZC3hU/xMymgdmh+NhNvinVpbZrcKGbfq
+         Pct5Q/SoBOOM8wOvk0NLVYK7+xVxBgs17pJKSitq/IjriGjH46yxb/P8TkGmEdFsHrdk
+         mE4TNeRx91AzTypMR5E+c4PXr1Spnb9+migRZ0Qr/z802yrajqCqlS00c6dvs2pX6VaQ
+         sGfw==
+X-Gm-Message-State: AOAM533GZ3iy0j++nFAsQjYVaSk9LfIF0lyY5QrisTM7G5/H59imE8bl
+        uYarDfeRNimhcLJ13WKSrUg=
+X-Google-Smtp-Source: ABdhPJwEwitvfeVHdVQCzyZ9JmrhkAoqCe6S8zQzO/RebBN+NLHzp3GMQlUt6JynkrHZA9xdHL8/FQ==
+X-Received: by 2002:a05:6e02:68c:: with SMTP id o12mr10272160ils.245.1643079438338;
+        Mon, 24 Jan 2022 18:57:18 -0800 (PST)
+Received: from [192.168.1.99] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id o14sm8386746ilq.21.2022.01.24.18.57.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 18:57:18 -0800 (PST)
+Message-ID: <89d415a6-7165-b1db-1f04-307f46bd07a4@gmail.com>
+Date:   Mon, 24 Jan 2022 19:57:17 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125142430.75c3160e@canb.auug.org.au>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH 5.16 0000/1039] 5.16.3-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, zanaziz313@gmail.com
+References: <20220124184125.121143506@linuxfoundation.org>
+From:   Zan Aziz <zanaziz313@gmail.com>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 02:24:30PM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the kspp tree, today's linux-next build (powerpc
-> allyesconfig) failed like this:
-> 
-> 
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c: In function 'ibmvscsis_send_messages':
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1934:44: error: array subscript 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long long unsigned int[1]'} [-Werror=array-bounds]
->  1934 |                                         crq->valid = VALID_CMD_RESP_EL;
->       |                                            ^~
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing 'msg_hi'
->  1875 |         u64 msg_hi = 0;
->       |             ^~~~~~
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1935:44: error: array subscript 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long long unsigned int[1]'} [-Werror=array-bounds]
->  1935 |                                         crq->format = cmd->rsp.format;
->       |                                            ^~
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing 'msg_hi'
->  1875 |         u64 msg_hi = 0;
->       |             ^~~~~~
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1938:52: error: array subscript 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long long unsigned int[1]'} [-Werror=array-bounds]
->  1938 |                                                 crq->status = VIOSRP_ADAPTER_FAIL;
->       |                                                    ^~
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing 'msg_hi'
->  1875 |         u64 msg_hi = 0;
->       |             ^~~~~~
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1940:44: error: array subscript 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long long unsigned int[1]'} [-Werror=array-bounds]
->  1940 |                                         crq->IU_length = cpu_to_be16(cmd->rsp.len);
->       |                                            ^~
-> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing 'msg_hi'
->  1875 |         u64 msg_hi = 0;
->       |             ^~~~~~
-> 
-> Exposed by commit
-> 
->   4ba545781e20 ("Makefile: Enable -Warray-bounds")
-> 
-> Probably introduced by commit
-> 
->   88a678bbc34c ("ibmvscsis: Initial commit of IBM VSCSI Tgt Driver")
-> 
-> I applied the following hack for now:
-> 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Tue, 25 Jan 2022 14:18:36 +1100
-> Subject: [PATCH] scsi: hack for building with -Warray-bounds
-> 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-> index 61f06f6885a5..89fcf98c61c3 100644
-> --- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-> +++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-> @@ -1872,11 +1872,11 @@ static void srp_snd_msg_failed(struct scsi_info *vscsi, long rc)
->   */
->  static void ibmvscsis_send_messages(struct scsi_info *vscsi)
->  {
-> -	u64 msg_hi = 0;
-> +	u64 msg_hi[2] = { };
->  	/* note do not attempt to access the IU_data_ptr with this pointer
->  	 * it is not valid
->  	 */
-> -	struct viosrp_crq *crq = (struct viosrp_crq *)&msg_hi;
-> +	struct viosrp_crq *crq = (struct viosrp_crq *)msg_hi;
->  	struct ibmvscsis_cmd *cmd, *nxt;
->  	long rc = ADAPT_SUCCESS;
->  	bool retry = false;
-> @@ -1940,7 +1940,7 @@ static void ibmvscsis_send_messages(struct scsi_info *vscsi)
->  					crq->IU_length = cpu_to_be16(cmd->rsp.len);
->  
->  					rc = h_send_crq(vscsi->dma_dev->unit_address,
-> -							be64_to_cpu(msg_hi),
-> +							be64_to_cpu(msg_hi[0]),
->  							be64_to_cpu(cmd->rsp.tag));
->  
->  					dev_dbg(&vscsi->dev, "send_messages: cmd %p, tag 0x%llx, rc %ld\n",
+On 1/24/22 11:29, Greg Kroah-Hartman wrote:
+> Hi Greg,
+>
+> Compiled and booted on my test system Lenovo P50s: Intel Core i7
+> No emergency and critical messages in the dmesg
+> I am going to be running perf bench sched from now on and I will
+> report any regressions
+>
+> /perf bench sched all
+> # Running sched/messaging benchmark...
+> # 20 sender and receiver processes per group
+> # 10 groups == 400 processes run
+>
+>       Total time: 0.437 [sec]
+>
+> # Running sched/pipe benchmark...
+> # Executed 1000000 pipe operations between two processes
+>
+>       Total time: 6.919 [sec]
+>
+>         6.919489 usecs/op
+>           144519 ops/sec
+>
+> Tested-by: Zan Aziz <zanaziz313@gmail.com>
+>
+> Thanks
+> -Zan
+> This is the start of the stable review cycle for the 5.16.3 release.
+> There are 1039 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.3-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
+Hi Greg,
 
-This looks correct to me. struct viosrp_crq is 16 bytes wide. The only
-suggestion I might make would be either avoid the bare '2':
+Compiled and booted on my test system Lenovo P50s: Intel Core i7
+No emergency and critical messages in the dmesg
+I am going to be running perf bench sched from now on and I will
+report any regressions
 
-	u64 msg_hi[sizeof(struct viosrp_crq) / sizeof(u64)] = { };
+/perf bench sched all
+# Running sched/messaging benchmark...
+# 20 sender and receiver processes per group
+# 10 groups == 400 processes run
 
-or adjust struct viosrp_crq so the casting isn't needed at all:
+      Total time: 0.437 [sec]
+
+# Running sched/pipe benchmark...
+# Executed 1000000 pipe operations between two processes
+
+      Total time: 6.919 [sec]
+
+        6.919489 usecs/op
+          144519 ops/sec
+
+Tested-by: Zan Aziz <zanaziz313@gmail.com>
+
+Thanks,
+-Zan
 
 
-truct viosrp_crq {
-	union {
-		u64 hi;
-		struct {
-		        u8 valid;               /* used by RPA */
-		        u8 format;              /* SCSI vs out-of-band */
-		        u8 reserved;
-		        u8 status;              /* non-scsi failure? (e.g. DMA failure) */
-		        __be16 timeout;         /* in seconds */
-		        __be16 IU_length;       /* in bytes */
-		};
-	};
-        __be64 IU_data_ptr;     /* the TCE for transferring data */
-};
-
-	struct viosrp_crq crq = { };
-	...
- 			rc = h_send_crq(vscsi->dma_dev->unit_address,
-					be64_to_cpu(crq.hi),
-					be64_to_cpu(cmd->rsp.tag));
-
-
-
--- 
-Kees Cook
