@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB3B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25180C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578803AbiAYOVR (ORCPT
+        id S1578852AbiAYOVW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:21:17 -0500
-Received: from 8bytes.org ([81.169.241.247]:46334 "EHLO theia.8bytes.org"
+        Tue, 25 Jan 2022 09:21:22 -0500
+Received: from 8bytes.org ([81.169.241.247]:46326 "EHLO theia.8bytes.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1453146AbiAYOQx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S1387260AbiAYOQx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 25 Jan 2022 09:16:53 -0500
 Received: from cap.home.8bytes.org (p549ad610.dip0.t-ipconnect.de [84.154.214.16])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by theia.8bytes.org (Postfix) with ESMTPSA id 49359740;
-        Tue, 25 Jan 2022 15:16:33 +0100 (CET)
+        by theia.8bytes.org (Postfix) with ESMTPSA id 33DB02C2;
+        Tue, 25 Jan 2022 15:16:32 +0100 (CET)
 From:   Joerg Roedel <joro@8bytes.org>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -27,9 +27,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Brijesh Singh <brijesh.singh@amd.com>,
         Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH v6 4/7] KVM: SVM: Set "released" on INIT-SIPI iff SEV-ES vCPU was in AP reset hold
-Date:   Tue, 25 Jan 2022 15:16:23 +0100
-Message-Id: <20220125141626.16008-5-joro@8bytes.org>
+Subject: [PATCH v6 1/7] KVM: SVM: Get rid of set_ghcb_msr() and *ghcb_msr_bits() functions
+Date:   Tue, 25 Jan 2022 15:16:20 +0100
+Message-Id: <20220125141626.16008-2-joro@8bytes.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220125141626.16008-1-joro@8bytes.org>
 References: <20220125141626.16008-1-joro@8bytes.org>
@@ -39,137 +39,158 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Joerg Roedel <jroedel@suse.de>
 
-Set ghcb->sw_exit_info_2 when releasing a vCPU from an AP reset hold if
-and only if the vCPU is actually in a reset hold.  Move the handling to
-INIT (was SIPI) so that KVM can check the current MP state; when SIPI is
-received, the vCPU will be in INIT_RECEIVED and will have lost track of
-whether or not the vCPU was in a reset hold.
+Replace the get_ghcb_msr_bits() function with macros and open code the
+GHCB MSR setters with hypercall specific helper macros and functions.
+This will avoid preserving any previous bits in the GHCB-MSR and
+improves code readability.
 
-Drop the received_first_sipi flag, which was a hack to workaround the
-fact that KVM lost track of whether or not the vCPU was in a reset hold.
+Also get rid of the set_ghcb_msr() function and open-code it at its
+call-sites for better code readability.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Suggested-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/sev.c | 34 ++++++++++++----------------------
- arch/x86/kvm/svm/svm.c | 13 ++++++++-----
- arch/x86/kvm/svm/svm.h |  4 +---
- 3 files changed, 21 insertions(+), 30 deletions(-)
+ arch/x86/include/asm/sev-common.h |  9 +++++
+ arch/x86/kvm/svm/sev.c            | 55 +++++++++++--------------------
+ 2 files changed, 28 insertions(+), 36 deletions(-)
 
+diff --git a/arch/x86/include/asm/sev-common.h b/arch/x86/include/asm/sev-common.h
+index 1b2fd32b42fe..d49ebec1252a 100644
+--- a/arch/x86/include/asm/sev-common.h
++++ b/arch/x86/include/asm/sev-common.h
+@@ -53,6 +53,11 @@
+ 	/* GHCBData[63:32] */				\
+ 	(((unsigned long)fn) << 32))
+ 
++#define GHCB_MSR_CPUID_FN(msr)		\
++	(((msr) >> GHCB_MSR_CPUID_FUNC_POS) & GHCB_MSR_CPUID_FUNC_MASK)
++#define GHCB_MSR_CPUID_REG(msr)		\
++	(((msr) >> GHCB_MSR_CPUID_REG_POS) & GHCB_MSR_CPUID_REG_MASK)
++
+ /* AP Reset Hold */
+ #define GHCB_MSR_AP_RESET_HOLD_REQ	0x006
+ #define GHCB_MSR_AP_RESET_HOLD_RESP	0x007
+@@ -72,6 +77,10 @@
+ 	(((((u64)reason_set) &  0xf) << 12) |		\
+ 	 /* GHCBData[23:16] */				\
+ 	((((u64)reason_val) & 0xff) << 16))
++#define GHCB_MSR_TERM_REASON_SET(msr)	\
++	(((msr) >> GHCB_MSR_TERM_REASON_SET_POS) & GHCB_MSR_TERM_REASON_SET_MASK)
++#define GHCB_MSR_TERM_REASON(msr)	\
++	(((msr) >> GHCB_MSR_TERM_REASON_POS) & GHCB_MSR_TERM_REASON_MASK)
+ 
+ #define GHCB_SEV_ES_GEN_REQ		0
+ #define GHCB_SEV_ES_PROT_UNSUPPORTED	1
 diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index bec5b6f4f75d..5ece46eca87f 100644
+index 6a22798eaaee..7632fc463458 100644
 --- a/arch/x86/kvm/svm/sev.c
 +++ b/arch/x86/kvm/svm/sev.c
-@@ -2900,8 +2900,19 @@ void sev_es_init_vmcb(struct vcpu_svm *svm)
- 	set_msr_interception(vcpu, svm->msrpm, MSR_IA32_LASTINTTOIP, 1, 1);
+@@ -2625,21 +2625,15 @@ static bool setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
+ 	return false;
  }
  
--void sev_es_vcpu_reset(struct vcpu_svm *svm)
-+void sev_es_vcpu_reset(struct vcpu_svm *svm, bool init_event)
+-static void set_ghcb_msr_bits(struct vcpu_svm *svm, u64 value, u64 mask,
+-			      unsigned int pos)
++static u64 ghcb_msr_cpuid_resp(u64 reg, u64 value)
  {
-+	if (init_event) {
-+		/*
-+		 * If the vCPU is in a "reset" hold, signal via SW_EXIT_INFO_2
-+		 * that, assuming it receives a SIPI, the vCPU was "released".
-+		 */
-+		if (svm->vcpu.arch.mp_state == KVM_MP_STATE_AP_RESET_HOLD &&
-+		    svm->sev_es.ghcb)
-+			ghcb_set_sw_exit_info_2(svm->sev_es.ghcb, 1);
-+		return;
-+	}
+-	svm->vmcb->control.ghcb_gpa &= ~(mask << pos);
+-	svm->vmcb->control.ghcb_gpa |= (value & mask) << pos;
+-}
++	u64 msr;
+ 
+-static u64 get_ghcb_msr_bits(struct vcpu_svm *svm, u64 mask, unsigned int pos)
+-{
+-	return (svm->vmcb->control.ghcb_gpa >> pos) & mask;
+-}
++	msr  = GHCB_MSR_CPUID_RESP;
++	msr |= (reg & GHCB_MSR_CPUID_REG_MASK) << GHCB_MSR_CPUID_REG_POS;
++	msr |= (value & GHCB_MSR_CPUID_VALUE_MASK) << GHCB_MSR_CPUID_VALUE_POS;
+ 
+-static void set_ghcb_msr(struct vcpu_svm *svm, u64 value)
+-{
+-	svm->vmcb->control.ghcb_gpa = value;
++	return msr;
+ }
+ 
+ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+@@ -2656,16 +2650,14 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+ 
+ 	switch (ghcb_info) {
+ 	case GHCB_MSR_SEV_INFO_REQ:
+-		set_ghcb_msr(svm, GHCB_MSR_SEV_INFO(GHCB_VERSION_MAX,
+-						    GHCB_VERSION_MIN,
+-						    sev_enc_bit));
++		svm->vmcb->control.ghcb_gpa = GHCB_MSR_SEV_INFO(GHCB_VERSION_MAX,
++								GHCB_VERSION_MIN,
++								sev_enc_bit);
+ 		break;
+ 	case GHCB_MSR_CPUID_REQ: {
+ 		u64 cpuid_fn, cpuid_reg, cpuid_value;
+ 
+-		cpuid_fn = get_ghcb_msr_bits(svm,
+-					     GHCB_MSR_CPUID_FUNC_MASK,
+-					     GHCB_MSR_CPUID_FUNC_POS);
++		cpuid_fn = GHCB_MSR_CPUID_FN(control->ghcb_gpa);
+ 
+ 		/* Initialize the registers needed by the CPUID intercept */
+ 		vcpu->arch.regs[VCPU_REGS_RAX] = cpuid_fn;
+@@ -2677,9 +2669,8 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+ 			break;
+ 		}
+ 
+-		cpuid_reg = get_ghcb_msr_bits(svm,
+-					      GHCB_MSR_CPUID_REG_MASK,
+-					      GHCB_MSR_CPUID_REG_POS);
++		cpuid_reg = GHCB_MSR_CPUID_REG(control->ghcb_gpa);
 +
- 	/*
+ 		if (cpuid_reg == 0)
+ 			cpuid_value = vcpu->arch.regs[VCPU_REGS_RAX];
+ 		else if (cpuid_reg == 1)
+@@ -2689,24 +2680,16 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+ 		else
+ 			cpuid_value = vcpu->arch.regs[VCPU_REGS_RDX];
+ 
+-		set_ghcb_msr_bits(svm, cpuid_value,
+-				  GHCB_MSR_CPUID_VALUE_MASK,
+-				  GHCB_MSR_CPUID_VALUE_POS);
++		svm->vmcb->control.ghcb_gpa = ghcb_msr_cpuid_resp(cpuid_reg, cpuid_value);
+ 
+-		set_ghcb_msr_bits(svm, GHCB_MSR_CPUID_RESP,
+-				  GHCB_MSR_INFO_MASK,
+-				  GHCB_MSR_INFO_POS);
+ 		break;
+ 	}
+ 	case GHCB_MSR_TERM_REQ: {
+ 		u64 reason_set, reason_code;
+ 
+-		reason_set = get_ghcb_msr_bits(svm,
+-					       GHCB_MSR_TERM_REASON_SET_MASK,
+-					       GHCB_MSR_TERM_REASON_SET_POS);
+-		reason_code = get_ghcb_msr_bits(svm,
+-						GHCB_MSR_TERM_REASON_MASK,
+-						GHCB_MSR_TERM_REASON_POS);
++		reason_set  = GHCB_MSR_TERM_REASON_SET(control->ghcb_gpa);
++		reason_code = GHCB_MSR_TERM_REASON(control->ghcb_gpa);
++
+ 		pr_info("SEV-ES guest requested termination: %#llx:%#llx\n",
+ 			reason_set, reason_code);
+ 
+@@ -2897,9 +2880,9 @@ void sev_es_vcpu_reset(struct vcpu_svm *svm)
  	 * Set the GHCB MSR value as per the GHCB specification when emulating
  	 * vCPU RESET for an SEV-ES guest.
-@@ -2931,24 +2942,3 @@ void sev_es_prepare_guest_switch(struct vcpu_svm *svm, unsigned int cpu)
- 	/* MSR_IA32_XSS is restored on VMEXIT, save the currnet host value */
- 	hostsa->xss = host_xss;
- }
--
--void sev_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector)
--{
--	struct vcpu_svm *svm = to_svm(vcpu);
--
--	/* First SIPI: Use the values as initially set by the VMM */
--	if (!svm->sev_es.received_first_sipi) {
--		svm->sev_es.received_first_sipi = true;
--		return;
--	}
--
--	/*
--	 * Subsequent SIPI: Return from an AP Reset Hold VMGEXIT, where
--	 * the guest will set the CS and RIP. Set SW_EXIT_INFO_2 to a
--	 * non-zero value.
--	 */
--	if (!svm->sev_es.ghcb)
--		return;
--
--	ghcb_set_sw_exit_info_2(svm->sev_es.ghcb, 1);
--}
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 2c99b18d76c0..1fd662c0ab14 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -1146,9 +1146,6 @@ static void __svm_vcpu_reset(struct kvm_vcpu *vcpu)
- 	svm_init_osvw(vcpu);
- 	vcpu->arch.microcode_version = 0x01000065;
- 	svm->tsc_ratio_msr = kvm_default_tsc_scaling_ratio;
--
--	if (sev_es_guest(vcpu->kvm))
--		sev_es_vcpu_reset(svm);
+ 	 */
+-	set_ghcb_msr(svm, GHCB_MSR_SEV_INFO(GHCB_VERSION_MAX,
+-					    GHCB_VERSION_MIN,
+-					    sev_enc_bit));
++	svm->vmcb->control.ghcb_gpa = GHCB_MSR_SEV_INFO(GHCB_VERSION_MAX,
++							GHCB_VERSION_MIN,
++							sev_enc_bit);
  }
  
- static void svm_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
-@@ -1162,6 +1159,9 @@ static void svm_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
- 
- 	if (!init_event)
- 		__svm_vcpu_reset(vcpu);
-+
-+	if (sev_es_guest(vcpu->kvm))
-+		sev_es_vcpu_reset(svm, init_event);
- }
- 
- void svm_switch_vmcb(struct vcpu_svm *svm, struct kvm_vmcb_info *target_vmcb)
-@@ -4345,10 +4345,13 @@ static bool svm_apic_init_signal_blocked(struct kvm_vcpu *vcpu)
- 
- static void svm_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector)
- {
-+	/*
-+	 * SEV-ES (and later derivatives) use INIT-SIPI to bring up APs, but
-+	 * the guest is responsible for transitioning to Real Mode and setting
-+	 * CS:RIP, GPRs, etc...  KVM just needs to make the vCPU runnable.
-+	 */
- 	if (!sev_es_guest(vcpu->kvm))
- 		return kvm_vcpu_deliver_sipi_vector(vcpu, vector);
--
--	sev_vcpu_deliver_sipi_vector(vcpu, vector);
- }
- 
- static void svm_vm_destroy(struct kvm *kvm)
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 776be8ff9e50..17812418d346 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -170,7 +170,6 @@ struct vcpu_sev_es_state {
- 	struct vmcb_save_area *vmsa;
- 	struct ghcb *ghcb;
- 	struct kvm_host_map ghcb_map;
--	bool received_first_sipi;
- 
- 	/* SEV-ES scratch area support */
- 	void *ghcb_sa;
-@@ -615,8 +614,7 @@ void sev_free_vcpu(struct kvm_vcpu *vcpu);
- int sev_handle_vmgexit(struct kvm_vcpu *vcpu);
- int sev_es_string_io(struct vcpu_svm *svm, int size, unsigned int port, int in);
- void sev_es_init_vmcb(struct vcpu_svm *svm);
--void sev_es_vcpu_reset(struct vcpu_svm *svm);
--void sev_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector);
-+void sev_es_vcpu_reset(struct vcpu_svm *svm, bool init_event);
- void sev_es_prepare_guest_switch(struct vcpu_svm *svm, unsigned int cpu);
- void sev_es_unmap_ghcb(struct vcpu_svm *svm);
- 
+ void sev_es_prepare_guest_switch(struct vcpu_svm *svm, unsigned int cpu)
 -- 
 2.34.1
 
