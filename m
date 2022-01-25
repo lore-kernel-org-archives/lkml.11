@@ -2,81 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D14C3526E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 137BCC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1319689AbiAYDJY (ORCPT
+        id S1356002AbiAYDKt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:09:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1312914AbiAYCrG (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:47:06 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82938C08118D;
-        Mon, 24 Jan 2022 16:05:14 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id j23so54440562edp.5;
-        Mon, 24 Jan 2022 16:05:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LqtTZJJS+DuJnUoPPxfP5zYuoYB4Rs8EWL7kEIrwG24=;
-        b=ibXrjc29K9+PFIfTeLx1Lxucf/xWbRvcHFlDOTHrkLhJHd8qlmgOA5VY/od8cbW2ni
-         nMbRjFB0ZKgLIEjuZZOex9znIMtnU94Yi/TK90xe/5UcXXhOK29/+VFfHTP8WgSE4fPl
-         5XF1iHBBNtDI7BG/ikjcu1v0Eber71joc+IFzMqI6wYmewDNZIQU02pvVHWbUFuV3iP2
-         WGZiSOyYLqWKGle3NNAj+QmKg6hWi3SI5axc2Im932dADn36QZMJVn9OF6tMNhaZFemW
-         W3jG78/zrfrwbbbUTUIJTwjS8u+9QbMuAmq4SBEP+3tX0QxyTczOpsYv6HgwRDtcl2H/
-         DBaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LqtTZJJS+DuJnUoPPxfP5zYuoYB4Rs8EWL7kEIrwG24=;
-        b=S7j4dC81OV1WX/PLpB5QtWblxC9T3S66wAxA1hin2GXLKVZn/Cmq5NAl3KHnENLqsS
-         gOAHqvA71TI+HxB2Xo6QYsXv5apfxLW6Aqq7KutgrK1R1799jn7yshi7ZbAIWa0vWYQh
-         fGrGGynP3M9+9UbPHjtJbbeK2dsML4DAyrvp0H2Vl61+mXpx0aE7z2bXoFN6uwp33Ctr
-         H15yaT2pTiRlDToIp8KRj3vL6fALy10cQGPewELHuGoH37EMzYVJ9z/llneAs9hu9PaY
-         BzClO1GMUC66nVozLfrsYXOLKvn0L2pOAKX6/j5CDreJzyQ6S/V6aokBbhSst2epqvWl
-         Y8Lg==
-X-Gm-Message-State: AOAM5324Z3CK+5VzfoadF7nJF1NulPPwPWuiolqWab4UBaemnb8744xs
-        ArC12DM+xWpUVCB83zik6YqQttpSY+U=
-X-Google-Smtp-Source: ABdhPJyu4EhknJPBIadru/z1uc/Sm2oPuZXKuVuUp5FtKPF3lG0c8yu5fwyEDdSgOkSZC39YXDazVw==
-X-Received: by 2002:a05:6402:1112:: with SMTP id u18mr18264945edv.150.1643069113153;
-        Mon, 24 Jan 2022 16:05:13 -0800 (PST)
-Received: from skbuf ([188.25.255.2])
-        by smtp.gmail.com with ESMTPSA id kq16sm5419982ejb.163.2022.01.24.16.05.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 16:05:12 -0800 (PST)
-Date:   Tue, 25 Jan 2022 02:05:11 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 1/2] net: dsa: Move VLAN filtering syncing out of
- dsa_switch_bridge_leave
-Message-ID: <20220125000511.oabwtychzodqghjx@skbuf>
-References: <20220124210944.3749235-1-tobias@waldekranz.com>
- <20220124210944.3749235-2-tobias@waldekranz.com>
+        Mon, 24 Jan 2022 22:10:49 -0500
+Received: from mga14.intel.com ([192.55.52.115]:39812 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1312860AbiAYCq4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 21:46:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643078816; x=1674614816;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=x/wFiXom4DbD3ERe/v38vavrcnfKJnSak0l7vDBkZOw=;
+  b=XNHjXggygs03vZNPmrZLigzZxzstuNzIF2jSMQVAbauUUqMPIuQ6+H3b
+   vTqMjhCY2kUL31MZrVTLpyYIIFv8UTgzG5xc4WYdf0uPyO5FN6Sgine4R
+   ugSepo0UMWvm5gmqRFHrb2WrWLv7EYTh86fi4DiB9vffTkIU2qfk3xzrB
+   FQP3f6SzJTVt0Nd8GiMA/owXXMpJOestQvmPO7zzTshj8BTssn7LbL3b8
+   gGOqCiNM6qH7sx/4uVYmt5J+BZi4Ty0r+YYbayuuKsG7bX76/qn3zVjgu
+   OjoodY9AUNritI/Y5EF7yBV/U95UtfyjRl9oRu6UuFKFeIBzoQc6YzOEw
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246419321"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="246419321"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 18:35:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="479319843"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 24 Jan 2022 18:35:19 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCBfz-000JEP-2u; Tue, 25 Jan 2022 02:35:19 +0000
+Date:   Tue, 25 Jan 2022 10:34:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sean Christopherson <sean.j.christopherson@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Isaku Yamahata <isaku.yamahata@intel.com>
+Subject: [intel-tdx:kvm-upstream-workaround 133/162] arch/x86/kvm/vmx/tdx.c:
+ linux/mmu_context.h is included more than once.
+Message-ID: <202201250902.FA1Zx2zw-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220124210944.3749235-2-tobias@waldekranz.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 10:09:43PM +0100, Tobias Waldekranz wrote:
-> Most of dsa_switch_bridge_leave was, in fact, dealing with the syncing
-> of VLAN filtering for switches on which that is a global
-> setting. Separate the two phases to prepare for the cross-chip related
-> bugfix in the following commit.
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
+tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
+head:   9ba9d8e36b0fa25f5f20109a0ae61619a421f550
+commit: 8429f3db2373c9bdca7a5a0cb479f6a7ee1bc71a [133/162] KVM: TDX: Add methods to ignore accesses to CPU state
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+includecheck warnings: (new ones prefixed by >>)
+>> arch/x86/kvm/vmx/tdx.c: linux/mmu_context.h is included more than once.
+>> /kbuild/src/consumer/arch/x86/kvm/vmx/tdx.c: asm/fpu/xcr.h is included more than once.
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
