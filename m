@@ -2,73 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 467DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD77C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233784AbiAYS4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 13:56:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
+        id S230331AbiAYS50 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 13:57:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233158AbiAYSz4 (ORCPT
+        with ESMTP id S233867AbiAYS4i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 13:55:56 -0500
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34555C06173D
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:55:48 -0800 (PST)
-Received: by mail-ua1-x935.google.com with SMTP id p7so31935565uao.6
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:55:48 -0800 (PST)
+        Tue, 25 Jan 2022 13:56:38 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98798C06173B
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:56:34 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id c15so12439484ljf.11
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:56:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rajagiritech-edu-in.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c9ZgTqaEJZN4qpmKovkjUxI/On3KKRk04Ai0LsfnAps=;
-        b=D53NKWJbF5iGs2lwPt37/6vcFbkDm6/qAwycCJLfKbfOVq6OxA7A1YZUb6aVxqTF0r
-         +vZpSA57NlD11RMTJJ2tKEiyWOFso7Zz0PaGR03LUEo7t9xggie5nBKrM+Ycs2WpPyfW
-         UypfMpeY+tAzTpoUuQrPacOlBZpnlU1wELoZ0Y4wSyXXp1PXLCe40jb0lFbgB2tuciEp
-         hafXgnLcQjZTS6ZeMfvGY1UsDrxwbhAiQ/X52cDcfMhjAjnPGjoD7eIkIGT7zJIK2jtO
-         00kIRbGGZsUx/qrMrHtwLW+HtqpBfVPhx2ScX45ZAKXVi/YHny1c4jHQi9bvpsW1xytw
-         2tJw==
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fTIC0KYcAU7y+7wUnGRMhkBW/04VGMWDeVkUkSJAGmQ=;
+        b=uawUMPNcPHv5iyPo4LsdD2z5I1KWjd80mTQkfdi//xbsOLnUlx37kKYhxJQ36Ugdtv
+         qTwb9l8FSud2YC9Rqhe1fgqVPtyKMrzh8AKP57x+/Y9FP+KjtdFESmnvaWarog81y0Nu
+         6RMAqUDIiwZvsVpks0rr1orKwCgm6grx5NYKG4OtsL3ijkniCzLjXTKvkkQv6IgiMXrb
+         peOfUymNCHOENVp77E7Cq8Ou+TSDA756j5mkZBpNlxGJ9xNmmvZaSFCpc96OCnp20KLf
+         LKTa+X5ze94gjndZXK1u9CC5l1rkhiBxnpZsByIgo/6ptgdlhYLMKYlOpOhIharThM1+
+         JLEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c9ZgTqaEJZN4qpmKovkjUxI/On3KKRk04Ai0LsfnAps=;
-        b=4Mzy/2MgWkW3ze6bXrfTi0DNnAxlXUfsdSQc4LP5llCXt9UfGoYNYZCmaPF9aknxSK
-         uTH7yJXmvuWl+0UMHARLpTFja/UFsdkcIFMHtiYxCtiD/vdUOKN7zq3gFR0rx3E0GYh8
-         Yah9wWPQXj+wNSFukqV3cEUM751F4ahuNKLWjj9k4BP4WS8T+TRCELfWcGI01rOZsWh3
-         Q6PWeyTQHVcJiy9jzP17nGw18On9Bv+0uNdAEefJFHzob5vqZWySj3PptKqfTWRFEEUH
-         2PNXzaszmZOOCma0/sGdHKsgSmbARS+Cpm369yvDR0Ln5BAmiO/J7OuDcB6J6etKMMOH
-         2jew==
-X-Gm-Message-State: AOAM530TYh65wF7tSnCHl6zGlGSq9g14bLAd7USkIkMCfxIoEsAPkzrl
-        qIVf+f6DkwWYM+ZpNC60vzFkyPGT/gMaLIRTeAxspQWC9Jx8WGNt
-X-Google-Smtp-Source: ABdhPJxxmuPTe6D45cYxOPvtCn+QtiikAuvqB5o7PhTTrNJnyQLbq8mUFz8alvACbfDVK8p8PoE0O79DsR+VtkRnvXs=
-X-Received: by 2002:a67:cb87:: with SMTP id h7mr7659810vsl.3.1643136947213;
- Tue, 25 Jan 2022 10:55:47 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fTIC0KYcAU7y+7wUnGRMhkBW/04VGMWDeVkUkSJAGmQ=;
+        b=2H2cMAAtll5uLxNTgAYAGgqqnmlBHP0ZjFkLss3yJ0moEr/bEMYk3eI8d1VbGHLR/k
+         dMJpJ1/lLavEXpGqt0acdO5mjZ8hUtkNcP6Sf8ORfpfsu25lmDxHfj0ClU/7K5duiZjh
+         6n4GVu5mM2Ccgw5th7SHXjT3geuhssLec7OJOUjrXkkwPqAIDiz1xtbP4AtnRsBqwOEm
+         iamOfJLfdf7/ogyX47nZWAA4Fh0C1GIT4CzVGY9qcYUpGvI6/UwWKcedfLMTuTLVxHdk
+         pEKYjMKDPuwMKFZd62TvoBGr5Bdaj7/igR5FMhe25iVRHRDsBDpn9eY1G9qYPbUc4MAt
+         xd5w==
+X-Gm-Message-State: AOAM532xyc5s05Z4hDOZH2xVSZnydkPn9iP/DGYgBwUytAQ9QYgYLrrt
+        OE9cVSZoLOrzqJQCAGt8xlbNgQ==
+X-Google-Smtp-Source: ABdhPJw8URkiYeFKqQFgbfsxeh5R2XmdcNoDAY7XJpAG5VI3oM9BQ2Z5+KLqSd/PqRHV/HXOzV6XDQ==
+X-Received: by 2002:a2e:b744:: with SMTP id k4mr3107981ljo.351.1643136993000;
+        Tue, 25 Jan 2022 10:56:33 -0800 (PST)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id y11sm1228113ljj.69.2022.01.25.10.56.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 10:56:32 -0800 (PST)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 65C4E103C0E; Tue, 25 Jan 2022 21:57:05 +0300 (+03)
+Date:   Tue, 25 Jan 2022 21:57:05 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Khalid Aziz <khalid.aziz@oracle.com>, akpm@linux-foundation.org,
+        longpeng2@huawei.com, arnd@arndb.de, dave.hansen@linux.intel.com,
+        david@redhat.com, rppt@kernel.org, surenb@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
+Message-ID: <20220125185705.wf7p2l77vggipfry@box.shutemov.name>
+References: <cover.1642526745.git.khalid.aziz@oracle.com>
+ <20220125114212.ks2qtncaahi6foan@box.shutemov.name>
+ <Ye/5yUyEqO0ws0G5@casper.infradead.org>
+ <20220125135917.ezi6itozrchsdcxg@box.shutemov.name>
+ <YfAEqzTeBJSIOKcA@casper.infradead.org>
 MIME-Version: 1.0
-References: <0af17d6952b3677dcd413fefa74b086d5ffb474b.camel@rajagiritech.edu.in>
- <YfAKYWOMdGJ0NxjE@kroah.com> <CAG=yYwksvQmEsfRyFiQTbSxUL39WGf7ryHaywtAxgdL1Nt67OQ@mail.gmail.com>
- <YfAk90OPjlpjruV5@kroah.com> <CAG=yYw=BK1gU0UV8g5_ZT5gOe5P2W2rKHWdFyPi4ZHSy4CGMFw@mail.gmail.com>
-In-Reply-To: <CAG=yYw=BK1gU0UV8g5_ZT5gOe5P2W2rKHWdFyPi4ZHSy4CGMFw@mail.gmail.com>
-From:   Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
-Date:   Wed, 26 Jan 2022 00:25:11 +0530
-Message-ID: <CAG=yYwkMrdGEX0cQX+z6Oj=vJp9LnrzuS7+vAzGZG8GW6t-Oyg@mail.gmail.com>
-Subject: Re: review for 5.16.3-rc2
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfAEqzTeBJSIOKcA@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-a
-> > Does
-> > 5.16.2 build properly for you?
+On Tue, Jan 25, 2022 at 02:09:47PM +0000, Matthew Wilcox wrote:
+> > I think zero-API approach (plus madvise() hints to tweak it) is worth
+> > considering.
+> 
+> I think the zero-API approach actually misses out on a lot of
+> possibilities that the mshare() approach offers.  For example, mshare()
+> allows you to mmap() many small files in the shared region -- you
+> can't do that with zeroAPI.
 
-anyway  5.16.2 does not build properly for me now.
-may be this build error issue started when i
-plugged in a usb transmitter for my new wireless keyboard and mouse.
+Do you consider a use-case for many small files to be common? I would
+think that the main consumer of the feature to be mmap of huge files.
+And in this case zero enabling burden on userspace side sounds like a
+sweet deal.
 
 -- 
-software engineer
-rajagiri school of engineering and technology
+ Kirill A. Shutemov
