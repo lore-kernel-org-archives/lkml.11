@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E463C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7677DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576000AbiAYNPm (ORCPT
+        id S1445610AbiAYNPy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:15:42 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:59916 "EHLO
+        Tue, 25 Jan 2022 08:15:54 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:59908 "EHLO
         fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1575755AbiAYNLn (ORCPT
+        with ESMTP id S1575754AbiAYNLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 25 Jan 2022 08:11:43 -0500
 Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20PDBOJC027551;
-        Tue, 25 Jan 2022 07:11:24 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1643116284;
-        bh=3laI8uf4l1oE5apYqmyKgRj1kR0orsQwsHKD/LYGTYg=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=yMcVtuBQVWR+wGm2BHeh0ZgUMPX25IzVxk644a9kO6sLv8UwePVHuwejiAxkWuC8q
-         xPmZCkTM3Zzgx8n98WAhbV3nu9eqz1kq2cHOHsfffZ1WoOFs0ZkL7QPUKlZ6HkD9AA
-         ntvwwJNfHqwiycwV4tQyIvJ+gsEhQwDLOGyWaPIA=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20PDBOt3008674
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 25 Jan 2022 07:11:24 -0600
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 25
- Jan 2022 07:11:24 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 25 Jan 2022 07:11:24 -0600
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20PDBE38032789;
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20PDBMBN027541;
         Tue, 25 Jan 2022 07:11:22 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1643116282;
+        bh=6EBktqnHJPduEi7KM4QfOLGkytmuyhIOPbDCjMbkRyw=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=JJVVOiLy0zc15kVJ2JCN2BRiAvBvdLC3L6MdraYWCK7kZ7KmRGXaNBfltHhcDINzz
+         SKri3x7Ocmzr4xxYrKxrj3Gt+YqVqoNHDIbUiStEURwmn29BFWRfe8hLoP8nUd0Ip7
+         pS7FN+cvmXXYDmIZzSqyottWTYK2E/ymcJ5xUbzU=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20PDBM6L008645
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 25 Jan 2022 07:11:22 -0600
+Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 25
+ Jan 2022 07:11:21 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 25 Jan 2022 07:11:21 -0600
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20PDBE37032789;
+        Tue, 25 Jan 2022 07:11:19 -0600
 From:   Aswath Govindraju <a-govindraju@ti.com>
 CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -45,9 +45,9 @@ CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Nishanth Menon <nm@ti.com>,
         Aswath Govindraju <a-govindraju@ti.com>
-Subject: [PATCH 3/6] arm64: dts: ti: k3-j721s2-mcu-wakeup: Add support of OSPI
-Date:   Tue, 25 Jan 2022 18:41:10 +0530
-Message-ID: <20220125131113.727-4-a-govindraju@ti.com>
+Subject: [PATCH 2/6] arm64: dts: ti: k3-j721s2-main: Add SERDES and WIZ device tree node
+Date:   Tue, 25 Jan 2022 18:41:09 +0530
+Message-ID: <20220125131113.727-3-a-govindraju@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220125131113.727-1-a-govindraju@ti.com>
 References: <20220125131113.727-1-a-govindraju@ti.com>
@@ -59,62 +59,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for two instance of OSPI in J721S2 SoC.
+Add dt node for the single instance of WIZ (SERDES wrapper) and
+SERDES module shared by PCIe, eDP and USB.
 
 Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 ---
- .../boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi     | 40 +++++++++++++++++++
- 1 file changed, 40 insertions(+)
+ arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi | 70 ++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi b/arch/arm64/boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi
-index 7521963719ff..569db20f356f 100644
---- a/arch/arm64/boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi
-@@ -299,4 +299,44 @@
- 			ti,cpts-periodic-outputs = <2>;
+diff --git a/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
+index e651f0af1aaa..ebd55032e59c 100644
+--- a/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
+@@ -5,6 +5,13 @@
+  * Copyright (C) 2021 Texas Instruments Incorporated - https://www.ti.com/
+  */
+ 
++/ {
++	serdes_refclk: serdes-refclk {
++		#clock-cells = <0>;
++		compatible = "fixed-clock";
++	};
++};
++
+ &cbass_main {
+ 	msmc_ram: sram@70000000 {
+ 		compatible = "mmio-sram";
+@@ -33,6 +40,13 @@
+ 		#size-cells = <1>;
+ 		ranges = <0x00 0x00 0x00104000 0x18000>;
+ 
++		serdes_ln_ctrl: mux-controller@80 {
++			compatible = "mmio-mux";
++			#mux-control-cells = <1>;
++			mux-reg-masks = <0x80 0x3>, <0x84 0x3>, /* SERDES0 lane0/1 select */
++					<0x88 0x3>, <0x8c 0x3>; /* SERDES0 lane2/3 select */
++		};
++
+ 		usb_serdes_mux: mux-controller@0 {
+ 			compatible = "mmio-mux";
+ 			#mux-control-cells = <1>;
+@@ -725,6 +739,62 @@
  		};
  	};
+ 
++	serdes_wiz0: wiz@5060000 {
++		compatible = "ti,j721e-wiz-10g";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		power-domains = <&k3_pds 365 TI_SCI_PD_EXCLUSIVE>;
++		clocks = <&k3_clks 365 0>, <&k3_clks 365 3>, <&serdes_refclk>;
++		clock-names = "fck", "core_ref_clk", "ext_ref_clk";
++		num-lanes = <4>;
++		#reset-cells = <1>;
++		ranges = <0x5060000 0x0 0x5060000 0x10000>;
 +
-+	fss: syscon@47000000 {
-+		compatible = "syscon", "simple-mfd";
-+		reg = <0x0 0x47000000 0x0 0x100>;
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
++		assigned-clocks = <&k3_clks 365 3>;
++		assigned-clock-parents = <&k3_clks 365 7>;
 +
-+		ospi0: spi@47040000 {
-+			compatible = "ti,am654-ospi", "cdns,qspi-nor";
-+			reg = <0x00 0x47040000 0x00 0x100>,
-+			      <0x5 0x0000000 0x1 0x0000000>;
-+			interrupts = <GIC_SPI 840 IRQ_TYPE_LEVEL_HIGH>;
-+			cdns,fifo-depth = <256>;
-+			cdns,fifo-width = <4>;
-+			cdns,trigger-address = <0x0>;
-+			clocks = <&k3_clks 109 5>;
-+			assigned-clocks = <&k3_clks 109 5>;
-+			assigned-clock-parents = <&k3_clks 109 7>;
-+			assigned-clock-rates = <166666666>;
-+			power-domains = <&k3_pds 109 TI_SCI_PD_EXCLUSIVE>;
++		wiz0_pll0_refclk: pll0-refclk {
++			clocks = <&k3_clks 365 3>, <&serdes_refclk>;
++			clock-output-names = "wiz0_pll0_refclk";
++			#clock-cells = <0>;
++			assigned-clocks = <&wiz0_pll0_refclk>;
++			assigned-clock-parents = <&k3_clks 365 3>;
++		};
++
++		wiz0_pll1_refclk: pll1-refclk {
++			clocks = <&k3_clks 365 3>, <&serdes_refclk>;
++			clock-output-names = "wiz0_pll1_refclk";
++			#clock-cells = <0>;
++			assigned-clocks = <&wiz0_pll1_refclk>;
++			assigned-clock-parents = <&k3_clks 365 3>;
++		};
++
++		wiz0_refclk_dig: refclk-dig {
++			clocks = <&k3_clks 365 3>, <&serdes_refclk>;
++			clock-output-names = "wiz0_refclk_dig";
++			#clock-cells = <0>;
++			assigned-clocks = <&wiz0_refclk_dig>;
++			assigned-clock-parents = <&k3_clks 365 3>;
++		};
++
++		wiz0_cmn_refclk_dig_div: cmn-refclk-dig-div {
++			clocks = <&wiz0_refclk_dig>;
++			#clock-cells = <0>;
++		};
++
++		serdes0: serdes@5060000 {
++			compatible = "ti,j721e-serdes-10g";
++			reg = <0x05060000 0x00010000>;
++			reg-names = "torrent_phy";
++			resets = <&serdes_wiz0 0>;
++			reset-names = "torrent_reset";
++			clocks = <&wiz0_pll0_refclk>;
++			clock-names = "refclk";
 +			#address-cells = <1>;
 +			#size-cells = <0>;
 +		};
-+
-+		ospi1: spi@47050000 {
-+			compatible = "ti,am654-ospi", "cdns,qspi-nor";
-+			reg = <0x00 0x47050000 0x00 0x100>,
-+			      <0x7 0x0000000 0x1 0x0000000>;
-+			interrupts = <GIC_SPI 841 IRQ_TYPE_LEVEL_HIGH>;
-+			cdns,fifo-depth = <256>;
-+			cdns,fifo-width = <4>;
-+			cdns,trigger-address = <0x0>;
-+			clocks = <&k3_clks 110 5>;
-+			power-domains = <&k3_pds 110 TI_SCI_PD_EXCLUSIVE>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+
 +	};
- };
++
+ 	main_mcan0: can@2701000 {
+ 		compatible = "bosch,m_can";
+ 		reg = <0x00 0x02701000 0x00 0x200>,
 -- 
 2.17.1
 
