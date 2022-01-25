@@ -2,80 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6333C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:57:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F522C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384768AbiAYL5R (ORCPT
+        id S1382032AbiAYL63 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 06:57:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
+        Tue, 25 Jan 2022 06:58:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382664AbiAYLu3 (ORCPT
+        with ESMTP id S1383639AbiAYLpL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 06:50:29 -0500
-Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18A39C061747;
-        Tue, 25 Jan 2022 03:50:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=metanate.com; s=stronger; h=Content-Transfer-Encoding:Message-Id:Date:
-        Subject:Cc:To:From:Content-Type:Reply-To:Content-ID:Content-Description:
-        In-Reply-To:References; bh=hkUccVp4P9p6ugtrSZv9QxAGFoIyyakvdi4VBQAA7go=; b=XW
-        2qRRssGvSjIxDFxgFjrcKHua7lf5liOR/8IXw7ygQdDr7QPGh8L7JlbxVpApHnGzXGL+W2ww25zQu
-        EOG6YVogM/72dPjlrqWl2GkpymVLsPYDo3Nk4Xg0vlSZ1bPw+4Z5eEqvOz6siigB2RROPOcZdwcmN
-        JosSAevZgTe9JGFpLG2JB8ZRNSN/Xbpa4jZgTIEZWY9r5RnnrDb+HpBl8gRf6TvHhAO2hq0Kox9qE
-        f96wh7gAQrAQ0P87jwSJEOWVzmhDT1Qtp8FwTgzfhE3Mg39jeUinwSze4cZaq7CUTHJBn3J8OR+o2
-        87sxWRt6iFYb3iau+wmYrWmbyfJjM7Dw==;
-Received: from [81.174.171.191] (helo=donbot.metanate.com)
-        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <john@metanate.com>)
-        id 1nCKL5-0002Dr-3Y; Tue, 25 Jan 2022 11:50:19 +0000
-From:   John Keeping <john@metanate.com>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     John Keeping <john@metanate.com>, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: dts: rockchip: fix MMC compatibles for rk3288
-Date:   Tue, 25 Jan 2022 11:50:07 +0000
-Message-Id: <20220125115007.3138311-1-john@metanate.com>
-X-Mailer: git-send-email 2.35.0
+        Tue, 25 Jan 2022 06:45:11 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD866C06175E;
+        Tue, 25 Jan 2022 03:44:17 -0800 (PST)
+Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=truhe.fritz.box); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1nCKFD-0001tA-BF; Tue, 25 Jan 2022 12:44:15 +0100
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+To:     linux-doc@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     workflows@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        regressions@lists.linux.dev,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH v3 0/2] docs: add a text about regressions to the Linux kernel's documentation
+Date:   Tue, 25 Jan 2022 12:44:12 +0100
+Message-Id: <cover.1643110442.git.linux@leemhuis.info>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Authenticated: YES
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1643111057;57976a3c;
+X-HE-SMSGID: 1nCKFD-0001tA-BF
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prior to commit 4bac670aa5cb ("mmc: dw_mmc: rockchip: use common_caps")
-the mshcN aliases were used in an unusual way by the dw_mmc driver and
-affected behaviour.  Now that this has been fixed, rename the mmc
-aliases to use the standard form.
+'We don't cause regressions' might be the first rule of Linux kernel
+development, but it and other aspects of regressions nevertheless are hardly
+described in the Linux kernel's documentation. The following two patches change
+this by creating a document dedicated to the topic.
 
-Signed-off-by: John Keeping <john@metanate.com>
+The second patch could easily be folded into the first one, but was kept
+separate, as it might be a bit controversial. This also allows the patch
+description to explain some backgrounds for this part of the document.
+Additionally, ACKs and Reviewed-by tags can be collected separately this way.
+
+v3 (this mail):
+- drop RFC tag
+- heavily reshuffled and slightly adjusted the text in the sections "The
+  important bits for people fixing regressions" and "How to add a regression to
+  regzbot's tracking somebody else reported?" to make them easier to grasp
+- a few small fixes and improvements
+- add ACK for the series from Greg (now for real)
+
+v2/RFC (https://lore.kernel.org/linux-doc/cover.1641565030.git.linux@leemhuis.info/):
+- a lot of small fixes, most are for spelling mistakes and grammar
+  errors/problems pointed out in the review feedback I got so far
+- add ACK for the series from Greg
+
+v1/RFC (https://lore.kernel.org/linux-doc/cover.1641203216.git.linux@leemhuis.info/):
+- initial version
+
 ---
- arch/arm/boot/dts/rk3288.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-index aaaa61875701..50fa0a4652b5 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
-@@ -25,10 +25,10 @@ aliases {
- 		i2c3 = &i2c3;
- 		i2c4 = &i2c4;
- 		i2c5 = &i2c5;
--		mshc0 = &emmc;
--		mshc1 = &sdmmc;
--		mshc2 = &sdio0;
--		mshc3 = &sdio1;
-+		mmc0 = &emmc;
-+		mmc1 = &sdmmc;
-+		mmc2 = &sdio0;
-+		mmc3 = &sdio1;
- 		serial0 = &uart0;
- 		serial1 = &uart1;
- 		serial2 = &uart2;
+Hi! Merge window is over, so I'd like to move on with this. Dropped the RFC tag;
+I had a small hope Linus would take a look at this (especially the second patch)
+before I remove it; well, didn't work out, but Greg ACKed it, which is good
+enough reason to move on with this. :-D
+
+Ciao, Thorsten
+
+Thorsten Leemhuis (2):
+  docs: add a document about regression handling
+  docs: regressions.rst: rules of thumb for handling regressions
+
+ Documentation/admin-guide/index.rst       |   1 +
+ Documentation/admin-guide/regressions.rst | 992 ++++++++++++++++++++++
+ MAINTAINERS                               |   1 +
+ 3 files changed, 994 insertions(+)
+ create mode 100644 Documentation/admin-guide/regressions.rst
+
+
+base-commit: e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
 -- 
-2.35.0
+2.31.1
 
