@@ -2,268 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E92A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:35:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 732C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1584000AbiAYQfV (ORCPT
+        id S1350823AbiAYQfe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 11:35:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37408 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385381AbiAYQaA (ORCPT
+        Tue, 25 Jan 2022 11:35:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27401 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1453897AbiAYQbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 11:30:00 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65168C06173B
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:30:00 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id c15so11853082ljf.11
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:30:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=R21QXj/bbTzapZcjCBdr87sf0YL59jDu7ua5W1yxSjY=;
-        b=yW6in9A43ni7mBKos1HDPn6wKZPDEVGrPgxu02cQJB8l/e29GLF94mbjEfvClBBLf/
-         OFb9VtKAHzqdIzO+0DU3qi+QFAHbm78KucAKyKIhpnRUYouqPQftifucTlBH3Rf5sztD
-         4JWhdA/XwTH4qIP0ItlvHEuEVzNXJgdmGcF2Qw2igkbVK+EfDgmKeMVm0VFzPsoRqN+C
-         fkyHjuze/uhhOt9u4z47fY9M3YZnW099lQ4+q8vB33119unuQ8/H/cCl96Sw7p8nCVTT
-         19xoxHZ5yoEMaWUWNIXw31mKUKq8h29fUmhiXQVo2XmS/kB6iR8W1sgfD+S71AlsAUIt
-         2cZg==
+        Tue, 25 Jan 2022 11:31:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643128271;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ReaBFbcLhGuXS2ueJc4WerhmCTBoSrJa8O+uDsGwdwU=;
+        b=DUjzoNQLvTr9EuzR426/7cCvOxZfjOHfd1iZswoUj5o6CoRc8rw31vznHUD8z/Ak+2g6bG
+        /4UaOyDyHPH98LE1lbecR55iDgU6AfSD2zkiguommTHQW0CGk+cN+w++VE/fppC7lNo+nh
+        oI9K5kGiwqAAhoewMC5SngRXLPsTzec=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-658-dkgMvb2dOxSDmFANXlWRqg-1; Tue, 25 Jan 2022 11:31:09 -0500
+X-MC-Unique: dkgMvb2dOxSDmFANXlWRqg-1
+Received: by mail-ed1-f72.google.com with SMTP id el8-20020a056402360800b00403bbdcef64so15300610edb.14
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:31:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=R21QXj/bbTzapZcjCBdr87sf0YL59jDu7ua5W1yxSjY=;
-        b=RtyR4pWmoX3vKixOG8sD9ESGhcnWFp1VkVQfYVmuetSx9ppOioJZ3RGaH2KKP6udmR
-         ayxFFhCHkTCZ1lDIrIyuK8xDj/pMP2um9fwCtaPra1Fx/IRmpIfK5y/RRSQDKl0+uNUk
-         GuB5xWV2ZFj+OjTnYE4Oe4NztV0nI/eE5ikLXgdLsNuut3Ag21kAr5v3ZduS6wxn3mrs
-         d7U6Sf+1y80XuhVeFJlwuBD4fp3O9kMTi7VnBYHkgs0RzWrYnxqWe4cA/bdp18Xl66A0
-         F7FI+3vPZRT+BDXcpSv1s5sMne1GtZydtC4N+RikIfA+ln1OJSdT7xIW0wHevjkqHY7G
-         20UA==
-X-Gm-Message-State: AOAM530PE7TX9mQHWrnAJxLPR6rZ1wp0FuQuzgVJnCBEE2OS1HS99IMa
-        nzr3uzdUFmnIRlUuJ616N7ZEPts8AoVteg==
-X-Google-Smtp-Source: ABdhPJyooFTLCV3wLGc1thxTqWPp3B5tQV9G3Av0fe+H6DrG8YxKD+3D1ABv0IyrPYHnAdhXKPyLwA==
-X-Received: by 2002:a2e:6e0b:: with SMTP id j11mr14423689ljc.3.1643128198444;
-        Tue, 25 Jan 2022 08:29:58 -0800 (PST)
-Received: from jade.urgonet (h-94-254-48-165.A175.priv.bahnhof.se. [94.254.48.165])
-        by smtp.gmail.com with ESMTPSA id d13sm536240lfq.75.2022.01.25.08.29.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 08:29:58 -0800 (PST)
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
-Cc:     Sumit Garg <sumit.garg@linaro.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
-        Rijo Thomas <Rijo-john.Thomas@amd.com>,
-        David Howells <dhowells@redhat.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Jens Wiklander <jens.wiklander@linaro.org>
-Subject: [PATCH v3 12/12] tee: refactor TEE_SHM_* flags
-Date:   Tue, 25 Jan 2022 17:29:38 +0100
-Message-Id: <20220125162938.838382-13-jens.wiklander@linaro.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220125162938.838382-1-jens.wiklander@linaro.org>
-References: <20220125162938.838382-1-jens.wiklander@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ReaBFbcLhGuXS2ueJc4WerhmCTBoSrJa8O+uDsGwdwU=;
+        b=IzUaVVyQeXFGnzqFd78afnr7G370C0Ij/Xeyy19QBkaQhDOrZhQC1elY3XETX3VyLM
+         OIn3fQ8FSkJpGpPvOcEG1y0RgS8OF+PXOwgS6nnNTgmBm8LY7hRcmT5T/wjpE/jXoArg
+         vvcYm2P0jJhSxOBl9avqGlHTyORsJVcoQ1+wCsMaT7Q4ZFZX6pft/touzA+F2mv8otK9
+         E6ZmOx9FeS38wuQEWpQ5ogd6PThReLDySiCxhrq7v3bl5sc5PMwZ1KpQjEKbFVro7IJw
+         xyj4/FICTmu3y4MIA0GTQPIfl0S0Elxa74LhJaQQq4I8X63LQkVj95Z287eNvWRFaW1C
+         fYCQ==
+X-Gm-Message-State: AOAM531T9xHHMtYTzHSQVD8zWNL0zGTj19C2b1xdXOM5Xm6hfOl8ylKh
+        6sE32nyG8yM28KiPD+sWDSpRnyhy2gUyOQ7pme2KI2qUH9SEpE/snv0v+IVb5wVdfs7MdWal/kz
+        24ko0VY53UmabNRi2tJgyXJit
+X-Received: by 2002:a17:907:97c3:: with SMTP id js3mr3245508ejc.117.1643128268320;
+        Tue, 25 Jan 2022 08:31:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzzhPjvYjqPGvGy/MBqxMjdO2IyfjnQJkOdM0pGh2VfimaHz7DdDd6i5qmMSQiyP7HIsTj0pw==
+X-Received: by 2002:a17:907:97c3:: with SMTP id js3mr3245486ejc.117.1643128268135;
+        Tue, 25 Jan 2022 08:31:08 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id h19sm2158726edv.90.2022.01.25.08.31.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 08:31:07 -0800 (PST)
+Message-ID: <5c5e274f-a09c-8a90-f7b1-51f969dd4c2d@redhat.com>
+Date:   Tue, 25 Jan 2022 17:31:06 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 16/19] KVM: x86: Remove unused "vcpu" of
+ kvm_arch_tsc_has_attr()
+Content-Language: en-US
+To:     Jinrong Liang <ljr.kernel@gmail.com>
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Jim Mattson <jmattson@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220125095909.38122-1-cloudliang@tencent.com>
+ <20220125095909.38122-17-cloudliang@tencent.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220125095909.38122-17-cloudliang@tencent.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Removes the redundant TEE_SHM_DMA_BUF, TEE_SHM_EXT_DMA_BUF,
-TEE_SHM_MAPPED and TEE_SHM_KERNEL_MAPPED flags.
+On 1/25/22 10:59, Jinrong Liang wrote:
+> From: Jinrong Liang <cloudliang@tencent.com>
+> 
+> The "struct kvm_vcpu *vcpu" parameter of kvm_arch_tsc_has_attr()
+> is not used, so remove it. No functional change intended.
+> 
+> Signed-off-by: Jinrong Liang <cloudliang@tencent.com>
+> ---
+>   arch/x86/kvm/x86.c | 5 ++---
+>   1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index df46d0737b85..22b73b918884 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -5003,8 +5003,7 @@ static int kvm_set_guest_paused(struct kvm_vcpu *vcpu)
+>   	return 0;
+>   }
+>   
+> -static int kvm_arch_tsc_has_attr(struct kvm_vcpu *vcpu,
+> -				 struct kvm_device_attr *attr)
+> +static int kvm_arch_tsc_has_attr(struct kvm_device_attr *attr)
+>   {
+>   	int r;
+>   
+> @@ -5099,7 +5098,7 @@ static int kvm_vcpu_ioctl_device_attr(struct kvm_vcpu *vcpu,
+>   
+>   	switch (ioctl) {
+>   	case KVM_HAS_DEVICE_ATTR:
+> -		r = kvm_arch_tsc_has_attr(vcpu, &attr);
+> +		r = kvm_arch_tsc_has_attr(&attr);
+>   		break;
+>   	case KVM_GET_DEVICE_ATTR:
+>   		r = kvm_arch_tsc_get_attr(vcpu, &attr);
 
-Assigns new values to the remaining flags to void gaps.
+I can't make my mind on this.  I think it's better to have the argument 
+in case some attributes depend on VM capabilities in the future.
 
-Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
----
- drivers/tee/optee/smc_abi.c |  4 ++--
- drivers/tee/tee_shm.c       | 23 +++++++++++------------
- drivers/tee/tee_shm_pool.c  |  2 +-
- include/linux/tee_drv.h     | 21 +++++++++------------
- 4 files changed, 23 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/tee/optee/smc_abi.c b/drivers/tee/optee/smc_abi.c
-index 9c1c9cfb7488..0895c5146dfa 100644
---- a/drivers/tee/optee/smc_abi.c
-+++ b/drivers/tee/optee/smc_abi.c
-@@ -228,7 +228,7 @@ static int optee_to_msg_param(struct optee *optee,
- 		case TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INPUT:
- 		case TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_OUTPUT:
- 		case TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INOUT:
--			if (tee_shm_is_registered(p->u.memref.shm))
-+			if (tee_shm_is_dynamic(p->u.memref.shm))
- 				rc = to_msg_param_reg_mem(mp, p);
- 			else
- 				rc = to_msg_param_tmp_mem(mp, p);
-@@ -669,7 +669,7 @@ static void handle_rpc_func_cmd_shm_alloc(struct tee_context *ctx,
- 
- 	sz = tee_shm_get_size(shm);
- 
--	if (tee_shm_is_registered(shm)) {
-+	if (tee_shm_is_dynamic(shm)) {
- 		struct page **pages;
- 		u64 *pages_list;
- 		size_t page_num;
-diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
-index c3a29022ec72..d9deb1f50022 100644
---- a/drivers/tee/tee_shm.c
-+++ b/drivers/tee/tee_shm.c
-@@ -58,7 +58,7 @@ static void tee_shm_release(struct tee_device *teedev, struct tee_shm *shm)
- {
- 	if (shm->flags & TEE_SHM_POOL) {
- 		teedev->pool->ops->free(teedev->pool, shm);
--	} else if (shm->flags & TEE_SHM_REGISTER) {
-+	} else if (shm->flags & TEE_SHM_DYNAMIC) {
- 		int rc = teedev->desc->ops->shm_unregister(shm->ctx, shm);
- 
- 		if (rc)
-@@ -139,8 +139,7 @@ static struct tee_shm *shm_alloc_helper(struct tee_context *ctx, size_t size,
-  */
- struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size)
- {
--	u32 flags = TEE_SHM_MAPPED | TEE_SHM_DMA_BUF | TEE_SHM_REGISTER |
--		    TEE_SHM_POOL;
-+	u32 flags = TEE_SHM_DYNAMIC | TEE_SHM_POOL;
- 	struct tee_device *teedev = ctx->teedev;
- 	struct tee_shm *shm;
- 	void *ret;
-@@ -185,7 +184,7 @@ struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size)
-  */
- struct tee_shm *tee_shm_alloc_kernel_buf(struct tee_context *ctx, size_t size)
- {
--	u32 flags = TEE_SHM_MAPPED | TEE_SHM_REGISTER | TEE_SHM_POOL;
-+	u32 flags = TEE_SHM_DYNAMIC | TEE_SHM_POOL;
- 
- 	return shm_alloc_helper(ctx, size, PAGE_SIZE, flags, -1);
- }
-@@ -209,7 +208,7 @@ EXPORT_SYMBOL_GPL(tee_shm_alloc_kernel_buf);
-  */
- struct tee_shm *tee_shm_alloc_priv_buf(struct tee_context *ctx, size_t size)
- {
--	u32 flags = TEE_SHM_MAPPED | TEE_SHM_PRIV | TEE_SHM_POOL;
-+	u32 flags = TEE_SHM_PRIV | TEE_SHM_POOL;
- 
- 	return shm_alloc_helper(ctx, size, sizeof(long) * 2, flags, -1);
- }
-@@ -306,7 +305,7 @@ register_shm_helper(struct tee_context *ctx, unsigned long addr,
- struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
- 					  unsigned long addr, size_t length)
- {
--	u32 flags = TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED | TEE_SHM_REGISTER;
-+	u32 flags = TEE_SHM_USER_MAPPED | TEE_SHM_DYNAMIC;
- 	struct tee_device *teedev = ctx->teedev;
- 	struct tee_shm *shm;
- 	void *ret;
-@@ -350,7 +349,7 @@ struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
- struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
- 					    void *addr, size_t length)
- {
--	u32 flags = TEE_SHM_REGISTER | TEE_SHM_KERNEL_MAPPED;
-+	u32 flags = TEE_SHM_DYNAMIC;
- 
- 	return register_shm_helper(ctx, (unsigned long)addr, length, flags, -1);
- }
-@@ -394,7 +393,7 @@ int tee_shm_get_fd(struct tee_shm *shm)
- {
- 	int fd;
- 
--	if (!(shm->flags & TEE_SHM_DMA_BUF))
-+	if (shm->id < 0)
- 		return -EINVAL;
- 
- 	/* matched by tee_shm_put() in tee_shm_op_release() */
-@@ -424,7 +423,7 @@ EXPORT_SYMBOL_GPL(tee_shm_free);
-  */
- int tee_shm_va2pa(struct tee_shm *shm, void *va, phys_addr_t *pa)
- {
--	if (!(shm->flags & TEE_SHM_MAPPED))
-+	if (!shm->kaddr)
- 		return -EINVAL;
- 	/* Check that we're in the range of the shm */
- 	if ((char *)va < (char *)shm->kaddr)
-@@ -446,7 +445,7 @@ EXPORT_SYMBOL_GPL(tee_shm_va2pa);
-  */
- int tee_shm_pa2va(struct tee_shm *shm, phys_addr_t pa, void **va)
- {
--	if (!(shm->flags & TEE_SHM_MAPPED))
-+	if (!shm->kaddr)
- 		return -EINVAL;
- 	/* Check that we're in the range of the shm */
- 	if (pa < shm->paddr)
-@@ -474,7 +473,7 @@ EXPORT_SYMBOL_GPL(tee_shm_pa2va);
-  */
- void *tee_shm_get_va(struct tee_shm *shm, size_t offs)
- {
--	if (!(shm->flags & TEE_SHM_MAPPED))
-+	if (!shm->kaddr)
- 		return ERR_PTR(-EINVAL);
- 	if (offs >= shm->size)
- 		return ERR_PTR(-EINVAL);
-@@ -549,7 +548,7 @@ void tee_shm_put(struct tee_shm *shm)
- 		 * the refcount_inc() in tee_shm_get_from_id() never starts
- 		 * from 0.
- 		 */
--		if (shm->flags & TEE_SHM_DMA_BUF)
-+		if (shm->id >= 0)
- 			idr_remove(&teedev->idr, shm->id);
- 		do_release = true;
- 	}
-diff --git a/drivers/tee/tee_shm_pool.c b/drivers/tee/tee_shm_pool.c
-index 71e0f8ae69aa..058bfbac657a 100644
---- a/drivers/tee/tee_shm_pool.c
-+++ b/drivers/tee/tee_shm_pool.c
-@@ -30,7 +30,7 @@ static int pool_op_gen_alloc(struct tee_shm_pool *pool, struct tee_shm *shm,
- 	 * This is from a static shared memory pool so no need to register
- 	 * each chunk, and no need to unregister later either.
- 	 */
--	shm->flags &= ~TEE_SHM_REGISTER;
-+	shm->flags &= ~TEE_SHM_DYNAMIC;
- 	return 0;
- }
- 
-diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
-index a3b663ef0694..911cad324acc 100644
---- a/include/linux/tee_drv.h
-+++ b/include/linux/tee_drv.h
-@@ -20,14 +20,11 @@
-  * specific TEE driver.
-  */
- 
--#define TEE_SHM_MAPPED		BIT(0)	/* Memory mapped by the kernel */
--#define TEE_SHM_DMA_BUF		BIT(1)	/* Memory with dma-buf handle */
--#define TEE_SHM_EXT_DMA_BUF	BIT(2)	/* Memory with dma-buf handle */
--#define TEE_SHM_REGISTER	BIT(3)  /* Memory registered in secure world */
--#define TEE_SHM_USER_MAPPED	BIT(4)  /* Memory mapped in user space */
--#define TEE_SHM_POOL		BIT(5)  /* Memory allocated from pool */
--#define TEE_SHM_KERNEL_MAPPED	BIT(6)  /* Memory mapped in kernel space */
--#define TEE_SHM_PRIV		BIT(7)  /* Memory private to TEE driver */
-+#define TEE_SHM_DYNAMIC		BIT(0)  /* Dynamic shared memory registered */
-+					/* in secure world */
-+#define TEE_SHM_USER_MAPPED	BIT(1)  /* Memory mapped in user space */
-+#define TEE_SHM_POOL		BIT(2)  /* Memory allocated from pool */
-+#define TEE_SHM_PRIV		BIT(3)  /* Memory private to TEE driver */
- 
- struct device;
- struct tee_device;
-@@ -280,13 +277,13 @@ struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
- 					    void *addr, size_t length);
- 
- /**
-- * tee_shm_is_registered() - Check if shared memory object in registered in TEE
-+ * tee_shm_is_dynamic() - Check if shared memory object is of the dynamic kind
-  * @shm:	Shared memory handle
-- * @returns true if object is registered in TEE
-+ * @returns true if object is dynamic shared memory
-  */
--static inline bool tee_shm_is_registered(struct tee_shm *shm)
-+static inline bool tee_shm_is_dynamic(struct tee_shm *shm)
- {
--	return shm && (shm->flags & TEE_SHM_REGISTER);
-+	return shm && (shm->flags & TEE_SHM_DYNAMIC);
- }
- 
- /**
--- 
-2.31.1
+Paolo
 
