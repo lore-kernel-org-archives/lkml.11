@@ -2,123 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 085C2C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC24C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1319468AbiAYDIz (ORCPT
+        id S1319555AbiAYDJH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:08:55 -0500
-Received: from mga04.intel.com ([192.55.52.120]:35768 "EHLO mga04.intel.com"
+        Mon, 24 Jan 2022 22:09:07 -0500
+Received: from mga09.intel.com ([134.134.136.24]:19971 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S3410822AbiAYCSn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:18:43 -0500
+        id S231483AbiAYCgV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 21:36:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643077123; x=1674613123;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fyE0Y1a6izA1HZIRgBBRJ9hch9fXCPSO/hVIlEG2PbU=;
-  b=QdmkuhrXgI+pp9plla7UK+No9aheYQ9D1Kf9xdxVBH5GwYM1IkXLHJ30
-   LD9FblTmUt2iqoWvNPbnJupsDlbZL0XxcM2EgM49xCRX0flQ38e8tM7bo
-   ejCmTCqxH1K1uAWQYJqtau7v9TlG1Gdi48ryJdq0m68HwVuosL4N5CEUS
-   Ra4f1eT0C/eR7Unr8oU8zNcVJGHQda9tIhRJFcGbMMXFOYdG085pulxTe
-   ec0lseNODccKyUrhrxljBVNaKyuEW9gL19OZOrF1tQneNP9YOQKm+a1dY
-   XjdINkRZ5LYLrMmQnj4GO1drYPocMnuvbF+3vbVJlyW0uHu7svOqzxyrC
+  t=1643078181; x=1674614181;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=iVWmi0NYMq09PnDrKJZIGnXwDprwNIKzw5zU1ymktuY=;
+  b=l3xe8GnS0nNbqm/c3r1v770o2uoY6I5xBb2bbm5p/j1w+AsMz9+QOM+h
+   5j/Y3KY6W5tUOM7wb1WW47CIwC0ttTzK5eDzi/Hcf3w5nziMlXy8b5qbv
+   F/wlYSej+c1tVN40/H6/5a9g9q5Wq+1SzaVGXSOIunIvU7LjaRXxNYZTn
+   hr12Nx4/ARXFgDEi0wAFl1qFoEBv+qUfunVMyH9Df0Ej8UIANDfhxWttb
+   b+DKOualLB88dyaUlqCnm/2YTuRiWVhSdIU1aRGo5jCC7GzkIdmnQd9go
+   EFYd3giRwL1lPrSpbGTddlzOlgiI5aULaVqM5n3v9EJmvD/x+//nS2xx9
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="245023793"
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="245983371"
 X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="245023793"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:12:11 -0800
+   d="scan'208";a="245983371"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 18:36:21 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="617443462"
-Received: from kerguder-mobl.ger.corp.intel.com (HELO localhost) ([10.249.158.133])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:12:03 -0800
-From:   Iwona Winiarska <iwona.winiarska@intel.com>
-To:     linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Borislav Petkov <bp@alien8.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Zev Weiss <zweiss@equinix.com>,
-        David Muller <d.mueller@elsoft.ch>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Billy Tsai <billy_tsai@aspeedtech.com>,
-        Iwona Winiarska <iwona.winiarska@intel.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v6 01/13] dt-bindings: Add generic bindings for PECI
-Date:   Tue, 25 Jan 2022 02:10:52 +0100
-Message-Id: <20220125011104.2480133-2-iwona.winiarska@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220125011104.2480133-1-iwona.winiarska@intel.com>
-References: <20220125011104.2480133-1-iwona.winiarska@intel.com>
+   d="scan'208";a="695656665"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 24 Jan 2022 18:36:19 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCBgx-000JEZ-3Z; Tue, 25 Jan 2022 02:36:19 +0000
+Date:   Tue, 25 Jan 2022 10:35:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Collingbourne <pcc@google.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: mm/kasan/sw_tags.c:211:6: warning: no previous prototype for
+ 'kasan_tag_mismatch'
+Message-ID: <202201251032.njnCerSX-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for the PECI controller.
+Hi Peter,
 
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
+commit: 1cbdf60bd1b74e397d48aa877367cfc621f45ffe kasan: arm64: support specialized outlined tag mismatch checks
+date:   8 months ago
+config: arm64-randconfig-r005-20220124 (https://download.01.org/0day-ci/archive/20220125/202201251032.njnCerSX-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1cbdf60bd1b74e397d48aa877367cfc621f45ffe
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 1cbdf60bd1b74e397d48aa877367cfc621f45ffe
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> mm/kasan/sw_tags.c:211:6: warning: no previous prototype for 'kasan_tag_mismatch' [-Wmissing-prototypes]
+     211 | void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
+         |      ^~~~~~~~~~~~~~~~~~
+
+
+vim +/kasan_tag_mismatch +211 mm/kasan/sw_tags.c
+
+   210	
+ > 211	void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
+
 ---
- .../bindings/peci/peci-controller.yaml        | 33 +++++++++++++++++++
- 1 file changed, 33 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/peci/peci-controller.yaml
-
-diff --git a/Documentation/devicetree/bindings/peci/peci-controller.yaml b/Documentation/devicetree/bindings/peci/peci-controller.yaml
-new file mode 100644
-index 000000000000..bbc3d3f3a929
---- /dev/null
-+++ b/Documentation/devicetree/bindings/peci/peci-controller.yaml
-@@ -0,0 +1,33 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/peci/peci-controller.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Generic Device Tree Bindings for PECI
-+
-+maintainers:
-+  - Iwona Winiarska <iwona.winiarska@intel.com>
-+
-+description:
-+  PECI (Platform Environment Control Interface) is an interface that provides a
-+  communication channel from Intel processors and chipset components to external
-+  monitoring or control devices.
-+
-+properties:
-+  $nodename:
-+    pattern: "^peci-controller(@.*)?$"
-+
-+  cmd-timeout-ms:
-+    description:
-+      Command timeout in units of ms.
-+
-+additionalProperties: true
-+
-+examples:
-+  - |
-+    peci-controller@1e78b000 {
-+      reg = <0x1e78b000 0x100>;
-+      cmd-timeout-ms = <500>;
-+    };
-+...
--- 
-2.31.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
