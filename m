@@ -2,43 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B12FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C831AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352791AbiAYKZb (ORCPT
+        id S1353118AbiAYKZr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:25:31 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60600 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243466AbiAYKUh (ORCPT
+        Tue, 25 Jan 2022 05:25:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243556AbiAYKUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:20:37 -0500
+        Tue, 25 Jan 2022 05:20:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBAF9C06175D
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:20:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AC9561639
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:20:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA4CBC340E0;
-        Tue, 25 Jan 2022 10:20:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A91D61614
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:20:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5890EC340E9;
+        Tue, 25 Jan 2022 10:20:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643106036;
-        bh=teZpSSDIJO8MxzMjV0LQdvAm1PtEQNLwt0AmngnKKyI=;
+        s=k20201202; t=1643106044;
+        bh=V+CXNMlBJLDkVnoMPBK0epjEdchEM7zxpeDI595A+Bw=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=dYPxNsfgvNGvhmD+fMaXfnYHhV3TJYQ57AavGj92hdZnTsmn51oewzSYGtjgpZFA8
-         kCXMb5eZHPQGcQHt1UWvCcN0fpq2EdWg9bAhIAz1DbaV48P3rRNf1+6Tn6rqRrJ8Tp
-         rHUWTtlocmLtQl8jblnWlzeUbHPCrN6qyMWwbS5TzGIkCfhgjQ7LLWmoWzu3RYppn1
-         qotbJ6YjF8Kg/ORPJ+oTKgfKZ7hcqwuiFUeCSRQKaiT08/maQlZTXgySNiaYTx4B1e
-         jlcueyAC0HIKNsDFz9jGaj2Dwr5n2zZvYgUF4OFQTul62rgURXMpidnMz1GuVQReQ6
-         RTM1UdDu4ZWLQ==
+        b=te+l92wRX7p451mWxm/bQ9/Y7QwQ07TyYhXRvd9JGv6T/QJXaQwZJbzN9g/qFFxUk
+         7yF5WuiSVn5Hct9ABnMSV/YjmNtZcaWqi/fcXTmlLHaa4Jh/w4s4TJcDf/7gDaFTEv
+         +QUBe5zdsQkVHx5UdhqqFlDxEEtuuDUN6va0lsim7mSQ9CB3rDl4LO1NZwtB/XgzzB
+         k5F1g1ZZjJbeSEBbwuZd9MCvhVnVBNFeJIZBDx6EB5LQVesvo8Y7lacUCouRoHmKzb
+         +pvRQnvYXCGk9sWrb5dWfA2UeZk0Uu/WG0GEeBgxg3GNGlnDH190K3hb+BHf7bChgv
+         M1qT64xqFZYPA==
 From:   Mark Brown <broonie@kernel.org>
-To:     Richard Fitzgerald <rf@opensource.cirrus.com>
-Cc:     linux-kernel@vger.kernel.org, patches@opensource.cirrus.com,
+To:     V sujith kumar Reddy <vsujithkumar.reddy@amd.com>,
         alsa-devel@alsa-project.org
-In-Reply-To: <20220121120412.672284-1-rf@opensource.cirrus.com>
-References: <20220121120412.672284-1-rf@opensource.cirrus.com>
-Subject: Re: [PATCH v2 0/3] ASOC: cs42l42: Add support for system suspend
-Message-Id: <164310603562.74844.1855667686976141960.b4-ty@kernel.org>
-Date:   Tue, 25 Jan 2022 10:20:35 +0000
+Cc:     Takashi Iwai <tiwai@suse.com>, Liam Girdwood <lgirdwood@gmail.com>,
+        Vijendar.Mukunda@amd.com, Jaroslav Kysela <perex@perex.cz>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        ajitkumar.pandey@amd.com, Basavaraj.Hiregoudar@amd.com,
+        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        Kai Vehmanen <kai.vehmanen@intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Sunil-kumar.Dommati@amd.com
+In-Reply-To: <20220122194707.2661026-1-vsujithkumar.reddy@amd.com>
+References: <20220122194707.2661026-1-vsujithkumar.reddy@amd.com>
+Subject: Re: [PATCH] ASoC: amd: sof-mach: Add support for RT5682S and RT1019 card
+Message-Id: <164310604108.74844.4371897613558454989.b4-ty@kernel.org>
+Date:   Tue, 25 Jan 2022 10:20:41 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -46,15 +57,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 21 Jan 2022 12:04:09 +0000, Richard Fitzgerald wrote:
-> Add system suspend and resume handlers so that the cs42l42 is cleanly
-> put into power-off state during system suspend and the registers are
-> restored in resume.
+On Sun, 23 Jan 2022 01:16:59 +0530, V sujith kumar Reddy wrote:
+> We have new platform with rt5682s as a primary codec and rt1019 as an
+> amp codec. Add machine struct to register sof audio based sound card
+> on such Chrome machine.
 > 
-> The first two patches separate out two small changes that can stand
-> alone and are needed to enable the system suspend implementation:
 > 
-> [...]
 
 Applied to
 
@@ -62,12 +70,8 @@ Applied to
 
 Thanks!
 
-[1/3] ASoC: cs42l42: Report full jack status when plug is detected
-      commit: 8d06f797f844d04a961f201f886f7f9985edc9bf
-[2/3] ASoC: cs42l42: Change jack_detect_mutex to a lock of all IRQ handling
-      commit: 5982b5a8ec7ddb076e774bdd0b17d74681ab0943
-[3/3] ASoC: cs42l42: Handle system suspend
-      commit: f8593e88540052b3feaf1fb36f2c1c0484c9dc14
+[1/1] ASoC: amd: sof-mach: Add support for RT5682S and RT1019 card
+      commit: 330dc18356e697eaf9796732b6acbdf948022136
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
