@@ -2,98 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C97EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:19:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382415AbiAYNTH (ORCPT
+        id S1385565AbiAYNTT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:19:07 -0500
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:40810 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1575809AbiAYNMg (ORCPT
+        Tue, 25 Jan 2022 08:19:19 -0500
+Received: from azure-sdnproxy.icoremail.net ([52.237.72.81]:40987 "HELO
+        azure-sdnproxy-1.icoremail.net" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with SMTP id S1575844AbiAYNNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 08:12:36 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20PDCZGc111935;
-        Tue, 25 Jan 2022 07:12:35 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1643116355;
-        bh=d76i5L4O9W7burlhFss6iuuswI1RV/QfLL2FiWDnHME=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=jAQu0yzWp7Bo5FqErnZqBngND/PgdVDnQXTVJBMKZPavTVrDU6rkeIsoLaBXLUyMr
-         SweQQ+7xOo2usfSLlM2lg5UDEm0mXvbh/l5leGSOWg8D7VxfPqmoJ6n63k0xI4K6nP
-         TmzDEhz+q2y4Nt9g7vsaxJGmIE3US/neI/TZbrdI=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20PDCYMd064929
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 25 Jan 2022 07:12:35 -0600
-Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 25
- Jan 2022 07:12:34 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 25 Jan 2022 07:12:34 -0600
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20PDCPWF008001;
-        Tue, 25 Jan 2022 07:12:32 -0600
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tero Kristo <kristo@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nishanth Menon <nm@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>
-Subject: [PATCH 2/2] arm64: dts: ti: k3-j721s2-common-proc-board: Enable PCIe
-Date:   Tue, 25 Jan 2022 18:42:25 +0530
-Message-ID: <20220125131225.871-3-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220125131225.871-1-a-govindraju@ti.com>
-References: <20220125131225.871-1-a-govindraju@ti.com>
+        Tue, 25 Jan 2022 08:13:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=KQ8E+I5jgn
+        dpekEIjuxuetI480OK8imxCoO0iKH46S4=; b=iGmegbYJKl0TTCJ9UVfVlywkjU
+        y4hAUgS3gUbn9eo5PyMUqZCJAje+hMTB1fB1EsLdyse43KwUDDPJj/QP7U+Mfpeg
+        1E/ECXjuN3Y8gbnzIdYk83UOxCMutLG0oBS2tQMhCgnPiFfrBPFjH1QaVR6WuWTe
+        lH3gIHkHgIcP6UYtQ=
+Received: from localhost.localdomain (unknown [111.192.165.103])
+        by app1 (Coremail) with SMTP id XAUFCgD3_sIO9+9hW39lAA--.12450S4;
+        Tue, 25 Jan 2022 21:11:48 +0800 (CST)
+From:   Xin Xiong <xiongx18@fudan.edu.cn>
+To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     yuanxzhang@fudan.edu.cn, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>
+Subject: [PATCH] NFSv4.2: fix reference count leaks in _nfs42_proc_copy_notify()
+Date:   Tue, 25 Jan 2022 21:10:45 +0800
+Message-Id: <20220125131045.37342-1-xiongx18@fudan.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: XAUFCgD3_sIO9+9hW39lAA--.12450S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cw1rGFW5Gr1rKr4DKFyxuFg_yoW8Aryxpa
+        yrCrWUAF95KF18JFZIyayv93W3uFZ5tryUGF9293y7uF9xX3s8GF1Yyr1Y9r17JrW8X398
+        XF1DKF4UZanYvF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
+        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r
+        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
+        648v4I1lc2xSY4AK67AK6ry8MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r
+        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
+        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
+        x0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+        nxnUUI43ZEXa7VUboa0DUUUUU==
+X-CM-SenderInfo: arytiiqsuqiimz6i3vldqovvfxof0/1tbiAg0REFKp2ijNzAAAsG
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-x1 lane PCIe slot in the common processor board is enabled and connected to
-J721S2 SOM. Add PCIe DT node in common processor board to reflect the
-same.
+The reference counting issue happens in two error paths in the
+function _nfs42_proc_copy_notify(). In both error paths, the function
+simply returns the error code and forgets to balance the refcount of
+object `ctx`, bumped by get_nfs_open_context() earlier, which may
+cause refcount leaks.
 
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+Fix it by balancing refcount of the `ctx` object before the function
+returns in both error paths.
+
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
 ---
- .../boot/dts/ti/k3-j721s2-common-proc-board.dts    | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ fs/nfs/nfs42proc.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721s2-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721s2-common-proc-board.dts
-index cb99a97af426..793ee77838f4 100644
---- a/arch/arm64/boot/dts/ti/k3-j721s2-common-proc-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721s2-common-proc-board.dts
-@@ -428,6 +428,20 @@
- 	};
- };
+diff --git a/fs/nfs/nfs42proc.c b/fs/nfs/nfs42proc.c
+index 8b21ff1be..438de4f93 100644
+--- a/fs/nfs/nfs42proc.c
++++ b/fs/nfs/nfs42proc.c
+@@ -592,8 +592,10 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
  
-+&pcie1_rc {
-+	reset-gpios = <&exp1 2 GPIO_ACTIVE_HIGH>;
-+	phys = <&serdes0_pcie_link>;
-+	phy-names = "pcie-phy";
-+	num-lanes = <1>;
-+};
-+
-+&pcie1_ep {
-+	phys = <&serdes0_pcie_link>;
-+	phy-names = "pcie-phy";
-+	num-lanes = <1>;
-+	status = "disabled";
-+};
-+
- &mcu_mcan0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&mcu_mcan0_pins_default>;
+ 	ctx = get_nfs_open_context(nfs_file_open_context(src));
+ 	l_ctx = nfs_get_lock_context(ctx);
+-	if (IS_ERR(l_ctx))
+-		return PTR_ERR(l_ctx);
++	if (IS_ERR(l_ctx)) {
++		status = PTR_ERR(l_ctx);
++		goto out;
++	}
+ 
+ 	status = nfs4_set_rw_stateid(&args->cna_src_stateid, ctx, l_ctx,
+ 				     FMODE_READ);
+@@ -601,7 +603,7 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
+ 	if (status) {
+ 		if (status == -EAGAIN)
+ 			status = -NFS4ERR_BAD_STATEID;
+-		return status;
++		goto out;
+ 	}
+ 
+ 	status = nfs4_call_sync(src_server->client, src_server, &msg,
+@@ -610,6 +612,7 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
+ 	if (status == -ENOTSUPP)
+ 		src_server->caps &= ~NFS_CAP_COPY_NOTIFY;
+ 
++out:
+ 	put_nfs_open_context(nfs_file_open_context(src));
+ 	return status;
+ }
 -- 
-2.17.1
+2.25.1
 
