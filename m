@@ -2,195 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0545C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B3BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452696AbiAYI4W (ORCPT
+        id S1453985AbiAYI4w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:56:22 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:42574 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453141AbiAYIwk (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:52:40 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 067522199F;
-        Tue, 25 Jan 2022 08:52:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1643100751; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bXSEp2XleIcO4xphn/mhCtpq46oflmZEb9NkcmEhGJc=;
-        b=lM8bWip5ZAIwddDfEpaQ0+9RtSe4juKsVAUpy0pnoWhyzKIviWEJLTdbne8sHgFQAcjG3n
-        c6k9BH2w7cdFamFgFZpkezS38qa1Fecx45KLLQu6ICBiaFjd10qymZlU4IOweEs6tdwZtC
-        Kl+TchZQPYqJRtZstKiAc3nrrvQu9Ec=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 91BEBA3B83;
-        Tue, 25 Jan 2022 08:52:30 +0000 (UTC)
-Date:   Tue, 25 Jan 2022 09:52:27 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Sperbeck <jsperbeck@google.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] kernel: count warnings and make count accessible to
- userspace
-Message-ID: <Ye+6S0YYImktieos@alley>
-References: <20220118060431.1368538-1-jsperbeck@google.com>
- <Yef9hPon8s8swQMn@alley>
- <CAFNjLiX6n9C6LqfC=x160RqkEKC9_F6upEPpKG2LRGCU96hfYQ@mail.gmail.com>
+        Tue, 25 Jan 2022 03:56:52 -0500
+Received: from mail-eopbgr80110.outbound.protection.outlook.com ([40.107.8.110]:35650
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1453196AbiAYIw5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 03:52:57 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CchPKbnpDD2bLuRPjxRa70a422wDS8dPjIwsbUUwwEuPbgpYuA4+XO7sbqeGFebkxgM89Wk/GugsJ3GHgTRMlORE/aYS8S6GPN68GfI5aH6MSyLqvKUO70bghBkOBkKjGFt41HE/xUcjteEONI/UAl0CVKmkyh1rfdCT8SBPHqHmcS2djFJm3YlQqx6o2Pt6brRLVW1SQhlRfCql+7j1OXPjCwwLbRDeuC1NN0J1RCxhercuHd/vXlX8lZ75nMITTgHwx3BtkwU3XYLd+3pFoTAblHAdBwG+f2THfSVIyvZ6CidQtEiFzao/TcDZHB9MNosKPdkW/xSXHkeLVHJylw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3X07FiMvTMvbpr8oS6LHNALMIuFKEsGfxRzibfAZUf0=;
+ b=kQzpmxxZ3bv6plhz/js0QR340DhrTTlCeD/UZQpNBvV6Z9/4a4vevCYplQ0EdjxDsdkZxpIzfVKRre3vIy9WqSnMDPe2kVbf8EMyv0XV+AJTUAmUp2IFdo2zcYZScRn4aRe4NpKkLwERhSVES9lGRQ9pehMdBo6ZEmsFXk/BOEtW8QzDLBMkW7/0b5E/N3N84oWuJLv2k6jH2SMvxjhBtrAFcgPChe8xaodCNkN55hbeXb4W4wVcHdaZ3sWq4Rap5fWiWvLP3BS9abAWjnfjUa7P3YFgPEpcnckSDsMnXlO7/RT14nMKE/vSZBQmqavG8msa1PDnvGRzpA9+0hH/FQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 217.111.95.66) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=arri.de;
+ dmarc=none action=none header.from=arri.de; dkim=none (message not signed);
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=arrigroup.onmicrosoft.com; s=selector1-arrigroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3X07FiMvTMvbpr8oS6LHNALMIuFKEsGfxRzibfAZUf0=;
+ b=BUGR6uBqZJOQOHgJy/VaJF0CxJNq04NMGOByvIJDDNF3CNVrW+Bz4bRoHWVbfIO8DWlg7mVzuKwHj3rl88oMgTqDTHEWcAQ5q7EIE11ipTSnFewmZziJnpZoC7ayh7jol4S6JXPrfP9ornBFi3JUMYlzpYoOWGBHwLE/UKsGmlw=
+Received: from AM0PR10CA0026.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17c::36)
+ by AS8PR07MB8156.eurprd07.prod.outlook.com (2603:10a6:20b:377::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.14; Tue, 25 Jan
+ 2022 08:52:47 +0000
+Received: from VE1EUR02FT004.eop-EUR02.prod.protection.outlook.com
+ (2603:10a6:208:17c:cafe::fd) by AM0PR10CA0026.outlook.office365.com
+ (2603:10a6:208:17c::36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8 via Frontend
+ Transport; Tue, 25 Jan 2022 08:52:47 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 217.111.95.66)
+ smtp.mailfrom=arri.de; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=arri.de;
+Received-SPF: Fail (protection.outlook.com: domain of arri.de does not
+ designate 217.111.95.66 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.111.95.66; helo=mta.arri.de;
+Received: from mta.arri.de (217.111.95.66) by
+ VE1EUR02FT004.mail.protection.outlook.com (10.152.12.217) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4909.7 via Frontend Transport; Tue, 25 Jan 2022 08:52:45 +0000
+Received: from localhost.de (192.168.54.129) by mta.arri.de (192.168.100.104)
+ with Microsoft SMTP Server (TLS) id 14.3.498.0; Tue, 25 Jan 2022 09:52:44
+ +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Abel Vesa <abel.vesa@nxp.com>
+CC:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Stefan Riedmueller <s.riedmueller@phytec.de>
+Subject: [PATCH 0/6] clk: imx6*: avoid GPMI clock glitches on reparenting/divider change
+Date:   Tue, 25 Jan 2022 09:52:00 +0100
+Message-ID: <20220125085206.8508-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFNjLiX6n9C6LqfC=x160RqkEKC9_F6upEPpKG2LRGCU96hfYQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [192.168.54.129]
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5d917b04-666b-4a20-7299-08d9dfe00e71
+X-MS-TrafficTypeDiagnostic: AS8PR07MB8156:EE_
+X-Microsoft-Antispam-PRVS: <AS8PR07MB81568BD78EDE5E11C87748D2BF5F9@AS8PR07MB8156.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1x+uC85KivG3WWODoeQPQjZ+AGHY3Oeio2t42QRAPaN3TBdDksbUqz5+4+4Nioc8TyMKtw1dT86M/kJVeGIUNEC6ukRYjSSoi2/ovb0xzsRPUbqKULAQGkt/bDl7TFZFSKki7s7q550Ic02C9d7xv78XySLQQ2UZVzn3k6wQdj5ewUkShs7Qb/sUHB52KmMK9Y+D+bjMRVlTo216dcCjI6pWUDKV9UpJGrQJFszhwpVOQZaxsNC8zvLG3W/xiVRbARhcM1humAkVNvQRRXt/U26/GTrkBeTWaSZlh1gakQ5RlwCTpCL/dECDx4dG9JfQ17n5cpgud8/1qWhYsxUy0ZXlSo8pFJ7XvzH6Myu2bUrlNNSDC60c5OBBwlahFI1yoGeGXrJar9horrip+Qkmwda3R/65BPi9fG+Ah0GHm11rLvOQkhCPnISPRZeU+G2ytyZO7DJ+jCOKDsgmg87EvnKv1JEZ43HnvfXK/kJ+0JquFNw1z+dermOph37zVPPD67PzHj8fAXF4JwYJyM6NcfJHsyAjDjGSvtEl8YgUdB8B5GnHedVlKo0xt6ZuEIxbVHDfEufx4Z5gBDt5kKG9RTu+VqcN6uEt5jRpZOhLPD/mjOjxRVVgH7x+vp/p0BYg6nPqLQ7BZxxkdh/ESmj+LrL2AmYTxGQiR2QPc1H09iO+Zk02DfAt3T0xy4hzWyxACMXNBUNjhXKQvkqu+oUgug==
+X-Forefront-Antispam-Report: CIP:217.111.95.66;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mta.arri.de;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(4326008)(8936002)(70206006)(70586007)(8676002)(6862004)(107886003)(508600001)(40460700003)(82310400004)(426003)(47076005)(356005)(336012)(36860700001)(2616005)(81166007)(316002)(1076003)(186003)(26005)(16526019)(54906003)(2906002)(6666004)(86362001)(83380400001)(5660300002)(4744005)(36756003)(36900700001)(20210929001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: arri.de
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 08:52:45.4964
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d917b04-666b-4a20-7299-08d9dfe00e71
+X-MS-Exchange-CrossTenant-Id: e6a73a5a-614d-4c51-b3e3-53b660a9433a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e6a73a5a-614d-4c51-b3e3-53b660a9433a;Ip=[217.111.95.66];Helo=[mta.arri.de]
+X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT004.eop-EUR02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR07MB8156
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding Andrew back to Cc :-)
+On the i.MX6 series (but not on i.MX7/8), most clock multiplexers and
+switchable dividers are not "glitch safe", so switching them while a
+consumer is connected can cause glitches with a higher frequency than
+supported by the consuming peripheral.
 
-On Sat 2022-01-22 12:58:39, John Sperbeck wrote:
-> On Wed, Jan 19, 2022 at 4:01 AM Petr Mladek <pmladek@suse.com> wrote:
-> >
-> > Adding Andrew into Cc. Most changes in panic.c go via his tree.
-> >
-> > On Tue 2022-01-18 06:04:31, John Sperbeck wrote:
-> > > When testing, it's common to consider a warning to be a test failure,
-> > > but it's currently awkward to determine which of multiple sequential
-> > > tests is responsible for triggering a warning.  Scraping dmesg or
-> > > /var/log/messages is somewhat expensive and error-prone.  Setting
-> > > panic_on_warn is reliable, but spoils test runs for minor issues.
-> > > Looking at the taint bit is also reliable, but only works for a single
-> > > warning.
-> > >
-> > > We can track the warning count and expose it as a sysfs file.  Test
-> > > infrastructures can snapshot the value before and after a test.  If
-> > > the value changes, they can do more expensive things like extracting
-> > > logs.
-> >
-> > The counter makes sense. It might be useful even for normal debugging.
-> > It would be nice to show the value in the log.
-> >
-> > > Signed-off-by: John Sperbeck <jsperbeck@google.com>
-> > > ---
-> > >  kernel/panic.c | 5 +++++
-> > >  1 file changed, 5 insertions(+)
-> > >
-> > > diff --git a/kernel/panic.c b/kernel/panic.c
-> > > index cefd7d82366f..5262c2a0ebf4 100644
-> > > --- a/kernel/panic.c
-> > > +++ b/kernel/panic.c
-> > > @@ -571,6 +571,8 @@ struct warn_args {
-> > >       va_list args;
-> > >  };
-> > >
-> > > +static atomic_t  __maybe_unused warn_counter;
-> > > +
-> > >  void __warn(const char *file, int line, void *caller, unsigned taint,
-> > >           struct pt_regs *regs, struct warn_args *args)
-> > >  {
-> > > @@ -612,6 +614,8 @@ void __warn(const char *file, int line, void *caller, unsigned taint,
-> > >
-> > >       /* Just a warning, don't kill lockdep. */
-> > >       add_taint(taint, LOCKDEP_STILL_OK);
-> > > +
-> > > +     atomic_inc(&warn_counter);
-> > >  }
-> > >
-> > >  #ifndef __WARN_FLAGS
-> > > @@ -667,6 +671,7 @@ static __init int register_warn_debugfs(void)
-> > >       /* Don't care about failure */
-> > >       debugfs_create_file_unsafe("clear_warn_once", 0200, NULL, NULL,
-> > >                                  &clear_warn_once_fops);
-> > > +     debugfs_create_atomic_t("warn_count", 0444, NULL, &warn_counter);
-> >
-> > Is the sysfs interface really important for you use case, please?
-> > Would the value in the log be enough?
-> >
-> > Anyway, we already count the number WARN() reports. It is quite hidden
-> > and hashed in init_oops_id()/print_oops_end_marker().
-> >
-> > A solution would be to make this hidden counter more explicit.
-> > Something like:
-> >
-> > diff --git a/kernel/panic.c b/kernel/panic.c
-> > index cefd7d82366f..8ac19124ceb4 100644
-> > --- a/kernel/panic.c
-> > +++ b/kernel/panic.c
-> > @@ -537,13 +537,12 @@ void oops_enter(void)
-> >   * 64-bit random ID for oopses:
-> >   */
-> >  static u64 oops_id;
-> > +static int oops_cnt;
-> >
-> >  static int init_oops_id(void)
-> >  {
-> >         if (!oops_id)
-> >                 get_random_bytes(&oops_id, sizeof(oops_id));
-> > -       else
-> > -               oops_id++;
-> >
-> >         return 0;
-> >  }
-> > @@ -552,7 +551,9 @@ late_initcall(init_oops_id);
-> >  static void print_oops_end_marker(void)
-> >  {
-> >         init_oops_id();
-> > -       pr_warn("---[ end trace %016llx ]---\n", (unsigned long long)oops_id);
-> > +       oops_cnt++;
-> > +       pr_warn("---[ end trace %016llx:%d ]---\n",
-> > +               (unsigned long long)oops_id, oops_cnt);
-> >  }
-> >
-> >  /*
-> >
-> >
-> > The report would like like:
-> >
-> > [ 1871.476204] WARNING: CPU: 2 PID: 2003 at samples/livepatch/livepatch-sample.c:60 livepatch_init+0x11/0x20 [livepatch_sample]
-> > [ 1871.476905] Modules linked in: livepatch_sample(EK+) [last unloaded: livepatch_sample]
-> > [ 1871.477509] CPU: 2 PID: 2003 Comm: modprobe Tainted: G        W   E K   5.16.0-default+ #312
-> > [ 1871.478175] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba527-rebuilt.opensuse.org 04/01/2014
-> > [ 1871.478858] RIP: 0010:livepatch_init+0x11/0x20 [livepatch_sample]
-> > [...]
-> > [ 1871.489801] hardirqs last disabled at (9188): [<ffffffffb217aa4e>] vprintk_emit+0x21e/0x2b0
-> > [ 1871.489803] softirqs last  enabled at (9096): [<ffffffffb3000364>] __do_softirq+0x364/0x4ab
-> > [ 1871.489805] softirqs last disabled at (9083): [<ffffffffb20efb5d>] irq_exit_rcu+0x10d/0x120
-> > [ 1871.489807] ---[ end trace a19f0f55262cfcc8:2 ]---
-> >
-> > Best Regards,
-> > Petr
-> 
-> Thanks for adding the CC.
-> 
-> The sysfs interface was kind of the main thing I'm after.  The intent is
-> to avoid parsing logs unless something interesting is likely to be there.
-> 
-> If we were to rely entirely on log parsing, adding a count to the logs
-> doesn't add much, I think.  That is, if a warning is parsed, then we
-> already know it occurred, and don't need the counter value in the message
-> that we parsed to tell us what we just discovered.
+Without fixes, peripherals can fail occasionally. One example is
+that system boot fails due to lockup of the GPMI NAND controller:
 
-Fair enough.
+f53d4c109a66 ("mtd: rawnand: gpmi: Add ERR007117 protection for nfc_apply_timings")
 
-> I see some precedent for exposing counts for things like this:  lockdep,
-> kfence, DMA-API debug.  Warnings, KASAN, and UBSAN are some areas that
-> don't have this convenience.
+The conditions where this can appear also depend on the device
+from which the system is booted and whether the bootloader has already
+performed all reparenting of the clocks.
 
-I see.
+To avoid these problems, the clock subsystem must:
+ - Gate consumer clocks during reparenting
+ - Enforce that all consumer clocks are gated before client drivers can change the divider 
 
-> If the sysfs interface isn't palatable, that's okay.  Supporting a
-> three-line patch locally isn't a tremendous burden.
 
-I am not against the debugfs interface. The counter might be useful.
-
-Well, I would still combine it with my proposal. The number of
-warnings is already "counted" by the number printed in
-'end trace XXXXXXXXXXXXXX' line. It does not make sense to
-add yet another counter.
-
-Best Regards,
-Petr
