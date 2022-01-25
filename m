@@ -2,105 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C48C4C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B13B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377424AbiAYHET (ORCPT
+        id S1354644AbiAYHGK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:04:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S248974AbiAYEDM (ORCPT
+        Tue, 25 Jan 2022 02:06:10 -0500
+Received: from ip59.38.31.103.in-addr.arpa.unknwn.cloudhost.asia ([103.31.38.59]:48360
+        "EHLO gnuweeb.org" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1376648AbiAYHEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 23:03:12 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57387C0613A0;
-        Mon, 24 Jan 2022 16:44:09 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id c190-20020a1c9ac7000000b0035081bc722dso394796wme.5;
-        Mon, 24 Jan 2022 16:44:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fLRx9U/2NmB44pdLfJwKGSap2HFuUnZgoHSikvYyf1Y=;
-        b=Uri3ZygruRiJrNQhOePq8oZkEEomTzM8IcTOvseIjxw6EGnuo4ouml6ZToHiWPeeCF
-         9BF6aHgCHSxQqRmJn7Fz6eP5ybedfIMEqA0Cgiw837k6VqVPzFOqaXSTG8ETZut+juGG
-         FcayrugHrMuu0XpBzU8b8NYycxZCnABQ44ZPddny/6d9x0b/6uxVcw+9aXj4NX8cQ0V5
-         hVWo8mWoszhMdoJfvKdGHcltZVpE8s6V/XuxPFDs+BKS+JCJiGmH/twVLqtt9H/Xeujt
-         jmiCuB7fQQAvPPk92/TW/t+F3D34u1txrJ/3MjbVXFj2YwQDH2vOXwrhc5qp2s7yI1tN
-         K5eQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fLRx9U/2NmB44pdLfJwKGSap2HFuUnZgoHSikvYyf1Y=;
-        b=2Lte37nn0Z6fISVIL6YG8PDsDogdoDxhvVik9jvodOJKxnughvn4p6bKfXHst8aS9y
-         /cYU0N/QquR9B5t3URzwgMmniOmevuCNxN8c3P14lvlc46n6VY2Il+zlwOYcAzAgKm1l
-         kbITloPdtEYGNQqgxWe8PYfa/6D9AZziSmn7oWnAWfW0ago1GUIGj1PeMhgMIDJ9s/7J
-         JeO72ju2sjAMAlREbBgEWcYLktM6m5me3x5JgdWLWRiuLUQOSGZOSRxNNALKLuK2nkpy
-         pWGDO2oYJjhDcBCeGK5jRwUulk6LZAoqWPaXM6tBhy5Ja6t6XABcsyaz32aYuxudWhaa
-         BnEw==
-X-Gm-Message-State: AOAM532KdzkZF344hZY2sHtFvRUTd8HScjg/KZjXsAqjckXhntagC8/+
-        aaIo58lDjDszQnjnRk1yKSI=
-X-Google-Smtp-Source: ABdhPJz5o+URFYf4JkJc3R99+zOF/mY6qpbpL6hjRWY5PsvVBvKIC7+1cAsO8rmcqD0Yawnz5WqATA==
-X-Received: by 2002:a05:600c:35d0:: with SMTP id r16mr642530wmq.195.1643071447836;
-        Mon, 24 Jan 2022 16:44:07 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id g20sm925194wmq.9.2022.01.24.16.44.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 16:44:07 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stable@vger.kernel.org
-Subject: [PATCH] carl9170: fix missing bit-wise or operator for tx_params
-Date:   Tue, 25 Jan 2022 00:44:06 +0000
-Message-Id: <20220125004406.344422-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        Tue, 25 Jan 2022 02:04:16 -0500
+Received: from [10.5.5.3] (unknown [68.183.184.174])
+        by gnuweeb.org (Postfix) with ESMTPSA id 81C96C317D;
+        Tue, 25 Jan 2022 07:04:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gnuweeb.org;
+        s=default; t=1643094247;
+        bh=3i058DVKQlYsfwYKEaGSqiqciIFIbPRYmTn0V/pN72I=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=oHdJZrgTp28F9DTYtcxBCOSNatT991wTstu8B4DElfZLkHNSM29Vf0oEKOVV4pvC6
+         Bf8auM+KG/QV2Gy4TNW7mIYVLE3/hysuL8vH+RpQZrYgF0lZF0H+2qifj8YUrFxaxn
+         cMGiMEKgsoJD7SQ8rMmAhHIu1Vovx04kBhkr40vtXFEJj/dfDPkSZyppoATHhQ11Ao
+         +BIludh26UDI2TgZI6VjvVhFMuWefAUDmdatVzeVFAH0ncIUuqzKTrUijTHLm09tt/
+         UnBvK+Oy7ecPa3xPraqQp7eUHoOtSkMm/svxsNSkML/DpOVBQpFbcg8nzGUUjB1RaX
+         veTidWJ1nDd2w==
+Message-ID: <df2d15fe-bc81-bdb1-1c31-2d717f274ab0@gnuweeb.org>
+Date:   Tue, 25 Jan 2022 14:04:04 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3] rcu: Add per-CPU rcuc task info to RCU CPU stall
+ warnings
+Content-Language: en-US
+To:     Zqiang <qiang1.zhang@intel.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+References: <20220125024744.4186726-1-qiang1.zhang@intel.com>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+In-Reply-To: <20220125024744.4186726-1-qiang1.zhang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently tx_params is being re-assigned with a new value and the
-previous setting IEEE80211_HT_MCS_TX_RX_DIFF is being overwritten.
-The assignment operator is incorrect, the original intent was to
-bit-wise or the value in. Fix this by replacing the = operator
-with |= instead.
+On 1/25/22 9:47 AM, Zqiang wrote:
+> When the 'use_softirq' be set zero, all RCU_SOFTIRQ processing
+> be moved to per-CPU rcuc kthreads, if the rcuc kthreads is
+> being starved, quiescent state can not report in time. the
+> RCU stall may be triggered. this commit adds a stack trace of
+> this CPU and dump rcuc kthreads stack to help analyze what
+> prevents rcuc kthreads from running.
+> 
+> Suggested-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> ---
 
-Kudos to Christian Lamparter for suggesting the correct fix.
+For https://lore.kernel.org/lkml/20220125024744.4186726-1-qiang1.zhang@intel.com/T/
 
-Fixes: fe8ee9ad80b2 ("carl9170: mac80211 glue and command interface")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Cc: <Stable@vger.kernel.org>
+```
 
----
+Reviewed-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-V2: change subject line to match the correct fix, add in the
-    missing | operator
----
- drivers/net/wireless/ath/carl9170/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/carl9170/main.c b/drivers/net/wireless/ath/carl9170/main.c
-index 49f7ee1c912b..2208ec800482 100644
---- a/drivers/net/wireless/ath/carl9170/main.c
-+++ b/drivers/net/wireless/ath/carl9170/main.c
-@@ -1914,7 +1914,7 @@ static int carl9170_parse_eeprom(struct ar9170 *ar)
- 		WARN_ON(!(tx_streams >= 1 && tx_streams <=
- 			IEEE80211_HT_MCS_TX_MAX_STREAMS));
- 
--		tx_params = (tx_streams - 1) <<
-+		tx_params |= (tx_streams - 1) <<
- 			    IEEE80211_HT_MCS_TX_MAX_STREAMS_SHIFT;
- 
- 		carl9170_band_2GHz.ht_cap.mcs.tx_params |= tx_params;
+```
+Thank you!
 -- 
-2.33.1
+Ammar Faizi
 
