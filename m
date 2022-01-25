@@ -2,270 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D05EC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FEE4C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1318854AbiAYDHU (ORCPT
+        id S1381433AbiAYDK6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:07:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3416589AbiAYCEW (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:04:22 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC38C055A85
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:56:21 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id a25so10652757lji.9
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:56:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XumZnCMB4R0k14jBBoNxw5hhL3IoIcFAxpFnFyRDfEk=;
-        b=EtGus1Z/GBCkeyfdjSVPULA65m+1qMx8aMjQVOVp4A+K0IXaTiuKzFuMi1Wb3vmDE/
-         6O6uqiX+0p0QQE31ZRWVNSLEyVVJGla9AYewxq4+iFNRh73G4bJKW2AadpZJg6BcEMpq
-         Alm41kdvZxu5yS1xAu6qYKMNgg+NbuzQ2SogTbYsRcTpzaUd65NaMlfTKvCVdXgzEdBU
-         +pidS5Ujz2RplkHmVJITMtZU+PPCMlbXW7HUy8STYSwUbsmTyFd8pOouZHQ9vE2Dg4KG
-         L3KmrE3qTxtZaoUsi8fAu3cw0i3GPDUVBdZmycabk6nwwlq0sw0avCSUPZLhLCOZXzV8
-         d9rQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XumZnCMB4R0k14jBBoNxw5hhL3IoIcFAxpFnFyRDfEk=;
-        b=MUKpZu9buZ5ITrET+q1boT8I0lG5uiblGtSiRg9s2uuivHaUGZ2+iAw4IFX3ctEwya
-         BMN/ucRhSXwkcmKoWavCtMN8TydS4m+WFnQN14Xw/t7BvPK6xuCpGNNmFcYJ6tsbWfBR
-         zyKBddz+zgrCQVS0nCzOOrm4VFPYys5MUZ5LeQ51fj0/y+jpL3DUdVDgdzRNspLAZEwN
-         NseOMsQw5IDC/E0IhKuikE44N9SmOXpBUWGAaJffo7QSwlvoba0oGSRLvMX5qBI8It5i
-         lVA2KOG523bRiiq2C2PekbNqAOTfR4KBxO0NpodHVI3KNhA5vtHfIpG+/+F/5ejMem6B
-         WiXg==
-X-Gm-Message-State: AOAM5328zbEVxybhmH+ldTNplza/LtA4We6NHOB8LYbZIQG5yE9/gG5P
-        YphAU2kUuK4YjuaC3mW+U0plEw==
-X-Google-Smtp-Source: ABdhPJytbIIGcWaK7gKPu6s2vuRyGpH4kx7gQHALuL4nozP2kuWdVQNGlDDyi+SNxSeHTxNJm7Oo4A==
-X-Received: by 2002:a05:651c:216:: with SMTP id y22mr7492882ljn.143.1643075780232;
-        Mon, 24 Jan 2022 17:56:20 -0800 (PST)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id g17sm822199lfr.30.2022.01.24.17.56.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 17:56:19 -0800 (PST)
-Message-ID: <0bab02c6-a59d-d68e-392e-a72f33de3969@linaro.org>
-Date:   Tue, 25 Jan 2022 04:56:18 +0300
+        Mon, 24 Jan 2022 22:10:58 -0500
+Received: from mga17.intel.com ([192.55.52.151]:55430 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1315919AbiAYCyw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 21:54:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643079292; x=1674615292;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/+hIMxCSNm/3aEhstnx/z0Au7uuKKPoQbFDPDormOXg=;
+  b=AzrMgvbz/GlulgfSXPMXjUL6Fnrw4ATMfXSnLBegDlATOlwtdOACn7G4
+   6JmnDu191GWfV31BxOQqnIK8CcClnmfzM93jj+c6d/Z8h4i+viIP98368
+   T5dR+ubf+gd0e3LUyV75keQD9m4vvhiMkU/ho6wvIr2L0Dc3ePPLSKPKy
+   blIZWzyRnyGLqEOfJaU5cJ77ImloIS9slOJLPljofggs2yFB58HbY2Bc/
+   EpQRSRKHB/kec1JSANiC+lxFsJgASQ6rJTmqBCusBR4pJzQRzJo9k6IbW
+   mvqwQBW1Rs2B0cnnMNuvGo/7gZ2ZX45mf9RyJFhLV1YHALfWZ7qupMKBT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226873674"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="226873674"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 18:47:25 -0800
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="534527634"
+Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 18:47:23 -0800
+From:   Zqiang <qiang1.zhang@intel.com>
+To:     paulmck@kernel.org
+Cc:     linux-kernel@vger.kernel.org, ammarfaizi2@gnuweeb.org,
+        qiang1.zhang@intel.com
+Subject: [PATCH v3] rcu: Add per-CPU rcuc task info to RCU CPU stall warnings
+Date:   Tue, 25 Jan 2022 10:47:44 +0800
+Message-Id: <20220125024744.4186726-1-qiang1.zhang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [v3 3/3] drm/msm/dsi: Add 10nm dsi phy tuning configuration
- support
-Content-Language: en-GB
-To:     Rajeev Nandan <quic_rajeevny@quicinc.com>,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, sean@poorly.run, robdclark@gmail.com,
-        robh+dt@kernel.org, robh@kernel.org, quic_abhinavk@quicinc.com,
-        quic_kalyant@quicinc.com, quic_mkrishn@quicinc.com,
-        jonathan@marek.ca, airlied@linux.ie, daniel@ffwll.ch,
-        swboyd@chromium.org
-References: <1642538320-1127-1-git-send-email-quic_rajeevny@quicinc.com>
- <1642538320-1127-4-git-send-email-quic_rajeevny@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <1642538320-1127-4-git-send-email-quic_rajeevny@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/01/2022 23:38, Rajeev Nandan wrote:
-> The clock and data lanes of the DSI PHY have a calibration circuitry
-> feature. As per the MSM DSI PHY tuning guidelines, the drive strength
-> tuning can be done by adjusting rescode offset for hstop/hsbot, and
-> the drive level tuning can be done by adjusting the LDO output level
-> for the HSTX drive.
-> 
-> Signed-off-by: Rajeev Nandan <quic_rajeevny@quicinc.com>
-> ---
-> 
-> Changes in v2:
->   - Split into generic code and 10nm-specific part (Dmitry Baryshkov)
->   - Fix the backward compatibility (Dmitry Baryshkov)
-> 
-> Changes in v3:
->   - Address comments for phy tuning data structure (Dmitry Baryshkov)
->   - Make changes as per updated dt-bindings
-> 
-> 
->   drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c | 97 ++++++++++++++++++++++++++++--
->   1 file changed, 91 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
-> index d8128f5..2d225fb 100644
-> --- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
-> +++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c
-> @@ -83,6 +83,18 @@ struct dsi_pll_10nm {
->   
->   #define to_pll_10nm(x)	container_of(x, struct dsi_pll_10nm, clk_hw)
->   
-> +/**
-> + * struct dsi_phy_10nm_tuning_cfg - Holds 10nm PHY tuning config parameters.
-> + * @rescode_offset_top: Offset for pull-up legs rescode.
-> + * @rescode_offset_bot: Offset for pull-down legs rescode.
-> + * @vreg_ctrl: vreg ctrl to drive LDO level
-> + */
-> +struct dsi_phy_10nm_tuning_cfg {
-> +	u8 rescode_offset_top[DSI_LANE_MAX];
-> +	u8 rescode_offset_bot[DSI_LANE_MAX];
-> +	u8 vreg_ctrl;
-> +};
-> +
->   /*
->    * Global list of private DSI PLL struct pointers. We need this for bonded DSI
->    * mode, where the master PLL's clk_ops needs access the slave's private data
-> @@ -747,6 +759,7 @@ static void dsi_phy_hw_v3_0_lane_settings(struct msm_dsi_phy *phy)
->   	int i;
->   	u8 tx_dctrl[] = { 0x00, 0x00, 0x00, 0x04, 0x01 };
->   	void __iomem *lane_base = phy->lane_base;
-> +	struct dsi_phy_10nm_tuning_cfg *tuning_cfg = phy->tuning_cfg;
->   
->   	if (phy->cfg->quirks & DSI_PHY_10NM_QUIRK_OLD_TIMINGS)
->   		tx_dctrl[3] = 0x02;
-> @@ -775,10 +788,13 @@ static void dsi_phy_hw_v3_0_lane_settings(struct msm_dsi_phy *phy)
->   		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_CFG2(i), 0x0);
->   		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_CFG3(i),
->   			      i == 4 ? 0x80 : 0x0);
-> -		dsi_phy_write(lane_base +
-> -			      REG_DSI_10nm_PHY_LN_OFFSET_TOP_CTRL(i), 0x0);
-> -		dsi_phy_write(lane_base +
-> -			      REG_DSI_10nm_PHY_LN_OFFSET_BOT_CTRL(i), 0x0);
-> +
-> +		/* platform specific dsi phy drive strength adjustment */
-> +		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_OFFSET_TOP_CTRL(i),
-> +				tuning_cfg->rescode_offset_top[i]);
-> +		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_OFFSET_BOT_CTRL(i),
-> +				tuning_cfg->rescode_offset_bot[i]);
-> +
->   		dsi_phy_write(lane_base + REG_DSI_10nm_PHY_LN_TX_DCTRL(i),
->   			      tx_dctrl[i]);
->   	}
-> @@ -799,6 +815,7 @@ static int dsi_10nm_phy_enable(struct msm_dsi_phy *phy,
->   	u32 const timeout_us = 1000;
->   	struct msm_dsi_dphy_timing *timing = &phy->timing;
->   	void __iomem *base = phy->base;
-> +	struct dsi_phy_10nm_tuning_cfg *tuning_cfg = phy->tuning_cfg;
->   	u32 data;
->   
->   	DBG("");
-> @@ -834,8 +851,9 @@ static int dsi_10nm_phy_enable(struct msm_dsi_phy *phy,
->   	/* Select MS1 byte-clk */
->   	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_GLBL_CTRL, 0x10);
->   
-> -	/* Enable LDO */
-> -	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_VREG_CTRL, 0x59);
-> +	/* Enable LDO with platform specific drive level/amplitude adjustment */
-> +	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_VREG_CTRL,
-> +		      tuning_cfg->vreg_ctrl);
->   
->   	/* Configure PHY lane swap (TODO: we need to calculate this) */
->   	dsi_phy_write(base + REG_DSI_10nm_PHY_CMN_LANE_CFG0, 0x21);
-> @@ -922,6 +940,71 @@ static void dsi_10nm_phy_disable(struct msm_dsi_phy *phy)
->   	DBG("DSI%d PHY disabled", phy->id);
->   }
->   
-> +static int dsi_10nm_phy_parse_dt(struct msm_dsi_phy *phy)
-> +{
-> +	struct device *dev = &phy->pdev->dev;
-> +	struct dsi_phy_10nm_tuning_cfg *tuning_cfg;
-> +	u8 offset_top[DSI_LANE_MAX] = { 0 }; /* No offset */
-> +	u8 offset_bot[DSI_LANE_MAX] = { 0 }; /* No offset */
-> +	u32 ldo_level = 400; /* 400mV */
-> +	u8 level;
-> +	int ret, i;
-> +
-> +	tuning_cfg = devm_kzalloc(dev, sizeof(*tuning_cfg), GFP_KERNEL);
-> +	if (!tuning_cfg)
-> +		return -ENOMEM;
-> +
-> +	/* Drive strength adjustment parameters */
-> +	ret = of_property_read_u8_array(dev->of_node, "qcom,phy-rescode-offset-top",
-> +					offset_top, DSI_LANE_MAX);
-> +	if (ret && ret != -EINVAL)
-> +		DRM_DEV_ERROR(dev, "failed to parse qcom,phy-rescode-offset-top, %d\n", ret);
-> +
-> +	for (i = 0; i < DSI_LANE_MAX; i++)
-> +		tuning_cfg->rescode_offset_top[i] = 0x3f & offset_top[i];
+When the 'use_softirq' be set zero, all RCU_SOFTIRQ processing
+be moved to per-CPU rcuc kthreads, if the rcuc kthreads is
+being starved, quiescent state can not report in time. the
+RCU stall may be triggered. this commit adds a stack trace of
+this CPU and dump rcuc kthreads stack to help analyze what
+prevents rcuc kthreads from running.
 
-You should validate offset_top and offset_bot to be withing expected 
-ranges and return an error otherwise.
+Suggested-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+---
+ v1->v2:
+ Avoid print anything when CPU is offline or idle.
+ v2->v3:
+ Make code more compact.
 
-> +
-> +	ret = of_property_read_u8_array(dev->of_node, "qcom,phy-rescode-offset-bot",
-> +					offset_bot, DSI_LANE_MAX);
-> +	if (ret && ret != -EINVAL)
-> +		DRM_DEV_ERROR(dev, "failed to parse qcom,phy-rescode-offset-bot, %d\n", ret);
-> +
-> +	for (i = 0; i < DSI_LANE_MAX; i++)
-> +		tuning_cfg->rescode_offset_bot[i] = 0x3f & offset_bot[i];
-> +
-> +	/* Drive level/amplitude adjustment parameters */
-> +	ret = of_property_read_u32(dev->of_node, "qcom,phy-drive-ldo-level", &ldo_level);
-> +	if (ret && ret != -EINVAL)
-> +		DRM_DEV_ERROR(dev, "failed to parse qcom,phy-drive-ldo-level, %d\n", ret);
-> +
-> +	switch (ldo_level) {
-> +	case 375:
-> +		level = 0;
-> +		break;
-> +	case 400:
-> +		level = 1;
-> +		break;
-> +	case 425:
-> +		level = 2;
-> +		break;
-> +	case 450:
-> +		level = 3;
-> +		break;
-> +	case 475:
-> +		level = 4;
-> +		break;
-> +	case 500:
-> +		level = 5;
-> +		break;
-> +	default:
-> +		level = 1; /* 400mV */
+ kernel/rcu/tree.c        |  3 +++
+ kernel/rcu/tree.h        |  1 +
+ kernel/rcu/tree_plugin.h |  3 +++
+ kernel/rcu/tree_stall.h  | 35 +++++++++++++++++++++++++++++++++++
+ 4 files changed, 42 insertions(+)
 
-Please change to:
-dev_err(....);
-return -EINVAL;
-
-> +	}
-> +	tuning_cfg->vreg_ctrl = 0x58 | (0x7 & level);
-> +
-> +	phy->tuning_cfg = tuning_cfg;
-> +
-> +	return 0;
-> +}
-> +
->   const struct msm_dsi_phy_cfg dsi_phy_10nm_cfgs = {
->   	.has_phy_lane = true,
->   	.reg_cfg = {
-> @@ -936,6 +1019,7 @@ const struct msm_dsi_phy_cfg dsi_phy_10nm_cfgs = {
->   		.pll_init = dsi_pll_10nm_init,
->   		.save_pll_state = dsi_10nm_pll_save_state,
->   		.restore_pll_state = dsi_10nm_pll_restore_state,
-> +		.parse_dt_properties = dsi_10nm_phy_parse_dt,
->   	},
->   	.min_pll_rate = 1000000000UL,
->   	.max_pll_rate = 3500000000UL,
-> @@ -957,6 +1041,7 @@ const struct msm_dsi_phy_cfg dsi_phy_10nm_8998_cfgs = {
->   		.pll_init = dsi_pll_10nm_init,
->   		.save_pll_state = dsi_10nm_pll_save_state,
->   		.restore_pll_state = dsi_10nm_pll_restore_state,
-> +		.parse_dt_properties = dsi_10nm_phy_parse_dt,
->   	},
->   	.min_pll_rate = 1000000000UL,
->   	.max_pll_rate = 3500000000UL,
-
-
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index a4c25a6283b0..e3fc31a0f546 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -2850,10 +2850,12 @@ static void rcu_cpu_kthread(unsigned int cpu)
+ {
+ 	unsigned int *statusp = this_cpu_ptr(&rcu_data.rcu_cpu_kthread_status);
+ 	char work, *workp = this_cpu_ptr(&rcu_data.rcu_cpu_has_work);
++	unsigned long *j = this_cpu_ptr(&rcu_data.rcuc_activity);
+ 	int spincnt;
+ 
+ 	trace_rcu_utilization(TPS("Start CPU kthread@rcu_run"));
+ 	for (spincnt = 0; spincnt < 10; spincnt++) {
++		WRITE_ONCE(*j, jiffies);
+ 		local_bh_disable();
+ 		*statusp = RCU_KTHREAD_RUNNING;
+ 		local_irq_disable();
+@@ -2874,6 +2876,7 @@ static void rcu_cpu_kthread(unsigned int cpu)
+ 	schedule_timeout_idle(2);
+ 	trace_rcu_utilization(TPS("End CPU kthread@rcu_yield"));
+ 	*statusp = RCU_KTHREAD_WAITING;
++	WRITE_ONCE(*j, jiffies);
+ }
+ 
+ static struct smp_hotplug_thread rcu_cpu_thread_spec = {
+diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
+index 486fc901bd08..4e0fdebb62e8 100644
+--- a/kernel/rcu/tree.h
++++ b/kernel/rcu/tree.h
+@@ -237,6 +237,7 @@ struct rcu_data {
+ 					/* rcuc per-CPU kthread or NULL. */
+ 	unsigned int rcu_cpu_kthread_status;
+ 	char rcu_cpu_has_work;
++	unsigned long rcuc_activity;
+ 
+ 	/* 7) Diagnostic data, including RCU CPU stall warnings. */
+ 	unsigned int softirq_snap;	/* Snapshot of softirq activity. */
+diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+index c5b45c2f68a1..327bbfd79cc6 100644
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -996,12 +996,15 @@ dump_blkd_tasks(struct rcu_node *rnp, int ncheck)
+  */
+ static void rcu_cpu_kthread_setup(unsigned int cpu)
+ {
++	struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
+ #ifdef CONFIG_RCU_BOOST
+ 	struct sched_param sp;
+ 
+ 	sp.sched_priority = kthread_prio;
+ 	sched_setscheduler_nocheck(current, SCHED_FIFO, &sp);
+ #endif /* #ifdef CONFIG_RCU_BOOST */
++
++	WRITE_ONCE(rdp->rcuc_activity, jiffies);
+ }
+ 
+ #ifdef CONFIG_RCU_BOOST
+diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
+index 21bebf7c9030..0c5d8516516a 100644
+--- a/kernel/rcu/tree_stall.h
++++ b/kernel/rcu/tree_stall.h
+@@ -379,6 +379,15 @@ static bool rcu_is_gp_kthread_starving(unsigned long *jp)
+ 	return j > 2 * HZ;
+ }
+ 
++static bool rcu_is_rcuc_kthread_starving(struct rcu_data *rdp, unsigned long *jp)
++{
++	unsigned long j = jiffies - READ_ONCE(rdp->rcuc_activity);
++
++	if (jp)
++		*jp = j;
++	return j > 2 * HZ;
++}
++
+ /*
+  * Print out diagnostic information for the specified stalled CPU.
+  *
+@@ -430,6 +439,29 @@ static void print_cpu_stall_info(int cpu)
+ 	       falsepositive ? " (false positive?)" : "");
+ }
+ 
++static void rcuc_kthread_dump(struct rcu_data *rdp)
++{
++	int cpu;
++	unsigned long j;
++	struct task_struct *rcuc;
++
++	rcuc = rdp->rcu_cpu_kthread_task;
++	if (!rcuc)
++		return;
++
++	cpu = task_cpu(rcuc);
++	if (cpu_is_offline(cpu) || idle_cpu(cpu))
++		return;
++
++	if (!rcu_is_rcuc_kthread_starving(rdp, &j))
++		return;
++
++	pr_err("%s kthread starved for %ld jiffies\n", rcuc->comm, j);
++	sched_show_task(rcuc);
++	if (!trigger_single_cpu_backtrace(cpu))
++		dump_cpu_task(cpu);
++}
++
+ /* Complain about starvation of grace-period kthread.  */
+ static void rcu_check_gp_kthread_starvation(void)
+ {
+@@ -601,6 +633,9 @@ static void print_cpu_stall(unsigned long gps)
+ 	rcu_check_gp_kthread_expired_fqs_timer();
+ 	rcu_check_gp_kthread_starvation();
+ 
++	if (!use_softirq)
++		rcuc_kthread_dump(rdp);
++
+ 	rcu_dump_cpu_stacks();
+ 
+ 	raw_spin_lock_irqsave_rcu_node(rnp, flags);
 -- 
-With best wishes
-Dmitry
+2.25.1
+
