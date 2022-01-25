@@ -2,209 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 629B7C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46683C35270
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:10:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1317871AbiAYDDQ (ORCPT
+        id S1318024AbiAYDEP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:03:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55958 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3415589AbiAYBsA (ORCPT
+        Mon, 24 Jan 2022 22:04:15 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:45692
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S3415605AbiAYBsY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 20:48:00 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B458BC01D7CE;
-        Mon, 24 Jan 2022 17:29:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=P/pVADs/xaxzcSJh6qZOPmplhn33eeiTUUHUCQLTs+g=; b=RiuXdYQMDg6lKw2ZdUlIlVTWfh
-        oErHs/5wEO/DUNbsdr0w7GaVRxJBfzd7AG8PtOi+t9cN6pVPCudDSZDAKyGihXSUqkeowAJh6z0yD
-        s8vovFBzCqsjmB9NmzpySCD8j18MuGALijvQ9qibGMaMbRYAfNthbfqNbOs/9qeiivOL3HKiQXnlS
-        7oeJ9fdy6G7Pz0pBJIt3CCSLNOPlXB3Kh9aX8FJ4vVl2Lp5b6z6i+uzu7hWzeBkUSqmeapJUlw0ob
-        Oqm5PYXOamSqtsgMaFBjjZkDm+CAYXDiJPVe4oe1NzkEAsOA1vebPKT288l+AOS9yTMSxSk56ZnK0
-        GFXoAReA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nCAeC-003KRf-IG; Tue, 25 Jan 2022 01:29:25 +0000
-Message-ID: <0ddcd3d8-6fca-dc6a-d9d8-f8df8715be95@infradead.org>
-Date:   Mon, 24 Jan 2022 17:29:17 -0800
+        Mon, 24 Jan 2022 20:48:24 -0500
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 374423FFFD
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:10:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643073026;
+        bh=Jnvhvo1jsZTo8cImpcuimvx90PJ5WAbukMF8k5/vBTc=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=BHOCujKDPiYHCvpv3Sq++TpQfeTPTomfeLNJq8+Gs+B1NMmlRVl4E4sVPBSYr/3Od
+         GV5aH5ddG+7tDL8eczhapcZ6XVFepkXvzGoE3/XGpzV4RwivPp/gyCPUqR+mzVlCLU
+         AL5YaKo6ZP84ycqLtrfVat/exbZD5JYk0ZDHIiTJDcTJ4LKrawvfdguba0oHzdtWHu
+         ZWhB4heLjncdYVmP08c2oQqeEcN4FQiSmYUxTzqr3C3sr7hBmpJ3c0bFv0QDxF4aTq
+         86sLhn+RU+r8XLSqW5buzjFOV7x8kfC9pzkv3Q8Y7OSfcOu7FnfdoGET3ItYPxmcmU
+         ORpUr4dum2JjQ==
+Received: by mail-pf1-f199.google.com with SMTP id o187-20020a625ac4000000b004c8fc6b9707so2296746pfb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:10:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:content-transfer-encoding:date
+         :message-id;
+        bh=Jnvhvo1jsZTo8cImpcuimvx90PJ5WAbukMF8k5/vBTc=;
+        b=FQiStAn5whSifULvMJ++zkK7YF4zIYEnkU36AcvC+h5FGU5NCq0lkVl+QEdK1hvs7c
+         CyV7LEVbKjg8+rm345iVrBKered6ogb8FzhSu5/RLo+SaGaEpopgt1hBNxLN9/6GimjK
+         g5cfttv0NTxcX8CPxNRu9eyZzX0lXUC14G/QHPX0ZMowdOTEKFawzfkhTIimmGWScRai
+         IkMVoCaGFaAkxgP3SMebqV9DbFFgCMXRlRrRyYWtICalnT32Ugg32LfqRkBC6gYPJytp
+         yoC0w0x3V/zZW0Bu5a22GJq1lmTadLhlaFUP8WZ42ANHtjJlG9G9HZmvZ+dgRabwoG3V
+         hZWA==
+X-Gm-Message-State: AOAM531qg0mS+Dg+OypgIzwPKxZyq8DbCxBGD+hxnEt7NlPkCIkKujwb
+        ZkXqy+3yRvCt/HcUJECcDgiTmX7w86D5oe2nGNfzyjZV+/+W8X53T3qu+Ew0/pU9fUjw4BfdJl5
+        lthks+0DFM+8UcgyhOK8JZ5T3rU4lkQiUQtqqTj/gFg==
+X-Received: by 2002:a17:90b:108c:: with SMTP id gj12mr964769pjb.231.1643073024541;
+        Mon, 24 Jan 2022 17:10:24 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzlU7IPR5r67U1VByD/vbSM2V3iIzFxlz326cIfadJ93vbjeIP3PWi1mrllDh3JLfTtOPwblw==
+X-Received: by 2002:a17:90b:108c:: with SMTP id gj12mr964749pjb.231.1643073024294;
+        Mon, 24 Jan 2022 17:10:24 -0800 (PST)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id m1sm76945pfk.202.2022.01.24.17.10.23
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 24 Jan 2022 17:10:23 -0800 (PST)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 6885B60DD1; Mon, 24 Jan 2022 17:10:23 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 60F79A0B22;
+        Mon, 24 Jan 2022 17:10:23 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Sun Shouxin <sunshouxin@chinatelecom.cn>
+cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, nikolay@nvidia.com,
+        huyd12@chinatelecom.cn
+Subject: Re: [PATCH v8] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
+In-reply-to: <20220125002954.94405-1-sunshouxin@chinatelecom.cn>
+References: <20220125002954.94405-1-sunshouxin@chinatelecom.cn>
+Comments: In-reply-to Sun Shouxin <sunshouxin@chinatelecom.cn>
+   message dated "Mon, 24 Jan 2022 19:29:54 -0500."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: Build regressions/improvements in v5.17-rc1
-Content-Language: en-US
-To:     Felix Kuehling <felix.kuehling@amd.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Alex Deucher <alexdeucher@gmail.com>
-Cc:     ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        KVM list <kvm@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        "Tobin C. Harding" <me@tobin.cc>
-References: <20220123125737.2658758-1-geert@linux-m68k.org>
- <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg>
- <CADnq5_MUq0fX7wMLJyUUxxa+2xoRinonL-TzD8tUhXALRfY8-A@mail.gmail.com>
- <CAMuHMdWUWqHYbbavtMT-XAD_sarDPC5xnc3c0pX1ZAh3Wuzuzg@mail.gmail.com>
- <aca104cf-5f5f-b696-754a-35e62dbe64c3@infradead.org>
- <500a3aa0-f51e-92ac-82d6-7ffc7f603e2c@amd.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <500a3aa0-f51e-92ac-82d6-7ffc7f603e2c@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <26802.1643073023.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Mon, 24 Jan 2022 17:10:23 -0800
+Message-ID: <26803.1643073023@famine>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Sun Shouxin <sunshouxin@chinatelecom.cn> wrote:
 
+>Since ipv6 neighbor solicitation and advertisement messages
+>isn't handled gracefully in bond6 driver, we can see packet
+>drop due to inconsistency between mac address in the option
+>message and source MAC .
+>
+>Another examples is ipv6 neighbor solicitation and advertisement
+>messages from VM via tap attached to host bridge, the src mac
+>might be changed through balance-alb mode, but it is not synced
+>with Link-layer address in the option message.
+>
+>The patch implements bond6's tx handle for ipv6 neighbor
+>solicitation and advertisement messages.
+>
+>Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+>Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+>Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+>---
+> drivers/net/bonding/bond_alb.c | 37 +++++++++++++++++++++++++++++++++-
+> 1 file changed, 36 insertions(+), 1 deletion(-)
+>
+>diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_al=
+b.c
+>index 533e476988f2..d4d8670643e9 100644
+>--- a/drivers/net/bonding/bond_alb.c
+>+++ b/drivers/net/bonding/bond_alb.c
+>@@ -1269,6 +1269,34 @@ static int alb_set_mac_address(struct bonding *bon=
+d, void *addr)
+> 	return res;
+> }
+> =
 
-On 1/24/22 17:23, Felix Kuehling wrote:
-> 
-> Am 2022-01-24 um 14:11 schrieb Randy Dunlap:
->> On 1/24/22 10:55, Geert Uytterhoeven wrote:
->>> Hi Alex,
->>>
->>> On Mon, Jan 24, 2022 at 7:52 PM Alex Deucher <alexdeucher@gmail.com> wrote:
->>>> On Mon, Jan 24, 2022 at 5:25 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->>>>> On Sun, 23 Jan 2022, Geert Uytterhoeven wrote:
->>>>>>   + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: error: control reaches end of non-void function [-Werror=return-type]:  => 1560:1
->>>> I don't really see what's going on here:
->>>>
->>>> #ifdef CONFIG_X86_64
->>>> return cpu_data(first_cpu_of_numa_node).apicid;
->>>> #else
->>>> return first_cpu_of_numa_node;
->>>> #endif
->>> Ah, the actual failure causing this was not included:
->>>
->>> In file included from /kisskb/src/arch/x86/um/asm/processor.h:41:0,
->>>                   from /kisskb/src/include/linux/mutex.h:19,
->>>                   from /kisskb/src/include/linux/kernfs.h:11,
->>>                   from /kisskb/src/include/linux/sysfs.h:16,
->>>                   from /kisskb/src/include/linux/kobject.h:20,
->>>                   from /kisskb/src/include/linux/pci.h:35,
->>>                   from
->>> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:25:
->>> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: In
->>> function 'kfd_cpumask_to_apic_id':
->>> /kisskb/src/arch/um/include/asm/processor-generic.h:103:18: error:
->>> called object is not a function or function pointer
->>>   #define cpu_data (&boot_cpu_data)
->>>                    ^
->>> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1556:9:
->>> note: in expansion of macro 'cpu_data'
->>>    return cpu_data(first_cpu_of_numa_node).apicid;
->>>           ^
->>> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1560:1:
->>> error: control reaches end of non-void function [-Werror=return-type]
->>>   }
->>>   ^
->> ah yes, UML.
->> I have a bunch of UML fixes that I have been hesitant to post.
->>
->> This is one of them.
->> What do people think about this?
-> 
-> Does it make sense to configure a UML kernel with a real device driver in the first place? Or should we just prevent enabling amdgpu for UML with a Kconfig dependency?
-> 
+>+/* determine if the packet is NA or NS */
+>+static bool __alb_determine_nd(struct icmp6hdr *hdr)
+>+{
+>+	if (hdr->icmp6_type =3D=3D NDISC_NEIGHBOUR_ADVERTISEMENT ||
+>+	    hdr->icmp6_type =3D=3D NDISC_NEIGHBOUR_SOLICITATION) {
+>+		return true;
+>+	}
+>+
+>+	return false;
+>+}
+>+
+>+static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
+>+{
+>+	struct ipv6hdr *ip6hdr;
+>+	struct icmp6hdr *hdr;
+>+
+>+	ip6hdr =3D ipv6_hdr(skb);
+>+	if (ip6hdr->nexthdr =3D=3D IPPROTO_ICMPV6) {
+>+		if (!pskb_may_pull(skb, sizeof(struct ipv6hdr) + sizeof(struct icmp6hd=
+r)))
+>+			return true;
+>+
+>+		hdr =3D icmp6_hdr(skb);
+>+		return __alb_determine_nd(hdr);
+>+	}
+>+
+>+	return false;
+>+}
+>+
+> /************************ exported alb functions ***********************=
+*/
+> =
 
-Hi,
+> int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+>@@ -1348,8 +1376,10 @@ struct slave *bond_xmit_tlb_slave_get(struct bondi=
+ng *bond,
+> 	/* Do not TX balance any multicast or broadcast */
+> 	if (!is_multicast_ether_addr(eth_data->h_dest)) {
+> 		switch (skb->protocol) {
+>-		case htons(ETH_P_IP):
+> 		case htons(ETH_P_IPV6):
+>+			if (alb_determine_nd(skb, bond))
+>+				break;
 
-Your option IMO. I have seen both opinions given.
-I also meant to reply that someone could just add
-	depends on !UML
-for this device, like you are suggesting.
+	I missed this before, but the new expectation is to have a
+"fallthrough;" statement when intentionally falling through to the next
+case.  See include/linux/compiler_attributes.h.
 
-I'm fine with it either way.
+	That nit aside, this still looks fine to me.
 
-thanks.
+	-J
 
-> 
->>
->> thanks.
->>
->> ---
->> From: Randy Dunlap <rdunlap@infradead.org>
->>
->>
->> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1556:9: note: in expansion of macro ‘cpu_data’
->>    return cpu_data(first_cpu_of_numa_node).apicid;
->>           ^~~~~~~~
->> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1560:1: error: control reaches end of non-void function [-Werror=return-type]
->>
->> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c: In function ‘kfd_fill_iolink_info_for_cpu’:
->> ../arch/um/include/asm/processor-generic.h:103:19: error: called object is not a function or function pointer
->>   #define cpu_data (&boot_cpu_data)
->>                    ~^~~~~~~~~~~~~~~
->> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1688:27: note: in expansion of macro ‘cpu_data’
->>    struct cpuinfo_x86 *c = &cpu_data(0);
->>                             ^~~~~~~~
->> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1691:7: error: dereferencing pointer to incomplete type ‘struct cpuinfo_x86’
->>    if (c->x86_vendor == X86_VENDOR_AMD)
->>         ^~
->> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1691:23: error: ‘X86_VENDOR_AMD’ undeclared (first use in this function); did you mean ‘X86_VENDOR_ANY’?
->>    if (c->x86_vendor == X86_VENDOR_AMD)
->>                         ^~~~~~~~~~~~~~
->>                         X86_VENDOR_ANY
->>
->> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c: In function ‘kfd_create_vcrat_image_cpu’:
->> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1742:11: warning: unused variable ‘entries’ [-Wunused-variable]
->>    uint32_t entries = 0;
->>
->> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->> ---
->>   drivers/gpu/drm/amd/amdkfd/kfd_crat.c     |    6 +++---
->>   drivers/gpu/drm/amd/amdkfd/kfd_topology.c |    2 +-
->>   2 files changed, 4 insertions(+), 4 deletions(-)
->>
->> --- linux-next-20220107.orig/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
->> +++ linux-next-20220107/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
->> @@ -1552,7 +1552,7 @@ static int kfd_cpumask_to_apic_id(const
->>       first_cpu_of_numa_node = cpumask_first(cpumask);
->>       if (first_cpu_of_numa_node >= nr_cpu_ids)
->>           return -1;
->> -#ifdef CONFIG_X86_64
->> +#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
->>       return cpu_data(first_cpu_of_numa_node).apicid;
->>   #else
->>       return first_cpu_of_numa_node;
->> --- linux-next-20220107.orig/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
->> +++ linux-next-20220107/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
->> @@ -1679,7 +1679,7 @@ static int kfd_fill_mem_info_for_cpu(int
->>       return 0;
->>   }
->>   -#ifdef CONFIG_X86_64
->> +#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
->>   static int kfd_fill_iolink_info_for_cpu(int numa_node_id, int *avail_size,
->>                   uint32_t *num_entries,
->>                   struct crat_subtype_iolink *sub_type_hdr)
->> @@ -1738,7 +1738,7 @@ static int kfd_create_vcrat_image_cpu(vo
->>       struct crat_subtype_generic *sub_type_hdr;
->>       int avail_size = *size;
->>       int numa_node_id;
->> -#ifdef CONFIG_X86_64
->> +#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
->>       uint32_t entries = 0;
->>   #endif
->>       int ret = 0;
->> @@ -1803,7 +1803,7 @@ static int kfd_create_vcrat_image_cpu(vo
->>               sub_type_hdr->length);
->>             /* Fill in Subtype: IO Link */
->> -#ifdef CONFIG_X86_64
->> +#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
->>           ret = kfd_fill_iolink_info_for_cpu(numa_node_id, &avail_size,
->>                   &entries,
->>                   (struct crat_subtype_iolink *)sub_type_hdr);
->>
->>
+>+		case htons(ETH_P_IP):
+> 			hash_index =3D bond_xmit_hash(bond, skb);
+> 			if (bond->params.tlb_dynamic_lb) {
+> 				tx_slave =3D tlb_choose_channel(bond,
+>@@ -1446,6 +1476,11 @@ struct slave *bond_xmit_alb_slave_get(struct bondi=
+ng *bond,
+> 			break;
+> 		}
+> =
 
--- 
-~Randy
+>+		if (alb_determine_nd(skb, bond)) {
+>+			do_tx_balance =3D false;
+>+			break;
+>+		}
+>+
+> 		hash_start =3D (char *)&ip6hdr->daddr;
+> 		hash_size =3D sizeof(ip6hdr->daddr);
+> 		break;
+>
+>base-commit: dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
+>-- =
+
+>2.27.0
+>
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
