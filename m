@@ -2,112 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9D9C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA5EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379393AbiAYJPx (ORCPT
+        id S1379255AbiAYJP6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:15:53 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:59672 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S245144AbiAYJAA (ORCPT
+        Tue, 25 Jan 2022 04:15:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1454515AbiAYI7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:00:00 -0500
-X-UUID: 64000213096a498fa612694f46a8d1ff-20220125
-X-UUID: 64000213096a498fa612694f46a8d1ff-20220125
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1183919896; Tue, 25 Jan 2022 16:59:24 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 25 Jan 2022 16:59:22 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 25 Jan 2022 16:59:21 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v4 18/35] iommu/mediatek: Adjust device link when it is sub-common
-Date:   Tue, 25 Jan 2022 16:56:17 +0800
-Message-ID: <20220125085634.17972-19-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220125085634.17972-1-yong.wu@mediatek.com>
-References: <20220125085634.17972-1-yong.wu@mediatek.com>
+        Tue, 25 Jan 2022 03:59:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D721C0613E8;
+        Tue, 25 Jan 2022 00:28:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2A724B8105C;
+        Tue, 25 Jan 2022 08:28:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DAF6C340E0;
+        Tue, 25 Jan 2022 08:27:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643099278;
+        bh=xw1QE15+0S8j/XaNcx1Ogqunn1Ho4bz8P34h+mouc9k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tEeyBrRXu1vG2/j1Y37YPds3ekrnZI6gCg08I28PQqKeW3XJK0pR38Etu0YHn1fQ3
+         i5mFZ5czCIk2W4HhHw1BNUWoYxX/5sx/hX1cCtJ0UO3xAgxfFAEf5i1/U1hXTBO4Lz
+         KxXDQHTU34FSDubi+Jlg3NyKZZU68d7VHyNlZJ1k=
+Date:   Tue, 25 Jan 2022 09:27:56 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Akira Yokosawa <akiyks@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: Re: [PATCH 5.16 0728/1039] scripts: sphinx-pre-install: Fix ctex
+ support on Debian
+Message-ID: <Ye+0jERrG9b27oha@kroah.com>
+References: <20220124184125.121143506@linuxfoundation.org>
+ <20220124184149.801920838@linuxfoundation.org>
+ <ba541d48-826c-3d39-b3e1-05642fa6edd6@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ba541d48-826c-3d39-b3e1-05642fa6edd6@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For MM IOMMU, We always add device link between smi-common and IOMMU HW.
-In mt8195, we add smi-sub-common. Thus, if the node is sub-common, we still
-need find again to get smi-common, then do device link.
+On Tue, Jan 25, 2022 at 07:48:39AM +0900, Akira Yokosawa wrote:
+> Hi Greg,
+> 
+> On Mon, 24 Jan 2022 19:41:57 +0100,
+> Greg Kroah-Hartman wrote:
+> > From: Mauro Carvalho Chehab <mchehab@kernel.org>
+> > 
+> > [ Upstream commit 87d6576ddf8ac25f36597bc93ca17f6628289c16 ]
+> > 
+> > The name of the package with ctexhook.sty is different on
+> > Debian/Ubuntu.
+> > 
+> > Reported-by: Akira Yokosawa <akiyks@gmail.com>
+> > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> > Tested-by: Akira Yokosawa <akiyks@gmail.com>
+> > Link: https://lore.kernel.org/r/63882425609a2820fac78f5e94620abeb7ed5f6f.1641429634.git.mchehab@kernel.org
+> > Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+> > Signed-off-by: Sasha Levin <sashal@kernel.org>
+> 
+> This "Fix" is against upstream commit 7baab965896e ("scripts:
+> sphinx-pre-install: add required ctex dependency") which is
+> also new to v5.17-rc1.
+> 
+> So I don't think this is worth backporting to stable branches.
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+Now dropped from all trees, thanks!
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 71f3acd00d8c..f676085af13d 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -798,9 +798,9 @@ static int mtk_iommu_mm_dts_parse(struct device *dev,
- 				  struct component_match **match,
- 				  struct mtk_iommu_data *data)
- {
-+	struct device_node *larbnode, *smicomm_node, *smi_subcomm_node;
- 	struct platform_device	*plarbdev;
- 	struct device_link	*link;
--	struct device_node *larbnode, *smicomm_node;
- 	int i, larb_nr, ret;
- 
- 	larb_nr = of_count_phandle_with_args(dev->of_node, "mediatek,larbs", NULL);
-@@ -834,11 +834,21 @@ static int mtk_iommu_mm_dts_parse(struct device *dev,
- 					    compare_of, larbnode);
- 	}
- 
--	/* Get smi-common dev from the last larb. */
--	smicomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
--	if (!smicomm_node)
-+	/* Get smi-(sub)-common dev from the last larb. */
-+	smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
-+	if (!smi_subcomm_node)
- 		return -EINVAL;
- 
-+	/*
-+	 * It may have two level smi-common. the node is smi-sub-common if it
-+	 * has a new mediatek,smi property. otherwise it is smi-commmon.
-+	 */
-+	smicomm_node = of_parse_phandle(smi_subcomm_node, "mediatek,smi", 0);
-+	if (smicomm_node)
-+		of_node_put(smi_subcomm_node);
-+	else
-+		smicomm_node = smi_subcomm_node;
-+
- 	plarbdev = of_find_device_by_node(smicomm_node);
- 	of_node_put(smicomm_node);
- 	data->smicomm_dev = &plarbdev->dev;
--- 
-2.18.0
-
+greg k-h
