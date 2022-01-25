@@ -2,40 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7297EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:49:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55760C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356435AbiAYKtY (ORCPT
+        id S1351183AbiAYKuI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:49:24 -0500
-Received: from foss.arm.com ([217.140.110.172]:34182 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355798AbiAYKqE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:46:04 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 506C5101E;
-        Tue, 25 Jan 2022 02:46:00 -0800 (PST)
-Received: from [10.163.43.67] (unknown [10.163.43.67])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 40CFD3F7D8;
-        Tue, 25 Jan 2022 02:45:56 -0800 (PST)
-Subject: Re: [PATCH V3 0/7] coresight: trbe: Workaround Cortex-A510 erratas
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        coresight@lists.linaro.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1641872346-3270-1-git-send-email-anshuman.khandual@arm.com>
- <ec21e5da-7b2a-e99f-b24f-89b459e2d5cb@arm.com>
- <8a348786-d028-a991-178f-60b17d3d6554@arm.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <94430fa0-0cac-79f4-f167-1ac77077ad23@arm.com>
-Date:   Tue, 25 Jan 2022 16:16:03 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 25 Jan 2022 05:50:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43216 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240054AbiAYKqx (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 05:46:53 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE67FC06173E
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:46:52 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id a13so19046187wrh.9
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:46:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ODHhtpuCmlqbjTbHm7GxkArm+DSdAOP3TtnFywy+XCo=;
+        b=HmvFaF91GZm0DymBzoHuOcm36L25FbImJBqbmmxCXNcRLvmmmhn11beqmxS91cgwtO
+         ygyU0UDTC2Rv4gSMI2lwGx+J8qehCq+YpnyW/4fR9NksEquu3qcDFodZWMUXKkHXATI2
+         gQQ16sZ0jkYCOBZi9U80VhZH7lzbMpaqXl9q//Y4PaHhm88tzrPOqHyNBL1WGzy1CtEg
+         gHgMfyhuUBbd7NtveONKtXgQvKQ+nAJPslsRIwRMH6oZCrlG61IrAHbcKp4UISjbavDs
+         TmpI/z/5QQswMKpB70MYlgsXaHd+qc5njVsdcKSt2myqneM7cJrHMkGj+O5DC/t+ZuVy
+         8kSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ODHhtpuCmlqbjTbHm7GxkArm+DSdAOP3TtnFywy+XCo=;
+        b=d8kwV8U1+ZpxeabxK7G1gvneHrfZV+mFTMCKSjDKJ5m6xcy9NynBljhwNhbsA3J+gz
+         3wYkGrsuo5Vmh+dFjoaMYPpZWc9p5sK4a5bcNupC7ULaj1iV0Ov4zLlf2KPGAwC99dkn
+         U+tEH/sDzRomzUEnQbp3usMwOVPnVwcbuc21c/CJ2Ag4PY3Viqmh7boCrvkBlGJ85ISi
+         3/t9aYBmlCuJ3IfFKOPp6OuRx7ZLAjmYQDONhNGwGk9TO54DNz/IWt7iHfvgGKxo8Z2B
+         t45gJg54M+UMw1Yi5ATvtCcEPMyEi5AeNnu3AKwMAo9hadRPeDR4v1ex158gpbLef9B4
+         Az4A==
+X-Gm-Message-State: AOAM531EAezlv+dK1N3GMOr5mcCZGtUSZtYT3g0Od8rAaPbfghT8e5Zf
+        qiqzASOhCU0TeI84yIIEihGUq9nUhpctcA==
+X-Google-Smtp-Source: ABdhPJwwYsaVtN/JMQj85M9Nhk3qx3KgFaCxZJu9P/WNzNz0qAG506UC4zor7KqLyhQWoeAaS86hvw==
+X-Received: by 2002:adf:9d85:: with SMTP id p5mr17950595wre.694.1643107611071;
+        Tue, 25 Jan 2022 02:46:51 -0800 (PST)
+Received: from ?IPv6:2a01:e34:ed2f:f020:6406:77e0:3787:258a? ([2a01:e34:ed2f:f020:6406:77e0:3787:258a])
+        by smtp.googlemail.com with ESMTPSA id j15sm261351wmq.19.2022.01.25.02.46.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 02:46:50 -0800 (PST)
+Subject: Re: [PATCH v6 2/5] powercap/drivers/dtpm: Add hierarchy creation
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     rjw@rjwysocki.net, robh@kernel.org, lukasz.luba@arm.com,
+        heiko@sntech.de, arnd@linaro.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@kernel.org>
+References: <20220119085719.1357874-1-daniel.lezcano@linaro.org>
+ <20220119085719.1357874-3-daniel.lezcano@linaro.org>
+ <CAPDyKFrtq0J2O0WBwLr7Zb+WkomhLcR1h+eDzzV-SxpiJmm_yQ@mail.gmail.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <061cd428-c022-4058-9a11-c5dbe3cb9777@linaro.org>
+Date:   Tue, 25 Jan 2022 11:46:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <8a348786-d028-a991-178f-60b17d3d6554@arm.com>
+In-Reply-To: <CAPDyKFrtq0J2O0WBwLr7Zb+WkomhLcR1h+eDzzV-SxpiJmm_yQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -43,71 +73,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 1/25/22 3:32 PM, Suzuki K Poulose wrote:
-> On 25/01/2022 03:21, Anshuman Khandual wrote:
+On 24/01/2022 21:00, Ulf Hansson wrote:
+> On Wed, 19 Jan 2022 at 09:58, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
 >>
+>> The DTPM framework is available but without a way to configure it.
 >>
->> On 1/11/22 9:08 AM, Anshuman Khandual wrote:
->>>     This series adds three different workarounds in the TRBE driver for
->>> Cortex-A510 specific erratas. But first, this adds Cortex-A510 specific cpu
->>> part number definition in the platform. This series applies on 5.16.
->>>
->>> Relevant errata documents can be found here.
->>>
->>> https://developer.arm.com/documentation/SDEN2397239/900
->>> https://developer.arm.com/documentation/SDEN2397589/900
->>>
->>> Changes in V3:
->>>
->>> - Moved the comment inside trbe_needs_drain_after_disable()
->>> - Moved the comment inside trbe_needs_ctxt_sync_after_enable()
->>>
->>> Changes in V2:
->>>
->>> https://lore.kernel.org/all/1641517808-5735-1-git-send-email-anshuman.khandual@arm.com/
->>>
->>> Accommodated most review comments from the previous version.
->>>
->>> - Split all patches into CPU errata definition, detection and TRBE workarounds
->>> - s/TRBE_WORKAROUND_SYSREG_WRITE_FAILURE/TRBE_NEEDS_DRAIN_AFTER_DISABLE
->>> - s/TRBE_WORKAROUND_CORRUPTION_WITH_ENABLE/TRBE_NEEDS_CTXT_SYNC_AFTER_ENABLE
->>> - s/trbe_may_fail_sysreg_write()/trbe_needs_drain_after_disable()
->>> - s/trbe_may_corrupt_with_enable()/trbe_needs_ctxt_sync_after_enable()
->>> - Updated Kconfig help message for config ARM64_ERRATUM_1902691
->>> - Updated error message for trbe_is_broken() detection
->>> - Added new trblimitr parameter to set_trbe_enabled(), improving performance
->>> - Added COMPILE_TEST dependency in the errata, until TRBE part is available
->>>
->>> Changes in V1:
->>>
->>> https://lore.kernel.org/lkml/1641359159-22726-1-git-send-email-anshuman.khandual@arm.com/
->>>
->>> Cc: Catalin Marinas <catalin.marinas@arm.com>
->>> Cc: Will Deacon <will@kernel.org>
->>> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
->>> Cc: Suzuki Poulose <suzuki.poulose@arm.com>
->>> Cc: coresight@lists.linaro.org
->>> Cc: linux-doc@vger.kernel.org
->>> Cc: linux-arm-kernel@lists.infradead.org
->>> Cc: linux-kernel@vger.kernel.org
->>>
->>> Anshuman Khandual (7):
->>>    arm64: Add Cortex-A510 CPU part definition
->>>    arm64: errata: Add detection for TRBE ignored system register writes
->>>    arm64: errata: Add detection for TRBE invalid prohibited states
->>>    arm64: errata: Add detection for TRBE trace data corruption
->>>    coresight: trbe: Work around the ignored system register writes
->>>    coresight: trbe: Work around the invalid prohibited states
->>>    coresight: trbe: Work around the trace data corruption
+>> This change provides a way to create a hierarchy of DTPM node where
+>> the power consumption reflects the sum of the children's power
+>> consumption.
 >>
->> Hello Catalin/Mathieu,
+>> It is up to the platform to specify an array of dtpm nodes where each
+>> element has a pointer to its parent, except the top most one. The type
+>> of the node gives the indication of which initialization callback to
+>> call. At this time, we can create a virtual node, where its purpose is
+>> to be a parent in the hierarchy, and a DT node where the name
+>> describes its path.
 >>
->> I am wondering how this series is going to be merged i.e via arm64 or coresight
->> tree ? Also will this require rebasing (and resend) against v5.17-rc1 release.
->> Please do suggest. Thank you.
+>> In order to ensure a nice self-encapsulation, the DTPM subsys array
+>> contains a couple of initialization functions, one to setup the DTPM
+>> backend and one to initialize it up. With this approach, the DTPM
+>> framework has a very few material to export.
+>>
+>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+>> ---
+>>  drivers/powercap/Kconfig |   1 +
+>>  drivers/powercap/dtpm.c  | 168 ++++++++++++++++++++++++++++++++++++++-
+>>  include/linux/dtpm.h     |  15 ++++
+>>  3 files changed, 181 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/powercap/Kconfig b/drivers/powercap/Kconfig
+>> index 8242e8c5ed77..b1ca339957e3 100644
+>> --- a/drivers/powercap/Kconfig
+>> +++ b/drivers/powercap/Kconfig
+>> @@ -46,6 +46,7 @@ config IDLE_INJECT
+>>
+>>  config DTPM
+>>         bool "Power capping for Dynamic Thermal Power Management (EXPERIMENTAL)"
+>> +       depends on OF
+>>         help
+>>           This enables support for the power capping for the dynamic
+>>           thermal power management userspace engine.
+>> diff --git a/drivers/powercap/dtpm.c b/drivers/powercap/dtpm.c
+>> index 0e5c93443c70..10032f7132c4 100644
+>> --- a/drivers/powercap/dtpm.c
+>> +++ b/drivers/powercap/dtpm.c
+>> @@ -23,6 +23,7 @@
+>>  #include <linux/powercap.h>
+>>  #include <linux/slab.h>
+>>  #include <linux/mutex.h>
+>> +#include <linux/of.h>
+>>
+>>  #include "dtpm_subsys.h"
+>>
+>> @@ -463,14 +464,175 @@ int dtpm_register(const char *name, struct dtpm *dtpm, struct dtpm *parent)
+>>         return 0;
+>>  }
+>>
+>> -static int __init init_dtpm(void)
+>> +static struct dtpm *dtpm_setup_virtual(const struct dtpm_node *hierarchy,
+>> +                                      struct dtpm *parent)
+>>  {
+>> +       struct dtpm *dtpm;
+>> +       int ret;
+>> +
+>> +       dtpm = kzalloc(sizeof(*dtpm), GFP_KERNEL);
+>> +       if (!dtpm)
+>> +               return ERR_PTR(-ENOMEM);
+>> +       dtpm_init(dtpm, NULL);
+>> +
+>> +       ret = dtpm_register(hierarchy->name, dtpm, parent);
+>> +       if (ret) {
+>> +               pr_err("Failed to register dtpm node '%s': %d\n",
+>> +                      hierarchy->name, ret);
+>> +               kfree(dtpm);
+>> +               return ERR_PTR(ret);
+>> +       }
+>> +
+>> +       return dtpm;
+>> +}
+>> +
+>> +static struct dtpm *dtpm_setup_dt(const struct dtpm_node *hierarchy,
+>> +                                 struct dtpm *parent)
+>> +{
+>> +       struct device_node *np;
+>> +       int i, ret;
+>> +
+>> +       np = of_find_node_by_path(hierarchy->name);
+>> +       if (!np) {
+>> +               pr_err("Failed to find '%s'\n", hierarchy->name);
+>> +               return ERR_PTR(-ENXIO);
+>> +       }
+>> +
+>> +       for (i = 0; i < ARRAY_SIZE(dtpm_subsys); i++) {
+>> +
+>> +               if (!dtpm_subsys[i]->setup)
+>> +                       continue;
+>> +
+>> +               ret = dtpm_subsys[i]->setup(parent, np);
+>> +               if (ret) {
+>> +                       pr_err("Failed to setup '%s': %d\n", dtpm_subsys[i]->name, ret);
+>> +                       of_node_put(np);
+>> +                       return ERR_PTR(ret);
+>> +               }
+>> +       }
+>> +
+>> +       of_node_put(np);
+>> +
+>> +       /*
+>> +        * By returning a NULL pointer, we let know the caller there
+>> +        * is no child for us as we are a leaf of the tree
+>> +        */
+>> +       return NULL;
+>> +}
+>> +
+>> +typedef struct dtpm * (*dtpm_node_callback_t)(const struct dtpm_node *, struct dtpm *);
+>> +
+>> +dtpm_node_callback_t dtpm_node_callback[] = {
+>> +       [DTPM_NODE_VIRTUAL] = dtpm_setup_virtual,
+>> +       [DTPM_NODE_DT] = dtpm_setup_dt,
+>> +};
+>> +
+>> +static int dtpm_for_each_child(const struct dtpm_node *hierarchy,
+>> +                              const struct dtpm_node *it, struct dtpm *parent)
+>> +{
+>> +       struct dtpm *dtpm;
+>> +       int i, ret;
+>> +
+>> +       for (i = 0; hierarchy[i].name; i++) {
+>> +
+>> +               if (hierarchy[i].parent != it)
+>> +                       continue;
+>> +
+>> +               dtpm = dtpm_node_callback[hierarchy[i].type](&hierarchy[i], parent);
+>> +               if (!dtpm || IS_ERR(dtpm))
 > 
-> I would recommend rebasing on rc1.
+> This can be tested with the "IS_ERR_OR_NULL()" macro.
+> 
+>> +                       continue;
+> 
+> We have discussed the error path previously. Just ignoring errors here
+> and continuing with the initialization, isn't normally how we design
+> good kernel code.
+> 
+> However, you have also explained that the error path is special and
+> somewhat non-trivial to manage in this case. I get that now and thanks
+> for clarifying.
+> 
+> Nevertheless, I think it deserves to be explained a bit with a comment
+> in the code of what goes on here. Otherwise another developer that
+> looks at this code in the future, may think it looks suspicious too.
+> 
+>> +
+>> +               ret = dtpm_for_each_child(hierarchy, &hierarchy[i], dtpm);
+>> +               if (ret)
+>> +                       return ret;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+> 
+> [...]
+> 
+> Other than the above, this looks good to me!
 
-Sure, will do.
+With the above fixed, shall I add your reviewed-by ?
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
