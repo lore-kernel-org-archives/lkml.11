@@ -2,220 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 662C1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75AE0C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378623AbiAYPjh (ORCPT
+        id S1381120AbiAYPjl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 10:39:37 -0500
-Received: from esa.hc3962-90.iphmx.com ([216.71.140.77]:57746 "EHLO
-        esa.hc3962-90.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384326AbiAYPgq (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:36:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qccesdkim1;
-  t=1643125005; x=1643729805;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=+GFn/jYtnUhh4v4MPFZNBlm1r6CkCkiSEL4SYUMk2b4=;
-  b=geefpg62doARpaF33tXyy6G1rTZV7pwfP483nThSPowX6kXSjPTnP9GG
-   RQuretTeRzfpLlqKOxM23yrnm4JaLwt8lt0c1aav3EeiOV4wCO9mVOVxM
-   gWgqbFPEccnPX3CmGhv72mfC0cbcEcjNwuCuols/0zeQZHoQSh/T9PMrp
-   s=;
-Received: from mail-bn7nam10lp2100.outbound.protection.outlook.com (HELO NAM10-BN7-obe.outbound.protection.outlook.com) ([104.47.70.100])
-  by ob1.hc3962-90.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 15:36:41 +0000
+        Tue, 25 Jan 2022 10:39:41 -0500
+Received: from mail-db8eur05on2051.outbound.protection.outlook.com ([40.107.20.51]:15073
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1385355AbiAYPhX (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 10:37:23 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lckWwSFt4cO01G5iEV7ShUh99TKc5vGeTv2zOsmxb7FHwzzcxqyiUmT7k96Ew/d6ucLJwzwBLEgJTrG5SK9PhVyWQEfILM2KA337XU0oQkuBlG0KQrkUKJgMDs8+60Nuv/sOY3LAxCdifOO+GWrZW2oHwdWDYkU5b3gj5Bwc6ma9NguVt6vgZ8fwSGy3Syv/i/j8k3PwNxDaniDwtH5MRxS1hwmqQF9R15Dwa3QK4FBPJqI9RHW0KBiBic14yrzDBIENEaoC4r2wUDgxSsGS5RdWcJdKuR3SBcm5v6wiSKduIkF1zrO0CnzCZeTECry24b6SbpgDsp0VeNqanvZycg==
+ b=V+Lb0uQbtewCw1VWKZpTJdJ8ARCCyf4e1arXWKJxNb4jYgg91HTSh9+sDwfpQtTZwLju0W1W1axlptt3QvFrN+56dUCYSWKIvgecthDt7Lx9iwXgqHGteQ7NAsjiQJaZc1rA/SST7p3JawVvHOKZ/GAkx7rT6mF4644KT84rXBv0WqpKIvLjDfIzm//d8Y02IawkSoHKRO8nz9vcv/chx1luVCZLteEwuEP3pwqK7+nrCk/fIb5aMVm/DT5P29yczjPhBvMsyI1eGzyblfhMmKCSc/a8qPqQza5IWKgRiDE7JCOlkOo7bZ0XeaGSIpn/sYh14HsMdjTNkvW+hLUg3Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+GFn/jYtnUhh4v4MPFZNBlm1r6CkCkiSEL4SYUMk2b4=;
- b=YJV34CuYjBTFtAl1ge/LE0qnbVAGaM1ZtVwi8PCR8i36MTs/Ypn0P1es56EFQyorLN3XMy4kdeZS00zqNSpA2PKSm9I30CDbCIzoBICQ0hw5lGh5KXwSs5GtmvJMfCC1n4sr/Whkpbt6N3UJpJaLizD9Usx4NiAl3o9z95EsotEZF2Ptp+0BnZ6pSBMK63TsBz0Kj3blalIWr8gyMkPwPKIWa436fK0lIFyg83mazLgKZMf+FZcgUwA+n6cqAVCgUwcpzLtxmexd1nAice/n994j+nE4jEaLY/Nf9SRouT8gVvwaWGh5ajQdJbbqBIWQI+Hkc7wpWjIyzy6eYU3dqg==
+ bh=3QcQs/cWeWLQhESfBX/sjyRVYXbwe2ACFDzcLkF75wo=;
+ b=DdOjg1zSAv0J1OORi+Bfb0lS5huXN00sK2qeS9Ge0uFGbbpvzDmA6aMdMa2ZJlYGzXVIVsv95TsT6DOXZ4djBKkfT4ZB84RnO4z6xIpthXhkRqyrl0HG2Zsocb8nPcrqZjERapHhzRBwhUsdNoAYabGki//YJm0+vBrTHylbBsK3dZFclFaNT5++RCrbblomofwwKHhc2IpHD1wnS6L1qDgzm2mPRcec8APs2fb8TwqneVSSpFmN2Bwy06fWkzhrFWICnytW7r4cq+vVtturK6dvYWYMVZ47Sj3Sr4fZzvGWy5JE1JhxDTVH84xc0kSuLECWvMxYGD7kRXU+BL643Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
-Received: from SJ0PR02MB8449.namprd02.prod.outlook.com (2603:10b6:a03:3f5::8)
- by DM5PR02MB2603.namprd02.prod.outlook.com (2603:10b6:3:45::16) with
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3QcQs/cWeWLQhESfBX/sjyRVYXbwe2ACFDzcLkF75wo=;
+ b=NO4tYSCvvSYa+Tj4+qd2CNzyfI3kYHMNpKrxY03rken0gApR9OJTTIWF83PbK88gCUleElcsZHhAa3oiXDMXzjJmvtP+je+js8YpB0sTGHuoQR056i5jfVHhjNjkmYT8pA3dFuo+Fpo0Zx+S0+8mnxNjyx8+k0ivvxRIPrRiong=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM0PR04MB6115.eurprd04.prod.outlook.com (2603:10a6:208:146::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Tue, 25 Jan
- 2022 15:36:39 +0000
-Received: from SJ0PR02MB8449.namprd02.prod.outlook.com
- ([fe80::481d:88c5:eab3:21c7]) by SJ0PR02MB8449.namprd02.prod.outlook.com
- ([fe80::481d:88c5:eab3:21c7%5]) with mapi id 15.20.4909.010; Tue, 25 Jan 2022
- 15:36:39 +0000
-From:   "Sajida Bhanu (Temp) (QUIC)" <quic_c_sbhanu@quicinc.com>
-To:     Michael Walle <michael@walle.cc>,
-        "Sajida Bhanu (Temp) (QUIC)" <quic_c_sbhanu@quicinc.com>
-CC:     "dianders@chromium.org" <dianders@chromium.org>,
-        "tudor.ambarus@microchip.com" <tudor.ambarus@microchip.com>,
-        "p.yadav@ti.com" <p.yadav@ti.com>,
-        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
-        "richard@nod.at" <richard@nod.at>,
-        "vigneshr@ti.com" <vigneshr@ti.com>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Tue, 25 Jan
+ 2022 15:37:13 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::f4d7:e110:4789:67b1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::f4d7:e110:4789:67b1%5]) with mapi id 15.20.4909.017; Tue, 25 Jan 2022
+ 15:37:12 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     Miroslav Lichvar <mlichvar@redhat.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stummala@codeaurora.org" <stummala@codeaurora.org>,
-        "vbadigan@codeaurora.org" <vbadigan@codeaurora.org>,
-        "Ram Prakash Gupta (QUIC)" <quic_rampraka@quicinc.com>,
-        "Pradeep Pragallapati (QUIC)" <quic_pragalla@quicinc.com>,
-        "sartgarg@codeaurora.org" <sartgarg@codeaurora.org>
-Subject: RE: [PATCH V4] mtd: spi-nor: winbond: Add support for winbond chip
-Thread-Topic: [PATCH V4] mtd: spi-nor: winbond: Add support for winbond chip
-Thread-Index: AQHYDePakDL0XfUSukOExyL3iAAZlaxrtgUAgAgw3CA=
-Date:   Tue, 25 Jan 2022 15:36:39 +0000
-Message-ID: <SJ0PR02MB8449372A38A34EC5FAC16765CD5F9@SJ0PR02MB8449.namprd02.prod.outlook.com>
-References: <1642672491-30067-1-git-send-email-quic_c_sbhanu@quicinc.com>
- <db1d17bbdcf7af2b8b58f6e7fa82062c@walle.cc>
-In-Reply-To: <db1d17bbdcf7af2b8b58f6e7fa82062c@walle.cc>
-Accept-Language: en-GB, en-US
+        David Miller <davem@davemloft.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Russell King <linux@arm.linux.org.uk>
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+Thread-Topic: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+Thread-Index: AQHYAPlHUZ7+aaeSVU6jmUK14JiGzaxsOSsAgAC1gICAAAeKAIAAtFaAgAAKjACABFJtgIAAZxAAgAGSUQA=
+Date:   Tue, 25 Jan 2022 15:37:12 +0000
+Message-ID: <20220125153712.dnujk6k3nfxczmi3@skbuf>
+References: <20220103232555.19791-4-richardcochran@gmail.com>
+ <20220120164832.xdebp5vykib6h6dp@skbuf> <Yeoqof1onvrcWGNp@lunn.ch>
+ <20220121040508.GA7588@hoboy.vegasvil.org>
+ <20220121145035.z4yv2qsub5mr7ljs@skbuf>
+ <20220121152820.GA15600@hoboy.vegasvil.org> <Ye5xN6sQvsfX1lmn@localhost>
+ <20220124153716.GB28194@hoboy.vegasvil.org>
+In-Reply-To: <20220124153716.GB28194@hoboy.vegasvil.org>
+Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=quicinc.com;
-x-ms-exchange-messagesentrepresentingtype: 1
+ header.d=none;dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 94ad719e-36d9-4ea4-44f5-08d9e0187adc
-x-ms-traffictypediagnostic: DM5PR02MB2603:EE_
-x-ld-processed: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d,ExtAddr
-x-microsoft-antispam-prvs: <DM5PR02MB26030CFA3F2A3CA27263BF00B15F9@DM5PR02MB2603.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-office365-filtering-correlation-id: 88876fee-c9a7-40c0-030b-08d9e0188ed5
+x-ms-traffictypediagnostic: AM0PR04MB6115:EE_
+x-microsoft-antispam-prvs: <AM0PR04MB61153FD6DBAA46EA74CDA8D6E05F9@AM0PR04MB6115.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Gjkfuiscn0Ro0tqZV6h7ecgsJtfd83CzdJKLqgPQWZkZrWWvlr+ZDET/OF7rErKJwFVK7wbInw2owzWJkfHtdnk4YdDAkI60GTR7fkw/as+DrqVd81g9lbF4yLxMgA6ZCp+W4H8hClteePRCxyufrgftYN2FYypnPNnvfEnzAbUKVWoL1zmUccSrb3tLqgC0zytui16JcsxYmpnkrAhpp0y+NPIsGAMPY8G7AzuSctK9GzFzPqVMsEM4GMarAQdL1S2FguVSyyCBJEOF7JtOLe7TxEI1HbedDmgRkaJ5Qh7c93AlSlYsu8Wo5RWv8UG9R5I0rFisYgxVb19IjIGYGuvHUdW79vg15iHc6lkpzEHwYkTnDIVjPWFGfxWAZjVMeFH9k3RzM+MTTt2WgJyCISs8idI0yAnhd6FjWVVT4SuUuAdMhDnw07p6WMaSNW6WUws4phEjy8o+1CLmrF30gCFITNmAds4baD4p85ZpDOsqEIYANQFnvSW1Ph9nBiTkPCL2LRO20vwoNguxXsc1jOhdXoOogsHme9qInLXv3sn8k5kqY4V+g5ZwYrHjuaSJ+2f4FYcXFaDs0SV77ucCv1X75lF2b8pOSmIbdrp0kVv7LiKoWa90wyQDO0DPinBul2mX/ERhyZlVg1jXGxQeqD3J5n5HCKRZ0DIYdDrwifs2CFdx/21DB1Hj1WlEGq7GLfa9yNne9ggsDrfEGb1OHsQHwVDiJ/VVp0sSIEi444QETZFh3G08luSoAy+ECEWhdprEdIsRlaxdkZ90oKS4r5TMh68omt8iFDXeV72vNfmojCXhEN3Wm1slhkU44Ky7IsAA8/ZJ/WtiI8rLyphTcw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR02MB8449.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(76116006)(53546011)(66556008)(38100700002)(122000001)(7416002)(4326008)(83380400001)(6506007)(26005)(186003)(52536014)(86362001)(110136005)(55016003)(33656002)(8936002)(7696005)(2906002)(66946007)(54906003)(8676002)(316002)(9686003)(66446008)(64756008)(71200400001)(966005)(38070700005)(5660300002)(508600001)(66476007);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: D6xyiy3xcZzfia8+5+s77vlioJf1KaRgs5FXr3KcZsqALdkAy92MGvx5ike//7Lx1iJAOKyTXSgpwkKCWlDp3pERx73qHbstSTbjKNworB8S5tJJ+Bi9MS1Z4jN9ndiDPDao/j2es5c9ZuUhbWBpqHQnUz8ZkFJjokcU6Vdl+OTdyrCtTgsn+rNVRwggBc67o8iYXCXymc6jmeJi8+POGwlfGvBUY8jw6A13DkYO/tul1nwl+/V8+TiK9TlJgNst6tES502ATSXamMb/GQ59Ztwqaqn89/yH6l3AN8wU9yHSnUFuDaGq2eQ/5tizc6yFJqW6J20E25Ll1U4kOl3JX8otmqylWYJ99ojhNUh6EYdmrfx1YRzMK7Gb9FV3dG66BmZbRdhDO3Q00CSE+mjlM7R05954+mxK4+9wm+/mxEIfB+bSCGY0fRH7NJ7oaUnwvg9GB8iPVR8dng+sMoB2o+Wshqe2y8lna1W/dQ/7/7tmbsa/o1H4I7Rc1CMHFCNv073yDGHV278jpobztIZUhb2qFPlt/fC5qNG44YMJa/KbcqS2WADNnlCLJFwAEFwchtm7l5nXrT9Lky206os916OZIaNEIqtMexiEysqxvPGqiTpq3p8NbCcodViTlIT9TnjcMfcFEWXVAs+3URpwy6mZvhzrx93HzshZx1E8TSPe3LCVFqoqG0FHaX5J5AY2gccQxg4y+QznaHaspAXryqob+xnb+BWQQEN1fiyHN1k=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(508600001)(6506007)(6512007)(9686003)(44832011)(2906002)(7416002)(86362001)(5660300002)(38070700005)(38100700002)(91956017)(66946007)(66476007)(66446008)(64756008)(8936002)(8676002)(4326008)(6916009)(54906003)(66556008)(76116006)(71200400001)(83380400001)(1076003)(316002)(33716001)(122000001)(26005)(186003)(6486002)(268134005)(20210929001);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?vv54ysYbJS02ScrAS0Z98EP/nGX1NBf44mJLuzc60wyo8MCX0nNU12XViydL?=
- =?us-ascii?Q?bHs//Vnj5lMdx3RXC+UvlWv2jWsrk8mPh+LRZmK8zmGlJeEPhrg58lpM+x2l?=
- =?us-ascii?Q?p+/wEr77qtMnDRajmLTZh56xqLr2nFq3fvEOl1tasCf3tBanq7gIFP+MVTiT?=
- =?us-ascii?Q?197Ydv4smUhprtaiZsUi65YHd7JYBGKKJczBCN4lGmmOsEAwW3Hem/mYoThz?=
- =?us-ascii?Q?6lHpzHZ9wzmGQZz3sngvO3KeN8l+HCocTqg2/59VsSIEmTUoh0NK+1/keH0D?=
- =?us-ascii?Q?y3PBDfloKdkqrEj2SUXspq7RZfDxQcqFtVBE6ymvYl5nZWSb3AtUt0FMbFp4?=
- =?us-ascii?Q?bAejZz+sePPiYSJIJj/7YffO3YNysZGSYZlh9tRb5AaQwp6t6aQN69h1Twak?=
- =?us-ascii?Q?QzZO12usAabXeNqD6NC7g1jwu2RJbHCIG33GN5HimvUHXPKyLqHpX27dMeDI?=
- =?us-ascii?Q?NeZ6GFlDgSJ6k2gFP5HO1DmZtnWXURnP+/jGrglHstDYhnKgzoT++VWg8dLQ?=
- =?us-ascii?Q?/imrbFcZwRhf2byF3i/t4D6OEKXzs3fUO9FRXoaQyohEa0vRR27hvkEpcWnw?=
- =?us-ascii?Q?4HYJqWfg48WWVFyBUlEgT08EK56wSrH06qdHzO50y9dZfw4UUYzWtYYKjt43?=
- =?us-ascii?Q?/Q1z0S28ZQCwUiZ7T+257AKdYaFDV251MAGxt8xTdLFPwyUO9Zgd/C3g29id?=
- =?us-ascii?Q?NW21eiqSQ2wY2DS1qviGoOZS1L+sQJH+Nmj9Sz9n4tcoL61WEpSkI8DFeKiW?=
- =?us-ascii?Q?qfMQGwLoAVDG0esrQzW9AynACvlAxr+2LWOqgrShXEGCW2H7V6Fc4fWpBlgF?=
- =?us-ascii?Q?dG+JOChLozdCHJ4vWMBALXr4TOyZ78y4ilFJ5g2OSyZaAjqM8JPZHcsT1Dc9?=
- =?us-ascii?Q?kfpgALm9IJgD63XFaZEwOgzrZc1n5O6DSysRsf7YCGmhoq+3PAvRlo8Ht21H?=
- =?us-ascii?Q?kvNKAF04zzWepC0Fy8ZXY7+gpgrTp8xdC6OcZuDeEsezm3kGJ0b9/owQ7opD?=
- =?us-ascii?Q?fbrvsG1RpK4sontUcJm3B3/6d644NcpDJpSE1qAwRDUR1V8Chs8r1qfBKZUy?=
- =?us-ascii?Q?vFOI3H5z1GRsMFf+8+IH9TKuGTcLX/KgMvy098vcGLU3yjCd8SSRZCklSmB3?=
- =?us-ascii?Q?EvwQ222/NyyP0RgBlJktwLbUR3V7tPGSBFNi1Bud9pdl9rvst6khGHy+SjLO?=
- =?us-ascii?Q?GnKtRlPP/QspcQo7edKyFYVUODUnMX4Xfn8KD8WOmbMLuZmQuFDNiGXkpYIM?=
- =?us-ascii?Q?txRoJqrOSiBHW259q62MkFWUJlTJSbZ0s2Q4eJzW9RBPlqDCu6IBAVFwfr62?=
- =?us-ascii?Q?ko5hxNlYUL1q8Yb7hqjTlt+Fjq+WSKy3Hnc4DtNDQ508cC4CB6+zLXk2qEmr?=
- =?us-ascii?Q?cuCoCzTc3pSYoeRocEYbzYUjp7Qw075jJLJCOr3QYwp0YeyCuJEwwhJ+yP+e?=
- =?us-ascii?Q?qI/Vze2YKy/snlxrAUGi92l8u0s5toEPKp+GdcXYTdKS4ainQgKPI361e2tB?=
- =?us-ascii?Q?MfbnLNwmU5I5oQpAV6FNqvTmbC6v845dRIkkqYX11fhnSmYTefDNm+3LEpK0?=
- =?us-ascii?Q?DNUk8kibmzN6R0qW/CXo4eWIa1sWIGdC02Sd/TsDwMTwmo4VIhgqkILVdK5I?=
- =?us-ascii?Q?zBTVrB4dxqcsCNbbvemXdmMOM0ENdPIjG8A4SXBYG4uUGT4rp/7ivFgpMwfE?=
- =?us-ascii?Q?cC8TiQ=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1mG/WmVy5Ao2tpGM0Iuy46/sUfTtngPEstvLlUNPCkpjNc66n+WwEH569lng?=
+ =?us-ascii?Q?NSpnoN12rU/5SR8MjCFesuuOlVQym+h63Di9UYDBm87UcqGNVoKywRXmKTUa?=
+ =?us-ascii?Q?eyYnwznvMIyindma1HlPgXHs43qK/O11P2DK780i94xMSNgtaW798diH68ex?=
+ =?us-ascii?Q?3YtVY4DMolAw5Mj4ctzcIuNLIaNAS8dbTib7zdjHFBV5wja6y3cLhBltnx2h?=
+ =?us-ascii?Q?g2KbwShH30eEwz9aUl7wk0M4qiuo1xzDFQ80tAjuy8sJKUumv9t3hb2Rk3Oc?=
+ =?us-ascii?Q?6X1LAaNKahEUMyorEfAkGAPztIH6c1ZM+CeRxqG3/w3jvIAxECH0f5NCNKgP?=
+ =?us-ascii?Q?0j09OAHgRqRNh96Kv/o7GdoheHSqc9D8mee4V1HgBVoH4phsJiVWMUEuELC8?=
+ =?us-ascii?Q?jl8CBXat23QeM7693I4+G9fuxYJwlWIh/K/03jPFACtSusC0uhoAPmRaxsml?=
+ =?us-ascii?Q?EQb3KitKLRXF8gXHUOfBfy17UM4AYjy2/uopwVWBuZ16GlgbZgTdByBVPff7?=
+ =?us-ascii?Q?YZwAkSx2JILiIiKFVeCK6wgCpTgb32YN8IBlL83ExgXdBUnmq6qQKenKp3/X?=
+ =?us-ascii?Q?hFMbX4a0BmqdVD/Rq81Q4r8Nu0tjT5BccLkepaR+YzhY498U+X2UqmYf6Oix?=
+ =?us-ascii?Q?C3+Kjn5KFFibYABhlT+1JiCDb+xIrE/o0SuKvp86e3txAiSJyLaOFkw7eAPS?=
+ =?us-ascii?Q?XtUqGVAbOCxnzyeuSqRU6V6CJm7a+msdEAqqUH6zHc0IKXGadoC18wz61sip?=
+ =?us-ascii?Q?4jCQ76qirA3FYR33UKXqMMdT/BVbNUtPwE2mH7T8INRGZelW2GSrsVmaL9kx?=
+ =?us-ascii?Q?vKs2eB6ZVnvZCwPGdxgx+ez8DQeaH8kiD41SPU6eOOyKNyKBRrMifIvpLWKS?=
+ =?us-ascii?Q?rSblC17kz4eC86hOb9iGaYjMW+vsdcRzpIb7N9L6y3Ns45yUD1CXv/JQ5wa5?=
+ =?us-ascii?Q?zEeITb4kIKuw+vtqiBOyTh/CXKtw8MdS9y6b5SAEOF7yBqhKc0RLs/+bIuCa?=
+ =?us-ascii?Q?DmZo/2GfculfvRtTN7JJHwy5nClHKWvKJAYQwV4xIvy0EVx/SgmluD/Cy3YR?=
+ =?us-ascii?Q?kC33ZOHsg1AF9ItCiqcmIe5qBUEzNCmQYyFxn681tHyl4QaZo+8WkAXtSr+r?=
+ =?us-ascii?Q?8bSCfnh5xoAwHpFqECjitHro1ovo/NCMuSYiQJPc7BRKgVlYF1xrcVSUIVtr?=
+ =?us-ascii?Q?vjCbIzVW21GLtt8ELq8teVqBZRicFKEgu2IG2so/h1xJMhT8TAZgIoAjRu9J?=
+ =?us-ascii?Q?o5XaZk3A6HPBqDVtMCMnpgcXX9OuttTwjX/AQGT0Qp3g2rOzBeW9gZQfBKGr?=
+ =?us-ascii?Q?g6YmDBupaHx0xOosGG3/+OAmCReozKY/cJtYgBOFuivXOQe/FsbSZP+8fw8r?=
+ =?us-ascii?Q?3Y3JSi2sLxHgMfbDnOLCcKATlZwsWcfi2HXPv4kptLBcvEwaH0c22VekuBwt?=
+ =?us-ascii?Q?eca0R1akTKw9ZBZ3jZBkIXXVlpVTMjeo93sZmtTOmHEQH0wj+BDqdX8nTy6Y?=
+ =?us-ascii?Q?CHJGxFS6fHBSDYJp42P/az4Ft24hGbCUi1PXdAY2UTBY/yQ15mv2UD3CgeZH?=
+ =?us-ascii?Q?qsYI6XLEgZFydZY+mBuDm1V08/My/OSodMckYOY032aQq6dzJIipYAkSh4Xp?=
+ =?us-ascii?Q?2fJZy+DELwPRF3slrgqFMs8=3D?=
 Content-Type: text/plain; charset="us-ascii"
+Content-ID: <049BA5E7EC3C3448B0C6BB0EA42C6EFF@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: quicinc.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR02MB8449.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 94ad719e-36d9-4ea4-44f5-08d9e0187adc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2022 15:36:39.2854
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88876fee-c9a7-40c0-030b-08d9e0188ed5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2022 15:37:12.9016
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Y5Q+dWZTkMpBER/XGxOSAVZl/PvkkyeUiO89Q7pVqC/92JQIgn6krEXok+m/4RHMSusXvkx4eeAPGQxQAgR37cFkatLyqPfnL/YA8qHtcps=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2603
+X-MS-Exchange-CrossTenant-userprincipalname: sUQ/WE/itsNiXhx3vK1UnD9u3GLPpSdvoOpq/51BdTRbFTpn5kuv1usXEbhVIvUjwsXVtdE/WdLherMSelRZJw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6115
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
------Original Message-----
-From: Michael Walle <michael@walle.cc>=20
-Sent: Thursday, January 20, 2022 4:02 PM
-To: Sajida Bhanu (Temp) (QUIC) <quic_c_sbhanu@quicinc.com>
-Cc: dianders@chromium.org; tudor.ambarus@microchip.com; p.yadav@ti.com; miq=
-uel.raynal@bootlin.com; richard@nod.at; vigneshr@ti.com; linux-mtd@lists.in=
-fradead.org; linux-kernel@vger.kernel.org; stummala@codeaurora.org; vbadiga=
-n@codeaurora.org; Ram Prakash Gupta (QUIC) <quic_rampraka@quicinc.com>; Pra=
-deep Pragallapati (QUIC) <quic_pragalla@quicinc.com>; sartgarg@codeaurora.o=
-rg
-Subject: Re: [PATCH V4] mtd: spi-nor: winbond: Add support for winbond chip
-
-Hi,
-
-Am 2022-01-20 10:54, schrieb Shaik Sajida Bhanu:
-> Add support for winbond W25Q512NW-IM chip.
+On Mon, Jan 24, 2022 at 07:37:16AM -0800, Richard Cochran wrote:
+> On Mon, Jan 24, 2022 at 10:28:23AM +0100, Miroslav Lichvar wrote:
 >=20
-> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-> Reviewed-by: Doug Anderson <dianders@chromium.org>
-> ---
+> > FWIW, scm_timestamping has three fields and the middle one no longer
+> > seems to be used. If a new socket/timestamping option enabled all
+> > three (SW, MAC, PHY) timestamps in the cmsg, I think that would be a
+> > nice feature.
 >=20
-> Changes since V1:
-> 	- Added space before name of the flash part as suggested by Doug.
+> This won't work because:
 >=20
-> Changes since V2:
-> 	- Updated chip name as w25q512nwm as suggested by Doug.
+> - There would need to be seven^W eight, not three slots.
 >=20
-> Changes since V3:
-> 	- Updated flash_info flags passing according to below patch
-
-Thanks!
-
-Please note, that you also have to supply a SFDP dump, see [1].
-
-> https://lore.kernel.org/all/20211207140254.87681-7-tudor.ambarus@microchi=
-p.com/
-> 	 As suggested by Tudor Ambarus.
-> ---
->  drivers/mtd/spi-nor/winbond.c | 4 ++++
->  1 file changed, 4 insertions(+)
+> - Even with just three, the CMSG would have to have a bit that clearly
+>   identifies the new format.
+> =20
+> > From an admin point of view, it makes sense to me to have an option to
+> > disable PHY timestamps for the whole device if there are issues with
+> > it. For debugging and applications, it would be nice to have an option
+> > to get all of them at the same time.
 >=20
-> diff --git a/drivers/mtd/spi-nor/winbond.c=20
-> b/drivers/mtd/spi-nor/winbond.c index 675f32c..c4be225 100644
-> --- a/drivers/mtd/spi-nor/winbond.c
-> +++ b/drivers/mtd/spi-nor/winbond.c
-> @@ -124,6 +124,10 @@ static const struct flash_info winbond_parts[] =3D {
->  	{ "w25m512jv", INFO(0xef7119, 0, 64 * 1024, 1024)
->  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ |
->  			      SPI_NOR_DUAL_READ) },
-> +	{ "w25q512nwm", INFO(0xef8020, 0, 64 * 1024, 1024)
-> +		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
-> +		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
-> +			      SPI_NOR_QUAD_READ) },
+> Right.  Those are two different use cases.  The present series
+> addresses the first one.  The second one entails making a new flavor
+> of time stamping API.
 
-Could you try adding OTP_INFO(256, 3, 0x1000, 0x1000), this should enable O=
-TP support. Could you please test this using the flash_otp_{dump,info,erase=
-,write} tools and add that line?
+I agree that they are different use cases, but with the runtime PHC
+change being now possible, there isn't really a clear-cut moment when an
+application can now say "from this moment on, I'm only getting
+timestamps from the new PHC". Especially when you switch over from the
+PHY to the MAC, a few tens of ms may pass until you get an RX timestamp
+from the PHY, and the MAC PHC may well be up and operational in the
+meantime, and ptp4l synchronizing based on its timestamps.
 
-I've checked ID duplications, because there is the w25qNNjw series. There d=
-oesn't seem to exist a w25q512jw, so we are safe for now. There is only a w=
-25q512jv and it has the id 0xef4020.
-
-fun fact.. the w25q512nwm describes the OTP lock bit for the first OTP regi=
-on (the one which is not documented and I've found out that its used for st=
-oring the SFDP) as SFDP lock bit. See ch "7.1.1 Security Register Lock Bits=
- (LB3, LB2, LB1, SFDP Lock bit)". So we finally have evidence :)
-
--michael
-
-Hi,
-
-Thanks for the review..=20
-
-Can you please share the documentation about OTP_INFO settings(Advantages e=
-tc..) if any.
-
-Can you please share more info on  flash_otp_{dump,info,erase,write} tools.
-
-Thanks,
-Sajida
-
-[1]
-https://lore.kernel.org/linux-mtd/4304e19f3399a0a6e856119d01ccabe0@walle.cc=
-/
+I don't have a clear idea how to put it in practice, either. I'll think
+about it, but the problem I see is that the phc_index reported by
+"ethtool -T" becomes a fuzzy concept in the presence of multiple PHCs.
+Adding the ability to retrieve timestamps from all of them doesn't make
+it any easier to select which one gets reported to ethtool.
+Maybe there's room for both the sysfs and the socket option after all.=
