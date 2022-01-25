@@ -2,843 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A649CC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B50C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454268AbiAYI6c (ORCPT
+        id S1453717AbiAYI6m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:58:32 -0500
-Received: from vulcan.natalenko.name ([104.207.131.136]:36788 "EHLO
-        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452549AbiAYItp (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:49:45 -0500
-Received: from spock.localnet (unknown [83.148.33.151])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id F093ED845FF;
-        Tue, 25 Jan 2022 09:49:38 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1643100579;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yA0TAlD+Kll6QGafIKb9QrjiPYhMhRjjMFmK+YKHguc=;
-        b=s8oBOf/lMS37Owkj9VnX+ufKnf7yCO0GztyVf1b1txRSygKbhGB+xub7i6ZsjqsVvvR5Fi
-        WyaSa7RzomH3BJrPzXpQj1Kh4coZPSjxLvGj7F2P3DEql6Iu2KIMVdpxjUa5xSg5zje7Ld
-        Ky7iiXFqckXcdYJCFHV81ewH6KxegxI=
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Eugene Shalygin <eugene.shalygin@gmail.com>
-Cc:     andy.shevchenko@gmail.com, pauk.denis@gmail.com,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org
-Subject: Re: [ASUS EC Sensors v8 1/3] hwmon: (asus-ec-sensors) add driver for ASUS EC
-Date:   Tue, 25 Jan 2022 09:49:37 +0100
-Message-ID: <4710352.31r3eYUQgx@natalenko.name>
-In-Reply-To: <20220124015658.687309-2-eugene.shalygin@gmail.com>
-References: <20220124015658.687309-1-eugene.shalygin@gmail.com> <20220124015658.687309-2-eugene.shalygin@gmail.com>
+        Tue, 25 Jan 2022 03:58:42 -0500
+Received: from mail-am6eur05on2122.outbound.protection.outlook.com ([40.107.22.122]:13153
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1345299AbiAYIzN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 03:55:13 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZEAAjj0jEJU1sbZsRpmtfNDPoTPXJYYJIcA1N2Js8PEhGLjx18a+fWMcSOP3xxnegxm1E9U2tS0+JTB8qUl3u32th9FRLRnhXOLIS/qTF6gF5zfKVz9/6WX+B6X8X+c2MsSqzBow8NUCJtSb3oPszaG+dBpQJEOujqTdKAndMjJtBiZxKcmOhew/8Aab6nKaxHEgPlkJlqS0epcZkd5z+IID2AAbB95kkpEq2ytXDe+x0dKF3w+tn9/nJeDURqSkfhB04RbifL9fXUvHWD0msUnWRek8aDClm8mTEaO8a10SLOjll8RgVeOOTdqd5cPduxixesmllsNyrKeVEGrGew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4MUXi3GP3jwU117h9vbCj7WYECEimyoTDiQdzXMRMSY=;
+ b=N+MKCx8Mo5VX2kSBdojR4XRDPVjE5VEOy7RuSzZgqg5x+nAxAU/XgA9c9fEFdDzc2e7UrtFp9btazIVVxzHParO+0n1KApA9W/OzCIAwxwkWVOTF+3uhmK+gEKJt4wFgl6yj61RjOVAeEPxKPLljr537sITs/IwAZAQRJ+BTILt0N+6MhRsw4ZJtCUZaTikX5bFxSlH59EkSIXbXUZMCIvQ0dLpf6FoCTa5bRP1ZM1rdZKsPYOqHWaCdJ5Mu5tw6Og0au1Cii5ARCnjB+/jJ1Z0GxHE4UaPGKK0Z7T/JX9jetFPXcFBzS0EdTbX36EhE+fei+VSOMag2Cl7GhKnufQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 217.111.95.66) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=arri.de;
+ dmarc=none action=none header.from=arri.de; dkim=none (message not signed);
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=arrigroup.onmicrosoft.com; s=selector1-arrigroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4MUXi3GP3jwU117h9vbCj7WYECEimyoTDiQdzXMRMSY=;
+ b=g4nSll5o/t9im+Y9+lV/h1gyNjd52ImNQk5Cm489ch50vrVBsBkOPQP3FXRpxJkTuFVlZz24KwUBOIxX0z8e8pc2VLChg787cUwG+xJK1t5Fw5gfeVl/kR03O0nGi2fg8MKabyzNTANzSwpnX3T3lWAXdRTQmjHrsVQu6POOrBk=
+Received: from AS8PR04CA0120.eurprd04.prod.outlook.com (2603:10a6:20b:31e::35)
+ by VI1PR07MB5936.eurprd07.prod.outlook.com (2603:10a6:803:be::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Tue, 25 Jan
+ 2022 08:55:07 +0000
+Received: from VE1EUR02FT033.eop-EUR02.prod.protection.outlook.com
+ (2603:10a6:20b:31e:cafe::bf) by AS8PR04CA0120.outlook.office365.com
+ (2603:10a6:20b:31e::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.19 via Frontend
+ Transport; Tue, 25 Jan 2022 08:55:07 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 217.111.95.66)
+ smtp.mailfrom=arri.de; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=arri.de;
+Received-SPF: Fail (protection.outlook.com: domain of arri.de does not
+ designate 217.111.95.66 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.111.95.66; helo=mta.arri.de;
+Received: from mta.arri.de (217.111.95.66) by
+ VE1EUR02FT033.mail.protection.outlook.com (10.152.12.99) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4909.7 via Frontend Transport; Tue, 25 Jan 2022 08:55:06 +0000
+Received: from localhost.de (192.168.54.129) by mta.arri.de (192.168.100.104)
+ with Microsoft SMTP Server (TLS) id 14.3.498.0; Tue, 25 Jan 2022 09:55:06
+ +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Abel Vesa <abel.vesa@nxp.com>
+CC:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Stefan Riedmueller <s.riedmueller@phytec.de>,
+        Christian Eggers <ceggers@arri.de>
+Subject: [PATCH 6/6] clk: imx6sx: enforce gating of gpmi_io clock
+Date:   Tue, 25 Jan 2022 09:54:40 +0100
+Message-ID: <20220125085440.8768-2-ceggers@arri.de>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220125085440.8768-1-ceggers@arri.de>
+References: <20220125085206.8508-1-ceggers@arri.de>
+ <20220125085440.8768-1-ceggers@arri.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [192.168.54.129]
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5f6c8192-9676-45de-f4be-08d9dfe062bd
+X-MS-TrafficTypeDiagnostic: VI1PR07MB5936:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR07MB5936F3758823DED6E1686336BF5F9@VI1PR07MB5936.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:655;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CH1XQ8GLBGsna/xHp8l+Kw1moy9rT8/DU7zwhk+u8Dz5Vv4+MSeLSJLEEVZgR5hAEe1H08yQk3cJ6JXqm+z7+SmUgqG32SBLsQ/Yr8SWWHwE+keT8N9J3azyMYGNqXWyTBdZsblhAOEAbE+FWY3eoMBCryWeQuy+EIe7zfywkNBrCrieyEyx4AO08XjJnrFLvIs8NW26qaElOuav0xtektgegfzvEip0uvrbLGtLZhAUJfO4cxry1NBIintdCZWAA702ZlM0vymaP1A5QD93P+u1nQPTAgk37fxdr+xYu1S333dlc0s+uGKdetC45e4ZWqZxsaMuSeQ+67QoAgvFRRjg9tnTNYaGGe4jKjYTJ4bppOCi5QdnbIVSEO/A1s7apNM7M0P9kannwofqnUIOYJBJC+ySwuuPVHNZ1dBN6N5hMsQGJvbh8wbpZ4PUu13LhSPJc5mogT6fsrFIe+WtJIdVZ5F7ieVdC/Vx+wELd9PjYQKGcnkRX++D6WR5LlHbTzjAJBaLRW6qvk4YUdUc4FPSvAqelA1zGJWD0Kgt1Sn5u76pKhLYU2ISjFkhAbY5/3TvS0+xwm5lOmqibHCx3ndqRdmXOxoNbZ0elQWv/y2jJ5oJnf95SkeCsWSq8Z8ge9XsKwEzoJckVORoyMiIsX8reGPzfGymJXB/I/1JE536eUv8yuHSNcm9FlPiPO9v6DdyB7XYg58sROBQDTKeOeLpQpxgqUwjfTGCn/mf3jo=
+X-Forefront-Antispam-Report: CIP:217.111.95.66;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mta.arri.de;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(16526019)(5660300002)(426003)(1076003)(36756003)(82310400004)(47076005)(2616005)(2906002)(186003)(26005)(336012)(107886003)(36860700001)(508600001)(54906003)(6666004)(6862004)(4326008)(70206006)(356005)(70586007)(86362001)(40460700003)(8936002)(316002)(8676002)(81166007)(83380400001)(32563001)(36900700001)(20210929001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: arri.de
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 08:55:06.9420
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5f6c8192-9676-45de-f4be-08d9dfe062bd
+X-MS-Exchange-CrossTenant-Id: e6a73a5a-614d-4c51-b3e3-53b660a9433a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e6a73a5a-614d-4c51-b3e3-53b660a9433a;Ip=[217.111.95.66];Helo=[mta.arri.de]
+X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT033.eop-EUR02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR07MB5936
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On pond=C4=9Bl=C3=AD 24. ledna 2022 2:56:43 CET Eugene Shalygin wrote:
-> This driver provides the same data as the asus_wmi_ec_sensors driver
-> (and gets it from the same source) but does not use WMI, polling
-> the ACPI EC directly.
->=20
-> That provides two enhancements: sensor reading became quicker (on some
-> systems or kernel configuration it took almost a full second to read
-> all the sensors, that transfers less than 15 bytes of data), the driver
-> became more flexible. The driver now relies on ACPI mutex to lock access
-> to the EC in the same way as the WMI code does.
->=20
-> Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
+Clock parent and divider changes are both glitchy for qspi2_clock_root.
+Enforce that the child clock is gated.
 
-Given minor changes against v7, I think my "Tested-by:" should have been pr=
-eserved.
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+---
+ drivers/clk/imx/clk-imx6sx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> ---
->  MAINTAINERS                     |   6 +
->  drivers/hwmon/Kconfig           |  11 +
->  drivers/hwmon/Makefile          |   1 +
->  drivers/hwmon/asus-ec-sensors.c | 694 ++++++++++++++++++++++++++++++++
->  4 files changed, 712 insertions(+)
->  create mode 100644 drivers/hwmon/asus-ec-sensors.c
->=20
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index fddd28d3db15..845f09bc0457 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3012,6 +3012,12 @@ L:	linux-hwmon@vger.kernel.org
->  S:	Maintained
->  F:	drivers/hwmon/asus_wmi_ec_sensors.c
-> =20
-> +ASUS EC HARDWARE MONITOR DRIVER
-> +M:	Eugene Shalygin <eugene.shalygin@gmail.com>
-> +L:	linux-hwmon@vger.kernel.org
-> +S:	Maintained
-> +F:	drivers/hwmon/asus-ec-sensors.c
-> +
->  ASUS WIRELESS RADIO CONTROL DRIVER
->  M:	Jo=C3=A3o Paulo Rechi Vita <jprvita@gmail.com>
->  L:	platform-driver-x86@vger.kernel.org
-> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-> index 43e5245874ad..2c16b19d2c03 100644
-> --- a/drivers/hwmon/Kconfig
-> +++ b/drivers/hwmon/Kconfig
-> @@ -2253,6 +2253,17 @@ config SENSORS_ASUS_WMI_EC
->  	  This driver can also be built as a module. If so, the module
->  	  will be called asus_wmi_sensors_ec.
-> =20
-> +config SENSORS_ASUS_EC
-> +	tristate "ASUS EC Sensors"
-> +	help
-> +	  If you say yes here you get support for the ACPI embedded controller
-> +	  hardware monitoring interface found in ASUS motherboards. The driver
-> +	  currently supports B550/X570 boards, although other ASUS boards might
-> +	  provide this monitoring interface as well.
-> +
-> +	  This driver can also be built as a module. If so, the module
-> +	  will be called asus_ec_sensors.
-> +
->  endif # ACPI
-> =20
->  endif # HWMON
-> diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
-> index 3a1551b3d570..2e5c216bb5d7 100644
-> --- a/drivers/hwmon/Makefile
-> +++ b/drivers/hwmon/Makefile
-> @@ -9,6 +9,7 @@ obj-$(CONFIG_HWMON_VID)		+=3D hwmon-vid.o
->  # APCI drivers
->  obj-$(CONFIG_SENSORS_ACPI_POWER) +=3D acpi_power_meter.o
->  obj-$(CONFIG_SENSORS_ATK0110)	+=3D asus_atk0110.o
-> +obj-$(CONFIG_SENSORS_ASUS_EC)	+=3D asus-ec-sensors.o
->  obj-$(CONFIG_SENSORS_ASUS_WMI)	+=3D asus_wmi_sensors.o
->  obj-$(CONFIG_SENSORS_ASUS_WMI_EC)	+=3D asus_wmi_ec_sensors.o
-> =20
-> diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sens=
-ors.c
-> new file mode 100644
-> index 000000000000..7285334c7d80
-> --- /dev/null
-> +++ b/drivers/hwmon/asus-ec-sensors.c
-> @@ -0,0 +1,694 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * HWMON driver for ASUS motherboards that publish some sensor values
-> + * via the embedded controller registers.
-> + *
-> + * Copyright (C) 2021 Eugene Shalygin <eugene.shalygin@gmail.com>
-> +
-> + * EC provides:
-> + * - Chipset temperature
-> + * - CPU temperature
-> + * - Motherboard temperature
-> + * - T_Sensor temperature
-> + * - VRM temperature
-> + * - Water In temperature
-> + * - Water Out temperature
-> + * - CPU Optional fan RPM
-> + * - Chipset fan RPM
-> + * - VRM Heat Sink fan RPM
-> + * - Water Flow fan RPM
-> + * - CPU current
-> + */
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/bitops.h>
-> +#include <linux/dev_printk.h>
-> +#include <linux/dmi.h>
-> +#include <linux/hwmon.h>
-> +#include <linux/init.h>
-> +#include <linux/jiffies.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/sort.h>
-> +#include <linux/units.h>
-> +
-> +#include <asm/unaligned.h>
-> +
-> +static char *mutex_path_override;
-> +
-> +/* Writing to this EC register switches EC bank */
-> +#define ASUS_EC_BANK_REGISTER	0xff
-> +#define SENSOR_LABEL_LEN	16
-> +
-> +/*
-> + * Arbitrary set max. allowed bank number. Required for sorting banks and
-> + * currently is overkill with just 2 banks used at max, but for the sake
-> + * of alignment let's set it to a higher value.
-> + */
-> +#define ASUS_EC_MAX_BANK	3
-> +
-> +#define ACPI_LOCK_DELAY_MS	500
-> +
-> +/* ACPI mutex for locking access to the EC for the firmware */
-> +#define ASUS_HW_ACCESS_MUTEX_ASMX	"\\AMW0.ASMX"
-> +
-> +/* There are two variants of the vendor spelling */
-> +#define VENDOR_ASUS_UPPER_CASE	"ASUSTeK COMPUTER INC."
-> +
-> +typedef union {
-> +	u32 value;
-> +	struct {
-> +		u8 index;
-> +		u8 bank;
-> +		u8 size;
-> +		u8 dummy;
-> +	} components;
-> +} sensor_address;
-> +
-> +#define MAKE_SENSOR_ADDRESS(size, bank, index) {                        =
-       \
-> +		.value =3D (size << 16) + (bank << 8) + index                    \
-> +	}
-> +
-> +static u32 hwmon_attributes[hwmon_max] =3D {
-> +	[hwmon_chip] =3D HWMON_C_REGISTER_TZ,
-> +	[hwmon_temp] =3D HWMON_T_INPUT | HWMON_T_LABEL,
-> +	[hwmon_in] =3D HWMON_I_INPUT | HWMON_I_LABEL,
-> +	[hwmon_curr] =3D HWMON_C_INPUT | HWMON_C_LABEL,
-> +	[hwmon_fan] =3D HWMON_F_INPUT | HWMON_F_LABEL,
-> +};
-> +
-> +struct ec_sensor_info {
-> +	char label[SENSOR_LABEL_LEN];
-> +	enum hwmon_sensor_types type;
-> +	sensor_address addr;
-> +};
-> +
-> +#define EC_SENSOR(sensor_label, sensor_type, size, bank, index) {       =
-       \
-> +		.label =3D sensor_label, .type =3D sensor_type,                    \
-> +		.addr =3D MAKE_SENSOR_ADDRESS(size, bank, index),                \
-> +	}
-> +
-> +enum ec_sensors {
-> +	/* chipset temperature [=E2=84=83] */
-> +	ec_sensor_temp_chipset,
-> +	/* CPU temperature [=E2=84=83] */
-> +	ec_sensor_temp_cpu,
-> +	/* motherboard temperature [=E2=84=83] */
-> +	ec_sensor_temp_mb,
-> +	/* "T_Sensor" temperature sensor reading [=E2=84=83] */
-> +	ec_sensor_temp_t_sensor,
-> +	/* VRM temperature [=E2=84=83] */
-> +	ec_sensor_temp_vrm,
-> +	/* CPU_Opt fan [RPM] */
-> +	ec_sensor_fan_cpu_opt,
-> +	/* VRM heat sink fan [RPM] */
-> +	ec_sensor_fan_vrm_hs,
-> +	/* Chipset fan [RPM] */
-> +	ec_sensor_fan_chipset,
-> +	/* Water flow sensor reading [RPM] */
-> +	ec_sensor_fan_water_flow,
-> +	/* CPU current [A] */
-> +	ec_sensor_curr_cpu,
-> +	/* "Water_In" temperature sensor reading [=E2=84=83] */
-> +	ec_sensor_temp_water_in,
-> +	/* "Water_Out" temperature sensor reading [=E2=84=83] */
-> +	ec_sensor_temp_water_out,
-> +};
-> +
-> +#define SENSOR_TEMP_CHIPSET BIT(ec_sensor_temp_chipset)
-> +#define SENSOR_TEMP_CPU BIT(ec_sensor_temp_cpu)
-> +#define SENSOR_TEMP_MB BIT(ec_sensor_temp_mb)
-> +#define SENSOR_TEMP_T_SENSOR BIT(ec_sensor_temp_t_sensor)
-> +#define SENSOR_TEMP_VRM BIT(ec_sensor_temp_vrm)
-> +#define SENSOR_FAN_CPU_OPT BIT(ec_sensor_fan_cpu_opt)
-> +#define SENSOR_FAN_VRM_HS BIT(ec_sensor_fan_vrm_hs)
-> +#define SENSOR_FAN_CHIPSET BIT(ec_sensor_fan_chipset)
-> +#define SENSOR_FAN_WATER_FLOW BIT(ec_sensor_fan_water_flow)
-> +#define SENSOR_CURR_CPU BIT(ec_sensor_curr_cpu)
-> +#define SENSOR_TEMP_WATER_IN BIT(ec_sensor_temp_water_in)
-> +#define SENSOR_TEMP_WATER_OUT BIT(ec_sensor_temp_water_out)
-> +
-> +/* All the known sensors for ASUS EC controllers */
-> +static const struct ec_sensor_info known_ec_sensors[] =3D {
-> +	[ec_sensor_temp_chipset] =3D
-> +		EC_SENSOR("Chipset", hwmon_temp, 1, 0x00, 0x3a),
-> +	[ec_sensor_temp_cpu] =3D EC_SENSOR("CPU", hwmon_temp, 1, 0x00, 0x3b),
-> +	[ec_sensor_temp_mb] =3D
-> +		EC_SENSOR("Motherboard", hwmon_temp, 1, 0x00, 0x3c),
-> +	[ec_sensor_temp_t_sensor] =3D
-> +		EC_SENSOR("T_Sensor", hwmon_temp, 1, 0x00, 0x3d),
-> +	[ec_sensor_temp_vrm] =3D EC_SENSOR("VRM", hwmon_temp, 1, 0x00, 0x3e),
-> +	[ec_sensor_fan_cpu_opt] =3D
-> +		EC_SENSOR("CPU_Opt", hwmon_fan, 2, 0x00, 0xb0),
-> +	[ec_sensor_fan_vrm_hs] =3D EC_SENSOR("VRM HS", hwmon_fan, 2, 0x00, 0xb2=
-),
-> +	[ec_sensor_fan_chipset] =3D
-> +		EC_SENSOR("Chipset", hwmon_fan, 2, 0x00, 0xb4),
-> +	[ec_sensor_fan_water_flow] =3D
-> +		EC_SENSOR("Water_Flow", hwmon_fan, 2, 0x00, 0xbc),
-> +	[ec_sensor_curr_cpu] =3D EC_SENSOR("CPU", hwmon_curr, 1, 0x00, 0xf4),
-> +	[ec_sensor_temp_water_in] =3D
-> +		EC_SENSOR("Water_In", hwmon_temp, 1, 0x01, 0x00),
-> +	[ec_sensor_temp_water_out] =3D
-> +		EC_SENSOR("Water_Out", hwmon_temp, 1, 0x01, 0x01),
-> +};
-> +
-> +/* Shortcuts for common combinations */
-> +#define SENSOR_SET_TEMP_CHIPSET_CPU_MB                                  =
-       \
-> +	(SENSOR_TEMP_CHIPSET | SENSOR_TEMP_CPU | SENSOR_TEMP_MB)
-> +#define SENSOR_SET_TEMP_WATER (SENSOR_TEMP_WATER_IN | SENSOR_TEMP_WATER_=
-OUT)
-> +
-> +#define DMI_EXACT_MATCH_BOARD(vendor, name, sensors) {                  =
-       \
-> +	.matches =3D {                                                         =
-  \
-> +		DMI_EXACT_MATCH(DMI_BOARD_VENDOR, vendor),                     \
-> +		DMI_EXACT_MATCH(DMI_BOARD_NAME, name),                         \
-> +	},                                                                     \
-> +	.driver_data =3D (void *)(sensors), \
-> +}
-> +
-> +static const struct dmi_system_id asus_ec_dmi_table[] __initconst =3D {
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "PRIME X570-PRO",
-> +		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
-> +		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET),
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "Pro WS X570-ACE",
-> +		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
-> +		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
-> +			      "ROG CROSSHAIR VIII DARK HERO",
-> +		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
-> +		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
-> +		SENSOR_FAN_CPU_OPT | SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
-> +			      "ROG CROSSHAIR VIII FORMULA",
-> +		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
-> +		SENSOR_TEMP_VRM | SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
-> +		SENSOR_CURR_CPU),
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG CROSSHAIR VIII HERO",
-> +		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
-> +		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
-> +		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
-> +		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
-> +			      "ROG CROSSHAIR VIII IMPACT",
-> +		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
-> +		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX B550-E GAMING",
-> +		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
-> +		SENSOR_TEMP_T_SENSOR |
-> +		SENSOR_TEMP_VRM | SENSOR_FAN_CPU_OPT),
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX B550-I GAMING",
-> +		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
-> +		SENSOR_TEMP_T_SENSOR |
-> +		SENSOR_TEMP_VRM | SENSOR_FAN_VRM_HS | SENSOR_CURR_CPU),
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-E GAMING",
-> +		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
-> +		SENSOR_TEMP_T_SENSOR |
-> +		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-F GAMING",
-> +		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
-> +		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET),
-> +	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-I GAMING",
-> +		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_VRM_HS |
-> +		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
-> +	{}
-> +};
-> +
-> +struct ec_sensor {
-> +	unsigned int info_index;
-> +	u32 cached_value;
-> +};
-> +
-> +struct ec_sensors_data {
-> +	unsigned long board_sensors;
-> +	struct ec_sensor *sensors;
-> +	/* EC registers to read from */
-> +	u16 *registers;
-> +	u8 *read_buffer;
-> +	/* sorted list of unique register banks */
-> +	u8 banks[ASUS_EC_MAX_BANK + 1];
-> +	/* in jiffies */
-> +	unsigned long last_updated;
-> +	acpi_handle aml_mutex;
-> +	/* number of board EC sensors */
-> +	u8 nr_sensors;
-> +	/*
-> +	 * number of EC registers to read
-> +	 * (sensor might span more than 1 register)
-> +	 */
-> +	u8 nr_registers;
-> +	/* number of unique register banks */
-> +	u8 nr_banks;
-> +};
-> +
-> +static u8 register_bank(u16 reg)
-> +{
-> +	return reg >> 8;
-> +}
-> +
-> +static u8 register_index(u16 reg)
-> +{
-> +	return reg & 0x00ff;
-> +}
-> +
-> +static const struct ec_sensor_info *
-> +get_sensor_info(const struct ec_sensors_data *state, int index)
-> +{
-> +	return &known_ec_sensors[state->sensors[index].info_index];
-> +}
-> +
-> +static int find_ec_sensor_index(const struct ec_sensors_data *ec,
-> +				enum hwmon_sensor_types type, int channel)
-> +{
-> +	unsigned int i;
-> +
-> +	for (i =3D 0; i < ec->nr_sensors; i++) {
-> +		if (get_sensor_info(ec, i)->type =3D=3D type) {
-> +			if (channel =3D=3D 0)
-> +				return i;
-> +			channel--;
-> +		}
-> +	}
-> +	return -ENOENT;
-> +}
-> +
-> +static int __init bank_compare(const void *a, const void *b)
-> +{
-> +	return *((const s8 *)a) - *((const s8 *)b);
-> +}
-> +
-> +static int __init board_sensors_count(unsigned long sensors)
-> +{
-> +	return hweight_long(sensors);
-> +}
-> +
-> +static void __init setup_sensor_data(struct ec_sensors_data *ec)
-> +{
-> +	struct ec_sensor *s =3D ec->sensors;
-> +	bool bank_found;
-> +	int i, j;
-> +	u8 bank;
-> +
-> +	ec->nr_banks =3D 0;
-> +	ec->nr_registers =3D 0;
-> +
-> +	for_each_set_bit(i, &ec->board_sensors,
-> +			  BITS_PER_TYPE(ec->board_sensors)) {
-> +		s->info_index =3D i;
-> +		s->cached_value =3D 0;
-> +		ec->nr_registers +=3D
-> +			known_ec_sensors[s->info_index].addr.components.size;
-> +		bank_found =3D false;
-> +		bank =3D known_ec_sensors[s->info_index].addr.components.bank;
-> +		for (j =3D 0; j < ec->nr_banks; j++) {
-> +			if (ec->banks[j] =3D=3D bank) {
-> +				bank_found =3D true;
-> +				break;
-> +			}
-> +		}
-> +		if (!bank_found) {
-> +			ec->banks[ec->nr_banks++] =3D bank;
-> +		}
-> +		s++;
-> +	}
-> +	sort(ec->banks, ec->nr_banks, 1, bank_compare, NULL);
-> +}
-> +
-> +static void __init fill_ec_registers(struct ec_sensors_data *ec)
-> +{
-> +	const struct ec_sensor_info *si;
-> +	unsigned int i, j, register_idx =3D 0;
-> +
-> +	for (i =3D 0; i < ec->nr_sensors; ++i) {
-> +		si =3D get_sensor_info(ec, i);
-> +		for (j =3D 0; j < si->addr.components.size; ++j, ++register_idx) {
-> +			ec->registers[register_idx] =3D
-> +				(si->addr.components.bank << 8) +
-> +				si->addr.components.index + j;
-> +		}
-> +	}
-> +}
-> +
-> +static acpi_handle __init asus_hw_access_mutex(struct device *dev)
-> +{
-> +	const char *mutex_path;
-> +	acpi_handle res;
-> +	int status;
-> +
-> +	mutex_path =3D mutex_path_override ?
-> +		mutex_path_override : ASUS_HW_ACCESS_MUTEX_ASMX;
-> +
-> +	status =3D acpi_get_handle(NULL, (acpi_string)mutex_path, &res);
-> +	if (ACPI_FAILURE(status)) {
-> +		dev_err(dev,
-> +			"Could not get hardware access guard mutex '%s': error %d",
-> +			mutex_path, status);
-> +		return NULL;
-> +	}
-> +	return res;
-> +}
-> +
-> +static int asus_ec_bank_switch(u8 bank, u8 *old)
-> +{
-> +	int status =3D 0;
-> +
-> +	if (old) {
-> +		status =3D ec_read(ASUS_EC_BANK_REGISTER, old);
-> +	}
-> +	if (status || (old && (*old =3D=3D bank)))
-> +		return status;
-> +	return ec_write(ASUS_EC_BANK_REGISTER, bank);
-> +}
-> +
-> +static int asus_ec_block_read(const struct device *dev,
-> +			      struct ec_sensors_data *ec)
-> +{
-> +	int ireg, ibank, status;
-> +	u8 bank, reg_bank, prev_bank;
-> +
-> +	bank =3D 0;
-> +	status =3D asus_ec_bank_switch(bank, &prev_bank);
-> +	if (status) {
-> +		dev_warn(dev, "EC bank switch failed");
-> +		return status;
-> +	}
-> +
-> +	if (prev_bank) {
-> +		/* oops... somebody else is working with the EC too */
-> +		dev_warn(dev,
-> +			"Concurrent access to the ACPI EC detected.\nRace condition possible.=
-");
-> +	}
-> +
-> +	/* read registers minimizing bank switches. */
-> +	for (ibank =3D 0; ibank < ec->nr_banks; ibank++) {
-> +		if (bank !=3D ec->banks[ibank]) {
-> +			bank =3D ec->banks[ibank];
-> +			if (asus_ec_bank_switch(bank, NULL)) {
-> +				dev_warn(dev, "EC bank switch to %d failed",
-> +					 bank);
-> +				break;
-> +			}
-> +		}
-> +		for (ireg =3D 0; ireg < ec->nr_registers; ireg++) {
-> +			reg_bank =3D register_bank(ec->registers[ireg]);
-> +			if (reg_bank < bank) {
-> +				continue;
-> +			}
-> +			ec_read(register_index(ec->registers[ireg]),
-> +				ec->read_buffer + ireg);
-> +		}
-> +	}
-> +
-> +	status =3D asus_ec_bank_switch(prev_bank, NULL);
-> +	return status;
-> +}
-> +
-> +static inline u32 get_sensor_value(const struct ec_sensor_info *si, u8 *=
-data)
-> +{
-> +	switch (si->addr.components.size) {
-> +	case 1:
-> +		return *data;
-> +	case 2:
-> +		return get_unaligned_be16(data);
-> +	case 4:
-> +		return get_unaligned_be32(data);
-> +	default:
-> +		return 0;
-> +	}
-> +}
-> +
-> +static void update_sensor_values(struct ec_sensors_data *ec, u8 *data)
-> +{
-> +	const struct ec_sensor_info *si;
-> +	struct ec_sensor *s;
-> +
-> +	for (s =3D ec->sensors; s !=3D ec->sensors + ec->nr_sensors; s++) {
-> +		si =3D &known_ec_sensors[s->info_index];
-> +		s->cached_value =3D get_sensor_value(si, data);
-> +		data +=3D si->addr.components.size;
-> +	}
-> +}
-> +
-> +static int update_ec_sensors(const struct device *dev,
-> +			     struct ec_sensors_data *ec)
-> +{
-> +	int status;
-> +
-> +	/*
-> +	 * ASUS DSDT does not specify that access to the EC has to be guarded,
-> +	 * but firmware does access it via ACPI
-> +	 */
-> +	if (ACPI_FAILURE(acpi_acquire_mutex(ec->aml_mutex, NULL,
-> +					    ACPI_LOCK_DELAY_MS))) {
-> +		dev_err(dev, "Failed to acquire AML mutex");
-> +		status =3D -EBUSY;
-> +		goto cleanup;
-> +	}
-> +
-> +	status =3D asus_ec_block_read(dev, ec);
-> +
-> +	if (!status) {
-> +		update_sensor_values(ec, ec->read_buffer);
-> +	}
-> +	if (ACPI_FAILURE(acpi_release_mutex(ec->aml_mutex, NULL))) {
-> +		dev_err(dev, "Failed to release AML mutex");
-> +	}
-> +cleanup:
-> +	return status;
-> +}
-> +
-> +static int scale_sensor_value(u32 value, int data_type)
-> +{
-> +	switch (data_type) {
-> +	case hwmon_curr:
-> +	case hwmon_temp:
-> +	case hwmon_in:
-> +		return value * MILLI;
-> +	default:
-> +		return value;
-> +	}
-> +}
-> +
-> +static int get_cached_value_or_update(const struct device *dev,
-> +				      int sensor_index,
-> +				      struct ec_sensors_data *state, u32 *value)
-> +{
-> +	if (time_after(jiffies, state->last_updated + HZ)) {
-> +		if (update_ec_sensors(dev, state)) {
-> +			dev_err(dev, "update_ec_sensors() failure\n");
-> +			return -EIO;
-> +		}
-> +
-> +		state->last_updated =3D jiffies;
-> +	}
-> +
-> +	*value =3D state->sensors[sensor_index].cached_value;
-> +	return 0;
-> +}
-> +
-> +/*
-> + * Now follow the functions that implement the hwmon interface
-> + */
-> +
-> +static int asus_ec_hwmon_read(struct device *dev, enum hwmon_sensor_type=
-s type,
-> +			      u32 attr, int channel, long *val)
-> +{
-> +	int ret;
-> +	u32 value =3D 0;
-> +
-> +	struct ec_sensors_data *state =3D dev_get_drvdata(dev);
-> +	int sidx =3D find_ec_sensor_index(state, type, channel);
-> +
-> +	if (sidx < 0) {
-> +		return sidx;
-> +	}
-> +
-> +	ret =3D get_cached_value_or_update(dev, sidx, state, &value);
-> +	if (!ret) {
-> +		*val =3D scale_sensor_value(value,
-> +					  get_sensor_info(state, sidx)->type);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int asus_ec_hwmon_read_string(struct device *dev,
-> +				     enum hwmon_sensor_types type, u32 attr,
-> +				     int channel, const char **str)
-> +{
-> +	struct ec_sensors_data *state =3D dev_get_drvdata(dev);
-> +	int sensor_index =3D find_ec_sensor_index(state, type, channel);
-> +	*str =3D get_sensor_info(state, sensor_index)->label;
-> +
-> +	return 0;
-> +}
-> +
-> +static umode_t asus_ec_hwmon_is_visible(const void *drvdata,
-> +					enum hwmon_sensor_types type, u32 attr,
-> +					int channel)
-> +{
-> +	const struct ec_sensors_data *state =3D drvdata;
-> +
-> +	return find_ec_sensor_index(state, type, channel) >=3D 0 ? S_IRUGO : 0;
-> +}
-> +
-> +static int __init
-> +asus_ec_hwmon_add_chan_info(struct hwmon_channel_info *asus_ec_hwmon_cha=
-n,
-> +			     struct device *dev, int num,
-> +			     enum hwmon_sensor_types type, u32 config)
-> +{
-> +	int i;
-> +	u32 *cfg =3D devm_kcalloc(dev, num + 1, sizeof(*cfg), GFP_KERNEL);
-> +
-> +	if (!cfg)
-> +		return -ENOMEM;
-> +
-> +	asus_ec_hwmon_chan->type =3D type;
-> +	asus_ec_hwmon_chan->config =3D cfg;
-> +	for (i =3D 0; i < num; i++, cfg++)
-> +		*cfg =3D config;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct hwmon_ops asus_ec_hwmon_ops =3D {
-> +	.is_visible =3D asus_ec_hwmon_is_visible,
-> +	.read =3D asus_ec_hwmon_read,
-> +	.read_string =3D asus_ec_hwmon_read_string,
-> +};
-> +
-> +static struct hwmon_chip_info asus_ec_chip_info =3D {
-> +	.ops =3D &asus_ec_hwmon_ops,
-> +};
-> +
-> +static unsigned long __init
-> +get_board_sensors(const struct device *dev)
-> +{
-> +	const struct dmi_system_id *dmi_entry;
-> +
-> +	dmi_entry =3D dmi_first_match(asus_ec_dmi_table);
-> +	if (!dmi_entry) {
-> +		dev_info(dev, "Unsupported board");
-> +		return 0;
-> +	}
-> +
-> +	return (unsigned long)dmi_entry->driver_data;
-> +}
-> +
-> +static int __init configure_sensor_setup(struct device *dev)
-> +{
-> +	struct ec_sensors_data *ec_data =3D dev_get_drvdata(dev);
-> +	int nr_count[hwmon_max] =3D { 0 }, nr_types =3D 0;
-> +	struct device *hwdev;
-> +	struct hwmon_channel_info *asus_ec_hwmon_chan;
-> +	const struct hwmon_channel_info **ptr_asus_ec_ci;
-> +	const struct hwmon_chip_info *chip_info;
-> +	const struct ec_sensor_info *si;
-> +	enum hwmon_sensor_types type;
-> +	unsigned int i;
-> +
-> +	ec_data->board_sensors =3D get_board_sensors(dev);
-> +	if (!ec_data->board_sensors) {
-> +		return -ENODEV;
-> +	}
-> +
-> +	ec_data->nr_sensors =3D board_sensors_count(ec_data->board_sensors);
-> +	ec_data->sensors =3D devm_kcalloc(dev, ec_data->nr_sensors,
-> +					sizeof(struct ec_sensor), GFP_KERNEL);
-> +
-> +	setup_sensor_data(ec_data);
-> +	ec_data->registers =3D devm_kcalloc(dev, ec_data->nr_registers,
-> +					  sizeof(u16), GFP_KERNEL);
-> +	ec_data->read_buffer =3D devm_kcalloc(dev, ec_data->nr_registers,
-> +					    sizeof(u8), GFP_KERNEL);
-> +
-> +	if (!ec_data->registers || !ec_data->read_buffer) {
-> +		return -ENOMEM;
-> +	}
-> +
-> +	fill_ec_registers(ec_data);
-> +
-> +	ec_data->aml_mutex =3D asus_hw_access_mutex(dev);
-> +
-> +	for (i =3D 0; i < ec_data->nr_sensors; ++i) {
-> +		si =3D get_sensor_info(ec_data, i);
-> +		if (!nr_count[si->type])
-> +			++nr_types;
-> +		++nr_count[si->type];
-> +	}
-> +
-> +	if (nr_count[hwmon_temp])
-> +		nr_count[hwmon_chip]++, nr_types++;
-> +
-> +	asus_ec_hwmon_chan =3D devm_kcalloc(
-> +		dev, nr_types, sizeof(*asus_ec_hwmon_chan), GFP_KERNEL);
-> +	if (!asus_ec_hwmon_chan)
-> +		return -ENOMEM;
-> +
-> +	ptr_asus_ec_ci =3D devm_kcalloc(dev, nr_types + 1,
-> +				       sizeof(*ptr_asus_ec_ci), GFP_KERNEL);
-> +	if (!ptr_asus_ec_ci)
-> +		return -ENOMEM;
-> +
-> +	asus_ec_chip_info.info =3D ptr_asus_ec_ci;
-> +	chip_info =3D &asus_ec_chip_info;
-> +
-> +	for (type =3D 0; type < hwmon_max; ++type) {
-> +		if (!nr_count[type])
-> +			continue;
-> +
-> +		asus_ec_hwmon_add_chan_info(asus_ec_hwmon_chan, dev,
-> +					     nr_count[type], type,
-> +					     hwmon_attributes[type]);
-> +		*ptr_asus_ec_ci++ =3D asus_ec_hwmon_chan++;
-> +	}
-> +
-> +	dev_info(dev, "board has %d EC sensors that span %d registers",
-> +		 ec_data->nr_sensors, ec_data->nr_registers);
-> +
-> +	hwdev =3D devm_hwmon_device_register_with_info(dev, "asusec",
-> +						     ec_data, chip_info, NULL);
-> +
-> +	return PTR_ERR_OR_ZERO(hwdev);
-> +}
-> +
-> +static int __init asus_ec_probe(struct platform_device *pdev)
-> +{
-> +	struct asus_ec_sensors *state;
-> +	int status =3D 0;
-> +
-> +	state =3D devm_kzalloc(&pdev->dev, sizeof(struct ec_sensors_data),
-> +			     GFP_KERNEL);
-> +
-> +	if (!state) {
-> +		return -ENOMEM;
-> +	}
-> +
-> +	dev_set_drvdata(&pdev->dev, state);
-> +	status =3D configure_sensor_setup(&pdev->dev);
-> +	return status;
-> +}
-> +
-> +static const struct acpi_device_id acpi_ec_ids[] =3D {
-> +	/* Embedded Controller Device */
-> +	{ "PNP0C09", 0 },
-> +	{}
-> +};
-> +
-> +static struct platform_driver asus_ec_sensors_platform_driver =3D {
-> +	.driver =3D {
-> +		.name	=3D "asus-ec-sensors",
-> +		.acpi_match_table =3D acpi_ec_ids,
-> +	},
-> +};
-> +
-> +MODULE_DEVICE_TABLE(dmi, asus_ec_dmi_table);
-> +module_platform_driver_probe(asus_ec_sensors_platform_driver, asus_ec_pr=
-obe);
-> +
-> +module_param_named(mutex_path, mutex_path_override, charp, 0);
-> +MODULE_PARM_DESC(mutex_path,
-> +		 "Override ACPI mutex path used to guard access to hardware");
-> +
-> +MODULE_AUTHOR("Eugene Shalygin <eugene.shalygin@gmail.com>");
-> +MODULE_DESCRIPTION(
-> +	"HWMON driver for sensors accessible via ACPI EC in ASUS motherboards");
-> +MODULE_LICENSE("GPL");
->=20
+diff --git a/drivers/clk/imx/clk-imx6sx.c b/drivers/clk/imx/clk-imx6sx.c
+index cf1c1fad45f9..023a18594ebe 100644
+--- a/drivers/clk/imx/clk-imx6sx.c
++++ b/drivers/clk/imx/clk-imx6sx.c
+@@ -286,7 +286,7 @@ static void __init imx6sx_clocks_init(struct device_node *ccm_node)
+ 	hws[IMX6SX_CLK_ESAI_SEL]           = imx_clk_hw_mux("esai_sel",         base + 0x20,  19,     2,      audio_sels,        ARRAY_SIZE(audio_sels));
+ 	hws[IMX6SX_CLK_CAN_SEL]            = imx_clk_hw_mux("can_sel",          base + 0x20,  8,      2,      can_sels,          ARRAY_SIZE(can_sels));
+ 	hws[IMX6SX_CLK_UART_SEL]           = imx_clk_hw_mux("uart_sel",         base + 0x24,  6,      1,      uart_sels,         ARRAY_SIZE(uart_sels));
+-	hws[IMX6SX_CLK_QSPI2_SEL]          = imx_clk_hw_mux_flags("qspi2_sel", base + 0x2c, 15, 3, qspi2_sels, ARRAY_SIZE(qspi2_sels), CLK_SET_RATE_PARENT);
++	hws[IMX6SX_CLK_QSPI2_SEL]          = imx_clk_hw_mux_flags("qspi2_sel", base + 0x2c, 15, 3, qspi2_sels, ARRAY_SIZE(qspi2_sels), CLK_SET_RATE_PARENT | CLK_SET_PARENT_GATE);
+ 	hws[IMX6SX_CLK_SPDIF_SEL]          = imx_clk_hw_mux("spdif_sel",        base + 0x30,  20,     2,      audio_sels,        ARRAY_SIZE(audio_sels));
+ 	hws[IMX6SX_CLK_AUDIO_SEL]          = imx_clk_hw_mux("audio_sel",        base + 0x30,  7,      2,      audio_sels,        ARRAY_SIZE(audio_sels));
+ 	hws[IMX6SX_CLK_ENET_PRE_SEL]       = imx_clk_hw_mux("enet_pre_sel",     base + 0x34,  15,     3,      enet_pre_sels,     ARRAY_SIZE(enet_pre_sels));
+@@ -441,7 +441,7 @@ static void __init imx6sx_clocks_init(struct device_node *ccm_node)
+ 	hws[IMX6SX_CLK_PWM4]         = imx_clk_hw_gate2("pwm4",          "perclk",            base + 0x78, 22);
+ 	hws[IMX6SX_CLK_GPMI_BCH_APB] = imx_clk_hw_gate2("gpmi_bch_apb",  "usdhc3",            base + 0x78, 24);
+ 	hws[IMX6SX_CLK_GPMI_BCH]     = imx_clk_hw_gate2("gpmi_bch",      "usdhc4",            base + 0x78, 26);
+-	hws[IMX6SX_CLK_GPMI_IO]      = imx_clk_hw_gate2("gpmi_io",       "qspi2_podf",        base + 0x78, 28);
++	hws[IMX6SX_CLK_GPMI_IO]      = imx_clk_hw_gate2_flags("gpmi_io",       "qspi2_podf",        base + 0x78, 28, CLK_SET_RATE_GATE);
+ 	hws[IMX6SX_CLK_GPMI_APB]     = imx_clk_hw_gate2("gpmi_apb",      "usdhc3",            base + 0x78, 30);
+ 
+ 	/* CCGR5 */
+-- 
+Christian Eggers
+Embedded software developer
 
-
-=2D-=20
-Oleksandr Natalenko (post-factum)
-
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
 
