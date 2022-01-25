@@ -2,146 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04130C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:49:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C18FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452521AbiAYItb (ORCPT
+        id S1451605AbiAYItr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:49:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41658 "EHLO
+        Tue, 25 Jan 2022 03:49:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452171AbiAYIpi (ORCPT
+        with ESMTP id S1452376AbiAYIql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:45:38 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918FEC06C5B2
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 23:19:54 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id i62so12569917ybg.5
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 23:19:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=zemX1b6TJ8preP7NBXduR0Q+ixTKnGjWqI4oVSUxJQM=;
-        b=ULwRLrFEYm108CDMrUWSDAjZ5CNZj7xP47ZhW6t5cSurZtNEpy8S1q65A4RaDVKx12
-         Bun3OqnuM6P09OUGoTcZpk9ocmDZjs7lAYDSJMmGWqstk5fja0AefHFEveaAcAPAn/9C
-         ZJVkh8z2L5HWXJwB9tAiaQUlfaegKhzuR++Y2/r8arrEl3mAZDL0MKx+WCwLZZWJyqwO
-         CM+pJpEIKHtrozEByp/X9nC+GR7FoyLBorufFQn8LEs2nSFOoVXIQBQbjr7SJCpijZwL
-         P8R+EXKhPUNeaxLdFAzvHx5QKvXJr3o8+6LsiLVWlYKolaygMAidzxGJc7N1rhgGjSJq
-         Jz4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=zemX1b6TJ8preP7NBXduR0Q+ixTKnGjWqI4oVSUxJQM=;
-        b=YDUtdvedxkm3KOApuf6eWbm6KiXCD73Xg7ljiBga/+7ARxuLBgR67F6n0wIgWiRGcR
-         ePCDS0Q6ZHZyZUkoWcWMkLh02VG8qaxcjAKz7Uny1Y9qrnMjco94mn0PiGehN3lBNJfE
-         3Ri2e8QL/4ak2lOVYozIPnNrJANaIXaLyeo+A8FXu7yHCJQRYG+dy7FORFmUE/ki21QP
-         uECZxFDY6Eh4Kl4tSIsrEa2E/AkhvvOyYSKY9HX7US+JNSioIgrj7guHDk2/RNmd71P3
-         pa0mSaXArzhEFSmt8Vgm0yvVzqwgM2I+DT28WYVBETb4WAyPSK2r+O9/4ns4KtHl6/ZR
-         WfCw==
-X-Gm-Message-State: AOAM533nL1ly8PexRMxZUL3hJDqXn1ffLY1Ksta3ZYGSM+f9ympzqbMR
-        BwCO7Jm9nACOlCPJzxDji3yDXvZgf0KYLs/Eqe3wVA==
-X-Google-Smtp-Source: ABdhPJzSCNIwSW9knqOAWRknnTZN1kDocqrpGezHGXfDLZyDvdZTj/Sd+9zHZuCWNPheDPwKCUWGePMrat72HKT+abc=
-X-Received: by 2002:a81:1186:0:b0:2ca:287c:6cd5 with SMTP id
- 00721157ae682-2ca287c6f97mr4858637b3.378.1643095193592; Mon, 24 Jan 2022
- 23:19:53 -0800 (PST)
+        Tue, 25 Jan 2022 03:46:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961EDC055A8C;
+        Mon, 24 Jan 2022 23:21:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FFE161307;
+        Tue, 25 Jan 2022 07:21:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5A75C340E8;
+        Tue, 25 Jan 2022 07:21:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643095289;
+        bh=/7vav1tP1IFHJLsPaTScBMjyW/1YdDoF34LK07MnAaw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=O2BCshx+Gvniy0Y60rn1m43b24EsUlYsOT6aMKgW8HlxYziOQZJiE79PEhUYG0ISg
+         pCph+I+WK0BwuVIcqeEODNwzEfgOWgjPdVAqI3kPxC0340goLtbFMAyh8GFGX5c7tb
+         jjEttOxIEKlFt8LZRUWRh6yJaMrMAkD3jLqFUoBekbt8FY7iwye7gNQXe9zmIQwsDS
+         bjnLAS/424xi2N9ry4FETJlYKAsRCoEmHrjs3T2PWZzNIjlYG/EympisqdFXttfH7z
+         Q6nKFMH7wnju6NVVBzuMelO4G/VlXRxiWQuwUIg6ouGrwX2BLtjT59DYRUHMcJPh2F
+         Ld2dDFkb5pLkA==
+Received: by mail-yb1-f177.google.com with SMTP id k17so3718029ybk.6;
+        Mon, 24 Jan 2022 23:21:29 -0800 (PST)
+X-Gm-Message-State: AOAM533pIRDiaHX8ID7cV64He8OZZRp5OnPNuiVNYONZN13Vsqr83Oqm
+        xKMBz/rlfLamP1AmA5C5wFQzbvoB+9XjT6tm0M0=
+X-Google-Smtp-Source: ABdhPJyqYR4DFbAGWIBtoB383m5E/+ETS5HAwrtiClUKnfSskVUeJQfarucshkcm6G/i3SfpNfQq1VBWaHCevUsDBfw=
+X-Received: by 2002:a5b:c01:: with SMTP id f1mr27513023ybq.47.1643095288812;
+ Mon, 24 Jan 2022 23:21:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20220124183953.750177707@linuxfoundation.org> <e2c9b01d-0500-645f-b4cc-f8dcb769996e@linaro.org>
-In-Reply-To: <e2c9b01d-0500-645f-b4cc-f8dcb769996e@linaro.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 25 Jan 2022 12:49:42 +0530
-Message-ID: <CA+G9fYsvgQyUNBnySuiOrAXRrh4_ZAnqygZ0A5y7pGO5vrXAYA@mail.gmail.com>
-Subject: Re: [PATCH 5.4 000/320] 5.4.174-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>,
+References: <20220121194926.1970172-1-song@kernel.org> <20220121194926.1970172-7-song@kernel.org>
+ <CAADnVQK6+gWTUDo2z1H6AE5_DtuBBetW+VTwwKz03tpVdfuoHA@mail.gmail.com>
+ <7393B983-3295-4B14-9528-B7BD04A82709@fb.com> <CAADnVQJLHXaU7tUJN=EM-Nt28xtu4vw9+Ox_uQsjh-E-4VNKoA@mail.gmail.com>
+ <5407DA0E-C0F8-4DA9-B407-3DE657301BB2@fb.com> <CAADnVQLOpgGG9qfR4EAgzrdMrfSg9ftCY=9psR46GeBWP7aDvQ@mail.gmail.com>
+ <5F4DEFB2-5F5A-4703-B5E5-BBCE05CD3651@fb.com> <CAADnVQLXGu_eF8VT6NmxKVxOHmfx7C=mWmmWF8KmsjFXg6P5OA@mail.gmail.com>
+ <5E70BF53-E3FB-4F7A-B55D-199C54A8FDCA@fb.com> <adec88f9-b3e6-bfe4-c09e-54825a60f45d@linux.ibm.com>
+ <2AAC8B8C-96F1-400F-AFA6-D4AF41EC82F4@fb.com> <CAADnVQKgdMMeONmjUhbq_3X39t9HNQWteDuyWVfcxmTerTnaMw@mail.gmail.com>
+In-Reply-To: <CAADnVQKgdMMeONmjUhbq_3X39t9HNQWteDuyWVfcxmTerTnaMw@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 24 Jan 2022 23:21:17 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW4AXLirZwjH4YfJLYj1VUU2muQx1wTkkUpeBBH9kvw2Ag@mail.gmail.com>
+Message-ID: <CAPhsuW4AXLirZwjH4YfJLYj1VUU2muQx1wTkkUpeBBH9kvw2Ag@mail.gmail.com>
+Subject: Re: [PATCH v6 bpf-next 6/7] bpf: introduce bpf_prog_pack allocator
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Song Liu <songliubraving@fb.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, stable@vger.kernel.org,
-        =?UTF-8?B?RGFuaWVsIETDrWF6?= <daniel.diaz@linaro.org>,
-        Yonghong Song <yhs@fb.com>
+        Kernel Team <Kernel-team@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 at 05:10, Daniel D=C3=ADaz <daniel.diaz@linaro.org> wro=
-te:
+On Mon, Jan 24, 2022 at 9:21 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Hello!
+> On Mon, Jan 24, 2022 at 10:27 AM Song Liu <songliubraving@fb.com> wrote:
+> > >
+> > > Are arches expected to allocate rw buffers in different ways? If not,
+> > > I would consider putting this into the common code as well. Then
+> > > arch-specific code would do something like
+> > >
+> > >  header = bpf_jit_binary_alloc_pack(size, &prg_buf, &prg_addr, ...);
+> > >  ...
+> > >  /*
+> > >   * Generate code into prg_buf, the code should assume that its first
+> > >   * byte is located at prg_addr.
+> > >   */
+> > >  ...
+> > >  bpf_jit_binary_finalize_pack(header, prg_buf);
+> > >
+> > > where bpf_jit_binary_finalize_pack() would copy prg_buf to header and
+> > > free it.
 >
-> On 1/24/22 12:39, Greg Kroah-Hartman wrote:
-> > This is the start of the stable review cycle for the 5.4.174 release.
-> > There are 320 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
+> It feels right, but bpf_jit_binary_finalize_pack() sounds 100% arch
+> dependent. The only thing it will do is perform a copy via text_poke.
+> What else?
+>
+> > I think this should work.
 > >
-> > Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >       https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.4.174-rc1.gz
-> > or in the git tree and branch at:
-> >       git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.4.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
+> > We will need an API like: bpf_arch_text_copy, which uses text_poke_copy()
+> > for x86_64 and s390_kernel_write() for x390. We will use bpf_arch_text_copy
+> > to
+> >   1) write header->size;
+> >   2) do finally copy in bpf_jit_binary_finalize_pack().
 >
-
-
-Regressions detected on arm, arm64, i386, x86, parisc.
-There are two build breaks,
-
-This is on Perf on arm, arm64, i386, x86:
-
+> we can combine all text_poke operations into one.
 >
->    libbpf.c: In function 'bpf_object__elf_collect':
->    libbpf.c:1581:31: error: i nvalid type argument of '->' (have 'GElf_Sh=
-dr' {aka 'Elf64_Shdr'})
->     1581 |                         if (sh->sh_type !=3D SHT_PROGBITS)
->          |                               ^~
->    libbpf.c:1585:31: error: invalid type argument of '->' (have 'GElf_Shd=
-r' {aka 'Elf64_Shdr'})
->     1585 |                         if (sh->sh_type !=3D SHT_PROGBITS)
->          |                               ^~
->    make[4]: *** [/builds/linux/tools/build/Makefile.build:97: /home/tuxbu=
-ild/.cache/tuxmake/builds/current/staticobjs/libbpf.o] Error 1
+> Can we add an 'image' pointer into struct bpf_binary_header ?
 
-This is due to,
-commit b98ad671ae465a1a4f76d1438b97cd8172e0ce14
-libbpf: Validate that .BTF and .BTF.ext sections contain data
-        [ Upstream commit 62554d52e71797eefa3fc15b54008038837bb2d4 ]
+There is a 4-byte hole in bpf_binary_header. How about we put
+image_offset there? Actually we only need 2 bytes for offset.
 
-
-This is from PA-RISC with gcc-8, gcc-9, gcc-10, gcc-11:
-
->    /builds/linux/drivers/parisc/sba_iommu.c: In function 'sba_io_pdir_ent=
-ry':
->    /builds/linux/arch/parisc/include/asm/special_insns.h:11:3: error: exp=
-ected ':' or ')' before 'ASM_EXCEPTIONTABLE_ENTRY'
->       ASM_EXCEPTIONTABLE_ENTRY(8b, 9b) \
->       ^~~~~~~~~~~~~~~~~~~~~~~~
+> Then do:
+> int bpf_jit_binary_alloc_pack(size, &ro_hdr, &rw_hdr);
 >
->
+> ro_hdr->image would be the address used to compute offsets by JIT.
 
-Bisection of the latter points to "parisc: Fix lpa and lpa_user defines".
+If we only do one text_poke(), we cannot write ro_hdr->image yet. We
+can use ro_hdr + rw_hdr->image_offset instead.
 
-commit 73c8c7ecdc141c20c9dbc8f3ec176e233942b0d9
-parisc: Fix lpa and lpa_user defines
-    [ commit db19c6f1a2a353cc8dec35b4789733a3cf6e2838 upstream ]
+> rw_hdr->image would point to kvmalloc-ed area for emitting insns.
+> rw_hdr->size would already be populated.
+>
+> The JITs would write insns into rw_hdr->image including 'int 3' insns.
+> At the end the JIT will do text_poke_copy(ro_hdr, rw_hdr, rw_hdr->size);
+> That would be the only copy that will transfer everything into final
+> location.
+> Then kvfree(rw_hdr)
 
->
-> Greetings!
->
-> Daniel D=C3=ADaz
-> daniel.diaz@linaro.org
+The only problem is the asymmetry of allocating rw_hdr from bpf/core.c,
+and freeing it from arch/bpf_jit_comp.c. But it doesn't bother me too much.
+
+Thanks,
+Song
