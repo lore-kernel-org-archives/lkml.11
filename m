@@ -2,133 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B58C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 953ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444966AbiAYMRj (ORCPT
+        id S1382221AbiAYMRr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:17:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
+        Tue, 25 Jan 2022 07:17:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346245AbiAYMMd (ORCPT
+        with ESMTP id S1354562AbiAYMMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:12:33 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB1AC061762
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 04:12:31 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id m6so61019293ybc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 04:12:31 -0800 (PST)
+        Tue, 25 Jan 2022 07:12:15 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85F9C061744;
+        Tue, 25 Jan 2022 04:11:57 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id jx6so30423912ejb.0;
+        Tue, 25 Jan 2022 04:11:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zZRe44cSDLUnR3rrUKljaQ4wjqngbVG3XfPyQtdqwGc=;
-        b=FJTICMIuNIJV9FDFXdSuOzkZ+2CoUGA8deDdbNHBF5B2pCgMrnfG2maOGU3qZ56U0b
-         4DaQKZPkiiSOGFHm4CBR3ytn2Y2N/iPL/WMfkrHoryVT0KMEpFkNptuz87MdZ5OOswB3
-         GIzKp+WbFFGpkAgvw929gx/pESiJ3bxdIC3XG79XGA6UkO7ca0TXduVD5uGjwldiXqOW
-         GDeP7aDCdq4eMcPbvh6RWe05mqG+Cwu/bi43w0elRCWYV/ox4HghwCn3ddIK12twxxbW
-         onwpgL7YBtyxTDIw8FTM+tguy4VxtY6d/ZlieDLw1YsHr93zxAVvPhhHRaTRyzM++CeR
-         5bFw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=sKnKru+rLN7ZmClVqR3FLwKLuS+kqBx+yEtQ0RgrvIA=;
+        b=VPa/38D/iK8xrFFQOve/ExPTwb19OvH5pPB6z5zWJZAIB6pB6SaGw2TSgaCRaEU6zv
+         dEqDeApRwCvHWRMT3k2BbiLO1A+2UvBa+HaC7E4pEFTg5KAa0wpcs6U7u7kX6m5NZ+Hw
+         Aw7S8YmfTH7/Kol1uaooN3y6Lxgoyu37pdsZ1bABwt2Nm77yolvsfddTL1lxHB2qD8F3
+         1nKUaWyWpkhPATIxKkvOmzo3FVqlwxWKQgo5A84x4RuaePjGCiZQH0lTi8BWg93ghdnE
+         B1zUq3UWRv0ggvRi1YMsXlpzkTAu+OnQpDhXRAxD5GjeCZR8gJphsJzE5lR64vTFbKEa
+         jm8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zZRe44cSDLUnR3rrUKljaQ4wjqngbVG3XfPyQtdqwGc=;
-        b=u2QZbRRMzS+WIkeqwQdM5v84XfzLSBNTV71MwOFArOx8UL6/XcZ2Q17gE11jfsKKij
-         VLDzwfFMEZIx67wO+0emG9/pxYr9PsbH5YGEFmDesn2Q/I1karU5BWE5QN/69TommbW2
-         ZBTmmi+AzcS19CjyYOeXa5p8BVj88xhJDy6NPm0S4HD/imL51oPdH5qVFzVTJOwLfSJv
-         8qk7Ny64aHKFO0wViDS5xw7Cjuef2GpaHfO7wqM+vsBx1Vs/tfgbUIAqN01hOmLRXg60
-         r9GQrOD0doAZ+fykIQrt1UO2HK6inIQx23aqAjzAy4GSuYfHupE7CDAbtFgthxooauQD
-         tNQA==
-X-Gm-Message-State: AOAM532Yd8gm0ABavcmleunQyZvQmKJ/+t+Wr0onyDVmJqqpuSgno+58
-        RRJcOJfxSa+jFFrRcwMzC9ySv0uX+bpbV+7uG1kEuA==
-X-Google-Smtp-Source: ABdhPJwTxaJHvVMo77snJVzlI//AOnGblDhhxemPpL6/uW3sPDc6KY3631DUGFvKmWWVBfqMHz73t7qghqsuY+HCeVQ=
-X-Received: by 2002:a25:8e89:: with SMTP id q9mr32229518ybl.520.1643112750404;
- Tue, 25 Jan 2022 04:12:30 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=sKnKru+rLN7ZmClVqR3FLwKLuS+kqBx+yEtQ0RgrvIA=;
+        b=QoNcKY3QmdYLUrfeoeu+NB5QOEe9Ub5I3dKTyE+z+O8HzYXjsD82g8BO49z0JsTBQg
+         zzO42UeuG9nemyLoYfDopaQVGCCqb8SNx+FZ1xmY4opbqnzmk+ylThXCTMxSHiw0xVqq
+         T6YGydUYm9xWHMr+QrCd/CzxizozCQQMul+W85+1nDliIxG/4asdzKNlcf23lay1ZFbA
+         c3YXlb8NYRGJFkv4nC4/NsJSnZfRHwVbx6eOLmnf9kn87Ep2BMT1C/636NNotFDwp4Hp
+         zt/eS/kJ8mwd5F7RBUx3UjcV7PlCM+WSE+tspr8TYQqFsYzJ3yXS8XJMR5/wK/OiV1l7
+         T4UQ==
+X-Gm-Message-State: AOAM533im1YO4seiuEjBLjqpkdk6a8fZIEGJvIl5wBewW9TXeg2MrMOX
+        GEa9jwowDf7/bCxCS0yywaPEfYE58EtqwQ==
+X-Google-Smtp-Source: ABdhPJwIKrUuoxJSLy8gQcb9j6ZO/rW71Z0XB/m9qkB9e/u2qYE377DjXFlkbEwQhA2bGtQkrOqFsg==
+X-Received: by 2002:a17:906:f19a:: with SMTP id gs26mr15841159ejb.106.1643112716207;
+        Tue, 25 Jan 2022 04:11:56 -0800 (PST)
+Received: from localhost.localdomain ([39.48.168.136])
+        by smtp.gmail.com with ESMTPSA id qf6sm6107334ejc.49.2022.01.25.04.11.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 04:11:55 -0800 (PST)
+From:   Ameer Hamza <amhamza.mgc@gmail.com>
+To:     mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@redhat.com, namhyung@kernel.org
+Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        rickyman7@gmail.com, alexey.v.bayduraev@linux.intel.com,
+        adrian.hunter@intel.com, leo.yan@linaro.org, german.gomez@arm.com,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        amhamza.mgc@gmail.com, James Clark <james.clark@arm.com>
+Subject: [PATCH v2] perf session: check for null pointer before derefernce
+Date:   Tue, 25 Jan 2022 17:11:41 +0500
+Message-Id: <20220125121141.18347-1-amhamza.mgc@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <8983b963-2139-ecb3-3a31-b5e225db389c@arm.com>
+References: <8983b963-2139-ecb3-3a31-b5e225db389c@arm.com>
 MIME-Version: 1.0
-References: <20220124183937.101330125@linuxfoundation.org> <CA+G9fYshfJ-WCB141=ha8uf0-FhE9Pim6hd5BWAVxDpvHhTR0w@mail.gmail.com>
-In-Reply-To: <CA+G9fYshfJ-WCB141=ha8uf0-FhE9Pim6hd5BWAVxDpvHhTR0w@mail.gmail.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 25 Jan 2022 17:42:18 +0530
-Message-ID: <CA+G9fYvPfpq+ptuzEW7S4S3o_vGxVGus4n0xAFxLoMzaH+Jnxw@mail.gmail.com>
-Subject: Re: [PATCH 4.14 000/186] 4.14.263-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Lucas Stach <l.stach@pengutronix.de>
-Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 at 16:58, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
->
-> On Tue, 25 Jan 2022 at 00:34, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > This is the start of the stable review cycle for the 4.14.263 release.
-> > There are 186 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.263-rc1.gz
-> > or in the git tree and branch at:
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
->
-> Following patch caused build failures on arm imx_v6_v7_defconfig
->
-> > Lucas Stach <l.stach@pengutronix.de>
-> >     drm/etnaviv: limit submit sizes
+Move null pointer check before dereferncing the variable
 
-The following patch might be missing,
+Addresses-Coverity: 1497622 ("Derereference before null check")
 
-commit 05916bed11b6d4c61b473a76220151a7d0547164
-Christian Gmeiner <christian.gmeiner@gmail.com>
- drm/etnaviv: add uapi for perfmon feature
+Reviewed-by: James Clark <james.clark@arm.com>
 
+Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
 
+---
+v1 -> v2: It should be possible to dump stuff if machine is NULL.
+---
+ tools/perf/util/session.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
->
->  build/clang-nightly-imx_v6_v7_defconfig
->  build/gcc-11-imx_v6_v7_defconfig
->  build/gcc-10-imx_v6_v7_defconfig
->  build/clang-11-imx_v6_v7_defconfig
->  build/clang-12-imx_v6_v7_defconfig
->  build/clang-13-imx_v6_v7_defconfig
->
-> Error:
-> -------
-> make --silent --keep-going --jobs=8 ARCH=arm
-> CROSS_COMPILE=arm-linux-gnueabihf- 'CC=sccache
-> arm-linux-gnueabihf-gcc' 'HOSTCC=sccache gcc'
->
-> drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c: In function
-> 'etnaviv_ioctl_gem_submit':
-> drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c:345:37: error: 'struct
-> drm_etnaviv_gem_submit' has no member named 'nr_pmrs'; did you mean
-> 'nr_bos'?
->       args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
->                                      ^~~~~~~
->                                      nr_bos
-> make[5]: *** [scripts/Makefile.build:329:
-> drivers/gpu/drm/etnaviv/etnaviv_gem_submit.o] Error 1
->
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
->
->  --
-> Linaro LKFT
-> https://lkft.linaro.org
+diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
+index f19348dddd55..210eeee3dd70 100644
+--- a/tools/perf/util/session.c
++++ b/tools/perf/util/session.c
+@@ -1503,11 +1503,12 @@ static int machines__deliver_event(struct machines *machines,
+ 			++evlist->stats.nr_unknown_id;
+ 			return 0;
+ 		}
+-		dump_sample(evsel, event, sample, perf_env__arch(machine->env));
+ 		if (machine == NULL) {
+ 			++evlist->stats.nr_unprocessable_samples;
++			dump_sample(evsel, event, sample, perf_env__arch(NULL));
+ 			return 0;
+ 		}
++		dump_sample(evsel, event, sample, perf_env__arch(machine->env));
+ 		return evlist__deliver_sample(evlist, tool, event, sample, evsel, machine);
+ 	case PERF_RECORD_MMAP:
+ 		return tool->mmap(tool, event, sample, machine);
+-- 
+2.25.1
+
