@@ -2,75 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72234C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 477E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380448AbiAYLHM (ORCPT
+        id S1380622AbiAYLID (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 06:07:12 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:59554 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1380128AbiAYLEb (ORCPT
+        Tue, 25 Jan 2022 06:08:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33158 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380014AbiAYLFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 06:04:31 -0500
-X-UUID: 5fdb8bf98e2f401d8f4506f1283dbaa6-20220125
-X-UUID: 5fdb8bf98e2f401d8f4506f1283dbaa6-20220125
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <kewei.xu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 737577550; Tue, 25 Jan 2022 19:04:22 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 25 Jan 2022 19:04:21 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 25 Jan 2022 19:04:20 +0800
-From:   Kewei Xu <kewei.xu@mediatek.com>
-To:     <wsa@the-dreams.de>
-CC:     <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <leilk.liu@mediatek.com>,
-        <qii.wang@mediatek.com>, <liguo.zhang@mediatek.com>,
-        <caiyu.chen@mediatek.com>, <housong.zhang@mediatek.com>,
-        <yuhan.wei@mediatek.com>, <kewei.xu@mediatek.com>,
-        <ryan-jh.yu@mediatek.com>
-Subject: [v2 1/2] dt-bindings: i2c: update bindings for MT8186 SoC
-Date:   Tue, 25 Jan 2022 19:04:12 +0800
-Message-ID: <20220125110413.18988-2-kewei.xu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220125110413.18988-1-kewei.xu@mediatek.com>
-References: <20220125110413.18988-1-kewei.xu@mediatek.com>
+        Tue, 25 Jan 2022 06:05:11 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C48AEB817AC;
+        Tue, 25 Jan 2022 11:05:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D55BC340E5;
+        Tue, 25 Jan 2022 11:05:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643108701;
+        bh=39FnnUyDGSOvgkUBb+00t+cCFGHIMLKaoIpyavhQQ6w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n7tds+Ihf2R3fBDWT3me6dMPRYOh/Rh6ng3tva9fEieGIHl8prhSj/xeQog+q6Rl+
+         BIlwBpFT1MMY17jZGPREjVqSOB/jNYSwakCdiUUdDq88dcQyF4rhjRUE4WTzQZr7Pk
+         yABMAHofUknEbO/VFS+VCcFewmHRkK0murp0YE3k=
+Date:   Tue, 25 Jan 2022 12:04:58 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Daniel =?iso-8859-1?Q?D=EDaz?= <daniel.diaz@linaro.org>,
+        linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 5.10 000/563] 5.10.94-rc1 review
+Message-ID: <Ye/ZWs2+taBOscQA@kroah.com>
+References: <20220124184024.407936072@linuxfoundation.org>
+ <12c8fd1e-431e-9a59-9e7a-e8d856c088b9@linaro.org>
+ <67b47645-016c-2d23-4710-b3743b073766@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <67b47645-016c-2d23-4710-b3743b073766@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a DT binding documentation for the MT8186 soc.
+On Mon, Jan 24, 2022 at 07:54:58PM -0800, Florian Fainelli wrote:
+> 
+> 
+> On 1/24/2022 3:00 PM, Daniel Díaz wrote:
+> > Hello!
+> > 
+> > On 1/24/22 12:36, Greg Kroah-Hartman wrote:
+> > > This is the start of the stable review cycle for the 5.10.94 release.
+> > > There are 563 patches in this series, all will be posted as a response
+> > > to this one.  If anyone has any issues with these being applied, please
+> > > let me know.
+> > > 
+> > > Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
+> > > Anything received after that time might be too late.
+> > > 
+> > > The whole patch series can be found in one patch at:
+> > >     https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.94-rc1.gz
+> > > 
+> > > or in the git tree and branch at:
+> > >     git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+> > > linux-5.10.y
+> > > and the diffstat can be found below.
+> > > 
+> > > thanks,
+> > > 
+> > > greg k-h
+> > 
+> > Regressions detected on arm, arm64, i386, x86.
+> > 
+> > This is from arm64:
+> >    /builds/linux/arch/arm64/mm/extable.c: In function 'fixup_exception':
+> >    /builds/linux/arch/arm64/mm/extable.c:17:13: error: implicit
+> > declaration of function 'in_bpf_jit'
+> > [-Werror=implicit-function-declaration]
+> >       17 |         if (in_bpf_jit(regs))
+> >          |             ^~~~~~~~~~
+> >    cc1: some warnings being treated as errors
+> >    make[3]: *** [/builds/linux/scripts/Makefile.build:280:
+> > arch/arm64/mm/extable.o] Error 1
+> > 
+> > And from Perf on arm, arm64, i386, x86:
+> >    libbpf.c: In function 'bpf_object__elf_collect':
+> >    libbpf.c:2873:31: error: invalid type argument of '->' (have
+> > 'GElf_Shdr' {aka 'Elf64_Shdr'})
+> >     2873 |                         if (sh->sh_type != SHT_PROGBITS)
+> >          |                               ^~
+> >    libbpf.c:2877:31: error: invalid type argument of '->' (have
+> > 'GElf_Shdr' {aka 'Elf64_Shdr'})
+> >     2877 |                         if (sh->sh_type != SHT_PROGBITS)
+> >          |                               ^~
+> >    make[4]: *** [/builds/linux/tools/build/Makefile.build:97:
+> > /home/tuxbuild/.cache/tuxmake/builds/current/staticobjs/libbpf.o] Error
+> > 1
+> > 
+> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> 
+> Same here.
 
-Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
----
- Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt | 1 +
- 1 file changed, 1 insertion(+)
+Thanks, I'll go drop this from all 3 trees now.
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-index 5ea216ae7084..88f74a3c81ec 100644
---- a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-+++ b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-@@ -14,6 +14,7 @@ Required properties:
-       "mediatek,mt7629-i2c", "mediatek,mt2712-i2c": for MediaTek MT7629
-       "mediatek,mt8173-i2c": for MediaTek MT8173
-       "mediatek,mt8183-i2c": for MediaTek MT8183
-+      "mediatek,mt8186-i2c": for MediaTek MT8186
-       "mediatek,mt8192-i2c": for MediaTek MT8192
-       "mediatek,mt8195-i2c", "mediatek,mt8192-i2c": for MediaTek MT8195
-       "mediatek,mt8516-i2c", "mediatek,mt2712-i2c": for MediaTek MT8516
--- 
-2.25.1
-
+greg k-h
