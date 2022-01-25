@@ -2,115 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4279DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7249BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237998AbiAYRX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:23:58 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45374 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588062AbiAYRV0 (ORCPT
+        id S1587517AbiAYRSH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 12:18:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351917AbiAYRNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:21:26 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 745676115D;
-        Tue, 25 Jan 2022 17:21:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2942C340E0;
-        Tue, 25 Jan 2022 17:21:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643131283;
-        bh=gPCdN8hHlNnY+V2scDQMdjEgjDrE7whfrHiP+g10BFA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=juhfXXTiGnYRUe2bYtmQAkzPKYBykTnU3r6H8snpH0i9nGBIfUXKesIJs7rOSrMGz
-         L6o5DdmAYdAZlaCcdLwNFfot2efLwMrZztC9y5cRihsvP9kuqVyLznEHoTWoNIdjER
-         nuR5AUW9TW/GZ/DIBaOXebYPQCzma1tFrqUlmDZOUV/6z0CU7Hh4qObSqW9uVGC9wt
-         7+dE7cGN0ojt/rcUVHk3RBJjkwhkC3nGrOzlJLhqNqWDj7KxHW9iXOrd54b24Swyrl
-         i5rwdhJwkHgRh0E/IuNEY64HYb3QokAGmwyChr4BAHn+eT606BlLHqqI8eiuOc1rUC
-         Nl99mnqgHTPNg==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nCPVR-002yy2-RP; Tue, 25 Jan 2022 17:21:21 +0000
+        Tue, 25 Jan 2022 12:13:50 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3436FC0617A4;
+        Tue, 25 Jan 2022 09:12:49 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id d188so10163085iof.7;
+        Tue, 25 Jan 2022 09:12:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XdxEZ7YOE8VCe+Ly6ca0cU/orZy3e2bgmci5GFke7S4=;
+        b=Nf/57L7y2j6kymmxNnIEbBlYSt3knUksoS+BuxMQ/gMtOGsDWiNXTF+NovrOH6T9R0
+         5nxuHmzxDb1qNm0qbxAKkfFWqK9ClBgIPADGPG96ccn2T+NVvKEFsG5Kjt80egTfm89X
+         xO1BlhMa9ziZ7eL6OmnRHjZKwzMHa8IednpTfriJ4PBuuFGOuISgxhHbYoSayQtJ3oIG
+         jwA+oF1Jtzrs4XRG0CTdNqgBS3QZL0qEN5Sbq1H5281AaDOlIBfMeNtqdmj2rkbeyFVt
+         hveJXHXr8iiBAeMSdH6ghTdWccf1xw6+ohFe831H2J14+HM50hsovnVwio6S7fMR+4qb
+         YYaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XdxEZ7YOE8VCe+Ly6ca0cU/orZy3e2bgmci5GFke7S4=;
+        b=ev1JsF8bG0PdysEohIqgtifNFAhIvOvKC9akKmshO7Ud8VRsf5lABBoe2DaUOCxJWR
+         J3TdPbRSxzvu4oHuzH0aCIPv/2/uFLKghrHvKum4ZUx4uWXJc6GcyjcK3jDM53cWAaCH
+         Q3ylM2/AHdcaRxCwAUIt+KX8+Abb+hdbNkD8rahD48eilVzNTfiHK4FHd5zHmiJjA46C
+         +5EBuHkimfLvEdF0XrrWg/E0QyGPup1+q1kq62U9ZSac3/H0sQTvbQY/GBidwOF3zfC6
+         d25BN+QLfc3iGDvSl7K/FM2efUZ7WUj1I5VvgJ3Fud+SpZsFNfqc140rK7Mhp9p5hysE
+         KBOQ==
+X-Gm-Message-State: AOAM530wYGINVVQqEBGUrnKbsLLBppWCdU9ltUXsN/n/p1u4gnDGDAwf
+        qoZ2Dd97g/SPFSGQwJao7J4mqQMjUDs=
+X-Google-Smtp-Source: ABdhPJwZ3uFCY2UY3PIrcdmD6IkV07uqs3j1K+i9dUSqnDgifh7kXW2qt7LOwNYp7nowhjXrJwqaXQ==
+X-Received: by 2002:a02:cb01:: with SMTP id j1mr3442600jap.194.1643130768156;
+        Tue, 25 Jan 2022 09:12:48 -0800 (PST)
+Received: from aford-IdeaCentre-A730.lan ([2601:448:8400:9e8:6592:b6fe:71b1:9f4c])
+        by smtp.gmail.com with ESMTPSA id m14sm8090291iov.0.2022.01.25.09.12.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 09:12:47 -0800 (PST)
+From:   Adam Ford <aford173@gmail.com>
+To:     linux-media@vger.kernel.org
+Cc:     aford@beaconembedded.com, cphealy@gmail.com,
+        Adam Ford <aford173@gmail.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev
+Subject: [PATCH V4 10/11] media: hantro: Add support for i.MX8MM Hantro-G1
+Date:   Tue, 25 Jan 2022 11:11:27 -0600
+Message-Id: <20220125171129.472775-11-aford173@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220125171129.472775-1-aford173@gmail.com>
+References: <20220125171129.472775-1-aford173@gmail.com>
 MIME-Version: 1.0
-Date:   Tue, 25 Jan 2022 17:21:21 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     qizhong cheng <qizhong.cheng@mediatek.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Jianjun Wang <jianjun.wang@mediatek.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy?= =?UTF-8?Q?=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, chuanjia.liu@mediatek.com
-Subject: Re: [PATCH] PCI: mediatek: Change MSI interrupt processing sequence
-In-Reply-To: <20220125165748.GA1458116@bhelgaas>
-References: <20220125165748.GA1458116@bhelgaas>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <e8e42eba6e7cf49bc2260f20844a7849@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: helgaas@kernel.org, qizhong.cheng@mediatek.com, ryder.lee@mediatek.com, jianjun.wang@mediatek.com, lorenzo.pieralisi@arm.com, kw@linux.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, chuanjia.liu@mediatek.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-25 16:57, Bjorn Helgaas wrote:
-> All patches change *something*.  Can you update the subject line so it
-> says something specific about the change?
-> 
-> Maybe something like "Clear MSI status before dispatching handler"?
-> 
-> On Sun, Jan 23, 2022 at 11:33:06AM +0800, qizhong cheng wrote:
->> As an edge-triggered interrupts, its interrupt status should be 
->> cleared
->> before dispatch to the handler of device.
-> 
-> I'm not an IRQ expert, but the reasoning that "we should clear the MSI
-> interrupt status before dispatching the handler because MSI is an
-> edge-triggered interrupt" doesn't seem completely convincing because
-> your code will now look like this:
-> 
->   /* Clear the INTx */
->   writel(1 << bit, port->base + PCIE_INT_STATUS);
->   generic_handle_domain_irq(port->irq_domain, bit - INTX_SHIFT);
->   ...
-> 
->   /* Clear MSI interrupt status */
->   writel(MSI_STATUS, port->base + PCIE_INT_STATUS);
->   generic_handle_domain_irq(port->inner_domain, bit);
-> 
-> You clear interrupt status before dispatching the handler for *both*
-> level-triggered INTx interrupts and edge-triggered MSI interrupts.
-> 
-> So it doesn't seem that simply being edge-triggered is the critical
-> factor here.
+The i.MX8MM has a Hantro G1 video decoder similar to the
+imx8mq but lacks the post-processor present in the imx8mq.
+Add support in the driver for it with the post-processing
+removed.
 
-This is the usual problem with these half-baked implementations.
-The signalling to the primary interrupt controller is level, as
-they take a multitude of input and (crucially) latch the MSI
-edges. Effectively, this is an edge-to-level converter, with
-all the problems that this creates.
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
 
-By clearing the status *after* the handling, you lose edges that
-have been received and coalesced after the read of the status
-register. By clearing it *before*, you are acknowledging the
-interrupts early, and allowing them to be coalesced independently
-of the ones that have been received earlier.
-
-This is however mostly an educated guess. Someone with access
-to the TRM should verify this.
-
-Thanks,
-
-         M.
+diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
+index f56e8b3efada..8f020ba15194 100644
+--- a/drivers/staging/media/hantro/hantro_drv.c
++++ b/drivers/staging/media/hantro/hantro_drv.c
+@@ -615,6 +615,7 @@ static const struct of_device_id of_hantro_match[] = {
+ 	{ .compatible = "rockchip,rk3399-vpu", .data = &rk3399_vpu_variant, },
+ #endif
+ #ifdef CONFIG_VIDEO_HANTRO_IMX8M
++	{ .compatible = "nxp,imx8mm-vpu-g1", .data = &imx8mm_vpu_g1_variant, },
+ 	{ .compatible = "nxp,imx8mq-vpu", .data = &imx8mq_vpu_variant, },
+ 	{ .compatible = "nxp,imx8mq-vpu-g1", .data = &imx8mq_vpu_g1_variant },
+ 	{ .compatible = "nxp,imx8mq-vpu-g2", .data = &imx8mq_vpu_g2_variant },
+diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/media/hantro/hantro_hw.h
+index f0bd2ffe290b..c00b46e06055 100644
+--- a/drivers/staging/media/hantro/hantro_hw.h
++++ b/drivers/staging/media/hantro/hantro_hw.h
+@@ -299,6 +299,7 @@ enum hantro_enc_fmt {
+ 	ROCKCHIP_VPU_ENC_FMT_UYVY422 = 3,
+ };
+ 
++extern const struct hantro_variant imx8mm_vpu_g1_variant;
+ extern const struct hantro_variant imx8mq_vpu_g1_variant;
+ extern const struct hantro_variant imx8mq_vpu_g2_variant;
+ extern const struct hantro_variant imx8mq_vpu_variant;
+diff --git a/drivers/staging/media/hantro/imx8m_vpu_hw.c b/drivers/staging/media/hantro/imx8m_vpu_hw.c
+index 849ea7122d47..9802508bade2 100644
+--- a/drivers/staging/media/hantro/imx8m_vpu_hw.c
++++ b/drivers/staging/media/hantro/imx8m_vpu_hw.c
+@@ -327,3 +327,15 @@ const struct hantro_variant imx8mq_vpu_g2_variant = {
+ 	.clk_names = imx8mq_g2_clk_names,
+ 	.num_clocks = ARRAY_SIZE(imx8mq_g2_clk_names),
+ };
++
++const struct hantro_variant imx8mm_vpu_g1_variant = {
++	.dec_fmts = imx8m_vpu_dec_fmts,
++	.num_dec_fmts = ARRAY_SIZE(imx8m_vpu_dec_fmts),
++	.codec = HANTRO_MPEG2_DECODER | HANTRO_VP8_DECODER |
++		 HANTRO_H264_DECODER,
++	.codec_ops = imx8mq_vpu_g1_codec_ops,
++	.irqs = imx8mq_irqs,
++	.num_irqs = ARRAY_SIZE(imx8mq_irqs),
++	.clk_names = imx8mq_g1_clk_names,
++	.num_clocks = ARRAY_SIZE(imx8mq_g1_clk_names),
++};
 -- 
-Jazz is not dead. It just smells funny...
+2.32.0
+
