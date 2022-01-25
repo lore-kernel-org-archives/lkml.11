@@ -2,67 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCBBC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:03:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 587C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386741AbiAYOCi (ORCPT
+        id S1387936AbiAYODn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:02:38 -0500
-Received: from protestant.ebb.org ([50.56.179.12]:57469 "EHLO
-        protestant.ebb.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387012AbiAYN7K (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 08:59:10 -0500
-X-Greylist: delayed 534 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jan 2022 08:59:10 EST
-Received: from localhost (unknown [216.161.86.19])
-        (Authenticated sender: bkuhn)
-        by protestant.ebb.org (Postfix) with ESMTPSA id CC12F820C4;
-        Tue, 25 Jan 2022 05:50:13 -0800 (PST)
-Date:   Tue, 25 Jan 2022 05:47:39 -0800
-From:   "Bradley M. Kuhn" <bkuhn@ebb.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "linux-spdx@vger.kernel.org" <linux-spdx@vger.kernel.org>
-Subject: Re: [PATCH v3] powerpc: Add missing SPDX license identifiers
-Message-ID: <Ye//e3q46n57x/1l@ebb.org>
-References: <d2c52284244d6dcb3472d2041abe43b456d116df.1642762977.git.christophe.leroy@csgroup.eu>
- <YerEuE6XlslE3Goo@kroah.com>
- <24829c2f-6855-c8d6-7ae4-17c5517f890d@csgroup.eu>
- <YerO8MjbXlvbMEsZ@kroah.com>
+        Tue, 25 Jan 2022 09:03:43 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:53066 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1385581AbiAYN7q (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 08:59:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ox78QD2G7Vl4O8u8fw2FuKHaFOQlJwcYfnNDAIdWWt4=; b=GGtpgHhjFCVP5d5DvN9Be/8S37
+        qPF6rga96LpRgWr7aKH/DGBZwNQi76wPWZXDVAXOWYhuY0eBJTbW1hHLIkpRVTPHkrh+eu1iB4TQx
+        yK6KbUeJ1vCQDN0S1T5UwI2qL7oxhb4kcmcI49fN4SDSOgLyBOqWRCKUMk4ezWq5/RQM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nCMM9-002esZ-4A; Tue, 25 Jan 2022 14:59:33 +0100
+Date:   Tue, 25 Jan 2022 14:59:33 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joseph CHAMG <josright123@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
+        leon@kernel.org
+Subject: Re: [PATCH v13, 2/2] net: Add dm9051 driver
+Message-ID: <YfACRXnsAUVxlZze@lunn.ch>
+References: <20220125085837.10357-1-josright123@gmail.com>
+ <20220125085837.10357-3-josright123@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YerO8MjbXlvbMEsZ@kroah.com>
+In-Reply-To: <20220125085837.10357-3-josright123@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Fri, Jan 21, 2022 at 03:13:50PM +0000, Christophe Leroy wrote:
-> > Isn't it what GPL-2.0+ means ?
+> +static int dm9051_mdiobus_read(struct mii_bus *mdiobus, int phy_id, int reg)
+> +{
+> +	struct board_info *db = mdiobus->priv;
+> +	unsigned int val = 0;
+> +	int ret;
+> +
+> +	if (phy_id == DM9051_PHY_ID) {
 
-Greg Kroah-Hartman wrote:
-> Yes, but look further down, as I point out below...
->
-> > >> 	include/asm/epapr_hcalls.h:/* SPDX-License-Identifier: GPL-2.0+ OR BSD */
-> > >> 	include/asm/fsl_hcalls.h:/* SPDX-License-Identifier: GPL-2.0+ OR BSD */
-> > >> 	include/asm/ibmebus.h:/* SPDX-License-Identifier: GPL-2.0 OR OpenIB BSD */
-> > >> 	include/asm/sfp-machine.h:/* SPDX-License-Identifier: LGPL-2.0+ */
-> > >> 	kvm/mpic.c:// SPDX-License-Identifier: GPL-2.0
-> > >> 	lib/crtsavres.S:/* SPDX-License-Identifier: GPL-2.0+ */
-> > >> 	mm/book3s64/hash_4k.c:// SPDX-License-Identifier: LGPL-2.0
-> > >> 	mm/book3s64/hash_64k.c:// SPDX-License-Identifier: LGPL-2.0
-> > >> 	mm/book3s64/hash_hugepage.c:// SPDX-License-Identifier: LGPL-2.1
-> > >> 	platforms/pseries/ibmebus.c:// SPDX-License-Identifier: GPL-2.0 OR OpenIB BSD
-> > >> 	tools/head_check.sh:# SPDX-License-Identifier: GPL-2.0+
-> > >> 	xmon/ppc.h:/* SPDX-License-Identifier: GPL-1.0+ */
+phy_id is a poor choice of name. It normally means the value you find
+in register 2 and 3 of the PHY which identifies the manufacture, make
+and possibly revision.
 
-If you're combining GPLv2-or-later works with LGPLv2.0/2.1 works, you'll have
-to normalize to some GPLv2-based license (such as GPLv2-or-later), since
-LGPLv2.1 requires that for combinations.  You won't be able to carry along
-the "OR 3-Clause-BSD" part once the combination is made.  Similarly true with
-GPLv2-or-later, but LGPL is the interesting one because it's explicit about
-the need to change license notices to GPL notices when you combine.
+If you look at the read function prototype in struct mii_bus:
 
- -- bkuhn
+https://elixir.bootlin.com/linux/v5.17-rc1/source/include/linux/phy.h#L357
+
+the normal name is addr.
+
+Ideally your driver needs to look similar to other drivers. Ideally
+you use the same variable names for the same things. That makes it
+easier for somebody else to read your driver and debug it. It makes it
+easier to review, etc. It is worth spending time reading a few other
+drivers and looking for common patterns, and making use of those
+patterns in your driver.
+
+> +static int dm9051_map_phyup(struct board_info *db)
+> +{
+> +	int ret;
+> +
+> +	/* ~BMCR_PDOWN to power-up the internal phy
+> +	 */
+> +	ret = mdiobus_modify(db->mdiobus, DM9051_PHY_ID, MII_BMCR, BMCR_PDOWN, 0);
+> +	if (ret < 0)
+> +		return ret;
+
+You are still touching PHY registers from the MAC driver. Why is your
+PHY driver not going this as part of the _config() function?
+
+    Andrew
