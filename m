@@ -2,98 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA90CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B05B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:14:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1318766AbiAYDHF (ORCPT
+        id S1318783AbiAYDHH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:07:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58526 "EHLO
+        Mon, 24 Jan 2022 22:07:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347011AbiAYB7B (ORCPT
+        with ESMTP id S1455538AbiAYCCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 20:59:01 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D80C055A80
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:51:18 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id a12so21924325iod.9
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:51:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PLNl1n+ArWj4qgvxdeXOuJ0Go6oqKB8kznJ4QDRWUEM=;
-        b=QMmybs4P4z/N501e17N58Rqmft/exeSOywcpVLntSEwc6z8ZkVkrxP1N1tdrJ4cHRe
-         8Q6ITbn0VT+8vdnaT4dPjcSOO/LssB0Yu/e3s0yb/WxRvqJqhTnoP8CLHkK/zUvpwMOQ
-         a6utyFhOpOb7CfZlcWuFX5m2ml0rmsvTLSTLk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PLNl1n+ArWj4qgvxdeXOuJ0Go6oqKB8kznJ4QDRWUEM=;
-        b=62dv7tPk1/XuOehdsVEjWk6LoE/WZPIjm/9QsSknP1FeTohQ6PHEoZEslcVdTlmXAe
-         GP3KAko4ZMdNxyBwMYmY1J3+59KXvCc8wfjRmLGXJmIVkjF6UqQlGTawqQpvtyfyG0wt
-         LKQWR8xy1sW6cppecfdyh4yTurB2maT0iNGmDFjhJASNcyAJE4lg9fwJ7Rxjj1QSxmYw
-         /C5pots2VIBUNC41RjXPrVLYRFQVaOH5TzSsq3JILAYyPXC9kh08XUB2vsgcTZnC6BxC
-         OEV29GQiQEXbF2uHG2GENXvUNz7AK631fG2Z9EG07MiYz33q5gl2G1ZjN8sBEdkVhk4p
-         xdvQ==
-X-Gm-Message-State: AOAM531PIotfvfmsTXAu1KigpezS3R2Cl/ilFTURzptdIppnCILCJm9J
-        8VTZDacI5R+8BbK+tbCNLKNwPQ==
-X-Google-Smtp-Source: ABdhPJyG9fWz6ez4vBJUr5NEHb+kDo75RY6fOU8hfE7G7MsCUG9lsjGpnwqG9w7vNUMQof6ki72mXQ==
-X-Received: by 2002:a02:a1d4:: with SMTP id o20mr4716189jah.45.1643075478323;
-        Mon, 24 Jan 2022 17:51:18 -0800 (PST)
-Received: from ?IPv6:2601:282:8200:4c:b48b:eb27:e282:37fe? ([2601:282:8200:4c:b48b:eb27:e282:37fe])
-        by smtp.gmail.com with ESMTPSA id u2sm8346698ilv.1.2022.01.24.17.51.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 17:51:18 -0800 (PST)
-Subject: Re: [PATCH 4.4 000/114] 4.4.300-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
-References: <20220124183927.095545464@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <de58657c-71fb-96eb-3dbd-2d99f2507518@linuxfoundation.org>
-Date:   Mon, 24 Jan 2022 18:51:13 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Mon, 24 Jan 2022 21:02:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C05C0619D0;
+        Mon, 24 Jan 2022 16:56:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0008960AF3;
+        Tue, 25 Jan 2022 00:56:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BFBAC340E4;
+        Tue, 25 Jan 2022 00:56:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643072167;
+        bh=HGL+ZuBOHbR5QhIj3i8dJ+BOoFj7BWUdJb5AT3Nbmgk=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=G98934XM7FvuZKrSQlupbv5mzhDZPcGmLNSpyGKYSZxmQtJnSKTtbY6YPfaj8tFAS
+         1r0R9d2QOtNocB1Z0Z7O5dRWt+X5inWR1jTVZXBqHatYd9RM4SlydSVXtTaATBCzmB
+         G0+K5JxsLUw+eF0NFvBKn+tJ7OLvYgD8BPfGBWfNkJ9y+jcV9VYm8gnYEeG/5ofgId
+         Uvkr6447UGI8cuDFB5WvupF+adnZweJxTX/atXz17zOY8Yi2O+9alFIiJmc6oN8YCq
+         kxV6oB5nXOzw+y8B2sejSJKKq9kQCVQ137pI4h1QzcO42Fa7ZT+rdHc+F7zzALfMIY
+         JJdCofjxz4JxQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220124052038.6242-1-miles.chen@mediatek.com>
+References: <20220117090030.13064-1-miles.chen@mediatek.com> <20220124052038.6242-1-miles.chen@mediatek.com>
+Subject: Re: [PATCH] clk: mediatek: add unregister logic to mtk_clk_simple_probe error path
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     chun-jie.chen@mediatek.com, ikjn@chromium.org,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        matthias.bgg@gmail.com, mturquette@baylibre.com,
+        weiyi.lu@mediatek.com
+To:     Miles Chen <miles.chen@mediatek.com>
+Date:   Mon, 24 Jan 2022 16:56:05 -0800
+User-Agent: alot/0.10
+Message-Id: <20220125005607.5BFBAC340E4@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/24/22 11:41 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.4.300 release.
-> There are 114 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.4.300-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Quoting Miles Chen (2022-01-23 21:20:38)
+> Hi Stephen,
+>=20
+> > Stephen pointed out that there is no unregister logic in
+> > mtk_clk_simple_probe() error path [1].
+> > Fix it by adding unregister logic to mtk_clk_simple_probe().
+>=20
+> Chen-Yu's work [1] already addresses this problem. So please ignore
+> this patch.
 
-Compiled and booted on my test system. No dmesg regressions.
-
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
-
-thanks,
--- Shuah
-
+Alright. Thanks.
