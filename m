@@ -2,203 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F47C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382334AbiAYL0N (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 06:26:13 -0500
-Received: from mga12.intel.com ([192.55.52.136]:52767 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1382145AbiAYLY6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 06:24:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643109897; x=1674645897;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=2DAAwyjGF3VJU1MTs4VLIJXtwINfvdA/C1fdAO95sw4=;
-  b=TSb++vYx+KWw4ikdPXq61hotaU/LAS1Ygpq2p+/nrIBl7zSmSc/xLGKz
-   FpLhM5gOpDsXfA2ckAKFdRZKA7NRTDc359ZliUSgU1rgM0WStsD6gRiSK
-   L+Tf0GsgId93DcnOQTQaNiNq6oeu+aytvVzj1RQPa3lWAjyhUuEHRECR/
-   ahrrSmInVOKxGe3IxOY7dcIS3Rby4nwodRsdsUF8zyf5dxSTBHgenSEWz
-   ZTKh2NNs9Tc4fJSPXcpdntBGDjU81LqSByPMa7ugdYQsOYMmp8lk0QBAY
-   6CMLVGP0JOcnjx32YYHgW6TgkoPfdQb0+6fGXnogfJ2SlktEW8W68EftY
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226257036"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="226257036"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 03:24:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="695801754"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 25 Jan 2022 03:24:51 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCJwQ-000JoT-Qk; Tue, 25 Jan 2022 11:24:50 +0000
-Date:   Tue, 25 Jan 2022 19:24:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jann Horn <jannh@google.com>
-Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Todd Kjos <tkjos@google.com>,
-        Tyler Hicks <code@tyhicks.com>,
-        Kees Cook <keescook@chromium.org>,
-        Jeff Vander Stoep <jeffv@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-5.4
- 3638/9999] kernel/seccomp.c:2041:41: sparse: sparse: incorrect type in
- argument 3 (different address spaces)
-Message-ID: <202201251943.TPk8Y7Ob-lkp@intel.com>
+        id S237305AbiAYL3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 06:29:46 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:40150 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1380783AbiAYL1J (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 06:27:09 -0500
+X-UUID: 26aa45f1b6b8467cb5ad5038fb9430f1-20220125
+X-UUID: 26aa45f1b6b8467cb5ad5038fb9430f1-20220125
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <qii.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 201473731; Tue, 25 Jan 2022 19:26:42 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 25 Jan 2022 19:26:41 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 Jan 2022 19:26:40 +0800
+Message-ID: <2262446371d8cdbc1b9653325d6faa067f12b2ac.camel@mediatek.com>
+Subject: Re: [v2 1/2] dt-bindings: i2c: update bindings for MT8186 SoC
+From:   Qii Wang <qii.wang@mediatek.com>
+To:     Kewei Xu <kewei.xu@mediatek.com>, <wsa@the-dreams.de>
+CC:     <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <leilk.liu@mediatek.com>,
+        <liguo.zhang@mediatek.com>, <caiyu.chen@mediatek.com>,
+        <housong.zhang@mediatek.com>, <yuhan.wei@mediatek.com>,
+        <ryan-jh.yu@mediatek.com>
+Date:   Tue, 25 Jan 2022 19:26:40 +0800
+In-Reply-To: <20220125110413.18988-2-kewei.xu@mediatek.com>
+References: <20220125110413.18988-1-kewei.xu@mediatek.com>
+         <20220125110413.18988-2-kewei.xu@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.4
-head:   3307e1a058380163f1a11c8f7632706168f9fcb1
-commit: 5444477e8a4d31f6e6ff720c2d018d06e405bcc1 [3638/9999] UPSTREAM: seccomp: Remove bogus __user annotations
-config: x86_64-randconfig-s022 (https://download.01.org/0day-ci/archive/20220125/202201251943.TPk8Y7Ob-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/5444477e8a4d31f6e6ff720c2d018d06e405bcc1
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.4
-        git checkout 5444477e8a4d31f6e6ff720c2d018d06e405bcc1
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Tue, 2022-01-25 at 19:04 +0800, Kewei Xu wrote:
+> Add a DT binding documentation for the MT8186 soc.
+> 
+> Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Qii Wang <qii.wang@mediatek.com>
 
+> ---
+>  Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
+> b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
+> index 5ea216ae7084..88f74a3c81ec 100644
+> --- a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
+> +++ b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
+> @@ -14,6 +14,7 @@ Required properties:
+>        "mediatek,mt7629-i2c", "mediatek,mt2712-i2c": for MediaTek
+> MT7629
+>        "mediatek,mt8173-i2c": for MediaTek MT8173
+>        "mediatek,mt8183-i2c": for MediaTek MT8183
+> +      "mediatek,mt8186-i2c": for MediaTek MT8186
+>        "mediatek,mt8192-i2c": for MediaTek MT8192
+>        "mediatek,mt8195-i2c", "mediatek,mt8192-i2c": for MediaTek
+> MT8195
+>        "mediatek,mt8516-i2c", "mediatek,mt2712-i2c": for MediaTek
+> MT8516
 
-sparse warnings: (new ones prefixed by >>)
->> kernel/seccomp.c:2041:41: sparse: sparse: incorrect type in argument 3 (different address spaces) @@     expected void [noderef] <asn:1> * @@     got void *buffer @@
-   kernel/seccomp.c:2041:41: sparse:     expected void [noderef] <asn:1> *
-   kernel/seccomp.c:2041:41: sparse:     got void *buffer
-   kernel/seccomp.c:2059:40: sparse: sparse: incorrect type in argument 3 (different address spaces) @@     expected void [noderef] <asn:1> * @@     got void *buffer @@
-   kernel/seccomp.c:2059:40: sparse:     expected void [noderef] <asn:1> *
-   kernel/seccomp.c:2059:40: sparse:     got void *buffer
->> kernel/seccomp.c:2115:54: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void *buffer @@     got void [noderef] <asn:1> *buffer @@
-   kernel/seccomp.c:2115:54: sparse:     expected void *buffer
-   kernel/seccomp.c:2115:54: sparse:     got void [noderef] <asn:1> *buffer
-   kernel/seccomp.c:2119:53: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void *buffer @@     got void [noderef] <asn:1> *buffer @@
-   kernel/seccomp.c:2119:53: sparse:     expected void *buffer
-   kernel/seccomp.c:2119:53: sparse:     got void [noderef] <asn:1> *buffer
-
-vim +2041 kernel/seccomp.c
-
-0ddec0fc890020 Tyler Hicks 2017-08-11  2025  
-5444477e8a4d31 Jann Horn   2020-11-20  2026  static int read_actions_logged(struct ctl_table *ro_table, void *buffer,
-d013db029491b4 Tyler Hicks 2018-05-04  2027  			       size_t *lenp, loff_t *ppos)
-0ddec0fc890020 Tyler Hicks 2017-08-11  2028  {
-0ddec0fc890020 Tyler Hicks 2017-08-11  2029  	char names[sizeof(seccomp_actions_avail)];
-0ddec0fc890020 Tyler Hicks 2017-08-11  2030  	struct ctl_table table;
-0ddec0fc890020 Tyler Hicks 2017-08-11  2031  
-0ddec0fc890020 Tyler Hicks 2017-08-11  2032  	memset(names, 0, sizeof(names));
-0ddec0fc890020 Tyler Hicks 2017-08-11  2033  
-0ddec0fc890020 Tyler Hicks 2017-08-11  2034  	if (!seccomp_names_from_actions_logged(names, sizeof(names),
-beb44acaf000c9 Tyler Hicks 2018-05-04  2035  					       seccomp_actions_logged, " "))
-0ddec0fc890020 Tyler Hicks 2017-08-11  2036  		return -EINVAL;
-d013db029491b4 Tyler Hicks 2018-05-04  2037  
-d013db029491b4 Tyler Hicks 2018-05-04  2038  	table = *ro_table;
-d013db029491b4 Tyler Hicks 2018-05-04  2039  	table.data = names;
-d013db029491b4 Tyler Hicks 2018-05-04  2040  	table.maxlen = sizeof(names);
-d013db029491b4 Tyler Hicks 2018-05-04 @2041  	return proc_dostring(&table, 0, buffer, lenp, ppos);
-0ddec0fc890020 Tyler Hicks 2017-08-11  2042  }
-0ddec0fc890020 Tyler Hicks 2017-08-11  2043  
-5444477e8a4d31 Jann Horn   2020-11-20  2044  static int write_actions_logged(struct ctl_table *ro_table, void *buffer,
-ea6eca778500b0 Tyler Hicks 2018-05-04  2045  				size_t *lenp, loff_t *ppos, u32 *actions_logged)
-d013db029491b4 Tyler Hicks 2018-05-04  2046  {
-d013db029491b4 Tyler Hicks 2018-05-04  2047  	char names[sizeof(seccomp_actions_avail)];
-d013db029491b4 Tyler Hicks 2018-05-04  2048  	struct ctl_table table;
-d013db029491b4 Tyler Hicks 2018-05-04  2049  	int ret;
-d013db029491b4 Tyler Hicks 2018-05-04  2050  
-d013db029491b4 Tyler Hicks 2018-05-04  2051  	if (!capable(CAP_SYS_ADMIN))
-d013db029491b4 Tyler Hicks 2018-05-04  2052  		return -EPERM;
-d013db029491b4 Tyler Hicks 2018-05-04  2053  
-d013db029491b4 Tyler Hicks 2018-05-04  2054  	memset(names, 0, sizeof(names));
-d013db029491b4 Tyler Hicks 2018-05-04  2055  
-0ddec0fc890020 Tyler Hicks 2017-08-11  2056  	table = *ro_table;
-0ddec0fc890020 Tyler Hicks 2017-08-11  2057  	table.data = names;
-0ddec0fc890020 Tyler Hicks 2017-08-11  2058  	table.maxlen = sizeof(names);
-d013db029491b4 Tyler Hicks 2018-05-04  2059  	ret = proc_dostring(&table, 1, buffer, lenp, ppos);
-0ddec0fc890020 Tyler Hicks 2017-08-11  2060  	if (ret)
-0ddec0fc890020 Tyler Hicks 2017-08-11  2061  		return ret;
-0ddec0fc890020 Tyler Hicks 2017-08-11  2062  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2063  	if (!seccomp_actions_logged_from_names(actions_logged, table.data))
-0ddec0fc890020 Tyler Hicks 2017-08-11  2064  		return -EINVAL;
-0ddec0fc890020 Tyler Hicks 2017-08-11  2065  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2066  	if (*actions_logged & SECCOMP_LOG_ALLOW)
-0ddec0fc890020 Tyler Hicks 2017-08-11  2067  		return -EINVAL;
-0ddec0fc890020 Tyler Hicks 2017-08-11  2068  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2069  	seccomp_actions_logged = *actions_logged;
-d013db029491b4 Tyler Hicks 2018-05-04  2070  	return 0;
-0ddec0fc890020 Tyler Hicks 2017-08-11  2071  }
-0ddec0fc890020 Tyler Hicks 2017-08-11  2072  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2073  static void audit_actions_logged(u32 actions_logged, u32 old_actions_logged,
-ea6eca778500b0 Tyler Hicks 2018-05-04  2074  				 int ret)
-ea6eca778500b0 Tyler Hicks 2018-05-04  2075  {
-ea6eca778500b0 Tyler Hicks 2018-05-04  2076  	char names[sizeof(seccomp_actions_avail)];
-ea6eca778500b0 Tyler Hicks 2018-05-04  2077  	char old_names[sizeof(seccomp_actions_avail)];
-ea6eca778500b0 Tyler Hicks 2018-05-04  2078  	const char *new = names;
-ea6eca778500b0 Tyler Hicks 2018-05-04  2079  	const char *old = old_names;
-ea6eca778500b0 Tyler Hicks 2018-05-04  2080  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2081  	if (!audit_enabled)
-ea6eca778500b0 Tyler Hicks 2018-05-04  2082  		return;
-ea6eca778500b0 Tyler Hicks 2018-05-04  2083  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2084  	memset(names, 0, sizeof(names));
-ea6eca778500b0 Tyler Hicks 2018-05-04  2085  	memset(old_names, 0, sizeof(old_names));
-ea6eca778500b0 Tyler Hicks 2018-05-04  2086  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2087  	if (ret)
-ea6eca778500b0 Tyler Hicks 2018-05-04  2088  		new = "?";
-ea6eca778500b0 Tyler Hicks 2018-05-04  2089  	else if (!actions_logged)
-ea6eca778500b0 Tyler Hicks 2018-05-04  2090  		new = "(none)";
-ea6eca778500b0 Tyler Hicks 2018-05-04  2091  	else if (!seccomp_names_from_actions_logged(names, sizeof(names),
-ea6eca778500b0 Tyler Hicks 2018-05-04  2092  						    actions_logged, ","))
-ea6eca778500b0 Tyler Hicks 2018-05-04  2093  		new = "?";
-ea6eca778500b0 Tyler Hicks 2018-05-04  2094  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2095  	if (!old_actions_logged)
-ea6eca778500b0 Tyler Hicks 2018-05-04  2096  		old = "(none)";
-ea6eca778500b0 Tyler Hicks 2018-05-04  2097  	else if (!seccomp_names_from_actions_logged(old_names,
-ea6eca778500b0 Tyler Hicks 2018-05-04  2098  						    sizeof(old_names),
-ea6eca778500b0 Tyler Hicks 2018-05-04  2099  						    old_actions_logged, ","))
-ea6eca778500b0 Tyler Hicks 2018-05-04  2100  		old = "?";
-ea6eca778500b0 Tyler Hicks 2018-05-04  2101  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2102  	return audit_seccomp_actions_logged(new, old, !ret);
-ea6eca778500b0 Tyler Hicks 2018-05-04  2103  }
-ea6eca778500b0 Tyler Hicks 2018-05-04  2104  
-d013db029491b4 Tyler Hicks 2018-05-04  2105  static int seccomp_actions_logged_handler(struct ctl_table *ro_table, int write,
-d013db029491b4 Tyler Hicks 2018-05-04  2106  					  void __user *buffer, size_t *lenp,
-d013db029491b4 Tyler Hicks 2018-05-04  2107  					  loff_t *ppos)
-d013db029491b4 Tyler Hicks 2018-05-04  2108  {
-ea6eca778500b0 Tyler Hicks 2018-05-04  2109  	int ret;
-ea6eca778500b0 Tyler Hicks 2018-05-04  2110  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2111  	if (write) {
-ea6eca778500b0 Tyler Hicks 2018-05-04  2112  		u32 actions_logged = 0;
-ea6eca778500b0 Tyler Hicks 2018-05-04  2113  		u32 old_actions_logged = seccomp_actions_logged;
-ea6eca778500b0 Tyler Hicks 2018-05-04  2114  
-ea6eca778500b0 Tyler Hicks 2018-05-04 @2115  		ret = write_actions_logged(ro_table, buffer, lenp, ppos,
-ea6eca778500b0 Tyler Hicks 2018-05-04  2116  					   &actions_logged);
-ea6eca778500b0 Tyler Hicks 2018-05-04  2117  		audit_actions_logged(actions_logged, old_actions_logged, ret);
-ea6eca778500b0 Tyler Hicks 2018-05-04  2118  	} else
-ea6eca778500b0 Tyler Hicks 2018-05-04  2119  		ret = read_actions_logged(ro_table, buffer, lenp, ppos);
-ea6eca778500b0 Tyler Hicks 2018-05-04  2120  
-ea6eca778500b0 Tyler Hicks 2018-05-04  2121  	return ret;
-0ddec0fc890020 Tyler Hicks 2017-08-11  2122  }
-0ddec0fc890020 Tyler Hicks 2017-08-11  2123  
-
-:::::: The code at line 2041 was first introduced by commit
-:::::: d013db029491b49e1459d5a55ecd9ec1be1447ca seccomp: Separate read and write code for actions_logged sysctl
-
-:::::: TO: Tyler Hicks <tyhicks@canonical.com>
-:::::: CC: Paul Moore <paul@paul-moore.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
