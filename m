@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D02B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC9E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234470AbiAYPaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 10:30:04 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:50034 "EHLO
+        id S1349464AbiAYPaR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 10:30:17 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:50066 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345447AbiAYP1N (ORCPT
+        with ESMTP id S1344600AbiAYP1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 25 Jan 2022 10:27:13 -0500
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643124418;
+        s=2020; t=1643124419;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=OqTj/MWZ/KJ2RN1mgDHy03k6dnz1y2VoL1uj4/vvUAQ=;
-        b=LbbMdRo1XXg6KVBHbbqPBcqdbG25p3Spy5dyBjTDPwNUCaIo1Et6mXdc9EdWJ9RKagpE8P
-        sdXgUE914mMUVB54BVaZrA15CKnzZ1EXhfbgG0TuW88AIpdytOJ18S/dLyS79RcUvI+Bxc
-        mwdiLCIdbLZEwKFHWlfh2PYFyREEqcpyJZyEV/JrJBw/xEW8jXJf/HpsG6qr3gpfH016Es
-        ZWlHUrx6j1U+Ho2rQwYxaGySdQOYhYS9J4f4scTOKgrt4mmgkOxKStCwrHi7h6zS+zaVo6
-        0irxj1KR1lJEc+QvGUkaOjaleOZg2/aiqcIxlxXnzw0fg5gNrR9pUyZ5en8RJw==
+        bh=6xLz/KFQPrcQSXuWbgpl53d0fa2nP/lvm2qQeThafk4=;
+        b=C5CRHCNiIL8NoJnSyTplmuSII/XcUiBucgWr4RnrEbVqLqWk5Dzh4SEXmg0eaXutRIQtPp
+        Hl4Pzc/zgVGwFh6QHQd8JXidKPGcmK4kEn6QgroyuzVJMwG7WMVwzE6tlcX/zPB42sveAg
+        GNrz62fODQBajX+1+iSPWzM7rLyUpBXawJQXPrKFey2WTdIsPuem2cigyZAn6AlwzyUIhg
+        1rzx3k1nq0I7Ipz3r7mKJKarhp8RIB2XqWjAnmXIgZiIPNemO4KxQk7io1Xvp40lpWVdtY
+        se3hQFwzYYSpWEhuV/rzrvUMn2aDRGH0amYvo7P4yK1zVwg9N7VjthSmRdSpog==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643124418;
+        s=2020e; t=1643124419;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=OqTj/MWZ/KJ2RN1mgDHy03k6dnz1y2VoL1uj4/vvUAQ=;
-        b=Ztyu45yMZ5XpxvMPjIGx8jVo3+SiuxbOyIjYqQ8Zrcfg3HpFXcPvaOZb6qVCWRcytPYA30
-        4W3V+fxptbgZFaDg==
+        bh=6xLz/KFQPrcQSXuWbgpl53d0fa2nP/lvm2qQeThafk4=;
+        b=8akRmo7tr2grKpZNHAYd8lvaTO6c5JidOQH+CcHp5XfufJxZs5qeebl3PB1jnbuvQMre+6
+        ssHHpcpS+lES8GCQ==
 To:     linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org
 Cc:     Andy Lutomirski <luto@kernel.org>, Ben Segall <bsegall@google.com>,
         Daniel Bristot de Oliveira <bristot@redhat.com>,
@@ -45,9 +46,9 @@ Cc:     Andy Lutomirski <luto@kernel.org>, Ben Segall <bsegall@google.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Vincent Guittot <vincent.guittot@linaro.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 1/8] kernel/fork: Redo ifdefs around task's handling.
-Date:   Tue, 25 Jan 2022 16:26:45 +0100
-Message-Id: <20220125152652.1963111-2-bigeasy@linutronix.de>
+Subject: [PATCH 3/8] kernel/fork, IA64: Provide a alloc_thread_stack_node() for IA64.
+Date:   Tue, 25 Jan 2022 16:26:47 +0100
+Message-Id: <20220125152652.1963111-4-bigeasy@linutronix.de>
 In-Reply-To: <20220125152652.1963111-1-bigeasy@linutronix.de>
 References: <20220125152652.1963111-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -56,170 +57,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of ifdef CONFIG_VMAP_STACK is confusing in terms what is
-actually happenning and what can happen.
-For instance from reading free_thread_stack() it appears that in the
-CONFIG_VMAP_STACK case we may receive a non-NULL vm pointer but it may
-also be NULL in which case __free_pages() is used to free the stack.
-This is however not the case because in the VMAP case a non-NULL pointer
-is always returned here.
-Since it looks like this might happen, the compiler creates the correct
-dead code with the invocation to __free_pages() and everything around
-it. Twice.
+Provide a generic alloc_thread_stack_node() for IA64/
+CONFIG_ARCH_THREAD_STACK_ALLOCATOR which returns stack pointer and sets
+task_struct::stack so it behaves exactly like the other implementations.
 
-Add spaces between the ifdef and the identifer to recognize the ifdef
-level that we are currently in.
-Add the current identifer as a comment behind #else and #endif.
-Move the code within free_thread_stack() and alloc_thread_stack_node()
-into the relavant ifdef block.
+Rename IA64's alloc_thread_stack_node() and add the generic version to
+the fork code so it is in one place _and_ to drastically lower chances
+of fat fingering the IA64 code.
+Do the same for free_thread_stack().
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- kernel/fork.c | 74 +++++++++++++++++++++++++++------------------------
- 1 file changed, 39 insertions(+), 35 deletions(-)
+ arch/ia64/include/asm/thread_info.h |  6 +++---
+ kernel/fork.c                       | 16 ++++++++++++++++
+ 2 files changed, 19 insertions(+), 3 deletions(-)
 
+diff --git a/arch/ia64/include/asm/thread_info.h b/arch/ia64/include/asm/th=
+read_info.h
+index 51d20cb377062..1684716f08201 100644
+--- a/arch/ia64/include/asm/thread_info.h
++++ b/arch/ia64/include/asm/thread_info.h
+@@ -55,15 +55,15 @@ struct thread_info {
+ #ifndef ASM_OFFSETS_C
+ /* how to get the thread information struct from C */
+ #define current_thread_info()	((struct thread_info *) ((char *) current + =
+IA64_TASK_SIZE))
+-#define alloc_thread_stack_node(tsk, node)	\
++#define arch_alloc_thread_stack_node(tsk, node)	\
+ 		((unsigned long *) ((char *) (tsk) + IA64_TASK_SIZE))
+ #define task_thread_info(tsk)	((struct thread_info *) ((char *) (tsk) + IA=
+64_TASK_SIZE))
+ #else
+ #define current_thread_info()	((struct thread_info *) 0)
+-#define alloc_thread_stack_node(tsk, node)	((unsigned long *) 0)
++#define arch_alloc_thread_stack_node(tsk, node)	((unsigned long *) 0)
+ #define task_thread_info(tsk)	((struct thread_info *) 0)
+ #endif
+-#define free_thread_stack(tsk)	/* nothing */
++#define arch_free_thread_stack(tsk)	/* nothing */
+ #define task_stack_page(tsk)	((void *)(tsk))
+=20
+ #define __HAVE_THREAD_FUNCTIONS
 diff --git a/kernel/fork.c b/kernel/fork.c
-index d75a528f7b219..f63c0af6002da 100644
+index c47dcba5d66d2..a0d58ae6fac76 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -185,7 +185,7 @@ static inline void free_task_struct(struct task_struct =
-*tsk)
-  */
- # if THREAD_SIZE >=3D PAGE_SIZE || defined(CONFIG_VMAP_STACK)
-=20
--#ifdef CONFIG_VMAP_STACK
-+#  ifdef CONFIG_VMAP_STACK
- /*
-  * vmalloc() is a bit slow, and calling vfree() enough times will force a =
-TLB
-  * flush.  Try to minimize the number of calls by caching stacks.
-@@ -210,11 +210,9 @@ static int free_vm_stack_cache(unsigned int cpu)
-=20
- 	return 0;
+@@ -330,6 +330,22 @@ void thread_stack_cache_init(void)
  }
--#endif
 =20
- static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int=
- node)
- {
--#ifdef CONFIG_VMAP_STACK
- 	void *stack;
- 	int i;
-=20
-@@ -258,7 +256,34 @@ static unsigned long *alloc_thread_stack_node(struct t=
-ask_struct *tsk, int node)
- 		tsk->stack =3D stack;
- 	}
- 	return stack;
--#else
-+}
-+
-+static void free_thread_stack(struct task_struct *tsk)
-+{
-+	struct vm_struct *vm =3D task_stack_vm_area(tsk);
-+	int i;
-+
-+	for (i =3D 0; i < THREAD_SIZE / PAGE_SIZE; i++)
-+		memcg_kmem_uncharge_page(vm->pages[i], 0);
-+
-+	for (i =3D 0; i < NR_CACHED_STACKS; i++) {
-+		if (this_cpu_cmpxchg(cached_stacks[i], NULL,
-+				     tsk->stack_vm_area) !=3D NULL)
-+			continue;
-+
-+		tsk->stack =3D NULL;
-+		tsk->stack_vm_area =3D NULL;
-+		return;
-+	}
-+	vfree_atomic(tsk->stack);
-+	tsk->stack =3D NULL;
-+	tsk->stack_vm_area =3D NULL;
-+}
-+
-+#  else /* !CONFIG_VMAP_STACK */
+ # endif /* THREAD_SIZE >=3D PAGE_SIZE || defined(CONFIG_VMAP_STACK) */
++#else /* CONFIG_ARCH_THREAD_STACK_ALLOCATOR */
 +
 +static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int=
  node)
 +{
- 	struct page *page =3D alloc_pages_node(node, THREADINFO_GFP,
- 					     THREAD_SIZE_ORDER);
-=20
-@@ -267,36 +292,17 @@ static unsigned long *alloc_thread_stack_node(struct =
-task_struct *tsk, int node)
- 		return tsk->stack;
- 	}
- 	return NULL;
--#endif
- }
-=20
--static inline void free_thread_stack(struct task_struct *tsk)
-+static void free_thread_stack(struct task_struct *tsk)
- {
--#ifdef CONFIG_VMAP_STACK
--	struct vm_struct *vm =3D task_stack_vm_area(tsk);
--
--	if (vm) {
--		int i;
--
--		for (i =3D 0; i < THREAD_SIZE / PAGE_SIZE; i++)
--			memcg_kmem_uncharge_page(vm->pages[i], 0);
--
--		for (i =3D 0; i < NR_CACHED_STACKS; i++) {
--			if (this_cpu_cmpxchg(cached_stacks[i],
--					NULL, tsk->stack_vm_area) !=3D NULL)
--				continue;
--
--			return;
--		}
--
--		vfree_atomic(tsk->stack);
--		return;
--	}
--#endif
--
- 	__free_pages(virt_to_page(tsk->stack), THREAD_SIZE_ORDER);
-+	tsk->stack =3D NULL;
- }
--# else
++	unsigned long *stack;
 +
-+#  endif /* CONFIG_VMAP_STACK */
-+# else /* !(THREAD_SIZE >=3D PAGE_SIZE || defined(CONFIG_VMAP_STACK)) */
++	stack =3D arch_alloc_thread_stack_node(tsk, node);
++	tsk->stack =3D stack;
++	return stack;
++}
 +
- static struct kmem_cache *thread_stack_cache;
-=20
- static unsigned long *alloc_thread_stack_node(struct task_struct *tsk,
-@@ -312,6 +318,7 @@ static unsigned long *alloc_thread_stack_node(struct ta=
-sk_struct *tsk,
- static void free_thread_stack(struct task_struct *tsk)
- {
- 	kmem_cache_free(thread_stack_cache, tsk->stack);
-+	tsk->stack =3D NULL;
- }
-=20
- void thread_stack_cache_init(void)
-@@ -321,8 +328,9 @@ void thread_stack_cache_init(void)
- 					THREAD_SIZE, NULL);
- 	BUG_ON(thread_stack_cache =3D=3D NULL);
- }
--# endif
--#endif
++static void free_thread_stack(struct task_struct *tsk, bool cache_only)
++{
++	arch_free_thread_stack(tsk);
++}
 +
-+# endif /* THREAD_SIZE >=3D PAGE_SIZE || defined(CONFIG_VMAP_STACK) */
-+#endif /* !CONFIG_ARCH_THREAD_STACK_ALLOCATOR */
+ #endif /* !CONFIG_ARCH_THREAD_STACK_ALLOCATOR */
 =20
  /* SLAB cache for signal_struct structures (tsk->signal) */
- static struct kmem_cache *signal_cachep;
-@@ -432,10 +440,6 @@ static void release_task_stack(struct task_struct *tsk)
-=20
- 	account_kernel_stack(tsk, -1);
- 	free_thread_stack(tsk);
--	tsk->stack =3D NULL;
--#ifdef CONFIG_VMAP_STACK
--	tsk->stack_vm_area =3D NULL;
--#endif
- }
-=20
- #ifdef CONFIG_THREAD_INFO_IN_TASK
 --=20
 2.34.1
 
