@@ -2,159 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F311C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 369FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230107AbiAYT3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 14:29:25 -0500
-Received: from mga11.intel.com ([192.55.52.93]:31440 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230053AbiAYT3T (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 14:29:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643138959; x=1674674959;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=jFKNoV/7yjG6kr9SE45/mFwrpz5JGNeru0FJuQRCN8Y=;
-  b=EMG89AdNAu8UZaDrPpG7vUuHksfvrlxkPjfGqzWCwRuxF+CV3ITRpc0w
-   JBhGHwJ+ftLtF1E+YLvHWuB9AGIVxTVCB9HQ4sZsanYwtj1rdXsiR/RLI
-   suGB6vqYhJi+AMJ6khGt+1GPE//gbsSysMehkibtz4Q0bT1E1aYSt9Vww
-   YlzQPKgHBTdQGrl2LF99s6hA1NAnqOVfrlFmkYfnCkdKfbOPywRLRqBB6
-   izynKS6kOomqSP6ir2m5yxzREs+Jtx3Gv2OkpRpD1OsOJAU0cd+Sevjcq
-   EA+aSGlSY8PBVAzNuXqoH2pUTGt+1xgqBANCXA2xIxm+0JSpV0VSV3pAq
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="243992846"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="243992846"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 11:29:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="477230951"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 25 Jan 2022 11:29:17 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCRVE-000KNC-RH; Tue, 25 Jan 2022 19:29:16 +0000
-Date:   Wed, 26 Jan 2022 03:28:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Li-hao Kuo <lhjeff911@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>
-Subject: [broonie-misc:spi-5.18 8/9] drivers/spi/spi-sunplus-sp7021.c:127:5:
- warning: no previous prototype for 'sp7021_spi_slave_tx'
-Message-ID: <202201260353.yX7WVJXz-lkp@intel.com>
+        id S230143AbiAYTcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 14:32:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230117AbiAYTcw (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 14:32:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24255C06173B;
+        Tue, 25 Jan 2022 11:32:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0F046169A;
+        Tue, 25 Jan 2022 19:32:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90B6FC340E0;
+        Tue, 25 Jan 2022 19:32:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643139170;
+        bh=eh3SDUBzbO+RbsUX4b5YjlEDOizdj2B3kgbhAZIXSfQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=sizI92IIcGhp94GfX0j81qNxn0adzGZLubYK4f270Nz1HqSO7AEFBhb3WpFuh3Rg3
+         vBQ+3nsV9YYHMAkDeohZJXh+P6TCtYuxj1kXYmaxoq3hCGTlcTsIBGWD0c9lmu9h7L
+         T8rg3fYfXfzgQSf9rOp7iEFzGudAZY+8MkncaokHcYW/tcpp6XnKgebkVXJcd0zXmv
+         etwLItN0BHhvdetBwk2mAXpbFSCYcM0/vNs0HkJOC1j6hN3dKgR7OjUbWOnz1NwC5U
+         RSdokmIHCTI2S4NxVcmYgUIvrP9oLDYI9Li8JV/9muFjnS7cnrk7ose6SM5D8d8eDV
+         6iNkqJhMVK18w==
+Message-ID: <f2704d4a-c30c-26be-7018-e496ce7c6313@kernel.org>
+Date:   Tue, 25 Jan 2022 13:32:48 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] clk: socfpga: Fix a memory leak bug in
+ socfpga_gate_init()
+Content-Language: en-US
+To:     Stephen Boyd <sboyd@kernel.org>, zhou1615@umn.edu
+Cc:     kjlu@umn.edu, Michael Turquette <mturquette@baylibre.com>,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220124165316.55449-1-zhou1615@umn.edu>
+ <20220124195341.50C97C340E5@smtp.kernel.org>
+From:   Dinh Nguyen <dinguyen@kernel.org>
+In-Reply-To: <20220124195341.50C97C340E5@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/misc.git spi-5.18
-head:   a708078eeb992799161e794d9c569cf4f725a5b0
-commit: f62ca4e2a863033d9b3b5a00a0d897557c9da6c5 [8/9] spi: Add spi driver for Sunplus SP7021
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220126/202201260353.yX7WVJXz-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/broonie/misc.git/commit/?id=f62ca4e2a863033d9b3b5a00a0d897557c9da6c5
-        git remote add broonie-misc https://git.kernel.org/pub/scm/linux/kernel/git/broonie/misc.git
-        git fetch --no-tags broonie-misc spi-5.18
-        git checkout f62ca4e2a863033d9b3b5a00a0d897557c9da6c5
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/spi/spi-sunplus-sp7021.c:127:5: warning: no previous prototype for 'sp7021_spi_slave_tx' [-Wmissing-prototypes]
-     127 | int sp7021_spi_slave_tx(struct spi_device *spi, struct spi_transfer *xfer)
-         |     ^~~~~~~~~~~~~~~~~~~
->> drivers/spi/spi-sunplus-sp7021.c:145:5: warning: no previous prototype for 'sp7021_spi_slave_rx' [-Wmissing-prototypes]
-     145 | int sp7021_spi_slave_rx(struct spi_device *spi, struct spi_transfer *xfer)
-         |     ^~~~~~~~~~~~~~~~~~~
->> drivers/spi/spi-sunplus-sp7021.c:163:6: warning: no previous prototype for 'sp7021_spi_master_rb' [-Wmissing-prototypes]
-     163 | void sp7021_spi_master_rb(struct sp7021_spi_ctlr *pspim, unsigned int len)
-         |      ^~~~~~~~~~~~~~~~~~~~
->> drivers/spi/spi-sunplus-sp7021.c:174:6: warning: no previous prototype for 'sp7021_spi_master_wb' [-Wmissing-prototypes]
-     174 | void sp7021_spi_master_wb(struct sp7021_spi_ctlr *pspim, unsigned int len)
-         |      ^~~~~~~~~~~~~~~~~~~~
-   drivers/spi/spi-sunplus-sp7021.c:568:12: warning: 'sp7021_spi_runtime_resume' defined but not used [-Wunused-function]
-     568 | static int sp7021_spi_runtime_resume(struct device *dev)
-         |            ^~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/spi/spi-sunplus-sp7021.c:560:12: warning: 'sp7021_spi_runtime_suspend' defined but not used [-Wunused-function]
-     560 | static int sp7021_spi_runtime_suspend(struct device *dev)
-         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-vim +/sp7021_spi_slave_tx +127 drivers/spi/spi-sunplus-sp7021.c
+On 1/24/22 13:53, Stephen Boyd wrote:
+> Quoting Zhou Qingyang (2022-01-24 08:53:16)
+>> diff --git a/drivers/clk/socfpga/clk-gate.c b/drivers/clk/socfpga/clk-gate.c
+>> index 53d6e3ec4309..0ca5e0000925 100644
+>> --- a/drivers/clk/socfpga/clk-gate.c
+>> +++ b/drivers/clk/socfpga/clk-gate.c
+>> @@ -188,8 +188,10 @@ void __init socfpga_gate_init(struct device_node *node)
+>>                  return;
+>>   
+>>          ops = kmemdup(&gateclk_ops, sizeof(gateclk_ops), GFP_KERNEL);
+>> -       if (WARN_ON(!ops))
+>> +       if (WARN_ON(!ops)) {
+> 
+> A WARN_ON() after an allocation failure will lead to double stacktraces.
+> Can you remove the WARN_ON()?
+> 
+> Furthermore, it looks like 'ops' is never freed on failure in this
+> function. Did the SA tool figure that out? There are more problems with
+> this function and error paths. Seems like nobody cares.
+> 
 
-   126	
- > 127	int sp7021_spi_slave_tx(struct spi_device *spi, struct spi_transfer *xfer)
-   128	{
-   129		struct sp7021_spi_ctlr *pspim = spi_controller_get_devdata(spi->controller);
-   130	
-   131		reinit_completion(&pspim->slave_isr);
-   132		writel(SP7021_SLAVE_DMA_EN | SP7021_SLAVE_DMA_RW | FIELD_PREP(SP7021_SLAVE_DMA_CMD, 3),
-   133		       pspim->s_base + SP7021_SLAVE_DMA_CTRL_REG);
-   134		writel(xfer->len, pspim->s_base + SP7021_SLAVE_DMA_LENGTH_REG);
-   135		writel(xfer->tx_dma, pspim->s_base + SP7021_SLAVE_DMA_ADDR_REG);
-   136		writel(readl(pspim->s_base + SP7021_DATA_RDY_REG) | SP7021_SLAVE_DATA_RDY,
-   137		       pspim->s_base + SP7021_DATA_RDY_REG);
-   138		if (wait_for_completion_interruptible(&pspim->isr_done)) {
-   139			dev_err(&spi->dev, "%s() wait_for_completion err\n", __func__);
-   140			return -EINTR;
-   141		}
-   142		return 0;
-   143	}
-   144	
- > 145	int sp7021_spi_slave_rx(struct spi_device *spi, struct spi_transfer *xfer)
-   146	{
-   147		struct sp7021_spi_ctlr *pspim = spi_controller_get_devdata(spi->controller);
-   148		int ret = 0;
-   149	
-   150		reinit_completion(&pspim->isr_done);
-   151		writel(SP7021_SLAVE_DMA_EN | FIELD_PREP(SP7021_SLAVE_DMA_CMD, 3),
-   152		       pspim->s_base + SP7021_SLAVE_DMA_CTRL_REG);
-   153		writel(xfer->len, pspim->s_base + SP7021_SLAVE_DMA_LENGTH_REG);
-   154		writel(xfer->rx_dma, pspim->s_base + SP7021_SLAVE_DMA_ADDR_REG);
-   155		if (wait_for_completion_interruptible(&pspim->isr_done)) {
-   156			dev_err(&spi->dev, "%s() wait_for_completion err\n", __func__);
-   157			return -EINTR;
-   158		}
-   159		writel(SP7021_SLAVE_SW_RST, pspim->s_base + SP7021_SLAVE_DMA_CTRL_REG);
-   160		return ret;
-   161	}
-   162	
- > 163	void sp7021_spi_master_rb(struct sp7021_spi_ctlr *pspim, unsigned int len)
-   164	{
-   165		int i;
-   166	
-   167		for (i = 0; i < len; i++) {
-   168			pspim->rx_buf[pspim->rx_cur_len] =
-   169				readl(pspim->m_base + SP7021_FIFO_REG);
-   170			pspim->rx_cur_len++;
-   171		}
-   172	}
-   173	
- > 174	void sp7021_spi_master_wb(struct sp7021_spi_ctlr *pspim, unsigned int len)
-   175	{
-   176		int i;
-   177	
-   178		for (i = 0; i < len; i++) {
-   179			writel(pspim->tx_buf[pspim->tx_cur_len],
-   180			       pspim->m_base + SP7021_FIFO_REG);
-   181			pspim->tx_cur_len++;
-   182		}
-   183	}
-   184	
+Thanks for pointing this out. I'll take a look and will send a patch 
+shortly.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Dinh
