@@ -2,136 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87430C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B37C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346307AbiAYRxQ (ORCPT
+        id S1355593AbiAYRxz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:53:16 -0500
-Received: from mail-yb1-f171.google.com ([209.85.219.171]:43911 "EHLO
-        mail-yb1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243629AbiAYRwr (ORCPT
+        Tue, 25 Jan 2022 12:53:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239596AbiAYRxP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:52:47 -0500
-Received: by mail-yb1-f171.google.com with SMTP id g81so63955733ybg.10;
-        Tue, 25 Jan 2022 09:52:46 -0800 (PST)
+        Tue, 25 Jan 2022 12:53:15 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04C2C06173D
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:53:14 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id y17so9707880plg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:53:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TdEpPt26Kd5ANAoShc8sbb2YgnlITBWoslxb5vWIwEY=;
+        b=YzgYg9UDALgHKyWstuZhVyuAwx51TXB1k3kl+r9JbhLEv9o5u0Znx7TJiFssZ5VvSH
+         qa+/jjs1oRx5XNbHLM5RkVGqX3YfJ2qwlh6Cs+H+WP+GpCRVf2bI7P5k5g0xjwHPJ3U+
+         tWtTDd8//8grF1A1PYoLrjaRlfST5DAEPJlmo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+j1GpCpGfNY2lH8frLrkCg4vSgaS4ibnLkUccs79nQA=;
-        b=RzcIeeIMikSwVSQ9Yza37NYqsfFrm0hOqPP/KK8YyAjiRunShioLLHtBjsimPmUmi3
-         Eopc3HhOpeMnQKM7ym9MJAt/wDGuoj3yoD/HDh4cT5oB16sis6auVObMBy8oZ1Y77B7N
-         6+Vriqme2ChbJepG2DAlOXPssIElDlFtA8pm9ea/B7qpCV9+r1vKxcewScZ4y742RbeC
-         i5UCoNv3F6jq9cZC6QSlI/fF8FWVjt6/lkdARhb54JHGhDtbfy2Hj+wes4rEw6QbCwBb
-         5NiIu98aWjOUnuO7m6gzKdqEam6ZYvdwSXoHROeg+I/fU6WYB9Is+2SeCgNayW2Xeh8a
-         qAvw==
-X-Gm-Message-State: AOAM5320hUWHXk2MI3tUMmNmGvH2JkzUnGWajZnkOnSfYnUIUp5za9s5
-        f2JofaoVdVi/RNpBUrYbK3YvQQVyphL9lKran8g=
-X-Google-Smtp-Source: ABdhPJyojknnzuIYMmZbjfeJ+s2pzRiKVKx+zefsCZtajgkwxnDKmiqfjgFEq1JOZLL4BipPUObjdUys5vQ1JNLbLZs=
-X-Received: by 2002:a25:bb93:: with SMTP id y19mr30844335ybg.466.1643133165102;
- Tue, 25 Jan 2022 09:52:45 -0800 (PST)
-MIME-Version: 1.0
-References: <1642851166-27096-1-git-send-email-akhilrajeev@nvidia.com> <1642851166-27096-2-git-send-email-akhilrajeev@nvidia.com>
-In-Reply-To: <1642851166-27096-2-git-send-email-akhilrajeev@nvidia.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 25 Jan 2022 18:52:34 +0100
-Message-ID: <CAJZ5v0hCREQczOczW6+UGv3UDxskYLRP06qpyQkyXEC1YA3nOw@mail.gmail.com>
-Subject: Re: [PATCH v4 1/3] device property: Add fwnode_irq_get_byname
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TdEpPt26Kd5ANAoShc8sbb2YgnlITBWoslxb5vWIwEY=;
+        b=OcBo5mbzIaorkkuOfPoB4kvahQv+/Zfyeuog4Lc4tB/fcfWL1vzT2XnMxVxxBqUIIa
+         Em+C0Sh29mOgxsmoupJM/lnKbdAYMoNtti2Av6tmAoQ61obEkeFmW2joxz61NSH+Pmkw
+         ydOXUbDRmm2/o9iR72KUV36tScst9FElt8Az4wVnOcxA8uACM+V7B2nQ2XlXCHifAPDT
+         n5cst7HknaXGUSjKfzrQRi5s+d2os+GcsCmFrQ3BzD6y7XmMBFxc5lxwTiVst16Ch3QM
+         C9X33JEwjNuUPloaMWGWVyY2VhSO1Tx/iCBLcurk/aAw4RzFLPlMhT1gLQflXQQG+b40
+         BLwQ==
+X-Gm-Message-State: AOAM532+Ndikds7lJ9RiW4lCTDWawuzar00D/aXRD36m+ES0dbpxwMrZ
+        CnIkcTw9qWWE4SHddkWTd+Cbyg==
+X-Google-Smtp-Source: ABdhPJwNGoJh0Y7zhQk0/VKPgKclIQQBKnQecn44cSa8KoSPv8nXiehDcI7fK/eKC+dpURSfjOIW/A==
+X-Received: by 2002:a17:902:7143:b0:14a:62ed:c2a7 with SMTP id u3-20020a170902714300b0014a62edc2a7mr19990530plm.80.1643133194479;
+        Tue, 25 Jan 2022 09:53:14 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id p38sm14430104pgb.36.2022.01.25.09.53.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 09:53:14 -0800 (PST)
+Date:   Tue, 25 Jan 2022 09:53:13 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the kspp tree
+Message-ID: <202201250952.2C89D08@keescook>
+References: <20220125145006.677e3709@canb.auug.org.au>
+ <202201242230.C54A6BCDFE@keescook>
+ <20220125222732.98ce2e445726e773f40e122e@kernel.org>
+ <20220125090152.0c457aae@gandalf.local.home>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220125090152.0c457aae@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 22, 2022 at 12:33 PM Akhil R <akhilrajeev@nvidia.com> wrote:
->
-> Add fwnode_irq_get_byname() to get an interrupt by name from either
-> ACPI table or Device Tree, whichever is used for enumeration.
->
-> In the ACPI case, this allow us to use 'interrupt-names' in
-> _DSD which can be mapped to Interrupt() resource by index.
-> The implementation is similar to 'interrupt-names' in the
-> Device Tree.
->
-> Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
+On Tue, Jan 25, 2022 at 09:01:52AM -0500, Steven Rostedt wrote:
+> On Tue, 25 Jan 2022 22:27:32 +0900
+> Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> 
+> > > But if this is true, I would imagine there would be plenty of other
+> > > warnings? I'm currently stumped.  
+> > 
+> > That is because __rel_loc is used only in the sample code in the kernel
+> > for testing. Other use-cases comes from user-space.
+> > Hmm, can we skip this boundary check for this example?
+> 
+> Is this only checked when __CHECKER__ is defined? If so, would this work?
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+__CHECKER__ is only for sparse. This is from re-enabling -Warray-bounds
+for gcc.
 
-> ---
->  drivers/base/property.c  | 29 +++++++++++++++++++++++++++++
->  include/linux/property.h |  1 +
->  2 files changed, 30 insertions(+)
->
-> diff --git a/drivers/base/property.c b/drivers/base/property.c
-> index e6497f6..fc59e0f 100644
-> --- a/drivers/base/property.c
-> +++ b/drivers/base/property.c
-> @@ -936,6 +936,35 @@ void __iomem *fwnode_iomap(struct fwnode_handle *fwnode, int index)
->  EXPORT_SYMBOL(fwnode_iomap);
->
->  /**
-> + * fwnode_irq_get_byname - Get IRQ from a fwnode using its name
-> + * @fwnode:    Pointer to the firmware node
-> + * @name:      IRQ name
-> + *
-> + * Description:
-> + * Find a match to the string @name in the 'interrupt-names' string array
-> + * in _DSD for ACPI, or of_node for Device Tree. Then get the Linux IRQ
-> + * number of the IRQ resource corresponding to the index of the matched
-> + * string.
-> + *
-> + * Return:
-> + * Linux IRQ number on success, or negative errno otherwise.
-> + */
-> +int fwnode_irq_get_byname(const struct fwnode_handle *fwnode, const char *name)
-> +{
-> +       int index;
-> +
-> +       if (!name)
-> +               return -EINVAL;
-> +
-> +       index = fwnode_property_match_string(fwnode, "interrupt-names",  name);
-> +       if (index < 0)
-> +               return index;
-> +
-> +       return fwnode_irq_get(fwnode, index);
-> +}
-> +EXPORT_SYMBOL(fwnode_irq_get_byname);
-> +
-> +/**
->   * fwnode_graph_get_next_endpoint - Get next endpoint firmware node
->   * @fwnode: Pointer to the parent firmware node
->   * @prev: Previous endpoint node or %NULL to get the first
-> diff --git a/include/linux/property.h b/include/linux/property.h
-> index 7399a0b..95d56a5 100644
-> --- a/include/linux/property.h
-> +++ b/include/linux/property.h
-> @@ -121,6 +121,7 @@ struct fwnode_handle *fwnode_handle_get(struct fwnode_handle *fwnode);
->  void fwnode_handle_put(struct fwnode_handle *fwnode);
->
->  int fwnode_irq_get(const struct fwnode_handle *fwnode, unsigned int index);
-> +int fwnode_irq_get_byname(const struct fwnode_handle *fwnode, const char *name);
->
->  void __iomem *fwnode_iomap(struct fwnode_handle *fwnode, int index);
->
-> --
-> 2.7.4
->
+-- 
+Kees Cook
