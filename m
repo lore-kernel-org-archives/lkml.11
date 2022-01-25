@@ -2,1042 +2,404 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCEF9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B65C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1319532AbiAYDJF (ORCPT
+        id S1319512AbiAYDJC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:09:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
+        Mon, 24 Jan 2022 22:09:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242158AbiAYCgX (ORCPT
+        with ESMTP id S3423536AbiAYCfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:36:23 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F59C047CE5;
-        Mon, 24 Jan 2022 18:10:32 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id i4so7470020qtr.0;
-        Mon, 24 Jan 2022 18:10:32 -0800 (PST)
+        Mon, 24 Jan 2022 21:35:23 -0500
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBDBC04967E
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 18:10:04 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id i14so15576966ila.11
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 18:10:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qrLM/hD0TSoYjG9jpP9XxtCjR9gw0jtpVZchvLYMiVk=;
-        b=Vmnw98j/Ly+Vzs66yKjc04Ss7uL1hJupnTD/19G4CqLc5wtSSdJSNgK/SUtKxQ53UI
-         68X2FHncl3Zema7kQaIAuiL9I5BeFkjDGaPPMk+qk4CeZAjijHnS2neFzU7wojyU3ydm
-         VrOHWxvHw0U5VmTrTjdfK67WP2K36AsgFTNz9SERG5OcS1xBcClQmFMQ8KyzfkVLRNTc
-         p4AD5DMzX5TW3kfYEAlvrc3bLzAJbQ+oC082p9JCTxcDazbRKVcy5ez9q4PudpouI7KK
-         cLjL6AqpJ4WOFi4rJRwwkuJn44KcTb9my8zw6aAjYE/QFKS2CCt7hRVxYpgWJVkg4xLk
-         mThw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Aw1DWEcQIEt8m+nktD6YAgCCZ66sXTqiTlvo4jZ+Ooc=;
+        b=IV4UUBTWv7dCWuKKUmqYaTqZ6BSPJXwQPCMLyUQtbxvSktF6MqhJiebjkrbQB+v6wx
+         nkYGW9GnuzlTEzoSlGB4FD9TFIYYweO/VzNgLF55/tMWgCjeBtaLcwVxJF5HEznh1qp7
+         cv0ZTIIOLS+vB1zI0iZlaSM9B5+X14oIQEGvBKOzzqCFEByCoMEeMCRQVcQ1DmsJ6u/A
+         2URcjpXTgtDbDsyyKsOWtpg+YmwnZSvqttK7NyQVhsSiTC21J6aCjIX/S50Ic3jP2pGQ
+         dZ9ghDbQK+7lsYCHdF5CFZ17L6AcSDdUxbah1dPgfp9t81Emk9274rkOLbWWY701Y3as
+         +AyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qrLM/hD0TSoYjG9jpP9XxtCjR9gw0jtpVZchvLYMiVk=;
-        b=rQ2ngyaC81lT1hIeEqdoYG4cIDRHkBXAJYGP6MG6xTM7/UhvYiaKr9aTHK5HyPTbla
-         ivka2vxfSXAkSIOHGtkDb4ZmtTOrK6Gc9Yr8lfKRLjmq/Vlu66abX8PnC0R1gCM6C6rS
-         0x/M0VTyrNcudKayXRJFjR7LemaFTyCVbntUTifGemZ7WKRumRMiXCtTVFDiSL9aWxHS
-         /bZYXrREzMBtz61fM4py3mO/sHWSKkO2V3LhdYL7u/scnj1PAEW3Yyf15f5OCpiXmEh5
-         6n/gYPBOHaGKsyJ6vxMA5F/kaWACHDUO56SU4ixBrCyax79KLYrBarLCezKsKXGgSztU
-         DaCg==
-X-Gm-Message-State: AOAM530mnJvp45OXE5EU6rQSzhMiBIWDjSvrmrkrDKzwTSjcDP68dlay
-        GsEJGjiYe1ImFga2Pj3B+KcXrHgcbbZsLA==
-X-Google-Smtp-Source: ABdhPJzhpaZDx8dsn5eZ+IpaZbrMBI0L5CMWI0HYSi+Q/pjKkWfzcrxa7CSFoKMEqKpI7NiVxt3DHQ==
-X-Received: by 2002:a05:622a:1053:: with SMTP id f19mr14947526qte.363.1643076631132;
-        Mon, 24 Jan 2022 18:10:31 -0800 (PST)
-Received: from Dell-Inspiron-15.dartmouth.edu ([129.170.195.217])
-        by smtp.gmail.com with ESMTPSA id m190sm8024845qkf.58.2022.01.24.18.10.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 18:10:30 -0800 (PST)
-From:   Ben Wolsieffer <benwolsieffer@gmail.com>
-Cc:     Ben Wolsieffer <benwolsieffer@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Stephen Boyd <sboyd@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 1/3] ARM: dts: qcom: add HP TouchPad (tenderloin)
-Date:   Mon, 24 Jan 2022 21:07:03 -0500
-Message-Id: <e908c7e59f78c0e61cdd74e55da089fc51ac7fdc.1643075547.git.benwolsieffer@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1643075547.git.benwolsieffer@gmail.com>
-References: <cover.1643075547.git.benwolsieffer@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Aw1DWEcQIEt8m+nktD6YAgCCZ66sXTqiTlvo4jZ+Ooc=;
+        b=BwMHgjRi4xyPOBgc4RgWPOA9TUUSwl8mJX/BdisQ6QFbfR7+ixGUNJEmyCKUbT3rYE
+         AujC6Rf8/kSOXLpuccwfmNjzucQaBQeSzML4HysTNiwqif2pGQPTwTCx9E3S2P8psaJq
+         S4HU3RGWghEAYFVc05P13fRvfxwhM+2gPEiGy0H9Ih4452viyLqjDXEsNkOoCGhisx22
+         dWuYrEDG7zeNzz6YBEqjHOFgBIM1tbh2PDoiowqzMz8PF68z15n5zhzfn5QnorqMW90O
+         oUG2RCp2LDe7gn61aY2/i/e7hfNw14CgUZPR1OiY9F0oW7Qih9B4+V3opmRc0idyyDYb
+         E55g==
+X-Gm-Message-State: AOAM530MynAo+xLbgMQC9egv4ZP+3X8MUJJKHCBY/qy52XPSThuhjNpA
+        mj94fxetJUsO4JX7Ni2kJqyqVH73efEOhdj0rwwX0Q==
+X-Google-Smtp-Source: ABdhPJzUKOwOTPGCN93MmdPXJ3xAz6M1rwWubCf/hb2F9I8m+/OrWMDeX8iB0GQ+2nwGsGoNuGLVwfigts5QuSSshsQ=
+X-Received: by 2002:a92:c9c8:: with SMTP id k8mr9677860ilq.2.1643076603057;
+ Mon, 24 Jan 2022 18:10:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20211118193714.2293728-1-irogers@google.com> <YaOi6pYqoc3boYX/@krava>
+ <YaY8eBB+PnklIxZA@kernel.org> <CAP-5=fXR952+Rfa8yPAwO7FmHTctuTxfY0yEREtvJkHtx=PfYA@mail.gmail.com>
+In-Reply-To: <CAP-5=fXR952+Rfa8yPAwO7FmHTctuTxfY0yEREtvJkHtx=PfYA@mail.gmail.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Mon, 24 Jan 2022 18:09:50 -0800
+Message-ID: <CAP-5=fWZH20L4kv-BwVtGLwR=Em3AOOT+Q4QGivvQuYn5AsPRg@mail.gmail.com>
+Subject: Re: [PATCH] perf map: Fix namespace memory leak
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Riccardo Mancini <rickyman7@gmail.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>,
+        Sohaib Mohamed <sohaib.amhmd@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The device tree is a copy of the Dragonboard, which uses the same SoC.
-Therefore, it is not usuable in its current form. Instead, this patch
-serves as a reference to make it easier to review the changes needed to
-support the TouchPad.
+Hi,
 
-Signed-off-by: Ben Wolsieffer <benwolsieffer@gmail.com>
----
- arch/arm/boot/dts/Makefile                    |   1 +
- arch/arm/boot/dts/qcom-apq8060-tenderloin.dts | 937 ++++++++++++++++++
- 2 files changed, 938 insertions(+)
- create mode 100644 arch/arm/boot/dts/qcom-apq8060-tenderloin.dts
+As with:
+https://lore.kernel.org/linux-perf-users/20220122045811.3402706-4-irogers@google.com/
+I implemented REFCNT_CHECKING for nsinfo (I'll mail it soon). This
+more accurately identifies the problem. In one run I got:
+```
+=================================================================
+==3900722==ERROR: AddressSanitizer: attempting double-free on
+0x602000026710 in thread T6:
+    #0 0x7f9a1dd6f4d7 in __interceptor_free
+../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:127
+    #1 0x5650d04cb29c in nsinfo__put util/namespaces.c:259
+    #2 0x5650d04aba93 in map__new util/map.c:198
+    #3 0x5650d04a11f6 in machine__process_mmap2_event util/machine.c:1798
+    #4 0x5650d04a24bf in machine__process_event util/machine.c:2019
+    #5 0x5650d03e78b3 in perf_event__process util/event.c:567
+    #6 0x5650d056e3bb in perf_tool__process_synth_event
+util/synthetic-events.c:65
+    #7 0x5650d05711a6 in perf_event__synthesize_mmap_events
+util/synthetic-events.c:501
+    #8 0x5650d0572fc0 in __event__synthesize_thread util/synthetic-events.c:792
+    #9 0x5650d05739fd in __perf_event__synthesize_threads
+util/synthetic-events.c:929
+    #10 0x5650d0573cbd in synthesize_threads_worker util/synthetic-events.c:961
+    #11 0x7f9a1dc48d7f in start_thread nptl/pthread_create.c:481
+    #12 0x7f9a1cfdcb6e in clone (/lib/x86_64-linux-gnu/libc.so.6+0xfcb6e)
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 235ad559acb2..ce04c8b8b577 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -969,6 +969,7 @@ dtb-$(CONFIG_ARCH_QCOM) += \
- 	qcom-apq8016-sbc.dtb \
- 	qcom-apq8026-lg-lenok.dtb \
- 	qcom-apq8060-dragonboard.dtb \
-+	qcom-apq8060-tenderloin.dtb \
- 	qcom-apq8064-cm-qs600.dtb \
- 	qcom-apq8064-ifc6410.dtb \
- 	qcom-apq8064-sony-xperia-yuga.dtb \
-diff --git a/arch/arm/boot/dts/qcom-apq8060-tenderloin.dts b/arch/arm/boot/dts/qcom-apq8060-tenderloin.dts
-new file mode 100644
-index 000000000000..996e73aa0b0b
---- /dev/null
-+++ b/arch/arm/boot/dts/qcom-apq8060-tenderloin.dts
-@@ -0,0 +1,937 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
-+#include <dt-bindings/pinctrl/qcom,pmic-mpp.h>
-+#include "qcom-msm8660.dtsi"
-+
-+/ {
-+	model = "HP TouchPad";
-+	compatible = "qcom,apq8060-tenderloin", "qcom,msm8660";
-+
-+	aliases {
-+		serial0 = &gsbi12_serial;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	regulators {
-+		compatible = "simple-bus";
-+
-+		/* Main power of the board: 3.7V */
-+		vph: regulator-fixed {
-+			compatible = "regulator-fixed";
-+			regulator-min-microvolt = <3700000>;
-+			regulator-max-microvolt = <3700000>;
-+			regulator-name = "VPH";
-+			regulator-type = "voltage";
-+			regulator-always-on;
-+			regulator-boot-on;
-+		};
-+
-+		/* GPIO controlled ethernet power regulator */
-+		dragon_veth: xc622a331mrg {
-+			compatible = "regulator-fixed";
-+			regulator-name = "XC6222A331MR-G";
-+			regulator-min-microvolt = <3300000>;
-+			regulator-max-microvolt = <3300000>;
-+			vin-supply = <&vph>;
-+			gpio = <&pm8058_gpio 40 GPIO_ACTIVE_HIGH>;
-+			enable-active-high;
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&dragon_veth_gpios>;
-+			regulator-always-on;
-+		};
-+
-+		/* VDDvario fixed regulator */
-+		dragon_vario: nds332p {
-+			compatible = "regulator-fixed";
-+			regulator-name = "NDS332P";
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			vin-supply = <&pm8058_s3>;
-+		};
-+
-+		/* This is a levelshifter for SDCC5 */
-+		dragon_vio_txb: txb0104rgyr {
-+			compatible = "regulator-fixed";
-+			regulator-name = "Dragon SDCC levelshifter";
-+			vin-supply = <&pm8058_l14>;
-+			regulator-always-on;
-+		};
-+	};
-+
-+	/*
-+	 * Capella CM3605 light and proximity sensor mounted directly
-+	 * on the sensor board.
-+	 */
-+	cm3605 {
-+		compatible = "capella,cm3605";
-+		vdd-supply = <&pm8058_l14>; // 2.85V
-+		aset-gpios = <&pm8058_gpio 35 GPIO_ACTIVE_LOW>;
-+		capella,aset-resistance-ohms = <100000>;
-+		/* Trig on both edges - getting close or far away */
-+		interrupts-extended = <&pm8058_gpio 34 IRQ_TYPE_EDGE_BOTH>;
-+		/* MPP05 analog input to the XOADC */
-+		io-channels = <&xoadc 0x00 0x05>;
-+		io-channel-names = "aout";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&dragon_cm3605_gpios>, <&dragon_cm3605_mpps>;
-+	};
-+
-+	soc {
-+		pinctrl@800000 {
-+			/* eMMMC pins, all 8 data lines connected */
-+			dragon_sdcc1_pins: sdcc1 {
-+				mux {
-+					pins = "gpio159", "gpio160", "gpio161",
-+					     "gpio162", "gpio163", "gpio164",
-+					     "gpio165", "gpio166", "gpio167",
-+					     "gpio168";
-+					     function = "sdc1";
-+				};
-+				clk {
-+					pins = "gpio167"; /* SDC1 CLK */
-+					drive-strength = <16>;
-+					bias-disable;
-+				};
-+				cmd {
-+					pins = "gpio168"; /* SDC1 CMD */
-+					drive-strength = <10>;
-+					bias-pull-up;
-+				};
-+				data {
-+					/* SDC1 D0 to D7 */
-+					pins = "gpio159", "gpio160", "gpio161", "gpio162",
-+					     "gpio163", "gpio164", "gpio165", "gpio166";
-+					drive-strength = <10>;
-+					bias-pull-up;
-+				};
-+			};
-+
-+			/*
-+			 * The SDCC3 pins are hardcoded (non-muxable) but need some pin
-+			 * configuration.
-+			 */
-+			dragon_sdcc3_pins: sdcc3 {
-+				clk {
-+					pins = "sdc3_clk";
-+					drive-strength = <8>;
-+					bias-disable;
-+				};
-+				cmd {
-+					pins = "sdc3_cmd";
-+					drive-strength = <8>;
-+					bias-pull-up;
-+				};
-+				data {
-+					pins = "sdc3_data";
-+					drive-strength = <8>;
-+					bias-pull-up;
-+				};
-+			};
-+
-+			/* Second SD card slot pins */
-+			dragon_sdcc5_pins: sdcc5 {
-+				mux {
-+					pins = "gpio95", "gpio96", "gpio97",
-+					    "gpio98", "gpio99", "gpio100";
-+					function = "sdc5";
-+				};
-+				clk {
-+					pins = "gpio97"; /* SDC5 CLK */
-+					drive-strength = <16>;
-+					bias-disable;
-+				};
-+				cmd {
-+					pins = "gpio95"; /* SDC5 CMD */
-+					drive-strength = <10>;
-+					bias-pull-up;
-+				};
-+				data {
-+					/* SDC5 D0 to D3 */
-+					pins = "gpio96", "gpio98", "gpio99", "gpio100";
-+					drive-strength = <10>;
-+					bias-pull-up;
-+				};
-+			};
-+
-+			dragon_gsbi8_i2c_pins: gsbi8_i2c {
-+				mux {
-+					pins = "gpio64", "gpio65";
-+					function = "gsbi8";
-+				};
-+				pinconf {
-+					pins = "gpio64", "gpio65";
-+					drive-strength = <16>;
-+					/* These have external pull-up 2.2kOhm to 1.8V */
-+					bias-disable;
-+				};
-+			};
-+
-+			dragon_gsbi12_i2c_pins: gsbi12_i2c {
-+				mux {
-+					pins = "gpio115", "gpio116";
-+					function = "gsbi12";
-+				};
-+				pinconf {
-+					pins = "gpio115", "gpio116";
-+					drive-strength = <16>;
-+					/* These have external pull-up 4.7kOhm to 1.8V */
-+					bias-disable;
-+				};
-+			};
-+
-+			/* Primary serial port uart 0 pins */
-+			dragon_gsbi12_serial_pins: gsbi12_serial {
-+				mux {
-+					pins = "gpio117", "gpio118";
-+					function = "gsbi12";
-+				};
-+				tx {
-+					pins = "gpio117";
-+					drive-strength = <8>;
-+					bias-disable;
-+				};
-+				rx {
-+					pins = "gpio118";
-+					drive-strength = <2>;
-+					bias-pull-up;
-+				};
-+			};
-+
-+			dragon_ebi2_pins: ebi2 {
-+				/*
-+				 * Pins used by EBI2 on the Dragonboard, actually only
-+				 * CS2 is used by a real peripheral. CS0 is just
-+				 * routed to a test point.
-+				 */
-+				mux0 {
-+					pins =
-+					    /* "gpio39", CS1A_N this is not good to mux */
-+					    "gpio40", /* CS2A_N */
-+					    "gpio134"; /* CS0_N testpoint TP29 */
-+					function = "ebi2cs";
-+				};
-+				mux1 {
-+					pins =
-+					    /* EBI2_ADDR_7 downto EBI2_ADDR_0 address bus */
-+					    "gpio123", "gpio124", "gpio125", "gpio126",
-+					    "gpio127", "gpio128", "gpio129", "gpio130",
-+					    /* EBI2_DATA_15 downto EBI2_DATA_0 data bus */
-+					    "gpio135", "gpio136", "gpio137", "gpio138",
-+					    "gpio139", "gpio140", "gpio141", "gpio142",
-+					    "gpio143", "gpio144", "gpio145", "gpio146",
-+					    "gpio147", "gpio148", "gpio149", "gpio150",
-+					    "gpio151", /* EBI2_OE_N */
-+					    "gpio153", /* EBI2_ADV */
-+					    "gpio157"; /* EBI2_WE_N */
-+					function = "ebi2";
-+				};
-+			};
-+
-+			/* Interrupt line for the KXSD9 accelerometer */
-+			dragon_kxsd9_gpios: kxsd9 {
-+				irq {
-+					pins = "gpio57"; /* IRQ line */
-+					bias-pull-up;
-+				};
-+			};
-+		};
-+
-+		qcom,ssbi@500000 {
-+			pmic@0 {
-+				keypad@148 {
-+					linux,keymap = <
-+					MATRIX_KEY(0, 0, KEY_MENU)
-+					MATRIX_KEY(0, 2, KEY_1)
-+					MATRIX_KEY(0, 3, KEY_4)
-+					MATRIX_KEY(0, 4, KEY_7)
-+					MATRIX_KEY(1, 0, KEY_UP)
-+					MATRIX_KEY(1, 1, KEY_LEFT)
-+					MATRIX_KEY(1, 2, KEY_DOWN)
-+					MATRIX_KEY(1, 3, KEY_5)
-+					MATRIX_KEY(1, 3, KEY_8)
-+					MATRIX_KEY(2, 0, KEY_HOME)
-+					MATRIX_KEY(2, 1, KEY_REPLY)
-+					MATRIX_KEY(2, 2, KEY_2)
-+					MATRIX_KEY(2, 3, KEY_6)
-+					MATRIX_KEY(3, 0, KEY_VOLUMEUP)
-+					MATRIX_KEY(3, 1, KEY_RIGHT)
-+					MATRIX_KEY(3, 2, KEY_3)
-+					MATRIX_KEY(3, 3, KEY_9)
-+					MATRIX_KEY(3, 4, KEY_SWITCHVIDEOMODE)
-+					MATRIX_KEY(4, 0, KEY_VOLUMEDOWN)
-+					MATRIX_KEY(4, 1, KEY_BACK)
-+					MATRIX_KEY(4, 2, KEY_CAMERA)
-+					MATRIX_KEY(4, 3, KEY_KBDILLUMTOGGLE)
-+					>;
-+					keypad,num-rows = <6>;
-+					keypad,num-columns = <5>;
-+				};
-+
-+				gpio@150 {
-+					dragon_ethernet_gpios: ethernet-gpios {
-+						pinconf {
-+							pins = "gpio7";
-+							function = "normal";
-+							input-enable;
-+							bias-disable;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+					};
-+					dragon_bmp085_gpios: bmp085-gpios {
-+						pinconf {
-+							pins = "gpio16";
-+							function = "normal";
-+							input-enable;
-+							bias-disable;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+					};
-+					dragon_mpu3050_gpios: mpu3050-gpios {
-+						pinconf {
-+							pins = "gpio17";
-+							function = "normal";
-+							input-enable;
-+							bias-disable;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+					};
-+					dragon_sdcc3_gpios: sdcc3-gpios {
-+						pinconf {
-+							pins = "gpio22";
-+							function = "normal";
-+							input-enable;
-+							bias-disable;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+					};
-+					dragon_sdcc5_gpios: sdcc5-gpios {
-+						pinconf {
-+							pins = "gpio26";
-+							function = "normal";
-+							input-enable;
-+							bias-pull-up;
-+							qcom,pull-up-strength = <PMIC_GPIO_PULL_UP_30>;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+					};
-+					dragon_ak8975_gpios: ak8975-gpios {
-+						pinconf {
-+							pins = "gpio33";
-+							function = "normal";
-+							input-enable;
-+							bias-disable;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+					};
-+					dragon_cm3605_gpios: cm3605-gpios {
-+						/* Pin 34 connected to the proxy IRQ */
-+						pinconf_gpio34 {
-+							pins = "gpio34";
-+							function = "normal";
-+							input-enable;
-+							bias-disable;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+						/* Pin 35 connected to ASET */
-+						pinconf_gpio35 {
-+							pins = "gpio35";
-+							function = "normal";
-+							output-high;
-+							bias-disable;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+					};
-+					dragon_veth_gpios: veth-gpios {
-+						pinconf {
-+							pins = "gpio40";
-+							function = "normal";
-+							bias-disable;
-+							drive-push-pull;
-+						};
-+					};
-+				};
-+
-+				mpps@50 {
-+					dragon_cm3605_mpps: cm3605-mpps-state {
-+						pinconf {
-+							pins = "mpp5";
-+							function = "analog";
-+							input-enable;
-+							bias-high-impedance;
-+							/* Let's use channel 5 */
-+							qcom,amux-route = <PMIC_MPP_AMUX_ROUTE_CH5>;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+					};
-+				};
-+
-+				xoadc@197 {
-+					/* Reference voltage 2.2 V */
-+					xoadc-ref-supply = <&pm8058_l18>;
-+
-+					/* Board-specific channels */
-+					mpp5@5 {
-+						/* Connected to AOUT of ALS sensor */
-+						reg = <0x00 0x05>;
-+					};
-+					mpp6@6 {
-+						/* Connected to test point TP43 */
-+						reg = <0x00 0x06>;
-+					};
-+					mpp7@7 {
-+						/* Connected to battery thermistor */
-+						reg = <0x00 0x07>;
-+					};
-+					mpp8@8 {
-+						/* Connected to battery ID detector */
-+						reg = <0x00 0x08>;
-+					};
-+					mpp9@9 {
-+						/* Connected to XO thermistor */
-+						reg = <0x00 0x09>;
-+					};
-+				};
-+
-+				led@48 {
-+					/*
-+					 * The keypad LED @0x48 is routed to
-+					 * the sensor board where it is
-+					 * connected to an infrared LED
-+					 * SFH4650 (60mW, @850nm) next to the
-+					 * ambient light and proximity sensor
-+					 * Capella Microsystems CM3605.
-+					 */
-+					compatible = "qcom,pm8058-keypad-led";
-+					reg = <0x48>;
-+					label = "pm8058:infrared:proximitysensor";
-+					default-state = "off";
-+					linux,default-trigger = "cm3605";
-+				};
-+				led@131 {
-+					compatible = "qcom,pm8058-led";
-+					reg = <0x131>;
-+					label = "pm8058:red";
-+					default-state = "off";
-+				};
-+				led@132 {
-+					/*
-+					 * This is actually green too on my
-+					 * board, but documented as yellow.
-+					 */
-+					compatible = "qcom,pm8058-led";
-+					reg = <0x132>;
-+					label = "pm8058:yellow";
-+					default-state = "off";
-+					linux,default-trigger = "mmc0";
-+				};
-+				led@133 {
-+					compatible = "qcom,pm8058-led";
-+					reg = <0x133>;
-+					label = "pm8058:green";
-+					default-state = "on";
-+					linux,default-trigger = "heartbeat";
-+				};
-+			};
-+		};
-+
-+		gsbi@19800000 {
-+			status = "okay";
-+			qcom,mode = <GSBI_PROT_I2C>;
-+
-+			i2c@19880000 {
-+				status = "okay";
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&dragon_gsbi8_i2c_pins>;
-+
-+				eeprom@52 {
-+					/* A 16KiB Platform ID EEPROM on the CPU carrier board */
-+					compatible = "atmel,24c128";
-+					reg = <0x52>;
-+					vcc-supply = <&pm8058_s3>;
-+					pagesize = <64>;
-+				};
-+				wm8903: wm8903@1a {
-+					/* This Woolfson Micro device has an unrouted interrupt line */
-+					compatible = "wlf,wm8903";
-+					reg = <0x1a>;
-+
-+					AVDD-supply = <&pm8058_l16>;
-+					CPVDD-supply = <&pm8058_l16>;
-+					DBVDD-supply = <&pm8058_s3>;
-+					DCVDD-supply = <&pm8058_l0>;
-+
-+					gpio-controller;
-+					#gpio-cells = <2>;
-+
-+					micdet-cfg = <0>;
-+					micdet-delay = <100>;
-+					gpio-cfg = <0xffffffff 0xffffffff 0 0xffffffff 0xffffffff>;
-+				};
-+			};
-+		};
-+
-+		gsbi@19c00000 {
-+			status = "okay";
-+			qcom,mode = <GSBI_PROT_I2C_UART>;
-+
-+			serial@19c40000 {
-+				status = "okay";
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&dragon_gsbi12_serial_pins>;
-+			};
-+
-+			i2c@19c80000 {
-+				status = "okay";
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&dragon_gsbi12_i2c_pins>;
-+
-+				ak8975@c {
-+					compatible = "asahi-kasei,ak8975";
-+					reg = <0x0c>;
-+					interrupt-parent = <&pm8058_gpio>;
-+					interrupts = <33 IRQ_TYPE_EDGE_RISING>;
-+					pinctrl-names = "default";
-+					pinctrl-0 = <&dragon_ak8975_gpios>;
-+					vid-supply = <&pm8058_lvs0>; // 1.8V
-+					vdd-supply = <&pm8058_l14>; // 2.85V
-+				};
-+				bmp085@77 {
-+					compatible = "bosch,bmp085";
-+					reg = <0x77>;
-+					interrupt-parent = <&pm8058_gpio>;
-+					interrupts = <16 IRQ_TYPE_EDGE_RISING>;
-+					reset-gpios = <&tlmm 86 GPIO_ACTIVE_LOW>;
-+					pinctrl-names = "default";
-+					pinctrl-0 = <&dragon_bmp085_gpios>;
-+					vddd-supply = <&pm8058_lvs0>; // 1.8V
-+					vdda-supply = <&pm8058_l14>; // 2.85V
-+				};
-+				mpu3050@68 {
-+					compatible = "invensense,mpu3050";
-+					reg = <0x68>;
-+					/*
-+					 * GPIO17 is pulled high by a 10k
-+					 * resistor to VLOGIC so needs to be
-+					 * active low/falling edge.
-+					 */
-+					interrupts-extended = <&pm8058_gpio 17 IRQ_TYPE_EDGE_FALLING>;
-+					pinctrl-names = "default";
-+					pinctrl-0 = <&dragon_mpu3050_gpios>;
-+					vlogic-supply = <&pm8058_lvs0>; // 1.8V
-+					vdd-supply = <&pm8058_l14>; // 2.85V
-+
-+					/*
-+					 * The MPU-3050 acts as a hub for the
-+					 * accelerometer.
-+					 */
-+					i2c-gate {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+
-+						kxsd9@18 {
-+							compatible = "kionix,kxsd9";
-+							reg = <0x18>;
-+							interrupt-parent = <&tlmm>;
-+							interrupts = <57 IRQ_TYPE_EDGE_FALLING>;
-+							pinctrl-names = "default";
-+							pinctrl-0 = <&dragon_kxsd9_gpios>;
-+							iovdd-supply = <&pm8058_lvs0>; // 1.8V
-+							vdd-supply = <&pm8058_l14>; // 2.85V
-+						};
-+					};
-+				};
-+			};
-+		};
-+
-+		external-bus@1a100000 {
-+			/* The EBI2 will instantiate first, then populate its children */
-+			status = "okay";
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&dragon_ebi2_pins>;
-+
-+			/*
-+			 * An on-board SMSC LAN9221 chip for "debug ethernet",
-+			 * which is actually just an ordinary ethernet on the
-+			 * EBI2. This has a 25MHz chrystal next to it, so no
-+			 * clocking is needed.
-+			 */
-+			ethernet@2,0 {
-+				compatible = "smsc,lan9221", "smsc,lan9115";
-+				reg = <2 0x0 0x100>;
-+				/*
-+				 * The second interrupt is the PME interrupt
-+				 * for network wakeup, connected to the TLMM.
-+				 */
-+				interrupts-extended = <&pm8058_gpio 7 IRQ_TYPE_EDGE_FALLING>,
-+						    <&tlmm 29 IRQ_TYPE_EDGE_RISING>;
-+				reset-gpios = <&tlmm 30 GPIO_ACTIVE_LOW>;
-+				vdd33a-supply = <&dragon_veth>;
-+				vddvario-supply = <&dragon_vario>;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&dragon_ethernet_gpios>;
-+				phy-mode = "mii";
-+				reg-io-width = <2>;
-+				smsc,force-external-phy;
-+				smsc,irq-push-pull;
-+
-+				/*
-+				 * SLOW chipselect config
-+				 * Delay 9 cycles (140ns@64MHz) between SMSC
-+				 * LAN9221 Ethernet controller reads and writes
-+				 * on CS2.
-+				 */
-+				qcom,xmem-recovery-cycles = <0>;
-+				qcom,xmem-write-hold-cycles = <3>;
-+				qcom,xmem-write-delta-cycles = <31>;
-+				qcom,xmem-read-delta-cycles = <28>;
-+				qcom,xmem-write-wait-cycles = <9>;
-+				qcom,xmem-read-wait-cycles = <9>;
-+			};
-+		};
-+
-+		rpm@104000 {
-+			/*
-+			 * Set up of the PMIC RPM regulators for this board
-+			 * PM8901 supplies "preliminary regulators" whatever
-+			 * that means
-+			 */
-+			pm8901-regulators {
-+				vdd_l0-supply = <&pm8901_s4>;
-+				vdd_l1-supply = <&vph>;
-+				vdd_l2-supply = <&vph>;
-+				vdd_l3-supply = <&vph>;
-+				vdd_l4-supply = <&vph>;
-+				vdd_l5-supply = <&vph>;
-+				vdd_l6-supply = <&vph>;
-+				/* vdd_s0-supply, vdd_s1-supply: SAW regulators */
-+				vdd_s2-supply = <&vph>;
-+				vdd_s3-supply = <&vph>;
-+				vdd_s4-supply = <&vph>;
-+				lvs0_in-supply = <&pm8058_s3>;
-+				lvs1_in-supply = <&pm8901_s4>;
-+				lvs2_in-supply = <&pm8058_l0>;
-+				lvs3_in-supply = <&pm8058_s2>;
-+				mvs_in-supply = <&pm8058_s3>;
-+
-+				l0 {
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1200000>;
-+					bias-pull-down;
-+				};
-+				l1 {
-+					regulator-min-microvolt = <3300000>;
-+					regulator-max-microvolt = <3300000>;
-+					bias-pull-down;
-+				};
-+				l2 {
-+					regulator-min-microvolt = <2850000>;
-+					regulator-max-microvolt = <3300000>;
-+					bias-pull-down;
-+				};
-+				l3 {
-+					regulator-min-microvolt = <3300000>;
-+					regulator-max-microvolt = <3300000>;
-+					bias-pull-down;
-+				};
-+				l4 {
-+					regulator-min-microvolt = <2600000>;
-+					regulator-max-microvolt = <2600000>;
-+					bias-pull-down;
-+				};
-+				l5 {
-+					regulator-min-microvolt = <2850000>;
-+					regulator-max-microvolt = <2850000>;
-+					bias-pull-down;
-+				};
-+				l6 {
-+					regulator-min-microvolt = <2200000>;
-+					regulator-max-microvolt = <2200000>;
-+					bias-pull-down;
-+				};
-+
-+				/* s0 and s1 are SAW regulators controlled over SPM */
-+				s2 {
-+					regulator-min-microvolt = <1300000>;
-+					regulator-max-microvolt = <1300000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					bias-pull-down;
-+				};
-+				s3 {
-+					regulator-min-microvolt = <1100000>;
-+					regulator-max-microvolt = <1100000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					bias-pull-down;
-+				};
-+				s4 {
-+					regulator-min-microvolt = <1225000>;
-+					regulator-max-microvolt = <1225000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					bias-pull-down;
-+				};
-+
-+				/* LVS0 thru 3 and mvs0 are just switches */
-+				lvs0 {
-+					regulator-always-on;
-+				};
-+				lvs1 { };
-+				lvs2 { };
-+				lvs3 { };
-+				mvs0 {};
-+
-+			};
-+
-+			pm8058-regulators {
-+				vdd_l0_l1_lvs-supply = <&pm8058_s3>;
-+				vdd_l2_l11_l12-supply = <&vph>;
-+				vdd_l3_l4_l5-supply = <&vph>;
-+				vdd_l6_l7-supply = <&vph>;
-+				vdd_l8-supply = <&vph>;
-+				vdd_l9-supply = <&vph>;
-+				vdd_l10-supply = <&vph>;
-+				vdd_l13_l16-supply = <&pm8058_s4>;
-+				vdd_l14_l15-supply = <&vph>;
-+				vdd_l17_l18-supply = <&vph>;
-+				vdd_l19_l20-supply = <&vph>;
-+				vdd_l21-supply = <&pm8058_s3>;
-+				vdd_l22-supply = <&pm8058_s3>;
-+				vdd_l23_l24_l25-supply = <&pm8058_s3>;
-+				vdd_s0-supply = <&vph>;
-+				vdd_s1-supply = <&vph>;
-+				vdd_s2-supply = <&vph>;
-+				vdd_s3-supply = <&vph>;
-+				vdd_s4-supply = <&vph>;
-+				vdd_ncp-supply = <&vph>;
-+
-+				l0 {
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1200000>;
-+					bias-pull-down;
-+				};
-+				l1 {
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1200000>;
-+					bias-pull-down;
-+				};
-+				l2 {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <2600000>;
-+					bias-pull-down;
-+				};
-+				l3 {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					bias-pull-down;
-+				};
-+				l4 {
-+					regulator-min-microvolt = <2850000>;
-+					regulator-max-microvolt = <2850000>;
-+					bias-pull-down;
-+				};
-+				l5 {
-+					regulator-min-microvolt = <2850000>;
-+					regulator-max-microvolt = <2850000>;
-+					bias-pull-down;
-+				};
-+				l6 {
-+					regulator-min-microvolt = <3000000>;
-+					regulator-max-microvolt = <3600000>;
-+					bias-pull-down;
-+				};
-+				l7 {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					bias-pull-down;
-+				};
-+				l8 {
-+					regulator-min-microvolt = <2900000>;
-+					regulator-max-microvolt = <3050000>;
-+					bias-pull-down;
-+				};
-+				l9 {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					bias-pull-down;
-+				};
-+				l10 {
-+					regulator-min-microvolt = <2600000>;
-+					regulator-max-microvolt = <2600000>;
-+					bias-pull-down;
-+				};
-+				l11 {
-+					regulator-min-microvolt = <1500000>;
-+					regulator-max-microvolt = <1500000>;
-+					bias-pull-down;
-+				};
-+				l12 {
-+					regulator-min-microvolt = <2900000>;
-+					regulator-max-microvolt = <2900000>;
-+					bias-pull-down;
-+				};
-+				l13 {
-+					regulator-min-microvolt = <2050000>;
-+					regulator-max-microvolt = <2050000>;
-+					bias-pull-down;
-+				};
-+				l14 {
-+					regulator-min-microvolt = <2850000>;
-+					regulator-max-microvolt = <2850000>;
-+				};
-+				l15 {
-+					regulator-min-microvolt = <2850000>;
-+					regulator-max-microvolt = <2850000>;
-+					bias-pull-down;
-+				};
-+				l16 {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					bias-pull-down;
-+					regulator-always-on;
-+				};
-+				l17 {
-+					// 1.5V according to schematic
-+					regulator-min-microvolt = <2600000>;
-+					regulator-max-microvolt = <2600000>;
-+					bias-pull-down;
-+				};
-+				l18 {
-+					regulator-min-microvolt = <2200000>;
-+					regulator-max-microvolt = <2200000>;
-+					bias-pull-down;
-+				};
-+				l19 {
-+					regulator-min-microvolt = <2500000>;
-+					regulator-max-microvolt = <2500000>;
-+					bias-pull-down;
-+				};
-+				l20 {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					bias-pull-down;
-+				};
-+				l21 {
-+					// 1.1 V according to schematic
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1200000>;
-+					bias-pull-down;
-+					regulator-always-on;
-+				};
-+				l22 {
-+					// 1.2 V according to schematic
-+					regulator-min-microvolt = <1150000>;
-+					regulator-max-microvolt = <1150000>;
-+					bias-pull-down;
-+				};
-+				l23 {
-+					// Unused
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1200000>;
-+					bias-pull-down;
-+				};
-+				l24 {
-+					// Unused
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1200000>;
-+					bias-pull-down;
-+				};
-+				l25 {
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1200000>;
-+					bias-pull-down;
-+				};
-+
-+				s0 {
-+					// regulator-min-microvolt = <500000>;
-+					// regulator-max-microvolt = <1325000>;
-+					regulator-min-microvolt = <1100000>;
-+					regulator-max-microvolt = <1100000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					bias-pull-down;
-+				};
-+				s1 {
-+					// regulator-min-microvolt = <500000>;
-+					// regulator-max-microvolt = <1250000>;
-+					regulator-min-microvolt = <1100000>;
-+					regulator-max-microvolt = <1100000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					bias-pull-down;
-+				};
-+				s2 {
-+					// 1.3 V according to schematic
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1400000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					bias-pull-down;
-+				};
-+				s3 {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					regulator-always-on;
-+					bias-pull-down;
-+				};
-+				s4 {
-+					regulator-min-microvolt = <2200000>;
-+					regulator-max-microvolt = <2200000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					regulator-always-on;
-+					bias-pull-down;
-+				};
-+
-+				/* LVS0 and LVS1 are just switches */
-+				lvs0 {
-+					bias-pull-down;
-+				};
-+				lvs1 {
-+					bias-pull-down;
-+				};
-+
-+				ncp {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+				};
-+			};
-+		};
-+		amba {
-+			/* Internal 3.69 GiB eMMC */
-+			mmc@12400000 {
-+				status = "okay";
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&dragon_sdcc1_pins>;
-+				vmmc-supply = <&pm8901_l5>;
-+				vqmmc-supply = <&pm8901_lvs0>;
-+			};
-+
-+			/* External micro SD card, directly connected, pulled up to 2.85 V */
-+			mmc@12180000 {
-+				status = "okay";
-+				/* Enable SSBI GPIO 22 as input, use for card detect */
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&dragon_sdcc3_pins>, <&dragon_sdcc3_gpios>;
-+				cd-gpios = <&pm8058_gpio 22 GPIO_ACTIVE_LOW>;
-+				wp-gpios = <&tlmm 110 GPIO_ACTIVE_HIGH>;
-+				vmmc-supply = <&pm8058_l14>;
-+			};
-+
-+			/*
-+			 * Second external micro SD card, using two TXB104RGYR levelshifters
-+			 * to lift from 1.8 V to 2.85 V
-+			 */
-+			mmc@12200000 {
-+				status = "okay";
-+				/* Enable SSBI GPIO 26 as input, use for card detect */
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&dragon_sdcc5_pins>, <&dragon_sdcc5_gpios>;
-+				cd-gpios = <&pm8058_gpio 26 GPIO_ACTIVE_LOW>;
-+				wp-gpios = <&tlmm 106 GPIO_ACTIVE_HIGH>;
-+				vmmc-supply = <&pm8058_l14>;
-+				vqmmc-supply = <&dragon_vio_txb>;
-+			};
-+		};
-+	};
-+};
--- 
-2.34.1
+0x602000026710 is located 0 bytes inside of 8-byte region
+[0x602000026710,0x602000026718)
+freed by thread T13 here:
+    #0 0x7f9a1dd6f4d7 in __interceptor_free
+../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:127
+    #1 0x5650d04cb29c in nsinfo__put util/namespaces.c:259
+    #2 0x5650d04aba93 in map__new util/map.c:198
+    #3 0x5650d04a11f6 in machine__process_mmap2_event util/machine.c:1798
+    #4 0x5650d04a24bf in machine__process_event util/machine.c:2019
+    #5 0x5650d03e78b3 in perf_event__process util/event.c:567
+    #6 0x5650d056e3bb in perf_tool__process_synth_event
+util/synthetic-events.c:65
+    #7 0x5650d05711a6 in perf_event__synthesize_mmap_events
+util/synthetic-events.c:501
+    #8 0x5650d0572fc0 in __event__synthesize_thread util/synthetic-events.c:792
+    #9 0x5650d05739fd in __perf_event__synthesize_threads
+util/synthetic-events.c:929
+    #10 0x5650d0573cbd in synthesize_threads_worker util/synthetic-events.c:961
+    #11 0x7f9a1dc48d7f in start_thread nptl/pthread_create.c:481
 
+previously allocated by thread T3 here:
+    #0 0x7f9a1dd6f7cf in __interceptor_malloc
+../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:145
+    #1 0x5650d04cb17f in nsinfo__get util/namespaces.c:244
+    #2 0x5650d04ab7df in map__new util/map.c:150
+    #3 0x5650d04a11f6 in machine__process_mmap2_event util/machine.c:1798
+    #4 0x5650d04a24bf in machine__process_event util/machine.c:2019
+    #5 0x5650d03e78b3 in perf_event__process util/event.c:567
+    #6 0x5650d056e3bb in perf_tool__process_synth_event
+util/synthetic-events.c:65
+    #7 0x5650d05711a6 in perf_event__synthesize_mmap_events
+util/synthetic-events.c:501
+    #8 0x5650d0572fc0 in __event__synthesize_thread util/synthetic-events.c:792
+    #9 0x5650d05739fd in __perf_event__synthesize_threads
+util/synthetic-events.c:929
+    #10 0x5650d0573cbd in synthesize_threads_worker util/synthetic-events.c:961
+    #11 0x7f9a1dc48d7f in start_thread nptl/pthread_create.c:481
+
+Thread T6 created by T0 here:
+    #0 0x7f9a1dd17716 in __interceptor_pthread_create
+../../../../src/libsanitizer/asan/asan_interceptors.cpp:216
+    #1 0x5650d05745eb in perf_event__synthesize_threads
+util/synthetic-events.c:1039
+    #2 0x5650d05789fc in __machine__synthesize_threads
+util/synthetic-events.c:1791
+    #3 0x5650d0578a81 in machine__synthesize_threads
+util/synthetic-events.c:1802
+    #4 0x5650d024edd8 in __cmd_top
+/usr/local/google/home/irogers/kernel-trees/kernel.org/tip/tools/perf/builtin-top.c:1273
+    #5 0x5650d025629b in cmd_top
+/usr/local/google/home/irogers/kernel-trees/kernel.org/tip/tools/perf/builtin-top.c:1774
+    #6 0x5650d03b132b in run_builtin
+/usr/local/google/home/irogers/kernel-trees/kernel.org/tip/tools/perf/perf.c:313
+    #7 0x5650d03b188d in handle_internal_command
+/usr/local/google/home/irogers/kernel-trees/kernel.org/tip/tools/perf/perf.c:365
+    #8 0x5650d03b1c52 in run_argv
+/usr/local/google/home/irogers/kernel-trees/kernel.org/tip/tools/perf/perf.c:409
+    #9 0x5650d03b246b in main
+/usr/local/google/home/irogers/kernel-trees/kernel.org/tip/tools/perf/perf.c:539
+    #10 0x7f9a1cf077ec in __libc_start_main ../csu/libc-start.c:332
+
+Thread T13 created by T0 here:
+    #0 0x7f9a1dd17716 in __interceptor_pthread_create
+../../../../src/libsanitizer/asan/asan_interceptors.cpp:216
+    #1 0x5650d05745eb in perf_event__synthesize_threads
+util/synthetic-events.c:1039
+    #2 0x5650d05789fc in __machine__synthesize_threads
+util/synthetic-events.c:1791
+```
+That is thread 3 had created the wrapper object around the nsinfo,
+thread 13 had put and freed it which cause a double free when thread 6
+tried to do the same thing. How did thread 6 and 13 have the same
+value for dso->nsinfo? In this patch we read then put the value, as
+the put is slow another thread reads and puts the value too. We need
+to atomically swap the value of dso->nsinfo with nsi and then do a put
+on nsi which holds the old value of dso->nsinfo. The question is how
+to do the swap?
+
+C11 has atomic_exchange, but Makefile.config sets the std as gnu99.
+C11 is used in some selftests. atomic_t and atomic_long_t aren't
+guaranteed to be 64-bit, a long can be 32-bit with 64-bit pointers.
+Using a non-atomic swap fixes the issue, memory leak, etc. but clearly
+this needs to be atomic. My preference would be to bump to C11, but I
+can do a linux atomic or poor man's swap if others prefer. Wdyt?
+
+Thanks,
+Ian
+
+On Tue, Nov 30, 2021 at 9:20 AM Ian Rogers <irogers@google.com> wrote:
+>
+> On Tue, Nov 30, 2021 at 7:00 AM Arnaldo Carvalho de Melo
+> <acme@kernel.org> wrote:
+> >
+> > Em Sun, Nov 28, 2021 at 04:40:26PM +0100, Jiri Olsa escreveu:
+> > > On Thu, Nov 18, 2021 at 11:37:14AM -0800, Ian Rogers wrote:
+> > > > This leak was happening reliably with test "Lookup mmap thread" with
+> > > > stack traces like:
+> > > >
+> > > > Direct leak of 5504 byte(s) in 172 object(s) allocated from:
+> > > >     #0 0x7f4685e47987 in __interceptor_calloc
+> > > >     #1 0x56063b974c2a in nsinfo__new util/namespaces.c:142
+> > > >     #2 0x56063b9781ff in thread__new util/thread.c:70
+> > > >     #3 0x56063b944953 in ____machine__findnew_thread util/machine.c:543
+> > > >     #4 0x56063b944ac6 in __machine__findnew_thread util/machine.c:574
+> > > >     #5 0x56063b944b36 in machine__findnew_thread util/machine.c:584
+> > > >     #6 0x56063b94c892 in machine__process_fork_event util/machine.c:1954
+> > > >     #7 0x56063b94cc1f in machine__process_event util/machine.c:2019
+> > > >     #8 0x56063b894f18 in perf_event__process util/event.c:567
+> > > >     #9 0x56063ba17951 in perf_tool__process_synth_event util/synthetic-events.c:65
+> > > >     #10 0x56063ba19086 in perf_event__synthesize_fork util/synthetic-events.c:287
+> > > >     #11 0x56063ba1c39d in __event__synthesize_thread util/synthetic-events.c:775
+> > > >     #12 0x56063ba1cf6f in __perf_event__synthesize_threads util/synthetic-events.c:929
+> > > >     #13 0x56063ba1d4ab in perf_event__synthesize_threads util/synthetic-events.c:1000
+> > > >     #14 0x56063b821a3d in synth_all tests/mmap-thread-lookup.c:136
+> > > >     #15 0x56063b821c86 in mmap_events tests/mmap-thread-lookup.c:174
+> > > >     #16 0x56063b8221b7 in test__mmap_thread_lookup tests/mmap-thread-lookup.c:230
+> > > >
+> > > > The dso->nsinfo is overwritten, but without a nsinfo__put this can leak
+> > > > the overwritten nsinfo.
+> > > >
+> > > > Signed-off-by: Ian Rogers <irogers@google.com>
+> > >
+> > > nice catch!
+> > >
+> > > Acked-by: Jiri Olsa <jolsa@redhat.com>
+> >
+> > This one is tricky, I have to retrieve the details from last time this
+> > surfaced, but try:
+> >
+> > # perf top -F 10000
+> >
+> > leave it for a while and press 'q':
+> >
+> > perf: /home/acme/git/perf/tools/include/linux/refcount.h:131: refcount_sub_and_test: Assertion `!(new > val)' failed.
+> >                                                                                                                      Aborted (core dumped)
+> >
+> > I reproduced the above assertion a few times, now I'm not being able,
+> > probably some namespace related activity took place when it hit.
+>
+> I was able to reproduce in about 1 run in 3. With address sanitizer
+> the core dump turns into a heap-use-after-free with a report of:
+>
+> ==235440==ERROR: AddressSanitizer: heap-use-after-free on address
+> 0x6030000485c8 at pc 0x55d8b882bfb7 bp 0x7fffd3426e90 sp
+> 0x7fffd3426e88
+> READ of size 4 at 0x6030000485c8 thread T0
+>     #0 0x55d8b882bfb6 in __read_once_size ./tools/include/linux/compiler.h:132
+>     #1 0x55d8b882bfb6 in atomic_read
+> ./tools/include/asm/../../arch/x86/include/asm/atomic.h:28
+>     #2 0x55d8b882c35c in refcount_sub_and_test
+> ./tools/include/linux/refcount.h:123
+>     #3 0x55d8b882c45e in refcount_dec_and_test
+> ./tools/include/linux/refcount.h:148
+>     #4 0x55d8b882d4af in nsinfo__put util/namespaces.c:204
+>     #5 0x55d8b87adecd in __nsinfo__zput util/namespaces.h:65
+>     #6 0x55d8b87b4bcc in dso__delete util/dso.c:1327
+>     #7 0x55d8b87b4c8d in dso__put util/dso.c:1342
+>     #8 0x55d8b87fb23b in dsos__purge util/machine.c:182
+>     #9 0x55d8b87fb2e3 in dsos__exit util/machine.c:190
+>     #10 0x55d8b87fb46e in machine__exit util/machine.c:222
+>     #11 0x55d8b87fb715 in machines__exit util/machine.c:262
+>     #12 0x55d8b88149d2 in perf_session__delete util/session.c:305
+>     #13 0x55d8b85c0924 in cmd_top ./tools/perf/builtin-top.c:1781
+>     #14 0x55d8b87176b7 in run_builtin ./tools/perf/perf.c:313
+>     #15 0x55d8b8717c10 in handle_internal_command ./tools/perf/perf.c:365
+>     #16 0x55d8b8717fcd in run_argv ./tools/perf/perf.c:409
+>     #17 0x55d8b87187bc in main ./tools/perf/perf.c:539
+>
+> 0x6030000485c8 is located 24 bytes inside of 32-byte region
+> [0x6030000485b0,0x6030000485d0)
+> freed by thread T0 here:
+>     #0 0x7fb6e7c454d7 in __interceptor_free
+> ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:127
+>     #1 0x55d8b882d41a in nsinfo__delete util/namespaces.c:192
+>     #2 0x55d8b882d4bf in nsinfo__put util/namespaces.c:205
+>     #3 0x55d8b87adecd in __nsinfo__zput util/namespaces.h:65
+>     #4 0x55d8b87b4bcc in dso__delete util/dso.c:1327
+>     #5 0x55d8b87b4c8d in dso__put util/dso.c:1342
+>     #6 0x55d8b87fb23b in dsos__purge util/machine.c:182
+>     #7 0x55d8b87fb2e3 in dsos__exit util/machine.c:190
+>     #8 0x55d8b87fb46e in machine__exit util/machine.c:222
+>     #9 0x55d8b87fb715 in machines__exit util/machine.c:262
+>     #10 0x55d8b88149d2 in perf_session__delete util/session.c:305
+>     #11 0x55d8b85c0924 in cmd_top ./tools/perf/builtin-top.c:1781
+>     #12 0x55d8b87176b7 in run_builtin ./tools/perf/perf.c:313
+>     #13 0x55d8b8717c10 in handle_internal_command ./tools/perf/perf.c:365
+>     #14 0x55d8b8717fcd in run_argv ./tools/perf/perf.c:409
+>     #15 0x55d8b87187bc in main ./tools/perf/perf.c:539
+>
+> previously allocated by thread T11 here:
+>     #0 0x7fb6e7c45987 in __interceptor_calloc
+> ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+>     #1 0x55d8b882ceaa in nsinfo__new util/namespaces.c:142
+>     #2 0x55d8b883047f in thread__new util/thread.c:70
+>     #3 0x55d8b87fcb93 in ____machine__findnew_thread util/machine.c:543
+>     #4 0x55d8b87fcd06 in __machine__findnew_thread util/machine.c:574
+>     #5 0x55d8b87fcd76 in machine__findnew_thread util/machine.c:584
+>     #6 0x55d8b8804ad2 in machine__process_fork_event util/machine.c:1954
+>     #7 0x55d8b8804e5f in machine__process_event util/machine.c:2019
+>     #8 0x55d8b874cf18 in perf_event__process util/event.c:567
+>     #9 0x55d8b88cfbd1 in perf_tool__process_synth_event
+> util/synthetic-events.c:65
+>     #10 0x55d8b88d1306 in perf_event__synthesize_fork
+> util/synthetic-events.c:287
+>     #11 0x55d8b88d461d in __event__synthesize_thread util/synthetic-events.c:775
+>     #12 0x55d8b88d51ef in __perf_event__synthesize_threads
+> util/synthetic-events.c:929
+>     #13 0x55d8b88d54af in synthesize_threads_worker util/synthetic-events.c:961
+>     #14 0x7fb6e7b1eead in start_thread nptl/pthread_create.c:463
+>
+> Thread T11 created by T0 here:
+>     #0 0x7fb6e7bed716 in __interceptor_pthread_create
+> ../../../../src/libsanitizer/asan/asan_interceptors.cpp:216
+>     #1 0x55d8b88d5ddd in perf_event__synthesize_threads
+> util/synthetic-events.c:1039
+>     #2 0x55d8b88da3b8 in __machine__synthesize_threads
+> util/synthetic-events.c:1791
+>     #3 0x55d8b88da43d in machine__synthesize_threads
+> util/synthetic-events.c:1802
+>     #4 0x55d8b85b9378 in __cmd_top ./tools/perf/builtin-top.c:1273
+>     #5 0x55d8b85c0811 in cmd_top ./tools/perf/builtin-top.c:1774
+>     #6 0x55d8b87176b7 in run_builtin ./tools/perf/perf.c:313
+>     #7 0x55d8b8717c10 in handle_internal_command ./tools/perf/perf.c:365
+>     #8 0x55d8b8717fcd in run_argv ./tools/perf/perf.c:409
+>     #9 0x55d8b87187bc in main ./tools/perf/perf.c:539
+>
+> SUMMARY: AddressSanitizer: heap-use-after-free
+> ./tools/include/linux/compiler.h:132 in __read_once_size
+> Shadow bytes around the buggy address:
+>   0x0c0680001060: fa fa fa fa fa fa fa fa fd fd fd fd fa fa fa fa
+>   0x0c0680001070: fa fa fa fa fa fa fa fa fa fa fd fd fd fd fa fa
+>   0x0c0680001080: fa fa fa fa fa fa fa fa fa fa fa fa fd fd fd fd
+>   0x0c0680001090: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+>   0x0c06800010a0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+> =>0x0c06800010b0: fa fa fa fa fa fa fd fd fd[fd]fa fa fa fa fa fa
+>   0x0c06800010c0: fa fa fa fa fa fa fa fa fd fd fd fa fa fa fd fd
+>   0x0c06800010d0: fd fa fa fa fd fd fd fd fa fa fd fd fd fa fa fa
+>   0x0c06800010e0: fd fd fd fd fa fa fd fd fd fd fa fa fd fd fd fa
+>   0x0c06800010f0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fd fd
+>   0x0c0680001100: fd fd fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+> Shadow byte legend (one shadow byte represents 8 application bytes):
+>   Addressable:           00
+>   Partially addressable: 01 02 03 04 05 06 07
+>   Heap left redzone:       fa
+>   Freed heap region:       fd
+>   Stack left redzone:      f1
+>   Stack mid redzone:       f2
+>   Stack right redzone:     f3
+>   Stack after return:      f5
+>   Stack use after scope:   f8
+>   Global redzone:          f9
+>   Global init order:       f6
+>   Poisoned by user:        f7
+>   Container overflow:      fc
+>   Array cookie:            ac
+>   Intra object redzone:    bb
+>   ASan internal:           fe
+>   Left alloca redzone:     ca
+>   Right alloca redzone:    cb
+>   Shadow gap:              cc
+> ==235440==ABORTING
+>
+> My hope was to land this so that 'perf test' wouldn't have new
+> failures caused by leak sanitizer. So one option could be to guard the
+> change with an address sanitizer #ifdef. The larger fix is to rework
+> the reference counting logic, but I'd really hope we could switch that
+> work to being in a language like Rust to get us out of the current
+> memory leak vs crash wac-a-mole.
+>
+> +Riccardo as he did some great and related fixes over the summer.
+>
+> Thanks,
+> Ian
+>
+>
+>
+> > - Arnaldo
+> >
+> > > thanks,
+> > > jirka
+> > >
+> > > > ---
+> > > >  tools/perf/util/map.c | 1 +
+> > > >  1 file changed, 1 insertion(+)
+> > > >
+> > > > diff --git a/tools/perf/util/map.c b/tools/perf/util/map.c
+> > > > index 8af693d9678c..ceed8f407bc0 100644
+> > > > --- a/tools/perf/util/map.c
+> > > > +++ b/tools/perf/util/map.c
+> > > > @@ -192,6 +192,7 @@ struct map *map__new(struct machine *machine, u64 start, u64 len,
+> > > >                     if (!(prot & PROT_EXEC))
+> > > >                             dso__set_loaded(dso);
+> > > >             }
+> > > > +           nsinfo__put(dso->nsinfo);
+> > > >             dso->nsinfo = nsi;
+> > > >
+> > > >             if (build_id__is_defined(bid))
+> > > > --
+> > > > 2.34.0.rc2.393.gf8c9666880-goog
+> > > >
+> >
+> > --
+> >
+> > - Arnaldo
