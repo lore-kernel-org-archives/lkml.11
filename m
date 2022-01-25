@@ -2,204 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E43C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48266C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355822AbiAYMOZ (ORCPT
+        id S1346258AbiAYMPC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:14:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33940 "EHLO
+        Tue, 25 Jan 2022 07:15:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444538AbiAYMKz (ORCPT
+        with ESMTP id S1444545AbiAYMKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 25 Jan 2022 07:10:55 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7307C061753;
-        Tue, 25 Jan 2022 04:09:02 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id e17so3295748ljk.5;
-        Tue, 25 Jan 2022 04:09:02 -0800 (PST)
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89950C061756
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 04:09:05 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id w5so12397011ilo.2
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 04:09:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=jYOvh3TluQrcjkgjx/socsMLlC7b20Fo9pmrYGjtKZg=;
-        b=e50pbGE8w0eIJVRReXoEZVlQD4WcZK070mmTC4q8/+TTueNm/GMXLNhx9y45Qn7pw4
-         3QN+rL4MuXizPS4/DiGvDnLrR2hzhZGpfizBtgxZkXcAVdNaM6ggpYxgV6WcklQczb9x
-         fb3nicof9MjMt/YxSlFv4dpx5t23LRTM504/diB50diJnpn0aNkW1pu3pO4zylBw6Aes
-         OTJFU28m8O5V9ohzYoFxI4FZNIktw2CKVOkIqeDHvNmbcghbjhGyeGR9TIS/jMuFhlF5
-         e2VyU+246N0qkNcHwErKtrUPGOfBbNCxUKcNmuQn+28pH4N5HGEwda9Yt+odv8k+s3jz
-         Y4jA==
+        h=content-transfer-encoding:from:mime-version:subject:date:message-id
+         :references:cc:in-reply-to:to;
+        bh=oIUXCBkZfDaLwCmKVAom3m0nKZsZArvDj4sp66MxNIY=;
+        b=kbwWYTigtVbAwxVP5h/2WoMNCT0uvDobJJOmV8gAulZTryYMbYlINIkMwhyjUfRvlm
+         APbiDi0n5yDb7PWuT3c5q+g+YA5mcbj6tUatepXj1ktuRNxnIpCX7OYCB/9eNKfoNAlH
+         LI6jOFVO6fG1UvjIizRiFwgZqz04lBkyIhYDYObNAXfDwZt+HUdAiYoSI3lZ7RVWDet/
+         FFzhe6BokKBfPG+t2TtrbnyNdc3QaY9OZ7/rwcWwQEd4vjEEAE9m4hqdA5BzSt9jHuYn
+         wWbj1SCWgHoDjrOgWWVhA/SpFPmvg1M993W/otRzFlCRXDErqfRo9cXVBuy01+KPtsMp
+         tnfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jYOvh3TluQrcjkgjx/socsMLlC7b20Fo9pmrYGjtKZg=;
-        b=NvRuameHfATFJt4l0oi6w5sFket6Z6eqaEty37yMsaukAMHnHhOKGBYuWWfW7VOdH8
-         hHRoPbDE4zfLKo8Fk/vFqafLctzoOzemxnyxiq+C1WS/JqzuDm1+kVU/ycwFQDwSVbbn
-         FR7gW24IDPFQOub2iNz6fs6E2QUTEVlSaCwwucjjCl/65eOXBs3yHE7WnpZDjz2+Ka31
-         cRxxy0fqPBuIAJ0ufzQpBXnQBcZGAmEKiNmk6bMWwv1pAQDUGFPDqZViyjgUcGO9Hb52
-         uSN5Vxu5ZLk4SPTmKlsxs45rfSeQXGWWuLeKxvlAZf55u32aO2Q+XpTr6+YBLWNjYCNp
-         3KCw==
-X-Gm-Message-State: AOAM5325OSL3f7ut0B19G+V6LaLqgelP1lOg+s7JBheUZkGGfo7XRPtJ
-        HXdqtSbYgNiDbH78TH5hiGE=
-X-Google-Smtp-Source: ABdhPJwVub3zDKTOB+wjBLNORR7sCU9xt8UfpG/X3/KvRRBcVKHVtkjQDkJBg0tA78MsiLJC2g6uDA==
-X-Received: by 2002:a2e:a5c9:: with SMTP id n9mr14649555ljp.220.1643112540915;
-        Tue, 25 Jan 2022 04:09:00 -0800 (PST)
-Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id y11sm1168942ljj.122.2022.01.25.04.08.59
+        h=x-gm-message-state:content-transfer-encoding:from:mime-version
+         :subject:date:message-id:references:cc:in-reply-to:to;
+        bh=oIUXCBkZfDaLwCmKVAom3m0nKZsZArvDj4sp66MxNIY=;
+        b=uP/hZGlPZQ9ornHE9Ult+brupglrBVdAr6XQOU+C8EkLdrPJ0y3Q7oxUREuM3d41Ud
+         eFWlNMPuEBURfM570sL41Hi3l3VYMjARvPRt1saUknmjJQOebpYtFIhIOngNX90WnWMX
+         Y52yESaGwSu4KcmTG4c6rU7Sw7/3xppXcOE6NirId3a60EmdB4Ubh8jJnIXBIQ7Zs425
+         iqI9oChW8+9GX7sOUDnIPpaQWaay1rCq1OF6B4jiFBHNmT0vjDE55YKd7rvXpHFXWg7L
+         LjHyXBNtRWx6Z1tjnGPhQcax5M2B3LNp8UglSqdde5Ckfpr/d2ux/RS1NwU0xB9j2aJU
+         1e/Q==
+X-Gm-Message-State: AOAM533oH0h5dzw8929Cass0TnKaZFNC7IlHqrnDL/SD/9a1xnfkPk7k
+        PpBFbg4f7ZaTlennhbiHGfI=
+X-Google-Smtp-Source: ABdhPJxcJRVl8Fn9/N5IAWVXaogd7+vJ+p5UHZ/wbZXPiXLLmpuscNgQLcWynu2NtESRMFJ2w3uXew==
+X-Received: by 2002:a92:d68b:: with SMTP id p11mr11243784iln.222.1643112544862;
+        Tue, 25 Jan 2022 04:09:04 -0800 (PST)
+Received: from smtpclient.apple ([2601:285:8200:efd:d5d:bd1d:8ace:f57f])
+        by smtp.gmail.com with ESMTPSA id i10sm5091515ilv.86.2022.01.25.04.09.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 04:09:00 -0800 (PST)
-Message-ID: <455f4360-34fe-7fee-66d5-fd945fe1e086@gmail.com>
-Date:   Tue, 25 Jan 2022 13:08:58 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
- Thunderbird/96.0
-Subject: Re: [PATCH 6/8] nvmem: transformations: ethernet address offset
- support
-To:     Michael Walle <michael@walle.cc>, linux-mtd@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <20211228142549.1275412-1-michael@walle.cc>
- <20211228142549.1275412-7-michael@walle.cc>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-In-Reply-To: <20211228142549.1275412-7-michael@walle.cc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Tue, 25 Jan 2022 04:09:04 -0800 (PST)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+From:   William Kucharski <kucharsk@gmail.com>
+Mime-Version: 1.0 (1.0)
+Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
+Date:   Tue, 25 Jan 2022 05:09:03 -0700
+Message-Id: <E44A9AB1-DBF0-4B8E-B049-293DD4DE6093@gmail.com>
+References: <20220125114212.ks2qtncaahi6foan@box.shutemov.name>
+Cc:     Khalid Aziz <khalid.aziz@oracle.com>, akpm@linux-foundation.org,
+        willy@infradead.org, longpeng2@huawei.com, arnd@arndb.de,
+        dave.hansen@linux.intel.com, david@redhat.com, rppt@kernel.org,
+        surenb@google.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org
+In-Reply-To: <20220125114212.ks2qtncaahi6foan@box.shutemov.name>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+X-Mailer: iPhone Mail (19D49)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28.12.2021 15:25, Michael Walle wrote:
-> An nvmem cell might just contain a base MAC address. To generate a
-> address of a specific interface, add a transformation to add an offset
-> to this base address.
-> 
-> Add a generic implementation and the first user of it, namely the sl28
-> vpd storage.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->   drivers/nvmem/transformations.c | 45 +++++++++++++++++++++++++++++++++
->   1 file changed, 45 insertions(+)
-> 
-> diff --git a/drivers/nvmem/transformations.c b/drivers/nvmem/transformations.c
-> index 61642a9feefb..15cd26da1f83 100644
-> --- a/drivers/nvmem/transformations.c
-> +++ b/drivers/nvmem/transformations.c
-> @@ -12,7 +12,52 @@ struct nvmem_transformations {
->   	nvmem_cell_post_process_t pp;
->   };
->   
-> +/**
-> + * nvmem_transform_mac_address_offset() - Add an offset to a mac address cell
-> + *
-> + * A simple transformation which treats the index argument as an offset and add
-> + * it to a mac address. This is useful, if the nvmem cell stores a base
-> + * ethernet address.
-> + *
-> + * @index: nvmem cell index
-> + * @data: nvmem data
-> + * @bytes: length of the data
-> + *
-> + * Return: 0 or negative error code on failure.
-> + */
-> +static int nvmem_transform_mac_address_offset(int index, unsigned int offset,
-> +					      void *data, size_t bytes)
-> +{
-> +	if (bytes != ETH_ALEN)
-> +		return -EINVAL;
-> +
-> +	if (index < 0)
-> +		return -EINVAL;
-> +
-> +	if (!is_valid_ether_addr(data))
-> +		return -EINVAL;
-> +
-> +	eth_addr_add(data, index);
-> +
-> +	return 0;
-> +}
-> +
-> +static int nvmem_kontron_sl28_vpd_pp(void *priv, const char *id, int index,
-> +				     unsigned int offset, void *data,
-> +				     size_t bytes)
-> +{
-> +	if (!id)
-> +		return 0;
-> +
-> +	if (!strcmp(id, "mac-address"))
-> +		return nvmem_transform_mac_address_offset(index, offset, data,
-> +							  bytes);
-> +
-> +	return 0;
-> +}
-> +
->   static const struct nvmem_transformations nvmem_transformations[] = {
-> +	{ .compatible = "kontron,sl28-vpd", .pp = nvmem_kontron_sl28_vpd_pp },
->   	{}
->   };
+I would think this should be the case; certainly it seems to be a more effec=
+tive approach than having to manually enable sharing via the API in every ca=
+se or via changes to ld.so.
 
-I think it's a rather bad solution that won't scale well at all.
+If anything it might be useful to have an API for shutting it off, though th=
+ere are already multiple areas where the system shares resources in ways tha=
+t cannot be shut off by user action.
 
-You'll end up with a lot of NVMEM device specific strings and code in a
-NVMEM core.
+> On Jan 25, 2022, at 04:41, Kirill A. Shutemov <kirill@shutemov.name> wrote=
+:
+>=20
+> =EF=BB=BFOn Tue, Jan 18, 2022 at 02:19:12PM -0700, Khalid Aziz wrote:
+>> Example Code
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>=20
+>> Snippet of the code that a donor process would run looks like below:
+>>=20
+>> -----------------
+>>        addr =3D mmap((void *)TB(2), GB(512), PROT_READ | PROT_WRITE,
+>>                        MAP_SHARED | MAP_ANONYMOUS, 0, 0);
+>>        if (addr =3D=3D MAP_FAILED)
+>>                perror("ERROR: mmap failed");
+>>=20
+>>        err =3D syscall(MSHARE_SYSCALL, "testregion", (void *)TB(2),
+>>            GB(512), O_CREAT|O_RDWR|O_EXCL, 600);
+>>        if (err < 0) {
+>>                perror("mshare() syscall failed");
+>>                exit(1);
+>>        }
+>>=20
+>>        strncpy(addr, "Some random shared text",
+>>            sizeof("Some random shared text"));
+>> -----------------
+>>=20
+>> Snippet of code that a consumer process would execute looks like:
+>>=20
+>> -----------------
+>>        fd =3D open("testregion", O_RDONLY);
+>>        if (fd < 0) {
+>>                perror("open failed");
+>>                exit(1);
+>>        }
+>>=20
+>>        if ((count =3D read(fd, &mshare_info, sizeof(mshare_info)) > 0))
+>>                printf("INFO: %ld bytes shared at addr %lx \n",
+>>                mshare_info[1], mshare_info[0]);
+>>        else
+>>                perror("read failed");
+>>=20
+>>        close(fd);
+>>=20
+>>        addr =3D (char *)mshare_info[0];
+>>        err =3D syscall(MSHARE_SYSCALL, "testregion", (void *)mshare_info[=
+0],
+>>            mshare_info[1], O_RDWR, 600);
+>>        if (err < 0) {
+>>                perror("mshare() syscall failed");
+>>                exit(1);
+>>        }
+>>=20
+>>        printf("Guest mmap at %px:\n", addr);
+>>        printf("%s\n", addr);
+>>    printf("\nDone\n");
+>>=20
+>>        err =3D syscall(MSHARE_UNLINK_SYSCALL, "testregion");
+>>        if (err < 0) {
+>>                perror("mshare_unlink() failed");
+>>                exit(1);
+>>        }
+>> -----------------
+>=20
+> I wounder if we can get away with zero-API here: we can transparently
+> create/use shared page tables for any inode on mmap(MAP_SHARED) as long as=
 
-You'll have a lot of duplicated code (many device specific functions
-calling e.g. nvmem_transform_mac_address_offset()).
-
-I think it also ignores fact that one NVMEM device can be reused in
-multiple platforms / device models using different (e.g. vendor / device
-specific) cells.
-
-
-What if we have:
-1. Foo company using "kontron,sl28-vpd" with NVMEM cells:
-    a. "mac-address"
-    b. "mac-address-2"
-    c. "mac-address-3"
-2. Bar company using "kontron,sl28-vpd" with NVMEM cell:
-    a. "mac-address"
-
-In the first case you don't want any transformation.
-
-
-If you consider using transformations for ASCII formats too then it
-causes another conflict issue. Consider two devices:
-
-1. Foo company device with BIN format of MAC
-2. Bar company device with ASCII format of MAC
-
-Both may use exactly the same binding:
-
-partition@0 {
-         compatible = "nvmem-cells";
-         reg = <0x0 0x100000>;
-         label = "bootloader";
-
-         #address-cells = <1>;
-         #size-cells = <1>;
-
-         mac-address@100 {
-                 reg = <0x100 0x6>;
-         };
-};
-
-how are you going to handle them with proposed implementation? You can't
-support both if you share "nvmem-cells" compatible string.
-
-
-I think that what can solve those problems is assing "compatible" to
-NVMEM cells.
-
-Let me think about details of that possible solution.
+> size and alignment is sutiable. Page tables will be linked to the inode
+> and will be freed when the last of such mapping will go away. I don't see
+> a need in new syscalls of flags to existing one.
+>=20
+> --=20
+> Kirill A. Shutemov
+>=20
