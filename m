@@ -2,373 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75BA6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB78C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445444AbiAYH2b (ORCPT
+        id S1359411AbiAYH25 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:28:31 -0500
-Received: from esa1.hc1455-7.c3s2.iphmx.com ([207.54.90.47]:58197 "EHLO
-        esa1.hc1455-7.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1444472AbiAYHV6 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:21:58 -0500
-IronPort-SDR: 2wYmYFIqB50Kl3K75d8Gh1y3pMpLSA0zBgkLFr1raQFCxz+TQHJIvgeHy8YjFR/hTLJL9XSnid
- xYSl6u35I41u1lQPIqoE0gYbWzZep13VJFEtUoM3odqKcP4B/0U37XVRMwbw9gCMvpTTVkn9xu
- kjPxPioW0fG053UCXHByvt5nksGPMo4wvKlUhk665B21oZTDUQ40gmgodh7ETtrRAuT9+sM37n
- WnRKku2oBkZa94rWBsJcW0psHzUHe77abmikcAhAORV6oTj0Ishjz4EFI4jD/EvKf/IY1OU1ek
- SdzxKDlL2f4KYcOvxd3tW3B6
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="60525509"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635174000"; 
-   d="scan'208";a="60525509"
-Received: from unknown (HELO yto-r4.gw.nic.fujitsu.com) ([218.44.52.220])
-  by esa1.hc1455-7.c3s2.iphmx.com with ESMTP; 25 Jan 2022 16:14:39 +0900
-Received: from yto-m1.gw.nic.fujitsu.com (yto-nat-yto-m1.gw.nic.fujitsu.com [192.168.83.64])
-        by yto-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id 230CACD6C1
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 16:14:38 +0900 (JST)
-Received: from yto-om4.fujitsu.com (yto-om4.o.css.fujitsu.com [10.128.89.165])
-        by yto-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id 6B118D0424
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 16:14:37 +0900 (JST)
-Received: from localhost.localdomain (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by yto-om4.fujitsu.com (Postfix) with ESMTP id 2BE74400C1BBC;
-        Tue, 25 Jan 2022 16:14:37 +0900 (JST)
-From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
-To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     tarumizu.kohei@fujitsu.com
-Subject: [PATCH 6/8] x86: Add hardware prefetch control support for x86
-Date:   Tue, 25 Jan 2022 16:14:12 +0900
-Message-Id: <20220125071414.811344-7-tarumizu.kohei@fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220125071414.811344-1-tarumizu.kohei@fujitsu.com>
-References: <20220125071414.811344-1-tarumizu.kohei@fujitsu.com>
-MIME-Version: 1.0
+        Tue, 25 Jan 2022 02:28:57 -0500
+Received: from mail-dm6nam12on2082.outbound.protection.outlook.com ([40.107.243.82]:45665
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1445104AbiAYH0i (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 02:26:38 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B1t5KXqJYappknWmKmWVsrUPVHUvnpITXcrbJWehZSdueeKu0DtqM+l7Vy7dCAnlGcv+XTV+Wmat66YpyqEQ91/ciYKxAma/XZUd9pdU/QxXAWOxUNDo+EbbZFhlDUoLfjxXigC0mLEg5LAi+8XmkPRQKxYmWSyRY4mrTUJP+xFrp+Dt5GclhYvsrNUFBDNTa7gQFdWzN500thGQQ2xL+cpcHVe+WKm1D96hr8VJOAmf5jErr7kAswjTxXgTnewRNPi7yxoVTaSbOnubjWXhvzL2tgvEs0uEtUNW/wo2uH80WjO6gMHvZBejQh0iho+KJI6CwxxF0Qd1snF89E92cA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iDYVNkPrlzT9H9e1/OuiVoKw3/d9p2F+WSl5pz1Vg+c=;
+ b=frkPBkdtHvI77tQDzVGt/Unri8wMoKJogqbNDW0k6O80w3M0IJeDtQTsTIfIvQp9YAYCuHlEtNR1izUSlp9g0z21ufrclpGRnrg3EKWYzPmQTXNuzGAXChj8PfR7sHp3Wxy7qjBObhmIg0kcxkXjc3Dxa1mnRTPSH9AgtotyRXEcUFfl3nj6mISGlTEDesue9py2vd54z4NnYyakFrapmrJV9yIBGvhwYCtD3s2KDN00Z09YkvQ1+YpgWK742l6hEEwkByvSzjKWsrZz7e+6apFZjcQ5M9Mq0y6RvOevug1J3R6s5GcxNm/gFNn0hpwjgMY1Q9wxjowdTcOn7lhYGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iDYVNkPrlzT9H9e1/OuiVoKw3/d9p2F+WSl5pz1Vg+c=;
+ b=BkF9QY+947zASJ49OuolZ9dUDV52YgoNaZ9wLPSvm/q4doa4BtINlJ4IH9ANqjZWdesZL7k1tb4EXiwz+HPwi2W3AKoBesWvXsx1NmtrElnjObFxz2oDvwuCWHAk6hJIL0rm4BrQSJsI60UHJ3RNpiWY6ltgVgAyLKl3l7GLD1s=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by BN8PR12MB2897.namprd12.prod.outlook.com (2603:10b6:408:99::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Tue, 25 Jan
+ 2022 07:26:26 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::d8e7:e6b0:d63c:4a21]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::d8e7:e6b0:d63c:4a21%5]) with mapi id 15.20.4909.017; Tue, 25 Jan 2022
+ 07:26:26 +0000
+Subject: Re: [PATCH 5.16 0702/1039] drm/amdgpu: Dont inherit GEM object VMAs
+ in child process
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        David Yat Sin <david.yatsin@amd.com>,
+        Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+ <20220124184148.931014095@linuxfoundation.org>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+Message-ID: <e37beeb2-1ec0-9f7f-06f6-ee4df975a956@amd.com>
+Date:   Tue, 25 Jan 2022 08:26:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+In-Reply-To: <20220124184148.931014095@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+Content-Language: en-US
+X-ClientProxiedBy: AM6P195CA0065.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:209:87::42) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 49fce4f3-e7d1-4480-58cc-08d9dfd3fede
+X-MS-TrafficTypeDiagnostic: BN8PR12MB2897:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB28974044EAC6C089CC111E92835F9@BN8PR12MB2897.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rpMe6izbguWC2OnLFhAzI5HHNSc6lPdkaJ2wDxThH5mveOjWXSUdBcpKUMnFJs0tKTCz4bbtl9y69STQFNiqIaNwGCtjfveGrh7UPMK7pKad473aDX0jK5V42EyLmW85Uyfcqq2j/BrhI2RZSwjZW5hz1hdaok9AL0CAkFxjbKKwf1W4/PX4MO3ac3dfUtQIYZAy10WDSeRP3b2iJtbCaLbWZ3y+6ViscjBh/qiKrgOtc+qCtqM4I7WxUC+8PkDj1ObKpBDZBsr/HredJbVAY/568kgChSsfNUMm9WcZVF6q5YlXtrHMtnuef/R3H3y/PBKRftpICzjm0wt9oNy9ImoneRAH5Eb4m1ICqsZ9VWNSXypGNim8KSxpQ76HRn9dG5TrZVvxfLh1tpEUplGMmGDUSiXxXY7PQ+HUzxMe9bueB31Bofhgmj3ce4S3M0APoKNFjRJeVMfOGbjU7bJ9w/CM9mfaA143xAXmmOjuybltl7/KSUoJi5c6DKOtuGPzAKPWn3n+D7nQvlTOegrDk/RXCaxi04Y/hGZNVuNGYTkV9/ea28GL7oKjjg6r8UXD5aO0xFKpkqZ3Zv27PpqEekxYKbGN5uajuZ8QJWK0jffupH4S561OT682L6AG39EufQAUyi7E+ayQtT8jR1mWODrEWdQPpslQiZE58ScrC7OS/0w3T4fo8ypV56sekifMyYD9HAQDeQ03XLZmxX338xX238ZAx7QIyNb4w3tcqYslHR9KKbvP/Xa7G+jHBerz15RVOqYa5G4Be+Nk1IUMPQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(31696002)(8936002)(38100700002)(66946007)(66476007)(66556008)(6666004)(186003)(5660300002)(8676002)(6506007)(86362001)(54906003)(4326008)(2906002)(316002)(508600001)(6512007)(6486002)(66574015)(36756003)(83380400001)(31686004)(2616005)(192303002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?U1dXaStZenZNbTIvYWVOLy95KzRQbVdOTlEzWURMRXNES1g5Rkp5TDhlamZR?=
+ =?utf-8?B?MlZjSTMrSnN2MkdMWk9ORkZTdVZnWU5QZG4yYUFkeU1MSHRaUHNxSzVmUDA1?=
+ =?utf-8?B?WGY2Z0w0bXQrNEZTNmU1ZEx5ZGpxdTJaZlRDMktRQ1BFVU85bjZPOUgwVVIv?=
+ =?utf-8?B?QVNsZVVLL3h3RS9JMCtsUFZWeElkdVhYeFdkYmIvMmMzTlJPNmVlRkZxdGxy?=
+ =?utf-8?B?SGhoeGFUQVQzU1RsSXFXRWZYSlc1RTdWUW55cVVBa3VZTWozeDZ4QXFUVUxN?=
+ =?utf-8?B?MFlKRXp6UWQ1VGU1Z0xVOVVsY0RRQUFsYWpwV2NVKys4a1VmSDFqVlg5YzdV?=
+ =?utf-8?B?NE1YZ3U0dVhPbnJPRml1SU5qaUdWOW9kWGsvYUIralFyV2pxL2hLK2FzckVp?=
+ =?utf-8?B?Y3F6c29pYSs0VjlQVzhsVnkwTXBGdEVyNHZEZmkvcGZKK2haUEFuRm9nM2Vh?=
+ =?utf-8?B?TTdrZmVLY3p5ZUxRSEIxMWZqalVNcmIzZ2c0em5hVmxyNCtxZ3NJVWREa3or?=
+ =?utf-8?B?RVlacTBCdkYwWTZuZU1BaUl4OXhMZ3BCcDJuelkzbjZnUmVpdFpPNGxqVklQ?=
+ =?utf-8?B?VDNPMHI2ekJidWFRWDFQME9ITFRTOFdJbGE3SEVhSDZGa3Q2VG1SN1hXU0ds?=
+ =?utf-8?B?MlpCOFVnMFJoTnRRMG9nTUxZQzU2REI1M2J0ZkNSczJnNGQrRklxWGxKbjMv?=
+ =?utf-8?B?cDNza3BScUVCSHA1b0wvUUh0emFMVjg4eVlwdzA2Wlp4NDg2N3NaU2hIaklh?=
+ =?utf-8?B?cmdqd0xmSDFHa2VuNVdYQmxSazZuMXpJd3J0YlNFQXY4dXk4SEpVUWZhTlRn?=
+ =?utf-8?B?Ujl4UmZnS0Vkb3E4TjkzRDVpQXh0UzltaGkrRWNBQUZqUnNNTy9pLzRPVGQw?=
+ =?utf-8?B?VFZ1NEVaQTRrTDI2OWdMZVlvUTllaU92TXZTZUVXQk5yenJ2c0dnOTdvTUhP?=
+ =?utf-8?B?bHk1cXVlK29wV09mZVdiSExUR09ESGNjYXJBK0N5azd4RE5SRU1ZRGNRWWpy?=
+ =?utf-8?B?QUxReFdRaXBWbjZISzFEbEVUbU1nczBCWHMvMXBEUERRZHh1OXo1SGxGMmtH?=
+ =?utf-8?B?SnhGQWE5UUdBcjYyK3ZMRDdrTC8vZ2pCV1cvM2IrUUVRZTVSb1NIcWFBWmNK?=
+ =?utf-8?B?UHpKaTBpeFV3Q1NnSytMd0JJOUhCamxlMnpZcExWc25sRzZFaGRNU2dEQ2dp?=
+ =?utf-8?B?M3ZsQVgySkc3bjdxNmVqY2o5RWMzZmUvY1lvb3BhYkxEUjBoNEg1azBXRDNQ?=
+ =?utf-8?B?SVhCYzBOQmhOc1VTWUJVQTFtUkJsOTY2MWpLeTdaYWo2L1Q1YUpUVmNlYzFG?=
+ =?utf-8?B?VEUwcCtrcHdteVVkSmZuQndETk9xVGk1OWM5aHQ3Rm9oalE3SnFrSHBDK2JQ?=
+ =?utf-8?B?MzN3QlZCSGppd1FCVDNianJvc1duT01GK0Zrd1VBWlVQbG8vcWl0a00xMEd3?=
+ =?utf-8?B?TG1rcTU1UHU5UGd6WHEvbllXbjFWdXUydkJVWUFKR2prZWMvTzJ0dThSZmUx?=
+ =?utf-8?B?QlRqOE9HaVVUUXl1UUJYcll2d2NCM0w3eWdMM0JOYU51OUNKVlRabEErTHl0?=
+ =?utf-8?B?ZGVKQzAzV3pVaHEvWHpyVERkdUxkQkhCYU0wVitLekExQUI5dVp2ZnJlYVM4?=
+ =?utf-8?B?SHB5NmR1YW5uS1MzR3phWVo3b2NUUWNVQmUvZ3NRUVZCR2d4enA4OE5zUm1u?=
+ =?utf-8?B?a2l0cEI2QkoxOFYwbys3V1BkL1pRdGN6NFdDd0ZtU0l4V2xhSE9CajgwOUVL?=
+ =?utf-8?B?dVZNcnpHYjU1NlFUaHlNWFNwY09rWXh4UG9KUUw3Tmk3RGo2eEJVNkgyZlRW?=
+ =?utf-8?B?NUIzY0hENlM5NjdWalVjS2hXd1JNVDRuOVY2Q3pmYWRYVXUydS8yajRBenNm?=
+ =?utf-8?B?VDMxNVUxM2UwdGluS293bjg4cmFBaE15ejhpYjJUYWRaajZVNkcxMGFjd3Vu?=
+ =?utf-8?B?bEJwNmFOWFRCTGt6MTc4b1QrTnkxeTkvWlBjMTFGS3dQbm1pbThhMEg1Q2wz?=
+ =?utf-8?B?dHBLdUp5dG5ybmFwTG9WNmxTWDIxSXBlUm41eE0vaXFKbTVVNXFHWDUzRnM3?=
+ =?utf-8?B?WlNTUXdRcTRjWmdwN1FjWjg4RmhJMi9JUDhXd2R3eDkzVEhobnhCN1NzQ3Bk?=
+ =?utf-8?B?TUlTbEpDK0grTUdvcDFURmZDbVl3YkxVTWxaWU44dGtYU3BORGgwK0lCekFN?=
+ =?utf-8?Q?8ij7aGtHKHPHCUsBCMhz1vk=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49fce4f3-e7d1-4480-58cc-08d9dfd3fede
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 07:26:25.8745
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: whTcLrfbBHAxWcSvtOGdo5l9hWYXe8Rf0P5F2mhiUf40qY3m/5WDXfRiHEM5j+mM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2897
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds module init/exit code, and creates sysfs attribute file
-"prefetch_control" for x86. This driver works only if the model is
-INTEL_FAM6_BROADWELL_X at this point.
+Hi Greg,
 
-If you would like to support a new model with the same register
-specifications as INTEL_FAM6_BROADWELL_X, it is possible to add the
-model settings to array of broadwell_cpu_ids[].
+Am 24.01.22 um 19:41 schrieb Greg Kroah-Hartman:
+> From: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
+>
+> [ Upstream commit fbcdbfde87509d523132b59f661a355c731139d0 ]
+>
+> When an application having open file access to a node forks, its shared
+> mappings also get reflected in the address space of child process even
+> though it cannot access them with the object permissions applied. With the
+> existing permission checks on the gem objects, it might be reasonable to
+> also create the VMAs with VM_DONTCOPY flag so a user space application
+> doesn't need to explicitly call the madvise(addr, len, MADV_DONTFORK)
+> system call to prevent the pages in the mapped range to appear in the
+> address space of the child process. It also prevents the memory leaks
+> due to additional reference counts on the mapped BOs in the child
+> process that prevented freeing the memory in the parent for which we had
+> worked around earlier in the user space inside the thunk library.
+>
+> Additionally, we faced this issue when using CRIU to checkpoint restore
+> an application that had such inherited mappings in the child which
+> confuse CRIU when it mmaps on restore. Having this flag set for the
+> render node VMAs helps. VMAs mapped via KFD already take care of this so
+> this is needed only for the render nodes.
+>
+> To limit the impact of the change to user space consumers such as OpenGL
+> etc, limit it to KFD BOs only.
+>
+> Acked-by: Felix Kuehling <Felix.Kuehling@amd.com>
+> Reviewed-by: Christian König <christian.koenig@amd.com>
+> Signed-off-by: David Yat Sin <david.yatsin@amd.com>
+> Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
+> Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 
-The details of the registers to be read and written in this patch are
-described below:
+Please drop this patch from all stable versions since it was reverted 
+from upstream later on.
 
-"https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html"
-Volume 4
+Regards,
+Christian.
 
-Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
----
- arch/x86/kernel/cpu/pfctl.c | 292 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 292 insertions(+)
- create mode 100644 arch/x86/kernel/cpu/pfctl.c
-
-diff --git a/arch/x86/kernel/cpu/pfctl.c b/arch/x86/kernel/cpu/pfctl.c
-new file mode 100644
-index 000000000000..02628f6d2c05
---- /dev/null
-+++ b/arch/x86/kernel/cpu/pfctl.c
-@@ -0,0 +1,292 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright 2022 FUJITSU LIMITED
-+ *
-+ * x86 Hardware Prefetch Control support
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/cacheinfo.h>
-+#include <linux/pfctl.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <asm/cpu_device_id.h>
-+#include <asm/intel-family.h>
-+#include <asm/msr.h>
-+
-+struct pfctl_driver x86_pfctl_driver;
-+
-+/**************************************
-+ * Intle BROADWELL support
-+ **************************************/
-+
-+/*
-+ * The register specification for each bits of Intel BROADWELL is as
-+ * follow:
-+ *
-+ * [0]    L2 Hardware Prefetcher Disable (R/W)
-+ * [1]    L2 Adjacent Cache Line Prefetcher Disable (R/W)
-+ * [2]    DCU Hardware Prefetcher Disable (R/W)
-+ * [3]    DCU IP Prefetcher Disable (R/W)
-+ * [63:4] Reserved
-+ *
-+ * See "Intel 64 and IA-32 Architectures Software Developer's Manual"
-+ * (https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
-+ * for register specification details.
-+ */
-+#define BROADWELL_L2_HWPF_FIELD		BIT_ULL(0)
-+#define BROADWELL_L2_ACLPF_FIELD	BIT_ULL(1)
-+#define BROADWELL_DCU_HWPF_FIELD	BIT_ULL(2)
-+#define BROADWELL_DCU_IPPF_FIELD	BIT_ULL(3)
-+
-+static int broadwell_get_hwpf_enable(u64 reg, unsigned int level)
-+{
-+	switch (level) {
-+	case 1:
-+		return FIELD_GET(BROADWELL_DCU_HWPF_FIELD, reg);
-+	case 2:
-+		return FIELD_GET(BROADWELL_L2_HWPF_FIELD, reg);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int broadwell_modify_hwpf_enable(u64 *reg, unsigned int level,
-+					unsigned int val)
-+{
-+	switch (level) {
-+	case 1:
-+		*reg &= ~BROADWELL_DCU_HWPF_FIELD;
-+		*reg |= FIELD_PREP(BROADWELL_DCU_HWPF_FIELD, val);
-+		break;
-+	case 2:
-+		*reg &= ~BROADWELL_L2_HWPF_FIELD;
-+		*reg |= FIELD_PREP(BROADWELL_L2_HWPF_FIELD, val);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int broadwell_get_ippf_enable(u64 reg, unsigned int level)
-+{
-+	switch (level) {
-+	case 1:
-+		return FIELD_GET(BROADWELL_DCU_IPPF_FIELD, reg);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int broadwell_modify_ippf_enable(u64 *reg, unsigned int level,
-+					unsigned int val)
-+{
-+	switch (level) {
-+	case 1:
-+		*reg &= ~BROADWELL_DCU_IPPF_FIELD;
-+		*reg |= FIELD_PREP(BROADWELL_DCU_IPPF_FIELD, val);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int broadwell_get_aclpf_enable(u64 reg, unsigned int level)
-+{
-+	switch (level) {
-+	case 2:
-+		return FIELD_GET(BROADWELL_L2_ACLPF_FIELD, reg);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int broadwell_modify_aclpf_enable(u64 *reg, unsigned int level,
-+					 unsigned int val)
-+{
-+	switch (level) {
-+	case 2:
-+		*reg &= ~BROADWELL_L2_ACLPF_FIELD;
-+		*reg |= FIELD_PREP(BROADWELL_L2_ACLPF_FIELD, val);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int _broadwell_get_pfctl_params(struct prefetcher_options *opts, u64 reg,
-+				   unsigned int level, int supported_prefetcher)
-+{
-+	int ret;
-+
-+	if (supported_prefetcher & HWPF) {
-+		ret = broadwell_get_hwpf_enable(reg, level);
-+		if (ret < 0)
-+			return ret;
-+		opts->hwpf_enable = ret;
-+	}
-+
-+	if (supported_prefetcher & IPPF) {
-+		ret = broadwell_get_ippf_enable(reg, level);
-+		if (ret < 0)
-+			return ret;
-+		opts->ippf_enable = ret;
-+	}
-+
-+	if (supported_prefetcher & ACLPF) {
-+		ret = broadwell_get_aclpf_enable(reg, level);
-+		if (ret < 0)
-+			return ret;
-+		opts->aclpf_enable = ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int broadwell_get_pfctl_params(struct prefetcher_options *opts, u64 reg,
-+				   unsigned int level)
-+{
-+	int ret, supported_prefetcher;
-+
-+	if (level == 1)
-+		supported_prefetcher =
-+			x86_pfctl_driver.supported_l1d_prefetcher;
-+	else if (level == 2)
-+		supported_prefetcher =
-+			x86_pfctl_driver.supported_l2_prefetcher;
-+	else
-+		return -EINVAL;
-+
-+	ret = _broadwell_get_pfctl_params(opts, reg, level, supported_prefetcher);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int broadwell_modify_pfreg(u64 *reg, struct prefetcher_options *opts,
-+				  unsigned int level)
-+{
-+	int ret;
-+
-+	if (opts->hwpf_enable != PFCTL_PARAM_UNSET) {
-+		ret = broadwell_modify_hwpf_enable(reg, level,
-+						   opts->hwpf_enable);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	if (opts->ippf_enable != PFCTL_PARAM_UNSET) {
-+		ret = broadwell_modify_ippf_enable(reg, level,
-+						   opts->ippf_enable);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	if (opts->aclpf_enable != PFCTL_PARAM_UNSET) {
-+		ret = broadwell_modify_aclpf_enable(reg, level,
-+						    opts->aclpf_enable);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int broadwell_read_pfreg(unsigned int cpu, unsigned int level,
-+				struct prefetcher_options *opts)
-+{
-+	int ret;
-+	u64 reg;
-+
-+	ret = rdmsrl_on_cpu(cpu, MSR_MISC_FEATURE_CONTROL, &reg);
-+	if (ret)
-+		return ret;
-+
-+	ret = broadwell_get_pfctl_params(opts, reg, level);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int broadwell_write_pfreg(unsigned int cpu, unsigned int level,
-+				 struct prefetcher_options *opts)
-+{
-+	int ret;
-+	u64 reg;
-+
-+	ret = rdmsrl_on_cpu(cpu, MSR_MISC_FEATURE_CONTROL, &reg);
-+	if (ret)
-+		return ret;
-+
-+	ret = broadwell_modify_pfreg(&reg, opts, level);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = wrmsrl_on_cpu(cpu, MSR_MISC_FEATURE_CONTROL, reg);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+/*
-+ * In addition to BROADWELL_X, NEHALEM and others have same register
-+ * specifications as those represented by BROADWELL_XXX_FIELD.
-+ * If you want to add support for these processor, add the new target model
-+ * here.
-+ */
-+static const struct x86_cpu_id broadwell_cpu_ids[] = {
-+	X86_MATCH_INTEL_FAM6_MODEL(BROADWELL_X, NULL),
-+	{}
-+};
-+
-+/***** end of Intel BROADWELL support *****/
-+
-+static int __init setup_pfctl_driver_params(void)
-+{
-+	if (x86_match_cpu(broadwell_cpu_ids)) {
-+		x86_pfctl_driver.supported_l1d_prefetcher = HWPF|IPPF;
-+		x86_pfctl_driver.supported_l2_prefetcher = HWPF|ACLPF;
-+		x86_pfctl_driver.read_pfreg = broadwell_read_pfreg;
-+		x86_pfctl_driver.write_pfreg = broadwell_write_pfreg;
-+	} else {
-+		return -ENODEV;
-+	}
-+
-+	return 0;
-+}
-+
-+static int __init x86_pfctl_init(void)
-+{
-+	int ret;
-+
-+	ret = setup_pfctl_driver_params();
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = pfctl_register_driver(&x86_pfctl_driver);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static void __exit x86_pfctl_exit(void)
-+{
-+	pfctl_unregister_driver(&x86_pfctl_driver);
-+}
-+
-+late_initcall(x86_pfctl_init);
-+module_exit(x86_pfctl_exit);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("FUJITSU LIMITED");
-+MODULE_DESCRIPTION("x86 Hardware Prefetch Control Driver");
--- 
-2.27.0
+> ---
+>   drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
+> index a1e63ba4c54a5..630dc99e49086 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
+> @@ -264,6 +264,9 @@ static int amdgpu_gem_object_mmap(struct drm_gem_object *obj, struct vm_area_str
+>   	    !(vma->vm_flags & (VM_READ | VM_WRITE | VM_EXEC)))
+>   		vma->vm_flags &= ~VM_MAYWRITE;
+>   
+> +	if (bo->kfd_bo)
+> +		vma->vm_flags |= VM_DONTCOPY;
+> +
+>   	return drm_gem_ttm_mmap(obj, vma);
+>   }
+>   
 
