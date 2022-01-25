@@ -2,65 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5026C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E56BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:44:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580027AbiAYOln (ORCPT
+        id S1580157AbiAYOmg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:41:43 -0500
-Received: from mga03.intel.com ([134.134.136.65]:43560 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1388509AbiAYOjI (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:39:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643121548; x=1674657548;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KqOpHtgSiTnL+U5jInAffrw6x8jdUAMVMkKnO4pQFoE=;
-  b=aRlBQKnf2nbIhJeIQPvWgFPOP2f6HfVY/c5KuDJ7+JqxHWUZhEwij51X
-   hcvu7Qw16NUR8Na/Ejfh+kVWxs5axa3XCGyRNy+Sv1wiy7xHKjHgGjqha
-   5GWiKX3QCV9bXUFPmwx+UJBE+G+mpS2DGblCUf4Lgmgh9ohrlsL4G7ngc
-   kCXCu9Kdbm5LzyloTRBiobZjcqEg9ris2I1JDvlAeiqBjiqhGc0Jk24MX
-   /0/sznLkMgzEFF8bTuRdBU+1tCLXxlTcQP0MjmYHspibKPpjHFX8Melch
-   yaWBlJrRav1n/TWI5yMB3BIDTuQNKaAYewh+ZgZZeFsHPf80pchMoAT+N
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246254525"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="246254525"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 06:26:59 -0800
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="532428160"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 06:26:57 -0800
-Received: by lahna (sSMTP sendmail emulation); Tue, 25 Jan 2022 16:26:55 +0200
-Date:   Tue, 25 Jan 2022 16:26:54 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Zha Qipeng <qipeng.zha@intel.com>, linux-kernel@vger.kernel.org
-Subject: Re: mfd/intel_pmc_bxt: `intel_pmc_get_resources()` results in page
- fault
-Message-ID: <YfAIrkJaahKpCta6@lahna>
-References: <92c233bc-d1e0-b180-efaa-27e05fbd732b@molgen.mpg.de>
+        Tue, 25 Jan 2022 09:42:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39930 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1579776AbiAYOiw (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 09:38:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478D4C061401;
+        Tue, 25 Jan 2022 06:38:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0EB82B81812;
+        Tue, 25 Jan 2022 14:38:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22EE7C340E0;
+        Tue, 25 Jan 2022 14:38:48 +0000 (UTC)
+Date:   Tue, 25 Jan 2022 09:38:46 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>, linux-block@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: Re: [Patch v3] block: introduce block_rq_error tracepoint
+Message-ID: <20220125093846.59826cad@gandalf.local.home>
+In-Reply-To: <20220125093702.3ffdb721@gandalf.local.home>
+References: <20200203053650.8923-1-xiyou.wangcong@gmail.com>
+        <CAHbLzkoUmhPbnt=yMfBSFs2G6r2S5ggD6AkYQvg0zxBAqQK2fA@mail.gmail.com>
+        <20220125093702.3ffdb721@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <92c233bc-d1e0-b180-efaa-27e05fbd732b@molgen.mpg.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, 25 Jan 2022 09:37:02 -0500
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-On Tue, Jan 25, 2022 at 02:08:53PM +0100, Paul Menzel wrote:
-> Dear Linux folks,
+> > > +TRACE_EVENT(block_rq_error,
+> > > +
+> > > +       TP_PROTO(struct request *rq, int error, unsigned int nr_bytes),
+> > > +
+> > > +       TP_ARGS(rq, error, nr_bytes),
+> > > +
+> > > +       TP_STRUCT__entry(
+> > > +               __field(  dev_t,        dev                     )
+> > > +               __string( name,         rq->rq_disk ? rq->rq_disk->disk_name : "?")
+> > > +               __field(  sector_t,     sector                  )
+> > > +               __field(  unsigned int, nr_sector               )
+> > > +               __field(  int,          error                   )
+> > > +               __array(  char,         rwbs,   RWBS_LEN        )  
 > 
+> Why is the above not "__string" ?
 > 
-> `intel_pmc_get_resources()` does not set the name member in the `resource`
-> struct `gcr_res` resulting in a page fault.
+> > > +       ),
+> > > +
+> > > +       TP_fast_assign(
+> > > +               __entry->dev       = rq->rq_disk ? disk_devt(rq->rq_disk) : 0;
+> > > +               __assign_str(name,   rq->rq_disk ? rq->rq_disk->disk_name : "?");  
 > 
+> __assign_str() will not work on an __array() type. It only works here
+> because you added it at the end, but it's just shear luck that it didn't
+> crash.
 
-On which system you reproduce this, and how? Can you also share ACPI
-dump from that system.
+Never mind :-p  I see the above is for name which is __string, and the
+array is for rwbs which is filled below. I need to finish my first cup of
+coffee before reviewing patches.
+
+-- Steve
+
+> 
+> 
+> > > +               __entry->sector    = blk_rq_pos(rq);
+> > > +               __entry->nr_sector = nr_bytes >> 9;
+> > > +               __entry->error     = error;
+> > > +
+> > > +               blk_fill_rwbs(__entry->rwbs, rq->cmd_flags, nr_bytes);
+> > > +       ),
+> > > +
+> > > +       TP_printk("%d,%d %s %s %llu + %u [%d]",
+> > > +                 MAJOR(__entry->dev), MINOR(__entry->dev),
+> > > +                 __get_str(name), __entry->rwbs,
+> > > +                 (unsigned long long)__entry->sector,
+> > > +                 __entry->nr_sector, __entry->error)
+> > > +);
+> > > +
