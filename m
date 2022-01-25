@@ -2,76 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86927C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 057E9C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582690AbiAYPxV (ORCPT
+        id S1350522AbiAYPxt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 10:53:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56462 "EHLO
+        Tue, 25 Jan 2022 10:53:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1582407AbiAYPtt (ORCPT
+        with ESMTP id S1344218AbiAYPvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:49:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3286EC061771;
-        Tue, 25 Jan 2022 07:49:43 -0800 (PST)
+        Tue, 25 Jan 2022 10:51:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551A8C06175E;
+        Tue, 25 Jan 2022 07:51:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3A0CB818D0;
-        Tue, 25 Jan 2022 15:49:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11A37C340E5;
-        Tue, 25 Jan 2022 15:49:39 +0000 (UTC)
-Date:   Tue, 25 Jan 2022 10:49:38 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the kspp tree
-Message-ID: <20220125104938.566da04f@gandalf.local.home>
-In-Reply-To: <20220125233154.dac280ed36944c0c2fe6f3ac@kernel.org>
-References: <20220125145006.677e3709@canb.auug.org.au>
-        <202201242230.C54A6BCDFE@keescook>
-        <20220125222732.98ce2e445726e773f40e122e@kernel.org>
-        <20220125233154.dac280ed36944c0c2fe6f3ac@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5C7661714;
+        Tue, 25 Jan 2022 15:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89EBBC340E0;
+        Tue, 25 Jan 2022 15:51:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643125867;
+        bh=lqaNa2pfwB8IZWQDz+uXS8piYRMBUthGf9Esoh4gpBs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KReubvvf80sqg+5GGymWHSGUyKPxT+YLMRinp/RSp6rs84Q1PvubMYKgkESdKoavp
+         MjgqMro47o1fAVQ0tBObWTyq5Ck6h6pdMXSXbw2OWCoVUycg0C2MQWGTHP9wAqWJ9y
+         7uJfJwYvMEDHcqGHkXXhA/jHyNqPRawrPxI89YiQ=
+Date:   Tue, 25 Jan 2022 16:51:04 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Helge Deller <deller@gmx.de>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        John David Anglin <dave.anglin@bell.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, stable@vger.kernel.org,
+        Daniel =?iso-8859-1?Q?D=EDaz?= <daniel.diaz@linaro.org>,
+        Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH 5.4 000/320] 5.4.174-rc1 review
+Message-ID: <YfAcaFaYlB0FUHMn@kroah.com>
+References: <20220124183953.750177707@linuxfoundation.org>
+ <e2c9b01d-0500-645f-b4cc-f8dcb769996e@linaro.org>
+ <CA+G9fYsvgQyUNBnySuiOrAXRrh4_ZAnqygZ0A5y7pGO5vrXAYA@mail.gmail.com>
+ <YfANvxrigpCy5spk@p100>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfANvxrigpCy5spk@p100>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 23:31:54 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
-
-> Could you try this patch?
+On Tue, Jan 25, 2022 at 03:48:31PM +0100, Helge Deller wrote:
+> * Naresh Kamboju <naresh.kamboju@linaro.org>:
+> > > On 1/24/22 12:39, Greg Kroah-Hartman wrote:
+> > > > This is the start of the stable review cycle for the 5.4.174 release.
+> > > > There are 320 patches in this series, all will be posted as a response
+> > > > to this one.  If anyone has any issues with these being applied, please
+> > > > let me know.
+> > > >
+> > > > Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
+> > > > Anything received after that time might be too late.
+> > > >
+> > > > The whole patch series can be found in one patch at:
+> > > >       https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.174-rc1.gz
+> > > > or in the git tree and branch at:
+> > > >       git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> > > > and the diffstat can be found below.
+> > > >
+> > > > thanks,
+> > > >
+> > > > greg k-h
+> > >
+> >
+> > [...]
+> >
+> > This is from PA-RISC with gcc-8, gcc-9, gcc-10, gcc-11:
+> >
+> > >    /builds/linux/drivers/parisc/sba_iommu.c: In function 'sba_io_pdir_entry':
+> > >    /builds/linux/arch/parisc/include/asm/special_insns.h:11:3: error: expected ':' or ')' before 'ASM_EXCEPTIONTABLE_ENTRY'
+> > >       ASM_EXCEPTIONTABLE_ENTRY(8b, 9b) \
+> > >       ^~~~~~~~~~~~~~~~~~~~~~~~
+> >
+> > Bisection of the latter points to "parisc: Fix lpa and lpa_user defines".
+> >
+> > commit 73c8c7ecdc141c20c9dbc8f3ec176e233942b0d9
+> > parisc: Fix lpa and lpa_user defines
+> >     [ commit db19c6f1a2a353cc8dec35b4789733a3cf6e2838 upstream ]
 > 
-> >From 2982ba01367ec1f746a4f128512436e5325a7f9d Mon Sep 17 00:00:00 2001  
-> From: Masami Hiramatsu <mhiramat@kernel.org>
-> Date: Tue, 25 Jan 2022 23:19:30 +0900
-> Subject: [PATCH] tracing: Avoid -Warray-bounds warning for __rel_loc macro
+> Naresh, thanks for noticing and bisecting!
 > 
-> Since -Warray-bounds checks the destination size from the
-> type of given pointer, __assign_rel_str() macro gets warned
-> because it passes the pointer to the 'u32' field instead of
-> 'trace_event_raw_*' data structure.
-> Pass the data address calculated from the 'trace_event_raw_*'
-> instead of 'u32' __rel_loc field.
+> The problem is, that in v5.4.x we are missing to include a header file
+> which is probably already indirectly included in the other Linux versions.
 > 
-> Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Cc: Kees Cook <keescook@chromium.org>
+> Greg, can you either drop this commit:
+> 
+>    commit 73c8c7ecdc141c20c9dbc8f3ec176e233942b0d9
+>    parisc: Fix lpa and lpa_user defines
+> 
+> or simply add the patch below to the commit?
+> 
+> Either solution which is easier for you is ok.
 
-If this works, I'll add it instead of the one that just turns it off it
-__CHECKER__ is defined.
+I've just dropped it now, thanks.
 
-Can you please let me know if it fixes the issue for you. I have a test run
-waiting on it.
-
-Thanks,
-
--- Steve
+greg k-h
