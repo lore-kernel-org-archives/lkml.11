@@ -2,130 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 909DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C23C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:47:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359202AbiAYGrW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:47:22 -0500
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:47034 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358016AbiAYGo1 (ORCPT
+        id S237449AbiAYGrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 01:47:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358307AbiAYGo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 01:44:27 -0500
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 20P6aluv078229;
-        Tue, 25 Jan 2022 14:36:47 +0800 (GMT-8)
-        (envelope-from jammy_huang@aspeedtech.com)
-Received: from JammyHuang-PC.aspeed.com (192.168.2.115) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 25 Jan
- 2022 14:44:07 +0800
-From:   Jammy Huang <jammy_huang@aspeedtech.com>
-To:     <eajames@linux.ibm.com>, <mchehab@kernel.org>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <linux-media@vger.kernel.org>,
-        <openbmc@lists.ozlabs.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 2/3] media: aspeed: Use FIELD_GET to improve readability
-Date:   Tue, 25 Jan 2022 14:44:08 +0800
-Message-ID: <20220125064409.5502-3-jammy_huang@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220125064409.5502-1-jammy_huang@aspeedtech.com>
-References: <20220125064409.5502-1-jammy_huang@aspeedtech.com>
+        Tue, 25 Jan 2022 01:44:56 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C029C06C58B;
+        Mon, 24 Jan 2022 21:05:10 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JjZY004ysz4xNm;
+        Tue, 25 Jan 2022 16:05:07 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1643087108;
+        bh=VnzwZkaUPBG6gyiFlcuKqba/xwt8hpq+mXdI1zWxHQA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=kxbwOGLYYNH0vo+x/IahWwMZ8ZlXiMBHd8K9EidBdUAsS5DAfRam26dCB7B7Q9Zn9
+         9D5+vVcC7sHDTjCwVe3tCDJcX+gSHJm5Mevfynu6+W+1EwTL826GNCCS/y5vIm9Umn
+         2QH9lfLFsw+7YwgsB8eyYtwtSjEZZs/NIt51layKX7uc0ZR9Gkpr8WiWs3tyaCWtlM
+         ijYfOwocg/tSBLo35sGLGxxWlwYH2bN/Tcljo2ba3IS9IN7W0+AWEvFoPT/DCKY+1I
+         NEfmQeWomo8QIMALbRqoeMUT87jIjC5lAh5x90J9StxeF/Y+q76W7C4gwpJQFbD4mf
+         QmKIzXeeb88kw==
+Date:   Tue, 25 Jan 2022 16:05:05 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Trond Myklebust <trondmy@gmail.com>,
+        NFS Mailing List <linux-nfs@vger.kernel.org>
+Subject: linux-next: runtime warning in next-20220125
+Message-ID: <20220125160505.068dbb52@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.115]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 20P6aluv078229
+Content-Type: multipart/signed; boundary="Sig_/VaGFByGqpnPxdhPTqS7TR2I";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the bitfield macro FIELD_GET, and GENMASK to do the shift and mask in
-one go for reg values.
+--Sig_/VaGFByGqpnPxdhPTqS7TR2I
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
----
- v4:
-  - no update
- v3:
-  - no update
- v2:
-  - Put some codes on one line
----
- drivers/media/platform/aspeed-video.c | 31 +++++++++++----------------
- 1 file changed, 12 insertions(+), 19 deletions(-)
+Hi all,
 
-diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
-index d5f77b205175..c241038ee27c 100644
---- a/drivers/media/platform/aspeed-video.c
-+++ b/drivers/media/platform/aspeed-video.c
-@@ -156,26 +156,22 @@
- #define  VE_SRC_LR_EDGE_DET_NO_H	BIT(13)
- #define  VE_SRC_LR_EDGE_DET_NO_DISP	BIT(14)
- #define  VE_SRC_LR_EDGE_DET_NO_CLK	BIT(15)
--#define  VE_SRC_LR_EDGE_DET_RT_SHF	16
--#define  VE_SRC_LR_EDGE_DET_RT		GENMASK(27, VE_SRC_LR_EDGE_DET_RT_SHF)
-+#define  VE_SRC_LR_EDGE_DET_RT		GENMASK(27, 16)
- #define  VE_SRC_LR_EDGE_DET_INTERLACE	BIT(31)
- 
- #define VE_SRC_TB_EDGE_DET		0x094
- #define  VE_SRC_TB_EDGE_DET_TOP		GENMASK(12, 0)
--#define  VE_SRC_TB_EDGE_DET_BOT_SHF	16
--#define  VE_SRC_TB_EDGE_DET_BOT		GENMASK(28, VE_SRC_TB_EDGE_DET_BOT_SHF)
-+#define  VE_SRC_TB_EDGE_DET_BOT		GENMASK(28, 16)
- 
- #define VE_MODE_DETECT_STATUS		0x098
- #define  VE_MODE_DETECT_H_PERIOD	GENMASK(11, 0)
--#define  VE_MODE_DETECT_V_LINES_SHF	16
--#define  VE_MODE_DETECT_V_LINES		GENMASK(27, VE_MODE_DETECT_V_LINES_SHF)
-+#define  VE_MODE_DETECT_V_LINES		GENMASK(27, 16)
- #define  VE_MODE_DETECT_STATUS_VSYNC	BIT(28)
- #define  VE_MODE_DETECT_STATUS_HSYNC	BIT(29)
- 
- #define VE_SYNC_STATUS			0x09c
- #define  VE_SYNC_STATUS_HSYNC		GENMASK(11, 0)
--#define  VE_SYNC_STATUS_VSYNC_SHF	16
--#define  VE_SYNC_STATUS_VSYNC		GENMASK(27, VE_SYNC_STATUS_VSYNC_SHF)
-+#define  VE_SYNC_STATUS_VSYNC		GENMASK(27, 16)
- 
- #define VE_H_TOTAL_PIXELS		0x0A0
- 
-@@ -988,23 +984,20 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 		sync = aspeed_video_read(video, VE_SYNC_STATUS);
- 		htotal = aspeed_video_read(video, VE_H_TOTAL_PIXELS);
- 
--		video->frame_bottom = (src_tb_edge & VE_SRC_TB_EDGE_DET_BOT) >>
--			VE_SRC_TB_EDGE_DET_BOT_SHF;
--		video->frame_top = src_tb_edge & VE_SRC_TB_EDGE_DET_TOP;
-+		video->frame_bottom = FIELD_GET(VE_SRC_TB_EDGE_DET_BOT, src_tb_edge);
-+		video->frame_top = FIELD_GET(VE_SRC_TB_EDGE_DET_TOP, src_tb_edge);
- 		det->vfrontporch = video->frame_top;
--		det->vbackporch = ((mds & VE_MODE_DETECT_V_LINES) >>
--			VE_MODE_DETECT_V_LINES_SHF) - video->frame_bottom;
--		det->vsync = (sync & VE_SYNC_STATUS_VSYNC) >>
--			VE_SYNC_STATUS_VSYNC_SHF;
-+		det->vbackporch = FIELD_GET(VE_MODE_DETECT_V_LINES, mds) -
-+			video->frame_bottom;
-+		det->vsync = FIELD_GET(VE_SYNC_STATUS_VSYNC, sync);
- 		if (video->frame_top > video->frame_bottom)
- 			continue;
- 
--		video->frame_right = (src_lr_edge & VE_SRC_LR_EDGE_DET_RT) >>
--			VE_SRC_LR_EDGE_DET_RT_SHF;
--		video->frame_left = src_lr_edge & VE_SRC_LR_EDGE_DET_LEFT;
-+		video->frame_right = FIELD_GET(VE_SRC_LR_EDGE_DET_RT, src_lr_edge);
-+		video->frame_left = FIELD_GET(VE_SRC_LR_EDGE_DET_LEFT, src_lr_edge);
- 		det->hfrontporch = video->frame_left;
- 		det->hbackporch = htotal - video->frame_right;
--		det->hsync = sync & VE_SYNC_STATUS_HSYNC;
-+		det->hsync = FIELD_GET(VE_SYNC_STATUS_HSYNC, sync);
- 		if (video->frame_left > video->frame_right)
- 			continue;
- 
--- 
-2.25.1
+My qemu boot test of a powerpc pseries_le_defconfig kernel produces the
+following trace:
 
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 0 at kernel/trace/trace_events.c:417 trace_event_raw_i=
+nit+0x194/0x730
+Modules linked in:
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc1 #2
+NIP:  c0000000002bdbb4 LR: c0000000002bdcb0 CTR: c0000000002bdb70
+REGS: c00000000278ba10 TRAP: 0700   Not tainted  (5.17.0-rc1)
+MSR:  8000000002021033 <SF,VEC,ME,IR,DR,RI,LE>  CR: 44000282  XER: 20000000
+CFAR: c0000000002bdb38 IRQMASK: 1=20
+GPR00: c0000000002bdc98 c00000000278bcb0 c00000000278d300 0000000000000000=
+=20
+GPR04: 000000000000002c 0000000000000005 000000000000023f c0000000002bdb3c=
+=20
+GPR08: 0000000000000000 0000000000000000 0000000000000000 0000000000000000=
+=20
+GPR12: c0000000002bda20 c000000002960000 0000000000000000 0000000000000000=
+=20
+GPR16: 0000000002bf00d0 000000007e68ebc8 ffffffffffffffff 000508b58019388f=
+=20
+GPR20: 0000000000000001 c000000000faf800 0000000000000005 0000000000000000=
+=20
+GPR24: 0000000000000000 0000000000000003 0000000000000000 0000000000000000=
+=20
+GPR28: c0000000026fefc0 c0000000026f8050 0000000000000251 c0000000026f82a1=
+=20
+NIP [c0000000002bdbb4] trace_event_raw_init+0x194/0x730
+LR [c0000000002bdcb0] trace_event_raw_init+0x290/0x730
+Call Trace:
+[c00000000278bcb0] [c0000000002bdc98] trace_event_raw_init+0x278/0x730 (unr=
+eliable)
+[c00000000278bda0] [c0000000002badb8] event_init+0x68/0xf0
+[c00000000278be10] [c000000002033990] trace_event_init+0xc8/0x334
+[c00000000278beb0] [c000000002033004] trace_init+0x18/0x2c
+[c00000000278bed0] [c0000000020042e0] start_kernel+0x590/0x8cc
+[c00000000278bf90] [c00000000000d19c] start_here_common+0x1c/0x600
+Instruction dump:
+41800438 60000000 60420000 3bde0001 7fdf07b4 7ffdfa14 891f0000 710a00ff=20
+4082ff5c 2c390000 38600000 41820320 <0fe00000> f9c10060 f9e10068 fa010070=20
+---[ end trace 0000000000000000 ]---
+event svc_xprt_accept has unsafe dereference of argument 1
+print_fmt: "server=3D%pISpc client=3D%pISpc flags=3D%s protocol=3D%s servic=
+e=3D%s", __get_sockaddr(server), __get_sockaddr(client), __print_flags(REC-=
+>flags, "|", { (1UL << 0), "XPT_BUSY"}, { (1UL << 1), "XPT_CONN"}, { (1UL <=
+< 2), "XPT_CLOSE"}, { (1UL << 3), "XPT_DATA"}, { (1UL << 4), "XPT_TEMP"}, {=
+ (1UL << 6), "XPT_DEAD"}, { (1UL << 7), "XPT_CHNGBUF"}, { (1UL << 8), "XPT_=
+DEFERRED"}, { (1UL << 9), "XPT_OLD"}, { (1UL << 10), "XPT_LISTENER"}, { (1U=
+L << 11), "XPT_CACHE_AUTH"}, { (1UL << 12), "XPT_LOCAL"}, { (1UL << 13), "X=
+PT_KILL_TEMP"}, { (1UL << 14), "XPT_CONG_CTRL"}), __get_str(protocol), __ge=
+t_str(service)
+event svc_xprt_free has unsafe dereference of argument 1
+print_fmt: "server=3D%pISpc client=3D%pISpc flags=3D%s", __get_sockaddr(ser=
+ver), __get_sockaddr(client), __print_flags(REC->flags, "|", { (1UL << 0), =
+"XPT_BUSY"}, { (1UL << 1), "XPT_CONN"}, { (1UL << 2), "XPT_CLOSE"}, { (1UL =
+<< 3), "XPT_DATA"}, { (1UL << 4), "XPT_TEMP"}, { (1UL << 6), "XPT_DEAD"}, {=
+ (1UL << 7), "XPT_CHNGBUF"}, { (1UL << 8), "XPT_DEFERRED"}, { (1UL << 9), "=
+XPT_OLD"}, { (1UL << 10), "XPT_LISTENER"}, { (1UL << 11), "XPT_CACHE_AUTH"}=
+, { (1UL << 12), "XPT_LOCAL"}, { (1UL << 13), "XPT_KILL_TEMP"}, { (1UL << 1=
+4), "XPT_CONG_CTRL"})
+event svc_xprt_detach has unsafe dereference of argument 1
+print_fmt: "server=3D%pISpc client=3D%pISpc flags=3D%s", __get_sockaddr(ser=
+ver), __get_sockaddr(client), __print_flags(REC->flags, "|", { (1UL << 0), =
+"XPT_BUSY"}, { (1UL << 1), "XPT_CONN"}, { (1UL << 2), "XPT_CLOSE"}, { (1UL =
+<< 3), "XPT_DATA"}, { (1UL << 4), "XPT_TEMP"}, { (1UL << 6), "XPT_DEAD"}, {=
+ (1UL << 7), "XPT_CHNGBUF"}, { (1UL << 8), "XPT_DEFERRED"}, { (1UL << 9), "=
+XPT_OLD"}, { (1UL << 10), "XPT_LISTENER"}, { (1UL << 11), "XPT_CACHE_AUTH"}=
+, { (1UL << 12), "XPT_LOCAL"}, { (1UL << 13), "XPT_KILL_TEMP"}, { (1UL << 1=
+4), "XPT_CONG_CTRL"})
+event svc_xprt_close has unsafe dereference of argument 1
+print_fmt: "server=3D%pISpc client=3D%pISpc flags=3D%s", __get_sockaddr(ser=
+ver), __get_sockaddr(client), __print_flags(REC->flags, "|", { (1UL << 0), =
+"XPT_BUSY"}, { (1UL << 1), "XPT_CONN"}, { (1UL << 2), "XPT_CLOSE"}, { (1UL =
+<< 3), "XPT_DATA"}, { (1UL << 4), "XPT_TEMP"}, { (1UL << 6), "XPT_DEAD"}, {=
+ (1UL << 7), "XPT_CHNGBUF"}, { (1UL << 8), "XPT_DEFERRED"}, { (1UL << 9), "=
+XPT_OLD"}, { (1UL << 10), "XPT_LISTENER"}, { (1UL << 11), "XPT_CACHE_AUTH"}=
+, { (1UL << 12), "XPT_LOCAL"}, { (1UL << 13), "XPT_KILL_TEMP"}, { (1UL << 1=
+4), "XPT_CONG_CTRL"})
+event svc_xprt_no_write_space has unsafe dereference of argument 1
+print_fmt: "server=3D%pISpc client=3D%pISpc flags=3D%s", __get_sockaddr(ser=
+ver), __get_sockaddr(client), __print_flags(REC->flags, "|", { (1UL << 0), =
+"XPT_BUSY"}, { (1UL << 1), "XPT_CONN"}, { (1UL << 2), "XPT_CLOSE"}, { (1UL =
+<< 3), "XPT_DATA"}, { (1UL << 4), "XPT_TEMP"}, { (1UL << 6), "XPT_DEAD"}, {=
+ (1UL << 7), "XPT_CHNGBUF"}, { (1UL << 8), "XPT_DEFERRED"}, { (1UL << 9), "=
+XPT_OLD"}, { (1UL << 10), "XPT_LISTENER"}, { (1UL << 11), "XPT_CACHE_AUTH"}=
+, { (1UL << 12), "XPT_LOCAL"}, { (1UL << 13), "XPT_KILL_TEMP"}, { (1UL << 1=
+4), "XPT_CONG_CTRL"})
+event svc_xprt_dequeue has unsafe dereference of argument 1
+print_fmt: "server=3D%pISpc client=3D%pISpc flags=3D%s wakeup-us=3D%lu", __=
+get_sockaddr(server), __get_sockaddr(client), __print_flags(REC->flags, "|"=
+, { (1UL << 0), "XPT_BUSY"}, { (1UL << 1), "XPT_CONN"}, { (1UL << 2), "XPT_=
+CLOSE"}, { (1UL << 3), "XPT_DATA"}, { (1UL << 4), "XPT_TEMP"}, { (1UL << 6)=
+, "XPT_DEAD"}, { (1UL << 7), "XPT_CHNGBUF"}, { (1UL << 8), "XPT_DEFERRED"},=
+ { (1UL << 9), "XPT_OLD"}, { (1UL << 10), "XPT_LISTENER"}, { (1UL << 11), "=
+XPT_CACHE_AUTH"}, { (1UL << 12), "XPT_LOCAL"}, { (1UL << 13), "XPT_KILL_TEM=
+P"}, { (1UL << 14), "XPT_CONG_CTRL"}), REC->wakeup
+event svc_xprt_enqueue has unsafe dereference of argument 1
+print_fmt: "server=3D%pISpc client=3D%pISpc flags=3D%s pid=3D%d", __get_soc=
+kaddr(server), __get_sockaddr(client), __print_flags(REC->flags, "|", { (1U=
+L << 0), "XPT_BUSY"}, { (1UL << 1), "XPT_CONN"}, { (1UL << 2), "XPT_CLOSE"}=
+, { (1UL << 3), "XPT_DATA"}, { (1UL << 4), "XPT_TEMP"}, { (1UL << 6), "XPT_=
+DEAD"}, { (1UL << 7), "XPT_CHNGBUF"}, { (1UL << 8), "XPT_DEFERRED"}, { (1UL=
+ << 9), "XPT_OLD"}, { (1UL << 10), "XPT_LISTENER"}, { (1UL << 11), "XPT_CAC=
+HE_AUTH"}, { (1UL << 12), "XPT_LOCAL"}, { (1UL << 13), "XPT_KILL_TEMP"}, { =
+(1UL << 14), "XPT_CONG_CTRL"}), REC->pid
+event svc_xprt_create_err has unsafe dereference of argument 1
+print_fmt: "addr=3D%pISpc program=3D%s protocol=3D%s error=3D%ld", __get_so=
+ckaddr(addr), __get_str(program), __get_str(protocol), REC->error
+event svc_stats_latency has unsafe dereference of argument 2
+print_fmt: "xid=3D0x%08x server=3D%pISpc client=3D%pISpc proc=3D%s execute-=
+us=3D%lu", REC->xid, __get_sockaddr(server), __get_sockaddr(client), __get_=
+str(procedure), REC->execute
+event svc_send has unsafe dereference of argument 2
+print_fmt: "xid=3D0x%08x server=3D%pISpc client=3D%pISpc status=3D%d flags=
+=3D%s", REC->xid, __get_sockaddr(server), __get_sockaddr(client), REC->stat=
+us, __print_flags(REC->flags, "|", { ((((1UL))) << ((0))), "SECURE" }, { ((=
+((1UL))) << ((1))), "LOCAL" }, { ((((1UL))) << ((2))), "USEDEFERRAL" }, { (=
+(((1UL))) << ((3))), "DROPME" }, { ((((1UL))) << ((4))), "SPLICE_OK" }, { (=
+(((1UL))) << ((5))), "VICTIM" }, { ((((1UL))) << ((6))), "BUSY" }, { ((((1U=
+L))) << ((7))), "DATA" })
+event svc_drop has unsafe dereference of argument 2
+print_fmt: "xid=3D0x%08x server=3D%pISpc client=3D%pISpc flags=3D%s", REC->=
+xid, __get_sockaddr(server), __get_sockaddr(client), __print_flags(REC->fla=
+gs, "|", { ((((1UL))) << ((0))), "SECURE" }, { ((((1UL))) << ((1))), "LOCAL=
+" }, { ((((1UL))) << ((2))), "USEDEFERRAL" }, { ((((1UL))) << ((3))), "DROP=
+ME" }, { ((((1UL))) << ((4))), "SPLICE_OK" }, { ((((1UL))) << ((5))), "VICT=
+IM" }, { ((((1UL))) << ((6))), "BUSY" }, { ((((1UL))) << ((7))), "DATA" })
+event svc_defer has unsafe dereference of argument 2
+print_fmt: "xid=3D0x%08x server=3D%pISpc client=3D%pISpc flags=3D%s", REC->=
+xid, __get_sockaddr(server), __get_sockaddr(client), __print_flags(REC->fla=
+gs, "|", { ((((1UL))) << ((0))), "SECURE" }, { ((((1UL))) << ((1))), "LOCAL=
+" }, { ((((1UL))) << ((2))), "USEDEFERRAL" }, { ((((1UL))) << ((3))), "DROP=
+ME" }, { ((((1UL))) << ((4))), "SPLICE_OK" }, { ((((1UL))) << ((5))), "VICT=
+IM" }, { ((((1UL))) << ((6))), "BUSY" }, { ((((1UL))) << ((7))), "DATA" })
+event svc_authenticate has unsafe dereference of argument 2
+print_fmt: "xid=3D0x%08x server=3D%pISpc client=3D%pISpc auth_res=3D%s auth=
+_stat=3D%s", REC->xid, __get_sockaddr(server), __get_sockaddr(client), __pr=
+int_symbolic(REC->svc_status, { 1, "SVC_GARBAGE" }, { 2, "SVC_SYSERR" }, { =
+3, "SVC_VALID" }, { 4, "SVC_NEGATIVE" }, { 5, "SVC_OK" }, { 6, "SVC_DROP" }=
+, { 7, "SVC_CLOSE" }, { 8, "SVC_DENIED" }, { 9, "SVC_PENDING" }, { 10, "SVC=
+_COMPLETE" }), __print_symbolic(REC->auth_stat, { RPC_AUTH_OK, "AUTH_OK" },=
+ { RPC_AUTH_BADCRED, "BADCRED" }, { RPC_AUTH_REJECTEDCRED, "REJECTEDCRED" }=
+, { RPC_AUTH_BADVERF, "BADVERF" }, { RPC_AUTH_REJECTEDVERF, "REJECTEDVERF" =
+}, { RPC_AUTH_TOOWEAK, "TOOWEAK" }, { RPCSEC_GSS_CREDPROBLEM, "GSS_CREDPROB=
+LEM" }, { RPCSEC_GSS_CTXPROBLEM, "GSS_CTXPROBLEM" })
+
+I have no idea what has caused this :-(  Maybe commit
+
+  5544d5318802 ("SUNRPC: Same as SVC_RQST_ENDPOINT, but without the xid")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/VaGFByGqpnPxdhPTqS7TR2I
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHvhQEACgkQAVBC80lX
+0Gy5zggAksZUJe8bw1ZWViHZU8wORBk4j2FkykU1/33nMLlMVw0QPRo3jEAtQjmx
+3zNAWerulXOj+7culael0z2n2Jql5WfL6Rh1naE02FWcKs40+YpeZoRDplL9hh/j
+6vepOv0eRXMr5SRsS5qxv4ABkrnPtD9AUKvHoNelG2v56chNwRBxXpM+ShQxwaMs
+0PFj34CVD9grBHPd5bc2cDs9yERplgegAMMx0ED/ddY+9vHXsPC33ljJGTvaoKhq
+0VI7PsOBVGNChpFblVplx9xmgNlLaZi2GkezJWdsPrID4HnLcM6bA7FC9PnUbpfk
+RzEe8pg/XwCtOkp3F4oQtLIhE8YYBQ==
+=izeq
+-----END PGP SIGNATURE-----
+
+--Sig_/VaGFByGqpnPxdhPTqS7TR2I--
