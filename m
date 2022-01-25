@@ -2,132 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63833C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353265AbiAYIgv (ORCPT
+        id S1378324AbiAYIhB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:36:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379114AbiAYIbl (ORCPT
+        Tue, 25 Jan 2022 03:37:01 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:16737 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378711AbiAYIcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:31:41 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57A2C0680BE
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 22:54:25 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id r65so55187236ybc.11
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 22:54:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=f1lt8YRK2UQEZww1aCXWt/M8bZ3Hv2L1sSVuMpXe9ZE=;
-        b=QPouWdi/gzbF4+mQxh5q1TeKToySu2NjOitRnPUXax5Cgxg1turxzuarhOurWA+BgV
-         GM4HAKi/SaY+OMAL2eCMMwbtrQuzCLjGuwsdeyfdaLo60DCjPeONA9VOyuWC48fEtmNB
-         +OrQP2LzVzC98B0mD1rjUkSR/vZlDNScYRGwKWiRcDs8UVL7Iglu2GTZySisXxkpGTga
-         rJ9YuTdnPmItK35VgXHcMNopyPebdxSc8yqnv8jdqJw3TL0LpTEGjUe3jE0YjS/eshT6
-         bXRRCCcQrQaHeG7OmC/Q6NNKdxHqboLOtyasA8Sbh5XMLOBqW9+u3NL3y4xDbfJYgSLT
-         GfCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=f1lt8YRK2UQEZww1aCXWt/M8bZ3Hv2L1sSVuMpXe9ZE=;
-        b=DEYIf2b3IGrmBAHANuKdjcDz3nGVE4f7SJTMeJYkLaErcIbXNlhomC7x6o8czhGknA
-         pSg3KejMs7XCWjuuK/mdGeIVSggDLJBf/DZYimm6j8K7YXw2wH6ZhpGO1eJ+C0/cMCuJ
-         4TviQ6znm6zEaO9FcJCRKeE0X/rBEKKAdxk2OF6snyWDiGOYYNMaY+ECM/vdKdnk3pS4
-         VpVO/JWj3MfvSYUdkt4ZSVviDGlttMxSUB1We8mSsTaDgvOlRoakxAR9yWbudcODh/SG
-         xSYZTduMt0VNv+YwK8aME0wYGkQvlm+EkItUGjIkbTB6AptRmVOQzOeXzJdQ7GBPaVrg
-         MnQg==
-X-Gm-Message-State: AOAM531wUUXUGIWHnfp3W+D7hedFHZ20UEo5gWpB7yKlboor9E+NotVc
-        3hKlUyioczRlHx94W08BQ97cY9ibK8MZgS5YWJsq9QJYKxzo0A==
-X-Google-Smtp-Source: ABdhPJzm36AyBsD/RrOvPYuWDEJgoIL4reeflPXvnGUumoJshfqgnpV0ijP7fzf3oaMG2VqWeOAcaHeguJI8MJK+IKc=
-X-Received: by 2002:a25:ada2:: with SMTP id z34mr20878578ybi.684.1643093664863;
- Mon, 24 Jan 2022 22:54:24 -0800 (PST)
-MIME-Version: 1.0
-References: <20220124184024.407936072@linuxfoundation.org> <12c8fd1e-431e-9a59-9e7a-e8d856c088b9@linaro.org>
-In-Reply-To: <12c8fd1e-431e-9a59-9e7a-e8d856c088b9@linaro.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 25 Jan 2022 12:24:13 +0530
-Message-ID: <CA+G9fYvokaTwyBTJvD73sO8+d56uEY6BDhXFS8O5iWhM-fxQFw@mail.gmail.com>
-Subject: Re: [PATCH 5.10 000/563] 5.10.94-rc1 review
+        Tue, 25 Jan 2022 03:32:48 -0500
+Received: from kwepemi100025.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jjg3s3ghGzZfP0;
+        Tue, 25 Jan 2022 16:28:41 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ kwepemi100025.china.huawei.com (7.221.188.158) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 16:32:34 +0800
+Received: from [10.174.178.208] (10.174.178.208) by
+ kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 16:32:33 +0800
+Subject: Re: [PATCH 5.4 000/320] 5.4.174-rc1 review
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, stable@vger.kernel.org,
-        =?UTF-8?B?RGFuaWVsIETDrWF6?= <daniel.diaz@linaro.org>,
-        Russell King <russell.king@oracle.com>,
-        Alan Maguire <alan.maguire@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        <linux-kernel@vger.kernel.org>
+CC:     <torvalds@linux-foundation.org>, <akpm@linux-foundation.org>,
+        <linux@roeck-us.net>, <shuah@kernel.org>, <patches@kernelci.org>,
+        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
+        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
+        <sudipm.mukherjee@gmail.com>, <stable@vger.kernel.org>
+References: <20220124183953.750177707@linuxfoundation.org>
+From:   Samuel Zou <zou_wei@huawei.com>
+Message-ID: <125f5bf8-0eb5-e80b-f078-536901ceb600@huawei.com>
+Date:   Tue, 25 Jan 2022 16:32:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.208]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 at 04:30, Daniel D=C3=ADaz <daniel.diaz@linaro.org> wro=
-te:
->
-> Hello!
->
-> On 1/24/22 12:36, Greg Kroah-Hartman wrote:
-> > This is the start of the stable review cycle for the 5.10.94 release.
-> > There are 563 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >       https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.10.94-rc1.gz
-> > or in the git tree and branch at:
-> >       git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.10.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
->
-
-Regressions detected on arm, arm64, i386, x86 on 5.10 and 5.15.
 
 
-> This is from arm64:
->    /builds/linux/arch/arm64/mm/extable.c: In function 'fixup_exception':
->    /builds/linux/arch/arm64/mm/extable.c:17:13: error: implicit declarati=
-on of function 'in_bpf_jit' [-Werror=3Dimplicit-function-declaration]
->       17 |         if (in_bpf_jit(regs))
->          |             ^~~~~~~~~~
->    cc1: some warnings being treated as errors
->    make[3]: *** [/builds/linux/scripts/Makefile.build:280: arch/arm64/mm/=
-extable.o] Error 1
->
-> And from Perf on arm, arm64, i386, x86:
->    libbpf.c: In function 'bpf_object__elf_collect':
->    libbpf.c:2873:31: error: invalid type argument of '->' (have 'GElf_Shd=
-r' {aka 'Elf64_Shdr'})
->     2873 |                         if (sh->sh_type !=3D SHT_PROGBITS)
->          |                               ^~
->    libbpf.c:2877:31: error: invalid type argument of '->' (have 'GElf_Shd=
-r' {aka 'Elf64_Shdr'})
->     2877 |                         if (sh->sh_type !=3D SHT_PROGBITS)
->          |                               ^~
->    make[4]: *** [/builds/linux/tools/build/Makefile.build:97: /home/tuxbu=
-ild/.cache/tuxmake/builds/current/staticobjs/libbpf.o] Error 1
+On 2022/1/25 2:39, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.174 release.
+> There are 320 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.174-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Due to this patch,
-arm64/bpf: Remove 128MB limit for BPF JIT programs
-commit b89ddf4cca43f1269093942cf5c4e457fd45c335 upstream.
+Tested on arm64 and x86 for 5.4.174-rc1,
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Kernel repo:
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+Branch: linux-5.4.y
+Version: 5.4.174-rc1
+Commit: 34a12dd3db7fef70acea32b5c7797ef9b9a8b196
+Compiler: gcc version 7.3.0 (GCC)
 
---
-Linaro LKFT
-https://lkft.linaro.org
+arm64:
+--------------------------------------------------------------------
+Testcase Result Summary:
+total: 9014
+passed: 9014
+failed: 0
+timeout: 0
+--------------------------------------------------------------------
+
+x86:
+--------------------------------------------------------------------
+Testcase Result Summary:
+total: 9014
+passed: 9014
+failed: 0
+timeout: 0
+--------------------------------------------------------------------
+
+Tested-by: Hulk Robot <hulkrobot@huawei.com>
