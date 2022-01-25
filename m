@@ -2,102 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA14AC4708A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB872C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1322279AbiAYDVb (ORCPT
+        id S1322317AbiAYDVc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:21:31 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:30299 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1319348AbiAYDIg (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:08:36 -0500
-Received: from kwepemi100026.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JjWxY0FZMzbk5W;
-        Tue, 25 Jan 2022 11:07:45 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi100026.china.huawei.com (7.221.188.60) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 11:08:34 +0800
-Received: from [10.174.178.208] (10.174.178.208) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 11:08:33 +0800
-Subject: Re: [PATCH 5.10 000/563] 5.10.94-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <torvalds@linux-foundation.org>, <akpm@linux-foundation.org>,
-        <linux@roeck-us.net>, <shuah@kernel.org>, <patches@kernelci.org>,
-        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
-        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
-        <sudipm.mukherjee@gmail.com>, <stable@vger.kernel.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-From:   Samuel Zou <zou_wei@huawei.com>
-Message-ID: <7d899479-ed31-2459-e2b4-311fa012f299@huawei.com>
-Date:   Tue, 25 Jan 2022 11:08:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.208]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+        Mon, 24 Jan 2022 22:21:32 -0500
+Received: from foss.arm.com ([217.140.110.172]:37322 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1319363AbiAYDIj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 22:08:39 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2D88B1FB;
+        Mon, 24 Jan 2022 19:08:37 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.42.113])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E671C3F766;
+        Mon, 24 Jan 2022 19:08:31 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org
+Cc:     akpm@linux-foundation.org, naoya.horiguchi@linux.dev,
+        rostedt@goodmis.org, Anshuman Khandual <anshuman.khandual@arm.com>,
+        Ingo Molnar <mingo@redhat.com>, Zi Yan <ziy@nvidia.com>,
+        Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V2 1/2] mm/migration: Add trace events for THP migrations
+Date:   Tue, 25 Jan 2022 08:38:24 +0530
+Message-Id: <1643080105-11416-2-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1643080105-11416-1-git-send-email-anshuman.khandual@arm.com>
+References: <1643080105-11416-1-git-send-email-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This adds two trace events for PMD based THP migration without split. These
+events closely follow the implementation details like setting and removing
+of PMD migration entries, which are essential operations for THP migration.
 
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Zi Yan <ziy@nvidia.com>
+Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ include/trace/events/thp.h | 27 +++++++++++++++++++++++++++
+ mm/huge_memory.c           |  5 +++++
+ 2 files changed, 32 insertions(+)
 
-On 2022/1/25 2:36, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.94 release.
-> There are 563 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.94-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+diff --git a/include/trace/events/thp.h b/include/trace/events/thp.h
+index ca3f2767828a..202b3e3e67ff 100644
+--- a/include/trace/events/thp.h
++++ b/include/trace/events/thp.h
+@@ -48,6 +48,33 @@ TRACE_EVENT(hugepage_update,
+ 	    TP_printk("hugepage update at addr 0x%lx and pte = 0x%lx clr = 0x%lx, set = 0x%lx", __entry->addr, __entry->pte, __entry->clr, __entry->set)
+ );
+ 
++DECLARE_EVENT_CLASS(migration_pmd,
++
++		TP_PROTO(unsigned long addr, unsigned long pmd),
++
++		TP_ARGS(addr, pmd),
++
++		TP_STRUCT__entry(
++			__field(unsigned long, addr)
++			__field(unsigned long, pmd)
++		),
++
++		TP_fast_assign(
++			__entry->addr = addr;
++			__entry->pmd = pmd;
++		),
++		TP_printk("addr=%lx, pmd=%lx", __entry->addr, __entry->pmd)
++);
++
++DEFINE_EVENT(migration_pmd, set_migration_pmd,
++	TP_PROTO(unsigned long addr, unsigned long pmd),
++	TP_ARGS(addr, pmd)
++);
++
++DEFINE_EVENT(migration_pmd, remove_migration_pmd,
++	TP_PROTO(unsigned long addr, unsigned long pmd),
++	TP_ARGS(addr, pmd)
++);
+ #endif /* _TRACE_THP_H */
+ 
+ /* This part must be outside protection */
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 406a3c28c026..ab49f9a3e420 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -39,6 +39,9 @@
+ #include <asm/pgalloc.h>
+ #include "internal.h"
+ 
++#define CREATE_TRACE_POINTS
++#include <trace/events/thp.h>
++
+ /*
+  * By default, transparent hugepage support is disabled in order to avoid
+  * risking an increased memory footprint for applications that are not
+@@ -3173,6 +3176,7 @@ void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
+ 	set_pmd_at(mm, address, pvmw->pmd, pmdswp);
+ 	page_remove_rmap(page, true);
+ 	put_page(page);
++	trace_set_migration_pmd(address, pmd_val(pmdswp));
+ }
+ 
+ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
+@@ -3206,5 +3210,6 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
+ 	if ((vma->vm_flags & VM_LOCKED) && !PageDoubleMap(new))
+ 		mlock_vma_page(new);
+ 	update_mmu_cache_pmd(vma, address, pvmw->pmd);
++	trace_remove_migration_pmd(address, pmd_val(pmde));
+ }
+ #endif
+-- 
+2.20.1
 
-Tested on arm64 and x86 for 5.10.94-rc1,
-
-Kernel repo:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-Branch: linux-5.10.y
-Version: 5.10.94-rc1
-Commit: 8688457e4545b8f49cf44e8bce83aff31db395f7
-Compiler: gcc version 7.3.0 (GCC)
-
-arm64:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9018
-passed: 9018
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-x86:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9018
-passed: 9018
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-Tested-by: Hulk Robot <hulkrobot@huawei.com>
