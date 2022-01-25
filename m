@@ -2,193 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 147FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31934C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384991AbiAYNEJ (ORCPT
+        id S1575358AbiAYNHK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:04:09 -0500
-Received: from mga02.intel.com ([134.134.136.20]:46661 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1574301AbiAYM6I (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:58:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643115488; x=1674651488;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=drsjVuY8z1grpOG0WDWezE+NIKu9MM0RBXPz+zXOdeA=;
-  b=akcYQKOOHYW5k18zfZRe4pXN98UGmMLezkc5bm/x/uZbGOiiPKqTNnnn
-   3k57V2j0jL4lh7VMVowiB2FdJ3RAep0D738+ccfBiwi2WYaS4T657KKo/
-   qipuvz7FsSeZp2uQ9MDgcN1LoFVxcsiLjzURpIJwOFgdJNvxpmm8GGWdZ
-   PvcdwzaK8udod2jjvpjU0bQGC9WgBuckit/4Tx1F8Y28x/ebHLbkyczbz
-   YToD26MDFJDU2qF37GWQZLebC9XE7U25wMRALTg2IUCUjjYBQcxQHXX3H
-   8shu6bH2Duje2l6yytf/JHpKU9dLbrNNUQ1125JCLtcv6HU7+M5MC5lTs
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="233662916"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="233662916"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 04:50:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="477093389"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 25 Jan 2022 04:50:54 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCLHh-000Jtt-Dv; Tue, 25 Jan 2022 12:50:53 +0000
-Date:   Tue, 25 Jan 2022 20:50:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Davidlohr Bueso <dave@stgolabs.net>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Song Liu <song@kernel.org>
-Subject: drivers/md/raid5.c:7055:9: sparse: sparse: cast removes address
- space '__percpu' of expression
-Message-ID: <202201252042.IYjJbxV8-lkp@intel.com>
+        Tue, 25 Jan 2022 08:07:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1575373AbiAYNEx (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 08:04:53 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD96C061779
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 05:04:51 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id p27so56709799lfa.1
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 05:04:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gnqs583Y3BfrRG808xRqv/vPmRDdR+9lKZ1Lg2jQfbI=;
+        b=BsaZ4GwHyazWq9JVPuDeG1vlH2x1tBbDiP475fIiL2IdIrJRDyXLfC+W8VEZgSYlAb
+         Vp9etEz/6tJ+DOc+vzVEQeMboHuHVGBZiYFbSnGsRAGCdEMdV4JzYS1vXhsjZOBZNhzS
+         b7tiENehrDtN465pMUWL4f0PDVmdtIKkKH27NEiEmmAQZsTfhnNhlix6PN/4mxkunLPy
+         0gxSYF0ETZtjJMeIhxqNvYGMUzycTXbkKKoSRJMHNmoGwCkvYrtHnysfgNnvskR68yqq
+         FlFpxvgRp5YNjRkqLMkclBX79z/nwhX+A0LQNzUMRjrqxv1rjqz1Q/i4SQRy4yivJ/oZ
+         7d5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gnqs583Y3BfrRG808xRqv/vPmRDdR+9lKZ1Lg2jQfbI=;
+        b=W6Ls/rAFUJ2VW73xg4cxY5kpYa5siI6FFcTH+uapY0ZMd0KtJIHEMEu5smM8xreFVF
+         19idL6cqgYox2U6TGLF2FzahnIc5WAWMDUzZ7qdYwdu5t44+eiD5plZG4kPPL070uZ49
+         R3gRPlHCmcVant3U9B7i+j7Wt+IETV6MtZ3cXDts9/8LtkLMDNY+5q9+XllvPMxOEDUC
+         PL84yRk5dfXuR9cnJk05RveZ+vvW9YWunYLrBQrCoYYsM6OzMtce1Ywx4lH3dimXbqZ2
+         0CYk9ENidpfE82XaZrF0srSUs2nK3W31LrA/TT/AgZjp4Jdz913N3Y2UHJayM3EpTs1H
+         hMwg==
+X-Gm-Message-State: AOAM533qP2LxEo6kQGXIKebGpla65+M3Ey5A6KPJLexVl2wP/00ovvC+
+        aNWiTluSn/XVXly0fEoiE7M=
+X-Google-Smtp-Source: ABdhPJzvIP3mbjCdT8pZEuhEz/3lHXJySNRPwqv2bHS10OOs2JPOZZGxLqBJw/HAN/JN6I3YiC0v+g==
+X-Received: by 2002:a05:6512:3ca0:: with SMTP id h32mr5383923lfv.244.1643115890029;
+        Tue, 25 Jan 2022 05:04:50 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.227.208])
+        by smtp.gmail.com with ESMTPSA id f20sm1202719ljk.73.2022.01.25.05.04.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 05:04:49 -0800 (PST)
+Message-ID: <fa0a2717-aca7-a323-2e57-93a9f7b8c371@gmail.com>
+Date:   Tue, 25 Jan 2022 16:04:48 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 05/10] staging: r8188eu: remove smaller sets of DBG_88E
+ calls from os_dep dir
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Phillip Potter <phil@philpotter.co.uk>, gregkh@linuxfoundation.org,
+        Larry.Finger@lwfinger.net, straube.linux@gmail.com,
+        martin@kaiser.cx, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20220124224415.831-1-phil@philpotter.co.uk>
+ <20220124224415.831-6-phil@philpotter.co.uk>
+ <67ddc4d7-e19f-7c9d-a4b7-4eb555830ea1@gmail.com>
+ <20220125125942.GS1978@kadam>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220125125942.GS1978@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   a08b41ab9e2e468647f78eb17c28e29b93006394
-commit: 770b1d216d7371c94c88713824da4be4bc39a4e0 md/raid5: play nice with PREEMPT_RT
-date:   3 weeks ago
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220125/202201252042.IYjJbxV8-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=770b1d216d7371c94c88713824da4be4bc39a4e0
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 770b1d216d7371c94c88713824da4be4bc39a4e0
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Hi Dan,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 1/25/22 15:59, Dan Carpenter wrote:
+> On Tue, Jan 25, 2022 at 03:48:32PM +0300, Pavel Skripkin wrote:
+>> Hi Phillip,
+>> 
+>> On 1/25/22 01:44, Phillip Potter wrote:
+>> > Remove all DBG_88E calls from the os_dep directory, other than those in
+>> > os_dep/ioctl_linux.c, as this contains almost 200 on its own so will be
+>> > done in a separate patch for ease of review. These calls do not conform
+>> > to kernel coding standards and are superfluous. Also restructure where
+>> > appropriate to remove no longer needed code left behind by removal of
+>> > these calls. This will allow the eventual removal of the DBG_88E macro
+>> > itself.
+>> > 
+>> > Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+>> > ---
+>> 
+>> [code snip]
+>> 
+>> > -	/* 2012-07-11 Move here to prevent the 8723AS-VAU BT auto
+>> > -	 * suspend influence */
+>> > -	if (usb_autopm_get_interface(pusb_intf) < 0)
+>> > -			DBG_88E("can't get autopm:\n");
+>> > -
+>> 
+>> Didn't you make a function change here? I didn't test and also didn't find
+>> any mentions of tests in cover letter.
+> 
+> It is obviously a bug.  Please avoid ask rhetorical questions or someone
+> will answer them.
+> 
+
+It isn't so obvious for me. Might be Phillip knows something about 
+8723AS-VAU BT (whatever it is) issue.
+
+I prefer not to say "it's an error", when I am not 100% sure :)
 
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/md/raid5.c: note: in included file:
-   drivers/md/raid5.h:271:14: sparse: sparse: array of flexible structures
-   drivers/md/raid5.c:641:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:641:40: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:641:40: sparse:    struct md_rdev *
-   drivers/md/raid5.c:643:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:643:32: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:643:32: sparse:    struct md_rdev *
-   drivers/md/raid5.c:667:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:667:40: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:667:40: sparse:    struct md_rdev *
-   drivers/md/raid5.c:669:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:669:32: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:669:32: sparse:    struct md_rdev *
-   drivers/md/raid5.c:1101:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:1101:25: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:1101:25: sparse:    struct md_rdev *
-   drivers/md/raid5.c:1103:24: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:1103:24: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:1103:24: sparse:    struct md_rdev *
-   drivers/md/raid5.c:3563:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:3563:32: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:3563:32: sparse:    struct md_rdev *
-   drivers/md/raid5.c:3689:48: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:3689:48: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:3689:48: sparse:    struct md_rdev *
-   drivers/md/raid5.c:3696:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:3696:32: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:3696:32: sparse:    struct md_rdev *
-   drivers/md/raid5.c:3718:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:3718:16: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:3718:16: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4646:24: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4646:24: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4646:24: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4657:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4657:32: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4657:32: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4704:49: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4704:49: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4704:49: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4717:49: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4717:49: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4717:49: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4726:49: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4726:49: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4726:49: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4748:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4748:40: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4748:40: sparse:    struct md_rdev *
-   drivers/md/raid5.c:5419:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:5419:16: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:5419:16: sparse:    struct md_rdev *
-   drivers/md/raid5.c:5422:24: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:5422:24: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:5422:24: sparse:    struct md_rdev *
->> drivers/md/raid5.c:7055:9: sparse: sparse: cast removes address space '__percpu' of expression
->> drivers/md/raid5.c:7055:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct lockdep_map *lock @@     got struct lockdep_map [noderef] __percpu * @@
-   drivers/md/raid5.c:7055:9: sparse:     expected struct lockdep_map *lock
-   drivers/md/raid5.c:7055:9: sparse:     got struct lockdep_map [noderef] __percpu *
->> drivers/md/raid5.c:7055:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct local_lock_t [usertype] *l @@     got struct local_lock_t [noderef] __percpu * @@
-   drivers/md/raid5.c:7055:9: sparse:     expected struct local_lock_t [usertype] *l
-   drivers/md/raid5.c:7055:9: sparse:     got struct local_lock_t [noderef] __percpu *
-   drivers/md/raid5.c:7808:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:7808:40: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:7808:40: sparse:    struct md_rdev *
-   drivers/md/raid5.c:8021:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:8021:25: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:8021:25: sparse:    struct md_rdev *
-   drivers/md/raid5.c:8037:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:8037:25: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:8037:25: sparse:    struct md_rdev *
-   drivers/md/raid5.c:1476:16: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:1476:39: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:2208:54: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:2419:16: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:2421:9: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:2422:9: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7031:23: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7031:23: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7032:9: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7033:16: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7034:9: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7039:34: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7040:17: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7041:22: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:97:9: sparse: sparse: context imbalance in 'raid5_quiesce' - different lock contexts for basic block
-
-vim +/__percpu +7055 drivers/md/raid5.c
-
-  7036	
-  7037	static int alloc_scratch_buffer(struct r5conf *conf, struct raid5_percpu *percpu)
-  7038	{
-  7039		if (conf->level == 6 && !percpu->spare_page) {
-  7040			percpu->spare_page = alloc_page(GFP_KERNEL);
-  7041			if (!percpu->spare_page)
-  7042				return -ENOMEM;
-  7043		}
-  7044	
-  7045		if (scribble_alloc(percpu,
-  7046				   max(conf->raid_disks,
-  7047				       conf->previous_raid_disks),
-  7048				   max(conf->chunk_sectors,
-  7049				       conf->prev_chunk_sectors)
-  7050				   / RAID5_STRIPE_SECTORS(conf))) {
-  7051			free_scratch_buffer(conf, percpu);
-  7052			return -ENOMEM;
-  7053		}
-  7054	
-> 7055		local_lock_init(&percpu->lock);
-  7056		return 0;
-  7057	}
-  7058	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+With regards,
+Pavel Skripkin
