@@ -2,88 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F03C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3451C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386759AbiAYN5o (ORCPT
+        id S1386553AbiAYOCM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:57:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42046 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385478AbiAYNyv (ORCPT
+        Tue, 25 Jan 2022 09:02:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1386886AbiAYN6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 08:54:51 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79CD4B81800;
-        Tue, 25 Jan 2022 13:54:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE166C340E0;
-        Tue, 25 Jan 2022 13:54:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643118882;
-        bh=4rIe1zqG4uqfonzu3BiGJCEJZPf0mpGzKQWhiuYB+xc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WEl+jx3XcfxdD1HyyZsL5xuZY0ecR9GJgiqCB5aw7sQJ5O+wkpfQeXbBaCp93Ex30
-         bsxfHIh9sUnNOSpAOjQCUEpn8i0zikJOkxKjMJUT4N+yqQl08CV1/vdwA3GFZvFt+t
-         Bck5npqcB2YiloVpGWVdiT6Viuy7zh8mVstQH9EDBvUdTZkhJ2MxLaqkP21aY6QwAn
-         AhJhLf10J5U98pDwrpCI2IDx7e2ycsrQyzyZrOhi6AED5yLtLCXeWdpA6luZdkbdea
-         cfzC5v/CynRTp79nN4Ybri/FrTWSWi3ETPHstcek2W210bHDJNmdX11pyWkIvzC9rx
-         jbVmYRVUrJr0A==
-Date:   Tue, 25 Jan 2022 13:54:36 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Alim Akhtar <alim.akhtar@samsung.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linus.walleij@linaro.org,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
-        andi@etezian.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] Add FSD SPI support
-Message-ID: <YfABHDjdTgxytcUY@sirena.org.uk>
-References: <CGME20220125032811epcas5p3ef7b2f4e4906c1da8ccb4a0b3ed9a591@epcas5p3.samsung.com>
- <20220125031604.76009-1-alim.akhtar@samsung.com>
+        Tue, 25 Jan 2022 08:58:47 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DD9C061744
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 05:58:46 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id x23so9973454lfc.0
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 05:58:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4t35tkSfhawZj3YdmXeypgJh5HQgRVLYdhSyxfOKLTU=;
+        b=u85tLHy1j+MBDPRG6pUcVnt8usiu3geVBkYlAX+KvLLDhkRuW5txGMJrgl8RWApWVP
+         KsiHdEUru6gtGc69w3lWx4SAB3F+RML896b2tUaoAFAmE+qkQF30hxUt37HhargEVIIi
+         fDaimZ6yC1KFgz8LhshXO3L1/ngUK7PpOSdGnbNnBJsjRrZUJgT1vJ8weuOBsl3UY12G
+         KhtPYvAIvqv9xYEQ+d4FNHFZAU4F9YICgzW+LqM4A4QkRKDnbRW0UPcHwjLT91Kk4MIX
+         DL5upOIhDvPBINtxHsq/X/rCkpHIKm/rSJzpiYFB3ldyKBA5eaXL5KwIEp2aXqA++WDJ
+         T/nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4t35tkSfhawZj3YdmXeypgJh5HQgRVLYdhSyxfOKLTU=;
+        b=VH+wrE+H/x7qFYjnRwuztGTqEo6TW7LDDBfML0neidKx7Yc77YjNOhqIFrEnMhQ/Sq
+         aRXcOzRykNv5BMlQSxriZtjPsYUhjsXWL+wQnLdu9sVmUOCY15nDToGlJFUoLtPp6fa8
+         RAjohbwUEMSNfm8TcOk4zuCr+luAhGdMK202pAkFA+ItElV0nKK7RfZ0WDWqs4UKrALd
+         QQLK9TdBOwnNVJ8x6qQjpeICy9vWwOjkiYvxoUb7y4Hh9rX9zPY0X/2s9BOO+Bg3xfC7
+         ISxehZY7L1M1En1onytKUuFFZXLMsIdAMeiKS6/WnE+O1dIw6JusA8FwB/RBP/VgyJXw
+         NUiQ==
+X-Gm-Message-State: AOAM530wobzkymLYmgDlxfMLjJTQgjXWRIKo233+OyBfye13mJ9oSMr/
+        5Q0gkrZxFExJKH8yh37CbG2KzQ==
+X-Google-Smtp-Source: ABdhPJzS/I+6lscy9Eg1GYbSwvsvywkknT8P6cHPDwk98dijkuNaRB7GfDzGKtrG0LQtwkz7qNGUgQ==
+X-Received: by 2002:a05:6512:785:: with SMTP id x5mr15447646lfr.614.1643119124417;
+        Tue, 25 Jan 2022 05:58:44 -0800 (PST)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id a4sm1500028lfg.31.2022.01.25.05.58.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 05:58:43 -0800 (PST)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 355B7103C0E; Tue, 25 Jan 2022 16:59:17 +0300 (+03)
+Date:   Tue, 25 Jan 2022 16:59:17 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Khalid Aziz <khalid.aziz@oracle.com>, akpm@linux-foundation.org,
+        longpeng2@huawei.com, arnd@arndb.de, dave.hansen@linux.intel.com,
+        david@redhat.com, rppt@kernel.org, surenb@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
+Message-ID: <20220125135917.ezi6itozrchsdcxg@box.shutemov.name>
+References: <cover.1642526745.git.khalid.aziz@oracle.com>
+ <20220125114212.ks2qtncaahi6foan@box.shutemov.name>
+ <Ye/5yUyEqO0ws0G5@casper.infradead.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6JkcGt5fzoOL7xil"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220125031604.76009-1-alim.akhtar@samsung.com>
-X-Cookie: Formatted to fit your screen.
+In-Reply-To: <Ye/5yUyEqO0ws0G5@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jan 25, 2022 at 01:23:21PM +0000, Matthew Wilcox wrote:
+> On Tue, Jan 25, 2022 at 02:42:12PM +0300, Kirill A. Shutemov wrote:
+> > I wounder if we can get away with zero-API here: we can transparently
+> > create/use shared page tables for any inode on mmap(MAP_SHARED) as long as
+> > size and alignment is sutiable. Page tables will be linked to the inode
+> > and will be freed when the last of such mapping will go away. I don't see
+> > a need in new syscalls of flags to existing one.
+> 
+> That's how HugeTLBfs works today, right?  Would you want that mechanism
+> hoisted into the real MM?  Because my plan was the opposite -- remove it
+> from the shadow MM once mshare() is established.
 
---6JkcGt5fzoOL7xil
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I hate HugeTLBfs because it is a special place with own rules. mshare() as
+it proposed creates a new special place. I don't like this.
 
-On Tue, Jan 25, 2022 at 08:46:01AM +0530, Alim Akhtar wrote:
+It's better to find a way to integrate the feature natively into core-mm
+and make as much users as possible to benefit from it.
 
-> Note: This series is depended on [1] patches which adds
-> support of FSD SoC and on Krzysztof's v6 [2] of spi schema changes
->=20
-> [1] https://lkml.org/lkml/2022/1/24/583
-> [2] https://lkml.org/lkml/2022/1/24/120
+I think zero-API approach (plus madvise() hints to tweak it) is worth
+considering.
 
-Please resend this when it can be applied, either wait until the
-dependencies are in place or rebase on top of current code.  In general
-only build time dependencies matter here, the SoC support being merged
-shouldn't be an issue one way or another.
-
---6JkcGt5fzoOL7xil
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHwARsACgkQJNaLcl1U
-h9CrDgf/XVhh2NrG4TbUGu2fJfgKzSEfgDJWYGaXXHThEbTw8/2XQbUYZ1WCLXcT
-SPdwv/cJEHFV4x3vjTyf99wE56WhowWyTFG6ubBr7AgMr1oM4nb2En6zrJChgqPd
-sI0AdFMZEh4z3CohEc4xQL8Z9PZZMXyI6DMv+OHIzYk+QYal9jXj7Hj2DEKjjRE+
-2RzmU1d3rTYHZSgaHi0yDetG+PzLqH75Hv+VuYWBuBeBoughWBk/Z0IpS2tglA4Q
-n7yrOFg805GgduKJjz5PefNDka0XmUMFlpFgfw8xhrlIPTvb1KaKvUu4iSyrJJPg
-J7INAl0E2QXPIwz8YrixYxvy8SrP/A==
-=Itzz
------END PGP SIGNATURE-----
-
---6JkcGt5fzoOL7xil--
+-- 
+ Kirill A. Shutemov
