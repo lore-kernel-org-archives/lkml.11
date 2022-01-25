@@ -2,65 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62058C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD271C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245143AbiAYGVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:21:06 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:57124 "EHLO
+        id S244544AbiAYGVn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 01:21:43 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:57196 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239023AbiAYGQy (ORCPT
+        with ESMTP id S244269AbiAYGSX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 01:16:54 -0500
+        Tue, 25 Jan 2022 01:18:23 -0500
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 86F9F212CA;
-        Tue, 25 Jan 2022 06:16:51 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 1280221997;
+        Tue, 25 Jan 2022 06:18:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643091411; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1643091502; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=A0IYK4txmrAqE9dKMwPSEvnRaOWt5ESVwDa2uLogNA0=;
-        b=AthH7C3PjONofgKMApmvZoKHcUA++pVPLCTmQ41SyCBT52DHx6YqBHedJ6KMSEd95lMUGg
-        KSsgaj90jk6Mi8TXQ0LPQxORACRBbtcBrBHPsoub2Nh8pDFkSs4urJ4mLZUspHbiXTJIX1
-        PPkcYWrVI8wo3L5TLA+zz6NeqGUpUvY=
+        bh=okVdD3yXH7+EfR/ObVe5yV4UjeKzNbRn/qqr4s3wyKU=;
+        b=M4QhN/qEuhm28gnXfRnLcVlKnsZWajHT5wNfgxX36DKuDFgv17pPKjClihfZIDllxFE8oV
+        1hd5QjX84LL6vwDYPpCGyXmHAfqwWQBKA7qrcBq5hdR7hIJ6ftfhdrtYsiHSTB5/xkC9Fu
+        y+nEdFceiMJsIeVSGmd0kLN30dDsjp0=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643091411;
+        s=susede2_ed25519; t=1643091502;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=A0IYK4txmrAqE9dKMwPSEvnRaOWt5ESVwDa2uLogNA0=;
-        b=/X8GJWsWh8oVBy5Jf8JY06e33U936gAWJ9OiT6dDmjH7mSwVGB9lhpNeNvC9W8eyw85YFc
-        qyuUyblvlkP/70AQ==
+        bh=okVdD3yXH7+EfR/ObVe5yV4UjeKzNbRn/qqr4s3wyKU=;
+        b=Y7mRw/syuRqFPLTMRviaAOOdbjesn5TCtBm/jZsGvSjtAq2i+VlEzQX/sDC22Axj4wYPwZ
+        OI0HvjWu0oFM/dBQ==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7481013D7C;
-        Tue, 25 Jan 2022 06:16:51 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 048C713D7C;
+        Tue, 25 Jan 2022 06:18:22 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id 6FXfG9OV72FhdAAAMHmgww
-        (envelope-from <osalvador@suse.de>); Tue, 25 Jan 2022 06:16:51 +0000
+        id 07HhAC6W72HidAAAMHmgww
+        (envelope-from <osalvador@suse.de>); Tue, 25 Jan 2022 06:18:22 +0000
 MIME-Version: 1.0
-Date:   Tue, 25 Jan 2022 07:16:51 +0100
+Date:   Tue, 25 Jan 2022 07:18:21 +0100
 From:   Oscar Salvador <osalvador@suse.de>
-To:     Zi Yan <ziy@nvidia.com>
-Cc:     Mel Gorman <mgorman@techsingularity.net>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mike Rapoport <rppt@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] mm: page_alloc: avoid merging non-fallbackable pageblocks
- with others.
-In-Reply-To: <20220124175957.1261961-1-zi.yan@sent.com>
-References: <20220124175957.1261961-1-zi.yan@sent.com>
+To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
+Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] mm, hwpoison: remove obsolete comment
+In-Reply-To: <20220125025601.3054511-1-naoya.horiguchi@linux.dev>
+References: <20220125025601.3054511-1-naoya.horiguchi@linux.dev>
 User-Agent: Roundcube Webmail
-Message-ID: <58f3a261fbd1c8480ce2e64e8543e466@suse.de>
+Message-ID: <e952b85b5511fa23be3141466be0f4e2@suse.de>
 X-Sender: osalvador@suse.de
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
@@ -69,24 +68,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-24 18:59, Zi Yan wrote:
-> From: Zi Yan <ziy@nvidia.com>
+On 2022-01-25 03:56, Naoya Horiguchi wrote:
+> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 > 
-> This is done in addition to MIGRATE_ISOLATE pageblock merge avoidance.
-> It prepares for the upcoming removal of the MAX_ORDER-1 alignment
-> requirement for CMA and alloc_contig_range().
+> With the introduction of mf_mutex, most of memory error handling
+> process is mutually exclusive, so the in-line comment about
+> subtlety about double-checking PageHWPoison is no more correct.
+> So remove it.
 > 
-> MIGRARTE_HIGHATOMIC should not merge with other migratetypes like
-> MIGRATE_ISOLATE and MIGRARTE_CMA[1], so this commit prevents that too.
-> 
-> Remove MIGRARTE_CMA and MIGRATE_ISOLATE from fallbacks list, since they
-> are never used.
-> 
-> [1] 
-> https://lore.kernel.org/linux-mm/20211130100853.GP3366@techsingularity.net/
-> 
-> Signed-off-by: Zi Yan <ziy@nvidia.com>
-> Acked-by: Mel Gorman <mgorman@techsingularity.net>
+> Suggested-by: Mike Kravetz <mike.kravetz@oracle.com>
+> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
 Reviewed-by: Oscar Salvador <osalvador@suse.de>
 
