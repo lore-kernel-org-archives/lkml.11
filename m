@@ -2,179 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 212AFC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457221AbiAYJOn (ORCPT
+        id S1457344AbiAYJPC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:14:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46604 "EHLO
+        Tue, 25 Jan 2022 04:15:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455337AbiAYJE0 (ORCPT
+        with ESMTP id S1455346AbiAYJE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 25 Jan 2022 04:04:26 -0500
-Received: from vulcan.natalenko.name (vulcan.natalenko.name [IPv6:2001:19f0:6c00:8846:5400:ff:fe0c:dfa0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574A3C061362;
-        Tue, 25 Jan 2022 00:48:21 -0800 (PST)
-Received: from spock.localnet (unknown [83.148.33.151])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id F0923D845E3;
-        Tue, 25 Jan 2022 09:48:16 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1643100497;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DNGmSgajX3AV7tac/NHRSny7ZKSXgCu8THN38jSPcJY=;
-        b=uVvpTJENujv89DwH1ydCqmX64nzGHF10t5qSormK78RR5uxmWBRxvlAfQ21pylsjVvnGcj
-        aJkXQBxb0eQeHVnNpV92VFOlITkBIXclTAiMTKakcLGVGwF+iYqN8UZacbblUxxCdtzqZJ
-        K6KFOu0kypEE5l0r6etqlVkwq6mr7Mk=
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Eugene Shalygin <eugene.shalygin@gmail.com>
-Cc:     andy.shevchenko@gmail.com, pauk.denis@gmail.com,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [ASUS EC Sensors v8 2/3] hwmon: (asus-ec-sensors) update documentation
-Date:   Tue, 25 Jan 2022 09:48:15 +0100
-Message-ID: <5534652.DvuYhMxLoT@natalenko.name>
-In-Reply-To: <20220124015658.687309-3-eugene.shalygin@gmail.com>
-References: <20220124015658.687309-1-eugene.shalygin@gmail.com> <20220124015658.687309-3-eugene.shalygin@gmail.com>
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4739BC061348
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:24 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id t7so7671105ljc.10
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Dl66e2A4mF2Qyvn7/VEBHhQt84ZUbQKV7qGHfbulC4U=;
+        b=Gsrzm15/kayF28SoC7sRkEvuny/rjuR0K2X1Z7cSFVnnayBUfiP4EzS1A2SOjEc6Hh
+         C7NTMRcc88pn/KoPjs2YMzKWjRjxmLg0jXOGRjhWVct3Tl0qq1V+JEFL75IbM/JUmsAM
+         tdrhqfsQXJCR4egAsQInQ8ZLP4VBZf3T+/bTepIzfgGapjSy+Jo9RjHYdxGOCkEOjvFf
+         7GZXD2q/iwvTy3FaLt/ZtdI8FpA7ZZInUvR4qxCp0oTiIr2xfzOySbV8bMt607oC1SfJ
+         7DsCIcTW0+tQfr3RglcbTYg/Mljf71FeLFk4M675o6azUTmUSWS9oipD0pox74oQEFRr
+         JN7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Dl66e2A4mF2Qyvn7/VEBHhQt84ZUbQKV7qGHfbulC4U=;
+        b=YGKZ0MSUnRk32Gmhkiq9/N2bsn1XAxHRpNQNJn33btwloep+rlLGc8MQsOEnvIoUig
+         ni33HHygMq0WxU/dMB7cdp6AfB1tYgO0ratd+EItZq2ghP3hwvOc5RJ52gZwNd/1X2Ru
+         VFgnSqnEkFxvRaHEDlke+KL9//RZAHGQVGqlZISr/rN3XaAMi1NpyjxsxgHGR5+QpyUX
+         bhtU8gahdaZaOp179CYYRfkagZYoTS9DjM7hekRUPoCEzknZzr/gONUp07/I54S1zeqc
+         +WqWZ1fZ6QPeZ2cFsEkfH3DCd0GeoHpfCPFic4LmBTK1e6ILasC87mMfrBiCLb1yXB+U
+         r44w==
+X-Gm-Message-State: AOAM532APJHVrK4Bt0ya8kmLJ5l3M/WtUfb4CSeDiUNPY0DbHf6rYVAT
+        4xZLlOWHjN6+bneTBykII6I5pA==
+X-Google-Smtp-Source: ABdhPJzCfueNt7EGxpjgAvt/Euq5JGSCE+aooEIdd/EgvAx3MMRVq/2nZFYCCNX0MnqsmbFtQII1ig==
+X-Received: by 2002:a05:651c:210c:: with SMTP id a12mr14427072ljq.285.1643100442603;
+        Tue, 25 Jan 2022 00:47:22 -0800 (PST)
+Received: from navi.cosmonova.net.ua ([95.67.24.131])
+        by smtp.gmail.com with ESMTPSA id q5sm1418944lfe.279.2022.01.25.00.47.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 00:47:22 -0800 (PST)
+From:   Andrew Melnychenko <andrew@daynix.com>
+To:     davem@davemloft.net, kuba@kernel.org, mst@redhat.com,
+        jasowang@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     yuri.benditovich@daynix.com, yan@daynix.com
+Subject: [RFC PATCH 2/5] driver/net/tun: Added features for USO.
+Date:   Tue, 25 Jan 2022 10:46:59 +0200
+Message-Id: <20220125084702.3636253-3-andrew@daynix.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220125084702.3636253-1-andrew@daynix.com>
+References: <20220125084702.3636253-1-andrew@daynix.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On pond=C4=9Bl=C3=AD 24. ledna 2022 2:56:44 CET Eugene Shalygin wrote:
-> Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
+Added support for USO4 and USO6, also added code for new ioctl TUNGETSUPPORTEDOFFLOADS.
+For now, to "enable" USO, it's required to set both USO4 and USO6 simultaneously.
+USO enables NETIF_F_GSO_UDP_L4.
 
-I believe some commit message is desired here.
+Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+---
+ drivers/net/tap.c | 18 ++++++++++++++++--
+ drivers/net/tun.c | 15 ++++++++++++++-
+ 2 files changed, 30 insertions(+), 3 deletions(-)
 
-> ---
->  Documentation/hwmon/asus_ec_sensors.rst     | 52 +++++++++++++++++++++
->  Documentation/hwmon/asus_wmi_ec_sensors.rst | 38 ---------------
->  2 files changed, 52 insertions(+), 38 deletions(-)
->  create mode 100644 Documentation/hwmon/asus_ec_sensors.rst
->  delete mode 100644 Documentation/hwmon/asus_wmi_ec_sensors.rst
->=20
-> diff --git a/Documentation/hwmon/asus_ec_sensors.rst b/Documentation/hwmo=
-n/asus_ec_sensors.rst
-> new file mode 100644
-> index 000000000000..b12ac7ebeb1a
-> --- /dev/null
-> +++ b/Documentation/hwmon/asus_ec_sensors.rst
-> @@ -0,0 +1,52 @@
-> +.. SPDX-License-Identifier: GPL-2.0-or-later
-> +
-> +Kernel driver asus_ec_sensors
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +Supported boards:
-> + * PRIME X570-PRO,
-> + * Pro WS X570-ACE,
-> + * ROG CROSSHAIR VIII DARK HERO,
-> + * ROG CROSSHAIR VIII FORMULA,
-> + * ROG CROSSHAIR VIII HERO,
-> + * ROG CROSSHAIR VIII IMPACT,
-> + * ROG STRIX B550-E GAMING,
-> + * ROG STRIX B550-I GAMING,
-> + * ROG STRIX X570-E GAMING,
-> + * ROG STRIX X570-F GAMING,
-> + * ROG STRIX X570-I GAMING
-> +
-> +Authors:
-> +    - Eugene Shalygin <eugene.shalygin@gmail.com>
-> +
-> +Description:
-> +------------
-> +ASUS mainboards publish hardware monitoring information via Super I/O
-> +chip and the ACPI embedded controller (EC) registers. Some of the sensors
-> +are only available via the EC.
-> +
-> +The driver is aware of and reads the following sensors:
-> +
-> +1. Chipset (PCH) temperature
-> +2. CPU package temperature
-> +3. Motherboard temperature
-> +4. Readings from the T_Sensor header
-> +5. VRM temperature
-> +6. CPU_Opt fan RPM
-> +7. VRM heatsink fan RPM
-> +8. Chipset fan RPM
-> +9. Readings from the "Water flow meter" header (RPM)
-> +10. Readings from the "Water In" and "Water Out" temperature headers
-> +11. CPU current
-> +
-> +Sensor values are read from EC registers, and to avoid race with the boa=
-rd
-> +firmware the driver acquires ACPI mutex, the one used by the WMI when its
-> +methods access the EC.
-> +
-> +Module Parameters
-> +-----------------
-> + * mutex_path: string
-> +		The driver holds path to the ACPI mutex for each board (actually,
-> +		the path is mostly identical for them). If ASUS changes this path
-> +		in a future BIOS update, this parameter can be used to override
-> +		the stored in the driver value until it gets updated.
-> diff --git a/Documentation/hwmon/asus_wmi_ec_sensors.rst b/Documentation/=
-hwmon/asus_wmi_ec_sensors.rst
-> deleted file mode 100644
-> index 1b287f229e86..000000000000
-> --- a/Documentation/hwmon/asus_wmi_ec_sensors.rst
-> +++ /dev/null
-> @@ -1,38 +0,0 @@
-> -.. SPDX-License-Identifier: GPL-2.0-or-later
-> -
-> -Kernel driver asus_wmi_ec_sensors
-> -=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> -
-> -Supported boards:
-> - * PRIME X570-PRO,
-> - * Pro WS X570-ACE,
-> - * ROG CROSSHAIR VIII DARK HERO,
-> - * ROG CROSSHAIR VIII FORMULA,
-> - * ROG CROSSHAIR VIII HERO,
-> - * ROG STRIX B550-E GAMING,
-> - * ROG STRIX B550-I GAMING,
-> - * ROG STRIX X570-E GAMING.
-> -
-> -Authors:
-> -    - Eugene Shalygin <eugene.shalygin@gmail.com>
-> -
-> -Description:
-> -------------
-> -ASUS mainboards publish hardware monitoring information via Super I/O
-> -chip and the ACPI embedded controller (EC) registers. Some of the sensors
-> -are only available via the EC.
-> -
-> -ASUS WMI interface provides a method (BREC) to read data from EC registe=
-rs,
-> -which is utilized by this driver to publish those sensor readings to the
-> -HWMON system. The driver is aware of and reads the following sensors:
-> -
-> -1. Chipset (PCH) temperature
-> -2. CPU package temperature
-> -3. Motherboard temperature
-> -4. Readings from the T_Sensor header
-> -5. VRM temperature
-> -6. CPU_Opt fan RPM
-> -7. Chipset fan RPM
-> -8. Readings from the "Water flow meter" header (RPM)
-> -9. Readings from the "Water In" and "Water Out" temperature headers
-> -10. CPU current
->=20
-
-
-=2D-=20
-Oleksandr Natalenko (post-factum)
-
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index 8e3a28ba6b28..82d742ba78b1 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -940,6 +940,10 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
+ 			if (arg & TUN_F_TSO6)
+ 				feature_mask |= NETIF_F_TSO6;
+ 		}
++
++		/* TODO: for now USO4 and USO6 should work simultaneously */
++		if (arg & (TUN_F_USO4 | TUN_F_USO6) == (TUN_F_USO4 | TUN_F_USO6))
++			features |= NETIF_F_GSO_UDP_L4;
+ 	}
+ 
+ 	/* tun/tap driver inverts the usage for TSO offloads, where
+@@ -950,7 +954,8 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
+ 	 * When user space turns off TSO, we turn off GSO/LRO so that
+ 	 * user-space will not receive TSO frames.
+ 	 */
+-	if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6))
++	if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6) ||
++	    feature_mask & (TUN_F_USO4 | TUN_F_USO6) == (TUN_F_USO4 | TUN_F_USO6))
+ 		features |= RX_OFFLOADS;
+ 	else
+ 		features &= ~RX_OFFLOADS;
+@@ -979,6 +984,7 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
+ 	unsigned short u;
+ 	int __user *sp = argp;
+ 	struct sockaddr sa;
++	unsigned int supported_offloads;
+ 	int s;
+ 	int ret;
+ 
+@@ -1074,7 +1080,8 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
+ 	case TUNSETOFFLOAD:
+ 		/* let the user check for future flags */
+ 		if (arg & ~(TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
+-			    TUN_F_TSO_ECN | TUN_F_UFO))
++			    TUN_F_TSO_ECN | TUN_F_UFO |
++			    TUN_F_USO4 | TUN_F_USO6))
+ 			return -EINVAL;
+ 
+ 		rtnl_lock();
+@@ -1082,6 +1089,13 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
+ 		rtnl_unlock();
+ 		return ret;
+ 
++	case TUNGETSUPPORTEDOFFLOADS:
++		supported_offloads = TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
++						TUN_F_TSO_ECN | TUN_F_UFO | TUN_F_USO4 | TUN_F_USO6;
++		if (copy_to_user(&arg, &supported_offloads, sizeof(supported_offloads)))
++			return -EFAULT;
++		return 0;
++
+ 	case SIOCGIFHWADDR:
+ 		rtnl_lock();
+ 		tap = tap_get_tap_dev(q);
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index fed85447701a..4f2105d1e6f1 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -185,7 +185,7 @@ struct tun_struct {
+ 	struct net_device	*dev;
+ 	netdev_features_t	set_features;
+ #define TUN_USER_FEATURES (NETIF_F_HW_CSUM|NETIF_F_TSO_ECN|NETIF_F_TSO| \
+-			  NETIF_F_TSO6)
++			  NETIF_F_TSO6 | NETIF_F_GSO_UDP_L4)
+ 
+ 	int			align;
+ 	int			vnet_hdr_sz;
+@@ -2821,6 +2821,12 @@ static int set_offload(struct tun_struct *tun, unsigned long arg)
+ 		}
+ 
+ 		arg &= ~TUN_F_UFO;
++
++		/* TODO: for now USO4 and USO6 should work simultaneously */
++		if (arg & TUN_F_USO4 && arg & TUN_F_USO6) {
++			features |= NETIF_F_GSO_UDP_L4;
++			arg &= ~(TUN_F_USO4 | TUN_F_USO6);
++		}
+ 	}
+ 
+ 	/* This gives the user a way to test for new features in future by
+@@ -2991,6 +2997,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+ 	int sndbuf;
+ 	int vnet_hdr_sz;
+ 	int le;
++	unsigned int supported_offloads;
+ 	int ret;
+ 	bool do_notify = false;
+ 
+@@ -3154,6 +3161,12 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+ 	case TUNSETOFFLOAD:
+ 		ret = set_offload(tun, arg);
+ 		break;
++	case TUNGETSUPPORTEDOFFLOADS:
++		supported_offloads = TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
++				TUN_F_TSO_ECN | TUN_F_UFO | TUN_F_USO4 | TUN_F_USO6;
++		if (copy_to_user(&arg, &supported_offloads, sizeof(supported_offloads)))
++			ret = -EFAULT;
++		break;
+ 
+ 	case TUNSETTXFILTER:
+ 		/* Can be set only for TAPs */
+-- 
+2.34.1
 
