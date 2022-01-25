@@ -2,70 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F14C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C343C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1318725AbiAYDG5 (ORCPT
+        id S1318516AbiAYDGH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:06:57 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:52124 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346056AbiAYB6d (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 20:58:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=vqIncw13EOORmlT/EjoC9h1eW7p1pLa1zW6wJTH4hys=; b=LehDvF77PFOcpCL1ZlaeFDIvoy
-        6kdNcCdYavZY8+3gy+TB/K/Slen/OnLNJCdIHkF7MpikmyoRpea9BKbbuLu7UvV/xH51qrjZT5bPI
-        7A3Myt6wLQLzABqOIHDH4s9Ex/dkrmxmsX6tYe7qKv8CxnoWENvJ1DZrsmCCWydCODNk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nCAhM-002ZLq-HM; Tue, 25 Jan 2022 02:32:40 +0100
-Date:   Tue, 25 Jan 2022 02:32:40 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net 2/2] net: stmmac: skip only stmmac_ptp_register when
- resume from suspend
-Message-ID: <Ye9TOHoFJi3PjhNV@lunn.ch>
-References: <20220124095951.23845-1-mohammad.athari.ismail@intel.com>
- <20220124095951.23845-3-mohammad.athari.ismail@intel.com>
- <Ye6maxMtt68JlZ9l@lunn.ch>
- <CO1PR11MB47716D7115E85AC4649CD3A5D55E9@CO1PR11MB4771.namprd11.prod.outlook.com>
+        Mon, 24 Jan 2022 22:06:07 -0500
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:47296 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S3415983AbiAYBxq (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 20:53:46 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V2o6oRt_1643075619;
+Received: from 30.225.24.84(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V2o6oRt_1643075619)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 25 Jan 2022 09:53:40 +0800
+Message-ID: <bbb32b23-b32a-cc6f-c85b-7ccf2aa8b8bc@linux.alibaba.com>
+Date:   Tue, 25 Jan 2022 09:53:39 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO1PR11MB47716D7115E85AC4649CD3A5D55E9@CO1PR11MB4771.namprd11.prod.outlook.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.2
+Subject: Re: [PATCH v2 00/20] fscache,erofs: fscache-based demand-read
+ semantics
+Content-Language: en-US
+To:     David Howells <dhowells@redhat.com>
+Cc:     linux-cachefs@redhat.com, xiang@kernel.org, chao@kernel.org,
+        linux-erofs@lists.ozlabs.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org
+References: <20220118131216.85338-1-jefflexu@linux.alibaba.com>
+ <2351231.1643044980@warthog.procyon.org.uk>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <2351231.1643044980@warthog.procyon.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > > @@ -3308,13 +3309,11 @@ static int stmmac_hw_setup(struct net_device
-> > *dev, bool init_ptp)
-...
 
-> > The init_ptp parameter now seems unused? If so, please remove it.
+
+On 1/25/22 1:23 AM, David Howells wrote:
+> Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
 > 
-> I believe you miss below diff. It is renamed to ptp_register.
+>> You could start a quick test by
+>> https://github.com/lostjeffle/demand-read-cachefilesd
 
-Ah, yes, sorry. I was looking at the context information diff gives
-you, which still has the old name.
+There is a quick test script in this repo in addition to the daemon
+(temporarily named with cachefilesd2).
 
-      Andrew
+> 
+> Can you pull this up to v5.17-rc1 or my netfs-lib branch?
+> 
+> 	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=netfs-lib
+
+While this kernel patch set is basically rebased to v5.17-rc1, rather
+than netfs-lib branch. I can see there's quite many refactoring for
+netfs lib in netfs-lib branch.
+
+
+> 
+> I'll do my best to have a look at it tomorrow.
+> 
+
+Thanks a lot.
+
+-- 
+Thanks,
+Jeffle
