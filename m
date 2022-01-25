@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC52C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:05:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8453C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240588AbiAYKFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:05:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60196 "EHLO
+        id S240714AbiAYKF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:05:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238501AbiAYJ7i (ORCPT
+        with ESMTP id S238524AbiAYJ7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:59:38 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61111C06175C;
-        Tue, 25 Jan 2022 01:59:37 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so1645027pju.2;
-        Tue, 25 Jan 2022 01:59:37 -0800 (PST)
+        Tue, 25 Jan 2022 04:59:46 -0500
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D22C061756;
+        Tue, 25 Jan 2022 01:59:42 -0800 (PST)
+Received: by mail-pj1-x1041.google.com with SMTP id nn16-20020a17090b38d000b001b56b2bce31so2271291pjb.3;
+        Tue, 25 Jan 2022 01:59:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FM5pcNZb9iz5vCSPvdknnsJq7LFJsbOHrnL0CWm1fY8=;
-        b=FfrOVLVxAr1U0q6A89oN8AlGrFHBD6+1usdFkL8nXiF6n39K8Ge8E6UEZAAsBPDYt3
-         9Mq//E7pGo3kw+v/jmVsKpe4WkikWA3kg0eim03DFhlr/IuYYgL+1FKYjpPLKabTefju
-         lkokuwyGOCYkvdL56Dkf1h6bnSdaa2CI5nP38twHwz5yTv9wDpk1TxO6MUaKOjadKoJR
-         10dU17vMD4NDYcmlhQ/bdIO7s4XHVeqZhgKkEGKmUe2+KjSuo4tCtY7MOoFqwHBI/G/B
-         J8SGPTV7Tf8RdtJvOaGTO3Wnv2mTBal15pV8kwieBWEsJiHJkXPWdY8qhXZoj+1D6ayH
-         VZgA==
+        bh=YCL/z3KlGNzFsVCJ/3z3F4LH/FmJiw0KoHdi2KVVmgk=;
+        b=gVcJuLPGV54zqq+spLjzSiaCND99bX63oHpJ6CucKDneVPQ4zgveS0nl2SuK31c6WA
+         s9/RSvBxt2ab6cAM0aUY73Uuak5ORezldkllhRLXYip2s/qgHeJFndT2ZubDM8nCt6o2
+         AJcobDggVSijg32KWNmyczUK8JwgPMo6KXhvnuPY5sPBvBYt1bkqVl3G1MUeUimsJPn4
+         MvSg62qys7MfPTPR50RkZ8kBjZW4jOq1MjtzHVFWeYbDhZBJCLMWogYlyGVlL7e3SmWN
+         OX46SAWqxHw/qTyZNzIQodX5UuLkJXJC8X+Kphs6LipNnawwZpfeZQU24LaDmWr2Y6Ji
+         8VMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FM5pcNZb9iz5vCSPvdknnsJq7LFJsbOHrnL0CWm1fY8=;
-        b=y4DQw3Sm9V2ClBO36oUs43Hc/4YEANp053j/+zwBKBmmL5iqyPQixkhBs1IVakte43
-         skOgwT8DjH8V/9gbtWXtFvcoPpXEZqo+/Gikq1sV99qcIw4a8o0sA3536+m+g2pceR9l
-         D2RuNsfg02HcXIbe3/HA0rcHu7/v/mC5EAwaZX1u1lYAcN46eF/+NqZPhB5pneEPOld3
-         yuXWiy/2DY+/oQxM1vWLtK4mMsxagrOzykVDXohLFeBBRFZTDCJv/kLZVWwGr6Hvv5TZ
-         Oco+NEXKYP5qqK/nu4SMUSWnE0Z9l+AFUJa0iytNoxsYSumJQDFBo3cgOjfFPi/isdkt
-         R3bg==
-X-Gm-Message-State: AOAM53356K7n1F3s6Kxtv7bXE34ek7CUafeKwX55Ks+39Bul4c7vi5ly
-        3BalUGJxXf0fGrW50hojtME=
-X-Google-Smtp-Source: ABdhPJxI9k7iHgnNBmOf81BloRoGh9PVBlAA/BtGWSejzRigOrY3HL55gaecq97eWoC1PgucwX4jkQ==
-X-Received: by 2002:a17:902:ed82:b0:14a:9ad8:a146 with SMTP id e2-20020a170902ed8200b0014a9ad8a146mr18004700plj.55.1643104776958;
-        Tue, 25 Jan 2022 01:59:36 -0800 (PST)
+        bh=YCL/z3KlGNzFsVCJ/3z3F4LH/FmJiw0KoHdi2KVVmgk=;
+        b=cSg0lMUcuzbuyjoVhJNgGb8IdV9podlYSUJmVBJpL9nhduiD0fsI0Z6EmpscfCfd21
+         1QYgV96YcDWNL8jPKWfCAZHfY1Qj+lFPCY0Xnv53+oRsUxEr6j794S0KRt8hwrf4U+Gj
+         Xv8GTrEk7SgG99xCzZ8Y2k4sSU1cVdZfItWOG95IyO4P+8uTB7hkuCK6BHkyQ0NJjYBq
+         IVQKlS0YgzqlWWo1Elk/dwm3B2ZOP25iicpZmn159uiJsQ4QAbIzq7Z93t3k7C/vWIxq
+         qtQ/t0Sk0btJGit8xByYYEgZnIFotf/VfHIOVivh0LLngPYF3ppQHI2Jt0kKv7vguJUb
+         1xVA==
+X-Gm-Message-State: AOAM532FWQaACbs7spEGo0GDhVwnoaP5bXi8DizXlYnknD01J/R+aqJf
+        yLj2nCgYjJPT9/hPaY8EOls=
+X-Google-Smtp-Source: ABdhPJzPVmkIK7wMi/i4VnSk7XEpJzBzxl3aNCucA2MqQnRG7cLZU+sJOmCW3ilnTvg4V0olJVHGuQ==
+X-Received: by 2002:a17:90a:f413:: with SMTP id ch19mr2650547pjb.19.1643104781737;
+        Tue, 25 Jan 2022 01:59:41 -0800 (PST)
 Received: from CLOUDLIANG-MB0.tencent.com ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id mq3sm201606pjb.4.2022.01.25.01.59.34
+        by smtp.gmail.com with ESMTPSA id mq3sm201606pjb.4.2022.01.25.01.59.39
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jan 2022 01:59:36 -0800 (PST)
+        Tue, 25 Jan 2022 01:59:41 -0800 (PST)
 From:   Jinrong Liang <ljr.kernel@gmail.com>
 X-Google-Original-From: Jinrong Liang <cloudliang@tencent.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
@@ -58,9 +58,9 @@ Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
         Wanpeng Li <wanpengli@tencent.com>,
         Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 08/19] KVM: x86: Remove unused "vcpu" of kvm_after_interrupt()
-Date:   Tue, 25 Jan 2022 17:58:58 +0800
-Message-Id: <20220125095909.38122-9-cloudliang@tencent.com>
+Subject: [PATCH 10/19] KVM: x86/sev: Remove unused "kvm" of sev_unbind_asid()
+Date:   Tue, 25 Jan 2022 17:59:00 +0800
+Message-Id: <20220125095909.38122-11-cloudliang@tencent.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20220125095909.38122-1-cloudliang@tencent.com>
 References: <20220125095909.38122-1-cloudliang@tencent.com>
@@ -72,69 +72,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jinrong Liang <cloudliang@tencent.com>
 
-The "struct kvm_vcpu *vcpu" parameter of kvm_after_interrupt() is not used,
+The "struct kvm *kvm" parameter of sev_unbind_asid() is not used,
 so remove it. No functional change intended.
 
 Signed-off-by: Jinrong Liang <cloudliang@tencent.com>
 ---
- arch/x86/kvm/svm/svm.c | 2 +-
- arch/x86/kvm/vmx/vmx.c | 2 +-
- arch/x86/kvm/x86.c     | 2 +-
- arch/x86/kvm/x86.h     | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/kvm/svm/sev.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index bc733dbadbdd..744ddc7ad6ad 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -3737,7 +3737,7 @@ static __no_kcsan fastpath_t svm_vcpu_run(struct kvm_vcpu *vcpu)
- 	/* Any pending NMI will happen here */
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index eae234afe04e..0727ac7221d7 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -217,7 +217,7 @@ static void sev_decommission(unsigned int handle)
+ 	sev_guest_decommission(&decommission, NULL);
+ }
  
- 	if (unlikely(svm->vmcb->control.exit_code == SVM_EXIT_NMI))
--		kvm_after_interrupt(vcpu);
-+		kvm_after_interrupt();
- 
- 	sync_cr8_to_lapic(vcpu);
- 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index a02a28ce7cc3..62b0335d9ae2 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -6453,7 +6453,7 @@ static void handle_interrupt_nmi_irqoff(struct kvm_vcpu *vcpu,
+-static void sev_unbind_asid(struct kvm *kvm, unsigned int handle)
++static void sev_unbind_asid(unsigned int handle)
  {
- 	kvm_before_interrupt(vcpu);
- 	vmx_do_interrupt_nmi_irqoff(entry);
--	kvm_after_interrupt(vcpu);
-+	kvm_after_interrupt();
+ 	struct sev_data_deactivate deactivate;
+ 
+@@ -363,7 +363,7 @@ static int sev_launch_start(struct kvm *kvm, struct kvm_sev_cmd *argp)
+ 	/* return handle to userspace */
+ 	params.handle = start.handle;
+ 	if (copy_to_user((void __user *)(uintptr_t)argp->data, &params, sizeof(params))) {
+-		sev_unbind_asid(kvm, start.handle);
++		sev_unbind_asid(start.handle);
+ 		ret = -EFAULT;
+ 		goto e_free_session;
+ 	}
+@@ -1426,7 +1426,7 @@ static int sev_receive_start(struct kvm *kvm, struct kvm_sev_cmd *argp)
+ 	if (copy_to_user((void __user *)(uintptr_t)argp->data,
+ 			 &params, sizeof(struct kvm_sev_receive_start))) {
+ 		ret = -EFAULT;
+-		sev_unbind_asid(kvm, start.handle);
++		sev_unbind_asid(start.handle);
+ 		goto e_free_session;
+ 	}
+ 
+@@ -2078,7 +2078,7 @@ void sev_vm_destroy(struct kvm *kvm)
+ 		}
+ 	}
+ 
+-	sev_unbind_asid(kvm, sev->handle);
++	sev_unbind_asid(sev->handle);
+ 	sev_asid_free(sev);
  }
  
- static void handle_nm_fault_irqoff(struct kvm_vcpu *vcpu)
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 55518b7d3b96..df46d0737b85 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -10094,7 +10094,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 	local_irq_enable();
- 	++vcpu->stat.exits;
- 	local_irq_disable();
--	kvm_after_interrupt(vcpu);
-+	kvm_after_interrupt();
- 
- 	/*
- 	 * Wait until after servicing IRQs to account guest time so that any
-diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
-index 1ebd5a7594da..651aa7ed5200 100644
---- a/arch/x86/kvm/x86.h
-+++ b/arch/x86/kvm/x86.h
-@@ -399,7 +399,7 @@ static inline void kvm_before_interrupt(struct kvm_vcpu *vcpu)
- 	__this_cpu_write(current_vcpu, vcpu);
- }
- 
--static inline void kvm_after_interrupt(struct kvm_vcpu *vcpu)
-+static inline void kvm_after_interrupt(void)
- {
- 	__this_cpu_write(current_vcpu, NULL);
- }
 -- 
 2.33.1
 
