@@ -2,64 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADFC6C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B65A4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1319590AbiAYDJL (ORCPT
+        id S1319629AbiAYDJQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:09:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3423965AbiAYCiZ (ORCPT
+        Mon, 24 Jan 2022 22:09:16 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.222]:47534 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S3424066AbiAYCiz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:38:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9950C06175F;
-        Mon, 24 Jan 2022 16:51:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96F52B810A8;
-        Tue, 25 Jan 2022 00:51:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 435C7C340E4;
-        Tue, 25 Jan 2022 00:51:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643071899;
-        bh=yzRDLvQ1vjIVlRYsbDhIDsSJXen/Z3G3DRZtgTvGlUA=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=JBLM8yTO0Ukv00hwrmiBtCeo55IkbagEIY1shJs+gUP+D0TkYhsGdAbFSfo/7aa+U
-         E7+4i0BsfWEW9oXOwke5XmMyoaj0a/rjcJELP4t8/5Ut3DMm6XjY4Ol+E+ttqs/j0s
-         hj0t1NWRmB3mQ/kdn4znEU9FNAar9xsn0oTWOI9FNi72ruvFYroiUxJ3UpjzPDau/K
-         nnnT/W05KluRK998MEGlYJ8LbviIsN89ir+EZKbWL1iAu3hmCbhTBumI7jBuIVNTat
-         VkR0YNc3OhRWIWpS+Wdy/uTPQ3ST6kKKUm7FN7IIQ3XMI824apDCu5dMy5HGepKgyw
-         2uN21gr91HV5w==
-Content-Type: text/plain; charset="utf-8"
+        Mon, 24 Jan 2022 21:38:55 -0500
+HMM_SOURCE_IP: 172.18.0.218:35484.1819251938
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-202.80.192.38 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id 45B41280100;
+        Tue, 25 Jan 2022 10:38:40 +0800 (CST)
+X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 09c87cdde5144ab48d00bffe4b83c960 for j.vosburgh@gmail.com;
+        Tue, 25 Jan 2022 10:38:44 CST
+X-Transaction-ID: 09c87cdde5144ab48d00bffe4b83c960
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
+To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jay.vosburgh@canonical.com, nikolay@nvidia.com,
+        huyd12@chinatelecom.cn
+Subject: [PATCH v9] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
+Date:   Mon, 24 Jan 2022 21:37:55 -0500
+Message-Id: <20220125023755.94837-1-sunshouxin@chinatelecom.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20211203141125.2447520-1-dev_public@wujek.eu>
-References: <20211203141125.2447520-1-dev_public@wujek.eu>
-Subject: Re: [PATCH] clk: si5341: fix reported clk_rate when output divider is 2
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Adam Wujek <dev_public@wujek.eu>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-To:     Adam Wujek <dev_public@wujek.eu>,
-        Michael Turquette <mturquette@baylibre.com>
-Date:   Mon, 24 Jan 2022 16:51:37 -0800
-User-Agent: alot/0.10
-Message-Id: <20220125005139.435C7C340E4@smtp.kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Adam Wujek (2021-12-03 06:12:07)
-> SI5341_OUT_CFG_RDIV_FORCE2 shall be checked first to distinguish whether
-> a divider for a given output is set to 2 (SI5341_OUT_CFG_RDIV_FORCE2
-> is set) or the output is disabled (SI5341_OUT_CFG_RDIV_FORCE2 not set,
-> SI5341_OUT_R_REG is set 0).
-> Before the change, divider set to 2 (SI5341_OUT_R_REG set to 0) was
-> interpreted as output is disabled.
->=20
-> Signed-off-by: Adam Wujek <dev_public@wujek.eu>
-> ---
+Since ipv6 neighbor solicitation and advertisement messages
+isn't handled gracefully in bond6 driver, we can see packet
+drop due to inconsistency between mac address in the option
+message and source MAC .
 
-Applied to clk-next
+Another examples is ipv6 neighbor solicitation and advertisement
+messages from VM via tap attached to host bridge, the src mac
+might be changed through balance-alb mode, but it is not synced
+with Link-layer address in the option message.
+
+The patch implements bond6's tx handle for ipv6 neighbor
+solicitation and advertisement messages.
+
+Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+---
+ drivers/net/bonding/bond_alb.c | 38 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
+index 533e476988f2..ba7cc1a9bf6c 100644
+--- a/drivers/net/bonding/bond_alb.c
++++ b/drivers/net/bonding/bond_alb.c
+@@ -1269,6 +1269,34 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
+ 	return res;
+ }
+ 
++/* determine if the packet is NA or NS */
++static bool __alb_determine_nd(struct icmp6hdr *hdr)
++{
++	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
++	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
++		return true;
++	}
++
++	return false;
++}
++
++static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
++{
++	struct ipv6hdr *ip6hdr;
++	struct icmp6hdr *hdr;
++
++	ip6hdr = ipv6_hdr(skb);
++	if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
++		if (!pskb_may_pull(skb, sizeof(struct ipv6hdr) + sizeof(struct icmp6hdr)))
++			return true;
++
++		hdr = icmp6_hdr(skb);
++		return __alb_determine_nd(hdr);
++	}
++
++	return false;
++}
++
+ /************************ exported alb functions ************************/
+ 
+ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+@@ -1348,8 +1376,11 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
+ 	/* Do not TX balance any multicast or broadcast */
+ 	if (!is_multicast_ether_addr(eth_data->h_dest)) {
+ 		switch (skb->protocol) {
+-		case htons(ETH_P_IP):
+ 		case htons(ETH_P_IPV6):
++			if (alb_determine_nd(skb, bond))
++				break;
++			fallthrough;
++		case htons(ETH_P_IP):
+ 			hash_index = bond_xmit_hash(bond, skb);
+ 			if (bond->params.tlb_dynamic_lb) {
+ 				tx_slave = tlb_choose_channel(bond,
+@@ -1446,6 +1477,11 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
+ 			break;
+ 		}
+ 
++		if (alb_determine_nd(skb, bond)) {
++			do_tx_balance = false;
++			break;
++		}
++
+ 		hash_start = (char *)&ip6hdr->daddr;
+ 		hash_size = sizeof(ip6hdr->daddr);
+ 		break;
+
+base-commit: dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
+-- 
+2.27.0
+
