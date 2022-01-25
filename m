@@ -2,80 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B6D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCCAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380118AbiAYLBX (ORCPT
+        id S1380305AbiAYLGu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 06:01:23 -0500
-Received: from mga17.intel.com ([192.55.52.151]:30554 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1379968AbiAYK7D (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:59:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643108343; x=1674644343;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SYDGkXed9Zpe3q3nrJrWXDYeh3RYZIJ5yQozPlmXdts=;
-  b=CkFQR20liFfzU4JzRkZyKtkEhEUsxhe2zgIayeii8uQaa7/5IuIYYHw/
-   JTTud31uXukQQrLThCWfPAeI/nJAJXcuLNR0MfhKmbeBk9emoaVc4byGw
-   uBuog6/VgMax43fJjzWlFtaBwcdjSiuGEKHgLDQlkkG4fhalIpfGZq8Hh
-   rZUktTwC79zI+ej7GegxYFsP7Frp+S+RNwspMJfc/oXeB/8XnilXEW73n
-   Ta9AWkOlmJgNJwRi/0O7NvnUVZQEtpDHC84O79BOkbe3F9gWpbLTulyjo
-   exttbBIIJ+/HOzWqV2B50UfhGKeo7F8/2xY7SEFp2RhNr/rJVt5MbT6dc
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226947058"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="226947058"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 02:59:00 -0800
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="562997636"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 02:58:55 -0800
-Received: by lahna (sSMTP sendmail emulation); Tue, 25 Jan 2022 12:58:52 +0200
-Date:   Tue, 25 Jan 2022 12:58:52 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Rajat Jain <rajatja@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rajatxjain@gmail.com,
-        dtor@google.com, jsbarnes@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] PCI: ACPI: Allow internal devices to be marked as
- untrusted
-Message-ID: <Ye/X7E2dKb+zem34@lahna>
-References: <20220120000409.2706549-1-rajatja@google.com>
- <20220121214117.GA1154852@bhelgaas>
- <Ye5GvQbFKo+CFtRb@lahna>
+        Tue, 25 Jan 2022 06:06:50 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:57348 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1380206AbiAYLEa (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 06:04:30 -0500
+X-UUID: 40ed0dc2144e41ddb22accfdde7155bd-20220125
+X-UUID: 40ed0dc2144e41ddb22accfdde7155bd-20220125
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <kewei.xu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1924179466; Tue, 25 Jan 2022 19:04:21 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 25 Jan 2022 19:04:19 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 Jan 2022 19:04:19 +0800
+From:   Kewei Xu <kewei.xu@mediatek.com>
+To:     <wsa@the-dreams.de>
+CC:     <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <leilk.liu@mediatek.com>,
+        <qii.wang@mediatek.com>, <liguo.zhang@mediatek.com>,
+        <caiyu.chen@mediatek.com>, <housong.zhang@mediatek.com>,
+        <yuhan.wei@mediatek.com>, <kewei.xu@mediatek.com>,
+        <ryan-jh.yu@mediatek.com>
+Subject: [v2 0/2] add i2c support for mt8186
+Date:   Tue, 25 Jan 2022 19:04:11 +0800
+Message-ID: <20220125110413.18988-1-kewei.xu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ye5GvQbFKo+CFtRb@lahna>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 08:27:17AM +0200, Mika Westerberg wrote:
-> > > This patch introduces a new "UntrustedDevice" property that can be used
-> > > by the firmware to mark any device as untrusted.
-> 
-> I think this new property should be documented somewhere too (also
-> explain when to use it instead of ExternalFacingPort). If not in the
-> next ACPI spec or some supplemental doc then perhaps in the DT bindings
-> under Documentation/devicetree/bindings.
+V1:
+Add i2c compatible for MT8186. Compare to MT8192 i2c controller,
+MT8186 doesn't need handshake signal with apdma.
 
-Actually Microsoft has similar already:
+Kewei Xu (2):
+  dt-bindings: i2c: update bindings for MT8186 SoC
+  i2c: mediatek: Add i2c compatible for Mediatek MT8186
 
-https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-internal-pcie-ports-accessible-to-users-and-requiring-dma-protection
+ .../devicetree/bindings/i2c/i2c-mt65xx.txt         |  1 +
+ drivers/i2c/busses/i2c-mt65xx.c                    | 14 ++++++++++++++
+ 2 files changed, 15 insertions(+)
 
-I think we should use that too here.
+--
+2.18.0
+
