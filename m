@@ -2,68 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2938BC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC4AC2BA4C
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1317723AbiAYDCv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:02:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
+        id S242633AbiAYDDU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 22:03:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3415412AbiAYBqM (ORCPT
+        with ESMTP id S3415598AbiAYBsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 20:46:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AEA5C06E00F;
-        Mon, 24 Jan 2022 17:05:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38EF9B81603;
-        Tue, 25 Jan 2022 01:05:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B04C340E4;
-        Tue, 25 Jan 2022 01:05:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643072738;
-        bh=C4zBnJsZ2BHLB/IT2MtkBDaS9vKy5lnt6zqu9oZCg5w=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=D1Mcqa6whk00jKaF4NhYbHl8B6iOCcajCt8d70fLrBNeBDOzt0Aj80tTqnrF+cATi
-         DyiVZZp9YkybjBeFeJzaHeFGzlYB2KarenVKdjIOJiaq5BRY1WjSyPYeQO6KsvIsRy
-         JFiOBrpv6J/2M7iH9ijM+1R5Faobo+Xb1HX2yzgX6oLY7MiitYFQhZHjWJhgTinQ5B
-         KWZho5ddeaTJDOPW8Zr5DtlsrfQj0XdIQiTrXSsZFF5ey8DwSRSIZafVy0v4SVX4QH
-         XqFHbSoqsNtSBqEUfrwasAauTmFYu8MYq2M/GPduujD7mO61dvz0Q3JFmOGsHt4Q/s
-         wR9vmep6Ao3NQ==
-Content-Type: text/plain; charset="utf-8"
+        Mon, 24 Jan 2022 20:48:05 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2361C06E015
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:46:32 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id u5so15540568ilq.9
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:46:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OLFh68WssbeQyB1KrT0TRpUmamwDBiQmELJA8PMvRb8=;
+        b=Kz8eMKjla9hxns2SFusdrhsEQaemENVSfQXAhV2XGbhNUGoZSIIGXScVsdzelc4LjM
+         Nb+4nN9llQO2eqIVWV2oqC4Cs5zMd8SpdFBcY+FoPiMh1ppIvhwu6/XETOeiBybv3MRh
+         b1PQ6tDHewtJvtVb6ebYv82xcyklYm445/sqA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OLFh68WssbeQyB1KrT0TRpUmamwDBiQmELJA8PMvRb8=;
+        b=otCzYbonto0mlRoQHQhxQqjMJG5gOvXn3Fub324qAvZ/sApwAXnOgVCY1if7uqVpGp
+         jrw3vwOC/betqKG7aFGdaeo4LLEe7NQQwHDEwPiAJp5Dxo2NozcHhIDAvPcDbEbUurjF
+         SzQFjg20hmcIBvvrbmUYkms0NJ+z99EFCaKDi94PA+Cel3E1OE1yUp5ua1ey+vW7yPLX
+         C+b7y3oeS6OmSfIQAcS2M1TkZvFwNW7vM8sfuWaU/JUIh7T5aZqMe8C7C2R+CUq2vsl6
+         9Nicx6yqDcWs0p5CGyyXhAlsbz1/sopP1zukhtRFInSxlt0IDuKy4c3uuiiQGh8wCGHh
+         obQg==
+X-Gm-Message-State: AOAM531fXsLSbvog909Gkrc/1hb1/V8JpG7nnf0YHirp8fuYsWdJQAyF
+        S3lzMLP7xMH0vmvYqR9IVylf4g==
+X-Google-Smtp-Source: ABdhPJzfzNVUXd2pR1v+yfQ36klDiWPOQZ69j5O6DVxr1DyUrEf/Dj0WF1Nc3KzJXCeDylaHeMPHNg==
+X-Received: by 2002:a05:6e02:1bcc:: with SMTP id x12mr10476913ilv.96.1643075191643;
+        Mon, 24 Jan 2022 17:46:31 -0800 (PST)
+Received: from ?IPv6:2601:282:8200:4c:b48b:eb27:e282:37fe? ([2601:282:8200:4c:b48b:eb27:e282:37fe])
+        by smtp.gmail.com with ESMTPSA id v19sm8057996ilj.49.2022.01.24.17.46.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 17:46:31 -0800 (PST)
+Subject: Re: [PATCH 5.16 0000/1039] 5.16.3-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <8e94c4da-86ef-4693-c1ae-31a3447f4efb@linuxfoundation.org>
+Date:   Mon, 24 Jan 2022 18:46:28 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220111142051.37957-1-admin@hifiphile.com>
-References: <20220111142051.37957-1-admin@hifiphile.com>
-Subject: Re: [PATCH] clk: at91: allow setting PMC_AUDIOPINCK clock parents via DT
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Zixun LI <admin@hifiphile.com>,
-        Claudiu Beznea <Claudiu.Beznea@microchip.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Zixun LI <admin@hifiphile.com>
-Date:   Mon, 24 Jan 2022 17:05:37 -0800
-User-Agent: alot/0.10
-Message-Id: <20220125010538.D5B04C340E4@smtp.kernel.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Zixun LI (2022-01-11 06:20:50)
-> Make AUDIOPINCK accessible via phandle to select it
-> as peripheral clock parent using assigned-clock-parents in DT
-> where available.
->=20
-> Signed-off-by: Zixun LI <admin@hifiphile.com>
-> Reviewed-by: Claudiu Beznea <Claudiu.Beznea@microchip.com>
-> ---
+On 1/24/22 11:29 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.3 release.
+> There are 1039 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.3-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Applied to clk-next
+Compiled and booted on my test system. No dmesg regressions.
+
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
