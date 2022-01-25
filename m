@@ -2,101 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E305C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:28:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E443FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:30:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450475AbiAYI2F (ORCPT
+        id S1450705AbiAYIaa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:28:05 -0500
-Received: from conssluserg-05.nifty.com ([210.131.2.90]:20300 "EHLO
-        conssluserg-05.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376941AbiAYIZ6 (ORCPT
+        Tue, 25 Jan 2022 03:30:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52849 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1450455AbiAYI15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:25:58 -0500
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 20P8PMwk017766;
-        Tue, 25 Jan 2022 17:25:22 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 20P8PMwk017766
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1643099122;
-        bh=SXcYTM/qBmgbG6//jXK+Wh8gfPtK3akJ9sIl9wIufX4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tyqBYwZC7AUwq59c7mPEA50sH66TwySMKzl1xNzrX2h2nlQqCLrMZYHycVUGDBEKv
-         jhlinySD1mLWqwULzjCUdaGkaf5HdRYPc2B+GK+i/Hsk5FSlyCk8C/NiGzSEUgPKNR
-         x76uvz70hViES1YF4NdMYGaZ7bmfaxlHdAU+6ZPpSolKEXrFzyB4fuCFUuyRuvK6WU
-         jk/Opnb+w1amTb0M7u1bUohB5FNBm0n/RZ400248drcmMbM1liHX2jShdoA/Y3zOb9
-         oE6xmEyqKOIAwtlGLEoKrtHr9qazeSLNyOa6E5pyoAKrUbmJ1uordiHKo06+9QQ46k
-         xlS3sSk0TepBQ==
-X-Nifty-SrcIP: [209.85.214.177]
-Received: by mail-pl1-f177.google.com with SMTP id k17so979905plk.0;
-        Tue, 25 Jan 2022 00:25:22 -0800 (PST)
-X-Gm-Message-State: AOAM531JG80fJ3r5W4I5vEegRT+fpLmdcNAIvwlMAZJ7hGA7m0KDUaq4
-        H1k40x4Kr9Jb3cVJfM0hubY8aHIxRair3syjwX4=
-X-Google-Smtp-Source: ABdhPJxnq0/zopDDBClwpC1WWbEaUfQvqa+dxOhu1M/cgTm623thDpCkX5xNmcrJJWJV87TY2I+pnoc03tlKyBpghQc=
-X-Received: by 2002:a17:902:6a89:b0:149:732e:d335 with SMTP id
- n9-20020a1709026a8900b00149732ed335mr17953179plk.136.1643099121719; Tue, 25
- Jan 2022 00:25:21 -0800 (PST)
+        Tue, 25 Jan 2022 03:27:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643099276;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xGAGC8ZSjobiyDfU0CWYjPdtebj6fAowX1E7dpabtwo=;
+        b=h7srgkEhudQxcGQNpJ+7hgupuIc4FXN8lolhOR6S/6j5/QlNnL7ihaznqtUynbwGFSX0q4
+        93hvRpP+EH+9pWQkGyfHcvsx6fdsE0jsPE3gKxB+u5+lC3RB0J5O7qRyLDh3RSIKv0frr7
+        TCru7mzCYC0PsUp6XDbD/3Mcv5os7j4=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-614-C55O4mNcNXeIY76bicNTVw-1; Tue, 25 Jan 2022 03:27:55 -0500
+X-MC-Unique: C55O4mNcNXeIY76bicNTVw-1
+Received: by mail-ed1-f69.google.com with SMTP id w3-20020a50c443000000b0040696821132so7480194edf.22
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:27:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xGAGC8ZSjobiyDfU0CWYjPdtebj6fAowX1E7dpabtwo=;
+        b=3Mh3YUZ8029WgiSkXCrhI+fvzxLS6u37xuADkOTYMUa/2LKyBtSA1iLYccE0wpFuMr
+         AEm1abtjO1coPiXLZQpG0wHUBFI9sPNdRGpdS71czie+FwLm0pfqNfgrdZIb3CB9tZZk
+         7GA5z4nTOuVU/o2y9BVx/RggbYBEzEdfDuPwSHKCpPt3PSLKD7h/31LtpROaF+2zhuhH
+         eiwLARcW3yuuOh598x2uE/JGSnZisWZmqlam7ygnA8gHy9f/WwHtBK9KLPhvRv3Siz5R
+         ZCF/M4orKgIRG/WoW8r9LLdWLx0F/ns2n4w2mURWHN3CIhade5N2VeelSeQWHzWv+9Yo
+         pM1w==
+X-Gm-Message-State: AOAM53311N7xjUQEQwQPQyFlo+4GEsrt1lufX1gswV5f0nJXYvjtmEhB
+        RhuVE+4qQTiAyoC7pNlObgzSFwMnGL978uJEUz11tUI3ffDYf8UY0Wo0jEzpoUoBkCjA6PQ132X
+        2q92spchSjRgedGYBCV9RvikM
+X-Received: by 2002:a05:6402:11ca:: with SMTP id j10mr19666875edw.169.1643099274040;
+        Tue, 25 Jan 2022 00:27:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzCXChr6Nh3ynRGb84TO3tGZbNPGj7Pfqsa1dBNHIpYahatyjTZ5IoE6kYc3KjFcQ9PBgrAMg==
+X-Received: by 2002:a05:6402:11ca:: with SMTP id j10mr19666860edw.169.1643099273816;
+        Tue, 25 Jan 2022 00:27:53 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id a11sm7867537edv.76.2022.01.25.00.27.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 00:27:53 -0800 (PST)
+Message-ID: <f00d0e56-e5d3-4ac6-1519-fa843fb4d734@redhat.com>
+Date:   Tue, 25 Jan 2022 09:27:47 +0100
 MIME-Version: 1.0
-References: <20220125075126.891825-1-keescook@chromium.org>
-In-Reply-To: <20220125075126.891825-1-keescook@chromium.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 25 Jan 2022 17:24:44 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATxgwygLbrSKPTDEenYRT-ARtVxPqR+ybLOObzXBHHzhw@mail.gmail.com>
-Message-ID: <CAK7LNATxgwygLbrSKPTDEenYRT-ARtVxPqR+ybLOObzXBHHzhw@mail.gmail.com>
-Subject: Re: [PATCH v3] Kconfig.debug: Make DEBUG_INFO selectable from a choice
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Isabella Basso <isabbasso@riseup.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] KVM: x86/cpuid: Exclude unpermitted xfeatures for
+ vcpu->arch.guest_supported_xcr0
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        Like Xu <like.xu.linux@gmail.com>
+Cc:     "Liu, Jing2" <jing2.liu@intel.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Zhong, Yang" <yang.zhong@intel.com>
+References: <20220123055025.81342-1-likexu@tencent.com>
+ <BN9PR11MB52762E2DEF810DF9AFAE1DDC8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <38c1fbc3-d770-48f3-5432-8fa1fde033f5@gmail.com>
+ <Ye7SbfPL/QAjOI6s@google.com>
+ <e5744e0b-00fc-8563-edb7-b6bf52c63b0e@redhat.com>
+ <BN9PR11MB5276170712A9EF842B36ACE48C5F9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <BN9PR11MB5276170712A9EF842B36ACE48C5F9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 4:51 PM Kees Cook <keescook@chromium.org> wrote:
->
-> Currently it's not possible to enable DEBUG_INFO for an all*config build,
-> since it is marked as "depends on !COMPILE_TEST". This generally makes
-> sense because a debug build of an all*config target ends up taking much
-> longer and the output is much larger. Having this be "default off" makes
-> sense. However, there are cases where enabling DEBUG_INFO for such builds
-> is useful for doing treewide A/B comparisons of build options, etc.
->
-> Make DEBUG_INFO selectable from any of the DWARF version choice options,
-> with DEBUG_INFO_NONE being the default for COMPILE_TEST. The mutually
-> exclusive relationship between DWARF5 and BTF must be inverted, but the
-> result remains the same. Additionally moves DEBUG_KERNEL and DEBUG_MISC
-> up to the top of the menu because they were enabling features _above_
-> it, making it weird to navigate menuconfig.
->
-> Suggested-by: Arnd Bergmann <arnd@arndb.de>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Masahiro Yamada <masahiroy@kernel.org>
+On 1/25/22 02:54, Tian, Kevin wrote:
+>> The extra complication is that arch_prctl(ARCH_REQ_XCOMP_GUEST_PERM)
+>> changes what host userspace can/can't do.  It would be easier if we
+>> could just say that KVM_GET_SUPPORTED_CPUID returns "the most" that
+>> userspace can do, but we already have the contract that userspace can
+>> take KVM_GET_SUPPORTED_CPUID and pass it straight to KVM_SET_CPUID2.
+>>
+>> Therefore,  KVM_GET_SUPPORTED_CPUID must limit its returned values to
+>> what has already been enabled.
+>>
+>> While reviewing the QEMU part of AMX support (this morning), I also
+>> noticed that there is no equivalent for guest permissions of
+>> ARCH_GET_XCOMP_SUPP.  This needs to know KVM's supported_xcr0, so it's
+>> probably best realized as a new KVM_CHECK_EXTENSION rather than as an
+>> arch_prctl.
+>>
+> Would that lead to a weird situation where although KVM says no support
+> of guest permissions while the user can still request them via prctl()?
 
+This is already the case for the current implementation of 
+KVM_GET_SUPPORTED_CPUID.
 
-Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
+Paolo
 
+> I wonder whether it's cleaner to do it still via prctl() if we really want to
+> enhance this part. But as you said then it needs a mechanism to know
+> KVM's supported_xcr0 (and if KVM is not loaded then no guest permission
+> support at all)...
 
-> Cc: Nick Desaulniers <ndesaulniers@google.com>
-> Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-> Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-> Tested-by: Nick Desaulniers <ndesaulniers@google.com>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
-> v1: https://lore.kernel.org/lkml/20211210000910.3597609-1-keescook@chromium.org
-> v2: https://lore.kernel.org/lkml/20220121001204.4023842-1-keescook@chromium.org
-> v3: - rebase to v5.17-rc1
-> ---
-
-
--- 
-Best Regards
-Masahiro Yamada
