@@ -2,97 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7CCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:19:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D840C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444985AbiAYMTm (ORCPT
+        id S1447700AbiAYMT6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:19:42 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34050 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381836AbiAYMP7 (ORCPT
+        Tue, 25 Jan 2022 07:19:58 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:35865 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354553AbiAYMQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:15:59 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8843C60E9A
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:15:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E39FDC340E0;
-        Tue, 25 Jan 2022 12:15:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643112957;
-        bh=mAalbFUhg2H+qPw2Vc2gO83s4pxQ5Vy4efnC7pLZGR4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QwwQgU8avm+TrG4TnU9Qk/i93XlpmimHmamC7WJ3/hN2Ty7sQvTJzli0Y0+5CoFDR
-         YrEsyYiZbVI78qxbTCES3YvWQKPGLc87fIJfq/rnINAYPNfpkhAiBZZM0V7+CaFte6
-         javZTiP7yecDelmXUqTt5JwHD2D7GoLG64YtzHsZfZYqrlMFd+rEeomfSt4i8ZCVFG
-         luh0FGhKPqCpl77sA3bFE+Otlv1rI0xt8jFGNTs0phibdio4iFzEQD4mazuUd61UXA
-         +EZlxFu4P6mkLxW/wVlXwQhy42gaLaFoVDbZBSlOzLvHk3PC9ob5Sk5IOhTiuhfKFM
-         gZ3GZnkiXdwKQ==
-Date:   Tue, 25 Jan 2022 13:15:45 +0100
-From:   Christian Brauner <brauner@kernel.org>
-To:     Josh Don <joshdon@google.com>
-Cc:     Joel Fernandes <joel@joelfernandes.org>,
-        Chris Hyser <chris.hyser@oracle.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Mel Gorman <mgorman@suse.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Balbir Singh <sblbir@amazon.com>
-Subject: Re: [resend RFC 2/3] sched/prctl: add PR_SCHED_CORE_SHARE command
-Message-ID: <20220125121545.rul2vqgrc7io4vio@wittgenstein>
-References: <20220124105247.2118990-1-brauner@kernel.org>
- <20220124105247.2118990-3-brauner@kernel.org>
- <CABk29NtFnswO3iaQobbijV1-FwCJd06prm2UMq7S8Tt736hYMA@mail.gmail.com>
+        Tue, 25 Jan 2022 07:16:08 -0500
+Received: from kwepemi500001.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jjm5G3JmwzccbZ;
+        Tue, 25 Jan 2022 20:15:14 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500001.china.huawei.com (7.221.188.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 20:16:03 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 25 Jan
+ 2022 20:16:03 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <snitzer@redhat.com>, <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
+Subject: [PATCH] dm mpath: fix missing blk_account_io_done() in error path
+Date:   Tue, 25 Jan 2022 20:26:54 +0800
+Message-ID: <20220125122654.2236172-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CABk29NtFnswO3iaQobbijV1-FwCJd06prm2UMq7S8Tt736hYMA@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 04:31:05PM -0800, Josh Don wrote:
-> Hey Christian,
-> 
-> This seems like a reasonable extension of the interface to me.
-> 
-> > @@ -200,6 +212,20 @@ int sched_core_share_pid(unsigned int cmd, pid_t pid, enum pid_type type,
-> >                 __sched_core_set(current, cookie);
-> >                 goto out;
-> >
-> > +       case PR_SCHED_CORE_SHARE:
-> > +               rcu_read_lock();
-> > +               p = task_by_pid(pid_share);
-> > +               if (!p)
-> > +                       err = -ESRCH;
-> > +               else if (!ptrace_may_access(p, PTRACE_MODE_READ_REALCREDS))
-> > +                       err = -EPERM;
-> > +               if (!err)
-> > +                       cookie = sched_core_clone_cookie(p);
-> > +               rcu_read_unlock();
-> > +               if (err)
-> > +                       goto out;
-> > +               break;
-> > +
-> 
-> Did you consider folding this into SCHED_CORE_SHARE_TO? SHARE_TO isn't
-> using the last arg right now; it could use it as an override for the
-> task we copy the cookie from instead of always choosing 'current'.
-> Since the code currently rejects any SCHED_CORE prctl calls with a
-> non-zero last arg for commands other than SCHED_CORE_GET, this would
-> be a safe change for userspace.
+If blk_mq_request_issue_directly() failed from
+blk_insert_cloned_request(), the request will be accounted start.
+Currently, blk_insert_cloned_request() is only called by dm, and such
+request won't be accounted done by dm.
 
-Yeah, that sounds good to me too. I can certainly rework the patch to do
-that!
+In normal path, io will be accounted start from blk_mq_bio_to_request(),
+when the request is allocated, and such io will be accounted done from
+__blk_mq_end_request_acct() whether it succeeded or failed. Thus add
+blk_account_io_done() to fix the problem.
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-mq.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index d73bc219a7fa..d73490fe200d 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -2922,6 +2922,8 @@ blk_status_t blk_insert_cloned_request(struct request_queue *q, struct request *
+ 	 */
+ 	blk_mq_run_dispatch_ops(rq->q,
+ 			ret = blk_mq_request_issue_directly(rq, true));
++	if (ret)
++		blk_account_io_done(rq, ktime_get_ns());
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(blk_insert_cloned_request);
+-- 
+2.31.1
+
