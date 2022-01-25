@@ -2,104 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8444C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF885C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445260AbiAYH1j (ORCPT
+        id S1445328AbiAYH1y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:27:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444563AbiAYHWq (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:22:46 -0500
-Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831D3C06E039;
-        Mon, 24 Jan 2022 22:27:47 -0800 (PST)
-Received: by mail-ua1-x930.google.com with SMTP id b16so35536049uaq.4;
-        Mon, 24 Jan 2022 22:27:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x7OWhLsmJS1+uUOEexpDwoIKITm+x9XBIi30vSgK1xg=;
-        b=hkWuAz/YuA6uirgqIr8pVE292nRVrNT1FRntEAbq6BSmuV1RjGikjVpCJ91lvOiWTI
-         wsSfkTZlPqf02zgXbqLu59iYosJKmRfHg9UN4n4eofqmvQSx24qipIN2arr5JrhMgs2o
-         UbVYyHuG3MrfZG3BR/VubSt4JsNDJWK1I5Q3IIaK9xATYai+n5SM0iOngkYc89ZUEinE
-         ZCW8ujZ79F1WoVYy5wmQzUPcE54FTEkgU98Ngt+xWYhUmXJTsD6h2aQo5YR5fGPI3i9K
-         dFfww1Uqm4jRM60BxU3/W42mUddMTt8OoHrM3+yYOWgNkrld2w4uraPYqsW3pkYsj1a2
-         4skA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x7OWhLsmJS1+uUOEexpDwoIKITm+x9XBIi30vSgK1xg=;
-        b=RPPkLZ43GCj5+OEhz+JlbqRVrKlui86EiARCri8cXjAspUj5HS5aGvSIJnIwVnnRJK
-         M18yXyyWxs/tTiOBaRJB/Jw30ghuxhQEwtrtbqH1SV+ZSqXe5uMrAQetL76onlwPIpZ9
-         oQ2C0QHqIS+3A8GeS4zmOVNZ7TlqP9wJ0vM7NmwGYvDebEZtOt36WeWMnED7LrAOpKks
-         WupxLLHpw6RAEBD8eAtHvENyz+Q4sHKywvQbmWDPOX/KAFVUX64Wubm+6nNaxEpb9HJm
-         BuVejrmTpgxupVuTNKeaYLpdm9CQwpRc4KdezQsHKxKyKIQjjwIk7H/HE867n1hLw1R+
-         DwSQ==
-X-Gm-Message-State: AOAM532AWL+2ue3rGgkizmkaqkbA9oMcHAJ5x5/1U5VUiZhOdrDBogYi
-        ZCfbTrI8psC9kujGPZpkO9xJGEfGokZIDsfOAvaCutwQwyU=
-X-Google-Smtp-Source: ABdhPJx+rYdRl8Z7+AGuvxfELBIQDGePT2oG2nEhInJMqyAa5hjsASHccpDLr9LNE0L1Vk3U7tCnise0rK2hMuuJdiI=
-X-Received: by 2002:ab0:3caa:: with SMTP id a42mr296234uax.46.1643092066597;
- Mon, 24 Jan 2022 22:27:46 -0800 (PST)
-MIME-Version: 1.0
-References: <20220110114930.1406665-1-sergio.paracuellos@gmail.com>
- <20220110114930.1406665-4-sergio.paracuellos@gmail.com> <20220125011429.93D9FC340E4@smtp.kernel.org>
-In-Reply-To: <20220125011429.93D9FC340E4@smtp.kernel.org>
-From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Date:   Tue, 25 Jan 2022 07:27:35 +0100
-Message-ID: <CAMhs-H9e4Ww2GNk4JqfkuRketb3ZR54UbrqaOx4qH+EJQiNakQ@mail.gmail.com>
-Subject: Re: [PATCH v8 3/4] clk: ralink: make system controller node a reset provider
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
-        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
-        Greg KH <gregkh@linuxfoundation.org>,
-        NeilBrown <neil@brown.name>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 25 Jan 2022 02:27:54 -0500
+Received: from mga06.intel.com ([134.134.136.31]:11673 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1324845AbiAYDeN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 22:34:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643081653; x=1674617653;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=8ucIpNbwLKGUANZTl44G5Tsgc2DPHdejNQlu4/aegko=;
+  b=bIj0+mqFnr8rkpNH+C5RXD3UNTFfYCByL+yTmyju4Dx/p5sZn4LQB1CB
+   yukNioJW1AABANiq2eNB6GhbAoytUAdEAI/nUZzFR4i47C3DPSXd4+BWL
+   GSst27XbAnRr1+gJQ+ASatID/Z+WuuoHlbJYIxpdpnLboDHE/MQw5Nklu
+   tmEkoE3BiUtDrUSGeAWewO32MLZY/Q/vp43YAuCYcngGJNEM0rcbuYPgP
+   i4+wOXw5K8blGcEA2Ewo/U3aNhaep5CgYuFLjg2ZCEwOCAXphIbLawyMc
+   d5J8HguAdozBeZZzJ1chZEmU/iGCyVpfN1Dg1zY2E0ASVru02eJzkFcuH
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="306923149"
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="306923149"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 19:24:26 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="532293091"
+Received: from mismail5-ilbpg0.png.intel.com ([10.88.229.13])
+  by fmsmga007.fm.intel.com with ESMTP; 24 Jan 2022 19:24:20 -0800
+From:   Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, mohammad.athari.ismail@intel.com
+Subject: [PATCH net v2 2/2] net: stmmac: skip only stmmac_ptp_register when resume from suspend
+Date:   Tue, 25 Jan 2022 11:23:24 +0800
+Message-Id: <20220125032324.4055-3-mohammad.athari.ismail@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220125032324.4055-1-mohammad.athari.ismail@intel.com>
+References: <20220125032324.4055-1-mohammad.athari.ismail@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 2:14 AM Stephen Boyd <sboyd@kernel.org> wrote:
->
-> Quoting Sergio Paracuellos (2022-01-10 03:49:29)
-> > MT7621 system controller node is already providing the clocks for the whole
-> > system but must also serve as a reset provider. Hence, add reset controller
-> > related code to the clock driver itself. To get resets properly ready for
-> > the rest of the world we need to move platform driver initialization process
-> > to 'arch_initcall'.
-> >
-> > CC: Philipp Zabel <p.zabel@pengutronix.de>
-> > Signed-off-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
-> > ---
-> >  drivers/clk/ralink/clk-mt7621.c | 92 ++++++++++++++++++++++++++++++++-
-> >  1 file changed, 91 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/clk/ralink/clk-mt7621.c b/drivers/clk/ralink/clk-mt7621.c
-> > index a2c045390f00..99256659dd96 100644
-> > --- a/drivers/clk/ralink/clk-mt7621.c
-> > +++ b/drivers/clk/ralink/clk-mt7621.c
-> > @@ -11,14 +11,17 @@
-> >  #include <linux/mfd/syscon.h>
-> >  #include <linux/platform_device.h>
-> >  #include <linux/regmap.h>
-> > +#include <linux/reset-controller.h>
-> >  #include <linux/slab.h>
-> >  #include <dt-bindings/clock/mt7621-clk.h>
-> > +#include <dt-bindings/reset/mt7621-reset.h>
->
-> I can't take this patch without taking the first patch. I suppose if
-> Greg is OK I can take the staging patch #4 through clk tree too? Let me
-> know.
+When resume from suspend, besides skipping PTP registration, it also
+skipping PTP HW initialization. This could cause PTP clock not able to
+operate properly when resume from suspend.
 
-Greg, can you Ack patch 4 of the series to get all applied through CLK tree?
+To fix this, only stmmac_ptp_register() is skipped when resume from
+suspend.
 
-Thanks!
+Fixes: fe1319291150 ("stmmac: Don't init ptp again when resume from suspend/hibernation")
+Cc: <stable@vger.kernel.org> # 5.15.x
+Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+---
+v2 changelog:
+- Fix build warning related to "function parameter or member not described".
+---
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 22 +++++++++----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-Best regards,
-    Sergio Paracuellos
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index d7e261768f73..b8e5e19e6f7b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -880,11 +880,12 @@ EXPORT_SYMBOL_GPL(stmmac_init_tstamp_counter);
+ /**
+  * stmmac_init_ptp - init PTP
+  * @priv: driver private structure
++ * @ptp_register: register PTP if set
+  * Description: this is to verify if the HW supports the PTPv1 or PTPv2.
+  * This is done by looking at the HW cap. register.
+  * This function also registers the ptp driver.
+  */
+-static int stmmac_init_ptp(struct stmmac_priv *priv)
++static int stmmac_init_ptp(struct stmmac_priv *priv, bool ptp_register)
+ {
+ 	bool xmac = priv->plat->has_gmac4 || priv->plat->has_xgmac;
+ 	int ret;
+@@ -914,7 +915,8 @@ static int stmmac_init_ptp(struct stmmac_priv *priv)
+ 	priv->hwts_tx_en = 0;
+ 	priv->hwts_rx_en = 0;
+ 
+-	stmmac_ptp_register(priv);
++	if (ptp_register)
++		stmmac_ptp_register(priv);
+ 
+ 	return 0;
+ }
+@@ -3241,7 +3243,7 @@ static int stmmac_fpe_start_wq(struct stmmac_priv *priv)
+ /**
+  * stmmac_hw_setup - setup mac in a usable state.
+  *  @dev : pointer to the device structure.
+- *  @init_ptp: initialize PTP if set
++ *  @ptp_register: register PTP if set
+  *  Description:
+  *  this is the main function to setup the HW in a usable state because the
+  *  dma engine is reset, the core registers are configured (e.g. AXI,
+@@ -3251,7 +3253,7 @@ static int stmmac_fpe_start_wq(struct stmmac_priv *priv)
+  *  0 on success and an appropriate (-)ve integer as defined in errno.h
+  *  file on failure.
+  */
+-static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
++static int stmmac_hw_setup(struct net_device *dev, bool ptp_register)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	u32 rx_cnt = priv->plat->rx_queues_to_use;
+@@ -3308,13 +3310,11 @@ static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
+ 
+ 	stmmac_mmc_setup(priv);
+ 
+-	if (init_ptp) {
+-		ret = stmmac_init_ptp(priv);
+-		if (ret == -EOPNOTSUPP)
+-			netdev_warn(priv->dev, "PTP not supported by HW\n");
+-		else if (ret)
+-			netdev_warn(priv->dev, "PTP init failed\n");
+-	}
++	ret = stmmac_init_ptp(priv, ptp_register);
++	if (ret == -EOPNOTSUPP)
++		netdev_warn(priv->dev, "PTP not supported by HW\n");
++	else if (ret)
++		netdev_warn(priv->dev, "PTP init failed\n");
+ 
+ 	priv->eee_tw_timer = STMMAC_DEFAULT_TWT_LS;
+ 
+-- 
+2.17.1
+
