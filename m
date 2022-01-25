@@ -2,104 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9699C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 05:46:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 05:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235403AbiAYFqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 00:46:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235329AbiAYFnL (ORCPT
+        id S238009AbiAYFqJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 00:46:09 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:31400 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235409AbiAYFkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 00:43:11 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB808C0613AF;
-        Mon, 24 Jan 2022 20:03:13 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id h10so60312wmh.4;
-        Mon, 24 Jan 2022 20:03:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=C3FYe6TcjYjJbJdwbX6OqfjeFpVDE2oMdSSX3Pq1Ukk=;
-        b=pKcHkaFv8cJewfXGxbaoexn8ygvz6aAsVsgb9im1bfgH1/UQPgeCfqahJ2dR2Jd6hw
-         AOgIxBugel8w8NhNgNGUc96a62L5XLi7ClRbyVQaZ/sWNJTCZIFAWX3weKU8H0yMhADj
-         GshQQfTaDIR+ZlBSv64qpiXbAhGVgFWhYXgI1NfaxBLlAfZYrCChvz7mNWx8KV61CCBN
-         oipUOMRVHvtv4shz3+ZU5vVYSz283rDSviTI8EVMkwsiULDNG+eCrrZhNHOmOIOsMsrK
-         ISx+Ta2LMa0Eh2OF2o+sGHLDFeQv4ktn5kAjzEIZJGfbHqgi10b/wM+h1LpOutSeBVLN
-         rghg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=C3FYe6TcjYjJbJdwbX6OqfjeFpVDE2oMdSSX3Pq1Ukk=;
-        b=pcio16Ww+L0DZKc+O6hwKqRlTUhl1byC78D9FPewjLNks1ojDHsG9x6iloAFcfTAh1
-         vRFV2s5zsZaOIK1+yH/RVBlWy2FUX4ASiR+KsLVuxVsuypBZD+H2aOCjRVetquaQg0LW
-         oTvYilpr7tMapfNI0Wkxgx6ZozQ/ZxXfWKjeJeoqT8a1P7tNsc2GHEEGvN0CLbX+Ynjr
-         DyegoWSde+frn35KJeDWRnB2e+60sS9wbb7BwIMiZ5PCplUUOfdwjlEJ52ZHjlUlV2ut
-         qln5U0JfP/aE8R8RmSZdu3IT6z2/0//zpprg7jr+BtDKbENz5trVwCWfg/0psirIG6Ze
-         pEmQ==
-X-Gm-Message-State: AOAM530t+8zPFH0Xzm01ES00c8ZDsySXpBRDP1oATRsMXkvsgDDdhrCP
-        lJPPumIj/Ycf4Frea5HV54s=
-X-Google-Smtp-Source: ABdhPJw35D0LrxgrZWlhbeSpwAo2a4wXCmg7DUqpptX4Hs+orfcpR6co5iihxpSUNgAQICwdVQ+zVQ==
-X-Received: by 2002:a05:600c:3797:: with SMTP id o23mr1116133wmr.158.1643083392066;
-        Mon, 24 Jan 2022 20:03:12 -0800 (PST)
-Received: from [172.16.20.20] ([87.200.95.144])
-        by smtp.gmail.com with ESMTPSA id z1sm1039020wma.20.2022.01.24.20.03.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jan 2022 20:03:11 -0800 (PST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.7\))
-Subject: Re: [PATCH 0/3] arm64: dts: meson: add BL32 reserved region to
- Beelink g12b devices
-From:   Christian Hewitt <christianshewitt@gmail.com>
-In-Reply-To: <7h7daoyka3.fsf@baylibre.com>
-Date:   Tue, 25 Jan 2022 08:03:09 +0400
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Furkan Kardame <furkan@fkardame.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <3A7E4C5F-AECB-4A3E-B074-E2E3419DD749@gmail.com>
-References: <20220122073221.2398-1-christianshewitt@gmail.com>
- <7h7daoyka3.fsf@baylibre.com>
-To:     Kevin Hilman <khilman@baylibre.com>
-X-Mailer: Apple Mail (2.3608.120.23.2.7)
+        Tue, 25 Jan 2022 00:40:55 -0500
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20P1VRwS019388;
+        Tue, 25 Jan 2022 05:40:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=LZnB4L07KX57W1nMkDDt+14Tce7jS78AInJQ9XIn0JA=;
+ b=a1XlucWmtEK0B0zfylAZIH+2vDa8Z9PyRPgAxAyGpaDuE2zuCCwOjKqIPxyRGsgcMdDB
+ AG9c1OGS+/Nt3yfG6XfDfFLvVS2RkIKbLUouFodWxiZ9f0BMmIaePlX+SnFk8k4OQ4uj
+ pq59t8veCB3190LQyTmetwd034x8Pcp9SDDURwKDhci6s020IUPAJCYEzDdyTU8vL5Oc
+ HCTBq+Csc1RFyJ8Z0UDQ7W8jiVZdokPbmo+j8OvFndXn2mEcaBWl7vXjSQf50pFweC8e
+ bjlCikElctuTMSiVKKtgtxyePTVlGrc0RqanEDJuNxqDHbaN9HPcgeHqzQFUKt0HQX6j 5Q== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dsy7asxpg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Jan 2022 05:40:50 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20P5auwX172061;
+        Tue, 25 Jan 2022 05:40:49 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 3dr71x1shf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Jan 2022 05:40:49 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 20P5embe181395;
+        Tue, 25 Jan 2022 05:40:48 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by userp3030.oracle.com with ESMTP id 3dr71x1sgc-1;
+        Tue, 25 Jan 2022 05:40:48 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     Adam Radford <aradford@gmail.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] scsi: 3w-sas: Remove useless DMA-32 fallback configuration
+Date:   Tue, 25 Jan 2022 00:40:37 -0500
+Message-Id: <164308671272.32373.7479857078284374730.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <dbbe8671ca760972d80f8d35f3170b4609bee368.1642236763.git.christophe.jaillet@wanadoo.fr>
+References: <dbbe8671ca760972d80f8d35f3170b4609bee368.1642236763.git.christophe.jaillet@wanadoo.fr>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: wfgt_y3oIB8nlCN-vsMWRsww0p-0Ae3t
+X-Proofpoint-ORIG-GUID: wfgt_y3oIB8nlCN-vsMWRsww0p-0Ae3t
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->=20
-> On 25 Jan 2022, at 12:02 am, Kevin Hilman <khilman@baylibre.com> =
-wrote:
->=20
-> Christian Hewitt <christianshewitt@gmail.com> writes:
->=20
->> This resolves a long-running issue where Beelink GT-King/Pro and
->> GS-King-X wedge on boot or shortly after when booting from vendor
->> u-boot. In some distros the issue is often reported as triggered
->> by large file transfers to/from USB or SD cards. Reserving the
->> BL32 memory region prevents the issue.
->=20
-> The BL32 is typically common for the SoC family, so this change should
-> probably go into the g12b.dtsi.  Or probably even
-> meson-g12-common.dtsi, which is where the BL31 reserved-memory is
-> described.
+On Sat, 15 Jan 2022 09:53:03 +0100, Christophe JAILLET wrote:
 
-Hi Kevin,
+> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+> dev->dma_mask is non-NULL.
+> So, if it fails, the 32 bits case will also fail for the same reason.
+> 
+> Simplify code and remove some dead code accordingly.
+> 
+> [1]: https://lore.kernel.org/linux-kernel/YL3vSPK5DXTNvgdx@infradead.org/#t
+> 
+> [...]
 
-Would you be okay with the same change applied to GX devices too? - I
-normally have these two catch-all patches in my tree to deal with random
-tv box hardware and it would be great to drop them:
+Applied to 5.17/scsi-fixes, thanks!
 
-=
-https://github.com/chewitt/linux/commit/4315ea4612389fc08d0a008b562cafbda9=
-6374fc
-=
-https://github.com/chewitt/linux/commit/3c0df794baa7ea9d32d8ad54530b5a056c=
-770ea9
+[1/1] scsi: 3w-sas: Remove useless DMA-32 fallback configuration
+      https://git.kernel.org/mkp/scsi/c/fb8d5ea8fd90
 
-Christian=
+-- 
+Martin K. Petersen	Oracle Linux Engineering
