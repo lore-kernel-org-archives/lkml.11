@@ -2,241 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D959C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1976C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238977AbiAYKqx convert rfc822-to-8bit (ORCPT
+        id S1376812AbiAYKrr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:46:53 -0500
-Received: from mail-ua1-f51.google.com ([209.85.222.51]:34740 "EHLO
-        mail-ua1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359754AbiAYKnd (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:43:33 -0500
-Received: by mail-ua1-f51.google.com with SMTP id y4so36590173uad.1;
-        Tue, 25 Jan 2022 02:43:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KUBI31PDeAnUzGFlBJuIh4dmvfrE44RhBRVMq2wEYSI=;
-        b=jEQDW5yodRmRVP9NIHGKf/Zqv7fciKPRB1CkTV3fKwnJqJOR9nObuvchECsV6CkowS
-         0RXMHwpiWGb2Tc8Kq8ywS8r7D5Ou/pBi+AuAod7u3AaDFL1+Z/eF6fLMeHVSznOTnWUW
-         90tv/NIVrXuMtI8sY04pwv/Mro4kUzc+Bpth5wWllcKADG4aGhnhIjbJhQzaV5RtPjzw
-         s1FdjjAQnwFOzetd3JADKbmMtsbUPpwqNRzajLB0hDQGa0Rgfbp8HOVlhxI+mK2MNTJd
-         Q5wTqyofT3OihGmTPOd6QhPLpcrEB7UCAoEmrVZTRCK/nWOxls32FCorF6O1NqCujuDv
-         dJSg==
-X-Gm-Message-State: AOAM531YcK63o+balcc5pV241srngLS5LTpT15FAMrvagHXIW5gKB3jS
-        U2c1AOPoRhAwTItUF4uz4P44uZUF4VS28vTX
-X-Google-Smtp-Source: ABdhPJwAP7sGEC010JKTiaYioiu/UTc4Mp89rGwnkrkLZob5IjBWSJ5wyDMZldWcel/u/8J+O6Kjog==
-X-Received: by 2002:a67:e146:: with SMTP id o6mr1664843vsl.4.1643107407326;
-        Tue, 25 Jan 2022 02:43:27 -0800 (PST)
-Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com. [209.85.221.178])
-        by smtp.gmail.com with ESMTPSA id s134sm3300983vkb.16.2022.01.25.02.43.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 02:43:27 -0800 (PST)
-Received: by mail-vk1-f178.google.com with SMTP id j185so8365206vkc.1;
-        Tue, 25 Jan 2022 02:43:27 -0800 (PST)
-X-Received: by 2002:a05:6102:34e:: with SMTP id e14mr295625vsa.68.1643107051968;
- Tue, 25 Jan 2022 02:37:31 -0800 (PST)
+        Tue, 25 Jan 2022 05:47:47 -0500
+Received: from foss.arm.com ([217.140.110.172]:34102 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1355114AbiAYKou (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 05:44:50 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 792DB1FB;
+        Tue, 25 Jan 2022 02:44:44 -0800 (PST)
+Received: from ip-10-252-15-108.eu-west-1.compute.internal (unknown [10.252.15.108])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9E0813F7D8;
+        Tue, 25 Jan 2022 02:44:41 -0800 (PST)
+From:   German Gomez <german.gomez@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Cc:     irogers@google.com, German Gomez <german.gomez@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Alexandre Truong <alexandre.truong@arm.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH] perf test: update arm64 perf_event_attr tests for --call-graph
+Date:   Tue, 25 Jan 2022 10:44:34 +0000
+Message-Id: <20220125104435.2737-1-german.gomez@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de> <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 25 Jan 2022 11:37:19 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWCRyyq1=5+YnXgt2=B-qXMGWXC4XtnP_GHGvghdaH_XQ@mail.gmail.com>
-Message-ID: <CAMuHMdWCRyyq1=5+YnXgt2=B-qXMGWXC4XtnP_GHGvghdaH_XQ@mail.gmail.com>
-Subject: Re: [PATCH 5/5] spi: make remove callback a void function
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Mark Brown <broonie@kernel.org>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Emma Anholt <emma@anholt.net>,
-        David Lechner <david@lechnology.com>,
-        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
-        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
-        Antti Palosaari <crope@iki.fi>,
-        Lee Jones <lee.jones@linaro.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Piel <eric.piel@tremplin-utc.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        =?UTF-8?Q?=C5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Harry Morris <h.morris@cascoda.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Solomon Peachy <pizza@shaftnet.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Benson Leung <bleung@chromium.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        James Schulman <james.schulman@cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        =?UTF-8?Q?Ronald_Tschal=C3=A4r?= <ronald@innovation.ch>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Heiko Schocher <hs@denx.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Matt Kline <matt@bitbashing.io>,
-        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nanyong Sun <sunnanyong@huawei.com>,
-        Yang Shen <shenyang39@huawei.com>,
-        dingsenjie <dingsenjie@yulong.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michael Walle <michael@walle.cc>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        wengjianfeng <wengjianfeng@yulong.com>,
-        Sidong Yang <realwakka@gmail.com>,
-        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
-        Davidlohr Bueso <dbueso@suse.de>, Claudius Heine <ch@denx.de>,
-        Jiri Prchal <jiri.prchal@aksignal.cz>,
-        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        linux-wireless@vger.kernel.org, libertas-dev@lists.infradead.org,
-        platform-driver-x86@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
-        kernel@pengutronix.de
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 23, 2022 at 6:54 PM Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
-> The value returned by an spi driver's remove function is mostly ignored.
-> (Only an error message is printed if the value is non-zero that the
-> error is ignored.)
->
-> So change the prototype of the remove function to return no value. This
-> way driver authors are not tempted to assume that passing an error to
-> the upper layer is a good idea. All drivers are adapted accordingly.
-> There is no intended change of behaviour, all callbacks were prepared to
-> return 0 before.
->
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+The struct perf_event_attr is initialised differently in Arm64 when
+recording in call-graph fp mode, so update the relevant tests, and add
+two extra arm64-only tests.
 
->  drivers/spi/spi-slave-system-control.c                |  3 +--
->  drivers/spi/spi-slave-time.c                          |  3 +--
->  drivers/spi/spi.c                                     | 11 ++---------
->  drivers/spi/spidev.c                                  |  4 +---
+Fixes: 7248e308a575 ("perf tools: Record ARM64 LR register automatically")
+Signed-off-by: German Gomez <german.gomez@arm.com>
+---
+ tools/perf/tests/attr/README                            | 2 ++
+ tools/perf/tests/attr/test-record-graph-default         | 2 ++
+ tools/perf/tests/attr/test-record-graph-default-aarch64 | 9 +++++++++
+ tools/perf/tests/attr/test-record-graph-fp              | 2 ++
+ tools/perf/tests/attr/test-record-graph-fp-aarch64      | 9 +++++++++
+ 5 files changed, 24 insertions(+)
+ create mode 100644 tools/perf/tests/attr/test-record-graph-default-aarch64
+ create mode 100644 tools/perf/tests/attr/test-record-graph-fp-aarch64
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
+index a36f49fb4dbe..1116fc6bf2ac 100644
+--- a/tools/perf/tests/attr/README
++++ b/tools/perf/tests/attr/README
+@@ -45,8 +45,10 @@ Following tests are defined (with perf commands):
+   perf record -d kill                           (test-record-data)
+   perf record -F 100 kill                       (test-record-freq)
+   perf record -g kill                           (test-record-graph-default)
++  perf record -g kill                           (test-record-graph-default-aarch64)
+   perf record --call-graph dwarf kill		(test-record-graph-dwarf)
+   perf record --call-graph fp kill              (test-record-graph-fp)
++  perf record --call-graph fp kill              (test-record-graph-fp-aarch64)
+   perf record --group -e cycles,instructions kill (test-record-group)
+   perf record -e '{cycles,instructions}' kill   (test-record-group1)
+   perf record -e '{cycles/period=1/,instructions/period=2/}:S' kill (test-record-group2)
+diff --git a/tools/perf/tests/attr/test-record-graph-default b/tools/perf/tests/attr/test-record-graph-default
+index 5d8234d50845..f0a18b4ea4f5 100644
+--- a/tools/perf/tests/attr/test-record-graph-default
++++ b/tools/perf/tests/attr/test-record-graph-default
+@@ -2,6 +2,8 @@
+ command = record
+ args    = --no-bpf-event -g kill >/dev/null 2>&1
+ ret     = 1
++# arm64 enables registers in the default mode (fp)
++arch    = !aarch64
+ 
+ [event:base-record]
+ sample_type=295
+diff --git a/tools/perf/tests/attr/test-record-graph-default-aarch64 b/tools/perf/tests/attr/test-record-graph-default-aarch64
+new file mode 100644
+index 000000000000..e98d62efb6f7
+--- /dev/null
++++ b/tools/perf/tests/attr/test-record-graph-default-aarch64
+@@ -0,0 +1,9 @@
++[config]
++command = record
++args    = --no-bpf-event -g kill >/dev/null 2>&1
++ret     = 1
++arch    = aarch64
++
++[event:base-record]
++sample_type=4391
++sample_regs_user=1073741824
+diff --git a/tools/perf/tests/attr/test-record-graph-fp b/tools/perf/tests/attr/test-record-graph-fp
+index 5630521c0b0f..a6e60e839205 100644
+--- a/tools/perf/tests/attr/test-record-graph-fp
++++ b/tools/perf/tests/attr/test-record-graph-fp
+@@ -2,6 +2,8 @@
+ command = record
+ args    = --no-bpf-event --call-graph fp kill >/dev/null 2>&1
+ ret     = 1
++# arm64 enables registers in fp mode
++arch    = !aarch64
+ 
+ [event:base-record]
+ sample_type=295
+diff --git a/tools/perf/tests/attr/test-record-graph-fp-aarch64 b/tools/perf/tests/attr/test-record-graph-fp-aarch64
+new file mode 100644
+index 000000000000..cbeea9971285
+--- /dev/null
++++ b/tools/perf/tests/attr/test-record-graph-fp-aarch64
+@@ -0,0 +1,9 @@
++[config]
++command = record
++args    = --no-bpf-event --call-graph fp kill >/dev/null 2>&1
++ret     = 1
++arch    = aarch64
++
++[event:base-record]
++sample_type=4391
++sample_regs_user=1073741824
+-- 
+2.25.1
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
