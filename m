@@ -2,139 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1135FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4821DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457186AbiAYJOi (ORCPT
+        id S1457285AbiAYJOz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:14:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
+        Tue, 25 Jan 2022 04:14:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453532AbiAYIyp (ORCPT
+        with ESMTP id S1455336AbiAYJE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:54:45 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F71EC078503
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 23:44:07 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id v3so12322102pgc.1
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 23:44:07 -0800 (PST)
+        Tue, 25 Jan 2022 04:04:26 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9FDC06135C
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:27 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id o12so11895451lfg.12
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YDl8tuenOB7OINLaTsYd1+PC6tJZxYpv16l39VyIDDg=;
-        b=jhLcV//DEN8NAy6w0LcFzAs7igIi+ZA17lYQTXWHFHsVoY0ehWuVVsQ1YPRQ/SSvsI
-         u0qOQ/gMEy+9Td2Idd9gSVlVTZPXe76GHBVLil/jwoskzCcRJYwuez58o6gJRmGvoWdp
-         QgzmSigJP7mawexsbZ4FSNnGvZX2o2y0b+Eww=
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=KADXDwPSZzBNJZyGOf6/RaxmVEZ0dcQMEj4ph2LZrIA=;
+        b=E5N6rnfpLVuomzpKv7B2iO6tqIya1+zMB7j6sPn5f/I6ggTAaJqoDqBHwysCe4g6D6
+         FFcao7hF04BWqCwu9s+U+g3GORW4cq8dmt4RqSXNaDPnA329ZI81GDO8lKVEe11XmxoQ
+         qdqv+GI8VdBE3edikJPt8xXPZZ59+BR55A+ZXBmrAZ/XtcgN0qouXrcIbmYQCfYJ1juM
+         58JkfDeW2VsEdCxdU5Z8THlgm7GFAZOYY3Sv9b4Htj2gMJgKUTQkszP8lSJ24EnW4P4X
+         GRkuYMYKrVRlJjnYxt6ud7UUwMM80YzgH3LH9zlOS/Gbh1c2aXETX6oG4qZtSPzLk19N
+         KCZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YDl8tuenOB7OINLaTsYd1+PC6tJZxYpv16l39VyIDDg=;
-        b=Sy5LeYMC0/SjpQK4hyOUn+s/Eb6SaVlUpxpg1nZvGODnQ6cfabSze7yGYo2QolZS7c
-         XTyZekrVRZva50bqePCN8h0ucG84249Be1bSe6FSFY6K1r2GlhphY4hujR0YSOZ8SuYx
-         c5zd737JSjGuU0xjjr17fSQ+y334wuwLeCPkUj9KaLIc7SHN1//OW+xU6tkoOIj0Brdb
-         bMpxVYZnv77cm6il+XLnpJGjDFAZt/cgLTYFC6mjsrEYcqz9QjwFmRG8L13uTBKbJ6Lq
-         W2vztpsS1rXFSK3DGTnrE6+7AS3pdCWaDZ6HUXunslyaIUzcbYby2Om5lSPD5jr5a30F
-         3S5g==
-X-Gm-Message-State: AOAM533G9KC9f98Hc+bh1kM3YSmuNuz6fDgF2D5HMwW/VYhTcgPOyM7X
-        a6i+RENe1GJxXRRAVvSwP7pF6w==
-X-Google-Smtp-Source: ABdhPJx1eKNMtskZDfwNpOccUTY1Kim/WLynhTPSIe0KGbPCH/+gumJHFG8D9tPvqfTxjWfWVTu7rg==
-X-Received: by 2002:a65:6ab0:: with SMTP id x16mr14730337pgu.24.1643096646857;
-        Mon, 24 Jan 2022 23:44:06 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id s23sm20534298pfg.144.2022.01.24.23.44.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=KADXDwPSZzBNJZyGOf6/RaxmVEZ0dcQMEj4ph2LZrIA=;
+        b=yVtpJ3XvhZkN55F2GlDbWmCzaV6Fz3DZIPgQrmuSOGIeR33VRaDijZuplozSqBYD8k
+         MikGT7Ss1JCd/BcuJd5OgBcxh9X+iZn6XDW4DkIS+1bqKOudWdrvAd3pu0p3v58VcIUe
+         xW18/uf1XFZdJ7ENcImsfMrCqp65HamdQu5KrBOFVVX0Qx7LHD6fmzdinc7ChYTrylW/
+         bWFoW7+4wCvpbZ9CkEV2lzNCouEWovrzRi7jHKcpu7k1Sllcu/xF51CJnYtCL6QQZ2Vc
+         dJbtGbu4mnnppqJwiv4PXuLSjMgn3GWHxNfIoGc72NOetkepnb8VKbwoaeIIxktipBYy
+         1syw==
+X-Gm-Message-State: AOAM53109bJWrEDliFc5bIN8tteX46bIySauZL7Yn3NCNbx7TkGX4P9M
+        qSmt2YfFggWGk4SvQg+cMpFfcA==
+X-Google-Smtp-Source: ABdhPJxBOpDCi+HD+W7m+aCE1uJ74rL4NmI8ow4BsEsaN6ZHzn0gSv57q1zh/Uyab4PWRk17uBBwWA==
+X-Received: by 2002:a05:6512:3d0a:: with SMTP id d10mr2796243lfv.472.1643100445460;
+        Tue, 25 Jan 2022 00:47:25 -0800 (PST)
+Received: from navi.cosmonova.net.ua ([95.67.24.131])
+        by smtp.gmail.com with ESMTPSA id q5sm1418944lfe.279.2022.01.25.00.47.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 23:44:06 -0800 (PST)
-Date:   Mon, 24 Jan 2022 23:44:05 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the kspp tree
-Message-ID: <202201242230.C54A6BCDFE@keescook>
-References: <20220125145006.677e3709@canb.auug.org.au>
+        Tue, 25 Jan 2022 00:47:25 -0800 (PST)
+From:   Andrew Melnychenko <andrew@daynix.com>
+To:     davem@davemloft.net, kuba@kernel.org, mst@redhat.com,
+        jasowang@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     yuri.benditovich@daynix.com, yan@daynix.com
+Subject: [RFC PATCH 5/5] drivers/net/virtio_net.c: Added USO support.
+Date:   Tue, 25 Jan 2022 10:47:02 +0200
+Message-Id: <20220125084702.3636253-6-andrew@daynix.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220125084702.3636253-1-andrew@daynix.com>
+References: <20220125084702.3636253-1-andrew@daynix.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125145006.677e3709@canb.auug.org.au>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 02:50:06PM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the kspp tree, today's linux-next build (powerpc
-> allmodconfig) failed like this:
-> 
-> In file included from include/linux/string.h:253,
->                  from include/linux/bitmap.h:11,
->                  from include/linux/cpumask.h:12,
->                  from include/linux/mm_types_task.h:14,
->                  from include/linux/mm_types.h:5,
->                  from include/linux/buildid.h:5,
->                  from include/linux/module.h:14,
->                  from samples/trace_events/trace-events-sample.c:2:
-> In function '__fortify_strcpy',
->     inlined from 'perf_trace_foo_rel_loc' at samples/trace_events/./trace-events-sample.h:519:1:
-> include/linux/fortify-string.h:47:33: error: '__builtin_strcpy' offset 12 is out of the bounds [0, 4] [-Werror=array-bounds]
+Now, it possible to enable GSO_UDP_L4("tx-udp-segmentation") for VirtioNet.
 
--Warray-bounds thinks something is trying to get at offset 12 of an
-object it thinks is only 4 bytes in size.
+Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+---
+ drivers/net/virtio_net.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
 
->    47 | #define __underlying_strcpy     __builtin_strcpy
->       |                                 ^
-> include/linux/fortify-string.h:445:24: note: in expansion of macro '__underlying_strcpy'
->   445 |                 return __underlying_strcpy(p, q);
->       |                        ^~~~~~~~~~~~~~~~~~~
-> 
-> Exposed by (probably) commit
-> 
->   602670289b69 ("fortify: Detect struct member overflows in memcpy() at compile-time")
-> 
-> Introduced by commit
-> 
->   b466b1332164 ("samples/trace_event: Add '__rel_loc' using sample event")
-> 
-> I have reverted that latter commit for today.
-
-Digging through the macros, I end up reconstructing this:
-
-	strcpy( (char *)((void *)(&__entry->__rel_loc_foo) +
-				  sizeof(__entry->__rel_loc_foo) +
-				  (__entry->__rel_loc_foo & 0xffff)),
-		foo ? (const char *)(foo) : "(null)");
-
-I couldn't figure out how __entry is being allocated, but it seemed
-maybe related to this note:
-
-/*
- * struct trace_event_data_offsets_<call> {
- *      u32                             <item1>;
- *      u32                             <item2>;
- *      [...]
- * };
- *
- * The __dynamic_array() macro will create each u32 <item>, this is
- * to keep the offset of each array from the beginning of the event.
- * The size of an array is also encoded, in the higher 16 bits of
- * <item>.
- */
-
-So, I think -Warray-bounds is refusing to see the destination as
-anything except a u32, but being accessed at 4 (sizeof(u32)) + 8
-(address && 0xffff) (?)
-
-But if this is true, I would imagine there would be plenty of other
-warnings? I'm currently stumped.
-
-Reading 55de2c0b5610 ("tracing: Add '__rel_loc' using trace event
-macros") did not help me. ;)
-
--Kees
-
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index a801ea40908f..a45eee022be4 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -60,13 +60,17 @@ static const unsigned long guest_offloads[] = {
+ 	VIRTIO_NET_F_GUEST_TSO6,
+ 	VIRTIO_NET_F_GUEST_ECN,
+ 	VIRTIO_NET_F_GUEST_UFO,
+-	VIRTIO_NET_F_GUEST_CSUM
++	VIRTIO_NET_F_GUEST_CSUM,
++	VIRTIO_NET_F_GUEST_USO4,
++	VIRTIO_NET_F_GUEST_USO6
+ };
+ 
+ #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+ 				(1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
+ 				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+-				(1ULL << VIRTIO_NET_F_GUEST_UFO))
++				(1ULL << VIRTIO_NET_F_GUEST_UFO)  | \
++				(1ULL << VIRTIO_NET_F_GUEST_USO4) | \
++				(1ULL << VIRTIO_NET_F_GUEST_USO6))
+ 
+ struct virtnet_stat_desc {
+ 	char desc[ETH_GSTRING_LEN];
+@@ -2530,7 +2534,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO6) ||
+ 	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
+ 		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
+-		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
++		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM) ||
++		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_USO4) ||
++		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_USO6))) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW/CSUM, disable GRO_HW/CSUM first");
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -3155,6 +3161,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 			dev->hw_features |= NETIF_F_TSO6;
+ 		if (virtio_has_feature(vdev, VIRTIO_NET_F_HOST_ECN))
+ 			dev->hw_features |= NETIF_F_TSO_ECN;
++		if (virtio_has_feature(vdev, VIRTIO_NET_F_HOST_USO))
++			dev->hw_features |= NETIF_F_GSO_UDP_L4;
+ 
+ 		dev->features |= NETIF_F_GSO_ROBUST;
+ 
+@@ -3169,6 +3177,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 		dev->features |= NETIF_F_GRO_HW;
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+ 		dev->hw_features |= NETIF_F_GRO_HW;
++	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO4) ||
++	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO6))
++		dev->hw_features |= NETIF_F_LRO;
+ 
+ 	dev->vlan_features = dev->features;
+ 
+@@ -3200,7 +3211,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+ 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6) ||
+ 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_ECN) ||
+-	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO))
++	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO) ||
++	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO4) ||
++	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO6))
+ 		vi->big_packets = true;
+ 
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
+@@ -3400,6 +3413,7 @@ static struct virtio_device_id id_table[] = {
+ 	VIRTIO_NET_F_HOST_TSO4, VIRTIO_NET_F_HOST_UFO, VIRTIO_NET_F_HOST_TSO6, \
+ 	VIRTIO_NET_F_HOST_ECN, VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6, \
+ 	VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_UFO, \
++	VIRTIO_NET_F_HOST_USO, VIRTIO_NET_F_GUEST_USO4, VIRTIO_NET_F_GUEST_USO6, \
+ 	VIRTIO_NET_F_MRG_RXBUF, VIRTIO_NET_F_STATUS, VIRTIO_NET_F_CTRL_VQ, \
+ 	VIRTIO_NET_F_CTRL_RX, VIRTIO_NET_F_CTRL_VLAN, \
+ 	VIRTIO_NET_F_GUEST_ANNOUNCE, VIRTIO_NET_F_MQ, \
 -- 
-Kees Cook
+2.34.1
+
