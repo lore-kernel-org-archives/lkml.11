@@ -2,84 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA08C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577852AbiAYOLE (ORCPT
+        id S1344784AbiAYOMb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:11:04 -0500
-Received: from mga01.intel.com ([192.55.52.88]:34418 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1578027AbiAYOIZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:08:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643119705; x=1674655705;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XgfYTpAKCUjsVgEWndslqumPAtQ3LFT5BEWLwncUR10=;
-  b=KFvdTrXcfZS+/+Ks3U5nreMdxBo8uXt4h7ZXI5fZdfrqcCW+u8cqayOK
-   42AmSrp5f2KxJxeK3m3uKJJ16GZCqU1hfqwBD5364OohARCVyLKHUlikt
-   zDitERCgaQsXuDwEOrRYqXceFxGauAV+D0kBlD5BSldQbln/JqRZZk/fQ
-   hCpBbaLpQa3bngiXiE7wRY2mVIPxvCRl8cowFhqUfW3+lzRWZczQJgjfw
-   rj8f8lX8jQGTsrR5308lrkw7S0seuO42Oh7CuYPqqVJ0dthhREs2dPj5T
-   1Tm84Twr+Czg+xiNgigl19ofiIp7b1M/MzoWzFIfxlIvpc8HAwh7QWWkH
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="270752320"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="270752320"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 06:05:22 -0800
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="580757906"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 06:05:18 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nCMQd-00EGe2-Nv;
-        Tue, 25 Jan 2022 16:04:11 +0200
-Date:   Tue, 25 Jan 2022 16:04:11 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>
-Subject: Re: [PATCH v2 1/5] nvmem: core: Remove unused devm_nvmem_unregister()
-Message-ID: <YfADW9YZ8Hbt8Phq@smile.fi.intel.com>
-References: <20220124180040.50660-1-andriy.shevchenko@linux.intel.com>
- <11caff0e-6bf3-9d66-6312-c2c2a6fc862a@linaro.org>
+        Tue, 25 Jan 2022 09:12:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1386212AbiAYOKP (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 09:10:15 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F45C061757
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:10:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=NDtxC4AV4/gW2KDw8MdrhdATAgU1HE8zgSQEUrvWdfA=; b=lVeE5N5gZ+s+tz3PNV9JEqvxsa
+        EhDK73wXij4kY8XOew/ZcY/NaO1P06iTeSjOyS1JpZJMNJ3rBNpZ+s0v02RlldkEpU1nmYb6GDbTq
+        I6HEaInAa3VmYijtrAd0ZUTAvrRlYrZHhFryAZ091cCRys/L5Ix8OMyo8PQzD362ye6JINFkZsbd1
+        Bn2pH841+i6OHOSrZzoCtQ3rnCt5dX9isNcYf1qATlO7K3Kg5Y0Qpox8mEox31cE09u8eCkKOwlS1
+        zcxfVR17ybd2Xbbk/jR3mSNPFs5+fJyUE5iNVggih+ndpTXHou7/oF6YOovBhJZkISGxTwYNZNFdJ
+        f61cwj6w==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nCMW3-002urD-5S; Tue, 25 Jan 2022 14:09:47 +0000
+Date:   Tue, 25 Jan 2022 14:09:47 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     Khalid Aziz <khalid.aziz@oracle.com>, akpm@linux-foundation.org,
+        longpeng2@huawei.com, arnd@arndb.de, dave.hansen@linux.intel.com,
+        david@redhat.com, rppt@kernel.org, surenb@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
+Message-ID: <YfAEqzTeBJSIOKcA@casper.infradead.org>
+References: <cover.1642526745.git.khalid.aziz@oracle.com>
+ <20220125114212.ks2qtncaahi6foan@box.shutemov.name>
+ <Ye/5yUyEqO0ws0G5@casper.infradead.org>
+ <20220125135917.ezi6itozrchsdcxg@box.shutemov.name>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <11caff0e-6bf3-9d66-6312-c2c2a6fc862a@linaro.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220125135917.ezi6itozrchsdcxg@box.shutemov.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 10:35:24AM +0000, Srinivas Kandagatla wrote:
-> On 24/01/2022 18:00, Andy Shevchenko wrote:
-> > There are no users and seems no will come of the devm_nvmem_unregister().
-> > Remove the function and remove the unused devm_nvmem_match() along with it.
+On Tue, Jan 25, 2022 at 04:59:17PM +0300, Kirill A. Shutemov wrote:
+> On Tue, Jan 25, 2022 at 01:23:21PM +0000, Matthew Wilcox wrote:
+> > On Tue, Jan 25, 2022 at 02:42:12PM +0300, Kirill A. Shutemov wrote:
+> > > I wounder if we can get away with zero-API here: we can transparently
+> > > create/use shared page tables for any inode on mmap(MAP_SHARED) as long as
+> > > size and alignment is sutiable. Page tables will be linked to the inode
+> > > and will be freed when the last of such mapping will go away. I don't see
+> > > a need in new syscalls of flags to existing one.
+> > 
+> > That's how HugeTLBfs works today, right?  Would you want that mechanism
+> > hoisted into the real MM?  Because my plan was the opposite -- remove it
+> > from the shadow MM once mshare() is established.
+> 
+> I hate HugeTLBfs because it is a special place with own rules. mshare() as
+> it proposed creates a new special place. I don't like this.
 
-> Applied 1/5, 2/5 and 3/5 patches.
+No new special place.  I suppose the only thing it creates that's "new"
+is an MM without any threads of its own.  And from the MM point of view,
+that's not a new thing at all because the MM simply doesn't care how
+many threads share an MM.
 
-Thanks!
+> It's better to find a way to integrate the feature natively into core-mm
+> and make as much users as possible to benefit from it.
 
-> Others can go via there own subsystems as I do not see any dependencies.
+That's what mshare is trying to do!
 
-They are dependent on the patch 3 ("nvmem: core: Check input parameter for
-NULL in nvmem_unregister()"). Since there are tags, can you apply them as
-well?
+> I think zero-API approach (plus madvise() hints to tweak it) is worth
+> considering.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+I think the zero-API approach actually misses out on a lot of
+possibilities that the mshare() approach offers.  For example, mshare()
+allows you to mmap() many small files in the shared region -- you
+can't do that with zeroAPI.
