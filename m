@@ -2,101 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE8B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3060EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382591AbiAYMwM (ORCPT
+        id S1357496AbiAYMxq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:52:12 -0500
-Received: from mout.kundenserver.de ([217.72.192.74]:35101 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457385AbiAYMtf (ORCPT
+        Tue, 25 Jan 2022 07:53:46 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:30303 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384068AbiAYMuv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:49:35 -0500
-Received: from mail-wr1-f53.google.com ([209.85.221.53]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MtwpW-1mI3FO2fTo-00uLwo for <linux-kernel@vger.kernel.org>; Tue, 25 Jan
- 2022 13:49:30 +0100
-Received: by mail-wr1-f53.google.com with SMTP id s9so3860567wrb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 04:49:30 -0800 (PST)
-X-Gm-Message-State: AOAM531TflCP6C7cIzf90W5AED9VnxkxFkb1Caknn9GKGWLzBwNpFg6h
-        OW3tHIklZ201JMLukrPtPeLp4TuK5k+VwCphvwY=
-X-Google-Smtp-Source: ABdhPJwQyRjnqkte/w6LuEz/PgKqyset8mRi8LGcNH/Fw+cF+Zcm5LVpOY8735bx7VtBAM3uI0s1L5n7mEaAKrvHJTw=
-X-Received: by 2002:adf:fd05:: with SMTP id e5mr18127892wrr.192.1643114970282;
- Tue, 25 Jan 2022 04:49:30 -0800 (PST)
+        Tue, 25 Jan 2022 07:50:51 -0500
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JjmsL6HhnzbkBp;
+        Tue, 25 Jan 2022 20:49:58 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 20:50:48 +0800
+From:   Yicong Yang <yangyicong@hisilicon.com>
+To:     <jarkko.nikula@linux.intel.com>,
+        <andriy.shevchenko@linux.intel.com>,
+        <mika.westerberg@linux.intel.com>, <wsa@kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <yangyicong@hisilicon.com>, <prime.zeng@hisilicon.com>,
+        <linuxarm@huawei.com>
+Subject: [PATCH 2/2] i2c: designware: Add ACPI assisted recovery support
+Date:   Tue, 25 Jan 2022 20:49:30 +0800
+Message-ID: <20220125124930.50369-3-yangyicong@hisilicon.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220125124930.50369-1-yangyicong@hisilicon.com>
+References: <20220125124930.50369-1-yangyicong@hisilicon.com>
 MIME-Version: 1.0
-References: <20220125073137.1.83124@7e6451f583e7> <CAMuHMdVYhwpP0vSK4LT+50ZqB9opD8gcm-2aor8wAc49=GR+-w@mail.gmail.com>
-In-Reply-To: <CAMuHMdVYhwpP0vSK4LT+50ZqB9opD8gcm-2aor8wAc49=GR+-w@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 25 Jan 2022 13:49:14 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2Qik6A9ts0J_oXP-LMbqA0-kvZ4E9=bgLx5spxvLuC8w@mail.gmail.com>
-Message-ID: <CAK8P3a2Qik6A9ts0J_oXP-LMbqA0-kvZ4E9=bgLx5spxvLuC8w@mail.gmail.com>
-Subject: Re: kisskb: FAILED linux-next/m68k-allmodconfig/m68k-gcc8 Tue Jan 25, 18:24
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yury Norov <yury.norov@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:TanfwuwFqZNfooVyZgHD3+rUPD3f1cJdCK5zG84TDZo31iIv5YG
- GXRVzIA19kzuQ/qkVFgnWBNIl/wxczrAaB46TSjL1q43y69CYK8CIt/5RsDTAPghffi3XRT
- kOc0/ofpbVemuYoW2IHdttLjGnnQQ8ifpX9iRQrzRUm88+44FNqOJ0KuBvgfOGpn3gaIeGP
- J2qtGQmD8O/lHZnoRFnBg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:oPQ+h+sOS+Q=:NII+iD2HrntS2r/VzhmExq
- wordjS5knJYuG8+7yR0zkTaqLSvZJL8/GNi5+zY3zMtzu4zh9abBk5VVYvIoBeQrCuWIi7Vmh
- 9Xa2n9whgrJZ9iM71tj1ewnzDJ5acoMwja/e3po3Lh5P30KNXPAGGMHW6pL1JwLdgjt9Lps0x
- ZGTKtivRJDDYxHdzSGTymm0WUtiFmorwLQYrKNnh/6LR065phMXQ64boGFN9/ZTWC1oc0m6IT
- G2rhLtwaXn1YIZa/BkgYWkSCgibJYbR6VFutq+JdSEhkU5dQoy459FcO5cEIcswOxtPE12pYS
- v7+paa2ReI0gAblR1jXDu644DDJhmLALDiC4IYkMH3TsIp5m1XUhRhuneal2yHZkKsnA/tUzz
- YTXxctXgERmJNDkZo9xsbwKubRBR2m9vYXsBpiznegh0E9b4E4O5Wv9M2tmxUOQ+v+0CL32tF
- K91WAtE4yS4omyg3B+xzXdmBaEtZnpFZPi/omEdW9XMz0ne+TsgusIGYKn0Aeil1Z1BbDwKvr
- f6RSYzw8uriFlRbFocf2b2H1iIphNXs2BBlIhF/8EZ1vlFoBs/blaevcwKo/4m37WQGFfxuww
- 4yKz8YL5I0SLxltqffa8hKwfYfMBSYZG/S6OPpKAgWXoMO7jWfbQOcP7PYsAgbdmiP7wak3lx
- PJtsQvsfUPdAWqFhYhMI5YUBEyCNIVMik2lLabgm/+SZLJpBxdqGg+/yTwKUjtu3JFUQ=
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 9:47 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> On Tue, Jan 25, 2022 at 8:31 AM <noreply@ellerman.id.au> wrote:
-> > FAILED linux-next/m68k-allmodconfig/m68k-gcc8 Tue Jan 25, 18:24
-> >
-> > http://kisskb.ellerman.id.au/kisskb/buildresult/14688953/
-> >
-> > Commit:   Add linux-next specific files for 20220125
-> >           d25ee88530253138d0b20d43511ca5acbda4e9f7
-> > Compiler: m68k-linux-gcc (GCC) 8.1.0 / GNU ld (GNU Binutils) 2.30
-> >
-> > Possible errors
-> > ---------------
-> >
-> > arch/m68k/include/asm/bitops.h:329:20: error: array subscript 2 is above array bounds of 'long unsigned int[1]' [-Werror=array-bounds]
-> > cc1: all warnings being treated as errors
-> > make[4]: *** [scripts/Makefile.build:289: drivers/net/ipa/ipa_mem.o] Error 1
-> > make[3]: *** [scripts/Makefile.build:572: drivers/net/ipa] Error 2
-> > make[2]: *** [scripts/Makefile.build:572: drivers/net] Error 2
-> > make[1]: *** [Makefile:1965: drivers] Error 2
-> > make: *** [Makefile:226: __sub-make] Error 2
-> >
-> > No warnings found in log.
->
-> The code that causes this is drivers/net/ipa/ipa_mem.c:ipa_mem_valid():
->
->         DECLARE_BITMAP(regions, IPA_MEM_COUNT) = { };
->         ...
->         for_each_clear_bit(mem_id, regions, IPA_MEM_COUNT) {
->                 if (ipa_mem_id_required(ipa, mem_id))
->                         dev_err(dev, "required memory region %u missing\n",
->                                 mem_id);
->         }
->
-> This only happens with gcc-8, not with gcc-9, so it might be a
-> compiler bug. I don't see anything wrong with c:ipa_mem_valid()
-> nor with m68k's find_first_zero_bit().
+On HiSilicon Kunpeng 920 the SCL/SDA pins are multiplexed with
+GPIO. On bus recovery the driver needs to swich the pin mux
+to GPIO to recover and switch back on finished. Currently the
+pin mux switch is generally implemented by a pinctrl driver
+which is unavailable on our platform.
 
-I've seen problems with warnings like this when gcc only partially
-inlines one of the functions. Does it go away if you mark find_next_bit()
-and find_first_bit() as __always_inline?
+This patch introduces an ACPI method to switch the pin mux of
+SCL/SDA during the recovery process. Then the recovery support
+can be enabled with the assistance of the ACPI.
 
-       Arnd
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+---
+ drivers/i2c/busses/i2c-designware-core.h    |  2 +
+ drivers/i2c/busses/i2c-designware-master.c  | 84 ++++++++++++++++++++-
+ drivers/i2c/busses/i2c-designware-platdrv.c |  6 +-
+ 3 files changed, 86 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/i2c/busses/i2c-designware-core.h b/drivers/i2c/busses/i2c-designware-core.h
+index 4b26cba40139..bbf4bb9c9d0f 100644
+--- a/drivers/i2c/busses/i2c-designware-core.h
++++ b/drivers/i2c/busses/i2c-designware-core.h
+@@ -297,6 +297,8 @@ struct dw_i2c_dev {
+ 
+ #define ACCESS_INTR_MASK	BIT(0)
+ #define ACCESS_NO_IRQ_SUSPEND	BIT(1)
++/* ACPI assists SCL/SDA pin mutiplexing on recovery */
++#define RECOVERY_WITH_ACPI	BIT(2)
+ 
+ #define MODEL_MSCC_OCELOT	BIT(8)
+ #define MODEL_BAIKAL_BT1	BIT(9)
+diff --git a/drivers/i2c/busses/i2c-designware-master.c b/drivers/i2c/busses/i2c-designware-master.c
+index 9177463c2cbb..89fdbc48b4a9 100644
+--- a/drivers/i2c/busses/i2c-designware-master.c
++++ b/drivers/i2c/busses/i2c-designware-master.c
+@@ -818,11 +818,81 @@ static void i2c_dw_unprepare_recovery(struct i2c_adapter *adap)
+ 	i2c_dw_init_master(dev);
+ }
+ 
++#ifdef CONFIG_ACPI
++#include <linux/acpi.h>
++
++/*
++ * i2c_dw_acpi_pin_mux_change - Change the I2C controller's pin mux through ACPI
++ * @dev: device owns the SCL/SDA pin
++ * @to_gpio: true to switch to GPIO, false to switch to SCL/SDA
++ *
++ * The function invokes the specific ACPI method "PMUX" for changing the
++ * pin mux of I2C controller between SCL/SDA and GPIO. It's not defined by
++ * the ACPI spec but used on some platforms like HiSilicon's Kunpeng 920
++ * server, help on the generic GPIO recovery process.
++ */
++static void i2c_dw_acpi_pin_mux_change(struct device *dev, bool to_gpio)
++{
++	acpi_handle handle = ACPI_HANDLE(dev);
++	struct acpi_object_list arg_list;
++	unsigned long long data;
++	union acpi_object arg;
++
++	arg.type = ACPI_TYPE_INTEGER;
++	arg.integer.value = to_gpio;
++	arg_list.count = 1;
++	arg_list.pointer = &arg;
++
++	acpi_evaluate_integer(handle, "PMUX", &arg_list, &data);
++}
++
++static void i2c_dw_acpi_prepare_recovery(struct i2c_adapter *adap)
++{
++	struct dw_i2c_dev *dev = i2c_get_adapdata(adap);
++
++	i2c_dw_prepare_recovery(adap);
++	i2c_dw_acpi_pin_mux_change(dev->dev, true);
++}
++
++static void i2c_dw_acpi_unprepare_recovery(struct i2c_adapter *adap)
++{
++	struct dw_i2c_dev *dev = i2c_get_adapdata(adap);
++
++	i2c_dw_acpi_pin_mux_change(dev->dev, false);
++	i2c_dw_unprepare_recovery(adap);
++}
++
++static int i2c_dw_acpi_init_recovery_info(struct dw_i2c_dev *dev)
++{
++	struct i2c_bus_recovery_info *rinfo = &dev->rinfo;
++	struct acpi_device *adev;
++
++	if (acpi_disabled)
++		return -EOPNOTSUPP;
++
++	adev = ACPI_COMPANION(dev->dev);
++	if (!adev || !acpi_has_method(adev->handle, "PMUX"))
++		return -EOPNOTSUPP;
++
++	rinfo->recover_bus = i2c_generic_scl_recovery;
++	rinfo->prepare_recovery = i2c_dw_acpi_prepare_recovery;
++	rinfo->unprepare_recovery = i2c_dw_acpi_unprepare_recovery;
++
++	return 0;
++}
++#else
++static int i2c_dw_acpi_init_recovery_info(struct dw_i2c_dev *dev)
++{
++	return -EOPNOTSUPP;
++}
++#endif
++
+ static int i2c_dw_init_recovery_info(struct dw_i2c_dev *dev)
+ {
+ 	struct i2c_bus_recovery_info *rinfo = &dev->rinfo;
+ 	struct i2c_adapter *adap = &dev->adapter;
+ 	struct gpio_desc *gpio;
++	int ret = 0;
+ 
+ 	gpio = devm_gpiod_get_optional(dev->dev, "scl", GPIOD_OUT_HIGH);
+ 	if (IS_ERR_OR_NULL(gpio))
+@@ -835,9 +905,17 @@ static int i2c_dw_init_recovery_info(struct dw_i2c_dev *dev)
+ 		return PTR_ERR(gpio);
+ 	rinfo->sda_gpiod = gpio;
+ 
+-	rinfo->recover_bus = i2c_generic_scl_recovery;
+-	rinfo->prepare_recovery = i2c_dw_prepare_recovery;
+-	rinfo->unprepare_recovery = i2c_dw_unprepare_recovery;
++	if (dev->flags & RECOVERY_WITH_ACPI) {
++		ret = i2c_dw_acpi_init_recovery_info(dev);
++	} else {
++		rinfo->recover_bus = i2c_generic_scl_recovery;
++		rinfo->prepare_recovery = i2c_dw_prepare_recovery;
++		rinfo->unprepare_recovery = i2c_dw_unprepare_recovery;
++	}
++
++	if (ret)
++		return ret;
++
+ 	adap->bus_recovery_info = rinfo;
+ 
+ 	dev_info(dev->dev, "running with gpio recovery mode! scl%s",
+diff --git a/drivers/i2c/busses/i2c-designware-platdrv.c b/drivers/i2c/busses/i2c-designware-platdrv.c
+index 2bd81abc86f6..a7070867a07f 100644
+--- a/drivers/i2c/busses/i2c-designware-platdrv.c
++++ b/drivers/i2c/busses/i2c-designware-platdrv.c
+@@ -52,9 +52,9 @@ static const struct acpi_device_id dw_i2c_acpi_match[] = {
+ 	{ "AMDI0010", ACCESS_INTR_MASK },
+ 	{ "AMDI0510", 0 },
+ 	{ "APMC0D0F", 0 },
+-	{ "HISI02A1", 0 },
+-	{ "HISI02A2", 0 },
+-	{ "HISI02A3", 0 },
++	{ "HISI02A1", RECOVERY_WITH_ACPI },
++	{ "HISI02A2", RECOVERY_WITH_ACPI },
++	{ "HISI02A3", RECOVERY_WITH_ACPI },
+ 	{ "HYGO0010", ACCESS_INTR_MASK },
+ 	{ }
+ };
+-- 
+2.24.0
+
