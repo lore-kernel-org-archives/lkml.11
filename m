@@ -2,64 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1801BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:25:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09883C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387918AbiAYOZ3 (ORCPT
+        id S1578492AbiAYOZ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:25:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1578575AbiAYOU1 (ORCPT
+        Tue, 25 Jan 2022 09:25:58 -0500
+Received: from mail-ua1-f43.google.com ([209.85.222.43]:46762 "EHLO
+        mail-ua1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1578679AbiAYOU6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:20:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2660EC061756;
-        Tue, 25 Jan 2022 06:20:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6A4F6158E;
-        Tue, 25 Jan 2022 14:20:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6502AC340E0;
-        Tue, 25 Jan 2022 14:20:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643120423;
-        bh=/9wV3DdR6VIU1LSc/7b0h+AIfBB7qLQlUNUZwUz9jWM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eMEERL17L3qALjy5zKR3OhyaS7Emkni9fYL+vHZViYhnIPXT5M9GiP+2+rX2ZkXwI
-         DeICSx3AWT7ROn5tSK4j142QwPRTFSroObwNmpQwHJUfrYCwcAABdjg9tEssu1a8A4
-         zuZqHosSX507s3cu8dGWiYn4tusyQ/K8VXTIwq630/o4jyLpnrpI+FowttGqzkrcqT
-         DLFyfo3OVtrW8j9UK/WkdyI1rS8SSfS7vmM2WhZ6Ktg1963VeG5xiFPnCer8cjDuPS
-         U8t+glyyCMIZrP7uOiu965zCrMZFrrgODlM/1/Cfe4m3C0P7UtObJdei3obBESvdmN
-         eQGNyRYkBWbFg==
-Date:   Tue, 25 Jan 2022 19:50:19 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Jonathan Marek <jonathan@marek.ca>
-Cc:     linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] arm64: dts: qcom: sm8450: fix apps_smmu interrupts
-Message-ID: <YfAHI7JH7ozteRf4@matsya>
-References: <20220122162932.7686-1-jonathan@marek.ca>
- <20220122162932.7686-2-jonathan@marek.ca>
+        Tue, 25 Jan 2022 09:20:58 -0500
+Received: by mail-ua1-f43.google.com with SMTP id c36so37608502uae.13;
+        Tue, 25 Jan 2022 06:20:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N429jTRG2O6NpwCQqF4KlOiX82MStuHyIsrCgU8SIEI=;
+        b=SwSrGk3NaP00TQJUYmXnZs/orTsj+vlnuiugvHFevLsmwa7oNsedl31vXLaaMHhPky
+         sesQzq5/cceh5dX15EzAYhOD+zoVX+h5JQzRv6RRCOvp638Cvs8g77tj4Zx5AfQWPWw6
+         QaKXCZgJ0k1/4BRUb3/aoHHi6dVP1x6HyIbAf2Ta0ZoVoSj8v/KtH7umjNkMCc6Iwq9Q
+         DcXVDCg1btusDs0Q1Kt7JwBcW6NtMWMFtcCGjPZEw4DJpOVczKSoOXz1xym2UdyFa97F
+         vHckb1qY2KJoX8v88GjNctBUVZ3A7Qij2AaF8p9t2gnkMYHD314d6wD42ZHjXOIwSTB5
+         gaTg==
+X-Gm-Message-State: AOAM533sD5rVNdXvVmuCgh9dkLEeM2rJrfkjLFAO7pqzID4+J6PZETjc
+        dvVxA/b3ZtPOQPIiZjHBkrwtQlvHXD9dvQZg
+X-Google-Smtp-Source: ABdhPJwRy1ZyMEDc6L+ES1Y7H4L11mpJAP4Bu5+tAHDCTAofUYCmWfJPBVYQwK0Ee8ttzqw4zLGiEA==
+X-Received: by 2002:ab0:1543:: with SMTP id p3mr7204112uae.88.1643120450538;
+        Tue, 25 Jan 2022 06:20:50 -0800 (PST)
+Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
+        by smtp.gmail.com with ESMTPSA id k203sm3376480vka.56.2022.01.25.06.20.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 06:20:50 -0800 (PST)
+Received: by mail-ua1-f41.google.com with SMTP id n15so36117376uaq.5;
+        Tue, 25 Jan 2022 06:20:49 -0800 (PST)
+X-Received: by 2002:a67:a401:: with SMTP id n1mr3524348vse.38.1643120449745;
+ Tue, 25 Jan 2022 06:20:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220122162932.7686-2-jonathan@marek.ca>
+References: <20220118182003.3385019-1-keescook@chromium.org>
+In-Reply-To: <20220118182003.3385019-1-keescook@chromium.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 25 Jan 2022 15:20:38 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWu-unMfV1U_HAKwJwPkB_LY3kU88_D69M=bX8y1B=QTg@mail.gmail.com>
+Message-ID: <CAMuHMdWu-unMfV1U_HAKwJwPkB_LY3kU88_D69M=bX8y1B=QTg@mail.gmail.com>
+Subject: Re: [PATCH 5.17-rc1 v2] eeprom: at25: Restore missing allocation
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jiri Prchal <jiri.prchal@aksignal.cz>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Ralph Siemsen <ralph.siemsen@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-01-22, 11:29, Jonathan Marek wrote:
-> Update interrupts in apps_smmu to match downstream. This is fixes apps_smmu
-> failing to probe when running at EL2 (expects 96 context interrupts)
+Hi Kees,
 
-Reviewed-by: Vinod Koul <vkoul@kernel.org>
+Thanks for your patch!
 
--- 
-~Vinod
+On Fri, Jan 21, 2022 at 12:33 AM Kees Cook <keescook@chromium.org> wrote:
+> The at25 driver regressed in v5.17-rc1 due to a broken conflict
+> resolution: the allocation of the object was accidentally removed. Restore
+> it.
+>
+> This was found when building under CONFIG_FORTIFY_SOURCE=y and
+> -Warray-bounds, which complained about strncpy() being used against an
+> empty object:
+>
+> In function 'strncpy',
+>     inlined from 'at25_fw_to_chip.constprop' at drivers/misc/eeprom/at25.c:312:2:
+> ./include/linux/fortify-string.h:48:33: warning: '__builtin_strncpy' offset [0, 9] is out of the bounds [0, 0] [-Warray-bounds]
+>    48 | #define __underlying_strncpy    __builtin_strncpy
+>       |                                 ^
+> ./include/linux/fortify-string.h:59:16: note: in expansion of macro '__underlying_strncpy'
+>    59 |         return __underlying_strncpy(p, q, size);
+>       |                ^~~~~~~~~~~~~~~~~~~~
+> In function 'strncpy',
+>     inlined from 'at25_fram_to_chip' at drivers/misc/eeprom/at25.c:373:2,
+>     inlined from 'at25_probe' at drivers/misc/eeprom/at25.c:453:10:
+> ./include/linux/fortify-string.h:48:33: warning: '__builtin_strncpy' offset [0, 9] is out of the bounds [0, 0] [-Warray-bounds]
+>    48 | #define __underlying_strncpy    __builtin_strncpy
+>       |                                 ^
+> ./include/linux/fortify-string.h:59:16: note: in expansion of macro '__underlying_strncpy'
+>    59 |         return __underlying_strncpy(p, q, size);
+>       |                ^~~~~~~~~~~~~~~~~~~~
+
+On real hardware:
+
+    Unable to handle kernel access to user memory outside uaccess
+routines at virtual address 0000000000000028
+    ...
+    pc : __mutex_init+0x20/0x68
+    lr : at25_probe+0x8c/0x4d8
+
+
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
