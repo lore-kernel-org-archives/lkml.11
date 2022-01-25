@@ -2,171 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 21:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE76C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 21:00:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232771AbiAYVAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 16:00:17 -0500
-Received: from netrider.rowland.org ([192.131.102.5]:51263 "HELO
-        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with SMTP id S232684AbiAYVAM (ORCPT
+        id S232725AbiAYVA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 16:00:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232755AbiAYVAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 16:00:12 -0500
-Received: (qmail 117653 invoked by uid 1000); 25 Jan 2022 16:00:11 -0500
-Date:   Tue, 25 Jan 2022 16:00:11 -0500
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Paul =?iso-8859-1?Q?Heidekr=FCger?= <paul.heidekrueger@in.tum.de>
-Cc:     Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        Marco Elver <elver@google.com>,
-        Charalampos Mainas <charalampos.mainas@gmail.com>,
-        Pramod Bhatotia <pramod.bhatotia@in.tum.de>
-Subject: Re: [PATCH] tools/memory-model: Clarify syntactic and semantic
- dependencies
-Message-ID: <YfBk265vVo4FL4MJ@rowland.harvard.edu>
-References: <20220125172819.3087760-1-paul.heidekrueger@in.tum.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220125172819.3087760-1-paul.heidekrueger@in.tum.de>
+        Tue, 25 Jan 2022 16:00:25 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E0CC06174E
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 13:00:25 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id z15-20020a25bb0f000000b00613388c7d99so43940562ybg.8
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 13:00:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=lhZFy11ryScz7wsYxziWawYb+Qi1p9jcBVxhBaeOFbM=;
+        b=iTtZyr75FthgBMy7b0cykaOf/77pXGF17YdKySDjAZDbp2pPSqJEHOW0gDiV36yShP
+         d6Lv5enklnIq5YpCbz+3oN36PqQJxvIJeFt+gNn6FyOUEns3/uWg8BVLoS1pZLufF9BM
+         n5b+b7WPvPIhiGcMZ8Czap3gk91Hs4jmzjNjRPLzAchaIeVPXPoc2ylrPBB5CkPmTb5P
+         sxpM6ZBnOpXSPUrLbwshVy8Y4VR07EorHldESNhBOWnPdtQUQEujMLulesXIrHlRhPoX
+         1QIDOEGVWfPtSLtfNqwe4+9ddl7QZ2HuFsbWjskkbTShrPUWn7Cs5a8jypOEyHM4UZZF
+         A3nA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=lhZFy11ryScz7wsYxziWawYb+Qi1p9jcBVxhBaeOFbM=;
+        b=g+bimo8XPdz0DW5sTiDyNH5pKyI7ES4v3sjETmpBluwZPqSaXUAX2bmMPaLwyI2Qei
+         1GyEqpfFqysY5GLbKlh9Xq8ZEYgSgB6/Yy0wHfi6ngsaqLZEoHmGt9yBE9J21522K0Aa
+         sCDijSDWlL41VvMye9kSZG9XDeURiLaPheJJMxMh9l9f6LbtE8q6aajcET/FN6aLfU3w
+         333BQ+bpGGGnjnCmngN1KXJd01vHZ9V7jPXaop5XBdzvSclhEVwZmDP1gDvyYLRwJQDL
+         Se/R6NBZVGbVng5WcgQzPH3DJjhpfLWvyMoW3yU0D4cf+azdjF/RFhSK7HgzKe4QvPUo
+         KpJA==
+X-Gm-Message-State: AOAM531/Ean2VVe2vV5jiNujA4rfvhtu8wU8EN0fVEcVfO1/II3Rccqj
+        2q4WaAchvociVovd5NYgjMPaqNX9dDvndQ==
+X-Google-Smtp-Source: ABdhPJxiZtgGgjhVY9T63xK9Vmx3lK5DTSaADtW6QL7LVDHDHG6S8D/3jQurMJ7ND76hgXfXl7OHV9skVu5UUQ==
+X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:ec63:7812:5e4a:c688])
+ (user=dlatypov job=sendgmr) by 2002:a81:36d7:0:b0:2ca:287c:6c18 with SMTP id
+ 00721157ae682-2ca287c6e66mr6946437b3.189.1643144424445; Tue, 25 Jan 2022
+ 13:00:24 -0800 (PST)
+Date:   Tue, 25 Jan 2022 13:00:08 -0800
+Message-Id: <20220125210011.3817742-1-dlatypov@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+Subject: [PATCH 0/3] kunit: further reduce stack usage of asserts
+From:   Daniel Latypov <dlatypov@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
+        Daniel Latypov <dlatypov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 05:28:19PM +0000, Paul Heidekrüger wrote:
-> Dependencies which are purely syntactic, i.e. not semantic, might imply
-> ordering at first glance. However, since they do not affect defined
-> behavior, compilers are within their rights to remove such dependencies
-> when optimizing code.
-> 
-> Since syntactic dependencies are not related to any kind of dependency
-> in particular, explicitly distinguish syntactic and semantic
-> dependencies as part of the 'A WARNING' section in explanation.txt,
-> which gives examples of how compilers might affect the LKMM's dependency
-> orderings in general.
+If the compiler doesn't optimize them away, each kunit assertion (use of
+KUNIT_EXPECT_EQ, etc.) can use 88 bytes of stack space in the worst and
+most common case. This has led to compiler warnings for certain configs
++ arches [1].
 
-The "A WARNING" section is a bad place to put this material, because it 
-comes before dependencies have been introduced.  It would be better to 
-put this at the end of the "DEPENDENCY RELATIONS: data, addr, and ctrl" 
-section.
+This series builds upon [2] which cut down kunit_assert from 48 => 24
+bytes, but only reduced kunit_binary_assert (the most common one) from
+88 => 48.
 
-> Link: https://lore.kernel.org/all/20211102190138.GA1497378@rowland.harvard.edu/
-> Signed-off-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
-> Cc: Marco Elver <elver@google.com>
-> Cc: Charalampos Mainas <charalampos.mainas@gmail.com>
-> Cc: Pramod Bhatotia <pramod.bhatotia@in.tum.de>
-> ---
->  .../Documentation/explanation.txt             | 25 +++++++++++++++++++
->  1 file changed, 25 insertions(+)
-> 
-> diff --git a/tools/memory-model/Documentation/explanation.txt b/tools/memory-model/Documentation/explanation.txt
-> index 5d72f3112e56..6d679e5ebdf9 100644
-> --- a/tools/memory-model/Documentation/explanation.txt
-> +++ b/tools/memory-model/Documentation/explanation.txt
-> @@ -411,6 +411,31 @@ Given this version of the code, the LKMM would predict that the load
->  from x could be executed after the store to y.  Thus, the memory
->  model's original prediction could be invalidated by the compiler.
->  
-> +Caution is also advised when dependencies are purely syntactic, i.e.
-> +not semantic.  A dependency between two marked accesses is purely
-> +syntactic iff the defined behavior of the second access is unaffected
-> +by its dependency.
+Now we have kunit_assert = 8 and kunit_binary_assert = 32.
+The cost is we need to pass around another parameter to some functions
+(struct va_format *), and we introduce a new type
+(sturct kunit_binary_assert_text) for holding the textual representation
+of the KUNIT_EXPECT_EQ arguments.
 
-That's a very abstract way of describing the situation; it doesn't do a 
-good job of getting the real idea across.  It also mixes up two separate 
-ideas: behaviors being unaffected by a syntactic dependency and 
-behaviors being undefined.  They should be described separately.  I 
-would prefer something along these lines...
+Note: it's possible to get kunit_assert = 0 and kunit_binary_assert =
+24 by removing the `format` function pointer field from kunit_assert.
+I think it's an improvement, but others might think that readability
+suffers from doing so, so I'm leaving that off from this series.
 
-----------------------------------------
+Meta: this series applies on top of 5.17-rc1 + [2] and [3].
+That should be available at in Shuah's kunit branch [4], but my version
+of git is constantly segfaulting, so I can't try and rebase to verify.
 
-Here's a trick question: When is a dependency not a dependency? Answer: 
-When it is purely syntactic rather than semantic.  We say a dependency 
-between two accesses is purely syntactic if the second access doesn't 
-actually depend on the result of the first.  Here is a trivial example:
+[1] https://groups.google.com/g/kunit-dev/c/i3fZXgvBrfA/m/VULQg1z6BAAJ
+[2] https://lore.kernel.org/linux-kselftest/20220113165931.451305-6-dlatypov@google.com/
+[3] https://lore.kernel.org/linux-kselftest/20220118223506.1701553-1-dlatypov@google.com/
+[4] https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git/?h=kunit 
 
-	r1 = READ_ONCE(x);
-	WRITE_ONCE(y, r1 * 0);
+Daniel Latypov (3):
+  kunit: remove va_format from kunit_assert
+  kunit: consolidate KUNIT_INIT_BINARY_ASSERT_STRUCT macros
+  kunit: factor out str constants from binary assertion structs
 
-There appears to be a data dependency from the load of x to the store of 
-y, since the value to be stored is computed from the value that was 
-loaded.  But in fact, the value stored does not really depend on 
-anything since it will always be 0.  Thus the data dependency is only 
-syntactic (it appears to exist in the code) but not semantic (the second 
-access will always be the same, regardless of the value of the first 
-access).  Given code like this, a compiler could simply eliminate the 
-load from x, which would certainly destroy any dependency.
+ include/kunit/assert.h | 152 ++++++++++++-----------------------------
+ include/kunit/test.h   |  32 +++++----
+ lib/kunit/assert.c     |  65 ++++++++++--------
+ lib/kunit/test.c       |  12 ++--
+ 4 files changed, 104 insertions(+), 157 deletions(-)
 
-(It's natural to object that no one in their right mind would write code 
-like the above.  However, macro expansions can easily give rise to this 
-sort of thing, in ways that generally are not apparent to the 
-programmer.)
+-- 
+2.35.0.rc2.247.g8bbb082509-goog
 
-Another mechanism that can give rise to purely syntactic dependencies is 
-related to the notion of "undefined behavior". Certain program behaviors 
-are called "undefined" in the C language specification, which means that 
-when they occur there are no guarantees at all about the outcome.  
-Consider the following example:
-
-	int a[1];
-	int i;
-
-	r1 = READ_ONCE(i);
-	r2 = READ_ONCE(a[r1]);
-
-Access beyond the end or before the beginning of an array is one kind of 
-undefined behavior.  Therefore the compiler doesn't have to worry about 
-what will happen if r1 is nonzero, and it can assume that r1 will always 
-be zero without actually loading anything from i.  (If the assumption 
-turns out to be wrong, the resulting behavior will be undefined anyway 
-so the compiler doesn't care!)  Thus the load from i can be eliminated, 
-breaking the address dependency.
-
-The LKMM is unaware that purely syntactic dependencies are different 
-from semantic dependencies and therefore mistakenly predicts that the 
-accesses in the two examples above will be ordered.  This is another 
-example of how the compiler can undermine the memory model.  Be warned.
-
-----------------------------------------
-
-Alan
-
-> +Compilers are aware of syntactic dependencies and are within their
-> +rights to remove them as part of optimizations, thereby breaking any
-> +guarantees of ordering.
-> +
-> +Notable cases are dependencies eliminated through constant propagation
-> +or those where only one value leads to defined behavior as in the
-> +following example:
-> +
-> +	int a[1];
-> +	int i;
-> +
-> +	r1 = READ_ONCE(i);
-> +	r2 = READ_ONCE(a[r1]);
-> +
-> +The formal LKMM is unaware of syntactic dependencies and therefore
-> +predicts ordering.  However, since any other value than 0 for r1 would
-> +result in an out-of-bounds access, which is undefined behavior, r2 is
-> +not affected by its dependency to r1, making the above a purely
-> +syntactic dependency.
-> +
->  Another issue arises from the fact that in C, arguments to many
->  operators and function calls can be evaluated in any order.  For
->  example:
-> -- 
-> 2.33.1
-> 
