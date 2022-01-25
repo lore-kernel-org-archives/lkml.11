@@ -2,164 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC1ADC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED74C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237122AbiAYJy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:54:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
+        id S238228AbiAYKCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:02:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232645AbiAYJvH (ORCPT
+        with ESMTP id S238379AbiAYJ7W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:51:07 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F5EC06175C
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:51:06 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id r10so30628002edt.1
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:51:06 -0800 (PST)
+        Tue, 25 Jan 2022 04:59:22 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD4FC06173B;
+        Tue, 25 Jan 2022 01:59:17 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id j16so8192112plx.4;
+        Tue, 25 Jan 2022 01:59:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HlPvap3s7pdO0i3AvOfOgwK8HydV4tcDe28Yz+r5dr0=;
-        b=czSb6VFvgku1bVsTdGbcRTR0h8h7GNK9U7KQbStWcKMBxUQIn8d5yU5gfXgnxAmfvr
-         2OsmpbsMIKQIJzgXfb/MHunf7rUu/HGy0aTFyNATY4s5oSHnUwkn+ccspaA7B4xMMS1x
-         ODBXUhk+iS4skIxEjJktEEBsCu1Mqmf1LYWH64SqZdlpNzh3svpwMTEynwMu1BHsJCQh
-         s/nSaUKZT5NM+M527n8NWD/Z6I5Nc9AKrr4oIkAPNW16pRI9PW4+GrJAo9N+219PjRZh
-         p3qKj2+9BdnsGQKJ/+Afhue35T2O3LgrmT+bzwkIXvYESr2x0PxpiBd3hO+zmXQ08DjV
-         O1hw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fFdstgg2rUPcDb1ze6Gb3FBjJ5NhUjfUjZg63XhP3m8=;
+        b=d+kNdAtMC6VO/K1pd0rlN3+UkQOHTSr4/8Gvkn1XwyLvTnRQ/TA3GNk3a2s1bCr2Gd
+         3xuvmKQHZ3Fy9dVJw6BkE4phM9S95dvpNcR683U5+kTyWv8JQvTZmFLZVyvaluxvP1o5
+         +Wpx8L1PAgT5V9HdJURbByv1VzZq1ANPnl28o6uHseAe0V1tJUF6/LKGT+nMvK/xt7y5
+         ckk8STa/NEXmMkks/iqDTEARcLiofyLonnojaiQ26bLAnylen+NUHqpP/VwoCy70Oxrw
+         G2myquSEOWdac1UHYok3RKBzxT1s2Y06/YTb1+IRAcchqE1v1j6GsmXeO23aUDER9Yyu
+         wtpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HlPvap3s7pdO0i3AvOfOgwK8HydV4tcDe28Yz+r5dr0=;
-        b=TjsJIlkG3f+2rBIUGzLm8CheIoLSUcZpBPMW2gxgiLuT9AFYujmg8dI9efHz0qvAwT
-         SHyKictOznJtPUZA+iS3wzV8fJqSLBTlDmjoA36o697EuFcvVgfczYGFqZNWTDZ8rs7H
-         0hFxoqIhyCxzCcHV6CtGnteDBuzvUWZlp5eYS3PomKfXmHziLRxLvV0RQd7qmT63n9wm
-         I47+fctoG8LRmPMXKZ0nPPSStC9Ob5HoXGhJ0nx4O7HS+EzvxBPYyhFnsG1MGaimkpVx
-         k++JJ5nCZCzvYxLt4+d1SVd2ttxxZd/RUipCQx29d7Swxm/p1V8eLxNSIOZrHq2cwSwl
-         fQ5A==
-X-Gm-Message-State: AOAM533xBdFEOeg8FDa6IspBA0qr3/oXOMwDUZnXKlPT8o97PxCDpgz0
-        GBe/CJjspo8LFA1zyd7hzQpn8f7o956zT3qQwyCQ/A==
-X-Google-Smtp-Source: ABdhPJwQzlX3EMzz8K17JeuAaI2l2wrQ2t9jeb+BkBrkVLHJV+P7nqMNLX4xKtjzYu9msSkcu7xBJKtfWdWFjHaLCAI=
-X-Received: by 2002:a05:6402:1604:: with SMTP id f4mr19666005edv.352.1643104264783;
- Tue, 25 Jan 2022 01:51:04 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fFdstgg2rUPcDb1ze6Gb3FBjJ5NhUjfUjZg63XhP3m8=;
+        b=psNXcdOy0jAo8UoY/f0pN+V1p0iO9r5zgJECP2trw/Mqr+PtXg1rbM8H+vZQZzkhRR
+         ADvCzkNhaQNK/2IKI2aznkE8ieCrSQy5U+W5RWG3WpQ94rMw/FxwEpVtb+Guw/ISznwo
+         t/d1Phe/h9FxamdzKpf8vuEDv8OANsQteIfB5ys+Lk2auMFVpN/xxy4gJA3mOZ2nyrks
+         lqyzi2mmxzDkjV/5QmMhEM9YLQ2buZLsuF2XvHooLgQiN+CU1NwaLE50wB2aGaFqMCHZ
+         DJ8M6kFgfmgHzeGdO8/1RfSPv3FQeRVEvcLzzuLL6oLidWY8xxOLKuzDCddWEcGWuZQu
+         eTXg==
+X-Gm-Message-State: AOAM531zDRKPAE83yJXBk1a5O0GUC5/FbgaHoz37GMqWpQWfsPUc6C3a
+        2Lu4Ae+l3G3RTVGf01Im+wQ=
+X-Google-Smtp-Source: ABdhPJynTjSw3NN4RTxtz7nF2flKZPjtCXyUXoOuXHJABCpRtZ88n0dzVJCCdj/R1ZW5yc4xCGtwog==
+X-Received: by 2002:a17:902:8695:b0:14a:f006:db03 with SMTP id g21-20020a170902869500b0014af006db03mr17647228plo.173.1643104757470;
+        Tue, 25 Jan 2022 01:59:17 -0800 (PST)
+Received: from CLOUDLIANG-MB0.tencent.com ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id mq3sm201606pjb.4.2022.01.25.01.59.15
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Jan 2022 01:59:17 -0800 (PST)
+From:   Jinrong Liang <ljr.kernel@gmail.com>
+X-Google-Original-From: Jinrong Liang <cloudliang@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Jim Mattson <jmattson@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 00/19] KVM: x86: Bulk removal of unused function parameters
+Date:   Tue, 25 Jan 2022 17:58:50 +0800
+Message-Id: <20220125095909.38122-1-cloudliang@tencent.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-References: <20220120070226.1492-1-biao.huang@mediatek.com> <20220120070226.1492-2-biao.huang@mediatek.com>
-In-Reply-To: <20220120070226.1492-2-biao.huang@mediatek.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 25 Jan 2022 10:50:54 +0100
-Message-ID: <CAMRc=Mc+DqcQFGqxoYXYG-VCuaKkJusoVGSHb0G-MtYsiVCxVw@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/9] net: ethernet: mtk-star-emac: store
- bit_clk_div in compat structure
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
-        srv_heupstream@mediatek.com, Macpaul Lin <macpaul.lin@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 8:02 AM Biao Huang <biao.huang@mediatek.com> wrote:
->
-> From: Fabien Parent <fparent@baylibre.com>
->
-> Not all the SoC are using the same clock divider. Move the divider into
-> a compat structure specific to the SoCs.
->
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> ---
->  drivers/net/ethernet/mediatek/mtk_star_emac.c | 23 +++++++++++++++----
->  1 file changed, 19 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> index 1d5dd2015453..26f5020f2e9c 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> @@ -17,6 +17,7 @@
->  #include <linux/module.h>
->  #include <linux/netdevice.h>
->  #include <linux/of.h>
-> +#include <linux/of_device.h>
->  #include <linux/of_mdio.h>
->  #include <linux/of_net.h>
->  #include <linux/platform_device.h>
-> @@ -232,6 +233,10 @@ struct mtk_star_ring {
->         unsigned int tail;
->  };
->
-> +struct mtk_star_compat {
-> +       unsigned char bit_clk_div;
-> +};
-> +
->  struct mtk_star_priv {
->         struct net_device *ndev;
->
-> @@ -257,6 +262,8 @@ struct mtk_star_priv {
->         int duplex;
->         int pause;
->
-> +       const struct mtk_star_compat *compat_data;
-> +
->         /* Protects against concurrent descriptor access. */
->         spinlock_t lock;
->
-> @@ -899,7 +906,7 @@ static void mtk_star_init_config(struct mtk_star_priv *priv)
->         regmap_write(priv->regs, MTK_STAR_REG_SYS_CONF, val);
->         regmap_update_bits(priv->regs, MTK_STAR_REG_MAC_CLK_CONF,
->                            MTK_STAR_MSK_MAC_CLK_CONF,
-> -                          MTK_STAR_BIT_CLK_DIV_10);
-> +                          priv->compat_data->bit_clk_div);
->  }
->
->  static void mtk_star_set_mode_rmii(struct mtk_star_priv *priv)
-> @@ -1461,6 +1468,7 @@ static int mtk_star_probe(struct platform_device *pdev)
->
->         priv = netdev_priv(ndev);
->         priv->ndev = ndev;
-> +       priv->compat_data = of_device_get_match_data(&pdev->dev);
->         SET_NETDEV_DEV(ndev, dev);
->         platform_set_drvdata(pdev, ndev);
->
-> @@ -1556,10 +1564,17 @@ static int mtk_star_probe(struct platform_device *pdev)
->         return devm_register_netdev(dev, ndev);
->  }
->
-> +static struct mtk_star_compat mtk_star_mt8516_compat = {
+From: Like Xu <likexu@tencent.com>
 
-static const ... ?
+Hi,
 
-> +       .bit_clk_div = MTK_STAR_BIT_CLK_DIV_10,
-> +};
-> +
->  static const struct of_device_id mtk_star_of_match[] = {
-> -       { .compatible = "mediatek,mt8516-eth", },
-> -       { .compatible = "mediatek,mt8518-eth", },
-> -       { .compatible = "mediatek,mt8175-eth", },
-> +       { .compatible = "mediatek,mt8516-eth",
-> +         .data = &mtk_star_mt8516_compat },
-> +       { .compatible = "mediatek,mt8518-eth",
-> +         .data = &mtk_star_mt8516_compat },
-> +       { .compatible = "mediatek,mt8175-eth",
-> +         .data = &mtk_star_mt8516_compat },
->         { }
->  };
->  MODULE_DEVICE_TABLE(of, mtk_star_of_match);
-> --
-> 2.25.1
->
+This patch set is a follow up to a similar patch [1], and may
+hopefully help to improve the code quality of KVM.
+
+Basically, the cleanup is triggered by a compiler feature[2], but obviously
+there are a lot of false positives here, and so far we may apply at least
+this changset, which also helps the related developers to think more
+carefully about why these functions were declared that way in the first
+place or what is left after a series of loosely-coupled clean-ups.
+
+[1] https://lore.kernel.org/kvm/20220124020456.156386-1-xianting.tian@linux.alibaba.com/
+[2] ccflags-y += -Wunused-parameter
+
+Thanks,
+Like Xu
+
+Jinrong Liang (19):
+  KVM: x86/mmu: Remove unused "kvm" of kvm_mmu_unlink_parents()
+  KVM: x86/mmu: Remove unused "kvm" of __rmap_write_protect()
+  KVM: x86/mmu: Remove unused "vcpu" of
+    reset_{tdp,ept}_shadow_zero_bits_mask()
+  KVM: x86/tdp_mmu: Remove unused "kvm" of kvm_tdp_mmu_get_root()
+  KVM: x86/mmu_audit: Remove unused "level" of audit_spte_after_sync()
+  KVM: x86/svm: Remove unused "vcpu" of svm_check_exit_valid()
+  KVM: x86/svm: Remove unused "vcpu" of nested_svm_check_tlb_ctl()
+  KVM: x86/svm: Remove unused "vcpu" of kvm_after_interrupt()
+  KVM: x86/sev: Remove unused "svm" of sev_es_prepare_guest_switch()
+  KVM: x86/sev: Remove unused "kvm" of sev_unbind_asid()
+  KVM: x86/sev: Remove unused "vector" of sev_vcpu_deliver_sipi_vector()
+  KVM: x86/i8259: Remove unused "addr" of elcr_ioport_{read,write}()
+  KVM: x86/ioapic: Remove unused "addr" and "length" of
+    ioapic_read_indirect()
+  KVM: x86/emulate: Remove unused "ctxt" of setup_syscalls_segments()
+  KVM: x86/emulate: Remove unused "ctxt" of task_switch_{16, 32}()
+  KVM: x86: Remove unused "vcpu" of kvm_arch_tsc_has_attr()
+  KVM: x86: Remove unused "vcpu" of kvm_scale_tsc()
+  KVM: Remove unused "kvm" of kvm_make_vcpu_request()
+  KVM: Remove unused "flags" of kvm_pv_kick_cpu_op()
+
+ arch/x86/include/asm/kvm_host.h |  2 +-
+ arch/x86/kvm/emulate.c          | 20 ++++++++------------
+ arch/x86/kvm/i8259.c            |  8 ++++----
+ arch/x86/kvm/ioapic.c           |  6 ++----
+ arch/x86/kvm/mmu/mmu.c          | 23 ++++++++++-------------
+ arch/x86/kvm/mmu/mmu_audit.c    |  4 ++--
+ arch/x86/kvm/mmu/tdp_mmu.c      |  4 ++--
+ arch/x86/kvm/mmu/tdp_mmu.h      |  3 +--
+ arch/x86/kvm/svm/nested.c       |  4 ++--
+ arch/x86/kvm/svm/sev.c          | 12 ++++++------
+ arch/x86/kvm/svm/svm.c          | 10 +++++-----
+ arch/x86/kvm/svm/svm.h          |  4 ++--
+ arch/x86/kvm/vmx/vmx.c          |  2 +-
+ arch/x86/kvm/x86.c              | 25 ++++++++++++-------------
+ arch/x86/kvm/x86.h              |  2 +-
+ virt/kvm/kvm_main.c             |  9 ++++-----
+ 16 files changed, 63 insertions(+), 75 deletions(-)
+
+-- 
+2.33.1
+
