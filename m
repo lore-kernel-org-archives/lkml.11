@@ -2,340 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D7FC46467
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84DD3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:55:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231603AbiAYLqA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 06:46:00 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4507 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354559AbiAYLky (ORCPT
+        id S1380687AbiAYLyu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 06:54:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383256AbiAYLpL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 06:40:54 -0500
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JjlBy0XdNz6F8gY;
-        Tue, 25 Jan 2022 19:35:06 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 12:39:21 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 11:39:18 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-        <artur.paszkiewicz@intel.com>, <jinpu.wang@cloud.ionos.com>,
-        <chenxiang66@hisilicon.com>, <Ajish.Koshy@microchip.com>
-CC:     <yanaijie@huawei.com>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <linuxarm@huawei.com>, <liuqi115@huawei.com>,
-        <Viswas.G@microchip.com>, <damien.lemoal@opensource.wdc.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH 16/16] scsi: libsas: Add sas_execute_ata_cmd()
-Date:   Tue, 25 Jan 2022 19:32:52 +0800
-Message-ID: <1643110372-85470-17-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
-References: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
+        Tue, 25 Jan 2022 06:45:11 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE31C06175F;
+        Tue, 25 Jan 2022 03:44:17 -0800 (PST)
+Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=truhe.fritz.box); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1nCKFD-0001tA-UU; Tue, 25 Jan 2022 12:44:16 +0100
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+To:     linux-doc@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     workflows@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        regressions@lists.linux.dev,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH v3 2/2] docs: regressions.rst: rules of thumb for handling regressions
+Date:   Tue, 25 Jan 2022 12:44:14 +0100
+Message-Id: <9eb100798e963e6f47c28cba81668d4068843876.1643110442.git.linux@leemhuis.info>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1643110442.git.linux@leemhuis.info>
+References: <cover.1643110442.git.linux@leemhuis.info>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1643111057;57976a3c;
+X-HE-SMSGID: 1nCKFD-0001tA-UU
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a function to execute an ATA command using the TMF code, and use in
-the hisi_sas driver. That driver needs to be able to issue the command on
-a specific phy, so add an interface for that.
+Add a section with a few rules of thumb about how quickly regressions
+should be fixed. They are written after studying the quotes from Linus
+found in the modified document and especially influenced by statements
+like "Users are literally the _only_ thing that matters" and "without
+users, your program is not a program, it's a pointless piece of code
+that you might as well throw away". The author interpreted those in
+perspective to how the various Linux kernel series are maintained and
+what those practices might mean for users running into a regression when
+updating.
 
-With that, hisi_sas_exec_internal_tmf_task() may be deleted.
+That for example lead to the paragraph starting with "Aim to get fixes
+for regressions mainlined within one week after identifying the culprit,
+if the regression was introduced in a stable/longterm release or the
+devel cycle for the latest mainline release". This is a pretty high bar,
+but on the other hand needed to not leave users out in the cold for to
+long. This can quickly happen, as the previous stable series is normally
+stamped "End of Life" about three or four weeks after a new mainline
+release, which makes a lot of users switch during this timeframe. Any of
+them risk running into regressions not promptly fixed; even worse, once
+the previous stable series is EOLed for real, users that face a
+regression might be left with only three options:
 
-Signed-off-by: John Garry <john.garry@huawei.com>
+ (1) continue running an outdated and thus potentially insecure kernel
+     version from an abandoned stable series
+
+ (2) run the kernel with the regression
+
+ (3) downgrade to an earlier longterm series still supported
+
+This is better avoided, as (1) puts users and their data in danger, (2)
+will only be possible if it's a minor regression that doesn't interfere
+with booting or serious usage, and (3) might be regression itself or
+impossible on the particular machine, as some users will require drivers
+or features only introduced after the latest longterm series took of.
+
+In the end this lead to the "Aim to fix regression within one week"
+part. It also is the reason for the "Try to resolve any regressions
+introduced in the current development cycle before its end.".
+
+Signed-off-by: Thorsten Leemhuis <linux@leemhuis.info>
+CC: Linus Torvalds <torvalds@linux-foundation.org>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- drivers/scsi/hisi_sas/hisi_sas_main.c  | 129 +------------------------
- drivers/scsi/hisi_sas/hisi_sas_v2_hw.c |   5 +-
- drivers/scsi/libsas/sas_ata.c          |   8 ++
- drivers/scsi/libsas/sas_scsi_host.c    |   6 ++
- include/scsi/libsas.h                  |  10 +-
- 5 files changed, 26 insertions(+), 132 deletions(-)
+Hi! A lot of developers are doing a good job in fixing regressions, but
+I noticed it sometimes takes many weeks to get even simple fixes for
+regressions merged. Most of the time this is due to one of these
+factors:
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c b/drivers/scsi/hisi_sas/hisi_sas_main.c
-index 359a5718fc59..c32af187e452 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_main.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
-@@ -1245,124 +1245,7 @@ static void hisi_sas_tmf_timedout(struct timer_list *t)
- 		complete(&task->slow_task->completion);
- }
+ * it takes a long time to get the fix ready, as some developers
+   apparently don't prioritize work on fixing regressions
+
+ * fully developed fixes linger in git trees of maintainers for weeks,
+   sometimes even without the fix being in linux-next
+
+This afaics is especially a problem for regressions introduced in
+mainline, but only found after a recent release or a stable kernel
+series derived from it. Sometimes fixes for these regressions are even
+left lying around for weeks until the next merge window, which
+contributes to a huge pile of fixes getting backported to stable and
+longterm releases during or shortly after merge windows. Asking
+developers to speed things up rarely helped, as people have different
+options on how fast regression fixes need to be developed and merged
+upstream.
+
+That's why it would be a great help to my work as regression tracker if
+we had some rough written down guidelines for handling regressions, as
+proposed by the patch below. I'm well aware that the text sets a pretty
+high bar. That's because I approached the problem primarily from the
+point of a user, as can be seen by the patch description.
+
+The text added by this patch likely will lead to some discussions,
+that's why I submit it separately from the rest of the new document on
+regressions, which is found in patch 1/2; I also CCed Linus on this
+patch and hope they state his opinion or ACK is. In the end I can
+easily tone this down or write something totally different: that's
+totally fine for me, I'm mainly interested in having some expectations
+roughly documented to get everyone on the same page.
+---
+ Documentation/admin-guide/regressions.rst | 81 +++++++++++++++++++++++
+ 1 file changed, 81 insertions(+)
+
+diff --git a/Documentation/admin-guide/regressions.rst b/Documentation/admin-guide/regressions.rst
+index 837b1658d149..903f3cb69b75 100644
+--- a/Documentation/admin-guide/regressions.rst
++++ b/Documentation/admin-guide/regressions.rst
+@@ -46,6 +46,10 @@ ensuring all regressions are acted upon in a timely manner.
+ The important bits for people fixing regressions
+ ================================================
  
--#define TASK_TIMEOUT			(20 * HZ)
--#define TASK_RETRY			3
- #define INTERNAL_ABORT_TIMEOUT		(6 * HZ)
--static int hisi_sas_exec_internal_tmf_task(struct domain_device *device,
--					   void *parameter, u32 para_len,
--					   struct sas_tmf_task *tmf)
--{
--	struct hisi_sas_device *sas_dev = device->lldd_dev;
--	struct hisi_hba *hisi_hba = sas_dev->hisi_hba;
--	struct device *dev = hisi_hba->dev;
--	struct sas_task *task;
--	int res, retry;
--
--	for (retry = 0; retry < TASK_RETRY; retry++) {
--		task = sas_alloc_slow_task(GFP_KERNEL);
--		if (!task)
--			return -ENOMEM;
--
--		task->dev = device;
--		task->task_proto = device->tproto;
--
--		if (dev_is_sata(device)) {
--			task->ata_task.device_control_reg_update = 1;
--			memcpy(&task->ata_task.fis, parameter, para_len);
--		} else {
--			memcpy(&task->ssp_task, parameter, para_len);
--		}
--		task->task_done = hisi_sas_task_done;
--
--		task->slow_task->timer.function = hisi_sas_tmf_timedout;
--		task->slow_task->timer.expires = jiffies + TASK_TIMEOUT;
--		add_timer(&task->slow_task->timer);
--
--		task->tmf = tmf;
--
--		res = hisi_sas_queue_command(task, GFP_KERNEL);
--		if (res) {
--			del_timer_sync(&task->slow_task->timer);
--			dev_err(dev, "abort tmf: executing internal task failed: %d\n",
--				res);
--			goto ex_err;
--		}
--
--		wait_for_completion(&task->slow_task->completion);
--		res = TMF_RESP_FUNC_FAILED;
--		/* Even TMF timed out, return direct. */
--		if ((task->task_state_flags & SAS_TASK_STATE_ABORTED)) {
--			if (!(task->task_state_flags & SAS_TASK_STATE_DONE)) {
--				struct hisi_sas_slot *slot = task->lldd_task;
--
--				dev_err(dev, "abort tmf: TMF task timeout and not done\n");
--				if (slot) {
--					struct hisi_sas_cq *cq =
--					       &hisi_hba->cq[slot->dlvry_queue];
--					/*
--					 * sync irq to avoid free'ing task
--					 * before using task in IO completion
--					 */
--					synchronize_irq(cq->irq_no);
--					slot->task = NULL;
--				}
--
--				goto ex_err;
--			} else
--				dev_err(dev, "abort tmf: TMF task timeout\n");
--		}
--
--		if (task->task_status.resp == SAS_TASK_COMPLETE &&
--		     task->task_status.stat == TMF_RESP_FUNC_COMPLETE) {
--			res = TMF_RESP_FUNC_COMPLETE;
--			break;
--		}
--
--		if (task->task_status.resp == SAS_TASK_COMPLETE &&
--			task->task_status.stat == TMF_RESP_FUNC_SUCC) {
--			res = TMF_RESP_FUNC_SUCC;
--			break;
--		}
--
--		if (task->task_status.resp == SAS_TASK_COMPLETE &&
--		      task->task_status.stat == SAS_DATA_UNDERRUN) {
--			/* no error, but return the number of bytes of
--			 * underrun
--			 */
--			dev_warn(dev, "abort tmf: task to dev %016llx resp: 0x%x sts 0x%x underrun\n",
--				 SAS_ADDR(device->sas_addr),
--				 task->task_status.resp,
--				 task->task_status.stat);
--			res = task->task_status.residual;
--			break;
--		}
--
--		if (task->task_status.resp == SAS_TASK_COMPLETE &&
--			task->task_status.stat == SAS_DATA_OVERRUN) {
--			dev_warn(dev, "abort tmf: blocked task error\n");
--			res = -EMSGSIZE;
--			break;
--		}
--
--		if (task->task_status.resp == SAS_TASK_COMPLETE &&
--		    task->task_status.stat == SAS_OPEN_REJECT) {
--			dev_warn(dev, "abort tmf: open reject failed\n");
--			res = -EIO;
--		} else {
--			dev_warn(dev, "abort tmf: task to dev %016llx resp: 0x%x status 0x%x\n",
--				 SAS_ADDR(device->sas_addr),
--				 task->task_status.resp,
--				 task->task_status.stat);
--		}
--		sas_free_task(task);
--		task = NULL;
--	}
--ex_err:
--	if (retry == TASK_RETRY)
--		dev_warn(dev, "abort tmf: executing internal task failed!\n");
--	sas_free_task(task);
--	return res;
--}
- 
- static void hisi_sas_fill_ata_reset_cmd(struct ata_device *dev,
- 		bool reset, int pmp, u8 *fis)
-@@ -1386,13 +1269,12 @@ static int hisi_sas_softreset_ata_disk(struct domain_device *device)
- 	int rc = TMF_RESP_FUNC_FAILED;
- 	struct hisi_hba *hisi_hba = dev_to_hisi_hba(device);
- 	struct device *dev = hisi_hba->dev;
--	int s = sizeof(struct host_to_dev_fis);
- 
- 	ata_for_each_link(link, ap, EDGE) {
- 		int pmp = sata_srst_pmp(link);
- 
- 		hisi_sas_fill_ata_reset_cmd(link->device, 1, pmp, fis);
--		rc = hisi_sas_exec_internal_tmf_task(device, fis, s, NULL);
-+		rc = sas_execute_ata_cmd(device, fis, -1);
- 		if (rc != TMF_RESP_FUNC_COMPLETE)
- 			break;
- 	}
-@@ -1402,8 +1284,7 @@ static int hisi_sas_softreset_ata_disk(struct domain_device *device)
- 			int pmp = sata_srst_pmp(link);
- 
- 			hisi_sas_fill_ata_reset_cmd(link->device, 0, pmp, fis);
--			rc = hisi_sas_exec_internal_tmf_task(device, fis,
--							     s, NULL);
-+			rc = sas_execute_ata_cmd(device, fis, -1);
- 			if (rc != TMF_RESP_FUNC_COMPLETE)
- 				dev_err(dev, "ata disk %016llx de-reset failed\n",
- 					SAS_ADDR(device->sas_addr));
-@@ -1513,10 +1394,8 @@ static void hisi_sas_send_ata_reset_each_phy(struct hisi_hba *hisi_hba,
- 					     struct asd_sas_port *sas_port,
- 					     struct domain_device *device)
- {
--	struct sas_tmf_task tmf_task = { .force_phy = 1 };
- 	struct ata_port *ap = device->sata_dev.ap;
- 	struct device *dev = hisi_hba->dev;
--	int s = sizeof(struct host_to_dev_fis);
- 	int rc = TMF_RESP_FUNC_FAILED;
- 	struct ata_link *link;
- 	u8 fis[20] = {0};
-@@ -1529,10 +1408,8 @@ static void hisi_sas_send_ata_reset_each_phy(struct hisi_hba *hisi_hba,
- 		ata_for_each_link(link, ap, EDGE) {
- 			int pmp = sata_srst_pmp(link);
- 
--			tmf_task.phy_id = i;
- 			hisi_sas_fill_ata_reset_cmd(link->device, 1, pmp, fis);
--			rc = hisi_sas_exec_internal_tmf_task(device, fis, s,
--							     &tmf_task);
-+			rc = sas_execute_ata_cmd(device, fis, i);
- 			if (rc != TMF_RESP_FUNC_COMPLETE) {
- 				dev_err(dev, "phy%d ata reset failed rc=%d\n",
- 					i, rc);
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c
-index ef5d8f64edd8..d8f58d92df4a 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c
-@@ -2492,6 +2492,7 @@ static void prep_ata_v2_hw(struct hisi_hba *hisi_hba,
- 	struct hisi_sas_cmd_hdr *hdr = slot->cmd_hdr;
- 	struct asd_sas_port *sas_port = device->port;
- 	struct hisi_sas_port *port = to_hisi_sas_port(sas_port);
-+	struct sas_ata_task *ata_task = &task->ata_task;
- 	struct sas_tmf_task *tmf = slot->tmf;
- 	u8 *buf_cmd;
- 	int has_data = 0, hdr_tag = 0;
-@@ -2505,9 +2506,9 @@ static void prep_ata_v2_hw(struct hisi_hba *hisi_hba,
- 	else
- 		dw0 |= 4 << CMD_HDR_CMD_OFF;
- 
--	if (tmf && tmf->force_phy) {
-+	if (tmf && ata_task->force_phy) {
- 		dw0 |= CMD_HDR_FORCE_PHY_MSK;
--		dw0 |= (1 << tmf->phy_id) << CMD_HDR_PHY_ID_OFF;
-+		dw0 |= (1 << ata_task->force_phy_id) << CMD_HDR_PHY_ID_OFF;
- 	}
- 
- 	hdr->dw0 = cpu_to_le32(dw0);
-diff --git a/drivers/scsi/libsas/sas_ata.c b/drivers/scsi/libsas/sas_ata.c
-index a315715b3622..350d5e29e25c 100644
---- a/drivers/scsi/libsas/sas_ata.c
-+++ b/drivers/scsi/libsas/sas_ata.c
-@@ -856,3 +856,11 @@ void sas_ata_wait_eh(struct domain_device *dev)
- 	ap = dev->sata_dev.ap;
- 	ata_port_wait_eh(ap);
- }
++Try to fix regressions quickly once the culprit has been identified; fixes for
++most regressions should be merged within two weeks, but some need to be
++addressed within two or three days.
 +
-+int sas_execute_ata_cmd(struct domain_device *device, u8 *fis, int force_phy_id)
-+{
-+	struct sas_tmf_task tmf_task = {};
-+	return sas_execute_tmf(device, fis, sizeof(struct host_to_dev_fis),
-+			       force_phy_id, &tmf_task);
-+}
-+EXPORT_SYMBOL_GPL(sas_execute_ata_cmd);
-diff --git a/drivers/scsi/libsas/sas_scsi_host.c b/drivers/scsi/libsas/sas_scsi_host.c
-index 3e2e3bcbbf67..7cc80a025702 100644
---- a/drivers/scsi/libsas/sas_scsi_host.c
-+++ b/drivers/scsi/libsas/sas_scsi_host.c
-@@ -939,6 +939,12 @@ int sas_execute_tmf(struct domain_device *device, void *parameter,
- 		task->task_proto = device->tproto;
+ When submitting fixes for regressions, add "Link:" tags pointing to all places
+ where the issue was reported, as tools like the Linux kernel regression bot
+ 'regzbot' heavily rely on them. These pointers are also of great value when
+@@ -257,6 +261,83 @@ In case you are having trouble, simply forward the report or a pointer to it
+ without further ado to Thorsten Leemhuis (regressions@leemhuis.info), he then
+ will handle things.
  
- 		if (dev_is_sata(device)) {
-+			task->ata_task.device_control_reg_update = 1;
-+			if (force_phy_id >= 0) {
-+				task->ata_task.force_phy = true;
-+				task->ata_task.force_phy_id = force_phy_id;
-+			}
-+			memcpy(&task->ata_task.fis, parameter, para_len);
- 		} else {
- 			memcpy(&task->ssp_task, parameter, para_len);
- 		}
-diff --git a/include/scsi/libsas.h b/include/scsi/libsas.h
-index 8a9ffe689d1f..02d28cd691e4 100644
---- a/include/scsi/libsas.h
-+++ b/include/scsi/libsas.h
-@@ -553,6 +553,9 @@ struct sas_ata_task {
- 	u8     stp_affil_pol:1;
- 
- 	u8     device_control_reg_update:1;
++How quickly should regressions be fixed?
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 +
-+	bool   force_phy;
-+	int    force_phy_id;
- };
- 
- struct sas_smp_task {
-@@ -580,10 +583,6 @@ struct sas_ssp_task {
- struct sas_tmf_task {
- 	u8 tmf;
- 	u16 tag_of_task_to_be_managed;
--
--	/* Temp */
--	int force_phy;
--	int phy_id;
- };
- 
- struct sas_task {
-@@ -729,10 +728,13 @@ int sas_clear_task_set(struct domain_device *dev, u8 *lun);
- int sas_lu_reset(struct domain_device *dev, u8 *lun);
- int sas_query_task(struct sas_task *task, u16 tag);
- int sas_abort_task(struct sas_task *task, u16 tag);
-+int sas_execute_ata_cmd(struct domain_device *device, u8 *fis,
-+			int force_phy_id);
- 
- int sas_notify_port_event(struct asd_sas_phy *phy, enum port_event event,
- 			  gfp_t gfp_flags);
- int sas_notify_phy_event(struct asd_sas_phy *phy, enum phy_event event,
- 			 gfp_t gfp_flags);
- 
++Developers should fix any reported regression as quickly as possible, to provide
++affected users with a solution in a timely manner and prevent more users from
++running into the issue; nevertheless developers need to take enough time and
++care to ensure regression fixes do not cause additional damage.
 +
- #endif /* _SASLIB_H_ */
++In the end though, developers should give their best to prevent users from
++running into situations where a regression leaves them only three options: 'run
++a kernel with a regression that seriously impacts usage', 'continue running an
++outdated and thus potentially insecure kernel version for more than two weeks
++after a regression's culprit was identified', and 'downgrade to a still
++supported kernel series that's missing required features'.
++
++How to realize this depends a lot on the situation. Here are a few rules of
++thumb for developers, in order or importance:
++
++ * Prioritize work on handling regression reports and fixing regression over all
++   other Linux kernel work, unless the latter concerns acute security issues or
++   bugs causing data loss or damage.
++
++ * Always consider reverting the culprit commits and reapplying them later
++   together with necessary fixes, as this might be the least dangerous and
++   quickest way to fix a regression.
++
++ * Try to resolve any regressions introduced in the current development before
++   its end. If you fear a fix might be too risky to apply only days before a new
++   mainline release, let Linus decide: submit the fix separately to him as soon
++   as possible with the explanation of the situation. He then can make a call
++   and postpone the release if necessary, for example if multiple such changes
++   show up in his inbox.
++
++ * Address regressions in stable, longterm, or proper mainline releases with
++   more urgency than regressions in mainline pre-releases. That changes after
++   the release of the fifth pre-release, aka '-rc5': mainline then becomes as
++   important, to ensure all the improvements and fixes are ideally tested
++   together for at least one week before Linus releases a new mainline version.
++
++ * Fix regressions within two or three days, if they are critical for some
++   reason -- for example, if the issue is likely to affect many users of the
++   kernel series in question on all or certain architectures. This thus includes
++   fixes for compile errors in mainline, as they otherwise might prevent
++   testers and continuous integration systems from doing their work.
++
++ * Aim to merge regression fixes into mainline within one week after the culprit
++   was identified, if the regression was introduced in a stable/longterm release
++   or the development cycle for the latest mainline release (say v5.14). If
++   possible, try to address the issue even quicker, if the previous stable
++   series (v5.13.y) will be abandoned soon or already was stamped 'End-of-Life'
++   (EOL) -- this usually happens about three to four weeks after a new mainline
++   release.
++
++ * Try to fix all other regressions within two weeks after the culprit was
++   found. Two or three additional weeks are acceptable for performance
++   regressions and other issues which are annoying, but don't prevent anyone
++   from running Linux (unless it's an issue in the current development cycle,
++   as those should ideally be addressed before the release). A few weeks in
++   total are acceptable if a regression can only be fixed with a risky change
++   and at the same time is affecting only a few users; as much time is
++   also okay if the regression is already present in the second newest longterm
++   kernel series.
++
++Note: The aforementioned time frames for resolving regressions are meant to
++include getting the fix tested, reviewed, and merged into mainline, ideally with
++the fix being in linux-next for two days.
++
++Developers thus need to get their fixes finished earlier, as each of these steps
++takes additional time.
++
++Subsystem maintainers are expected to assist in reaching those periods by doing
++timely reviews and quick handling of accepted patches. They thus might have to
++send git-pull requests earlier or more often than usual; depending on the fix,
++it might even be acceptable to skip testing in linux-next. Especially fixes for
++regressions in stable and longterm kernels need to be handled quickly, as fixes
++need to be merged in mainline before they can be backported to older series.
++
+ Are really all regressions fixed?
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
 -- 
-2.26.2
+2.31.1
 
