@@ -2,95 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A345BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC45C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455865AbiAYJb3 (ORCPT
+        id S1574040AbiAYJbm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:31:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573004AbiAYJSg (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:18:36 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7419EC061401;
-        Tue, 25 Jan 2022 01:14:02 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id l35-20020a05600c1d2300b0034d477271c1so1285648wms.3;
-        Tue, 25 Jan 2022 01:14:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sRD6qyOpLvPcbfxyrO55uccAQnyiA9egM9CuSrcd7Oc=;
-        b=pxDtXbN4xMP3UQSMn75sFL/SaeutiFSKz3kyKW6caQJyCeyRxcWrn7GX9HpWclAX7Z
-         dOIbygVko6RUJ/wt6z/a095spH8ZQrmCIPD7+FxqN+rexXZo86O9CQyYthLZ4/37WKN3
-         RIEOsH+MByBUUHXUyyl+eVy7OlEWbgjzuOs6QI7e0OXOlacH5EaTneJZHG0gNex2UHOt
-         sUaTXry+PvodKcsJNnvv6exMgY6eos/9VZOhdIMFMf2UTnH+coNJ8RoHHjKxCqC886p2
-         uy8HF9SmsVkV70U6Vvd81B6fE8yREd+3EaFq6CirH1obIK0hImClV0TNBLZqGnugmzdk
-         7b8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sRD6qyOpLvPcbfxyrO55uccAQnyiA9egM9CuSrcd7Oc=;
-        b=JvxoIiIheczynPHFlHGx2hyComFCMJpfK1IQNTcTxCwfDvitVMe4CjimEjJ+X4Ht35
-         dCTNO//CMhL6Y3fXyXeFYCr+k6pz/2rfyt9pwCWVxFbwm1nDxWT4rD0PP6FxgNzORoUS
-         SZ8H5uay6yii6uE5RKanXw7FSpQBCA0ItNP2OzDpBRziGxXrnZm9rObv7PhNNpL1lHq0
-         T/E9jwkfHUKW8z4HTz28F5ILjb57eSII8MPUJxEwOYDGkt1VXZsGUp9J+3jYR2M+mV3X
-         tRBioCHpQ/2i3OwfE72ITmfWiNjPrV1OsFVqkSDNnLQF2g10dgtYNMj983dYUMKKxyMS
-         bZ6A==
-X-Gm-Message-State: AOAM531NEbna1KYqxTOnsMcHnOr+QQmlZHc8GvffVcjGWIMpOn5fV4Cq
-        x/kVc0rtBSodvoNcg6Pf7Js=
-X-Google-Smtp-Source: ABdhPJxzyKb03iquT0LFx2oqC90sGv/+nQr+qE2QH5pD8+5O0GEBKjf4WlPRN0eo54vLAvnnDr0wuA==
-X-Received: by 2002:a7b:c4c3:: with SMTP id g3mr2038528wmk.125.1643102040934;
-        Tue, 25 Jan 2022 01:14:00 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id l4sm3859839wrs.6.2022.01.25.01.14.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 01:14:00 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        John Harrison <John.C.Harrison@Intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] drm/i915/guc: fix spelling mistake "notificaion" -> "notification"
-Date:   Tue, 25 Jan 2022 09:13:59 +0000
-Message-Id: <20220125091359.350918-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        Tue, 25 Jan 2022 04:31:42 -0500
+Received: from mga18.intel.com ([134.134.136.126]:37163 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1573290AbiAYJUU (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 04:20:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643102417; x=1674638417;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=CvoHKh2Sj7FSwQosQoHJRoEf+DpWTkpPjpylZISDp5A=;
+  b=XXuqlvmikoXuVLELT4LAOnvy7jf3/+p3EDUtVKzq08h/moFcDnJfnli4
+   AM5GOHJPQFvIL6yAe77PMVjdsPmcFf1tDaYm2AdHmHWydjzWXb4yiibtH
+   Jk94WFp7p91T5CG4vUhxhBh239QIZnxIm57vhbMPlOEr7p57BpNEIkJrj
+   GkSL0TsnTJhHr3vYQP5BwzurAKqQsmCjB8eJ4kq5L4xkX39TgnCI05jDB
+   zJLnXkTZFQGjIrTCx5vPwzju1+atbjenb8uQHrJxoNYZzg2J7FD9Z5iE1
+   p1B7eW0Qddcv2ytwhVlecMZRwnVD7hJTAqoPjSPQGgNJ39KwbMrwfg7vS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="229836283"
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="229836283"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 01:16:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="562976285"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 25 Jan 2022 01:16:33 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCHwH-000JdN-8e; Tue, 25 Jan 2022 09:16:33 +0000
+Date:   Tue, 25 Jan 2022 17:16:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/paravirt] BUILD SUCCESS
+ 2e1f8e55f9e054b4a49ffc06c7e33b5d4725f05e
+Message-ID: <61efbfe9.7zfLb0nKW+J6dWfa%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a spelling mistake in a drm_err error message. Fix it.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/paravirt
+branch HEAD: 2e1f8e55f9e054b4a49ffc06c7e33b5d4725f05e  x86/paravirt: Use %rip-relative addressing in hook calls
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+elapsed time: 728m
+
+configs tested: 146
+configs skipped: 84
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20220124
+sh                 kfr2r09-romimage_defconfig
+mips                         bigsur_defconfig
+arc                 nsimosci_hs_smp_defconfig
+powerpc                     rainier_defconfig
+mips                      maltasmvp_defconfig
+sh                           se7722_defconfig
+mips                     decstation_defconfig
+sparc                       sparc64_defconfig
+powerpc                      ppc6xx_defconfig
+mips                            gpr_defconfig
+arc                          axs101_defconfig
+xtensa                    xip_kc705_defconfig
+powerpc                     asp8347_defconfig
+riscv                    nommu_k210_defconfig
+m68k                          atari_defconfig
+powerpc                     tqm8548_defconfig
+openrisc                            defconfig
+csky                                defconfig
+sh                           se7206_defconfig
+ia64                          tiger_defconfig
+arc                            hsdk_defconfig
+arm                       multi_v4t_defconfig
+arm                        trizeps4_defconfig
+arm                        mvebu_v7_defconfig
+arm                           viper_defconfig
+sh                   sh7724_generic_defconfig
+ia64                        generic_defconfig
+sh                           sh2007_defconfig
+arm                          simpad_defconfig
+sh                          r7780mp_defconfig
+mips                  maltasmvp_eva_defconfig
+sh                             shx3_defconfig
+powerpc                    amigaone_defconfig
+arm                            lart_defconfig
+arc                         haps_hs_defconfig
+mips                        bcm47xx_defconfig
+xtensa                          iss_defconfig
+arm                  randconfig-c002-20220124
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a002-20220124
+x86_64               randconfig-a003-20220124
+x86_64               randconfig-a001-20220124
+x86_64               randconfig-a004-20220124
+x86_64               randconfig-a005-20220124
+x86_64               randconfig-a006-20220124
+i386                 randconfig-a002-20220124
+i386                 randconfig-a005-20220124
+i386                 randconfig-a003-20220124
+i386                 randconfig-a004-20220124
+i386                 randconfig-a001-20220124
+i386                 randconfig-a006-20220124
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+
+clang tested configs:
+arm                  randconfig-c002-20220124
+riscv                randconfig-c006-20220124
+i386                 randconfig-c001-20220124
+powerpc              randconfig-c003-20220124
+mips                 randconfig-c004-20220124
+x86_64               randconfig-c007-20220124
+mips                        workpad_defconfig
+mips                     loongson2k_defconfig
+mips                     cu1000-neo_defconfig
+mips                  cavium_octeon_defconfig
+mips                        omega2p_defconfig
+arm                           sama7_defconfig
+powerpc                     kmeter1_defconfig
+mips                        bcm63xx_defconfig
+powerpc                          g5_defconfig
+arm                          imote2_defconfig
+powerpc                     tqm5200_defconfig
+mips                       lemote2f_defconfig
+powerpc                        icon_defconfig
+powerpc                     mpc5200_defconfig
+powerpc                     tqm8560_defconfig
+mips                     cu1830-neo_defconfig
+arm                        neponset_defconfig
+mips                           ip22_defconfig
+arm                     davinci_all_defconfig
+powerpc                      ppc44x_defconfig
+arm                              alldefconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64               randconfig-a011-20220124
+x86_64               randconfig-a013-20220124
+x86_64               randconfig-a015-20220124
+x86_64               randconfig-a016-20220124
+x86_64               randconfig-a014-20220124
+x86_64               randconfig-a012-20220124
+i386                 randconfig-a011-20220124
+i386                 randconfig-a016-20220124
+i386                 randconfig-a013-20220124
+i386                 randconfig-a014-20220124
+i386                 randconfig-a015-20220124
+i386                 randconfig-a012-20220124
+riscv                randconfig-r042-20220124
+hexagon              randconfig-r045-20220124
+hexagon              randconfig-r041-20220124
+
 ---
- drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
-index 1331ff91c5b0..1ae3d1f259e3 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
-@@ -3942,7 +3942,7 @@ static void guc_handle_context_reset(struct intel_guc *guc,
- 		guc_context_replay(ce);
- 	} else {
- 		drm_err(&guc_to_gt(guc)->i915->drm,
--			"Invalid GuC engine reset notificaion for 0x%04X on %s: banned = %d, blocked = %d",
-+			"Invalid GuC engine reset notification for 0x%04X on %s: banned = %d, blocked = %d",
- 			ce->guc_id.id, ce->engine->name, intel_context_is_banned(ce),
- 			context_blocked(ce));
- 	}
--- 
-2.33.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
