@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10DEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:36:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF77C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243675AbiAYKgT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:36:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
+        id S1349136AbiAYKgc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:36:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358768AbiAYKdc (ORCPT
+        with ESMTP id S1358780AbiAYKdi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:33:32 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E4EAC061744
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:33:32 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id l25so18940247wrb.13
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:33:31 -0800 (PST)
+        Tue, 25 Jan 2022 05:33:38 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B8CC061748
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:33:37 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id l25so18940775wrb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:33:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HKmB0WnD95we+nYv5Lf5hKGk4udGQMGznAa0meSenNE=;
-        b=aRZ3EMi3MVJvN3Z2hlWYk2nlUiGg0lck95fhMFyvC4tToOzZrkPdieA1idHZ5aZZP6
-         Q2jBUOUnj0wMCp0zbQWj1CDElxw+lBX8U7wk6C0t8TPOzMAg53udxrR8SetAptUIf7OX
-         zcnaAnUJvskinlIk+LQv7hJMN1RkMzEqjZ3J6J17uEs9RF8alLioU6ro1QIIQTaSQPzn
-         d4aUh3hnkqcXslSDQUimYd/jAhVzsYHv9RvGatP51Db8x3L3YQr3BX1SZ03JKKQUWPwB
-         7f7MFD4cT+a4Q90SqPhCojoOHzEkkEWWuFijkNFKlPx5wp1CLLJBvCc8hxDPIlCb4yM2
-         lYCw==
+        bh=4KLk48uJDSh7dm6hMRysfiEnctm+6+wF78zxIH1Wen0=;
+        b=o1Wq6iDHZRoJHBNvyNYJitPQBl0zy0dTTWhJMOzi3G/hkZEz9H4Ban72KriTfmzOKD
+         iNdm1tC2X2uZzJVbSpZCOU+T6aNYuP3krRd5b4yWg/Qa/gKF8wwi2YirsEbBWaiDcJ3t
+         QpsYkW7uzo2fAnWuVwrQcsmmvAlSx8cfKoy5McQk0yqzrfwD3Awsj3AiNdrSE1qakXdU
+         r1nwjlNgED+9xKcijhORfvWGjlpgKDM/jOmmVyPUhsxN9ULhLjOOM8QZSGFBxuHJjIhx
+         icyWxeF73hKIf2BPMJfcPWAu1FP+Ty/sJ8F060lA5EEPcUiISzBIX1LsPPqkNBsBl4RD
+         XbuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HKmB0WnD95we+nYv5Lf5hKGk4udGQMGznAa0meSenNE=;
-        b=8IBuhyk3QO34ZhfB9KO/KvqkAQBl5I7lS7GPNFhVFINti+Ce6D7FDDGCOxB7E6yE++
-         /JlVaJ5nxihEhGYVmg/42KfgBIsRFl1Rdr7BIIa8OKl4BD/lh3Sh9rGIrjsHr1rLHfqn
-         RRxzxrLwrtw5UqoBMXAxpQuR7ha0EeFFyqIzGfYGXUl5j4KUsTI5Jn1gh+KElL7hPE52
-         vU3bZpteAZQhtClqLcihdJVqohSfv9+s6auipZmAwyfdUpVZjREND3eceHPFUG/AWLoK
-         ZmxeaMEMmaAzhOVzdMCGOW8yzebi24TjZea8khpAwfe8RbeO+lKX9v/Tj+gQDfWf1CCe
-         S6wQ==
-X-Gm-Message-State: AOAM5315hQ+JFwdyEUbrXqun9QWObg4dZ+81KIesGZYiSO7bHx3wY5Q9
-        FhsZyVIDEE9UxaFYsvSecXT8/PVmSOPaog==
-X-Google-Smtp-Source: ABdhPJyz+hpwgnmS6vF+cFqljL7qNp2mmjZL9diVXzyL2WoxLhvCp3r07PehJ2JIXBpmQmdK5gMriA==
-X-Received: by 2002:a5d:64a5:: with SMTP id m5mr9375014wrp.596.1643106810651;
-        Tue, 25 Jan 2022 02:33:30 -0800 (PST)
+        bh=4KLk48uJDSh7dm6hMRysfiEnctm+6+wF78zxIH1Wen0=;
+        b=RMdYv6lNmpmkNB7NNRBXh4vk6yYrwQCUPMww6/3jBq+gc7Na55W/OsA1hNP1rPpJzT
+         qmc81d57uyaZake7it4u4NEikeYRGasyHqGXByJnZJr/4CHWKTBWNXC8OCLN1gm+sWjv
+         JHly/ShvWvzAnrwt9KoViMp0kEEPaqHUE64u5DMB8No1PVuHkSuMepmLd94W67y2BG6L
+         HQqyEjca4Z/qcAo0K8qCrn8l1EUvL5FGb2r3/OuatJpshj/5dymA3h0YyvoOnq7I+Nbu
+         5KDE5FeurMnFdAankATVfKU9E82BI6HILzoPEJY1Lmn5Bt8BO+4DRqWadKKHiOa2fx6V
+         WKdg==
+X-Gm-Message-State: AOAM532uFCwJr2MqhCz6oX30L3HE898s2jW5Ux9WlaIe92L6GaMy92mW
+        AO1aWbg9aDBdIcCXQh0Xm0w=
+X-Google-Smtp-Source: ABdhPJzeYnIwIwI2bx93AUMmHy9Ljr3qEjp+OgMxz/CXBizsLniJ0tPzBSFdSkmuwzhX3J1zRZKvVw==
+X-Received: by 2002:a5d:6c64:: with SMTP id r4mr11041464wrz.389.1643106816397;
+        Tue, 25 Jan 2022 02:33:36 -0800 (PST)
 Received: from localhost (cable-89-216-134-246.dynamic.sbb.rs. [89.216.134.246])
-        by smtp.gmail.com with ESMTPSA id h18sm1579636wro.9.2022.01.25.02.33.30
+        by smtp.gmail.com with ESMTPSA id t30sm17264875wra.95.2022.01.25.02.33.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 02:33:30 -0800 (PST)
+        Tue, 25 Jan 2022 02:33:36 -0800 (PST)
 From:   =?UTF-8?q?Aleksa=20Vu=C4=8Dkovi=C4=87?= <aleksav013@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org,
         =?UTF-8?q?Aleksa=20Vu=C4=8Dkovi=C4=87?= <aleksav013@gmail.com>
-Subject: [PATCH 2/4] drivers: dio: Fixed unwanted spaces coding style issue
-Date:   Tue, 25 Jan 2022 11:33:08 +0100
-Message-Id: <20220125103310.13893-2-aleksav013@gmail.com>
+Subject: [PATCH 4/4] drivers: dio: Fixed spaces coding style issue
+Date:   Tue, 25 Jan 2022 11:33:10 +0100
+Message-Id: <20220125103310.13893-4-aleksav013@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220125103310.13893-1-aleksav013@gmail.com>
 References: <20220125103310.13893-1-aleksav013@gmail.com>
@@ -65,113 +66,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Removing spaces at the end of the lines.
+Added or removed spaces in the code according to the checkpatch.pl script.
 
 Signed-off-by: Aleksa Vučković <aleksav013@gmail.com>
 ---
- drivers/dio/dio.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/dio/dio.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/dio/dio.c b/drivers/dio/dio.c
-index f1772975bf9d..d2d3028df93f 100644
+index 0f29d4903012..020a3d6219ae 100644
 --- a/drivers/dio/dio.c
 +++ b/drivers/dio/dio.c
-@@ -2,27 +2,27 @@
- /* Code to support devices on the DIO and DIO-II bus
-  * Copyright (C) 05/1998 Peter Maydell <pmaydell@chiark.greenend.org.uk>
-  * Copyright (C) 2004 Jochen Friedrich <jochen@scram.de>
-- * 
-+ *
-  * This code has basically these routines at the moment:
-  * int dio_find(u_int deviceid)
-  *    Search the list of DIO devices and return the select code
-  *    of the next unconfigured device found that matches the given device ID.
-  *    Note that the deviceid parameter should be the encoded ID.
-- *    This means that framebuffers should pass it as 
-+ *    This means that framebuffers should pass it as
-  *    DIO_ENCODE_ID(DIO_ID_FBUFFER,DIO_ID2_TOPCAT)
-  *    (or whatever); everybody else just uses DIO_ID_FOOBAR.
-  * unsigned long dio_scodetophysaddr(int scode)
-  *    Return the physical address corresponding to the given select code.
-  * int dio_scodetoipl(int scode)
-- *    Every DIO card has a fixed interrupt priority level. This function 
-+ *    Every DIO card has a fixed interrupt priority level. This function
-  *    returns it, whatever it is.
-  * const char *dio_scodetoname(int scode)
-- *    Return a character string describing this board [might be "" if 
-+ *    Return a character string describing this board [might be "" if
-  *    not CONFIG_DIO_CONSTANTS]
-  * void dio_config_board(int scode)     mark board as configured in the list
-  * void dio_unconfig_board(int scode)   mark board as no longer configured
-  *
-- * This file is based on the way the Amiga port handles Zorro II cards, 
-+ * This file is based on the way the Amiga port handles Zorro II cards,
-  * although we aren't so complicated...
-  */
- #include <linux/module.h>
-@@ -52,9 +52,9 @@ struct dio_bus dio_bus = {
- /* We associate each numeric ID with an appropriate descriptive string
-  * using a constant array of these structs.
-  * FIXME: we should be able to arrange to throw away most of the strings
-- * using the initdata stuff. Then we wouldn't need to worry about 
-+ * using the initdata stuff. Then we wouldn't need to worry about
-  * carrying them around...
-- * I think we do this by copying them into newly kmalloc()ed memory and 
-+ * I think we do this by copying them into newly kmalloc()ed memory and
-  * marking the names[] array as .initdata ?
-  */
- struct dioname
-@@ -67,7 +67,7 @@ struct dioname
+@@ -64,7 +64,7 @@ struct dioname {
+ 
+ /* useful macro */
  #define DIONAME(x) { DIO_ID_##x, DIO_DESC_##x }
- #define DIOFBNAME(x) { DIO_ENCODE_ID( DIO_ID_FBUFFER, DIO_ID2_##x), DIO_DESC2_##x }
+-#define DIOFBNAME(x) { DIO_ENCODE_ID( DIO_ID_FBUFFER, DIO_ID2_##x), DIO_DESC2_##x }
++#define DIOFBNAME(x) { DIO_ENCODE_ID(DIO_ID_FBUFFER, DIO_ID2_##x), DIO_DESC2_##x }
  
--static struct dioname names[] = 
-+static struct dioname names[] =
- {
+ static struct dioname names[] = {
  	DIONAME(DCA0), DIONAME(DCA0REM), DIONAME(DCA1), DIONAME(DCA1REM),
- 	DIONAME(DCM), DIONAME(DCMREM),
-@@ -78,12 +78,12 @@ static struct dioname names[] =
- 	DIONAME(PARALLEL), DIONAME(VME), DIONAME(DCL), DIONAME(DCLREM),
- 	DIONAME(MISC0), DIONAME(MISC1), DIONAME(MISC2), DIONAME(MISC3),
- 	DIONAME(MISC4), DIONAME(MISC5), DIONAME(MISC6), DIONAME(MISC7),
--	DIONAME(MISC8), DIONAME(MISC9), DIONAME(MISC10), DIONAME(MISC11), 
-+	DIONAME(MISC8), DIONAME(MISC9), DIONAME(MISC10), DIONAME(MISC11),
- 	DIONAME(MISC12), DIONAME(MISC13),
- 	DIOFBNAME(GATORBOX), DIOFBNAME(TOPCAT), DIOFBNAME(RENAISSANCE),
- 	DIOFBNAME(LRCATSEYE), DIOFBNAME(HRCCATSEYE), DIOFBNAME(HRMCATSEYE),
- 	DIOFBNAME(DAVINCI), DIOFBNAME(XXXCATSEYE), DIOFBNAME(HYPERION),
--	DIOFBNAME(XGENESIS), DIOFBNAME(TIGER), DIOFBNAME(YGENESIS)   
-+	DIOFBNAME(XGENESIS), DIOFBNAME(TIGER), DIOFBNAME(YGENESIS)
- };
+@@ -236,7 +236,7 @@ static int __init dio_init(void)
+ 			dev->id = prid;
  
- #undef DIONAME
-@@ -97,7 +97,7 @@ static const char *dio_getname(int id)
- 	/* return pointer to a constant string describing the board with given ID */
- 	unsigned int i;
- 	for (i = 0; i < ARRAY_SIZE(names); i++)
--		if (names[i].id == id) 
-+		if (names[i].id == id)
- 			return names[i].name;
- 
- 	return unknowndioname;
-@@ -175,7 +175,7 @@ static int __init dio_init(void)
- 
- 	printk(KERN_INFO "Scanning for DIO devices...\n");
- 
--	/* Initialize the DIO bus */ 
-+	/* Initialize the DIO bus */
- 	INIT_LIST_HEAD(&dio_bus.devices);
- 	dev_set_name(&dio_bus.dev, "dio");
- 	error = device_register(&dio_bus.dev);
-@@ -195,7 +195,7 @@ static int __init dio_init(void)
- 		u_char prid, secid = 0;	/* primary, secondary ID bytes */
- 		u_char *va;
- 		unsigned long pa;
--		
-+
- 		if (DIO_SCINHOLE(scode))
- 			continue;
- 
+ 		dev->ipl = DIO_IPL(va);
+-		strcpy(dev->name,dio_getname(dev->id));
++		strcpy(dev->name, dio_getname(dev->id));
+ 		printk(KERN_INFO "select code %3d: ipl %d: ID %02X", dev->scode, dev->ipl, prid);
+ 		if (DIO_NEEDSSECID(prid))
+ 			printk(":%02X", secid);
 -- 
 2.34.1
 
