@@ -2,105 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 477B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5818C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357260AbiAYPet (ORCPT
+        id S1357163AbiAYPfQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 10:34:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349272AbiAYPcJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:32:09 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6543C061762
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 07:30:12 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id h20-20020a17090adb9400b001b518bf99ffso2302244pjv.1
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 07:30:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GrAtAIlMK2rk7KAp7C2s7R2F2nNCdug8ASeh5+c9Xxw=;
-        b=hmA+4kWIT0VJkfsrIj3CAk+o2e5xm3EHa9OOGgMLC6V8kk3s6txEmtpOvHCwQCFu/z
-         f6Z1KLDIBThomje+wVZtC/avAyK1NYKshJzQbEKYVjuh+o+SiJevaxvP9ArK8rWsbreG
-         W0NdXjX/AzBkRxSlOjgUb2e5K+WqPzSqA/cXw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GrAtAIlMK2rk7KAp7C2s7R2F2nNCdug8ASeh5+c9Xxw=;
-        b=DyQfZKg/l6A0rIoqT5KeBrEeZ+X4csrK4TlpG4c9lUnXZ1Br/x1c+4M8GMuqtNxvFQ
-         SDm9ezvefYXcLo514hUERaJHZ7o8Tqrr3C7QZBNHHXCO2LkXSgLXy2CBdOyCkesxuJ7N
-         su88IUvWLWRHwWoEizxehlYkxw72PZEN1ExT8jS2s+2zlmKUkiJ05SW0KUEEZ3l8IfGz
-         FTMGGubef7WsyJNMmnVXZBrzt1ELALvzSXHJxEJWir29vIASQSCgnxIf1FMuVd7nP0r5
-         BTImXZhJ058w0BkpICUyubXb+ldhdQhLEwlRqrD9LJp4VDm9s4B6QWauVba88Zgf6uMe
-         Zmkg==
-X-Gm-Message-State: AOAM5307pYHGjhK2Tv3YGyE7BEIwK+wTewoWquXXSVkz5lc/+11/5/Hn
-        +jiynMT/ezPoYxeL/fXqe6NAMg43n7lo4w==
-X-Google-Smtp-Source: ABdhPJzd5aF6C+FAPgDlRwmXwFEc5etijNnVCwLbg8thUNE5rIwkeqTw25zE2c3dG5DyN9uNQ8t/ig==
-X-Received: by 2002:a17:902:7d81:b0:149:c926:7c2e with SMTP id a1-20020a1709027d8100b00149c9267c2emr19600182plm.27.1643124612092;
-        Tue, 25 Jan 2022 07:30:12 -0800 (PST)
-Received: from chentsungp920.tpe.corp.google.com ([2401:fa00:1:10:b78b:8e2a:968c:d872])
-        by smtp.gmail.com with ESMTPSA id k5sm20989991pfc.85.2022.01.25.07.30.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 07:30:11 -0800 (PST)
-From:   Chen-Tsung Hsieh <chentsung@chromium.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Chen-Tsung Hsieh <chentsung@chromium.org>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Richard Weinberger <richard@nod.at>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org
-Subject: [PATCH] mtd: spi-nor: core: Check written SR value in spi_nor_write_16bit_sr_and_check()
-Date:   Tue, 25 Jan 2022 23:30:00 +0800
-Message-Id: <20220125153000.3263064-1-chentsung@chromium.org>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+        Tue, 25 Jan 2022 10:35:16 -0500
+Received: from foss.arm.com ([217.140.110.172]:50810 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1356120AbiAYPc7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 10:32:59 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4A113D6E;
+        Tue, 25 Jan 2022 07:23:25 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.1.45])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D69FC3F793;
+        Tue, 25 Jan 2022 07:23:23 -0800 (PST)
+Date:   Tue, 25 Jan 2022 15:23:20 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Evgenii Stepanov <eugenis@google.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: extable: fix null deref in load_unaligned_zeropad.
+Message-ID: <YfAV6FTN5g6jZGj7@FVFF77S0Q05N>
+References: <20220122023447.1480995-1-eugenis@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220122023447.1480995-1-eugenis@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Read back Status Register 1 to ensure that the written byte match the
-received value and return -EIO if read back test failed.
+On Fri, Jan 21, 2022 at 06:34:47PM -0800, Evgenii Stepanov wrote:
+> ex_handler_load_unaligned_zeropad extracts the source and data register
+> numbers from the wrong field of the exception table.
 
-Without this patch, spi_nor_write_16bit_sr_and_check() only check the
-second half of the 16bit. It causes errors like spi_nor_sr_unlock()
-return success incorrectly when spi_nor_write_16bit_sr_and_check()
-doesn't write SR successfully.
+Ouch. Did you find this by inspection, or did this show up in testing?
 
-Fixes: 39d1e3340c73 ("mtd: spi-nor: Fix clearing of QE bit on lock()/unlock()")
-Signed-off-by: Chen-Tsung Hsieh <chentsung@chromium.org>
----
+Sorry about this.
 
- drivers/mtd/spi-nor/core.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+I think we should be a little more explicit as to exactly what goes wrong. How
+about:
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index 04ea180118e3..426bfa9a65f4 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -1007,6 +1007,15 @@ static int spi_nor_write_16bit_sr_and_check(struct spi_nor *nor, u8 sr1)
- 	if (ret)
- 		return ret;
- 
-+	ret = spi_nor_read_sr(nor, sr_cr);
-+	if (ret)
-+		return ret;
-+
-+	if (sr1 != sr_cr[0]) {
-+		dev_dbg(nor->dev, "SR: Read back test failed\n");
-+		return -EIO;
-+	}
-+
- 	if (nor->flags & SNOR_F_NO_READ_CR)
- 		return 0;
- 
--- 
-2.35.0.rc0.227.g00780c9af4-goog
+| In ex_handler_load_unaligned_zeropad() we erroneously extract the data and
+| addr register indices from ex->type rather than ex->data. As ex->type will
+| contain EX_TYPE_LOAD_UNALIGNED_ZEROPAD (i.e. 4):
+| 
+| * We'll always treat X0 as the address register, since EX_DATA_REG_ADDR is
+|   extracted from bits [9:5]. Thus, we may attempt to dereference an arbitrary
+|   address as X0 may hold an arbitary value.
+| 
+| * We'll always treat X4 as the data register, since EX_DATA_REG_DATA is
+|   extracted from bits [4:0]. Thus we will corrupt X4 and cause arbitrary
+|   behaviour within load_unaligned_zeropad() and its caller.
+| 
+| Fix this by extracting both values from ex->data as originally intended.
 
+> Fixes: 753b3236
+
+That should be expanded, e.g.
+
+  Fixes: 753b32368705c396 ("arm64: extable: add load_unaligned_zeropad() handler")
+
+With those changes:
+
+Reviewed-by: Mark Rutland <mark.rutland@arm.com>
+
+Thanks,
+Mark.
+
+> Signed-off-by: Evgenii Stepanov <eugenis@google.com>
+> ---
+>  arch/arm64/mm/extable.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
+> index c0181e60cc98..489455309695 100644
+> --- a/arch/arm64/mm/extable.c
+> +++ b/arch/arm64/mm/extable.c
+> @@ -40,8 +40,8 @@ static bool
+>  ex_handler_load_unaligned_zeropad(const struct exception_table_entry *ex,
+>  				  struct pt_regs *regs)
+>  {
+> -	int reg_data = FIELD_GET(EX_DATA_REG_DATA, ex->type);
+> -	int reg_addr = FIELD_GET(EX_DATA_REG_ADDR, ex->type);
+> +	int reg_data = FIELD_GET(EX_DATA_REG_DATA, ex->data);
+> +	int reg_addr = FIELD_GET(EX_DATA_REG_ADDR, ex->data);
+>  	unsigned long data, addr, offset;
+>  
+>  	addr = pt_regs_read_reg(regs, reg_addr);
+> -- 
+> 2.35.0.rc0.227.g00780c9af4-goog
+> 
