@@ -2,71 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE352C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:46:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A60A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389125AbiAYOqW (ORCPT
+        id S1358243AbiAYOra (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:46:22 -0500
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:43481 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1579916AbiAYOlE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:41:04 -0500
-Received: from [192.168.0.2] (ip5f5aeaa2.dynamic.kabel-deutschland.de [95.90.234.162])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id EA43161E6478B;
-        Tue, 25 Jan 2022 15:40:54 +0100 (CET)
-Message-ID: <2ebf7968-a324-6f98-e178-45d4d19cfb48@molgen.mpg.de>
-Date:   Tue, 25 Jan 2022 15:40:54 +0100
+        Tue, 25 Jan 2022 09:47:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1580235AbiAYOoE (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 09:44:04 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D128BC061744
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:44:03 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nCN3B-0000ct-3n; Tue, 25 Jan 2022 15:44:01 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nCN3A-00CMRg-As; Tue, 25 Jan 2022 15:43:59 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nCN39-001Jns-0U; Tue, 25 Jan 2022 15:43:59 +0100
+Date:   Tue, 25 Jan 2022 15:43:56 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     linux-pwm@vger.kernel.org, thierry.reding@gmail.com,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        andrey@lebedev.lt, stable@vger.kernel.org
+Subject: Re: [PATCH 1/3] pwm-sun4i: convert "next_period" to local variable
+Message-ID: <20220125144356.zofft3jd4ov564gd@pengutronix.de>
+References: <20220125123429.3490883-1-max.kellermann@gmail.com>
+ <20220125143158.qbelqvr5mjq33zay@pengutronix.de>
+ <YfALlLgo3MAcbFrZ@swift.blarg.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: mfd/intel_pmc_bxt: `intel_pmc_get_resources()` results in page
- fault
-Content-Language: en-US
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     Zha Qipeng <qipeng.zha@intel.com>, linux-kernel@vger.kernel.org,
-        Andy Pont <andy.pont@sdcsystems.com>
-References: <92c233bc-d1e0-b180-efaa-27e05fbd732b@molgen.mpg.de>
- <YfAIrkJaahKpCta6@lahna>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <YfAIrkJaahKpCta6@lahna>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="2tr2cnvnwymsukbg"
+Content-Disposition: inline
+In-Reply-To: <YfALlLgo3MAcbFrZ@swift.blarg.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Cc: +Andy]
 
-Dear Mika,
+--2tr2cnvnwymsukbg
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Jan 25, 2022 at 03:39:16PM +0100, Max Kellermann wrote:
+> On 2022/01/25 15:31, Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> =
+wrote:
+> > I think I'd drop this. This isn't a fix worth on it's own to be
+> > backported and if this is needed for one of the next patches, the stable
+> > maintainers will notice themselves (and it might be worth to shuffle
+> > this series to make the fixes come first).
+>=20
+> The first two patches are preparation for the third patch, which fixes
+> the actual bug.
+>=20
+> Of course, I could have done everything in one patch, but I thought
+> splitting the first two out makes review easier.  This way, every step
+> is almost trivial.
+>=20
+> If you want me to fold the three patches into one, I can do that.  But
+> I can't reorder them (or backport only the bug fix to stable).
 
-Am 25.01.22 um 15:26 schrieb Mika Westerberg:
+That sounds fine. Note my statement "I'd drop this" only refers to the
+Cc: stable line.
 
-> On Tue, Jan 25, 2022 at 02:08:53PM +0100, Paul Menzel wrote:
+Best regards
+Uwe
 
->> `intel_pmc_get_resources()` does not set the name member in the `resource`
->> struct `gcr_res` resulting in a page fault.
-> 
-> On which system you reproduce this,
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-The dump contains the name:
+--2tr2cnvnwymsukbg
+Content-Type: application/pgp-signature; name="signature.asc"
 
-     Hardware name: Star Labs Lite/Lite, BIOS 8 01/24/2022
+-----BEGIN PGP SIGNATURE-----
 
-> and how? Can you also share ACPI dump from that system.
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHwDKkACgkQwfwUeK3K
+7An5GggAgauWhA0u9+PUGQow7LIjuLcOmmqR5fZWPNxeM+6iNujkn9jpHGaIcx60
+Ibf7pV4uAB05bXJz08LRNocUBDqvsGk0/o1SpqixiRuZ5l9NOvc1SEwpoiePfzjx
+XmYvy+rjk1DjrAt4f2+jQyEmj7GT/lGkldHBZQXHvP6FQSBvxQbu0rTMYEAjR378
+85qnSKiNKf1R8gixkqTljnLYKjM9KeDyh7H4EkFByLP6e0vbNoysslHxiVGVudpy
+8W+s84Xf08JwoE3EW0vvT4yKXjeSb8x8kZT+MV383F0qQBQh8Fx19baBqUCRb5mk
+8haO/OWNH2t1MDpkmJzYCKr4995mmA==
+=FZEp
+-----END PGP SIGNATURE-----
 
-Note, I only forwarded this from a report in #coreboot. The reporter 
-Andy is now in Cc.
-
-Unrelated from that information, the Linux kernel should never run into 
-a page fault and not trust system data.
-
-
-Kind regards,
-
-Paul
+--2tr2cnvnwymsukbg--
