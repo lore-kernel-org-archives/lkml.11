@@ -2,95 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D6B2C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:36:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55EEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230337AbiAYTgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 14:36:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
+        id S230263AbiAYThC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 14:37:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230315AbiAYTfp (ORCPT
+        with ESMTP id S230265AbiAYTf4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 14:35:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC2DC061755;
-        Tue, 25 Jan 2022 11:35:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01B78B819D9;
-        Tue, 25 Jan 2022 19:35:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91FC3C340E6;
-        Tue, 25 Jan 2022 19:35:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643139327;
-        bh=2SKgMeaepEa/3fqmOk3qpuRploR2lWhnOwQ1mCTG4l8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=svmfcgT96x5RmVksMCBJvYdIuMEaOvAt+P5FqTHqYL1XJONcH3ydicPxs5N35LEUb
-         9cCSgKfYet6QPhmh/03Vx6xIZ55/j/ULba+Iua+QuhGaVVDLRZeN7rV/tVP2t0wjEu
-         yVV7a48kjsXtLdRBUsbPDT81z5jHvlR39f5tYG9h95l7tjJp47S1hSZJ8aGaRz2XKI
-         mXkwr3J4wJSeZaWQOaQtZpuXupwcELyp+qlp/Au30u+qNuAaLkmAypZ/wC8WSrFbl9
-         5OQmfLCr4mb4wox0Sd9B2Vi2HYPOBD0/RpCDgc/PFD+oNGC4Zh7njIlUZhxhEuA/dZ
-         L+gUhbJCnczXA==
-Date:   Tue, 25 Jan 2022 13:42:13 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc:     linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] scsi: storvsc: Use struct_size() helper in
- storvsc_queuecommand()
-Message-ID: <20220125194213.GA74670@embeddedor>
+        Tue, 25 Jan 2022 14:35:56 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C70BC061749
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 11:35:54 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id EC51C1F44554
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1643139352;
+        bh=Fut1EPFyHtKExAKjhP5T7L+Q36Hqy+5BGq/LNpKSQ60=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UcQvy6f2q6L4RV6bjrHWQ9PqFKab1srk0pN2Q46jgTU4j4as1qDEf/5pdtSNHzpNk
+         tG5dlIU/3AdWrefA2VWG7FZedLcADBTMUcCO/Q6qCptzHFEctRHuwALlnLIk04zTET
+         y80pASKQeYZ/gk9ic4RuIhspdytILZUzNEK+j9l+G7UVs5QbNtfg1M001x2njf3ZZ2
+         dSEMFVlIpy6KIqRsDnjwj/HrTduvuxHXFxZKLmWnnMUeRKl2cCHdGs9teQ1PgoIRyK
+         mUbWpIuPuzwe7V7sdSizm39CBrWpKqEQZ91rU+eL6XQdUsYHXC+zHiFZnY7UJsCSYy
+         yFMVU1juFTPcA==
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Ramalingam C <ramalingam.c@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Robert Beckett <bob.beckett@collabora.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 1/5] drm/i915: add needs_compact_pt flag
+Date:   Tue, 25 Jan 2022 19:35:26 +0000
+Message-Id: <20220125193530.3272386-2-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220125193530.3272386-1-bob.beckett@collabora.com>
+References: <20220125193530.3272386-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make use of the struct_size() helper instead of an open-coded version,
-in order to avoid any potential type mistakes or integer overflows that,
-in the worst scenario, could lead to heap overflows.
+From: Ramalingam C <ramalingam.c@intel.com>
 
-Also, address the following sparse warnings:
-drivers/scsi/storvsc_drv.c:1843:39: warning: using sizeof on a flexible structure
+Add a new platform flag, needs_compact_pt, to mark the requirement of
+compact pt layout support for the ppGTT when using 64K GTT pages.
 
-Link: https://github.com/KSPP/linux/issues/174
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+With this flag has_64k_pages will only indicate requirement of 64K
+GTT page sizes or larger for device local memory access.
+
+Suggested-by: Matthew Auld <matthew.auld@intel.com>
+Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
 ---
- drivers/scsi/storvsc_drv.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/i915_drv.h          | 10 +++++++---
+ drivers/gpu/drm/i915/i915_pci.c          |  2 ++
+ drivers/gpu/drm/i915/intel_device_info.h |  1 +
+ 3 files changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 9a0bba5a51a7..89c20dfc6609 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -1755,7 +1755,7 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 	struct scatterlist *sgl;
- 	struct vmscsi_request *vm_srb;
- 	struct vmbus_packet_mpb_array  *payload;
--	u32 payload_sz;
-+	size_t payload_sz;
- 	u32 length;
+diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
+index 44c1f98144b4..1258b7779705 100644
+--- a/drivers/gpu/drm/i915/i915_drv.h
++++ b/drivers/gpu/drm/i915/i915_drv.h
+@@ -1512,12 +1512,16 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
  
- 	if (vmstor_proto_version <= VMSTOR_PROTO_VERSION_WIN8) {
-@@ -1839,8 +1839,8 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
+ /*
+  * Set this flag, when platform requires 64K GTT page sizes or larger for
+- * device local memory access. Also this flag implies that we require or
+- * at least support the compact PT layout for the ppGTT when using the 64K
+- * GTT pages.
++ * device local memory access.
+  */
+ #define HAS_64K_PAGES(dev_priv) (INTEL_INFO(dev_priv)->has_64k_pages)
  
- 		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
++/* Set this flag when platform doesn't allow both 64k pages and 4k pages in
++ * the same PT. this flag means we need to support compact PT layout for the
++ * ppGTT when using the 64K GTT pages.
++ */
++#define NEEDS_COMPACT_PT(dev_priv) (INTEL_INFO(dev_priv)->needs_compact_pt)
++
+ #define HAS_IPC(dev_priv)		 (INTEL_INFO(dev_priv)->display.has_ipc)
  
--			payload_sz = (hvpg_count * sizeof(u64) +
--				      sizeof(struct vmbus_packet_mpb_array));
-+			payload_sz = struct_size(payload, range.pfn_array,
-+						 hvpg_count);
- 			payload = kzalloc(payload_sz, GFP_ATOMIC);
- 			if (!payload)
- 				return SCSI_MLQUEUE_DEVICE_BUSY;
+ #define HAS_REGION(i915, i) (INTEL_INFO(i915)->memory_regions & (i))
+diff --git a/drivers/gpu/drm/i915/i915_pci.c b/drivers/gpu/drm/i915/i915_pci.c
+index 4081fd50ba9d..799b56569ef5 100644
+--- a/drivers/gpu/drm/i915/i915_pci.c
++++ b/drivers/gpu/drm/i915/i915_pci.c
+@@ -1028,6 +1028,7 @@ static const struct intel_device_info xehpsdv_info = {
+ 	PLATFORM(INTEL_XEHPSDV),
+ 	.display = { },
+ 	.has_64k_pages = 1,
++	.needs_compact_pt = 1,
+ 	.platform_engine_mask =
+ 		BIT(RCS0) | BIT(BCS0) |
+ 		BIT(VECS0) | BIT(VECS1) | BIT(VECS2) | BIT(VECS3) |
+@@ -1045,6 +1046,7 @@ static const struct intel_device_info dg2_info = {
+ 	.media.rel = 55,
+ 	PLATFORM(INTEL_DG2),
+ 	.has_64k_pages = 1,
++	.needs_compact_pt = 1,
+ 	.platform_engine_mask =
+ 		BIT(RCS0) | BIT(BCS0) |
+ 		BIT(VECS0) | BIT(VECS1) |
+diff --git a/drivers/gpu/drm/i915/intel_device_info.h b/drivers/gpu/drm/i915/intel_device_info.h
+index 3699b1c539ea..c8aaf646430c 100644
+--- a/drivers/gpu/drm/i915/intel_device_info.h
++++ b/drivers/gpu/drm/i915/intel_device_info.h
+@@ -130,6 +130,7 @@ enum intel_ppgtt_type {
+ 	/* Keep has_* in alphabetical order */ \
+ 	func(has_64bit_reloc); \
+ 	func(has_64k_pages); \
++	func(needs_compact_pt); \
+ 	func(gpu_reset_clobbers_display); \
+ 	func(has_reset_engine); \
+ 	func(has_global_mocs); \
 -- 
-2.27.0
+2.25.1
 
