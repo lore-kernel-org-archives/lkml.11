@@ -2,219 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCD69C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC88C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358406AbiAYGIW (ORCPT
+        id S1356426AbiAYGH4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:08:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
+        Tue, 25 Jan 2022 01:07:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242159AbiAYGDI (ORCPT
+        with ESMTP id S256035AbiAYFUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 01:03:08 -0500
-Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884F1C061744
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 20:21:16 -0800 (PST)
-Received: by mail-vk1-xa2a.google.com with SMTP id n14so11527021vkk.6
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 20:21:16 -0800 (PST)
+        Tue, 25 Jan 2022 00:20:12 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D736C0E5315
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:43:46 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id i8so17159948pgt.13
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:43:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=BVAMq9GRKYiZni2C1DYbJu82DtncqP/nDFyPD+aovCw=;
-        b=e5CkqIGcdixXlWQEdLDqofUhbG7SDHyJUqj4Ax1VIBXZlMEIBv3ExR9f5IHBgGHdeU
-         GNggMSsSfSRnAX7/mfN7VynjngrT2HeMmuueegIBVYFXnVl1a1UhY9AAbhv5QPc+dhZk
-         /g28OpgWAezz67gU9k22USRpLb0DrNwcqJGwW7q/YFCPQEuNPMFDkF7kEzuwNzh5Gq05
-         xFT43opxBeMP3gP3agQGQohJebV/m4C1rS4OvVaTCN0eVah8rlFINlYjPGB/9UaUfgQd
-         V3caZVDXeegwzMnsUH1pwONeGwy4IMQuAomFb8Altt0ZvlGe+clKdwh94f0DcPJI+U8A
-         7ysw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Hqb18lApb/EFs0zyR5xR3AKweon3zrpFVJcMur2wQdo=;
+        b=oO7BhMsRUneAngIb6wlqB5HdF/xeGN3DL6ZG/u6ECkSxMoHNPpOOfAxzqAVgDtaT4n
+         BqgVUmMg7H/tUSffs8I7Gu+5usatPhZmWCP6dwG5G66u/ppefFTP/PzhcbM+ahaNgq3m
+         buQUbZQoUcLRALeKNkHYbuTNLU9Dxu0PcIcBE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=BVAMq9GRKYiZni2C1DYbJu82DtncqP/nDFyPD+aovCw=;
-        b=leqvgVlJ+n6qIVkMF3UkHdt8FBZ0t2Co4OtAD7cWQ8ybuUJaE3LPf7ARYAkLLSfNEM
-         pQouNnsEKBvyjPO7WHXRzoeTToxk4eXfHYZfa1H1eTcJEGBbeRxiN5BVGFkTGUU3Mef0
-         wi6gfvaKsU7YNoVmH1199x0prr+BUelor/NpYMUp/znV3KUwxYfugty6eYhnNLhuGnJ5
-         ejoCclUwOlfXy7OR89NudFqXXI+83s1JmNKT7X7AUe1oTSiiLH0/1AfId6RSWS64bfLs
-         JeObNf+nsbx6PtzmfQREL/iOUO20vwZ/0BnlgwTBtR/Po7AV/GypE5cc8Ah4fdZKnOzr
-         GNDg==
-X-Gm-Message-State: AOAM531/XmLZ7EY1PocDMMCFBZqNlulPCVTGc23t2e/9C+x/E2DU8Gj/
-        yKiYF7mhZZg+VG9LmyaVT9KssVBKfWKywuacsTziu5TapO5lMi57
-X-Google-Smtp-Source: ABdhPJz2VrElZsxccwpEn/n75+2hy/f8HeARaOgFCMw6IouglGVvbMU33LG9o3Csl//Ri2h1KSsc6qaALyXLZTdoWEE=
-X-Received: by 2002:a1f:a086:: with SMTP id j128mr7222321vke.17.1643084475611;
- Mon, 24 Jan 2022 20:21:15 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Hqb18lApb/EFs0zyR5xR3AKweon3zrpFVJcMur2wQdo=;
+        b=HYldWPkfqHr9UuOTfZU5ESKPRrf6uwzxPHPzqHg9CU7Gpm3Pyn/Byxuqb/2uyWvMHX
+         wrYf4JoO+wmNgDYgw9OtEJxDM23bf7opBq9cwwDWvaGbAowfB19N8IQzIxsMpVrK7mkm
+         W5cx9eDtSBrHsUusFY+1jsINKAH8FOFKKMPFGLAN1Uawh7rWChrpxd7EHckJOa/23rxM
+         g8kElVjEdm/jwgzkBHtQzXh4vPhdJ2Hz2AdRuJbUZGhRrqkNRPXsWq5JvFrSZltxzBnL
+         85uZDlg52wTP2p8aOP1GYaHG8R/AYUinmiemyS5bCkm/Mwo59EH8jZQ1hUKsZnZvW0YP
+         fMYg==
+X-Gm-Message-State: AOAM531hXcGqFxgENfFCZcbuQZ9dZ5EBwOZ8lpdDuEj2lnRc9dX3FoTH
+        IgIK8bY0f5+uZfieitMFPj3o3g==
+X-Google-Smtp-Source: ABdhPJwYG5x88nJPkog09GJ1OJns/HDR/CaUdlxBNhDCDDEWbRfi9mn7oaVXJoVP7XPSNW9ZK0FocA==
+X-Received: by 2002:aa7:8218:0:b0:4c7:ef9b:8151 with SMTP id k24-20020aa78218000000b004c7ef9b8151mr11663250pfi.77.1643082225441;
+        Mon, 24 Jan 2022 19:43:45 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id p18sm19244628pfh.98.2022.01.24.19.43.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 19:43:45 -0800 (PST)
+Date:   Mon, 24 Jan 2022 19:43:44 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        "Bryant G. Ly" <bryantly@linux.vnet.ibm.com>,
+        Michael Cyr <mikecyr@linux.vnet.ibm.com>,
+        Nicholas Bellinger <nab@linux-iscsi.org>,
+        Steven Royer <seroyer@linux.vnet.ibm.com>,
+        Tyrel Datwyler <tyreld@linux.vnet.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the kspp tree
+Message-ID: <202201241938.DA2AB1AB4@keescook>
+References: <20220125142430.75c3160e@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20211216125157.631992-1-chenhuacai@loongson.cn>
- <20211216125356.632067-1-chenhuacai@loongson.cn> <20211216125356.632067-2-chenhuacai@loongson.cn>
- <87pmpwwpw5.wl-maz@kernel.org> <CAAhV-H75SwqWiRjey_9MiRQtY-_Wjm7Tppx31XM8EfLDb_YUhQ@mail.gmail.com>
- <87czlrwk2k.wl-maz@kernel.org> <CAAhV-H6VFaRtiyhgq-vDQPUbiAtf9L1M6ZNyeApTu11O9JCXnw@mail.gmail.com>
- <87wnjuz5xr.wl-maz@kernel.org>
-In-Reply-To: <87wnjuz5xr.wl-maz@kernel.org>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Tue, 25 Jan 2022 12:21:10 +0800
-Message-ID: <CAAhV-H6P2xXutw8vz5xQp5bhs9AFtiLgDHQPHBDRc-sxjSnBtg@mail.gmail.com>
-Subject: Re: [PATCH V8 02/10] irqchip/loongson-pch-pic: Add ACPI init support
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220125142430.75c3160e@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Marc,
+On Tue, Jan 25, 2022 at 02:24:30PM +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> After merging the kspp tree, today's linux-next build (powerpc
+> allyesconfig) failed like this:
+> 
+> 
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c: In function 'ibmvscsis_send_messages':
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1934:44: error: array subscript 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long long unsigned int[1]'} [-Werror=array-bounds]
+>  1934 |                                         crq->valid = VALID_CMD_RESP_EL;
+>       |                                            ^~
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing 'msg_hi'
+>  1875 |         u64 msg_hi = 0;
+>       |             ^~~~~~
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1935:44: error: array subscript 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long long unsigned int[1]'} [-Werror=array-bounds]
+>  1935 |                                         crq->format = cmd->rsp.format;
+>       |                                            ^~
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing 'msg_hi'
+>  1875 |         u64 msg_hi = 0;
+>       |             ^~~~~~
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1938:52: error: array subscript 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long long unsigned int[1]'} [-Werror=array-bounds]
+>  1938 |                                                 crq->status = VIOSRP_ADAPTER_FAIL;
+>       |                                                    ^~
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing 'msg_hi'
+>  1875 |         u64 msg_hi = 0;
+>       |             ^~~~~~
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1940:44: error: array subscript 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long long unsigned int[1]'} [-Werror=array-bounds]
+>  1940 |                                         crq->IU_length = cpu_to_be16(cmd->rsp.len);
+>       |                                            ^~
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing 'msg_hi'
+>  1875 |         u64 msg_hi = 0;
+>       |             ^~~~~~
+> 
+> Exposed by commit
+> 
+>   4ba545781e20 ("Makefile: Enable -Warray-bounds")
+> 
+> Probably introduced by commit
+> 
+>   88a678bbc34c ("ibmvscsis: Initial commit of IBM VSCSI Tgt Driver")
+> 
+> I applied the following hack for now:
+> 
+> From: Stephen Rothwell <sfr@canb.auug.org.au>
+> Date: Tue, 25 Jan 2022 14:18:36 +1100
+> Subject: [PATCH] scsi: hack for building with -Warray-bounds
+> 
+> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> ---
+>  drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+> index 61f06f6885a5..89fcf98c61c3 100644
+> --- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+> +++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+> @@ -1872,11 +1872,11 @@ static void srp_snd_msg_failed(struct scsi_info *vscsi, long rc)
+>   */
+>  static void ibmvscsis_send_messages(struct scsi_info *vscsi)
+>  {
+> -	u64 msg_hi = 0;
+> +	u64 msg_hi[2] = { };
+>  	/* note do not attempt to access the IU_data_ptr with this pointer
+>  	 * it is not valid
+>  	 */
+> -	struct viosrp_crq *crq = (struct viosrp_crq *)&msg_hi;
+> +	struct viosrp_crq *crq = (struct viosrp_crq *)msg_hi;
+>  	struct ibmvscsis_cmd *cmd, *nxt;
+>  	long rc = ADAPT_SUCCESS;
+>  	bool retry = false;
+> @@ -1940,7 +1940,7 @@ static void ibmvscsis_send_messages(struct scsi_info *vscsi)
+>  					crq->IU_length = cpu_to_be16(cmd->rsp.len);
+>  
+>  					rc = h_send_crq(vscsi->dma_dev->unit_address,
+> -							be64_to_cpu(msg_hi),
+> +							be64_to_cpu(msg_hi[0]),
+>  							be64_to_cpu(cmd->rsp.tag));
+>  
+>  					dev_dbg(&vscsi->dev, "send_messages: cmd %p, tag 0x%llx, rc %ld\n",
 
-On Fri, Dec 24, 2021 at 5:51 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Fri, 24 Dec 2021 07:31:53 +0000,
-> Huacai Chen <chenhuacai@gmail.com> wrote:
-> >
-> > Hi, Marc,
-> >
-> > On Mon, Dec 20, 2021 at 8:13 PM Marc Zyngier <maz@kernel.org> wrote:
-> > >
-> > > On Fri, 17 Dec 2021 04:45:24 +0000,
-> > > Huacai Chen <chenhuacai@gmail.com> wrote:
-> > > >
-> > > > Hi, Marc,
-> > > >
-> > > > On Thu, Dec 16, 2021 at 11:06 PM Marc Zyngier <maz@kernel.org> wrot=
-e:
-> > > > >
-> > > > > On Thu, 16 Dec 2021 12:53:48 +0000,
-> > > > > Huacai Chen <chenhuacai@loongson.cn> wrote:
-> > > > > >
-> > > > > > We are preparing to add new Loongson (based on LoongArch, not c=
-ompatible
-> > > > > > with old MIPS-based Loongson) support. LoongArch use ACPI other=
- than DT
-> > > > > > as its boot protocol, so add ACPI init support.
-> > > > > >
-> > > > > > PCH-PIC/PCH-MSI stands for "Interrupt Controller" that describe=
-d in
-> > > > > > Section 5 of "Loongson 7A1000 Bridge User Manual". For more inf=
-ormation
-> > > > > > please refer Documentation/loongarch/irq-chip-model.rst.
-> > > > > >
-> > > > > > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-> > > > > > ---
-> > > > > >  drivers/irqchip/irq-loongson-pch-pic.c | 108 +++++++++++++++++=
-+-------
-> > > > > >  1 file changed, 81 insertions(+), 27 deletions(-)
-> > > > >
-> > > > > [...]
-> > > > >
-> > > > > >
-> > > > > > +#ifdef CONFIG_ACPI
-> > > > > > +
-> > > > > > +struct irq_domain *pch_pic_acpi_init(struct irq_domain *parent=
-,
-> > > > > > +                                     struct acpi_madt_bio_pic =
-*acpi_pchpic)
-> > > > >
-> > > > > Who is calling this? This works the opposite way from what the ar=
-m64
-> > > > > irqchips are doing. Why? I have the ugly feeling that this is cal=
-led
-> > > > > from the arch code, bypassing the existing infrastructure...
-> > > > Yes, this is called from the arch code and a bit ugly, but I can't
-> > > > find a better way to do this.
-> > > >
-> > > > Is the "existing infrastructure" declare the irqchip init function
-> > > > with  IRQCHIP_ACPI_DECLARE and the arch code only need to call
-> > > > irqchip_init()? Then we have a problem: our irqchips have a 4 level
-> > > > hierachy and the parent should be initialized before its children. =
-In
-> > > > FDT world this is not a problem, because of_irq_init() will sort
-> > > > irqchip drivers to ensure the right order. But in ACPI world,
-> > > > acpi_probe_device_table just call init functions in the linking ord=
-er.
-> > > > If we want to control the order, it seems we can only sort the driv=
-ers
-> > > > in drivers/irq/Makefile. But I don't think this is a good idea...
-> > > >
-> > > > If there are better solutions, please let me know. Thanks.
-> > >
-> > > We have the exact same thing on the arm64 side, and we don't need of
-> > > this to be arch specific:
-> > >
-> > > - The MADT table describes the root interrupt controller, and it is
-> > >   probed via IRQCHIP_ACPI_DECLARE().
-> > >
-> > > - Each children controller is declared in ACPI as a *device*, and is
-> > >   both an interrupt producer and an interrupt consumer. Normal probe
-> > >   deferral rules apply. See irq-mbigen.c for an example of how this i=
-s
-> > >   done.
-> > Thank you for your suggestions, I have tried but failed. It seems
-> > there are some differences between irq-mbigen.c and our irqchips.
-> > Because our irqchips are mandatory while mbigen is optional.
->
-> The fact that this is optional has nothing to do with it. On a system
-> that requires mbigen to boot (both mass storage and networking are
-> hanging off it), there is a guarantee that the probe order will
-> respect the resource dependency.
->
-> And if that's not enough, -EPROBE_DEFER is your friend, always.
->
-> > If we declare our irqchips as devices, they are initialized in the
-> > initcall phase, which is too late for pci devices.
->
-> This suggests that your PCIe driver is either not enforcing the
-> dependencies on the interrupt controller (bad), or that the core code
-> is not made aware of the dependencies (equally bad).
->
-> In any case, this needs sorting, because a new architecture should be
-> able to boot without resorting to handcrafted dependencies that will
-> inevitably result in a larger pile of hacks over time. It is much
-> easier to solve it before day-1.
+This looks correct to me. struct viosrp_crq is 16 bytes wide. The only
+suggestion I might make would be either avoid the bare '2':
 
-Sorry for the long delay, but we still failed.
+	u64 msg_hi[sizeof(struct viosrp_crq) / sizeof(u64)] = { };
 
-- There are several kinds of irq chips(e.g. pchpic=E3=80=81eiointc=E3=80=81=
-cpuintc)
-for LoongArch. SCI interrupt (Fixed hardware is implemented for
-LoongArch in pch such as LS7A1000, and SCI interrupt is used for fixed
-event handling.) is an irq input of pch irq chip which routes
-interrupts to cpu as following irq chips path:
+or adjust struct viosrp_crq so the casting isn't needed at all:
 
-sci interrupt->|pchpic| ->|eiointc|->|cpuintc|
 
-sci_interrupt will be transferred from gsi to irq through
-acpi_gsi_to_irq in acpi_enable_subsystem called from acpi_bus_init
-before acpi_scan_init where acpi device namespace is created, so we
-should build pch irq domain and related upstream irq domains before
-acpi_bus_init.
+truct viosrp_crq {
+	union {
+		u64 hi;
+		struct {
+		        u8 valid;               /* used by RPA */
+		        u8 format;              /* SCSI vs out-of-band */
+		        u8 reserved;
+		        u8 status;              /* non-scsi failure? (e.g. DMA failure) */
+		        __be16 timeout;         /* in seconds */
+		        __be16 IU_length;       /* in bytes */
+		};
+	};
+        __be64 IU_data_ptr;     /* the TCE for transferring data */
+};
 
-- PCI bus enumeration is executed from acpi_scan_init, and
-pci_set_msi_domain will be called for setting msi_domain of enumerated
-pci device. In pci_set_msi_domain, msi domain may be got through
-pcibios_device_add, fdt, iort(used for arm64) or inheriting from host
-bridge domain. And in each way, the msi domain needs to be found by
-calling irq_find_matching_fwnode(fwnode, DOMAIN_BUS_PCI_MSI) to match
-one from the registered msi domain before. So we build the msi domain
-as x86 and arm64 before acpi_scan_init. The msi domain is hierarchic
-as following:
+	struct viosrp_crq crq = { };
+	...
+ 			rc = h_send_crq(vscsi->dma_dev->unit_address,
+					be64_to_cpu(crq.hi),
+					be64_to_cpu(cmd->rsp.tag));
 
-msi interrupt->|msipic| ->|eiointc|->|cpuintc|
 
-- Yes, a driver can be deferred probed when get -EPROBE_DEFER on
-probing, but both sci interrupt transfer and pci bus enumeration are
-common code (not private driver for LoongArch).
 
-So, declaring pic devices in DSDT for seems not suitable, we can only
-select the X86-like way which is a bit ugly.
-
-Huacai
-
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
+-- 
+Kees Cook
