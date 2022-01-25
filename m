@@ -2,119 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0BB4C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B863AC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315876AbiAYCyu (ORCPT
+        id S1316034AbiAYCzF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:54:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39218 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3409660AbiAYA1J (ORCPT
+        Mon, 24 Jan 2022 21:55:05 -0500
+Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:34034 "EHLO
+        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S3410177AbiAYA2o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:27:09 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F41C0C6864
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:08:40 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id m8-20020a9d4c88000000b00592bae7944bso24246165otf.1
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:08:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5AU7UHXWGTgXus+jcgLu4tYknaJHqkDWYn1T5acuUH8=;
-        b=NMM7a/yjJoWOPQjiTo+SdO9A7Y7k+6dqKIG3Kq3o8dz5RSoZ1W2vD77yq2K3z1Nxt4
-         2Qn4P18bkaT2nk5dsqlPUyMhY/TB3Qoo6FJRy1W+8sr33cSUmBdktRvJMckxtUpC7ev5
-         NS4RFF6uAiFsuqMj/uJEnwtonchUz8WDNLz/9Wj0/0qE5/gDqlonX/RwX/0T7sfOjJsJ
-         mIRTYh6QH+zNutWNdWHCUp+LbnJaxAVIF41PJPKVg7CoHdgjKGgvoNgaGqzpbgr4/4Ox
-         X1OrHW75bzMi9cF1nNAmFxIVFjO2qiS8K+uCqfqG980sJeDjyS8uL0x5tfK1XA0vq274
-         2OwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5AU7UHXWGTgXus+jcgLu4tYknaJHqkDWYn1T5acuUH8=;
-        b=KbJDaLLvVU+WglUBj+dYRQPoJ1iDOkrsiLSohR60XG5u7xi/m47RKdbOpA7gBFSCCz
-         G0Xc/z/978zOoecCDi5zxr/y4cNY7vJ+vo2YC6IHSQNWNxW6y05KCwri4Y6nShRKVnvJ
-         mZlZe8Pf5pNY0/KIhWXwmrNWajlh6I/+SiAqR0qjvYxrYNTOA3hOSBncx9m3+6QdW6NG
-         S55pZUgipkztcoqf4TFOzZSqCtv15USun5Ud0BE1JlwO1Nfp/gGdWpGNcaMB4qRtxNX5
-         12XZm+BWZWCu1tE9VqZ4ZY53K1VfLPjX9oGmHp/R6QC5AJvzECYNt9i30WuhE69H2x/D
-         8sOw==
-X-Gm-Message-State: AOAM533RruNJBG9Pc//jqQBvfYfgP8Vk8UpLgWbpO0x+R8bkN8+mKzc8
-        j2rbyhQkVq1td+zKOV8QvDjV+Fj5DWobpXypKJk=
-X-Google-Smtp-Source: ABdhPJyRp7jJ3E/mwEtBlF6sV7zRxPUTudHrillxpCsaSQDiBOb6hmpGdoVdYTdWWuI6WFz59OvDXIFEApG8s+eBGw0=
-X-Received: by 2002:a9d:601a:: with SMTP id h26mr3605702otj.357.1643062119806;
- Mon, 24 Jan 2022 14:08:39 -0800 (PST)
+        Mon, 24 Jan 2022 19:28:44 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V2nnv0z_1643070520;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V2nnv0z_1643070520)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 25 Jan 2022 08:28:41 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     mchehab@kernel.org
+Cc:     matthias.bgg@gmail.com, tiffany.lin@mediatek.com,
+        andrew-ct.chen@mediatek.com, yunfei.dong@mediatek.com,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] media: mtk-vcodec: Remove duplicated include in mtk_vcodec_enc_drv.c
+Date:   Tue, 25 Jan 2022 08:28:39 +0800
+Message-Id: <20220125002839.92004-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-References: <20220124201812.1078824-1-trix@redhat.com>
-In-Reply-To: <20220124201812.1078824-1-trix@redhat.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Mon, 24 Jan 2022 17:08:28 -0500
-Message-ID: <CADnq5_M+xmJkiMkug=5bix8ypxHzr0embK7GN4GRY57BK1y4FA@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/amd/pm: return -ENOTSUPP if there is no
- get_dpm_ultimate_freq function
-To:     Tom Rix <trix@redhat.com>
-Cc:     "Quan, Evan" <evan.quan@amd.com>,
-        "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        Dave Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "Lazar, Lijo" <lijo.lazar@amd.com>,
-        "Powell, Darren" <darren.powell@amd.com>,
-        "Chen, Guchun" <guchun.chen@amd.com>,
-        Arunpravin <Arunpravin.PaneerSelvam@amd.com>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        llvm@lists.linux.dev,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+Fix following includecheck warning:
+./drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c:
+linux/pm_runtime.h is included more than once.
 
-Alex
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-On Mon, Jan 24, 2022 at 3:18 PM <trix@redhat.com> wrote:
->
-> From: Tom Rix <trix@redhat.com>
->
-> clang static analysis reports this represenative problem
-> amdgpu_smu.c:144:18: warning: The left operand of '*' is a garbage value
->         return clk_freq * 100;
->                ~~~~~~~~ ^
->
-> If there is no get_dpm_ultimate_freq function,
-> smu_get_dpm_freq_range returns success without setting the
-> output min,max parameters.  So return an -ENOTSUPP error.
->
-> Fixes: e5ef784b1e17 ("drm/amd/powerplay: revise calling chain on retrieving frequency range")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
-> v2: return error instead of initializing min/max
->
-> drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-> index 5ace30434e603..264eb09ccfd51 100644
-> --- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-> +++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-> @@ -116,7 +116,7 @@ int smu_get_dpm_freq_range(struct smu_context *smu,
->                            uint32_t *min,
->                            uint32_t *max)
->  {
-> -       int ret = 0;
-> +       int ret = -ENOTSUPP;
->
->         if (!min && !max)
->                 return -EINVAL;
-> --
-> 2.26.3
->
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
+index 507ad1ea2104..a3870628c9f0 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
+@@ -15,7 +15,6 @@
+ #include <media/v4l2-event.h>
+ #include <media/v4l2-mem2mem.h>
+ #include <media/videobuf2-dma-contig.h>
+-#include <linux/pm_runtime.h>
+ 
+ #include "mtk_vcodec_drv.h"
+ #include "mtk_vcodec_enc.h"
+-- 
+2.20.1.7.g153144c
+
