@@ -2,156 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A77E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230213AbiAYTfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 14:35:11 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:17360 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230163AbiAYTep (ORCPT
+        id S230303AbiAYTfg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 14:35:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230205AbiAYTe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 14:34:45 -0500
+        Tue, 25 Jan 2022 14:34:27 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69D3C061747
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 11:34:25 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id u130so16440537pfc.2
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 11:34:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1643139285; x=1674675285;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NAvOTNs9bwZgrhJlwLaHAnqjrea7JZaYZR3NRB0BhzQ=;
-  b=OWYQ4X37BjUoSYndpLfKy9mR9yVcQjo+AEWYvslArd2IgfEEbuvsBR6h
-   b75DdvT0XHkhgfKS3ClNEGUlIPN6Wrb7GNhoaYtTv3fQmdP13Wr5oc2TK
-   xZfbjGF60emkn6HZxO3eE0UfehfNuwP32OyIKp3tCabbxMBIY/WmFlTzm
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.88,315,1635206400"; 
-   d="scan'208";a="168477491"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 25 Jan 2022 19:34:43 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com (Postfix) with ESMTPS id B0A7141860;
-        Tue, 25 Jan 2022 19:34:42 +0000 (UTC)
-Received: from EX13D02UWB003.ant.amazon.com (10.43.161.48) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Tue, 25 Jan 2022 19:34:33 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
- EX13D02UWB003.ant.amazon.com (10.43.161.48) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Tue, 25 Jan 2022 19:34:33 +0000
-Received: from dev-dsk-alisaidi-i31e-9f3421fe.us-east-1.amazon.com
- (10.200.138.153) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
- Server id 15.0.1497.28 via Frontend Transport; Tue, 25 Jan 2022 19:34:33
- +0000
-Received: by dev-dsk-alisaidi-i31e-9f3421fe.us-east-1.amazon.com (Postfix, from userid 5131138)
-        id 4B27421E70; Tue, 25 Jan 2022 19:34:33 +0000 (UTC)
-From:   Ali Saidi <alisaidi@amazon.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <alisaidi@amazon.com>, <benh@kernel.crashing.org>,
-        Peter Zijlstra <peterz@infradead.org>,
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wqkKZwea4Ntd1UMLoEnxDe91teRkaMMO7ADnYpsEdMY=;
+        b=Xax9igYolzgTI16rjcvA8qDy9hafAlD+40MG99uerzRhh0xcnwKx0vFFRpRLKXYeH8
+         tXPv3lZv2wlrAdPIBPf33UKrEC6hN3ZTkTy65/mll1hln7phNHyMfgImIu018DPHuTHC
+         lMkw2UyJ6vdDWTzyFzUHtVqaKKSjOFKPDm+o57lPjotAHyTHwxSAa3fQooLvtqb4LXb0
+         5s+Dym2nVR1PFfXPpg/9jAMYwRTxQfmTaMz7PQuafw4Le9KX3N8RI3n0SGZtqocxO4qX
+         p6d6ohiKn3Z8GugQHJq2QwVTs442Q97jxAXKnld2tZVN1zn4e0zZ8FmRxhTM7HwuTF7U
+         F4TQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wqkKZwea4Ntd1UMLoEnxDe91teRkaMMO7ADnYpsEdMY=;
+        b=qkPcV7bfukEKm1wZZ8R8EonqaExH9MKn1i3IoaWY2kG+mTJrZUpJzhDWdw1R5l0JTE
+         6TR1uwWiCtPHZnlzAqSC2zFUmSrL4W+yYA4bs29pJMrp10U2vWyZ/f2K4Ybf3Sak7lG2
+         Hxzur17dljCdWdfGbkoJ8Ic9owMEfq2upuEF1uYzPLz1xibHWS4+Jl59+acrOCsucMRR
+         qWRTKIH1qZY3t0fGn93g2xOASIKkefJW2a0fMTv9BKs12zHRW0VjNw6DPoZN6ix2Oz1s
+         Bpo9wxlNcyBxVXYXUUmjKd9l3N/9XyLiFVLC3lfOCk+kHTaoSzSw/37A/9BVbgp4FqNF
+         NqQg==
+X-Gm-Message-State: AOAM530X/NDs9wpESpvTaQLCEMNsU/wwXb63PYsrlO02Q+1vMDUufxZ+
+        tYuHNBLYsWtj2JMlwils1eobVA==
+X-Google-Smtp-Source: ABdhPJwKn4xsubm3B306tmrdkEHk+6IyVkLSe3+CfFCGvzbf6On+fSFVFQ3hGvWDObdK1oO/yyE/RQ==
+X-Received: by 2002:a05:6a00:1312:b0:4c4:cffa:a4c0 with SMTP id j18-20020a056a00131200b004c4cffaa4c0mr19606314pfu.79.1643139265175;
+        Tue, 25 Jan 2022 11:34:25 -0800 (PST)
+Received: from localhost.localdomain ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id q7sm19499854pfs.32.2022.01.25.11.34.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 11:34:24 -0800 (PST)
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+To:     peterz@infradead.org
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
         Ingo Molnar <mingo@redhat.com>,
-        "Arnaldo Carvalho de Melo" <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Alexander Shishkin" <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        "Will Deacon" <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        "Leo Yan" <leo.yan@linaro.org>, James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Andrew Kilroy <andrew.kilroy@arm.com>
-Subject: [PATCH 2/2] perf arm-spe: Parse more SPE fields and store source
-Date:   Tue, 25 Jan 2022 19:20:10 +0000
-Message-ID: <20220125192016.20538-3-alisaidi@amazon.com>
-X-Mailer: git-send-email 2.24.4.AMZN
-In-Reply-To: <20220125192016.20538-1-alisaidi@amazon.com>
-References: <20220125192016.20538-1-alisaidi@amazon.com>
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        Daniel Jordan <daniel.m.jordan@oracle.com>,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+Subject: [PATCH v3] sched/fair: Fix fault in reweight_entity
+Date:   Tue, 25 Jan 2022 11:34:03 -0800
+Message-Id: <20220125193403.778497-1-tadeusz.struk@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Decode more SPE events and op types to allow for processing by perf
-scripts. For example looking for branches which may indicate candidates
-for conversion to a CSEL, store exclusives that are candidates for
-conversion to LSE atomics and record the source information for memory
-ops.
+Syzbot found a GPF in reweight_entity. This has been bisected to commit
+4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
 
-Signed-off-by: Ali Saidi <alisaidi@amazon.com>
+There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
+within a thread group that causes a null-ptr-deref in reweight_entity()
+in CFS. The scenario is that the main process spawns number of new
+threads, which then call setpriority(PRIO_PGRP, 0, -20), wait, and exit.
+For each of the new threads the copy_process() gets invoked, which adds
+the new task_struct and calls sched_post_fork() for it.
+
+In the above scenario there is a possibility that setpriority(PRIO_PGRP)
+and set_one_prio() will be called for a thread in the group that is just
+being created by copy_process(), and for which the sched_post_fork() has
+not been executed yet. This will trigger a null pointer dereference in
+reweight_entity(), as it will try to access the run queue pointer, which
+hasn't been set. This results it a crash as shown below:
+
+KASAN: null-ptr-deref in range [0x00000000000000a0-0x00000000000000a7]
+CPU: 0 PID: 2392 Comm: reduced_repro Not tainted 5.16.0-11201-gb42c5a161ea3
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
+RIP: 0010:reweight_entity+0x15d/0x440
+RSP: 0018:ffffc900035dfcf8 EFLAGS: 00010006
+Call Trace:
+<TASK>
+reweight_task+0xde/0x1c0
+set_load_weight+0x21c/0x2b0
+set_user_nice.part.0+0x2d1/0x519
+set_user_nice.cold+0x8/0xd
+set_one_prio+0x24f/0x263
+__do_sys_setpriority+0x2d3/0x640
+__x64_sys_setpriority+0x84/0x8b
+do_syscall_64+0x35/0xb0
+entry_SYSCALL_64_after_hwframe+0x44/0xae
+</TASK>
+---[ end trace 9dc80a9d378ed00a ]---
+
+Before the mentioned change the cfs_rq pointer for the task  has been
+set in sched_fork(), which is called much earlier in copy_process(),
+before the new task is added to the thread_group.
+Now it is done in the sched_post_fork(), which is called after that.
+To fix the issue the update_load condition passed to set_load_weight()
+in set_user_nice() and __sched_setscheduler() has been changed from
+always true to true if the task->state != TASK_NEW.
+
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ben Segall <bsegall@google.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
+Cc: Zhang Qiao <zhangqiao22@huawei.com>
+Cc: Daniel Jordan <daniel.m.jordan@oracle.com>
+Cc: stable@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Link: https://syzkaller.appspot.com/bug?id=9d9c27adc674e3a7932b22b61c79a02da82cbdc1
+Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
+Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
 ---
- .../util/arm-spe-decoder/arm-spe-decoder.c     | 18 ++++++++++++++++++
- .../util/arm-spe-decoder/arm-spe-decoder.h     |  8 ++++++++
- 2 files changed, 26 insertions(+)
+Changes in v3:
+- Removed the new check and changed the update_load condition from
+  always true to true if p->state != TASK_NEW
 
-diff --git a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
-index 5e390a1a79ab..177bac0f7128 100644
---- a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
-+++ b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
-@@ -191,6 +191,20 @@ static int arm_spe_read_record(struct arm_spe_decoder *decoder)
- 					decoder->record.op = ARM_SPE_ST;
- 				else
- 					decoder->record.op = ARM_SPE_LD;
-+				if (SPE_OP_PKT_IS_LDST_ATOMIC(payload)) {
-+					if (payload & SPE_OP_PKT_AT)
-+						decoder->record.op |= ARM_SPE_LDST_ATOMIC;
-+					if (payload & SPE_OP_PKT_EXCL)
-+						decoder->record.op |= ARM_SPE_LDST_EXCL;
-+					if (payload & SPE_OP_PKT_AR)
-+						decoder->record.op |= ARM_SPE_LDST_ACQREL;
-+				}
-+			} else if (idx == SPE_OP_PKT_HDR_CLASS_BR_ERET) {
-+				decoder->record.op = ARM_SPE_BR;
-+				if (payload & SPE_OP_PKT_COND)
-+					decoder->record.op |= ARM_SPE_BR_COND;
-+				if (SPE_OP_PKT_IS_INDIRECT_BRANCH(payload))
-+					decoder->record.op |= ARM_SPE_BR_IND;
- 			}
- 			break;
- 		case ARM_SPE_EVENTS:
-@@ -218,8 +232,12 @@ static int arm_spe_read_record(struct arm_spe_decoder *decoder)
- 			if (payload & BIT(EV_MISPRED))
- 				decoder->record.type |= ARM_SPE_BRANCH_MISS;
+Changes in v2:
+- Added a check in set_user_nice(), and return from there if the task
+  is not fully setup instead of returning from reweight_entity()
+---
+---
+ kernel/sched/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 848eaa0efe0e..3d7ede06b971 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6921,7 +6921,7 @@ void set_user_nice(struct task_struct *p, long nice)
+ 		put_prev_task(rq, p);
  
-+			if (payload & BIT(EV_NOT_TAKEN))
-+				decoder->record.type |= ARM_SPE_BR_NOT_TAKEN;
-+
- 			break;
- 		case ARM_SPE_DATA_SOURCE:
-+			decoder->record.source = payload;
- 			break;
- 		case ARM_SPE_BAD:
- 			break;
-diff --git a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
-index 69b31084d6be..113e427afe99 100644
---- a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
-+++ b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
-@@ -22,11 +22,18 @@ enum arm_spe_sample_type {
- 	ARM_SPE_TLB_MISS	= 1 << 5,
- 	ARM_SPE_BRANCH_MISS	= 1 << 6,
- 	ARM_SPE_REMOTE_ACCESS	= 1 << 7,
-+	ARM_SPE_BR_NOT_TAKEN	= 1 << 8,
- };
+ 	p->static_prio = NICE_TO_PRIO(nice);
+-	set_load_weight(p, true);
++	set_load_weight(p, !(READ_ONCE(p->__state) & TASK_NEW));
+ 	old_prio = p->prio;
+ 	p->prio = effective_prio(p);
  
- enum arm_spe_op_type {
- 	ARM_SPE_LD		= 1 << 0,
- 	ARM_SPE_ST		= 1 << 1,
-+	ARM_SPE_LDST_EXCL	= 1 << 2,
-+	ARM_SPE_LDST_ATOMIC	= 1 << 3,
-+	ARM_SPE_LDST_ACQREL	= 1 << 4,
-+	ARM_SPE_BR		= 1 << 5,
-+	ARM_SPE_BR_COND		= 1 << 6,
-+	ARM_SPE_BR_IND		= 1 << 7,
- };
+@@ -7212,7 +7212,7 @@ static void __setscheduler_params(struct task_struct *p,
+ 	 */
+ 	p->rt_priority = attr->sched_priority;
+ 	p->normal_prio = normal_prio(p);
+-	set_load_weight(p, true);
++	set_load_weight(p, !(READ_ONCE(p->__state) & TASK_NEW));
+ }
  
- struct arm_spe_record {
-@@ -40,6 +47,7 @@ struct arm_spe_record {
- 	u64 virt_addr;
- 	u64 phys_addr;
- 	u64 context_id;
-+	u16 source;
- };
- 
- struct arm_spe_insn;
+ /*
 -- 
-2.24.4.AMZN
+2.34.1
 
