@@ -2,97 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1026C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 22:27:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34807C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 22:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233803AbiAYW1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 17:27:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233746AbiAYW1P (ORCPT
+        id S233812AbiAYW2A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 17:28:00 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37110 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233794AbiAYW15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 17:27:15 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC36C06173B
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 14:27:15 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id w14so12937347edd.10
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 14:27:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/1BiB0LlRhrBnkIdJld33ntWmu5J0JJj0Fcrw4TDuSI=;
-        b=codcubGyPRRa9Co1DwYI2ifTPo2sxWpxhfC162hwvfv0Dvj34aQMGqFZRV+Fb2oImP
-         YpQ02SJTC8gYN4g1JmYjUiqx+ZGdRf3JxCvvepEPZ3YpTdzCmnsRqP74xG00slnsfB+u
-         4xuSx8u/lS9VDpfe9MwjJKJneITNky/Le68TZyQyLDyUH4T+w+PWeJ8Igu2HT5b6VpEl
-         cfIkvq3BZdEDsTfy/SW7uKUQAsA5A7Q0VdZ8kkr4a+Yp8jpTMnbe+KebgjevbzkM5X3l
-         qpJbeaR8+ZXrHfrkX8i4u7kjQOIV0mBbZjfbgS5QSZSt7U+d7952i/y2bjS3bwCWniS9
-         NqCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/1BiB0LlRhrBnkIdJld33ntWmu5J0JJj0Fcrw4TDuSI=;
-        b=pewWE0LseDt5S4ugsVEUnpHx1bt6xkXR6NK9UzNa/p768RTv6MM52PwJGWU+Mh/le0
-         VcnhhRjYmSBcLNKyEfqI6B5V92GKNBvw+x3naprqWItZrb9R0muYwPSNZTFYQILH17ZC
-         PeurVthNZjWcOivmYvf7Y6yBPDDXwWbezA5Q4JRQfh8fXljUYCLeuFCpQZSE/fSlfp1x
-         6UbRzdeUC/+rnzbBbqWoKZI5r6CEVkv3DCjCx+gepkvt2z+gTXibOMvBHJyPHvt3A8iz
-         JTO3OlAiFJHfXYXiocz26l7pqGyyBurJiEFHi9ZOqVBtdcmIs0QEE/ltUJu5dvPovaMh
-         NyoA==
-X-Gm-Message-State: AOAM530GgmtVNETC6lcdopdFBgckBS7W/tHCH63mMoq24A4dXMuImDyR
-        r2WXB9wp23yMeGjwehGUM9yGliHhmwK1DVz0CA2u
-X-Google-Smtp-Source: ABdhPJyMnhB7AjQM90R3rAyHkw09pciULNZQsSRVFJsPjgGXkMK5fv7dlJ9igPXCWWBfuR6Qb8adl5BW2dDLMR1lkNk=
-X-Received: by 2002:a05:6402:1e93:: with SMTP id f19mr21939603edf.343.1643149633597;
- Tue, 25 Jan 2022 14:27:13 -0800 (PST)
+        Tue, 25 Jan 2022 17:27:57 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EF566184A;
+        Tue, 25 Jan 2022 22:27:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B7F5C340E0;
+        Tue, 25 Jan 2022 22:27:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643149676;
+        bh=21Wcgn1j9relNyi3Uz6u2QsAkpxOeBhxGiQVPqE19R4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Gj0nd8JJzBg2ACxpoOnKSAcoEBiYNetMzpqhFkBlB8pUui+yl2xZdzXiV5bfg2hAI
+         +5U2cQKH2/DUpwIyfrjcJN1c03InGAJ1p9eHpF0s/Xr0bhM4maFEqYz0jlWHSg03cG
+         VYwqPX9XEImDw0ojzIzhtfsULg80yFT5FVCsneauZoKgyXw2vJDngxmgbSyUJxZL6m
+         iaKD10QhK4Ua9NCiZdZzw4dvh31PsatVTyw3Lre0S9lVL8OB2MHjq+6MqjSG8ra0iq
+         n0k1NuRBz2HY0bJQ3savB8v6LJuRnFOSl8JJMXooLF+2enassriW2Q91Vvx8FtP3nW
+         Q1tLdEbmK/kxw==
+Date:   Tue, 25 Jan 2022 16:34:43 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     David Kershner <david.kershner@unisys.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] staging: unisys: visorinput: Use struct_size() helper
+ in kzalloc()
+Message-ID: <20220125223443.GA76937@embeddedor>
 MIME-Version: 1.0
-References: <4df50e95-6173-4ed1-9d08-3c1c4abab23f@gmail.com>
-In-Reply-To: <4df50e95-6173-4ed1-9d08-3c1c4abab23f@gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 25 Jan 2022 17:27:02 -0500
-Message-ID: <CAHC9VhSjTqT-4TMxBnQOQHkj+djONihfeoPVyy1egrZY2t10XA@mail.gmail.com>
-Subject: Re: [PATCH] SELinux: Always allow FIOCLEX and FIONCLEX
-To:     Demi Marie Obenour <demiobenour@gmail.com>
-Cc:     Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>, selinux@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 4:34 PM Demi Marie Obenour
-<demiobenour@gmail.com> wrote:
->
-> These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
-> always allows too.  Furthermore, a failed FIOCLEX could result in a file
-> descriptor being leaked to a process that should not have access to it.
->
-> Signed-off-by: Demi Marie Obenour <demiobenour@gmail.com>
-> ---
->  security/selinux/hooks.c | 5 +++++
->  1 file changed, 5 insertions(+)
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worst scenario, could lead to heap overflows.
 
-I'm not convinced that these two ioctls should be exempt from SELinux
-policy control, can you explain why allowing these ioctls with the
-file:ioctl permission is not sufficient for your use case?  Is it a
-matter of granularity?
+Also, address the following sparse warnings:
+drivers/staging/unisys/visorinput/visorinput.c:409:27: warning: using sizeof on a flexible structure
 
-> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> index 5b6895e4fc29..8f3b2f15c1f3 100644
-> --- a/security/selinux/hooks.c
-> +++ b/security/selinux/hooks.c
-> @@ -3728,6 +3728,11 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
->                 error = file_has_perm(cred, file, FILE__GETATTR);
->                 break;
->
-> +       /* must always succeed */
-> +       case FIOCLEX:
-> +       case FIONCLEX:
-> +               break;
-> +
->         case FS_IOC_SETFLAGS:
->         case FS_IOC_SETVERSION:
->                 error = file_has_perm(cred, file, FILE__SETATTR);
+Link: https://github.com/KSPP/linux/issues/174
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/staging/unisys/visorinput/visorinput.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---
-paul-moore.com
+diff --git a/drivers/staging/unisys/visorinput/visorinput.c b/drivers/staging/unisys/visorinput/visorinput.c
+index 426deab22d62..dffa71ac3cc5 100644
+--- a/drivers/staging/unisys/visorinput/visorinput.c
++++ b/drivers/staging/unisys/visorinput/visorinput.c
+@@ -406,7 +406,8 @@ static struct visorinput_devdata *devdata_create(struct visor_device *dev,
+ 	if (dtype == visorinput_keyboard)
+ 		/* allocate room for devdata->keycode_table, filled in below */
+ 		extra_bytes = KEYCODE_TABLE_BYTES * 2;
+-	devdata = kzalloc(sizeof(*devdata) + extra_bytes, GFP_KERNEL);
++	devdata = kzalloc(struct_size(devdata, keycode_table, extra_bytes),
++			  GFP_KERNEL);
+ 	if (!devdata)
+ 		return NULL;
+ 	mutex_init(&devdata->lock_visor_dev);
+-- 
+2.27.0
+
