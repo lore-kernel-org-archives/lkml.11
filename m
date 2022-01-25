@@ -2,165 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB511C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232392AbiAYGSu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:18:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S251802AbiAYEXx (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 23:23:53 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAB4C055A9A
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:00:11 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id m4so26991048ejb.9
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:00:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kylehuey.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kDfcMnt1ZIQSIpldkMR2YGoR++JF8Hl0uMJZ3mgF3iY=;
-        b=S9E1edi4iAkbpoJ+Y0W1HzlmRTnQHoOVMmp52n5V0GF6fHlHMM4a+MZlAhd2vQVolE
-         gBNHQO9G95AU6El8yYP+9K3U0j6H+9dEeqes2bv5Ou90d9Zmh2QlPtfT4eQ95yQjQqu1
-         xTuZ+anWtCg0c5ZqvdnxrWvcJ1M/JvO6p4saH2DieiVcQ48tmbAE1LcmiQfoeJfxCeBz
-         AgExhWjkDueju4N0H4vL0WEYNmLv9FDmq/c4wA3+1c/Y6QFD6QID6E6t54DVjjBui3fX
-         o6TpqUJQDbGHhh+ly41BVgzMzFEQnzjuuJwPAUXez1Zam6u9VHvEWUY/8pK2npJegX4B
-         iWHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kDfcMnt1ZIQSIpldkMR2YGoR++JF8Hl0uMJZ3mgF3iY=;
-        b=dXJ1ALcxc07e6mp46S42hgCZP+Iw09XVEDWzQlglDKyz+kc7sknuuzVSB0H/0lvoXW
-         /+LaidLa1WOvLCR9VdqttB9DUfyT4UpcQpWwgJv1MSUEZZ0AokKYoyGZgRbx/MfA8TU/
-         +FHqgcpSii/B8lTI6TLfxj7apUjwmzcPMxVovjy95U045usw56u33fxq6WMrNhCKNsb9
-         1Aqi74T36D38OL7N2Df1euooeGTsD2WVcrg6s2NXmzWlMsUTp3qBmlNUJBGyquL2bUMA
-         TW6LERokUx6aCL12iBgY6r5j5+xcDNe9fPqM45HLPRQ4nW3hR8vjkVMEKHmMAmNx/88C
-         li4A==
-X-Gm-Message-State: AOAM532n3XeVmCITrVjl/8O1RvrRPcaicTxMKCk0lUIBjMwzeBQ2MFC1
-        c2K9Fc0aKbEhjr9Dop1gGTThx1Et5wONZHgwMpGgYw==
-X-Google-Smtp-Source: ABdhPJwSbjPkXOC0WNl3nA/m/jbSakBXomokfM2F4pnK0jGKb+qnJjxSs6ue0f5eJmhwXSqQigIKuRUHo0JdGXBOh7U=
-X-Received: by 2002:a17:907:3da1:: with SMTP id he33mr8344074ejc.250.1643079610110;
- Mon, 24 Jan 2022 19:00:10 -0800 (PST)
+        id S244651AbiAYGTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 01:19:49 -0500
+Received: from mga12.intel.com ([192.55.52.136]:19009 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1391793AbiAYFKj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 00:10:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643087439; x=1674623439;
+  h=cc:subject:to:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=V9CYJ2kCUBsupqpOKFqBBwFqKIJsJUlTvgIb6c/puoE=;
+  b=T7CiCInR6GEr1rc7oRsrGhQTgZGmqXUbbgK22Faz7/PYWgcNbIsxj0eV
+   JrkD34/An/jqzKaIR3LX3YU1Swm5CyFjdTwoK5zgLkh48HuRL8l6u2Sx1
+   +7dCi5jT+YnV58pl21+Cs2GZCRpQHdyvZPos/A8hmJkucaUkQ1YRg3+a9
+   LWVultPjdpkJ5Xba9PG61XKzLz/MDaycRJQIbWy5wP1YQ5Z7ODQV1qjnm
+   JE2tjuGeQFEPdIN7GuNjIrJkIN9XAha5nPp3jTmc6fVBRf6jy51LFtALk
+   M1rq/JjlWBMT2Q3L8ewabqYpZVRs3Ix8lj1GnYZZUvY/9jI8CZ/eagVFe
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226198648"
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="226198648"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 21:05:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="534564947"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by orsmga008.jf.intel.com with ESMTP; 24 Jan 2022 21:05:43 -0800
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
+To:     Jason Gunthorpe <jgg@nvidia.com>
+References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+ <20220124071103.2097118-8-baolu.lu@linux.intel.com>
+ <20220124175542.GA987164@nvidia.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <6fd81c95-6fd6-d678-b7df-f2f747e2b10c@linux.intel.com>
+Date:   Tue, 25 Jan 2022 13:04:43 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220122072644.92292-1-khuey@kylehuey.com> <Ye6Z31keWVPrsNWU@hirez.programming.kicks-ass.net>
- <3c35dc76-c187-8d3f-7fc9-75de32e7cbf6@linux.intel.com>
-In-Reply-To: <3c35dc76-c187-8d3f-7fc9-75de32e7cbf6@linux.intel.com>
-From:   Kyle Huey <me@kylehuey.com>
-Date:   Mon, 24 Jan 2022 18:59:58 -0800
-Message-ID: <CAP045ArbX7cYKyv0H4X2SxUJWycB1VoLZWLME=_RXttBFBfP3A@mail.gmail.com>
-Subject: Re: [PATCH] x86/perf: Default freeze_on_smi on for Comet Lake and later.
-To:     "Liang, Kan" <kan.liang@linux.intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Robert O'Callahan" <rocallahan@gmail.com>,
-        Keno Fischer <keno@juliacomputing.com>,
-        Andi Kleen <ak@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220124175542.GA987164@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 8:01 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
->
->
->
-> On 1/24/2022 7:21 AM, Peter Zijlstra wrote:
-> > On Fri, Jan 21, 2022 at 11:26:44PM -0800, Kyle Huey wrote:
-> >> Beginning in Comet Lake, Intel extended the concept of privilege rings to
-> >> SMM.[0] A side effect of this is that events caused by execution of code
-> >> in SMM are now visible to performance counters with IA32_PERFEVTSELx.USR
-> >> set.
-> >>
-> >> rr[1] depends on exact counts of performance events for the user space
-> >> tracee, so this change in behavior is fatal for us. It is, however, easily
-> >> corrected by setting IA32_DEBUGCTL.FREEZE_WHILE_SMM to 1 (visible in sysfs
-> >> as /sys/devices/cpu/freeze_on_smi). While we can and will tell our users to
-> >> set freeze_on_smi manually when appropriate, because observing events in
-> >> SMM is rarely useful to anyone, we propose to change the default value of
-> >> this switch.
->
-> + Andi
->
->  From we heard many times from sophisticated customers, they really hate
-> blind spots. They want to see everything. That's why we set
-> freeze_on_smi to 0 as default. I think the patch breaks the principle.
+On 1/25/22 1:55 AM, Jason Gunthorpe wrote:
+> On Mon, Jan 24, 2022 at 03:11:02PM +0800, Lu Baolu wrote:
+>> -	int (*enable_nesting)(struct iommu_domain *domain);
+> 
+> 
+> Lu, there is an implementation in the Intel driver here, is it usable
+> at all?
 
-The default kernel settings for perf events prioritize preventing
-information leaks to less privileged code. perf_event_paranoid
-defaults to 2, preventing unprivileged users from observing kernel
-space. If "sophisticated customers" want to see everything they have
-already needed privileges (or an explicit opt-in through decreasing
-perf_event_paranoid) for some time.
+It's useless and I have cleaned it up in this series.
 
-The current situation on Comet Lake+ where an unprivileged user
-*cannot* observe kernel code due to security concerns but
-simultaneously *must* observe SMM code seems rather absurd.
+> 
+> Jason
+> 
 
-> I don't think there is a way to notify all the users that the default
-> kernel value will be changed. (Yes, the end user can always check the
-> /sys/devices/cpu/freeze_on_smi to get the latest value. But in practice,
-> no one checks it unless some errors found.) I think it may bring
-> troubles to the users if they rely on the counts in SMM.
-
-Unfortunately the new hardware has already changed the behavior
-without notifying users, no matter what we do here.
-
-> The patch only changes the default values for some platforms, not all
-> platforms. The default value is not consistent among platforms anymore.
-> It can bring confusion.
-
-I don't personally object to changing freeze_on_smi for all platforms
-:) I was merely trying to limit the changes.
-
-> All in all, we have already exposed an interface for the end-users to
-> change the value. If some apps, e.g., rr, doesn't want the default
-> value, I think they can always change it in the app for all platforms.
-> We should still keep the freeze_on_smi to 0 as default, which should
-> benefit more users.
-
-I think "people who want to just do userspace profiling like they did
-before can just change the value" is an unsatisfying answer,
-especially because freeze_on_smi requires root to change.
-
-
-- Kyle
-
->
-> >>
-> >> In this patch I have assumed that all non-Atom Intel microarchitectures
-> >> starting with Comet Lake behave like this but it would be good for someone
-> >> at Intel to verify that.
-> >>
-> >
-> > Kan, can you look at that?
-> >
->
-> I'm asking internally.
->
-> Thanks,
-> Kan
->
-> >> [0] See the Intel white paper "Trustworthy SMM on the Intel vPro Platform"
-> >> at https://bugzilla.kernel.org/attachment.cgi?id=300300, particularly the
-> >> end of page 5.
-> >>
-> >> [1] https://rr-project.org/
-> >>
-> >> Signed-off-by: Kyle Huey <khuey@kylehuey.com>
-> >
-> > Patch seems sensible enough; I'll go queue it up unless Kan comes back
-> > with anything troublesome.
+Best regards,
+baolu
