@@ -2,55 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD4AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385771AbiAYON7 (ORCPT
+        id S1578116AbiAYOO2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:13:59 -0500
-Received: from iota.tcarey.uk ([138.68.159.189]:41324 "EHLO iota.tcarey.uk"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1385990AbiAYOLT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:11:19 -0500
-X-Greylist: delayed 441 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jan 2022 09:11:16 EST
-Received: from kappa (unknown [IPv6:2a02:c7e:82c:6a00:a723:ff23:8e33:a24d])
-        by iota.tcarey.uk (Postfix) with ESMTPSA id 5786A24F8E;
-        Tue, 25 Jan 2022 14:03:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tcarey.uk; s=iota;
-        t=1643119398; bh=d3dqljjzMtihzfzHZx940rE3jMAaU35i9VLf6eor8n0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rAWD9LwLe/ApzSEPkI0CufjOilLwawjW3Vnr7iQXuJynwLRX2FhUS+sH3vKJuItw4
-         O1nklv2LwO7GMywHLWq0Wv+qmk08yPACEGZ1/Fm3poQTq2Zv+V3EqRtXMAu1Xdt9Zq
-         hkQj8MtacnzAwo6yysRKMMTbBis2zAPK52D7r0DhAYedmHs1WsrDZCBMD14A+ozNUx
-         pFfbuP7/uo0TQwCLHgwxBbxDBfdfM9OVglKwrl5GtR/1jEi4ghLYR74y0ptU5QSOn/
-         em/J2s6t0sVC207G4yzon36BKao5J++HAHHg7OpPN0K7X+VK4aMFPe73eEYKSyqGum
-         wRbHne54TMf7Q==
-Date:   Tue, 25 Jan 2022 14:03:16 +0000
-From:   Torin Carey <torin@tcarey.uk>
-To:     Hao Lee <haolee.swjtu@gmail.com>
-Cc:     akpm@linux-foundation.org, christian.brauner@ubuntu.com,
-        keescook@chromium.org, adobriyan@gmail.com,
-        jamorris@linux.microsoft.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] proc: use kmalloc instead of __get_free_page() to alloc
- path buffer
-Message-ID: <YfADJHY7Fy8S9Tl4@kappa>
-References: <20220123100837.GA1491@haolee.io>
+        Tue, 25 Jan 2022 09:14:28 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:49588 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385495AbiAYOL1 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 09:11:27 -0500
+Date:   Tue, 25 Jan 2022 15:11:13 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643119874;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=h+wE1mLTdMlmWkAW7/tM+Umy8zPTuE4e9hSvnL89+pw=;
+        b=ftU/JGCC/X8WRV7lYnZBtY1zN4pqHDeQnAa2q4koZBBXCPqPUy921Vm9xmjYUp7HUo87AN
+        jMxXR6Y9oqJrP5tJ+DyEs/PhRR/LXve1RkiyXutaMCT/ooHNnPT1iXGzfSq3vSGDDMlQCf
+        RvitRXpRh0yoiZGdx6g8Ebtl2NxlcK2Q4phPUzoZdNb0rUg8hV/rhhp9s9ETMNfFS9klIT
+        b9kF/pA6PSpVTsQNEvdFBAWKHJkGI+M4ANyMF5eLTtkOSmdHNMKB0haSgarvqIGOP6pa0O
+        v/DVlRoESDFueo7cFZGSChgtDLkK0by5YTIa40gdMfVKkYWxu7r8fNXuqJ3Wyw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643119874;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=h+wE1mLTdMlmWkAW7/tM+Umy8zPTuE4e9hSvnL89+pw=;
+        b=FelGQCJ9DU5ujDud+PuIKWVMqiR1OA2veGCDfpMU/zakW6DjMoYVUZEXg5x7X5AgMy1IwQ
+        bbuoU6nTltnyRwAw==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Wander Costa <wcosta@redhat.com>
+Cc:     Wander Lairson Costa <wander@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v3 1/1] tty: serial: Use fifo in 8250 console driver
+Message-ID: <YfAFAcYmJ+Zrontd@linutronix.de>
+References: <20211222112831.1968392-1-wander@redhat.com>
+ <20211222112831.1968392-2-wander@redhat.com>
+ <Ye/1+Z8mEzbKbrqG@linutronix.de>
+ <CAAq0SUmdGinqdWXrHztx8g9hb+5UF5rDJJjVeVMj3CQ=Fw3kJg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220123100837.GA1491@haolee.io>
+In-Reply-To: <CAAq0SUmdGinqdWXrHztx8g9hb+5UF5rDJJjVeVMj3CQ=Fw3kJg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 23, 2022 at 10:08:37AM +0000, Hao Lee wrote:
-> It's not a standard approach that use __get_free_page() to alloc path
-> buffer directly. We'd better use kmalloc and PATH_MAX.
+On 2022-01-25 10:15:04 [-0300], Wander Costa wrote:
+> There is another thread[1] reporting some issues with this patch.
+> There, this diff seems to fix the problems, could you please try and
+> report if it works for you too?
 
-If we're allocating PATH_MAX sized buffers for names, wouldn't it be
-suitable to use the name slab names_cachep declared in
-include/linux/fs.h using __getname() and __putname()?
+Nope. Still there.
 
-Best,
-Torin
+Sebastian
