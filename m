@@ -2,113 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 253A0C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D68C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242890AbiAYKLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:11:08 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:34778 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237361AbiAYKBl (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:01:41 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20PA1EMo109847;
-        Tue, 25 Jan 2022 04:01:14 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1643104874;
-        bh=c0J7TKjHWfZrKCmOVPBiKFm+qVkhcj0TJ8/2B5dklU0=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=BkYBpo2PKEqb6rUbS42OJ2zEUPs5WBcWshSAs+SBBzjgmNRvLA4SDM+YmVb0RoijL
-         XXihRz94R8SLwBF97R/ThV/8WO7qPUcSXc6Y1IhMDKB0fghVkCkUN/qPqjOTlwiF7A
-         omyzyyDatkM/xxvQTx6hbzB43j0sCZ+0d6ce6vP8=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20PA1DkI071265
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 25 Jan 2022 04:01:14 -0600
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 25
- Jan 2022 04:01:13 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 25 Jan 2022 04:01:13 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20PA1CZw011949;
-        Tue, 25 Jan 2022 04:01:13 -0600
-Date:   Tue, 25 Jan 2022 15:31:12 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Ley Foon Tan <leyfoon.tan@linux.starfivetech.com>
-CC:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        Ley Foon Tan <lftan.linux@gmail.com>
-Subject: Re: [PATCH] mtd: spi-nor: macronix: Add support for mx66u1g45g
-Message-ID: <20220125100112.jevrd4knhxytmry2@ti.com>
-References: <20220124060225.149007-1-leyfoon.tan@linux.starfivetech.com>
+        id S242930AbiAYKLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:11:14 -0500
+Received: from foss.arm.com ([217.140.110.172]:59968 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238734AbiAYKCj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 05:02:39 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 65ADF1FB;
+        Tue, 25 Jan 2022 02:02:34 -0800 (PST)
+Received: from [10.57.86.86] (unknown [10.57.86.86])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0ACE63F7D8;
+        Tue, 25 Jan 2022 02:02:32 -0800 (PST)
+Message-ID: <8a348786-d028-a991-178f-60b17d3d6554@arm.com>
+Date:   Tue, 25 Jan 2022 10:02:31 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220124060225.149007-1-leyfoon.tan@linux.starfivetech.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH V3 0/7] coresight: trbe: Workaround Cortex-A510 erratas
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        coresight@lists.linaro.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1641872346-3270-1-git-send-email-anshuman.khandual@arm.com>
+ <ec21e5da-7b2a-e99f-b24f-89b459e2d5cb@arm.com>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <ec21e5da-7b2a-e99f-b24f-89b459e2d5cb@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 25/01/2022 03:21, Anshuman Khandual wrote:
+> 
+> 
+> On 1/11/22 9:08 AM, Anshuman Khandual wrote:
+>> 	This series adds three different workarounds in the TRBE driver for
+>> Cortex-A510 specific erratas. But first, this adds Cortex-A510 specific cpu
+>> part number definition in the platform. This series applies on 5.16.
+>>
+>> Relevant errata documents can be found here.
+>>
+>> https://developer.arm.com/documentation/SDEN2397239/900
+>> https://developer.arm.com/documentation/SDEN2397589/900
+>>
+>> Changes in V3:
+>>
+>> - Moved the comment inside trbe_needs_drain_after_disable()
+>> - Moved the comment inside trbe_needs_ctxt_sync_after_enable()
+>>
+>> Changes in V2:
+>>
+>> https://lore.kernel.org/all/1641517808-5735-1-git-send-email-anshuman.khandual@arm.com/
+>>
+>> Accommodated most review comments from the previous version.
+>>
+>> - Split all patches into CPU errata definition, detection and TRBE workarounds
+>> - s/TRBE_WORKAROUND_SYSREG_WRITE_FAILURE/TRBE_NEEDS_DRAIN_AFTER_DISABLE
+>> - s/TRBE_WORKAROUND_CORRUPTION_WITH_ENABLE/TRBE_NEEDS_CTXT_SYNC_AFTER_ENABLE
+>> - s/trbe_may_fail_sysreg_write()/trbe_needs_drain_after_disable()
+>> - s/trbe_may_corrupt_with_enable()/trbe_needs_ctxt_sync_after_enable()
+>> - Updated Kconfig help message for config ARM64_ERRATUM_1902691
+>> - Updated error message for trbe_is_broken() detection
+>> - Added new trblimitr parameter to set_trbe_enabled(), improving performance
+>> - Added COMPILE_TEST dependency in the errata, until TRBE part is available
+>>
+>> Changes in V1:
+>>
+>> https://lore.kernel.org/lkml/1641359159-22726-1-git-send-email-anshuman.khandual@arm.com/
+>>
+>> Cc: Catalin Marinas <catalin.marinas@arm.com>
+>> Cc: Will Deacon <will@kernel.org>
+>> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+>> Cc: Suzuki Poulose <suzuki.poulose@arm.com>
+>> Cc: coresight@lists.linaro.org
+>> Cc: linux-doc@vger.kernel.org
+>> Cc: linux-arm-kernel@lists.infradead.org
+>> Cc: linux-kernel@vger.kernel.org
+>>
+>> Anshuman Khandual (7):
+>>    arm64: Add Cortex-A510 CPU part definition
+>>    arm64: errata: Add detection for TRBE ignored system register writes
+>>    arm64: errata: Add detection for TRBE invalid prohibited states
+>>    arm64: errata: Add detection for TRBE trace data corruption
+>>    coresight: trbe: Work around the ignored system register writes
+>>    coresight: trbe: Work around the invalid prohibited states
+>>    coresight: trbe: Work around the trace data corruption
+> 
+> Hello Catalin/Mathieu,
+> 
+> I am wondering how this series is going to be merged i.e via arm64 or coresight
+> tree ? Also will this require rebasing (and resend) against v5.17-rc1 release.
+> Please do suggest. Thank you.
 
-On 24/01/22 02:02PM, Ley Foon Tan wrote:
-> The Macronix mx66u1g45g [1] is a 1.8V, 1Gbit (128MB) flash device that
-> supports x1, x2, or x4 operation.
-> 
-> The mx66u1g45g is the smaller sibling of the mx66u2g45g that is
-> already supported.
-> 
-> Tested on StarFive Dubhe hardware on FPGA.
-> Validated by erase and read back, write and read back.
-> 
-> [1] https://www.macronix.com/Lists/Datasheet/Attachments/7877/MX66U1G45G,%201.8V,%201Gb,%20v1.4.pdf
-> 
-> Signed-off-by: Ley Foon Tan <leyfoon.tan@linux.starfivetech.com>
-> ---
->  drivers/mtd/spi-nor/macronix.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/mtd/spi-nor/macronix.c b/drivers/mtd/spi-nor/macronix.c
-> index 97dba1ae7fb1..79ee808c5442 100644
-> --- a/drivers/mtd/spi-nor/macronix.c
-> +++ b/drivers/mtd/spi-nor/macronix.c
-> @@ -97,6 +97,9 @@ static const struct flash_info macronix_parts[] = {
->  			      SPI_NOR_QUAD_READ) },
->  	{ "mx66l1g55g",  INFO(0xc2261b, 0, 64 * 1024, 2048)
->  		NO_SFDP_FLAGS(SPI_NOR_QUAD_READ) },
-> +	{ "mx66u1g45g",  INFO(0xc2253b, 0, 64 * 1024, 2048)
-> +		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-> +		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
+I would recommend rebasing on rc1.
 
-This is the "legacy" way of defining flags. I see from the datasheet 
-that SFDP is supported. Please use PARSE_SFDP to allow these parameters 
-to be discovered via SFDP. If one of the SFDP table has wrong data then 
-please use fixup hooks to correct it.
-
-You also need to dump the SFDP table and some other flash parameters in 
-the patch comments. See [0] for an example.
-
-[0] https://patchwork.ozlabs.org/project/linux-mtd/patch/20211209190436.401946-2-tudor.ambarus@microchip.com/
-
->  	{ "mx66u2g45g",	 INFO(0xc2253c, 0, 64 * 1024, 4096)
->  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
->  		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
-> -- 
-> 2.25.1
-> 
-> 
-
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+Thanks
+Suzuki
