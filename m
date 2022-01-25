@@ -2,254 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F05D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57623C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381771AbiAYLhq (ORCPT
+        id S1381703AbiAYLmG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 06:37:46 -0500
-Received: from foss.arm.com ([217.140.110.172]:37066 "EHLO foss.arm.com"
+        Tue, 25 Jan 2022 06:42:06 -0500
+Received: from mga01.intel.com ([192.55.52.88]:23740 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231356AbiAYLeO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 06:34:14 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9FEB91435;
-        Tue, 25 Jan 2022 03:32:28 -0800 (PST)
-Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A06953F7D8;
-        Tue, 25 Jan 2022 03:32:26 -0800 (PST)
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     acme@redhat.com, ardb@kernel.org, bp@alien8.de, broonie@kernel.org,
-        catalin.marinas@arm.com, dave.hansen@linux.intel.com,
-        jpoimboe@redhat.com, jslaby@suse.cz,
-        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
-        mark.rutland@arm.com, mingo@redhat.com, peterz@infradead.org,
-        tglx@linutronix.de, will@kernel.org
-Subject: [PATCH v2 7/7] tools: update x86 string routines
-Date:   Tue, 25 Jan 2022 11:32:00 +0000
-Message-Id: <20220125113200.3829108-8-mark.rutland@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220125113200.3829108-1-mark.rutland@arm.com>
-References: <20220125113200.3829108-1-mark.rutland@arm.com>
+        id S1381864AbiAYLiF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 06:38:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643110685; x=1674646685;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=b02e+1obuTOrQU4aNxSrFFqNId85Lz2ySMd1EDnL7M0=;
+  b=TmZtDHvecHMatfrF46pwV8KSISTFtLLYAhOA7BFal0c4XkDcmgogE6fh
+   r5bziIoIPbjTzyDCrFcmALvXZqGy8b5oYshK6bBe/EgldHvj36QI6LVg7
+   1PESo2GhUEY9fvEp8OJzpjqZG4klVL3GSWQF5KTKon2so9OdfuzfFkWR7
+   lfm9wm1Q9dJW2EqdoVBxTKFnbdozHMnQ/uWqLp6TYJmA2nSmuuqm7k1IA
+   dxo8beAvZ3W9YM+70wQKpfya5p+fOgsCrwKbbjgrfMldwvVP7Qj3WzXMy
+   1L8jjPPxeox7mmu6Rra4cs3GR2sd02opszFuNYkaJXuwv71N2itkJHtDZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="270726201"
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="270726201"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 03:34:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="695804700"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 25 Jan 2022 03:34:51 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCK67-000Jp8-45; Tue, 25 Jan 2022 11:34:51 +0000
+Date:   Tue, 25 Jan 2022 19:34:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:paulmck/linux-rcu/dev 80/85]
+ kernel/rcu/srcutree.c:1168:27: warning: variable 'sdp' set but not used
+Message-ID: <202201251951.fCJTBQJd-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building the perf tool the build system complains that the x86
-string routines are out-of-date:
+tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/dev
+head:   3cd375aa70d563fe8aa3e5f03280bdd8a334de45
+commit: 2c773bcaf4dd5031d0b2c980cc623ecfbcc6ab62 [80/85] squash! srcu: Make Tree SRCU able to operate without snp_node array
+config: arc-randconfig-r043-20220124 (https://download.01.org/0day-ci/archive/20220125/202201251951.fCJTBQJd-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/2c773bcaf4dd5031d0b2c980cc623ecfbcc6ab62
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/dev
+        git checkout 2c773bcaf4dd5031d0b2c980cc623ecfbcc6ab62
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash kernel/rcu/
 
-| Warning: Kernel ABI header at 'tools/arch/x86/lib/memcpy_64.S' differs from latest version at 'arch/x86/lib/memcpy_64.S'
-| diff -u tools/arch/x86/lib/memcpy_64.S arch/x86/lib/memcpy_64.S
-| Warning: Kernel ABI header at 'tools/arch/x86/lib/memset_64.S' differs from latest version at 'arch/x86/lib/memset_64.S'
-| diff -u tools/arch/x86/lib/memset_64.S arch/x86/lib/memset_64.S
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This is due to the way the asm-annotations for symbol aliasing were
-reworked, which should have no functional/performance impact.
+All warnings (new ones prefixed by >>):
 
-Import the latest versions, adding the new style SYM_FUNC_ALIAS(),
-SYM_FUNC_ALIAS_LOAD(), SYM_FUNC_ALIAS_WEAK() macros into the perf
-<linux/linkage.h> header. The old style SYM_FUNC_START_ALIAS() and
-SYM_FUNC_END_ALIAS() macros are removed.
+   kernel/rcu/srcutree.c: In function 'srcu_barrier':
+>> kernel/rcu/srcutree.c:1168:27: warning: variable 'sdp' set but not used [-Wunused-but-set-variable]
+    1168 |         struct srcu_data *sdp;
+         |                           ^~~
 
-Other than removign the build-time warning, there should be no
-functional change as a result of this patch.
 
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
+vim +/sdp +1168 kernel/rcu/srcutree.c
+
+2c773bcaf4dd50 Paul E. McKenney 2022-01-24  1160  
+dad81a2026841b Paul E. McKenney 2017-03-25  1161  /**
+dad81a2026841b Paul E. McKenney 2017-03-25  1162   * srcu_barrier - Wait until all in-flight call_srcu() callbacks complete.
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1163   * @ssp: srcu_struct on which to wait for in-flight callbacks.
+dad81a2026841b Paul E. McKenney 2017-03-25  1164   */
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1165  void srcu_barrier(struct srcu_struct *ssp)
+dad81a2026841b Paul E. McKenney 2017-03-25  1166  {
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1167  	int cpu;
+da915ad5cf25b5 Paul E. McKenney 2017-04-05 @1168  	struct srcu_data *sdp;
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1169  	unsigned long s = rcu_seq_snap(&ssp->srcu_barrier_seq);
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1170  
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1171  	check_init_srcu_struct(ssp);
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1172  	mutex_lock(&ssp->srcu_barrier_mutex);
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1173  	if (rcu_seq_done(&ssp->srcu_barrier_seq, s)) {
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1174  		smp_mb(); /* Force ordering following return. */
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1175  		mutex_unlock(&ssp->srcu_barrier_mutex);
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1176  		return; /* Someone else did our work for us. */
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1177  	}
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1178  	rcu_seq_start(&ssp->srcu_barrier_seq);
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1179  	init_completion(&ssp->srcu_barrier_completion);
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1180  
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1181  	/* Initial count prevents reaching zero until all CBs are posted. */
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1182  	atomic_set(&ssp->srcu_barrier_cpu_cnt, 1);
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1183  
+2c773bcaf4dd50 Paul E. McKenney 2022-01-24  1184  	if (!smp_load_acquire(&ssp->srcu_size_state)) {
+2c773bcaf4dd50 Paul E. McKenney 2022-01-24  1185  		srcu_barrier_one_cpu(ssp, per_cpu_ptr(ssp->sda, 0));
+2c773bcaf4dd50 Paul E. McKenney 2022-01-24  1186  	} else {
+2c773bcaf4dd50 Paul E. McKenney 2022-01-24  1187  
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1188  		/*
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1189  		 * Each pass through this loop enqueues a callback, but only
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1190  		 * on CPUs already having callbacks enqueued.  Note that if
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1191  		 * a CPU already has callbacks enqueue, it must have already
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1192  		 * registered the need for a future grace period, so all we
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1193  		 * need do is enqueue a callback that will use the same
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1194  		 * grace period as the last callback already in the queue.
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1195  		 */
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1196  		for_each_possible_cpu(cpu) {
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1197  			sdp = per_cpu_ptr(ssp->sda, cpu);
+2c773bcaf4dd50 Paul E. McKenney 2022-01-24  1198  			srcu_barrier_one_cpu(ssp, per_cpu_ptr(ssp->sda, cpu));
+a602538e46c9c6 Paul E. McKenney 2017-04-28  1199  		}
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1200  	}
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1201  
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1202  	/* Remove the initial count, at which point reaching zero can happen. */
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1203  	if (atomic_dec_and_test(&ssp->srcu_barrier_cpu_cnt))
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1204  		complete(&ssp->srcu_barrier_completion);
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1205  	wait_for_completion(&ssp->srcu_barrier_completion);
+da915ad5cf25b5 Paul E. McKenney 2017-04-05  1206  
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1207  	rcu_seq_end(&ssp->srcu_barrier_seq);
+aacb5d91ab1bfb Paul E. McKenney 2018-10-28  1208  	mutex_unlock(&ssp->srcu_barrier_mutex);
+dad81a2026841b Paul E. McKenney 2017-03-25  1209  }
+dad81a2026841b Paul E. McKenney 2017-03-25  1210  EXPORT_SYMBOL_GPL(srcu_barrier);
+dad81a2026841b Paul E. McKenney 2017-03-25  1211  
+
+:::::: The code at line 1168 was first introduced by commit
+:::::: da915ad5cf25b5f5d358dd3670c3378d8ae8c03e srcu: Parallelize callback handling
+
+:::::: TO: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+:::::: CC: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+
 ---
- tools/arch/x86/lib/memcpy_64.S          | 10 ++--
- tools/arch/x86/lib/memset_64.S          |  6 +-
- tools/perf/util/include/linux/linkage.h | 80 ++++++++++++++++---------
- 3 files changed, 61 insertions(+), 35 deletions(-)
-
-diff --git a/tools/arch/x86/lib/memcpy_64.S b/tools/arch/x86/lib/memcpy_64.S
-index 59cf2343f3d90..d0d7b9bc6cad3 100644
---- a/tools/arch/x86/lib/memcpy_64.S
-+++ b/tools/arch/x86/lib/memcpy_64.S
-@@ -27,8 +27,7 @@
-  * Output:
-  * rax original destination
-  */
--SYM_FUNC_START_ALIAS(__memcpy)
--SYM_FUNC_START_WEAK(memcpy)
-+SYM_FUNC_START(__memcpy)
- 	ALTERNATIVE_2 "jmp memcpy_orig", "", X86_FEATURE_REP_GOOD, \
- 		      "jmp memcpy_erms", X86_FEATURE_ERMS
- 
-@@ -40,11 +39,12 @@ SYM_FUNC_START_WEAK(memcpy)
- 	movl %edx, %ecx
- 	rep movsb
- 	RET
--SYM_FUNC_END(memcpy)
--SYM_FUNC_END_ALIAS(__memcpy)
--EXPORT_SYMBOL(memcpy)
-+SYM_FUNC_END(__memcpy)
- EXPORT_SYMBOL(__memcpy)
- 
-+SYM_FUNC_ALIAS_WEAK(memcpy, __memcpy)
-+EXPORT_SYMBOL(memcpy)
-+
- /*
-  * memcpy_erms() - enhanced fast string memcpy. This is faster and
-  * simpler than memcpy. Use memcpy_erms when possible.
-diff --git a/tools/arch/x86/lib/memset_64.S b/tools/arch/x86/lib/memset_64.S
-index d624f2bc42f16..fc9ffd3ff3b21 100644
---- a/tools/arch/x86/lib/memset_64.S
-+++ b/tools/arch/x86/lib/memset_64.S
-@@ -17,7 +17,6 @@
-  *
-  * rax   original destination
-  */
--SYM_FUNC_START_WEAK(memset)
- SYM_FUNC_START(__memset)
- 	/*
- 	 * Some CPUs support enhanced REP MOVSB/STOSB feature. It is recommended
-@@ -42,10 +41,11 @@ SYM_FUNC_START(__memset)
- 	movq %r9,%rax
- 	RET
- SYM_FUNC_END(__memset)
--SYM_FUNC_END_ALIAS(memset)
--EXPORT_SYMBOL(memset)
- EXPORT_SYMBOL(__memset)
- 
-+SYM_FUNC_ALIAS_WEAK(memset, __memset)
-+EXPORT_SYMBOL(memset)
-+
- /*
-  * ISO C memset - set a memory block to a byte value. This function uses
-  * enhanced rep stosb to override the fast string function.
-diff --git a/tools/perf/util/include/linux/linkage.h b/tools/perf/util/include/linux/linkage.h
-index 5acf053fca7d4..b8edb5059bd6d 100644
---- a/tools/perf/util/include/linux/linkage.h
-+++ b/tools/perf/util/include/linux/linkage.h
-@@ -32,59 +32,59 @@
- 
- /* === generic annotations === */
- 
-+#ifndef SYM_ENTRY_AT
-+#define SYM_ENTRY_AT(name, location, linkage)		\
-+	linkage(name) ASM_NL				\
-+	.set .L____sym_entry__##name, location ASM_NL	\
-+	.set name, location ASM_NL
-+#endif
-+
- /* SYM_ENTRY -- use only if you have to for non-paired symbols */
- #ifndef SYM_ENTRY
- #define SYM_ENTRY(name, linkage, align...)		\
--	linkage(name) ASM_NL				\
- 	align ASM_NL					\
--	name:
-+	SYM_ENTRY_AT(name, ., linkage)
-+#endif
-+
-+/* SYM_START_AT -- use only if you have to */
-+#ifndef SYM_START_AT
-+#define SYM_START_AT(name, location, linkage)		\
-+	SYM_ENTRY_AT(name, location, linkage)
- #endif
- 
- /* SYM_START -- use only if you have to */
- #ifndef SYM_START
- #define SYM_START(name, linkage, align...)		\
--	SYM_ENTRY(name, linkage, align)
-+	align ASM_NL					\
-+	SYM_START_AT(name, ., linkage)
- #endif
- 
--/* SYM_END -- use only if you have to */
--#ifndef SYM_END
--#define SYM_END(name, sym_type)				\
-+/* SYM_END_AT -- use only if you have to */
-+#ifndef SYM_END_AT
-+#define SYM_END_AT(name, location, sym_type)		\
- 	.type name sym_type ASM_NL			\
--	.size name, .-name
-+	.set .L____sym_end__##name, location ASM_NL	\
-+	.size name, location-name ASM_NL
- #endif
- 
--/*
-- * SYM_FUNC_START_ALIAS -- use where there are two global names for one
-- * function
-- */
--#ifndef SYM_FUNC_START_ALIAS
--#define SYM_FUNC_START_ALIAS(name)			\
--	SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)
-+/* SYM_END -- use only if you have to */
-+#ifndef SYM_END
-+#define SYM_END(name, sym_type)				\
-+	SYM_END_AT(name, ., sym_type)
- #endif
- 
- /* SYM_FUNC_START -- use for global functions */
- #ifndef SYM_FUNC_START
--/*
-- * The same as SYM_FUNC_START_ALIAS, but we will need to distinguish these two
-- * later.
-- */
- #define SYM_FUNC_START(name)				\
- 	SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)
- #endif
- 
- /* SYM_FUNC_START_LOCAL -- use for local functions */
- #ifndef SYM_FUNC_START_LOCAL
--/* the same as SYM_FUNC_START_LOCAL_ALIAS, see comment near SYM_FUNC_START */
- #define SYM_FUNC_START_LOCAL(name)			\
- 	SYM_START(name, SYM_L_LOCAL, SYM_A_ALIGN)
- #endif
- 
--/* SYM_FUNC_END_ALIAS -- the end of LOCAL_ALIASed or ALIASed function */
--#ifndef SYM_FUNC_END_ALIAS
--#define SYM_FUNC_END_ALIAS(name)			\
--	SYM_END(name, SYM_T_FUNC)
--#endif
--
- /* SYM_FUNC_START_WEAK -- use for weak functions */
- #ifndef SYM_FUNC_START_WEAK
- #define SYM_FUNC_START_WEAK(name)			\
-@@ -96,9 +96,35 @@
-  * SYM_FUNC_START_WEAK, ...
-  */
- #ifndef SYM_FUNC_END
--/* the same as SYM_FUNC_END_ALIAS, see comment near SYM_FUNC_START */
- #define SYM_FUNC_END(name)				\
- 	SYM_END(name, SYM_T_FUNC)
- #endif
- 
--#endif	/* PERF_LINUX_LINKAGE_H_ */
-+/*
-+ * SYM_FUNC_ALIAS_LOCAL -- define a local alias for an existing function
-+ */
-+#ifndef SYM_FUNC_ALIAS_LOCAL
-+#define SYM_FUNC_ALIAS_LOCAL(alias, name)				\
-+	SYM_START_AT(alias, .L____sym_entry__##name, SYM_L_LOCAL)	\
-+	SYM_END_AT(alias, .L____sym_end__##name, SYM_T_FUNC)
-+#endif
-+
-+/*
-+ * SYM_FUNC_ALIAS -- define a global alias for an existing function
-+ */
-+#ifndef SYM_FUNC_ALIAS
-+#define SYM_FUNC_ALIAS(alias, name)					\
-+	SYM_START_AT(alias, .L____sym_entry__##name, SYM_L_GLOBAL)	\
-+	SYM_END_AT(alias, .L____sym_end__##name, SYM_T_FUNC)
-+#endif
-+
-+/*
-+ * SYM_FUNC_ALIAS_WEAK -- define a weak global alias for an existing function
-+ */
-+#ifndef SYM_FUNC_ALIAS_WEAK
-+#define SYM_FUNC_ALIAS_WEAK(alias, name)				\
-+	SYM_START_AT(alias, .L____sym_entry__##name, SYM_L_WEAK)	\
-+	SYM_END_AT(alias, .L____sym_end__##name, SYM_T_FUNC)
-+#endif
-+
-+#endif /* PERF_LINUX_LINKAGE_H */
--- 
-2.30.2
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
