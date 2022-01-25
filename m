@@ -2,109 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3800AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F180C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442702AbiAYHKj (ORCPT
+        id S1442777AbiAYHKz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:10:39 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:54032 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442405AbiAYHIP (ORCPT
+        Tue, 25 Jan 2022 02:10:55 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:17805 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377695AbiAYHIY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:08:15 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BFE87CE1764;
-        Tue, 25 Jan 2022 07:07:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D93C340E6;
-        Tue, 25 Jan 2022 07:07:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643094477;
-        bh=u4sZb43o6v9pvDvs7BsPPpiWoB/VBKMPiOOl3tPLaEs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=GftWM3c1oIqLFALD23owKTErEZfdczcMT8uVPxGLP1FOkBmR1KtCfQlDYB8d6riL8
-         DPO4fVeV5rN4oKIV/NGuFFriOPq0d9MNMXrycCIeRnZtIDSC888/FqYqeJAd1loBtA
-         hXx+UyrWJRWu5z0Liq3idU4Acw4Krc4kyOXxUymIUCtW2CeSt/my0j5CtcpE11hz82
-         efA+jIDbZ5nwan6om754XfkbxhyZ1x7WanhNeGUoHS6K4izmm/GuBYsh/FFkJyAM+d
-         4eJsnOwPf+hR2epbDvchWReD02znUZ4KI+EtbSobJIn5nlYbvmni6AuNhx6MRAVv3e
-         3cd7v/zi0KY/A==
-Received: by mail-yb1-f169.google.com with SMTP id r65so55267861ybc.11;
-        Mon, 24 Jan 2022 23:07:57 -0800 (PST)
-X-Gm-Message-State: AOAM532Eymuk8g76qQJeJ6llUNBNDzuA8/8PA7ajb2YILHgMD/VEIpmI
-        9+2GPoYApt17FypcDiJAlIx31dcZcOAgMwd6Ajk=
-X-Google-Smtp-Source: ABdhPJxhRopogeep+UB2H+4fwzAnBfxW+obMKHyynYJuQjl+/u9U0011KEHGoECdFaAAZ+09H1f4CSH4mTvEV+mXA4s=
-X-Received: by 2002:a25:fd6:: with SMTP id 205mr29018898ybp.654.1643094475930;
- Mon, 24 Jan 2022 23:07:55 -0800 (PST)
+        Tue, 25 Jan 2022 02:08:24 -0500
+Received: from kwepemi500003.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JjdFf65y5z9sS2;
+        Tue, 25 Jan 2022 15:07:02 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi500003.china.huawei.com (7.221.188.51) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 15:08:21 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 15:08:21 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net] net: hns3: handle empty unknown interrupt for VF
+Date:   Tue, 25 Jan 2022 15:03:12 +0800
+Message-ID: <20220125070312.53945-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <CA+khW7gh=vO8m-_SVnwWwj7kv+EDeUPcuWFqebf2Zmi9T_oEAQ@mail.gmail.com>
-In-Reply-To: <CA+khW7gh=vO8m-_SVnwWwj7kv+EDeUPcuWFqebf2Zmi9T_oEAQ@mail.gmail.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 24 Jan 2022 23:07:45 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW7F4KritXPXixoPSw4zbCsqpfZaYBuw5BgD+KKXaoeGxg@mail.gmail.com>
-Message-ID: <CAPhsuW7F4KritXPXixoPSw4zbCsqpfZaYBuw5BgD+KKXaoeGxg@mail.gmail.com>
-Subject: Re: [Question] How to reliably get BuildIDs from bpf prog
-To:     Hao Luo <haoluo@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Blake Jones <blakejones@google.com>,
-        Alexey Alexandrov <aalexand@google.com>,
-        Namhyung Kim <namhyung@google.com>,
-        Ian Rogers <irogers@google.com>,
-        "pasha.tatashin@soleen.com" <pasha.tatashin@soleen.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 2:43 PM Hao Luo <haoluo@google.com> wrote:
->
-> Dear BPF experts,
->
-> I'm working on collecting some kernel performance data using BPF
-> tracing prog. Our performance profiling team wants to associate the
-> data with user stack information. One of the requirements is to
-> reliably get BuildIDs from bpf_get_stackid() and other similar helpers
-> [1].
->
-> As part of an early investigation, we found that there are a couple
-> issues that make bpf_get_stackid() much less reliable than we'd like
-> for our use:
->
-> 1. The first page of many binaries (which contains the ELF headers and
-> thus the BuildID that we need) is often not in memory. The failure of
-> find_get_page() (called from build_id_parse()) is higher than we would
-> want.
+From: Yufeng Mo <moyufeng@huawei.com>
 
-Our top use case of bpf_get_stack() is called from NMI, so there isn't
-much we can do. Maybe it is possible to improve it by changing the
-layout of the binary and the libraries? Specifically, if the text is
-also in the first page, it is likely to stay in memory?
+Since some interrupt states may be cleared by hardware, the driver
+may receive an empty interrupt. Currently, the VF driver directly
+disables the vector0 interrupt in this case. As a result, the VF
+is unavailable. Therefore, the vector0 interrupt should be enabled
+in this case.
 
-> 2. When anonymous huge pages are used to hold some regions of process
-> text, build_id_parse() also fails to get a BuildID because
-> vma->vm_file is NULL.
+Fixes: b90fcc5bd904 ("net: hns3: add reset handling for VF when doing Core/Global/IMP reset")
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-How did the text get in anonymous memory? I guess it is NOT from JIT?
-We had a hack to use transparent huge page for application text. The
-hack looks like:
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 7df87610ad96..21442a9bb996 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -2043,8 +2043,7 @@ static irqreturn_t hclgevf_misc_irq_handle(int irq, void *data)
+ 		break;
+ 	}
+ 
+-	if (event_cause != HCLGEVF_VECTOR0_EVENT_OTHER)
+-		hclgevf_enable_vector(&hdev->misc_vector, true);
++	hclgevf_enable_vector(&hdev->misc_vector, true);
+ 
+ 	return IRQ_HANDLED;
+ }
+-- 
+2.33.0
 
-"At run time, the application creates an 8MB temporary buffer and the
-hot section of the executable memory is copied to it. The 8MB region in
-the executable memory is then converted to a huge page (by way of an
-mmap() to anonymous pages and an madvise() to create a huge page), the
-data is copied back to it, and it is made executable again using
-mprotect()."
-
-If your case is the same (or similar), it can probably be fixed with
-CONFIG_READ_ONLY_THP_FOR_FS, and modified user space.
-
-Thanks,
-Song
