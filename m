@@ -2,139 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE04C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233259AbiAYJk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:40:56 -0500
-Received: from mail-ej1-f41.google.com ([209.85.218.41]:43730 "EHLO
-        mail-ej1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574736AbiAYJge (ORCPT
+        id S234526AbiAYJrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 04:47:16 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:39002 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232545AbiAYJks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:36:34 -0500
-Received: by mail-ej1-f41.google.com with SMTP id d10so29228716eje.10;
-        Tue, 25 Jan 2022 01:36:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=uMgOw5Ryt+tazHG/W/vzY+daSEWrYBxAzR9U0mzM8Ek=;
-        b=K0eGI4nN2+HU40WjLBJrmoTJoSo8xv0UVVO2sY8jxGQGBRf/3W0Xvem3pUVisIPxkx
-         lZU4hsv0o0/uQNMFm/1x+SP5yCni2oaPVuVUdWqkuyKt4DmJ8PYRexEQDdkmTr99UVbO
-         WFVHjsiAswJ/EBq+XD67MjLRt7trC0SoiA2GjPLu8QGDtcLZcmQHWgMhThB6Qvz3dCDn
-         m5EoYE+TI63eQ4DELscudx5xlsts9fR28iXmOTGtQiBSbCL9Uu2l6GSpne9pPe+IfXYn
-         bCQ5XoM3Fz2ADp5jzo5fobnvF+ISaUQ+928BT5VTgK+GFnNQYOmWht3UjRP0hwdpd6CG
-         Ms9A==
-X-Gm-Message-State: AOAM531AhDoM1H0CnOcHrdrx3DtX6PyXm1lsptfqQ+rXWQTYghRt+kzY
-        Awv8sETQ8t0bQ8WsVgZ0na8=
-X-Google-Smtp-Source: ABdhPJxIz7O8IMWskiQQN+rGOnZHZD+Vb53T+XBFmHDCHMTYiFBVUtGgofNy58YXprt2a8qvDL7XZw==
-X-Received: by 2002:a17:907:6d11:: with SMTP id sa17mr15917404ejc.473.1643103389041;
-        Tue, 25 Jan 2022 01:36:29 -0800 (PST)
-Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id v23sm5967129ejy.177.2022.01.25.01.36.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 01:36:28 -0800 (PST)
-Message-ID: <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
-Date:   Tue, 25 Jan 2022 10:36:27 +0100
+        Tue, 25 Jan 2022 04:40:48 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C1C881F381;
+        Tue, 25 Jan 2022 09:40:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643103635;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wjLef+eHR65gSrHBUwJYgL8VczDBRD6PtowiaRp8cqg=;
+        b=V2hf9WhYVmPenYoQzKChrh0nsB0PQioiYNLQUrnwuWOtckSlBXL/PG4a22f0pShotdLkMh
+        6aLik9Bz/6cHPeoQFJzf1mU/8y7d+p/ux+CbSjg74DX0nb1yi1DMNGvVCyW0N43Kn5tSZG
+        Iw/b4UsRZwLkVzGUrno2xRJY8SXw8k8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643103635;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wjLef+eHR65gSrHBUwJYgL8VczDBRD6PtowiaRp8cqg=;
+        b=8GlYzYvBEcCCBr+9cTRi9mfPfMAd6QoqhINOtop7egkKKZxKCbFV7bo/SCV5bEPS6bhU8P
+        9R0/O75lzTPU2+Cg==
+Received: from g78 (unknown [10.163.24.90])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 00244A3B84;
+        Tue, 25 Jan 2022 09:40:34 +0000 (UTC)
+References: <20210912123429.GA25450@xsang-OptiPlex-9020>
+ <YT8HqsXsHFeMdDxS@yuki> <20210917121331.GA14905@quack2.suse.cz>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Richard Palethorpe <rpalethorpe@suse.de>
+To:     Jan Kara <jack@suse.cz>
+Cc:     Cyril Hrubis <chrubis@suse.cz>,
+        Miklos Szeredi <mszeredi@redhat.com>, lkp@intel.com,
+        Chi Wu <wuchi.zero@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, Jens Axboe <axboe@fb.com>,
+        lkp@lists.01.org, kernel test robot <oliver.sang@intel.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>, Tejun Heo <tj@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        ltp@lists.linux.it
+Subject: Re: [LTP] [mm/page]  ab19939a6a: ltp.msync04.fail
+Date:   Tue, 25 Jan 2022 09:27:30 +0000
+Reply-To: rpalethorpe@suse.de
+In-reply-to: <20210917121331.GA14905@quack2.suse.cz>
+Message-ID: <87o840xiel.fsf@suse.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
-Content-Language: en-US
-From:   Jiri Slaby <jirislaby@kernel.org>
-To:     Jon Hunter <jonathanh@nvidia.com>, wander@redhat.com
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-References: <20211029201402.428284-1-wander@redhat.com>
- <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
- <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
-In-Reply-To: <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25. 01. 22, 10:08, Jiri Slaby wrote:
-> On 25. 01. 22, 9:39, Jon Hunter wrote:
->>
->> On 29/10/2021 21:14, wander@redhat.com wrote:
->>> From: Wander Lairson Costa <wander@redhat.com>
->>>
->>> Note: I am using a small test app + driver located at [0] for the
->>> problem description. serco is a driver whose write function dispatches
->>> to the serial controller. sertest is a user-mode app that writes n bytes
->>> to the serial console using the serco driver.
-...
->>> Signed-off-by: Wander Lairson Costa <wander@redhat.com>
->>
->>
->> On the current mainline and -next branches, I have noticed that the
->> serial output on many of our Tegra boards is corrupted and so
->> parsing the serial output is failing.
->>
->> Before this change the serial console would appear as follows ...
->>
->> [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x411fd071]
->> [    0.000000] Linux version 5.16.0-rc6-00091-gadbfddc757ae 
->> (jonathanh@jonathanh-vm-01) (aarch64-linux-gnu-gcc (Linaro GCC 
->> 6.4-2017.08) 6.4.1 20170707, GNU ld (Linaro_Binutils-2017.08) 
->> 2.27.0.20161019) #15 SMP PREEMPT Tue Jan 25 00:15:25 PST 2022
->> [    0.000000] Machine model: NVIDIA Jetson TX1 Developer Kit
->>
->> And now I see ...
->>
->> [    0.000000] Booting Linux on physicalfd071]
->> [    0.000000] Linux version 5.16.0-rc6-athanh@j-linux-g017.08) 
->> Linaro_B20161019n 25 00:[    0.000000] Machine model: NVIDIA Jet[ 
->> 0.000000] efi: UEFI not found.
->> [    0.000000] NUMA: No NUMA configurati[    0.000000] NUMA: Faking a 
->> node at [m00000001[    0.000000] NUMA: NODE_DATA [mem 0x17[    
->> 0.000000] Zone ranges:
->>
->> Bisecting is pointing to this commit. Let me know if there are any
->> tests I can run. Otherwise we may need to disable this at least
->> for Tegra.
-> 
-> 
-> The test is bogus:
->          use_fifo = (up->capabilities & UART_CAP_FIFO) &&
->                  port->fifosize > 1 &&
->                  (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO)
-> 
-> FCR is write only. Reading it, one gets IIR contents.
+Hello,
 
-In particular, the test is checking whether there is no interrupt 
-pending (UART_FCR_ENABLE_FIFO == UART_IIR_NO_INT). So it oscillates 
-between use_fifo and not, depending on the interrupt state of the chip.
+Jan Kara <jack@suse.cz> writes:
 
-Could you change it into something like this:
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3396,7 +3396,7 @@ void serial8250_console_write(struct 
-uart_8250_port *up, const char *s,
+> On Mon 13-09-21 10:11:22, Cyril Hrubis wrote:
+>> Hi!
+>> > FYI, we noticed the following commit (built with gcc-9):
+>> > 
+>> > commit: ab19939a6a5010cba4e9cb04dd8bee03c72edcbd ("mm/page-writeback: Fix performance when BDI's share of ratio is 0.")
+>> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>> > 
+>> > 
+>> > in testcase: ltp
+>> > version: ltp-x86_64-14c1f76-1_20210907
+>> > with following parameters:
+>> > 
+>> > 	disk: 1HDD
+>> > 	fs: xfs
+>> > 	test: syscalls-03
+>> > 	ucode: 0xe2
+>> > 
+>> > test-description: The LTP testsuite contains a collection of tools for testing the Linux kernel and related features.
+>> > test-url: http://linux-test-project.github.io/
+>> 
+>> The msync04 test formats a device with a diffrent filesystems, for each
+>> filesystem it maps a file, writes to the mapped page and the checks a
+>> dirty bit in /proc/kpageflags before and after msync() on that page.
+>> 
+>> This seems to be broken after this patch for ntfs over FUSE and it looks
+>> like the page does not have a dirty bit set right after it has been
+>> written to.
+>> 
+>> Also I guess that we should increase the number of the pages we dirty or
+>> attempt to retry since a single page may be flushed to the storage if we
+>> are unlucky and the process is preempted between the write and the
+>> initial check for the dirty bit.
+>
+> Yes, I agree. The most likely explanation I see for this is that the
+> identified commit results in waking flush worker earlier so it may now
+> succeed in cleaning the page before get_dirty_bit() in the LTP testcase
+> manages to see it. This is a principial race in this testcase, you can
+> perhaps make it less likely but not completely fix it AFAICT.
+>
+> 								Honza
+> -- 
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
 
-         use_fifo = (up->capabilities & UART_CAP_FIFO) &&
-                 port->fifosize > 1 &&
--               (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
-+               (up->fcr & UART_FCR_ENABLE_FIFO) &&
-                 /*
-                  * After we put a data in the fifo, the controller will 
-send
-                  * it regardless of the CTS state. Therefore, only use fifo
+If the dirty bit is not set, then I guess dropping the pagecache will
+not write anything to the underlying storage?
 
+So when we see no dirty bit is set, we can drop the pagecache then read
+the file to check the value was written correctly? If so then we can
+exit with TCONF saying msync couldn't be tested because the storage was
+written to too quickly.
 
-And see whether it fixes the issue. Anyway, of what port type is the 
-serial port (what says dmesg/setserial about that)?
+Also I guess we can optimize the get_dirty_bit function. It's doing 3
+syscalls instead of 1 AFAICT.
 
-thanks,
 -- 
-js
-suse labs
+Thank you,
+Richard.
