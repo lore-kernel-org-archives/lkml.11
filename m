@@ -2,145 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 990E7C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA243C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1585773AbiAYQov (ORCPT
+        id S1585817AbiAYQpC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 11:44:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33454 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1585111AbiAYQl2 (ORCPT
+        Tue, 25 Jan 2022 11:45:02 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:23715 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346610AbiAYQg3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 11:41:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643128888;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GbY3XP61M3uD9sP2FFUZOwoizO9Z7SgKKtfr4x3BErc=;
-        b=JcuEmNEHhX3Lsr5Bq7eKJGS+nXPeuky2yjqW85AGn4JuG1ja8e0uP3Psy9i/mPA7HiTzV2
-        aqaMuqkhened1AL3gXHidVXGIjrCNgAdL3Qs6kbHKef6BEVUPsPEAgSGglMVEA75tNIeOC
-        TpD0R7Hx1gdasdxWYerojXLbO5SUVeo=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-300-PKz8F_BmM4KgvKXt6bWuLg-1; Tue, 25 Jan 2022 11:41:26 -0500
-X-MC-Unique: PKz8F_BmM4KgvKXt6bWuLg-1
-Received: by mail-ej1-f69.google.com with SMTP id v2-20020a1709062f0200b006a5f725efc1so3663436eji.23
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:41:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GbY3XP61M3uD9sP2FFUZOwoizO9Z7SgKKtfr4x3BErc=;
-        b=rgDSg9VFjG4zZxfz0Zlslf3SZlZq4sP0RvF2suL94Rq0Os6vKJfjoIdaAWb1XqzwwZ
-         8IldeL+aWTwlh7wmMFq+b3MrWZVruCddatTXxP4Gw/QTAmwgdvp6Fg0QIwDjYEYmIgC3
-         aPFELorDQB3euODta1A1NMP6HhIcdDkd4NCBA+u3x28lLhi/L5jDfpC/y/yUu/5eSTHp
-         kU/a7uIWfBHt7CzB+49A25LHJj5+hO+J1pksxn1cetn9FRUtMzNK6XwOvZqeZgnw4WUm
-         /In2wy7rS+GLX+f8LSMAPwNVZ9KCxkaydjzjJpP6e1T+OD/QRtsbbWrzBY+zuv4AH4qF
-         BPpg==
-X-Gm-Message-State: AOAM530opxOJ738lrI3R+05bC1q0U5UuECjDFcXvqEM+3GysvOTqAL2l
-        AfsiS3kln+oCc6R9C5r7tF5GoKOozftdvkOGf2p3Co8eoxXse4MhNEXoDVGAfaYxTykJ+fxVqHc
-        HcBTLBUh1tZcNbZJ/eeNxdwE8
-X-Received: by 2002:a17:907:3f29:: with SMTP id hq41mr6272871ejc.358.1643128884403;
-        Tue, 25 Jan 2022 08:41:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwg37J+bP3Vw6kcPaqHnw/mAqqdxblwP1MOYVrCrqDDNprj6rBqlub90ZLbiCa3i8cWgEnxKg==
-X-Received: by 2002:a17:907:3f29:: with SMTP id hq41mr6272861ejc.358.1643128884190;
-        Tue, 25 Jan 2022 08:41:24 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id a14sm8449020edx.96.2022.01.25.08.41.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 08:41:23 -0800 (PST)
-Date:   Tue, 25 Jan 2022 17:41:21 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v5 2/9] fprobe: Add ftrace based probe APIs
-Message-ID: <YfAoMW6i4gqw2Na0@krava>
-References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
- <164311271777.1933078.9066058105807126444.stgit@devnote2>
+        Tue, 25 Jan 2022 11:36:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643128588; x=1674664588;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=0WnV+EmPb8krky3QwTcyyzwQkQl+BhKbWAGWV4smPyc=;
+  b=vpfVJVu+lgJADXsRNAEROAPp5JNr06ci5m9H4ewteMbsUWuo98ICNeuO
+   vDrMQud3MwG4G1kTJyH1y1JJ/iPGISu0pVHUGhiKGvkX9qxh27Okkprn2
+   E43mgQ8LF5MTCtHiCVE7Hf40HAVGYGY3O31X+GRPi/yWu9+hdL5TFuyXr
+   w=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 25 Jan 2022 08:36:24 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 08:36:24 -0800
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 25 Jan 2022 08:36:24 -0800
+Received: from codeaurora.org (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 25 Jan
+ 2022 08:36:21 -0800
+From:   Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
+To:     Lukasz Luba <lukasz.luba@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Amit Kucheria" <amitk@kernel.org>, Zhang Rui <rui.zhang@intel.com>
+CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Manaf Meethalavalappu Pallikunhi" <quic_manafm@quicinc.com>
+Subject: [PATCH v4] drivers: thermal: clear all mitigation when thermal zone is disabled
+Date:   Tue, 25 Jan 2022 22:06:05 +0530
+Message-ID: <1643128565-22838-1-git-send-email-quic_manafm@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <164311271777.1933078.9066058105807126444.stgit@devnote2>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 09:11:57PM +0900, Masami Hiramatsu wrote:
+Whenever a thermal zone is in trip violated state, there is a chance
+that the same thermal zone mode can be disabled either via
+thermal core API or via thermal zone sysfs. Once it is disabled,
+the framework bails out any re-evaluation of thermal zone. It leads
+to a case where if it is already in mitigation state, it will stay
+the same state forever.
 
-SNIP
+To avoid above mentioned issue, add support to bind/unbind
+governor from thermal zone during thermal zone mode change request
+and clear all existing throttling in governor unbind_from_tz()
+callback.
 
-> +
-> +/* Convert ftrace location address from symbols */
-> +static int convert_func_addresses(struct fprobe *fp)
-> +{
-> +	unsigned long addr, size;
-> +	unsigned int i;
-> +
-> +	/* Convert symbols to symbol address */
-> +	if (fp->syms) {
-> +		fp->addrs = kcalloc(fp->nentry, sizeof(*fp->addrs), GFP_KERNEL);
-> +		if (!fp->addrs)
-> +			return -ENOMEM;
-> +
-> +		for (i = 0; i < fp->nentry; i++) {
-> +			fp->addrs[i] = kallsyms_lookup_name(fp->syms[i]);
-> +			if (!fp->addrs[i])	/* Maybe wrong symbol */
-> +				goto error;
-> +		}
-> +	}
-> +
-> +	/* Convert symbol address to ftrace location. */
-> +	for (i = 0; i < fp->nentry; i++) {
-> +		if (!kallsyms_lookup_size_offset(fp->addrs[i], &size, NULL))
-> +			size = MCOUNT_INSN_SIZE;
-> +		addr = ftrace_location_range(fp->addrs[i], fp->addrs[i] + size);
-
-you need to substract 1 from 'end' in here, as explained in
-__within_notrace_func comment:
-
-        /*
-         * Since ftrace_location_range() does inclusive range check, we need
-         * to subtract 1 byte from the end address.
-         */
-
-like in the patch below
-
-also this convert is for archs where address from kallsyms does not match
-the real attach addresss, like for arm you mentioned earlier, right?
-
-could we have that arch specific, so we don't have extra heavy search
-loop for archs that do not need it?
-
-thanks,
-jirka
-
-
+Suggested-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
 ---
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index 4d089dda89c2..7970418820e7 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -91,7 +91,7 @@ static int convert_func_addresses(struct fprobe *fp)
- 	for (i = 0; i < fp->nentry; i++) {
- 		if (!kallsyms_lookup_size_offset(fp->addrs[i], &size, NULL))
- 			size = MCOUNT_INSN_SIZE;
--		addr = ftrace_location_range(fp->addrs[i], fp->addrs[i] + size);
-+		addr = ftrace_location_range(fp->addrs[i], fp->addrs[i] + size - 1);
- 		if (!addr) /* No dynamic ftrace there. */
- 			goto error;
- 		fp->addrs[i] = addr;
+ drivers/thermal/gov_power_allocator.c |  3 +++
+ drivers/thermal/gov_step_wise.c       | 26 ++++++++++++++++++++++++++
+ drivers/thermal/thermal_core.c        | 31 +++++++++++++++++++++++++++----
+ 3 files changed, 56 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/thermal/gov_power_allocator.c b/drivers/thermal/gov_power_allocator.c
+index 13e3757..9ff0c5f 100644
+--- a/drivers/thermal/gov_power_allocator.c
++++ b/drivers/thermal/gov_power_allocator.c
+@@ -696,6 +696,9 @@ static void power_allocator_unbind(struct thermal_zone_device *tz)
+ 
+ 	dev_dbg(&tz->device, "Unbinding from thermal zone %d\n", tz->id);
+ 
++	tz->passive = 0;
++	allow_maximum_power(tz, true);
++
+ 	if (params->allocated_tzp) {
+ 		kfree(tz->tzp);
+ 		tz->tzp = NULL;
+diff --git a/drivers/thermal/gov_step_wise.c b/drivers/thermal/gov_step_wise.c
+index 12acb12..2132c14 100644
+--- a/drivers/thermal/gov_step_wise.c
++++ b/drivers/thermal/gov_step_wise.c
+@@ -168,6 +168,31 @@ static void thermal_zone_trip_update(struct thermal_zone_device *tz, int trip)
+ }
+ 
+ /**
++ * step_wise_unbind() - unbind the step_wise governor to a thermal zone
++ * @tz:	thermal zone to unbind it to
++ *
++ * Clear all previous throttling and reset passive counter.
++ *
++ */
++static void step_wise_unbind(struct thermal_zone_device *tz)
++{
++	struct thermal_instance *instance;
++
++	dev_dbg(&tz->device, "Unbinding from thermal zone %d\n", tz->id);
++
++	mutex_lock(&tz->lock);
++	tz->passive = 0;
++	list_for_each_entry(instance, &tz->thermal_instances, tz_node) {
++		instance->initialized = false;
++		instance->target = THERMAL_NO_TARGET;
++		mutex_lock(&instance->cdev->lock);
++		 __thermal_cdev_update(instance->cdev);
++		mutex_unlock(&instance->cdev->lock);
++	}
++	mutex_unlock(&tz->lock);
++}
++
++/**
+  * step_wise_throttle - throttles devices associated with the given zone
+  * @tz: thermal_zone_device
+  * @trip: trip point index
+@@ -196,6 +221,7 @@ static int step_wise_throttle(struct thermal_zone_device *tz, int trip)
+ 
+ static struct thermal_governor thermal_gov_step_wise = {
+ 	.name		= "step_wise",
++	.unbind_from_tz	= step_wise_unbind,
+ 	.throttle	= step_wise_throttle,
+ };
+ THERMAL_GOVERNOR_DECLARE(thermal_gov_step_wise);
+diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+index 1389174..9828eb3 100644
+--- a/drivers/thermal/thermal_core.c
++++ b/drivers/thermal/thermal_core.c
+@@ -274,6 +274,26 @@ static int __init thermal_register_governors(void)
+ 	return ret;
+ }
+ 
++static void thermal_governor_attach(struct thermal_zone_device *tz)
++{
++	mutex_lock(&thermal_governor_lock);
++	if (tz->governor && tz->governor->bind_to_tz) {
++		if (tz->governor->bind_to_tz(tz))
++			dev_err(&tz->device,
++				"governor %s failed to bind to thermal zone %s\n",
++				tz->governor->name, tz->type);
++	}
++	mutex_unlock(&thermal_governor_lock);
++}
++
++static void thermal_governor_detach(struct thermal_zone_device *tz)
++{
++	mutex_lock(&thermal_governor_lock);
++	if (tz->governor && tz->governor->unbind_from_tz)
++		tz->governor->unbind_from_tz(tz);
++	mutex_unlock(&thermal_governor_lock);
++}
++
+ /*
+  * Zone update section: main control loop applied to each zone while monitoring
+  *
+@@ -447,12 +467,15 @@ static int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
+ 
+ 	mutex_unlock(&tz->lock);
+ 
+-	thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
+-
+-	if (mode == THERMAL_DEVICE_ENABLED)
++	if (mode == THERMAL_DEVICE_ENABLED) {
++		thermal_governor_attach(tz);
++		thermal_zone_device_init(tz);
++		thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
+ 		thermal_notify_tz_enable(tz->id);
+-	else
++	} else {
++		thermal_governor_detach(tz);
+ 		thermal_notify_tz_disable(tz->id);
++	}
+ 
+ 	return ret;
+ }
