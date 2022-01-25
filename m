@@ -2,74 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8140CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF4DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1318684AbiAYDGw (ORCPT
+        id S1318743AbiAYDHA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:06:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57398 "EHLO
+        Mon, 24 Jan 2022 22:07:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3416067AbiAYBy3 (ORCPT
+        with ESMTP id S1346119AbiAYB6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 20:54:29 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 343C0C02B86A
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:12:58 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id p37so17792912pfh.4
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:12:58 -0800 (PST)
+        Mon, 24 Jan 2022 20:58:35 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CE7C06179A
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:50:57 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id i62so6225838ioa.1
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:50:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=juHcihMU504MExcTZ9GLv7lBDDM16Zik+9Orkm7/GTI=;
-        b=KLwkpP+q4x5XMX/jnXWG3fY+/0wY1bYlCFIKbH4s9Ms/2M408GBXQ2AcIrtmLJIexK
-         gy8nus3KU7jtyyF/v6Deesi8D9c04gizslrKQjDEX7dQ8djYZiggvQTzTnnY9KXar2Uq
-         FQeNgv19sV7EDKZOY1bib1xVAp/EzNza19DPpCIA7sfPZV4LqmFC472e9s9KhNnKCeQ4
-         RazQQK+ObmTTJbYg9ZR/nq01NuaQ80znKxvBwJOZRNz9qaL4EalZK88mQeS7yyZqKXlO
-         ohA/9RoRh6+5yU9Sen01iwVfvzw1wzie3LXuBfdXmiX62jhYsk5u30YFdd3kZtV/sQvU
-         FVEA==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/1d1kaM+wY9koZYobUo0XrdU4rdHnsKv0hB2d3Y2iLo=;
+        b=ULrPj7FtDkx8HUFfClmDZrlERjdr03KjuRzkVS24IWs5Cslv0HY+ht853cAenMwKLd
+         s2HXWoG3LzazlqsZSc3b6UmKiJLDpoNmYqKFDWfXxOhRwy9SwVh/b9mYGmULF5+/G5kr
+         7BvPj312ch4JtZmc9kh09e3dl1EQo3qQ64u7A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=juHcihMU504MExcTZ9GLv7lBDDM16Zik+9Orkm7/GTI=;
-        b=4gidiXZCaHNuayRaNHl8ff6pKL6Y+wzamqBvL2tsr5JJeOhXj8cVwEI5PtVcNW5xq6
-         ma6csdVIj+Wc/EdlIwhWT6uXmq0tLH5Jofwh7cQAGKdIidmhPI7Jyk5L2tTzHiYmVyJ+
-         6nOA6TEhwSVLo4kNi3TtG25cbKLU+5q0jgMneDp9lpF+STgBFibi/vsz1LKjJZfUexxH
-         on0kJixIdyq3wakavK1VkJOx25SmzIUxSpGqhQ6YrcFsnEUHCTe+eSkWrxKHK/AjGLP+
-         2aBLUnfAp11ltpBsGOo8ysJd+WiaXJPjCpc2ZE66AR464aGk3vhCup1I4In+B1Poyw3Z
-         HhqA==
-X-Gm-Message-State: AOAM5322Mx6D8RcIFrJnLF2/mjgfsx8EtdyUcDVUiocuXzC3Oii0PAns
-        wb0s9ov6dGR5ZD5lxhpFXNtFj9vj+ej9RXqFAaX3RXPWQNk=
-X-Google-Smtp-Source: ABdhPJy6/hRB7xHzNbOoBC98EAuozrsI80oV9sSX1lfyCFZZVO0quV4pwoKzg8R+7D+Iw/5WcQm0rBLgCkuROG0JD7o=
-X-Received: by 2002:a63:6b44:: with SMTP id g65mr13597344pgc.175.1643073177245;
- Mon, 24 Jan 2022 17:12:57 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=/1d1kaM+wY9koZYobUo0XrdU4rdHnsKv0hB2d3Y2iLo=;
+        b=GfnjxlHuuAvqMBdNZq9pMvqvJdBIMoUMdW8r39xQm6GTrLPMLe4xyGJYcWgaEQvwXl
+         J6dEbEvltx/eC+yVbJEwSOEKPlN5LbvmkKdj7ZzmhtbZwshHjhFkR7dzVZjiUv7BskB7
+         KJ239FM9fHsAUjrbtrW904yUA/whfKH0X1xoG02v8JBRnmV4qUOPWV+lcsTpm198YrYZ
+         t6/dT63YEuvsj4vqZKCyb6R4sPhqLfPUPWz6i9YHzqDhxZZebl2+x1RKWUi6wuWxWzoh
+         lJbVxeU/4fw4OAunxcGoiPQ+F7krOycH9pwFbeBS/0A3jrJjLX4U2CzUG9tyb3JP3e9k
+         C5Ag==
+X-Gm-Message-State: AOAM533izTMTFDFXVvfr32ttNM8gVVLl4+xZ5uSEV3GesqU8v9d98bTm
+        XNillHei+kyQtM9PlzCf8kQCMg==
+X-Google-Smtp-Source: ABdhPJxHW5JydOSiC9Ml0dy6dX/xJijg6+C7Uy1XiIffHE+NGmEm7LEPvoGkysvQF4/ZsxSlfaZOSw==
+X-Received: by 2002:a02:b10b:: with SMTP id r11mr7684802jah.14.1643075457219;
+        Mon, 24 Jan 2022 17:50:57 -0800 (PST)
+Received: from ?IPv6:2601:282:8200:4c:b48b:eb27:e282:37fe? ([2601:282:8200:4c:b48b:eb27:e282:37fe])
+        by smtp.gmail.com with ESMTPSA id k14sm8446572ilv.74.2022.01.24.17.50.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 17:50:56 -0800 (PST)
+Subject: Re: [PATCH 4.9 000/157] 4.9.298-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
+References: <20220124183932.787526760@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <647b943e-48b7-fbe2-fae5-3729d68c8e2f@linuxfoundation.org>
+Date:   Mon, 24 Jan 2022 18:50:52 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20220105031242.287751-1-dustin@howett.net> <Ye8RaQcIuR6kpaYj@google.com>
-In-Reply-To: <Ye8RaQcIuR6kpaYj@google.com>
-From:   Tzung-Bi Shih <tzungbi@google.com>
-Date:   Tue, 25 Jan 2022 09:12:46 +0800
-Message-ID: <CA+Px+wV8Ygz3n=4TtX1F6YB3Gcz8amNmotru09ftn9w776nDuA@mail.gmail.com>
-Subject: Re: [PATCH 0/2] platform/chrome: Add support for the Framework Laptop
-To:     Benson Leung <bleung@google.com>
-Cc:     "Dustin L. Howett" <dustin@howett.net>,
-        linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Benson,
+On 1/24/22 11:41 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.298 release.
+> There are 157 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.298-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-On Tue, Jan 25, 2022 at 4:52 AM Benson Leung <bleung@google.com> wrote:
-> Tzung-Bi, could you help take a look at Dustin's series?
+Compiled and booted on my test system. No dmesg regressions.
 
-Pardon me, I didn't subscribe LKML due to it is too noisy.  Could you
-also forward the 2 patches?
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-I will try some magic
-(https://chromium.googlesource.com/chromiumos/docs/+/HEAD/kernel_development.md#Downloading-a-patch-from-patchwork-into-IMAP)
-to get the mail thread.  And subscribe LKML to get further patch
-series.
+thanks,
+-- Shuah
