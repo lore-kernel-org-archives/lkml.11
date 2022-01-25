@@ -2,121 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:55:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B32EBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:04:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385939AbiAYGzD (ORCPT
+        id S1376671AbiAYHEQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:55:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
+        Tue, 25 Jan 2022 02:04:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376960AbiAYGwE (ORCPT
+        with ESMTP id S248970AbiAYEDM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 01:52:04 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568CCC0419D2;
-        Mon, 24 Jan 2022 21:21:40 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id h12so18743179pjq.3;
-        Mon, 24 Jan 2022 21:21:40 -0800 (PST)
+        Mon, 24 Jan 2022 23:03:12 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C0FC061394
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 16:41:46 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id s61-20020a17090a69c300b001b4d0427ea2so607031pjj.4
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 16:41:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2JyjXhsZHrYi9l/DoJTaQgjCKN4lD5LnNO41dT9vNks=;
-        b=SeWhln3X4+SoMhpZU+pjXcqQ0y1Pm6fDTjhiHF8opWSSWcMpymGPTTmwhedeVyuIYm
-         BrIMDsEOvf8qdVKDWkOsTi0XxDM9CaPQVPQiAa3CM5C5CcitkQYVp1EQSHTdy14vRuRp
-         mN3ybN6shHshovx9QBMN25j03uj04XQT+qmLS8+7LeoBXPCI4YNNk2dGP7w1yjb1reho
-         +kFWHLmEeryjmpwEG43M0dn2Qkx0YopIIELYZBVk6DcQGmHlJnW6ZTkjlqQg1PTfQTim
-         5RMVR3Hu7kBCV/SyNTy0zBXkFY3DCREvTgWlkkDZJU0/JxmqQHQXRZoBfPW2Ivgm9VIb
-         fnWw==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=NefrKzx5OHKKvYYf1TiO3FvEJzN+eja5s5Q735QU1F0=;
+        b=hQBTs3rPEaX5QpMhGJN0sQ1KIvn0GCl7Ol7ejuwTF4A8bAYknvdCviHNLZ2J7WURPU
+         7J411kY6kdxD5njmZAbInNsypAC/jukuL/Fc1TU+7ByEu7bsLqZl1iU4XEat6Vrfk4wi
+         EHHMLFDJS5km0IEUXAO9Mty8aOqT4FF8MxUbD01sNJaQ3fiFgKVwWa/2dFfdEC9VMauL
+         eEZmOUYJITLEQDTN8XjGXbgfTWn9erMQxRhNaAofRKQmFxar0KImFrYedGHcE+WElgfO
+         z78aBat3R2A7j99osBhvSALy6qYnr/XDCeQp+b3zBjJ6ANjLScbli0FpYKg0a00VboQK
+         b34g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2JyjXhsZHrYi9l/DoJTaQgjCKN4lD5LnNO41dT9vNks=;
-        b=rxE2HwACPRLcpepLfkc9RxslZ+T28wt4mpxuOphr3nntZWwB/BDNpzxIuKHqwZ9v6t
-         664zpX/+PgcxKQNGqRFf4MKycHWWGEqBz6iDn0fA6vOpyCEZW9R7wtGT47A6ndl3PH+Q
-         LzZE9+1qZwpMT51T5FermIq3otJTVpo/u7W04p5Ak8xppw8lMT/PGKYM9g8917Qt9xv0
-         5/evKnGIp4QwsKiqAPbx6dVKAST8Pam9d6VpkvFMMzdJRYZLs58ueeaidCypPRAtJs8R
-         AY0qbdJrnuM9ejnbQaPGe55q7MuZGpdAI2G5jKesWUtq3YBLZcjsa6ye+l8LTSalam2N
-         jizw==
-X-Gm-Message-State: AOAM532d14Ymb4jUWzvFF9eKX6Vx9MqzLBbzbe6H+d81DSSqJ7uMr04E
-        eO/Ee3JfkGik8kAhG5hyDFk/tgMEGwzGk7HqXt4=
-X-Google-Smtp-Source: ABdhPJzhmi79JGKGRPuYnoxbQJpn2/dNIGOqCLfn+2p6JavciXjFEjoRJ2CYqqHW7AIvi8+sKVxt6L+HkH/sflr3dGs=
-X-Received: by 2002:a17:90b:3b4c:: with SMTP id ot12mr1826113pjb.62.1643088099826;
- Mon, 24 Jan 2022 21:21:39 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=NefrKzx5OHKKvYYf1TiO3FvEJzN+eja5s5Q735QU1F0=;
+        b=7x/5xW1FUYfnFjAY41Sl01UQ3VNgu73Oa98T2M8UYvPRu/h3zDxVEPQhyYhtcBOK7c
+         U3U2tEFwTjpZq8T2dXe3/ch0urV8PtJBHoSM2OrtUCA+ql8+GXF5zXQc3BisBpjbOsam
+         G57DMMFuJxxKoc7GFQXxE5/ST+WqGBoyfk8rX3JFmkzN8MtYcFSOdqcRvnOgP9+EWExi
+         tOXP65TO0pHxlB4uZayr8VkfrNBkLjrbAUjSShYqWWln3h9xODfTjBmW4AVUmUsak5DI
+         8A326qBv73RDiZWG0P6kDy6FwjTQMvh+6TB1G+4wPFO9aIoJZdJizaMOcxlpMYgL+kd/
+         UR1Q==
+X-Gm-Message-State: AOAM530TWupD0LVkJ+/K7OoHyVVPqEt7vJ+G9JqPo7chn96STHOEeTpX
+        rwXYJ1Wi+WMhE9y7gKEVTsT8NQ==
+X-Google-Smtp-Source: ABdhPJzY2YXYLCkrS4vtJeyIT+l3DZOSE+RZqG87uCqApw6tGl6rk3GXgFX62r1zW7xY1DkqAl2eMA==
+X-Received: by 2002:a17:902:e88a:b0:14b:3aa4:4d17 with SMTP id w10-20020a170902e88a00b0014b3aa44d17mr9876178plg.160.1643071305403;
+        Mon, 24 Jan 2022 16:41:45 -0800 (PST)
+Received: from [2620:15c:29:204:1f99:bd65:fcbb:146c] ([2620:15c:29:204:1f99:bd65:fcbb:146c])
+        by smtp.gmail.com with ESMTPSA id me4sm471426pjb.26.2022.01.24.16.41.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 16:41:44 -0800 (PST)
+Date:   Mon, 24 Jan 2022 16:41:43 -0800 (PST)
+From:   David Rientjes <rientjes@google.com>
+To:     Zi Yan <ziy@nvidia.com>
+cc:     Muchun Song <songmuchun@bytedance.com>, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        Lars Persson <lars.persson@axis.com>
+Subject: Re: [PATCH v2 2/2] mm: fix missing cache flush for all tail pages
+ of THP
+In-Reply-To: <5D9B52E1-A74B-4964-AACF-ADB91536C4C0@nvidia.com>
+Message-ID: <91608087-a650-bf1c-a225-7afd63adf63d@google.com>
+References: <20220124051752.83281-1-songmuchun@bytedance.com> <20220124051752.83281-2-songmuchun@bytedance.com> <4d5044e7-cac9-b6e6-1467-59ea6010b0f5@google.com> <5D9B52E1-A74B-4964-AACF-ADB91536C4C0@nvidia.com>
 MIME-Version: 1.0
-References: <20220121194926.1970172-1-song@kernel.org> <20220121194926.1970172-7-song@kernel.org>
- <CAADnVQK6+gWTUDo2z1H6AE5_DtuBBetW+VTwwKz03tpVdfuoHA@mail.gmail.com>
- <7393B983-3295-4B14-9528-B7BD04A82709@fb.com> <CAADnVQJLHXaU7tUJN=EM-Nt28xtu4vw9+Ox_uQsjh-E-4VNKoA@mail.gmail.com>
- <5407DA0E-C0F8-4DA9-B407-3DE657301BB2@fb.com> <CAADnVQLOpgGG9qfR4EAgzrdMrfSg9ftCY=9psR46GeBWP7aDvQ@mail.gmail.com>
- <5F4DEFB2-5F5A-4703-B5E5-BBCE05CD3651@fb.com> <CAADnVQLXGu_eF8VT6NmxKVxOHmfx7C=mWmmWF8KmsjFXg6P5OA@mail.gmail.com>
- <5E70BF53-E3FB-4F7A-B55D-199C54A8FDCA@fb.com> <adec88f9-b3e6-bfe4-c09e-54825a60f45d@linux.ibm.com>
- <2AAC8B8C-96F1-400F-AFA6-D4AF41EC82F4@fb.com>
-In-Reply-To: <2AAC8B8C-96F1-400F-AFA6-D4AF41EC82F4@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 24 Jan 2022 21:21:28 -0800
-Message-ID: <CAADnVQKgdMMeONmjUhbq_3X39t9HNQWteDuyWVfcxmTerTnaMw@mail.gmail.com>
-Subject: Re: [PATCH v6 bpf-next 6/7] bpf: introduce bpf_prog_pack allocator
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Ilya Leoshkevich <iii@linux.ibm.com>, Song Liu <song@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="447496086-858381783-1643071304=:26091"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 10:27 AM Song Liu <songliubraving@fb.com> wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--447496086-858381783-1643071304=:26091
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Mon, 24 Jan 2022, Zi Yan wrote:
+
+> >> The D-cache maintenance inside move_to_new_page() only consider one page,
+> >> there is still D-cache maintenance issue for tail pages of THP. Fix this
+> >> by not using flush_dcache_folio() since it is not backportable.
+> >>
 > >
-> > Are arches expected to allocate rw buffers in different ways? If not,
-> > I would consider putting this into the common code as well. Then
-> > arch-specific code would do something like
-> >
-> >  header = bpf_jit_binary_alloc_pack(size, &prg_buf, &prg_addr, ...);
-> >  ...
-> >  /*
-> >   * Generate code into prg_buf, the code should assume that its first
-> >   * byte is located at prg_addr.
-> >   */
-> >  ...
-> >  bpf_jit_binary_finalize_pack(header, prg_buf);
-> >
-> > where bpf_jit_binary_finalize_pack() would copy prg_buf to header and
-> > free it.
+> > The mention of being backportable suggests that we should backport this,
+> > likely to 4.14+.  So should it be marked as stable?
+> 
+> Hmm, after more digging, I am not sure if the bug exists. For THP migration,
+> flush_cache_range() is used in remove_migration_pmd(). The flush_dcache_page()
+> was added by Lars Persson (cc’d) to solve the data corruption on MIPS[1],
+> but THP migration is only enabled on x86_64, PPC_BOOK3S_64, and ARM64.
+> 
+> To make code more consistent, I guess flush_cache_range() in remove_migration_pmd()
+> can be removed, since it is superseded by the flush_dcache_page() below.
+> 
+> The Fixes can be dropped. Let me know if I miss anything.
+> 
 
-It feels right, but bpf_jit_binary_finalize_pack() sounds 100% arch
-dependent. The only thing it will do is perform a copy via text_poke.
-What else?
-
-> I think this should work.
->
-> We will need an API like: bpf_arch_text_copy, which uses text_poke_copy()
-> for x86_64 and s390_kernel_write() for x390. We will use bpf_arch_text_copy
-> to
->   1) write header->size;
->   2) do finally copy in bpf_jit_binary_finalize_pack().
-
-we can combine all text_poke operations into one.
-
-Can we add an 'image' pointer into struct bpf_binary_header ?
-Then do:
-int bpf_jit_binary_alloc_pack(size, &ro_hdr, &rw_hdr);
-
-ro_hdr->image would be the address used to compute offsets by JIT.
-rw_hdr->image would point to kvmalloc-ed area for emitting insns.
-rw_hdr->size would already be populated.
-
-The JITs would write insns into rw_hdr->image including 'int 3' insns.
-At the end the JIT will do text_poke_copy(ro_hdr, rw_hdr, rw_hdr->size);
-That would be the only copy that will transfer everything into final
-location.
-Then kvfree(rw_hdr)
-
-wdyt?
+Yeah, I don't think the Fixes needs to exist here because there doesn't 
+appear to be an issue today.  We likely need to choose one of the two 
+paths from above to handle the flush only in a single place.
+--447496086-858381783-1643071304=:26091--
