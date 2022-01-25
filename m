@@ -2,83 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A90C5AC75
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 23:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A49FAC5AC75
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 23:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234929AbiAYXjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 18:39:35 -0500
-Received: from gate.crashing.org ([63.228.1.57]:54754 "EHLO gate.crashing.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234898AbiAYXjb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 18:39:31 -0500
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 20PNVUiB032739;
-        Tue, 25 Jan 2022 17:31:30 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 20PNVSKH032738;
-        Tue, 25 Jan 2022 17:31:28 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Tue, 25 Jan 2022 17:31:28 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        x86@kernel.org, llvm@lists.linux.dev, linux-sparse@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: [PATCH] objtool: prefer memory clobber & %= to volatile & __COUNTER__
-Message-ID: <20220125233128.GT614@gate.crashing.org>
-References: <20220114010526.1776605-1-ndesaulniers@google.com> <YeQei0xNzMq7bFdg@zn.tnic> <20220118192256.jzk5dnceeusq7x7u@treble> <20220118230120.pivvson7qekfiqic@treble> <CAKwvOdmLzwz=02ypt0_1324_5-7i3Az7HizFaDMqZv__-D99uA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKwvOdmLzwz=02ypt0_1324_5-7i3Az7HizFaDMqZv__-D99uA@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+        id S234939AbiAYXjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 18:39:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234931AbiAYXjo (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 18:39:44 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFB9C061747
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 15:39:44 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id e79so25641006iof.13
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 15:39:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=3EGAwwEJ1UFzCDVb++WP09dEeEE8cQffQQY/gexv+tw=;
+        b=Qae0ZTtqjocmY0Ravf5tq6h8wF8LGSOwgVdIsQeW+atXcVBL7ij5nxtNqYBRJs+mML
+         0G42t7d1SA3+ZKDAb9blJK1jggBfu1thzmapEH+kYO0VvTGNCsw1yM3+pPXZac/Qt6v4
+         a0DVYlThxayvdUm7QhLesXrDF3yLnijz7nTEM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=3EGAwwEJ1UFzCDVb++WP09dEeEE8cQffQQY/gexv+tw=;
+        b=Xb/3OcawdhgiHmdDVV2k9jcGQ1QnZXLAsy/bGVD0b5ngLmXRNspMLni+2RUGTGHTV9
+         HTONh1IxG5H4+sTcqPfr6tezJZ0UoHdpqA1sL7L5mzcBkHlxoPLqRMjbJitVY+/j+s+A
+         /YsuoWELemEkmU4EjDeMDN+LnxegBeWORTS2fB6bALWKsSJy/AY3rhd5669xV/60QSfP
+         sD1xc1FhCQL/sczduWyWxxhMCkWf86MYlGA9zs2uE99GVzbw+FUDjdmeRbFvYz9UYbLP
+         NDVYdB6FGUAQ1VjGIqv4QOMpJOijeWmAILo/ozVg5WVBmBIxiz7L7YR98o2WOptpwVrU
+         RToA==
+X-Gm-Message-State: AOAM531iJsb9gA2hLBeKgDCeXsw61j7cvJLI/ROxOjD4DBCrjXbKsAxa
+        bXluNgsAtaVfC2QUtXncQdlggw==
+X-Google-Smtp-Source: ABdhPJx+r3KufkOqCDwgWoIEMdDUZvZOUwJZIWuUXZno6vmkS0bEKKvB96shjxxwL7qyzVnI8MWtHA==
+X-Received: by 2002:a02:7b1b:: with SMTP id q27mr6030853jac.27.1643153983448;
+        Tue, 25 Jan 2022 15:39:43 -0800 (PST)
+Received: from ?IPv6:2601:282:8200:4c:4ef8:d404:554b:9671? ([2601:282:8200:4c:4ef8:d404:554b:9671])
+        by smtp.gmail.com with ESMTPSA id u26sm3697804ior.52.2022.01.25.15.39.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 15:39:43 -0800 (PST)
+Subject: Re: [PATCH 5.16 0000/1033] 5.16.3-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
+References: <20220125155447.179130255@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <b89ab685-41fa-c78b-b0fc-bbf90b33b01f@linuxfoundation.org>
+Date:   Tue, 25 Jan 2022 16:39:41 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+MIME-Version: 1.0
+In-Reply-To: <20220125155447.179130255@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+On 1/25/22 9:33 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.3 release.
+> There are 1033 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 27 Jan 2022 15:52:30 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.3-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-On Mon, Jan 24, 2022 at 03:26:36PM -0800, Nick Desaulniers wrote:
-> I noticed in that report and
-> https://lore.kernel.org/lkml/202201190702.XNSXrMTK-lkp@intel.com/
-> that gcc-9 was used.  I wonder if %= has been fixed in gcc-10+? Have
-> there been other reports with gcc-10+ for my patch?
+Compiled and booted on my test system. No dmesg regressions.
 
-None of the %= code (which is trivial) has been changed since 1992.
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-> If this is fixed in gcc-10, then we can probably add a comment with a
-> FIXME link to the issue or commit to replace __COUNTER__ with %= one
-> day.  If not, then we can probably come up with a reduced test case
-> for the GCC devs to take a look at, then add the FIXME comment to
-> kernel sources.
-
-Please open a PR?
-
-> I'm more confident that we can remove the `volatile` keyword (I was
-> thinking about adding a new diagnostic to clang to warn that volatile
-> is redundate+implied for asm goto or inline asm that doesn't have
-> outputs) though that's not the problem here and will probably generate
-> some kernel wide cleanup before we could enable such a flag.
-
-Its main value is that it would discourage users from thinking volatile
-is magic.  Seriously worth some pain!
-
-> Perhaps
-> there are known compiler versions that still require the keyword for
-> those cases for some reason.
-
-It was removed from compiler-gcc.h in 3347acc6fcd4 (which changed the
-minimum required GCC version to GCC 5).
-
-
-Segher
+thanks,
+-- Shuah
