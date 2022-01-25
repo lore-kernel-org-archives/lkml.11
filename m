@@ -2,235 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442509AbiAYHJC (ORCPT
+        id S1442279AbiAYHJY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:09:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45958 "EHLO
+        Tue, 25 Jan 2022 02:09:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391924AbiAYHEm (ORCPT
+        with ESMTP id S1442257AbiAYHGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:04:42 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8A2C04188D
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:44:16 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id e28so14028553pfj.5
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:44:16 -0800 (PST)
+        Tue, 25 Jan 2022 02:06:43 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275E7C061781
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:47:40 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id t9so3363153lji.12
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:47:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ANfiyTNuLH3K34lM7cYA66sM88G94rOT/TdSDWy1dfM=;
-        b=Z2l3OEwPTmcht1x90krU+HvQuTaWfAECasawdJmUmykWoDMEy1GSasrIoFi1UnDWAE
-         Ye/rxw3S4BZl3JeodXOFKlJu+zb5l9yujbNh3LwcmQSTgv3VjTSPVSJObmo56q3kqw88
-         j5KeMhQUACWMLkNNo9fWDtrFHIcV/x9YjCeYPzku04KhdiAUyGwTlZufjBsdTwwJtwyd
-         xEBaIyIwCsYpXQnJbsBfAjrlnKeEJM7pK/aw1YRN9bw64S+iLpoXAbkddKabkQ1qMPIo
-         CdCcXVL9uOifEcjynI8Jbu53AjS6U+rSaVI3Us/xaiFGIkflxxwbdlJ8AblslAD5rQ09
-         QjHw==
+        d=cogentembedded-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=sGwN6/PZ/JlBAeZ5KsZg9fZ+Ao13VjZFxZr+RAWIxdo=;
+        b=A09YnLzTaKn9EdmzYmyvMZaiISrRLWuv19XFxtLOw3S6UPh1zv0pIaCbBEM/3ErV+j
+         GDk2Nri6Sb1TUOBftHisD5mGt/GxY5QPwBsD5EGcpKkyiGRHPzWUp1TfUfMFs/RVPEj1
+         sNs7fDgdxfCiXwyZ/tCvDxjNsIVUdsT57pb9oXfZOXx4k8GH1+ZPo99KV8YtEmf9pMyN
+         05KfEPMbzMcsC1HOoai8xnmvR2s83rpAPLDdwh6R0klWgQN6c7bF0hGoNJvgFCfEUOsg
+         Ym/pfuCr3lv4S/4NrtcyrqKROVdJkwJKot2LDNOVm1hKm6PRqrJj9Z5WoOSMDCUwV6kr
+         +I7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ANfiyTNuLH3K34lM7cYA66sM88G94rOT/TdSDWy1dfM=;
-        b=ceY+WY3yuNu1/DAGtWaaVkw91J5MAi5rT9r1ndvkVoN2AM3ZjOEfVQXsIYQ74B+eY4
-         rtv5UOP/ENTJWVJqazMntCP7sm67J5jsEcTaTFg4HsjX1IgI6amVXIQQUM16/aT/9FJv
-         LclU1tE+WofKYG5z2DgpNnQJ5gN4nqDaZeZq9+6gJ8xTOHfq3GuHMBOq0oDLR2JMkHjm
-         YverkycV/IpKW85blFySnecUKS4gGXIlfyF8qnDMLrdNPFBmgbkbbSmWSpNN349qhoUA
-         U+VqdeqZ5QKCAcNquaLfVcEXmZUqU9jxn7oqmBZXWCignizj9UhHIE069ADSgxPQW4vs
-         PTKQ==
-X-Gm-Message-State: AOAM5307TWJ5y+o8oPy4CCpjagl6e6UdK+8AZxpwVlsX1ezR4pAeWbdO
-        XQe57eBBenqfUQFqIOAhK6JufQ==
-X-Google-Smtp-Source: ABdhPJy0Zt7AAbcR7aurgb/+aFMWVQO2AH2G40/mq0eF7GIvSo6FCzs8tY79M7CoMlpekOisT6wp7w==
-X-Received: by 2002:a65:578b:: with SMTP id b11mr6140482pgr.318.1643089455716;
-        Mon, 24 Jan 2022 21:44:15 -0800 (PST)
-Received: from localhost.localdomain ([122.179.14.218])
-        by smtp.gmail.com with ESMTPSA id c6sm19524508pfl.200.2022.01.24.21.44.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 21:44:15 -0800 (PST)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Anup Patel <anup@brainfault.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH 5/6] RISC-V: Use IPIs for remote TLB flush when possible
-Date:   Tue, 25 Jan 2022 11:12:16 +0530
-Message-Id: <20220125054217.383482-6-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220125054217.383482-1-apatel@ventanamicro.com>
-References: <20220125054217.383482-1-apatel@ventanamicro.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=sGwN6/PZ/JlBAeZ5KsZg9fZ+Ao13VjZFxZr+RAWIxdo=;
+        b=psFZCuC4hItfP12570Yp7joBKlM8TmR/x6Qj7zFgFd4TXDZCgxnrKAbtugYVv3+FxC
+         j4dtCLBDu+XPywh2BWNKZIdSNcz1UNq5Ia6GjB/Jo58e3sAESOMnIvyai/ImATbr5+Pa
+         LS28/0j+zXZzLCxEd9HAiKhAtGWPYkKrYxrR7QWne5XGEjend5BeeBUb8pBVeZjkqjrd
+         mct1l1HN8eXPom+AsiyWrle0GW9zZwbU4uKjf7XD6RHTSoJISrfqlSmu+KXmxdTZl28Y
+         2MH7Ooy3ysj6j/M9/hOReu5lGpja6mTeRbYFz3xZMCF6W2S9ZjfCdsBqDA++z1GJDPbL
+         BxJg==
+X-Gm-Message-State: AOAM533eV/uyGg1PFssn0sR9JS6Crj0fUN9zAxgJvZLAsjtQAwuxZpM+
+        6roVCuqt0BB+zwJXI2Gau0vUJA==
+X-Google-Smtp-Source: ABdhPJyJchuAfqKxEoZHNfeglu2mhDn/41Om9kU2nisHx2f3LxWjzQNJw2845GY1KKIPbaNRREE35w==
+X-Received: by 2002:a2e:854f:: with SMTP id u15mr2955901ljj.237.1643089658510;
+        Mon, 24 Jan 2022 21:47:38 -0800 (PST)
+Received: from [192.168.112.17] (nikaet.starlink.ru. [94.141.168.29])
+        by smtp.gmail.com with ESMTPSA id b11sm1374206lfb.277.2022.01.24.21.47.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 21:47:37 -0800 (PST)
+Message-ID: <a179c80c-7ce8-da1a-f344-5d72b65c3da4@cogentembedded.com>
+Date:   Tue, 25 Jan 2022 08:47:37 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] drivers: irqchip: add irq-type-changer
+Content-Language: en-US
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        linux-kernel@vger.kernel.org
+References: <20220124095652.522099-1-nikita.yoush@cogentembedded.com>
+ <878rv58ghy.wl-maz@kernel.org>
+From:   Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+In-Reply-To: <878rv58ghy.wl-maz@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If IPI calls are injected using SBI IPI calls then remote TLB flush
-using SBI RFENCE calls is much faster because using IPIs for remote
-TLB flush would still endup as SBI IPI calls with extra processing
-on kernel side.
+Hi
 
-It is now possible to have specialized hardware (such as RISC-V AIA
-and RISC-V ACLINT) which allows S-mode software to directly inject
-IPIs without any assistance from M-mode runtime firmware.
+ > I also don't see why you model this as the actual device that triggers
+ > the interrupt.
 
-This patch extends remote TLB flush functions to use IPIs whenever
-underlying IPI operations are suitable for remote FENCEs.
+Well, that somehow matches the physical reality. In the case of wl18xx on KF, physically the interrupt 
+signal indeed originates from the intermediate chip - the inverting level-shifter.
 
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- arch/riscv/mm/tlbflush.c | 93 +++++++++++++++++++++++++++++++++-------
- 1 file changed, 78 insertions(+), 15 deletions(-)
+I remember your suggestion to configure interrupt source's node with interrupt-parent set to inverter 
+and interrupt details for inverter's parent. But this looks hacky and inconsistent for me.
 
-diff --git a/arch/riscv/mm/tlbflush.c b/arch/riscv/mm/tlbflush.c
-index 37ed760d007c..27a7db8eb2c4 100644
---- a/arch/riscv/mm/tlbflush.c
-+++ b/arch/riscv/mm/tlbflush.c
-@@ -23,14 +23,62 @@ static inline void local_flush_tlb_page_asid(unsigned long addr,
- 			: "memory");
- }
- 
-+static inline void local_flush_tlb_range(unsigned long start,
-+		unsigned long size, unsigned long stride)
-+{
-+	if (size <= stride)
-+		local_flush_tlb_page(start);
-+	else
-+		local_flush_tlb_all();
-+}
-+
-+static inline void local_flush_tlb_range_asid(unsigned long start,
-+		unsigned long size, unsigned long stride, unsigned long asid)
-+{
-+	if (size <= stride)
-+		local_flush_tlb_page_asid(start, asid);
-+	else
-+		local_flush_tlb_all_asid(asid);
-+}
-+
-+static void __ipi_flush_tlb_all(void *info)
-+{
-+	local_flush_tlb_all();
-+}
-+
- void flush_tlb_all(void)
- {
--	sbi_remote_sfence_vma(NULL, 0, -1);
-+	if (riscv_use_ipi_for_rfence())
-+		on_each_cpu(__ipi_flush_tlb_all, NULL, 1);
-+	else
-+		sbi_remote_sfence_vma(NULL, 0, -1);
-+}
-+
-+struct flush_tlb_range_data {
-+	unsigned long asid;
-+	unsigned long start;
-+	unsigned long size;
-+	unsigned long stride;
-+};
-+
-+static void __ipi_flush_tlb_range_asid(void *info)
-+{
-+	struct flush_tlb_range_data *d = info;
-+
-+	local_flush_tlb_range_asid(d->start, d->size, d->stride, d->asid);
-+}
-+
-+static void __ipi_flush_tlb_range(void *info)
-+{
-+	struct flush_tlb_range_data *d = info;
-+
-+	local_flush_tlb_range(d->start, d->size, d->stride);
- }
- 
--static void __sbi_tlb_flush_range(struct mm_struct *mm, unsigned long start,
--				  unsigned long size, unsigned long stride)
-+static void __flush_tlb_range(struct mm_struct *mm, unsigned long start,
-+			      unsigned long size, unsigned long stride)
- {
-+	struct flush_tlb_range_data ftd;
- 	struct cpumask *cmask = mm_cpumask(mm);
- 	unsigned int cpuid;
- 	bool broadcast;
-@@ -45,19 +93,34 @@ static void __sbi_tlb_flush_range(struct mm_struct *mm, unsigned long start,
- 		unsigned long asid = atomic_long_read(&mm->context.id);
- 
- 		if (broadcast) {
--			sbi_remote_sfence_vma_asid(cmask, start, size, asid);
--		} else if (size <= stride) {
--			local_flush_tlb_page_asid(start, asid);
-+			if (riscv_use_ipi_for_rfence()) {
-+				ftd.asid = asid;
-+				ftd.start = start;
-+				ftd.size = size;
-+				ftd.stride = stride;
-+				on_each_cpu_mask(cmask,
-+						 __ipi_flush_tlb_range_asid,
-+						 &ftd, 1);
-+			} else
-+				sbi_remote_sfence_vma_asid(cmask,
-+							   start, size, asid);
- 		} else {
--			local_flush_tlb_all_asid(asid);
-+			local_flush_tlb_range_asid(start, size, stride, asid);
- 		}
- 	} else {
- 		if (broadcast) {
--			sbi_remote_sfence_vma(cmask, start, size);
--		} else if (size <= stride) {
--			local_flush_tlb_page(start);
-+			if (riscv_use_ipi_for_rfence()) {
-+				ftd.asid = 0;
-+				ftd.start = start;
-+				ftd.size = size;
-+				ftd.stride = stride;
-+				on_each_cpu_mask(cmask,
-+						 __ipi_flush_tlb_range,
-+						 &ftd, 1);
-+			} else
-+				sbi_remote_sfence_vma(cmask, start, size);
- 		} else {
--			local_flush_tlb_all();
-+			local_flush_tlb_range(start, size, stride);
- 		}
- 	}
- 
-@@ -66,23 +129,23 @@ static void __sbi_tlb_flush_range(struct mm_struct *mm, unsigned long start,
- 
- void flush_tlb_mm(struct mm_struct *mm)
- {
--	__sbi_tlb_flush_range(mm, 0, -1, PAGE_SIZE);
-+	__flush_tlb_range(mm, 0, -1, PAGE_SIZE);
- }
- 
- void flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
- {
--	__sbi_tlb_flush_range(vma->vm_mm, addr, PAGE_SIZE, PAGE_SIZE);
-+	__flush_tlb_range(vma->vm_mm, addr, PAGE_SIZE, PAGE_SIZE);
- }
- 
- void flush_tlb_range(struct vm_area_struct *vma, unsigned long start,
- 		     unsigned long end)
- {
--	__sbi_tlb_flush_range(vma->vm_mm, start, end - start, PAGE_SIZE);
-+	__flush_tlb_range(vma->vm_mm, start, end - start, PAGE_SIZE);
- }
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
- void flush_pmd_tlb_range(struct vm_area_struct *vma, unsigned long start,
- 			unsigned long end)
- {
--	__sbi_tlb_flush_range(vma->vm_mm, start, end - start, PMD_SIZE);
-+	__flush_tlb_range(vma->vm_mm, start, end - start, PMD_SIZE);
- }
- #endif
--- 
-2.25.1
+In contrary, an abstraction of intermediate entity that does a static conversion of the trigger type and 
+does not need any software control, looks sane. And, hardware designers do strange things sometimes, I 
+won't be surprised observing a change from level to edge one day. Thus it looked a good idea not to 
+limit the conversion to inversion, but support arbitrary one. Then, irqspec inside the node for the 
+intermediate entity obtains a meaning, making the entire model consistent.
+
+I don't strongly insist on this approach, it just looks cleaner for me.
+
+
+ > I'm also pretty sure that with the current code,
+ > you end-up with *two* interrupts (one for the inverter and one for the
+ > end-point).
+
+In driver's init, I only call of_irq_parse_one() for interrupt defined in the changer's node. This does 
+not create a mapping for it. The mapping is only created when changer's "interrupt-child" creates a 
+mapping for their interrupt - then changer's alloc() routine calls irq_domain_alloc_irqs_parent() in the 
+same way as all other hierarchical irqchips do.
+
+I don't see where double mapping can appear here. Please explain.
+
+
+ > You need a proper DT binding...
+ > Geert commented on why this is wrong...
+ > Use struct_size()...
+
+Will fix all that after we negotiate the basic approach.
+
+Thanks,
+
+Nikita
 
