@@ -2,97 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FAB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E1EBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386629AbiAYNZO (ORCPT
+        id S1575982AbiAYNZW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:25:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:55363 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1385378AbiAYNTJ (ORCPT
+        Tue, 25 Jan 2022 08:25:22 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:44212
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1575844AbiAYNTz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 08:19:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643116748;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nw6/P4vFvvsk6C4bAS0kt4Nq/2orgfJm/8P78VRSln8=;
-        b=OINu0tXjJyl2T6cLYaSJD58tkMtpg+Az4VLC48yroNQeJt7w9E6E9UzZGNlQ6dDaE3f2CH
-        LJd41rM9ywYt9NKtHBfPym1oRa+gC5jNhI/QzjDWPlQkxaNpOhoAC2yoQE0DGrAXtW7sZD
-        xKi4AwPEOoPXzRWen1JDSdnumMXkC2E=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-479-CT81lrWwOvarZbzjdKCIwg-1; Tue, 25 Jan 2022 08:19:07 -0500
-X-MC-Unique: CT81lrWwOvarZbzjdKCIwg-1
-Received: by mail-ed1-f70.google.com with SMTP id h21-20020aa7c955000000b0040390b2bfc5so14888287edt.15
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 05:19:07 -0800 (PST)
+        Tue, 25 Jan 2022 08:19:55 -0500
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 32FE73F1D1
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 13:19:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643116780;
+        bh=7H+kwmtltVSBKx5eHk33vYDBjpgrbeevYoDgB27H+CI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=lokDWwC6CE9N/xXzBGFrWAkmoqIQt5tP7uAgs8+EQzRKp0ED6fVN7Yef4QIMOp97s
+         jg2KVzr9h3dwoISj8WO9mPnp96YT9boiNcoBnXQO950r8/CZpAlUus8yi8n+LGtF3i
+         oAwUTJtNhwVj6iBUj+i1rbjs6IRf911/cqtZE5b8ucyfbVsGZXmCBUnMXAWeRCimE2
+         a7sci0pgBRa3gkm4s3ruBSCz60GiTcN+4thtK38rH/XyqgDwSTG7U73L72FA1w96Vu
+         F43EV44S/rx6aDf5H44SsC1tvZHxFefhyDagpqG1mjO8BZHwwYzKicBzTViBvqQFcL
+         oZNxRZzxV7F5w==
+Received: by mail-wm1-f71.google.com with SMTP id c16-20020a1c9a10000000b0034dd409329eso1458982wme.3
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 05:19:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=nw6/P4vFvvsk6C4bAS0kt4Nq/2orgfJm/8P78VRSln8=;
-        b=1/OjyMg0PBOQiGI98zTT3oHx5e2IsnM/LDlzIvsSp70HqX/Wv1JaE43DsZyFVtsYcg
-         x3eMMzwubUBfgfnGlW/sl5gd3ITfkXJ+1sA/RUewOzWij52jhQKb/zpt8/kzR+zGkW8s
-         4z37YxlLmH4simculB1u9RuSlj6MA/vqmoEQ1CaTHoJ9J2hA96rnaC14WVcwLuXemrsy
-         6UvT+iMji+ZtHWWou2AUKVFlzGHoXggMHyBfnauZV8+w9pTsvaw/eMwrIATzE6AhDdI6
-         wLZG+R48PDEH2P0yG3V1fsWO7qRp/glPaJSVnqNFkEI8yaqkJyQwGUnzE84TSrYi+Nfc
-         pw1w==
-X-Gm-Message-State: AOAM5316DTOFp8e6iRQjSWeeILuWML6knwZ/L7Pa/56lju80PMGApRGd
-        Zf6EeMxC9ZTt3vFdXKDTRMl5fi2XuAKE8yGUuHYWeTULQH9+ks7/tJup0oaU4V3pOPxcrJgkv4b
-        Ynd/JfNbu7UmaKay/7LNDpvm/
-X-Received: by 2002:a17:907:d07:: with SMTP id gn7mr16409836ejc.575.1643116746360;
-        Tue, 25 Jan 2022 05:19:06 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyyw5RW8Nh2bZKDlZodVPV9SulaXaDHTqbUkgiy0r0JjRo0OABJCVp63qdCsEhkiHdy6HcIvA==
-X-Received: by 2002:a17:907:d07:: with SMTP id gn7mr16409827ejc.575.1643116746154;
-        Tue, 25 Jan 2022 05:19:06 -0800 (PST)
-Received: from ?IPV6:2003:cb:c70f:8000:9797:8f:1ed9:7596? (p200300cbc70f80009797008f1ed97596.dip0.t-ipconnect.de. [2003:cb:c70f:8000:9797:8f:1ed9:7596])
-        by smtp.gmail.com with ESMTPSA id o11sm8214857edq.5.2022.01.25.05.19.01
+        bh=7H+kwmtltVSBKx5eHk33vYDBjpgrbeevYoDgB27H+CI=;
+        b=lKnvdA9F24GUeFarP/hZRj6VFxSTvzwsP9ti20i67ld43SHN/TxES6uzgTqf80T3oD
+         XveJyWjbmm0wje3DOhjDMoTk9j5gux0Y1vlRrXtzjN2UgQfcZ9dOmmke5Yb2d2ZzWrnN
+         qEHJEiVvSfaSzLpIuVgajECJkhmjdPYEstq2vdUnCdT30ZCJXQnlYBz4Jr2OtAfIU3Qh
+         7ztz8pfccsMt/0qUBqxz6GzwncHA6BXXQaD4D4h8kNNjgs2VLnUmYXGE2ZDR1/xIDura
+         IhL8wV3GaMqjhgcgy6XxyDcvz7HuQzRn6sOD+8oAt8XmcYqJoJR1Lww2b6lIz+dfCQFw
+         xpEg==
+X-Gm-Message-State: AOAM530geVJHEpTBLfDkrV6tAaSwRG9DtdLlXEyJsY91vhKAzG7IEstp
+        Splf7jUcDc5Jtig6jLAo3COyeAYMWgig/VBHf3lrzjqvgWNU2RKktyNa/vXFv1yGaScIqZ/KQrK
+        EeE1S5acwmixyXhpHfR3jM/AkWpMj6kF7QR5Ex2fJzw==
+X-Received: by 2002:a1c:4d0e:: with SMTP id o14mr2930720wmh.1.1643116779821;
+        Tue, 25 Jan 2022 05:19:39 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwa5CbjVgAdTzjpJrtsTBt6f96wmnehH2oqiBhJobNl5d/0gRlB/5PGKzta91V9mOV7mtz02w==
+X-Received: by 2002:a1c:4d0e:: with SMTP id o14mr2930685wmh.1.1643116779550;
+        Tue, 25 Jan 2022 05:19:39 -0800 (PST)
+Received: from [192.168.0.57] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id l20sm552432wms.24.2022.01.25.05.19.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 05:19:03 -0800 (PST)
-Message-ID: <fccf697d-919e-8e99-ea08-3ab991b610eb@redhat.com>
-Date:   Tue, 25 Jan 2022 14:18:57 +0100
+        Tue, 25 Jan 2022 05:19:38 -0800 (PST)
+Message-ID: <9ce18ea8-caed-7d46-8f79-725561429f57@canonical.com>
+Date:   Tue, 25 Jan 2022 14:19:36 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/2] dt-bindings: mediatek: mt8186: Add binding for MM
+ iommu
 Content-Language: en-US
-To:     William Kucharski <kucharsk@gmail.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>
-Cc:     Khalid Aziz <khalid.aziz@oracle.com>, akpm@linux-foundation.org,
-        willy@infradead.org, longpeng2@huawei.com, arnd@arndb.de,
-        dave.hansen@linux.intel.com, rppt@kernel.org, surenb@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <20220125114212.ks2qtncaahi6foan@box.shutemov.name>
- <E44A9AB1-DBF0-4B8E-B049-293DD4DE6093@gmail.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <E44A9AB1-DBF0-4B8E-B049-293DD4DE6093@gmail.com>
+To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org,
+        Hsin-Yi Wang <hsinyi@chromium.org>, youlin.pei@mediatek.com,
+        anan.sun@mediatek.com, xueqi.zhang@mediatek.com,
+        yen-chang.chen@mediatek.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        mingyuan.ma@mediatek.com, yf.wang@mediatek.com,
+        libo.kang@mediatek.com, chengci.xu@mediatek.com
+References: <20220125093244.18230-1-yong.wu@mediatek.com>
+ <20220125093244.18230-2-yong.wu@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220125093244.18230-2-yong.wu@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.01.22 13:09, William Kucharski wrote:
-> I would think this should be the case; certainly it seems to be a more effective approach than having to manually enable sharing via the API in every case or via changes to ld.so.
+On 25/01/2022 10:32, Yong Wu wrote:
+> Add mt8186 iommu binding. "-mm" means the iommu is for Multimedia.
 > 
-> If anything it might be useful to have an API for shutting it off, though there are already multiple areas where the system shares resources in ways that cannot be shut off by user action.
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>  .../bindings/iommu/mediatek,iommu.yaml        |   4 +
+>  .../dt-bindings/memory/mt8186-memory-port.h   | 217 ++++++++++++++++++
+>  2 files changed, 221 insertions(+)
+>  create mode 100644 include/dt-bindings/memory/mt8186-memory-port.h
 > 
 
-I don't have time to look into details right now, but I see various
-possible hard-to-handle issues with sharing anon pages via this
-mechanism between processes. If we could restrict it to MAP_SHARED and
-have some magic toggle to opt in, that would be great. Features like
-uffd that we might soon see on some MAP_SHARED pages will require to not
-share page tables automatically I assume.
 
--- 
-Thanks,
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-David / dhildenb
 
+Best regards,
+Krzysztof
