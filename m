@@ -2,176 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F907C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:05:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239175AbiAYRFj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:05:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359421AbiAYRDI (ORCPT
+        id S240739AbiAYRGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 12:06:16 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:50804
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1377982AbiAYRDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:03:08 -0500
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548C5C061751
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:03:04 -0800 (PST)
-Received: by mail-ua1-x935.google.com with SMTP id m90so38646967uam.2
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:03:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rajagiritech-edu-in.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lT2ZEVyfUq+RaCtD1SacFhDgchwqLFLjwZATklfqjQo=;
-        b=7kV2ubF4TIQ4dwGGaiZY6131cWDRToAMH/HRzgcl8dHqnGW/u7vnbPaPyT2W7f6wtJ
-         tapTLf+rzYrb3PMcA4y2yPx9tULUJH2eDPtW5yj6k1jjRmQZvBQexwuJ9FHvrasO9fMO
-         c6KcV9CzdSYCh064A9DhFhH/gvu4tFOKZlTiW0bBo5omThzxkNvkwkIqW+f0MbNVL9c1
-         ukaTpDZLYSI/sI1gQYM9zVJI3g5srRQv8IKXXmc8/aeffY8eWY4bQH/1g16oBiqxsAv2
-         rXSc7k3Qyov+weW6wiLNAuhE++nqSJE+fAHYwNxvN0RXke6djmViq6qye5rtNqZYVzsX
-         jyfw==
+        Tue, 25 Jan 2022 12:03:14 -0500
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id F0FAD40045
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 17:03:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643130193;
+        bh=Khs15J5Mbq9aHaNEf8S9OePqypIZSb0dV1fDUx3j1zY=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version:Content-Type;
+        b=cXO/rwQQaJqr5Lc/RYx57oNwkSCy4C02ZRX+ItMkoRRblufoL5udYutdu4Q3Og9n/
+         W+O+G250MfOmRVCavMYbv+EVLB4R7McCvSMAGut3nfHZcER5Ou2v3y7gC4CFxf7DJo
+         1E4JmyesFth5uk18zYYKAH8LOx8kggg1bdIMcWJuMI0MRCzz7rmhe7v2QhVZIndvFX
+         hisg3U+QIXrmmfGS1X65zXRt/MN8pnC9wOzrLAwf6NGzOclk9C0H0q3CpSwke7ecsP
+         i7rU5zOXGlOcIVY6F+6iGFoIqIx9iYS9h7TxRPaF+2o705vapdkQFod9K2x5t6dvam
+         LTXWW4LpDjr0Q==
+Received: by mail-wr1-f70.google.com with SMTP id g8-20020adfa488000000b001d8e6467fe8so3326214wrb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:03:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lT2ZEVyfUq+RaCtD1SacFhDgchwqLFLjwZATklfqjQo=;
-        b=G/sMzO45506pk5hhh1yMd7nBxbl1usLetUAT0Cc7Ep5jknGu/FKiakLkMNrOLqi/l3
-         xc2qKEyxpDRIDMhLTfDiYG/eGBqcQbPKdmYFD0MRQZlwoEoyyuoUnID7rB2HRxJfk1uM
-         bfz/c0FOs1mHnY78lv5N7/5NvXqg4t1xisGpQK39JC2SLsWv1V5ACX2mlmcXhSKZI/IK
-         U3v4DYO9Zec2LxrnphJdRSCEThGUwHnUeRwbbwuxDUVS034XqtMFCZZavVHvgQzqrV0I
-         fqdQpr0Qe0UEqmrn9QU2pKk+tDI70uIefiDOiDfiKfddWI5/mNJHNAY0oOBEKwycJYDc
-         BAnA==
-X-Gm-Message-State: AOAM533cUNSsvRcqa/o/P7ZyVVBBvFYuF8GF0f/I5EKHekJ1tp2twc5/
-        S/V55NcAM2ljTfAi0wKbyDfJ2BgtxMxBZWhka4hMEQ==
-X-Google-Smtp-Source: ABdhPJy+Q4MbRbCaNWgzjyIfDeid5bkMbIcQqaOwKnPZ1IalYuAahOQ2HN0GrpLSexg/X+GgIFK06+RLTac33eVQxxw=
-X-Received: by 2002:a67:cc07:: with SMTP id q7mr3762136vsl.21.1643130182745;
- Tue, 25 Jan 2022 09:03:02 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Khs15J5Mbq9aHaNEf8S9OePqypIZSb0dV1fDUx3j1zY=;
+        b=Q6OMF0AVTVhY+yiQKwrH1eq8VD982nTqAdTQXwe7+EiSOAzgFRa9jkplSk0QbLTBUx
+         qycl13/oSw0LDNyXJ1+FwTQroXkuhk5wFERCCibxn0p5Uq+34JtXOy+IuOUcm/9qikcg
+         2XZ24okcH75stFk2/i0WHa/Vhg2umZBn3LwgSS0lGgZvu5l0Fff0t6qTGqfZZ0nm5AMa
+         HQmypLPnXDoSv8LMaL7Kn9LcTFRQ/pA3r9Y+1rtc4CBUR7uPZ9RLgrNJZFb3WaSQsGZa
+         bcuq0HeFwoqQH6U2VT1yUHhjzd4xZ6L5qYpo76xHKX9wsNHbcqb/0OwqwlS1IpqR1f+2
+         lVKQ==
+X-Gm-Message-State: AOAM532oHBQ6Wqtq+JMNCeFucYFxoI8HztXEHQWZzAeQhklHaA5WUyZz
+        Sl47g1KqtvJN2IiLm2hXGVe/nAO9ZQiOwxvy/PvDseqhOdYW2IAmCZBLu85Xe+qGybsdt+ShVxy
+        Xs2kjY1GjlZyZ4Oeec+vqKDH4kHyj7j2e+UOe9tmoHw==
+X-Received: by 2002:a5d:4343:: with SMTP id u3mr18313340wrr.504.1643130192783;
+        Tue, 25 Jan 2022 09:03:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyG9zjm9t7btrydRtRdnKDOUoYdpl+wsZCbJPwqP/WbdmBoRfkoAn21BZz2+hcP67O92cBkLw==
+X-Received: by 2002:a5d:4343:: with SMTP id u3mr18313323wrr.504.1643130192571;
+        Tue, 25 Jan 2022 09:03:12 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id i3sm17162548wru.33.2022.01.25.09.03.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 09:03:11 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     linux-samsung-soc@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 00/12] usb: dt-bindings: samsung: convert to dtschema (subset)
+Date:   Tue, 25 Jan 2022 18:02:30 +0100
+Message-Id: <164313008959.78836.16134870344795249201.b4-ty@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220123111644.25540-1-krzysztof.kozlowski@canonical.com>
+References: <20220123111644.25540-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-References: <0af17d6952b3677dcd413fefa74b086d5ffb474b.camel@rajagiritech.edu.in>
- <YfAKYWOMdGJ0NxjE@kroah.com> <CAG=yYwksvQmEsfRyFiQTbSxUL39WGf7ryHaywtAxgdL1Nt67OQ@mail.gmail.com>
- <YfAk90OPjlpjruV5@kroah.com>
-In-Reply-To: <YfAk90OPjlpjruV5@kroah.com>
-From:   Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
-Date:   Tue, 25 Jan 2022 22:32:26 +0530
-Message-ID: <CAG=yYw=BK1gU0UV8g5_ZT5gOe5P2W2rKHWdFyPi4ZHSy4CGMFw@mail.gmail.com>
-Subject: Re: review for 5.16.3-rc2
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 9:57 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Jan 25, 2022 at 09:49:00PM +0530, Jeffrin Thalakkottoor wrote:
-> > On Tue, Jan 25, 2022 at 8:04 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Tue, Jan 25, 2022 at 06:15:46PM +0530, Jeffrin Jose T wrote:
-> > > > hello greg,
-> > > >
-> > > > compile failed for  5.16.3-rc2 related.
-> > > > a relevent file attached.
-> > > >
-> > > > Tested-by : Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
-> > >
-> > > But it failed for you, how did you test it?
-> >
-> > i compiled  5.16.3-rc2  related to "make localmodconfig" and  "make  -j4"
->
-> So it somehow failed?
+On Sun, 23 Jan 2022 12:16:32 +0100, Krzysztof Kozlowski wrote:
+> Dependencies
+> ============
+> None.
+> 
+> The DTS patches are independent and I will take them via Samsung SoC tree.
+> I am including them here just so automatic robot checks won't complain about
+> DTS differences against newly dtschema.
+> 
+> [...]
 
-Yes i think so
+Applied subset, thanks!
 
->
-> > >
-> > > >
-> > > >
-> > >
-> > > >       char *                     typetab;              /*    24     8 */
-> > > >
-> > > >       /* size: 32, cachelines: 1, members: 4 */
-> > > >       /* sum members: 28, holes: 1, sum holes: 4 */
-> > > >       /* last cacheline: 32 bytes */
-> > > > };
-> > > > struct klp_modinfo {
-> > > >       Elf64_Ehdr                 hdr;                  /*     0    64 */
-> > > >       /* --- cacheline 1 boundary (64 bytes) --- */
-> > > >       Elf64_Shdr *               sechdrs;              /*    64     8 */
-> > > >       char *                     secstrings;           /*    72     8 */
-> > > >       unsigned int               symndx;               /*    80     4 */
-> > > >
-> > > >       /* size: 88, cachelines: 2, members: 4 */
-> > > >       /* padding: 4 */
-> > > >       /* last cacheline: 24 bytes */
-> > > > };
-> > > > Segmentation fault
-> > >
-> > > What "faulted"?  Look higher up in the log please.
-> >
-> > a top view...
-> >
-> >   CALL    scripts/atomic/check-atomics.sh
-> >   CALL    scripts/checksyscalls.sh
-> >   CHK     include/generated/compile.h
-> >   GEN     .version
-> >   CHK     include/generated/compile.h
-> >   UPD     include/generated/compile.h
-> >   CC      init/version.o
-> >   AR      init/built-in.a
-> >   LD      vmlinux.o
-> >   MODPOST vmlinux.symvers
-> >   MODINFO modules.builtin.modinfo
-> >   GEN     modules.builtin
-> >   LD      .tmp_vmlinux.btf
-> >   BTF     .btf.vmlinux.bin.o
-> > struct list_head {
-> >     struct list_head *         next;                 /*     0     8 */
-> >     struct list_head *         prev;                 /*     8     8 */
-> >
-> >     /* size: 16, cachelines: 1, members: 2 */
-> >     /* last cacheline: 16 bytes */
-> > };
-> > struct hlist_head {
-> >     struct hlist_node *        first;                /*     0     8 */
-> >
-> >     /* size: 8, cachelines: 1, members: 1 */
-> >     /* last cacheline: 8 bytes */
-> > };
-> > struct hlist_node {
-> >     struct hlist_node *        next;                 /*     0     8 */
-> >     struct hlist_node * *      pprev;                /*     8     8 */
-> >
-> >     /* size: 16, cachelines: 1, members: 2 */
-> >     /* last cacheline: 16 bytes */
-> > };
-> > struct callback_head {
-> >     struct callback_head *     next;                 /*     0     8 */
-> >     void                       (*func)(struct callback_head *); /*
-> > 8     8 */
-> > .
-> > .
-> > .
-> > .
-> > .
-> > .
->
-> I do not know what is failing, there is no error message here.  Does
-> 5.16.2 build properly for you?
+[01/12] arm64: dts: exynos: add USB DWC3 supplies to Espresso board
+        commit: 31c33503fdb3965d6aaf0db4a8c42e7d8cef1dff
+[02/12] ARM: dts: exynos: add USB DWC3 supplies to Arndale
+        commit: 52d53d937da8889964c60216a0333cb19fe0812d
+[03/12] ARM: dts: exynos: add USB DWC3 supplies to SMDK5250
+        commit: ebbb07b8d349fc2eccb67780850d2d1bbfc918d6
+[04/12] ARM: dts: exynos: add USB DWC3 supplies to Chromebook Snow
+        commit: 9745be7b5a3be39a00e6bbda3305e2d789ee4082
+[05/12] ARM: dts: exynos: add USB DWC3 supplies to Chromebook Spring
+        commit: 111ea2d6dd217684db4e7a97a2bda3bf14734427
+[06/12] ARM: dts: exynos: add USB DWC3 supplies to ArndaleOcta
+        commit: 0a14272479627bb9388ece3b0ebac72a3928062d
+[07/12] ARM: dts: exynos: add USB DWC3 supplies to Chromebook Peach Pit
+        commit: 7adf978462dadc41ea7d4138de53bc9a15922191
+[08/12] ARM: dts: exynos: add USB DWC3 supplies to Chromebook Peach Pi
+        commit: 72477416ac12e88384a96575c5f2e4bd7ac8feeb
+[09/12] ARM: dts: exynos: add USB DWC3 supplies to SMDK5420
+        commit: c441d2d73107fcb45c0affb345fe6b9bc3fd3bab
+[10/12] ARM: dts: exynos: add fake USB DWC3 supplies to SMDK5410
+        commit: 4043114504cc05d0a7ca2a061838699b500599cd
 
-stderr has  captured  the  following...
-
-
--------------x-----------------x--------------x---
-FAILED: load BTF from vmlinux: No such file or directory
-make: *** [Makefile:1161: vmlinux] Error 255
-make: *** Deleting file 'vmlinux'
-------------x----------------x------------x--
-5.16.2-rc1 builds for me.
-
-Will the following link help...
-
-https://unix.stackexchange.com/questions/616392/failed-load-btf-from-vmlinux-unknown-error-2make-makefile1162-vmlinu
-
+Best regards,
 -- 
-software engineer
-rajagiri school of engineering and technology
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
