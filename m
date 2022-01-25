@@ -2,98 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6192DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC840C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574309AbiAYJdF (ORCPT
+        id S1355198AbiAYJeQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:33:05 -0500
-Received: from mga04.intel.com ([192.55.52.120]:62356 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355319AbiAYJ2s (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:28:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643102918; x=1674638918;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nZjPFP6UH/U8IVgtLu81A+WgziLleI8nGlkeLFyix8w=;
-  b=Fsqf+CDOqhht1C0REWaSjoVDe5WoGQx3RWGWZ6V6guKARzHT/7kJFUZ1
-   ZNVXPnUG4mM3ARaHahfHYEx+JgW8sdP3OfmtK+c9/xzRlAeb/prkepJyA
-   OcJGrbPkY5nXRR/8kSuS/7J7jclwg9IyU24RaqvtBph2XO++c0RoPlEkS
-   ZViRifp9u+KYJdN6Pt7hg9mji/BdVGJABCtyyZ5DfywqWkJdylPG4HQ2q
-   YqIU0ba0YsS5Gsl0UQPqN2Gi+asqAqH+0r/0XJ6MblrjFO2L+B6cOWCUS
-   +Ymb24UeHkxDW6y7tF1QpCYNBUJxP4sxdO1MRxYswFOzfW/SjeLc5pqGS
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="245096240"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="245096240"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 01:19:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="520317463"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 25 Jan 2022 01:19:34 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCHzB-000JeF-JZ; Tue, 25 Jan 2022 09:19:33 +0000
-Date:   Tue, 25 Jan 2022 17:18:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jeff Layton <jlayton@kernel.org>
-Subject: fs/fscache/cookie.c:32:14: sparse: sparse: symbol
- 'fscache_lru_cookie_timeout' was not declared. Should it be static?
-Message-ID: <202201251717.ssGUprks-lkp@intel.com>
+        Tue, 25 Jan 2022 04:34:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1573979AbiAYJa4 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 04:30:56 -0500
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCE0C0613F0
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:30:55 -0800 (PST)
+Received: by mail-ua1-x931.google.com with SMTP id p7so29029593uao.6
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:30:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1mm7+Qmz3LImo4aFwbhXIFkzVEgm/HAOzd6fbdAVMrg=;
+        b=kCmCEgQ+xOVJqgvY6mIiDwGpng9RE64Ri/x5bVEJVgfKmrbder8yB0SJa9j3j/iO6u
+         VSlwxJi1GtMfRaX9rz0Fi8V70QZmpTm/yg+yqKEhFTP/kvAigM6NlkG016BHxBuEGBud
+         aKKG3vXyGKhkWECz7g02ij5pN8RBjRbfSAGJhF2s+s/E8Wzq61/RmUZzmkHINs6y38kj
+         8W/C1tUsfkR71I5xYVxyEgRhxjIz/FmTGO/CwLqL3papla/+aWUpb3kyrOT/GpbDGqeC
+         c1kCPdzAMoEjl9Ka3L/ozlubTR502/GpTZoRLS5kuqKqPkl9NQ2lJSPzTzJVIDppuhpp
+         EfLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1mm7+Qmz3LImo4aFwbhXIFkzVEgm/HAOzd6fbdAVMrg=;
+        b=L+ugmTcXJC9324BzvC8J7zFItOMGd5RZNBLTybWUxQeA0oFkfX2wvXD/GDHIKXlrlr
+         QiwdExuPP0jITw6oCqmetVtiDqeRLic4koCeTpeiDveD/UxsDEA4Zk6VyJCFyGsS0R92
+         oaRM9Pz5oZ422E3KMPlPY0qtoLjBtf+YlgFhAtgcfyQZiXH5h0pq9Kk9HU6uBoJSDFoV
+         8dRE1hmbmLK+vsg64YIHqDFzYOAP81pDQ8j5jTIBJOU0Pv+RQTPVpeneeNjz9WIiZdTV
+         GRQU8GNxMAGKDF75xwAeinjMQKnPPUZZSwjByXS3bPioCBUUVYqI7yvtpRdZ8jqBKyoT
+         TxvA==
+X-Gm-Message-State: AOAM532xLoKxIsugKM/eiwEUVOXWJFKC7pIzQKCnw4btKG7JKxYJ+NYR
+        /UXqPaNfaccLgAF4opo/S+fARzqUaruUQeGLPTEx9A==
+X-Google-Smtp-Source: ABdhPJwHGGkAwOnsd7qe0zHQAqHAUzi5PBqvJQ90yr1sdZ5zdG5wkLeKm2Z8HhNpFMDsTHL1nOGUCrWQS9pCXlyV9Y0=
+X-Received: by 2002:a67:8c2:: with SMTP id 185mr712613vsi.19.1643103053912;
+ Tue, 25 Jan 2022 01:30:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
+From:   Lee Jones <lee.jones@linaro.org>
+Date:   Tue, 25 Jan 2022 09:30:43 +0000
+Message-ID: <CAF2Aj3g0uxj7=m+USWz9QvmQ511DN83e9WsVDW-484aEdix4hg@mail.gmail.com>
+Subject: Re: [PATCH 0/5] spi: make remove callback a void function
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Mark Brown <broonie@kernel.org>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Emma Anholt <emma@anholt.net>,
+        David Lechner <david@lechnology.com>,
+        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dan Robertson <dan@dlrobertson.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
+        Antti Palosaari <crope@iki.fi>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Piel <eric.piel@tremplin-utc.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        =?UTF-8?Q?=C5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Claudiu Beznea <Claudiu.Beznea@microchip.com>,
+        Solomon Peachy <pizza@shaftnet.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mark Greer <mgreer@animalcreek.com>,
+        Benson Leung <bleung@chromium.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        James Schulman <james.schulman@cirrus.com>,
+        David Rhodes <david.rhodes@cirrus.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        =?UTF-8?Q?Ronald_Tschal=C3=A4r?= <ronald@innovation.ch>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Heiko Schocher <hs@denx.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Tudor Ambarus <Tudor.Ambarus@microchip.com>,
+        Matt Kline <matt@bitbashing.io>,
+        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nanyong Sun <sunnanyong@huawei.com>,
+        Yang Shen <shenyang39@huawei.com>,
+        dingsenjie <dingsenjie@yulong.com>,
+        Aditya Srivastava <yashsri421@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michael Walle <michael@walle.cc>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        wengjianfeng <wengjianfeng@yulong.com>,
+        Sidong Yang <realwakka@gmail.com>,
+        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
+        Davidlohr Bueso <dbueso@suse.de>, Claudius Heine <ch@denx.de>,
+        Jiri Prchal <jiri.prchal@aksignal.cz>,
+        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
+        linux-wireless@vger.kernel.org, libertas-dev@lists.infradead.org,
+        platform-driver-x86@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
+        kernel@pengutronix.de, Noralf Tronnes <notro@tronnes.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Guenter Roeck <groeck@google.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
-commit: 12bb21a29c19aae50cfad4e2bb5c943108f34a7d fscache: Implement cookie user counting and resource pinning
-date:   3 weeks ago
-config: csky-randconfig-s032-20220120 (https://download.01.org/0day-ci/archive/20220125/202201251717.ssGUprks-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=12bb21a29c19aae50cfad4e2bb5c943108f34a7d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 12bb21a29c19aae50cfad4e2bb5c943108f34a7d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=csky SHELL=/bin/bash block// fs/
+My usual mailer won't let me reply to this many people, so I'm using Gmail.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+No idea what chaos this will cause, but here goes ...
 
+> The value returned by an spi driver's remove function is mostly ignored.
+> (Only an error message is printed if the value is non-zero that the
+> error is ignored.)
+>
+> So change the prototype of the remove function to return no value. This
+> way driver authors are not tempted to assume that passing an error to
+> the upper layer is a good idea. All drivers are adapted accordingly.
+> There is no intended change of behaviour, all callbacks were prepared to
+> return 0 before.
+>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
 
-sparse warnings: (new ones prefixed by >>)
->> fs/fscache/cookie.c:32:14: sparse: sparse: symbol 'fscache_lru_cookie_timeout' was not declared. Should it be static?
+[...]
 
-vim +/fscache_lru_cookie_timeout +32 fs/fscache/cookie.c
+>  drivers/mfd/arizona-spi.c                             |  4 +---
+>  drivers/mfd/da9052-spi.c                             |  3 +--
+>  drivers/mfd/ezx-pcap.c                                |  4 +---
+>  drivers/mfd/madera-spi.c                             |  4 +---
+>  drivers/mfd/mc13xxx-spi.c                           |  3 +--
+>  drivers/mfd/rsmu_spi.c                                |  4 +---
+>  drivers/mfd/stmpe-spi.c                               |  4 +---
+>  drivers/mfd/tps65912-spi.c                          |  4 +---
 
-    23	
-    24	#define fscache_cookie_hash_shift 15
-    25	static struct hlist_bl_head fscache_cookie_hash[1 << fscache_cookie_hash_shift];
-    26	static LIST_HEAD(fscache_cookies);
-    27	static DEFINE_RWLOCK(fscache_cookies_lock);
-    28	static LIST_HEAD(fscache_cookie_lru);
-    29	static DEFINE_SPINLOCK(fscache_cookie_lru_lock);
-    30	DEFINE_TIMER(fscache_cookie_lru_timer, fscache_cookie_lru_timed_out);
-    31	static DECLARE_WORK(fscache_cookie_lru_work, fscache_cookie_lru_worker);
-  > 32	static const char fscache_cookie_states[FSCACHE_COOKIE_STATE__NR] = "-LCAIFUWRD";
-    33	unsigned int fscache_lru_cookie_timeout = 10 * HZ;
-    34	
+>  drivers/video/backlight/ams369fg06.c         |  3 +--
+>  drivers/video/backlight/corgi_lcd.c               |  3 +--
+>  drivers/video/backlight/ili922x.c                    |  3 +--
+>  drivers/video/backlight/l4f00242t03.c           |  3 +--
+>  drivers/video/backlight/lms501kf03.c            |  3 +--
+>  drivers/video/backlight/ltv350qv.c                 |  3 +--
+>  drivers/video/backlight/tdo24m.c                  |  3 +--
+>  drivers/video/backlight/tosa_lcd.c                |  4 +---
+>  drivers/video/backlight/vgg2432a4.c            |  4 +---
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+If it's okay with Mark, it's okay with me.
+
+Acked-by: Lee Jones <lee.jones@linaro.org>
+
+--=20
+Lee Jones [=E6=9D=8E=E7=90=BC=E6=96=AF]
+Linaro Services Principle Technical Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
