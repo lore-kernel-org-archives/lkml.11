@@ -2,98 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5026C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579778AbiAYOlm (ORCPT
+        id S1580027AbiAYOln (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:41:42 -0500
-Received: from foss.arm.com ([217.140.110.172]:47544 "EHLO foss.arm.com"
+        Tue, 25 Jan 2022 09:41:43 -0500
+Received: from mga03.intel.com ([134.134.136.65]:43560 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1579753AbiAYOig (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:38:36 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E8FF8D6E;
-        Tue, 25 Jan 2022 06:38:34 -0800 (PST)
-Received: from p8cg001049571a15.arm.com (unknown [10.163.42.158])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1493E3F793;
-        Tue, 25 Jan 2022 06:38:31 -0800 (PST)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64/mm: Consolidate TCR_EL1 fields
-Date:   Tue, 25 Jan 2022 20:08:33 +0530
-Message-Id: <1643121513-21854-1-git-send-email-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.7.4
+        id S1388509AbiAYOjI (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 09:39:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643121548; x=1674657548;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=KqOpHtgSiTnL+U5jInAffrw6x8jdUAMVMkKnO4pQFoE=;
+  b=aRlBQKnf2nbIhJeIQPvWgFPOP2f6HfVY/c5KuDJ7+JqxHWUZhEwij51X
+   hcvu7Qw16NUR8Na/Ejfh+kVWxs5axa3XCGyRNy+Sv1wiy7xHKjHgGjqha
+   5GWiKX3QCV9bXUFPmwx+UJBE+G+mpS2DGblCUf4Lgmgh9ohrlsL4G7ngc
+   kCXCu9Kdbm5LzyloTRBiobZjcqEg9ris2I1JDvlAeiqBjiqhGc0Jk24MX
+   /0/sznLkMgzEFF8bTuRdBU+1tCLXxlTcQP0MjmYHspibKPpjHFX8Melch
+   yaWBlJrRav1n/TWI5yMB3BIDTuQNKaAYewh+ZgZZeFsHPf80pchMoAT+N
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246254525"
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="246254525"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 06:26:59 -0800
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="532428160"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 06:26:57 -0800
+Received: by lahna (sSMTP sendmail emulation); Tue, 25 Jan 2022 16:26:55 +0200
+Date:   Tue, 25 Jan 2022 16:26:54 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Zha Qipeng <qipeng.zha@intel.com>, linux-kernel@vger.kernel.org
+Subject: Re: mfd/intel_pmc_bxt: `intel_pmc_get_resources()` results in page
+ fault
+Message-ID: <YfAIrkJaahKpCta6@lahna>
+References: <92c233bc-d1e0-b180-efaa-27e05fbd732b@molgen.mpg.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <92c233bc-d1e0-b180-efaa-27e05fbd732b@molgen.mpg.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This renames and moves SYS_TCR_EL1_TCMA1 and SYS_TCR_EL1_TCMA0 definitions
-into pgtable-hwdef.h thus consolidating all TCR fields in a single header.
-This does not cause any functional change.
+Hi,
 
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
-This applies on v5.17-rc1
+On Tue, Jan 25, 2022 at 02:08:53PM +0100, Paul Menzel wrote:
+> Dear Linux folks,
+> 
+> 
+> `intel_pmc_get_resources()` does not set the name member in the `resource`
+> struct `gcr_res` resulting in a page fault.
+> 
 
-This was earlier posted with FEAT_LPA2 series.
-
-https://lore.kernel.org/all/1632998116-11552-3-git-send-email-anshuman.khandual@arm.com/
-
- arch/arm64/include/asm/pgtable-hwdef.h | 2 ++
- arch/arm64/include/asm/sysreg.h        | 4 ----
- arch/arm64/mm/proc.S                   | 2 +-
- 3 files changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/arch/arm64/include/asm/pgtable-hwdef.h b/arch/arm64/include/asm/pgtable-hwdef.h
-index 40085e53f573..66671ff05183 100644
---- a/arch/arm64/include/asm/pgtable-hwdef.h
-+++ b/arch/arm64/include/asm/pgtable-hwdef.h
-@@ -273,6 +273,8 @@
- #define TCR_NFD1		(UL(1) << 54)
- #define TCR_E0PD0		(UL(1) << 55)
- #define TCR_E0PD1		(UL(1) << 56)
-+#define TCR_TCMA0		(UL(1) << 57)
-+#define TCR_TCMA1		(UL(1) << 58)
- 
- /*
-  * TTBR.
-diff --git a/arch/arm64/include/asm/sysreg.h b/arch/arm64/include/asm/sysreg.h
-index 898bee0004ae..34800d264f69 100644
---- a/arch/arm64/include/asm/sysreg.h
-+++ b/arch/arm64/include/asm/sysreg.h
-@@ -1101,10 +1101,6 @@
- #define CPACR_EL1_ZEN_EL0EN	(BIT(17)) /* enable EL0 access, if EL1EN set */
- #define CPACR_EL1_ZEN		(CPACR_EL1_ZEN_EL1EN | CPACR_EL1_ZEN_EL0EN)
- 
--/* TCR EL1 Bit Definitions */
--#define SYS_TCR_EL1_TCMA1	(BIT(58))
--#define SYS_TCR_EL1_TCMA0	(BIT(57))
--
- /* GCR_EL1 Definitions */
- #define SYS_GCR_EL1_RRND	(BIT(16))
- #define SYS_GCR_EL1_EXCL_MASK	0xffffUL
-diff --git a/arch/arm64/mm/proc.S b/arch/arm64/mm/proc.S
-index d35c90d2e47a..50bbed947bec 100644
---- a/arch/arm64/mm/proc.S
-+++ b/arch/arm64/mm/proc.S
-@@ -46,7 +46,7 @@
- #endif
- 
- #ifdef CONFIG_KASAN_HW_TAGS
--#define TCR_MTE_FLAGS SYS_TCR_EL1_TCMA1 | TCR_TBI1 | TCR_TBID1
-+#define TCR_MTE_FLAGS TCR_TCMA1 | TCR_TBI1 | TCR_TBID1
- #else
- /*
-  * The mte_zero_clear_page_tags() implementation uses DC GZVA, which relies on
--- 
-2.20.1
-
+On which system you reproduce this, and how? Can you also share ACPI
+dump from that system.
