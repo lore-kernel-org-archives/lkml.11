@@ -2,191 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE20EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573991AbiAYJa6 (ORCPT
+        id S1380522AbiAYJbO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:30:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49466 "EHLO
+        Tue, 25 Jan 2022 04:31:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573003AbiAYJSg (ORCPT
+        with ESMTP id S1573002AbiAYJSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 25 Jan 2022 04:18:36 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95541C06174E
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:14:54 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id q22so7068267ljh.7
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:14:54 -0800 (PST)
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC37C061245
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:13:17 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id s5so28991351ejx.2
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 01:13:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qrgiZGQ6iDovOpvrU32QRk7eljkxoPWyGy5MexT9X4I=;
-        b=Yz2JeNHhq5XcFshwTR7g5n40VgZtU4lRAtDEj/GojdZK5RxjDf23wQ/pzu5acf+Dy8
-         2Ugx0biQWhmmP2vWA7xGO7oOFi+maeNvwfeVrjg6zFJhNpWMw5y46Pbrvs8pcI7UPkcO
-         mmuYSf03AAL49jlQiQXGb7HK2595dtPejQBGbHBaVmpuN+2sXyWTC3EdB2UMZlOIKtNi
-         aNz9lN7EEAVxXmBlCi4zbmNEJPG+weJ+ejVUm3QStQzw+lzV3u+badZWBTwf+qEtIuxl
-         IxB2VpHQMu/pMR/3KXXRX0UjZ8qsInINtLA4+1c8J0nvMvn02/1Nt5VVEUCBzwuORlDH
-         /PrA==
+        bh=m3vz4K1cVFxkkZgxl+94bcQ+gdSebDBC3L0OFBYI+gI=;
+        b=wwKwalFIdRZU/Tdudj95kPncu6eVBEFqiUctk9Ry4HB2QDqDev6XJnraAHxSJ+36eV
+         gfJZIya0esm65p0LebvssGsiLOIOt5Ag/ODMrBUNzqX4qoQ9qo/iGqihQO1vepOkE094
+         Rbng7qvbgi0jP6d14HYexooHGRWNtER6rudYcpM7ISXkFAwpqgscUvy4zuo3b/d4AijY
+         cv0orhFfqgUFocTkIZdPiYFCikaEwk1+bSHsU1eJLTvuuiudpvcLcfe4Wi9xwX26qooa
+         8dYHnSm+/qnB6p4BvYlKrIAdf/4KYMFCIBk8IjQQpa5z9YJ1M+7GOuWYk94YRKO6CeJM
+         Q1aA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qrgiZGQ6iDovOpvrU32QRk7eljkxoPWyGy5MexT9X4I=;
-        b=RruedDxceHfTeh1bq3hp+EzMA/h850DPu43pBoK8VD1ZWKnWIlEeEBsKz05rJhnJrZ
-         y1bnQ+CiUybkW8LTIpxIj6Q02TXgv9k/JtPRxCjqDqxXV9C64almb2rvVpuyhv+XWLyE
-         Omwvo53e89JbiFOnvzpRFj/rN8Qr22GTbotVRbMAWCKu1e0CJVmzGO7l2KVsYTLqQhE7
-         DtQZrWIJF8yMzvjtbsNI8cJKsUuIMG12gEkqmyn4QZ6CuRV63PW3IpArLcnjSXuCxRnZ
-         SZrwG/JWl86Xm1JM+Bn34hc1aL0VeGfXpFRciJWKkeHBB58XHUbr0I6gcZ/+5ah7MbkU
-         +1Iw==
-X-Gm-Message-State: AOAM531n9DjW6ct7R9m0Q+h8BAh4H82Ym7RJg3Izzd72yZHLaFJBfDOa
-        ymADG/BRmW4DklUza0D514ayP35EgLiYMrriTJ6e9w==
-X-Google-Smtp-Source: ABdhPJzeq/FzwGiCeBTJHEg6r95G1ZdhTdmrdSjD6Yutu6gLbJJWNcXh4b7oAOFsB95LEsMJlk6By0jWGzJ/zBOV8kg=
-X-Received: by 2002:a2e:6a13:: with SMTP id f19mr8258334ljc.365.1643102092835;
- Tue, 25 Jan 2022 01:14:52 -0800 (PST)
+        bh=m3vz4K1cVFxkkZgxl+94bcQ+gdSebDBC3L0OFBYI+gI=;
+        b=pNkXQ6haDJDXB2NCZXSXWC8uR12B5+xOb665H2kFOP0XKrKFB+FRKplzVuuzRn2GKN
+         KDP83+zaxCxJYuKzgc+egb+IgsuXtZ9w2bKl6apXe5dSJ3UWQ7R76c2NbV30EMNTyFHK
+         fcSWjTMFS4VL9Gnws8Gh9HHSC/d416ko2sFmnoHWl5oh+4/nDa1d7MjkSAz9iqMUjs57
+         8CzLT56l5XirG0wxmjVdOa05svnW0z2EIYfFPoBl0BOFn3tnl06RdXKu5Myeaa6ObeJt
+         Dy1PfAe1+1NKI5QVtQYUZiUszBFauhO+Xxsk/PKMpEly4i12xNNITzQQUZs3ty0i3vI9
+         QQlQ==
+X-Gm-Message-State: AOAM531Ls2p1IXcqR6JqY0UUOjWbwPWhOmZTMmBwrwJk+Lys6Wfy7kZe
+        nz4ta1KatMDR5L/Gb/9AIPaxn2lgInezWvOgIG/x/w==
+X-Google-Smtp-Source: ABdhPJyKED35BiARsyi5JjkQILds3vmoy8nNLHmR1XxangMF+3k3jjmDTcZF5xnFaqXGnDk9Tr7DzrwnSr3rG5yCxv0=
+X-Received: by 2002:a17:906:274f:: with SMTP id a15mr15375119ejd.492.1643101996062;
+ Tue, 25 Jan 2022 01:13:16 -0800 (PST)
 MIME-Version: 1.0
-References: <20220120200139.118978-1-tadeusz.struk@linaro.org> <20220125011804.mhlhdenbjluzqkgf@oracle.com>
-In-Reply-To: <20220125011804.mhlhdenbjluzqkgf@oracle.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Tue, 25 Jan 2022 10:14:41 +0100
-Message-ID: <CAKfTPtB7UvUG3C_xiHL-V6eDfDOAkpzFWa0_QQeeRAQG7PovXQ@mail.gmail.com>
-Subject: Re: [PATCH v2] sched/fair: Fix fault in reweight_entity
-To:     Daniel Jordan <daniel.m.jordan@oracle.com>
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>, peterz@infradead.org,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+References: <20220114141507.395271-1-marcel@ziswiler.com> <20220114141507.395271-3-marcel@ziswiler.com>
+In-Reply-To: <20220114141507.395271-3-marcel@ziswiler.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 25 Jan 2022 10:13:05 +0100
+Message-ID: <CAMRc=MdHeGPNMcp23aY+YTH0rz-1WjPPqozWjZE8Onnwz0V5Yg@mail.gmail.com>
+Subject: Re: [PATCH v2 02/11] dt-bindings: gpio: fix gpio-hog example
+To:     Marcel Ziswiler <marcel@ziswiler.com>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Rob Herring <robh@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 at 02:18, Daniel Jordan <daniel.m.jordan@oracle.com> wrote:
+On Fri, Jan 14, 2022 at 3:15 PM Marcel Ziswiler <marcel@ziswiler.com> wrote:
 >
-> Hi,
+> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 >
-> On Thu, Jan 20, 2022 at 12:01:39PM -0800, Tadeusz Struk wrote:
-> > Syzbot found a GPF in reweight_entity(). This has been bisected to commit
-> > 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
-> >
-> > There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
-> > within a thread group that causes a null-ptr-deref in reweight_entity()
-> > in CFS. The scenario is that the main process spawns number of new
-> > threads, which then call setpriority(PRIO_PGRP, 0, prio), wait, and exit.
-> > For each of the new threads the copy_process() gets invoked, which adds
-> > the new task_struct to the group, and eventually calls sched_post_fork() for it.
-> >
-> > In the above scenario there is a possibility that setpriority(PRIO_PGRP)
-> > and set_one_prio() will be called for a thread in the group that is just
-> > being created by copy_process(), and for which the sched_post_fork() has
-> > not been executed yet. This will trigger a null pointer dereference in
-> > reweight_entity(), as it will try to access the run queue pointer, which
-> > hasn't been set.
+> Even if this is no yaml yet at least fix the example to be compliant to
+> later schema as e.g. found in gpio-pca95xx.yaml, fairchild,74hc595.yaml
+> and gpio/fsl-imx-gpio.yaml.
 >
-> It's kinda strange that p->se.cfs_rq is NULLed in __sched_fork().
-> AFAICT, that lets set_task_rq_fair() distinguish between fork and other
-> paths per ad936d8658fd, but it's causing this problem now and it's not
-> the only way that set_task_rq_fair() could tell the difference.
+> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> Acked-by: Rob Herring <robh@kernel.org>
 >
-> We might be able to get rid of the NULL assignment instead of adding
-> code to detect it.  Maybe something like this, against today's mainline?
-> set_task_rq_fair() would rely on TASK_NEW instead of NULL.
+> ---
 >
-> Haven't thought it all the way through, so could be missing something.
-> Will think more
+> Changes in v2:
+> - Added Rob's ack.
+>
+>  Documentation/devicetree/bindings/gpio/gpio.txt | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/devicetree/bindings/gpio/gpio.txt b/Documentation/devicetree/bindings/gpio/gpio.txt
+> index a8895d339bfe..5663e71b751f 100644
+> --- a/Documentation/devicetree/bindings/gpio/gpio.txt
+> +++ b/Documentation/devicetree/bindings/gpio/gpio.txt
+> @@ -213,7 +213,7 @@ Example of two SOC GPIO banks defined as gpio-controller nodes:
+>                 gpio-controller;
+>                 #gpio-cells = <2>;
+>
+> -               line_b {
+> +               line_b-hog {
+>                         gpio-hog;
+>                         gpios = <6 0>;
+>                         output-low;
+> --
+> 2.33.1
+>
 
-Could we use :
-set_load_weight(p, !(p->__state & TASK_NEW));
-instead of
-set_load_weight(p, true);
-in set_user_nice and __setscheduler_params.
+Applied, thanks!
 
-The current always true value forces the update of the weight of the
-cfs_rq of the task which is not already set in this case
-
->
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index 848eaa0efe0ea..9a5b264c5dc10 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -4241,10 +4241,6 @@ static void __sched_fork(unsigned long clone_flags, struct task_struct *p)
->         p->se.vruntime                  = 0;
->         INIT_LIST_HEAD(&p->se.group_node);
->
-> -#ifdef CONFIG_FAIR_GROUP_SCHED
-> -       p->se.cfs_rq                    = NULL;
-> -#endif
-> -
->  #ifdef CONFIG_SCHEDSTATS
->         /* Even if schedstat is disabled, there should not be garbage */
->         memset(&p->stats, 0, sizeof(p->stats));
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 5146163bfabb9..7aff3b603220d 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -3339,15 +3339,19 @@ static inline void update_tg_load_avg(struct cfs_rq *cfs_rq)
->   * caller only guarantees p->pi_lock is held; no other assumptions,
->   * including the state of rq->lock, should be made.
->   */
-> -void set_task_rq_fair(struct sched_entity *se,
-> -                     struct cfs_rq *prev, struct cfs_rq *next)
-> +void set_task_rq_fair(struct task_struct *p, struct cfs_rq *next)
->  {
-> +       struct sched_entity *se = &p->se;
-> +       struct cfs_rq *prev = se->cfs_rq;
->         u64 p_last_update_time;
->         u64 n_last_update_time;
->
->         if (!sched_feat(ATTACH_AGE_LOAD))
->                 return;
->
-> +       if (p->__state == TASK_NEW)
-> +               return;
-> +
->         /*
->          * We are supposed to update the task to "current" time, then its up to
->          * date and ready to go to new CPU/cfs_rq. But we have difficulty in
-> @@ -3355,7 +3359,7 @@ void set_task_rq_fair(struct sched_entity *se,
->          * time. This will result in the wakee task is less decayed, but giving
->          * the wakee more load sounds not bad.
->          */
-> -       if (!(se->avg.last_update_time && prev))
-> +       if (!se->avg.last_update_time)
->                 return;
->
->  #ifndef CONFIG_64BIT
-> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-> index de53be9057390..a6f749f136ee1 100644
-> --- a/kernel/sched/sched.h
-> +++ b/kernel/sched/sched.h
-> @@ -514,11 +514,10 @@ extern int sched_group_set_shares(struct task_group *tg, unsigned long shares);
->  extern int sched_group_set_idle(struct task_group *tg, long idle);
->
->  #ifdef CONFIG_SMP
-> -extern void set_task_rq_fair(struct sched_entity *se,
-> -                            struct cfs_rq *prev, struct cfs_rq *next);
-> +extern void set_task_rq_fair(struct task_struct *p, struct cfs_rq *next);
->  #else /* !CONFIG_SMP */
-> -static inline void set_task_rq_fair(struct sched_entity *se,
-> -                            struct cfs_rq *prev, struct cfs_rq *next) { }
-> +static inline void set_task_rq_fair(struct task_struct *p,
-> +                                   struct cfs_rq *next) {}
->  #endif /* CONFIG_SMP */
->  #endif /* CONFIG_FAIR_GROUP_SCHED */
->
-> @@ -1910,7 +1909,7 @@ static inline void set_task_rq(struct task_struct *p, unsigned int cpu)
->  #endif
->
->  #ifdef CONFIG_FAIR_GROUP_SCHED
-> -       set_task_rq_fair(&p->se, p->se.cfs_rq, tg->cfs_rq[cpu]);
-> +       set_task_rq_fair(p, tg->cfs_rq[cpu]);
->         p->se.cfs_rq = tg->cfs_rq[cpu];
->         p->se.parent = tg->se[cpu];
->  #endif
+Bart
