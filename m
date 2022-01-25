@@ -2,113 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 22:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E12C47084
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 22:58:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234471AbiAYWzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 17:55:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:38315 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234519AbiAYWzm (ORCPT
+        id S234495AbiAYW6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 17:58:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234781AbiAYW6G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 17:55:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643151341;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l5eZe6k04P6h4FujwlF9i3vzXzuFnGBmcS8dEFuDl4U=;
-        b=LxHMY/hazanFBGqndivwQVEyrzRAB9h+hlOy3PHzdAuGnP/3WRuqud6J+pvJLZcFjaLIHL
-        F/1Phv+qYPrZo63WK3L5irSDhp9DuUr2d3FFXds6MpziMDwsEkq/nZullL1PoTIzEsCqxA
-        6Lt7acpdahyZjsUHRu9xSD9pH6Ws8Jw=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-583-MHmnVgz1Nka6ZBNEw7vWpQ-1; Tue, 25 Jan 2022 17:55:38 -0500
-X-MC-Unique: MHmnVgz1Nka6ZBNEw7vWpQ-1
-Received: by mail-wm1-f72.google.com with SMTP id d140-20020a1c1d92000000b0034edefd55caso1654097wmd.4
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 14:55:38 -0800 (PST)
+        Tue, 25 Jan 2022 17:58:06 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DDDEC06161C
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 14:58:05 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id x7so59571362lfu.8
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 14:58:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vUEaRvAeqO4wB5ShFfH+VshVtU3ztYzAw/eGT2KcLXg=;
+        b=emXX7F+vgI8KhnQH9o8EoWDuLk34WEtKEuctbuMWmeiFTDs04Yti6LC1oiu8hvoE0F
+         6zHK6uDducjGcgdYBRTb/60kK0eZSzL099gOzXGM+UvZ2vcGKri/cniF0gpJYUVnWRea
+         6dGK8DLP2OcCP90vFMP7G/3sSDZi7vsl0YXErQRmv4pNYTWuvtBLkg0s3XkX0t93bXLX
+         1OF5dZjc6ezxkmX4OZJavqEQKMXuh+0Jok/FvIWwPv+o/Ck56Z/kEONKFEdFsr8xnxJ3
+         6kjKUATDq6/IYyps70N9u/r+ZwJx3zo8OXiUl5ue0/cHQkVTBeKKA9HgNz4/nTD/6vmB
+         uMuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=l5eZe6k04P6h4FujwlF9i3vzXzuFnGBmcS8dEFuDl4U=;
-        b=3FwNsVCZjOylL1r2DoB4s9u5XM8Apwvl5akaGqQPWE6MVJoOzrtMTAh+Eapvd9g7pv
-         6xKlkdcWqJ3/kbDGn+uc3PWKJf2237MFd4FC4QtO6+DHgooAtFFBf0+2pJ9XEhFHje8r
-         ZvSiKJF0J0c6VjmB8jkPp+o63QfPTfB3iyTY0t0LcZQHCxXLLSCJSeH51LoAcgTXFUjd
-         kJvTNAf6l1GwOscpUHRxPy/Gg0NPYoe+ZHH/HGXg+OR2SUvuLIG9kFM/zFUrqhkRuBOs
-         zdbGmt5mRkuc+rS3qsCsSb3LnaL9+nKlSTMV6K+9nwLG4MtoYBrX/coeEa6RVyElGw3U
-         Cusw==
-X-Gm-Message-State: AOAM533UqPRK4b+/22+yPf69Ih4Vu6Sw18HavoEWhbusLu2PgyoUM2G6
-        aoHn0vlIpCzpnfWEruS9iVk5CymbjBuNbU/3XCaN0aerjxkQlqfhav1q6x9l4X8abcs/noz60iM
-        5S9Vhwt/7QR20oBmg+WD06Lr6
-X-Received: by 2002:a5d:6481:: with SMTP id o1mr5212536wri.634.1643151337093;
-        Tue, 25 Jan 2022 14:55:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwM72FiqwBIeZCWiqaero+rda/N1iBvU/aDG+fYvb/Jh1rErqIrF4zFPCKpU1dPpMpFNDQO+g==
-X-Received: by 2002:a5d:6481:: with SMTP id o1mr5212524wri.634.1643151336908;
-        Tue, 25 Jan 2022 14:55:36 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id h11sm1513031wmb.12.2022.01.25.14.55.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 14:55:36 -0800 (PST)
-Message-ID: <e89dbc7b-b3ae-c334-b704-f5633725c29f@redhat.com>
-Date:   Tue, 25 Jan 2022 23:55:35 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vUEaRvAeqO4wB5ShFfH+VshVtU3ztYzAw/eGT2KcLXg=;
+        b=38/doV7Gdp/ktMl7mcV4QDMdsNtgoUlq5TXWVC71fMvv1K5c2CHfjHSKF98nyD1uR/
+         HJXez4pswiKc+YNwEyX28+7MtFXHNn7Qil/ff6ClW65tfMQdOVb0UF37P3OeYOE8IYTh
+         xKi1smnoueo7Xl7PMRPqyAua9r6eVK4fUkW8xU+a1yYOnrSlFL8vUPcUzkmqQWGTq6ae
+         h/uXwQjGo1jLW4Q3wa32jKshJk5+ZYQRqtqlmZQKEpX8eIyuiLoE+h6+To8akmQeaCjE
+         3ZmoR2NA8yOzxXzzhiu7ZJReDft+eXZJu3HW5mhRVfKa14OYWt0t0er9zaz8NgD3FiwH
+         YAPQ==
+X-Gm-Message-State: AOAM531l367CXROLXrEaxeN5l6RqXLUN1hWnc/8oINhaMyK+5vZkD/7g
+        d+KVxmnB8XmTWTFvkLOCCFtMMZwG4Oxqj+hPu+4pCw==
+X-Google-Smtp-Source: ABdhPJzS7mt6iG3Pp05PQnOZLNNTR53sS7DB6BxYN+I6qmf5VodV069J0P5dkoLqwCzN7ToUVidHyehHCQRs1LfEyXA=
+X-Received: by 2002:a05:6512:33d5:: with SMTP id d21mr18778383lfg.8.1643151483817;
+ Tue, 25 Jan 2022 14:58:03 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] drm/panel-edp: Allow querying the detected panel via
- sysfs
-Content-Language: en-US
-To:     Douglas Anderson <dianders@chromium.org>,
-        dri-devel@lists.freedesktop.org
-Cc:     David Airlie <airlied@linux.ie>, robert.foss@linaro.org,
-        linux-kernel@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>, jjsu@chromium.org,
-        lschyi@chromium.org, Sam Ravnborg <sam@ravnborg.org>
-References: <20220125135406.1.I62322abf81dbc1a1b72392a093be0c767da9bf51@changeid>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <20220125135406.1.I62322abf81dbc1a1b72392a093be0c767da9bf51@changeid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220125051736.2981459-1-shakeelb@google.com> <2bec4db-1533-2d39-77f9-bf613fc262d9@google.com>
+In-Reply-To: <2bec4db-1533-2d39-77f9-bf613fc262d9@google.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Tue, 25 Jan 2022 14:57:52 -0800
+Message-ID: <CALvZod5B_nQdU_MHmcYyOpHhGrv5YUnMY-rBPE11Tou6XU_mSA@mail.gmail.com>
+Subject: Re: [PATCH] mm: io_uring: allow oom-killer from io_uring_setup
+To:     David Rientjes <rientjes@google.com>
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>, io-uring@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Doug,
+On Tue, Jan 25, 2022 at 10:35 AM David Rientjes <rientjes@google.com> wrote:
+>
+> On Mon, 24 Jan 2022, Shakeel Butt wrote:
+>
+> > On an overcommitted system which is running multiple workloads of
+> > varying priorities, it is preferred to trigger an oom-killer to kill a
+> > low priority workload than to let the high priority workload receiving
+> > ENOMEMs. On our memory overcommitted systems, we are seeing a lot of
+> > ENOMEMs instead of oom-kills because io_uring_setup callchain is using
+> > __GFP_NORETRY gfp flag which avoids the oom-killer. Let's remove it and
+> > allow the oom-killer to kill a lower priority job.
+> >
+>
+> What is the size of the allocations that io_mem_alloc() is doing?
+>
+> If get_order(size) > PAGE_ALLOC_COSTLY_ORDER, then this will fail even
+> without the __GFP_NORETRY.  To make the guarantee that workloads are not
+> receiving ENOMEM, it seems like we'd need to guarantee that allocations
+> going through io_mem_alloc() are sufficiently small.
+>
+> (And if we're really serious about it, then even something like a
+> BUILD_BUG_ON().)
+>
 
-On 1/25/22 22:54, Douglas Anderson wrote:
-> Recently we added generic "edp-panel"s probed by EDID. To support
-> panels in this way we look at the panel ID in the EDID and look up the
-> panel in a table that has power sequence timings. If we find a panel
-> that's not in the table we will still attempt to use it but we'll use
-> conservative timings. While it's likely that these conservative
-> timings will work for most nearly all panels, the performance of
-> turning the panel off and on suffers.
-> 
-> We'd like to be able to reliably detect the case that we're using the
-> hardcoded timings without relying on parsing dmesg. This allows us to
-> implement tests that ensure that no devices get shipped that are
-> relying on the conservative timings.
-> 
-> Let's add a new sysfs entry to panel devices. It will have one of:
-> * UNKNOWN - We tried to detect a panel but it wasn't in our table.
-> * HARDCODED - We're not using generic "edp-panel" probed by EDID.
-> * A panel name - This is the name of the panel from our table.
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
+The test case provided to me for which the user was seeing ENOMEMs was
+io_uring_setup() with 64 entries (nothing else).
 
-Patch looks good to me.
+If I understand rings_size() calculations correctly then the 0 order
+allocation was requested in io_mem_alloc().
 
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-
-Should this new sysfs entry be documented in Documentation/ABI/ ?
-
-Best regards,
--- 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+For order > PAGE_ALLOC_COSTLY_ORDER, maybe we can use
+__GFP_RETRY_MAYFAIL. It will at least do more aggressive reclaim
+though I think that is a separate discussion. For this issue, we are
+seeing ENOMEMs even for order 0 allocations.
