@@ -2,91 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1772FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452544AbiAYOE0 (ORCPT
+        id S1358916AbiAYOE7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:04:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234877AbiAYOAu (ORCPT
+        Tue, 25 Jan 2022 09:04:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54808 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233817AbiAYOA1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:00:50 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6C0C06176C
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:00:45 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id a25so13035939lji.9
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:00:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jCE3Q9w0pYZdgf9y0akmYzNqAp0U6bL6oFF7qLl/HS4=;
-        b=C80cnNOrbC/ii20I5s7FIzvQcERCV/9osEmLgdRKjY/XGh8q+JbuYn32GnnFQx3eMi
-         jXQ7fNrTUQiNOrOQP8vCSxGLBbV6gdmCNdmNNY/v7NsMW6d5gn60uBIAmJohvxc/yRM9
-         QcJiF+XA+Bvfj/vfqjJdk7ydzwymuvqknSTufiXApG7fxcyYKZNpeVM0uF1xWTT2A2c6
-         K2w/rHWss33ijX+OKtsYvnNU6U4vt4L8wnX4+NFYCIB/J+BoQd2gedaBwyF3YoHGqRd/
-         9EAuggep4kxiP7jdPVGKUgzNe4FRemYsuZYyDy5ksk2zvTqra+D4ny0UGcry7OTnBYRH
-         HB3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jCE3Q9w0pYZdgf9y0akmYzNqAp0U6bL6oFF7qLl/HS4=;
-        b=TggXZ+tp2x/7uYMpT87AnA1BFyT8S9kt63r9knfLN6IxchcikR/y7oJBLet9uw/8MK
-         SU/ekt/1gc6OksP4ZPnGGCgbW5XbhlqVzsgD1MuimIBw1TtIrsrwgMHhKArBnFS380Jg
-         hwIR344QMN3Kb8cJCio2RfW33wlLFGCWuvwl1m93deX86SQd90i3+v7PEZVoaAEfnU6z
-         O3Gqo7tfV/hhGgr2bZVVbRSBwIB7wb1duvoTeh22t8Ostx6RMz0vLTOAehr9OJ6hwhBp
-         T0OyDXXnL46GXG254PnIRkFCOLnfxAL7umo9vwPI5y6IWsXXBfOj45ebib3LzbXXFMcI
-         QCKg==
-X-Gm-Message-State: AOAM532wfAsgk7KlnRSrjlI055OnbbmXJjbKT4H61cCkRiloAeHg4FPI
-        ew5RtIHjy3xsajG/vQm0FikyJA==
-X-Google-Smtp-Source: ABdhPJzwDU03/3/lYn+e29qN9G04dI/m9iuoAGuQYcq3nmcfKuiUkZoE86mXTsxivN3kWvmOPTYuSw==
-X-Received: by 2002:a2e:878a:: with SMTP id n10mr3245940lji.400.1643119243345;
-        Tue, 25 Jan 2022 06:00:43 -0800 (PST)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id u1sm1222580lfc.98.2022.01.25.06.00.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 06:00:42 -0800 (PST)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id 21B16103C0E; Tue, 25 Jan 2022 17:01:16 +0300 (+03)
-Date:   Tue, 25 Jan 2022 17:01:16 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     William Kucharski <kucharsk@gmail.com>,
-        Khalid Aziz <khalid.aziz@oracle.com>,
-        akpm@linux-foundation.org, willy@infradead.org,
-        longpeng2@huawei.com, arnd@arndb.de, dave.hansen@linux.intel.com,
-        rppt@kernel.org, surenb@google.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
-Message-ID: <20220125140116.db2lg6qmwlpdbgcg@box.shutemov.name>
-References: <20220125114212.ks2qtncaahi6foan@box.shutemov.name>
- <E44A9AB1-DBF0-4B8E-B049-293DD4DE6093@gmail.com>
- <fccf697d-919e-8e99-ea08-3ab991b610eb@redhat.com>
+        Tue, 25 Jan 2022 09:00:27 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F085661512;
+        Tue, 25 Jan 2022 14:00:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64145C340E9;
+        Tue, 25 Jan 2022 14:00:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643119226;
+        bh=9awAQP4oKFlE1lZZ1KeVdAwXKINZ0vFGHrNIDlHoYCs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=LtGAKvSbKL0VUM/VhFyPEShcpcV9FO6U0tOG9pslt9CU3GR9JwSNjNhsIfI/SXagT
+         Bg+JIOg4Fo5gah5jM/zosakuqb/vR0PR4CvlXjnp6ViKpasSlBbhAplcTFpemnQxED
+         2/FJFXBl9Hq6WNzzwniCvcgmiyr41+TCQk7D4WUjm5oMrmKxk9ZH5gE0Scze6eTrYD
+         CRcQwMIzcFQSiuP3eiWe4D4KBV/7oJmJFjbTFJk42vtjCJUb+nUacFBK9Kx1pSHspe
+         1kQxsZ65W7Y8q50uaJOgqx2fnxn8BsIKbUN0A3DHTJvxhN3D9ThYc3c0H2X+mxQ+no
+         hwX70DXQMC1lA==
+Received: by mail-ed1-f54.google.com with SMTP id a18so62792835edj.7;
+        Tue, 25 Jan 2022 06:00:26 -0800 (PST)
+X-Gm-Message-State: AOAM531PRd6ZiWV0WOBqdh4GqqAyh4eJ53Z1sf40Y2Z/mhtSZv4Bpdpo
+        ggnu88NnbZAEJpfd5x6d6t2U5qvTnRz4ReXs1Q==
+X-Google-Smtp-Source: ABdhPJzpLb/eBKpd+yZrCy2aAmQXbDlTvrjCdky51D0FFx0SdHMSqVbntVHTjHVMzz6VnkzGEBO7u5rPsDLV094wgLI=
+X-Received: by 2002:a17:906:d184:: with SMTP id c4mr16020810ejz.20.1643119224639;
+ Tue, 25 Jan 2022 06:00:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fccf697d-919e-8e99-ea08-3ab991b610eb@redhat.com>
+References: <20220110134659.30424-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220110134659.30424-11-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220110134659.30424-11-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Tue, 25 Jan 2022 08:00:13 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKnWwSEneKTvQWWmGk1gJG2dx37vAJAFWOLVm5wL5t31g@mail.gmail.com>
+Message-ID: <CAL_JsqKnWwSEneKTvQWWmGk1gJG2dx37vAJAFWOLVm5wL5t31g@mail.gmail.com>
+Subject: Re: [PATCH v2 10/12] arm64: dts: renesas: Add initial DTSI for RZ/V2L SoC
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-renesas-soc@vger.kernel.org,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 02:18:57PM +0100, David Hildenbrand wrote:
-> On 25.01.22 13:09, William Kucharski wrote:
-> > I would think this should be the case; certainly it seems to be a more effective approach than having to manually enable sharing via the API in every case or via changes to ld.so.
-> > 
-> > If anything it might be useful to have an API for shutting it off, though there are already multiple areas where the system shares resources in ways that cannot be shut off by user action.
-> > 
-> 
-> I don't have time to look into details right now, but I see various
-> possible hard-to-handle issues with sharing anon pages via this
-> mechanism between processes.
+On Mon, Jan 10, 2022 at 7:47 AM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+>
+> From: Biju Das <biju.das.jz@bp.renesas.com>
+>
+> The RZ/V2L is package- and pin-compatible with the RZ/G2L. The only
+> difference being the RZ/V2L SoC has additional DRP-AI IP (AI
+> accelerator).
+>
+> Add initial DTSI for RZ/V2L SoC with below SoC specific dtsi files for
+> supporting single core and dual core devices.
+>
+> r9a07g054l1.dtsi => RZ/V2L R9A07G054L1 SoC specific parts
+> r9a07g054l2.dtsi => RZ/V2L R9A07G054L2 SoC specific parts
+>
+> Both RZ/G2L and RZ/V2L SMARC EVK SoM  are identical apart from SoC's
+> used hence the common dtsi files (rzg2l-smarc*.dtsi) are share between
+> RZ/G2L and RZ/V2L SMARC EVK. Place holders are added in device nodes to
+> avoid compilation errors for the devices which have not been enabled yet
+> on RZ/V2L SoC.
+>
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+> v1->v2
+> * None
+> ---
+>  arch/arm64/boot/dts/renesas/r9a07g054.dtsi   | 491 +++++++++++++++++++
+>  arch/arm64/boot/dts/renesas/r9a07g054l1.dtsi |  25 +
+>  arch/arm64/boot/dts/renesas/r9a07g054l2.dtsi |  13 +
+>  3 files changed, 529 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g054.dtsi
+>  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g054l1.dtsi
+>  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g054l2.dtsi
+>
+> diff --git a/arch/arm64/boot/dts/renesas/r9a07g054.dtsi b/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
+> new file mode 100644
+> index 000000000000..5de8f343f12a
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
+> @@ -0,0 +1,491 @@
+> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +/*
+> + * Device Tree Source for the RZ/V2L SoC
+> + *
+> + * Copyright (C) 2021 Renesas Electronics Corp.
+> + */
+> +
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/clock/r9a07g054-cpg.h>
 
-Right. We should not break invariant that an anonymous page can only be
-mapped into a process once. Otherwise may need to deal with new class of
-security issues.
+linux-next is failing because this header is missing:
 
--- 
- Kirill A. Shutemov
+In file included from arch/arm64/boot/dts/renesas/r9a07g054l2.dtsi:9,
+                 from arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts:9:
+arch/arm64/boot/dts/renesas/r9a07g054.dtsi:9:10: fatal error:
+dt-bindings/clock/r9a07g054-cpg.h: No such file or directory
+    9 | #include <dt-bindings/clock/r9a07g054-cpg.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
