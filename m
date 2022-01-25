@@ -2,119 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFAD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344901AbiAYRBs (ORCPT
+        id S1348516AbiAYRCX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:01:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
+        Tue, 25 Jan 2022 12:02:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351746AbiAYQ7X (ORCPT
+        with ESMTP id S1354779AbiAYRAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 11:59:23 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F5FC061783
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:59:20 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id r25so4387581wrc.12
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:59:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0EPBTQB+lrJUfmAenKtP4vKFgFhxTwuJuGHovZ9LsFE=;
-        b=QhaQEJdMKLqtIqzHjLgydhsRceWU0PhhmbNDNtwNqt62yw+clPUDRqeO3McjtGcb5h
-         61ADGpP/FdrSZSlir/xDTOpCLQ/cIGQ9gRs1zV6v6jwSqOzqt4aDGp3rCAglx/OXuoi3
-         /AkO3meyRxOgscSoNR5Nrf8CQuswv+9iEq2Jpq+OWoaB23diYL2HtGV4WE7uVIAC1xZw
-         7gPEk2TtkO6Yn3oRbB2kXY6SIxoa4uXzB/WHnfTZCnX9H5OCHPhrf3tqZT6NvZPHBhzt
-         qggN4D0baZrmfIGrOebWZDVojORI4G2+B1tAlZPzXOA1OqXdncZOk1rgb81f/0bEM3j9
-         zrow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0EPBTQB+lrJUfmAenKtP4vKFgFhxTwuJuGHovZ9LsFE=;
-        b=wqI+N0xHi6swGzRnJmS2RK/ZF2i052tLXpQNwF+DCqk3YWpfJo5KBibebSapuH/vUx
-         ALiIHa0b5LTNc3FeKsjisHjNl+zlC94cf+OLt/XaQDrqM8DWDTiUs8lod+g6uXo6MsY3
-         z5HqKJsO/RUWzdj+w1Nld803+lmE9ipNiYiuWJmE5vGi5HgQ+rFm5lV43/d9gSbmVovU
-         LQIphh5chZh+UpcE7sZAq/oDx/86ZmYAHsxS29t9LERTTNMPWSNR+IPjmhN7A0nOjIWG
-         YnsyB/r+xvdt+DexyTR7ZBu7BaEPu3QRf8tT50gmCxdJoXAzVpj1ELlslKHHHa9rZYix
-         emXQ==
-X-Gm-Message-State: AOAM531ZleFUQ0F8JKb1PYHKiYgLEoBlBllWihcWDgEFbiTrVk0GP/B4
-        XfJif9z1ckyrbvFNm0FxvptVw0mMaqaXl2R6YecdHA==
-X-Google-Smtp-Source: ABdhPJzhr5UswaMT7F1OyCk083+R2wOZHEwcVvfkypvFYUFRK0pPN7sqIb8CdgutboBR4Raggs4Qj74sny/tSJ1be8k=
-X-Received: by 2002:adf:dfcb:: with SMTP id q11mr18953518wrn.181.1643129959261;
- Tue, 25 Jan 2022 08:59:19 -0800 (PST)
+        Tue, 25 Jan 2022 12:00:20 -0500
+X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 25 Jan 2022 09:00:18 PST
+Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E7DC06174E
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:00:17 -0800 (PST)
+Received: (qmail 10734 invoked from network); 25 Jan 2022 16:52:27 -0000
+Received: from p200300cf0713e20076d435fffeb7be92.dip0.t-ipconnect.de ([2003:cf:713:e200:76d4:35ff:feb7:be92]:48794 HELO eto.sf-tec.de) (auth=eike@sf-mail.de)
+        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
+        for <linux-mm@kvack.org>; Tue, 25 Jan 2022 17:52:27 +0100
+From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
+To:     linux-mm@kvack.org, Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     linux-kernel@vger.kernel.org, hch@infradead.org,
+        akpm@linux-foundation.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        linux-parisc@vger.kernel.org
+Subject: Re: [RFC V1 21/31] parisc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Date:   Tue, 25 Jan 2022 17:53:27 +0100
+Message-ID: <11909976.O9o76ZdvQC@eto.sf-tec.de>
+In-Reply-To: <1643029028-12710-22-git-send-email-anshuman.khandual@arm.com>
+References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com> <1643029028-12710-22-git-send-email-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-References: <20220122023447.1480995-1-eugenis@google.com> <YfAV6FTN5g6jZGj7@FVFF77S0Q05N>
- <YfAcKZpDWmKMZy8q@FVFF77S0Q05N>
-In-Reply-To: <YfAcKZpDWmKMZy8q@FVFF77S0Q05N>
-From:   Evgenii Stepanov <eugenis@google.com>
-Date:   Tue, 25 Jan 2022 08:59:07 -0800
-Message-ID: <CAFKCwrjbn3e2w-LikMY5bOvUKbUBi7_4iwBOD7KQUn8QHPwbng@mail.gmail.com>
-Subject: Re: [PATCH] arm64: extable: fix null deref in load_unaligned_zeropad.
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="nextPart5535662.DvuYhMxLoT"; micalg="pgp-sha1"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 7:50 AM Mark Rutland <mark.rutland@arm.com> wrote:
->
-> On Tue, Jan 25, 2022 at 03:23:20PM +0000, Mark Rutland wrote:
-> > On Fri, Jan 21, 2022 at 06:34:47PM -0800, Evgenii Stepanov wrote:
-> > > ex_handler_load_unaligned_zeropad extracts the source and data register
-> > > numbers from the wrong field of the exception table.
-> >
-> > Ouch. Did you find this by inspection, or did this show up in testing?
-> >
-> > Sorry about this.
-> >
-> > I think we should be a little more explicit as to exactly what goes wrong. How
-> > about:
-> >
-> > | In ex_handler_load_unaligned_zeropad() we erroneously extract the data and
-> > | addr register indices from ex->type rather than ex->data. As ex->type will
-> > | contain EX_TYPE_LOAD_UNALIGNED_ZEROPAD (i.e. 4):
-> > |
-> > | * We'll always treat X0 as the address register, since EX_DATA_REG_ADDR is
-> > |   extracted from bits [9:5]. Thus, we may attempt to dereference an arbitrary
-> > |   address as X0 may hold an arbitary value.
-> > |
-> > | * We'll always treat X4 as the data register, since EX_DATA_REG_DATA is
-> > |   extracted from bits [4:0]. Thus we will corrupt X4 and cause arbitrary
-> > |   behaviour within load_unaligned_zeropad() and its caller.
-> > |
-> > | Fix this by extracting both values from ex->data as originally intended.
-> >
-> > > Fixes: 753b3236
-> >
-> > That should be expanded, e.g.
-> >
-> >   Fixes: 753b32368705c396 ("arm64: extable: add load_unaligned_zeropad() handler")
-> >
-> > With those changes:
-> >
-> > Reviewed-by: Mark Rutland <mark.rutland@arm.com>
->
-> Looking again, sicne this isn't jsut a null-deref, can we also rework the
-> title, something like:
->
-> | arm64: extable: fix load_unaligned_zeropad() reg indices
+--nextPart5535662.DvuYhMxLoT
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-That's a much better commit message, thank you! I'll upload v2 shortly.
+Anshuman Khandual wrote:
+> This defines and exports a platform specific custom vm_get_page_prot() via
+> subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
+> macros can be dropped which are no longer needed.
+> 
+> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+> Cc: linux-parisc@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+> ---
+>  arch/parisc/Kconfig               |  1 +
+>  arch/parisc/include/asm/pgtable.h | 20 ---------------
+>  arch/parisc/mm/init.c             | 41 +++++++++++++++++++++++++++++++
+>  3 files changed, 42 insertions(+), 20 deletions(-)
+> 
+> diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
+> index 43c1c880def6..de512f120b50 100644
+> --- a/arch/parisc/Kconfig
+> +++ b/arch/parisc/Kconfig
+> @@ -10,6 +10,7 @@ config PARISC
+>  	select ARCH_HAS_ELF_RANDOMIZE
+>  	select ARCH_HAS_STRICT_KERNEL_RWX
+>  	select ARCH_HAS_UBSAN_SANITIZE_ALL
+> +	select ARCH_HAS_VM_GET_PAGE_PROT
+>  	select ARCH_NO_SG_CHAIN
+>  	select ARCH_SUPPORTS_HUGETLBFS if PA20
+>  	select ARCH_SUPPORTS_MEMORY_FAILURE
+> diff --git a/arch/parisc/include/asm/pgtable.h
+> b/arch/parisc/include/asm/pgtable.h index 3e7cf882639f..80d99b2b5913 100644
+> --- a/arch/parisc/include/asm/pgtable.h
+> +++ b/arch/parisc/include/asm/pgtable.h
+> @@ -269,26 +269,6 @@ extern void __update_cache(pte_t pte);
+>   * pages.
+>   */
+> 
+> -	 /*xwr*/
+> -#define __P000  PAGE_NONE
+> -#define __P001  PAGE_READONLY
+> -#define __P010  __P000 /* copy on write */
+> -#define __P011  __P001 /* copy on write */
+> -#define __P100  PAGE_EXECREAD
+> -#define __P101  PAGE_EXECREAD
+> -#define __P110  __P100 /* copy on write */
+> -#define __P111  __P101 /* copy on write */
+> -
+> -#define __S000  PAGE_NONE
+> -#define __S001  PAGE_READONLY
+> -#define __S010  PAGE_WRITEONLY
+> -#define __S011  PAGE_SHARED
+> -#define __S100  PAGE_EXECREAD
+> -#define __S101  PAGE_EXECREAD
+> -#define __S110  PAGE_RWX
+> -#define __S111  PAGE_RWX
+> -
+> -
+>  extern pgd_t swapper_pg_dir[]; /* declared in init_task.c */
+> 
+>  /* initial page tables for 0-8MB for kernel */
+> diff --git a/arch/parisc/mm/init.c b/arch/parisc/mm/init.c
+> index 1ae31db9988f..c8316e97e1a2 100644
+> --- a/arch/parisc/mm/init.c
+> +++ b/arch/parisc/mm/init.c
+> @@ -866,3 +866,44 @@ void flush_tlb_all(void)
+>  	spin_unlock(&sid_lock);
+>  }
+>  #endif
+> +
+> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
+> +{
+> +	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
+> +	case VM_NONE:
+> +		return PAGE_NONE;
+> +	case VM_READ:
+> +		return PAGE_READONLY;
+> +	case VM_WRITE:
+> +		return PAGE_NONE;
+> +	case VM_READ | VM_WRITE:
+> +		return PAGE_READONLY;
 
-This was found by updating to a newer QEMU that correctly delivers MTE
-faults from unaligned memory accesses, and triggers this bug reliably
-during Android boot. I'll add a stack trace to v2.
+This looks extremely strange. It probably is correct when it comes to CoW, how 
+about including the comment that was in the original definitions for the cases 
+where CoW is expected?
 
->
-> Thanks,
-> Mark.
+> +	case VM_EXEC:
+> +		return PAGE_EXECREAD;
+> +	case VM_EXEC | VM_READ:
+> +		return PAGE_EXECREAD;
+> +	case VM_EXEC | VM_WRITE:
+> +		return PAGE_EXECREAD;
+> +	case VM_EXEC | VM_READ | VM_WRITE:
+> +		return PAGE_EXECREAD;
+> +	case VM_SHARED:
+> +		return PAGE_NONE;
+> +	case VM_SHARED | VM_READ:
+> +		return PAGE_READONLY;
+> +	case VM_SHARED | VM_WRITE:
+> +		return PAGE_WRITEONLY;
+> +	case VM_SHARED | VM_READ | VM_WRITE:
+> +		return PAGE_SHARED;
+> +	case VM_SHARED | VM_EXEC:
+> +		return PAGE_EXECREAD;
+> +	case VM_SHARED | VM_EXEC | VM_READ:
+> +		return PAGE_EXECREAD;
+> +	case VM_SHARED | VM_EXEC | VM_WRITE:
+> +		return PAGE_RWX;
+> +	case VM_SHARED | VM_EXEC | VM_READ | VM_WRITE:
+> +		return PAGE_RWX;
+> +	default:
+> +		BUILD_BUG();
+> +	}
+> +}
+> +EXPORT_SYMBOL(vm_get_page_prot);
+
+
+--nextPart5535662.DvuYhMxLoT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCYfArBwAKCRBcpIk+abn8
+Tn3fAJ9mCiqlAWz0LSE02l6g56q9bKoqEgCfTTU/KTI/Xf7FeIAR89tBwIQgI/A=
+=Hgfz
+-----END PGP SIGNATURE-----
+
+--nextPart5535662.DvuYhMxLoT--
+
+
+
