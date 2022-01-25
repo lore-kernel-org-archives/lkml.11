@@ -2,113 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D66C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:28:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345145AbiAYP2s (ORCPT
+        id S1349226AbiAYP25 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 10:28:48 -0500
-Received: from mail-ua1-f45.google.com ([209.85.222.45]:33774 "EHLO
-        mail-ua1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343808AbiAYPZ7 (ORCPT
+        Tue, 25 Jan 2022 10:28:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51274 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344629AbiAYP1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:25:59 -0500
-Received: by mail-ua1-f45.google.com with SMTP id u6so38098405uaq.0;
-        Tue, 25 Jan 2022 07:25:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UDZLNNI8bYyTslSgTWAgw/zQxPHro7WjafgbKw4LNRo=;
-        b=dM+3K6FIBIr67m8hIBLOzHv13bxI28/tTu06WftoV2xDK3h84F9SiBJhbNIMrwOmFv
-         9H62idOHzSS3Ow4uqXK83kt43pxlPsk+Tq57IzVMYicsVKw385vu2CDRqJw1aobKIjhR
-         mrV1f6fi2S3FrGakx2MghIZiFOJwFxCsuqVHwpsb0f/T96y8g1AwROoSp+J0JXE7pnBU
-         QHb2wcXSp6so9WY+8ZPeAYwef8vLaOnINkKfGCU95dfl07K48OscZ7uOCnQ0XQFBpOmS
-         IAHfTitNK4NPsbiHLE/BLGGB6T9Zx5PO8v3xSSlG/8mazh7Z9ToHn1f+U/X3lVP1F7M8
-         SUQg==
-X-Gm-Message-State: AOAM53243CefptTYwIPRErexcViypNZDd8FviIhjE1KlLBoJSp/Yzn0O
-        Ws8zHlJhXlQIf8jFB5LqsMxe2z9NHCcLy/m5
-X-Google-Smtp-Source: ABdhPJz03PZ1ctx6US/HQo/SGmt/9jn5OMdKWd75V+MKGSyaiUavn+bDabmGnBrehBd/6IEh4DSOYQ==
-X-Received: by 2002:a67:c889:: with SMTP id v9mr5953435vsk.30.1643124353063;
-        Tue, 25 Jan 2022 07:25:53 -0800 (PST)
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
-        by smtp.gmail.com with ESMTPSA id g22sm1114451vsk.26.2022.01.25.07.25.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 07:25:51 -0800 (PST)
-Received: by mail-ua1-f51.google.com with SMTP id b37so20321618uad.12;
-        Tue, 25 Jan 2022 07:25:51 -0800 (PST)
-X-Received: by 2002:a67:a401:: with SMTP id n1mr3702988vse.38.1643124351338;
- Tue, 25 Jan 2022 07:25:51 -0800 (PST)
+        Tue, 25 Jan 2022 10:27:03 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC75C06173B;
+        Tue, 25 Jan 2022 07:27:01 -0800 (PST)
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643124419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BK2stH6hi6EZUuAUSqM+wo9W+aB6VBt7vWmGOsrxxmc=;
+        b=OdceoFbM/Wj57SOd6znbsQY3MsmXlbOmk2bulXpIvPSxnzQm7R0BwkELtv6vVlI5hKnX4F
+        Ccifq7s4rqwa+UVzThVCk/7ZhtprWmpcwMes5t9HbSN5RuB4iU7luXDt+9C/YlRrSFBSQi
+        gxeYx33SItNN1Al8detKvINuFmMotqq9nWnqSAr7S5iVigIznBRvRoOJfT+FRhz/wnPULJ
+        tRZAr0+6YokMkavLhGUnbpeCQu33bUSV1xLgJ+a0Dufi1KSYGKFiZailzwIQ8FPng5YT9N
+        7DtaCIFfVki5IUv0wgsiuTFH1C1VxEVbYHMrl3rUcSB2TKWO5w9zK4tykDk4Bw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643124419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BK2stH6hi6EZUuAUSqM+wo9W+aB6VBt7vWmGOsrxxmc=;
+        b=lIrRCHtHgCkL017Fxh1X/FsxD1FIWUvZS/FahKHPt4RhzD/rn8mjQXTS3d/dscUwBshGy1
+        NbDxytNDCzJFr1Dg==
+To:     linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org
+Cc:     Andy Lutomirski <luto@kernel.org>, Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 4/8] kernel/fork: Don't assign the stack pointer in dup_task_struct().
+Date:   Tue, 25 Jan 2022 16:26:48 +0100
+Message-Id: <20220125152652.1963111-5-bigeasy@linutronix.de>
+In-Reply-To: <20220125152652.1963111-1-bigeasy@linutronix.de>
+References: <20220125152652.1963111-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
-References: <20220118182003.3385019-1-keescook@chromium.org> <CAMuHMdWu-unMfV1U_HAKwJwPkB_LY3kU88_D69M=bX8y1B=QTg@mail.gmail.com>
-In-Reply-To: <CAMuHMdWu-unMfV1U_HAKwJwPkB_LY3kU88_D69M=bX8y1B=QTg@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 25 Jan 2022 16:25:39 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXzEWN7B122ca279t4RPSSWGL29jzTgMdSoJ+Y56jEQYw@mail.gmail.com>
-Message-ID: <CAMuHMdXzEWN7B122ca279t4RPSSWGL29jzTgMdSoJ+Y56jEQYw@mail.gmail.com>
-Subject: Re: [PATCH 5.17-rc1 v2] eeprom: at25: Restore missing allocation
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jiri Prchal <jiri.prchal@aksignal.cz>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Ralph Siemsen <ralph.siemsen@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 3:20 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Fri, Jan 21, 2022 at 12:33 AM Kees Cook <keescook@chromium.org> wrote:
-> > The at25 driver regressed in v5.17-rc1 due to a broken conflict
-> > resolution: the allocation of the object was accidentally removed. Restore
-> > it.
-> >
-> > This was found when building under CONFIG_FORTIFY_SOURCE=y and
-> > -Warray-bounds, which complained about strncpy() being used against an
-> > empty object:
-> >
-> > In function 'strncpy',
-> >     inlined from 'at25_fw_to_chip.constprop' at drivers/misc/eeprom/at25.c:312:2:
-> > ./include/linux/fortify-string.h:48:33: warning: '__builtin_strncpy' offset [0, 9] is out of the bounds [0, 0] [-Warray-bounds]
-> >    48 | #define __underlying_strncpy    __builtin_strncpy
-> >       |                                 ^
-> > ./include/linux/fortify-string.h:59:16: note: in expansion of macro '__underlying_strncpy'
-> >    59 |         return __underlying_strncpy(p, q, size);
-> >       |                ^~~~~~~~~~~~~~~~~~~~
-> > In function 'strncpy',
-> >     inlined from 'at25_fram_to_chip' at drivers/misc/eeprom/at25.c:373:2,
-> >     inlined from 'at25_probe' at drivers/misc/eeprom/at25.c:453:10:
-> > ./include/linux/fortify-string.h:48:33: warning: '__builtin_strncpy' offset [0, 9] is out of the bounds [0, 0] [-Warray-bounds]
-> >    48 | #define __underlying_strncpy    __builtin_strncpy
-> >       |                                 ^
-> > ./include/linux/fortify-string.h:59:16: note: in expansion of macro '__underlying_strncpy'
-> >    59 |         return __underlying_strncpy(p, q, size);
-> >       |                ^~~~~~~~~~~~~~~~~~~~
->
-> On real hardware:
->
->     Unable to handle kernel access to user memory outside uaccess
-> routines at virtual address 0000000000000028
->     ...
->     pc : __mutex_init+0x20/0x68
->     lr : at25_probe+0x8c/0x4d8
+All four versions of alloc_thread_stack_node() assign now
+task_struct::stack in case the allocation was successful.
 
-To avoid confusion: of course the crash happens only without Kees'
-patch.  I just wanted to point out what happens when you boot on
-real hardware, as it might be worthwhile to add that to the commit
-description.
+Let alloc_thread_stack_node() return an error code instead of the stack
+pointer and remove the stack assignment in dup_task_struct().
 
-Gr{oetje,eeting}s,
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/fork.c | 47 ++++++++++++++++-------------------------------
+ 1 file changed, 16 insertions(+), 31 deletions(-)
 
-                        Geert
+diff --git a/kernel/fork.c b/kernel/fork.c
+index a0d58ae6fac76..e6337b3c34ff7 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -211,7 +211,7 @@ static int free_vm_stack_cache(unsigned int cpu)
+ 	return 0;
+ }
+=20
+-static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int=
+ node)
++static int alloc_thread_stack_node(struct task_struct *tsk, int node)
+ {
+ 	void *stack;
+ 	int i;
+@@ -232,7 +232,7 @@ static unsigned long *alloc_thread_stack_node(struct ta=
+sk_struct *tsk, int node)
+=20
+ 		tsk->stack_vm_area =3D s;
+ 		tsk->stack =3D s->addr;
+-		return s->addr;
++		return 0;
+ 	}
+=20
+ 	/*
+@@ -245,17 +245,16 @@ static unsigned long *alloc_thread_stack_node(struct =
+task_struct *tsk, int node)
+ 				     THREADINFO_GFP & ~__GFP_ACCOUNT,
+ 				     PAGE_KERNEL,
+ 				     0, node, __builtin_return_address(0));
+-
++	if (!stack)
++		return -ENOMEM;
+ 	/*
+ 	 * We can't call find_vm_area() in interrupt context, and
+ 	 * free_thread_stack() can be called in interrupt context,
+ 	 * so cache the vm_struct.
+ 	 */
+-	if (stack) {
+-		tsk->stack_vm_area =3D find_vm_area(stack);
+-		tsk->stack =3D stack;
+-	}
+-	return stack;
++	tsk->stack_vm_area =3D find_vm_area(stack);
++	tsk->stack =3D stack;
++	return 0;
+ }
+=20
+ static void free_thread_stack(struct task_struct *tsk)
+@@ -282,16 +281,16 @@ static void free_thread_stack(struct task_struct *tsk)
+=20
+ #  else /* !CONFIG_VMAP_STACK */
+=20
+-static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int=
+ node)
++static int alloc_thread_stack_node(struct task_struct *tsk, int node)
+ {
+ 	struct page *page =3D alloc_pages_node(node, THREADINFO_GFP,
+ 					     THREAD_SIZE_ORDER);
+=20
+ 	if (likely(page)) {
+ 		tsk->stack =3D kasan_reset_tag(page_address(page));
+-		return tsk->stack;
++		return 0;
+ 	}
+-	return NULL;
++	return -ENOMEM;
+ }
+=20
+ static void free_thread_stack(struct task_struct *tsk)
+@@ -305,14 +304,13 @@ static void free_thread_stack(struct task_struct *tsk)
+=20
+ static struct kmem_cache *thread_stack_cache;
+=20
+-static unsigned long *alloc_thread_stack_node(struct task_struct *tsk,
+-						  int node)
++static int alloc_thread_stack_node(struct task_struct *tsk, int node)
+ {
+ 	unsigned long *stack;
+ 	stack =3D kmem_cache_alloc_node(thread_stack_cache, THREADINFO_GFP, node);
+ 	stack =3D kasan_reset_tag(stack);
+ 	tsk->stack =3D stack;
+-	return stack;
++	return stack ? 0 : -ENOMEM;
+ }
+=20
+ static void free_thread_stack(struct task_struct *tsk)
+@@ -332,13 +330,13 @@ void thread_stack_cache_init(void)
+ # endif /* THREAD_SIZE >=3D PAGE_SIZE || defined(CONFIG_VMAP_STACK) */
+ #else /* CONFIG_ARCH_THREAD_STACK_ALLOCATOR */
+=20
+-static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int=
+ node)
++static int alloc_thread_stack_node(struct task_struct *tsk, int node)
+ {
+ 	unsigned long *stack;
+=20
+ 	stack =3D arch_alloc_thread_stack_node(tsk, node);
+ 	tsk->stack =3D stack;
+-	return stack;
++	return stack ? 0 : -ENOMEM;
+ }
+=20
+ static void free_thread_stack(struct task_struct *tsk, bool cache_only)
+@@ -894,8 +892,6 @@ void set_task_stack_end_magic(struct task_struct *tsk)
+ static struct task_struct *dup_task_struct(struct task_struct *orig, int n=
+ode)
+ {
+ 	struct task_struct *tsk;
+-	unsigned long *stack;
+-	struct vm_struct *stack_vm_area __maybe_unused;
+ 	int err;
+=20
+ 	if (node =3D=3D NUMA_NO_NODE)
+@@ -908,24 +904,13 @@ static struct task_struct *dup_task_struct(struct tas=
+k_struct *orig, int node)
+ 	if (err)
+ 		goto free_tsk;
+=20
+-	stack =3D alloc_thread_stack_node(tsk, node);
+-	if (!stack)
++	err =3D alloc_thread_stack_node(tsk, node);
++	if (err)
+ 		goto free_tsk;
+=20
+ 	if (memcg_charge_kernel_stack(tsk))
+ 		goto free_stack;
+=20
+-	stack_vm_area =3D task_stack_vm_area(tsk);
+-
+-	/*
+-	 * arch_dup_task_struct() clobbers the stack-related fields.  Make
+-	 * sure they're properly initialized before using any stack-related
+-	 * functions again.
+-	 */
+-	tsk->stack =3D stack;
+-#ifdef CONFIG_VMAP_STACK
+-	tsk->stack_vm_area =3D stack_vm_area;
+-#endif
+ #ifdef CONFIG_THREAD_INFO_IN_TASK
+ 	refcount_set(&tsk->stack_refcount, 1);
+ #endif
+--=20
+2.34.1
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
