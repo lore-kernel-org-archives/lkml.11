@@ -2,85 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD42C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:14:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353437AbiAYQOn (ORCPT
+        id S1357658AbiAYQO7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 11:14:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60856 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583346AbiAYQKz (ORCPT
+        Tue, 25 Jan 2022 11:14:59 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:24688 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1583352AbiAYQLO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 11:10:55 -0500
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D215FC061760
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:10:46 -0800 (PST)
-Received: (Authenticated sender: alex@ghiti.fr)
-        by mail.gandi.net (Postfix) with ESMTPSA id 930DDC0005;
-        Tue, 25 Jan 2022 16:10:41 +0000 (UTC)
-Message-ID: <36519886-cedc-a3e3-70d2-712f8a6d3a10@ghiti.fr>
-Date:   Tue, 25 Jan 2022 17:10:41 +0100
+        Tue, 25 Jan 2022 11:11:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643127073; x=1674663073;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xRYkd7VewVRjl2nwBsabmztrBiW/NhQrxdxHXY44LgQ=;
+  b=Zu/t+WQ3I2tThkJUySD0iMV0Oa3zpSl2R71Exf3cKUnRUKEqf20i1mjd
+   aCT+SK8csG1+H3KuKg/1hgiQuBBM0M9FbHBqsGo3LrnwlMaITe1X8UhyT
+   Hu4rYD5qsQLS6uGK0PJd2fzkB4DJSJGBuxfsYSZ7OL2FsnQXRUfB7m0GR
+   nabVGaob40Rq2Ao8ROqSdyrWMr1PB+a6GUqA9QOHsD+UsrOiRPdSDBFrz
+   lYjIFUxyVry5vaiH6ZVLRWfLwIjiSXJynbx//MWXPKYaJxLReW8+fu0RQ
+   Ghh1DC6+tyl4QE4tdKmJRc1tRGBoXu110n936YTaXol2SaY9eFdrqWFYD
+   w==;
+IronPort-SDR: 2ZX6Jzv4KYS6XAdsDpNOkUNCRiajSPWu+JvId5T0r+V3uhUO8t/v4s34gwICPsjqRKfqhXolFb
+ Dm+k7QZPq00RnqYdIqcUSj8mig5WzuaVz3bqmSYatVHzrX6Syd60hMLDfjls1zr1A6w4b0/ymf
+ fXXX7+JGgIZTOJ28PF3AQBxmoO7zyXNwwsyNWI2AleCPf0gj8PwvR8Afrig/iaLeXveMPs9D19
+ Y+kQ9ob4/IgsN2Q9wcebexiTGvA1r12eLJYOyBO8BqiRbmzINXtZE9l1x7V8nqFu20jKANHUDv
+ IWm0SWF/xpWdVJQL7sajvG7y
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="143829729"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Jan 2022 09:11:05 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 25 Jan 2022 09:11:05 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 25 Jan 2022 09:11:03 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <linus.walleij@linaro.org>,
+        <colin.foster@in-advantage.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH] pinctrl: microchip-sgpio: Fix support for regmap
+Date:   Tue, 25 Jan 2022 17:12:45 +0100
+Message-ID: <20220125161245.418882-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] riscv: mm: remove the BUG_ON check of mapping the last 4K
- bytes of memory
-Content-Language: en-US
-To:     Jisheng Zhang <jszhang@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220125155542.3753-1-jszhang@kernel.org>
-From:   Alexandre Ghiti <alex@ghiti.fr>
-In-Reply-To: <20220125155542.3753-1-jszhang@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Initially the driver accessed the registers using u32 __iomem but then
+in the blamed commit it changed it to use regmap. The problem is that now
+the offset of the registers is not calculated anymore at word offset but
+at byte offset. Therefore make sure to multiply the offset with word size.
 
-On 1/25/22 16:55, Jisheng Zhang wrote:
-> remove the BUG_ON check of mapping the last 4K bytes of the addressable
-> memory since "this is true for every kernel actually" as pointed out
-> by Alexandre.
->
-> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> Reviewed-by: Alexandre Ghiti <alex@ghiti.fr>
-> ---
->   arch/riscv/mm/init.c | 8 --------
->   1 file changed, 8 deletions(-)
->
-> diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-> index cf4d018b7d66..8347d0fda8cd 100644
-> --- a/arch/riscv/mm/init.c
-> +++ b/arch/riscv/mm/init.c
-> @@ -811,14 +811,6 @@ asmlinkage void __init setup_vm(uintptr_t dtb_pa)
->   	BUG_ON((PAGE_OFFSET % PGDIR_SIZE) != 0);
->   	BUG_ON((kernel_map.phys_addr % PMD_SIZE) != 0);
->   
-> -#ifdef CONFIG_64BIT
-> -	/*
-> -	 * The last 4K bytes of the addressable memory can not be mapped because
-> -	 * of IS_ERR_VALUE macro.
-> -	 */
-> -	BUG_ON((kernel_map.virt_addr + kernel_map.size) > ADDRESS_SPACE_END - SZ_4K);
-> -#endif
+Fixes: 2afbbab45c261a ("pinctrl: microchip-sgpio: update to support regmap")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/pinctrl/pinctrl-microchip-sgpio.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
+index 8e081c90bdb2..2999c98bbdee 100644
+--- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
++++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
+@@ -98,6 +98,12 @@ static const struct sgpio_properties properties_sparx5 = {
+ 	.regoff = { 0x00, 0x06, 0x26, 0x04, 0x05, 0x2a, 0x32, 0x3a, 0x3e, 0x42 },
+ };
+ 
++static const struct regmap_config regmap_config = {
++		.reg_bits = 32,
++		.val_bits = 32,
++		.reg_stride = 4,
++};
++
+ static const char * const functions[] = { "gpio" };
+ 
+ struct sgpio_bank {
+@@ -137,7 +143,7 @@ static inline int sgpio_addr_to_pin(struct sgpio_priv *priv, int port, int bit)
+ 
+ static inline u32 sgpio_get_addr(struct sgpio_priv *priv, u32 rno, u32 off)
+ {
+-	return priv->properties->regoff[rno] + off;
++	return (priv->properties->regoff[rno] + off) * regmap_config.reg_stride;
+ }
+ 
+ static u32 sgpio_readl(struct sgpio_priv *priv, u32 rno, u32 off)
+@@ -821,11 +827,6 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
+ 	struct clk *clk;
+ 	u32 __iomem *regs;
+ 	u32 val;
+-	struct regmap_config regmap_config = {
+-		.reg_bits = 32,
+-		.val_bits = 32,
+-		.reg_stride = 4,
+-	};
+ 
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+-- 
+2.33.0
 
-This BUG_ON seems pretty legit to me: I re-read the exchanges we had, 
-and I see that I didn't notice that in your v2, you actually removed the 
-BUG_ON. So that's my bad, what I meant in the first place was that the 
-BUG_ON is true for 32-bit and 64-bit kernels actually.
-
-Sorry my RB was not right on this one :(
-
-Alex
-
-
-> -
->   	pt_ops_set_early();
->   
->   	/* Setup early PGD for fixmap */
