@@ -2,298 +2,331 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 780D5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:01:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF4EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381393AbiAYNBb (ORCPT
+        id S1384841AbiAYNB4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:01:31 -0500
-Received: from mga09.intel.com ([134.134.136.24]:15268 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1574505AbiAYM6n (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:58:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643115518; x=1674651518;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=et9+ZqkMxNyaIinPs3rLA/T1shewefofFV8LdQgNIlw=;
-  b=JkAgogLMCBZ0XoBcH8KYXjMDv5f6i5Xx24RVdrAO7gCrTSlJNG4I8tjL
-   hw/CUF51rR8aoGmOjMwFELrRmiNPkzciuCEVRXH+nN9Jg8FVmxB2IdQn+
-   0U9AnlOudqKlcUZF63tWMSJZ6A29mZu5rvIafz0/MgqFd0kPE/qJn0q6h
-   A+fnfsmB3rjKM+ygcK6bJDKVNb7CxJ62kJiPj3w9A15AR9mSJtYFkQxbV
-   rjbTCXujBiNVP0LEcwPDdx3vmUbVRyLFe2szuL33Y1lQQEGlhTdWMZG5e
-   Lq9PoSLqY7Wlcg00glGNCw3kKCaWntJpIMZCdMXDxOguZwiGY/KSCvab3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246073891"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="246073891"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 04:56:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="627918605"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
-  by orsmga004.jf.intel.com with ESMTP; 25 Jan 2022 04:56:53 -0800
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 25 Jan 2022 04:56:52 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Tue, 25 Jan 2022 04:56:52 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.108)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Tue, 25 Jan 2022 04:56:52 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BiORTeM0ByWEbS5LwZElUP87ak84FkFyevl7ZvVTz7k6iOkVCm/uGuKUBlrJpDRmm18AUwU0V0hTOP2Z5n+aDXR3lrlhBPDKPMmhkSZvhkOFRQ0sE8JJTQxJ1eGvMSnpi9YOa+XVKlf7FV7D03o/vnN5C5ccEP5RRied/LGTUu8+GRTHXmAvHbk8XqlKVdHVnuqHimGgqyuOzMLgQyy7dMiD022wXltehdlh8RWTrSXavSnhG+yyt5Fke7e/x/QnWsypfrMwcmLEUYJVtkQKuB/Nai8WIrB0nA0Q1arTkIMEvhegCpXULPmaltu75Zb3M79FVvKZjc+IB/DxPXL0Tg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yoONrviKz6vG5zQ/UkX5bzbT6WkMkSWgzx/0kJBMnwI=;
- b=NwAWZiS8ybQud206MGr5x0JhbdBkx955KXv2Ja8xt1Q8WVjHTH8l4VSh9h/XLenrkFfhyuBGe0mRWY6yuHuxs/vPkbOoAkBKbdLuIoVVHnP1xg+JKvaYR9dWUIHbsKEw9GMwRkO26wxoVguV+ZLfWTT3sjt09vny+LqflUdDnoDKlhuZsRAUM+9Mrki3HjV/cNFvFteeOcyH2JyOD3iw95dibaQKKpTuOOEnxE0NH5bvrtTJ9s+QtSkfbshY7IDF+ES9zPoyFVO5shHK/EIewCOlKY3aLqJa0mKBZcJAj+gNkPqwQRs7DKuTgE89JfPySUIhPLTUqMiIVStMPiEfww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from DM6PR11MB3660.namprd11.prod.outlook.com (2603:10b6:5:13c::17)
- by CO1PR11MB5011.namprd11.prod.outlook.com (2603:10b6:303:6d::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Tue, 25 Jan
- 2022 12:56:50 +0000
-Received: from DM6PR11MB3660.namprd11.prod.outlook.com
- ([fe80::753b:f9a6:9c93:278c]) by DM6PR11MB3660.namprd11.prod.outlook.com
- ([fe80::753b:f9a6:9c93:278c%3]) with mapi id 15.20.4909.019; Tue, 25 Jan 2022
- 12:56:50 +0000
-From:   "D, Lakshmi Sowjanya" <lakshmi.sowjanya.d@intel.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "Tobin C. Harding" <me@tobin.cc>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: Build regressions/improvements in v5.17-rc1
-Thread-Topic: Build regressions/improvements in v5.17-rc1
-Thread-Index: AQHYEPfSFpmDnQzpgkifGWSL3krxPKxzsmGw
-Date:   Tue, 25 Jan 2022 12:56:50 +0000
-Message-ID: <DM6PR11MB3660804C821D7CA7329B6CAFC45F9@DM6PR11MB3660.namprd11.prod.outlook.com>
-References: <20220123125737.2658758-1-geert@linux-m68k.org>
- <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg>
-In-Reply-To: <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.6.200.16
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8c2a41c2-48eb-42e3-3acb-08d9e002278e
-x-ms-traffictypediagnostic: CO1PR11MB5011:EE_
-x-microsoft-antispam-prvs: <CO1PR11MB50119942373926B13B967E76C45F9@CO1PR11MB5011.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: TSOxQ8EjKVAuiKHG9e/SKn+DuA76OZBOHZoRNhGzANCWUEUo/3RbCZtp+pYe76uNAyZEiJgEBIOr2/VUItaPbWpJj1+4j2VQheR2dEHy65kc2bXfGe5U1KLrpwHOMxtVu6RM5iwt3tlgEIpvExLdLT6deuBbFSpG8Ot6Y3Ng8S0ouGymtW2H5i2MBH/lJ19EWHtSj04GsGKyVNy14MwK0JUilppfL/RgzaKumfckUr2lhFVyjRM1sfiScgcuQlMjf74hM6MA6MTzkYUhZfztvtdAsw1XXi95fV6xwt70IMv+H4HSaGqoN2wMfG8HzhbRoOg/lLNnTxeEnywWdfCKzGetnkPc/d7mdbicr/8lbrrTGXskicrPOXtCCmIbwjdZoEdMW3vGEJ2OT08XgQ3pW2AIznzTU9mV1YqFUPxHPCx8HlrnQvCi/P60WD7rNcDsgD8BKOAPTRoHaKXEcvmQlGzNThIpvIPFy1fmdLl7uX//m+lMY+iyu5xN8PFvWVGTudADmCoabfzBoo4mO1+Sp6T44oDQvW5mc0TT3WpbaOS6//RwcvFtyvzjaR55tXTZ4yn6NpyQwKUail/QtMRbJUmgQFlYE6DfM+auznAhNPClF19DR0WHWqJ8ML4NhC5y0RcEH749zlomRMNzY7FfI54YrnLOTBwP1Pk9buFttbvVj4tYxewc+4tgEUSQqBD46c1bvXCO6zuj6qU0ieboFzY8GZ5+c4Xeln1LRw2Zx52NZrrwT4bVQ8ii3ZScKDF5BjZVk1vRil0XukQkipYXPwrOtdt5WLz4irz/nyeLOg0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3660.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(82960400001)(66946007)(110136005)(8936002)(2906002)(966005)(38070700005)(66574015)(508600001)(38100700002)(52536014)(54906003)(76116006)(8676002)(186003)(86362001)(9686003)(5660300002)(4326008)(71200400001)(33656002)(26005)(66556008)(316002)(6506007)(7696005)(83380400001)(7416002)(55016003)(66446008)(53546011)(66476007)(64756008)(122000001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-2?Q?fUk/DrnQ8TNg8PT0qbnVaCbMpNxKN1Xauy6bLbJY/zuWKBENB/8jTyrFxL?=
- =?iso-8859-2?Q?mFyHcaB4Ho/5/6T+v9L4PgBQGNzy2/AC+NTCAZOSQ6Ryl4NFAbaQyL/a03?=
- =?iso-8859-2?Q?ly0U781i4qhwqLKk9Ood3EJF3zABFPukaN0NaRN6aQU+emZL06t2DY97PE?=
- =?iso-8859-2?Q?ZshVHce6vU12nrp+k77qW3d9MyV0/iOGjcyyWjTkshm5AzkfV4Vyymit2J?=
- =?iso-8859-2?Q?JiL8GY5Nh5ASP3/KpCPUls8iR0xJYLWwXtzcpyZ76+kpSUfYs25lEezUfB?=
- =?iso-8859-2?Q?+DVwTv8i70OjyA5jCujEq/MwjTcx3Be+X3E8xmesIWCSOuOq9u6mo2oP1H?=
- =?iso-8859-2?Q?vKER5rleLoQHKkgEPtfwU0ChFVCOZjCNbQu/Hcmr6MhKWOaRngwRXKCZG2?=
- =?iso-8859-2?Q?1uTQAfI8Lazi8azj9eiwMKyTQE7CO4WQtnD+O6QOJS72zA80STFQox/KKG?=
- =?iso-8859-2?Q?nqX6X+D21cvmBOcJx55WhdCRAavE5EA+jxHC/LlJ2QNU7upc/n7rf2vqFf?=
- =?iso-8859-2?Q?sNx4p7pgPpBZXcLpsvxyIAdvtFhcL2e9qFI+qfEMjjAfTYZnQNRzCPDN7W?=
- =?iso-8859-2?Q?8J6fGuhabzOPCzNjVbgYoe4azea56wBJ069lADAnTzTGBfkszrbAOgkzd8?=
- =?iso-8859-2?Q?Qjnf9fKKJ2JhhFtSdN4jnlQDexUns4P3ad2stAuXJLiVyH5WK+STVtk2Fi?=
- =?iso-8859-2?Q?Q9xQE9oZe33ElQKSdFWUpQelyij67yaV9CfLGu5ERtKDQLjxOWFq5Vizph?=
- =?iso-8859-2?Q?1JuFcW2yQGURrszcDwwglo5xsQX5VF/gHBC+Z4U3myvzJyESB6SWLEQwxy?=
- =?iso-8859-2?Q?/2Jqod4Q9IpLdcWhK6oeOdsjui2UXCKcE93WYA+kExCCiTC5Lx3aLi0hhR?=
- =?iso-8859-2?Q?Qo7j9UKMf69uX54jWPCw11z0NRU2aZnKCEXLR1rc+rV0QMJttqL1YjzlMF?=
- =?iso-8859-2?Q?ssn1KCc2RCFdkqk126s+pg34i4c0XRYIEkFT227UJKsHloVND80HGv09b7?=
- =?iso-8859-2?Q?rBDEl+ZiK5gLmkoRHcZSjh5YSu1EkQ3rp5mP0lUaoTsqRsK8WgPNXuA6Sx?=
- =?iso-8859-2?Q?ioh4bzVSehS+o2S8N9S+X5lLS7298Mtcun1HWiKE4wcX6fSVxX20IdXr4m?=
- =?iso-8859-2?Q?bJn6FjPuZTtvGLzZ5DuaIqHvnOLn0lKlcbERck0jwbx6kAQ62dOHHWDahe?=
- =?iso-8859-2?Q?+4ggTxXk6nr6yHaTQAzdXzA7FYZTKRcUu4u9lUMaAuOe3nWhLP/TZHM5ih?=
- =?iso-8859-2?Q?K/cNNuQI6igzarCHfQGupU4/gD9YJMqQUNHBZTe8zsplhmjNWbPHrUMiPn?=
- =?iso-8859-2?Q?/r/NxkpcNdKiDLm4XLjrBs9Ig3T7phHVhgLctqwEtRaA6BpHLffIqjt7uR?=
- =?iso-8859-2?Q?wyOaPnLYPi7lolnAsf3sfFnRrhJsbrxyEjL7QtOC94lzKupY+S6H7gA1d7?=
- =?iso-8859-2?Q?c38Mm42mEdTuyHLlsAZKigmBfxIf7CzP6r6YrcQrxm347N3Y2K/7HAu+vy?=
- =?iso-8859-2?Q?0dWm5ARlTZgxfChpv2lTWZyh9D4+fuEM8CPz5W5XFajOXtmtJWr/f9WLjt?=
- =?iso-8859-2?Q?FquoCejYxqMMB+9QghdX3ae+XKkEQvrNHcdohJKEnugRfk2jeUrChEOJe/?=
- =?iso-8859-2?Q?byy4uQdhMbv1lqHjpkraYALlflfD4gtEFKbDkF3YmPxR596G37ttrsRUOj?=
- =?iso-8859-2?Q?6wO21sJA9KlJ7YvMO8T5S/kmRKXQB+oNWzuqUrLTbcbDIn86U8aL0NkTte?=
- =?iso-8859-2?Q?G0sg=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 25 Jan 2022 08:01:56 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:22240 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1348692AbiAYM7o (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 07:59:44 -0500
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20PCg3W9029371;
+        Tue, 25 Jan 2022 12:59:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=tl6Cs7TnQDyQv3GmXJtbo2WKbDnaVetS+2E9nqwdUHE=;
+ b=AChDC8aXuSLRr21EAvtQfDQkwTOmW2sTfZmvSdYp8eLMZf1Yv6BzVVyoaYuOsN4kT+t3
+ p4PSSeATdtaJBgbMIn87Z7wZeJy9ov2gNl+SEU7DbDf7FKt7iGbt3zxUvt27FI/a6Gw0
+ hFPDkVRLE66WRAirEM544RJzLUOPKMrm/1Yid0khAJI71SKkwBXuMcOccDpBTAQ8p1fu
+ J39uOEmpln27c/uVv3439blwQEVWOb+Z2/Z6bq5ykpWxlIc5VaFziLmscOdY6k5GeSRU
+ SU8Y39hFVXggQpPWz1yWyO06UCaAsJ9CatPRxF0kKKhIeJCB0po1rGeW4QzyfUblzDbD jg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dthehrap1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 12:59:38 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20PChawG003320;
+        Tue, 25 Jan 2022 12:59:38 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dthehranj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 12:59:38 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20PCwL5P021981;
+        Tue, 25 Jan 2022 12:59:36 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3dr96je7s7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 12:59:36 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20PCxVQr47055132
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Jan 2022 12:59:31 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 61A66AE051;
+        Tue, 25 Jan 2022 12:59:31 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B33B8AE045;
+        Tue, 25 Jan 2022 12:59:29 +0000 (GMT)
+Received: from [9.171.58.95] (unknown [9.171.58.95])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 25 Jan 2022 12:59:29 +0000 (GMT)
+Message-ID: <17ccab21-b654-636f-2dfa-57014f4cd4eb@linux.ibm.com>
+Date:   Tue, 25 Jan 2022 14:01:19 +0100
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3660.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8c2a41c2-48eb-42e3-3acb-08d9e002278e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2022 12:56:50.6731
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0aLZFmIS/Ikp1vMUBSaHHcYeEvITtt9hICbp8N854aPuAM4V68wOPmFIPJvKukHOD2oPbydxyCdOtOPsKwOEgt0n3hYJRp8B4yuuf+Ok+Lw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5011
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v2 25/30] vfio-pci/zdev: wire up zPCI interpretive
+ execution support
+Content-Language: en-US
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
+        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
+ <20220114203145.242984-26-mjrosato@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <20220114203145.242984-26-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: gxu6dUrP3EQJXCtEJR2aWICrbrRLS4HG
+X-Proofpoint-GUID: -7CtNxsBinYA5Uo-8HgZm70o5LGwD5aL
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-25_02,2022-01-25_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ mlxlogscore=999 clxscore=1015 mlxscore=0 phishscore=0 spamscore=0
+ priorityscore=1501 impostorscore=0 bulkscore=0 malwarescore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201250081
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-> -----Original Message-----
-> From: Geert Uytterhoeven <geert@linux-m68k.org>
-> Sent: Monday, January 24, 2022 1:26 PM
-> To: linux-kernel@vger.kernel.org
-> Cc: linuxppc-dev@lists.ozlabs.org; sparclinux@vger.kernel.org; linux-
-> um@lists.infradead.org; D, Lakshmi Sowjanya
-> <lakshmi.sowjanya.d@intel.com>; kvm@vger.kernel.org; linux-
-> mips@vger.kernel.org; Tobin C. Harding <me@tobin.cc>; alsa-devel@alsa-
-> project.org; amd-gfx@lists.freedesktop.org; netdev@vger.kernel.org
-> Subject: Re: Build regressions/improvements in v5.17-rc1
->=20
-> On Sun, 23 Jan 2022, Geert Uytterhoeven wrote:
-> > Below is the list of build error/warning regressions/improvements in
-> > v5.17-rc1[1] compared to v5.16[2].
-> >
-> > Summarized:
-> >  - build errors: +17/-2
-> >  - build warnings: +23/-25
-> >
-> > Note that there may be false regressions, as some logs are incomplete.
-> > Still, they're build errors/warnings.
-> >
-> > Happy fixing! ;-)
-> >
-> > Thanks to the linux-next team for providing the build service.
-> >
-> > [1]
-> > http://kisskb.ellerman.id.au/kisskb/branch/linus/head/e783362eb54cd99b
-> > 2cac8b3a9aeac942e6f6ac07/ (all 99 configs) [2]
-> > http://kisskb.ellerman.id.au/kisskb/branch/linus/head/df0cc57e057f18e4
-> > 4dac8e6c18aba47ab53202f9/ (98 out of 99 configs)
-> >
-> >
-> > *** ERRORS ***
-> >
-> > 17 error regressions:
-> >  + /kisskb/src/arch/powerpc/kernel/stacktrace.c: error: implicit
-> > declaration of function 'nmi_cpu_backtrace'
-> > [-Werror=3Dimplicit-function-declaration]:  =3D> 171:2  +
-> > /kisskb/src/arch/powerpc/kernel/stacktrace.c: error: implicit
-> > declaration of function 'nmi_trigger_cpumask_backtrace'
-> > [-Werror=3Dimplicit-function-declaration]:  =3D> 226:2
->=20
-> powerpc-gcc5/skiroot_defconfig
->=20
-> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible
-> > function types from 'void (*)(long unsigned int)' to 'void (*)(long
-> > unsigned int,  long unsigned int,  long unsigned int,  long unsigned
-> > int,  long unsigned int)' [-Werror=3Dcast-function-type]:  =3D> 1756:13=
-,
-> > 1639:13  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between
-> > incompatible function types from 'void (*)(struct mm_struct *)' to
-> > 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,
-> > long unsigned int,  long unsigned int)' [-Werror=3Dcast-function-type]:
-> > =3D> 1674:29, 1662:29  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast
-> > between incompatible function types from 'void (*)(struct mm_struct *,
-> > long unsigned int)' to 'void (*)(long unsigned int,  long unsigned
-> > int,  long unsigned int,  long unsigned int,  long unsigned int)'
-> > [-Werror=3Dcast-function-type]:  =3D> 1767:21  +
-> > /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible
-> > function types from 'void (*)(struct vm_area_struct *, long unsigned
-> > int)' to 'void (*)(long unsigned int,  long unsigned int,  long
-> > unsigned int,  long unsigned int,  long unsigned int)'
-> > [-Werror=3Dcast-function-type]:  =3D> 1741:29, 1726:29  +
-> > /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible
-> > function types from 'void (*)(struct vm_area_struct *, long unsigned
-> > int,  long unsigned int)' to 'void (*)(long unsigned int,  long
-> > unsigned int,  long unsigned int,  long unsigned int,  long unsigned
-> > int)' [-Werror=3Dcast-function-type]:  =3D> 1694:29, 1711:29
->=20
-> sparc64-gcc11/sparc-allmodconfig
->=20
-> >  + /kisskb/src/arch/um/include/asm/processor-generic.h: error: called
-> > object is not a function or function pointer:  =3D> 103:18  +
-> > /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: assignment makes
-> > pointer from integer without a cast [-Werror=3Dint-conversion]:  =3D>
-> > 324:9, 317:9  + /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error:
-> > implicit declaration of function 'ioport_map'
-> > [-Werror=3Dimplicit-function-declaration]:  =3D> 317:11  +
-> > /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit
-> > declaration of function 'ioport_unmap'
-> > [-Werror=3Dimplicit-function-declaration]:  =3D> 338:15
->=20
-> um-x86_64/um-allyesconfig
->=20
-> >  + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:
-> > error: control reaches end of non-void function [-Werror=3Dreturn-type]=
-:
-> > =3D> 1560:1
->=20
-> um-x86_64/um-all{mod,yes}config
->=20
-> >  + /kisskb/src/drivers/net/ethernet/freescale/fec_mpc52xx.c: error:
-> > passing argument 2 of 'mpc52xx_fec_set_paddr' discards 'const'
-> > qualifier from pointer target type [-Werror=3Ddiscarded-qualifiers]:  =
-=3D>
-> > 659:29
->=20
-> powerpc-gcc5/ppc32_allmodconfig
->=20
-> >  + /kisskb/src/drivers/pinctrl/pinctrl-thunderbay.c: error: assignment
-> > discards 'const' qualifier from pointer target type
-> > [-Werror=3Ddiscarded-qualifiers]:  =3D> 815:8, 815:29
->=20
-> arm64-gcc5.4/arm64-allmodconfig
-> arm64-gcc8/arm64-allmodconfig
->=20
+On 1/14/22 21:31, Matthew Rosato wrote:
+> Introduce support for VFIO_DEVICE_FEATURE_ZPCI_INTERP, which is a new
+> VFIO_DEVICE_FEATURE ioctl.  This interface is used to indicate that an
+> s390x vfio-pci device wishes to enable/disable zPCI interpretive
+> execution, which allows zPCI instructions to be executed directly by
+> underlying firmware without KVM involvement.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>   arch/s390/include/asm/kvm_pci.h  |  1 +
+>   drivers/vfio/pci/vfio_pci_core.c |  2 +
+>   drivers/vfio/pci/vfio_pci_zdev.c | 78 ++++++++++++++++++++++++++++++++
+>   include/linux/vfio_pci_core.h    | 10 ++++
+>   include/uapi/linux/vfio.h        |  7 +++
+>   include/uapi/linux/vfio_zdev.h   | 15 ++++++
+>   6 files changed, 113 insertions(+)
+> 
+> diff --git a/arch/s390/include/asm/kvm_pci.h b/arch/s390/include/asm/kvm_pci.h
+> index 97a90b37c87d..dc00c3f27a00 100644
+> --- a/arch/s390/include/asm/kvm_pci.h
+> +++ b/arch/s390/include/asm/kvm_pci.h
+> @@ -35,6 +35,7 @@ struct kvm_zdev {
+>   	struct kvm_zdev_ioat ioat;
+>   	struct zpci_fib fib;
+>   	struct notifier_block nb;
+> +	bool interp;
 
-These errors are fixed with the patch set by Rafa=B3 Mi=B3ecki:=20
-https://lore.kernel.org/all/CACRpkdYbR-hpLTcvN1_LuxEH_mgHLqDmopDqo1ddui9o8Z=
-vSPQ@mail.gmail.com/t/
+NIT: s/interp/interpretation/ ?
 
-Regards,
-Lakshmi Sowjanya
+>   };
+>   
+>   int kvm_s390_pci_dev_open(struct zpci_dev *zdev);
+> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+> index fc57d4d0abbe..2b2d64a2190c 100644
+> --- a/drivers/vfio/pci/vfio_pci_core.c
+> +++ b/drivers/vfio/pci/vfio_pci_core.c
+> @@ -1172,6 +1172,8 @@ long vfio_pci_core_ioctl(struct vfio_device *core_vdev, unsigned int cmd,
+>   			mutex_unlock(&vdev->vf_token->lock);
+>   
+>   			return 0;
+> +		case VFIO_DEVICE_FEATURE_ZPCI_INTERP:
+> +			return vfio_pci_zdev_feat_interp(vdev, feature, arg);
+>   		default:
+>   			return -ENOTTY;
+>   		}
+> diff --git a/drivers/vfio/pci/vfio_pci_zdev.c b/drivers/vfio/pci/vfio_pci_zdev.c
+> index 5c2bddc57b39..4339f48b98bc 100644
+> --- a/drivers/vfio/pci/vfio_pci_zdev.c
+> +++ b/drivers/vfio/pci/vfio_pci_zdev.c
+> @@ -54,6 +54,10 @@ static int zpci_group_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
+>   		.version = zdev->version
+>   	};
+>   
+> +	/* Some values are different for interpreted devices */
+> +	if (zdev->kzdev && zdev->kzdev->interp)
+> +		cap.maxstbl = zdev->maxstbl;
+> +
+>   	return vfio_info_add_capability(caps, &cap.header, sizeof(cap));
+>   }
+>   
+> @@ -138,6 +142,72 @@ int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
+>   	return ret;
+>   }
+>   
+> +int vfio_pci_zdev_feat_interp(struct vfio_pci_core_device *vdev,
+> +			      struct vfio_device_feature feature,
+> +			      unsigned long arg)
+> +{
+> +	struct zpci_dev *zdev = to_zpci(vdev->pdev);
+> +	struct vfio_device_zpci_interp *data;
+> +	struct vfio_device_feature *feat;
+> +	unsigned long minsz;
+> +	int size, rc;
+> +
+> +	if (!zdev || !zdev->kzdev)
+> +		return -EINVAL;
+> +
+> +	/* If PROBE specified, return probe results immediately */
+> +	if (feature.flags & VFIO_DEVICE_FEATURE_PROBE)
+> +		return kvm_s390_pci_interp_probe(zdev);
+> +
+> +	/* GET and SET are mutually exclusive */
+> +	if ((feature.flags & VFIO_DEVICE_FEATURE_GET) &&
+> +	    (feature.flags & VFIO_DEVICE_FEATURE_SET))
+> +		return -EINVAL;
 
-> >  + /kisskb/src/lib/test_printf.c: error: "PTR" redefined [-Werror]:
-> > =3D> 247:0, 247  + /kisskb/src/sound/pci/ca0106/ca0106.h: error: "PTR"
-> > redefined [-Werror]:  =3D> 62, 62:0
->=20
-> mips-gcc8/mips-allmodconfig
-> mipsel/mips-allmodconfig
->=20
-> >  + error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to
-> > fit: R_PPC64_REL14 (stub) against symbol `machine_check_common'
-> > defined in .text section in arch/powerpc/kernel/head_64.o:  =3D>
-> > (.text+0x3e4)
->=20
-> powerpc-gcc5/powerpc-allyesconfig
->=20
-> Gr{oetje,eeting}s,
->=20
->  						Geert
->=20
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-
-> m68k.org
->=20
-> In personal conversations with technical people, I call myself a hacker. =
-But when
-> I'm talking to journalists I just say "programmer" or something like that=
-.
->  							    -- Linus Torvalds
+Isn't the check already done in VFIO core?
+
+> +
+> +	size = sizeof(*feat) + sizeof(*data);
+> +	feat = kzalloc(size, GFP_KERNEL);
+> +	if (!feat)
+> +		return -ENOMEM;
+> +
+> +	data = (struct vfio_device_zpci_interp *)&feat->data;
+> +	minsz = offsetofend(struct vfio_device_feature, flags);
+> +
+> +	if (feature.argsz < minsz + sizeof(*data))
+> +		return -EINVAL;
+> +
+> +	/* Get the rest of the payload for GET/SET */
+> +	rc = copy_from_user(data, (void __user *)(arg + minsz),
+> +			    sizeof(*data));
+> +	if (rc)
+> +		rc = -EINVAL;
+> +
+> +	if (feature.flags & VFIO_DEVICE_FEATURE_GET) {
+> +		if (zdev->gd != 0)
+> +			data->flags = VFIO_DEVICE_ZPCI_FLAG_INTERP;
+> +		else
+> +			data->flags = 0;
+> +		data->fh = zdev->fh;
+> +		/* userspace is using host fh, give interpreted clp values */
+> +		zdev->kzdev->interp = true;
+> +
+> +		if (copy_to_user((void __user *)arg, feat, size))
+> +			rc = -EFAULT;
+> +	} else if (feature.flags & VFIO_DEVICE_FEATURE_SET) {
+> +		if (data->flags == VFIO_DEVICE_ZPCI_FLAG_INTERP)
+> +			rc = kvm_s390_pci_interp_enable(zdev);
+> +		else if (data->flags == 0)
+> +			rc = kvm_s390_pci_interp_disable(zdev);
+> +		else
+> +			rc = -EINVAL;
+> +	} else {
+> +		/* Neither GET nor SET were specified */
+> +		rc = -EINVAL;
+> +	}
+> +
+> +	kfree(feat);
+> +	return rc;
+> +}
+> +
+>   static int vfio_pci_zdev_group_notifier(struct notifier_block *nb,
+>   					unsigned long action, void *data)
+>   {
+> @@ -164,6 +234,7 @@ void vfio_pci_zdev_open(struct vfio_pci_core_device *vdev)
+>   		return;
+>   
+>   	zdev->kzdev->nb.notifier_call = vfio_pci_zdev_group_notifier;
+> +	zdev->kzdev->interp = false;
+>   
+>   	if (vfio_register_notifier(vdev->vdev.dev, VFIO_GROUP_NOTIFY,
+>   				   &events, &zdev->kzdev->nb))
+> @@ -180,5 +251,12 @@ void vfio_pci_zdev_release(struct vfio_pci_core_device *vdev)
+>   	vfio_unregister_notifier(vdev->vdev.dev, VFIO_GROUP_NOTIFY,
+>   				 &zdev->kzdev->nb);
+>   
+> +	/*
+> +	 * If the device was using interpretation, don't trust that userspace
+> +	 * did the appropriate cleanup
+> +	 */
+> +	if (zdev->gd != 0)
+> +		kvm_s390_pci_interp_disable(zdev);
+> +
+>   	kvm_s390_pci_dev_release(zdev);
+>   }
+> diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
+> index 05287f8ac855..0db2b1051931 100644
+> --- a/include/linux/vfio_pci_core.h
+> +++ b/include/linux/vfio_pci_core.h
+> @@ -198,6 +198,9 @@ static inline int vfio_pci_igd_init(struct vfio_pci_core_device *vdev)
+>   #ifdef CONFIG_VFIO_PCI_ZDEV
+>   extern int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
+>   				       struct vfio_info_cap *caps);
+> +int vfio_pci_zdev_feat_interp(struct vfio_pci_core_device *vdev,
+> +			      struct vfio_device_feature feature,
+> +			      unsigned long arg);
+>   void vfio_pci_zdev_open(struct vfio_pci_core_device *vdev);
+>   void vfio_pci_zdev_release(struct vfio_pci_core_device *vdev);
+>   #else
+> @@ -207,6 +210,13 @@ static inline int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
+>   	return -ENODEV;
+>   }
+>   
+> +static inline int vfio_pci_zdev_feat_interp(struct vfio_pci_core_device *vdev,
+> +					    struct vfio_device_feature feature,
+> +					    unsigned long arg)
+> +{
+> +	return -ENOTTY;
+> +}
+> +
+>   static inline void vfio_pci_zdev_open(struct vfio_pci_core_device *vdev)
+>   {
+>   }
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index ef33ea002b0b..b9a75485b8e7 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -1002,6 +1002,13 @@ struct vfio_device_feature {
+>    */
+>   #define VFIO_DEVICE_FEATURE_PCI_VF_TOKEN	(0)
+>   
+> +/*
+> + * Provide support for enabling interpretation of zPCI instructions.  This
+> + * feature is only valid for s390x PCI devices.  Data provided when setting
+> + * and getting this feature is futher described in vfio_zdev.h
+> + */
+> +#define VFIO_DEVICE_FEATURE_ZPCI_INTERP		(1)
+> +
+>   /* -------- API for Type1 VFIO IOMMU -------- */
+>   
+>   /**
+> diff --git a/include/uapi/linux/vfio_zdev.h b/include/uapi/linux/vfio_zdev.h
+> index b4309397b6b2..575f0410dc66 100644
+> --- a/include/uapi/linux/vfio_zdev.h
+> +++ b/include/uapi/linux/vfio_zdev.h
+> @@ -75,4 +75,19 @@ struct vfio_device_info_cap_zpci_pfip {
+>   	__u8 pfip[];
+>   };
+>   
+> +/**
+> + * VFIO_DEVICE_FEATURE_ZPCI_INTERP
+> + *
+> + * This feature is used for enabling zPCI instruction interpretation for a
+> + * device.  No data is provided when setting this feature.  When getting
+> + * this feature, the following structure is provided which details whether
+> + * or not interpretation is active and provides the guest with host device
+> + * information necessary to enable interpretation.
+> + */
+> +struct vfio_device_zpci_interp {
+> +	__u64 flags;
+> +#define VFIO_DEVICE_ZPCI_FLAG_INTERP 1
+> +	__u32 fh;		/* Host device function handle */
+> +};
+> +
+>   #endif
+> 
+
+Otherwise LGTM
+
+-- 
+Pierre Morel
+IBM Lab Boeblingen
