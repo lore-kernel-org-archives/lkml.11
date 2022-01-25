@@ -2,115 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14743C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442279AbiAYHJY (ORCPT
+        id S1442340AbiAYHKJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:09:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442257AbiAYHGn (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:06:43 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275E7C061781
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:47:40 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id t9so3363153lji.12
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:47:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=sGwN6/PZ/JlBAeZ5KsZg9fZ+Ao13VjZFxZr+RAWIxdo=;
-        b=A09YnLzTaKn9EdmzYmyvMZaiISrRLWuv19XFxtLOw3S6UPh1zv0pIaCbBEM/3ErV+j
-         GDk2Nri6Sb1TUOBftHisD5mGt/GxY5QPwBsD5EGcpKkyiGRHPzWUp1TfUfMFs/RVPEj1
-         sNs7fDgdxfCiXwyZ/tCvDxjNsIVUdsT57pb9oXfZOXx4k8GH1+ZPo99KV8YtEmf9pMyN
-         05KfEPMbzMcsC1HOoai8xnmvR2s83rpAPLDdwh6R0klWgQN6c7bF0hGoNJvgFCfEUOsg
-         Ym/pfuCr3lv4S/4NrtcyrqKROVdJkwJKot2LDNOVm1hKm6PRqrJj9Z5WoOSMDCUwV6kr
-         +I7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=sGwN6/PZ/JlBAeZ5KsZg9fZ+Ao13VjZFxZr+RAWIxdo=;
-        b=psFZCuC4hItfP12570Yp7joBKlM8TmR/x6Qj7zFgFd4TXDZCgxnrKAbtugYVv3+FxC
-         j4dtCLBDu+XPywh2BWNKZIdSNcz1UNq5Ia6GjB/Jo58e3sAESOMnIvyai/ImATbr5+Pa
-         LS28/0j+zXZzLCxEd9HAiKhAtGWPYkKrYxrR7QWne5XGEjend5BeeBUb8pBVeZjkqjrd
-         mct1l1HN8eXPom+AsiyWrle0GW9zZwbU4uKjf7XD6RHTSoJISrfqlSmu+KXmxdTZl28Y
-         2MH7Ooy3ysj6j/M9/hOReu5lGpja6mTeRbYFz3xZMCF6W2S9ZjfCdsBqDA++z1GJDPbL
-         BxJg==
-X-Gm-Message-State: AOAM533eV/uyGg1PFssn0sR9JS6Crj0fUN9zAxgJvZLAsjtQAwuxZpM+
-        6roVCuqt0BB+zwJXI2Gau0vUJA==
-X-Google-Smtp-Source: ABdhPJyJchuAfqKxEoZHNfeglu2mhDn/41Om9kU2nisHx2f3LxWjzQNJw2845GY1KKIPbaNRREE35w==
-X-Received: by 2002:a2e:854f:: with SMTP id u15mr2955901ljj.237.1643089658510;
-        Mon, 24 Jan 2022 21:47:38 -0800 (PST)
-Received: from [192.168.112.17] (nikaet.starlink.ru. [94.141.168.29])
-        by smtp.gmail.com with ESMTPSA id b11sm1374206lfb.277.2022.01.24.21.47.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 21:47:37 -0800 (PST)
-Message-ID: <a179c80c-7ce8-da1a-f344-5d72b65c3da4@cogentembedded.com>
-Date:   Tue, 25 Jan 2022 08:47:37 +0300
+        Tue, 25 Jan 2022 02:10:09 -0500
+Received: from mga17.intel.com ([192.55.52.151]:45815 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1442352AbiAYHHk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 02:07:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643094458; x=1674630458;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version:content-transfer-encoding;
+  bh=yGV7YtKAgiBGeCNiwRFnIigFHqGr5li2VVz16Ut0GkA=;
+  b=nkJvrgCS3b1v/PO9jk4QZs7wuFMS/+dh+hGrFrwZXgkP3uCsdHsMzlYD
+   MitNvV4Nurx8YQZsFRGiO6eQTwH84CTmo2v46kC4bc6WXo4NHOPCapAZW
+   yRsVhS2YuucCvqxeN7ewjUEmHoR5X02Q4HN6/GkJ0vjcIoqe4fZhsvGcm
+   demNDV/ySMMX35e3D48+kaZMeIRz+PYKOjg7mHMMrQ5BpfPuHCEQX8Wzb
+   R0fFRxmLszTGiLZpev1XSYmchcwr3yli6Qm4aoaDQrrlJ6TkJK3/2bl4Z
+   5JEa9R8x8eU37vluBOcmpzkHj1AhogOUZDRstlD6li7hYOu0iycGuXOXN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226908641"
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="226908641"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 23:02:19 -0800
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="534599476"
+Received: from skirillo-mobl1.ccr.corp.intel.com (HELO localhost) ([10.252.32.77])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 23:02:15 -0800
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Yaroslav Bolyukin <iam@lach.pw>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Cc:     intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Yaroslav Bolyukin <iam@lach.pw>
+Subject: Re: [PATCH v2] drm/edid: Support type 7 timings
+In-Reply-To: <20220123191955.57994-1-iam@lach.pw>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220118215956.17229-1-iam@lach.pw>
+ <20220123191955.57994-1-iam@lach.pw>
+Date:   Tue, 25 Jan 2022 09:02:00 +0200
+Message-ID: <87lez41eon.fsf@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] drivers: irqchip: add irq-type-changer
-Content-Language: en-US
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>,
-        linux-kernel@vger.kernel.org
-References: <20220124095652.522099-1-nikita.yoush@cogentembedded.com>
- <878rv58ghy.wl-maz@kernel.org>
-From:   Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-In-Reply-To: <878rv58ghy.wl-maz@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+On Sun, 23 Jan 2022, Yaroslav Bolyukin <iam@lach.pw> wrote:
+> Per VESA DisplayID Standard v2.0: Type VII Timing =E2=80=93 Detailed Timi=
+ng Data
+>
+> Definitions were already provided as type I, but not used
+>
+> Signed-off-by: Yaroslav Bolyukin <iam@lach.pw>
 
- > I also don't see why you model this as the actual device that triggers
- > the interrupt.
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
 
-Well, that somehow matches the physical reality. In the case of wl18xx on KF, physically the interrupt 
-signal indeed originates from the intermediate chip - the inverting level-shifter.
+> ---
+>  drivers/gpu/drm/drm_edid.c | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
+> index 12893e7be..5f2ae5bfa 100644
+> --- a/drivers/gpu/drm/drm_edid.c
+> +++ b/drivers/gpu/drm/drm_edid.c
+> @@ -5405,7 +5405,8 @@ u32 drm_add_display_info(struct drm_connector *conn=
+ector, const struct edid *edi
+>  }
+>=20=20
+>  static struct drm_display_mode *drm_mode_displayid_detailed(struct drm_d=
+evice *dev,
+> -							    struct displayid_detailed_timings_1 *timings)
+> +							    struct displayid_detailed_timings_1 *timings,
+> +							    bool type_7)
+>  {
+>  	struct drm_display_mode *mode;
+>  	unsigned pixel_clock =3D (timings->pixel_clock[0] |
+> @@ -5426,7 +5427,8 @@ static struct drm_display_mode *drm_mode_displayid_=
+detailed(struct drm_device *d
+>  	if (!mode)
+>  		return NULL;
+>=20=20
+> -	mode->clock =3D pixel_clock * 10;
+> +	/* resolution is kHz for type VII, and 10 kHz for type I */
+> +	mode->clock =3D type_7 ? pixel_clock : pixel_clock * 10;
+>  	mode->hdisplay =3D hactive;
+>  	mode->hsync_start =3D mode->hdisplay + hsync;
+>  	mode->hsync_end =3D mode->hsync_start + hsync_width;
+> @@ -5457,6 +5459,7 @@ static int add_displayid_detailed_1_modes(struct dr=
+m_connector *connector,
+>  	int num_timings;
+>  	struct drm_display_mode *newmode;
+>  	int num_modes =3D 0;
+> +	bool type_7 =3D block->tag =3D=3D DATA_BLOCK_2_TYPE_7_DETAILED_TIMING;
+>  	/* blocks must be multiple of 20 bytes length */
+>  	if (block->num_bytes % 20)
+>  		return 0;
+> @@ -5465,7 +5468,7 @@ static int add_displayid_detailed_1_modes(struct dr=
+m_connector *connector,
+>  	for (i =3D 0; i < num_timings; i++) {
+>  		struct displayid_detailed_timings_1 *timings =3D &det->timings[i];
+>=20=20
+> -		newmode =3D drm_mode_displayid_detailed(connector->dev, timings);
+> +		newmode =3D drm_mode_displayid_detailed(connector->dev, timings, type_=
+7);
+>  		if (!newmode)
+>  			continue;
+>=20=20
+> @@ -5484,7 +5487,8 @@ static int add_displayid_detailed_modes(struct drm_=
+connector *connector,
+>=20=20
+>  	displayid_iter_edid_begin(edid, &iter);
+>  	displayid_iter_for_each(block, &iter) {
+> -		if (block->tag =3D=3D DATA_BLOCK_TYPE_1_DETAILED_TIMING)
+> +		if (block->tag =3D=3D DATA_BLOCK_TYPE_1_DETAILED_TIMING ||
+> +		    block->tag =3D=3D DATA_BLOCK_2_TYPE_7_DETAILED_TIMING)
+>  			num_modes +=3D add_displayid_detailed_1_modes(connector, block);
+>  	}
+>  	displayid_iter_end(&iter);
+>
+> base-commit: 99613159ad749543621da8238acf1a122880144e
 
-I remember your suggestion to configure interrupt source's node with interrupt-parent set to inverter 
-and interrupt details for inverter's parent. But this looks hacky and inconsistent for me.
-
-In contrary, an abstraction of intermediate entity that does a static conversion of the trigger type and 
-does not need any software control, looks sane. And, hardware designers do strange things sometimes, I 
-won't be surprised observing a change from level to edge one day. Thus it looked a good idea not to 
-limit the conversion to inversion, but support arbitrary one. Then, irqspec inside the node for the 
-intermediate entity obtains a meaning, making the entire model consistent.
-
-I don't strongly insist on this approach, it just looks cleaner for me.
-
-
- > I'm also pretty sure that with the current code,
- > you end-up with *two* interrupts (one for the inverter and one for the
- > end-point).
-
-In driver's init, I only call of_irq_parse_one() for interrupt defined in the changer's node. This does 
-not create a mapping for it. The mapping is only created when changer's "interrupt-child" creates a 
-mapping for their interrupt - then changer's alloc() routine calls irq_domain_alloc_irqs_parent() in the 
-same way as all other hierarchical irqchips do.
-
-I don't see where double mapping can appear here. Please explain.
-
-
- > You need a proper DT binding...
- > Geert commented on why this is wrong...
- > Use struct_size()...
-
-Will fix all that after we negotiate the basic approach.
-
-Thanks,
-
-Nikita
-
+--=20
+Jani Nikula, Intel Open Source Graphics Center
