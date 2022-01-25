@@ -2,82 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46238C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB2EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356912AbiAYR4m (ORCPT
+        id S1385332AbiAYR44 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:56:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385185AbiAYRyu (ORCPT
+        Tue, 25 Jan 2022 12:56:56 -0500
+Received: from mail-yb1-f182.google.com ([209.85.219.182]:40758 "EHLO
+        mail-yb1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357539AbiAYRzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:54:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2364C06175E;
-        Tue, 25 Jan 2022 09:54:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F05CB819DC;
-        Tue, 25 Jan 2022 17:54:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BE27C340E0;
-        Tue, 25 Jan 2022 17:54:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643133286;
-        bh=e8RIDdHaka7BpYFM9Quoh+WQnHQ0tbZzk2YChopEt5k=;
-        h=Date:From:To:Cc:Subject:From;
-        b=kfe3v9vI/NVHnoFrPeCBhSyVHjQQDrMtFRj2FLGHhtonu4oVamFx2uaUDoex/ZPwl
-         zAnO3bCTPb9q619jkKtp8C1pKJs+BkuizxhpCxMKjeiPV8PutwIkovgwe8m+mrFAMM
-         2HEC5/bm4WyeaEShCLHujXX1zoGLyVfDlZOEvGB6zvoypSLpPLnlheC948/vEtMNsN
-         /fdY4pHAsSdnn3fHTGfUNrB0XxeSV1ybgzkbB/ohctVLAxpjqfQ05uUhAiSMJhSLRq
-         3rYxH/SCyAD0/K0KLdZnAVPnfzcfa4kBNlSjiA/QDbNGNDJwFRub/mtBKmXwTelMft
-         NwUAu3eCvQhBQ==
-Date:   Tue, 25 Jan 2022 12:01:31 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>
-Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] Drivers: hv: vmbus: Use struct_size() helper in
- kmalloc()
-Message-ID: <20220125180131.GA67746@embeddedor>
+        Tue, 25 Jan 2022 12:55:02 -0500
+Received: by mail-yb1-f182.google.com with SMTP id 23so63924631ybf.7;
+        Tue, 25 Jan 2022 09:54:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y+R3o3okOUEIZN8/dDxsGECLwf9ITaDap15PmIOOEJw=;
+        b=tsaGoOSmVk7vaXbB33hs4k9q3BbeTHUtBXwyeQUuY62ng6sjhay1Kb4Lkgq/AUAgN+
+         6qPdLnFELJywM6E1EE3SVz6+TRd+7bnuB0tpov/WrsG3Svjy7GrVu8HZ/CbIDGP+QNJe
+         oQEbuXHgOXLaHVLD24h2Y9Y/kXEefHWPXYT5bsrULtvYDNCfjkm3GDoPUe8hDayhTVVO
+         Kz9Ms1OfHUy3KbMJp18jW8fgRMT87MzcCpM93IUAuBEeSiuySK97rE0ZoYdf+6HoURyf
+         NGnh9UrhQrCFuOxTSDngSUEDDCzYrcrpIda+jjDv+UFSx1suftZpy/p6ntJvcZR8tCCq
+         RDoQ==
+X-Gm-Message-State: AOAM530pDc2Zout0EHUtZV5IwPRSuSgNf6aZjx1i3U89GfCmC64SQrv0
+        5jnhfKkCY70mzNNEEnxmMQt4tbgQ+yC8QKXnGf0=
+X-Google-Smtp-Source: ABdhPJx+RSxvIz+QTS29NNZlNto0r/PEcq1x9Ah2IeEOnqDbQuwUZ7x2ZQ/2bvu5VBLp3XyWBQoxhvNKmB0ZgYbANKg=
+X-Received: by 2002:a25:1bd5:: with SMTP id b204mr34517304ybb.552.1643133297390;
+ Tue, 25 Jan 2022 09:54:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <1642851166-27096-1-git-send-email-akhilrajeev@nvidia.com> <1642851166-27096-3-git-send-email-akhilrajeev@nvidia.com>
+In-Reply-To: <1642851166-27096-3-git-send-email-akhilrajeev@nvidia.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 25 Jan 2022 18:54:46 +0100
+Message-ID: <CAJZ5v0gt+aDr_Te_mco_0CyRJAWgyeDKUb+dksfZz0mj91G0hw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] docs: firmware-guide: ACPI: Add named interrupt doc
+To:     Akhil R <akhilrajeev@nvidia.com>
+Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make use of the struct_size() helper instead of an open-coded version,
-in order to avoid any potential type mistakes or integer overflows that,
-in the worst scenario, could lead to heap overflows.
+On Sat, Jan 22, 2022 at 12:33 PM Akhil R <akhilrajeev@nvidia.com> wrote:
+>
+> Add a detailed example of the named interrupts in the ACPI table.
+>
+> Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
 
-Also, address the following sparse warnings:
-drivers/hv/vmbus_drv.c:1132:31: warning: using sizeof on a flexible structure
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Link: https://github.com/KSPP/linux/issues/174
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/hv/vmbus_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 17bf55fe3169..cd193456cd84 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -1129,7 +1129,7 @@ void vmbus_on_msg_dpc(unsigned long data)
- 	}
- 
- 	if (entry->handler_type	== VMHT_BLOCKING) {
--		ctx = kmalloc(sizeof(*ctx) + payload_size, GFP_ATOMIC);
-+		ctx = kmalloc(struct_size(ctx, msg.payload, payload_size), GFP_ATOMIC);
- 		if (ctx == NULL)
- 			return;
- 
--- 
-2.27.0
-
+> ---
+>  Documentation/firmware-guide/acpi/enumeration.rst | 39 +++++++++++++++++++++++
+>  1 file changed, 39 insertions(+)
+>
+> diff --git a/Documentation/firmware-guide/acpi/enumeration.rst b/Documentation/firmware-guide/acpi/enumeration.rst
+> index 74b830b2..d002256 100644
+> --- a/Documentation/firmware-guide/acpi/enumeration.rst
+> +++ b/Documentation/firmware-guide/acpi/enumeration.rst
+> @@ -143,6 +143,45 @@ In robust cases the client unfortunately needs to call
+>  acpi_dma_request_slave_chan_by_index() directly and therefore choose the
+>  specific FixedDMA resource by its index.
+>
+> +Named Interrupts
+> +================
+> +
+> +Drivers enumerated via ACPI can have names to interrupts in the ACPI table
+> +which can be used to get the IRQ number in the driver.
+> +
+> +The interrupt name can be listed in _DSD as 'interrupt-names'. The names
+> +should be listed as an array of strings which will map to the Interrupt()
+> +resource in the ACPI table corresponding to its index.
+> +
+> +The table below shows an example of its usage::
+> +
+> +    Device (DEV0) {
+> +        ...
+> +        Name (_CRS, ResourceTemplate() {
+> +            ...
+> +            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) {
+> +                0x20,
+> +                0x24
+> +            }
+> +        })
+> +
+> +        Name (_DSD, Package () {
+> +            ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+> +            Package () {
+> +                Package () {"interrupt-names",
+> +                Package (2) {"default", "alert"}},
+> +            }
+> +        ...
+> +        })
+> +    }
+> +
+> +The interrupt name 'default' will correspond to 0x20 in Interrupt()
+> +resource and 'alert' to 0x24. Note that only the Interrupt() resource
+> +is mapped and not GpioInt() or similar.
+> +
+> +The driver can call the function - fwnode_irq_get_byname() with the fwnode
+> +and interrupt name as arguments to get the corresponding IRQ number.
+> +
+>  SPI serial bus support
+>  ======================
+>
+> --
+> 2.7.4
+>
