@@ -2,63 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD5B7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BACBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:53:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580881AbiAYOww (ORCPT
+        id S1580552AbiAYOxr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:52:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1580352AbiAYOsW (ORCPT
+        Tue, 25 Jan 2022 09:53:47 -0500
+Received: from gproxy4-pub.mail.unifiedlayer.com ([69.89.23.142]:35041 "EHLO
+        gproxy4-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1580410AbiAYOtV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:48:22 -0500
-X-Greylist: delayed 535 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 25 Jan 2022 06:48:13 PST
-Received: from swift.blarg.de (swift.blarg.de [IPv6:2a01:4f8:c17:52a8::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CBC0C061401;
-        Tue, 25 Jan 2022 06:48:13 -0800 (PST)
-Received: by swift.blarg.de (Postfix, from userid 1000)
-        id D0BE040E4E; Tue, 25 Jan 2022 15:39:16 +0100 (CET)
-Date:   Tue, 25 Jan 2022 15:39:16 +0100
-From:   Max Kellermann <max@blarg.de>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     linux-pwm@vger.kernel.org, thierry.reding@gmail.com,
-        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        andrey@lebedev.lt, stable@vger.kernel.org
-Subject: Re: [PATCH 1/3] pwm-sun4i: convert "next_period" to local variable
-Message-ID: <YfALlLgo3MAcbFrZ@swift.blarg.de>
-Mail-Followup-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-        linux-pwm@vger.kernel.org, thierry.reding@gmail.com,
-        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        andrey@lebedev.lt, stable@vger.kernel.org
-References: <20220125123429.3490883-1-max.kellermann@gmail.com>
- <20220125143158.qbelqvr5mjq33zay@pengutronix.de>
+        Tue, 25 Jan 2022 09:49:21 -0500
+Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
+        by progateway6.mail.pro1.eigbox.com (Postfix) with ESMTP id 444CD10048474
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 14:49:11 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id CN8AnHAhbnAlUCN8An9JQZ; Tue, 25 Jan 2022 14:49:11 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=QIOt+iHL c=1 sm=1 tr=0 ts=61f00de7
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=DghFqjY3_ZEA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=aQAIBmicJCSxrmNyH3iv9LFB+3idbl+44IkGVHzPsZQ=; b=Jx4qh/VKtn/MFl0Ep7ecOLLtGJ
+        cyPjOsoxdZL4ygKDRuJ3Afqak+u+Qp/IsQ7s7uz3Apw+KkURTn4sxBftgwwcR4SoOuOmCTeD6kk3t
+        p0gWR1TqOcyeJQEfmauEEFLj8;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:51644 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nCN8A-000lzi-Ew; Tue, 25 Jan 2022 07:49:10 -0700
+Message-ID: <0ea51623-2455-4860-cca7-7e9765e3ae6f@w6rz.net>
+Date:   Tue, 25 Jan 2022 06:49:09 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220125143158.qbelqvr5mjq33zay@pengutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.16 0000/1039] 5.16.3-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+References: <20220124184125.121143506@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nCN8A-000lzi-Ew
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:51644
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/01/25 15:31, Uwe Kleine-König <u.kleine-koenig@pengutronix.de> wrote:
-> I think I'd drop this. This isn't a fix worth on it's own to be
-> backported and if this is needed for one of the next patches, the stable
-> maintainers will notice themselves (and it might be worth to shuffle
-> this series to make the fixes come first).
+On 1/24/22 10:29, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.3 release.
+> There are 1039 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.3-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-The first two patches are preparation for the third patch, which fixes
-the actual bug.
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-Of course, I could have done everything in one patch, but I thought
-splitting the first two out makes review easier.  This way, every step
-is almost trivial.
-
-If you want me to fold the three patches into one, I can do that.  But
-I can't reorder them (or backport only the bug fix to stable).
-
-Max
-
+Tested-by: Ron Economos <re@w6rz.net>
 
