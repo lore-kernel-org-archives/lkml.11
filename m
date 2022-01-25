@@ -2,156 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 014B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D01C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:04:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387130AbiAYL5c (ORCPT
+        id S1391992AbiAYMEf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 06:57:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58040 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386558AbiAYLwi (ORCPT
+        Tue, 25 Jan 2022 07:04:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:46643 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1382800AbiAYMAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 06:52:38 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDBEC061401;
-        Tue, 25 Jan 2022 03:52:34 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id i17so2015685pfq.13;
-        Tue, 25 Jan 2022 03:52:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6ah5l1D0e53j/TNN2l2oD6uzzld/ChKHxACn/WjMnXw=;
-        b=ZUOZzEiiIeoBmuueZJlIyuA5Yyl8fzNEoPX6viN5ap+oULD+C8EhJs5uKlNYvKIvVS
-         NVtVp9Kxo/vEGUCXjjnQ5n4cBlRCmueBWheMhdXbTV7W4wLoaxL3cbrbSOag7TAq9yuP
-         xkArWofc5Ajhx7SNuO85atzhs0P9rqljxgupnGeCnuKR9IBjVN+HbrW3OJX8MYo4WEif
-         ydv4p1ehnYkKoWLom+SiOK794lgMXt+ONiANqxg+2vpd4Dm37sgAgRWgSpQYL4FY9kpd
-         /FzilJ7tGPFpWuzs0Cnz/TEVPPxaO2MEyTcpyiMsQdbQnNQNLs18JWDnfjpOfyy1Ue4G
-         thNg==
+        Tue, 25 Jan 2022 07:00:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643112031;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2lsdYPIqQ4QlcpvU2QM4ze8T2zz+UGakXhoLQCT2xuc=;
+        b=NED8xet4OZL3J00CxHbetxFWuuzj/zWX2STD+VrGJdB37A/qMKhs8nxC65RLm7yxzmz1zT
+        +hDy7aXN5hhqYv0WnACEd1yF3TuL8XdQ/DRmNQl8PjAMNR0l/LrcJzULRGI2i2L0ojI3cE
+        w2QJgyiFK28SD9G8lPfzikK6+qm111E=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-225-k8ddlABMONSIiyS4KO6izA-1; Tue, 25 Jan 2022 07:00:30 -0500
+X-MC-Unique: k8ddlABMONSIiyS4KO6izA-1
+Received: by mail-wm1-f69.google.com with SMTP id d140-20020a1c1d92000000b0034edefd55caso1119768wmd.4
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 04:00:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=6ah5l1D0e53j/TNN2l2oD6uzzld/ChKHxACn/WjMnXw=;
-        b=uFaZWJdCNc1REiaebaPvf7eYbkimYzekvo64ZFnoo9ZWdG0mhXDkFiXF0lFXNfFvXP
-         W4wrKoSiqHrouH9i7uPF2fJJNSjL4jisH32Sky6MPYCZVvPwz3Ep15WLu4YqaeYqr5OT
-         +Z1TPXxmGV6cpvQu9Oj1nW9wk1dvIJ758SpUEJwwuw3pK9Iw1ZLfblp5ZFc6DjXHnq8n
-         mvFx/IJCsZYkjqwbWyf49K9wBxwevRKFxrMqaCoGkKq4dwiomU/gFGIDyehSkFOj+WwU
-         WJa/NJr04c7BvzRi9D2YYnuvxfUwkH1Xqb224IV+38ghQLUPr5B0JlZM+z3AAGd1GOZe
-         UAkg==
-X-Gm-Message-State: AOAM530ScspVgIW0XcNba7c0SgOAIwe31TOng/7c1YIfHZtY3l8FaQuT
-        +4KI8LlkbLV46YP5+eg1t2cU/yvISQEMJQ==
-X-Google-Smtp-Source: ABdhPJwSI5Uxzhc1kA5HdaNpZMdx4vlj5nYn1XV49bP01FNKLHZ+tYqXagIi8HvyIq2DGKUqlXoSXw==
-X-Received: by 2002:a63:114:: with SMTP id 20mr8114462pgb.524.1643111554401;
-        Tue, 25 Jan 2022 03:52:34 -0800 (PST)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id b4sm14353030pgq.75.2022.01.25.03.52.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 03:52:33 -0800 (PST)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Tian Kevin <kevin.tian@intel.com>,
-        Jim Mattson <jmattson@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] KVM: x86/cpuid: Exclude unpermitted xfeatures sizes at KVM_GET_SUPPORTED_CPUID
-Date:   Tue, 25 Jan 2022 19:52:23 +0800
-Message-Id: <20220125115223.33707-1-likexu@tencent.com>
-X-Mailer: git-send-email 2.33.1
+        bh=2lsdYPIqQ4QlcpvU2QM4ze8T2zz+UGakXhoLQCT2xuc=;
+        b=yxA81H1Yw8pH+ME1ai1a+Zoij4ZinbtJg03089IKoAeR7aFvtHD6a21OcgIGKIzCbq
+         FlWpHZrkrn+L8r/nwU86JMdoRnRE9EHMIH0qEKeusH0rP2+tU1KrQsB7N1CxBjo9RzCv
+         xCFxUXFouYjPfNvOHHyQeLlKeSHVSj+R8Tvz7oGtWf/KSTnLDbTHZgMaJ9gu480TDsVK
+         BirZw770+NCxffyAaOrnGvrCeb/I/O2T/WITJNX1WvRSGKnhCCbgHLSXi6OokvEm1sBE
+         tubtd1CQLsA2qs2dZO5wyRoiZMFUZPhAu7UHZ3uPdKaL03A8KNTBcyw8vImC8H07N599
+         EcgQ==
+X-Gm-Message-State: AOAM532mgc4E+4uzmDKHcpk/ZolDywTgV7W86Yl6o+i9uRcG3Qml6q+R
+        HIkNuwTC4wTk4criP3fSr7DLav7IW/HsdRiz6dEL8z+z7hTtpzKiXMuQWgsMQTrtpk2pc4OGOHs
+        TSwFKgjRh39iGRNxxSp5kn7Hv
+X-Received: by 2002:a1c:cc08:: with SMTP id h8mr2659711wmb.156.1643112029366;
+        Tue, 25 Jan 2022 04:00:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJygqV37/XDy+29IPJuuFxB8Vr2Cp0cFygEJ6RlKk0ecIA/aj6eOc5JLqKQTmnbzn5TcAS8pZA==
+X-Received: by 2002:a1c:cc08:: with SMTP id h8mr2659671wmb.156.1643112029092;
+        Tue, 25 Jan 2022 04:00:29 -0800 (PST)
+Received: from [10.33.192.183] (nat-pool-str-t.redhat.com. [149.14.88.106])
+        by smtp.gmail.com with ESMTPSA id g5sm12180088wri.108.2022.01.25.04.00.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 04:00:28 -0800 (PST)
+Message-ID: <3035e023-d71a-407b-2ba6-45ad0ae85a9e@redhat.com>
+Date:   Tue, 25 Jan 2022 13:00:27 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [RFC PATCH v1 06/10] KVM: s390: Add vm IOCTL for key checked
+ guest absolute memory access
+Content-Language: en-US
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220118095210.1651483-1-scgl@linux.ibm.com>
+ <20220118095210.1651483-7-scgl@linux.ibm.com>
+ <069c72b6-457f-65c7-652e-e6eca7235fca@redhat.com>
+ <8647fcaf-6d8a-4678-0695-4b1cc797b3b1@linux.ibm.com>
+From:   Thomas Huth <thuth@redhat.com>
+In-Reply-To: <8647fcaf-6d8a-4678-0695-4b1cc797b3b1@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On 20/01/2022 13.23, Janis Schoetterl-Glausch wrote:
+> On 1/20/22 11:38, Thomas Huth wrote:
+>> On 18/01/2022 10.52, Janis Schoetterl-Glausch wrote:
+>>> Channel I/O honors storage keys and is performed on absolute memory.
+>>> For I/O emulation user space therefore needs to be able to do key
+>>> checked accesses.
+>>> The vm IOCTL supports read/write accesses, as well as checking
+>>> if an access would succeed.
+>> ...
+>>> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+>>> index e3f450b2f346..dd04170287fd 100644
+>>> --- a/include/uapi/linux/kvm.h
+>>> +++ b/include/uapi/linux/kvm.h
+>>> @@ -572,6 +572,8 @@ struct kvm_s390_mem_op {
+>>>    #define KVM_S390_MEMOP_LOGICAL_WRITE    1
+>>>    #define KVM_S390_MEMOP_SIDA_READ    2
+>>>    #define KVM_S390_MEMOP_SIDA_WRITE    3
+>>> +#define KVM_S390_MEMOP_ABSOLUTE_READ    4
+>>> +#define KVM_S390_MEMOP_ABSOLUTE_WRITE    5
+>>
+>> Not quite sure about this - maybe it is, but at least I'd like to see this discussed: Do we really want to re-use the same ioctl layout for both, the VM and the VCPU file handles? Where the userspace developer has to know that the *_ABSOLUTE_* ops only work with VM handles, and the others only work with the VCPU handles? A CPU can also address absolute memory, so why not adding the *_ABSOLUTE_* ops there, too? And if we'd do that, wouldn't it be sufficient to have the VCPU ioctls only - or do you want to call these ioctls from spots in QEMU where you do not have a VCPU handle available? (I/O instructions are triggered from a CPU, so I'd assume that you should have a VCPU handle around?)
+> 
+> There are some differences between the vm and the vcpu memops.
+> No storage or fetch protection overrides apply to IO/vm memops, after all there is no control register to enable them.
+> Additionally, quiescing is not required for IO, tho in practice we use the same code path for the vcpu and the vm here.
+> Allowing absolute accesses with a vcpu is doable, but I'm not sure what the use case for it would be, I'm not aware of
+> a precedence in the architecture. Of course the vcpu memop already supports logical=real accesses.
 
-With the help of xstate_get_guest_group_perm(), KVM can exclude unpermitted
-xfeatures in cpuid.0xd.0.eax, in which case the corresponding xfeatures
-sizes should also be matched to the permitted xfeatures.
+Ok. Maybe it then would be better to call new ioctl and the new op defines 
+differently, to avoid confusion? E.g. call it "vmmemop" and use:
 
-To fix this inconsistency, the permitted_xcr0 and permitted_xss are defined
-consistently, which implies 'supported' plus certain permissions for this
-task, and it also fixes cpuid.0xd.1.ebx and later leaf-by-leaf queries.
+#define KVM_S390_VMMEMOP_ABSOLUTE_READ    1
+#define KVM_S390_VMMEMOP_ABSOLUTE_WRITE   2
 
-Fixes: 445ecdf79be0 ("kvm: x86: Exclude unpermitted xfeatures at KVM_GET_SUPPORTED_CPUID")
-Signed-off-by: Like Xu <likexu@tencent.com>
----
-v1 -> v2 Changelog:
-- Drop the use of shadow variable; (Paolo)
-- Define permitted_xss consistently; (Kevin)
+?
 
-Previous:
-https://lore.kernel.org/kvm/20220124080251.60558-1-likexu@tencent.com/
-
- arch/x86/kvm/cpuid.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
-
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 3902c28fb6cb..07844d15dfdf 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -887,13 +887,14 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 		}
- 		break;
- 	case 0xd: {
--		u64 guest_perm = xstate_get_guest_group_perm();
-+		u64 permitted_xcr0 = supported_xcr0 & xstate_get_guest_group_perm();
-+		u64 permitted_xss = supported_xss;
- 
--		entry->eax &= supported_xcr0 & guest_perm;
--		entry->ebx = xstate_required_size(supported_xcr0, false);
-+		entry->eax &= permitted_xcr0;
-+		entry->ebx = xstate_required_size(permitted_xcr0, false);
- 		entry->ecx = entry->ebx;
--		entry->edx &= (supported_xcr0 & guest_perm) >> 32;
--		if (!supported_xcr0)
-+		entry->edx &= permitted_xcr0 >> 32;
-+		if (!permitted_xcr0)
- 			break;
- 
- 		entry = do_host_cpuid(array, function, 1);
-@@ -902,20 +903,20 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 
- 		cpuid_entry_override(entry, CPUID_D_1_EAX);
- 		if (entry->eax & (F(XSAVES)|F(XSAVEC)))
--			entry->ebx = xstate_required_size(supported_xcr0 | supported_xss,
-+			entry->ebx = xstate_required_size(permitted_xcr0 | permitted_xss,
- 							  true);
- 		else {
--			WARN_ON_ONCE(supported_xss != 0);
-+			WARN_ON_ONCE(permitted_xss != 0);
- 			entry->ebx = 0;
- 		}
--		entry->ecx &= supported_xss;
--		entry->edx &= supported_xss >> 32;
-+		entry->ecx &= permitted_xss;
-+		entry->edx &= permitted_xss >> 32;
- 
- 		for (i = 2; i < 64; ++i) {
- 			bool s_state;
--			if (supported_xcr0 & BIT_ULL(i))
-+			if (permitted_xcr0 & BIT_ULL(i))
- 				s_state = false;
--			else if (supported_xss & BIT_ULL(i))
-+			else if (permitted_xss & BIT_ULL(i))
- 				s_state = true;
- 			else
- 				continue;
-@@ -929,7 +930,7 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 			 * invalid sub-leafs.  Only valid sub-leafs should
- 			 * reach this point, and they should have a non-zero
- 			 * save state size.  Furthermore, check whether the
--			 * processor agrees with supported_xcr0/supported_xss
-+			 * processor agrees with permitted_xcr0/permitted_xss
- 			 * on whether this is an XCR0- or IA32_XSS-managed area.
- 			 */
- 			if (WARN_ON_ONCE(!entry->eax || (entry->ecx & 0x1) != s_state)) {
--- 
-2.33.1
+  Thomas
 
