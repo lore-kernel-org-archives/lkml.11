@@ -2,311 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:15:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EDC8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581818AbiAYPOt (ORCPT
+        id S1346215AbiAYPST (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 10:14:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47840 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1581513AbiAYPML (ORCPT
+        Tue, 25 Jan 2022 10:18:19 -0500
+Received: from sonic303-24.consmr.mail.gq1.yahoo.com ([98.137.64.205]:40827
+        "EHLO sonic303-24.consmr.mail.gq1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1359359AbiAYPPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:12:11 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64366C06173B;
-        Tue, 25 Jan 2022 07:12:11 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id p12so63951656edq.9;
-        Tue, 25 Jan 2022 07:12:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=b/fVXGWL7pXguX3NnL+L9P3rO1c2oKSjzsBSQyAaKoI=;
-        b=b49+POoNj5fEkS3FK8cNC5hrd0L0Q8NYvsXzIbXVCfLrjq5zOWOZ8IcLn5Cgdj53c5
-         XmtWnBNl55rAQ1T8BTs604GyDQzge9/Q8QyG3n1obTzwEwHvSdykC4UsTyFWMukQnssv
-         CaJxDzMJVbTDSvWto/RnZjUDDSANqJOaGn5VYB5HKjVAnJFygAeYPmi/SINAlFPK3x9N
-         m5ZYMaYml97/4HFzJ0TgAANF7Bj5Z0jImirg6HY/6JP+ZlZWrqlAisFEikTJjas/KZPw
-         e2bgqFdvMdAgtm/mo5myrCc8BVDEGvvxg2deACgWVA8Y1kZvQotbN3xuin2jkivFXBhF
-         4uaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b/fVXGWL7pXguX3NnL+L9P3rO1c2oKSjzsBSQyAaKoI=;
-        b=HcYpK3pEg1B921yeZqKBW+uYOU8w2nXYxoEe7GSleTdByfOFjnqbR/9Yxv4RnoHa0N
-         QCBBJ2WgmXzL7klxZTN9PHm/aaP1UUHQW9zd1g6hcZilrzc5OCHNb9C6BfFoCZ1FU8i0
-         KyXKfe0jOp+5uQq9lFLZRJD34dhxFRuGrHFjUdbKanX8UxACM1uPp6oYRhqPWEvzga5x
-         dbrOUZ8I0pmUfiOE6c2Jedj2+DGzh5H1BjVORKrbnkzX7Inn5bAysLiynQcl2avv0Vaz
-         Jwl7jhI1D/tOnSWKma/eipAGZZtHEOO+61WfwPqKvk/b+RFE/WK3uTEnVYlF6pj1MZyx
-         qLrQ==
-X-Gm-Message-State: AOAM531zaGCrJqavTZI3IvGiPQ5ZXFP/hTTNjpu7rLXV2tX/NJtOdE+F
-        pkgK9jQiImC7UYgHq2oRbbY=
-X-Google-Smtp-Source: ABdhPJzSk6NWHSYclxAOyjZyJFZ1K6AbVTBS8s7c5CQF+5NDJeZFqS47qK6tI1OypDgzFrI3QS0Trg==
-X-Received: by 2002:a05:6402:438b:: with SMTP id o11mr14226461edc.23.1643123529440;
-        Tue, 25 Jan 2022 07:12:09 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id 5sm8706467edx.32.2022.01.25.07.12.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 07:12:08 -0800 (PST)
-Date:   Tue, 25 Jan 2022 17:12:07 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH v7 11/16] net: dsa: qca8k: add support for mib
- autocast in Ethernet packet
-Message-ID: <20220125151207.zmwioczu54kkwcjm@skbuf>
-References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <20220123013337.20945-12-ansuelsmth@gmail.com>
+        Tue, 25 Jan 2022 10:15:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.ca; s=s2048; t=1643123750; bh=W1FnFYdavyQlYiM/uuwdQDRcOc93SjxE81qWWEYe6Ng=; h=Date:From:Subject:To:Cc:References:In-Reply-To:From:Subject:Reply-To; b=Rhd8KojzEurxfg73PMC4sbMKIsU1JGde39XPt3zJRmZwvFiHackvzQlRcYmtrLPEdGOVLwdY/6GslG9HTu/j8Omz9R3tw9feYyfY06BDZAREKVtuwQU/Dwsf1hKJqInAdHfjtaKlN9GT7JhWIwosewbEdGNJPTuoWTvBq8Ixj5DG83FrwKuJFBQqb4EIGWXzwb4g6vJqyHwCZYop7ieacJZQ7rRKtgvNp8BQFr0pZa432WEpTcMgfvV47g84Y/cjqujxQ0VCFJ08didh5PonSwNxXKFdrL/zKQp+u6iPwX4leysxkF/IKgdM2rkCY+IuwPmZk7FCuyQi2ggo1o+woA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1643123750; bh=Tvc5KMN89e/YUtEJzf53mfd2o5IbWQBRFwtLDH154x5=; h=X-Sonic-MF:Date:From:Subject:To:From:Subject; b=X6UMNPbG+ezRpZ7MpggDt1m06MN97HpNrZHh5jbWSyz6Q8tQg+3rU47iloQBw3JUI/N554gAnqy5WY60AIVFGWFj1lYM+ODNHIJaZw6gelCOCUlRIYLCFoNHWMnCJp3OT1GnIkEzqdzZO30YcxiSm5QpMAbr1wDXrqHMoXSameU7MQux+WcfM2a8jo4vXr2dpI5yksVGCn8OEBgh8DC/fegX2vjGzUgyyG+A1e8glL5Gsdeos2uoYVJwA1K27jfsJWmZPM84iFkP+AOo22YPpLKwvGg+ZCKISW60DZHkP61s79cLADHW4Z5nnZFy7oMJO8zqfHQY8TgPAiNHINv61w==
+X-YMail-OSG: IWs0ZA0VM1k4fOZG7KdkFi2uwbleyk1Je1HFy04MFHxqyT6K.Ai4hb1LI_P78X8
+ Zidc8kBt.oXGjigqjnr9JFhRt_MVc210InpqlSu71MHl3ESl4aIL51gHWklmlKm1gAzddz_vMVLD
+ Wba.X0S80fuxWcpN5iDkheZUKKTHBURybHiHIqTq4qaoJLrMtNt.mKJEvfeRej5leVvUUP6QLieN
+ LE9ZSpSfKXdML_QLpqVnk9HQhFJmlR4oHHFuj.1QUEIMFHsvBkdyzyLrxuDGV.Vwc2LCFgUnGf_5
+ WmgL2j5cKCbD6YQwDOCH_BsJyIYWk8sFUV5mnfS.oq0xiGAczKw4iv1YHB6oU6vviXk6VNKa9ame
+ 9ldd7x5IGEMq7d5TMyENYTr1GHnczk_6sEumozdfH4z4edJxIco21RTkhjic0suI8TJMCj_BvXAt
+ W0Uw2goYzzpPYTCkNaTzqCJL5WMGdFDU1hFb8kU15VU_oucYUx2vNk87WgN5uGFuygpwr.KLfVAE
+ i0COMtAeLTDod0Rf0rbbq7AyLac0DYMpk_QLpVrHbNG0XVC4g0PpfsMWwkP.P6Ly4Iu4otvZPmeg
+ OmUM._XY558EbrcxKdotfbDFQBVvOM1qyj0SS2QK40Z6QWqTlWVid2qEM5GoIR9qqur.9o0FYn1I
+ 3iviTdks9pWA4mhxZes5GHWwhEixSAllR4y3usRCwmmRmyvgg8HdXdRHQciJG64ESRLsXT5MwaNZ
+ mAMwmteJycCWqIxdSr9L3DtRAchl56_GHuLWR6RjwB9bt4WYm9w5PSU5IBlcMQaCbeo3TUby2KXD
+ jvdqviecBIvhBQea_F2gcWv_4VNjiTvRPBNitvaS4M7dRGQleCq8tsBE126oNfjhTCBmSygNf0C4
+ MGyv8hR5xNU0eZYJjLntb4tNtXhJRczYEDRtWsy1jwJxdmXhcyaF05UKW04yRa.tFUVecPjZmgbV
+ 8Y8ZqiT0oExdpstuOVRjiAms7z6Ttqt93J2vxHfJAupN.3bxYR84t4CEK4X1ob0HVkvI0ZN2.clz
+ bx9eqVp_QPeAJ1.NkOonTNp5h0TfCGGlW8Ixr66vHmEUZZFynbiemotxP1pBet981axp5ZuBAxN0
+ pwvqBbBK50Vc2oYzyk8iqEG8BP8F7U20lUuvXNlca5kU8OKtBot4EIQNLrIqtrucWbf2x7AnpHP_
+ 3CJettKRv54QfHeKFkTKzU98u.8CEbK6QCaji2QuzL4JB.EJ2K1n_DQGLpJledCmr_mYRAdu8vqg
+ ztgtuyPQOmDwD5Bb4N9R8mPYDkyO2fYoP._RRzgevIm.t2fuBe8A0ISYetu7DEE1WrnoFX7.a95R
+ 3CHjJOOqqNpeUz0Hc9xp3ydVF6m0RqqZ3r3_Az6ebvOoYH0ckawuRwKL5CQ9fk3BVgaCwnJLc1xd
+ eWZ9t7P6_odrXpE2i4KhoqZOiSKRVT.xvLZCmcHh9c6GMb0j1neueztL6KVftzs0XddXx4xM4coO
+ 97_hV5kRg83rhwyn7t3L.xa63AIPiFyTpOrUmegrTHAcxFExsk_m921N7LOI1.VtdkbiisGeNL_P
+ 7Ar7n7YFK0yNG4Oscc_a5DnUAhFzFNqMSKQ2Xn59A58_QOyl1JEZFlJCwtBIHGwdlLKOrMg8D5ai
+ T5iyGgbph2eYdvYCr7J471akVv2QFGdvAkUsnqv9W98rGmxhQGdoV79i7olJhCqwwNimO4np8gl1
+ rS6Ub7bGqGf46OfFw_ab1ExR6Fw8.VMnSXg2KkAtLKbedTeyyGz3IlKhM_e7QXs.b5hPfZxzdF1k
+ ObD.Go.U2dXqDz.UJzCx2..YnI8TEMTWA9W7SJb4TKjaQKbp2dzDZ3Jx8jwzH7mzpiFQziCrC99p
+ yvZoCNrYENFWsGzAlHw6lbogERBmV6zJLZtQcaO7qiaHZJRf2MkDkcsD99o0FT0puYi5nF1kwNY4
+ IAiYyUCS_eBjIVZ0L_2Ke.6kXkxZ3g0oPZlJtkNy1UMLGqseySc0pWEs45cn5Qw5xeymGUnw6PL8
+ L9se5n7WsHYPGfLtA5038hAP0NvwOXtX1bVjkoOBP24_2lzVMGzgLcZLgpogbSW_bgArvfL7.9Ly
+ ae8qdHr0HdJTgkBjM2zXTI9JfNYR5wGRyhhvHWrQx1SbPopzyb0JOvAsEjUJSOlgsRCeR3Jd7Q0d
+ wyWX1z9rxTTBLY6G9aONzXQN1NGp6.12ZhY.77hFQe6s7MwHhmpceZ0FgPbXbpNUUAfafSvLgavl
+ 8eLeLs5zCO4GUz6L_IJJV9kzRbV2JQgJly.ziaTNVNms6BE2dHXMndXEudkeMs7L6wmLI9tRdp74
+ r8SwLitxGeEFU39a0
+X-Sonic-MF: <alex_y_xu@yahoo.ca>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic303.consmr.mail.gq1.yahoo.com with HTTP; Tue, 25 Jan 2022 15:15:50 +0000
+Received: by kubenode523.mail-prod1.omega.bf1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 12639cd08c3790f326dd7cfd6ce75ecb;
+          Tue, 25 Jan 2022 15:15:45 +0000 (UTC)
+Date:   Tue, 25 Jan 2022 10:15:41 -0500
+From:   "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>
+Subject: Re: "blk-mq: fix tag_get wait task can't be awakened" causes hangs
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        axboe@kernel.dk, linux-block@vger.kernel.org,
+        QiuLaibin <qiulaibin@huawei.com>
+Cc:     akpm@linux-foundation.org, bvanassche@acm.org, hare@suse.de,
+        john.garry@huawei.com, linux-kernel@vger.kernel.org,
+        martin.petersen@oracle.com, ming.lei@redhat.com,
+        Daniel Palmer <daniel@0x0f.com>
+References: <1643040870.3bwvk3sis4.none.ref@localhost>
+        <1643040870.3bwvk3sis4.none@localhost>
+        <78cafe94-a787-e006-8851-69906f0c2128@huawei.com>
+In-Reply-To: <78cafe94-a787-e006-8851-69906f0c2128@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220123013337.20945-12-ansuelsmth@gmail.com>
+Message-Id: <1643123281.zt4edu32d8.none@localhost>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: WebService/1.1.19615 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 23, 2022 at 02:33:32AM +0100, Ansuel Smith wrote:
-> The switch can autocast MIB counter using Ethernet packet.
-> Add support for this and provide a handler for the tagger.
-> The switch will send packet with MIB counter for each port, the switch
-> will use completion API to wait for the correct packet to be received
-> and will complete the task only when each packet is received.
-> Although the handler will drop all the other packet, we still have to
-> consume each MIB packet to complete the request. This is done to prevent
-> mixed data with concurrent ethtool request.
-> 
-> connect_tag_protocol() is used to add the handler to the tag_qca tagger,
-> master_state_change() use the MIB lock to make sure no MIB Ethernet is
-> in progress.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  drivers/net/dsa/qca8k.c | 108 +++++++++++++++++++++++++++++++++++++++-
->  drivers/net/dsa/qca8k.h |  17 ++++++-
->  2 files changed, 122 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index 35711d010eb4..f51a6d8993ff 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -811,7 +811,10 @@ qca8k_mib_init(struct qca8k_priv *priv)
->  	int ret;
->  
->  	mutex_lock(&priv->reg_mutex);
-> -	ret = regmap_set_bits(priv->regmap, QCA8K_REG_MIB, QCA8K_MIB_FLUSH | QCA8K_MIB_BUSY);
-> +	ret = regmap_update_bits(priv->regmap, QCA8K_REG_MIB,
-> +				 QCA8K_MIB_FUNC | QCA8K_MIB_BUSY,
-> +				 FIELD_PREP(QCA8K_MIB_FUNC, QCA8K_MIB_FLUSH) |
-> +				 QCA8K_MIB_BUSY);
->  	if (ret)
->  		goto exit;
->  
-> @@ -1882,6 +1885,97 @@ qca8k_get_strings(struct dsa_switch *ds, int port, u32 stringset, uint8_t *data)
->  			ETH_GSTRING_LEN);
->  }
->  
-> +static void qca8k_mib_autocast_handler(struct dsa_switch *ds, struct sk_buff *skb)
-> +{
-> +	const struct qca8k_match_data *match_data;
-> +	struct qca8k_mib_hdr_data *mib_hdr_data;
-> +	struct qca8k_priv *priv = ds->priv;
-> +	const struct qca8k_mib_desc *mib;
-> +	struct mib_ethhdr *mib_ethhdr;
-> +	int i, mib_len, offset = 0;
-> +	u64 *data;
-> +	u8 port;
-> +
-> +	mib_ethhdr = (struct mib_ethhdr *)skb_mac_header(skb);
-> +	mib_hdr_data = &priv->mib_hdr_data;
-> +
-> +	/* The switch autocast every port. Ignore other packet and
-> +	 * parse only the requested one.
-> +	 */
-> +	port = FIELD_GET(QCA_HDR_RECV_SOURCE_PORT, ntohs(mib_ethhdr->hdr));
-> +	if (port != mib_hdr_data->req_port)
-> +		goto exit;
-> +
-> +	match_data = device_get_match_data(priv->dev);
-> +	data = mib_hdr_data->data;
-> +
-> +	for (i = 0; i < match_data->mib_count; i++) {
-> +		mib = &ar8327_mib[i];
-> +
-> +		/* First 3 mib are present in the skb head */
-> +		if (i < 3) {
-> +			data[i] = mib_ethhdr->data[i];
-> +			continue;
-> +		}
-> +
-> +		mib_len = sizeof(uint32_t);
-> +
-> +		/* Some mib are 64 bit wide */
-> +		if (mib->size == 2)
-> +			mib_len = sizeof(uint64_t);
-> +
-> +		/* Copy the mib value from packet to the */
-> +		memcpy(data + i, skb->data + offset, mib_len);
-> +
-> +		/* Set the offset for the next mib */
-> +		offset += mib_len;
-> +	}
-> +
-> +exit:
-> +	/* Complete on receiving all the mib packet */
-> +	if (refcount_dec_and_test(&mib_hdr_data->port_parsed))
-> +		complete(&mib_hdr_data->rw_done);
-> +}
-> +
-> +static int
-> +qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
-> +{
-> +	struct dsa_port *dp = dsa_to_port(ds, port);
-> +	struct qca8k_mib_hdr_data *mib_hdr_data;
-> +	struct qca8k_priv *priv = ds->priv;
-> +	int ret;
-> +
-> +	mib_hdr_data = &priv->mib_hdr_data;
-> +
-> +	mutex_lock(&mib_hdr_data->mutex);
-> +
-> +	reinit_completion(&mib_hdr_data->rw_done);
-> +
-> +	mib_hdr_data->req_port = dp->index;
-> +	mib_hdr_data->data = data;
-> +	refcount_set(&mib_hdr_data->port_parsed, QCA8K_NUM_PORTS);
-> +
-> +	mutex_lock(&priv->reg_mutex);
-> +
-> +	/* Send mib autocast request */
-> +	ret = regmap_update_bits(priv->regmap, QCA8K_REG_MIB,
-> +				 QCA8K_MIB_FUNC | QCA8K_MIB_BUSY,
-> +				 FIELD_PREP(QCA8K_MIB_FUNC, QCA8K_MIB_CAST) |
-> +				 QCA8K_MIB_BUSY);
-> +
-> +	mutex_unlock(&priv->reg_mutex);
-> +
-> +	if (ret)
-> +		goto exit;
-> +
-> +	ret = wait_for_completion_timeout(&mib_hdr_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
-> +
-> +exit:
-> +	mutex_unlock(&mib_hdr_data->mutex);
-> +
-> +	return ret;
-> +}
-> +
->  static void
->  qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
->  			uint64_t *data)
-> @@ -1893,6 +1987,10 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
->  	u32 hi = 0;
->  	int ret;
->  
-> +	if (priv->mgmt_master &&
-> +	    qca8k_get_ethtool_stats_eth(ds, port, data) > 0)
-> +		return;
-> +
->  	match_data = of_device_get_match_data(priv->dev);
->  
->  	for (i = 0; i < match_data->mib_count; i++) {
-> @@ -2573,7 +2671,8 @@ qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
->  	if (dp->index != 0)
->  		return;
->  
-> -	mutex_lock(&priv->mgmt_hdr_data.mutex);
-> +	mutex_unlock(&priv->mgmt_hdr_data.mutex);
+Excerpts from QiuLaibin's message of January 24, 2022 11:08 pm:
+> Hi Alex
+>=20
+> 1=E3=80=81Please help to import this structure:
+>=20
+> blk_mq_tags <=3D request_queue->blk_mq_hw_ctx->blk_mq_tags
 
-Why do you unlock mgmt_hdr_data here?
+I don't understand what you mean.
 
-> +	mutex_lock(&priv->mib_hdr_data.mutex);
->  
->  	if (operational)
->  		priv->mgmt_master = master;
-> @@ -2581,6 +2680,7 @@ qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
->  		priv->mgmt_master = NULL;
->  
->  	mutex_unlock(&priv->mgmt_hdr_data.mutex);
-> +	mutex_unlock(&priv->mib_hdr_data.mutex);
+> If there is no kernel dump, help to see the value of
+>=20
+> cat /sys/block/sda/mq/0/nr_tags
+>                 __ <=3D Change it to the problem device
 
-Please unlock in the reverse order of locking.
+The affected device returns 1. My understanding is that mq does not work=20
+with legacy non-UAS devices.
 
->  }
->  
->  static int qca8k_connect_tag_protocol(struct dsa_switch *ds,
-> @@ -2593,6 +2693,7 @@ static int qca8k_connect_tag_protocol(struct dsa_switch *ds,
->  		tagger_data = ds->tagger_data;
->  
->  		tagger_data->rw_reg_ack_handler = qca8k_rw_reg_ack_handler;
-> +		tagger_data->mib_autocast_handler = qca8k_mib_autocast_handler;
->  
->  		break;
->  	default:
-> @@ -2721,6 +2822,9 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
->  	mutex_init(&priv->mgmt_hdr_data.mutex);
->  	init_completion(&priv->mgmt_hdr_data.rw_done);
->  
-> +	mutex_init(&priv->mib_hdr_data.mutex);
-> +	init_completion(&priv->mib_hdr_data.rw_done);
-> +
->  	priv->ds->dev = &mdiodev->dev;
->  	priv->ds->num_ports = QCA8K_NUM_PORTS;
->  	priv->ds->priv = priv;
-> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-> index a358a67044d3..dc1365542aa3 100644
-> --- a/drivers/net/dsa/qca8k.h
-> +++ b/drivers/net/dsa/qca8k.h
-> @@ -67,7 +67,7 @@
->  #define QCA8K_REG_MODULE_EN				0x030
->  #define   QCA8K_MODULE_EN_MIB				BIT(0)
->  #define QCA8K_REG_MIB					0x034
-> -#define   QCA8K_MIB_FLUSH				BIT(24)
-> +#define   QCA8K_MIB_FUNC				GENMASK(26, 24)
->  #define   QCA8K_MIB_CPU_KEEP				BIT(20)
->  #define   QCA8K_MIB_BUSY				BIT(17)
->  #define QCA8K_MDIO_MASTER_CTRL				0x3c
-> @@ -317,6 +317,12 @@ enum qca8k_vlan_cmd {
->  	QCA8K_VLAN_READ = 6,
->  };
->  
-> +enum qca8k_mid_cmd {
-> +	QCA8K_MIB_FLUSH = 1,
-> +	QCA8K_MIB_FLUSH_PORT = 2,
-> +	QCA8K_MIB_CAST = 3,
-> +};
-> +
->  struct ar8xxx_port_status {
->  	int enabled;
->  };
-> @@ -340,6 +346,14 @@ struct qca8k_mgmt_hdr_data {
->  	u32 data[4];
->  };
->  
-> +struct qca8k_mib_hdr_data {
-> +	struct completion rw_done;
-> +	struct mutex mutex; /* Process one command at time */
-> +	refcount_t port_parsed; /* Counter to track parsed port */
-> +	u8 req_port;
-> +	u64 *data; /* pointer to ethtool data */
-> +};
-> +
->  struct qca8k_ports_config {
->  	bool sgmii_rx_clk_falling_edge;
->  	bool sgmii_tx_clk_falling_edge;
-> @@ -367,6 +381,7 @@ struct qca8k_priv {
->  	unsigned int port_mtu[QCA8K_NUM_PORTS];
->  	const struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
->  	struct qca8k_mgmt_hdr_data mgmt_hdr_data;
-> +	struct qca8k_mib_hdr_data mib_hdr_data;
->  };
->  
->  struct qca8k_mib_desc {
-> -- 
-> 2.33.1
-> 
+> And how many block devices in total by lsblk.
+
+My device topology roughly looks like:
+
+NAME        MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINTS
+sda           8:0    0 [snip]  0 disk
+=E2=94=9C=E2=94=80sda1        8:1    0 [snip]  0 part
+=E2=94=9C=E2=94=80sda2        8:2    0 [snip]  0 part
+=E2=94=94=E2=94=80sda3        8:3    0 [snip]  0 part
+sdb           8:16   0 [snip]  0 disk
+=E2=94=9C=E2=94=80sdb1        8:17   0 [snip]  0 part
+=E2=94=9C=E2=94=80sdb2        8:18   0 [snip]  0 part
+=E2=94=9C=E2=94=80sdb3        8:19   0 [snip]  0 part
+=E2=94=94=E2=94=80sdb4        8:20   0 [snip]  0 part
+sdc           8:32   1 [snip]  0 disk
+=E2=94=9C=E2=94=80sdc1        8:33   1 [snip]  0 part
+=E2=94=94=E2=94=80sdc2        8:34   1 [snip]  0 part
+nvme0n1     259:0    0 [snip]  0 disk
+=E2=94=9C=E2=94=80nvme0n1p1 259:1    0 [snip]  0 part
+=E2=94=94=E2=94=80nvme0n1p2 259:2    0 [snip]  0 part
+  =E2=94=94=E2=94=80root    254:0    0 [snip]  0 crypt /
+
+> 2=E3=80=81Please describe in detail how to reproduce the issue,
+
+1. Plug in the device.
+2. Execute Show Blocked Tasks. udev is stuck.
+
+> And what type of USB device?
+
+It is a cheap unbranded USB flash drive.
+
+> 3=E3=80=81Please help to try the attachment patch and see if it can be re=
+produced.
+
+From a quick test, it appears to resolve the issue.
+
+> Thanks.
+
+Cheers,
+Alex.
