@@ -2,84 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D1CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452222AbiAYMlR (ORCPT
+        id S1452534AbiAYMlf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:41:17 -0500
-Received: from foss.arm.com ([217.140.110.172]:40508 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1383607AbiAYMhr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:37:47 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 968681FB;
-        Tue, 25 Jan 2022 04:37:39 -0800 (PST)
-Received: from e110455-lin.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7719C3F7D8;
-        Tue, 25 Jan 2022 04:37:39 -0800 (PST)
-Received: by e110455-lin.cambridge.arm.com (Postfix, from userid 1000)
-        id 3856D684477; Tue, 25 Jan 2022 12:37:38 +0000 (GMT)
-Date:   Tue, 25 Jan 2022 12:37:38 +0000
-From:   Liviu Dudau <liviu.dudau@arm.com>
-To:     carsten.haitzler@foss.arm.com
-Cc:     dri-devel@lists.freedesktop.org, brian.starkey@arm.com,
-        airlied@linux.ie, daniel@ffwll.ch, steven.price@arm.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/arm: arm hdlcd select DRM_GEM_CMA_HELPER
-Message-ID: <Ye/vEilz6j8gX3wu@e110455-lin.cambridge.arm.com>
-References: <20220124162437.2470344-1-carsten.haitzler@foss.arm.com>
+        Tue, 25 Jan 2022 07:41:35 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.228]:39257 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1383611AbiAYMh5 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 07:37:57 -0500
+HMM_SOURCE_IP: 172.18.0.218:48792.662813070
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-112.38.63.33 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id D15D1280029;
+        Tue, 25 Jan 2022 20:37:29 +0800 (CST)
+X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 9423f2faf0214720bbdbdc2eb317ba02 for nikolay@nvidia.com;
+        Tue, 25 Jan 2022 20:37:34 CST
+X-Transaction-ID: 9423f2faf0214720bbdbdc2eb317ba02
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+Message-ID: <6f7b59b2-1d97-5257-f68b-1658cc5b7cc9@chinatelecom.cn>
+Date:   Tue, 25 Jan 2022 20:37:26 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v9] net: bonding: Add support for IPV6 ns/na to
+ balance-alb/balance-tlb mode
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jay.vosburgh@canonical.com, huyd12@chinatelecom.cn
+References: <20220125023755.94837-1-sunshouxin@chinatelecom.cn>
+ <d0afa956-6852-2749-fce8-2a3e06cae556@nvidia.com>
+ <8eac3258-8b2a-37eb-2a1e-6a71d5d1f859@nvidia.com>
+From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
+In-Reply-To: <8eac3258-8b2a-37eb-2a1e-6a71d5d1f859@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220124162437.2470344-1-carsten.haitzler@foss.arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 04:24:37PM +0000, carsten.haitzler@foss.arm.com wrote:
-> From: Carsten Haitzler <carsten.haitzler@arm.com>
-> 
-> Without DRM_GEM_CMA_HELPER HDLCD won't build. This needs to be there too.
-> 
-> Fixes: 09717af7d13d ("drm: Remove CONFIG_DRM_KMS_CMA_HELPER option")
-> 
-> Signed-off-by: Carsten Haitzler <carsten.haitzler@arm.com>
 
-Acked-by: Liviu Dudau <liviu.dudau@arm.com>
+在 2022/1/25 17:02, Nikolay Aleksandrov 写道:
+> On 25/01/2022 10:51, Nikolay Aleksandrov wrote:
+>> On 25/01/2022 04:37, Sun Shouxin wrote:
+>>> Since ipv6 neighbor solicitation and advertisement messages
+>>> isn't handled gracefully in bond6 driver, we can see packet
+>>> drop due to inconsistency between mac address in the option
+>>> message and source MAC .
+>>>
+>>> Another examples is ipv6 neighbor solicitation and advertisement
+>>> messages from VM via tap attached to host bridge, the src mac
+>>> might be changed through balance-alb mode, but it is not synced
+>>> with Link-layer address in the option message.
+>>>
+>>> The patch implements bond6's tx handle for ipv6 neighbor
+>>> solicitation and advertisement messages.
+>>>
+>>> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+>>> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+>>> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+>>> ---
+>>>   drivers/net/bonding/bond_alb.c | 38 +++++++++++++++++++++++++++++++++-
+>>>   1 file changed, 37 insertions(+), 1 deletion(-)
+>>>
+> [snip]
+>
+> Also forgot to mention, you should add a changelog between patch versions.
+> You can add it below the --- marker so it won't be included in the commit
+> message. Otherwise it's hard to track how the patch reached v9 and what
+> changed between versions.
+>
+> E.g. v8 -> v9: <changed blah>
+>
+> Thanks,
+>   Nik
+>
+>
 
-I will add Steven's reviewed-by as well when pushing it.
+Thanks your comment, I'll adjust it and send out V10 soon.
 
-Best regards,
-Liviu
 
-> ---
->  drivers/gpu/drm/arm/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/gpu/drm/arm/Kconfig b/drivers/gpu/drm/arm/Kconfig
-> index 58a242871b28..6e3f1d600541 100644
-> --- a/drivers/gpu/drm/arm/Kconfig
-> +++ b/drivers/gpu/drm/arm/Kconfig
-> @@ -6,6 +6,7 @@ config DRM_HDLCD
->  	depends on DRM && OF && (ARM || ARM64 || COMPILE_TEST)
->  	depends on COMMON_CLK
->  	select DRM_KMS_HELPER
-> +	select DRM_GEM_CMA_HELPER
->  	help
->  	  Choose this option if you have an ARM High Definition Colour LCD
->  	  controller.
-> -- 
-> 2.30.1
-> 
-
--- 
-====================
-| I would like to |
-| fix the world,  |
-| but they're not |
-| giving me the   |
- \ source code!  /
-  ---------------
-    ¯\_(ツ)_/¯
