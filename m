@@ -2,108 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B2F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231378AbiAYSZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 13:25:18 -0500
-Received: from mga03.intel.com ([134.134.136.65]:4719 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229488AbiAYSYL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 13:24:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643135050; x=1674671050;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=UJIqw8gcL194wHLtJoARGquGC2qqeBOMWHN3mV2Gobg=;
-  b=EyMMRXFt5NOcoBwlH8/Xj1wheqWzCIBlOy27ftXRanL2+l+2GqTs0/Ix
-   YUkEozVsVFuOFr3JWKuuSIg3m1MahS/V/zvf0cp90tiyoUOGdNBOarW/6
-   sXBoW3mlTHGg71DCaNHSs3Z7WrIKZ7vlqYjGyROAhUnK16DyWMai0RLB8
-   9suKfH76ItUTKni3zOxvQnW4e2rYGvIlszallSwnpJZeRxb41V0m9KeUm
-   9k8+ndr8lZNZf5q6Tiwn/Q0jRfEbYwzGFpcsEIrTcCFSsU1YvG/bAOKpM
-   0x8UoFH+iCRqFuMyxATYtEnmHa66Aq+1LX48JQR+7xAgzm8ZEzhOtzDmn
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="246319033"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="246319033"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 10:22:48 -0800
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="563134939"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 10:22:48 -0800
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     vijay.dhanraj@intel.com, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH V2] x86/sgx: Silence softlockup detection when releasing large enclaves
-Date:   Tue, 25 Jan 2022 10:22:43 -0800
-Message-Id: <b5e9f218064aa76e3026f778e1ad0a1d823e3db8.1643133224.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S229985AbiAYS0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 13:26:33 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:55257 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231514AbiAYS0P (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 13:26:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643135176; x=1674671176;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=y3OyjjNPOF/xwWFxdHrFJnviAKdTRmjfdM4A7OrtKPY=;
+  b=n8Pnpmr3B8EynDzbet5aaEyJcC/mNV/MIZuSzJ2rHRqDhbmCcwZhFFY3
+   uexLCNJM+gmRqyVSJgDrNelpCwxVDgK0PkLUBIo5TTGN6KKznoMi2lq9M
+   C5Zi7Ep/Uqr7Vyhs6Np4DH8GSqHUzljw3EljgVU5cilWwwcnGJrx8j4J+
+   c=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 25 Jan 2022 10:26:10 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 10:26:09 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 25 Jan 2022 10:26:09 -0800
+Received: from [10.110.95.84] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 25 Jan
+ 2022 10:26:08 -0800
+Message-ID: <7155e3ab-daf1-4104-6712-1c4e3a328b56@quicinc.com>
+Date:   Tue, 25 Jan 2022 10:26:07 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH] drm/msm/dp: add connector type to enhance debug messages
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
+        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
+        <daniel@ffwll.ch>, <dmitry.baryshkov@linaro.org>,
+        <robdclark@gmail.com>, <sean@poorly.run>, <vkoul@kernel.org>
+CC:     <quic_abhinavk@quicinc.com>, <aravindh@codeaurora.org>,
+        <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1643064292-6965-1-git-send-email-quic_khsieh@quicinc.com>
+ <CAE-0n505fYR1zpgZnC=J7WSxp_gpn6mnda9TuVjmJD8vMRn2Rg@mail.gmail.com>
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+In-Reply-To: <CAE-0n505fYR1zpgZnC=J7WSxp_gpn6mnda9TuVjmJD8vMRn2Rg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Vijay reported that the "unclobbered_vdso_oversubscribed" selftest
-triggers the softlockup detector.
 
-Actual SGX systems have 128GB of enclave memory or more.  The
-"unclobbered_vdso_oversubscribed" selftest creates one enclave which
-consumes all of the enclave memory on the system. Tearing down such a
-large enclave takes around a minute, most of it in the loop where
-the EREMOVE instruction is applied to each individual 4k enclave page.
-
-Spending one minute in a loop triggers the softlockup detector.
-
-Add a cond_resched() to give other tasks a chance to run and placate
-the softlockup detector.
-
-Cc: stable@vger.kernel.org
-Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
-Reported-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
-Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
----
-Softlockup message:
-
-watchdog: BUG: soft lockup - CPU#7 stuck for 22s! [test_sgx:11502]
-Kernel panic - not syncing: softlockup: hung tasks
-<snip>
-sgx_encl_release+0x86/0x1c0
-sgx_release+0x11c/0x130
-__fput+0xb0/0x280
-____fput+0xe/0x10
-task_work_run+0x6c/0xc0
-exit_to_user_mode_prepare+0x1eb/0x1f0
-syscall_exit_to_user_mode+0x1d/0x50
-do_syscall_64+0x46/0xb0
-entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Changes since V1:
-- V1: https://lore.kernel.org/lkml/1aa037705e5aa209d8b7a075873c6b4190327436.1642530802.git.reinette.chatre@intel.com/
-- Add comment provided by Jarkko.
-
- arch/x86/kernel/cpu/sgx/encl.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-index 001808e3901c..48afe96ae0f0 100644
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -410,6 +410,8 @@ void sgx_encl_release(struct kref *ref)
- 		}
- 
- 		kfree(entry);
-+		/* Invoke scheduler to prevent soft lockups. */
-+		cond_resched();
- 	}
- 
- 	xa_destroy(&encl->page_array);
--- 
-2.25.1
-
+On 1/24/2022 5:50 PM, Stephen Boyd wrote:
+> Quoting Kuogee Hsieh (2022-01-24 14:44:52)
+>> DP driver is a generic driver which supports both eDP and DP.
+>> For debugging purpose it is required to have capabilities to
+>> differentiate message are generated from eDP or DP. This patch
+>> add connector type into debug messages for this purpose.
+>>
+>> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+>> ---
+>>   drivers/gpu/drm/msm/dp/dp_ctrl.c    | 20 +++++------
+>>   drivers/gpu/drm/msm/dp/dp_display.c | 71 ++++++++++++++++++++++++++-----------
+>>   2 files changed, 60 insertions(+), 31 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>> index 245e1b9..dcd0126 100644
+>> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>> @@ -1396,6 +1396,8 @@ void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl)
+>>
+>>          dp_catalog_ctrl_phy_reset(ctrl->catalog);
+>>          phy_init(phy);
+>> +       DRM_DEBUG_DP("phy=%p init=%d power_on=%d\n",
+>> +                       phy, phy->init_count, phy->power_count);
+>>   }
+>>
+>>   void dp_ctrl_phy_exit(struct dp_ctrl *dp_ctrl)
+>> @@ -1410,6 +1412,8 @@ void dp_ctrl_phy_exit(struct dp_ctrl *dp_ctrl)
+>>
+>>          dp_catalog_ctrl_phy_reset(ctrl->catalog);
+>>          phy_exit(phy);
+>> +       DRM_DEBUG_DP("phy=%p init=%d power_on=%d\n",
+>> +                       phy, phy->init_count, phy->power_count);
+>>   }
+>>
+>>   static bool dp_ctrl_use_fixed_nvid(struct dp_ctrl_private *ctrl)
+>> @@ -1484,6 +1488,8 @@ static int dp_ctrl_deinitialize_mainlink(struct dp_ctrl_private *ctrl)
+>>          phy_exit(phy);
+>>          phy_init(phy);
+>>
+>> +       DRM_DEBUG_DP("phy=%p init=%d power_on=%d\n",
+>> +                       phy, phy->init_count, phy->power_count);
+>>          return 0;
+>>   }
+>>
+> These are entirely new messages. Adding messages isn't mentioned in the
+> commit text. Please either split this out or indicate in the commit text
+> what's going on here.
+>
+>> @@ -1895,14 +1901,12 @@ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl)
+>>
+>>          phy_power_off(phy);
+>>
+>> -       DRM_DEBUG_DP("After, phy=%x init_count=%d power_on=%d\n",
+>> -               (u32)(uintptr_t)phy, phy->init_count, phy->power_count);
+>> -
+>>          /* aux channel down, reinit phy */
+>>          phy_exit(phy);
+>>          phy_init(phy);
+>>
+>> -       DRM_DEBUG_DP("DP off link/stream done\n");
+>> +       DRM_DEBUG_DP("phy=%p init=%d power_on=%d\n",
+> The DRM_DEBUG_DP macro says it's deprecated now and we should use
+> drm_dbg_dp() instead. Can you use that macro instead? Then it looks like
+> drm->dev can actually be any old struct device, so I guess we're allowed
+> to pass in the particular instance of dp device this is for. Allowing us
+> to figure out which DP device is actually printing messages.
+where it say "deprecated"?
+>> +                       phy, phy->init_count, phy->power_count);
+>>          return ret;
+>>   }
+>>
