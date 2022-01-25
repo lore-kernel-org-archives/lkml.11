@@ -2,151 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4821DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC1AC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457285AbiAYJOz (ORCPT
+        id S1457221AbiAYJOn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:14:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
+        Tue, 25 Jan 2022 04:14:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455336AbiAYJE0 (ORCPT
+        with ESMTP id S1455337AbiAYJE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 25 Jan 2022 04:04:26 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9FDC06135C
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:27 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id o12so11895451lfg.12
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KADXDwPSZzBNJZyGOf6/RaxmVEZ0dcQMEj4ph2LZrIA=;
-        b=E5N6rnfpLVuomzpKv7B2iO6tqIya1+zMB7j6sPn5f/I6ggTAaJqoDqBHwysCe4g6D6
-         FFcao7hF04BWqCwu9s+U+g3GORW4cq8dmt4RqSXNaDPnA329ZI81GDO8lKVEe11XmxoQ
-         qdqv+GI8VdBE3edikJPt8xXPZZ59+BR55A+ZXBmrAZ/XtcgN0qouXrcIbmYQCfYJ1juM
-         58JkfDeW2VsEdCxdU5Z8THlgm7GFAZOYY3Sv9b4Htj2gMJgKUTQkszP8lSJ24EnW4P4X
-         GRkuYMYKrVRlJjnYxt6ud7UUwMM80YzgH3LH9zlOS/Gbh1c2aXETX6oG4qZtSPzLk19N
-         KCZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KADXDwPSZzBNJZyGOf6/RaxmVEZ0dcQMEj4ph2LZrIA=;
-        b=yVtpJ3XvhZkN55F2GlDbWmCzaV6Fz3DZIPgQrmuSOGIeR33VRaDijZuplozSqBYD8k
-         MikGT7Ss1JCd/BcuJd5OgBcxh9X+iZn6XDW4DkIS+1bqKOudWdrvAd3pu0p3v58VcIUe
-         xW18/uf1XFZdJ7ENcImsfMrCqp65HamdQu5KrBOFVVX0Qx7LHD6fmzdinc7ChYTrylW/
-         bWFoW7+4wCvpbZ9CkEV2lzNCouEWovrzRi7jHKcpu7k1Sllcu/xF51CJnYtCL6QQZ2Vc
-         dJbtGbu4mnnppqJwiv4PXuLSjMgn3GWHxNfIoGc72NOetkepnb8VKbwoaeIIxktipBYy
-         1syw==
-X-Gm-Message-State: AOAM53109bJWrEDliFc5bIN8tteX46bIySauZL7Yn3NCNbx7TkGX4P9M
-        qSmt2YfFggWGk4SvQg+cMpFfcA==
-X-Google-Smtp-Source: ABdhPJxBOpDCi+HD+W7m+aCE1uJ74rL4NmI8ow4BsEsaN6ZHzn0gSv57q1zh/Uyab4PWRk17uBBwWA==
-X-Received: by 2002:a05:6512:3d0a:: with SMTP id d10mr2796243lfv.472.1643100445460;
-        Tue, 25 Jan 2022 00:47:25 -0800 (PST)
-Received: from navi.cosmonova.net.ua ([95.67.24.131])
-        by smtp.gmail.com with ESMTPSA id q5sm1418944lfe.279.2022.01.25.00.47.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 00:47:25 -0800 (PST)
-From:   Andrew Melnychenko <andrew@daynix.com>
-To:     davem@davemloft.net, kuba@kernel.org, mst@redhat.com,
-        jasowang@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     yuri.benditovich@daynix.com, yan@daynix.com
-Subject: [RFC PATCH 5/5] drivers/net/virtio_net.c: Added USO support.
-Date:   Tue, 25 Jan 2022 10:47:02 +0200
-Message-Id: <20220125084702.3636253-6-andrew@daynix.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220125084702.3636253-1-andrew@daynix.com>
-References: <20220125084702.3636253-1-andrew@daynix.com>
+Received: from vulcan.natalenko.name (vulcan.natalenko.name [IPv6:2001:19f0:6c00:8846:5400:ff:fe0c:dfa0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574A3C061362;
+        Tue, 25 Jan 2022 00:48:21 -0800 (PST)
+Received: from spock.localnet (unknown [83.148.33.151])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by vulcan.natalenko.name (Postfix) with ESMTPSA id F0923D845E3;
+        Tue, 25 Jan 2022 09:48:16 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
+        s=dkim-20170712; t=1643100497;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DNGmSgajX3AV7tac/NHRSny7ZKSXgCu8THN38jSPcJY=;
+        b=uVvpTJENujv89DwH1ydCqmX64nzGHF10t5qSormK78RR5uxmWBRxvlAfQ21pylsjVvnGcj
+        aJkXQBxb0eQeHVnNpV92VFOlITkBIXclTAiMTKakcLGVGwF+iYqN8UZacbblUxxCdtzqZJ
+        K6KFOu0kypEE5l0r6etqlVkwq6mr7Mk=
+From:   Oleksandr Natalenko <oleksandr@natalenko.name>
+To:     Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     andy.shevchenko@gmail.com, pauk.denis@gmail.com,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [ASUS EC Sensors v8 2/3] hwmon: (asus-ec-sensors) update documentation
+Date:   Tue, 25 Jan 2022 09:48:15 +0100
+Message-ID: <5534652.DvuYhMxLoT@natalenko.name>
+In-Reply-To: <20220124015658.687309-3-eugene.shalygin@gmail.com>
+References: <20220124015658.687309-1-eugene.shalygin@gmail.com> <20220124015658.687309-3-eugene.shalygin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now, it possible to enable GSO_UDP_L4("tx-udp-segmentation") for VirtioNet.
+On pond=C4=9Bl=C3=AD 24. ledna 2022 2:56:44 CET Eugene Shalygin wrote:
+> Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
 
-Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
----
- drivers/net/virtio_net.c | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+I believe some commit message is desired here.
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index a801ea40908f..a45eee022be4 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -60,13 +60,17 @@ static const unsigned long guest_offloads[] = {
- 	VIRTIO_NET_F_GUEST_TSO6,
- 	VIRTIO_NET_F_GUEST_ECN,
- 	VIRTIO_NET_F_GUEST_UFO,
--	VIRTIO_NET_F_GUEST_CSUM
-+	VIRTIO_NET_F_GUEST_CSUM,
-+	VIRTIO_NET_F_GUEST_USO4,
-+	VIRTIO_NET_F_GUEST_USO6
- };
- 
- #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
- 				(1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
- 				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
--				(1ULL << VIRTIO_NET_F_GUEST_UFO))
-+				(1ULL << VIRTIO_NET_F_GUEST_UFO)  | \
-+				(1ULL << VIRTIO_NET_F_GUEST_USO4) | \
-+				(1ULL << VIRTIO_NET_F_GUEST_USO6))
- 
- struct virtnet_stat_desc {
- 	char desc[ETH_GSTRING_LEN];
-@@ -2530,7 +2534,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO6) ||
- 	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
- 		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
--		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
-+		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM) ||
-+		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_USO4) ||
-+		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_USO6))) {
- 		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW/CSUM, disable GRO_HW/CSUM first");
- 		return -EOPNOTSUPP;
- 	}
-@@ -3155,6 +3161,8 @@ static int virtnet_probe(struct virtio_device *vdev)
- 			dev->hw_features |= NETIF_F_TSO6;
- 		if (virtio_has_feature(vdev, VIRTIO_NET_F_HOST_ECN))
- 			dev->hw_features |= NETIF_F_TSO_ECN;
-+		if (virtio_has_feature(vdev, VIRTIO_NET_F_HOST_USO))
-+			dev->hw_features |= NETIF_F_GSO_UDP_L4;
- 
- 		dev->features |= NETIF_F_GSO_ROBUST;
- 
-@@ -3169,6 +3177,9 @@ static int virtnet_probe(struct virtio_device *vdev)
- 		dev->features |= NETIF_F_GRO_HW;
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
- 		dev->hw_features |= NETIF_F_GRO_HW;
-+	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO4) ||
-+	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO6))
-+		dev->hw_features |= NETIF_F_LRO;
- 
- 	dev->vlan_features = dev->features;
- 
-@@ -3200,7 +3211,9 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
- 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6) ||
- 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_ECN) ||
--	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO))
-+	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO) ||
-+	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO4) ||
-+	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO6))
- 		vi->big_packets = true;
- 
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
-@@ -3400,6 +3413,7 @@ static struct virtio_device_id id_table[] = {
- 	VIRTIO_NET_F_HOST_TSO4, VIRTIO_NET_F_HOST_UFO, VIRTIO_NET_F_HOST_TSO6, \
- 	VIRTIO_NET_F_HOST_ECN, VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6, \
- 	VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_UFO, \
-+	VIRTIO_NET_F_HOST_USO, VIRTIO_NET_F_GUEST_USO4, VIRTIO_NET_F_GUEST_USO6, \
- 	VIRTIO_NET_F_MRG_RXBUF, VIRTIO_NET_F_STATUS, VIRTIO_NET_F_CTRL_VQ, \
- 	VIRTIO_NET_F_CTRL_RX, VIRTIO_NET_F_CTRL_VLAN, \
- 	VIRTIO_NET_F_GUEST_ANNOUNCE, VIRTIO_NET_F_MQ, \
--- 
-2.34.1
+> ---
+>  Documentation/hwmon/asus_ec_sensors.rst     | 52 +++++++++++++++++++++
+>  Documentation/hwmon/asus_wmi_ec_sensors.rst | 38 ---------------
+>  2 files changed, 52 insertions(+), 38 deletions(-)
+>  create mode 100644 Documentation/hwmon/asus_ec_sensors.rst
+>  delete mode 100644 Documentation/hwmon/asus_wmi_ec_sensors.rst
+>=20
+> diff --git a/Documentation/hwmon/asus_ec_sensors.rst b/Documentation/hwmo=
+n/asus_ec_sensors.rst
+> new file mode 100644
+> index 000000000000..b12ac7ebeb1a
+> --- /dev/null
+> +++ b/Documentation/hwmon/asus_ec_sensors.rst
+> @@ -0,0 +1,52 @@
+> +.. SPDX-License-Identifier: GPL-2.0-or-later
+> +
+> +Kernel driver asus_ec_sensors
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Supported boards:
+> + * PRIME X570-PRO,
+> + * Pro WS X570-ACE,
+> + * ROG CROSSHAIR VIII DARK HERO,
+> + * ROG CROSSHAIR VIII FORMULA,
+> + * ROG CROSSHAIR VIII HERO,
+> + * ROG CROSSHAIR VIII IMPACT,
+> + * ROG STRIX B550-E GAMING,
+> + * ROG STRIX B550-I GAMING,
+> + * ROG STRIX X570-E GAMING,
+> + * ROG STRIX X570-F GAMING,
+> + * ROG STRIX X570-I GAMING
+> +
+> +Authors:
+> +    - Eugene Shalygin <eugene.shalygin@gmail.com>
+> +
+> +Description:
+> +------------
+> +ASUS mainboards publish hardware monitoring information via Super I/O
+> +chip and the ACPI embedded controller (EC) registers. Some of the sensors
+> +are only available via the EC.
+> +
+> +The driver is aware of and reads the following sensors:
+> +
+> +1. Chipset (PCH) temperature
+> +2. CPU package temperature
+> +3. Motherboard temperature
+> +4. Readings from the T_Sensor header
+> +5. VRM temperature
+> +6. CPU_Opt fan RPM
+> +7. VRM heatsink fan RPM
+> +8. Chipset fan RPM
+> +9. Readings from the "Water flow meter" header (RPM)
+> +10. Readings from the "Water In" and "Water Out" temperature headers
+> +11. CPU current
+> +
+> +Sensor values are read from EC registers, and to avoid race with the boa=
+rd
+> +firmware the driver acquires ACPI mutex, the one used by the WMI when its
+> +methods access the EC.
+> +
+> +Module Parameters
+> +-----------------
+> + * mutex_path: string
+> +		The driver holds path to the ACPI mutex for each board (actually,
+> +		the path is mostly identical for them). If ASUS changes this path
+> +		in a future BIOS update, this parameter can be used to override
+> +		the stored in the driver value until it gets updated.
+> diff --git a/Documentation/hwmon/asus_wmi_ec_sensors.rst b/Documentation/=
+hwmon/asus_wmi_ec_sensors.rst
+> deleted file mode 100644
+> index 1b287f229e86..000000000000
+> --- a/Documentation/hwmon/asus_wmi_ec_sensors.rst
+> +++ /dev/null
+> @@ -1,38 +0,0 @@
+> -.. SPDX-License-Identifier: GPL-2.0-or-later
+> -
+> -Kernel driver asus_wmi_ec_sensors
+> -=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> -
+> -Supported boards:
+> - * PRIME X570-PRO,
+> - * Pro WS X570-ACE,
+> - * ROG CROSSHAIR VIII DARK HERO,
+> - * ROG CROSSHAIR VIII FORMULA,
+> - * ROG CROSSHAIR VIII HERO,
+> - * ROG STRIX B550-E GAMING,
+> - * ROG STRIX B550-I GAMING,
+> - * ROG STRIX X570-E GAMING.
+> -
+> -Authors:
+> -    - Eugene Shalygin <eugene.shalygin@gmail.com>
+> -
+> -Description:
+> -------------
+> -ASUS mainboards publish hardware monitoring information via Super I/O
+> -chip and the ACPI embedded controller (EC) registers. Some of the sensors
+> -are only available via the EC.
+> -
+> -ASUS WMI interface provides a method (BREC) to read data from EC registe=
+rs,
+> -which is utilized by this driver to publish those sensor readings to the
+> -HWMON system. The driver is aware of and reads the following sensors:
+> -
+> -1. Chipset (PCH) temperature
+> -2. CPU package temperature
+> -3. Motherboard temperature
+> -4. Readings from the T_Sensor header
+> -5. VRM temperature
+> -6. CPU_Opt fan RPM
+> -7. Chipset fan RPM
+> -8. Readings from the "Water flow meter" header (RPM)
+> -9. Readings from the "Water In" and "Water Out" temperature headers
+> -10. CPU current
+>=20
+
+
+=2D-=20
+Oleksandr Natalenko (post-factum)
+
 
