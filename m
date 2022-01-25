@@ -2,208 +2,879 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E80C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA0DC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1319222AbiAYDIL (ORCPT
+        id S1319262AbiAYDIU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:08:11 -0500
-Received: from mga12.intel.com ([192.55.52.136]:22221 "EHLO mga12.intel.com"
+        Mon, 24 Jan 2022 22:08:20 -0500
+Received: from mga05.intel.com ([192.55.52.43]:15022 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S3420575AbiAYCYt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:24:49 -0500
+        id S242093AbiAYCUr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 21:20:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643077489; x=1674613489;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=9QRgxHm21iFW7RW5EhUCu2uoFYa84HxTfvUSQEuv2Kw=;
-  b=fFVSsTn1IqR0ZXfvDpbzo1slMSwwuGAlbnmVG2WYQarDktTF2L3ubCKz
-   WhtL8RiyA7nVxfIJMp8VUfRZIwXLOqEXQSMkf0ud+qvin0nC2ZEV7w4V6
-   AwWKczD7j9FaQ8wRVOYiUPZauQKT7syi2PeN3BwQwqfjjHZfhfsSvsj11
-   bBB57dCcpk+T4nQknDIKMlozAh6WrSRqQYukowVKKQN8mjhZBEpPtCH9L
-   YRVh4/u7IvNMvqL6J2I5tr/4L2IN6VyPOgmxxiyYC8bod+Xr3lFvutmK7
-   X1fgCaaKnpINQ5QkAZrgR9r1mY1u+CpbIl9rYAdZ6yhdKQQrGuz0SW1in
+  t=1643077234; x=1674613234;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ClZrQhQZaKvcyN7ooHQhychEaCJBiYEkFxsQCwQ6hag=;
+  b=NMeFhOAo0CJxekugkp+H3+YcTmb6/2saatjUAfYom/qp7h0X10JP+Rnb
+   Qj61S/8Bz3vYrYblYGklRlufgQ8gUUFQvAdrx48/cASbu/OdRDKOO8BQ7
+   mNk2MIgX5JEImwKPfsOc7nxCFbPYo26QG/sV6l3ZPg77CJz1OkjgsAXDN
+   70u9HHJIhcNHx1BUDt4xCa3APnotXAruz5qGdx+ZgNSG51AdqTAAsRX9O
+   D6tKtxZ8xSj6JTkdyT/KKBnY1QWBDpwlHiPIbUCxYjoXHDveIi+psTeB/
+   +ta7RauDARRZ1hccKNexDo6il9RT8VfPLYfGbjnGrvtMxj7iEP2kgjPw7
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226173614"
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="332544573"
 X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="226173614"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:54:57 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="332544573"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:15:34 -0800
 X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="624300981"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Jan 2022 17:54:56 -0800
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 24 Jan 2022 17:54:55 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Mon, 24 Jan 2022 17:54:55 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.172)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Mon, 24 Jan 2022 17:54:55 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DP3c4ckl6TvT6KACHuBAytQDSGumh8oAB+wD4gIxo9i7wL/QCn7XPeAvnSFdKbGWJd3DlhFr9CJF7MJsw53g4atiOPxiGmy6rPonAGP2wiN+YkL8x3c1cECvzWjXrVredbkNbNylKrxXuWl+UBx9qdGS/EQ/0VTfpi/zEsayHtCE2NI63MEIwPPsh49Jj/rZnpK0U8B8QCu7PZpn0QaP+KXe2kYvuUMoERYnC/l7LQ+/w61tzv/sXrukImkvIuc1L2FmzonnSQsIrR5C1cmJvIw8ud/e36UlodLA/YksNWQ2L/fiyTp9W0cUqgTPEZQC25rWK4XJPVp8Pq+XCfb21Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9QRgxHm21iFW7RW5EhUCu2uoFYa84HxTfvUSQEuv2Kw=;
- b=IGT2kIgOsErEte14nRyG08ZXLb+C5qJFqP0Swrp5sIwKqKXi8PSJ+gEHVOOq2gw8gFF2v9vTxAr1gWre4drfDu090yy+gM3UWhdxOaFTnzoglEO/anSrK4mQtsdxLdc68l6dNHXoZx/SdcJHH3J41Ni0ihVLbjWuN85DeQNvimdK72jxtq6nukvThalKuSbNvIOEHI7JxcYN5OBKwrVCLP3sCqnH2/cmocG2njmVZToZ8ICXuwhQ4GOaziJcTH59uWjorMYAIwmnGg14sGc0m28eUgrASk7hZBv7s20gEo3We7cC/DYKXUyEGfBxCBiQQy17BWKnWMPWTobOjshHLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DM5PR1101MB2298.namprd11.prod.outlook.com (2603:10b6:4:53::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.14; Tue, 25 Jan
- 2022 01:54:52 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e46b:a312:2f85:76dc]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e46b:a312:2f85:76dc%5]) with mapi id 15.20.4909.017; Tue, 25 Jan 2022
- 01:54:52 +0000
-From:   "Tian, Kevin" <kevin.tian@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        Like Xu <like.xu.linux@gmail.com>
-CC:     "Liu, Jing2" <jing2.liu@intel.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Zhong, Yang" <yang.zhong@intel.com>
-Subject: RE: [PATCH] KVM: x86/cpuid: Exclude unpermitted xfeatures for
- vcpu->arch.guest_supported_xcr0
-Thread-Topic: [PATCH] KVM: x86/cpuid: Exclude unpermitted xfeatures for
- vcpu->arch.guest_supported_xcr0
-Thread-Index: AQHYEB04i+jH6+Lv20CJG71ADhixA6xxwR/ggAADloCAAJhpgIAAAciAgACa5uA=
-Date:   Tue, 25 Jan 2022 01:54:52 +0000
-Message-ID: <BN9PR11MB5276170712A9EF842B36ACE48C5F9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220123055025.81342-1-likexu@tencent.com>
- <BN9PR11MB52762E2DEF810DF9AFAE1DDC8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <38c1fbc3-d770-48f3-5432-8fa1fde033f5@gmail.com>
- <Ye7SbfPL/QAjOI6s@google.com>
- <e5744e0b-00fc-8563-edb7-b6bf52c63b0e@redhat.com>
-In-Reply-To: <e5744e0b-00fc-8563-edb7-b6bf52c63b0e@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8eda921d-1b08-4aff-27ab-08d9dfa5ad7b
-x-ms-traffictypediagnostic: DM5PR1101MB2298:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <DM5PR1101MB2298B7DB675643A15DD3110E8C5F9@DM5PR1101MB2298.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DB/pavotzm4N6Ef24K3ETxTZFBy9jLV/YnzmjPVRv2Lbz7F4oAC+OxzH1wxstJaI17tcr74BNI1FwC02DKQqEftqSD+QPEFax8BEVB+XIUHd4l9ytABMJM39iSAQe80aU8oY8bHg5RfPzJAIZoz3DMDuawTp/qausZlZM9tPW3i6+RvqxWZWAL44GjCjrB8a60XaiXciQDD+rofDWd0kGkIx02+b3PHHgsFBzRbv47Q8MsC2/hP/kpWBOLv3XT/5e7u7lajGv0rxE2G2bRQrM1Btw0kHF8vssvGo/hk9UCK3EnyGtnm2xUi3a3TDVG8QunM5CEk1neJb4RNBFz/sRRI+Mmym7wUN7SigbKGDN5YR2OGfVy6KMltJzkYMM8WJuOvT4M1kxKE3GRsGwFP0AbD9jHwa3132VR5n9Gy0Ehvib3cZYZ3TFH09OxqXf4uXB02W4i91xTKmOP9S/Kllqap6CLg8p44A81TgzQDGYWjfR6RcXwIEObAbbdLD21DfTYaUn4tqbGRmVknP/FLrclfMkJkXbrXCSTtIBtHG9P+iYEDeW9Ajh1AqQg5hqMQqJ2madk9SzMT5OeGapYz+yyS1ThKMaYUje1VIuZheo5ImyhyKipNrT1eVN3Yl828mzUXpVDT5AtfQ1d0TJzGRcV8e5Pl9cKibvdQsucEb5rd45rc3f55tB8K/ZgP4iCKstk/VMEbfu8y8E6uTYJ7haQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(508600001)(2906002)(86362001)(82960400001)(5660300002)(64756008)(54906003)(76116006)(316002)(4326008)(66946007)(66476007)(66446008)(38070700005)(52536014)(6506007)(8676002)(83380400001)(55016003)(7696005)(110136005)(8936002)(186003)(9686003)(33656002)(53546011)(107886003)(38100700002)(66556008)(26005)(71200400001)(122000001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MlhXY1phVkJGTFVMbnZkaXN4cU12Y0FKdngzczY3OGNXUjdjRS9DWFdvZXlT?=
- =?utf-8?B?UXlaZ0RKZStYWjg3Ty95akNOdnlDalJxSFFLN1RQeTYwanpXbVBpamkwczli?=
- =?utf-8?B?ekUwSWhtc0ZBRzJObVdnZ3E2ejZmRlNMeCtVSGtSekdYOEU3UmNCU1pNZkM5?=
- =?utf-8?B?NE51b1pPbnh2eWxLR0xiaGpTOWdqQkZhVDQ1UkJoMFFnZVpOZy9ZWm4vZTRh?=
- =?utf-8?B?U2p5dStjT0FycUF6Mm9vN3F5UjcraENGVjRFb2VQYW4wWmZ0Nk9KcldjUmhB?=
- =?utf-8?B?dU9rVktiLzg3Z0dtbXlTbFRZMHlXTVRaTk5DdHZpeWlUWFlRejJjQVJJQU1a?=
- =?utf-8?B?MHRHWlJuSVdMMTNONWdaN0wyK1FYRy9wMlJuRmNSU3h6SitjUlVGMDZidG1n?=
- =?utf-8?B?T2twcS9uK1krYzV0dHhicHNzMEkzWEdDVlRPTDVqUjhDOUJGU0poNkRYclBN?=
- =?utf-8?B?QUd1S3N5ZHpTMkt5TDdLRTQ1M0hLNVA3WWk3cksrOW5GN2tabnBWZkZiajF3?=
- =?utf-8?B?MDh2WmtGK2ZsbUhtczJkZjRzS0hsTGMvTHZnbFNTVnBlRWdiWXF6czBlTy9u?=
- =?utf-8?B?czh5TkV1SUxaM0ZPMXRsLzliS01TMlhwcFlKdmFCOUZWWEVETU5iMnROdUxV?=
- =?utf-8?B?T3hoaEhUdGYrQll3Ui9WMktVdUJDMFJ2UXRiaG4wVXhVK2RhcDRkQVZsT2Vk?=
- =?utf-8?B?bXJjTnE3VmtxY1dBOVlkdFBoVHJoend1RXM4Mjh5T2pTenkxZU9XUHFacEc1?=
- =?utf-8?B?LzY0T0RFR011Vms3ZS93LzFmM0gxT3hUV1VjSHZ5dDJRUlU0aWlRWnIyMldC?=
- =?utf-8?B?MXQvMzR0QXh3eDhKNUJNcEpGVzV5ZlZOSHdacXdFU2NCNy91R280U2NMWlJ4?=
- =?utf-8?B?TmtzYzRLZGxFbDhOQmVHVFBXVG1aeW9EelJ5MHJkMkZkZmo5L2FkRmRSMHFj?=
- =?utf-8?B?YlpDMm5wRVZCNE9CRUtsdVFFUDAyUmRiU0VDZVROazJFWFBLV2F6NWY1TnZo?=
- =?utf-8?B?ZmlSM3NMZHJYcU44TVM4VFV0TDAwaGtjd0h4YVdjWHBkR1NCaHFFVEx1WDBR?=
- =?utf-8?B?N0NvWmFpVy9aTkk3TUFQbTUvMUJORFJQS1ZnVDg3QVFqamRSaGl4UEw3dHJX?=
- =?utf-8?B?aC9ybWxiMDVxODVwSEx6eVhiZWtEZW85SFJUOS94U0x0YjJJcXFQVHNWWDlG?=
- =?utf-8?B?UmlvdUdhYjdwQ0w3U21NT0RtOUVCNzBkeFIyY3V5R1RVYWY1bVY3MzFZTmM1?=
- =?utf-8?B?L01Ob1I4aWZxTXBISGYzQWVlRE5Fd3RQMkthYzJpSDdic1VWRUFLZEtjcVp6?=
- =?utf-8?B?dTJMQUlVZG1GSmttby9rTTY3OTNpa2FGVmM1OVhaOHZoS0ZzaVJYcm1uanQ2?=
- =?utf-8?B?enFEa09CUE9zV1V1VjVvWlhKK2hQYWJmY1owc2JBcHJIMzdsZ0E1NHFZbFFa?=
- =?utf-8?B?STZHdThoU0ZLc3I3NlJxbUJ5a01MbjhEdWxtelB6RTNXWXBEdUlpQTlqbmcw?=
- =?utf-8?B?ZWpYOVRyOWRlYzFXRDU5OUdNWUFuRmNHaHNUQUZYTlZ3Q1dQOEJDN1JvR1NS?=
- =?utf-8?B?VGVSLzhORjdWTmovRVpmcXFOWVJ0WWdERk8rckFmNENUTmdqMjlDWnJ0NjZi?=
- =?utf-8?B?N2c4STIvemhQWHlERlllcVVuQ093RFhYQ2dsaVJoSXg2d2x1eXB5ZjJBL3Er?=
- =?utf-8?B?Y0RaV1p5QTZoWndFWnlWQkxWektBUHlnUHlaelRDZHNQMEV0ZVhwUUlkQWxK?=
- =?utf-8?B?UTBFY1dBWG1zL2pZb3BhbVJPTFNrMngyUm1zL0pDd1JlVk9zTjZzTlYrdlRY?=
- =?utf-8?B?L2YzQWFLSHNwLytMV0o4ZVYwOGVsZlJFWnZ0N25YS0llVEJnNm5raEdZdzhq?=
- =?utf-8?B?eGRWV0dLNmZJL1R3RUZRRTU2bzlGeUMwQ3o0UmVadU91bExMRnBZdVZRMmdS?=
- =?utf-8?B?Q2pPdjNLT0hEdGd3d2RVdUE2L3ZIcit3c1gzeDlQYjJ1azJBenNOUVFjMy9q?=
- =?utf-8?B?SFpKVVlRTzVNYkh5WFFQa1prSjdFU09aeW9YRVZiU0Q4MVdQUzlMY1BtSFZt?=
- =?utf-8?B?MS9icjlvQitGWDdnMW9JVVRGUm41UmFwcUNKNTNrSDB6ckRzK3VwSHRiOXlr?=
- =?utf-8?B?TjA0Mk1JNzNUUGk4UXFOeWN4dDMyZlB6N1o1NThiWG1lMnFiSHN5RnprMHhv?=
- =?utf-8?Q?KFZ3U7v6HfePVRe9VY2ZcUs=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+   d="scan'208";a="695634451"
+Received: from kerguder-mobl.ger.corp.intel.com (HELO localhost) ([10.249.158.133])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 17:15:22 -0800
+From:   Iwona Winiarska <iwona.winiarska@intel.com>
+To:     linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Borislav Petkov <bp@alien8.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Zev Weiss <zweiss@equinix.com>,
+        David Muller <d.mueller@elsoft.ch>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Billy Tsai <billy_tsai@aspeedtech.com>,
+        Iwona Winiarska <iwona.winiarska@intel.com>
+Subject: [PATCH v6 09/13] peci: Add peci-cpu driver
+Date:   Tue, 25 Jan 2022 02:11:00 +0100
+Message-Id: <20220125011104.2480133-10-iwona.winiarska@intel.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220125011104.2480133-1-iwona.winiarska@intel.com>
+References: <20220125011104.2480133-1-iwona.winiarska@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8eda921d-1b08-4aff-27ab-08d9dfa5ad7b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2022 01:54:52.1982
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0QS+ilB0wiWJvGdIK1B22kqmk6oWfXd8JCTfCKTlhwu7KUEKmGYhmUQIxRrdG2yXMN9LijeSM0t01ZxPV0UdnA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1101MB2298
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBGcm9tOiBQYW9sbyBCb256aW5pIDxwYm9uemluaUByZWRoYXQuY29tPg0KPiBTZW50OiBUdWVz
-ZGF5LCBKYW51YXJ5IDI1LCAyMDIyIDEyOjMwIEFNDQo+IA0KPiBPbiAxLzI0LzIyIDE3OjIzLCBT
-ZWFuIENocmlzdG9waGVyc29uIHdyb3RlOg0KPiA+IE9uIE1vbiwgSmFuIDI0LCAyMDIyLCBMaWtl
-IFh1IHdyb3RlOg0KPiA+PiBPbiAyNC8xLzIwMjIgMzowNiBwbSwgVGlhbiwgS2V2aW4gd3JvdGU6
-DQo+ID4+Pj4gRnJvbTogTGlrZSBYdSA8bGlrZS54dS5saW51eEBnbWFpbC5jb20+DQo+ID4+Pj4g
-U2VudDogU3VuZGF5LCBKYW51YXJ5IDIzLCAyMDIyIDE6NTAgUE0NCj4gPj4+Pg0KPiA+Pj4+IEZy
-b206IExpa2UgWHUgPGxpa2V4dUB0ZW5jZW50LmNvbT4NCj4gPj4+Pg0KPiA+Pj4+IEEgbWFsaWNp
-b3VzIHVzZXIgc3BhY2UgY2FuIGJ5cGFzcyB4c3RhdGVfZ2V0X2d1ZXN0X2dyb3VwX3Blcm0oKSBp
-bg0KPiB0aGUNCj4gPj4+PiBLVk1fR0VUX1NVUFBPUlRFRF9DUFVJRCBtZWNoYW5pc20gYW5kIG9i
-dGFpbiB1bnBlcm1pdHRlZA0KPiB4ZmVhdHVyZXMsDQo+ID4+Pj4gc2luY2UgdGhlIHZhbGlkaXR5
-IGNoZWNrIG9mIHhjcjAgZGVwZW5kcyBvbmx5IG9uIGd1ZXN0X3N1cHBvcnRlZF94Y3IwLg0KPiA+
-Pj4NCj4gPj4+IFVucGVybWl0dGVkIHhmZWF0dXJlcyBjYW5ub3QgcGFzcyBrdm1fY2hlY2tfY3B1
-aWQoKS4uLg0KPiA+Pg0KPiA+PiBJbmRlZWQsIDVhYjJmNDViYmE0ODk0YTBkYjRhZjg1NjdkYTNl
-ZmQ2MjI4ZGQwMTAuDQo+ID4+DQo+ID4+IFRoaXMgcGFydCBvZiBsb2dpYyBpcyBwcmV0dHkgZnJh
-Z2lsZSBhbmQgZnJhZ21lbnRlZCBkdWUgdG8gc2VtYW50aWMNCj4gPj4gaW5jb25zaXN0ZW5jaWVz
-IGJldHdlZW4gc3VwcG9ydGVkX3hjcjAgYW5kIGd1ZXN0X3N1cHBvcnRlZF94Y3IwDQo+ID4+IGlu
-IG90aGVyIHRocmVlIHBsYWNlczoNCj4gPg0KPiA+IFRoZXJlIGFyZSBubyBpbmNvbnNpc3RlbmNp
-ZXMsIGF0IGxlYXN0IG5vdCBpbiB0aGUgZXhhbXBsZXMgYmVsb3csIGFzIHRoZQ0KPiBleGFtcGxl
-cw0KPiA+IGFyZSBpbnRlbmRlZCB0byB3b3JrIGluIGhvc3QgY29udGV4dC4gIGd1ZXN0X3N1cHBv
-cnRlZF94Y3IwIGlzIGFib3V0IHdoYXQNCj4gdGhlIGd1ZXN0DQo+ID4gaXMvaXNuJ3QgYWxsb3dl
-ZCB0byBhY2Nlc3MsIGl0IGhhcyBubyBiZWFyaW5nIG9uIHdoYXQgaG9zdCB1c2Vyc3BhY2UNCj4g
-Y2FuL2Nhbid0IGRvLg0KPiA+IE9yIGFyZSB5b3UgdGFsa2luZyBhYm91dCBhIGRpZmZlcmVudCB0
-eXBlIG9mIGluY29uc2lzdGVuY3k/DQo+IA0KPiBUaGUgZXh0cmEgY29tcGxpY2F0aW9uIGlzIHRo
-YXQgYXJjaF9wcmN0bChBUkNIX1JFUV9YQ09NUF9HVUVTVF9QRVJNKQ0KPiBjaGFuZ2VzIHdoYXQg
-aG9zdCB1c2Vyc3BhY2UgY2FuL2Nhbid0IGRvLiAgSXQgd291bGQgYmUgZWFzaWVyIGlmIHdlDQo+
-IGNvdWxkIGp1c3Qgc2F5IHRoYXQgS1ZNX0dFVF9TVVBQT1JURURfQ1BVSUQgcmV0dXJucyAidGhl
-IG1vc3QiIHRoYXQNCj4gdXNlcnNwYWNlIGNhbiBkbywgYnV0IHdlIGFscmVhZHkgaGF2ZSB0aGUg
-Y29udHJhY3QgdGhhdCB1c2Vyc3BhY2UgY2FuDQo+IHRha2UgS1ZNX0dFVF9TVVBQT1JURURfQ1BV
-SUQgYW5kIHBhc3MgaXQgc3RyYWlnaHQgdG8gS1ZNX1NFVF9DUFVJRDIuDQo+IA0KPiBUaGVyZWZv
-cmUsICBLVk1fR0VUX1NVUFBPUlRFRF9DUFVJRCBtdXN0IGxpbWl0IGl0cyByZXR1cm5lZCB2YWx1
-ZXMgdG8NCj4gd2hhdCBoYXMgYWxyZWFkeSBiZWVuIGVuYWJsZWQuDQo+IA0KPiBXaGlsZSByZXZp
-ZXdpbmcgdGhlIFFFTVUgcGFydCBvZiBBTVggc3VwcG9ydCAodGhpcyBtb3JuaW5nKSwgSSBhbHNv
-DQo+IG5vdGljZWQgdGhhdCB0aGVyZSBpcyBubyBlcXVpdmFsZW50IGZvciBndWVzdCBwZXJtaXNz
-aW9ucyBvZg0KPiBBUkNIX0dFVF9YQ09NUF9TVVBQLiAgVGhpcyBuZWVkcyB0byBrbm93IEtWTSdz
-IHN1cHBvcnRlZF94Y3IwLCBzbyBpdCdzDQo+IHByb2JhYmx5IGJlc3QgcmVhbGl6ZWQgYXMgYSBu
-ZXcgS1ZNX0NIRUNLX0VYVEVOU0lPTiByYXRoZXIgdGhhbiBhcyBhbg0KPiBhcmNoX3ByY3RsLg0K
-PiANCg0KV291bGQgdGhhdCBsZWFkIHRvIGEgd2VpcmQgc2l0dWF0aW9uIHdoZXJlIGFsdGhvdWdo
-IEtWTSBzYXlzIG5vIHN1cHBvcnQNCm9mIGd1ZXN0IHBlcm1pc3Npb25zIHdoaWxlIHRoZSB1c2Vy
-IGNhbiBzdGlsbCByZXF1ZXN0IHRoZW0gdmlhIHByY3RsKCk/DQoNCkkgd29uZGVyIHdoZXRoZXIg
-aXQncyBjbGVhbmVyIHRvIGRvIGl0IHN0aWxsIHZpYSBwcmN0bCgpIGlmIHdlIHJlYWxseSB3YW50
-IHRvDQplbmhhbmNlIHRoaXMgcGFydC4gQnV0IGFzIHlvdSBzYWlkIHRoZW4gaXQgbmVlZHMgYSBt
-ZWNoYW5pc20gdG8ga25vdyANCktWTSdzIHN1cHBvcnRlZF94Y3IwIChhbmQgaWYgS1ZNIGlzIG5v
-dCBsb2FkZWQgdGhlbiBubyBndWVzdCBwZXJtaXNzaW9uDQpzdXBwb3J0IGF0IGFsbCkuLi4NCg0K
-VGhhbmtzDQpLZXZpbg0K
+PECI is an interface that may be used by different types of devices.
+Add a peci-cpu driver compatible with Intel processors. The driver is
+responsible for handling auxiliary devices that can subsequently be used
+by other drivers (e.g. hwmons).
+
+Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+---
+ MAINTAINERS              |   1 +
+ drivers/peci/Kconfig     |  15 ++
+ drivers/peci/Makefile    |   2 +
+ drivers/peci/cpu.c       | 343 +++++++++++++++++++++++++++++++++++++++
+ drivers/peci/device.c    |   1 +
+ drivers/peci/internal.h  |  27 +++
+ drivers/peci/request.c   | 213 ++++++++++++++++++++++++
+ include/linux/peci-cpu.h |  40 +++++
+ include/linux/peci.h     |   8 -
+ 9 files changed, 642 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/peci/cpu.c
+ create mode 100644 include/linux/peci-cpu.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6c9b12004e4e..7c31e29c885a 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15105,6 +15105,7 @@ L:	openbmc@lists.ozlabs.org (moderated for non-subscribers)
+ S:	Supported
+ F:	Documentation/devicetree/bindings/peci/
+ F:	drivers/peci/
++F:	include/linux/peci-cpu.h
+ F:	include/linux/peci.h
+ 
+ PENSANDO ETHERNET DRIVERS
+diff --git a/drivers/peci/Kconfig b/drivers/peci/Kconfig
+index 99279df97a78..89872ad83320 100644
+--- a/drivers/peci/Kconfig
++++ b/drivers/peci/Kconfig
+@@ -16,6 +16,21 @@ menuconfig PECI
+ 
+ if PECI
+ 
++config PECI_CPU
++	tristate "PECI CPU"
++	select AUXILIARY_BUS
++	help
++	  This option enables peci-cpu driver for Intel processors. It is
++	  responsible for creating auxiliary devices that can subsequently
++	  be used by other drivers in order to perform various
++	  functionalities such as e.g. temperature monitoring.
++
++	  Additional drivers must be enabled in order to use the functionality
++	  of the device.
++
++	  This driver can also be built as a module. If so, the module
++	  will be called peci-cpu.
++
+ source "drivers/peci/controller/Kconfig"
+ 
+ endif # PECI
+diff --git a/drivers/peci/Makefile b/drivers/peci/Makefile
+index 917f689e147a..7de18137e738 100644
+--- a/drivers/peci/Makefile
++++ b/drivers/peci/Makefile
+@@ -3,6 +3,8 @@
+ # Core functionality
+ peci-y := core.o request.o device.o sysfs.o
+ obj-$(CONFIG_PECI) += peci.o
++peci-cpu-y := cpu.o
++obj-$(CONFIG_PECI_CPU) += peci-cpu.o
+ 
+ # Hardware specific bus drivers
+ obj-y += controller/
+diff --git a/drivers/peci/cpu.c b/drivers/peci/cpu.c
+new file mode 100644
+index 000000000000..68eb61c65d34
+--- /dev/null
++++ b/drivers/peci/cpu.c
+@@ -0,0 +1,343 @@
++// SPDX-License-Identifier: GPL-2.0-only
++// Copyright (c) 2021 Intel Corporation
++
++#include <linux/auxiliary_bus.h>
++#include <linux/module.h>
++#include <linux/peci.h>
++#include <linux/peci-cpu.h>
++#include <linux/slab.h>
++
++#include "internal.h"
++
++/**
++ * peci_temp_read() - read the maximum die temperature from PECI target device
++ * @device: PECI device to which request is going to be sent
++ * @temp_raw: where to store the read temperature
++ *
++ * It uses GetTemp PECI command.
++ *
++ * Return: 0 if succeeded, other values in case errors.
++ */
++int peci_temp_read(struct peci_device *device, s16 *temp_raw)
++{
++	struct peci_request *req;
++
++	req = peci_xfer_get_temp(device);
++	if (IS_ERR(req))
++		return PTR_ERR(req);
++
++	*temp_raw = peci_request_temp_read(req);
++
++	peci_request_free(req);
++
++	return 0;
++}
++EXPORT_SYMBOL_NS_GPL(peci_temp_read, PECI_CPU);
++
++/**
++ * peci_pcs_read() - read PCS register
++ * @device: PECI device to which request is going to be sent
++ * @index: PCS index
++ * @param: PCS parameter
++ * @data: where to store the read data
++ *
++ * It uses RdPkgConfig PECI command.
++ *
++ * Return: 0 if succeeded, other values in case errors.
++ */
++int peci_pcs_read(struct peci_device *device, u8 index, u16 param, u32 *data)
++{
++	struct peci_request *req;
++	int ret;
++
++	req = peci_xfer_pkg_cfg_readl(device, index, param);
++	if (IS_ERR(req))
++		return PTR_ERR(req);
++
++	ret = peci_request_status(req);
++	if (ret)
++		goto out_req_free;
++
++	*data = peci_request_data_readl(req);
++out_req_free:
++	peci_request_free(req);
++
++	return ret;
++}
++EXPORT_SYMBOL_NS_GPL(peci_pcs_read, PECI_CPU);
++
++/**
++ * peci_pci_local_read() - read 32-bit memory location using raw address
++ * @device: PECI device to which request is going to be sent
++ * @bus: bus
++ * @dev: device
++ * @func: function
++ * @reg: register
++ * @data: where to store the read data
++ *
++ * It uses RdPCIConfigLocal PECI command.
++ *
++ * Return: 0 if succeeded, other values in case errors.
++ */
++int peci_pci_local_read(struct peci_device *device, u8 bus, u8 dev, u8 func,
++			u16 reg, u32 *data)
++{
++	struct peci_request *req;
++	int ret;
++
++	req = peci_xfer_pci_cfg_local_readl(device, bus, dev, func, reg);
++	if (IS_ERR(req))
++		return PTR_ERR(req);
++
++	ret = peci_request_status(req);
++	if (ret)
++		goto out_req_free;
++
++	*data = peci_request_data_readl(req);
++out_req_free:
++	peci_request_free(req);
++
++	return ret;
++}
++EXPORT_SYMBOL_NS_GPL(peci_pci_local_read, PECI_CPU);
++
++/**
++ * peci_ep_pci_local_read() - read 32-bit memory location using raw address
++ * @device: PECI device to which request is going to be sent
++ * @seg: PCI segment
++ * @bus: bus
++ * @dev: device
++ * @func: function
++ * @reg: register
++ * @data: where to store the read data
++ *
++ * Like &peci_pci_local_read, but it uses RdEndpointConfig PECI command.
++ *
++ * Return: 0 if succeeded, other values in case errors.
++ */
++int peci_ep_pci_local_read(struct peci_device *device, u8 seg,
++			   u8 bus, u8 dev, u8 func, u16 reg, u32 *data)
++{
++	struct peci_request *req;
++	int ret;
++
++	req = peci_xfer_ep_pci_cfg_local_readl(device, seg, bus, dev, func, reg);
++	if (IS_ERR(req))
++		return PTR_ERR(req);
++
++	ret = peci_request_status(req);
++	if (ret)
++		goto out_req_free;
++
++	*data = peci_request_data_readl(req);
++out_req_free:
++	peci_request_free(req);
++
++	return ret;
++}
++EXPORT_SYMBOL_NS_GPL(peci_ep_pci_local_read, PECI_CPU);
++
++/**
++ * peci_mmio_read() - read 32-bit memory location using 64-bit bar offset address
++ * @device: PECI device to which request is going to be sent
++ * @bar: PCI bar
++ * @seg: PCI segment
++ * @bus: bus
++ * @dev: device
++ * @func: function
++ * @address: 64-bit MMIO address
++ * @data: where to store the read data
++ *
++ * It uses RdEndpointConfig PECI command.
++ *
++ * Return: 0 if succeeded, other values in case errors.
++ */
++int peci_mmio_read(struct peci_device *device, u8 bar, u8 seg,
++		   u8 bus, u8 dev, u8 func, u64 address, u32 *data)
++{
++	struct peci_request *req;
++	int ret;
++
++	req = peci_xfer_ep_mmio64_readl(device, bar, seg, bus, dev, func, address);
++	if (IS_ERR(req))
++		return PTR_ERR(req);
++
++	ret = peci_request_status(req);
++	if (ret)
++		goto out_req_free;
++
++	*data = peci_request_data_readl(req);
++out_req_free:
++	peci_request_free(req);
++
++	return ret;
++}
++EXPORT_SYMBOL_NS_GPL(peci_mmio_read, PECI_CPU);
++
++static const char * const peci_adev_types[] = {
++	"cputemp",
++	"dimmtemp",
++};
++
++struct peci_cpu {
++	struct peci_device *device;
++	const struct peci_device_id *id;
++};
++
++static void adev_release(struct device *dev)
++{
++	struct auxiliary_device *adev = to_auxiliary_dev(dev);
++
++	auxiliary_device_uninit(adev);
++
++	kfree(adev->name);
++	kfree(adev);
++}
++
++static struct auxiliary_device *adev_alloc(struct peci_cpu *priv, int idx)
++{
++	struct peci_controller *controller = to_peci_controller(priv->device->dev.parent);
++	struct auxiliary_device *adev;
++	const char *name;
++	int ret;
++
++	adev = kzalloc(sizeof(*adev), GFP_KERNEL);
++	if (!adev)
++		return ERR_PTR(-ENOMEM);
++
++	name = kasprintf(GFP_KERNEL, "%s.%s", peci_adev_types[idx], (const char *)priv->id->data);
++	if (!name) {
++		ret = -ENOMEM;
++		goto free_adev;
++	}
++
++	adev->name = name;
++	adev->dev.parent = &priv->device->dev;
++	adev->dev.release = adev_release;
++	adev->id = (controller->id << 16) | (priv->device->addr);
++
++	ret = auxiliary_device_init(adev);
++	if (ret)
++		goto free_name;
++
++	return adev;
++
++free_name:
++	kfree(name);
++free_adev:
++	kfree(adev);
++	return ERR_PTR(ret);
++}
++
++static void unregister_adev(void *_adev)
++{
++	struct auxiliary_device *adev = _adev;
++
++	auxiliary_device_delete(adev);
++}
++
++static int devm_adev_add(struct device *dev, int idx)
++{
++	struct peci_cpu *priv = dev_get_drvdata(dev);
++	struct auxiliary_device *adev;
++	int ret;
++
++	adev = adev_alloc(priv, idx);
++	if (IS_ERR(adev))
++		return PTR_ERR(adev);
++
++	ret = auxiliary_device_add(adev);
++	if (ret) {
++		auxiliary_device_uninit(adev);
++		return ret;
++	}
++
++	ret = devm_add_action_or_reset(&priv->device->dev, unregister_adev, adev);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static void peci_cpu_add_adevices(struct peci_cpu *priv)
++{
++	struct device *dev = &priv->device->dev;
++	int ret, i;
++
++	for (i = 0; i < ARRAY_SIZE(peci_adev_types); i++) {
++		ret = devm_adev_add(dev, i);
++		if (ret) {
++			dev_warn(dev, "Failed to register PECI auxiliary: %s, ret = %d\n",
++				 peci_adev_types[i], ret);
++			continue;
++		}
++	}
++}
++
++static int
++peci_cpu_probe(struct peci_device *device, const struct peci_device_id *id)
++{
++	struct device *dev = &device->dev;
++	struct peci_cpu *priv;
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	dev_set_drvdata(dev, priv);
++	priv->device = device;
++	priv->id = id;
++
++	peci_cpu_add_adevices(priv);
++
++	return 0;
++}
++
++static const struct peci_device_id peci_cpu_device_ids[] = {
++	{ /* Haswell Xeon */
++		.family	= 6,
++		.model	= INTEL_FAM6_HASWELL_X,
++		.data	= "hsx",
++	},
++	{ /* Broadwell Xeon */
++		.family	= 6,
++		.model	= INTEL_FAM6_BROADWELL_X,
++		.data	= "bdx",
++	},
++	{ /* Broadwell Xeon D */
++		.family	= 6,
++		.model	= INTEL_FAM6_BROADWELL_D,
++		.data	= "bdxd",
++	},
++	{ /* Skylake Xeon */
++		.family	= 6,
++		.model	= INTEL_FAM6_SKYLAKE_X,
++		.data	= "skx",
++	},
++	{ /* Icelake Xeon */
++		.family	= 6,
++		.model	= INTEL_FAM6_ICELAKE_X,
++		.data	= "icx",
++	},
++	{ /* Icelake Xeon D */
++		.family	= 6,
++		.model	= INTEL_FAM6_ICELAKE_D,
++		.data	= "icxd",
++	},
++	{ }
++};
++MODULE_DEVICE_TABLE(peci, peci_cpu_device_ids);
++
++static struct peci_driver peci_cpu_driver = {
++	.probe		= peci_cpu_probe,
++	.id_table	= peci_cpu_device_ids,
++	.driver		= {
++		.name		= "peci-cpu",
++	},
++};
++module_peci_driver(peci_cpu_driver);
++
++MODULE_AUTHOR("Iwona Winiarska <iwona.winiarska@intel.com>");
++MODULE_DESCRIPTION("PECI CPU driver");
++MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS(PECI);
+diff --git a/drivers/peci/device.c b/drivers/peci/device.c
+index 184b5e650b0b..e6b0bffb14f4 100644
+--- a/drivers/peci/device.c
++++ b/drivers/peci/device.c
+@@ -3,6 +3,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/peci.h>
++#include <linux/peci-cpu.h>
+ #include <linux/slab.h>
+ 
+ #include "internal.h"
+diff --git a/drivers/peci/internal.h b/drivers/peci/internal.h
+index 52c02e12874f..9d75ea54504c 100644
+--- a/drivers/peci/internal.h
++++ b/drivers/peci/internal.h
+@@ -22,6 +22,7 @@ void peci_request_free(struct peci_request *req);
+ int peci_request_status(struct peci_request *req);
+ 
+ u64 peci_request_dib_read(struct peci_request *req);
++s16 peci_request_temp_read(struct peci_request *req);
+ 
+ u8 peci_request_data_readb(struct peci_request *req);
+ u16 peci_request_data_readw(struct peci_request *req);
+@@ -36,6 +37,32 @@ struct peci_request *peci_xfer_pkg_cfg_readw(struct peci_device *device, u8 inde
+ struct peci_request *peci_xfer_pkg_cfg_readl(struct peci_device *device, u8 index, u16 param);
+ struct peci_request *peci_xfer_pkg_cfg_readq(struct peci_device *device, u8 index, u16 param);
+ 
++struct peci_request *peci_xfer_pci_cfg_local_readb(struct peci_device *device,
++						   u8 bus, u8 dev, u8 func, u16 reg);
++struct peci_request *peci_xfer_pci_cfg_local_readw(struct peci_device *device,
++						   u8 bus, u8 dev, u8 func, u16 reg);
++struct peci_request *peci_xfer_pci_cfg_local_readl(struct peci_device *device,
++						   u8 bus, u8 dev, u8 func, u16 reg);
++
++struct peci_request *peci_xfer_ep_pci_cfg_local_readb(struct peci_device *device, u8 seg,
++						      u8 bus, u8 dev, u8 func, u16 reg);
++struct peci_request *peci_xfer_ep_pci_cfg_local_readw(struct peci_device *device, u8 seg,
++						      u8 bus, u8 dev, u8 func, u16 reg);
++struct peci_request *peci_xfer_ep_pci_cfg_local_readl(struct peci_device *device, u8 seg,
++						      u8 bus, u8 dev, u8 func, u16 reg);
++
++struct peci_request *peci_xfer_ep_pci_cfg_readb(struct peci_device *device, u8 seg,
++						u8 bus, u8 dev, u8 func, u16 reg);
++struct peci_request *peci_xfer_ep_pci_cfg_readw(struct peci_device *device, u8 seg,
++						u8 bus, u8 dev, u8 func, u16 reg);
++struct peci_request *peci_xfer_ep_pci_cfg_readl(struct peci_device *device, u8 seg,
++						u8 bus, u8 dev, u8 func, u16 reg);
++
++struct peci_request *peci_xfer_ep_mmio32_readl(struct peci_device *device, u8 bar, u8 seg,
++					       u8 bus, u8 dev, u8 func, u64 offset);
++
++struct peci_request *peci_xfer_ep_mmio64_readl(struct peci_device *device, u8 bar, u8 seg,
++					       u8 bus, u8 dev, u8 func, u64 offset);
+ /**
+  * struct peci_device_id - PECI device data to match
+  * @data: pointer to driver private data specific to device
+diff --git a/drivers/peci/request.c b/drivers/peci/request.c
+index a49eb351cda3..8d6dd7b6b559 100644
+--- a/drivers/peci/request.c
++++ b/drivers/peci/request.c
+@@ -3,6 +3,7 @@
+ 
+ #include <linux/bug.h>
+ #include <linux/export.h>
++#include <linux/pci.h>
+ #include <linux/peci.h>
+ #include <linux/slab.h>
+ #include <linux/types.h>
+@@ -15,6 +16,10 @@
+ #define  PECI_GET_DIB_WR_LEN		1
+ #define  PECI_GET_DIB_RD_LEN		8
+ 
++#define PECI_GET_TEMP_CMD		0x01
++#define  PECI_GET_TEMP_WR_LEN		1
++#define  PECI_GET_TEMP_RD_LEN		2
++
+ #define PECI_RDPKGCFG_CMD		0xa1
+ #define  PECI_RDPKGCFG_WR_LEN		5
+ #define  PECI_RDPKGCFG_RD_LEN_BASE	1
+@@ -22,6 +27,45 @@
+ #define  PECI_WRPKGCFG_WR_LEN_BASE	6
+ #define  PECI_WRPKGCFG_RD_LEN		1
+ 
++#define PECI_RDIAMSR_CMD		0xb1
++#define  PECI_RDIAMSR_WR_LEN		5
++#define  PECI_RDIAMSR_RD_LEN		9
++#define PECI_WRIAMSR_CMD		0xb5
++#define PECI_RDIAMSREX_CMD		0xd1
++#define  PECI_RDIAMSREX_WR_LEN		6
++#define  PECI_RDIAMSREX_RD_LEN		9
++
++#define PECI_RDPCICFG_CMD		0x61
++#define  PECI_RDPCICFG_WR_LEN		6
++#define  PECI_RDPCICFG_RD_LEN		5
++#define  PECI_RDPCICFG_RD_LEN_MAX	24
++#define PECI_WRPCICFG_CMD		0x65
++
++#define PECI_RDPCICFGLOCAL_CMD			0xe1
++#define  PECI_RDPCICFGLOCAL_WR_LEN		5
++#define  PECI_RDPCICFGLOCAL_RD_LEN_BASE		1
++#define PECI_WRPCICFGLOCAL_CMD			0xe5
++#define  PECI_WRPCICFGLOCAL_WR_LEN_BASE		6
++#define  PECI_WRPCICFGLOCAL_RD_LEN		1
++
++#define PECI_ENDPTCFG_TYPE_LOCAL_PCI		0x03
++#define PECI_ENDPTCFG_TYPE_PCI			0x04
++#define PECI_ENDPTCFG_TYPE_MMIO			0x05
++#define PECI_ENDPTCFG_ADDR_TYPE_PCI		0x04
++#define PECI_ENDPTCFG_ADDR_TYPE_MMIO_D		0x05
++#define PECI_ENDPTCFG_ADDR_TYPE_MMIO_Q		0x06
++#define PECI_RDENDPTCFG_CMD			0xc1
++#define  PECI_RDENDPTCFG_PCI_WR_LEN		12
++#define  PECI_RDENDPTCFG_MMIO_WR_LEN_BASE	10
++#define  PECI_RDENDPTCFG_MMIO_D_WR_LEN		14
++#define  PECI_RDENDPTCFG_MMIO_Q_WR_LEN		18
++#define  PECI_RDENDPTCFG_RD_LEN_BASE		1
++#define PECI_WRENDPTCFG_CMD			0xc5
++#define  PECI_WRENDPTCFG_PCI_WR_LEN_BASE	13
++#define  PECI_WRENDPTCFG_MMIO_D_WR_LEN_BASE	15
++#define  PECI_WRENDPTCFG_MMIO_Q_WR_LEN_BASE	19
++#define  PECI_WRENDPTCFG_RD_LEN			1
++
+ /* Device Specific Completion Code (CC) Definition */
+ #define PECI_CC_SUCCESS				0x40
+ #define PECI_CC_NEED_RETRY			0x80
+@@ -202,6 +246,27 @@ struct peci_request *peci_xfer_get_dib(struct peci_device *device)
+ }
+ EXPORT_SYMBOL_NS_GPL(peci_xfer_get_dib, PECI);
+ 
++struct peci_request *peci_xfer_get_temp(struct peci_device *device)
++{
++	struct peci_request *req;
++	int ret;
++
++	req = peci_request_alloc(device, PECI_GET_TEMP_WR_LEN, PECI_GET_TEMP_RD_LEN);
++	if (!req)
++		return ERR_PTR(-ENOMEM);
++
++	req->tx.buf[0] = PECI_GET_TEMP_CMD;
++
++	ret = peci_request_xfer(req);
++	if (ret) {
++		peci_request_free(req);
++		return ERR_PTR(ret);
++	}
++
++	return req;
++}
++EXPORT_SYMBOL_NS_GPL(peci_xfer_get_temp, PECI);
++
+ static struct peci_request *
+ __pkg_cfg_read(struct peci_device *device, u8 index, u16 param, u8 len)
+ {
+@@ -226,6 +291,108 @@ __pkg_cfg_read(struct peci_device *device, u8 index, u16 param, u8 len)
+ 	return req;
+ }
+ 
++static u32 __get_pci_addr(u8 bus, u8 dev, u8 func, u16 reg)
++{
++	return reg | PCI_DEVID(bus, PCI_DEVFN(dev, func)) << 12;
++}
++
++static struct peci_request *
++__pci_cfg_local_read(struct peci_device *device, u8 bus, u8 dev, u8 func, u16 reg, u8 len)
++{
++	struct peci_request *req;
++	u32 pci_addr;
++	int ret;
++
++	req = peci_request_alloc(device, PECI_RDPCICFGLOCAL_WR_LEN,
++				 PECI_RDPCICFGLOCAL_RD_LEN_BASE + len);
++	if (!req)
++		return ERR_PTR(-ENOMEM);
++
++	pci_addr = __get_pci_addr(bus, dev, func, reg);
++
++	req->tx.buf[0] = PECI_RDPCICFGLOCAL_CMD;
++	req->tx.buf[1] = 0;
++	put_unaligned_le24(pci_addr, &req->tx.buf[2]);
++
++	ret = peci_request_xfer_retry(req);
++	if (ret) {
++		peci_request_free(req);
++		return ERR_PTR(ret);
++	}
++
++	return req;
++}
++
++static struct peci_request *
++__ep_pci_cfg_read(struct peci_device *device, u8 msg_type, u8 seg,
++		  u8 bus, u8 dev, u8 func, u16 reg, u8 len)
++{
++	struct peci_request *req;
++	u32 pci_addr;
++	int ret;
++
++	req = peci_request_alloc(device, PECI_RDENDPTCFG_PCI_WR_LEN,
++				 PECI_RDENDPTCFG_RD_LEN_BASE + len);
++	if (!req)
++		return ERR_PTR(-ENOMEM);
++
++	pci_addr = __get_pci_addr(bus, dev, func, reg);
++
++	req->tx.buf[0] = PECI_RDENDPTCFG_CMD;
++	req->tx.buf[1] = 0;
++	req->tx.buf[2] = msg_type;
++	req->tx.buf[3] = 0;
++	req->tx.buf[4] = 0;
++	req->tx.buf[5] = 0;
++	req->tx.buf[6] = PECI_ENDPTCFG_ADDR_TYPE_PCI;
++	req->tx.buf[7] = seg; /* PCI Segment */
++	put_unaligned_le32(pci_addr, &req->tx.buf[8]);
++
++	ret = peci_request_xfer_retry(req);
++	if (ret) {
++		peci_request_free(req);
++		return ERR_PTR(ret);
++	}
++
++	return req;
++}
++
++static struct peci_request *
++__ep_mmio_read(struct peci_device *device, u8 bar, u8 addr_type, u8 seg,
++	       u8 bus, u8 dev, u8 func, u64 offset, u8 tx_len, u8 len)
++{
++	struct peci_request *req;
++	int ret;
++
++	req = peci_request_alloc(device, tx_len, PECI_RDENDPTCFG_RD_LEN_BASE + len);
++	if (!req)
++		return ERR_PTR(-ENOMEM);
++
++	req->tx.buf[0] = PECI_RDENDPTCFG_CMD;
++	req->tx.buf[1] = 0;
++	req->tx.buf[2] = PECI_ENDPTCFG_TYPE_MMIO;
++	req->tx.buf[3] = 0; /* Endpoint ID */
++	req->tx.buf[4] = 0; /* Reserved */
++	req->tx.buf[5] = bar;
++	req->tx.buf[6] = addr_type;
++	req->tx.buf[7] = seg; /* PCI Segment */
++	req->tx.buf[8] = PCI_DEVFN(dev, func);
++	req->tx.buf[9] = bus; /* PCI Bus */
++
++	if (addr_type == PECI_ENDPTCFG_ADDR_TYPE_MMIO_D)
++		put_unaligned_le32(offset, &req->tx.buf[10]);
++	else
++		put_unaligned_le64(offset, &req->tx.buf[10]);
++
++	ret = peci_request_xfer_retry(req);
++	if (ret) {
++		peci_request_free(req);
++		return ERR_PTR(ret);
++	}
++
++	return req;
++}
++
+ u8 peci_request_data_readb(struct peci_request *req)
+ {
+ 	return req->rx.buf[1];
+@@ -256,6 +423,12 @@ u64 peci_request_dib_read(struct peci_request *req)
+ }
+ EXPORT_SYMBOL_NS_GPL(peci_request_dib_read, PECI);
+ 
++s16 peci_request_temp_read(struct peci_request *req)
++{
++	return get_unaligned_le16(&req->rx.buf[0]);
++}
++EXPORT_SYMBOL_NS_GPL(peci_request_temp_read, PECI);
++
+ #define __read_pkg_config(x, type) \
+ struct peci_request *peci_xfer_pkg_cfg_##x(struct peci_device *device, u8 index, u16 param) \
+ { \
+@@ -267,3 +440,43 @@ __read_pkg_config(readb, u8);
+ __read_pkg_config(readw, u16);
+ __read_pkg_config(readl, u32);
+ __read_pkg_config(readq, u64);
++
++#define __read_pci_config_local(x, type) \
++struct peci_request * \
++peci_xfer_pci_cfg_local_##x(struct peci_device *device, u8 bus, u8 dev, u8 func, u16 reg) \
++{ \
++	return __pci_cfg_local_read(device, bus, dev, func, reg, sizeof(type)); \
++} \
++EXPORT_SYMBOL_NS_GPL(peci_xfer_pci_cfg_local_##x, PECI)
++
++__read_pci_config_local(readb, u8);
++__read_pci_config_local(readw, u16);
++__read_pci_config_local(readl, u32);
++
++#define __read_ep_pci_config(x, msg_type, type) \
++struct peci_request * \
++peci_xfer_ep_pci_cfg_##x(struct peci_device *device, u8 seg, u8 bus, u8 dev, u8 func, u16 reg) \
++{ \
++	return __ep_pci_cfg_read(device, msg_type, seg, bus, dev, func, reg, sizeof(type)); \
++} \
++EXPORT_SYMBOL_NS_GPL(peci_xfer_ep_pci_cfg_##x, PECI)
++
++__read_ep_pci_config(local_readb, PECI_ENDPTCFG_TYPE_LOCAL_PCI, u8);
++__read_ep_pci_config(local_readw, PECI_ENDPTCFG_TYPE_LOCAL_PCI, u16);
++__read_ep_pci_config(local_readl, PECI_ENDPTCFG_TYPE_LOCAL_PCI, u32);
++__read_ep_pci_config(readb, PECI_ENDPTCFG_TYPE_PCI, u8);
++__read_ep_pci_config(readw, PECI_ENDPTCFG_TYPE_PCI, u16);
++__read_ep_pci_config(readl, PECI_ENDPTCFG_TYPE_PCI, u32);
++
++#define __read_ep_mmio(x, y, addr_type, type1, type2) \
++struct peci_request *peci_xfer_ep_mmio##y##_##x(struct peci_device *device, u8 bar, u8 seg, \
++					   u8 bus, u8 dev, u8 func, u64 offset) \
++{ \
++	return __ep_mmio_read(device, bar, addr_type, seg, bus, dev, func, \
++			      offset, PECI_RDENDPTCFG_MMIO_WR_LEN_BASE + sizeof(type1), \
++			      sizeof(type2)); \
++} \
++EXPORT_SYMBOL_NS_GPL(peci_xfer_ep_mmio##y##_##x, PECI)
++
++__read_ep_mmio(readl, 32, PECI_ENDPTCFG_ADDR_TYPE_MMIO_D, u32, u32);
++__read_ep_mmio(readl, 64, PECI_ENDPTCFG_ADDR_TYPE_MMIO_Q, u64, u32);
+diff --git a/include/linux/peci-cpu.h b/include/linux/peci-cpu.h
+new file mode 100644
+index 000000000000..ff8ae9c26c80
+--- /dev/null
++++ b/include/linux/peci-cpu.h
+@@ -0,0 +1,40 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Copyright (c) 2021 Intel Corporation */
++
++#ifndef __LINUX_PECI_CPU_H
++#define __LINUX_PECI_CPU_H
++
++#include <linux/types.h>
++
++#include "../../arch/x86/include/asm/intel-family.h"
++
++#define PECI_PCS_PKG_ID			0  /* Package Identifier Read */
++#define  PECI_PKG_ID_CPU_ID		0x0000  /* CPUID Info */
++#define  PECI_PKG_ID_PLATFORM_ID	0x0001  /* Platform ID */
++#define  PECI_PKG_ID_DEVICE_ID		0x0002  /* Uncore Device ID */
++#define  PECI_PKG_ID_MAX_THREAD_ID	0x0003  /* Max Thread ID */
++#define  PECI_PKG_ID_MICROCODE_REV	0x0004  /* CPU Microcode Update Revision */
++#define  PECI_PKG_ID_MCA_ERROR_LOG	0x0005  /* Machine Check Status */
++#define PECI_PCS_MODULE_TEMP		9  /* Per Core DTS Temperature Read */
++#define PECI_PCS_THERMAL_MARGIN		10 /* DTS thermal margin */
++#define PECI_PCS_DDR_DIMM_TEMP		14 /* DDR DIMM Temperature */
++#define PECI_PCS_TEMP_TARGET		16 /* Temperature Target Read */
++#define PECI_PCS_TDP_UNITS		30 /* Units for power/energy registers */
++
++struct peci_device;
++
++int peci_temp_read(struct peci_device *device, s16 *temp_raw);
++
++int peci_pcs_read(struct peci_device *device, u8 index,
++		  u16 param, u32 *data);
++
++int peci_pci_local_read(struct peci_device *device, u8 bus, u8 dev,
++			u8 func, u16 reg, u32 *data);
++
++int peci_ep_pci_local_read(struct peci_device *device, u8 seg,
++			   u8 bus, u8 dev, u8 func, u16 reg, u32 *data);
++
++int peci_mmio_read(struct peci_device *device, u8 bar, u8 seg,
++		   u8 bus, u8 dev, u8 func, u64 address, u32 *data);
++
++#endif /* __LINUX_PECI_CPU_H */
+diff --git a/include/linux/peci.h b/include/linux/peci.h
+index 4eda423ba10c..06e6ef935297 100644
+--- a/include/linux/peci.h
++++ b/include/linux/peci.h
+@@ -14,14 +14,6 @@
+  */
+ #define PECI_REQUEST_MAX_BUF_SIZE 32
+ 
+-#define PECI_PCS_PKG_ID			0  /* Package Identifier Read */
+-#define  PECI_PKG_ID_CPU_ID		0x0000  /* CPUID Info */
+-#define  PECI_PKG_ID_PLATFORM_ID	0x0001  /* Platform ID */
+-#define  PECI_PKG_ID_DEVICE_ID		0x0002  /* Uncore Device ID */
+-#define  PECI_PKG_ID_MAX_THREAD_ID	0x0003  /* Max Thread ID */
+-#define  PECI_PKG_ID_MICROCODE_REV	0x0004  /* CPU Microcode Update Revision */
+-#define  PECI_PKG_ID_MCA_ERROR_LOG	0x0005  /* Machine Check Status */
+-
+ struct peci_controller;
+ struct peci_request;
+ 
+-- 
+2.31.1
+
