@@ -2,83 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 112B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5342C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349299AbiAYK0J (ORCPT
+        id S1353885AbiAYK0S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:26:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344692AbiAYKU5 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:20:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B66EC061763
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:20:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 25 Jan 2022 05:26:18 -0500
+Received: from mail.skyhub.de ([5.9.137.197]:32882 "EHLO mail.skyhub.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346696AbiAYKVl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 05:21:41 -0500
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBBD1B81751
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:20:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A92ACC340E5;
-        Tue, 25 Jan 2022 10:20:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643106050;
-        bh=7KMZbdLA3JGGWK1HPak5egeulhdFSxR5vmut9dFA5S0=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=b+eaIpF5SssFfWSjSFSEzXXW62NuSz4G8pOz2GMTki7Lhv3jgnMur2ECDCfDfXNb8
-         BFuzxS5mhZ4P4zI4ttbxjgHTswm8Do98+SSMge6EcvJsGxFsjhCjeIe2amDZl2is34
-         eQoFKfRj7GGgxYhGO7pHLr0phsK10/Qb/8uwCFUvtStXRYNDb5dd8515wJzFIEmUOi
-         1zB+PNTnQ0mQ/CwXCBFO+zoL0u/WXzWJxn9PRH6VUuLA34SXmq7QYiJABc5Vn4MkBr
-         cQzWy7knh0LlY4dLb9hoHQuhZ7JKDHrDHCTPidgIAceMkDWrGmfcR2AodJZR7lL7j1
-         kX/nMbNwcKp1g==
-From:   Mark Brown <broonie@kernel.org>
-To:     Luca Ceresoli <luca@lucaceresoli.net>, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-In-Reply-To: <20220113144259.355845-1-luca@lucaceresoli.net>
-References: <20220113144259.355845-1-luca@lucaceresoli.net>
-Subject: Re: [PATCH] regmap-irq: Fix typo in comment
-Message-Id: <164310604941.74982.2461375736544607384.b4-ty@kernel.org>
-Date:   Tue, 25 Jan 2022 10:20:49 +0000
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 5A6061EC0441;
+        Tue, 25 Jan 2022 11:21:33 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1643106093;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=nZTEKo7MPhQxeMuwLWwjdWmjG5ba3B1ygZdLV8+Ny7w=;
+        b=m3lZp6WMvvCykmsgvEEKXaXRi9yDGC7m1mBvR81VplAVnBMr0CS7EdiRQjI2BoEHGfVfnI
+        dFQqFGc0YbLxV4eZWNSpNDDFnH/5gB9+8OrVWOtKz53edd866kCrF1JaLxmFVmspUWVEUm
+        XJ/pvuVomw5Az4vEQSobaYppR2ZL784=
+Date:   Tue, 25 Jan 2022 11:21:32 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Shuai Xue <xueshuai@linux.alibaba.com>
+Cc:     rric@kernel.org, mchehab@kernel.org, tony.luck@intel.com,
+        james.morse@arm.com, ardb@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        zhangliguang@linux.alibaba.com, zhuo.song@linux.alibaba.com
+Subject: Re: [RESEND PATCH v3 1/2] efi/cper: add cper_mem_err_status_str to
+ decode error description
+Message-ID: <Ye/PLDlOBhYmGb5D@zn.tnic>
+References: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
+ <20220124024759.19176-2-xueshuai@linux.alibaba.com>
+ <Ye8XMvfXCetzJLTH@zn.tnic>
+ <98aae382-ac38-8811-f147-d00b953f608d@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <98aae382-ac38-8811-f147-d00b953f608d@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 13 Jan 2022 15:42:59 +0100, Luca Ceresoli wrote:
-> This is not a resource manager, it is a "Resource managed version of
-> regmap_add_irq_chip()". Fix the comment.
-> 
-> 
+On Tue, Jan 25, 2022 at 10:45:31AM +0800, Shuai Xue wrote:
+> I will fix it in next version.
 
-Applied to
+Yes, thanks.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
+However, you don't have to resend immediately but wait instead until
+people have had time to review the whole thing. And while you're
+waiting, you can read through Documentation/process/...
 
-Thanks!
+There are passages like the following one, for example:
 
-[1/1] regmap-irq: Fix typo in comment
-      commit: 1056c41634d400cf88d30580dc53270030cb0ace
+"Don't get discouraged - or impatient
+------------------------------------
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+After you have submitted your change, be patient and wait.  Reviewers are
+busy people and may not get to your patch right away.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+Once upon a time, patches used to disappear into the void without comment,
+but the development process works more smoothly than that now.  You should
+receive comments within a week or so; if that does not happen, make sure
+that you have sent your patches to the right place.  Wait for a minimum of
+one week before resubmitting or pinging reviewers - possibly longer during
+busy times like merge windows.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+It's also ok to resend the patch or the patch series after a couple of
+weeks with the word "RESEND" added to the subject line::
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+   [PATCH Vx RESEND] sub/sys: Condensed patch summary
 
-Thanks,
-Mark
+Don't add "RESEND" when you are submitting a modified version of your
+patch or patch series - "RESEND" only applies to resubmission of a
+patch or patch series which have not been modified in any way from the
+previous submission."
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
