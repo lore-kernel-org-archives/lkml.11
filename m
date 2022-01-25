@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A8DAC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD58C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242209AbiAYKIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:08:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60290 "EHLO
+        id S242253AbiAYKIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:08:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238590AbiAYJ77 (ORCPT
+        with ESMTP id S238629AbiAYKAG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:59:59 -0500
+        Tue, 25 Jan 2022 05:00:06 -0500
 Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F526C061763;
-        Tue, 25 Jan 2022 01:59:59 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id k17so1216444plk.0;
-        Tue, 25 Jan 2022 01:59:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EDEC061768;
+        Tue, 25 Jan 2022 02:00:04 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id z5so4853747plg.8;
+        Tue, 25 Jan 2022 02:00:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9H2RK8DHWUQ8flbtobvjjEJWkT4wxuUh6nAS0SNRdvM=;
-        b=LYVSwsR5VkUmnzLoKDW0Dh5QOI7K7kPhc0fcFv74Z6QR/gjEnpEvmD0RhwikT3W+HO
-         sjbN/N9zwH2JJtzPrGmLiWm/FWlDNbj0exJG2+e+b61AjIfX2bQ2iLscQd2OvLEm739u
-         VdNo1rmcOHrdpnU6mfcAeiljwxcZCG0b58J8JIYyQV2hzRez5s4ZhHeV+poWSie6L1R+
-         lk8G6BXQMj1/pQgQoFCSC/zoywMtilUbEshVKKwKQEXh5q3R3SwZN545iW0A/AwtUJMV
-         f+9J7bnuqk4k5v8Z+qGw4EytTBbjU+c1EsyCSiii8TxQVs7XOzT2JyT4sZtHn4dMgvOe
-         Kmjw==
+        bh=+9/h4WgwvINM2uXFYzps/DVN0t3qraH1rjLtTgc8ipg=;
+        b=BY1Kpc6uzILlB69ntbdcG2NpCbHQ8Kgd1/1Li8Tju2eMKDY9dOYABLBX/ZV+gNSB4x
+         HKQJ9oDd0SWF0AGc9y99lvHQYi1aKBZUxPtjknshvOzJpm8gnILRuU4pwvel550nWeQz
+         5iRbxJfwOvnPPAejDvi/6WSyjS5KlAq2lnrFu+vqvmn9Iy6dYAFq/uWO1LA71qjEY5oe
+         zdSQZId+y8KwX+VtkbC7XsUzfJ8DfMd1+NtknroUpNHq79pEYBUHqw0shUV7skIXIF8y
+         sF2lPJNBbYgDDzh6yGDM2gepbiOcr0OaSV+5+jn1bdNr5lTNHNpA92Ihrdj1qO1MSUp6
+         D1Ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9H2RK8DHWUQ8flbtobvjjEJWkT4wxuUh6nAS0SNRdvM=;
-        b=lDyb4qO8XV+Epr9VIk6GUkvXW1DT+01W/pnrvnxkni+F1XRmfFb/uVqZnbw3IDnrA6
-         ondmmzCcx0AVpgBbE721gZzmdkUVk0rbbVH9PEL4sUGF1htGdkMX3dJJMf7dsS3mKKXe
-         KFt83N63pPe9ozS9iZoiPMoJTw3EAq18RsHcH1VxLFZff3z0XnstqcF9Z//eY03VJA60
-         6OEwSbbgPS1Cpj1fQ8hN1IYIjYQstgf+WMn2dTwRMVW+ox3QJa/CvWFWnGwPfQGoz1Kw
-         KlBmxKd6HMiNuh7sJAr+OVoBzxJ3+uuSMyWs5OsvFtDl0Pi1V4AZ0KgIx3Dkttdw1gH7
-         qUYw==
-X-Gm-Message-State: AOAM533iTPOF1yT4pswxM3Gt4fQExun7G7c22/C3mKvMrc7Cx/isqfut
-        klzI3NC2wbwA8hU9yKpzLDQ=
-X-Google-Smtp-Source: ABdhPJwnM1BWbeIyfdBw0xYAlNuKBZp8Mw+OlA1cAca3g7ZZEQ6dQFfFo22ViVxDGGmCmNT9thHhag==
-X-Received: by 2002:a17:90b:1806:: with SMTP id lw6mr2678516pjb.124.1643104798690;
-        Tue, 25 Jan 2022 01:59:58 -0800 (PST)
+        bh=+9/h4WgwvINM2uXFYzps/DVN0t3qraH1rjLtTgc8ipg=;
+        b=Kr+rEoo3hR2Ft1viIC8mRlBAsR7C/NX2q1R6bdCMelumw8T7YOSrZP0twuwM9LXkYe
+         izbihSOk11RRKNUmv124csJj5wxlRVl9PE84HlmNz+9DOcvIWoAWzmtRx2LgWjLC5y2w
+         +Op8JeLHeO02ychT+ZBNbh7XuOMY6ULth9CTE8Bhfxc78ZDzLVZzuTS+bWYsibhvq/pm
+         z/le88QZlh64PazknsxrHhTQnuUMT6Agmgw38BCvnrQfuCQN63o8XFb1yG106GmAmdnM
+         yDdCMwj6lMLKmvAMb+JCzD/4Jr3SG5W48CmKXSOiRRVuIOYhFiH6EMy0BPgsAGmGQQxH
+         z/Fw==
+X-Gm-Message-State: AOAM533DA1OFUDVmNYgjqD6iwX2kchs4P20qIwENgBcDujKm1uCN4lWJ
+        4WaUB7goHi8SoJM+kHrq0oI=
+X-Google-Smtp-Source: ABdhPJx9dQJt1f7yFLZ5RvUiloClMf6N9IKzWq88HkQ/mZTjsAYfIya8rtD+02X0/9THQWaQx6g2cQ==
+X-Received: by 2002:a17:90a:5d8c:: with SMTP id t12mr2601800pji.189.1643104803775;
+        Tue, 25 Jan 2022 02:00:03 -0800 (PST)
 Received: from CLOUDLIANG-MB0.tencent.com ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id mq3sm201606pjb.4.2022.01.25.01.59.56
+        by smtp.gmail.com with ESMTPSA id mq3sm201606pjb.4.2022.01.25.02.00.01
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jan 2022 01:59:58 -0800 (PST)
+        Tue, 25 Jan 2022 02:00:03 -0800 (PST)
 From:   Jinrong Liang <ljr.kernel@gmail.com>
 X-Google-Original-From: Jinrong Liang <cloudliang@tencent.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
@@ -58,9 +58,9 @@ Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
         Wanpeng Li <wanpengli@tencent.com>,
         Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 17/19] KVM: x86: Remove unused "vcpu" of kvm_scale_tsc()
-Date:   Tue, 25 Jan 2022 17:59:07 +0800
-Message-Id: <20220125095909.38122-18-cloudliang@tencent.com>
+Subject: [PATCH 19/19] KVM: Remove unused "flags" of kvm_pv_kick_cpu_op()
+Date:   Tue, 25 Jan 2022 17:59:09 +0800
+Message-Id: <20220125095909.38122-20-cloudliang@tencent.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20220125095909.38122-1-cloudliang@tencent.com>
 References: <20220125095909.38122-1-cloudliang@tencent.com>
@@ -72,95 +72,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jinrong Liang <cloudliang@tencent.com>
 
-The "struct kvm_vcpu *vcpu" parameter of kvm_scale_tsc() is not used,
+The "unsigned long flags" parameter of  kvm_pv_kick_cpu_op() is not used,
 so remove it. No functional change intended.
 
 Signed-off-by: Jinrong Liang <cloudliang@tencent.com>
 ---
- arch/x86/include/asm/kvm_host.h |  2 +-
- arch/x86/kvm/x86.c              | 14 +++++++-------
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ arch/x86/kvm/x86.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 682ad02a4e58..ebd5a1e8db77 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1871,7 +1871,7 @@ static inline bool kvm_is_supported_user_return_msr(u32 msr)
- 	return kvm_find_user_return_msr(msr) >= 0;
- }
- 
--u64 kvm_scale_tsc(struct kvm_vcpu *vcpu, u64 tsc, u64 ratio);
-+u64 kvm_scale_tsc(u64 tsc, u64 ratio);
- u64 kvm_read_l1_tsc(struct kvm_vcpu *vcpu, u64 host_tsc);
- u64 kvm_calc_nested_tsc_offset(u64 l1_offset, u64 l2_offset, u64 l2_multiplier);
- u64 kvm_calc_nested_tsc_multiplier(u64 l1_multiplier, u64 l2_multiplier);
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 22b73b918884..4e438e009ba9 100644
+index 4e438e009ba9..acd34adc097f 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -2397,7 +2397,7 @@ static inline u64 __scale_tsc(u64 ratio, u64 tsc)
- 	return mul_u64_u64_shr(tsc, ratio, kvm_tsc_scaling_ratio_frac_bits);
- }
- 
--u64 kvm_scale_tsc(struct kvm_vcpu *vcpu, u64 tsc, u64 ratio)
-+u64 kvm_scale_tsc(u64 tsc, u64 ratio)
+@@ -8940,7 +8940,7 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
+  *
+  * @apicid - apicid of vcpu to be kicked.
+  */
+-static void kvm_pv_kick_cpu_op(struct kvm *kvm, unsigned long flags, int apicid)
++static void kvm_pv_kick_cpu_op(struct kvm *kvm, int apicid)
  {
- 	u64 _tsc = tsc;
+ 	struct kvm_lapic_irq lapic_irq;
  
-@@ -2412,7 +2412,7 @@ static u64 kvm_compute_l1_tsc_offset(struct kvm_vcpu *vcpu, u64 target_tsc)
- {
- 	u64 tsc;
+@@ -9059,7 +9059,7 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
+ 		if (!guest_pv_has(vcpu, KVM_FEATURE_PV_UNHALT))
+ 			break;
  
--	tsc = kvm_scale_tsc(vcpu, rdtsc(), vcpu->arch.l1_tsc_scaling_ratio);
-+	tsc = kvm_scale_tsc(rdtsc(), vcpu->arch.l1_tsc_scaling_ratio);
- 
- 	return target_tsc - tsc;
- }
-@@ -2420,7 +2420,7 @@ static u64 kvm_compute_l1_tsc_offset(struct kvm_vcpu *vcpu, u64 target_tsc)
- u64 kvm_read_l1_tsc(struct kvm_vcpu *vcpu, u64 host_tsc)
- {
- 	return vcpu->arch.l1_tsc_offset +
--		kvm_scale_tsc(vcpu, host_tsc, vcpu->arch.l1_tsc_scaling_ratio);
-+		kvm_scale_tsc(host_tsc, vcpu->arch.l1_tsc_scaling_ratio);
- }
- EXPORT_SYMBOL_GPL(kvm_read_l1_tsc);
- 
-@@ -2623,7 +2623,7 @@ static inline void adjust_tsc_offset_host(struct kvm_vcpu *vcpu, s64 adjustment)
- {
- 	if (vcpu->arch.l1_tsc_scaling_ratio != kvm_default_tsc_scaling_ratio)
- 		WARN_ON(adjustment < 0);
--	adjustment = kvm_scale_tsc(vcpu, (u64) adjustment,
-+	adjustment = kvm_scale_tsc((u64) adjustment,
- 				   vcpu->arch.l1_tsc_scaling_ratio);
- 	adjust_tsc_offset_guest(vcpu, adjustment);
- }
-@@ -3043,7 +3043,7 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
- 	/* With all the info we got, fill in the values */
- 
- 	if (kvm_has_tsc_control)
--		tgt_tsc_khz = kvm_scale_tsc(v, tgt_tsc_khz,
-+		tgt_tsc_khz = kvm_scale_tsc(tgt_tsc_khz,
- 					    v->arch.l1_tsc_scaling_ratio);
- 
- 	if (unlikely(vcpu->hw_tsc_khz != tgt_tsc_khz)) {
-@@ -3854,7 +3854,7 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 			ratio = vcpu->arch.tsc_scaling_ratio;
- 		}
- 
--		msr_info->data = kvm_scale_tsc(vcpu, rdtsc(), ratio) + offset;
-+		msr_info->data = kvm_scale_tsc(rdtsc(), ratio) + offset;
+-		kvm_pv_kick_cpu_op(vcpu->kvm, a0, a1);
++		kvm_pv_kick_cpu_op(vcpu->kvm, a1);
+ 		kvm_sched_yield(vcpu, a1);
+ 		ret = 0;
  		break;
- 	}
- 	case MSR_MTRRcap:
-@@ -5067,7 +5067,7 @@ static int kvm_arch_tsc_set_attr(struct kvm_vcpu *vcpu,
- 			   kvm->arch.last_tsc_khz == vcpu->arch.virtual_tsc_khz &&
- 			   kvm->arch.last_tsc_offset == offset);
- 
--		tsc = kvm_scale_tsc(vcpu, rdtsc(), vcpu->arch.l1_tsc_scaling_ratio) + offset;
-+		tsc = kvm_scale_tsc(rdtsc(), vcpu->arch.l1_tsc_scaling_ratio) + offset;
- 		ns = get_kvmclock_base_ns();
- 
- 		__kvm_synchronize_tsc(vcpu, offset, tsc, ns, matched);
 -- 
 2.33.1
 
