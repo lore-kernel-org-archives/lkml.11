@@ -2,136 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1ACCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:19:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2132DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449728AbiAYIT0 (ORCPT
+        id S1353926AbiAYIZS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:19:26 -0500
-Received: from mail-db8eur05on2106.outbound.protection.outlook.com ([40.107.20.106]:40449
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1449308AbiAYIRL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:17:11 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lR9jFwQaLyelMncKi80ae0kKPwrGgZUjbsle7qVfQI+Cs/3jUFyLX2iSBV9V9jAFGUnu5Pq7c6uhbM3ZHofQQJW8u4TO8FXuqvlWUUJl5D4uzRkMfJ2Iee3WF6GEfMVCz++5SOX7OEj64YqhX2xdEC9GSEYdWXtSpGWwa0bX5DKMptAVQgtmcyYRtohFRVrgPPHFIGcQTQZBPHrdSVB35sN119sjTdCWhnqp+gfN1/L+ihHNnfg3bF/MbDs0yZFjLk4DzowT9bY5wIvzJCKISKXK+a0ghpAM2ua82YhEvpE3/VX8S9EAidXl2ItWvhGarAKLpmkgeX5ItqRhzhL9XQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=whVvU1ebmTXM7amqvOY/ClpLpQyMQD7jtoiNX2DxdY4=;
- b=ClL9UXrw3UGzXlCWLUVwd4CSl37TFQJr9Sqe4AR46pz8MHhWrmNXtCSciEicoIMGD+KnlVnLZwu6KlfsTVRXxv+hwRSr2VkSGjp44CH3rvXix00mTYLPVCZUg0AiNjHSuSM+sPYIslgAJO0RHcdVyFbWspvgXJAfo8x7xPzMbvZzNAICAXDv3h1F3BNqAZRCmPlVObXldQiUE2CE6Rwv9XvovXfxUgUBIXzITWTB6NMKCwU3n3uVEykzq6/3aaDIUqxbLu4rUDJ2OCpqPjpJj8CHv/U5WbRtLpOwlGwIhrZ8uUmfZtNtvw2bSWXvLKZgmt8PQ038UgUPm8k5iAlr6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 217.111.95.66) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=arri.de;
- dmarc=none action=none header.from=arri.de; dkim=none (message not signed);
- arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=arrigroup.onmicrosoft.com; s=selector1-arrigroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=whVvU1ebmTXM7amqvOY/ClpLpQyMQD7jtoiNX2DxdY4=;
- b=YhGUEu2BBtVqefj0cHupfLpCwE+VU1ME2Y2ZID/lOLffrWdqAtAES2JmKkh7MfLptzTFFs5q7ZdXre+DPC2uSRL9L6Ue9hsZvLspVZon8kxSa9MBekJ/Mc3blDHtd0v8ArE7LvDSML/JbfANU00UA5oIv7snFIs40yn60Z4M2A0=
-Received: from AM6PR05CA0016.eurprd05.prod.outlook.com (2603:10a6:20b:2e::29)
- by DB6PR07MB3253.eurprd07.prod.outlook.com (2603:10a6:6:21::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Tue, 25 Jan
- 2022 08:17:09 +0000
-Received: from VE1EUR02FT039.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:2e:cafe::f9) by AM6PR05CA0016.outlook.office365.com
- (2603:10a6:20b:2e::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.19 via Frontend
- Transport; Tue, 25 Jan 2022 08:17:09 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 217.111.95.66)
- smtp.mailfrom=arri.de; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=arri.de;
-Received-SPF: Fail (protection.outlook.com: domain of arri.de does not
- designate 217.111.95.66 as permitted sender) receiver=protection.outlook.com;
- client-ip=217.111.95.66; helo=mta.arri.de;
-Received: from mta.arri.de (217.111.95.66) by
- VE1EUR02FT039.mail.protection.outlook.com (10.152.13.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4909.7 via Frontend Transport; Tue, 25 Jan 2022 08:17:08 +0000
-Received: from localhost.de (192.168.54.129) by mta.arri.de (192.168.100.104)
- with Microsoft SMTP Server (TLS) id 14.3.498.0; Tue, 25 Jan 2022 09:17:04
- +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     Han Xu <han.xu@nxp.com>, Miquel Raynal <miquel.raynal@bootlin.com>
-CC:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Stefan Riedmueller <s.riedmueller@phytec.de>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        Pavel Machek <pavel@denx.de>,
-        Christian Eggers <ceggers@arri.de>, <stable@vger.kernel.org>
-Subject: [PATCH] mtd: rawnand: gpmi: don't leak PM reference in error path
-Date:   Tue, 25 Jan 2022 09:16:19 +0100
-Message-ID: <20220125081619.6286-1-ceggers@arri.de>
-X-Mailer: git-send-email 2.31.1
+        Tue, 25 Jan 2022 03:25:18 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:39130 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1449797AbiAYIUS (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 03:20:18 -0500
+X-UUID: 54edde21346943f9a2d85f5a21796c96-20220125
+X-UUID: 54edde21346943f9a2d85f5a21796c96-20220125
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <moudy.ho@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 588502847; Tue, 25 Jan 2022 16:20:07 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 25 Jan 2022 16:20:05 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 Jan 2022 16:20:05 +0800
+Message-ID: <356f512b549f90b329775e249fd48eb2954ade02.camel@mediatek.com>
+Subject: Re: [PATCH v11 2/3] dts: arm64: mt8183: add Mediatek MDP3 nodes
+From:   moudy ho <moudy.ho@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jernej Skrabec <jernej.skrabec@siol.net>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        <tfiga@chromium.org>, <drinkcat@chromium.org>,
+        <pihsun@chromium.org>, <hsinyi@google.com>,
+        "Maoguang Meng" <maoguang.meng@mediatek.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
+        <menghui.lin@mediatek.com>, <sj.huang@mediatek.com>,
+        <allen-kh.cheng@mediatek.com>, <randy.wu@mediatek.com>,
+        <jason-jh.lin@mediatek.com>, <roy-cw.yeh@mediatek.com>,
+        <river.cheng@mediatek.com>, <srv_heupstream@mediatek.com>
+Date:   Tue, 25 Jan 2022 16:20:05 +0800
+In-Reply-To: <d61ec481-8059-a897-504a-0125f88fad61@collabora.com>
+References: <20220105093758.6850-1-moudy.ho@mediatek.com>
+         <20220105093758.6850-3-moudy.ho@mediatek.com>
+         <d61ec481-8059-a897-504a-0125f88fad61@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [192.168.54.129]
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9efce90d-7912-471f-806f-08d9dfdb14db
-X-MS-TrafficTypeDiagnostic: DB6PR07MB3253:EE_
-X-Microsoft-Antispam-PRVS: <DB6PR07MB3253F78F03CA449D6CC3BA0DBF5F9@DB6PR07MB3253.eurprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: J/9ra//hyg84142ZE0cBucf1FEzBeA+Bbg+iB+ZM8W3Y4O09JTaUzyrRR6AwgtnJTpLiokFjSadPEozgtQdAHUpVPCzPRCGLICLhoqh9LtaeD8rThBb9OjqaNNK/QIOS/kvjT9HgS8p7pp2XH7PYWvDv6dUwOM8mrMLdGXTeezTomJlHQs0BkGpv5B6z2era0eBeugD0b0rF+Lk850mEikNslkTuGbbQaMc90w0OFn4+hKyuXGH2cEC/fR7MniqoCPeAJJMNFOaQ0B5rgwcyqN6Lyb++DcJqX94CSlskhBgHwRhMvRt01Ja1EBM2OyVT0nsIWuHG6AMBff+F5Ftjxoy0HBe40IgPpGa62SzT1E/FGxW1iHMOuVPD45bRq7rHLndQFItJsmaPIMQnA6a4tVYDFhqLmr8JqX+n9tjON0o4OM6g5rKlCMNZKuGz9DlMRQEgwmLbN5LEG9P8rHnzdZH8rBD4tS3H6U1C7R7wsnBozMRJFUZLKwUrhiYhS1s7n7sB6V8IvS45QJ21CQMle1KOceqhANYsh4AGFeBnZU12bEDwxYI6QMWZyltUMrebvu7y8fuTgYXWZPjkpVSIJh8hBrtyWP21hKc03N5Q4mHsRiTTth6zyS5KVTlKAvtuar5SaDzqkhKD04APEqAt1SsYv36eB/NyRQMZadMw1ihvxtG5baQZAJT1V8zh+t90dTl9Jt5zfM7tdkvEaKC/oQ==
-X-Forefront-Antispam-Report: CIP:217.111.95.66;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mta.arri.de;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(110136005)(54906003)(26005)(16526019)(2616005)(6666004)(316002)(47076005)(83380400001)(36860700001)(508600001)(2906002)(40460700003)(36756003)(1076003)(82310400004)(426003)(336012)(8936002)(356005)(8676002)(4326008)(70206006)(86362001)(81166007)(5660300002)(186003)(70586007)(36900700001)(20210929001);DIR:OUT;SFP:1102;
-X-OriginatorOrg: arri.de
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 08:17:08.7897
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9efce90d-7912-471f-806f-08d9dfdb14db
-X-MS-Exchange-CrossTenant-Id: e6a73a5a-614d-4c51-b3e3-53b660a9433a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e6a73a5a-614d-4c51-b3e3-53b660a9433a;Ip=[217.111.95.66];Helo=[mta.arri.de]
-X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT039.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR07MB3253
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If gpmi_nfc_apply_timings() fails, the PM runtime usage counter must be
-dropped.
+On Fri, 2022-01-21 at 12:58 +0100, AngeloGioacchino Del Regno wrote:
+> Il 05/01/22 10:37, Moudy Ho ha scritto:
+> > Add device nodes for Media Data Path 3 (MDP3) modules.
+> > 
+> > Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+> > ---
+> >   arch/arm64/boot/dts/mediatek/mt8183.dtsi | 108
+> > ++++++++++++++++++++++-
+> >   1 file changed, 107 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> > b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> > index ba4584faca5a..b872ef1ff6b3 100644
+> > --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> > +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> > @@ -1325,6 +1325,79 @@
+> >   			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX
+> > 0 0x1000>;
+> >   		};
+> >   
+> > +		mdp3_rdma0: mdp3_rdma0@14001000 {
+> > +			compatible = "mediatek,mt8183-mdp3",
+> > +				     "mediatek,mt8183-mdp3-rdma0";
+> > +			mediatek,scp = <&scp>;
+> > +			mediatek,mdp3-comps = "mediatek,mt8183-mdp3-
+> > dl1",
+> > +					      "mediatek,mt8183-mdp3-
+> > dl2",
+> > +					      "mediatek,mt8183-mdp3-
+> > path1",
+> > +					      "mediatek,mt8183-mdp3-
+> > path2",
+> > +					      "mediatek,mt8183-mdp3-
+> > imgi",
+> > +					      "mediatek,mt8183-mdp3-
+> > exto";
+> > +			reg = <0 0x14001000 0 0x1000>,
+> > +			      <0 0x14000000 0 0x1000>,
+> > +			      <0 0x14005000 0 0x1000>,
+> > +			      <0 0x14006000 0 0x1000>,
+> > +			      <0 0x15020000 0 0x1000>;
+> > +			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX
+> > 0x1000 0x1000>,
+> > +						  <&gce SUBSYS_1400XXXX
+> > 0 0x1000>,
+> > +						  <&gce SUBSYS_1400XXXX
+> > 0x5000 0x1000>,
+> > +						  <&gce SUBSYS_1400XXXX
+> > 0x6000 0x1000>,
+> > +						  <&gce SUBSYS_1502XXXX
+> > 0 0x1000>;
+> > +			power-domains = <&spm
+> > MT8183_POWER_DOMAIN_DISP>;
+> > +			clocks = <&mmsys CLK_MM_MDP_RDMA0>,
+> > +				 <&mmsys CLK_MM_MDP_RSZ1>,
+> > +				 <&mmsys CLK_MM_MDP_DL_TXCK>,
+> > +				 <&mmsys CLK_MM_MDP_DL_RX>,
+> > +				 <&mmsys CLK_MM_IPU_DL_TXCK>,
+> > +				 <&mmsys CLK_MM_IPU_DL_RX>;
+> > +			iommus = <&iommu M4U_PORT_MDP_RDMA0>;
+> > +			mediatek,mmsys = <&mmsys>;
+> > +			mediatek,mm-mutex = <&mutex>;
+> > +			mediatek,mailbox-gce = <&gce>;
+> > +			mboxes = <&gce 20 CMDQ_THR_PRIO_LOWEST 0>,
+> > +				 <&gce 21 CMDQ_THR_PRIO_LOWEST>,
+> > +				 <&gce 22 CMDQ_THR_PRIO_LOWEST>,
+> > +				 <&gce 23 CMDQ_THR_PRIO_LOWEST>;
+> 
+> Hello Moudy,
+> the mboxes for gce 21, 22, 23 are missing the third cell. Please fix.
+> 
+> Regards,
+> Angelo
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Fixes: f53d4c109a66 ("mtd: rawnand: gpmi: Add ERR007117 protection for nfc_apply_timings")
-Signed-off-by: Christian Eggers <ceggers@arri.de>
-Cc: stable@vger.kernel.org
----
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Hi Angelo,
+Thanks for the reminder, but I'm a bit confused, the previous
+version(v10) mentioned that the current upstream mbox has only 2
+cells.
+So I should follow this rule to remove the extra 0 in the first item as
+follows:
+ +			mboxes = <&gce 20 CMDQ_THR_PRIO_LOWEST>,
+ +				 <&gce 21 CMDQ_THR_PRIO_LOWEST>,
+ +				 <&gce 22 CMDQ_THR_PRIO_LOWEST>,
+ +				 <&gce 23 CMDQ_THR_PRIO_LOWEST>;
 
-diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-index 1b64c5a5140d..ded4df473928 100644
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -2285,7 +2285,7 @@ static int gpmi_nfc_exec_op(struct nand_chip *chip,
- 		this->hw.must_apply_timings = false;
- 		ret = gpmi_nfc_apply_timings(this);
- 		if (ret)
--			return ret;
-+			goto out_pm;
- 	}
- 
- 	dev_dbg(this->dev, "%s: %d instructions\n", __func__, op->ninstrs);
-@@ -2414,6 +2414,7 @@ static int gpmi_nfc_exec_op(struct nand_chip *chip,
- 
- 	this->bch = false;
- 
-+out_pm:
- 	pm_runtime_mark_last_busy(this->dev);
- 	pm_runtime_put_autosuspend(this->dev);
- 
--- 
-Christian Eggers
-Embedded software developer
-
-Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
-Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
-Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
+Thanks,
+Moudy Ho
+> 
+> > +			gce-subsys = <&gce 0x14000000 SUBSYS_1400XXXX>,
+> > +				     <&gce 0x14010000 SUBSYS_1401XXXX>,
+> > +				     <&gce 0x14020000 SUBSYS_1402XXXX>,
+> > +				     <&gce 0x15020000 SUBSYS_1502XXXX>;
+> > +		};
+> > +
+> 
+> 
 
