@@ -2,86 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86208C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 301C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229645AbiAYTNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 14:13:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiAYTNH (ORCPT
+        id S229688AbiAYTP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 14:15:56 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:49490 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229668AbiAYTPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 14:13:07 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FCC2C06173B;
-        Tue, 25 Jan 2022 11:13:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Zn9OdX6SCDnc0a4wA7ukdq4TtllhJ5C7oxCbnabS+XQ=; b=J/KCFhpGNX4sNyM277ABmhi8Hy
-        Fi3zuqPhUBkZJ/KU+5Gw+g3bRVewGjJ38vNw6llArBt5rsz9wKFmcWafnpxC8/vmErxXwnqp0xYwH
-        54S1Js5dgFwRmsQrtowdpFVzTSTEtgbihFq9Kw/WZeCIrfyN/xhcJTk6RX5h7eINcd1runRLXFY7D
-        oJD9wcsZ8vIRzBO6JElLBPGr4sXEL7oULummUlc6kgFAXm/Rzkf+AA+ORFs1o8wGrHfn9UK9/WJPZ
-        OttFM/ZB4OUrAmkclZ/uaj4BNahfakC13qeynjYggqZO+JxaDBZDDJ9fTyPF1qYjr06e+DVDxOF7o
-        esxPxyjQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nCRFU-003HEF-4M; Tue, 25 Jan 2022 19:13:00 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id BE278300099;
-        Tue, 25 Jan 2022 20:12:58 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 7AC342B370DB8; Tue, 25 Jan 2022 20:12:58 +0100 (CET)
-Date:   Tue, 25 Jan 2022 20:12:58 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     James Clark <james.clark@arm.com>
-Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
-        namhyung@kernel.org, linux-perf-users@vger.kernel.org,
-        leo.yan@linaro.com, Suzuki.Poulose@arm.com,
-        Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 1/1] perf/core: Wake up parent event if inherited
- event has no ring buffer
-Message-ID: <YfBLusfOk9fpIqqI@hirez.programming.kicks-ass.net>
-References: <20211206113840.130802-1-james.clark@arm.com>
- <20211206113840.130802-2-james.clark@arm.com>
- <Ye6SR0yxTrkNUQF6@hirez.programming.kicks-ass.net>
- <a4b64cff-f3f1-e6ad-38e9-b65a113ce561@arm.com>
+        Tue, 25 Jan 2022 14:15:49 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 978481C0B88; Tue, 25 Jan 2022 20:15:46 +0100 (CET)
+Date:   Tue, 25 Jan 2022 20:15:46 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: Re: [PATCH 4.19 127/239] ARM: imx: rename DEBUG_IMX21_IMX27_UART to
+ DEBUG_IMX27_UART
+Message-ID: <20220125191546.GA5395@duo.ucw.cz>
+References: <20220124183943.102762895@linuxfoundation.org>
+ <20220124183947.149798691@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="gKMricLos+KVdGMg"
 Content-Disposition: inline
-In-Reply-To: <a4b64cff-f3f1-e6ad-38e9-b65a113ce561@arm.com>
+In-Reply-To: <20220124183947.149798691@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 02:58:18PM +0000, James Clark wrote:
 
-> > Would this be the better patch?
-> 
-> Yes I tested this and it also works.
+--gKMricLos+KVdGMg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Excellent!
+Hi!
 
-> There is one other suspicious access
-> of ->rb followed by if(rb) here in perf_poll(), but maybe it works out ok?
-> 
-> 	mutex_lock(&event->mmap_mutex);
-> 	rb = event->rb;
-> 	if (rb)
-> 		events = atomic_xchg(&rb->poll, 0);
-> 
+> [ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
+>=20
+> Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
+> DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
+>=20
+> So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
+> Kconfig and rename the definitions to IMX27 as further clean-up.
+>=20
+> This issue was discovered with ./scripts/checkkconfigsymbols.py, which
+> reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
+> SOC_IMX21.
 
-That case must be good since it is the event from a file. Those cannot
-be clones.
+This is unsuitable for 4.19, as CONFIG_SOC_IMX21 is still present
+there. It is probably okay for 5.10. I did not check others.
 
-> We also have a Perf self test that covers this failure for Arm SPE now, I'm not
-> sure if I should post that separately or with your new version of this fix?
+Best regards,
+								Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
-They'd be routed through separate trees anyway, Arnaldo takes the
-userspace stuff.
+--gKMricLos+KVdGMg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYfBMYgAKCRAw5/Bqldv6
+8kLmAJ9Tn1pr0Eu14zkiONTP061sMm/3pgCdFHJqS6R92Z1sRdgpcR9UiA/trh8=
+=1bY9
+-----END PGP SIGNATURE-----
+
+--gKMricLos+KVdGMg--
