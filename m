@@ -2,146 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7027FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:15:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D40E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:20:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242252AbiAYKPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:15:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35104 "EHLO
+        id S242356AbiAYKUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:20:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241533AbiAYKM6 (ORCPT
+        with ESMTP id S239137AbiAYKPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:12:58 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CE0C06173B
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:12:56 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 6B5A41EC0441;
-        Tue, 25 Jan 2022 11:12:50 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1643105570;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/SkR8C69fbyLSk4Zc2npPvzA0CISECMcPfrCJCLg77I=;
-        b=go2+7PBa4BEBYblHiCBya3fMm2EpAxgvbEsMVQiwDH44iBTDm5+MIRxcSnnMNetOavwdw0
-        nptLlGIB0c9DCEehwbZqSsU9IKnb1IGaAe9pEv88ApA0SV7RK8t5d1VenwWWaElAg40gHJ
-        23iJWnTLYBtk1B6aCHmxVICABRaBszw=
-Date:   Tue, 25 Jan 2022 11:12:45 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     =?utf-8?B?THXDrXM=?= Ferreira <contact@lsferreira.net>,
-        x86-ml <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] x86/fpu: remove memset call for xmm registers on
- xfpregs_set
-Message-ID: <Ye/NHQM3dj8ycUsL@zn.tnic>
-References: <20220125022015.874422-1-contact@lsferreira.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220125022015.874422-1-contact@lsferreira.net>
+        Tue, 25 Jan 2022 05:15:49 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB8AC0613EC
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:15:49 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id 4-20020a250304000000b006137f4a9920so39594713ybd.6
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:15:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=doB02I4qSIR86llAlGQe+kwodmbCH1lEdNRlPOZ7RJM=;
+        b=Q+ZIkfTltqz4qOuwoZbjAXVwZkFHvt0AQRjZ6h5mJ67D6lTbnrm+bPFcLOu8wShVK/
+         4D71NwBWnNkevWqEtzjzuif2JuO/zovBD8IoOT9U7cx+hW04NWDPr272TLJp7a/5I4kv
+         mQ8t4Ot9XGq0Cr5Vy8QDxydT7JVf2l6fTznlnMOGWEC2QPaiMn0Jut+ecgFgFjtzd3E6
+         blV+1TThV7ZqC1Ub2U8BiMfc4FGJreB+EZ9MI+70L2jtk6Vr1fYfnkaSgetGLZ0/n5dO
+         FnV+E58JkIPQKE9xjGxeWCvpt+hLwkhliI/eqg3NUlVaOW+q7CLyYLGe5eb1Zn3dxaa0
+         Kp2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=doB02I4qSIR86llAlGQe+kwodmbCH1lEdNRlPOZ7RJM=;
+        b=V3XNW1qL7VKyUR1We2M9Tl2whL2FN9EYQHeapNSS0DhrADjCvRq/JB3EEChsuGHa99
+         pcKaHwCxoSP9Eoh1L0r/I6Zn5LgejKIzU57cDeLYmDjBD1CJSFcQdsRjIBfMqL7Y8G+i
+         i1Fytf6CIwZKIsLdmnsN+VtGuaHDqZsIjWEe8EaBlqW/9ucjO6mwal48U6ZV36TIM3eY
+         OsnaiBDQs4W/oFIk75o8KOS5XALz8jKvAIsg0bInx1OCJRLRj4AZwMlVHAKyaUJN6j/T
+         qB5yWVRIZL/tpURKKeGHS5Q3RhewvksaIcuwqJcJp3jVNNVdvUJXmn1Ogc/nT5F4u6OT
+         0Neg==
+X-Gm-Message-State: AOAM530iCzruZ+GhtM5EtfLTVGWd30kK6IzL95EDNid/6m2YdVGexh4I
+        XB0xUfWnr/b9URTGx1Trsk//8Beo53iS
+X-Google-Smtp-Source: ABdhPJyOhFP5FqSpeywDFHUbBXaMD2WR8iKvWmZKfzHPZowdZTykVxzzx6348bJ1lA6I9ZspUFBLUPDDOJ+n
+X-Received: from tzungbi-z840.tpe.corp.google.com ([2401:fa00:1:10:69af:7f25:2010:2c85])
+ (user=tzungbi job=sendgmr) by 2002:a81:a105:0:b0:2ca:287c:6cff with SMTP id
+ 00721157ae682-2ca287c6f46mr6115897b3.420.1643105747887; Tue, 25 Jan 2022
+ 02:15:47 -0800 (PST)
+Date:   Tue, 25 Jan 2022 18:15:22 +0800
+In-Reply-To: <20220125101527.1812887-1-tzungbi@google.com>
+Message-Id: <20220125101527.1812887-2-tzungbi@google.com>
+Mime-Version: 1.0
+References: <20220125101527.1812887-1-tzungbi@google.com>
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+Subject: [PATCH 1/6] platform/chrome: cros_ec: fix error handling in cros_ec_register()
+From:   Tzung-Bi Shih <tzungbi@google.com>
+To:     bleung@chromium.org
+Cc:     groeck@chromium.org, tzungbi@google.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 02:20:15AM +0000, Luís Ferreira wrote:
-> This patch fixes https://bugzilla.kernel.org/show_bug.cgi?id=215524 by removing
-> the memset introduced by 6164331d15f7d912fb9369245368e9564ea49813, which
-> created a regression on ptrace PTRACE_SETREGSET request with NT_FPREGSET.
+Fixes cros_ec_register() doesn't unregister platform devices if
+blocking_notifier_chain_register() fails.
 
-Is NT_FPREGSET the same as NT_PRFPREG core_note_type?
+Also uses the single exit path to handle the platform device
+unregistration.
 
-I can see former is mentioned in elf(5) as an ELF note type:
+This fix depends on the fact that all the callers of cros_ec_register()
+allocate zeroed memory.
 
-/usr/include/elf.h:
-#define NT_FPREGSET     2               /* Contains copy of fpregset struct */
+Fixes: 42cd0ab476e2 ("platform/chrome: cros_ec: Query EC protocol version if EC transitions between RO/RW")
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+---
+ drivers/platform/chrome/cros_ec.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-while latter is defined in the kernel tree like this:
-
-/*
- * Notes used in ET_CORE. Architectures export some of the arch register sets
- * using the corresponding note types via the PTRACE_GETREGSET and
- * PTRACE_SETREGSET requests.
- * The note name for all these is "LINUX".
- */
-#define NT_PRSTATUS     1
-#define NT_PRFPREG      2
-...
-
-I guess those are one and the same thing - just named differently.
-
-> Particularly, it zeros some XMM registers on the wrong offsets. Fixing the offsets
-> only solves the problem for i686, which doesn't include xmm8-15 registers, so
-> the right way is to probably completely remove this call.
-
-It's a good thing you mention i686. I believe the reason for the zeroing
-was the X86_FEATURE_FXSR check which means the CPU has FXSAVE/FXRSTOR,
-CR4.OSFXSR support.
-
-Now, FXSAVE doc says:
-
-"The architecture supports two 512-bit memory formats for FXSAVE, a
-64-bit format that saves XMM0-XMM15, and a 32-bit legacy format that
-saves only XMM0-XMM7. If FXSAVE is executed in 64-bit mode, the 64-bit
-format is used, otherwise the 32-bit format is used."
-
-Then, just to check I went and built a kernel before:
-
-  6164331d15f7 ("x86/fpu: Rewrite xfpregs_set()")
-
-and tried the reproducer with %xmm7 and %xmm9:
-
-$ gdb /bin/bash -batch -x gdbcmds
-warning: Could not load shared library symbols for linux-vdso.so.1.
-Do you need "set solib-search-path" or "set sysroot"?
-
-Program received signal SIGILL, Illegal instruction.
-0x00007ffff79d8a97 in kill () from /lib/x86_64-linux-gnu/libc.so.6
-$1 = 0x20202020202020202020202020202020
-Setting xmm7 to 35322350018591
-$2 = 35322350018591
-
-$  gdb /bin/bash -batch -x gdbcmds
-warning: Could not load shared library symbols for linux-vdso.so.1.
-Do you need "set solib-search-path" or "set sysroot"?
-
-Program received signal SIGILL, Illegal instruction.
-0x00007ffff79d8a97 in kill () from /lib/x86_64-linux-gnu/libc.so.6
-$1 = 0xffffffffffffffffffffffffffffffff
-Setting xmm9 to 35322350018591
-$2 = 35322350018591
-
-So whatever that clearing was supposed to do, it needs to go because it
-used to work before that so this looks like a regression. Unless I'm
-missing an aspect...
-
-> Signed-off-by: Luís Ferreira <contact@lsferreira.net>
-> ---
->  arch/x86/kernel/fpu/regset.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/arch/x86/kernel/fpu/regset.c b/arch/x86/kernel/fpu/regset.c
-> index 437d7c930c0b..aec6c49029b1 100644
-> --- a/arch/x86/kernel/fpu/regset.c
-> +++ b/arch/x86/kernel/fpu/regset.c
-> @@ -116,9 +116,7 @@ int xfpregs_set(struct task_struct *target, const struct user_regset *regset,
->  	/* Copy the state  */
->  	memcpy(&fpu->fpstate->regs.fxsave, &newstate, sizeof(newstate));
->  
-> -	/* Clear xmm8..15 */
->  	BUILD_BUG_ON(sizeof(fpu->__fpstate.regs.fxsave.xmm_space) != 16 * 16);
-> -	memset(&fpu->fpstate->regs.fxsave.xmm_space[8], 0, 8 * 16);
->  
->  	/* Mark FP and SSE as in use when XSAVE is enabled */
->  	if (use_xsave())
-> -- 
-
+diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
+index fc5aa1525d13..3aec890edd39 100644
+--- a/drivers/platform/chrome/cros_ec.c
++++ b/drivers/platform/chrome/cros_ec.c
+@@ -245,18 +245,16 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 		if (IS_ERR(ec_dev->pd)) {
+ 			dev_err(ec_dev->dev,
+ 				"Failed to create CrOS PD platform device\n");
+-			platform_device_unregister(ec_dev->ec);
+-			return PTR_ERR(ec_dev->pd);
++			err = PTR_ERR(ec_dev->pd);
++			goto exit;
+ 		}
+ 	}
+ 
+ 	if (IS_ENABLED(CONFIG_OF) && dev->of_node) {
+ 		err = devm_of_platform_populate(dev);
+ 		if (err) {
+-			platform_device_unregister(ec_dev->pd);
+-			platform_device_unregister(ec_dev->ec);
+ 			dev_err(dev, "Failed to register sub-devices\n");
+-			return err;
++			goto exit;
+ 		}
+ 	}
+ 
+@@ -278,7 +276,7 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 		err = blocking_notifier_chain_register(&ec_dev->event_notifier,
+ 						      &ec_dev->notifier_ready);
+ 		if (err)
+-			return err;
++			goto exit;
+ 	}
+ 
+ 	dev_info(dev, "Chrome EC device registered\n");
+@@ -291,6 +289,12 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 		cros_ec_irq_thread(0, ec_dev);
+ 
+ 	return 0;
++exit:
++	if (ec_dev->pd && !IS_ERR(ec_dev->pd))
++		platform_device_unregister(ec_dev->pd);
++	if (ec_dev->ec && !IS_ERR(ec_dev->ec))
++		platform_device_unregister(ec_dev->ec);
++	return err;
+ }
+ EXPORT_SYMBOL(cros_ec_register);
+ 
 -- 
-Regards/Gruss,
-    Boris.
+2.35.0.rc0.227.g00780c9af4-goog
 
-https://people.kernel.org/tglx/notes-about-netiquette
