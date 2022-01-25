@@ -2,117 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1772FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:05:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B96C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:05:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358916AbiAYOE7 (ORCPT
+        id S1385761AbiAYOFL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:04:59 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54808 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233817AbiAYOA1 (ORCPT
+        Tue, 25 Jan 2022 09:05:11 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:10054 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244466AbiAYOCA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:00:27 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F085661512;
-        Tue, 25 Jan 2022 14:00:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64145C340E9;
-        Tue, 25 Jan 2022 14:00:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643119226;
-        bh=9awAQP4oKFlE1lZZ1KeVdAwXKINZ0vFGHrNIDlHoYCs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=LtGAKvSbKL0VUM/VhFyPEShcpcV9FO6U0tOG9pslt9CU3GR9JwSNjNhsIfI/SXagT
-         Bg+JIOg4Fo5gah5jM/zosakuqb/vR0PR4CvlXjnp6ViKpasSlBbhAplcTFpemnQxED
-         2/FJFXBl9Hq6WNzzwniCvcgmiyr41+TCQk7D4WUjm5oMrmKxk9ZH5gE0Scze6eTrYD
-         CRcQwMIzcFQSiuP3eiWe4D4KBV/7oJmJFjbTFJk42vtjCJUb+nUacFBK9Kx1pSHspe
-         1kQxsZ65W7Y8q50uaJOgqx2fnxn8BsIKbUN0A3DHTJvxhN3D9ThYc3c0H2X+mxQ+no
-         hwX70DXQMC1lA==
-Received: by mail-ed1-f54.google.com with SMTP id a18so62792835edj.7;
-        Tue, 25 Jan 2022 06:00:26 -0800 (PST)
-X-Gm-Message-State: AOAM531PRd6ZiWV0WOBqdh4GqqAyh4eJ53Z1sf40Y2Z/mhtSZv4Bpdpo
-        ggnu88NnbZAEJpfd5x6d6t2U5qvTnRz4ReXs1Q==
-X-Google-Smtp-Source: ABdhPJzpLb/eBKpd+yZrCy2aAmQXbDlTvrjCdky51D0FFx0SdHMSqVbntVHTjHVMzz6VnkzGEBO7u5rPsDLV094wgLI=
-X-Received: by 2002:a17:906:d184:: with SMTP id c4mr16020810ejz.20.1643119224639;
- Tue, 25 Jan 2022 06:00:24 -0800 (PST)
+        Tue, 25 Jan 2022 09:02:00 -0500
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20PDa1B1026888;
+        Tue, 25 Jan 2022 14:01:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : references : date : in-reply-to : message-id : mime-version :
+ content-type; s=pp1; bh=hM+U2dlqP46OUo4fwxEPEJfGWMF4re/nYmzSS2JOeRc=;
+ b=hZCiJ2CAWduSzQpBnyHIC33rqkEsePodhpbctvVzBHdarFOvdKVcjQ25zxq+UuskPeYX
+ cP/LFODS+jLGf8G7mQvfJCjjM1OdRQs4b0e11EU7kRIb+gCSg6OsUVfR2N8RlVKG3d2y
+ P2gR/7qPM9zRqc6bChkHBf90Ujawqt3Gtqi0b/ykT1JIVLXOQTl2Q1l4dohHYN8bzBSB
+ YypXC+oaCk+KKRjYU1SQxF253PlFOL9lgIig7Tvze5Opln/ZYwMfjENF9OF9ZwtXTuSt
+ Q3JY+cObvrKsaYnIFVyHbXZnmBwNqcurivUyT5HqMI6n5AHbyFMltFWTY+evXnORzAHp FA== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dthxvrvuy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 14:01:41 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20PDwLK9020971;
+        Tue, 25 Jan 2022 14:01:39 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06ams.nl.ibm.com with ESMTP id 3dr96jetbv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 14:01:39 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20PE1aLX42860816
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Jan 2022 14:01:37 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D0E7742047;
+        Tue, 25 Jan 2022 14:01:36 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 930654204B;
+        Tue, 25 Jan 2022 14:01:36 +0000 (GMT)
+Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue, 25 Jan 2022 14:01:36 +0000 (GMT)
+From:   Sven Schnelle <svens@linux.ibm.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>
+Subject: Re: earlyprintk=xdbc seems broken
+References: <Yao35lElOkwtBYEb@kroah.com>
+        <c2b5c9bb-1b75-bf56-3754-b5b18812d65e@linux.intel.com>
+        <YbyWuxoBSicFBGuv@hirez.programming.kicks-ass.net>
+        <YcGhIm7yqYPk4Nuu@hirez.programming.kicks-ass.net>
+        <YeE4rtq6t73OxOi+@hirez.programming.kicks-ass.net>
+        <cd534ff9-e500-c7ea-426a-347ac2b0830b@linux.intel.com>
+        <YeLxE3zQ7Vexk3gv@hirez.programming.kicks-ass.net>
+        <dfb311e3-1a83-31a2-3c82-fd982c0757f6@linux.intel.com>
+        <Ye/w/lOf4f8+8fDt@hirez.programming.kicks-ass.net>
+        <yt9dbl00rmgx.fsf@linux.ibm.com>
+        <YfAA+age1zo3lxIB@hirez.programming.kicks-ass.net>
+Date:   Tue, 25 Jan 2022 15:01:36 +0100
+In-Reply-To: <YfAA+age1zo3lxIB@hirez.programming.kicks-ass.net> (Peter
+        Zijlstra's message of "Tue, 25 Jan 2022 14:54:01 +0100")
+Message-ID: <yt9dh79rnccf.fsf@linux.ibm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-References: <20220110134659.30424-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220110134659.30424-11-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220110134659.30424-11-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Tue, 25 Jan 2022 08:00:13 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKnWwSEneKTvQWWmGk1gJG2dx37vAJAFWOLVm5wL5t31g@mail.gmail.com>
-Message-ID: <CAL_JsqKnWwSEneKTvQWWmGk1gJG2dx37vAJAFWOLVm5wL5t31g@mail.gmail.com>
-Subject: Re: [PATCH v2 10/12] arm64: dts: renesas: Add initial DTSI for RZ/V2L SoC
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: iYUsxqAKHKiGZOdJeA37eLFAyGmJX0Zv
+X-Proofpoint-ORIG-GUID: iYUsxqAKHKiGZOdJeA37eLFAyGmJX0Zv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-25_02,2022-01-25_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ mlxscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0
+ priorityscore=1501 clxscore=1015 suspectscore=0 impostorscore=0
+ mlxlogscore=765 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201250092
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 7:47 AM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
->
-> From: Biju Das <biju.das.jz@bp.renesas.com>
->
-> The RZ/V2L is package- and pin-compatible with the RZ/G2L. The only
-> difference being the RZ/V2L SoC has additional DRP-AI IP (AI
-> accelerator).
->
-> Add initial DTSI for RZ/V2L SoC with below SoC specific dtsi files for
-> supporting single core and dual core devices.
->
-> r9a07g054l1.dtsi => RZ/V2L R9A07G054L1 SoC specific parts
-> r9a07g054l2.dtsi => RZ/V2L R9A07G054L2 SoC specific parts
->
-> Both RZ/G2L and RZ/V2L SMARC EVK SoM  are identical apart from SoC's
-> used hence the common dtsi files (rzg2l-smarc*.dtsi) are share between
-> RZ/G2L and RZ/V2L SMARC EVK. Place holders are added in device nodes to
-> avoid compilation errors for the devices which have not been enabled yet
-> on RZ/V2L SoC.
->
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
-> v1->v2
-> * None
-> ---
->  arch/arm64/boot/dts/renesas/r9a07g054.dtsi   | 491 +++++++++++++++++++
->  arch/arm64/boot/dts/renesas/r9a07g054l1.dtsi |  25 +
->  arch/arm64/boot/dts/renesas/r9a07g054l2.dtsi |  13 +
->  3 files changed, 529 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g054.dtsi
->  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g054l1.dtsi
->  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g054l2.dtsi
->
-> diff --git a/arch/arm64/boot/dts/renesas/r9a07g054.dtsi b/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
-> new file mode 100644
-> index 000000000000..5de8f343f12a
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
-> @@ -0,0 +1,491 @@
-> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +/*
-> + * Device Tree Source for the RZ/V2L SoC
-> + *
-> + * Copyright (C) 2021 Renesas Electronics Corp.
-> + */
-> +
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/clock/r9a07g054-cpg.h>
+Peter Zijlstra <peterz@infradead.org> writes:
 
-linux-next is failing because this header is missing:
+> On Tue, Jan 25, 2022 at 02:09:18PM +0100, Sven Schnelle wrote:
+>> Peter Zijlstra <peterz@infradead.org> writes:
+>> 
+>> > Now the documentation states we need this super speed A<->A cable, but
+>> > could you also update the documentation for usb-c ? There's a fair
+>> > number of usb-c only devices out there now.
+>> 
+>> Stupid beginners question: Would every USB3 A-A cable work, or are the
+>> debug cables special? I've read the RX/TX pairs have to be swapped, but
+>> to me it looks like that's always the case?
+>
+> I'm using a random USB3 A-A cable (it came with an HDMI frame grabber of
+> of AliExpress). The official one has a wire missing I think, to avoid
+> ground loops or something like that.
+>
+> The easiest thing to do is try the runtime DBC option:
+>
+>   echo enable > /sys/bus/pci/devices/0000:00:14.0/dbc
+>
+> If that works you can see what it takes to make the earlyprintk one
+> working. This thread seems to have much of that covered.
 
-In file included from arch/arm64/boot/dts/renesas/r9a07g054l2.dtsi:9,
-                 from arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts:9:
-arch/arm64/boot/dts/renesas/r9a07g054.dtsi:9:10: fatal error:
-dt-bindings/clock/r9a07g054-cpg.h: No such file or directory
-    9 | #include <dt-bindings/clock/r9a07g054-cpg.h>
-      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Thanks, the sysfs test works for me. I have two A-A cables, one is from
+a cheap PCI-e extender, the other one from a KVM switch. Both work,
+which is great. So i assume that most A-A cable would work. I'm building
+a new kernel now with the patch on top, lets see.
+
+Thanks!
