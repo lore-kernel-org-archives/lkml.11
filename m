@@ -2,293 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BAEC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D35BEC47086
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1321980AbiAYDUR (ORCPT
+        id S1455415AbiAYDVL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:20:17 -0500
-Received: from lgeamrelo13.lge.com ([156.147.23.53]:47065 "EHLO
-        lgeamrelo11.lge.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1318663AbiAYDG6 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:06:58 -0500
-Received: from unknown (HELO lgeamrelo02.lge.com) (156.147.1.126)
-        by 156.147.23.53 with ESMTP; 25 Jan 2022 11:36:47 +0900
-X-Original-SENDERIP: 156.147.1.126
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.126 with ESMTP; 25 Jan 2022 11:36:47 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     torvalds@linux-foundation.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org
-Cc:     peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
-        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
-        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
-        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
-        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
-        amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com
-Subject: [RFC 10/14] dept: Add proc knobs to show stats and dependency graph
-Date:   Tue, 25 Jan 2022 11:36:40 +0900
-Message-Id: <1643078204-12663-11-git-send-email-byungchul.park@lge.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1643078204-12663-1-git-send-email-byungchul.park@lge.com>
-References: <1643078204-12663-1-git-send-email-byungchul.park@lge.com>
+        Mon, 24 Jan 2022 22:21:11 -0500
+Received: from mga02.intel.com ([134.134.136.20]:50542 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1318872AbiAYDHY (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 22:07:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643080043; x=1674616043;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=engvKbl+jC8slbfHM9iBDpf0HIyr8rPy13E1UZzS8gc=;
+  b=LO37sapKSlZfA91fg4SGosGItOt7SoooLeIlP1PdazMMlFnYGWlfkBoL
+   /FTLhJ3WazZRmh2CVJHzWR3mvSW1fSdWShTJy7OUVzAf/144qctAE2CbA
+   I+jH4/rVJFtRf+MwQl4ZWaTc+e8MUHe3rOsICgJAlpKsSQMQkZ/Ij81aD
+   x3wFO1yEBFmh1pYVjMKnHPbDCbkWTiEabkC8ErvBuIN83BVyD9Yj+0ytA
+   33AqHtj49EUlKohv6rEYHFWq8ioR6ryrWLsYyi6FG0cgy65+tfCZ0wXPH
+   I45iuSu+dfdjpufcqS2mvNHEBGDj550a1baoyuNB7GKM6R/FKYJGVlmxj
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="233573112"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="233573112"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 19:07:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="673846638"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 24 Jan 2022 19:07:20 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCCAy-000JGx-4b; Tue, 25 Jan 2022 03:07:20 +0000
+Date:   Tue, 25 Jan 2022 11:06:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Zhou Qingyang <zhou1615@umn.edu>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, kjlu@umn.edu,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Lv Zheng <lv.zheng@intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ACPI / tables: Fix a NULL pointer dereference in
+ acpi_table_initrd_override()
+Message-ID: <202201251123.ScbhjE9a-lkp@intel.com>
+References: <20220124164251.52466-1-zhou1615@umn.edu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124164251.52466-1-zhou1615@umn.edu>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It'd be useful to show Dept internal stats and dependency graph on
-runtime via proc for better information. Introduced the knobs.
+Hi Zhou,
 
-Signed-off-by: Byungchul Park <byungchul.park@lge.com>
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on rafael-pm/linux-next]
+[also build test ERROR on linux/master linus/master v5.17-rc1 next-20220124]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Zhou-Qingyang/ACPI-tables-Fix-a-NULL-pointer-dereference-in-acpi_table_initrd_override/20220125-004517
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
+config: x86_64-randconfig-r011-20220124 (https://download.01.org/0day-ci/archive/20220125/202201251123.ScbhjE9a-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 2e58a18910867ba6795066e044293e6daf89edf5)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/924d4e212d2041e2af120ade3599fdc00e0b12fd
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Zhou-Qingyang/ACPI-tables-Fix-a-NULL-pointer-dereference-in-acpi_table_initrd_override/20220125-004517
+        git checkout 924d4e212d2041e2af120ade3599fdc00e0b12fd
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/acpi/tables.c:710:4: error: void function 'acpi_table_initrd_scan' should not return a value [-Wreturn-type]
+                           return AE_NO_MEMORY;
+                           ^      ~~~~~~~~~~~~
+   1 error generated.
+
+
+vim +/acpi_table_initrd_scan +710 drivers/acpi/tables.c
+
+   695	
+   696	static void __init acpi_table_initrd_scan(void)
+   697	{
+   698		int table_offset = 0;
+   699		int table_index = 0;
+   700		u32 table_length;
+   701		struct acpi_table_header *table;
+   702	
+   703		if (!acpi_tables_addr)
+   704			return;
+   705	
+   706		while (table_offset + ACPI_HEADER_SIZE <= all_tables_size) {
+   707			table = acpi_os_map_memory(acpi_tables_addr + table_offset,
+   708						   ACPI_HEADER_SIZE);
+   709			if (!table) {
+ > 710				return AE_NO_MEMORY;
+   711			}
+   712	
+   713			if (table_offset + table->length > all_tables_size) {
+   714				acpi_os_unmap_memory(table, ACPI_HEADER_SIZE);
+   715				WARN_ON(1);
+   716				return;
+   717			}
+   718	
+   719			table_length = table->length;
+   720	
+   721			/* Skip RSDT/XSDT which should only be used for override */
+   722			if (ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_RSDT) ||
+   723			    ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_XSDT)) {
+   724				acpi_os_unmap_memory(table, ACPI_HEADER_SIZE);
+   725				goto next_table;
+   726			}
+   727			/*
+   728			 * Mark the table to avoid being used in
+   729			 * acpi_table_initrd_override(). Though this is not possible
+   730			 * because override is disabled in acpi_install_physical_table().
+   731			 */
+   732			if (test_and_set_bit(table_index, acpi_initrd_installed)) {
+   733				acpi_os_unmap_memory(table, ACPI_HEADER_SIZE);
+   734				goto next_table;
+   735			}
+   736	
+   737			pr_info("Table Upgrade: install [%4.4s-%6.6s-%8.8s]\n",
+   738				table->signature, table->oem_id,
+   739				table->oem_table_id);
+   740			acpi_os_unmap_memory(table, ACPI_HEADER_SIZE);
+   741			acpi_install_physical_table(acpi_tables_addr + table_offset);
+   742	next_table:
+   743			table_offset += table_length;
+   744			table_index++;
+   745		}
+   746	}
+   747	#else
+   748	static acpi_status
+   749	acpi_table_initrd_override(struct acpi_table_header *existing_table,
+   750				   acpi_physical_address *address,
+   751				   u32 *table_length)
+   752	{
+   753		*table_length = 0;
+   754		*address = 0;
+   755		return AE_OK;
+   756	}
+   757	
+
 ---
- kernel/dependency/Makefile        |  1 +
- kernel/dependency/dept.c          | 24 ++++------
- kernel/dependency/dept_internal.h | 26 +++++++++++
- kernel/dependency/dept_proc.c     | 97 +++++++++++++++++++++++++++++++++++++++
- 4 files changed, 133 insertions(+), 15 deletions(-)
- create mode 100644 kernel/dependency/dept_internal.h
- create mode 100644 kernel/dependency/dept_proc.c
-
-diff --git a/kernel/dependency/Makefile b/kernel/dependency/Makefile
-index 9f7778e..49152ad 100644
---- a/kernel/dependency/Makefile
-+++ b/kernel/dependency/Makefile
-@@ -1,4 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
- 
- obj-$(CONFIG_DEPT) += dept.o
-+obj-$(CONFIG_DEPT) += dept_proc.o
- 
-diff --git a/kernel/dependency/dept.c b/kernel/dependency/dept.c
-index 64287894..b682bf9 100644
---- a/kernel/dependency/dept.c
-+++ b/kernel/dependency/dept.c
-@@ -90,6 +90,7 @@
- #include <linux/hash.h>
- #include <linux/dept.h>
- #include <linux/utsname.h>
-+#include "dept_internal.h"
- 
- static int dept_stop;
- static int dept_per_cpu_ready;
-@@ -241,20 +242,13 @@ static inline struct dept_task *dept_task(void)
-  *       have been freed will be placed.
-  */
- 
--enum object_t {
--#define OBJECT(id, nr) OBJECT_##id,
--	#include "dept_object.h"
--#undef  OBJECT
--	OBJECT_NR,
--};
--
- #define OBJECT(id, nr)							\
- static struct dept_##id spool_##id[nr];					\
- static DEFINE_PER_CPU(struct llist_head, lpool_##id);
- 	#include "dept_object.h"
- #undef  OBJECT
- 
--static struct dept_pool pool[OBJECT_NR] = {
-+struct dept_pool dept_pool[OBJECT_NR] = {
- #define OBJECT(id, nr) {						\
- 	.name = #id,							\
- 	.obj_sz = sizeof(struct dept_##id),				\
-@@ -283,7 +277,7 @@ static void *from_pool(enum object_t t)
- 	if (DEPT_WARN_ON(!irqs_disabled()))
- 		return NULL;
- 
--	p = &pool[t];
-+	p = &dept_pool[t];
- 
- 	/*
- 	 * Try local pool first.
-@@ -312,7 +306,7 @@ static void *from_pool(enum object_t t)
- 
- static void to_pool(void *o, enum object_t t)
- {
--	struct dept_pool *p = &pool[t];
-+	struct dept_pool *p = &dept_pool[t];
- 	struct llist_head *h;
- 
- 	preempt_disable();
-@@ -1986,7 +1980,7 @@ void dept_map_nocheck(struct dept_map *m)
- }
- EXPORT_SYMBOL_GPL(dept_map_nocheck);
- 
--static LIST_HEAD(classes);
-+LIST_HEAD(dept_classes);
- 
- static inline bool within(const void *addr, void *start, unsigned long size)
- {
-@@ -2031,7 +2025,7 @@ void dept_free_range(void *start, unsigned int sz)
- 	 */
- 	free_staleie_staleiw_range(start, sz);
- 
--	list_for_each_entry_safe(c, n, &classes, all_node) {
-+	list_for_each_entry_safe(c, n, &dept_classes, all_node) {
- 		if (!within((void *)c->key, start, sz) &&
- 		    !within(c->name, start, sz))
- 			continue;
-@@ -2100,7 +2094,7 @@ static struct dept_class *check_new_class(struct dept_key *local,
- 	c->sub = sub;
- 	c->key = (unsigned long)(k->subkeys + sub);
- 	hash_add_class(c);
--	list_add(&c->all_node, &classes);
-+	list_add(&c->all_node, &dept_classes);
- unlock:
- 	dept_unlock();
- caching:
-@@ -2429,8 +2423,8 @@ static void migrate_per_cpu_pool(void)
- 		struct llist_head *from;
- 		struct llist_head *to;
- 
--		from = &pool[i].boot_pool;
--		to = per_cpu_ptr(pool[i].lpool, boot_cpu);
-+		from = &dept_pool[i].boot_pool;
-+		to = per_cpu_ptr(dept_pool[i].lpool, boot_cpu);
- 		move_llist(to, from);
- 	}
- }
-diff --git a/kernel/dependency/dept_internal.h b/kernel/dependency/dept_internal.h
-new file mode 100644
-index 0000000..007c1ee
---- /dev/null
-+++ b/kernel/dependency/dept_internal.h
-@@ -0,0 +1,26 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Dept(DEPendency Tracker) - runtime dependency tracker internal header
-+ *
-+ * Started by Byungchul Park <max.byungchul.park@gmail.com>:
-+ *
-+ *  Copyright (c) 2020 LG Electronics, Inc., Byungchul Park
-+ */
-+
-+#ifndef __DEPT_INTERNAL_H
-+#define __DEPT_INTERNAL_H
-+
-+#ifdef CONFIG_DEPT
-+
-+enum object_t {
-+#define OBJECT(id, nr) OBJECT_##id,
-+	#include "dept_object.h"
-+#undef  OBJECT
-+	OBJECT_NR,
-+};
-+
-+extern struct list_head dept_classes;
-+extern struct dept_pool dept_pool[];
-+
-+#endif
-+#endif /* __DEPT_INTERNAL_H */
-diff --git a/kernel/dependency/dept_proc.c b/kernel/dependency/dept_proc.c
-new file mode 100644
-index 0000000..5e5afa3
---- /dev/null
-+++ b/kernel/dependency/dept_proc.c
-@@ -0,0 +1,97 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * kernel/dependency/dept_proc.c
-+ *
-+ * Runtime dependency tracker
-+ *
-+ * Started by Byungchul Park <max.byungchul.park@gmail.com>:
-+ *
-+ *  Copyright (C) 2021 LG Electronics, Inc. , Byungchul Park
-+ *
-+ * Code for /proc/dept_*:
-+ *
-+ */
-+#include <linux/proc_fs.h>
-+#include <linux/seq_file.h>
-+#include <linux/dept.h>
-+#include "dept_internal.h"
-+
-+static void *l_next(struct seq_file *m, void *v, loff_t *pos)
-+{
-+	/*
-+	 * XXX: Serialize list traversal if needed. The following might
-+	 * give a wrong information on contention.
-+	 */
-+	return seq_list_next(v, &dept_classes, pos);
-+}
-+
-+static void *l_start(struct seq_file *m, loff_t *pos)
-+{
-+	/*
-+	 * XXX: Serialize list traversal if needed. The following might
-+	 * give a wrong information on contention.
-+	 */
-+	return seq_list_start_head(&dept_classes, *pos);
-+}
-+
-+static void l_stop(struct seq_file *m, void *v)
-+{
-+}
-+
-+static int l_show(struct seq_file *m, void *v)
-+{
-+	struct dept_class *fc = list_entry(v, struct dept_class, all_node);
-+	struct dept_dep *d;
-+
-+	if (v == &dept_classes) {
-+		seq_printf(m, "All classes:\n\n");
-+		return 0;
-+	}
-+
-+	seq_printf(m, "[%p] %s\n", (void *)fc->key, fc->name);
-+
-+	/*
-+	 * XXX: Serialize list traversal if needed. The following might
-+	 * give a wrong information on contention.
-+	 */
-+	list_for_each_entry(d, &fc->dep_head, dep_node) {
-+		struct dept_class *tc = d->wait->class;
-+		seq_printf(m, " -> [%p] %s\n", (void *)tc->key, tc->name);
-+	}
-+	seq_puts(m, "\n");
-+
-+	return 0;
-+}
-+
-+static const struct seq_operations dept_deps_ops = {
-+	.start	= l_start,
-+	.next	= l_next,
-+	.stop	= l_stop,
-+	.show	= l_show,
-+};
-+
-+static int dept_stats_show(struct seq_file *m, void *v)
-+{
-+	int r;
-+
-+	seq_printf(m, "Availablity in the static pools:\n\n");
-+#define OBJECT(id, nr)							\
-+	r = atomic_read(&dept_pool[OBJECT_##id].obj_nr);		\
-+	if (r < 0)							\
-+		r = 0;							\
-+	seq_printf(m, "%s\t%d/%d(%d%%)\n", #id, r, nr, (r * 100) / (nr));
-+	#include "dept_object.h"
-+#undef  OBJECT
-+
-+	return 0;
-+}
-+
-+static int __init dept_proc_init(void)
-+{
-+	proc_create_seq("dept_deps", S_IRUSR, NULL, &dept_deps_ops);
-+	proc_create_single("dept_stats", S_IRUSR, NULL, dept_stats_show);
-+	return 0;
-+}
-+
-+__initcall(dept_proc_init);
-+
--- 
-1.9.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
