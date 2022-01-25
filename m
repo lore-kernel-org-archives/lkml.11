@@ -2,53 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB29C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A523C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232448AbiAYUqJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 15:46:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40368 "EHLO
+        id S232511AbiAYUqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 15:46:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232437AbiAYUqI (ORCPT
+        with ESMTP id S232463AbiAYUqN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 15:46:08 -0500
+        Tue, 25 Jan 2022 15:46:13 -0500
 Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBB4C061744
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:46:08 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id f12-20020a056902038c00b006116df1190aso43646706ybs.20
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:46:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFA8C061749
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:46:12 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id g7-20020a25bdc7000000b00611c616bc76so43746626ybk.5
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:46:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=anQaSV8wgWDg5PaHVvH5H7QC7YRJVw+zbrdZNKl0Kfs=;
-        b=npsJuwb9I37aB0Q6Mqjp/WG5l5nHKIjD6M3hDmED8nNF2zflyxZl1xfy823ytIBpwO
-         ny4SWWT9KMoWRH27nEIIorHyHdu93628nEY4oP4j35JoiMYJRr4rJ+0fS0iEVEXYkwX0
-         JEDkVAyyZ2mC9y21HpA5J5cGlEcODGCOFF8oBCl6wO2kzBInSdwPKnQaGU5/t1wPFzwS
-         o00mVR8VWqzptvG++DLXV0RyhfsrYrU+bvvP9duWRRlim3LVE/j7JMWfYuuvzK/LOkry
-         TL/ISFxkvBFoNfD5lw+/Oa1+kptJjt2gLz0QJbm5vfYRQlgKwEj8wJs4KQmFrFuteLFJ
-         Bn5w==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=100W4F2SZe3IWptV5RcjIMfgKhxT7aMM0DwnzM2uSwI=;
+        b=AtZRyMJoLmRfImn6GijY+LOfXNuW5R979dWq2WEKkjVF5oC8JztYwcYuD2rH/cYe0p
+         xiYe8ye9PRjpjWl5ItXl+LHdIwsUlUI5120zvJJsZuykYVj1PrfN1GGKtBQ8RcRSfMZq
+         +SOGEc2PV7Wz4dtW5kXTrLPa68rmovr5r4PPcZAHxAYJ0Nd3OcCdvmcFQka3qp3oJBAO
+         RVrxhaRUw4oDWPeJJbj3xxN/7NmqykbwzQwqsaKz79O5kFiAcLAEcHBHnb8cWj1MZVFW
+         FHYtiMjMxghS6EkcvScsLJrBfT5C2ub634yFZs7q7Aq5RV4ZAZpWYfwq1gqr+ZjVinaA
+         l4mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=anQaSV8wgWDg5PaHVvH5H7QC7YRJVw+zbrdZNKl0Kfs=;
-        b=ltHk8t1PGMIWFOwGf0iMCbiT8/nQJJEFeBhPR9LZbe38zw72Ra/AO93cFsbtfdB2+G
-         61hqOTZHIuuPoqtUNrMfEu8gjdukbPqJmma/FM9zalJbWgLyUCN4zg/h0Rq9MdmmOmfe
-         mZ6YMOS4ByLpc/sJgh/oAgF3P0c+5qJDcz9/vJ9/Lo1EzqAmW2ufPkGisys8hRO6fJvA
-         hvLQtRpkNGyvT415sp9WNqgoDcUe3ECTssGi+PX974n5JBXTE5dLVKPcJ9Kde/xwe627
-         hKl1mE3EHf4TAIEUstWyc9h5yCxL3rfXTFRurFuf3j9tQf57Qbj1QhgTokuQL25p7shS
-         WThA==
-X-Gm-Message-State: AOAM533AFXxVSYo6zFk5IwMtaXoVy8sydqEuAeF2g+dfSvLygif1rEJv
-        RGdsdcQtrOAX41THf3f317vuSBXhx5Bx
-X-Google-Smtp-Source: ABdhPJyyDRhsv7XHJfWsMxyNmwOLKL1kswIkIGL+GrM6PewkGCB5ZrnWTQP2teDZpZsUaiqSS4HvbXL8mjD1
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=100W4F2SZe3IWptV5RcjIMfgKhxT7aMM0DwnzM2uSwI=;
+        b=NILn+/lGCOEG8xZF4u8Ls5YSmVG1EgyjB2XbXm1/jVnCatLELcObZUguZo5YiRxsWj
+         JgPJK5VoQtPr91fsroLfsTDj3P90YGT44/S80uygXvd5oEluzgI5w1EBWbGA3IJih2kv
+         N1Cr8/XC99IPlQjvw51K0OFeGM1Bzeff/8JuDyBZT9PIiUYv3XYHhrPz40uJkb94MSzj
+         kgQO88g5Q5MD5GM9UGXPHmXZkC16E6hlk6/jibz5N8i5c9xsmCjqvveZUyuwg11hTTFm
+         NwWqi1pX1OoJPGjB2wqeuJV2+R3PgiXEZ4VeNql8HhcDUgt7cQXT5yjj/XWCpIrl/BUV
+         8Nlw==
+X-Gm-Message-State: AOAM531Fu6fjL97se8Z/pcDxVdBQr48P8w4w+MrYG8ipRhqNGDaZjgbJ
+        DaB6ku/txVyDVKBKpbf2sAtfIxMtXmNe
+X-Google-Smtp-Source: ABdhPJz2AIIoZgVx9s5C8xIPQXRhGrzFQOIyFCz9l/0X/Qe4+Z88KgE1Z4u1cAGgzmMAEZwt+iZ+joHSwBBP
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:1a99:924a:8878:c44a])
- (user=irogers job=sendgmr) by 2002:a81:4fd8:0:b0:2ca:287c:6cf2 with SMTP id
- 00721157ae682-2cb14269f9emr7357057b3.407.1643143566870; Tue, 25 Jan 2022
- 12:46:06 -0800 (PST)
-Date:   Tue, 25 Jan 2022 12:45:58 -0800
-Message-Id: <20220125204602.4137477-1-irogers@google.com>
+ (user=irogers job=sendgmr) by 2002:a25:a102:: with SMTP id
+ z2mr32541998ybh.100.1643143572035; Tue, 25 Jan 2022 12:46:12 -0800 (PST)
+Date:   Tue, 25 Jan 2022 12:46:00 -0800
+In-Reply-To: <20220125204602.4137477-1-irogers@google.com>
+Message-Id: <20220125204602.4137477-3-irogers@google.com>
 Mime-Version: 1.0
+References: <20220125204602.4137477-1-irogers@google.com>
 X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH v2 0/4] Reference count checker and related fixes
+Subject: [PATCH v2 2/4] perf dso: Make lock error check and add BUG_ONs
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -91,75 +94,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This v2 patch set has the main reference count patch for cpu map from
-the first set and then adds reference count checking to nsinfo. The
-reference count checking on nsinfo helped diagnose a data race bug
-which is fixed in the independent patches 2 and 3.
+Make the pthread mutex on dso use the error check type. This allows
+deadlock checking via the return type. Assert the returned value from
+mutex lock is always 0.
 
-The perf tool has a class of memory problems where reference counts
-are used incorrectly. Memory/address sanitizers and valgrind don't
-provide useful ways to debug these problems, you see a memory leak
-where the only pertinent information is the original allocation
-site. What would be more useful is knowing where a get fails to have a
-corresponding put, where there are double puts, etc.
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/perf/util/dso.c    | 12 +++++++++---
+ tools/perf/util/symbol.c |  2 +-
+ 2 files changed, 10 insertions(+), 4 deletions(-)
 
-This work was motivated by the roll-back of:
-https://lore.kernel.org/linux-perf-users/20211118193714.2293728-1-irogers@google.com/
-where fixing a missed put resulted in a use-after-free in a different
-context. There was a sense in fixing the issue that a game of
-wac-a-mole had been embarked upon in adding missed gets and puts.
-
-The basic approach of the change is to add a level of indirection at
-the get and put calls. Get allocates a level of indirection that, if
-no corresponding put is called, becomes a memory leak (and associated
-stack trace) that leak sanitizer can report. Similarly if two puts are
-called for the same get, then a double free can be detected by address
-sanitizer. This can also detect the use after put, which should also
-yield a segv without a sanitizer.
-
-Adding reference count checking to cpu map was done as a proof of
-concept, it yielded little other than a location where the use of get
-could be cleaner by using its result. Reference count checking on
-nsinfo identified a double free of the indirection layer and the
-related threads, thereby identifying a data race as discussed here:
-https://lore.kernel.org/linux-perf-users/CAP-5=fWZH20L4kv-BwVtGLwR=Em3AOOT+Q4QGivvQuYn5AsPRg@mail.gmail.com/
-Accordingly the dso->lock was extended and use to cover the race.
-
-An alternative that was considered was ref_tracker:
- https://lwn.net/Articles/877603/
-ref_tracker requires use of a reference counted struct to also use a
-cookie/tracker. The cookie is combined with data in a ref_tracker_dir
-to spot double puts. When an object is finished with leaks can be
-detected, as with this approach when leak analysis happens. This
-approach was preferred as it doesn't introduce cookies, spots use
-after put and appears moderately more neutral to the API. Weaknesses
-of the implemented approcah are not being able to do adhoc leak
-detection and a preference for adding an accessor API to structs. I
-believe there are other issues and welcome suggestions.
-
-Ian Rogers (4):
-  perf cpumap: Add reference count checking
-  perf dso: Make lock error check and add BUG_ONs
-  perf dso: Hold lock when accessing nsinfo
-  perf namespaces: Add reference count checking
-
- tools/lib/perf/cpumap.c                  | 120 ++++++++++-----
- tools/lib/perf/include/internal/cpumap.h |  14 +-
- tools/perf/builtin-inject.c              |   6 +-
- tools/perf/builtin-probe.c               |   2 +-
- tools/perf/tests/cpumap.c                |  20 ++-
- tools/perf/util/build-id.c               |   4 +-
- tools/perf/util/cpumap.c                 |  42 ++---
- tools/perf/util/dso.c                    |  17 ++-
- tools/perf/util/jitdump.c                |  10 +-
- tools/perf/util/map.c                    |   7 +-
- tools/perf/util/namespaces.c             | 187 ++++++++++++++++-------
- tools/perf/util/namespaces.h             |  23 ++-
- tools/perf/util/pmu.c                    |  24 +--
- tools/perf/util/probe-event.c            |   2 +
- tools/perf/util/symbol.c                 |  10 +-
- 15 files changed, 337 insertions(+), 151 deletions(-)
-
+diff --git a/tools/perf/util/dso.c b/tools/perf/util/dso.c
+index 9cc8a1772b4b..6beccffeef7b 100644
+--- a/tools/perf/util/dso.c
++++ b/tools/perf/util/dso.c
+@@ -784,7 +784,7 @@ dso_cache__free(struct dso *dso)
+ 	struct rb_root *root = &dso->data.cache;
+ 	struct rb_node *next = rb_first(root);
+ 
+-	pthread_mutex_lock(&dso->lock);
++	BUG_ON(pthread_mutex_lock(&dso->lock) != 0);
+ 	while (next) {
+ 		struct dso_cache *cache;
+ 
+@@ -830,7 +830,7 @@ dso_cache__insert(struct dso *dso, struct dso_cache *new)
+ 	struct dso_cache *cache;
+ 	u64 offset = new->offset;
+ 
+-	pthread_mutex_lock(&dso->lock);
++	BUG_ON(pthread_mutex_lock(&dso->lock) != 0);
+ 	while (*p != NULL) {
+ 		u64 end;
+ 
+@@ -1259,6 +1259,8 @@ struct dso *dso__new_id(const char *name, struct dso_id *id)
+ 	struct dso *dso = calloc(1, sizeof(*dso) + strlen(name) + 1);
+ 
+ 	if (dso != NULL) {
++		pthread_mutexattr_t lock_attr;
++
+ 		strcpy(dso->name, name);
+ 		if (id)
+ 			dso->id = *id;
+@@ -1286,8 +1288,12 @@ struct dso *dso__new_id(const char *name, struct dso_id *id)
+ 		dso->root = NULL;
+ 		INIT_LIST_HEAD(&dso->node);
+ 		INIT_LIST_HEAD(&dso->data.open_entry);
+-		pthread_mutex_init(&dso->lock, NULL);
++		pthread_mutexattr_init(&lock_attr);
++		pthread_mutexattr_settype(&lock_attr, PTHREAD_MUTEX_ERRORCHECK);
++		pthread_mutex_init(&dso->lock, &lock_attr);
++		pthread_mutexattr_destroy(&lock_attr);
+ 		refcount_set(&dso->refcnt, 1);
++
+ 	}
+ 
+ 	return dso;
+diff --git a/tools/perf/util/symbol.c b/tools/perf/util/symbol.c
+index b2ed3140a1fa..43f47532696f 100644
+--- a/tools/perf/util/symbol.c
++++ b/tools/perf/util/symbol.c
+@@ -1783,7 +1783,7 @@ int dso__load(struct dso *dso, struct map *map)
+ 	}
+ 
+ 	nsinfo__mountns_enter(dso->nsinfo, &nsc);
+-	pthread_mutex_lock(&dso->lock);
++	BUG_ON(pthread_mutex_lock(&dso->lock) != 0);
+ 
+ 	/* check again under the dso->lock */
+ 	if (dso__loaded(dso)) {
 -- 
 2.35.0.rc0.227.g00780c9af4-goog
 
