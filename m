@@ -2,153 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232338AbiAYUkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 15:40:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39088 "EHLO
+        id S232342AbiAYUlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 15:41:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232323AbiAYUke (ORCPT
+        with ESMTP id S232319AbiAYUlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 15:40:34 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95162C061747
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:40:33 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id b14so11795874ljb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:40:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=n1kkTsjIA/F1IWqHrRaAWXMMPcD/Uv5ibtuDYOR7mwM=;
-        b=mJk2ZakZu9I4pk9ZoweaWEZ3lyYSGbgesgD9J/pjxjHu6TkSoxv0cYzmtihs6k5lU2
-         fz/iNa2Xud3i6QpKnpMf7VR8Z2zqbO4oB1LdCt7Kg3vOzqDKuy33QrHfJiIZxUsZgsI8
-         N0PSaWypurs2tesgR5wsi8QyogQqzn5smMLdvmsrqi/PUHWmtBIzdp9uNKVsschFg1L+
-         mdt2/e/Rz8aD1/HSE58uOXXtxobp4VqjVnQQ8zAgg4S4GcaP5U4gD49Xl19cnDhQ7KwE
-         dqwcwf5Jap/KNesQUYJlyYTtKBzhBsZHLsn3ETpOO0dwrgG08Ii9+pWjZ9mpJOzBfqBo
-         xeag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=n1kkTsjIA/F1IWqHrRaAWXMMPcD/Uv5ibtuDYOR7mwM=;
-        b=CTt51FPcTgVVjmRGlZqEk8cmOrSiKYjJSeePv9kIYY9a38+Q+qG0t15VPY59qOsoX6
-         flhwP4Kjatkl5tR00ubM4y0TeSMlq5PuTRZm3SmqG+9SYXbMc0tFuP5lYY5hquq1QwuH
-         o48zQPmZBmAiD2YTFFrGYN18dt6LewyvroUJs3bNwfq70If8osa/gaElxhcriKIh7EpI
-         /j8wL+TDgLpCCauSJ6C9ZPBGsBtVkr0/8pzBAk5/fLD/PmjWmHTfP3dfi7lHTMQvIqY9
-         3cspIMA8SnjgPBlr0cwWE13dRzTvd/aJ0clRXoR4SN3xYgG5AjteM3Iw0FOLWxm2K/rc
-         WDcQ==
-X-Gm-Message-State: AOAM5317WxAtXDbPpEOl7zDJ5gVOGqQqcNizMaJAiA8jL+mt4XP9RvKM
-        W2SPNSNFr4gGolU6555E3hy6f2hA2ef5MlDVf8cNXg==
-X-Google-Smtp-Source: ABdhPJwqFYjcPHxaLoTDrVYkTbJkK5FXJutbgwZV1gs460eQh4UwxRmcQkJCvM89L3w0xQnwcPP4T5KE7zK0Rco8yg8=
-X-Received: by 2002:a2e:a5c9:: with SMTP id n9mr16093565ljp.220.1643143231698;
- Tue, 25 Jan 2022 12:40:31 -0800 (PST)
+        Tue, 25 Jan 2022 15:41:19 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF830C06173B;
+        Tue, 25 Jan 2022 12:41:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=wTFIgfu16335Gx3oq+pioLGVCsaF9YtbWH5+gxe4W2c=; b=RB5vu3jOCzht8oUW3jFXMfbNde
+        zkDIv2h22MrVwwCF0NQ+JiaArMaUuf45eEPgqPhak//kis3M125M97fsFMESuJYu2KUZllFg+YCIU
+        03DYLlMciEfmy48mIZXBLPyjs3VanoVEvpqb042iJBIGUQUkn+bKqvINkzt0CY6vILdrNpVNvrF0N
+        MHNzjEYNO58/0XqBRkSnxRBQdTaghYFsqpHXqS1mg+8NfspZoidYqgvHF/m0EnQUWsuXpnFy2lH2z
+        aSocJbMrQ9BTwvjA9+P3IqGjNGoa40LPwxdiBRvFhIdXANhiRS5njITxeDvEzbC1gEqW9Z1UwT5Bg
+        8y/S7F2w==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nCScu-009WZ9-1w; Tue, 25 Jan 2022 20:41:16 +0000
+Date:   Tue, 25 Jan 2022 12:41:16 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     snitzer@redhat.com, axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
+Subject: Re: [PATCH] dm mpath: fix missing blk_account_io_done() in error path
+Message-ID: <YfBgbLVOPWEy60bH@infradead.org>
+References: <20220125122654.2236172-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-References: <20220125141422.32655-1-cgzones@googlemail.com> <20220125141422.32655-3-cgzones@googlemail.com>
-In-Reply-To: <20220125141422.32655-3-cgzones@googlemail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 25 Jan 2022 12:40:19 -0800
-Message-ID: <CAKwvOdmLAhbvvqi7900yAS5zV8c_Hb7a-Tj_NyVHxh+mePpQbQ@mail.gmail.com>
-Subject: Re: [PATCH 4/9] selinux: enclose macro arguments in parenthesis
-To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
-Cc:     selinux@vger.kernel.org, Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Xiong Zhenwu <xiong.zhenwu@zte.com.cn>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Jeff Vander Stoep <jeffv@google.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220125122654.2236172-1-yukuai3@huawei.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 6:14 AM Christian G=C3=B6ttsche
-<cgzones@googlemail.com> wrote:
->
-> Enclose the macro arguments in parenthesis to avoid potential evaluation
-> order issues.
->
-> Note the xperm and ebitmap macros are still not side-effect safe due to
-> double evaluation.
->
-> Reported by clang-tidy [bugprone-macro-parentheses]
+On Tue, Jan 25, 2022 at 08:26:54PM +0800, Yu Kuai wrote:
+> If blk_mq_request_issue_directly() failed from
+> blk_insert_cloned_request(), the request will be accounted start.
+> Currently, blk_insert_cloned_request() is only called by dm, and such
+> request won't be accounted done by dm.
+> 
+> In normal path, io will be accounted start from blk_mq_bio_to_request(),
+> when the request is allocated, and such io will be accounted done from
+> __blk_mq_end_request_acct() whether it succeeded or failed. Thus add
+> blk_account_io_done() to fix the problem.
 
-Good idea to run clang-tidy :)
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
->
-> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
-> ---
->  security/selinux/include/security.h | 4 ++--
->  security/selinux/ss/ebitmap.h       | 6 +++---
->  security/selinux/ss/sidtab.c        | 4 ++--
->  3 files changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/security/selinux/include/security.h b/security/selinux/inclu=
-de/security.h
-> index 6482e0efb368..d91a5672de99 100644
-> --- a/security/selinux/include/security.h
-> +++ b/security/selinux/include/security.h
-> @@ -254,8 +254,8 @@ struct av_decision {
->  #define XPERMS_AUDITALLOW 2
->  #define XPERMS_DONTAUDIT 4
->
-> -#define security_xperm_set(perms, x) (perms[x >> 5] |=3D 1 << (x & 0x1f)=
-)
-> -#define security_xperm_test(perms, x) (1 & (perms[x >> 5] >> (x & 0x1f))=
-)
-> +#define security_xperm_set(perms, x) ((perms)[(x) >> 5] |=3D 1 << ((x) &=
- 0x1f))
-> +#define security_xperm_test(perms, x) (1 & ((perms)[(x) >> 5] >> ((x) & =
-0x1f)))
->  struct extended_perms_data {
->         u32 p[8];
->  };
-> diff --git a/security/selinux/ss/ebitmap.h b/security/selinux/ss/ebitmap.=
-h
-> index 9eb2d0af2805..58eb822f11ee 100644
-> --- a/security/selinux/ss/ebitmap.h
-> +++ b/security/selinux/ss/ebitmap.h
-> @@ -118,9 +118,9 @@ static inline void ebitmap_node_clr_bit(struct ebitma=
-p_node *n,
->  }
->
->  #define ebitmap_for_each_positive_bit(e, n, bit)       \
-> -       for (bit =3D ebitmap_start_positive(e, &n);       \
-> -            bit < ebitmap_length(e);                   \
-> -            bit =3D ebitmap_next_positive(e, &n, bit))   \
-> +       for ((bit) =3D ebitmap_start_positive(e, &(n));   \
-> +            (bit) < ebitmap_length(e);                 \
-> +            (bit) =3D ebitmap_next_positive(e, &(n), bit))       \
->
->  int ebitmap_cmp(struct ebitmap *e1, struct ebitmap *e2);
->  int ebitmap_cpy(struct ebitmap *dst, struct ebitmap *src);
-> diff --git a/security/selinux/ss/sidtab.c b/security/selinux/ss/sidtab.c
-> index 293ec048af08..a54b8652bfb5 100644
-> --- a/security/selinux/ss/sidtab.c
-> +++ b/security/selinux/ss/sidtab.c
-> @@ -27,8 +27,8 @@ struct sidtab_str_cache {
->         char str[];
->  };
->
-> -#define index_to_sid(index) (index + SECINITSID_NUM + 1)
-> -#define sid_to_index(sid) (sid - (SECINITSID_NUM + 1))
-> +#define index_to_sid(index) ((index) + SECINITSID_NUM + 1)
-> +#define sid_to_index(sid) ((sid) - (SECINITSID_NUM + 1))
->
->  int sidtab_init(struct sidtab *s)
->  {
-> --
-> 2.34.1
->
-
-
---=20
-Thanks,
-~Nick Desaulniers
+The patch looks good, but the subject is incorrect, this is not in
+dm-mpath but in the block layer.
