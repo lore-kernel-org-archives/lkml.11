@@ -2,91 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1488C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F34C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:59:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377072AbiAYQ7I (ORCPT
+        id S1349141AbiAYQ7w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 11:59:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586531AbiAYQ5Q (ORCPT
+        Tue, 25 Jan 2022 11:59:52 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38048 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1587075AbiAYQ55 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 11:57:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82444C0617A3;
-        Tue, 25 Jan 2022 08:54:45 -0800 (PST)
+        Tue, 25 Jan 2022 11:57:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 498CAB81626;
-        Tue, 25 Jan 2022 16:54:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45D50C340E0;
-        Tue, 25 Jan 2022 16:54:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00110B81910;
+        Tue, 25 Jan 2022 16:57:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D488C340E0;
+        Tue, 25 Jan 2022 16:57:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643129683;
-        bh=rw+3G6xtiUqoEm6IJINS6kg0qGUDlHZ60ZFR3a2STdw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=OvIlRzdNs0u3TKQbD+zqONaqes09wji3XfQ/OdhWSiJNI9x4HiJ6+hDJe6TWjcmVo
-         Ixl108Kp3dLorankwVLvgTuyHHjX6dv9J418QqD93hLZMvID0odhe0s9dRt45GxE0C
-         uf81M+1H3xmwlOxJzOxNz3Dv3/S85GOuNa6vr3Ml0wKRzV8YU7RKvknFgUkLynWLqD
-         advRLLvcLI1Bmp8p967m0/NEgWMKyrIyiNfP5SYb68OaYrvOF6Ih8YXhouE22ViX4s
-         LsuwuzZX0hr4fX3VQWRkOwRgoKXc+VYn5kkEYZHa5sDjcpm+AqxS6jzFIx5FP3o+nq
-         EKQeXrzA/m93Q==
-Date:   Tue, 25 Jan 2022 11:01:28 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Ido Schimmel <idosch@nvidia.com>, Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] mlxsw: spectrum_kvdl: Use struct_size() helper in
- kzalloc()
-Message-ID: <20220125170128.GA60918@embeddedor>
+        s=k20201202; t=1643129869;
+        bh=6XkwXgsw19qj7USLrufn0h/tjB7gak8V19SNDIbm7V8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=LJ678dooB3UE1J+39GaMMyngBcQRH9jk6vt/5V1WPObw1WTcNf87X/MvOI02+KCsk
+         ZSGZbwVHwrnXd5ybU5Caxd0VIqT6wHtu7sshlroYRQHKp1zinrqKA6QIUZMONlsOrH
+         jxPNE1B1lqteRYJ0ePeUInqCQs0p0uuITFc37fJlRN87P+q8s1W2GGk3UN8SgYxxkI
+         S/f4p1PTvgTGq/tpMhI6MHdjFZi5QsIq3xkZKXNJ+B+yFExbGB1F3PC+AL+jJO0Nl8
+         QGkStm965gjNBUgErdUUe00An9cLRjJYjawdvvi79/WnvnMXB+in8AV0A9yVPGpsVR
+         hCtO/WYvAK7DQ==
+Date:   Tue, 25 Jan 2022 10:57:48 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     qizhong cheng <qizhong.cheng@mediatek.com>
+Cc:     Ryder Lee <ryder.lee@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, chuanjia.liu@mediatek.com
+Subject: Re: [PATCH] PCI: mediatek: Change MSI interrupt processing sequence
+Message-ID: <20220125165748.GA1458116@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220123033306.29799-1-qizhong.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make use of the struct_size() helper instead of an open-coded version,
-in order to avoid any potential type mistakes or integer overflows that,
-in the worst scenario, could lead to heap overflows.
+All patches change *something*.  Can you update the subject line so it
+says something specific about the change?
 
-Also, address the following sparse warnings:
-drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c:229:24: warning: using sizeof on a flexible structure
+Maybe something like "Clear MSI status before dispatching handler"?
 
-Link: https://github.com/KSPP/linux/issues/174
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+On Sun, Jan 23, 2022 at 11:33:06AM +0800, qizhong cheng wrote:
+> As an edge-triggered interrupts, its interrupt status should be cleared
+> before dispatch to the handler of device.
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c
-index a9fff8adc75e..d20e794e01ca 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c
-@@ -213,7 +213,6 @@ mlxsw_sp1_kvdl_part_init(struct mlxsw_sp *mlxsw_sp,
- 	struct mlxsw_sp1_kvdl_part *part;
- 	bool need_update = true;
- 	unsigned int nr_entries;
--	size_t usage_size;
- 	u64 resource_size;
- 	int err;
- 
-@@ -225,8 +224,8 @@ mlxsw_sp1_kvdl_part_init(struct mlxsw_sp *mlxsw_sp,
- 	}
- 
- 	nr_entries = div_u64(resource_size, info->alloc_size);
--	usage_size = BITS_TO_LONGS(nr_entries) * sizeof(unsigned long);
--	part = kzalloc(sizeof(*part) + usage_size, GFP_KERNEL);
-+	part = kzalloc(struct_size(part, usage, BITS_TO_LONGS(nr_entries)),
-+		       GFP_KERNEL);
- 	if (!part)
- 		return ERR_PTR(-ENOMEM);
- 
--- 
-2.27.0
+I'm not an IRQ expert, but the reasoning that "we should clear the MSI
+interrupt status before dispatching the handler because MSI is an
+edge-triggered interrupt" doesn't seem completely convincing because
+your code will now look like this:
 
+  /* Clear the INTx */
+  writel(1 << bit, port->base + PCIE_INT_STATUS);
+  generic_handle_domain_irq(port->irq_domain, bit - INTX_SHIFT);
+  ...
+
+  /* Clear MSI interrupt status */
+  writel(MSI_STATUS, port->base + PCIE_INT_STATUS);
+  generic_handle_domain_irq(port->inner_domain, bit);
+
+You clear interrupt status before dispatching the handler for *both*
+level-triggered INTx interrupts and edge-triggered MSI interrupts.
+
+So it doesn't seem that simply being edge-triggered is the critical
+factor here.
+
+> Signed-off-by: qizhong cheng <qizhong.cheng@mediatek.com>
+> ---
+>  drivers/pci/controller/pcie-mediatek.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/pcie-mediatek.c b/drivers/pci/controller/pcie-mediatek.c
+> index 2f3f974977a3..705ea33758b1 100644
+> --- a/drivers/pci/controller/pcie-mediatek.c
+> +++ b/drivers/pci/controller/pcie-mediatek.c
+> @@ -624,12 +624,12 @@ static void mtk_pcie_intr_handler(struct irq_desc *desc)
+>  		if (status & MSI_STATUS){
+>  			unsigned long imsi_status;
+>  
+> +			/* Clear MSI interrupt status */
+> +			writel(MSI_STATUS, port->base + PCIE_INT_STATUS);
+>  			while ((imsi_status = readl(port->base + PCIE_IMSI_STATUS))) {
+>  				for_each_set_bit(bit, &imsi_status, MTK_MSI_IRQS_NUM)
+>  					generic_handle_domain_irq(port->inner_domain, bit);
+>  			}
+> -			/* Clear MSI interrupt status */
+> -			writel(MSI_STATUS, port->base + PCIE_INT_STATUS);
+>  		}
+>  	}
+>  
+> -- 
+> 2.25.1
+> 
+> 
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
