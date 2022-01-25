@@ -2,75 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BC28C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C069BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238484AbiAYOei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:34:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238463AbiAYObJ (ORCPT
+        id S1579247AbiAYOg3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 09:36:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42906 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1388184AbiAYOdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:31:09 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26209C061773
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:26:44 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id g14so62104148ybs.8
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:26:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wl6G1I8d7amrdxFUYe5VdZlTB2njtWsoXMFyPet+gSM=;
-        b=AGW72ryFUV7dVhvx7fItSQe6ZZHiMtTV5Da/c6LbG0unTjI5NleXJ6OdX+dcMAo3XP
-         Egpc2Ui/iAx/cdbFGKKIggUeC7r+FbsAeu6d9h+vTDvb25dE8nqSP7ccD+/WTQdWj0+s
-         9aMo3rC131UNWFHlxKUd5aZ62wkqORyZpgNvACVVaLR4Mumpf7Qm438DHuTrBqP9jpCm
-         /Ft8pdlHTjs9Qq/e2gNrC2s7q43TXwOr/RCgSdSyWjsqC6Ezc2J/L1jjSNPDh7F1RRgB
-         kCh2H1qKG+GhLqK22qGSxvtGlAjTFmh+zZb8yyte+M1KeTy4OO71L38j3uGr51G9usH7
-         sqPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wl6G1I8d7amrdxFUYe5VdZlTB2njtWsoXMFyPet+gSM=;
-        b=wlYIwAn7U8VXPflFGqsJs538RN6yLOtUeOXZHN1VVeYl5pfa3og/z9j7PYMi+xUay2
-         VZ3tbaHNogbxIBUwh2t9rpw0O+NzaPw8BnPw+CEgdc+dPi4Xm6705v3/h3D0iOHKKGwo
-         FdDD1lLQvBOcl36SHBb1yDpe9hablBcbhud6g+mQKhNhLUxV7unCTeA5qkLHxKTPBRXf
-         GM3XVF5pc2166eteP6KIhWJHO+c8/7SgW4nlHrex0neCP/qY3YZVA4WLg0Mv/5iNyx8F
-         sfwtTNo6Sazr/13skD8tP7vlVcztZOq97jLIO+renzqzqT4gKg7SwTc+kv6Q6+aYFc2D
-         yHIQ==
-X-Gm-Message-State: AOAM531bduWYYvAVZHANIQPj7OGlJXbi1ul0JQtsBHZ5WTH2OTqa9KuW
-        WHXoFmk/JXGKSYV5FvkfSA9yNxmXYhVjetWZK7NUOaAwAiXS1w==
-X-Google-Smtp-Source: ABdhPJyFvo0J2ACdgGip0xhojHQiB4Fhvy8CYFKQFGItnOFG8EzOF30f7xwY1X3oEdihcoOJrEv5uvnaovhwTDuhnyE=
-X-Received: by 2002:a25:af4b:: with SMTP id c11mr29461798ybj.49.1643120803495;
- Tue, 25 Jan 2022 06:26:43 -0800 (PST)
+        Tue, 25 Jan 2022 09:33:02 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A741615CF
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 14:33:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51BEBC340E0;
+        Tue, 25 Jan 2022 14:32:59 +0000 (UTC)
+Date:   Tue, 25 Jan 2022 09:32:58 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     xkernel.wang@foxmail.com
+Cc:     mingo@redhat.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tracing/histogram: fix a potential memory leak for
+ kstrdup()
+Message-ID: <20220125093258.222175c7@gandalf.local.home>
+In-Reply-To: <tencent_C52895FD37802832A3E5B272D05008866F0A@qq.com>
+References: <tencent_C52895FD37802832A3E5B272D05008866F0A@qq.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220125132221.2220-1-linmiaohe@huawei.com>
-In-Reply-To: <20220125132221.2220-1-linmiaohe@huawei.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 25 Jan 2022 22:26:07 +0800
-Message-ID: <CAMZfGtUJ08hL8RW0VCxx6KMmf0eUvMaO1hu_Mhhhu90HQQ31rQ@mail.gmail.com>
-Subject: Re: [PATCH] mm/balloon_compaction: make balloon page compaction
- callbacks static
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 9:29 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
->
-> Since commit b1123ea6d3b3 ("mm: balloon: use general non-lru movable page
-> feature"), these functions are called via balloon_aops callbacks. They're
-> not called directly outside this file. So make them static and clean up
-> the relevant code.
->
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+On Tue, 25 Jan 2022 12:07:15 +0800
+xkernel.wang@foxmail.com wrote:
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+> 
+> kfree() is missing on an error path to free the memory allocated by
+> kstrdup():
+> > p = param = kstrdup(data->params[i], GFP_KERNEL);  
+> So it is better to free it via kfree(p).
+> 
+
+Applied. Thanks,
+
+-- Steve
+
+> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+> ---
+>  kernel/trace/trace_events_hist.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+> index f01e442..1fac14c 100644
+> --- a/kernel/trace/trace_events_hist.c
+> +++ b/kernel/trace/trace_events_hist.c
+> @@ -3578,6 +3578,7 @@ static int trace_action_create(struct hist_trigger_data *hist_data,
+>  
+>  			var_ref_idx = find_var_ref_idx(hist_data, var_ref);
+>  			if (WARN_ON(var_ref_idx < 0)) {
+> +				kfree(p);
+>  				ret = var_ref_idx;
+>  				goto err;
+>  			}
+
