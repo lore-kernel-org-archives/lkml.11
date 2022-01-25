@@ -2,331 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C27C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384841AbiAYNB4 (ORCPT
+        id S1575219AbiAYNCs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:01:56 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:22240 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1348692AbiAYM7o (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:59:44 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20PCg3W9029371;
-        Tue, 25 Jan 2022 12:59:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=tl6Cs7TnQDyQv3GmXJtbo2WKbDnaVetS+2E9nqwdUHE=;
- b=AChDC8aXuSLRr21EAvtQfDQkwTOmW2sTfZmvSdYp8eLMZf1Yv6BzVVyoaYuOsN4kT+t3
- p4PSSeATdtaJBgbMIn87Z7wZeJy9ov2gNl+SEU7DbDf7FKt7iGbt3zxUvt27FI/a6Gw0
- hFPDkVRLE66WRAirEM544RJzLUOPKMrm/1Yid0khAJI71SKkwBXuMcOccDpBTAQ8p1fu
- J39uOEmpln27c/uVv3439blwQEVWOb+Z2/Z6bq5ykpWxlIc5VaFziLmscOdY6k5GeSRU
- SU8Y39hFVXggQpPWz1yWyO06UCaAsJ9CatPRxF0kKKhIeJCB0po1rGeW4QzyfUblzDbD jg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dthehrap1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 12:59:38 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20PChawG003320;
-        Tue, 25 Jan 2022 12:59:38 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dthehranj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 12:59:38 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20PCwL5P021981;
-        Tue, 25 Jan 2022 12:59:36 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3dr96je7s7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 12:59:36 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20PCxVQr47055132
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 25 Jan 2022 12:59:31 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 61A66AE051;
-        Tue, 25 Jan 2022 12:59:31 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B33B8AE045;
-        Tue, 25 Jan 2022 12:59:29 +0000 (GMT)
-Received: from [9.171.58.95] (unknown [9.171.58.95])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 25 Jan 2022 12:59:29 +0000 (GMT)
-Message-ID: <17ccab21-b654-636f-2dfa-57014f4cd4eb@linux.ibm.com>
-Date:   Tue, 25 Jan 2022 14:01:19 +0100
+        Tue, 25 Jan 2022 08:02:48 -0500
+Received: from mga18.intel.com ([134.134.136.126]:51283 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1573866AbiAYNAG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 08:00:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643115603; x=1674651603;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yzsKhozAAf7/ioiWYX2kSFAetWf23UwLpvHuHDWhI9Q=;
+  b=NR//p5kdFiAZh6yjNHLWilqU/esPUsLI97gCAJQO46Znm7s9P582cdZV
+   CsUMdUhwdKSpo66axky/dVc2slTqkCtDACYv6mVrPLQcGU+AhjPC8y47U
+   Gl4+ivl6Ppcrr+J6/fS4sEzSKpKjU61hXQOEJmhQU6GRqtuYhRIWTjxZx
+   9HV7taQQHtJBH0OL3BZ69x5uyz984UzlZBVMO7wlt7hBrY3SGYMJo9MFz
+   GBCjR6Pa+1qmN0FgiY6McsxvNi9Tpz8Rx9oUJaOLGqyUhtBO3DqXCRua0
+   ynfu1a/iILtlO8LlN9X15kqPLudy0QPCBjlZJ9b73LmuPqJX8GFgvDZqq
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="229866371"
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="229866371"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 04:55:47 -0800
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="695823077"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 04:55:42 -0800
+Received: by lahna (sSMTP sendmail emulation); Tue, 25 Jan 2022 14:55:40 +0200
+Date:   Tue, 25 Jan 2022 14:55:40 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Rajat Jain <rajatja@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rajatxjain@gmail.com,
+        dtor@google.com, jsbarnes@google.com,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Pavel Machek <pavel@denx.de>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] PCI: ACPI: Allow internal devices to be marked as
+ untrusted
+Message-ID: <Ye/zTHR5aCG58z87@lahna>
+References: <20220120000409.2706549-1-rajatja@google.com>
+ <20220121214117.GA1154852@bhelgaas>
+ <Ye5GvQbFKo+CFtRb@lahna>
+ <Ye/X7E2dKb+zem34@lahna>
+ <Ye/btvA1rLB2rp02@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v2 25/30] vfio-pci/zdev: wire up zPCI interpretive
- execution support
-Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
- <20220114203145.242984-26-mjrosato@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <20220114203145.242984-26-mjrosato@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: gxu6dUrP3EQJXCtEJR2aWICrbrRLS4HG
-X-Proofpoint-GUID: -7CtNxsBinYA5Uo-8HgZm70o5LGwD5aL
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-25_02,2022-01-25_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- mlxlogscore=999 clxscore=1015 mlxscore=0 phishscore=0 spamscore=0
- priorityscore=1501 impostorscore=0 bulkscore=0 malwarescore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201250081
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ye/btvA1rLB2rp02@kroah.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 1/14/22 21:31, Matthew Rosato wrote:
-> Introduce support for VFIO_DEVICE_FEATURE_ZPCI_INTERP, which is a new
-> VFIO_DEVICE_FEATURE ioctl.  This interface is used to indicate that an
-> s390x vfio-pci device wishes to enable/disable zPCI interpretive
-> execution, which allows zPCI instructions to be executed directly by
-> underlying firmware without KVM involvement.
+On Tue, Jan 25, 2022 at 12:15:02PM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Jan 25, 2022 at 12:58:52PM +0200, Mika Westerberg wrote:
+> > On Mon, Jan 24, 2022 at 08:27:17AM +0200, Mika Westerberg wrote:
+> > > > > This patch introduces a new "UntrustedDevice" property that can be used
+> > > > > by the firmware to mark any device as untrusted.
+> > > 
+> > > I think this new property should be documented somewhere too (also
+> > > explain when to use it instead of ExternalFacingPort). If not in the
+> > > next ACPI spec or some supplemental doc then perhaps in the DT bindings
+> > > under Documentation/devicetree/bindings.
+> > 
+> > Actually Microsoft has similar already:
+> > 
+> > https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-internal-pcie-ports-accessible-to-users-and-requiring-dma-protection
+> > 
+> > I think we should use that too here.
 > 
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->   arch/s390/include/asm/kvm_pci.h  |  1 +
->   drivers/vfio/pci/vfio_pci_core.c |  2 +
->   drivers/vfio/pci/vfio_pci_zdev.c | 78 ++++++++++++++++++++++++++++++++
->   include/linux/vfio_pci_core.h    | 10 ++++
->   include/uapi/linux/vfio.h        |  7 +++
->   include/uapi/linux/vfio_zdev.h   | 15 ++++++
->   6 files changed, 113 insertions(+)
-> 
-> diff --git a/arch/s390/include/asm/kvm_pci.h b/arch/s390/include/asm/kvm_pci.h
-> index 97a90b37c87d..dc00c3f27a00 100644
-> --- a/arch/s390/include/asm/kvm_pci.h
-> +++ b/arch/s390/include/asm/kvm_pci.h
-> @@ -35,6 +35,7 @@ struct kvm_zdev {
->   	struct kvm_zdev_ioat ioat;
->   	struct zpci_fib fib;
->   	struct notifier_block nb;
-> +	bool interp;
+> But we do not have "dma protection" for Linux, so how will that value
+> make sense?
 
-NIT: s/interp/interpretation/ ?
+Yes I think we do - IOMMU. That's the same thing what we do now for
+"External Facing Ports". This one just is for internal ones.
 
->   };
->   
->   int kvm_s390_pci_dev_open(struct zpci_dev *zdev);
-> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-> index fc57d4d0abbe..2b2d64a2190c 100644
-> --- a/drivers/vfio/pci/vfio_pci_core.c
-> +++ b/drivers/vfio/pci/vfio_pci_core.c
-> @@ -1172,6 +1172,8 @@ long vfio_pci_core_ioctl(struct vfio_device *core_vdev, unsigned int cmd,
->   			mutex_unlock(&vdev->vf_token->lock);
->   
->   			return 0;
-> +		case VFIO_DEVICE_FEATURE_ZPCI_INTERP:
-> +			return vfio_pci_zdev_feat_interp(vdev, feature, arg);
->   		default:
->   			return -ENOTTY;
->   		}
-> diff --git a/drivers/vfio/pci/vfio_pci_zdev.c b/drivers/vfio/pci/vfio_pci_zdev.c
-> index 5c2bddc57b39..4339f48b98bc 100644
-> --- a/drivers/vfio/pci/vfio_pci_zdev.c
-> +++ b/drivers/vfio/pci/vfio_pci_zdev.c
-> @@ -54,6 +54,10 @@ static int zpci_group_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
->   		.version = zdev->version
->   	};
->   
-> +	/* Some values are different for interpreted devices */
-> +	if (zdev->kzdev && zdev->kzdev->interp)
-> +		cap.maxstbl = zdev->maxstbl;
-> +
->   	return vfio_info_add_capability(caps, &cap.header, sizeof(cap));
->   }
->   
-> @@ -138,6 +142,72 @@ int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
->   	return ret;
->   }
->   
-> +int vfio_pci_zdev_feat_interp(struct vfio_pci_core_device *vdev,
-> +			      struct vfio_device_feature feature,
-> +			      unsigned long arg)
-> +{
-> +	struct zpci_dev *zdev = to_zpci(vdev->pdev);
-> +	struct vfio_device_zpci_interp *data;
-> +	struct vfio_device_feature *feat;
-> +	unsigned long minsz;
-> +	int size, rc;
-> +
-> +	if (!zdev || !zdev->kzdev)
-> +		return -EINVAL;
-> +
-> +	/* If PROBE specified, return probe results immediately */
-> +	if (feature.flags & VFIO_DEVICE_FEATURE_PROBE)
-> +		return kvm_s390_pci_interp_probe(zdev);
-> +
-> +	/* GET and SET are mutually exclusive */
-> +	if ((feature.flags & VFIO_DEVICE_FEATURE_GET) &&
-> +	    (feature.flags & VFIO_DEVICE_FEATURE_SET))
-> +		return -EINVAL;
+> And shouldn't this be an ACPI standard?
 
-Isn't the check already done in VFIO core?
+Probably should or some supplemental doc but not sure how easy these
+"properties" can be added there to be honest.
 
-> +
-> +	size = sizeof(*feat) + sizeof(*data);
-> +	feat = kzalloc(size, GFP_KERNEL);
-> +	if (!feat)
-> +		return -ENOMEM;
-> +
-> +	data = (struct vfio_device_zpci_interp *)&feat->data;
-> +	minsz = offsetofend(struct vfio_device_feature, flags);
-> +
-> +	if (feature.argsz < minsz + sizeof(*data))
-> +		return -EINVAL;
-> +
-> +	/* Get the rest of the payload for GET/SET */
-> +	rc = copy_from_user(data, (void __user *)(arg + minsz),
-> +			    sizeof(*data));
-> +	if (rc)
-> +		rc = -EINVAL;
-> +
-> +	if (feature.flags & VFIO_DEVICE_FEATURE_GET) {
-> +		if (zdev->gd != 0)
-> +			data->flags = VFIO_DEVICE_ZPCI_FLAG_INTERP;
-> +		else
-> +			data->flags = 0;
-> +		data->fh = zdev->fh;
-> +		/* userspace is using host fh, give interpreted clp values */
-> +		zdev->kzdev->interp = true;
-> +
-> +		if (copy_to_user((void __user *)arg, feat, size))
-> +			rc = -EFAULT;
-> +	} else if (feature.flags & VFIO_DEVICE_FEATURE_SET) {
-> +		if (data->flags == VFIO_DEVICE_ZPCI_FLAG_INTERP)
-> +			rc = kvm_s390_pci_interp_enable(zdev);
-> +		else if (data->flags == 0)
-> +			rc = kvm_s390_pci_interp_disable(zdev);
-> +		else
-> +			rc = -EINVAL;
-> +	} else {
-> +		/* Neither GET nor SET were specified */
-> +		rc = -EINVAL;
-> +	}
-> +
-> +	kfree(feat);
-> +	return rc;
-> +}
-> +
->   static int vfio_pci_zdev_group_notifier(struct notifier_block *nb,
->   					unsigned long action, void *data)
->   {
-> @@ -164,6 +234,7 @@ void vfio_pci_zdev_open(struct vfio_pci_core_device *vdev)
->   		return;
->   
->   	zdev->kzdev->nb.notifier_call = vfio_pci_zdev_group_notifier;
-> +	zdev->kzdev->interp = false;
->   
->   	if (vfio_register_notifier(vdev->vdev.dev, VFIO_GROUP_NOTIFY,
->   				   &events, &zdev->kzdev->nb))
-> @@ -180,5 +251,12 @@ void vfio_pci_zdev_release(struct vfio_pci_core_device *vdev)
->   	vfio_unregister_notifier(vdev->vdev.dev, VFIO_GROUP_NOTIFY,
->   				 &zdev->kzdev->nb);
->   
-> +	/*
-> +	 * If the device was using interpretation, don't trust that userspace
-> +	 * did the appropriate cleanup
-> +	 */
-> +	if (zdev->gd != 0)
-> +		kvm_s390_pci_interp_disable(zdev);
-> +
->   	kvm_s390_pci_dev_release(zdev);
->   }
-> diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
-> index 05287f8ac855..0db2b1051931 100644
-> --- a/include/linux/vfio_pci_core.h
-> +++ b/include/linux/vfio_pci_core.h
-> @@ -198,6 +198,9 @@ static inline int vfio_pci_igd_init(struct vfio_pci_core_device *vdev)
->   #ifdef CONFIG_VFIO_PCI_ZDEV
->   extern int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
->   				       struct vfio_info_cap *caps);
-> +int vfio_pci_zdev_feat_interp(struct vfio_pci_core_device *vdev,
-> +			      struct vfio_device_feature feature,
-> +			      unsigned long arg);
->   void vfio_pci_zdev_open(struct vfio_pci_core_device *vdev);
->   void vfio_pci_zdev_release(struct vfio_pci_core_device *vdev);
->   #else
-> @@ -207,6 +210,13 @@ static inline int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
->   	return -ENODEV;
->   }
->   
-> +static inline int vfio_pci_zdev_feat_interp(struct vfio_pci_core_device *vdev,
-> +					    struct vfio_device_feature feature,
-> +					    unsigned long arg)
-> +{
-> +	return -ENOTTY;
-> +}
-> +
->   static inline void vfio_pci_zdev_open(struct vfio_pci_core_device *vdev)
->   {
->   }
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index ef33ea002b0b..b9a75485b8e7 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -1002,6 +1002,13 @@ struct vfio_device_feature {
->    */
->   #define VFIO_DEVICE_FEATURE_PCI_VF_TOKEN	(0)
->   
-> +/*
-> + * Provide support for enabling interpretation of zPCI instructions.  This
-> + * feature is only valid for s390x PCI devices.  Data provided when setting
-> + * and getting this feature is futher described in vfio_zdev.h
-> + */
-> +#define VFIO_DEVICE_FEATURE_ZPCI_INTERP		(1)
-> +
->   /* -------- API for Type1 VFIO IOMMU -------- */
->   
->   /**
-> diff --git a/include/uapi/linux/vfio_zdev.h b/include/uapi/linux/vfio_zdev.h
-> index b4309397b6b2..575f0410dc66 100644
-> --- a/include/uapi/linux/vfio_zdev.h
-> +++ b/include/uapi/linux/vfio_zdev.h
-> @@ -75,4 +75,19 @@ struct vfio_device_info_cap_zpci_pfip {
->   	__u8 pfip[];
->   };
->   
-> +/**
-> + * VFIO_DEVICE_FEATURE_ZPCI_INTERP
-> + *
-> + * This feature is used for enabling zPCI instruction interpretation for a
-> + * device.  No data is provided when setting this feature.  When getting
-> + * this feature, the following structure is provided which details whether
-> + * or not interpretation is active and provides the guest with host device
-> + * information necessary to enable interpretation.
-> + */
-> +struct vfio_device_zpci_interp {
-> +	__u64 flags;
-> +#define VFIO_DEVICE_ZPCI_FLAG_INTERP 1
-> +	__u32 fh;		/* Host device function handle */
-> +};
-> +
->   #endif
-> 
+Some of these that we use in Linux too are from that same page:
 
-Otherwise LGTM
+https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
 
--- 
-Pierre Morel
-IBM Lab Boeblingen
+Namely these: HotPlugSupportInD3, ExternalFacingPort, usb4-host-interface,
+usb4-port-number and StorageD3Enable.
