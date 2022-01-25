@@ -2,102 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5215CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C7FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445207AbiAYRUA (ORCPT
+        id S1587561AbiAYRUM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:20:00 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:57506 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1356093AbiAYROP (ORCPT
+        Tue, 25 Jan 2022 12:20:12 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:51456
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344459AbiAYRNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:14:15 -0500
-X-UUID: 52745c4973ec4f9a8683bfd2748ab433-20220126
-X-UUID: 52745c4973ec4f9a8683bfd2748ab433-20220126
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1341138552; Wed, 26 Jan 2022 01:14:08 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 26 Jan 2022 01:14:07 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 26 Jan 2022 01:14:07 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     <wenst@chromium.org>
-CC:     <chun-jie.chen@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>
-Subject: Re: [PATCH 07/31] clk: mediatek: cpumux: Internalize struct mtk_clk_cpumux
-Date:   Wed, 26 Jan 2022 01:14:07 +0800
-Message-ID: <20220125171407.32525-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220122091731.283592-8-wenst@chromium.org>
-References: <20220122091731.283592-8-wenst@chromium.org>
+        Tue, 25 Jan 2022 12:13:34 -0500
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 632EA402F3
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 17:11:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643130717;
+        bh=LvBwPzZuQYg1sk1AcEyVLVG7UxYbxMueMK9OojLw1Q4=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version:Content-Type;
+        b=CY7PK8+b4bB9aoCAUW0tERxpxzO0v2nWOQ0fzR7bvxf0uuXmbre7Zc06Vd/PnuyS0
+         O8uBlpcNoiSNJOquriY5l5fBTFqrJhKrDQXqd/BtaNpn7lUcg3dxRYtP6ZI62MgtNR
+         CkCfJuKdyLVJwA2pEo58ykbTMKNophQQJGFncYp4vV6TOd3JShy5Il1XiCbXKMueo8
+         OvhTk5ChHAZ9Hx+RkjVtBR1OFBkIodANZahKQrmEjfYTpY5+lao3+BJYmcGFAZeggB
+         8YX2YBKG1WBJ+I3DFeTMIVGzLGb2Dyu3qNvnkArmMgIjA90gdO9aVDwEK2l18aaWNb
+         MTmNZlV+AtUcg==
+Received: by mail-wm1-f72.google.com with SMTP id l16-20020a7bcf10000000b0034ffdd81e7aso1783551wmg.4
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:11:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LvBwPzZuQYg1sk1AcEyVLVG7UxYbxMueMK9OojLw1Q4=;
+        b=MrOeekPimSb7BkihNE8sYp6xEClAZMPtlV2fHCggOl3082u8Ydhkya0NfgbLNyhKXG
+         7Dgvmq66zJUMsJ/aKzXZQpfUN3ID7iDtIttogSLrV+m59eSuJlvuDTI+RI+s6eolDYD7
+         TcJ56kwGmzzG5hdMpDRToT4oxt58rKJOuEcvu3Wuzdxf8U5RMbHtfiRNXm/B8ARcrjZR
+         axhl2HFhSSN7JJ3gWpJvQ6K75nqq3OTC9TysG8Efsao4CPDg4cpFTFF2B/kYqdNrOQmQ
+         j8bcTtz0SUjsnwBXQZ5P2JQUO21UU9pYcmJNfFTpfnfztp/puATuKjjEqTgGiX1Z7yKw
+         +6iA==
+X-Gm-Message-State: AOAM532RPkJng8ru6ik77daYOwd3NJALvzK2msB4AcmIVnqI936vDTb6
+        g28s+pqAi/M2n8phEDdPq38TnrNHgpJ71UUx3CbFZ2J8dikTQjQNJLcz65AEODR0bg2upCXYD5u
+        dLJoCaZ5M/iSBzIvxHGm9hUpXVB2sLwMI0RgYG6AmcQ==
+X-Received: by 2002:a05:600c:4b95:: with SMTP id e21mr3819817wmp.106.1643130716928;
+        Tue, 25 Jan 2022 09:11:56 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwfP17LMlnVHGMliQrz4/SA8fpjZEApa5SVjlONjtvltbKWP+dIusViDktiO3K5mmPtxTR73g==
+X-Received: by 2002:a05:600c:4b95:: with SMTP id e21mr3819792wmp.106.1643130716796;
+        Tue, 25 Jan 2022 09:11:56 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id f8sm1185826wmg.44.2022.01.25.09.11.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 09:11:55 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     linux-arm-kernel@lists.infradead.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linus.walleij@linaro.org, linux-fsd@tesla.com,
+        devicetree@vger.kernel.org, olof@lixom.net, soc@kernel.org,
+        sboyd@kernel.org, linux-clk@vger.kernel.org, arnd@arndb.de,
+        linux-samsung-soc@vger.kernel.org, catalin.marinas@arm.com,
+        robh+dt@kernel.org, pankaj.dubey@samsung.com,
+        s.nawrocki@samsung.com
+Subject: Re: (subset) [PATCH v5 16/16] arm64: defconfig: Enable Tesla FSD SoC
+Date:   Tue, 25 Jan 2022 18:11:07 +0100
+Message-Id: <164313065136.81319.934364321640879263.b4-ty@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220124141644.71052-17-alim.akhtar@samsung.com>
+References: <20220124141644.71052-1-alim.akhtar@samsung.com> <CGME20220124143005epcas5p103598aa358ac35fe5e1ee762faf508b0@epcas5p1.samsung.com> <20220124141644.71052-17-alim.akhtar@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> struct mtk_clk_cpumux is an implementation detail of the cpumux clk
-> type, and is not used outside of the implementation.
+On Mon, 24 Jan 2022 19:46:44 +0530, Alim Akhtar wrote:
+> This patch enables the Tesla FSD SoC in arm64 defconfig.
 > 
-> Internalize the definition to minimize leakage of details and shrink
-> the header file.
 > 
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
->
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-> ---
->  drivers/clk/mediatek/clk-cpumux.c | 8 ++++++++
->  drivers/clk/mediatek/clk-cpumux.h | 8 --------
->  2 files changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/clk/mediatek/clk-cpumux.c b/drivers/clk/mediatek/clk-cpumux.c
-> index 99a819e3673f..344c6399b22f 100644
-> --- a/drivers/clk/mediatek/clk-cpumux.c
-> +++ b/drivers/clk/mediatek/clk-cpumux.c
-> @@ -12,6 +12,14 @@
->  #include "clk-mtk.h"
->  #include "clk-cpumux.h"
->  
-> +struct mtk_clk_cpumux {
-> +	struct clk_hw	hw;
-> +	struct regmap	*regmap;
-> +	u32		reg;
-> +	u32		mask;
-> +	u8		shift;
-> +};
-> +
->  static inline struct mtk_clk_cpumux *to_mtk_clk_cpumux(struct clk_hw *_hw)
->  {
->  	return container_of(_hw, struct mtk_clk_cpumux, hw);
-> diff --git a/drivers/clk/mediatek/clk-cpumux.h b/drivers/clk/mediatek/clk-cpumux.h
-> index fda7770fd803..a538f2bbef0d 100644
-> --- a/drivers/clk/mediatek/clk-cpumux.h
-> +++ b/drivers/clk/mediatek/clk-cpumux.h
-> @@ -7,14 +7,6 @@
->  #ifndef __DRV_CLK_CPUMUX_H
->  #define __DRV_CLK_CPUMUX_H
->  
-> -struct mtk_clk_cpumux {
-> -	struct clk_hw	hw;
-> -	struct regmap	*regmap;
-> -	u32		reg;
-> -	u32		mask;
-> -	u8		shift;
-> -};
-> -
->  int mtk_clk_register_cpumuxes(struct device_node *node,
->  			      const struct mtk_composite *clks, int num,
->  			      struct clk_onecell_data *clk_data);
-> -- 
-> 2.35.0.rc0.227.g00780c9af4-goog
 
+Applied, thanks!
 
+[16/16] arm64: defconfig: Enable Tesla FSD SoC
+        commit: aeb62e360c0fffd9cf218a314647d0c7254becbe
+
+Best regards,
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
