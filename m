@@ -2,132 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81782C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6FF3C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3415259AbiAYDOi (ORCPT
+        id S1320898AbiAYDPE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:14:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46030 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1318161AbiAYDEn (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:04:43 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AED6C0E5331
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:44:41 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id o30-20020a05600c511e00b0034f4c3186f4so352652wms.3
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:44:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=97GwBkpfkEyDXPs9Xg2PMr7/QxnDaM9vXKCUdcNdzlQ=;
-        b=ch536Dq2+p5qGm7SDqd/7tTHbZh0/MFxbamVvJp4UwtA8hIEuzLVOkqNwojOiyNNvW
-         l9lQ6Tt+02/My+3APjDxUWFMzpPRaRoQ3OFVuSD77hPQHfD66rGni0uTd0IlIX3k5tCx
-         1alAT07eHhMe3THyARDSrF+cgxXvTeqQ4n4N/ivzVT7gU5nChQMBz7r3IOstkTyjO8oS
-         6mpHk1SUFCDZ3mwfOVygBRiP/8DVdZHjArCgoaPOe/CS6q7RXs9fYXL5kr4OEesPmD5x
-         jJKoSRgU5gVCOIc1SGwf07HiRfCMK4XlpuBmd+lGVoBx5KY4Zq3EymfcKQ0uHTgD9yDG
-         Lx/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=97GwBkpfkEyDXPs9Xg2PMr7/QxnDaM9vXKCUdcNdzlQ=;
-        b=qp+qgGnl1iKUYqIpjU38VZTlNMj9CbdNCC/TNaueDfpPCScqnkstQM1mctLWysAfyo
-         OoWcU3R6+4eo0xYOZgMocgt8ZLAv+3A604ngeAoNWCqH4ytMwz+NZqUsCDjG5qL6dqLq
-         4/6916HfcUsy8Q9q4it1Rtuukekl/TUgtohY7F7Mfi//+2spdaGFpLOgyVaJg1WbWgQ8
-         b1Eh49a0ec1XtbS/W2/xQLXu2jw7hDgSJ5Fs8NvO/eLS3eOpN6A2g3jvZUN27pjVetyY
-         ujc7WmmapxSoQqnfAce7Q7euvbqeg+6nbwcX2rpC8mpGpB5ZxGpAP/GD+DqWJliFhXr8
-         YbJA==
-X-Gm-Message-State: AOAM5306p5SJicPrulLkaXmpk0OyoHbrDVi7oOReouzvVzGjGWHLXcCS
-        gX4GtnNbm4Jz5j7uWGe8lBs5Uw==
-X-Google-Smtp-Source: ABdhPJw1Pbz998Z2T97NBh6nX+rD2V4rXuGJTJn2mIfdxD5zRNSecpEGAL3kl6eKVmrz6OOv3S2pZg==
-X-Received: by 2002:a1c:7303:: with SMTP id d3mr381891wmb.154.1643064280218;
-        Mon, 24 Jan 2022 14:44:40 -0800 (PST)
-Received: from localhost.localdomain (d.f.5.e.6.6.b.1.e.6.2.7.e.5.c.8.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0:8c5e:726e:1b66:e5fd])
-        by smtp.gmail.com with ESMTPSA id i3sm15010613wru.33.2022.01.24.14.44.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 14:44:39 -0800 (PST)
-From:   Phillip Potter <phil@philpotter.co.uk>
-To:     gregkh@linuxfoundation.org
-Cc:     dan.carpenter@oracle.com, Larry.Finger@lwfinger.net,
-        straube.linux@gmail.com, martin@kaiser.cx,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        paskripkin@gmail.com
-Subject: [PATCH 10/10] staging: r8188eu: remove GlobalDebugLevel flag
-Date:   Mon, 24 Jan 2022 22:44:15 +0000
-Message-Id: <20220124224415.831-11-phil@philpotter.co.uk>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124224415.831-1-phil@philpotter.co.uk>
-References: <20220124224415.831-1-phil@philpotter.co.uk>
+        Mon, 24 Jan 2022 22:15:04 -0500
+Received: from mga01.intel.com ([192.55.52.88]:63761 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1318491AbiAYDGC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 22:06:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643079962; x=1674615962;
+  h=cc:subject:to:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=by9ZO+ZTDaK468UmSn4Yi/q3n6O9rPWIIHQ/Z6V2Pus=;
+  b=V1sZsfiyN8T4D944xM4WGXhYmpEpZDUx1MqHjV+E8/dhd55TXlVZnezd
+   IaWQA+xtkppwDTeO2pcMY+va2psU4czhhIk5WwyLELn4KoVy/u9s7c92h
+   I6IHjDsNboQq8SfJ5jiWUV0JLRgNopb8jZ+0urexY1eRu+3b36iVKmsgc
+   Ku5idTD8/91QNevRrQvGrnrf2Hs3/QG74B0tce8sZmNUOsei+e7ANeZRY
+   LyyEIPj6/wpy/w3eyYf8gFEJduryPxBDTkhdyKExBwtiiLJKDwpo7Mf4F
+   Qjm6fhxHOv74kjHDHEE9iWKV9BswPxVO7T85ezbJWOW33E6GFgvtxITzN
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="270647151"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="270647151"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 19:02:08 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="534531392"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by orsmga008.jf.intel.com with ESMTP; 24 Jan 2022 19:02:03 -0800
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 6/7] iommu: Use right way to retrieve iommu_ops
+To:     Christoph Hellwig <hch@infradead.org>
+References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+ <20220124071103.2097118-7-baolu.lu@linux.intel.com>
+ <Ye5yHejpaAnJQYeR@infradead.org>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <f59b5cf7-0275-b979-1d57-a629fd81450a@linux.intel.com>
+Date:   Tue, 25 Jan 2022 11:01:03 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <Ye5yHejpaAnJQYeR@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove hal/odm_debug.c, to get rid of the GlobalDebugLevel flag,
-and remove the two other lines that reference GlobalDebugLevel, as
-the last remaining user (DBG_88E) is now gone. Also modify Makefile
-to no longer build hal/odm_debug.c.
+On 1/24/22 5:32 PM, Christoph Hellwig wrote:
+> On Mon, Jan 24, 2022 at 03:11:01PM +0800, Lu Baolu wrote:
+>> The common iommu_ops is hooked to both device and domain. When a helper
+>> has both device and domain pointer, the way to get the iommu_ops looks
+>> messy in iommu core. This sorts out the way to get iommu_ops. The device
+>> related helpers go through device pointer, while the domain related ones
+>> go through domain pointer.
+> 
+> Ugg. This really sounds like we should have a different structures for
+> each set of ops?
+>
 
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
----
- drivers/staging/r8188eu/Makefile            | 1 -
- drivers/staging/r8188eu/hal/odm_debug.c     | 6 ------
- drivers/staging/r8188eu/include/rtw_debug.h | 2 --
- drivers/staging/r8188eu/os_dep/os_intfs.c   | 1 -
- 4 files changed, 10 deletions(-)
- delete mode 100644 drivers/staging/r8188eu/hal/odm_debug.c
+Yes. Do this in the following patch.
 
-diff --git a/drivers/staging/r8188eu/Makefile b/drivers/staging/r8188eu/Makefile
-index a7a486cc16dd..ecd6fe5bd94c 100644
---- a/drivers/staging/r8188eu/Makefile
-+++ b/drivers/staging/r8188eu/Makefile
-@@ -10,7 +10,6 @@ r8188eu-y = \
- 		hal/hal_intf.o \
- 		hal/hal_com.o \
- 		hal/odm.o \
--		hal/odm_debug.o \
- 		hal/odm_HWConfig.o \
- 		hal/odm_RegConfig8188E.o \
- 		hal/odm_RTL8188E.o \
-diff --git a/drivers/staging/r8188eu/hal/odm_debug.c b/drivers/staging/r8188eu/hal/odm_debug.c
-deleted file mode 100644
-index 7a134229fe39..000000000000
---- a/drivers/staging/r8188eu/hal/odm_debug.c
-+++ /dev/null
-@@ -1,6 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright(c) 2007 - 2011 Realtek Corporation. */
--
--#include "../include/rtw_debug.h"
--
--u32 GlobalDebugLevel;
-diff --git a/drivers/staging/r8188eu/include/rtw_debug.h b/drivers/staging/r8188eu/include/rtw_debug.h
-index 959fb6bd25ca..01a7d987d6cc 100644
---- a/drivers/staging/r8188eu/include/rtw_debug.h
-+++ b/drivers/staging/r8188eu/include/rtw_debug.h
-@@ -52,6 +52,4 @@
- 
- #define DRIVER_PREFIX	"R8188EU: "
- 
--extern u32 GlobalDebugLevel;
--
- #endif	/* __RTW_DEBUG_H__ */
-diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
-index 17249b4fb7ad..8589de487289 100644
---- a/drivers/staging/r8188eu/os_dep/os_intfs.c
-+++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
-@@ -155,7 +155,6 @@ static uint loadparam(struct adapter *padapter)
- {
- 	struct registry_priv  *registry_par = &padapter->registrypriv;
- 
--	GlobalDebugLevel = rtw_debug;
- 	registry_par->chip_version = (u8)rtw_chip_version;
- 	registry_par->rfintfs = (u8)rtw_rfintfs;
- 	registry_par->lbkmode = (u8)rtw_lbkmode;
--- 
-2.34.1
-
+Best regards,
+baolu
