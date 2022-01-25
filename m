@@ -2,186 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3721EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D811C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454368AbiAYI7L (ORCPT
+        id S1454458AbiAYI7d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:59:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453978AbiAYI4w (ORCPT
+        Tue, 25 Jan 2022 03:59:33 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:56956 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1453979AbiAYI47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:56:52 -0500
-Received: from forward500j.mail.yandex.net (forward500j.mail.yandex.net [IPv6:2a02:6b8:0:801:2::110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5664AC058CB3
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:01:25 -0800 (PST)
-Received: from vla1-d53b4f396d89.qloud-c.yandex.net (vla1-d53b4f396d89.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:b8c:0:640:d53b:4f39])
-        by forward500j.mail.yandex.net (Yandex) with ESMTP id 748156CB6689;
-        Tue, 25 Jan 2022 11:01:08 +0300 (MSK)
-Received: from vla1-62318bfe5573.qloud-c.yandex.net (vla1-62318bfe5573.qloud-c.yandex.net [2a02:6b8:c0d:3819:0:640:6231:8bfe])
-        by vla1-d53b4f396d89.qloud-c.yandex.net (mxback/Yandex) with ESMTP id pNAwKE7dnK-17d8u1YQ;
-        Tue, 25 Jan 2022 11:01:08 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1643097668;
-        bh=q9aiavGIEsjbNTguZm0W5pY728tsRKPQNL57qb/RJnA=;
-        h=In-Reply-To:Subject:To:From:References:Date:Message-ID:Cc;
-        b=FcSm1notg3awy/NpOlZDklhUfmE4arK/fI6+B9/ury8N/qa7hpcSzj1jJGVSfeCLT
-         syMQDpKguyReiAdhZpVjwp4KEMJRHu4XaZdpqXHQ9YS2zJBPef9BHcirc4sKVcmWQK
-         7ZBq+XmpKRNQ3x5x7xmd87n9vKAKAGFfF0JBDcbI=
-Authentication-Results: vla1-d53b4f396d89.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
-Received: by vla1-62318bfe5573.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id yIWdB9Nobz-17IiQ4Sd;
-        Tue, 25 Jan 2022 11:01:07 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 2
-Date:   Tue, 25 Jan 2022 11:01:06 +0300
-From:   Nikita Shubin <nikita.shubin@maquefel.me>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        kernel test robot <yujie.liu@intel.com>,
-        Nathan Huckleberry <nhuck@google.com>,
-        Philip Li <philip.li@intel.com>
-Subject: Re: arch/arm/mach-ep93xx/clock.c:154:2: warning: Use of memory
- after it is freed [clang-analyzer-unix.Malloc]
-Message-ID: <20220125110106.7043f846@redslave.neermore.group>
-In-Reply-To: <CAKwvOd=NVZs7bfz-OTnhPmk4xZfmJq6zQzJaEtaX4AO0N7Pi9A@mail.gmail.com>
-References: <202201200359.lTk9zHg4-lkp@intel.com>
-        <39230575-13ea-7384-71bc-2aac1fa2edb8@intel.com>
-        <CAKwvOd=NVZs7bfz-OTnhPmk4xZfmJq6zQzJaEtaX4AO0N7Pi9A@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 25 Jan 2022 03:56:59 -0500
+X-UUID: cb91789688a241969ef728b51114aef3-20220125
+X-UUID: cb91789688a241969ef728b51114aef3-20220125
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 757348763; Tue, 25 Jan 2022 16:56:45 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 25 Jan 2022 16:56:44 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 Jan 2022 16:56:42 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
+        "AngeloGioacchino Del Regno" 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
+Subject: [PATCH v4 00/35] MT8195 IOMMU SUPPORT
+Date:   Tue, 25 Jan 2022 16:55:59 +0800
+Message-ID: <20220125085634.17972-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Nick,
+This patchset adds MT8195 iommu support.
 
-On Mon, 24 Jan 2022 13:50:02 -0800
-Nick Desaulniers <ndesaulniers@google.com> wrote:
+MT8195 have 3 IOMMU HWs. 2 IOMMU HW is for multimedia, and 1 IOMMU HW is
+for infra-master, like PCIe/USB.
 
-> On Wed, Jan 19, 2022 at 5:46 PM kernel test robot
-> <yujie.liu@intel.com> wrote:
-> >
-> > tree:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> > master head:   1d1df41c5a33359a00e919d54eaebfb789711fdc commit:
-> > 9645ccc7bd7a16cd73c3be9dee70cd702b03be37 ep93xx: clock: convert
-> > in-place to COMMON_CLK date:   3 months ago config:
-> > arm-randconfig-c002-20220118
-> > (https://download.01.org/0day-ci/archive/20220120/202201200359.lTk9zHg4-lkp@intel.com/config)
-> > compiler: clang version 14.0.0
-> > (https://github.com/llvm/llvm-project
-> > 5f782d25a742302d25ef3c8b84b54f7483c2deb9) reproduce (this is a W=1
-> > build): wget
-> > https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross
-> > -O ~/bin/make.cross chmod +x ~/bin/make.cross # install arm cross
-> > compiling tool for clang build # apt-get install
-> > binutils-arm-linux-gnueabi #
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9645ccc7bd7a16cd73c3be9dee70cd702b03be37
-> > git remote add linus
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> > git fetch --no-tags linus master git checkout
-> > 9645ccc7bd7a16cd73c3be9dee70cd702b03be37 # save the config file to
-> > linux build tree COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang
-> > make.cross ARCH=arm clang-analyzer  
-> 
-> Hey! This check finally caught something that looks legit! Cool to see
-> 0day bot running clang-analyzer, too!
-> Nikita, can you PTAL?
+About the 2 MM IOMMU HW, something like this:
 
-Of course, i thought Alexander Sverdlin - already took care of it, he
-is really fast and fires patches before i even realize what happens.
+        IOMMU(VDO)          IOMMU(VPP)
+           |                   |
+      SMI_COMMON(VDO)      SMI_COMMON(VPP)
+      ---------------     ----------------
+      |      |   ...      |      |     ...
+    larb0 larb2  ...    larb1 larb3    ...
 
-Alexander have you already taken care of it ? If not it's my turn to
-clear my own mess.
+these two MM IOMMU HW share a pgtable.
 
-> 
-> >
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> >
-> >
-> > clang-analyzer warnings: (new ones prefixed by >>)
-> >  
-> >  >> arch/arm/mach-ep93xx/clock.c:154:2: warning: Use of memory
-> >  >> after it is freed [clang-analyzer-unix.Malloc]  
-> >             return &psc->hw;
-> >             ^
-> >     arch/arm/mach-ep93xx/clock.c:151:2: note: Taking true branch
-> >             if (IS_ERR(clk))
-> >             ^
-> >     arch/arm/mach-ep93xx/clock.c:152:3: note: Memory is released
-> >                     kfree(psc);
-> >                     ^~~~~~~~~~
-> >     arch/arm/mach-ep93xx/clock.c:154:2: note: Use of memory after
-> > it is freed return &psc->hw;
-> >             ^      ~~~~~~~~  
-> >  >> arch/arm/mach-ep93xx/clock.c:484:2: warning: Value stored to
-> >  >> 'hw' is never read [clang-analyzer-deadcode.DeadStores]  
-> >             hw = clk_hw_register_fixed_factor(NULL, "uart",
-> > "xtali", 0, 1, clk_uart_div); ^
-> > ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >  
-> >  >> arch/arm/mach-ep93xx/clock.c:612:2: warning: Value stored to
-> >  >> 'hw' is never read [clang-analyzer-deadcode.DeadStores]  
-> >             hw = clk_hw_register_fixed_factor(NULL, "usb_clk",
-> > "pll2", 0, 1, clk_usb_div); ^
-> > ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >
-> > vim +154 arch/arm/mach-ep93xx/clock.c
-> >
-> > ff05c0330b9880 Hartley Sweeten 2009-05-07  125
-> > 9645ccc7bd7a16 Nikita Shubin   2021-10-18  126  static struct
-> > clk_hw *ep93xx_clk_register_gate(const char *name, 9645ccc7bd7a16
-> > Nikita Shubin   2021-10-18  127
-> >  const char *parent_name, 9645ccc7bd7a16 Nikita Shubin   2021-10-18
-> >  128                                      void __iomem *reg,
-> > 9645ccc7bd7a16 Nikita Shubin   2021-10-18  129
-> >                 u8 bit_idx) 9645ccc7bd7a16 Nikita Shubin
-> > 2021-10-18  130  { 9645ccc7bd7a16 Nikita Shubin   2021-10-18  131
-> >        struct clk_init_data init; 9645ccc7bd7a16 Nikita Shubin
-> > 2021-10-18  132          struct clk_psc *psc; 9645ccc7bd7a16 Nikita
-> > Shubin   2021-10-18  133          struct clk *clk; 9645ccc7bd7a16
-> > Nikita Shubin   2021-10-18  134 9645ccc7bd7a16 Nikita Shubin
-> > 2021-10-18  135          psc = kzalloc(sizeof(*psc), GFP_KERNEL);
-> > 9645ccc7bd7a16 Nikita Shubin   2021-10-18  136          if (!psc)
-> > 9645ccc7bd7a16 Nikita Shubin   2021-10-18  137
-> > return ERR_PTR(-ENOMEM); 9645ccc7bd7a16 Nikita Shubin   2021-10-18
-> > 138 9645ccc7bd7a16 Nikita Shubin   2021-10-18  139
-> > init.name = name; 9645ccc7bd7a16 Nikita Shubin   2021-10-18  140
-> >       init.ops = &clk_ep93xx_gate_ops; 9645ccc7bd7a16 Nikita Shubin
-> >   2021-10-18  141          init.flags = CLK_SET_RATE_PARENT;
-> > 9645ccc7bd7a16 Nikita Shubin   2021-10-18  142
-> > init.parent_names = (parent_name ? &parent_name : NULL);
-> > 9645ccc7bd7a16 Nikita Shubin   2021-10-18  143
-> > init.num_parents = (parent_name ? 1 : 0); 9645ccc7bd7a16 Nikita
-> > Shubin   2021-10-18  144 9645ccc7bd7a16 Nikita Shubin   2021-10-18
-> > 145          psc->reg = reg; 9645ccc7bd7a16 Nikita Shubin
-> > 2021-10-18  146          psc->bit_idx = bit_idx; 9645ccc7bd7a16
-> > Nikita Shubin   2021-10-18  147          psc->hw.init = &init;
-> > 9645ccc7bd7a16 Nikita Shubin   2021-10-18  148          psc->lock =
-> > &clk_lock; 9645ccc7bd7a16 Nikita Shubin   2021-10-18  149
-> > 9645ccc7bd7a16 Nikita Shubin   2021-10-18  150          clk =
-> > clk_register(NULL, &psc->hw); 9645ccc7bd7a16 Nikita Shubin
-> > 2021-10-18  151          if (IS_ERR(clk)) 9645ccc7bd7a16 Nikita
-> > Shubin   2021-10-18  152                  kfree(psc);  
-> 
-> probably should `return ERR_CAST(clk);` ?
-> 
-> > 9645ccc7bd7a16 Nikita Shubin   2021-10-18  153
-> > 9645ccc7bd7a16 Nikita Shubin   2021-10-18 @154          return
-> > &psc->hw; ff05c0330b9880 Hartley Sweeten 2009-05-07  155  }
-> > ff05c0330b9880 Hartley Sweeten 2009-05-07  156
-> >
-> > ---
-> > 0-DAY CI Kernel Test Service, Intel Corporation
-> > https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-> >  
-> 
-> 
+About the INFRA IOMMU, it don't have larbs, the master connects the iommu
+directly. It use a independent pgtable.
+
+Also, mt8195 IOMMU bank supports. Normally the IOMMU register size only
+is 0x1000. In this IOMMU HW, the register size is 5 * 0x1000. each 0x1000
+is a bank. the banks' register look like this:
+     ----------------------------------------
+     |bank0  | bank1 | bank2 | bank3 | bank4|
+     ----------------------------------------
+     |global |
+     |control|         null
+     |regs   |
+     -----------------------------------------
+     |bank   |bank   |bank   |bank   |bank   |
+     |regs   |regs   |regs   |regs   |regs   |
+     |       |       |       |       |       |
+     -----------------------------------------
+All the banks share some global control registers, and each bank have its
+special bank registers, like pgtable base register, tlb operation registers,
+the fault status registers.
+ 
+In mt8195, we enable this bank feature for infra iommu, We put PCIe in bank0
+and USB in bank4. they have independent pgtable.
+
+Change note:
+v4:1) Base on v5.16-rc1
+   2) Base on tlb logic 2, some patches in v3 has already gone through in that
+   patchset.
+   https://lore.kernel.org/linux-mediatek/20211208120744.2415-1-dafna.hirschfeld@collabora.com/  
+   3) Due to the unreadable union for v1/v2(comment in 26/33 of v3), I
+   separate mtk_iommu_data for v1 and v2 totally, then remove mtk_iommu.h.
+   please see patch[26/35][27/35].
+   4) add two mutex for the internal data. patch[6/35][7/35].
+   5) add a new flag PM_CLK_AO.
+
+v3: https://lore.kernel.org/linux-mediatek/20210923115840.17813-1-yong.wu@mediatek.com/
+    1) base on v5.15-rc1
+    2) Adjust devlink with smi-common, not use the property(sub-sommon).
+    3) Adjust tlb_flush_all flow,
+       a) Fix tlb_flush_all only is supported in bank0.
+       b) add tlb-flush-all in the resume callback.
+       c) remove the pm status checking in tlb-flush-all.
+       The reason are showed in the commit message.
+    4) Allow IOMMU_DOMAIN_UNMANAGED since PCIe VFIO use that.
+    5) Fix a clk warning and a null abort when unbind the iommu driver.
+
+v2: https://lore.kernel.org/linux-mediatek/20210813065324.29220-1-yong.wu@mediatek.com/
+    1) Base on v5.14-rc1.
+    2) Fix build fail for arm32.
+    3) Fix dt-binding issue from Rob.
+    4) Fix the bank issue when tlb flush. v1 always use bank->base.
+    5) adjust devlink with smi-common since the node may be smi-sub-common.
+    6) other changes: like reword some commit message(removing many
+       "This patch..."); seperate serveral patches.
+
+v1: https://lore.kernel.org/linux-mediatek/20210630023504.18177-1-yong.wu@mediatek.com/
+    Base on v5.13-rc1
+
+Yong Wu (35):
+  dt-bindings: mediatek: mt8195: Add binding for MM IOMMU
+  dt-bindings: mediatek: mt8195: Add binding for infra IOMMU
+  iommu/mediatek: Fix 2 HW sharing pgtable issue
+  iommu/mediatek: Add list_del in mtk_iommu_remove
+  iommu/mediatek: Remove clk_disable in mtk_iommu_remove
+  iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
+  iommu/mediatek: Add mutex for data in the mtk_iommu_domain
+  iommu/mediatek: Use kmalloc for protect buffer
+  iommu/mediatek: Adapt sharing and non-sharing pgtable case
+  iommu/mediatek: Add 12G~16G support for multi domains
+  iommu/mediatek: Add a flag DCM_DISABLE
+  iommu/mediatek: Add a flag NON_STD_AXI
+  iommu/mediatek: Remove the granule in the tlb flush
+  iommu/mediatek: Always enable output PA over 32bits in isr
+  iommu/mediatek: Add SUB_COMMON_3BITS flag
+  iommu/mediatek: Add IOMMU_TYPE flag
+  iommu/mediatek: Contain MM IOMMU flow with the MM TYPE
+  iommu/mediatek: Adjust device link when it is sub-common
+  iommu/mediatek: Allow IOMMU_DOMAIN_UNMANAGED for PCIe VFIO
+  iommu/mediatek: Add a PM_CLK_AO flag for infra iommu
+  iommu/mediatek: Add infra iommu support
+  iommu/mediatek: Add PCIe support
+  iommu/mediatek: Add mt8195 support
+  iommu/mediatek: Only adjust code about register base
+  iommu/mediatek: Just move code position in hw_init
+  iommu/mediatek: Separate mtk_iommu_data for v1 and v2
+  iommu/mediatek: Remove mtk_iommu.h
+  iommu/mediatek-v1: Just rename mtk_iommu to mtk_iommu_v1
+  iommu/mediatek: Add mtk_iommu_bank_data structure
+  iommu/mediatek: Initialise bank HW for each a bank
+  iommu/mediatek: Change the domid to iova_region_id
+  iommu/mediatek: Get the proper bankid for multi banks
+  iommu/mediatek: Initialise/Remove for multi bank dev
+  iommu/mediatek: Backup/restore regsiters for multi banks
+  iommu/mediatek: mt8195: Enable multi banks for infra iommu
+
+ .../bindings/iommu/mediatek,iommu.yaml        |  20 +-
+ drivers/iommu/mtk_iommu.c                     | 951 +++++++++++++-----
+ drivers/iommu/mtk_iommu.h                     | 111 --
+ drivers/iommu/mtk_iommu_v1.c                  | 243 +++--
+ .../dt-bindings/memory/mt8195-memory-port.h   | 408 ++++++++
+ include/dt-bindings/memory/mtk-memory-port.h  |   2 +
+ 6 files changed, 1255 insertions(+), 480 deletions(-)
+ delete mode 100644 drivers/iommu/mtk_iommu.h
+ create mode 100644 include/dt-bindings/memory/mt8195-memory-port.h
+
+-- 
+2.18.0
+
 
