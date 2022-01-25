@@ -2,125 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD49C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B215C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:34:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574248AbiAYJcs (ORCPT
+        id S1574284AbiAYJc6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:32:48 -0500
-Received: from mga11.intel.com ([192.55.52.93]:31835 "EHLO mga11.intel.com"
+        Tue, 25 Jan 2022 04:32:58 -0500
+Received: from mga11.intel.com ([192.55.52.93]:32553 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1573836AbiAYJ11 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:27:27 -0500
+        id S1573833AbiAYJ10 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 04:27:26 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643102847; x=1674638847;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=byejYFRqzcSUD2bt70cc0O5CBdu3stOFVh3KT6zy8TU=;
-  b=ODyVmu99c6BRd9dzFtn4r7PQr/SB7+iwioQaFFvycZegb6RVkWkTw3Kr
-   0bf93FFPkgUZh5pnLVOa/wKbNk1jeF9qX32qASqSGNFYliwt3yVTXMwhQ
-   7fh9+iwMSLYNvyaxvSshpsE5QDpFfm3ay1Aj6QjIDYd/X/6WQTf856n/z
-   1fEptvSQdjeLtRlevwTJCd7kRAcIeREIsHRioZCep0xN9XIQK8ClMtFZi
-   UIIVBiX4NaQ2IhqFmTahZ5O5H/RPyVe1n7e+5GgexNVWIStBNZcQxqUCS
-   NNzHOFgVr6uOSlt1ehDyXFI2GU28GDfw7NyveBwuXSYYXfI9p8g9SxiOT
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="243860825"
+  t=1643102846; x=1674638846;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=BslUopwdkn6hqPPPjIlnIuLGFxUBwc2V6iMFkRY3pak=;
+  b=a4u60lE0S3M0cbKlwePYhNia+g6HE/XwfAVdmh9BAMNS0D+bzcEFEUVo
+   icggdexsLQ1vYjtY9D1MW1pLjiGJWiBt0DTYGeDSmjVkmgbNMSWp3nSx5
+   C5e2Mzf5U6CEQOdqt7/stBlHxFLIPl0T8K9Fu8QtM7ElCIHQeQZFA2sJ6
+   O6IP4T0KzH0IxJexw0S+yLcToiOUvRU3nlczw6938rzH2F/DHEhf+By4w
+   aXmYxAqvKaW1SpTZUkwZcTkADxfJcM8i3lLba4bzPpL+bi2ELGnHPzpAQ
+   lxubJmr9btBrM5YyEmTlKFr1wS2z7XPQ8iz8K5GjwVvTTYsLuyqOXuffa
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="243860549"
 X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="243860825"
+   d="scan'208";a="243860549"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 01:18:12 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 01:16:35 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="673931597"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 25 Jan 2022 01:18:10 -0800
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 25 Jan 2022 11:18:09 +0200
-Date:   Tue, 25 Jan 2022 11:18:09 +0200
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] usb: ulpi: Call of_node_put correctly
-Message-ID: <Ye/AUUlnuHBoGxab@kuha.fi.intel.com>
-References: <20220124173344.874885-1-sean.anderson@seco.com>
- <20220124173344.874885-2-sean.anderson@seco.com>
+   d="scan'208";a="673931295"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 25 Jan 2022 01:16:33 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCHwH-000JdQ-9t; Tue, 25 Jan 2022 09:16:33 +0000
+Date:   Tue, 25 Jan 2022 17:15:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:rcu/next] BUILD SUCCESS
+ ab2a290a7391fdf42c3d3cf3b278143b84856ee1
+Message-ID: <61efbfcf.LMZi+O1sdP6v9nPU%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124173344.874885-2-sean.anderson@seco.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 12:33:44PM -0500, Sean Anderson wrote:
-> of_node_put should always be called on device nodes gotten from
-> of_get_*. Additionally, it should only be called after there are no
-> remaining users. To address the first issue, call of_node_put if later
-> steps in ulpi_register fail. To address the latter, call of_node_put
-> only after calling device_unregister.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
+branch HEAD: ab2a290a7391fdf42c3d3cf3b278143b84856ee1  rcu: Replace cpumask_weight with cpumask_empty where appropriate
 
-This looks like a fix, but you don't have the fix tag.
+elapsed time: 1822m
 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
-> 
-> Changes in v2:
-> - New
-> 
->  drivers/usb/common/ulpi.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/usb/common/ulpi.c b/drivers/usb/common/ulpi.c
-> index 87deb514eb78..c6ba72544f2b 100644
-> --- a/drivers/usb/common/ulpi.c
-> +++ b/drivers/usb/common/ulpi.c
-> @@ -301,11 +301,11 @@ static int ulpi_register(struct device *dev, struct ulpi *ulpi)
->  
->  	ret = ulpi_read_id(ulpi);
->  	if (ret)
-> -		return ret;
-> +		goto err;
->  
->  	ret = device_register(&ulpi->dev);
->  	if (ret)
-> -		return ret;
-> +		goto err;
+configs tested: 211
+configs skipped: 4
 
-I think there is another bug in the code here. Missing put_device().
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-If you first fix that, you should then be able to call
-fwnode_handle_put() (instead of of_node_put()) from
-ulpi_dev_release(), and that should cover all cases.
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20220124
+powerpc              randconfig-c003-20220124
+arc                 nsimosci_hs_smp_defconfig
+arm                       imx_v6_v7_defconfig
+i386                                defconfig
+xtensa                       common_defconfig
+m68k                          multi_defconfig
+sh                 kfr2r09-romimage_defconfig
+mips                         bigsur_defconfig
+powerpc                     rainier_defconfig
+mips                      maltasmvp_defconfig
+m68k                          hp300_defconfig
+m68k                        mvme16x_defconfig
+sh                   sh7770_generic_defconfig
+arc                           tb10x_defconfig
+sh                           se7722_defconfig
+mips                     decstation_defconfig
+sparc                       sparc64_defconfig
+powerpc                      ppc6xx_defconfig
+mips                            gpr_defconfig
+arc                          axs101_defconfig
+xtensa                    xip_kc705_defconfig
+powerpc                     asp8347_defconfig
+sh                           se7751_defconfig
+sh                         microdev_defconfig
+powerpc                     stx_gp3_defconfig
+sh                          polaris_defconfig
+um                                  defconfig
+m68k                             allyesconfig
+powerpc                           allnoconfig
+arm                         cm_x300_defconfig
+powerpc                     tqm8548_defconfig
+powerpc                 mpc837x_mds_defconfig
+sh                           sh2007_defconfig
+sh                          kfr2r09_defconfig
+nios2                         10m50_defconfig
+powerpc                     sequoia_defconfig
+arm                           h5000_defconfig
+sh                          rsk7269_defconfig
+arm                         vf610m4_defconfig
+sh                            shmin_defconfig
+riscv                    nommu_k210_defconfig
+m68k                          atari_defconfig
+openrisc                            defconfig
+csky                                defconfig
+sh                           se7206_defconfig
+ia64                          tiger_defconfig
+arc                            hsdk_defconfig
+arm                       multi_v4t_defconfig
+arm                        trizeps4_defconfig
+sparc                       sparc32_defconfig
+arm                        mvebu_v7_defconfig
+arm                           viper_defconfig
+sh                   sh7724_generic_defconfig
+ia64                        generic_defconfig
+arm                          simpad_defconfig
+h8300                       h8s-sim_defconfig
+alpha                               defconfig
+ia64                            zx1_defconfig
+xtensa                              defconfig
+xtensa                generic_kc705_defconfig
+openrisc                         alldefconfig
+i386                             alldefconfig
+arc                        vdk_hs38_defconfig
+sh                           se7780_defconfig
+mips                         cobalt_defconfig
+arm                           sunxi_defconfig
+sh                         ap325rxa_defconfig
+arc                         haps_hs_defconfig
+powerpc                     mpc83xx_defconfig
+h8300                            alldefconfig
+sh                          r7780mp_defconfig
+mips                  maltasmvp_eva_defconfig
+sh                             shx3_defconfig
+parisc                generic-32bit_defconfig
+riscv                            allmodconfig
+powerpc                     tqm8541_defconfig
+sh                          sdk7780_defconfig
+microblaze                      mmu_defconfig
+arc                     haps_hs_smp_defconfig
+sh                          r7785rp_defconfig
+powerpc                      cm5200_defconfig
+arm                           u8500_defconfig
+openrisc                 simple_smp_defconfig
+powerpc                    amigaone_defconfig
+arm                            lart_defconfig
+mips                        bcm47xx_defconfig
+xtensa                          iss_defconfig
+mips                            ar7_defconfig
+arm                       aspeed_g5_defconfig
+arm                  randconfig-c002-20220123
+arm                  randconfig-c002-20220124
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+x86_64               randconfig-a002-20220124
+x86_64               randconfig-a003-20220124
+x86_64               randconfig-a001-20220124
+x86_64               randconfig-a004-20220124
+x86_64               randconfig-a005-20220124
+x86_64               randconfig-a006-20220124
+i386                 randconfig-a002-20220124
+i386                 randconfig-a005-20220124
+i386                 randconfig-a003-20220124
+i386                 randconfig-a004-20220124
+i386                 randconfig-a001-20220124
+i386                 randconfig-a006-20220124
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
 
->  	root = debugfs_create_dir(dev_name(dev), ULPI_ROOT);
->  	debugfs_create_file("regs", 0444, root, ulpi, &ulpi_regs_ops);
-> @@ -314,6 +314,10 @@ static int ulpi_register(struct device *dev, struct ulpi *ulpi)
->  		ulpi->id.vendor, ulpi->id.product);
->  
->  	return 0;
-> +
-> +err:
-> +	of_node_put(ulpi->dev.of_node);
-> +	return ret;
+clang tested configs:
+arm                  randconfig-c002-20220124
+riscv                randconfig-c006-20220124
+i386                 randconfig-c001-20220124
+powerpc              randconfig-c003-20220124
+mips                 randconfig-c004-20220124
+x86_64               randconfig-c007-20220124
+powerpc                       ebony_defconfig
+mips                       rbtx49xx_defconfig
+arm                        spear3xx_defconfig
+arm                                 defconfig
+arm                     am200epdkit_defconfig
+mips                          ath79_defconfig
+mips                        workpad_defconfig
+mips                     loongson2k_defconfig
+arm                             mxs_defconfig
+mips                        bcm63xx_defconfig
+mips                     cu1000-neo_defconfig
+mips                  cavium_octeon_defconfig
+mips                        omega2p_defconfig
+powerpc                 mpc832x_rdb_defconfig
+arm                   milbeaut_m10v_defconfig
+arm                           sama7_defconfig
+powerpc                     kmeter1_defconfig
+powerpc                     mpc512x_defconfig
+mips                           ip22_defconfig
+mips                   sb1250_swarm_defconfig
+mips                         tb0287_defconfig
+arm                        vexpress_defconfig
+mips                            e55_defconfig
+powerpc                          g5_defconfig
+arm                          imote2_defconfig
+mips                           mtx1_defconfig
+powerpc                   lite5200b_defconfig
+powerpc                     tqm5200_defconfig
+mips                       lemote2f_defconfig
+powerpc                        icon_defconfig
+powerpc                     mpc5200_defconfig
+powerpc                     tqm8560_defconfig
+mips                      maltaaprp_defconfig
+mips                     cu1830-neo_defconfig
+arm                        neponset_defconfig
+arm                     davinci_all_defconfig
+powerpc                      ppc44x_defconfig
+arm                              alldefconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64               randconfig-a011-20220124
+x86_64               randconfig-a013-20220124
+x86_64               randconfig-a015-20220124
+x86_64               randconfig-a016-20220124
+x86_64               randconfig-a014-20220124
+x86_64               randconfig-a012-20220124
+i386                 randconfig-a011-20220124
+i386                 randconfig-a016-20220124
+i386                 randconfig-a013-20220124
+i386                 randconfig-a014-20220124
+i386                 randconfig-a015-20220124
+i386                 randconfig-a012-20220124
+riscv                randconfig-r042-20220124
+hexagon              randconfig-r045-20220123
+hexagon              randconfig-r045-20220124
+hexagon              randconfig-r041-20220124
+hexagon              randconfig-r041-20220123
 
-So no need for that.
-
->  }
->  
->  /**
-> @@ -357,8 +361,8 @@ void ulpi_unregister_interface(struct ulpi *ulpi)
->  {
->  	debugfs_remove_recursive(debugfs_lookup(dev_name(&ulpi->dev),
->  						ULPI_ROOT));
-> -	of_node_put(ulpi->dev.of_node);
->  	device_unregister(&ulpi->dev);
-> +	of_node_put(ulpi->dev.of_node);
->  }
-
-And here you can just remove that of_node_put() call.
-
-thanks,
-
--- 
-heikki
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
