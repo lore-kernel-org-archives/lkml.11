@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0503C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0FA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:24:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350401AbiAYKYQ (ORCPT
+        id S1350782AbiAYKYW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:24:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36882 "EHLO
+        Tue, 25 Jan 2022 05:24:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242268AbiAYKU0 (ORCPT
+        with ESMTP id S243307AbiAYKU3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:20:26 -0500
+        Tue, 25 Jan 2022 05:20:29 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EBEC061755;
-        Tue, 25 Jan 2022 02:20:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E0CC061757;
+        Tue, 25 Jan 2022 02:20:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C25B61635;
-        Tue, 25 Jan 2022 10:20:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54366C340E5;
-        Tue, 25 Jan 2022 10:20:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94EC561635;
+        Tue, 25 Jan 2022 10:20:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C82C340E5;
+        Tue, 25 Jan 2022 10:20:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643106023;
-        bh=bPm0LjPdqkJuh3S4vN12VSn0qh8bPUdA5DbAm6JDSKI=;
+        s=k20201202; t=1643106028;
+        bh=lHbr/XHtohtZv4WPTENAycbeFslCLLfzxFh1ho8lZgs=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=E0g1wqBLEi1ip7lwDDh6jAKSNrueJIO+J0FOpq62I7AyowojSutWWFQbU8me7o04V
-         rsYRAH9ZkB1Ri9RGHM636oiMoGhse+mlfVjQ+X5ue3y/7EIiB4jhYyHBc7vDhxy92a
-         f07gXfB7UvO0Gd5Wfu5xUWZmB+GlNVb/ewuAuZ0zlWLVeIfOhI8how56sbrGszcnSj
-         ZgqVhR7FLfQ/qNHy3cWz1qYwGZDU+TEkFV+MjW0J1Z//bCqPB34erCS7otnbW7CEek
-         nJtv5F3/F3zA8LBmta6Qe03PefruPPgKOq1peyynvmGAlK8ZqGvZS6b+z1WGf2q/4h
-         0/AuOhLHqfo0w==
+        b=jNURRxl14bETE3BtGe0qCU395qFA0Kx4q6IVWgyK/MP8hKX4rlXVC450RpYifAgLz
+         amsiHAMzJptke7eXPMElmmUibwYuTkiiHS12MYNgibT4EA53R+/sjxRu1/QEDz7NsQ
+         cALJlDqk01DZrmCrWMoxpTa82MG52ARTYO78I5TEgLqzeIIYP0vmP/dG98s6+jfc5+
+         UM6K7JGVNdJEJyQA82toL6u0W/GcV6+Z+yPAAByqH0iQ/p75ek0OO46M0UFUlrm3vZ
+         +yp2kHGc2nbY6Iz6JIUF4sB59Z9WfPjOIoirIeVEexhehBLt9qD7deWiz2OadueUDh
+         Y7l2TQuJs3s6A==
 From:   Mark Brown <broonie@kernel.org>
-To:     Ariel D'Alessandro <ariel.dalessandro@collabora.com>,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Cc:     tiwai@suse.com, michael@amarulasolutions.com, tony@atomide.com,
-        lgirdwood@gmail.com, kuninori.morimoto.gx@renesas.com,
-        nicoleotsuka@gmail.com, bcousson@baylibre.com, Xiubo.Lee@gmail.com,
-        shengjiu.wang@gmail.com, festevam@gmail.com, perex@perex.cz,
-        robh+dt@kernel.org
-In-Reply-To: <20220117132109.283365-1-ariel.dalessandro@collabora.com>
-References: <20220117132109.283365-1-ariel.dalessandro@collabora.com>
-Subject: Re: [PATCH v2 0/5] fsl-asoc-card: Add optional dt property for setting mclk-id
-Message-Id: <164310602006.74844.15557219169532586931.b4-ty@kernel.org>
-Date:   Tue, 25 Jan 2022 10:20:20 +0000
+To:     alsa-devel@alsa-project.org,
+        Daniel Beer <daniel.beer@igorinstitute.com>,
+        devicetree@vger.kernel.org
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Derek Simkowiak <derek.simkowiak@igorinstitute.com>,
+        Andy Liu <andy-liu@ti.com>, linux-kernel@vger.kernel.org
+In-Reply-To: <cover.1642298336.git.daniel.beer@igorinstitute.com>
+References: <cover.1642298336.git.daniel.beer@igorinstitute.com>
+Subject: Re: [PATCH v3 0/2] ASoC: add support for TAS5805M digital amplifier
+Message-Id: <164310602619.74844.8879999031786613742.b4-ty@kernel.org>
+Date:   Tue, 25 Jan 2022 10:20:26 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -55,14 +53,13 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 17 Jan 2022 10:21:04 -0300, Ariel D'Alessandro wrote:
-> This is a follow up of patchset:
+On Sun, 16 Jan 2022 14:58:56 +1300, Daniel Beer wrote:
+> This pair of patches implements support for the TAS5805M class D audio
+> amplifier. This driver, and the example configuration in the device-tree
+> file, were originally based on a 4.19 series kernel and have been
+> modified slightly from the tested version.
 > 
->     [RFC patch 0/5] Support BCLK input clock in tlv320aic31xx
-> 
-> Sound cards may allow using different main clock inputs. In the generic
-> fsl-asoc-card driver, these values are hardcoded for each specific card
-> configuration.
+> This resubmission differs from v2 as follows:
 > 
 > [...]
 
@@ -72,16 +69,10 @@ Applied to
 
 Thanks!
 
-[1/5] dt-bindings: sound: Rename tlv320aic31xx-micbias as tlv320aic31xx
-      commit: 85f856f790b5fd427cb31b3f62755713174da0aa
-[2/5] dt-bindings: tlv320aic31xx: Define PLL clock inputs
-      commit: 6045ffd366283236f0de79c8a0e98ae766e9a8f9
-[3/5] ASoC: bindings: fsl-asoc-card: Add mclk-id optional property
-      commit: 55915f20ad9ae92015bf7b2c4ac854e5b720d63f
-[4/5] ASoC: fsl-asoc-card: Add optional dt property for setting mclk-id
-      commit: e6ec5a3936ee0c01f46e1d09dc758bb762e06dd9
-[5/5] ASoC: fsl-asoc-card: Remove BCLK default value for tlv320aic31xx card
-      commit: d4c4e2861560ab1cbf540bbda5bcdf4c92b17110
+[1/2] ASoC: add support for TAS5805M digital amplifier
+      commit: 2e5a74c68d601b11a496f91f76fa7bb236d10bd0
+[2/2] ASoC: dt-bindings: add bindings for TI TAS5805M.
+      commit: b8aec7a4a01b75973c22f004377a48593a3fef03
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
