@@ -2,157 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A295C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:10:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BAB5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1317224AbiAYDBU (ORCPT
+        id S1317311AbiAYDBc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:01:20 -0500
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:55998 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3415294AbiAYBis (ORCPT
+        Mon, 24 Jan 2022 22:01:32 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:56824 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S3415295AbiAYBjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 20:38:48 -0500
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 20P1UV32050587;
-        Tue, 25 Jan 2022 09:30:31 +0800 (GMT-8)
-        (envelope-from jammy_huang@aspeedtech.com)
-Received: from [192.168.2.115] (192.168.2.115) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 25 Jan
- 2022 09:37:50 +0800
-Message-ID: <fbe1742c-2afd-bc09-b565-783b080a1418@aspeedtech.com>
-Date:   Tue, 25 Jan 2022 09:37:51 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 4/4] media: aspeed: Fix timing polarity incorrect
-Content-Language: en-US
-To:     Hans Verkuil <hverkuil@xs4all.nl>,
-        "eajames@linux.ibm.com" <eajames@linux.ibm.com>,
-        "mchehab@kernel.org" <mchehab@kernel.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "andrew@aj.id.au" <andrew@aj.id.au>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
+        Mon, 24 Jan 2022 20:39:05 -0500
+X-UUID: ed62f45f87e34dfd8c932a2fd279f6f8-20220125
+X-UUID: ed62f45f87e34dfd8c932a2fd279f6f8-20220125
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <leilk.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 136281167; Tue, 25 Jan 2022 09:18:53 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 25 Jan 2022 09:18:52 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 Jan 2022 09:18:51 +0800
+Message-ID: <184823d40e24166246b2be1fc823a18d413e341d.camel@mediatek.com>
+Subject: Re: [PATCH V3 1/2] dt-bindings: spi: Convert spi-mt65xx to
+ json-schema
+From:   Leilk Liu <leilk.liu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20211222082139.26933-1-jammy_huang@aspeedtech.com>
- <20211222082139.26933-5-jammy_huang@aspeedtech.com>
- <418fc1b2-ddbe-24e3-82cc-aa8ce74f4507@xs4all.nl>
- <b8707885-c10c-ca19-3f2c-f19f567e1f92@aspeedtech.com>
- <2ddda01a-3f1f-eff6-6ce1-a5b9354f2993@xs4all.nl>
-From:   Jammy Huang <jammy_huang@aspeedtech.com>
-In-Reply-To: <2ddda01a-3f1f-eff6-6ce1-a5b9354f2993@xs4all.nl>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.2.115]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 20P1UV32050587
+        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Date:   Tue, 25 Jan 2022 09:18:51 +0800
+In-Reply-To: <Ye6nQIVoti5TKh+k@sirena.org.uk>
+References: <20220124061238.7854-1-leilk.liu@mediatek.com>
+         <20220124061238.7854-2-leilk.liu@mediatek.com>
+         <Ye6nQIVoti5TKh+k@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 2022-01-24 at 13:18 +0000, Mark Brown wrote:
+> On Mon, Jan 24, 2022 at 02:12:37PM +0800, Leilk Liu wrote:
+> > Convert Mediatek ARM SOC's SPI Master controller binding
+> > to json-schema format.
+> 
+> Please make any YAML conversion patches the last patches in a series
+> -
+> there's frequently a backlog in reviewing them so having the DT
+> binding
+> patches first blocks any progress on everything else in the series.
 
-On 2022/1/24 下午 06:22, Hans Verkuil wrote:
-> On 24/01/2022 03:29, Jammy Huang wrote:
->> On 2022/1/21 下午 03:30, Hans Verkuil wrote:
->>> On 12/22/21 09:21, Jammy Huang wrote:
->>>> This is a workaround for sync polarity unstable.
->>>> Sync value get by VR09C counts from sync's rising edge, which means
->>>> sync's polarity is negative if sync value is bigger than total/2.
->>> Do you have an example of such a format, or is this mostly theoretical?
->>>
->>> Either provide the example or make a note that it is theoretical.
->> OK, I will update an example in next patch. Let me explain first.
->>
->> This is a must-be result. Please refer to the graph below as I sent in 3/4 of this
->> series. For negative sync, sync width equals to back porch + data enable + front porch.
->> Thus, sync would be bigger than 90% of total in most cases.
-> Right, I suspected that might be the case.
->
-> I think it would be better to combine patches 3 and 4 into a single
-> patch, since they are closely related and it is actually easier to
-> understand if it's just a single patch.
-OK, I will combine 3/4 into a single patch in next series.
-Thanks.
+OK, I mistake to lost " dt-bindings: spi: Convert spi-slave-mt27xx to
+json-schema" on V3 series, I'll send it again, thanks
 
-Best Regards,
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
 
-         Jammy
->
-> Regards,
->
-> 	Hans
->
->>                    +-------------------+
->>                    |    v i d e o      |
->>        +--+  +-----+                   +-----+  +---+
->>           |  |                               |  |
->>           +--+                               +--+
->>         vsync+-------------------------------+
->>     frame_top+-----+
->> frame_bottom+-------------------------+
->>
->>
->> Following registers are what I got for 1920x1200@60.
->>
->> 1e700090: 07ee206f 04c9001a c4d3efff 04cc001f
->>
->> 1e7000a0: 0000081f 00000000 00000000 00000000
->>
->> vertical total = 0x4D3 (VR098[27:16]) = 1235
->> vertical sync = 0x4CC (VR09C[27:16]) = 1228
->>
->>> Regards,
->>>
->>>      Hans
->>>
->>>> Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
->>>> ---
->>>>    v2:
->>>>     - Use 'total/2' rather than 'total<<1'
->>>>     - Update comment
->>>> ---
->>>>    drivers/media/platform/aspeed-video.c | 20 ++++++++++++++++++++
->>>>    1 file changed, 20 insertions(+)
->>>>
->>>> diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
->>>> index 7c50567f5ab0..c3e3343d91e1 100644
->>>> --- a/drivers/media/platform/aspeed-video.c
->>>> +++ b/drivers/media/platform/aspeed-video.c
->>>> @@ -989,6 +989,16 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
->>>>              video->frame_bottom = FIELD_GET(VE_SRC_TB_EDGE_DET_BOT, src_tb_edge);
->>>>            video->frame_top = FIELD_GET(VE_SRC_TB_EDGE_DET_TOP, src_tb_edge);
->>>> +
->>>> +        /*
->>>> +         * This is a workaround for polarity detection when the sync
->>>> +         * value is larger than half.
->>>> +         */
->>>> +        if (vsync > (vtotal / 2))
->>>> +            det->polarities &= ~V4L2_DV_VSYNC_POS_POL;
->>>> +        else
->>>> +            det->polarities |= V4L2_DV_VSYNC_POS_POL;
->>>> +
->>>>            if (det->polarities & V4L2_DV_VSYNC_POS_POL) {
->>>>                det->vbackporch = video->frame_top - vsync;
->>>>                det->vfrontporch = vtotal - video->frame_bottom;
->>>> @@ -1003,6 +1013,16 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
->>>>              video->frame_right = FIELD_GET(VE_SRC_LR_EDGE_DET_RT, src_lr_edge);
->>>>            video->frame_left = FIELD_GET(VE_SRC_LR_EDGE_DET_LEFT, src_lr_edge);
->>>> +
->>>> +        /*
->>>> +         * This is a workaround for polarity detection when the sync
->>>> +         * value is larger than half.
->>>> +         */
->>>> +        if (hsync > (htotal / 2))
->>>> +            det->polarities &= ~V4L2_DV_HSYNC_POS_POL;
->>>> +        else
->>>> +            det->polarities |= V4L2_DV_HSYNC_POS_POL;
->>>> +
->>>>            if (det->polarities & V4L2_DV_HSYNC_POS_POL) {
->>>>                det->hbackporch = video->frame_left - hsync;
->>>>                det->hfrontporch = htotal - video->frame_right;
