@@ -2,113 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E632CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37260C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 12:15:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382825AbiAYMPJ (ORCPT
+        id S1383899AbiAYMPZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:15:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33914 "EHLO
+        Tue, 25 Jan 2022 07:15:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444435AbiAYMKz (ORCPT
+        with ESMTP id S1444637AbiAYMLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:10:55 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D80C061747
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 04:08:44 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id d10so30328160eje.10
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 04:08:44 -0800 (PST)
+        Tue, 25 Jan 2022 07:11:01 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2AAC0613E4;
+        Tue, 25 Jan 2022 04:09:49 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id e9so18126828pgb.3;
+        Tue, 25 Jan 2022 04:09:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ionos.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bnTeOdUZ1f18AewsYNZJ5wSThzHFTuycY7IVqVPOkq4=;
-        b=ZvHEkk5xUxPuGXPnF5qSuvyzgrOJuihK9Y7jz5RAAisK5c7Llx+i3W5Cim8Es9HwKQ
-         KeR7WV4260zLaoLr9S7z5ZjLj6L0PiqoTCS+AaxkLgx63ttkPdzm1qZaLEuVgTlw3SY4
-         +TkggyDT1NjuTNf4ubfR+Hi77GRyFzO6PGoKcAAbp3bwQpcPov13FdXRmDc5er8IYhQa
-         7U3WamVIW5u0uoCphTZzxwiCUsanHATz6flPKGpHH5M4fXs0DUYxoQ7soSiu2vbQLfyM
-         xhM9OYRvxgwI0BwQeIl69WroDpTU3u+6NiYm6qikHVDqAKXPFdctOQQSZzIQINkai3md
-         a7sw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=gz5QosXuuikQvaYvAabGfLU0Wh+nilVLn99jf+63zBE=;
+        b=aJSWF3wejABTFVsm1kEpebFPzWHq/Z3MZfCaMWcKBTkhLhQxqDSfPlUb1Ob9Ul41O3
+         YGk31Jp4JeuQqbKUwVGQtIbOZdh4Xla6WVv5+4FWziSh8fyu8xQzygT4pwMQfC9Bunr2
+         e977MW3h8i1E9KP/ExsIv4Y1nOkjXcFmmgICegTi2gPkPphhG/7DttFuwmBo17kRWG/I
+         qT3b04qpg1hl+8XOubDvtK9d84M7B2mhDRc0LZjBLCbS7qtMMcSgwvGIkBUFdZ9t7sz2
+         RRS+q0koQqd5caBgwko9+sSVhOnplvh0NjoXeoa0uxth611ic/fQgafsi6uM54bHRW9m
+         U9xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bnTeOdUZ1f18AewsYNZJ5wSThzHFTuycY7IVqVPOkq4=;
-        b=2B50uuNrZDRKJX8h3wIW4KjnEXSz1GkxB+7FLqbMTUWEaYXzk8H8aBWmok90c188od
-         Io00m+M287pbWCXrx/HS0/FDkL7Z1Mt3lL6G2JY1ETU19v5JH3CFhBaZ+Ba8LaWcd6Tm
-         PILP4YMpwH8eJSZY9PTkiq2XMWStAfn9B4BaRONI+zNaktz1i7ak3O1VO12Y16jr3Xgb
-         m4X1g+mOlKWfheZ9o0T2zJteXdy0Iry/WIkULqZk6CZibpBTvbU8x8wnxzL4My3N7PJq
-         JrtWnU3BwHOhFapbLqjflgxICnZP4seNjkm2kNCIGAlayKIGnUv1JDb7XcGhB7HvuPE0
-         3EwQ==
-X-Gm-Message-State: AOAM5316+7KP00KAlepNcs/3lYtGGO/qDUoZQ0r+NuatOqS4bIRS1Qw5
-        0nBhf6QBDMJWkvSH7ghxJrrMyu7MuPJICq+NXshN8A==
-X-Google-Smtp-Source: ABdhPJz2+mIM5zA6wUdvIdNw7dCbU7p6GO73rgF0MZ2UBLSc7rUHX6MYpPx/oW8XBB/mbeH2j2BN4/3E3HfcMDU6OGs=
-X-Received: by 2002:a17:907:3f84:: with SMTP id hr4mr16347608ejc.443.1643112522894;
- Tue, 25 Jan 2022 04:08:42 -0800 (PST)
-MIME-Version: 1.0
-References: <1643110372-85470-1-git-send-email-john.garry@huawei.com> <1643110372-85470-2-git-send-email-john.garry@huawei.com>
-In-Reply-To: <1643110372-85470-2-git-send-email-john.garry@huawei.com>
-From:   Jinpu Wang <jinpu.wang@ionos.com>
-Date:   Tue, 25 Jan 2022 13:08:31 +0100
-Message-ID: <CAMGffEn1mCb=EmspNnRw_H0es5ZfBWMrZj9G8J7y=_YH3PdF6Q@mail.gmail.com>
-Subject: Re: [PATCH 01/16] scsi: libsas: Use enum for response frame DATAPRES field
-To:     John Garry <john.garry@huawei.com>
-Cc:     jejb@linux.ibm.com, martin.petersen@oracle.com,
-        artur.paszkiewicz@intel.com, jinpu.wang@ionos.com,
-        chenxiang66@hisilicon.com, Ajish.Koshy@microchip.com,
-        yanaijie@huawei.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linuxarm@huawei.com, liuqi115@huawei.com, Viswas.G@microchip.com,
-        damien.lemoal@opensource.wdc.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=gz5QosXuuikQvaYvAabGfLU0Wh+nilVLn99jf+63zBE=;
+        b=LHkUwidCyt/WcyOGMJe1W3LnuMRRSsgILFflgGTvCuO9Qkka9FyPHaYDdBCs4Ptkdh
+         /B3i79LrXot087DFR/DkB1UVy+tmRjGENeAVz6sHbtKplIuj7buJ0xi5+nef0Vyl9KA4
+         gY5hr/kaam3Y7bP9ztrZnRTzmOMlUGEjwxHKaWo0GzoPP0p3N5WMjfVLR0tGkeWFyGgG
+         9uq3ccfN408+uRAxJ9QjZ7SkIfC86iLHcnyt/ue8o+S+RGxkzxAu1SGNPjQTgc8e4tgg
+         8LkCmHOGq5eI15ik/DdFAbMYT+zY7eYZ4Byw+01LCF7Aa4IsS/eG6/UDYGu2trPTIR8m
+         epbw==
+X-Gm-Message-State: AOAM532r3S+P0ctJf8iR6LpmwosYtJKFunNZAhZBAuyejlD334WBK+S1
+        olNi9u6NFtWw0JXFJLFMWT2dL3BqcPJTDA==
+X-Google-Smtp-Source: ABdhPJwPCGl41ps+jjyFeVExACj5l/DSCsoTsEAXk9yP/DESw4vmkFpObKcPD2EBkESmO0Q2qkZo4g==
+X-Received: by 2002:a63:754d:: with SMTP id f13mr15222276pgn.268.1643112588789;
+        Tue, 25 Jan 2022 04:09:48 -0800 (PST)
+Received: from localhost.localdomain ([203.205.141.111])
+        by smtp.googlemail.com with ESMTPSA id x66sm8355386pfb.36.2022.01.25.04.09.46
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Jan 2022 04:09:48 -0800 (PST)
+From:   Wanpeng Li <kernellwp@gmail.com>
+X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Aili Yao <yaoaili@kingsoft.com>
+Subject: [PATCH RESEND v2] KVM: LAPIC: Enable timer posted-interrupt when mwait/hlt is advertised
+Date:   Tue, 25 Jan 2022 04:08:58 -0800
+Message-Id: <1643112538-36743-1-git-send-email-wanpengli@tencent.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 12:38 PM John Garry <john.garry@huawei.com> wrote:
->
-> As defined in table 126 of the SAS spec 1.1, use an enum for the DATAPRES
-> field, which makes reading the code easier.
->
-> Signed-off-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Thx!
-> ---
->  drivers/scsi/libsas/sas_task.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/scsi/libsas/sas_task.c b/drivers/scsi/libsas/sas_task.c
-> index 2966ead1d421..7240fd22b154 100644
-> --- a/drivers/scsi/libsas/sas_task.c
-> +++ b/drivers/scsi/libsas/sas_task.c
-> @@ -7,6 +7,12 @@
->  #include <scsi/sas.h>
->  #include <scsi/libsas.h>
->
-> +enum {
-> +       NO_DATA = 0,
-> +       RESPONSE_DATA = 1,
-> +       SENSE_DATA = 2,
-> +};
-> +
->  /* fill task_status_struct based on SSP response frame */
->  void sas_ssp_task_response(struct device *dev, struct sas_task *task,
->                            struct ssp_response_iu *iu)
-> @@ -15,11 +21,11 @@ void sas_ssp_task_response(struct device *dev, struct sas_task *task,
->
->         tstat->resp = SAS_TASK_COMPLETE;
->
-> -       if (iu->datapres == 0)
-> +       if (iu->datapres == NO_DATA)
->                 tstat->stat = iu->status;
-> -       else if (iu->datapres == 1)
-> +       else if (iu->datapres == RESPONSE_DATA)
->                 tstat->stat = iu->resp_data[3];
-> -       else if (iu->datapres == 2) {
-> +       else if (iu->datapres == SENSE_DATA) {
->                 tstat->stat = SAS_SAM_STAT_CHECK_CONDITION;
->                 tstat->buf_valid_size =
->                         min_t(int, SAS_STATUS_BUF_SIZE,
-> --
-> 2.26.2
->
+From: Wanpeng Li <wanpengli@tencent.com>
+
+As commit 0c5f81dad46 (KVM: LAPIC: Inject timer interrupt via posted interrupt) 
+mentioned that the host admin should well tune the guest setup, so that vCPUs 
+are placed on isolated pCPUs, and with several pCPUs surplus for *busy* housekeeping.
+It is better to disable mwait/hlt/pause vmexits to keep the vCPUs in non-root 
+mode. However, we may isolate pCPUs for other purpose like DPDK or we can make 
+some guests isolated and others not, we may lose vmx preemption timer/timer fastpath 
+due to not well tuned setup, and the checking in kvm_can_post_timer_interrupt() 
+is not enough. Let's guarantee mwait/hlt is advertised before enabling posted-interrupt 
+interrupt. vmx preemption timer/timer fastpath can continue to work if both of them 
+are not advertised.
+
+Reported-by: Aili Yao <yaoaili@kingsoft.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Cc: Aili Yao <yaoaili@kingsoft.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+---
+v1 -> v2:
+ * also check kvm_hlt_in_guest since sometime mwait is disabled on host
+
+ arch/x86/kvm/lapic.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index f206fc3..fdb7c81 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -113,7 +113,8 @@ static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
+ 
+ static bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
+ {
+-	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
++	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu) &&
++		(kvm_mwait_in_guest(vcpu->kvm) || kvm_hlt_in_guest(vcpu->kvm));
+ }
+ 
+ bool kvm_can_use_hv_timer(struct kvm_vcpu *vcpu)
+-- 
+2.7.4
+
