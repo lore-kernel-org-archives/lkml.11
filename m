@@ -2,68 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F14C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1318492AbiAYDGE (ORCPT
+        id S1318725AbiAYDG5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:06:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57346 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3415888AbiAYBwz (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 20:52:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A0AC09540C;
-        Mon, 24 Jan 2022 17:11:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2882B810A8;
-        Tue, 25 Jan 2022 01:11:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62708C340E4;
-        Tue, 25 Jan 2022 01:11:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643073094;
-        bh=SZQl2OYvF7dYq5ExNDfTCvJM3j5G6REAjF7S3w9vODQ=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=CqvEZBYClop7DzOWBD4V5JRZls6qR9LNmJlm58IX+9Dt5ISzZO52HnK0IdRz38SCp
-         svowT/so8LHfOFgNqefwLNVxzCNTC9Rwa5NZ/NDFGemiHZ34I0QwzPkUmbfiFzqOM8
-         N+CSG7P6woDwroM1BYLsdl+LqQ2kLHoV3rVTc7rUvI0xBV3W86ZaI/TSLU+QLkpq4v
-         DLJCN0PqC7j5NO7ZCU8dF/j4ZQn9LiZG4PzEDB+yG/0yd1kqQ9oea8z26HHJuL/ux3
-         nv9u82LurQ3f8LHY/sCfo92qbea1UScdYHgYRr1yDPJxYnnCzxVJALpNW/kPBUNzLo
-         +prsIKHrgpdyQ==
-Content-Type: text/plain; charset="utf-8"
+        Mon, 24 Jan 2022 22:06:57 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:52124 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346056AbiAYB6d (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 20:58:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=vqIncw13EOORmlT/EjoC9h1eW7p1pLa1zW6wJTH4hys=; b=LehDvF77PFOcpCL1ZlaeFDIvoy
+        6kdNcCdYavZY8+3gy+TB/K/Slen/OnLNJCdIHkF7MpikmyoRpea9BKbbuLu7UvV/xH51qrjZT5bPI
+        7A3Myt6wLQLzABqOIHDH4s9Ex/dkrmxmsX6tYe7qKv8CxnoWENvJ1DZrsmCCWydCODNk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nCAhM-002ZLq-HM; Tue, 25 Jan 2022 02:32:40 +0100
+Date:   Tue, 25 Jan 2022 02:32:40 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net 2/2] net: stmmac: skip only stmmac_ptp_register when
+ resume from suspend
+Message-ID: <Ye9TOHoFJi3PjhNV@lunn.ch>
+References: <20220124095951.23845-1-mohammad.athari.ismail@intel.com>
+ <20220124095951.23845-3-mohammad.athari.ismail@intel.com>
+ <Ye6maxMtt68JlZ9l@lunn.ch>
+ <CO1PR11MB47716D7115E85AC4649CD3A5D55E9@CO1PR11MB4771.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220110114930.1406665-4-sergio.paracuellos@gmail.com>
-References: <20220110114930.1406665-1-sergio.paracuellos@gmail.com> <20220110114930.1406665-4-sergio.paracuellos@gmail.com>
-Subject: Re: [PATCH v8 3/4] clk: ralink: make system controller node a reset provider
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     john@phrozen.org, linux-staging@lists.linux.dev,
-        gregkh@linuxfoundation.org, neil@brown.name,
-        p.zabel@pengutronix.de, linux-kernel@vger.kernel.org
-To:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        linux-clk@vger.kernel.org
-Date:   Mon, 24 Jan 2022 17:11:32 -0800
-User-Agent: alot/0.10
-Message-Id: <20220125011134.62708C340E4@smtp.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CO1PR11MB47716D7115E85AC4649CD3A5D55E9@CO1PR11MB4771.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Sergio Paracuellos (2022-01-10 03:49:29)
-> MT7621 system controller node is already providing the clocks for the who=
-le
-> system but must also serve as a reset provider. Hence, add reset controll=
-er
-> related code to the clock driver itself. To get resets properly ready for
-> the rest of the world we need to move platform driver initialization proc=
-ess
-> to 'arch_initcall'.
->=20
-> CC: Philipp Zabel <p.zabel@pengutronix.de>
-> Signed-off-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
-> ---
+> > > @@ -3308,13 +3309,11 @@ static int stmmac_hw_setup(struct net_device
+> > *dev, bool init_ptp)
+...
 
-Applied to clk-next
+> > The init_ptp parameter now seems unused? If so, please remove it.
+> 
+> I believe you miss below diff. It is renamed to ptp_register.
+
+Ah, yes, sorry. I was looking at the context information diff gives
+you, which still has the old name.
+
+      Andrew
