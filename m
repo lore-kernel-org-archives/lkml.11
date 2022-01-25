@@ -2,61 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA71C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B08C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581934AbiAYPTH (ORCPT
+        id S1581989AbiAYPTL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 10:19:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35740 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343901AbiAYPQL (ORCPT
+        Tue, 25 Jan 2022 10:19:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49880 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359583AbiAYPQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:16:11 -0500
+        Tue, 25 Jan 2022 10:16:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8659A61677
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 15:16:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE21BC340E0;
-        Tue, 25 Jan 2022 15:16:07 +0000 (UTC)
-Date:   Tue, 25 Jan 2022 10:16:06 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org, naoya.horiguchi@linux.dev,
-        Ingo Molnar <mingo@redhat.com>, Zi Yan <ziy@nvidia.com>,
-        Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 2/2] mm/migration: Add trace events for base page and
- HugeTLB migrations
-Message-ID: <20220125101606.3cfb5561@gandalf.local.home>
-In-Reply-To: <Ye/7EWJ576hdkWDg@casper.infradead.org>
-References: <1643080105-11416-1-git-send-email-anshuman.khandual@arm.com>
-        <1643080105-11416-3-git-send-email-anshuman.khandual@arm.com>
-        <Ye/7EWJ576hdkWDg@casper.infradead.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25137B815F3;
+        Tue, 25 Jan 2022 15:15:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5364C340E0;
+        Tue, 25 Jan 2022 15:15:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643123756;
+        bh=gld+cOICDVSyR3eBycE7Kw4pbeGx/5O8Kju3l/BFsZc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uxCMXUS9vU3rX/8c9OHaV7K9zy+vIlk9FYXci6vHqKNTHiqFFWa5VoQEPxjeSmo78
+         dVZK2zk2T8b97wcUmepHBWBZz9Z0YtsEbRF1hODLtXMlDNFe2pGycWZoBNY+6ebs9b
+         uT18I/myxa1sQhLDgqtgZtjx5ofKpVmGDbq86OkbEUJdIMPB9QsAV4E9AXqg5es3Qt
+         9O+uvPMXRWMES2Z8cKYEeZQOSQ7HHZ+ujQDFUwLZnOk5Vr51p42emfZmN+rIK11EEJ
+         UQ+UBvZ1roGlKILKO+1CeXAN3tpu2vKa53/41SWX9HD9V31UfvsB1eS7w4De7P55ji
+         4yY+q+2hMW/Eg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nCNY2-002weW-Nr; Tue, 25 Jan 2022 15:15:54 +0000
+Date:   Tue, 25 Jan 2022 15:15:54 +0000
+Message-ID: <87o83z7snp.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Reiji Watanabe <reijiw@google.com>,
+        Raghavendra Rao Ananta <rananta@google.com>,
+        kvm@vger.kernel.org, Peter Shier <pshier@google.com>,
+        linux-kernel@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Jim Mattson <jmattson@google.com>
+Subject: Re: [RFC PATCH v3 01/11] KVM: Capture VM start
+In-Reply-To: <YedWUJNnQK3HFrWC@google.com>
+References: <CAAeT=Fxyct=WLUvfbpROKwB9huyt+QdJnKTaj8c5NKk+UY51WQ@mail.gmail.com>
+        <CAJHc60za+E-zEO5v2QeKuifoXznPnt5n--g1dAN5jgsuq+SxrA@mail.gmail.com>
+        <CALMp9eQDzqoJMck=_agEZNU9FJY9LB=iW-8hkrRc20NtqN=gDA@mail.gmail.com>
+        <CAJHc60xZ9emY9Rs9ZbV+AH-Mjmkyg4JZU7V16TF48C-HJn+n4A@mail.gmail.com>
+        <CALMp9eTPJZDtMiHZ5XRiYw2NR9EBKSfcP5CYddzyd2cgWsJ9hw@mail.gmail.com>
+        <CAJHc60xD2U36pM4+Dq3yZw6Cokk-16X83JHMPXj4aFnxOJ3BUQ@mail.gmail.com>
+        <CALMp9eR+evJ+w9VTSvR2KHciQDgTsnS=bh=1OUL4yy8gG6O51A@mail.gmail.com>
+        <CAJHc60zw1o=JdUJ+sNNtv3mc_JTRMKG3kPp=-cchWkHm74hUYA@mail.gmail.com>
+        <YeBfj89mIf8SezfD@google.com>
+        <CAAeT=Fz2q4PfJMXes3A9f+c01NnyORbvUrzJZO=ew-LsjPq2jQ@mail.gmail.com>
+        <YedWUJNnQK3HFrWC@google.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: seanjc@google.com, reijiw@google.com, rananta@google.com, kvm@vger.kernel.org, pshier@google.com, linux-kernel@vger.kernel.org, catalin.marinas@arm.com, pbonzini@redhat.com, will@kernel.org, kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org, jmattson@google.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 13:28:49 +0000
-Matthew Wilcox <willy@infradead.org> wrote:
-
-> On Tue, Jan 25, 2022 at 08:38:25AM +0530, Anshuman Khandual wrote:
-> > +		TP_printk("addr=%lx, pte=%lx order=%d", __entry->addr, __entry->pte, __entry->order)  
+On Wed, 19 Jan 2022 00:07:44 +0000,
+Sean Christopherson <seanjc@google.com> wrote:
 > 
-> In these days of increasingly advanced Rowhammer attacks, is it wise
-> to let userspace know exactly which physical addresses are being
-> used for virtual addresses?
+> On Fri, Jan 14, 2022, Reiji Watanabe wrote:
+> > The restriction, with which KVM doesn't need to worry about the changes
+> > in the registers after KVM_RUN, could potentially protect or be useful
+> > to protect KVM and simplify future changes/maintenance of the KVM codes
+> > that consumes the values.
+> 
+> That sort of protection is definitely welcome, the previously mentioned CPUID mess
+> on x86 would have benefit greatly by KVM being restrictive in the past.  That said,
+> hooking KVM_RUN is likely the wrong way to go about implementing any restrictions.
+> Running a vCPU is where much of the vCPU's state is explicitly consumed, but it's
+> all too easy for KVM to implicity/indirectly consume state via a different ioctl(),
+> e.g. if there are side effects that are visible in other registers, than an update
+> can also be visible to userspace via KVM_{G,S}ET_{S,}REGS, at which point disallowing
+> modifying state after KVM_RUN but not after reading/writing regs is arbitrary and
+> inconsitent.
+> 
+> If possible, preventing modification if kvm->created_vcpus > 0 is
+> ideal as it's a relatively common pattern in KVM, and provides a
+> clear boundary to userpace regarding what is/isn't allowed.
 
-Is it an issue if this is only available for privileged users?
+No, that's way too late. The configuration is in general per-CPU, and
+I really don't want to expand the surface of the userspace API to
+allow all sort of magic trick depending on the nature of what you
+save/restore.
 
-With tracing, you can just create a kprobe to get the same information for
-you as well, so this isn't giving a user anything they do not already have.
+The "first run" crap is already there. We have it on a per-CPU basis,
+and we need it at the VM level for other reasons (see the recent
+discussion about PMU filtering vs binding to a specific PMU
+implementation).
 
--- Steve
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
