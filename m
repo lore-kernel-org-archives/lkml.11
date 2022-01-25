@@ -2,206 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F89C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6092C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 15:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581125AbiAYO5a (ORCPT
+        id S1346248AbiAYO76 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:57:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
+        Tue, 25 Jan 2022 09:59:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1581057AbiAYOyi (ORCPT
+        with ESMTP id S1580814AbiAYOwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:54:38 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D63C06173B
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:54:37 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id s18so20377365wrv.7
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:54:37 -0800 (PST)
+        Tue, 25 Jan 2022 09:52:35 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33793C061401;
+        Tue, 25 Jan 2022 06:52:34 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id u18so49343789edt.6;
+        Tue, 25 Jan 2022 06:52:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=L4EjSQRW8FE0Hy1a1OCObXW1JPeDhbxfCUQxQfcGCdA=;
-        b=PdWSH25XO3nst6j4LhWnxbuH6rcneAReUC+ulVlbs4Mn+5m+zvlBtMxnpsqbYWvNpt
-         QREr+1C4LTD/cQKwvU7FvyGRsnILtoIFcP4S+OMzNhBcxv7HgVj8Jf+JEAGrOzOVsc03
-         0qbP+JM2T3BVds+4LoRvEQY9TWUbDX3Kj19RLWTNnZADdPdp1hjVOC5H83Kx/KVlsg6D
-         OJlqN77co5fKXAhBxX6+VyZGR+MxsIoO36/VU+uRMcS30WV4mfvD73bU8Xl5esjmOkV2
-         r5RhTdqmNV+1QTjK76qxgxHwL7IN1AgD5GeeBY58Zbh9ijFPT96ny/JBAzfY0bPkzQU+
-         K+SA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+kGacvdzzCD6QPq8PV1iVn7D6O+2KzgMqS70OsbrFYQ=;
+        b=Yu7pLJMLfgzlzf9ovzBXVxyYr/qzb+CvjSdDzhO42TEjdsuuJoEasVu17KFNUY+Z9/
+         ++83IAn3Gao+GtQQN8+4YjMbC8gHgSr+M2HQNZRokWwrDutGSEh4vfszqzqaJ2y8X6oP
+         Zq949DML/m7S2eqeiNtThdqEGFw/iGA7sJmS3TKcmoW2CjbdDQdWtlYJwU9qImp8AGJ4
+         l1znaDsNSoXNwUSJjpe4HEFc4mVRWvdN0oyw6dGovLYyreYf6RaCftxe//j75hNQ1kID
+         ksjyQHrUznDS2YOR9jU4eSl7kMsDe1FF5NfAnSE3iIz7XdzNiZzCgusNI+z/IUu4snlb
+         zbsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=L4EjSQRW8FE0Hy1a1OCObXW1JPeDhbxfCUQxQfcGCdA=;
-        b=3MqTkOXasQPzk0s0TCxycD85kgazSEUm0AoA8xjoru8n6K/Rf7NMp2U96SB1D4BAMH
-         jFp+CpyOP8J2FLU7WNUlK371gGmn+D6VsbkDgoUoGMElFy5yVq0dV9hY7kXajyakZ6bg
-         AIuUvCpD6HV/Arzu/IVdTA1GX+ExNLaZH2oFk4hhUq5f8D8nr8v/XI9PX6peAYUF4QXb
-         xfbmALWtmqdP0ZuJRCpP+9dIh3et490iuHx8R7Kh5WEuuI80lWW5N6fjlSh1mgQOU15w
-         UBdkljHr0DeHhrb8awws4MpVqPbyR5TXJ4KWht3fIwaG8GwI8GinWvykgL9MYzeB/ULw
-         qQgQ==
-X-Gm-Message-State: AOAM533aZBuNIC2l5KjwpesWBPQc9XV6w0qp/Y43T71t0SyQIpgxA2ke
-        YQzcqL9HWFVos4COMqFe6UxTR4D2Tn7zOQ==
-X-Google-Smtp-Source: ABdhPJzumuKere4mTeyM17OgS2jGkO+i0UITKhP0vksIIJO0J6DMs4WkxBnFoLezAGiFq2bQUyIbxw==
-X-Received: by 2002:a5d:64e2:: with SMTP id g2mr5117625wri.22.1643122475496;
-        Tue, 25 Jan 2022 06:54:35 -0800 (PST)
-Received: from ?IPv6:2001:861:44c0:66c0:e03f:56c1:665f:b320? ([2001:861:44c0:66c0:e03f:56c1:665f:b320])
-        by smtp.gmail.com with ESMTPSA id z17sm526375wmf.47.2022.01.25.06.54.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 06:54:34 -0800 (PST)
-Subject: Re: [PATCH v10 0/4] clk: meson: add a sub EMMC clock controller
- support
-To:     Liang Yang <liang.yang@amlogic.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-clk@vger.kernel.org
-Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220121074508.42168-1-liang.yang@amlogic.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-Message-ID: <f5a429f2-ffbc-ea03-810a-45a0f90959a2@baylibre.com>
-Date:   Tue, 25 Jan 2022 15:54:34 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+kGacvdzzCD6QPq8PV1iVn7D6O+2KzgMqS70OsbrFYQ=;
+        b=JlRrrmRO9T+8uBv8AuyBpJeUtvlJnb5GInzmP45GTt+DMOfLC3hBbmsV/Pn0ynb9xB
+         M+OKX4Qbs8Iq3xkyYBMzQFg80yH4WhbxNQ8QqjEKbBovvydcltMOxColtK4IBqc+8dvP
+         5xHnmClrm7OnSmhh2lUKrOP8EgnkMnCrfcJ7Fc5IF0pp8DSMPuB9J5pvUzU4sFKMl8rQ
+         aiZVpu8+BRwmioqRam/E1ZY3YATkYY2KRZM2hgMDqph3YTYp4mYVXQ/SlB7UocMofZma
+         uZpmBvsrEyXrNkiN07mqvRqoBBauVrT06Vh8ym2d+gkTzk7zuT28uocSvLLpDZa5KVMh
+         4+jg==
+X-Gm-Message-State: AOAM530kw4357Axx+FzqDvekrKA9ZpAPQmxwsIEHQrua9xFUeWeRJxOo
+        uVO3xdHtFtwhCczfK9oZLYzZ0Dcq3Y3S2fm4IhU=
+X-Google-Smtp-Source: ABdhPJxNcdIZR214oE7LafSn66ibQhAT6BqnKIutmDO1RoylpDHkgokt7k3YXTz+7+x0/44BmJdUjIZVfU11PrtXqPg=
+X-Received: by 2002:a05:6402:35d5:: with SMTP id z21mr13592745edc.29.1643122352627;
+ Tue, 25 Jan 2022 06:52:32 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220121074508.42168-1-liang.yang@amlogic.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220125085837.10357-1-josright123@gmail.com> <20220125085837.10357-3-josright123@gmail.com>
+In-Reply-To: <20220125085837.10357-3-josright123@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 25 Jan 2022 16:50:53 +0200
+Message-ID: <CAHp75VfrP7ZkeYGu_7XL98veJNDNmjnkL_cieS+53WNOM7KVHQ@mail.gmail.com>
+Subject: Re: [PATCH v13, 2/2] net: Add dm9051 driver
+To:     Joseph CHAMG <josright123@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Leon Romanovsky <leon@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Liang,
+On Tue, Jan 25, 2022 at 10:59 AM Joseph CHAMG <josright123@gmail.com> wrote:
+>
+> Add davicom dm9051 spi ethernet driver. The driver work for the
+> device platform with spi master
 
-On 21/01/2022 08:45, Liang Yang wrote:
-> This driver will add a MMC clock controller driver support.
-> The original idea about adding a clock controller is during the
-> discussion in the NAND driver mainline effort[1].
-> 
-> This driver is tested in the S400 board (AXG platform) with NAND driver.
+This is better, but please use a grammar period as well.
 
-Thanks a lot for providing a fixed and updated version of this serie.
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: andy Shevchenko <andy.shevchenko@gmail.com>
 
-After some chat with Jerome and Kevin, it seems the way the eMMC clock reuse
-for NAND was designed nearly 4 years doesn't look accurate anymore.
+Andy
 
-Having a separate clk driver designed to replace the eMMC node when NAND is
-used on the board seems over engineered.
+And you may utilize --cc parameter to git send-email or move this Cc
+block behind the cutter '--- ' line.
 
-Actually having the clock code you add in this serie _but_ directly in
-the NAND looks far better, and more coherent since having Linux runtime
-detection of eMMC vs NAND will never happen and even this serie required
-some DT modification from the bootloader.
+...
 
-I'll let Jerome or Kevin add more details if they want, but I think you should resurrect
-the work you pushed in [1] & [2] but:
-- passing the eMMC clk registers as a third "reg" cell
-- passing the same "clocks" phandle as the eMMC node
-- adding the eMMC clock code in the NAND driver directly
+> +#include <linux/etherdevice.h>
+> +#include <linux/ethtool.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/mii.h>
+> +#include <linux/module.h>
+> +#include <linux/netdevice.h>
+> +#include <linux/phy.h>
+> +#include <linux/regmap.h>
+> +#include <linux/skbuff.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/spi/spi.h>
 
-I'm open to discussions if you consider the current approach is still superior.
+types.h is missing
 
-Thanks,
-Neil
+...
 
-[1] https://lore.kernel.org/r/20220106033130.37623-1-liang.yang@amlogic.com
-[2] https://lore.kernel.org/r/20220106032504.23310-1-liang.yang@amlogic.com
+> +/**
+> + * struct rx_ctl_mach - rx activities record
 
-> 
-> Changes since v9 [10]
->  - use clk_parent_data instead of parent_names
-> 
-> Changes since v8 [9]
->  - use MESON_SCLK_ONE_BASED instead of CLK_DIVIDER_ONE_BASED
->  - use struct_size to caculate onecell_data
->  - add clk-phase-delay.h
->  - define CLK_DELAY_STEP_PS_GX and CLK_DELAY_STEP_PS_AXG
-> 
-> Changes since v7 [8]
->  - move meson_clk_get_phase_delay_data() from header to driver
->  - CONFIG sclk-div with COMMON_CLK_AMLOGIC instead of COMMON_CLK_AMLOGIC_AUDIO
->  - remove onecell date and ID for internal MUX clk
->  - use helper for functions for ONE_BASED in sclk-div
->  - add ONE_BASED support for duty cycle
-> 
-> Changes since v6 [7]:
->  - add one based support for sclk divier
->  - alloc sclk in probe for multiple instance
->  - fix coding styles
-> 
-> Changes since v5 [6]:
->  - remove divider ops with .init and use sclk_div instead
->  - drop CLK_DIVIDER_ROUND_CLOSEST in mux and div
->  - drop the useless type cast 
-> 
-> Changes since v4 [5]:
->  - use struct parm in phase delay driver
->  - remove 0 delay releted part in phase delay driver
->  - don't rebuild the parent name once again
->  - add divider ops with .init
-> 
-> Changes since v3 [4]:
->  - separate clk-phase-delay driver
->  - replace clk_get_rate() with clk_hw_get_rate()
->  - collect Rob's R-Y
->  - drop 'meson-' prefix from compatible string
-> 
->  Changes since v2 [3]:
->  - squash dt-binding clock-id patch
->  - update license
->  - fix alignment
->  - construct a clk register helper() function
-> 
-> Changes since v1 [2]:
->  - implement phase clock
->  - update compatible name
->  - adjust file name
->  - divider probe() into small functions, and re-use them
-> 
-> [1] https://lkml.kernel.org/r/20180628090034.0637a062@xps13
-> [2] https://lkml.kernel.org/r/20180703145716.31860-1-yixun.lan@amlogic.com
-> [3] https://lkml.kernel.org/r/20180710163658.6175-1-yixun.lan@amlogic.com
-> [4] https://lkml.kernel.org/r/20180712211244.11428-1-yixun.lan@amlogic.com
-> [5] https://lkml.kernel.org/r/20180809070724.11935-4-yixun.lan@amlogic.com
-> [6] https://lkml.kernel.org/r/1539839245-13793-1-git-send-email-jianxin.pan@amlogic.com
-> [7] https://lkml.kernel.org/r/1541089855-19356-1-git-send-email-jianxin.pan@amlogic.com
-> [8] https://lkml.kernel.org/r/1544457877-51301-1-git-send-email-jianxin.pan@amlogic.com
-> [9] https://lkml.kernel.org/r/1545063850-21504-1-git-send-email-jianxin.pan@amlogic.com
-> [10] https://lore.kernel.org/all/20220113115745.45826-1-liang.yang@amlogic.com/
-> Liang Yang (4):
->   clk: meson: add one based divider support for sclk
->   clk: meson: add emmc sub clock phase delay driver
->   clk: meson: add DT documentation for emmc clock controller
->   clk: meson: add sub MMC clock controller driver
-> 
->  .../bindings/clock/amlogic,mmc-clkc.yaml      |  64 ++++
->  drivers/clk/meson/Kconfig                     |  18 ++
->  drivers/clk/meson/Makefile                    |   2 +
->  drivers/clk/meson/clk-phase-delay.c           |  69 ++++
->  drivers/clk/meson/clk-phase-delay.h           |  20 ++
->  drivers/clk/meson/mmc-clkc.c                  | 302 ++++++++++++++++++
->  drivers/clk/meson/sclk-div.c                  |  59 ++--
->  drivers/clk/meson/sclk-div.h                  |   3 +
->  include/dt-bindings/clock/amlogic,mmc-clkc.h  |  14 +
->  9 files changed, 529 insertions(+), 22 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/clock/amlogic,mmc-clkc.yaml
->  create mode 100644 drivers/clk/meson/clk-phase-delay.c
->  create mode 100644 drivers/clk/meson/clk-phase-delay.h
->  create mode 100644 drivers/clk/meson/mmc-clkc.c
->  create mode 100644 include/dt-bindings/clock/amlogic,mmc-clkc.h
-> 
+> + *
 
+In all similar cases remove this blank line.
+
+> + * @status_err_counter: rx status error counter
+> + * @large_err_counter: rx get large packet length error counter
+> + * @fifo_rst_counter: reset operation counter
+> + *
+> + * To keep track for the driver operation statistics
+> + */
+
+...
+
+> +/**
+> + * struct dm9051_rxhdr - rx packet data header
+> + *
+> + * @rxpktready: lead byte is 0x01 tell a valid packet
+> + * @rxstatus: status bits for the received packet
+> + * @rxlen: packet length
+> + *
+
+> + * The rx packet enter into the fifo memory is start with these four
+
+The Rx packed, entered into the FIFO memory, starts with
+
+> + * bytes which is the rx header, follow this header is the ethernet
+
+Rx header, followed by the ethernet
+
+> + * packet data and end with a appended 4-byte CRC data.
+
+ends
+an appended
+
+
+> + * Both rx packet and CRC data are for check purpose and finally are
+> + * dropped by this driver
+> + */
+
+...
+
+> + * @kw_rxctrl: kernel thread worke structure for rx control
+
+worker?
+
+...
+
+> +       int ret = regmap_read_poll_timeout(db->regmap_dm, DM9051_NSR, mval,
+> +                                          mval & (NSR_TX2END | NSR_TX1END), 1, 20);
+> +
+> +       if (ret)
+
+Please, split the assignment and get it closer to its user, so
+
+  int ret;
+
+  ret = ...
+  if (ret)
+
+This applies to all similar cases.
+
+Actually all comments are against the entire code even if it's given
+only for one occurrence of the similar code block.
+
+> +               netdev_err(db->ndev, "timeout in checking for tx ends\n");
+> +       return ret;
+> +}
+
+...
+
+> +       ret = regmap_bulk_read(db->regmap_dmbulk, DM9051_EPDRL, to, 2);
+> +       if (ret < 0)
+> +               return ret;
+> +       return ret;
+
+  return regmap_...(...);
+
+Same for other similar places.
+
+...
+
+> +       /* this is a 2 bytes data written via regmap_bulk_write
+> +        */
+
+Useless comments.
+
+...
+
+> +static int dm9051_mdiobus_read(struct mii_bus *mdiobus, int phy_id, int reg)
+> +{
+> +       struct board_info *db = mdiobus->priv;
+
+> +       unsigned int val = 0;
+
+You can  do
+
+  val = 0xffff;
+
+here...
+
+> +       int ret;
+> +
+> +       if (phy_id == DM9051_PHY_ID) {
+> +               ret = ctrl_dm9051_phyread(db, reg, &val);
+> +               if (ret)
+> +                       return ret;
+
+> +               return val;
+> +       }
+> +       return 0xffff;
+
+...and
+
+  }
+  return val;
+
+here.
+
+> +}
+
+
+> +       while (count--) {
+
+If the count is guaranteed to be greater than 0, it would be better to use
+
+  do {
+    ...
+  } while (--count);
+
+> +               ret = regmap_read(db->regmap_dm, reg, &rb);
+> +               if (ret) {
+> +                       netif_err(db, drv, ndev, "%s: error %d dumping read reg %02x\n",
+> +                                 __func__, ret, reg);
+> +                       break;
+> +               }
+> +       }
+> +       return ret;
+> +}
+
+...
+
+> +#ifndef _DM9051_H_
+> +#define _DM9051_H_
+> +
+> +#include <linux/bitfield.h>
+
+There is no user of this header, but missing bits.h and one that
+provides netdev_priv().
+
+...
+
+> +#define DRVNAME_9051           "dm9051"
+
+Why is this in the header?
+
+
+--
+With Best Regards,
+Andy Shevchenko
