@@ -2,113 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D693BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:49:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E70C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359345AbiAYGr7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:47:59 -0500
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:46728 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357883AbiAYGoV (ORCPT
+        id S243719AbiAYGt2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 01:49:28 -0500
+Received: from esa2.mentor.iphmx.com ([68.232.141.98]:2460 "EHLO
+        esa2.mentor.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358497AbiAYGpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 01:44:21 -0500
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 20P6akpG078228;
-        Tue, 25 Jan 2022 14:36:46 +0800 (GMT-8)
-        (envelope-from jammy_huang@aspeedtech.com)
-Received: from JammyHuang-PC.aspeed.com (192.168.2.115) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 25 Jan
- 2022 14:44:06 +0800
-From:   Jammy Huang <jammy_huang@aspeedtech.com>
-To:     <eajames@linux.ibm.com>, <mchehab@kernel.org>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <linux-media@vger.kernel.org>,
-        <openbmc@lists.ozlabs.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 1/3] media: aspeed: Correct value for h-total-pixels
-Date:   Tue, 25 Jan 2022 14:44:07 +0800
-Message-ID: <20220125064409.5502-2-jammy_huang@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220125064409.5502-1-jammy_huang@aspeedtech.com>
-References: <20220125064409.5502-1-jammy_huang@aspeedtech.com>
+        Tue, 25 Jan 2022 01:45:54 -0500
+IronPort-SDR: RavLzcctKxeWmPfeSVQq0/h5zi++CKjs+wR40FTuoPI91FkRRmWfCwlNsdt8mCTWoAHhJiWhEz
+ 1A/osGKKPX+xgTj+Kv510RU6YsW/At6kse/y2ILH/H9Hv7LlqvAtgpknUiGE87IiVC7Tx+EjWa
+ d9E0tF9H4EHlp7Rje0hmr2lmH5unf2U1Df+jiMy/brZbRr07W2zt9rk3+VpoXjDqDDQ0mnbPSu
+ frq92heBJUYWnA+G9MPKziRYatr2IZjvhyPmdwMSeLJdEyGlvtrfYgJY2oDGsMPBFMd5rlaO9i
+ i1zh22CU1pwxg1N28SOtNu4c
+X-IronPort-AV: E=Sophos;i="5.88,314,1635235200"; 
+   d="scan'208";a="71173504"
+Received: from orw-gwy-02-in.mentorg.com ([192.94.38.167])
+  by esa2.mentor.iphmx.com with ESMTP; 24 Jan 2022 22:45:47 -0800
+IronPort-SDR: twu5CcYaTiNsnA+NYdGL2X0/4vzJI8f01adpyAyQxPSMZaYlztDK4Dm2bMVvPq1mcRTS77pWG4
+ OHvUqjtl9v+sisYWUersXHILqmetzMJt9WFll7qylz3MrFZbQXIu4EExt1w4exHXce0dZ6qzHa
+ 6BNOnUbDgvuh0Xf74tQwHcPc3H8fSQNaCpDTrjSfE8Klk3nTke+COZ5ymW01Mj/GXu41i93ZSn
+ 9Wl2Q5xurIdHVeyZxhv6B9B4fIOHhqub1TvSZ9BV+jrbu14nvIRKwhH7lOLfTWOWRYm2J2iuso
+ JFg=
+From:   Andrew Gabbasov <andrew_gabbasov@mentor.com>
+To:     'Geert Uytterhoeven' <geert@linux-m68k.org>
+CC:     'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>,
+        'Linux I2C' <linux-i2c@vger.kernel.org>,
+        'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>,
+        'Wolfram Sang' <wsa+renesas@sang-engineering.com>,
+        "Surachari, Bhuvanesh" <Bhuvanesh_Surachari@mentor.com>
+References: <20210922160649.28449-1-andrew_gabbasov@mentor.com> <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>   
+In-Reply-To: 
+Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
+Date:   Tue, 25 Jan 2022 09:45:34 +0300
+Organization: Mentor Graphics Corporation
+Message-ID: <000001d811b7$2bd58310$83808930$@mentor.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.115]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 20P6akpG078228
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHXue1eCQdNXjaiK021FrevUeTu7qvGRbCQgEMVGxCAUkv+EIAYU0UA
+Content-Language: en-us
+X-Originating-IP: [137.202.0.90]
+X-ClientProxiedBy: svr-ies-mbx-10.mgc.mentorg.com (139.181.222.10) To
+ svr-ies-mbx-02.mgc.mentorg.com (139.181.222.2)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previous reg-field, 0x98[11:0], stands for the period of the detected
-hsync signal.
-Use the correct reg, 0xa0, to get h-total in pixels.
+Hello Geert, Wolfram,
 
-Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
-Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
----
-v4:
- - no update
-v3:
- - no update
-v2:
- - no update
----
- drivers/media/platform/aspeed-video.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Any feedback on the patch, please?
 
-diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
-index b388bc56ce81..d5f77b205175 100644
---- a/drivers/media/platform/aspeed-video.c
-+++ b/drivers/media/platform/aspeed-video.c
-@@ -166,7 +166,7 @@
- #define  VE_SRC_TB_EDGE_DET_BOT		GENMASK(28, VE_SRC_TB_EDGE_DET_BOT_SHF)
- 
- #define VE_MODE_DETECT_STATUS		0x098
--#define  VE_MODE_DETECT_H_PIXELS	GENMASK(11, 0)
-+#define  VE_MODE_DETECT_H_PERIOD	GENMASK(11, 0)
- #define  VE_MODE_DETECT_V_LINES_SHF	16
- #define  VE_MODE_DETECT_V_LINES		GENMASK(27, VE_MODE_DETECT_V_LINES_SHF)
- #define  VE_MODE_DETECT_STATUS_VSYNC	BIT(28)
-@@ -177,6 +177,8 @@
- #define  VE_SYNC_STATUS_VSYNC_SHF	16
- #define  VE_SYNC_STATUS_VSYNC		GENMASK(27, VE_SYNC_STATUS_VSYNC_SHF)
- 
-+#define VE_H_TOTAL_PIXELS		0x0A0
-+
- #define VE_INTERRUPT_CTRL		0x304
- #define VE_INTERRUPT_STATUS		0x308
- #define  VE_INTERRUPT_MODE_DETECT_WD	BIT(0)
-@@ -938,6 +940,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 	u32 src_lr_edge;
- 	u32 src_tb_edge;
- 	u32 sync;
-+	u32 htotal;
- 	struct v4l2_bt_timings *det = &video->detected_timings;
- 
- 	det->width = MIN_WIDTH;
-@@ -983,6 +986,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 		src_tb_edge = aspeed_video_read(video, VE_SRC_TB_EDGE_DET);
- 		mds = aspeed_video_read(video, VE_MODE_DETECT_STATUS);
- 		sync = aspeed_video_read(video, VE_SYNC_STATUS);
-+		htotal = aspeed_video_read(video, VE_H_TOTAL_PIXELS);
- 
- 		video->frame_bottom = (src_tb_edge & VE_SRC_TB_EDGE_DET_BOT) >>
- 			VE_SRC_TB_EDGE_DET_BOT_SHF;
-@@ -999,8 +1003,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 			VE_SRC_LR_EDGE_DET_RT_SHF;
- 		video->frame_left = src_lr_edge & VE_SRC_LR_EDGE_DET_LEFT;
- 		det->hfrontporch = video->frame_left;
--		det->hbackporch = (mds & VE_MODE_DETECT_H_PIXELS) -
--			video->frame_right;
-+		det->hbackporch = htotal - video->frame_right;
- 		det->hsync = sync & VE_SYNC_STATUS_HSYNC;
- 		if (video->frame_left > video->frame_right)
- 			continue;
--- 
-2.25.1
+Thanks.
+
+Best regards,
+Andrew
+
+> -----Original Message-----
+> From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+> Sent: Sunday, January 09, 2022 10:20 PM
+> To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
+> Cc: 'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>; 'Linux I2C' <linux-i2c@vger.kernel.org>; 'Linux Kernel
+> Mailing List' <linux-kernel@vger.kernel.org>; 'Wolfram Sang' <wsa+renesas@sang-engineering.com>; Surachari,
+> Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
+> Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
+> 
+> Hello Geert, Wolfram,
+> 
+> Could you please let me know your opinion on version 2 of this patch,
+> that addressed your earlier review comments?
+> 
+> https://lore.kernel.org/all/20211006182314.10585-1-andrew_gabbasov@mentor.com/
+> 
+> Does it still need any further modifications or are you going to promote it further upstream?
+> 
+> Thanks.
+> 
+> Best regards,
+> Andrew
+> 
+> > -----Original Message-----
+> > From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+> > Sent: Thursday, November 18, 2021 1:35 PM
+> > To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
+> > Cc: 'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>; 'Linux I2C' <linux-i2c@vger.kernel.org>; 'Linux Kernel
+> > Mailing List' <linux-kernel@vger.kernel.org>; 'Wolfram Sang' <wsa+renesas@sang-engineering.com>; Surachari,
+> > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
+> > Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
+> >
+> > Hello Geert, Wolfram,
+> >
+> > Do you have any feedback on version 2 of this patch, that was submitted
+> > after your review comments below?
+> >
+> > https://lore.kernel.org/all/20211006182314.10585-1-andrew_gabbasov@mentor.com/
+> >
+> > Thanks!
+> >
+> > Best regards,
+> > Andrew
+> >
+> > > -----Original Message-----
+> > > From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+> > > Sent: Wednesday, October 06, 2021 9:12 PM
+> > > To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
+> > > Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>; Linux I2C <linux-i2c@vger.kernel.org>; Linux Kernel
+> > > Mailing List <linux-kernel@vger.kernel.org>; Wolfram Sang <wsa+renesas@sang-engineering.com>; Surachari,
+> > > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
+> > > Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
+> > >
+> > > Hi Geert,
+> > >
+> > > Thank you for your review!
+> > >
+> > > > -----Original Message-----
+> > > > From: Geert Uytterhoeven <geert@linux-m68k.org>
+> > > > Sent: Tuesday, October 05, 2021 4:32 PM
+> > > > To: Gabbasov, Andrew <Andrew_Gabbasov@mentor.com>
+> > > > Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>; Linux I2C <linux-i2c@vger.kernel.org>; Linux Kernel
+> > > > Mailing List <linux-kernel@vger.kernel.org>; Wolfram Sang <wsa+renesas@sang-engineering.com>; Surachari,
+> > > > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
+> > > > Subject: Re: [PATCH] i2c: rcar: add SMBus block read support
+> > > >
+> > > > Hi Andrew,
+> > > >
+> > > > On Wed, Sep 22, 2021 at 6:14 PM Andrew Gabbasov
+> > > > <andrew_gabbasov@mentor.com> wrote:
+> > > > > The smbus block read is not currently supported for rcar i2c devices.
+> > > > > This patchset adds the support to rcar i2c bus so that blocks of data
+> > > > > can be read using SMbus block reads.(using i2c_smbus_read_block_data()
+> > > > > function from the i2c-core-smbus.c).
+> > > > >
+> > > > > Inspired by commit 8e8782c71595 ("i2c: imx: add SMBus block read support")
+> > > > >
+> > > > > This patch (adapted) was tested with v4.14, but due to lack of real
+> > > > > hardware with SMBus block read operations support, using "simulation",
+> > > > > that is manual analysis of data, read from plain I2C devices with
+> > > > > SMBus block read request.
+> > > > >
+> > > > > Signed-off-by: Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>
+> > > > > Signed-off-by: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+> > > >
+> > > > Thanks for your patch!
+> > > >
+> > > > > --- a/drivers/i2c/busses/i2c-rcar.c
+> > > > > +++ b/drivers/i2c/busses/i2c-rcar.c
+> > > > > @@ -429,9 +431,16 @@ static bool rcar_i2c_dma(struct rcar_i2c_priv *priv)
+> > > > >                 /*
+> > > > >                  * The last two bytes needs to be fetched using PIO in
+> > > > >                  * order for the STOP phase to work.
+> > > > > +                *
+> > > > > +                * For SMBus block read the first byte was received using PIO.
+> > > >
+> > > > So it might be easier to read, and more maintainable, to keep the
+> > > > old assignments:
+> > > >
+> > > >     buf = priv->msg->buf;
+> > > >     len = priv->msg->len - 2;
+> > > >
+> > > > and adjust them for SMBus afterwards:
+> > > >
+> > > >     if (block_data) {
+> > > >             /* For SMBus block read the first byte was received using PIO */
+> > > >             buf++;
+> > > >             len--;
+> > > >     }
+> > > >
+> > > > ?
+> > > >
+> > > > >                  */
+> > > > > -               buf = priv->msg->buf;
+> > > > > -               len = priv->msg->len - 2;
+> > > > > +               if (block_data) {
+> > > > > +                       buf = priv->msg->buf + 1;
+> > > > > +                       len = priv->msg->len - 3;
+> > > > > +               } else {
+> > > > > +                       buf = priv->msg->buf;
+> > > > > +                       len = priv->msg->len - 2;
+> > > > > +               }
+> > > > >         } else {
+> > > > >                 /*
+> > > > >                  * First byte in message was sent using PIO.
+> > > >
+> > > > And below we have another case handling buf and len :-(
+> > > >
+> > > > So perhaps:
+> > > >
+> > > >     buf = priv->msg->buf;
+> > > >     len = priv->msg->len;
+> > > >
+> > > >     if (read) {
+> > > >             /*
+> > > >              * The last two bytes needs to be fetched using PIO in
+> > > >              * order for the STOP phase to work.
+> > > >              */
+> > > >             len -= 2;
+> > > >     }
+> > > >     if (!read || block_data) {
+> > > >             /* First byte in message was sent using PIO *
+> > > >             buf++;
+> > > >             len--;
+> > > >     }
+> > >
+> > > Probably I was trying to minimize the changes ;-)
+> > >
+> > > However, I agree with you that the whole code fragment can be simplified
+> > > and your variant indeed looks more clean and understandable.
+> > > Thank you for your suggestion, I'll submit version 2 of the patch
+> > > with this fragment changed.
+> > >
+> > > Thanks!
+> > >
+> > > Best regards,
+> > > Andrew
 
