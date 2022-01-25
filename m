@@ -2,103 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D06EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 22:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45364C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 22:51:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234210AbiAYWvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 17:51:06 -0500
-Received: from elvis.franken.de ([193.175.24.41]:40123 "EHLO elvis.franken.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234546AbiAYWuZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 17:50:25 -0500
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nCUdn-00055K-00; Tue, 25 Jan 2022 23:50:19 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id C55C2C10E8; Tue, 25 Jan 2022 20:05:31 +0100 (CET)
-Date:   Tue, 25 Jan 2022 20:05:31 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>, linux-mips@vger.kernel.org
-Subject: Re: [PATCH 38/54] arch/mips: replace cpumask_weight with
- cpumask_weight_{eq, ...} where appropriate
-Message-ID: <20220125190531.GA31998@alpha.franken.de>
-References: <20220123183925.1052919-1-yury.norov@gmail.com>
- <20220123183925.1052919-39-yury.norov@gmail.com>
+        id S234498AbiAYWvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 17:51:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234186AbiAYWui (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 17:50:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A0AC061753;
+        Tue, 25 Jan 2022 14:50:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA45960C0B;
+        Tue, 25 Jan 2022 22:50:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48474C340EB;
+        Tue, 25 Jan 2022 22:50:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643151037;
+        bh=A+6x5HIcipmLX7MAIl49Tcq4C1TNDEakGFm4cHaCy3I=;
+        h=Date:From:To:Cc:Subject:From;
+        b=AnfpOrC3lCetTI4n+HRBoIh7HG9pgRM8yewmybCi3yHD8Nvv/eDlCC9QiHYEpMO0g
+         dUUwgsSvNX1Qa7GYR84ZPiLdcv9Fru5v1UX/Xy2q6u+o6T+k+uT9Dsc/RXUtg7ZoGP
+         n9SgRTBKqnmGJ2AYq+tAEAkFegU/+NezUZYGS6ApjO6UijQ0iYWzEHkcVs4AxVH+sV
+         Z51ujurEa+5pgcYE7a3qC9qibJFOgzu8iq+jcb8ZQlnhjbkBZUlegxKmv5u7NydHMf
+         9YA4K3g3GL3wECSEdjsH+6GYlSgrNAbqcbn9vUlEbPAlw3mU3kcSFufkrDOevRf6Gr
+         YWezmOJy64jdQ==
+Date:   Tue, 25 Jan 2022 16:57:23 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>
+Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] hwspinlock: sprd: Use struct_size() helper in
+ devm_kzalloc()
+Message-ID: <20220125225723.GA78256@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220123183925.1052919-39-yury.norov@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 23, 2022 at 10:39:09AM -0800, Yury Norov wrote:
-> Mips code uses calls cpumask_weight() to compare the weight of
-> cpumask with a given number. We can do it more efficiently with
-> cpumask_weight_{eq, ...} because conditional cpumask_weight may stop
-> traversing the cpumask earlier, as soon as condition is met.
-> 
-> Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> ---
->  arch/mips/cavium-octeon/octeon-irq.c | 4 ++--
->  arch/mips/kernel/crash.c             | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/mips/cavium-octeon/octeon-irq.c b/arch/mips/cavium-octeon/octeon-irq.c
-> index 844f882096e6..914871f15fb7 100644
-> --- a/arch/mips/cavium-octeon/octeon-irq.c
-> +++ b/arch/mips/cavium-octeon/octeon-irq.c
-> @@ -763,7 +763,7 @@ static void octeon_irq_cpu_offline_ciu(struct irq_data *data)
->  	if (!cpumask_test_cpu(cpu, mask))
->  		return;
->  
-> -	if (cpumask_weight(mask) > 1) {
-> +	if (cpumask_weight_gt(mask, 1)) {
->  		/*
->  		 * It has multi CPU affinity, just remove this CPU
->  		 * from the affinity set.
-> @@ -795,7 +795,7 @@ static int octeon_irq_ciu_set_affinity(struct irq_data *data,
->  	 * This removes the need to do locking in the .ack/.eoi
->  	 * functions.
->  	 */
-> -	if (cpumask_weight(dest) != 1)
-> +	if (!cpumask_weight_eq(dest, 1))
->  		return -EINVAL;
->  
->  	if (!enable_one)
-> diff --git a/arch/mips/kernel/crash.c b/arch/mips/kernel/crash.c
-> index 81845ba04835..5b690d52491f 100644
-> --- a/arch/mips/kernel/crash.c
-> +++ b/arch/mips/kernel/crash.c
-> @@ -72,7 +72,7 @@ static void crash_kexec_prepare_cpus(void)
->  	 */
->  	pr_emerg("Sending IPI to other cpus...\n");
->  	msecs = 10000;
-> -	while ((cpumask_weight(&cpus_in_crash) < ncpus) && (--msecs > 0)) {
-> +	while (cpumask_weight_lt(&cpus_in_crash, ncpus) && (--msecs > 0)) {
->  		cpu_relax();
->  		mdelay(1);
->  	}
-> -- 
-> 2.30.2
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worst scenario, could lead to heap overflows.
 
-Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Also, address the following sparse warnings:
+drivers/hwspinlock/sprd_hwspinlock.c:96:36: warning: using sizeof on a flexible structure
 
+Link: https://github.com/KSPP/linux/issues/174
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/hwspinlock/sprd_hwspinlock.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/hwspinlock/sprd_hwspinlock.c b/drivers/hwspinlock/sprd_hwspinlock.c
+index d221fc9d756d..22e2ffb91743 100644
+--- a/drivers/hwspinlock/sprd_hwspinlock.c
++++ b/drivers/hwspinlock/sprd_hwspinlock.c
+@@ -93,8 +93,7 @@ static int sprd_hwspinlock_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 
+ 	sprd_hwlock = devm_kzalloc(&pdev->dev,
+-				   sizeof(struct sprd_hwspinlock_dev) +
+-				   SPRD_HWLOCKS_NUM * sizeof(*lock),
++				   struct_size(sprd_hwlock, bank.lock, SPRD_HWLOCKS_NUM),
+ 				   GFP_KERNEL);
+ 	if (!sprd_hwlock)
+ 		return -ENOMEM;
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+2.27.0
+
