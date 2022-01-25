@@ -2,122 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05569C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46238C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358589AbiAYRzT (ORCPT
+        id S1356912AbiAYR4m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:55:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57032 "EHLO
+        Tue, 25 Jan 2022 12:56:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379794AbiAYRyQ (ORCPT
+        with ESMTP id S1385185AbiAYRyu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:54:16 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19941C061753
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:54:16 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id h12so20670622pjq.3
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:54:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aIV6eSMSODWibmjbStB+qKd/AvnMQkOZd3vv2gOpFy0=;
-        b=ll5W9H/HRJqzopdwRXtU8gikl/FzPb+JXHP6WmoFVz4eH+wYbfNK3NFW0z7VTdIBq9
-         EJVs1deIsktmrWw9xQmoZgXGVfzBPaQ2A0sZlswVlxRAEb2HScQTId1k4gUcewwFOebp
-         zNAvgfpHfR/qQKwfpLwRVCFbIv2I5VP3Q5RG8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aIV6eSMSODWibmjbStB+qKd/AvnMQkOZd3vv2gOpFy0=;
-        b=jG+Pr5YQ9XFS/CucvqbCqz3fXK3FdEvjdmHP1JrDD12ovmSw2jQXg59dSvBEo262rI
-         XBfyjFAefIIPv1h7tPEi5DTJOSG2J04WwkYq7lZFC2LSbIf0ZUGiBnQQA/gyag+4isU3
-         XSLcWDT167ryj42NxOafC4I68gsvUZvubP+ZC/78azNyPc32BBtWCG6SYaKGDeMOAqVk
-         duKraQ8Y0/OIaqQe83miUMKb+GnrK3PvW+KJqgX6A4ppRK7Z5nW3kFdj3VXUz/L3AvXL
-         xU9ZqL3yCXMaiZU+VbYbVyUNUW7xgE6T2hD6EzTTiBLgqYv7BV7Rjs4qx2M7GDdVIBXZ
-         4u7A==
-X-Gm-Message-State: AOAM530z6Br5iVxcS+kYkfhr2ZIIfye6ZIwRYS9DeKJW6vM28APsdvqu
-        Q9tz9kc+kc4K1VBRBxaXWFz3/g==
-X-Google-Smtp-Source: ABdhPJzyT4Nwg0+TTagvzVcv7RVSYSao1rl+8zt3eBqdMaUdgBlFntA35C+9SFj740GOzoDpEiJr4Q==
-X-Received: by 2002:a17:90a:f283:: with SMTP id fs3mr4595049pjb.173.1643133255559;
-        Tue, 25 Jan 2022 09:54:15 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id 13sm19569673pfm.161.2022.01.25.09.54.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 09:54:15 -0800 (PST)
-Date:   Tue, 25 Jan 2022 09:54:14 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the kspp tree
-Message-ID: <202201250953.3F4D0499@keescook>
-References: <20220125145006.677e3709@canb.auug.org.au>
- <202201242230.C54A6BCDFE@keescook>
- <20220125222732.98ce2e445726e773f40e122e@kernel.org>
- <20220125233154.dac280ed36944c0c2fe6f3ac@kernel.org>
+        Tue, 25 Jan 2022 12:54:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2364C06175E;
+        Tue, 25 Jan 2022 09:54:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F05CB819DC;
+        Tue, 25 Jan 2022 17:54:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BE27C340E0;
+        Tue, 25 Jan 2022 17:54:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643133286;
+        bh=e8RIDdHaka7BpYFM9Quoh+WQnHQ0tbZzk2YChopEt5k=;
+        h=Date:From:To:Cc:Subject:From;
+        b=kfe3v9vI/NVHnoFrPeCBhSyVHjQQDrMtFRj2FLGHhtonu4oVamFx2uaUDoex/ZPwl
+         zAnO3bCTPb9q619jkKtp8C1pKJs+BkuizxhpCxMKjeiPV8PutwIkovgwe8m+mrFAMM
+         2HEC5/bm4WyeaEShCLHujXX1zoGLyVfDlZOEvGB6zvoypSLpPLnlheC948/vEtMNsN
+         /fdY4pHAsSdnn3fHTGfUNrB0XxeSV1ybgzkbB/ohctVLAxpjqfQ05uUhAiSMJhSLRq
+         3rYxH/SCyAD0/K0KLdZnAVPnfzcfa4kBNlSjiA/QDbNGNDJwFRub/mtBKmXwTelMft
+         NwUAu3eCvQhBQ==
+Date:   Tue, 25 Jan 2022 12:01:31 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>
+Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] Drivers: hv: vmbus: Use struct_size() helper in
+ kmalloc()
+Message-ID: <20220125180131.GA67746@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220125233154.dac280ed36944c0c2fe6f3ac@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 11:31:54PM +0900, Masami Hiramatsu wrote:
-> On Tue, 25 Jan 2022 22:27:32 +0900
-> Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> 
-> > > /*
-> > >  * struct trace_event_data_offsets_<call> {
-> > >  *      u32                             <item1>;
-> > >  *      u32                             <item2>;
-> > >  *      [...]
-> > >  * };
-> > >  *
-> > >  * The __dynamic_array() macro will create each u32 <item>, this is
-> > >  * to keep the offset of each array from the beginning of the event.
-> > >  * The size of an array is also encoded, in the higher 16 bits of
-> > >  * <item>.
-> > >  */
-> > > 
-> > > So, I think -Warray-bounds is refusing to see the destination as
-> > > anything except a u32, but being accessed at 4 (sizeof(u32)) + 8
-> > > (address && 0xffff) (?)
-> > 
-> > Ah, I got it. Yes, that's right. __data_loc() will access the data
-> > from the __entry, but the __rel_loc() points the same address from
-> > the encoded field ("__rel_loc_foo" in this case) itself.
-> > This is introduced for the user application event, which doesn't
-> > know the actual __entry size because the __entry includes some
-> > kernel internal defined fields.
-> > 
-> > > But if this is true, I would imagine there would be plenty of other
-> > > warnings? I'm currently stumped.
-> > 
-> > That is because __rel_loc is used only in the sample code in the kernel
-> > for testing. Other use-cases comes from user-space.
-> > Hmm, can we skip this boundary check for this example?
-> 
-> If the -Warray-bounds determines the destination array size from
-> the type of given pointer, we can just change the macro as below;
-> 
-> #define __get_rel_dynamic_array(field) 
-> 			((void *)__entry +                                 \
-> 			 offsetof(typeof(*__entry), __rel_loc_##field) +   \
-> 			 sizeof(__entry->__rel_loc_##field) +              \
-> 			 (__entry->__rel_loc_##field & 0xffff))
-> 
-> This must works same as __get_dynamic_array() macro.
-> 
-> Could you try this patch?
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worst scenario, could lead to heap overflows.
 
-Thanks, I'll give this a spin. I need to reproduce sfr's warning first,
-but now that I've fetched next-20220125, it should be easy. *famous last
-words*
+Also, address the following sparse warnings:
+drivers/hv/vmbus_drv.c:1132:31: warning: using sizeof on a flexible structure
 
+Link: https://github.com/KSPP/linux/issues/174
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/hv/vmbus_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+index 17bf55fe3169..cd193456cd84 100644
+--- a/drivers/hv/vmbus_drv.c
++++ b/drivers/hv/vmbus_drv.c
+@@ -1129,7 +1129,7 @@ void vmbus_on_msg_dpc(unsigned long data)
+ 	}
+ 
+ 	if (entry->handler_type	== VMHT_BLOCKING) {
+-		ctx = kmalloc(sizeof(*ctx) + payload_size, GFP_ATOMIC);
++		ctx = kmalloc(struct_size(ctx, msg.payload, payload_size), GFP_ATOMIC);
+ 		if (ctx == NULL)
+ 			return;
+ 
 -- 
-Kees Cook
+2.27.0
+
