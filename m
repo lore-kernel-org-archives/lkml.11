@@ -2,123 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E25E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:29:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4137C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1458115AbiAYJ3m (ORCPT
+        id S1573483AbiAYJaF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:29:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455880AbiAYJHr (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:07:47 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AE6C0604E4
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:52:32 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id z5so4682752plg.8
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:52:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z6BUBIXxwk4JS7jq5Yl7ItB5kjOCwOltRASPAnQYIJw=;
-        b=isin369zUSC40ktqW1doEJCXWOEH1OU5ukhknSdIN4RWE4rkPLugFGrL4HYjTnuK9p
-         Y8jFQpCuI/ESuhyEQhI9LBentgNgik6941Y2a0pJ2mPikrhj6FYXExGQATyUT68+1HHe
-         iNxyCvMdyw+C6J5lP5q4tKtmBJVLcad6GMqokKtHlzsva6c/phxQkw6HCaXwT0PDvtD5
-         T4T3R+T4mNGjUkhXriMwlsTj0TSmjoj3gG0bspRcezdlrC4b1kuCSQmWYneNBET3mm7+
-         FRw0WmyHpjKPEFqEtftPkDOIAs5kcF9vaSFfQFoNKMD0hCWUUnMfpxLaeUQPwQjUcYeM
-         mcvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z6BUBIXxwk4JS7jq5Yl7ItB5kjOCwOltRASPAnQYIJw=;
-        b=WqUX4Mv9tiXyiNOVyfhmzR78mftIoBPzjYV4JBQkzBRYh1boSHPcey3YwqIUI4Ob/b
-         CuI/k6jrEg/xa4Oz+kCjz5R3Rj4GwYelrxQBYZwjcW8oLcK1pKvylgd/br8hyroQotQT
-         1SLv8hNOy8OE4i2UkYGX3eWzmV8RVoxp0NhhXZ+XalAO6jvRh+hDoahYM2CA8EGMls2v
-         x/dfMxPDaT/rfuCFy8XUipCJf3gUwGBahh7VG9hpofOryI45nvlMJaiRLpShLtwvT8H0
-         fzZeaKhJQ8NOzyzceMeAkM0b8a+IckkusCYrfSsNA6X048CFEl2hrHOTEVb3ZOmnLg2m
-         N2cA==
-X-Gm-Message-State: AOAM531286/ZSv4zylOLVSU2nAQnQvItKX7tykx4Ul7rsahhs3WX5wLz
-        Wgvy6wpP95wRzU7X4C0CAHnZZlZEHeSd3jla/NAXdQ==
-X-Google-Smtp-Source: ABdhPJyJCDBExRKo1Z2uaO9BO1hoBiSILCxHvfufTUddE7i5PKusvobUkxXsUsTI4l9zR+XhF8mPIQT697Ywp8srQVA=
-X-Received: by 2002:a17:90b:1881:: with SMTP id mn1mr2400939pjb.236.1643100751744;
- Tue, 25 Jan 2022 00:52:31 -0800 (PST)
+        Tue, 25 Jan 2022 04:30:05 -0500
+Received: from mga05.intel.com ([192.55.52.43]:4621 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1455982AbiAYJH5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 04:07:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643101677; x=1674637677;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EXHV5EA/AYibvFLmGk7sya8bHLZVSKVgJE8RlOP/3M4=;
+  b=d+Oohpr4xoZ7nJb3hdJ5XGCckgXHLVCVpNvpJQstOIXCcXO2tuYV6ux/
+   FvdxkHFqqeRWDU+fmMqcBaXvg1gFaowSepMeflWsEmp6qQ0/eE4nph6vi
+   /9sjQq0CUhdTEzXYszc5KSKQTj+LmX5gSicEIYV2dIG4L6/KbFFToENOn
+   I8UyXKUPXhcZG6Ry8SlPQTPllx0sTKzR5xFhZgLqyTa8+ya+Q0MRfVEu/
+   cBce8rRe3g7nLFpwBic8JcjmQJVvborErJ6qoA+yGA3937HCkoueQaqet
+   8B+y/ReOHolUQPWl8nVdAmV22/WsxPCaJTa5sMJAVeSOxgWEDz0wPo9DD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="332613043"
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="332613043"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 01:02:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="673927566"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 25 Jan 2022 01:02:26 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 25 Jan 2022 11:02:25 +0200
+Date:   Tue, 25 Jan 2022 11:02:25 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Badhri Jagan Sridharan <badhri@google.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kyle Tso <kyletso@google.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v1 2/2] usb: typec: tcpm: Do not disconnect when
+ receiving VSAFE0V
+Message-ID: <Ye+8oRlfz8HS2fsB@kuha.fi.intel.com>
+References: <20220122015520.332507-1-badhri@google.com>
+ <20220122015520.332507-2-badhri@google.com>
 MIME-Version: 1.0
-References: <20220123195239.509528-1-ayushranjan@google.com> <Ye7gykcvjig7aPNM@google.com>
-In-Reply-To: <Ye7gykcvjig7aPNM@google.com>
-From:   Ayush Ranjan <ayushranjan@google.com>
-Date:   Tue, 25 Jan 2022 00:51:55 -0800
-Message-ID: <CALqkrRUVVEiM9HxOCffVVDczxBr7yGCw4r0vdH1W0K0B4+h6iQ@mail.gmail.com>
-Subject: Re: [PATCH] x86: add additional EPT bit definitions
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ben Gardon <bgardon@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andrei Vagin <avagin@gmail.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Pratt <mpratt@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220122015520.332507-2-badhri@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Abandoning this patch.
+On Fri, Jan 21, 2022 at 05:55:20PM -0800, Badhri Jagan Sridharan wrote:
+> With some chargers, vbus might momentarily raise above VSAFE5V and fall
+> back to 0V causing VSAFE0V to be triggered. This will
+> will report a VBUS off event causing TCPM to transition to
+> SNK_UNATTACHED state where it should be waiting in either SNK_ATTACH_WAIT
+> or SNK_DEBOUNCED state. This patch makes TCPM avoid VSAFE0V events
+> while in SNK_ATTACH_WAIT or SNK_DEBOUNCED state.
+> 
+> Stub from the spec:
+>     "4.5.2.2.4.2 Exiting from AttachWait.SNK State
+>     A Sink shall transition to Unattached.SNK when the state of both
+>     the CC1 and CC2 pins is SNK.Open for at least tPDDebounce.
+>     A DRP shall transition to Unattached.SRC when the state of both
+>     the CC1 and CC2 pins is SNK.Open for at least tPDDebounce."
+> 
+> [23.194131] CC1: 0 -> 0, CC2: 0 -> 5 [state SNK_UNATTACHED, polarity 0, connected]
+> [23.201777] state change SNK_UNATTACHED -> SNK_ATTACH_WAIT [rev3 NONE_AMS]
+> [23.209949] pending state change SNK_ATTACH_WAIT -> SNK_DEBOUNCED @ 170 ms [rev3 NONE_AMS]
+> [23.300579] VBUS off
+> [23.300668] state change SNK_ATTACH_WAIT -> SNK_UNATTACHED [rev3 NONE_AMS]
+> [23.301014] VBUS VSAFE0V
+> [23.301111] Start toggling
+> 
+> Fixes: 28b43d3d746b8 ("usb: typec: tcpm: Introduce vsafe0v for vbus")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
 
-On Mon, Jan 24, 2022 at 9:24 AM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Sun, Jan 23, 2022, Ayush Ranjan wrote:
-> > From: Michael Pratt <mpratt@google.com>
-> >
-> > Used in gvisor for EPT support.
->
-> As you may have surmised from the other patch, the changelogs from patches carried
-> in our internal kernels rarely meet the criteria for acceptance upstream.  E.g. this
-> doesn't provide sufficient justification since there's obviously no in-kernel gvisor
-> that's consuming this.
->
-> Submitting patches that we carry internally is perfectly ok, but there needs to be
-> sufficient justfication, and the patch needs to follow the rules laid out by
-> Documentation/process/submitting-patches.rst.
->
-> > Tested: Builds cleanly
-> > Signed-off-by: Ayush Ranjan <ayushranjan@google.com>
-> > Signed-off-by: Michael Pratt <mpratt@google.com>
-> > ---
-> >  arch/x86/include/asm/vmx.h | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/arch/x86/include/asm/vmx.h b/arch/x86/include/asm/vmx.h
-> > index 0ffaa3156a4e..c77ad687cdf7 100644
-> > --- a/arch/x86/include/asm/vmx.h
-> > +++ b/arch/x86/include/asm/vmx.h
-> > @@ -496,7 +496,9 @@ enum vmcs_field {
-> >  #define VMX_EPT_WRITABLE_MASK                        0x2ull
-> >  #define VMX_EPT_EXECUTABLE_MASK                      0x4ull
-> >  #define VMX_EPT_IPAT_BIT                     (1ull << 6)
-> > -#define VMX_EPT_ACCESS_BIT                   (1ull << 8)
-> > +#define VMX_EPT_PSE_BIT                              (1ull << 7)
->
-> I'm not a fan of "PSE", it's unnecessarily terse and "PSE" has different meaning
-> in IA32 paging.  VMX_EPT_PAGE_SIZE_BIT would be choice.
->
-> As for justification, something that has been mentioned once or thrice is the lack
-> of build-time assertions that the PT_* bits in mmu.h that are reused for EPT entries
-> do indeed match the EPT definitions.  I can throw together a patch/series to add
-> that and do the below cleanup.
->
-> > +#define VMX_EPT_ACCESS_SHIFT                 8
->
-> I'd prefer we don't define the "shifts" for EPT (or PTE) bits, they really shouldn't
-> be used as doing things like test_and_clear_bit() via a shift value can generate
-> unnecessary lock instructions.  arch/x86/kvm/mmu.h could use a bit of spring cleaning
-> in this regard.
->
-> > +#define VMX_EPT_ACCESS_BIT                   (1ull << VMX_EPT_ACCESS_SHIFT)
-> >  #define VMX_EPT_DIRTY_BIT                    (1ull << 9)
-> >  #define VMX_EPT_RWX_MASK                        (VMX_EPT_READABLE_MASK |       \
-> >                                                VMX_EPT_WRITABLE_MASK |       \
-> > --
-> > 2.35.0.rc0.227.g00780c9af4-goog
-> >
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+
+> ---
+>  drivers/usb/typec/tcpm/tcpm.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
+> index b8afe3d8c882..5fce795b69c7 100644
+> --- a/drivers/usb/typec/tcpm/tcpm.c
+> +++ b/drivers/usb/typec/tcpm/tcpm.c
+> @@ -5264,6 +5264,10 @@ static void _tcpm_pd_vbus_vsafe0v(struct tcpm_port *port)
+>  	case PR_SWAP_SNK_SRC_SOURCE_ON:
+>  		/* Do nothing, vsafe0v is expected during transition */
+>  		break;
+> +	case SNK_ATTACH_WAIT:
+> +	case SNK_DEBOUNCED:
+> +		/*Do nothing, still waiting for VSAFE5V for connect */
+> +		break;
+>  	default:
+>  		if (port->pwr_role == TYPEC_SINK && port->auto_vbus_discharge_enabled)
+>  			tcpm_set_state(port, SNK_UNATTACHED, 0);
+> -- 
+> 2.35.0.rc0.227.g00780c9af4-goog
+
+-- 
+heikki
