@@ -2,100 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCCBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48124C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456840AbiAYJNE (ORCPT
+        id S1456930AbiAYJNh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:13:04 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:36166 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S235782AbiAYI5Y (ORCPT
+        Tue, 25 Jan 2022 04:13:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455319AbiAYJEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:57:24 -0500
-X-UUID: 3a34ca8f93ff4b7b8c3f69c55b079165-20220125
-X-UUID: 3a34ca8f93ff4b7b8c3f69c55b079165-20220125
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 433771288; Tue, 25 Jan 2022 16:57:15 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 25 Jan 2022 16:57:14 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 25 Jan 2022 16:57:13 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v4 03/35] iommu/mediatek: Fix 2 HW sharing pgtable issue
-Date:   Tue, 25 Jan 2022 16:56:02 +0800
-Message-ID: <20220125085634.17972-4-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220125085634.17972-1-yong.wu@mediatek.com>
-References: <20220125085634.17972-1-yong.wu@mediatek.com>
+        Tue, 25 Jan 2022 04:04:07 -0500
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B49CC061344
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:23 -0800 (PST)
+Received: by mail-lj1-x244.google.com with SMTP id a25so11788408lji.9
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 00:47:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oUbvyNj5dnaM8qXXPaaN3calf58RmDrlF6ofRRGF5q8=;
+        b=30zRHP3cawR9fo/gEqHpAmA2Q78/yKunsBnxe6QD4YYv2dV+ZUH16nD9lEUozhnFLi
+         nHYLbBGOmgFfFBCvtZJX7kuVEvBu4m2+9ms9+7pTOTgRtfMzxt9YVEANSGx/w7I4cGpC
+         jw3p/2FY/utquahuDCkPXVf9cP3dMXh1ALo00N0iSNlmm5xLEruBjkjf+/iYCKkWgFNS
+         nstYMxpGvhRqCzKyuj3KxC4h/xGy312OnG1vehytswq716BF3P9bMbZeGDgSYjV9wyX6
+         cy63f40FQeAPdxgeXgEgCLnSMUkFb/BH97zBfi7vKsVuAPm6i8bghcJniZYkJcjOpML/
+         5gnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oUbvyNj5dnaM8qXXPaaN3calf58RmDrlF6ofRRGF5q8=;
+        b=CAx6jqCuO8EfJNdFWpwbew4pxFKfv7AOLtYv7edRrvW2DzDa6SUGNzsKEiGO2xEdcu
+         UP3WMItQBUrlceWgZoYdzAFReDqUSnO1EfXiDOtMdFUtM17GamN3SO0tNyv/EdGmwhPN
+         1+Bhjou0i5jls4cfwdbsYWHac0+ZTxkAAUm7rYTnpDzoK2ttNcgw3/HucI1GLdmUw/Il
+         UM9PNQsPhIRW6t8zgwmr+pnrea7BB18pcSuMj8qkByXF65iryyjo1GAtlUIAv5Um4uDM
+         lgYifh1JxAl8FBCtck8PBO0uszALDO0zDJyA0W/EISfeNXEdD3ieyTSP4Vq0ZQ/9mC3f
+         91vA==
+X-Gm-Message-State: AOAM530bJepBCN5Vg8vcKQ9bUn5qFK6SWlCXFDGEo/bkb9I3Kx0NcR8q
+        bQYAtjukoLOzPwNUvkuU+CigCA==
+X-Google-Smtp-Source: ABdhPJxmuLUFKp9der5dVvy/11NTxMaDlAPxrJvNLiMLIAlXxg1yxjfnkjVt3mTw9T6dl7CBTLbrbA==
+X-Received: by 2002:a05:651c:b2a:: with SMTP id b42mr13381928ljr.168.1643100440664;
+        Tue, 25 Jan 2022 00:47:20 -0800 (PST)
+Received: from navi.cosmonova.net.ua ([95.67.24.131])
+        by smtp.gmail.com with ESMTPSA id q5sm1418944lfe.279.2022.01.25.00.47.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 00:47:20 -0800 (PST)
+From:   Andrew Melnychenko <andrew@daynix.com>
+To:     davem@davemloft.net, kuba@kernel.org, mst@redhat.com,
+        jasowang@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     yuri.benditovich@daynix.com, yan@daynix.com
+Subject: [RFC PATCH 0/5] TUN/VirtioNet USO features support.
+Date:   Tue, 25 Jan 2022 10:46:57 +0200
+Message-Id: <20220125084702.3636253-1-andrew@daynix.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the commit 4f956c97d26b ("iommu/mediatek: Move domain_finalise into
-attach_device"), I overlooked the sharing pgtable case.
-After that commit, the "data" in the mtk_iommu_domain_finalise always is
-the data of the current IOMMU HW. Fix this for the sharing pgtable case.
+Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
+Technically they enable NETIF_F_GSO_UDP_L4
+(and only if USO4 & USO6 are set simultaneously).
+It allows to transmission of large UDP packets.
 
-Only affect mt2712 which is the only SoC that share pgtable currently.
+Different features USO4 and USO6 are required for qemu where Windows guests can
+enable disable USO receives for IPv4 and IPv6 separately.
+On the other side, Linux can't really differentiate USO4 and USO6, for now.
+For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
+In the future, there would be a mechanism to control UDP_L4 GSO separately.
 
-Fixes: 4f956c97d26b ("iommu/mediatek: Move domain_finalise into attach_device")
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Test it WIP Qemu https://github.com/daynix/qemu/tree/Dev_USOv2
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index eb43e7edb9dc..a92b01805232 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -446,7 +446,7 @@ static void mtk_iommu_domain_free(struct iommu_domain *domain)
- static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 				   struct device *dev)
- {
--	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
-+	struct mtk_iommu_data *data = dev_iommu_priv_get(dev), *frstdata;
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 	struct device *m4udev = data->dev;
- 	int ret, domid;
-@@ -456,7 +456,10 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 		return domid;
- 
- 	if (!dom->data) {
--		if (mtk_iommu_domain_finalise(dom, data, domid))
-+		/* Data is in the frstdata in sharing pgtable case. */
-+		frstdata = mtk_iommu_get_m4u_data();
-+
-+		if (mtk_iommu_domain_finalise(dom, frstdata, domid))
- 			return -ENODEV;
- 		dom->data = data;
- 	}
+New types for VirtioNet already on mailing:
+https://lists.oasis-open.org/archives/virtio-comment/202110/msg00010.html
+
+Also, there is a known issue with transmitting packages between two guests.
+Without hacks with skb's GSO - packages are still segmented on the host's postrouting.
+
+Andrew Melnychenko (5):
+  uapi/linux/if_tun.h: Added new ioctl for tun/tap.
+  driver/net/tun: Added features for USO.
+  uapi/linux/virtio_net.h: Added USO types.
+  linux/virtio_net.h: Added Support for GSO_UDP_L4 offload.
+  drivers/net/virtio_net.c: Added USO support.
+
+ drivers/net/tap.c               | 18 ++++++++++++++++--
+ drivers/net/tun.c               | 15 ++++++++++++++-
+ drivers/net/virtio_net.c        | 22 ++++++++++++++++++----
+ include/linux/virtio_net.h      | 11 +++++++++++
+ include/uapi/linux/if_tun.h     |  3 +++
+ include/uapi/linux/virtio_net.h |  4 ++++
+ 6 files changed, 66 insertions(+), 7 deletions(-)
+
 -- 
-2.18.0
+2.34.1
 
