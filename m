@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2709BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:25:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352325AbiAYKZN (ORCPT
+        id S1352456AbiAYKZS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:25:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36928 "EHLO
+        Tue, 25 Jan 2022 05:25:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243438AbiAYKUh (ORCPT
+        with ESMTP id S243610AbiAYKUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:20:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8C2C06173E
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:20:34 -0800 (PST)
+        Tue, 25 Jan 2022 05:20:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5B1C06175B
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:20:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D365B81751
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A85C340E0;
-        Tue, 25 Jan 2022 10:20:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AE2E61614
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:20:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B62BC340E8;
+        Tue, 25 Jan 2022 10:20:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643106031;
-        bh=9oanPmGbEa5RXVfsZnBLjEA4BeGdcq9Tr6zFHoUW3cI=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=n1hLkgqOUOQ1uj4tQZHu6lnsHZJ1l41hlJWZGXAYw3xWCn3/fWOQ0+roowbnTmr24
-         +dHu9sLzOzPVxPvHUVrZqZbPXBFlRYVt18vZy1ee2QH5zXnoqx9/fTJ1u5wy4i8Vw/
-         Ml6Zf7lDmNI4loAFcsyoTy9wJk0ZqYUpyWqhpUlnT+pPpf8BMKGl4czzgp+bcPSKsP
-         /m1DvZP2VaLb8rtpDWkzKA7UXSZocd8WvDh1Y74MCTD0WrSWHQtIhA5adMIkhb4El8
-         eEbNOOXwWfJgITgfWh5xSC0CKaYPX3JvysTwOhiIRQhQwsD/YS6yu6VDV5Ffnt6Qfq
-         Wjc6E3KtnLm2g==
+        s=k20201202; t=1643106040;
+        bh=PPeOvJVjKQk1sgWBgXTRE3M3X/ghG6GwBr17kd9EHAs=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=dx/CfScUZ2xfA9Ast+sVlMjDabJlKwxJVNGShS4Hgc0IGSpT5qNBm6ZqUhnQpAZJi
+         NH2erSXALoBz7bbfLbkg+qEWYIUHQX9RRCES3p8LkA6B4aMDTvm0nz4SVY2dDKI6jq
+         iTCNsb+6BbxmzEoLzFfzv/9Ad9ggJGLzIkpya2QNTT48/9508YL9LrppFc/Sc8iMOT
+         f6OewycNyKOE50sDAcMHATWyLYlC3UT1UuAiFDdY6CLMtLtasVBlSWEK0K/6cbLmnT
+         2VUGbhU9IG32KLJ/mreOtm/s55njGS16GBCwKEUcsj1A9N+aJCGnuwOEtj1mruyQ+x
+         BNS4Z69RrKCUw==
 From:   Mark Brown <broonie@kernel.org>
-To:     tiwai@suse.com, lgirdwood@gmail.com, lars@metafoo.de,
-        linux-kernel@vger.kernel.org,
-        Shengjiu Wang <shengjiu.wang@nxp.com>, perex@perex.cz,
-        alsa-devel@alsa-project.org
-In-Reply-To: <1642646642-15908-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1642646642-15908-1-git-send-email-shengjiu.wang@nxp.com>
-Subject: Re: [PATCH] ASoC: soc-generic-dmaengine-pcm: separate max_buffer_size assignment
-Message-Id: <164310603029.74844.18163154288522285277.b4-ty@kernel.org>
-Date:   Tue, 25 Jan 2022 10:20:30 +0000
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     cezary.rojewski@intel.com, tiwai@suse.com, lgirdwood@gmail.com,
+        linux-kernel@vger.kernel.org, srinivas.kandagatla@linaro.org,
+        perex@perex.cz, alsa-devel@alsa-project.org,
+        bgoswami@codeaurora.org
+In-Reply-To: <20220121171031.2826198-1-jiasheng@iscas.ac.cn>
+References: <20220121171031.2826198-1-jiasheng@iscas.ac.cn>
+Subject: Re: [PATCH v3] ASoC: codecs: Check for error pointer after calling devm_regmap_init_mmio
+Message-Id: <164310603890.74844.13333058824598578375.b4-ty@kernel.org>
+Date:   Tue, 25 Jan 2022 10:20:38 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -50,12 +51,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 20 Jan 2022 10:44:02 +0800, Shengjiu Wang wrote:
-> The config->pcm_hardware may be NULL when config->prealloc_buffer_size
-> is not zero, so it is better to move max_buffer_size assignment under
-> a separate condition.
+On Sat, 22 Jan 2022 01:10:31 +0800, Jiasheng Jiang wrote:
+> Since the potential failure of the devm_regmap_init_mmio(), it will
+> return error pointer and be assigned to the regmap.
+> Then the error pointer will be dereferenced.
+> For example rx->regmap will be used in rx_macro_mclk_enable().
+> Therefore, it should be better to check it.
 > 
 > 
+> [...]
 
 Applied to
 
@@ -63,8 +67,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: soc-generic-dmaengine-pcm: separate max_buffer_size assignment
-      commit: 88c62b16281e5fe748f22f44da3def8a91fb1c34
+[1/1] ASoC: codecs: Check for error pointer after calling devm_regmap_init_mmio
+      commit: aa505ecccf2ae7546e0e262d574e18a9241f3005
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
