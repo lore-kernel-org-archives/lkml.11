@@ -2,102 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63604C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:26:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A574EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:26:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380450AbiAYR0Y (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:26:24 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:47232 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1388991AbiAYRQW (ORCPT
+        id S243090AbiAYR03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 12:26:29 -0500
+Received: from relay031.a.hostedemail.com ([64.99.140.31]:63473 "EHLO
+        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1380798AbiAYRT1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:16:22 -0500
-X-UUID: f466c55c129348a38ecb46b28d0a0a39-20220126
-X-UUID: f466c55c129348a38ecb46b28d0a0a39-20220126
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 258942651; Wed, 26 Jan 2022 01:16:06 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 26 Jan 2022 01:16:05 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 Jan
- 2022 01:16:05 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 26 Jan 2022 01:16:04 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     <wenst@chromium.org>
-CC:     <chun-jie.chen@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>
-Subject: Re: [PATCH 08/31] clk: mediatek: cpumux: Clean up included headers
-Date:   Wed, 26 Jan 2022 01:16:04 +0800
-Message-ID: <20220125171604.1548-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220122091731.283592-9-wenst@chromium.org>
-References: <20220122091731.283592-9-wenst@chromium.org>
+        Tue, 25 Jan 2022 12:19:27 -0500
+Received: from omf18.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay07.hostedemail.com (Postfix) with ESMTP id 3182320C1C;
+        Tue, 25 Jan 2022 17:19:07 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id 4035D42;
+        Tue, 25 Jan 2022 17:18:51 +0000 (UTC)
+Message-ID: <afcc70baa10003ce89c70b7b310981672547218b.camel@perches.com>
+Subject: Re: [PATCH v15 13/13] MAINTAINERS: add AMPHION VPU CODEC V4L2
+ driver entry
+From:   Joe Perches <joe@perches.com>
+To:     Ming Qian <ming.qian@nxp.com>, mchehab@kernel.org,
+        shawnguo@kernel.org, robh+dt@kernel.org, s.hauer@pengutronix.de
+Cc:     hverkuil-cisco@xs4all.nl, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, aisheng.dong@nxp.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Date:   Tue, 25 Jan 2022 09:19:02 -0800
+In-Reply-To: <2f695f6a597a4372842d75105b654fba6db27d59.1643077283.git.ming.qian@nxp.com>
+References: <cover.1643077283.git.ming.qian@nxp.com>
+         <2f695f6a597a4372842d75105b654fba6db27d59.1643077283.git.ming.qian@nxp.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: qd8yigbcjnn7odxdizrocdsn51sg6mrd
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 4035D42
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19qj9D5y8YasMCA8MRO8wfsgSoZYAra1qc=
+X-HE-Tag: 1643131131-328248
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Some headers with the declaration of functions and structures aren't
-> directly included. Explicitly include them so that future changes to
-> other headers would not result in an unexpected build break.
-> 
-> On the header side, add forward declarations for any data structures
-> whose pointers are used in function signatures. No headers are
-> required.
-> 
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-
-> ---
->  drivers/clk/mediatek/clk-cpumux.c | 3 +++
->  drivers/clk/mediatek/clk-cpumux.h | 4 ++++
->  2 files changed, 7 insertions(+)
-> 
-> diff --git a/drivers/clk/mediatek/clk-cpumux.c b/drivers/clk/mediatek/clk-cpumux.c
-> index 344c6399b22f..658aee789f44 100644
-> --- a/drivers/clk/mediatek/clk-cpumux.c
-> +++ b/drivers/clk/mediatek/clk-cpumux.c
-> @@ -5,8 +5,11 @@
->   */
+On Tue, 2022-01-25 at 15:11 +0800, Ming Qian wrote:
+> Add AMPHION VPU CODEC v4l2 driver entry
+[]
+> diff --git a/MAINTAINERS b/MAINTAINERS
+[]
+> @@ -13913,6 +13913,15 @@ S:	Maintained
+>  F:	Documentation/devicetree/bindings/media/nxp,imx8-jpeg.yaml
+>  F:	drivers/media/platform/imx-jpeg
 >  
->  #include <linux/clk-provider.h>
-> +#include <linux/container_of.h>
-> +#include <linux/err.h>
->  #include <linux/mfd/syscon.h>
->  #include <linux/module.h>
-> +#include <linux/regmap.h>
->  #include <linux/slab.h>
->  
->  #include "clk-mtk.h"
-> diff --git a/drivers/clk/mediatek/clk-cpumux.h b/drivers/clk/mediatek/clk-cpumux.h
-> index a538f2bbef0d..b07e89f7c283 100644
-> --- a/drivers/clk/mediatek/clk-cpumux.h
-> +++ b/drivers/clk/mediatek/clk-cpumux.h
-> @@ -7,6 +7,10 @@
->  #ifndef __DRV_CLK_CPUMUX_H
->  #define __DRV_CLK_CPUMUX_H
->  
-> +struct clk_onecell_data;
-> +struct device_node;
-> +struct mtk_composite;
+> +AMPHION VPU CODEC V4L2 DRIVER
+> +M:	Ming Qian <ming.qian@nxp.com>
+> +M:	Shijie Qin <shijie.qin@nxp.com>
+> +M:	Zhou Peng <eagle.zhou@nxp.com>
+> +L:	linux-media@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/media/amphion,vpu.yaml
+> +F:	drivers/media/platform/amphion/
 > +
->  int mtk_clk_register_cpumuxes(struct device_node *node,
->  			      const struct mtk_composite *clks, int num,
->  			      struct clk_onecell_data *clk_data);
-> -- 
-> 2.35.0.rc0.227.g00780c9af4-goog
+
+Alphabetic section ordering please.
+
+>  NZXT-KRAKEN2 HARDWARE MONITORING DRIVER
+>  M:	Jonas Malaco <jonas@protocubo.io>
+>  L:	linux-hwmon@vger.kernel.org
 
 
