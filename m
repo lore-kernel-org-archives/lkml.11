@@ -2,109 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5762BC5DF62
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 23:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C6EC5AC75
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 23:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234602AbiAYXDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 18:03:01 -0500
-Received: from mga17.intel.com ([192.55.52.151]:2730 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234582AbiAYXCq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 18:02:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643151766; x=1674687766;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=c7U1oexDbl/SlmK7PbtMWHCKv4u7m75odnW2SzZd0Rc=;
-  b=WWSOrJlyNsaT2RLmXIGgQGHzzgbGLYf7FHH1jrM17V4oehQ0pHzFiX3q
-   dHQ3D+WK35Jgq6tJLAJBxTo9hVvdnZbuOX6dYSaVjw3AsMzAqnDE8LyNZ
-   RYLPbd4PWSy9ExQFK4P8AUXmhRo+lINqJrKvE5hdKZTNudparNrwBxZwD
-   KsA2ojv2IeF33Zc80z0OCsV35N/xkhyMDG1e4CndIkisH2IVMoDIo2pP/
-   AlWyKHLFgGYrofMLu2v6nNv0xezCtoHmvBjAJaxlskQotijVmZfsRulX7
-   B91RiA9HAviDAXSPN3XdadTJu7joHt61WewhF08G7T9TnkkEMpmRBaXWh
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="227108404"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="227108404"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 15:02:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="477289996"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 25 Jan 2022 15:02:25 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCUpU-000KXX-FH; Tue, 25 Jan 2022 23:02:24 +0000
-Date:   Wed, 26 Jan 2022 07:01:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jason Ekstrand <jason@jlekstrand.net>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Subject: [mlankhorst:xe 37/165] drivers/gpu/drm/xe/xe_irq.c:30:6: error: no
- previous prototype for 'gen11_gt_irq_reset'
-Message-ID: <202201260746.o0wAH4uG-lkp@intel.com>
+        id S234634AbiAYXDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 18:03:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234586AbiAYXCt (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 18:02:49 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A59C06173B;
+        Tue, 25 Jan 2022 15:02:49 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id u11so20779936plh.13;
+        Tue, 25 Jan 2022 15:02:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EBImikir9ryAT25BALwOBZaIdeZpyfkOerp8AGfow0Y=;
+        b=nS/qs9KssIJBTLzoLDLJszdVUiXxpkn92Gj/mSrQkvnuM5mgW1SQgyG1o+8jAruIj7
+         ECS09HKz/+dnA+KNFP2GgHqKwmKO2hCXnqNDrNrDNuKMBTs+5Z+l4C0tk/fZMCZnoZdr
+         YhC3VN2lfAFgR/0mdLfFIUG4PJRoh7kFfMHP3pqhfdEsCUT78J5zjm1dWL8MFMZ8d0pX
+         WuURUQf53/4jtwjRwdI9Dxw5Y8rZR7KHJRXKizykEq7xkNycQK5bwgeSMYMBj17IFW+r
+         mblklustS3N81EEQYEu675+sO1LupmJjWR4M2HVHsEYGXegfUO32PGTktkreTBVB37VZ
+         +OQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EBImikir9ryAT25BALwOBZaIdeZpyfkOerp8AGfow0Y=;
+        b=okBwUwq6UTYsMQhAX2djnD4sxagRhUPIwoCkT0VIwEdcvYeTlD2gCJnj4Siz13NK06
+         ikN9705PjjPrDXmaaQo/qytClKv4VNB3y2D52PviZqS4xAyWSzuNQRt5V8QQvKnjeIWy
+         Z6+pbf1d1gRUwL0wmtWidM5eZUk7OW5F7OxS+o4W/746PSBudOJAnH1tjfz6PEiuxNoI
+         Ed2Gv5ccH2HNOmpPFLnGGXdXnFpQqsmFObgFjWA0SDzghyu6IxD9hf+6WxCTGiVqrc1I
+         XLKsU+X+rAiPMtX2CylA+1YZtf0OSyCtMAJ8yljYS+UL+9sakvB+8je+cinTtTSzleZw
+         6a/g==
+X-Gm-Message-State: AOAM532xm9DnCjwiERDDxWlvOIyKrtLILdU+CGmUNqUajIyuLcHhKXfN
+        bFBjG5yLO0k+F7T+g0Bqt0q3J3Dboak4wq1tuoU=
+X-Google-Smtp-Source: ABdhPJy5YQg3TdenuLu2bpBojTq87dI7qwnNcwo4fmhj3+xZGz079adASMz1cchAxmmJBkXWlv8d72PId6c8m90wEOk=
+X-Received: by 2002:a17:90b:3b4c:: with SMTP id ot12mr5749610pjb.62.1643151768394;
+ Tue, 25 Jan 2022 15:02:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220113070245.791577-1-imagedong@tencent.com>
+ <87sftbobys.fsf@cloudflare.com> <20220125224524.fkodqvknsluihw74@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20220125224524.fkodqvknsluihw74@kafai-mbp.dhcp.thefacebook.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 25 Jan 2022 15:02:37 -0800
+Message-ID: <CAADnVQKbYCCYjCMhEV7p1YzkAVSKvg-1VKfWVQYVL0TaESNxBQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct bpf_sock'
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Menglong Dong <menglong8.dong@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Mengen Sun <mengensun@tencent.com>, flyingpeng@tencent.com,
+        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://people.freedesktop.org/~mlankhorst/linux xe
-head:   4bc3039b4403c76a13d58f7ac1f7c07dca6f88d8
-commit: 0fc4361f4fc10e980acdb7328ad17d66aa1c3644 [37/165] MOAR
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220126/202201260746.o0wAH4uG-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        git remote add mlankhorst git://people.freedesktop.org/~mlankhorst/linux
-        git fetch --no-tags mlankhorst xe
-        git checkout 0fc4361f4fc10e980acdb7328ad17d66aa1c3644
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Tue, Jan 25, 2022 at 2:45 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Tue, Jan 25, 2022 at 08:24:27PM +0100, Jakub Sitnicki wrote:
+> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > index b0383d371b9a..891a182a749a 100644
+> > > --- a/include/uapi/linux/bpf.h
+> > > +++ b/include/uapi/linux/bpf.h
+> > > @@ -5500,7 +5500,11 @@ struct bpf_sock {
+> > >     __u32 src_ip4;
+> > >     __u32 src_ip6[4];
+> > >     __u32 src_port;         /* host byte order */
+> > > -   __u32 dst_port;         /* network byte order */
+> > > +   __u32 dst_port;         /* low 16-bits are in network byte order,
+> > > +                            * and high 16-bits are filled by 0.
+> > > +                            * So the real port in host byte order is
+> > > +                            * bpf_ntohs((__u16)dst_port).
+> > > +                            */
+> > >     __u32 dst_ip4;
+> > >     __u32 dst_ip6[4];
+> > >     __u32 state;
+> >
+> > I'm probably missing something obvious, but is there anything stopping
+> > us from splitting the field, so that dst_ports is 16-bit wide?
+> >
+> > I gave a quick check to the change below and it seems to pass verifier
+> > checks and sock_field tests.
+> >
+> > IDK, just an idea. Didn't give it a deeper thought.
+> >
+> > --8<--
+> >
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 4a2f7041ebae..344d62ccafba 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -5574,7 +5574,8 @@ struct bpf_sock {
+> >       __u32 src_ip4;
+> >       __u32 src_ip6[4];
+> >       __u32 src_port;         /* host byte order */
+> > -     __u32 dst_port;         /* network byte order */
+> > +     __u16 unused;
+> > +     __u16 dst_port;         /* network byte order */
+> This will break the existing bpf prog.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I think Jakub's idea is partially expressed:
++       case offsetof(struct bpf_sock, dst_port):
++               bpf_ctx_record_field_size(info, sizeof(__u16));
++               return bpf_ctx_narrow_access_ok(off, size, sizeof(__u16));
 
-All errors (new ones prefixed by >>):
-
->> drivers/gpu/drm/xe/xe_irq.c:30:6: error: no previous prototype for 'gen11_gt_irq_reset' [-Werror=missing-prototypes]
-      30 | void gen11_gt_irq_reset(struct xe_device *xe)
-         |      ^~~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
-
-
-vim +/gen11_gt_irq_reset +30 drivers/gpu/drm/xe/xe_irq.c
-
-    29	
-  > 30	void gen11_gt_irq_reset(struct xe_device *xe)
-    31	{
-    32		/* Disable RCS, BCS, VCS and VECS class engines. */
-    33		xe_mmio_write32(xe, GEN11_RENDER_COPY_INTR_ENABLE.reg, 0);
-    34		xe_mmio_write32(xe, GEN11_VCS_VECS_INTR_ENABLE.reg,	  0);
-    35	
-    36		/* Restore masks irqs on RCS, BCS, VCS and VECS engines. */
-    37		xe_mmio_write32(xe, GEN11_RCS0_RSVD_INTR_MASK.reg,	~0);
-    38		xe_mmio_write32(xe, GEN11_BCS_RSVD_INTR_MASK.reg,	~0);
-    39		xe_mmio_write32(xe, GEN11_VCS0_VCS1_INTR_MASK.reg,	~0);
-    40		xe_mmio_write32(xe, GEN11_VCS2_VCS3_INTR_MASK.reg,	~0);
-    41	//	if (HAS_ENGINE(gt, VCS4) || HAS_ENGINE(gt, VCS5))
-    42	//		xe_mmio_write32(xe, GEN12_VCS4_VCS5_INTR_MASK.reg,   ~0);
-    43	//	if (HAS_ENGINE(gt, VCS6) || HAS_ENGINE(gt, VCS7))
-    44	//		xe_mmio_write32(xe, GEN12_VCS6_VCS7_INTR_MASK.reg,   ~0);
-    45		xe_mmio_write32(xe, GEN11_VECS0_VECS1_INTR_MASK.reg,	~0);
-    46	//	if (HAS_ENGINE(gt, VECS2) || HAS_ENGINE(gt, VECS3))
-    47	//		xe_mmio_write32(xe, GEN12_VECS2_VECS3_INTR_MASK.reg, ~0);
-    48	
-    49		xe_mmio_write32(xe, GEN11_GPM_WGBOXPERF_INTR_ENABLE.reg, 0);
-    50		xe_mmio_write32(xe, GEN11_GPM_WGBOXPERF_INTR_MASK.reg,  ~0);
-    51		xe_mmio_write32(xe, GEN11_GUC_SG_INTR_ENABLE.reg, 0);
-    52		xe_mmio_write32(xe, GEN11_GUC_SG_INTR_MASK.reg,  ~0);
-    53	}
-    54	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Either 'unused' needs to be after dst_port or
+bpf_sock_is_valid_access() needs to allow offset at 'unused'
+and at 'dst_port'.
+And allow u32 access though the size is actually u16.
+Then the existing bpf progs (without recompiling) should work?
