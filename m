@@ -2,144 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5515AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3800AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442684AbiAYHKg (ORCPT
+        id S1442702AbiAYHKj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:10:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378094AbiAYHEg (ORCPT
+        Tue, 25 Jan 2022 02:10:39 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:54032 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442405AbiAYHIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:04:36 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32A25C041883
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:44:01 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id 128so18484462pfe.12
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:44:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uQS+XB01rQTghLAjvmUkl8tFaMQ6CMQ1+K0sDDXtaTI=;
-        b=Ky+UZvUt3KlfSaUIzSkiXKL3tJePDBQAjdWQLddrc4hgN63O6uogDkolOLjlF53Bn9
-         VPvfMSi8100wkYCP4WISvBQWXzxIbuWfrf3xkQJKAhv61BAtY3LWN/vf0IVXJ+jWw7Dj
-         9+zkGdkWRVcNGi0rpqI1bCaF/pgO4jgj6ra97b5428qJbBbGqQ2DDXxYOO5/BLmkvT/9
-         sf/CbFSOr8QDetg0xTCqFexST5SlPPuoYNXzDNyQKvhmL69uxuV421bz1yaA80lFUJ/W
-         zHaq1YQ9ZeFle2HzKjPS0p25cZlX3DbZ3K9E6gVC8zVIJJDm2ffuf5CXF3U7wIxB6fb0
-         M6Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uQS+XB01rQTghLAjvmUkl8tFaMQ6CMQ1+K0sDDXtaTI=;
-        b=CGb+isdj3lQiAvR5yv6gmbo+ZfSHp1J5BcnEPvgQukNTqCJegdM6bEravPIdj5KKY7
-         S75I734a/kzRpOniuDVM/K8Y5FGwEPNHpze1vOMM/vQqQl/GF29vjYrgo9kw/POOHyWU
-         iX3oxPgN88dgg5oEn9ew6mwXSwoE7rSo91qiRz6nmEWU9jGOJnnmXZlYP4DQ6pKX1DXf
-         y0kdxA5nhJDsBwtdx8dog3UZMSuMUke4KlVU3jkSYv6VCvpi4lLl0iUa/8kfV0ykn7Bm
-         vfvuNzHggSgLfCZSaACsqwm4NQGMcnCRCbRSCGKaDQUjg4Gxe+yfr3FGwSdYqGTvsLjw
-         9TWw==
-X-Gm-Message-State: AOAM532H4HptUd3c+Fy1FB7XWMBI1KruzXttCP/UAnf0wEYEHfxKRBMQ
-        whNco57D31rGSMUwKDQqSpQWyw==
-X-Google-Smtp-Source: ABdhPJzMWcWR6nzR3mwo77XGWNf8PMri0gVk1yT1811+iC80BfVQO9Nmz+o+PxMVKmPrJqIXqV43JQ==
-X-Received: by 2002:a05:6a00:179c:b0:4c9:ef72:87eb with SMTP id s28-20020a056a00179c00b004c9ef7287ebmr5121764pfg.47.1643089440765;
-        Mon, 24 Jan 2022 21:44:00 -0800 (PST)
-Received: from localhost.localdomain ([122.179.14.218])
-        by smtp.gmail.com with ESMTPSA id c6sm19524508pfl.200.2022.01.24.21.43.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 21:44:00 -0800 (PST)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Anup Patel <anup@brainfault.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH 2/6] irqchip/riscv-intc: Set intc domain as the default host
-Date:   Tue, 25 Jan 2022 11:12:13 +0530
-Message-Id: <20220125054217.383482-3-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220125054217.383482-1-apatel@ventanamicro.com>
-References: <20220125054217.383482-1-apatel@ventanamicro.com>
+        Tue, 25 Jan 2022 02:08:15 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BFE87CE1764;
+        Tue, 25 Jan 2022 07:07:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D93C340E6;
+        Tue, 25 Jan 2022 07:07:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643094477;
+        bh=u4sZb43o6v9pvDvs7BsPPpiWoB/VBKMPiOOl3tPLaEs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=GftWM3c1oIqLFALD23owKTErEZfdczcMT8uVPxGLP1FOkBmR1KtCfQlDYB8d6riL8
+         DPO4fVeV5rN4oKIV/NGuFFriOPq0d9MNMXrycCIeRnZtIDSC888/FqYqeJAd1loBtA
+         hXx+UyrWJRWu5z0Liq3idU4Acw4Krc4kyOXxUymIUCtW2CeSt/my0j5CtcpE11hz82
+         efA+jIDbZ5nwan6om754XfkbxhyZ1x7WanhNeGUoHS6K4izmm/GuBYsh/FFkJyAM+d
+         4eJsnOwPf+hR2epbDvchWReD02znUZ4KI+EtbSobJIn5nlYbvmni6AuNhx6MRAVv3e
+         3cd7v/zi0KY/A==
+Received: by mail-yb1-f169.google.com with SMTP id r65so55267861ybc.11;
+        Mon, 24 Jan 2022 23:07:57 -0800 (PST)
+X-Gm-Message-State: AOAM532Eymuk8g76qQJeJ6llUNBNDzuA8/8PA7ajb2YILHgMD/VEIpmI
+        9+2GPoYApt17FypcDiJAlIx31dcZcOAgMwd6Ajk=
+X-Google-Smtp-Source: ABdhPJxhRopogeep+UB2H+4fwzAnBfxW+obMKHyynYJuQjl+/u9U0011KEHGoECdFaAAZ+09H1f4CSH4mTvEV+mXA4s=
+X-Received: by 2002:a25:fd6:: with SMTP id 205mr29018898ybp.654.1643094475930;
+ Mon, 24 Jan 2022 23:07:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CA+khW7gh=vO8m-_SVnwWwj7kv+EDeUPcuWFqebf2Zmi9T_oEAQ@mail.gmail.com>
+In-Reply-To: <CA+khW7gh=vO8m-_SVnwWwj7kv+EDeUPcuWFqebf2Zmi9T_oEAQ@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 24 Jan 2022 23:07:45 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW7F4KritXPXixoPSw4zbCsqpfZaYBuw5BgD+KKXaoeGxg@mail.gmail.com>
+Message-ID: <CAPhsuW7F4KritXPXixoPSw4zbCsqpfZaYBuw5BgD+KKXaoeGxg@mail.gmail.com>
+Subject: Re: [Question] How to reliably get BuildIDs from bpf prog
+To:     Hao Luo <haoluo@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Blake Jones <blakejones@google.com>,
+        Alexey Alexandrov <aalexand@google.com>,
+        Namhyung Kim <namhyung@google.com>,
+        Ian Rogers <irogers@google.com>,
+        "pasha.tatashin@soleen.com" <pasha.tatashin@soleen.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have quite a few RISC-V drivers (such as RISC-V SBI IPI driver,
-RISC-V timer driver, RISC-V PMU driver, etc) which do not have a
-dedicated DT/ACPI fwnode. This patch makes intc domain as the default
-host so that these drivers can directly create local interrupt mapping
-using standardized local interrupt numbers
+On Mon, Jan 24, 2022 at 2:43 PM Hao Luo <haoluo@google.com> wrote:
+>
+> Dear BPF experts,
+>
+> I'm working on collecting some kernel performance data using BPF
+> tracing prog. Our performance profiling team wants to associate the
+> data with user stack information. One of the requirements is to
+> reliably get BuildIDs from bpf_get_stackid() and other similar helpers
+> [1].
+>
+> As part of an early investigation, we found that there are a couple
+> issues that make bpf_get_stackid() much less reliable than we'd like
+> for our use:
+>
+> 1. The first page of many binaries (which contains the ELF headers and
+> thus the BuildID that we need) is often not in memory. The failure of
+> find_get_page() (called from build_id_parse()) is higher than we would
+> want.
 
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- drivers/clocksource/timer-riscv.c | 17 +----------------
- drivers/irqchip/irq-riscv-intc.c  |  9 +++++++++
- 2 files changed, 10 insertions(+), 16 deletions(-)
+Our top use case of bpf_get_stack() is called from NMI, so there isn't
+much we can do. Maybe it is possible to improve it by changing the
+layout of the binary and the libraries? Specifically, if the text is
+also in the first page, it is likely to stay in memory?
 
-diff --git a/drivers/clocksource/timer-riscv.c b/drivers/clocksource/timer-riscv.c
-index 1767f8bf2013..dd6916ae6365 100644
---- a/drivers/clocksource/timer-riscv.c
-+++ b/drivers/clocksource/timer-riscv.c
-@@ -102,8 +102,6 @@ static irqreturn_t riscv_timer_interrupt(int irq, void *dev_id)
- static int __init riscv_timer_init_dt(struct device_node *n)
- {
- 	int cpuid, hartid, error;
--	struct device_node *child;
--	struct irq_domain *domain;
- 
- 	hartid = riscv_of_processor_hartid(n);
- 	if (hartid < 0) {
-@@ -121,20 +119,7 @@ static int __init riscv_timer_init_dt(struct device_node *n)
- 	if (cpuid != smp_processor_id())
- 		return 0;
- 
--	domain = NULL;
--	child = of_get_compatible_child(n, "riscv,cpu-intc");
--	if (!child) {
--		pr_err("Failed to find INTC node [%pOF]\n", n);
--		return -ENODEV;
--	}
--	domain = irq_find_host(child);
--	of_node_put(child);
--	if (!domain) {
--		pr_err("Failed to find IRQ domain for node [%pOF]\n", n);
--		return -ENODEV;
--	}
--
--	riscv_clock_event_irq = irq_create_mapping(domain, RV_IRQ_TIMER);
-+	riscv_clock_event_irq = irq_create_mapping(NULL, RV_IRQ_TIMER);
- 	if (!riscv_clock_event_irq) {
- 		pr_err("Failed to map timer interrupt for node [%pOF]\n", n);
- 		return -ENODEV;
-diff --git a/drivers/irqchip/irq-riscv-intc.c b/drivers/irqchip/irq-riscv-intc.c
-index b65bd8878d4f..9f0a7a8a5c4d 100644
---- a/drivers/irqchip/irq-riscv-intc.c
-+++ b/drivers/irqchip/irq-riscv-intc.c
-@@ -125,6 +125,15 @@ static int __init riscv_intc_init(struct device_node *node,
- 		return rc;
- 	}
- 
-+	/*
-+	 * Make INTC as the default domain which will allow drivers
-+	 * not having dedicated DT/ACPI fwnode (such as RISC-V SBI IPI
-+	 * driver, RISC-V timer driver, RISC-V PMU driver, etc) can
-+	 * directly create local interrupt mapping using standardized
-+	 * local interrupt numbers.
-+	 */
-+	irq_set_default_host(intc_domain);
-+
- 	cpuhp_setup_state(CPUHP_AP_IRQ_RISCV_STARTING,
- 			  "irqchip/riscv/intc:starting",
- 			  riscv_intc_cpu_starting,
--- 
-2.25.1
+> 2. When anonymous huge pages are used to hold some regions of process
+> text, build_id_parse() also fails to get a BuildID because
+> vma->vm_file is NULL.
 
+How did the text get in anonymous memory? I guess it is NOT from JIT?
+We had a hack to use transparent huge page for application text. The
+hack looks like:
+
+"At run time, the application creates an 8MB temporary buffer and the
+hot section of the executable memory is copied to it. The 8MB region in
+the executable memory is then converted to a huge page (by way of an
+mmap() to anonymous pages and an madvise() to create a huge page), the
+data is copied back to it, and it is made executable again using
+mprotect()."
+
+If your case is the same (or similar), it can probably be fixed with
+CONFIG_READ_ONLY_THP_FOR_FS, and modified user space.
+
+Thanks,
+Song
