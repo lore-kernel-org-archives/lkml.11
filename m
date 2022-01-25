@@ -2,74 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3751EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A74C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 11:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382628AbiAYLmN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 06:42:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353399AbiAYLi2 (ORCPT
+        id S244105AbiAYLmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 06:42:35 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4493 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382067AbiAYLin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 06:38:28 -0500
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1087C061756
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 03:38:20 -0800 (PST)
-Received: by mail-ua1-x935.google.com with SMTP id w21so36765053uan.7
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 03:38:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=0x0f.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3Ix6kgvVL8Nx/8c4lClNn1uhhNmlmsg5FomNs+dQrm8=;
-        b=TcL2zqIFyGmrSBGXnAzZyHWTQCUfrOmoLawiiEfG/DbKVQHFUwvWQhFmaP3z4heST0
-         D7lj5aDTwFmiZ4fv86t6Au3RLSY9DsKr9q3CsLn8uNbYuCVU4OUTML/1JuvNyJ+tL21G
-         pWsYQScqliIvmP5FQH94O68/Caosku1u4aLNg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3Ix6kgvVL8Nx/8c4lClNn1uhhNmlmsg5FomNs+dQrm8=;
-        b=yyx8zSrWSJ6EvfQxyMCozKALPKkowH5QgSyqU+pq3SXh0uw8OUKci0tz8/jCBfTBDx
-         bGUzWBe42NuCD10U4EsrydXYvR2eyzHf2ywNnk92i3cqJMT7AVuxMJrys96nHSUMNOLO
-         Ae79+yEiwe3RmCCShUeMlNIzpvElFF8i6rNDf+Q8q8EMem/AQIq6VPN/Z4Fim+sRiH7W
-         oWE1TwSGRN/xMEVdELLdjFp+Iqc/RKQKyCnwi7mULxVG2OwN3AoDrFpeX95n+cS2MhBt
-         0/Fgf1bc865huKFKoGVSNlDDzSI47YKQpyIT4mRiUdQGdM11fYKQsfn/YzkYMmUDRHW9
-         YTSQ==
-X-Gm-Message-State: AOAM530c5vPcdKaAXC00RNjOUY//1wsXhYKQU/rhwgN2s3nNUt9ij4H0
-        aBMIlXjGxBImaWumc4T4IgPSd9kNOZnLYbE0EvF9Jg==
-X-Google-Smtp-Source: ABdhPJxUdxt1YoKPBp18HqqmTSJHdv14fBYM59nqNk9gfC62QoUo/N5B+/KzsQ+U3nKBgwu/DraVMQvVj57wkIiQCSw=
-X-Received: by 2002:a67:26c1:: with SMTP id m184mr6848398vsm.48.1643110699766;
- Tue, 25 Jan 2022 03:38:19 -0800 (PST)
+        Tue, 25 Jan 2022 06:38:43 -0500
+Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JjlBs34Sdz687G4;
+        Tue, 25 Jan 2022 19:35:01 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 12:38:26 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 11:38:22 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <artur.paszkiewicz@intel.com>, <jinpu.wang@cloud.ionos.com>,
+        <chenxiang66@hisilicon.com>, <Ajish.Koshy@microchip.com>
+CC:     <yanaijie@huawei.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <linuxarm@huawei.com>, <liuqi115@huawei.com>,
+        <Viswas.G@microchip.com>, <damien.lemoal@opensource.wdc.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH 01/16] scsi: libsas: Use enum for response frame DATAPRES field
+Date:   Tue, 25 Jan 2022 19:32:37 +0800
+Message-ID: <1643110372-85470-2-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
+References: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
-References: <1643040870.3bwvk3sis4.none.ref@localhost> <1643040870.3bwvk3sis4.none@localhost>
-In-Reply-To: <1643040870.3bwvk3sis4.none@localhost>
-From:   Daniel Palmer <daniel@0x0f.com>
-Date:   Tue, 25 Jan 2022 20:38:09 +0900
-Message-ID: <CAFr9PXk0XxXN4rWhwe_hVc8npXcVc=vb7QEmiwYaydMhXrjquQ@mail.gmail.com>
-Subject: Re: "blk-mq: fix tag_get wait task can't be awakened" causes hangs
-To:     "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>
-Cc:     Laibin Qiu <qiulaibin@huawei.com>, axboe@kernel.dk,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-block@vger.kernel.org, john.garry@huawei.com,
-        ming.lei@redhat.com, martin.petersen@oracle.com, hare@suse.de,
-        Andrew Morton <akpm@linux-foundation.org>, bvanassche@acm.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alex,
+As defined in table 126 of the SAS spec 1.1, use an enum for the DATAPRES
+field, which makes reading the code easier.
 
-Same issue here. I just spent an hour bisecting the issue and hit the
-same commit you did.
+Signed-off-by: John Garry <john.garry@huawei.com>
+---
+ drivers/scsi/libsas/sas_task.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-If I try to dd from a USB card reader to null I can see a few commands
-wake up the thread that usb storage uses and then nothing more.
-The user process then blocks forever waiting for the data it asked for.
+diff --git a/drivers/scsi/libsas/sas_task.c b/drivers/scsi/libsas/sas_task.c
+index 2966ead1d421..7240fd22b154 100644
+--- a/drivers/scsi/libsas/sas_task.c
++++ b/drivers/scsi/libsas/sas_task.c
+@@ -7,6 +7,12 @@
+ #include <scsi/sas.h>
+ #include <scsi/libsas.h>
+ 
++enum {
++	NO_DATA = 0,
++	RESPONSE_DATA = 1,
++	SENSE_DATA = 2,
++};
++
+ /* fill task_status_struct based on SSP response frame */
+ void sas_ssp_task_response(struct device *dev, struct sas_task *task,
+ 			   struct ssp_response_iu *iu)
+@@ -15,11 +21,11 @@ void sas_ssp_task_response(struct device *dev, struct sas_task *task,
+ 
+ 	tstat->resp = SAS_TASK_COMPLETE;
+ 
+-	if (iu->datapres == 0)
++	if (iu->datapres == NO_DATA)
+ 		tstat->stat = iu->status;
+-	else if (iu->datapres == 1)
++	else if (iu->datapres == RESPONSE_DATA)
+ 		tstat->stat = iu->resp_data[3];
+-	else if (iu->datapres == 2) {
++	else if (iu->datapres == SENSE_DATA) {
+ 		tstat->stat = SAS_SAM_STAT_CHECK_CONDITION;
+ 		tstat->buf_valid_size =
+ 			min_t(int, SAS_STATUS_BUF_SIZE,
+-- 
+2.26.2
 
-Cheers,
-
-Daniel
