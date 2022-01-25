@@ -2,68 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17901C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F27E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 16:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586865AbiAYQwV (ORCPT
+        id S1349497AbiAYQyT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 11:52:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586721AbiAYQuW (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 11:50:22 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA09C06173B
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 08:50:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=VrBKWP0akaG4dIR083DmtTNeX0gnAazEE+UlofwJtug=; b=G47DpRhQzRKnkRExVce/bUy461
-        Jgz4K6JpXmFTSsjjSe0zJnvC9QTgJaXueYe6LFLVjds6/Wl/IxEmFpQUy+cg0HSFE11QewCZmMK9G
-        VwLAvsOo5GqTyvHeTryUXb3x9Hj7Qk/AP6q9wkUi0h6mB83BJj2p5r74CRqwrREy1WOpFg5WYaVyv
-        HQKyJoF4v9/03plFZqfs5BI5osKC2QcXq/VaSZaKgfA6iEIJ9dA93ITE/TqzTls/m71S+K5VprCTx
-        bqcK75gtqUrjNgzKE+qAEC0eLcH0HCEcpov9zt27oAubhQ9RyYrq1eZEkcbZnDDArW3jv86+SK10g
-        gxT8P/eg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nCP1K-0035c0-8b; Tue, 25 Jan 2022 16:50:14 +0000
-Date:   Tue, 25 Jan 2022 16:50:14 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Oleksiy Avramchenko <oleksiy.avramchenko@sonymobile.com>
-Subject: Re: [PATCH v2 1/1] mm/vmalloc: Move draining areas out of caller
- context
-Message-ID: <YfAqRrGD2UKrZHfJ@casper.infradead.org>
-References: <20220125163912.2809-1-urezki@gmail.com>
+        Tue, 25 Jan 2022 11:54:19 -0500
+Received: from foss.arm.com ([217.140.110.172]:55652 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1586761AbiAYQvy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 11:51:54 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9BC8A1FB;
+        Tue, 25 Jan 2022 08:51:52 -0800 (PST)
+Received: from ip-10-252-15-108.eu-west-1.compute.internal (unknown [10.252.15.108])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id EDD343F766;
+        Tue, 25 Jan 2022 08:51:50 -0800 (PST)
+From:   German Gomez <german.gomez@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Cc:     German Gomez <german.gomez@arm.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>
+Subject: [PATCH] perf test: Add shell script test for ARM64 frame-pointer call graphs
+Date:   Tue, 25 Jan 2022 16:51:32 +0000
+Message-Id: <20220125165133.10198-1-german.gomez@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125163912.2809-1-urezki@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 05:39:12PM +0100, Uladzislau Rezki (Sony) wrote:
-> @@ -1768,7 +1776,8 @@ static void free_vmap_area_noflush(struct vmap_area *va)
->  
->  	/* After this point, we may free va at any time */
->  	if (unlikely(nr_lazy > lazy_max_pages()))
-> -		try_purge_vmap_area_lazy();
-> +		if (!atomic_xchg(&drain_vmap_work_in_progress, 1))
-> +			schedule_work(&drain_vmap_work);
->  }
+In the commit in [1], the frame-pointer call-graphs were fixed in ARM64.
+So add a test to avoid future regressions.
 
-Is it necessary to have drain_vmap_work_in_progress?  The documentation
-says:
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b9f6fbb3b2c29736970ae9fcc0e82b0bd459442b
 
- * This puts a job in the kernel-global workqueue if it was not already
- * queued and leaves it in the same position on the kernel-global
- * workqueue otherwise.
+Suggested-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: German Gomez <german.gomez@arm.com>
+---
+ .../tests/shell/test_arm_fp_call_graph.sh     | 74 +++++++++++++++++++
+ 1 file changed, 74 insertions(+)
+ create mode 100755 tools/perf/tests/shell/test_arm_fp_call_graph.sh
 
-and the implementation seems to use test_and_set_bit() to ensure this
-is true.
+diff --git a/tools/perf/tests/shell/test_arm_fp_call_graph.sh b/tools/perf/tests/shell/test_arm_fp_call_graph.sh
+new file mode 100755
+index 000000000000..4ba17163b320
+--- /dev/null
++++ b/tools/perf/tests/shell/test_arm_fp_call_graph.sh
+@@ -0,0 +1,74 @@
++#!/bin/sh
++# Check frame pointer call-graphs are correct on Arm64
++
++# SPDX-License-Identifier: GPL-2.0
++# German Gomez <german.gomez@arm.com>, 2022
++
++# This test checks that the perf tool injects the missing caller of a
++# leaf function on Arm64 when unwinding using frame pointers.
++# See: https://lore.kernel.org/r/20211217154521.80603-7-german.gomez@arm.com
++
++# Only run this test on Arm64
++lscpu | grep -q "aarch64" || return 2
++
++if ! [ -x "$(command -v cc)" ]; then
++	echo "failed: no compiler, install gcc"
++	exit 2
++fi
++
++PERF_DATA=$(mktemp /tmp/__perf_test.perf.data.XXXXX)
++TEST_PROGRAM_SOURCE=$(mktemp /tmp/test_program.XXXXX.c)
++TEST_PROGRAM=$(mktemp /tmp/test_program.XXXXX)
++SCRIPT_FILE=$(mktemp /tmp/perf.script.XXXXX)
++
++cleanup_files() {
++	rm -f $PERF_DATA*
++	rm -f $TEST_PROGRAM_SOURCE
++	rm -f $TEST_PROGRAM
++	rm -f $SCRIPT_FILE
++}
++
++trap cleanup_files exit term int
++
++# compile test program
++cat << EOF > $TEST_PROGRAM_SOURCE
++int a = 0;
++void leaf(void) {
++  for (int i = 0; i < 10000000; i++)
++    a *= a;
++}
++void parent(void) {
++  leaf();
++}
++int main(void) {
++  parent();
++  return 0;
++}
++EOF
++
++CFLAGS="-O0 -fno-inline -fno-omit-frame-pointer"
++cc $CFLAGS $TEST_PROGRAM_SOURCE -o $TEST_PROGRAM || exit 1
++
++perf record --call-graph fp -o $PERF_DATA -- $TEST_PROGRAM
++
++# search for the following pattern in perf-script output
++#     734 leaf+0x18 (...)
++#     78b parent+0xb (...)
++#     7a4 main+0xc (...)
++
++perf script -i $PERF_DATA | egrep "[0-9a-f]+ +leaf" -A2 -m1 > $SCRIPT_FILE
++
++egrep -q " +leaf\+0x[0-9a-f]+" $SCRIPT_FILE && \
++egrep -q " +parent\+0x[0-9a-f]+" $SCRIPT_FILE && \
++egrep -q " +main\+0x[0-9a-f]+" $SCRIPT_FILE
++err=$?
++
++echo -n "Check frame pointer call-graphs on Arm64: "
++if [ $err != 0 ]; then
++	echo "FAIL"
++	exit 1
++else
++	echo "PASS"
++fi
++
++exit 0
+-- 
+2.25.1
+
