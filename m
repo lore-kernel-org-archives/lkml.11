@@ -2,129 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2723C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S248669AbiAYExN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:53:13 -0500
-Received: from mga02.intel.com ([134.134.136.20]:56207 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1325657AbiAYEn4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 23:43:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643085836; x=1674621836;
-  h=cc:subject:to:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=ePB8x5wsn46fcq0gstZC9w5tmuRZOJRLGU6KysgfNoE=;
-  b=WqqCtDqH5DNkEa6FYxhKPyQ9RApBxIMMbkvlJkSLSnS9j7iw4dLsd3FR
-   66dHYB4LVAR36U16XsYRPsBYiYwHC897pws24zV5FVteeUsA9+AEiA9tS
-   mDF8muX1JeumUSbzED+hVFjx83Ff62gHzE7Z30Ymj6CHALRumkFdF/R4/
-   5iGNKPkIvEqpj6o262Q5wQZ8bhdsrzOeyT3ELrUcngYkMe3VWboIakkBa
-   LSajQ/LF+WUPLKYrRa9HjitF4LHSO98JU9IKQau9odszOaDW68bg/rPXb
-   s3IFewZhVvdZwLRr2dSDnatNdicn83jGr25f3XP+8BVJWZlAjHaEJ+yO0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="233585515"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="233585515"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 20:43:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="534559224"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by orsmga008.jf.intel.com with ESMTP; 24 Jan 2022 20:43:50 -0800
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
-To:     Christoph Hellwig <hch@infradead.org>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-8-baolu.lu@linux.intel.com>
- <Ye5zUapC/YcZs7kl@infradead.org>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <62b47e7f-8704-24b1-2a94-bc456e7ad3a0@linux.intel.com>
-Date:   Tue, 25 Jan 2022 12:42:50 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S254950AbiAYExj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 23:53:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3412751AbiAYEmD (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 23:42:03 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CC0C061756;
+        Mon, 24 Jan 2022 19:21:56 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id p125so17203776pga.2;
+        Mon, 24 Jan 2022 19:21:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dRYUZ3M7rYppnI+hr0K9I96s0E7Snr+RM+8KvNOCFtU=;
+        b=VD8oeGdqW09JSIqWe22HlKYenwRDp2U8WB+CnjY9QLzalkATlxubrBmgjYYpfW6yCY
+         1n07L6NKNOdq6J5J+VoxM0dHKSLcYBwSHN1OUYe2tsN889Jw9me66zKLHFVus7BiiWUw
+         RLkkqAtHIvkBY32Zec94woTaIa0mYUIvOEzYAQzbiU2k4Q4nJwMcuLPd3DDGGEMxpdRR
+         dIeGhMe0j2TWZUIW20y/3h0vUAStXPE1oj0nGC5Klr7KclyeFrKIZKGaoLDP+jx4ZAuQ
+         IF9XsGGcHnzSbDikDNG3Lq27ObcBgORcGhKZfLNzpKtXqKo6rbyACvIgwmpFVyAmvJrA
+         N+4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dRYUZ3M7rYppnI+hr0K9I96s0E7Snr+RM+8KvNOCFtU=;
+        b=7TtkTlHWL/GsEi1zsoQyXJikadWnbkvlZb9A4CSyc2CilJ+X34/rEjZ02W/Ec79o1V
+         TkHGX9w9WmTRoASan8r9h6D19IMvYlZ1GVTW2wht56uvySeh7Z3Gp6ZEDpr0AZhdTZs/
+         Rxpy7bSOW3y4WQW8jXUMUuHqPJHtlTNnvgqjdUqPTS2+Nm4iwBzCuKwNH3BM/8XIyzJc
+         +YeccKAooOtLpDYQC8c/DxOT63lajz7zsgRRvkp+AVYuegg2OLFFvA5PHHI9817QBlti
+         5NI8tIgs4xu7OGGFhq90ZcqjAc1Ajza+x96/OK1jTFWejNyhpSHB1eug5YVFkO85ojbV
+         DxaQ==
+X-Gm-Message-State: AOAM5304+GLtwtkmSaNWCHTuRKtB9mTrarJsLmEnkrA+0zg0VLnpsz8u
+        XYeVADl1v+O2UjX6+BUCTQffnIZKqPLmBIVZ0cQdfBfGkEE=
+X-Google-Smtp-Source: ABdhPJywmScDK7JzNLK/WwmQPFrg9zEjpJrbDmlinzZCQUfw9Uu/CfMyBOT1zd0fMVAprCPY+u6ivYkhqGRTbivhBTk=
+X-Received: by 2002:aa7:88d4:0:b0:4ca:a670:d05f with SMTP id
+ k20-20020aa788d4000000b004caa670d05fmr2460464pff.38.1643080915561; Mon, 24
+ Jan 2022 19:21:55 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <Ye5zUapC/YcZs7kl@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220104171058.22580-1-avagin@gmail.com>
+In-Reply-To: <20220104171058.22580-1-avagin@gmail.com>
+From:   Andrei Vagin <avagin@gmail.com>
+Date:   Mon, 24 Jan 2022 19:21:44 -0800
+Message-ID: <CANaxB-x83ZUSw493feutgF4_sBD7Uj_p0VwNxpmaq1u7eMsq-w@mail.gmail.com>
+Subject: Re: [PATCH] fs/pipe: use kvcalloc to allocate a pipe_buffer array
+To:     LKML <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/24/22 5:37 PM, Christoph Hellwig wrote:
-> On Mon, Jan 24, 2022 at 03:11:02PM +0800, Lu Baolu wrote:
->> Add a domain specific callback set, domain_ops, for vendor iommu driver
->> to provide domain specific operations. Move domain-specific callbacks
->> from iommu_ops to the domain_ops and hook them when a domain is allocated.
-> 
-> Ah, that's what I meant earlier.  Perfect!
-> 
-> Nit:  I don't think vendor is the right term here.
-> 
-> Maybe something like:
-> 
-> iommut: split struct iommu_ops
-> 
-> Move the domain specific operations out of struct iommu_ops into a new
-> structure that only has domain specific operations.  This solves
-> the problem of needing to know if the method vector for a given
-> operation needs to be retreived from the device or th domain.
+On Tue, Jan 4, 2022 at 9:11 AM Andrei Vagin <avagin@gmail.com> wrote:
+>
+> Right now, kcalloc is used to allocate a pipe_buffer array.  The size of
+> the pipe_buffer struct is 40 bytes. kcalloc allows allocating reliably
+> chunks with sizes less or equal to PAGE_ALLOC_COSTLY_ORDER (3). It means
+> that the maximum pipe size is 3.2MB in this case.
+>
+> In CRIU, we use pipes to dump processes memory. CRIU freezes a target
+> process, injects a parasite code into it and then this code splices
+> memory into pipes. If a maximum pipe size is small, we need to
+> do many iterations or create many pipes.
+>
+> kvcalloc attempt to allocate physically contiguous memory, but upon
+> failure, fall back to non-contiguous (vmalloc) allocation and so it
+> isn't limited by PAGE_ALLOC_COSTLY_ORDER.
+>
+> The maximum pipe size for non-root users is limited by
+> the /proc/sys/fs/pipe-max-size sysctl that is 1MB by default, so only
+> the root user will be able to trigger vmalloc allocations.
+>
+> Cc: Dmitry Safonov <0x7f454c46@gmail.com>
+> Signed-off-by: Andrei Vagin <avagin@gmail.com>
 
-Sure. Will use above description.
+Alexander and Andrew,
 
-> 
->> +struct domain_ops {
-> 
-> This needs to keep an iommu in the name, i.e. iommu_domain_ops.
+Do you have any objections? Could you merge this patch?
 
-Sure.
+Dmitry's comments have been addressed in the separate patch:
+https://lkml.org/lkml/2022/1/6/463
 
-> 
->> +	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
-> 
-> Overly long line.
+BTW: I found that fuse already uses kvmalloc to allocate pipe buffers
+(e. g. fuse_dev_splice_read).
 
-./scripts/checkpatch.pl --strict *.patch
-
-didn't give me a WARN or CHECK. I will make it short anyway.
-
-> 
->> +static inline void iommu_domain_set_ops(struct iommu_domain *domain,
->> +					const struct domain_ops *ops)
->> +{
->> +	domain->ops = ops;
->> +}
-> 
-> Do we really need this helper?
-
-Unnecessary. I can set the pointer directly in the drivers.
-
-> 
->> +static const struct domain_ops amd_domain_ops;
-> 
-> Can we avoid these forward declarations or would that cause too much
-> churn?
-> 
-
-I don't like this either. But it's common to put the ops at the bottom
-of the file in almost all iommu drivers.
-
-Best regards,
-baolu
+Thanks,
+Andrei
