@@ -2,115 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:11:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D681C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 08:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449021AbiAYILh (ORCPT
+        id S1449072AbiAYIMG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 03:11:37 -0500
-Received: from mga18.intel.com ([134.134.136.126]:31555 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1448687AbiAYIJH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:09:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643098147; x=1674634147;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=3rARKrczq0kbe7goiRwTPDqPVCq68DDhD8taH5Gx47U=;
-  b=gjBixyJQRXULNujs0koKsSv0ixY+v0UfV/Eg+gGB6eytMue3Al9TsSE3
-   yBwY/977RRXVXhmNSogXAgRogNKxcn691vek+BECccxKcoXppdBEHSWXt
-   RSelHUaVTeWyr817k/IloGHBSuB7BlZpn0RnopXzP0uky9ITHLtXXNtsS
-   Imwt5I254jLCBqKzywnhjTjuB9M8Pq5PQcQsRl8AmTpPT4q/sXN7PZ8Ga
-   eir/+O9GR6QhzLcnTEziJes16wXVOLYu63C5U9pEBPSUeJ4PxHOTHxHyy
-   Si5RFsJpB7u4mIyTUVHX0Q6lsK41sYY5RjVaZEBzIHZWMAUrWgBM6jkd2
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="229823479"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="229823479"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 00:08:44 -0800
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="520295331"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.29.83]) ([10.255.29.83])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 00:08:42 -0800
-Subject: Re: [kbuild-all] Re: fs/ntfs3/fsntfs.c:2248:41: warning: taking
- address of packed member 'de' of class or structure 'NTFS_DE_SII' may result
- in an unaligned pointer value
-To:     Nathan Chancellor <nathan@kernel.org>,
-        kernel test robot <lkp@intel.com>
-Cc:     Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-References: <202201242326.uQ3OazUi-lkp@intel.com>
- <Ye7kyA3yJupMLSD2@archlinux-ax161>
-From:   "Chen, Rong A" <rong.a.chen@intel.com>
-Message-ID: <90b97ffb-1feb-a83f-44e7-61e77b77ad6e@intel.com>
-Date:   Tue, 25 Jan 2022 16:08:40 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        Tue, 25 Jan 2022 03:12:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1448713AbiAYIJL (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 03:09:11 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9FA0C05A199
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 22:44:06 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id nn16-20020a17090b38d000b001b56b2bce31so1811754pjb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 22:44:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=heitbaum.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=C+J7O81Yn6PJdF+eRC1IATHARSNrRlCx+oll/tKiMdc=;
+        b=H/xV85Oe5nelkk/GU8IC9+vPAy5X0buwJGiu8v+sAKczJrVKauEKOvjIvNPLLnTWuO
+         NDsx3RxJxaXeD58X3VAsw88r7M7qGe8wRESza7xx3uxdRqqyI97uVpDmt0yCme+I7CSi
+         Jw5ho9zwWTkou7GIkZbm8jsfwMJdoyrJHlwLQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=C+J7O81Yn6PJdF+eRC1IATHARSNrRlCx+oll/tKiMdc=;
+        b=a2FoECX2Zj4czQEfd+LlcEPQoWGPZDgdDUpE9at5NYplfh9qxNqSvWpqSzfdBzTBgk
+         jZ2DFJE2Mb8Wfe1ZQexO/Kfk6P0X60F8z8UvRWV/WijW3cn9Z3QR2JHZdLmZduJZdYi0
+         MRFW8F707iempYiEnUedczpZIt9BoS4OjlsjFHpt1Gw8bifEGJTxsuPYwWG8t5U59EKH
+         PjEtJuVN4BtfgOrSwDjiJmlqMoBFzt9kIcBZHWDM4gTMzKLUtiTnewtPsMXelNxXKVKf
+         VHxkfNs9TxtXa+duOYcHpmkkWqinG+WcJhm+uW/5AGOMOW6a17kDCaU0ssC6FViXxmWe
+         vYtA==
+X-Gm-Message-State: AOAM530tPelg/L4IHjyw+n2xH4skjbMVQIE01Izx27Aw29ybJKTbB9Jx
+        Kcy023Zmm5yZri7GTLitf9D0oCIV1azWSg==
+X-Google-Smtp-Source: ABdhPJwhaJ7KmthGm2/RTx5HpQiBhaJZVzzCK7PTko/uUigr5Iu1bMT7/JYCH5M8tlkFdM15LmEJRA==
+X-Received: by 2002:a17:902:ab82:b0:14a:188a:cd1f with SMTP id f2-20020a170902ab8200b0014a188acd1fmr17611226plr.44.1643093046008;
+        Mon, 24 Jan 2022 22:44:06 -0800 (PST)
+Received: from 6facd6251e90 ([203.221.136.13])
+        by smtp.gmail.com with ESMTPSA id s23sm20181656pfg.144.2022.01.24.22.44.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 22:44:05 -0800 (PST)
+Date:   Tue, 25 Jan 2022 06:43:58 +0000
+From:   Rudi Heitbaum <rudi@heitbaum.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 5.16 0000/1039] 5.16.3-rc1 review
+Message-ID: <20220125064358.GA2349358@6facd6251e90>
+References: <20220124184125.121143506@linuxfoundation.org>
 MIME-Version: 1.0
-In-Reply-To: <Ye7kyA3yJupMLSD2@archlinux-ax161>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jan 24, 2022 at 07:29:49PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.3 release.
+> There are 1039 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 
+Hi Greg,
 
-On 1/25/2022 1:41 AM, Nathan Chancellor wrote:
-> On Mon, Jan 24, 2022 at 11:21:59PM +0800, kernel test robot wrote:
->> Hi Konstantin,
->>
->> FYI, the error/warning still remains.
->>
->> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->> head:   dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
->> commit: 6e5be40d32fb1907285277c02e74493ed43d77fe fs/ntfs3: Add NTFS3 in fs/Kconfig and fs/Makefile
->> date:   5 months ago
->> config: mips-buildonly-randconfig-r001-20220122 (https://download.01.org/0day-ci/archive/20220124/202201242326.uQ3OazUi-lkp@intel.com/config)
->> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
->> reproduce (this is a W=1 build):
->>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>          chmod +x ~/bin/make.cross
->>          # install mips cross compiling tool for clang build
->>          # apt-get install binutils-mips-linux-gnu
->>          # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6e5be40d32fb1907285277c02e74493ed43d77fe
->>          git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>          git fetch --no-tags linus master
->>          git checkout 6e5be40d32fb1907285277c02e74493ed43d77fe
->>          # save the config file to linux build tree
->>          mkdir build_dir
->>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash fs/ntfs3/
->>
->> If you fix the issue, kindly add following tag as appropriate
->> Reported-by: kernel test robot <lkp@intel.com>
->>
->> All warnings (new ones prefixed by >>):
->>
->>     fs/ntfs3/fsntfs.c:1874:9: warning: variable 'cnt' set but not used [-Wunused-but-set-variable]
->>             size_t cnt, off;
->>                    ^
->>>> fs/ntfs3/fsntfs.c:2248:41: warning: taking address of packed member 'de' of class or structure 'NTFS_DE_SII' may result in an unaligned pointer value [-Waddress-of-packed-member]
->>             err = indx_insert_entry(indx_sii, ni, &sii_e.de, NULL, NULL);
->>                                                    ^~~~~~~~
->>     2 warnings generated.
-> 
-> This warning has the same root cause as
-> https://lore.kernel.org/r/YenXz+RznXBuJMSR@dev-arch.archlinux-ax161/.
-> 
-> Intel folks, would it be possible to limit instances of
-> -Waddress-of-packed-member with mips randconfigs to our mailing list for
-> the reason I note in the link above?
-> 
-> Cheers,
-> Nathan
+Looking good.
 
-Hi Nathan,
+Run tested on:
+- Allwinner H6 (Tanix TX6)
+- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
 
-Thanks for the advice, will do it.
+In addition: build tested on:
+- Allwinner A64
+- Allwinner H3
+- Allwinner H5
+- NXP iMX6
+- NXP iMX8
+- Qualcomm Dragonboard
+- Rockchip RK3288
+- Rockchip RK3328
+- Rockchip RK3399pro
+- Samsung Exynos
 
-Best Regards,
-Rong Chen
+Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
+--
+Rudi
