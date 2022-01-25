@@ -2,117 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACDE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93DDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 19:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbiAYTS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 14:18:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48134 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbiAYTSB (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 14:18:01 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99363C061755
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 11:17:45 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id z19so22004605lfq.13
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 11:17:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wZzixtPsBwjSdlfmVlQxvw65IbQas2Gqlofz//xzbt8=;
-        b=SoiX0MB1KR/dZ1i0RrY8wFpu4FCIw2nPsbRx8INbBLCr10ClG/5D8Y5MXxUSb6i5Vs
-         LY1GRHnVw+WHTeQCuf/jN5A7Ftfs5V+r0qa2Z6wJ25pHpM30g6zwvfr7VcibvIq+6w5P
-         Y7NqDfXCdQ/q86EmFQR2qYP0Oqu8sfEUPhFmxYG61M4svXTBtHEnGqvc9d+iG4Q5/mg7
-         aRILAfn33GP+HHRI4DFLT1voIKNhtENCcliuJxLC38Hlac2r4g6WahCQMYJycpS1RLwf
-         NnKiclmqbb3knOVRKllMHjM23zGZ3fsArhcL+92vdHsQepZgsIPKot+hPPzXlOBpbhsb
-         x7Lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wZzixtPsBwjSdlfmVlQxvw65IbQas2Gqlofz//xzbt8=;
-        b=FZyuJBENwMIlayk76demPWv8VUwOJrJIhD+GnRw9Ti7po8na+3YzK09pO/vi+1BsOG
-         53yF1nV8CruNHohMM9DxdymSWw8DPnqB2PEDsL/8nFuKLcLvSn2N+5kqONTHgtmprpeP
-         GikCTQWnlYT/8kF8vMzF+IEsUo8QTj5tuI61e65slnRkcoUmls1y4xGpbUZtlt8nIbTE
-         OrmN7Bj3ZuOdTggntGnDOrazUca5tvPMwfw+R+naf9ihndYyWXmOsiZyBPNBU1ITlInZ
-         hxwoWWX+mkaDWa/5hTMsN9knAAzu4zz95rqqZ7M/z/LTh5/cgqYHZ3f8iGuaD3N7fe71
-         5HKQ==
-X-Gm-Message-State: AOAM530pgexSye4v93fqqHSfQq42enBfbWnD/i0jQXdthxvB28wb++RY
-        MLryOK5jnkfZ7MT2RxEu4K0=
-X-Google-Smtp-Source: ABdhPJz18O5o0EYwKWuRD2/VV9tPzNMOAquUWPZmqL7c3La+ZxSp2jwLApG25RYI/RNZg3Xq2Qd7yg==
-X-Received: by 2002:a05:6512:39c2:: with SMTP id k2mr5581182lfu.49.1643138263873;
-        Tue, 25 Jan 2022 11:17:43 -0800 (PST)
-Received: from pc638.lan ([155.137.26.201])
-        by smtp.gmail.com with ESMTPSA id z23sm819001lfu.84.2022.01.25.11.17.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 11:17:42 -0800 (PST)
-From:   Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
-Date:   Tue, 25 Jan 2022 20:17:40 +0100
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Uladzislau Rezki <urezki@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Oleksiy Avramchenko <oleksiy.avramchenko@sonymobile.com>
-Subject: Re: [PATCH v2 1/1] mm/vmalloc: Move draining areas out of caller
- context
-Message-ID: <YfBM1IF9maxuAAcL@pc638.lan>
-References: <20220125163912.2809-1-urezki@gmail.com>
- <YfAqRrGD2UKrZHfJ@casper.infradead.org>
- <YfAvkKZlVQYukays@pc638.lan>
- <YfBFi5IqC0MtLADf@casper.infradead.org>
+        id S230002AbiAYTSj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 14:18:39 -0500
+Received: from mga11.intel.com ([192.55.52.93]:30633 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229831AbiAYTST (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 14:18:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643138299; x=1674674299;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=yxx3Wd/Oulk3FtEv9gN62CsvVj6sGb15bGLewt5QSxA=;
+  b=NyAx6lZkV95lbGPnfhrGgxGqyeGLq7Mj+FClF8UKat541/izpcL1efCO
+   q1qKQJ4s4mkTc6IS7brmrl5HM8AZ/T0PP1U1LkqgsnDtEs0Qoa+VCEIm/
+   NrTwPgYml0kOwttC2QxCHfN4k/jY6tgtD1rPDJn3I7q5/kfwpGvmRwJx9
+   i3f4dd8dAH6qEwoBrFPyQP4/l8sN4GcdXI7qLx61o+RHadcjI07l2DXK1
+   NoBqpSmQ27hxE9YEVfpDS3cBfB2hUyGpOxpfVzJYfLtUSEfiHMW+Ld5GX
+   Q0kYPG20UOwsWyzlTM6I1VPyaDVpN5pJeQbMc53J5DO7U8mbEi/syzqfk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="243991151"
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="243991151"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 11:18:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="674107412"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 25 Jan 2022 11:18:17 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCRKZ-000KMA-Ul; Tue, 25 Jan 2022 19:18:15 +0000
+Date:   Wed, 26 Jan 2022 03:17:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: sound/pci/hda/hda_auto_parser.c:1021:6: warning: %x in format string
+ (no. 1) requires 'unsigned int *' but the argument type is 'signed int *'.
+ [invalidScanfArgType_int]
+Message-ID: <202201260353.d4cl4rJz-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YfBFi5IqC0MtLADf@casper.infradead.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 06:46:35PM +0000, Matthew Wilcox wrote:
-> On Tue, Jan 25, 2022 at 06:12:48PM +0100, Uladzislau Rezki wrote:
-> > On Tue, Jan 25, 2022 at 04:50:14PM +0000, Matthew Wilcox wrote:
-> > > On Tue, Jan 25, 2022 at 05:39:12PM +0100, Uladzislau Rezki (Sony) wrote:
-> > > > @@ -1768,7 +1776,8 @@ static void free_vmap_area_noflush(struct vmap_area *va)
-> > > >  
-> > > >  	/* After this point, we may free va at any time */
-> > > >  	if (unlikely(nr_lazy > lazy_max_pages()))
-> > > > -		try_purge_vmap_area_lazy();
-> > > > +		if (!atomic_xchg(&drain_vmap_work_in_progress, 1))
-> > > > +			schedule_work(&drain_vmap_work);
-> > > >  }
-> > > 
-> > > Is it necessary to have drain_vmap_work_in_progress?  The documentation
-> > > says:
-> > > 
-> > >  * This puts a job in the kernel-global workqueue if it was not already
-> > >  * queued and leaves it in the same position on the kernel-global
-> > >  * workqueue otherwise.
-> > > 
-> > > and the implementation seems to use test_and_set_bit() to ensure this
-> > > is true.
-> > >
-> > It checks pending state, if the work is in run-queue you can place it
-> > one more time. The motivation of having it is to prevent the drain work
-> > of being placed several times at once what i see on my stress testing.
-> > 
-> > CPU_1: invokes vfree() -> queues the drain work -> TASK_RUNNING
-> > CPU_2: invokes vfree() -> queues the drain work one more time since it was not pending
-> 
-> But why not unconditionally call schedule_work() here?
->
-We can :) The question is do we agree that extra queuing will be kind of
-spurious? Because the CPU_1 will complete all cleanups once it is physically
-on CPU and others workers just bail out.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   a08b41ab9e2e468647f78eb17c28e29b93006394
+commit: a235d5b8e550fac7520410440bcc8003fb4cf8d0 ALSA: hda: Allow model option to specify PCI SSID alias
+date:   5 months ago
+compiler: nds32le-linux-gcc (GCC) 11.2.0
 
-We can disregard those spurious wake-ups for sure. If someone complains about
-it in the future we can think later then.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Re-spin and do it unconditionally? I do not have a strong opinion about it.
 
---
-Vlad Rezki
+cppcheck warnings: (new ones prefixed by >>)
+>> sound/pci/hda/hda_auto_parser.c:1021:6: warning: %x in format string (no. 1) requires 'unsigned int *' but the argument type is 'signed int *'. [invalidScanfArgType_int]
+        sscanf(codec->modelname, "%04x:%04x", &vendor, &device) == 2) {
+        ^
+   sound/pci/hda/hda_auto_parser.c:1021:6: warning: %x in format string (no. 2) requires 'unsigned int *' but the argument type is 'signed int *'. [invalidScanfArgType_int]
+        sscanf(codec->modelname, "%04x:%04x", &vendor, &device) == 2) {
+        ^
+
+vim +1021 sound/pci/hda/hda_auto_parser.c
+
+   961	
+   962	/**
+   963	 * snd_hda_pick_fixup - Pick up a fixup matching with PCI/codec SSID or model string
+   964	 * @codec: the HDA codec
+   965	 * @models: NULL-terminated model string list
+   966	 * @quirk: zero-terminated PCI/codec SSID quirk list
+   967	 * @fixlist: the fixup list
+   968	 *
+   969	 * Pick up a fixup entry matching with the given model string or SSID.
+   970	 * If a fixup was already set beforehand, the function doesn't do anything.
+   971	 * When a special model string "nofixup" is given, also no fixup is applied.
+   972	 *
+   973	 * The function tries to find the matching model name at first, if given.
+   974	 * If the model string contains the SSID alias, try to look up with the given
+   975	 * alias ID.
+   976	 * If nothing matched, try to look up the PCI SSID.
+   977	 * If still nothing matched, try to look up the codec SSID.
+   978	 */
+   979	void snd_hda_pick_fixup(struct hda_codec *codec,
+   980				const struct hda_model_fixup *models,
+   981				const struct snd_pci_quirk *quirk,
+   982				const struct hda_fixup *fixlist)
+   983	{
+   984		const struct snd_pci_quirk *q;
+   985		int id = HDA_FIXUP_ID_NOT_SET;
+   986		const char *name = NULL;
+   987		const char *type = NULL;
+   988		int vendor, device;
+   989	
+   990		if (codec->fixup_id != HDA_FIXUP_ID_NOT_SET)
+   991			return;
+   992	
+   993		/* when model=nofixup is given, don't pick up any fixups */
+   994		if (codec->modelname && !strcmp(codec->modelname, "nofixup")) {
+   995			id = HDA_FIXUP_ID_NO_FIXUP;
+   996			fixlist = NULL;
+   997			codec_dbg(codec, "%s: picked no fixup (nofixup specified)\n",
+   998				  codec->core.chip_name);
+   999			goto found;
+  1000		}
+  1001	
+  1002		/* match with the model name string */
+  1003		if (codec->modelname && models) {
+  1004			while (models->name) {
+  1005				if (!strcmp(codec->modelname, models->name)) {
+  1006					id = models->id;
+  1007					name = models->name;
+  1008					codec_dbg(codec, "%s: picked fixup %s (model specified)\n",
+  1009						  codec->core.chip_name, codec->fixup_name);
+  1010					goto found;
+  1011				}
+  1012				models++;
+  1013			}
+  1014		}
+  1015	
+  1016		if (!quirk)
+  1017			return;
+  1018	
+  1019		/* match with the SSID alias given by the model string "XXXX:YYYY" */
+  1020		if (codec->modelname &&
+> 1021		    sscanf(codec->modelname, "%04x:%04x", &vendor, &device) == 2) {
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
