@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD65C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C36EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 13:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385537AbiAYN37 (ORCPT
+        id S1577261AbiAYNaW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 08:29:59 -0500
-Received: from relmlor1.renesas.com ([210.160.252.171]:15749 "EHLO
+        Tue, 25 Jan 2022 08:30:22 -0500
+Received: from relmlor1.renesas.com ([210.160.252.171]:54506 "EHLO
         relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1386682AbiAYNZT (ORCPT
+        by vger.kernel.org with ESMTP id S1385740AbiAYNZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 08:25:19 -0500
+        Tue, 25 Jan 2022 08:25:13 -0500
 X-IronPort-AV: E=Sophos;i="5.88,314,1635174000"; 
-   d="scan'208";a="107606150"
+   d="scan'208";a="107606144"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 25 Jan 2022 22:25:17 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 25 Jan 2022 22:25:11 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id D6F29429594A;
-        Tue, 25 Jan 2022 22:25:14 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id AEAF54295952;
+        Tue, 25 Jan 2022 22:25:09 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Mark Brown <broonie@kernel.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
@@ -30,12 +30,10 @@ Cc:     linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Prabhakar <prabhakar.csengg@gmail.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 2/3] ASoC: sh: rz-ssi: Add rz_ssi_set_substream() helper function
-Date:   Tue, 25 Jan 2022 13:24:56 +0000
-Message-Id: <20220125132457.14984-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 0/3] ASoC: sh: rz-ssi: Trivial changes
+Date:   Tue, 25 Jan 2022 13:24:54 +0000
+Message-Id: <20220125132457.14984-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220125132457.14984-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220125132457.14984-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -43,70 +41,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A copy of substream pointer is stored in priv structure during
-rz_ssi_dai_trigger() callback ie in SNDRV_PCM_TRIGGER_START case
-and the pointer is assigned to NULL in case of SNDRV_PCM_TRIGGER_STOP.
+Hi All,
 
-The driver used the locks only in rz_ssi_stream_is_valid() and assigned
-the local substream pointer to NULL in rz_ssi_dai_trigger() callback but
-never locked it while making a local copy.
+This patch series has trivial changes for rz-ssi driver. Patches 1
+(partial) & 2 are from series [3].
 
-This patch adds the rz_ssi_set_substream() helper function to set the
-substream pointer with locks acquired and replaces the instances of
-setting the local substream pointer with the rz_ssi_set_substream()
-function.
+patch 1/3 is just a cosmetic change which was part of patch [0] where it
+uses a do-while instead of while-do. Patch 2/3 is from series [1] where a
+helper function is added and patch 3/3 is a new patch which removes
+duplicate macros.
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
----
- sound/soc/sh/rz-ssi.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+All the patches apply to [2] (sound -next)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index 2c8775d37f50..1a46c9f3c4e5 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -188,6 +188,17 @@ static inline bool rz_ssi_is_dma_enabled(struct rz_ssi_priv *ssi)
- 	return (ssi->playback.dma_ch && (ssi->dma_rt || ssi->capture.dma_ch));
- }
- 
-+static void rz_ssi_set_substream(struct rz_ssi_stream *strm,
-+				 struct snd_pcm_substream *substream)
-+{
-+	struct rz_ssi_priv *ssi = strm->priv;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&ssi->lock, flags);
-+	strm->substream = substream;
-+	spin_unlock_irqrestore(&ssi->lock, flags);
-+}
-+
- static bool rz_ssi_stream_is_valid(struct rz_ssi_priv *ssi,
- 				   struct rz_ssi_stream *strm)
- {
-@@ -206,7 +217,7 @@ static void rz_ssi_stream_init(struct rz_ssi_stream *strm,
- {
- 	struct snd_pcm_runtime *runtime = substream->runtime;
- 
--	strm->substream = substream;
-+	rz_ssi_set_substream(strm, substream);
- 	strm->sample_width = samples_to_bytes(runtime, 1);
- 	strm->dma_buffer_pos = 0;
- 	strm->period_counter = 0;
-@@ -224,11 +235,8 @@ static void rz_ssi_stream_quit(struct rz_ssi_priv *ssi,
- 			       struct rz_ssi_stream *strm)
- {
- 	struct snd_soc_dai *dai = rz_ssi_get_dai(strm->substream);
--	unsigned long flags;
- 
--	spin_lock_irqsave(&ssi->lock, flags);
--	strm->substream = NULL;
--	spin_unlock_irqrestore(&ssi->lock, flags);
-+	rz_ssi_set_substream(strm, NULL);
- 
- 	if (strm->oerr_num > 0)
- 		dev_info(dai->dev, "overrun = %d\n", strm->oerr_num);
+[0] https://patchwork.kernel.org/project/alsa-devel/patch/
+20220115012303.29651-2-prabhakar.mahadev-lad.rj@bp.renesas.com/
+[1] https://patchwork.kernel.org/project/alsa-devel/patch/
+20220115012303.29651-6-prabhakar.mahadev-lad.rj@bp.renesas.com/
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git/log/
+[3] https://patchwork.kernel.org/project/alsa-devel/list/?series=605672
+
+Cheers,
+Prabhakar
+
+Lad Prabhakar (3):
+  ASoC: sh: rz-ssi: Use a do-while loop in rz_ssi_pio_recv()
+  ASoC: sh: rz-ssi: Add rz_ssi_set_substream() helper function
+  ASoC: sh: rz-ssi: Remove duplicate macros
+
+ sound/soc/sh/rz-ssi.c | 31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
+
 -- 
 2.17.1
 
