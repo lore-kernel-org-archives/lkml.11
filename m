@@ -2,72 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56486C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3830CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238495AbiAYGAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:00:19 -0500
-Received: from 6.mo584.mail-out.ovh.net ([188.165.36.253]:60817 "EHLO
-        6.mo584.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239847AbiAYF6K (ORCPT
+        id S231417AbiAYGCh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 01:02:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238340AbiAYGAJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 00:58:10 -0500
-X-Greylist: delayed 12603 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jan 2022 00:58:10 EST
-Received: from player772.ha.ovh.net (unknown [10.108.20.147])
-        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 0714F21E2B
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:20:34 +0000 (UTC)
-Received: from lsferreira.net (176.45.37.188.rev.vodafone.pt [188.37.45.176])
-        (Authenticated sender: contact@lsferreira.net)
-        by player772.ha.ovh.net (Postfix) with ESMTPSA id 5D39826BC40C1;
-        Tue, 25 Jan 2022 02:20:31 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-98R0025a45659e-af8e-4b3e-a074-61450c3cdb5d,
-                    A364C2FA6BBA4E3111F02E9B60B1C00A106F9C6B) smtp.auth=contact@lsferreira.net
-X-OVh-ClientIp: 188.37.45.176
-From:   =?UTF-8?q?Lu=C3=ADs=20Ferreira?= <contact@lsferreira.net>
-To:     linux-kernel@vger.kernel.org
-Cc:     bp@alien8.de,
-        =?UTF-8?q?Lu=C3=ADs=20Ferreira?= <contact@lsferreira.net>
-Subject: [PATCH] x86/fpu: remove memset call for xmm registers on xfpregs_set
-Date:   Tue, 25 Jan 2022 02:20:15 +0000
-Message-Id: <20220125022015.874422-1-contact@lsferreira.net>
-X-Mailer: git-send-email 2.34.1
+        Tue, 25 Jan 2022 01:00:09 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E91A8C046E05
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 20:16:39 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id d18so5251486plg.2
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 20:16:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iOG5WTBgZhfMtwYPCsNaOnc2/hv+YPjXSC9MURQ5W0Y=;
+        b=LTo5hiH/Pog/i833Q2JQ6246B+bU+u2LZyUgtec45u/C2geW13mBw4rDEzgvXNcNB0
+         WJ9mhPVw0watdJXd5EVtC8zeNLRXuJ1oRJ8bxfkFWcl9vYjKtG3rOkXkNPfN4LWxlKDY
+         NyFF2F4CrThueMgwVVQqWwF+oyR7YXh5AIqOj+TGDIyQy3fnVsA2YdUOQhMLuinHmRNI
+         mmafmt3VC2tYbSOuQUw01dDjCkIvarD5VYYAmcVjxP0LBhyGFIWRK4Z5DC4E+Q4rcoqb
+         5EUmadf08eYvzdcf9g8RLmxJHZhwO3PiKW6YXWMPS3004EwZjvF9wcf5d9azNfETJDf2
+         pZHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iOG5WTBgZhfMtwYPCsNaOnc2/hv+YPjXSC9MURQ5W0Y=;
+        b=JCmmRJaMTGsqS9Pe5ptQITWPkZu+0WSyEgRMrBfcCMyu8yRVwn/Pa2igazAwcfuutG
+         RyAYtfVyGt0xVv1pKm1fth2yY7jTIFdPMK+AvvIJRhWvkNbYPKuIrwyq51kLIwPhs5Kv
+         eWyEIWlwenRSrnEWZbpAmn1bQEyxBvrvaH7858jUTg7vMRASpglamVjibY0SXWbNsSJE
+         Gqp0/htX9AKDrTJn6Tj873V8h3fozP5MhIXGw/is9ghBwJeyS8woQD5nz4vYqH0jk0tE
+         IKFzyr3vI8LmOMo9NiblUJ1aaFNiO8bysmDk8ELP/yGTLeuhJBLh4TSW7ANgyDlKHqgF
+         74oA==
+X-Gm-Message-State: AOAM531MVjlxkBqSucKEwnFntzO8KwOdLxqwDQXwiR+7VEwA0Yy8L2tv
+        P4D825KbNA9y89EqzD9X92G7KfbBYDZ0yA==
+X-Google-Smtp-Source: ABdhPJxPvAZx1nrZK8RvCNQJxSEjXoxAv/EgUYt5goesLAsjzhw6VgxnXTVJxb3sp37j/6zUU/CYAw==
+X-Received: by 2002:a17:90b:30c9:: with SMTP id hi9mr1669053pjb.68.1643084198823;
+        Mon, 24 Jan 2022 20:16:38 -0800 (PST)
+Received: from google.com ([2401:fa00:1:10:5978:14f2:157f:f050])
+        by smtp.gmail.com with ESMTPSA id f6sm4427901pfv.30.2022.01.24.20.16.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 20:16:38 -0800 (PST)
+Date:   Tue, 25 Jan 2022 12:16:36 +0800
+From:   Tzung-Bi Shih <tzungbi@google.com>
+To:     "Dustin L. Howett" <dustin@howett.net>
+Cc:     "Dustin L. Howett" <dustin@howett.net>,
+        linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+Subject: Re: [PATCH 1/2] platform/chrome: cros-ec: detect the Framework Laptop
+Message-ID: <Ye95pJiHfR3i9iwj@google.com>
+References: <20220105031242.287751-1-dustin@howett.net>
+ <20220105031242.287751-2-dustin@howett.net>
+ <CALtnz62fQbyK+WEE=8zSQpuDuaVO=A6PTBEdrYJ+nrSuphpi7Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 6805220514716842232
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: 0
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrvdekgdeghecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecunecujfgurhephffvufffkffogggtgfesthekredtredtjeenucfhrhhomhepnfhuvohsucfhvghrrhgvihhrrgcuoegtohhnthgrtghtsehlshhfvghrrhgvihhrrgdrnhgvtheqnecuggftrfgrthhtvghrnhepheegtdefjedtkedvieettdeigeejtdeikefgieehkeekffejledvudefhefgkeehnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkpheptddrtddrtddrtddpudekkedrfeejrdeghedrudejieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejvddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegtohhnthgrtghtsehlshhfvghrrhgvihhrrgdrnhgvthdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALtnz62fQbyK+WEE=8zSQpuDuaVO=A6PTBEdrYJ+nrSuphpi7Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fixes https://bugzilla.kernel.org/show_bug.cgi?id=215524 by removing
-the memset introduced by 6164331d15f7d912fb9369245368e9564ea49813, which
-created a regression on ptrace PTRACE_SETREGSET request with NT_FPREGSET.
-Particularly, it zeros some XMM registers on the wrong offsets. Fixing the offsets
-only solves the problem for i686, which doesn't include xmm8-15 registers, so
-the right way is to probably completely remove this call.
+On Tue, Jan 25, 2022 at 11:41:51AM +0800, Tzung-Bi Shih wrote:
+> On Tue, Jan 25, 2022 at 9:35 AM Dustin L. Howett <dustin@howett.net> wrote:
+> >
+> > The Framework Laptop identifies itself in DMI with manufacturer
+> > "Framework" and product "Laptop".
+> >
+> > Signed-off-by: Dustin L. Howett <dustin@howett.net>
 
-Signed-off-by: Luís Ferreira <contact@lsferreira.net>
----
- arch/x86/kernel/fpu/regset.c | 2 --
- 1 file changed, 2 deletions(-)
+Nit: "platform/chrome: cros_ec_lpc:" would be a better commit title prefix.
 
-diff --git a/arch/x86/kernel/fpu/regset.c b/arch/x86/kernel/fpu/regset.c
-index 437d7c930c0b..aec6c49029b1 100644
---- a/arch/x86/kernel/fpu/regset.c
-+++ b/arch/x86/kernel/fpu/regset.c
-@@ -116,9 +116,7 @@ int xfpregs_set(struct task_struct *target, const struct user_regset *regset,
- 	/* Copy the state  */
- 	memcpy(&fpu->fpstate->regs.fxsave, &newstate, sizeof(newstate));
- 
--	/* Clear xmm8..15 */
- 	BUILD_BUG_ON(sizeof(fpu->__fpstate.regs.fxsave.xmm_space) != 16 * 16);
--	memset(&fpu->fpstate->regs.fxsave.xmm_space[8], 0, 8 * 16);
- 
- 	/* Mark FP and SSE as in use when XSAVE is enabled */
- 	if (use_xsave())
--- 
-2.34.1
-
+With that,
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
