@@ -2,86 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE282C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F30C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:15:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1319790AbiAYDJf (ORCPT
+        id S1319862AbiAYDJq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:09:35 -0500
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:46114 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1313896AbiAYCty (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:49:54 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R611e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V2oJqFn_1643078981;
-Received: from localhost.localdomain(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0V2oJqFn_1643078981)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 25 Jan 2022 10:49:42 +0800
-From:   Shuai Xue <xueshuai@linux.alibaba.com>
-To:     bp@alien8.de, rric@kernel.org
-Cc:     mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
-        ardb@kernel.org, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        xueshuai@linux.alibaba.com, zhangliguang@linux.alibaba.com,
-        zhuo.song@linux.alibaba.com
-Subject: [PATCH v4 0/2] EDAC/ghes: refactor memory error reporting to avoid code duplication
-Date:   Tue, 25 Jan 2022 10:49:37 +0800
-Message-Id: <20220125024939.30635-1-xueshuai@linux.alibaba.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
-References: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
+        Mon, 24 Jan 2022 22:09:46 -0500
+Received: from mga05.intel.com ([192.55.52.43]:15988 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1314190AbiAYCu1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 21:50:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643079027; x=1674615027;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BQEKrxu8mZSdmInIO8R3Ao2+sKCwBgclP+u7CtUFXMo=;
+  b=Xt2C9bNQTChDT8rcGD+DV3ZrK4czsyAkvAaXCDFKCckAU3KI6e5t2hxn
+   poqluX25dA2+/+dwbGXCOHizctXXd94RF3YWcPrXz5l2ibbDT1gfVmuBy
+   gNLL1M8A/nCbnTgCrYHoXZ+t2gddo95beIEYJFR7vxwILmojys31bCkcc
+   gYLsZABVq+xBLZgjkUc5MY4VVxr4RUM8X9uuzWa6C7aOb8O2PGSfhsUdT
+   jo9Vha9UzHbrwO9VRVTlyyVICBH3nycIjhYB6oZY5ceYfMw7ECWWxBi0w
+   +BSnkDpQcjg+d/97MWLBUx9MPUWWLtJHqI7oJbkFcdhi9+jQG4gbz6mAQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="332556566"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="332556566"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 18:36:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="476945379"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 24 Jan 2022 18:36:19 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCBgx-000JEd-4r; Tue, 25 Jan 2022 02:36:19 +0000
+Date:   Tue, 25 Jan 2022 10:35:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     lostway@zju.edu.cn, linux-kernel@vger.kernel.org,
+        linux-edac@vger.kernel.org, bp@alien8.de, tony.luck@intel.com
+Cc:     kbuild-all@lists.01.org
+Subject: Re: [PATCH] RAS: Report ARM processor information to userspace
+Message-ID: <202201250944.dyy7niOd-lkp@intel.com>
+References: <20220124093034.33095-1-lostway@zju.edu.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124093034.33095-1-lostway@zju.edu.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ghes_edac_report_mem_error() in ghes_edac.c is a Long Method and have
-Duplicated Code with cper_mem_err_location(), cper_dimm_err_location(), and
-cper_mem_err_type_str() in drivers/firmware/efi/cper.c. In addition, the
-cper_print_mem() in drivers/firmware/efi/cper.c only reports the error status
-and misses its description.
+Hi,
 
-This patch set is to refactor ghes_edac_report_mem_error with:
+Thank you for the patch! Perhaps something to improve:
 
-- Patch 01 is to wrap up error status decoding logics and reuse it in
-    cper_print_mem().
-- Patch 02 is to introduces cper_*(), into ghes_edac_report_mem_error(),
-  this can avoid bunch of duplicate code lines;
+[auto build test WARNING on linux/master]
+[also build test WARNING on rafael-pm/linux-next linus/master v5.17-rc1 next-20220124]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Changes since v3:
+url:    https://github.com/0day-ci/linux/commits/lostway-zju-edu-cn/RAS-Report-ARM-processor-information-to-userspace/20220124-174203
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 2c271fe77d52a0555161926c232cd5bc07178b39
+config: x86_64-randconfig-m001-20220124 (https://download.01.org/0day-ci/archive/20220125/202201250944.dyy7niOd-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
 
-- make cper_mem_err_status_str table a lot more compact
-- Fix alignment and format problem
-- Link: https://lore.kernel.org/all/20220124024759.19176-1-xueshuai@linux.alibaba.com/
-- Thanks Borislav Petkov for review comments.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Changes since v2:
+smatch warnings:
+drivers/ras/ras.c:51 log_arm_hw_error() warn: unsigned 'vsei_len' is never less than zero.
 
-- delete the unified patch
-- adjusted the order of patches
-- Link: https://lore.kernel.org/all/20211210134019.28536-1-xueshuai@linux.alibaba.com/
-- Thanks Borislav Petkov for review comments.
+vim +/vsei_len +51 drivers/ras/ras.c
 
-Changes since v1:
+    23	
+    24	void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev)
+    25	{
+    26		u32 pei_len;
+    27		u32 ctx_len = 0;
+    28		u32 vsei_len;
+    29		u8 *pei_err;
+    30		u8 *ctx_err;
+    31		u8 *ven_err_data;
+    32		struct cper_arm_err_info *err_info;
+    33		struct cper_arm_ctx_info *ctx_info;
+    34		int n, sz;
+    35		int cpu;
+    36	
+    37		pei_len = sizeof(struct cper_arm_err_info) * err->err_info_num;
+    38		pei_err = (u8 *)err + sizeof(struct cper_sec_proc_arm);
+    39	
+    40		err_info = (struct cper_arm_err_info *)(err + 1);
+    41		ctx_info = (struct cper_arm_ctx_info *)(err_info + err->err_info_num);
+    42		ctx_err = (u8 *)ctx_info;
+    43		for (n = 0; n < err->context_info_num; n++) {
+    44			sz = sizeof(struct cper_arm_ctx_info) + ctx_info->size;
+    45			ctx_info = (struct cper_arm_ctx_info *)((long)ctx_info + sz);
+    46			ctx_len += sz;
+    47		}
+    48	
+    49		vsei_len = err->section_length - (sizeof(struct cper_sec_proc_arm) +
+    50							pei_len + ctx_len);
+  > 51		if (vsei_len < 0) {
+    52			pr_warn(FW_BUG
+    53				"section length: %d\n", err->section_length);
+    54			pr_warn(FW_BUG
+    55				"section length is too small\n");
+    56			pr_warn(FW_BUG
+    57				"firmware-generated error record is incorrect\n");
+    58			vsei_len = 0;
+    59		}
+    60		ven_err_data = (u8 *)ctx_info;
+    61	
+    62		cpu = GET_LOGICAL_INDEX(err->mpidr);
+    63		/* when return value is invalid, set cpu index to -1 */
+    64		if (cpu < 0)
+    65			cpu = -1;
+    66	
+    67		trace_arm_event(err, pei_err, pei_len, ctx_err, ctx_len,
+    68				ven_err_data, vsei_len, sev, cpu);
+    69	}
+    70	
 
-- add a new patch to unify ghes and cper before removing duplication.
-- document the changes in patch description
-- add EXPORT_SYMBOL_GPL()s for cper_*()
-- document and the dependency and add UEFI_CPER dependency explicitly
-- Link: https://lore.kernel.org/all/20211207031905.61906-2-xueshuai@linux.alibaba.com/
-- Thanks Robert Richter for review comments.
-
-Shuai Xue (2):
-  efi/cper: add cper_mem_err_status_str to decode error description
-  EDAC/ghes: use cper functions to avoid code duplication
-
- drivers/edac/Kconfig        |   1 +
- drivers/edac/ghes_edac.c    | 196 +++++++-----------------------------
- drivers/firmware/efi/cper.c |  65 ++++++++----
- include/linux/cper.h        |   3 +
- 4 files changed, 85 insertions(+), 180 deletions(-)
-
--- 
-2.20.1.12.g72788fdb
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
