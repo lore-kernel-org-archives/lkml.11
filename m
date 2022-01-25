@@ -2,80 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7005FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8061C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443996AbiAYHWK (ORCPT
+        id S1443667AbiAYHZI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:22:10 -0500
-Received: from mailgw.kylinos.cn ([123.150.8.42]:35480 "EHLO nksmu.kylinos.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1443974AbiAYHSU (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:18:20 -0500
-X-UUID: 2c51394019f045a588d334a83e04d3ba-20220125
-X-CPASD-INFO: 289dcfeeade14cac8556269bc2fefc8c@e4hzhJCYk5WNhKd9g6asnVhmZWZiYlm
-        xpWyGlZSTZIOVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3gXpzhJOUlQ==
-X-CPASD-FEATURE: 0.0
-X-CLOUD-ID: 289dcfeeade14cac8556269bc2fefc8c
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,EXT:0.0,OB:0.0,URL:-5,T
-        VAL:185.0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:127.0,IP:-2.0,MAL:0.0,ATTNUM:0
-        .0,PHF:-5.0,PHC:-5.0,SPF:4.0,EDMS:-3,IPLABEL:4488.0,FROMTO:0,AD:0,FFOB:0.0,CF
-        OB:0.0,SPC:0.0,SIG:-5,AUF:103,DUF:31675,ACD:174,DCD:276,SL:0,AG:0,CFC:0.714,C
-        FSR:0.104,UAT:0,RAF:0,VERSION:2.3.4
-X-CPASD-ID: 2c51394019f045a588d334a83e04d3ba-20220125
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1, 1
-X-UUID: 2c51394019f045a588d334a83e04d3ba-20220125
-X-User: yinxiujiang@kylinos.cn
-Received: from localhost.localdomain [(118.26.139.139)] by nksmu.kylinos.cn
-        (envelope-from <yinxiujiang@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 1238024265; Tue, 25 Jan 2022 15:30:57 +0800
-From:   Yin Xiujiang <yinxiujiang@kylinos.cn>
-To:     mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        sven@narfation.org, davem@davemloft.net, kuba@kernel.org
-Cc:     b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] batman-adv: Make use of the helper macro kthread_run()
-Date:   Tue, 25 Jan 2022 15:18:08 +0800
-Message-Id: <20220125071808.459017-1-yinxiujiang@kylinos.cn>
-X-Mailer: git-send-email 2.30.0
+        Tue, 25 Jan 2022 02:25:08 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:21140 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1443677AbiAYHV3 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 02:21:29 -0500
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20P4kQqF031034;
+        Tue, 25 Jan 2022 07:21:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=dyT61F/+H7CcwaycbWvxPVLwL6aVpoLq1rauxes63zs=;
+ b=rgGrd1A+UD8slBcMvDc/3dl3yYSXOc4LF7saLwl79d7a/DQPNQix65N4z2ywxydQMATQ
+ 1K7u7JjcaDme47ImFOnKLRlqatNMU1EH0O4N28X8H/wguA+fIANPpIG8I32N4MMiE5x1
+ HQtC9HHeDTNBd+aU+NX/P+7PpY756mm0i3lokPJ7nQ9/OLcFlQ9nErnLtXf30eS9eAhL
+ 2adUhrJUcI5yAPIu+vPoSLYPZdOyDnk1SYSCiqX7XxY00MsqRsqVz9VEsaFVGvhFKif7
+ Hj1L1Z+DVKIaXrMtok9x7Yk6OMpuSL91IYO7eLcStv/ZqzWV3SAIlRyR8YsPJlRCY+oX gw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dtafr30ff-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 07:21:06 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20P6Fp0f032124;
+        Tue, 25 Jan 2022 07:21:05 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dtafr30f5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 07:21:05 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20P7D94x008053;
+        Tue, 25 Jan 2022 07:21:04 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma04dal.us.ibm.com with ESMTP id 3dr9ja33xr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 07:21:04 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20P7L4Tj17105166
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Jan 2022 07:21:04 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 12FD712405E;
+        Tue, 25 Jan 2022 07:21:04 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B44BD124052;
+        Tue, 25 Jan 2022 07:21:03 +0000 (GMT)
+Received: from localhost (unknown [9.211.142.9])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 25 Jan 2022 07:21:03 +0000 (GMT)
+From:   Nathan Lynch <nathanl@linux.ibm.com>
+To:     linuxppc-dev@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, mpe@ellerman.id.au,
+        npiggin@gmail.com, brking@linux.ibm.com, srikar@linux.vnet.ibm.com
+Subject: [PATCH] powerpc/smp: poll cpu_callin_map more aggressively in __cpu_up()
+Date:   Tue, 25 Jan 2022 01:21:03 -0600
+Message-Id: <20220125072103.70715-1-nathanl@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: dp0YO1CDidMdt_gGX0vysidABI96_2PC
+X-Proofpoint-ORIG-GUID: _wTH7Yl5XuQ-UE0KFyJBm5Q7lWc7Hio3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-25_02,2022-01-24_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
+ malwarescore=0 spamscore=0 phishscore=0 lowpriorityscore=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 mlxscore=0 bulkscore=0 mlxlogscore=952
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2201250047
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Repalce kthread_create/wake_up_process() with kthread_run()
-to simplify the code.
+Replace the outdated iteration and timeout calculations here with
+indefinite spin_until_cond()-wrapped poll of cpu_callin_map. __cpu_up()
+already does this when waiting for the cpu to set its online bit before
+returning, so this change is not really making the function more brittle.
 
-Signed-off-by: Yin Xiujiang <yinxiujiang@kylinos.cn>
+Removing the msleep(1) in the hotplug path here reduces the time it takes
+to online a CPU on a P9 PowerVM LPAR from about 30ms to 1ms when exercised
+via thaw_secondary_cpus().
+
+Signed-off-by: Nathan Lynch <nathanl@linux.ibm.com>
 ---
- net/batman-adv/tp_meter.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/powerpc/kernel/smp.c | 25 ++-----------------------
+ 1 file changed, 2 insertions(+), 23 deletions(-)
 
-diff --git a/net/batman-adv/tp_meter.c b/net/batman-adv/tp_meter.c
-index 93730d30af54..a36e498c7c8f 100644
---- a/net/batman-adv/tp_meter.c
-+++ b/net/batman-adv/tp_meter.c
-@@ -905,7 +905,7 @@ static void batadv_tp_start_kthread(struct batadv_tp_vars *tp_vars)
- 	u32 session_cookie;
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index b7fd6a72aa76..990893365fe0 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -1270,7 +1270,7 @@ static void cpu_idle_thread_init(unsigned int cpu, struct task_struct *idle)
  
- 	kref_get(&tp_vars->refcount);
--	kthread = kthread_create(batadv_tp_send, tp_vars, "kbatadv_tp_meter");
-+	kthread = kthread_run(batadv_tp_send, tp_vars, "kbatadv_tp_meter");
- 	if (IS_ERR(kthread)) {
- 		session_cookie = batadv_tp_session_cookie(tp_vars->session,
- 							  tp_vars->icmp_uid);
-@@ -921,8 +921,6 @@ static void batadv_tp_start_kthread(struct batadv_tp_vars *tp_vars)
- 		batadv_tp_sender_cleanup(bat_priv, tp_vars);
- 		return;
+ int __cpu_up(unsigned int cpu, struct task_struct *tidle)
+ {
+-	int rc, c;
++	int rc;
+ 
+ 	/*
+ 	 * Don't allow secondary threads to come online if inhibited
+@@ -1314,28 +1314,7 @@ int __cpu_up(unsigned int cpu, struct task_struct *tidle)
+ 		return rc;
  	}
--
--	wake_up_process(kthread);
- }
  
- /**
+-	/*
+-	 * wait to see if the cpu made a callin (is actually up).
+-	 * use this value that I found through experimentation.
+-	 * -- Cort
+-	 */
+-	if (system_state < SYSTEM_RUNNING)
+-		for (c = 50000; c && !cpu_callin_map[cpu]; c--)
+-			udelay(100);
+-#ifdef CONFIG_HOTPLUG_CPU
+-	else
+-		/*
+-		 * CPUs can take much longer to come up in the
+-		 * hotplug case.  Wait five seconds.
+-		 */
+-		for (c = 5000; c && !cpu_callin_map[cpu]; c--)
+-			msleep(1);
+-#endif
+-
+-	if (!cpu_callin_map[cpu]) {
+-		printk(KERN_ERR "Processor %u is stuck.\n", cpu);
+-		return -ENOENT;
+-	}
++	spin_until_cond(cpu_callin_map[cpu] != 0);
+ 
+ 	DBG("Processor %u found.\n", cpu);
+ 
 -- 
-2.30.0
+2.34.1
 
