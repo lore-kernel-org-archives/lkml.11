@@ -2,202 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BEAC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C561C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1325461AbiAYEnh (ORCPT
+        id S1325710AbiAYEoB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:43:37 -0500
-Received: from mga06.intel.com ([134.134.136.31]:11440 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1324254AbiAYDa5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:30:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643081456; x=1674617456;
-  h=cc:subject:to:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=+G9uJ5cBRukDuRVioB36b7JgfNmSiiRAztt/zlvEwis=;
-  b=LseJGdQqIKpFgs+N8PQdIJa7pq8hwO6U+kkuRndUeGIWkeNA+uZdT2D7
-   hG0t1qmvAz83c452BI9iRVeIZMci7EKqiJWFHkudYfziM6OdArGz7fwCL
-   tOHXkk6Mo89XcJjzn1xwqVu29hIzARvkmhbp9ITHoWVuVtKEq51hFdiTj
-   Um1LCc7b2xQVrO1p0wOqJ0gUiB/zt6J+ak+JVm7pb73b05VNuurinhxww
-   kYoqxZ4ug23q5LKngplQTQS4JamXo6qlcX6Rn5R5ogTzWScGnWUxjK7iW
-   6GWEczOGNstcBL04lMRfOJjj4xjykXJ+9o7oVomPKyakB34yET78xMOwL
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="306922475"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="306922475"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 19:19:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="534536381"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by orsmga008.jf.intel.com with ESMTP; 24 Jan 2022 19:19:01 -0800
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/7] iommu: Use right way to retrieve iommu_ops
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-7-baolu.lu@linux.intel.com>
- <20220124173650.GF966497@nvidia.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <e4493dac-07bf-7ee3-5bea-a159fd37a2dd@linux.intel.com>
-Date:   Tue, 25 Jan 2022 11:18:01 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 24 Jan 2022 23:44:01 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:36520 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1324739AbiAYDdr (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 22:33:47 -0500
+X-UUID: 27967c8e90634ea090afe0d3355cd65b-20220125
+X-UUID: 27967c8e90634ea090afe0d3355cd65b-20220125
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <chaotian.jing@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 938173205; Tue, 25 Jan 2022 11:33:37 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 25 Jan 2022 11:33:35 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 Jan 2022 11:33:35 +0800
+Message-ID: <f66964a5afd960fee6a2fecaf74fa902bb76a8d9.camel@mediatek.com>
+Subject: Re: [PATCH] mmc: mediatek: Add cmd polling mode
+From:   Chaotian Jing <chaotian.jing@mediatek.com>
+To:     Derong Liu <derong.liu@mediatek.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <linux-mmc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <wsp_upstream@mediatek.com>,
+        Peng Zhou <peng.zhou@mediatek.com>
+Date:   Tue, 25 Jan 2022 11:33:35 +0800
+In-Reply-To: <20220124121814.17452-1-derong.liu@mediatek.com>
+References: <20220124121814.17452-1-derong.liu@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-In-Reply-To: <20220124173650.GF966497@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/25/22 1:36 AM, Jason Gunthorpe wrote:
-> On Mon, Jan 24, 2022 at 03:11:01PM +0800, Lu Baolu wrote:
->> The common iommu_ops is hooked to both device and domain. When a helper
->> has both device and domain pointer, the way to get the iommu_ops looks
->> messy in iommu core. This sorts out the way to get iommu_ops. The device
->> related helpers go through device pointer, while the domain related ones
->> go through domain pointer.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>   include/linux/iommu.h |  8 ++++++++
->>   drivers/iommu/iommu.c | 25 ++++++++++++++-----------
->>   2 files changed, 22 insertions(+), 11 deletions(-)
->>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index aa5486243892..111b3e9c79bb 100644
->> +++ b/include/linux/iommu.h
->> @@ -385,6 +385,14 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
->>   	};
->>   }
->>   
->> +static inline const struct iommu_ops *dev_iommu_ops_get(struct device *dev)
->> +{
->> +	if (dev && dev->iommu && dev->iommu->iommu_dev)
->> +		return dev->iommu->iommu_dev->ops;
->> +
->> +	return NULL;
+On Mon, 2022-01-24 at 20:18 +0800, Derong Liu wrote:
+> We found sdcard can gain more read/write performance
+> when using cmd polling mode instead of interrupt mode, in the
+> meantime,
+> there are much more devices have equipped with high frequency cpu,
+> so it is necessary to support cmd polling mode.
 > 
-> What is the purpose of this helper?
+Hi, I think you have not found the root cause of performace drop. if
+the sdcard read/write performance is 100MB/s, which means that it can
+complete 512KB of data xfer within 5ms, and if performance drop is 5%,
+then means that your interrupt mode will take more than 250us.
+Is it possible to clarify if the interrupt mode really takes 250us?
 
-Get the iommu_ops from a device pointer. Just want to avoid duplicate
-code in various functions.
+And, if you find that the polling mode is readlly fast then interrupt
+mode and has no side effect(ie. cpu loading issue), then, We will drop
+the interrupt mode of waiting response.
+> Signed-off-by: Derong Liu <derong.liu@mediatek.com>
+> ---
+>  drivers/mmc/host/mtk-sd.c | 92 +++++++++++++++++++++++++++++++++++
+> ----
+>  1 file changed, 83 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
+> index 65037e1d7723..612f5115ca4b 100644
+> --- a/drivers/mmc/host/mtk-sd.c
+> +++ b/drivers/mmc/host/mtk-sd.c
+> @@ -465,6 +465,7 @@ struct msdc_host {
+>  	bool hs400_tuning;	/* hs400 mode online tuning */
+>  	bool internal_cd;	/* Use internal card-detect logic */
+>  	bool cqhci;		/* support eMMC hw cmdq */
+> +	bool cmd_polling_mode;	/* support cmd polling mode */
+>  	struct msdc_save_para save_para; /* used when gate HCLK */
+>  	struct msdc_tune_para def_tune_para; /* default tune setting */
+>  	struct msdc_tune_para saved_tune_para; /* tune result of
+> CMD21/CMD19 */
+> @@ -1250,6 +1251,63 @@ static inline bool msdc_cmd_is_ready(struct
+> msdc_host *host,
+>  	return true;
+>  }
+>  
+> +static inline int use_cmd_polling_mode(struct msdc_host *host,
+> +	struct mmc_command *cmd)
+> +{
+> +	/* R1B use interrupt mode */
+> +	return (host->cmd_polling_mode &&
+> +			((mmc_from_priv(host))->caps2 &
+> MMC_CAP2_NO_SDIO) &&
+> +			(mmc_resp_type(cmd) != MMC_RSP_R1B));
+> +}
+> +
+> +static bool msdc_command_resp_polling(struct msdc_host *host,
+> +	struct mmc_request *mrq, struct mmc_command *cmd,
+> +	unsigned long timeout)
+> +{
+> +	bool ret = false;
+> +	unsigned long tmo;
+> +	int events;
+> +	unsigned long flags;
+> +
+> +	if (!use_cmd_polling_mode(host, cmd))
+> +		goto exit;
+> +
+> +retry:
+> +	tmo = jiffies + timeout;
+> +	while (1) {
+> +		spin_lock_irqsave(&host->lock, flags);
+why need spin lock ? if there are no SDIO device irq, then there is no
+race conditon of access MSDC register.
+> +		events = readl(host->base + MSDC_INT);
+> +		if (events & cmd_ints_mask) {
+> +			/* clear all int flag */
+> +			events &= cmd_ints_mask;
+> +			writel(events, host->base + MSDC_INT);
+> +			spin_unlock_irqrestore(&host->lock, flags);
+> +			break;
+> +		}
+> +		spin_unlock_irqrestore(&host->lock, flags);
+> +
+> +		if (time_after(jiffies, tmo) &&
+> +			((events & cmd_ints_mask) == 0)) {
+> +			dev_info(host->dev, "[%s]: CMD<%d>
+> polling_for_completion timeout ARG<0x%.8x>\n",
+> +				__func__, cmd->opcode, cmd->arg);
+> +			ret = msdc_cmd_done(host, MSDC_INT_CMDTMO, mrq,
+> cmd);
+> +			goto exit;
+> +		}
+> +	}
+> +
+> +	if (cmd) {
+> +		ret = msdc_cmd_done(host, events, mrq, cmd);
+> +		/* if only autocmd23 done,
+> +		 * it needs to polling the continue read/write cmd
+> directly.
+> +		 */
+> +		if (!ret)
+> +			goto retry;
+> +	}
+> +
+> +exit:
+> +	return ret;
+> +}
+> +
+>  static void msdc_start_command(struct msdc_host *host,
+>  		struct mmc_request *mrq, struct mmc_command *cmd)
+>  {
+> @@ -1273,7 +1331,10 @@ static void msdc_start_command(struct
+> msdc_host *host,
+>  	rawcmd = msdc_cmd_prepare_raw_cmd(host, mrq, cmd);
+>  
+>  	spin_lock_irqsave(&host->lock, flags);
+> -	sdr_set_bits(host->base + MSDC_INTEN, cmd_ints_mask);
+> +	if (use_cmd_polling_mode(host, cmd))
+> +		sdr_clr_bits(host->base + MSDC_INTEN, cmd_ints_mask);
+> +	else
+> +		sdr_set_bits(host->base + MSDC_INTEN, cmd_ints_mask);
+>  	spin_unlock_irqrestore(&host->lock, flags);
+>  
+>  	writel(cmd->arg, host->base + SDC_ARG);
+> @@ -1290,9 +1351,11 @@ static void msdc_cmd_next(struct msdc_host
+> *host,
+>  	       host->hs400_tuning))) ||
+>  	    (mrq->sbc && mrq->sbc->error))
+>  		msdc_request_done(host, mrq);
+> -	else if (cmd == mrq->sbc)
+> +	else if (cmd == mrq->sbc) {
+>  		msdc_start_command(host, mrq, mrq->cmd);
+> -	else if (!cmd->data)
+> +		msdc_command_resp_polling(host, mrq,
+> +				mrq->cmd, CMD_TIMEOUT);
+> +	} else if (!cmd->data)
+>  		msdc_request_done(host, mrq);
+>  	else
+>  		msdc_start_data(host, cmd, cmd->data);
+> @@ -1314,10 +1377,15 @@ static void msdc_ops_request(struct mmc_host
+> *mmc, struct mmc_request *mrq)
+>  	 * use HW option,  otherwise use SW option
+>  	 */
+>  	if (mrq->sbc && (!mmc_card_mmc(mmc->card) ||
+> -	    (mrq->sbc->arg & 0xFFFF0000)))
+> +	    (mrq->sbc->arg & 0xFFFF0000))) {
+>  		msdc_start_command(host, mrq, mrq->sbc);
+> -	else
+> +		msdc_command_resp_polling(host, mrq,
+> +				mrq->sbc, CMD_TIMEOUT);
+> +	} else {
+>  		msdc_start_command(host, mrq, mrq->cmd);
+> +		msdc_command_resp_polling(host, mrq,
+> +				mrq->cmd, CMD_TIMEOUT);
+> +	}
+>  }
+>  
+>  static void msdc_pre_req(struct mmc_host *mmc, struct mmc_request
+> *mrq)
+> @@ -1350,9 +1418,11 @@ static void msdc_post_req(struct mmc_host
+> *mmc, struct mmc_request *mrq,
+>  static void msdc_data_xfer_next(struct msdc_host *host, struct
+> mmc_request *mrq)
+>  {
+>  	if (mmc_op_multi(mrq->cmd->opcode) && mrq->stop && !mrq->stop-
+> >error &&
+> -	    !mrq->sbc)
+> +	    !mrq->sbc) {
+>  		msdc_start_command(host, mrq, mrq->stop);
+> -	else
+> +		msdc_command_resp_polling(host, mrq,
+> +				mrq->stop, CMD_TIMEOUT);
+> +	} else
+>  		msdc_request_done(host, mrq);
+>  }
+>  
+> @@ -2492,11 +2562,15 @@ static void msdc_of_property_parse(struct
+> platform_device *pdev,
+>  	else
+>  		host->hs400_cmd_resp_sel_rising = false;
+>  
+> -	if (of_property_read_bool(pdev->dev.of_node,
+> -				  "supports-cqe"))
+> +	if (of_property_read_bool(pdev->dev.of_node, "supports-cqe"))
+>  		host->cqhci = true;
+>  	else
+>  		host->cqhci = false;
+> +
+> +	if (of_property_read_bool(pdev->dev.of_node, "mediatek,cmd-
+> polling-mode"))
+> +		host->cmd_polling_mode = true;
+> +	else
+> +		host->cmd_polling_mode = false;
+>  }
+>  
+>  static int msdc_of_clock_parse(struct platform_device *pdev,
 
-> 
->> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
->>   	struct iommu_domain *domain = group->default_domain;
->>   	struct iommu_resv_region *entry;
->>   	struct list_head mappings;
->> @@ -785,8 +786,8 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
->>   		dma_addr_t start, end, addr;
->>   		size_t map_size = 0;
->>   
->> -		if (domain->ops->apply_resv_region)
->> -			domain->ops->apply_resv_region(dev, domain, entry);
->> +		if (ops->apply_resv_region)
->> +			ops->apply_resv_region(dev, domain, entry);
-> 
-> Here we call it and don't check for NULL? So why did we check the
-> interior pointers in the helper?
-
-Yes. Should check.
-
-> 
->> @@ -831,8 +832,10 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
->>   static bool iommu_is_attach_deferred(struct iommu_domain *domain,
->>   				     struct device *dev)
->>   {
->> -	if (domain->ops->is_attach_deferred)
->> -		return domain->ops->is_attach_deferred(domain, dev);
->> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
->> +
->> +	if (ops->is_attach_deferred)
->> +		return ops->is_attach_deferred(domain, dev);
-> 
-> Same here, at least return false if ops is null..
-
-Yes.
-
->    
->> @@ -1251,10 +1254,10 @@ int iommu_page_response(struct device *dev,
->>   	struct iommu_fault_event *evt;
->>   	struct iommu_fault_page_request *prm;
->>   	struct dev_iommu *param = dev->iommu;
->> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
->>   	bool has_pasid = msg->flags & IOMMU_PAGE_RESP_PASID_VALID;
->> -	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->>   
->> -	if (!domain || !domain->ops->page_response)
->> +	if (!ops || !ops->page_response)
->>   		return -ENODEV;
->>   
->>   	if (!param || !param->fault_param)
->> @@ -1295,7 +1298,7 @@ int iommu_page_response(struct device *dev,
->>   			msg->pasid = 0;
->>   		}
->>   
->> -		ret = domain->ops->page_response(dev, evt, msg);
->> +		ret = ops->page_response(dev, evt, msg);
->>   		list_del(&evt->list);
->>   		kfree(evt);
->>   		break;
-> 
-> Feels weird that page_response is not connected to a domain, the fault
-> originated from a domain after all. I would say this op should be
-> moved to the domain and the caller should provide the a pointer to the
-> domain that originated the fault.
-> 
-> Ideally since only some domain's will be configured to handle faults
-> at all - domains that can't do this should have a NULL page_response
-> op, even if other domains created by the same device driver could
-> handle page_response..
-> 
->> @@ -1758,10 +1761,10 @@ static int __iommu_group_dma_attach(struct iommu_group *group)
->>   
->>   static int iommu_group_do_probe_finalize(struct device *dev, void *data)
->>   {
->> -	struct iommu_domain *domain = data;
->> +	const struct iommu_ops *ops = dev_iommu_ops_get(dev);
->>   
->> -	if (domain->ops->probe_finalize)
->> -		domain->ops->probe_finalize(dev);
->> +	if (ops->probe_finalize)
->> +		ops->probe_finalize(dev);
-> 
-> This is an oddball one too, it is finishing setting up the default
-> domain for a device? Several drivers seem to recover the default
-> domain in their implementations..
-
-In order to avoid default domain type (DMA or IDENDITY) conflict among
-devices in a same iommu_group, the probe process is divided into two
-phases, one for determining the default domain type and the other for
-allocating the default domain and attaching it to the device.
-
-ops->probe_finalize() is called to tell the vendor iommu driver that
-the device probe is done. Normally the vendor iommu driver could set the
-dma ops in this callback.
-
-> 
-> Jason
-> 
-
-Best regards,
-baolu
