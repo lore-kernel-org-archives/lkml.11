@@ -2,125 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 555E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:48:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234526AbiAYJrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:47:16 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:39002 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232545AbiAYJks (ORCPT
+        id S234653AbiAYJrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 04:47:52 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:5678 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S234335AbiAYJmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:40:48 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id C1C881F381;
-        Tue, 25 Jan 2022 09:40:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643103635;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wjLef+eHR65gSrHBUwJYgL8VczDBRD6PtowiaRp8cqg=;
-        b=V2hf9WhYVmPenYoQzKChrh0nsB0PQioiYNLQUrnwuWOtckSlBXL/PG4a22f0pShotdLkMh
-        6aLik9Bz/6cHPeoQFJzf1mU/8y7d+p/ux+CbSjg74DX0nb1yi1DMNGvVCyW0N43Kn5tSZG
-        Iw/b4UsRZwLkVzGUrno2xRJY8SXw8k8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643103635;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wjLef+eHR65gSrHBUwJYgL8VczDBRD6PtowiaRp8cqg=;
-        b=8GlYzYvBEcCCBr+9cTRi9mfPfMAd6QoqhINOtop7egkKKZxKCbFV7bo/SCV5bEPS6bhU8P
-        9R0/O75lzTPU2+Cg==
-Received: from g78 (unknown [10.163.24.90])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 00244A3B84;
-        Tue, 25 Jan 2022 09:40:34 +0000 (UTC)
-References: <20210912123429.GA25450@xsang-OptiPlex-9020>
- <YT8HqsXsHFeMdDxS@yuki> <20210917121331.GA14905@quack2.suse.cz>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Richard Palethorpe <rpalethorpe@suse.de>
-To:     Jan Kara <jack@suse.cz>
-Cc:     Cyril Hrubis <chrubis@suse.cz>,
-        Miklos Szeredi <mszeredi@redhat.com>, lkp@intel.com,
-        Chi Wu <wuchi.zero@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, Jens Axboe <axboe@fb.com>,
-        lkp@lists.01.org, kernel test robot <oliver.sang@intel.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>, Tejun Heo <tj@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        ltp@lists.linux.it
-Subject: Re: [LTP] [mm/page]  ab19939a6a: ltp.msync04.fail
-Date:   Tue, 25 Jan 2022 09:27:30 +0000
-Reply-To: rpalethorpe@suse.de
-In-reply-to: <20210917121331.GA14905@quack2.suse.cz>
-Message-ID: <87o840xiel.fsf@suse.de>
+        Tue, 25 Jan 2022 04:42:20 -0500
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20P9g7Um018272;
+        Tue, 25 Jan 2022 09:42:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=3otL+4z0kpAg/JI3RysnLW9r0L/YYZ3G6sqBrPUos1o=;
+ b=bm9nlYIpfKzdf9wJo+Ris3IgoYJjp82vbk/TmRiPgeutCZD1MC87ROc+nrohznmWS153
+ a6kjFP6xE/hs4AO0wdbFoPenzg3HmwyF+9yJaycSjuvrWXjJqfVYiWcIhVi1RzeGm8/S
+ lecnCtQTP2FDTvyLlZR0Qbj1lF8UvxmIiBfzV+6jHZNsQCG+tKEIHplKajY+CHu1fc42
+ Gv7buXIlZ/MVKkYdkzCgTIsuu+S5KqKXvsPTmLOv2J8xKlKAWoosEiArMKJ5MfQnd9mC
+ OK/TvfjsJmOcaDb1yyVGaJ8KiqKyy3RQY3WN+qduqAXN1pZLq8yxdNCK/p6pjW7MFfPc ng== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dtet1r020-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 09:42:11 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20P9gBid018335;
+        Tue, 25 Jan 2022 09:42:11 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dtet1r01g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 09:42:11 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20P9dt9A021927;
+        Tue, 25 Jan 2022 09:42:09 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma02fra.de.ibm.com with ESMTP id 3dr9j9b1xn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 09:42:08 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20P9g6jb36045144
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Jan 2022 09:42:06 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 84C8B4C04A;
+        Tue, 25 Jan 2022 09:42:06 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 41BB54C058;
+        Tue, 25 Jan 2022 09:42:06 +0000 (GMT)
+Received: from [9.171.94.78] (unknown [9.171.94.78])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 25 Jan 2022 09:42:06 +0000 (GMT)
+Message-ID: <1f13f001-e4d7-fdcd-6575-caa1be1526e1@linux.ibm.com>
+Date:   Tue, 25 Jan 2022 10:42:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [RFC PATCH net-next] net/smc: Introduce receive queue flow
+ control support
+Content-Language: en-US
+To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>,
+        kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220120065140.5385-1-guangguan.wang@linux.alibaba.com>
+From:   Stefan Raspl <raspl@linux.ibm.com>
+In-Reply-To: <20220120065140.5385-1-guangguan.wang@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: qwhbVy3rG3bYBb61MKH5uEk6M6GBXzIS
+X-Proofpoint-ORIG-GUID: P4u1KMhNSr5YUk26tLwFBpUocj4uMVHf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-25_02,2022-01-24_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 clxscore=1011
+ phishscore=0 suspectscore=0 spamscore=0 impostorscore=0 malwarescore=0
+ adultscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201250063
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 1/20/22 07:51, Guangguan Wang wrote:
+> This implement rq flow control in smc-r link layer. QPs
+> communicating without rq flow control, in the previous
+> version, may result in RNR (reveive not ready) error, which
+> means when sq sends a message to the remote qp, but the
+> remote qp's rq has no valid rq entities to receive the message.
+> In RNR condition, the rdma transport layer may retransmit
+> the messages again and again until the rq has any entities,
+> which may lower the performance, especially in heavy traffic.
+> Using credits to do rq flow control can avoid the occurrence
+> of RNR.
 
-Jan Kara <jack@suse.cz> writes:
+That's some truly substantial improvements!
+But we need to be careful with protocol-level changes: There are other operating 
+systems like z/OS and AIX which have compatible implementations of SMC, too. 
+Changes like a reduction of connections per link group or usage of reserved 
+fields would need to be coordinated, and likely would have unwanted side-effects 
+even when used with older Linux kernel versions.
+Changing the protocol is "expensive" insofar as it requires time to thoroughly 
+discuss the changes, perform compatibility tests, and so on.
+So I would like to urge you to investigate alternative ways that do not require 
+protocol-level changes to address this scenario, e.g. by modifying the number of 
+completion queue elements, to see if this could yield similar results.
 
-> On Mon 13-09-21 10:11:22, Cyril Hrubis wrote:
->> Hi!
->> > FYI, we noticed the following commit (built with gcc-9):
->> > 
->> > commit: ab19939a6a5010cba4e9cb04dd8bee03c72edcbd ("mm/page-writeback: Fix performance when BDI's share of ratio is 0.")
->> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->> > 
->> > 
->> > in testcase: ltp
->> > version: ltp-x86_64-14c1f76-1_20210907
->> > with following parameters:
->> > 
->> > 	disk: 1HDD
->> > 	fs: xfs
->> > 	test: syscalls-03
->> > 	ucode: 0xe2
->> > 
->> > test-description: The LTP testsuite contains a collection of tools for testing the Linux kernel and related features.
->> > test-url: http://linux-test-project.github.io/
->> 
->> The msync04 test formats a device with a diffrent filesystems, for each
->> filesystem it maps a file, writes to the mapped page and the checks a
->> dirty bit in /proc/kpageflags before and after msync() on that page.
->> 
->> This seems to be broken after this patch for ntfs over FUSE and it looks
->> like the page does not have a dirty bit set right after it has been
->> written to.
->> 
->> Also I guess that we should increase the number of the pages we dirty or
->> attempt to retry since a single page may be flushed to the storage if we
->> are unlucky and the process is preempted between the write and the
->> initial check for the dirty bit.
->
-> Yes, I agree. The most likely explanation I see for this is that the
-> identified commit results in waking flush worker earlier so it may now
-> succeed in cleaning the page before get_dirty_bit() in the LTP testcase
-> manages to see it. This is a principial race in this testcase, you can
-> perhaps make it less likely but not completely fix it AFAICT.
->
-> 								Honza
-> -- 
-> Jan Kara <jack@suse.com>
-> SUSE Labs, CR
+Thx!
 
-If the dirty bit is not set, then I guess dropping the pagecache will
-not write anything to the underlying storage?
 
-So when we see no dirty bit is set, we can drop the pagecache then read
-the file to check the value was written correctly? If so then we can
-exit with TCONF saying msync couldn't be tested because the storage was
-written to too quickly.
 
-Also I guess we can optimize the get_dirty_bit function. It's doing 3
-syscalls instead of 1 AFAICT.
 
--- 
-Thank you,
-Richard.
+
