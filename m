@@ -2,70 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B13B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B61C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 07:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354644AbiAYHGK (ORCPT
+        id S1442006AbiAYHHa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 02:06:10 -0500
-Received: from ip59.38.31.103.in-addr.arpa.unknwn.cloudhost.asia ([103.31.38.59]:48360
-        "EHLO gnuweeb.org" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1376648AbiAYHEQ (ORCPT
+        Tue, 25 Jan 2022 02:07:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384569AbiAYHEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:04:16 -0500
-Received: from [10.5.5.3] (unknown [68.183.184.174])
-        by gnuweeb.org (Postfix) with ESMTPSA id 81C96C317D;
-        Tue, 25 Jan 2022 07:04:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gnuweeb.org;
-        s=default; t=1643094247;
-        bh=3i058DVKQlYsfwYKEaGSqiqciIFIbPRYmTn0V/pN72I=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=oHdJZrgTp28F9DTYtcxBCOSNatT991wTstu8B4DElfZLkHNSM29Vf0oEKOVV4pvC6
-         Bf8auM+KG/QV2Gy4TNW7mIYVLE3/hysuL8vH+RpQZrYgF0lZF0H+2qifj8YUrFxaxn
-         cMGiMEKgsoJD7SQ8rMmAhHIu1Vovx04kBhkr40vtXFEJj/dfDPkSZyppoATHhQ11Ao
-         +BIludh26UDI2TgZI6VjvVhFMuWefAUDmdatVzeVFAH0ncIUuqzKTrUijTHLm09tt/
-         UnBvK+Oy7ecPa3xPraqQp7eUHoOtSkMm/svxsNSkML/DpOVBQpFbcg8nzGUUjB1RaX
-         veTidWJ1nDd2w==
-Message-ID: <df2d15fe-bc81-bdb1-1c31-2d717f274ab0@gnuweeb.org>
-Date:   Tue, 25 Jan 2022 14:04:04 +0700
+        Tue, 25 Jan 2022 02:04:36 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CD9C0424FF
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:43:50 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id d12-20020a17090a628c00b001b4f47e2f51so1154600pjj.3
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:43:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o8bdPFvu0KYwY+deTDk1RV7vsOfEo42xcwC/j+hIQro=;
+        b=kc9FKdqXuSjdbaYL7OvcZcEhkGhrE2bP6qaAjucN+PcXjc9ij2U3jpQ+BISAIkkq2Q
+         PyjqHDrpfwmKoBvYHm/J6JnQKotXc7XfdsAoveyTjJKIF9D2nEJN4xMTC6XjE/PhZcS6
+         e83qL0mDpTIMSm0eRXsdULP0yrFNegDbORZHmk+3igwbH4d068sJxvpiXin2zcdR2SVa
+         YmA7ZLhphgVT36DnxL3h9fIyYQC5vNcYOax+v4VgA+RpRmhxWOR6igiBw6muLEgNG88b
+         v1eV0mc+v02iOXGLJPc7WdJ8leLJGYSlnWbY2QiAaK/W9nO/KNyo5SRMmkZ+Le0RnfbM
+         VBIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o8bdPFvu0KYwY+deTDk1RV7vsOfEo42xcwC/j+hIQro=;
+        b=1BUDpN5qsftMDAecsonyYharwpdqoPJYqUUs+fUxjh9vVMiqSyqM3qfbUjqGRnzUCa
+         aJdzd7plllSJ4SOnwjqvpDyl1y6umUAilXWoB3cf3UaD2F+2TJX9jdBSo0k2p2hJmZMk
+         gnofmwW+tvOdEm6du3KZ6t9GJYThf4EIvKy7EHstP4bX5zvNxc34/qDuBPNvPaLfts6a
+         mZMd9ksLSL2sphFT5Qgw/UTNtX1RQYxeOgmwcnDM4ViDbx3bg9WY8Fs9rWLtOW3SJrJw
+         R3Y1q/RONVk1HjJuuQo5bvd2s1W/rMK9LvpcWxcovIDSh6gK7rxpZhghG8y9s5fuU+NM
+         sJqg==
+X-Gm-Message-State: AOAM532dyTgJat+ZJyyM7HjLl2l+9PIFLkRQWA97KbkVpcbF235kOJBq
+        xdwTLY1Q5f7kBUxvjol3Y4tJyg==
+X-Google-Smtp-Source: ABdhPJzBpyC2qWDsq6GkdaiLHkBIUGrCHoN9Dn3I4c5Jei0Kdyvy3O0ztqpSVka+1k1kZg1p4wiRrw==
+X-Received: by 2002:a17:90b:240a:: with SMTP id nr10mr1863085pjb.110.1643089430401;
+        Mon, 24 Jan 2022 21:43:50 -0800 (PST)
+Received: from localhost.localdomain ([122.179.14.218])
+        by smtp.gmail.com with ESMTPSA id c6sm19524508pfl.200.2022.01.24.21.43.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 21:43:49 -0800 (PST)
+From:   Anup Patel <apatel@ventanamicro.com>
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH 0/6] RISC-V IPI Improvements
+Date:   Tue, 25 Jan 2022 11:12:11 +0530
+Message-Id: <20220125054217.383482-1-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3] rcu: Add per-CPU rcuc task info to RCU CPU stall
- warnings
-Content-Language: en-US
-To:     Zqiang <qiang1.zhang@intel.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-References: <20220125024744.4186726-1-qiang1.zhang@intel.com>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-In-Reply-To: <20220125024744.4186726-1-qiang1.zhang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/25/22 9:47 AM, Zqiang wrote:
-> When the 'use_softirq' be set zero, all RCU_SOFTIRQ processing
-> be moved to per-CPU rcuc kthreads, if the rcuc kthreads is
-> being starved, quiescent state can not report in time. the
-> RCU stall may be triggered. this commit adds a stack trace of
-> this CPU and dump rcuc kthreads stack to help analyze what
-> prevents rcuc kthreads from running.
-> 
-> Suggested-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-> ---
+This series aims to improve IPI support in Linux RISC-V in following ways:
+ 1) Treat IPIs as normal per-CPU interrupts instead of having custom RISC-V
+    specific hooks. This also makes Linux RISC-V IPI support aligned with
+    other architectures.
+ 2) Remote TLB flushes and icache flushes should prefer local IPIs instead
+    of SBI calls whenever we have specialized hardware (such as RISC-V AIA
+    IMSIC and RISC-V ACLINT) which allows S-mode software to directly inject
+    IPIs without any assistance from M-mode runtime firmware.
 
-For https://lore.kernel.org/lkml/20220125024744.4186726-1-qiang1.zhang@intel.com/T/
+These patches were already part of the "Linux RISC-V ACLINT Support" series
+but this now a separate series so that it can be merged independently of
+the "Linux RISC-V ACLINT Support" series.
+(Refer, https://lore.kernel.org/lkml/20211007123632.697666-1-anup.patel@wdc.com/)
 
-```
+These patches are also a preparatory patches for the up-coming:
+ 1) Linux RISC-V ACLINT support
+ 2) Linux RISC-V AIA support
+ 3) KVM RISC-V TLB flush improvements
 
-Reviewed-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+These patches can also be found in riscv_ipi_imp_v1 branch at:
+https://github.com/avpatel/linux.git
 
-```
-Thank you!
+Anup Patel (6):
+  RISC-V: Clear SIP bit only when using SBI IPI operations
+  irqchip/riscv-intc: Set intc domain as the default host
+  RISC-V: Treat IPIs as normal Linux IRQs
+  RISC-V: Allow marking IPIs as suitable for remote FENCEs
+  RISC-V: Use IPIs for remote TLB flush when possible
+  RISC-V: Use IPIs for remote icache flush when possible
+
+ arch/riscv/Kconfig                |   1 +
+ arch/riscv/include/asm/ipi-mux.h  |  45 +++++++
+ arch/riscv/include/asm/sbi.h      |   2 +
+ arch/riscv/include/asm/smp.h      |  49 +++++--
+ arch/riscv/kernel/Makefile        |   1 +
+ arch/riscv/kernel/cpu-hotplug.c   |   3 +-
+ arch/riscv/kernel/ipi-mux.c       | 217 ++++++++++++++++++++++++++++++
+ arch/riscv/kernel/irq.c           |   3 +-
+ arch/riscv/kernel/sbi.c           |  18 ++-
+ arch/riscv/kernel/smp.c           | 164 +++++++++++-----------
+ arch/riscv/kernel/smpboot.c       |   5 +-
+ arch/riscv/mm/cacheflush.c        |   5 +-
+ arch/riscv/mm/tlbflush.c          |  93 ++++++++++---
+ drivers/clocksource/timer-clint.c |   8 +-
+ drivers/clocksource/timer-riscv.c |  17 +--
+ drivers/irqchip/irq-riscv-intc.c  |  62 ++++-----
+ 16 files changed, 521 insertions(+), 172 deletions(-)
+ create mode 100644 arch/riscv/include/asm/ipi-mux.h
+ create mode 100644 arch/riscv/kernel/ipi-mux.c
+
 -- 
-Ammar Faizi
+2.25.1
 
