@@ -2,124 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9567C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E50C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 18:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231250AbiAYSXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 13:23:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230429AbiAYSWf (ORCPT
+        id S231365AbiAYSYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 13:24:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:46361 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231276AbiAYSXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 13:22:35 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D90C061753
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:22:35 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id d65-20020a256844000000b00614359972a6so33918284ybc.16
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:22:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=Lok6oxADWNe/Lq9Bd8BF739UQWqpIq0qYKa/bk6A5N0=;
-        b=Q7l+l0kOp7iAA251LRk5qfU1ONabSuPZAiJwgqqdIvUyhHRq5IpqYE0NG2FjMa8LI3
-         BOf0LsBOrb5++slHn79YerH9uoCp11FPSy6Bk1I2YWasaNbov63mEXtyjagbrQdhbk4u
-         d+ykI49DmoF40J+nuy6z7Uni3moA4qm18Mo2TtKprOXdqOWQIHq+zsvKbQg7QOwlD5MZ
-         2x0eWn+SQcCkXLrY9t+ikn9LW98pTC2sJf36jaM0RVFCl7BKt0YN5QzVBzk660JBKU78
-         OmF/S/Yf/V7V4h6eZhc5o7qKII3l+IRuydkfe4u8z2fWazTlYOqNaDTs5rcXCVUfusb1
-         TAVg==
+        Tue, 25 Jan 2022 13:23:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643135026;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wQiWPJdaqri76JgRGXeOGlGXeaAGk3DNqSI3A9eZhrQ=;
+        b=Pdn/AZtea6QLh0biD6MwjDY7JPaZAP/4ARLS9i/l1WLo7ArTK18idb25E+Vtikff1HFncv
+        MTuDAgCCagUYpKSzT4EOUo1oJ+nkZt27BUn4RNrMiaBDG3Y947+i5wZqrpxEcLUlTaGWIy
+        uG/d3T8VfQ7FbiV/OqeCoSvVPvBA7Ws=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-141-WC3j1EzSM62uYdjHeTmUyQ-1; Tue, 25 Jan 2022 13:23:44 -0500
+X-MC-Unique: WC3j1EzSM62uYdjHeTmUyQ-1
+Received: by mail-wr1-f70.google.com with SMTP id h12-20020adfa4cc000000b001d474912698so3418989wrb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 10:23:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=Lok6oxADWNe/Lq9Bd8BF739UQWqpIq0qYKa/bk6A5N0=;
-        b=LXGZ08bpReZAOyV8Io1XHuwyI1toalnKk4MLO19Q8dw4WX9R/7dXPdiwOUxlGrEHj/
-         yYsSGjUBwK1FJjLk77xAHd7lJiIvgPwpeG4lxAHtq6G9hcu8XKyOfmdkj/QeErsCCie3
-         peLNxXgcpJXNeykfRbSqC6q/hdf8Goaqf5TnQBYoCXSK/QbbroGSAApreX3bd7P/QBA2
-         xjt1G9fkjfwLCKEU4ltegKS/wN+6OBCupp4WVNbr9bGPMrPmDtfBvOFTCc2LbVOTdRHk
-         ZfCVeaxbvonEHC9Oe93noMJB6Sn8qBohe6r6fgBgngbSUfySYBkbeI+A+BjsIiP0kYJI
-         DBWQ==
-X-Gm-Message-State: AOAM533MNd14mFVNpZKkVZe+iylr/RU1Eb+I3TPeFnApI+w623UQ3MNA
-        SnmH7R7HsABm1dodGyMBuSfoFxGthG4w
-X-Google-Smtp-Source: ABdhPJywOjHqDnkI+4Tt9DzDqL7Nok6BVw+ygf1J/HuOdAqVIIEzVomSL/CnnzfCvbWdHBqUd9wizHquVF9G
-X-Received: from eugenis.svl.corp.google.com ([2620:15c:2ce:200:d947:cd1e:4976:2712])
- (user=eugenis job=sendgmr) by 2002:a05:6902:47:: with SMTP id
- m7mr33544786ybh.69.1643134954491; Tue, 25 Jan 2022 10:22:34 -0800 (PST)
-Date:   Tue, 25 Jan 2022 10:22:17 -0800
-Message-Id: <20220125182217.2605202-1-eugenis@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH v2] arm64: extable: fix load_unaligned_zeropad() reg indices
-From:   Evgenii Stepanov <eugenis@google.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jisheng Zhang <jszhang@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Evgenii Stepanov <eugenis@google.com>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wQiWPJdaqri76JgRGXeOGlGXeaAGk3DNqSI3A9eZhrQ=;
+        b=tvIpwJaPIQ/EFAiVQ7v7Yfw2ZlIRNM8QzpC91SabpbPwzDSIW+kL4rJyuvTdXrF4vq
+         whFepYlODZDCHKoBAmLZs+LOBM8IWCYTqV7n9u+w5zkFNSbg8wn8vFunHECFwlUYKQve
+         D/pbblwL95/3nCRkW81ZZlFIj/DsB+KFuv8+GyBhdRONozq6U6PJr/Lmyn4AcqPJjfgK
+         /4OP0qbCNJj9h8WjiARjQXdvJbZuNp9xSV0BjaDBvyx7b022Jw50yfc8mjNCSdb0+ZGF
+         sMX0stoMESol4CF8fYl7pTKwhtVlGksV4HICImg0UE8sd6+Qm/QSyP17dbN+s2MElFuF
+         3qcw==
+X-Gm-Message-State: AOAM531Wx4lJdLnt9ftbRq24HuG5qG0wU2ulbB2tZSnj8h5j3CX92OcB
+        ry0ph4F122HTIlIo42hAUghEu4NJ9kj5SOawGuMKrQSlKjBUjHniu9jwttnbl0yRxc4cyD/I9YW
+        rXypkeVxzdlu3DtmZWo1hospb
+X-Received: by 2002:a5d:69c1:: with SMTP id s1mr15463228wrw.114.1643135022681;
+        Tue, 25 Jan 2022 10:23:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJygGx6tbpCyoXfBOstJyIPCE+fQLPVTlTN361eLiHBotZVy/dgkejxLJ7815NvcqdCls1TNvA==
+X-Received: by 2002:a5d:69c1:: with SMTP id s1mr15463214wrw.114.1643135022434;
+        Tue, 25 Jan 2022 10:23:42 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id bg26sm1032430wmb.48.2022.01.25.10.23.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 10:23:41 -0800 (PST)
+Subject: Re: [PATCH v4 05/21] KVM: arm64: Support SDEI_EVENT_{ENABLE, DISABLE}
+ hypercall
+To:     Gavin Shan <gshan@redhat.com>, kvmarm@lists.cs.columbia.edu
+Cc:     maz@kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan.Cameron@huawei.com, pbonzini@redhat.com, will@kernel.org
+References: <20210815001352.81927-1-gshan@redhat.com>
+ <20210815001352.81927-6-gshan@redhat.com>
+ <4ce1aed4-d955-145c-777b-350efec2e7bc@redhat.com>
+ <d7fdb8f8-d0f7-32c4-9644-0ab7cb46dfdf@redhat.com>
+From:   Eric Auger <eauger@redhat.com>
+Message-ID: <69cdc2b8-ccbe-dbe2-4805-04f1a53d9a53@redhat.com>
+Date:   Tue, 25 Jan 2022 19:23:40 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <d7fdb8f8-d0f7-32c4-9644-0ab7cb46dfdf@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In ex_handler_load_unaligned_zeropad() we erroneously extract the data and
-addr register indices from ex->type rather than ex->data. As ex->type will
-contain EX_TYPE_LOAD_UNALIGNED_ZEROPAD (i.e. 4):
- * We'll always treat X0 as the address register, since EX_DATA_REG_ADDR is
-   extracted from bits [9:5]. Thus, we may attempt to dereference an
-   arbitrary address as X0 may hold an arbitrary value.
- * We'll always treat X4 as the data register, since EX_DATA_REG_DATA is
-   extracted from bits [4:0]. Thus we will corrupt X4 and cause arbitrary
-   behaviour within load_unaligned_zeropad() and its caller.
+Hi Gavin,
 
-Fix this by extracting both values from ex->data as originally intended.
+On 1/12/22 3:29 AM, Gavin Shan wrote:
+> Hi Eric,
+> 
+> On 11/10/21 12:02 AM, Eric Auger wrote:
+>> On 8/15/21 2:13 AM, Gavin Shan wrote:
+>>> This supports SDEI_EVENT_{ENABLE, DISABLE} hypercall. After SDEI
+>>> event is registered by guest, it won't be delivered to the guest
+>>> until it's enabled. On the other hand, the SDEI event won't be
+>>> raised to the guest or specific vCPU if it's has been disabled
+>>> on the guest or specific vCPU.
+>>>
+>>> Signed-off-by: Gavin Shan <gshan@redhat.com>
+>>> ---
+>>>   arch/arm64/kvm/sdei.c | 68 +++++++++++++++++++++++++++++++++++++++++++
+>>>   1 file changed, 68 insertions(+)
+>>>
+>>> diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
+>>> index d3ea3eee154b..b022ce0a202b 100644
+>>> --- a/arch/arm64/kvm/sdei.c
+>>> +++ b/arch/arm64/kvm/sdei.c
+>>> @@ -206,6 +206,70 @@ static unsigned long
+>>> kvm_sdei_hypercall_register(struct kvm_vcpu *vcpu)
+>>>       return ret;
+>>>   }
+>>>   +static unsigned long kvm_sdei_hypercall_enable(struct kvm_vcpu *vcpu,
+>>> +                           bool enable)
+>>> +{
+>>> +    struct kvm *kvm = vcpu->kvm;
+>>> +    struct kvm_sdei_kvm *ksdei = kvm->arch.sdei;
+>>> +    struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
+>>> +    struct kvm_sdei_event *kse = NULL;
+>>> +    struct kvm_sdei_kvm_event *kske = NULL;
+>>> +    unsigned long event_num = smccc_get_arg1(vcpu);
+>>> +    int index = 0;
+>>> +    unsigned long ret = SDEI_SUCCESS;
+>>> +
+>>> +    /* Sanity check */
+>>> +    if (!(ksdei && vsdei)) {
+>>> +        ret = SDEI_NOT_SUPPORTED;
+>>> +        goto out;
+>>> +    }
+>>> +
+>>> +    if (!kvm_sdei_is_valid_event_num(event_num)) {
+>> I would rename into is_exposed_event_num()
+> 
+> kvm_sdei_is_virtual() has been recommended by you when you reviewed the
+> following
+> patch. I think kvm_sdei_is_virtual() is good enough :)
 
-On an MTE-enabled QEMU image we are hitting the following crash:
- Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
- Call trace:
-  fixup_exception+0xc4/0x108
-  __do_kernel_fault+0x3c/0x268
-  do_tag_check_fault+0x3c/0x104
-  do_mem_abort+0x44/0xf4
-  el1_abort+0x40/0x64
-  el1h_64_sync_handler+0x60/0xa0
-  el1h_64_sync+0x7c/0x80
-  link_path_walk+0x150/0x344
-  path_openat+0xa0/0x7dc
-  do_filp_open+0xb8/0x168
-  do_sys_openat2+0x88/0x17c
-  __arm64_sys_openat+0x74/0xa0
-  invoke_syscall+0x48/0x148
-  el0_svc_common+0xb8/0xf8
-  do_el0_svc+0x28/0x88
-  el0_svc+0x24/0x84
-  el0t_64_sync_handler+0x88/0xec
-  el0t_64_sync+0x1b4/0x1b8
- Code: f8695a69 71007d1f 540000e0 927df12a (f940014a)
+argh, is_virtual() then :)
 
-Fixes: 753b32368705 ("arm64: extable: add load_unaligned_zeropad() handler")
-Cc: <stable@vger.kernel.org> # 5.16.x
-Reviewed-by: Mark Rutland <mark.rutland@arm.com>
-Signed-off-by: Evgenii Stepanov <eugenis@google.com>
----
- arch/arm64/mm/extable.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
-index c0181e60cc98..489455309695 100644
---- a/arch/arm64/mm/extable.c
-+++ b/arch/arm64/mm/extable.c
-@@ -40,8 +40,8 @@ static bool
- ex_handler_load_unaligned_zeropad(const struct exception_table_entry *ex,
- 				  struct pt_regs *regs)
- {
--	int reg_data = FIELD_GET(EX_DATA_REG_DATA, ex->type);
--	int reg_addr = FIELD_GET(EX_DATA_REG_ADDR, ex->type);
-+	int reg_data = FIELD_GET(EX_DATA_REG_DATA, ex->data);
-+	int reg_addr = FIELD_GET(EX_DATA_REG_ADDR, ex->data);
- 	unsigned long data, addr, offset;
- 
- 	addr = pt_regs_read_reg(regs, reg_addr);
--- 
-2.35.0.rc0.227.g00780c9af4-goog
+Eric
+> 
+>    [PATCH v4 02/21] KVM: arm64: Add SDEI virtualization infrastructure
+> 
+>>> +        ret = SDEI_INVALID_PARAMETERS;
+>>> +        goto out;
+>>> +    }
+>>> +
+>>> +    /* Check if the KVM event exists */
+>>> +    spin_lock(&ksdei->lock);
+>>> +    kske = kvm_sdei_find_kvm_event(kvm, event_num);
+>>> +    if (!kske) {
+>>> +        ret = SDEI_INVALID_PARAMETERS;
+>> should be DENIED according to the spec, ie. nobody registered that event?
+> 
+> Ok.
+> 
+>>> +        goto unlock;
+>>> +    }
+>>> +
+>>> +    /* Check if there is pending events */
+>> does that match the "handler-unregister-pending state" case mentionned
+>> in the spec?
+>>> +    if (kske->state.refcount) {
+>>> +        ret = SDEI_PENDING;
+>> ? not documented in my A spec? DENIED?
+> 
+> Yep, It should be DENIED.
+> 
+>>> +        goto unlock;
+>>> +    }
+>>> +
+>>> +    /* Check if it has been registered */
+>> isn't duplicate of /* Check if the KVM event exists */ ?
+> 
+> It's not duplicate check, but the comment here seems misleading. I will
+> correct this to:
+> 
+>     /* Check if it has been defined or exposed */
+> 
+>>> +    kse = kske->kse;
+>>> +    index = (kse->state.type == SDEI_EVENT_TYPE_PRIVATE) ?
+>>> +        vcpu->vcpu_idx : 0;
+>>> +    if (!kvm_sdei_is_registered(kske, index)) {
+>>> +        ret = SDEI_DENIED;
+>>> +        goto unlock;
+>>> +    }
+>>> +
+>>> +    /* Verify its enablement state */
+>>> +    if (enable == kvm_sdei_is_enabled(kske, index)) {
+>> spec says:
+>> Enabling/disabled an event, which is already enabled/disabled, is
+>> permitted and has no effect. I guess ret should be OK.
+> 
+> yep, it should be ok.
+> 
+>>> +        ret = SDEI_DENIED;
+>>> +        goto unlock;
+>>> +    }
+>>> +
+>>> +    /* Update enablement state */
+>>> +    if (enable)
+>>> +        kvm_sdei_set_enabled(kske, index);
+>>> +    else
+>>> +        kvm_sdei_clear_enabled(kske, index);
+>>> +
+>>> +unlock:
+>>> +    spin_unlock(&ksdei->lock);
+>>> +out:
+>>> +    return ret;
+>>> +}
+>>> +
+>>>   int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
+>>>   {
+>>>       u32 func = smccc_get_function(vcpu);
+>>> @@ -220,7 +284,11 @@ int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
+>>>           ret = kvm_sdei_hypercall_register(vcpu);
+>>>           break;
+>>>       case SDEI_1_0_FN_SDEI_EVENT_ENABLE:
+>>> +        ret = kvm_sdei_hypercall_enable(vcpu, true);
+>>> +        break;
+>>>       case SDEI_1_0_FN_SDEI_EVENT_DISABLE:
+>>> +        ret = kvm_sdei_hypercall_enable(vcpu, false);
+>>> +        break;
+>>>       case SDEI_1_0_FN_SDEI_EVENT_CONTEXT:
+>>>       case SDEI_1_0_FN_SDEI_EVENT_COMPLETE:
+>>>       case SDEI_1_0_FN_SDEI_EVENT_COMPLETE_AND_RESUME:
+>>>
+> 
+> Thanks,
+> Gavin
+> 
 
