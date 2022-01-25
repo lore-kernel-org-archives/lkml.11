@@ -2,156 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBEEDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C908C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 10:41:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244835AbiAYKjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:39:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355376AbiAYKf2 (ORCPT
+        id S1355390AbiAYKkq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:40:46 -0500
+Received: from mail-ed1-f45.google.com ([209.85.208.45]:45010 "EHLO
+        mail-ed1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358978AbiAYKiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:35:28 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3F8C061779
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:35:27 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id r82-20020a1c4455000000b0034e043aaac7so857035wma.5
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 02:35:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=uYdg+h4xUgFlS4VbgtGVuleOkynWItCXXdRK+L0ak6M=;
-        b=GTubB8hv4bF/W8pl5G1QRyju+3fXfWPO83WqGYnDfxz6ak26wEZCcfjVnpmxnNX3W/
-         H3A7PbnHfrdr/KHcapPP25NzGTUtX/g8yvTo/Ymjhi1hs0/b0BmLSFqfrE9o+Dz5rn5b
-         K11DjI6yKNdBviS54JKQaHIiqEs5XumCs6PnIwStMPoLmVuMIqaX+CksR4xicdeivJuu
-         893R0XyAXbei5Ap5+nv+TsJkY/0Ziu9ykV1bslhHNJgE2MvHrum0sTeANEEy9PplecCQ
-         /Xjl0YKmNzPJFLLa7kyHEhD8MRvuie+dzmguYI4ITtNen3QTekXrFltTK6rBIgJUhyhU
-         B3hg==
+        Tue, 25 Jan 2022 05:38:09 -0500
+Received: by mail-ed1-f45.google.com with SMTP id u24so15885674eds.11;
+        Tue, 25 Jan 2022 02:38:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=uYdg+h4xUgFlS4VbgtGVuleOkynWItCXXdRK+L0ak6M=;
-        b=rzwdUGNnUisjML/lsLB9KgN01VMiUA9WEhFYtDDHbjYL9kKcb5KYLUKX+s+Rtr+EDt
-         46GlxZuxh02y8gLJQNGR65r/7FdvprXXMr6ycpzW3avlCLQne5ewoQ6CizHn0/JSfyAj
-         IGlnyMN9ZaV0dGAI3FRz/nWJjQ9NutoK7pzQiGUPl0AW6CZqOXwNgrWlOInYchIAb5U3
-         fdkjok0B4MDJRcl2KA0RwaDHTPFwOzXIE3CExb0URNdvHe6pNU6578zrayw/WAp8UqRo
-         bQSPvWbPX18TE3YWtjFwAo+zU03jj2rv9rp0jRqBLU46Vn3zhhOXrrsMHl7YP67uNaQm
-         UtXg==
-X-Gm-Message-State: AOAM5326h4Noyoqcsb+W2MFLqtyn2yqMD41gB/TL6QsR4exw0ZHBxLJY
-        i6tB8r4z2fvL9qvvbb8aVa7oQQ==
-X-Google-Smtp-Source: ABdhPJx+w8z5aGYxT5A5QKy6zwet2VVfvd21nx8U+IbtSeToofaDduOXQkk2XZ3Di33nkZhxepnP/g==
-X-Received: by 2002:a7b:c3c5:: with SMTP id t5mr2340963wmj.168.1643106926197;
-        Tue, 25 Jan 2022 02:35:26 -0800 (PST)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id v124sm155335wme.30.2022.01.25.02.35.25
+        bh=FnyumMuINSTl10b4Z1f77CLpKT4vvjCzwh3tAHHSoQs=;
+        b=LHb1lUmkmFukBRLZLG55kHFJYkFpiiMl6Qm9cGVq5/DiaCbmFVUcVu+Qz2pmZ+W/2r
+         Yd5YJSI46gE9HvD1W9pQOr0NV5c5YjyV++wZM00lcRmm6IeKjxZ7pl2KvL5z6mQR2uke
+         si+NzFWWeXY84P1oVHzeHjPrJ3/2i2CM0JHMXUi7R3INRxyjxI6RgMmvuRKeQ3iQ5PS4
+         EOtRX9Iw84A9NWhfKKUzY6eMdqlLH/x9ZPFKzcuXw6GfBw9ur2nsWB1/okGDiXJ64kwf
+         kUcAgRp8KFrMbAsOyohNJ7FVknVgPlxrP9dmD4xCvx5pMyonLHs42mdHPs3YFj/EZ5BZ
+         DI8w==
+X-Gm-Message-State: AOAM530TyXOtYrKdoWTqi4yCy+XfwdczgoF4zceRyC74sayjNgaLGGQ1
+        EJbiMVtNmQybEPpIpeehVHA=
+X-Google-Smtp-Source: ABdhPJzcd86llx4XOWtpgGa1Ng7tiuLZoGKKB7qTySUUk++C9x0aCvnCJ78BWfFojtkGWywurGWJTQ==
+X-Received: by 2002:a50:9e6c:: with SMTP id z99mr19963324ede.71.1643107087231;
+        Tue, 25 Jan 2022 02:38:07 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id gu2sm5944053ejb.221.2022.01.25.02.38.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 02:35:25 -0800 (PST)
-Message-ID: <11caff0e-6bf3-9d66-6312-c2c2a6fc862a@linaro.org>
-Date:   Tue, 25 Jan 2022 10:35:24 +0000
+        Tue, 25 Jan 2022 02:38:06 -0800 (PST)
+Message-ID: <b6392347-c347-137a-d97e-f621b3a7e099@kernel.org>
+Date:   Tue, 25 Jan 2022 11:38:05 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/5] nvmem: core: Remove unused devm_nvmem_unregister()
+Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
 Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+To:     Wander Costa <wcosta@redhat.com>
+Cc:     Jon Hunter <jonathanh@nvidia.com>,
+        Wander Lairson Costa <wander@redhat.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>
-References: <20220124180040.50660-1-andriy.shevchenko@linux.intel.com>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <20220124180040.50660-1-andriy.shevchenko@linux.intel.com>
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <20211029201402.428284-1-wander@redhat.com>
+ <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
+ <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
+ <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
+ <CAAq0SUm-NQ6kwxhSJsOwHaBsi7dagAy8Pj4vOHOd6wy33Nqp2g@mail.gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <CAAq0SUm-NQ6kwxhSJsOwHaBsi7dagAy8Pj4vOHOd6wy33Nqp2g@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks Andy for the cleanup,
-
-On 24/01/2022 18:00, Andy Shevchenko wrote:
-> There are no users and seems no will come of the devm_nvmem_unregister().
-> Remove the function and remove the unused devm_nvmem_match() along with it.
+On 25. 01. 22, 11:18, Wander Costa wrote:
+>> In particular, the test is checking whether there is no interrupt
+>> pending (UART_FCR_ENABLE_FIFO == UART_IIR_NO_INT). So it oscillates
+>> between use_fifo and not, depending on the interrupt state of the chip.
+>>
+>> Could you change it into something like this:
+>> --- a/drivers/tty/serial/8250/8250_port.c
+>> +++ b/drivers/tty/serial/8250/8250_port.c
+>> @@ -3396,7 +3396,7 @@ void serial8250_console_write(struct
+>> uart_8250_port *up, const char *s,
+>>
+>>           use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+>>                   port->fifosize > 1 &&
+>> -               (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
+>> +               (up->fcr & UART_FCR_ENABLE_FIFO) &&
+>>                   /*
+>>                    * After we put a data in the fifo, the controller will
+>> send
+>>                    * it regardless of the CTS state. Therefore, only use fifo
+>>
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Indeed I made a mistake here. Independent of the reported this, this
+> should be fixed.
+> Jiri, do you intend to send an official patch or should I do so?
 
+Please you send the fix after testing the fifo mode still works with 
+that fix.
 
-Applied 1/5, 2/5 and 3/5 patches.
-
-Others can go via there own subsystems as I do not see any dependencies.
-
---srini
-> ---
-> v2: removed unused devm_nvmem_match() (lkp)
->   drivers/nvmem/core.c           | 22 ----------------------
->   include/linux/nvmem-provider.h |  8 --------
->   2 files changed, 30 deletions(-)
-> 
-> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-> index 23a38dcf0fc4..1a70b3bdb71d 100644
-> --- a/drivers/nvmem/core.c
-> +++ b/drivers/nvmem/core.c
-> @@ -945,28 +945,6 @@ struct nvmem_device *devm_nvmem_register(struct device *dev,
->   }
->   EXPORT_SYMBOL_GPL(devm_nvmem_register);
->   
-> -static int devm_nvmem_match(struct device *dev, void *res, void *data)
-> -{
-> -	struct nvmem_device **r = res;
-> -
-> -	return *r == data;
-> -}
-> -
-> -/**
-> - * devm_nvmem_unregister() - Unregister previously registered managed nvmem
-> - * device.
-> - *
-> - * @dev: Device that uses the nvmem device.
-> - * @nvmem: Pointer to previously registered nvmem device.
-> - *
-> - * Return: Will be negative on error or zero on success.
-> - */
-> -int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
-> -{
-> -	return devres_release(dev, devm_nvmem_release, devm_nvmem_match, nvmem);
-> -}
-> -EXPORT_SYMBOL(devm_nvmem_unregister);
-> -
->   static struct nvmem_device *__nvmem_device_get(void *data,
->   			int (*match)(struct device *dev, const void *data))
->   {
-> diff --git a/include/linux/nvmem-provider.h b/include/linux/nvmem-provider.h
-> index 98efb7b5660d..99c01c43d7a8 100644
-> --- a/include/linux/nvmem-provider.h
-> +++ b/include/linux/nvmem-provider.h
-> @@ -133,8 +133,6 @@ void nvmem_unregister(struct nvmem_device *nvmem);
->   struct nvmem_device *devm_nvmem_register(struct device *dev,
->   					 const struct nvmem_config *cfg);
->   
-> -int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem);
-> -
->   void nvmem_add_cell_table(struct nvmem_cell_table *table);
->   void nvmem_del_cell_table(struct nvmem_cell_table *table);
->   
-> @@ -153,12 +151,6 @@ devm_nvmem_register(struct device *dev, const struct nvmem_config *c)
->   	return nvmem_register(c);
->   }
->   
-> -static inline int
-> -devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
-> -{
-> -	return -EOPNOTSUPP;
-> -}
-> -
->   static inline void nvmem_add_cell_table(struct nvmem_cell_table *table) {}
->   static inline void nvmem_del_cell_table(struct nvmem_cell_table *table) {}
->   
+thanks,
+-- 
+js
