@@ -2,165 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71157C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B7CC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 17:05:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241192AbiAYRFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 12:05:12 -0500
-Received: from mga03.intel.com ([134.134.136.65]:59652 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354582AbiAYRCu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:02:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643130170; x=1674666170;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/mTnNtkyEJI+5x7IYcfDbJkXYf2eGevEJEqfSB40thE=;
-  b=N/W7+AqbiKQN6UkwT8j4bUeEbG6LhoswMuiKiqyNgjeChq37mtJSW39W
-   vIMkyQYIyubAeopmeDBsqZa9MNXtpIlaMeGLVJF4Xpor3qJTiRFwG+Ip2
-   6np9U1sRt0O5NM0P1A/Ev0LNDgXvGJcBtShp+RdV4wz/62ldsEONX+y8C
-   pLDU7MyJyB+HMm2ws+oafnTX1Uq7JsFsUoSK6F/s2d3qqoWF9HZGs0mCw
-   zSD4P/dk9jFib81i+55OQGlceKlOz5NRWd0zcYJ6ZrqORDHc/MmDc3BFl
-   jBuTFMMO1MIKOkyFA35NdxUzndd39mXmtPR9d9Hrr6ZMC5mVtHSLDO8eE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246294502"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="246294502"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 08:54:57 -0800
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="477174004"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 08:54:54 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nCP4m-00EJqX-Ce;
-        Tue, 25 Jan 2022 18:53:48 +0200
-Date:   Tue, 25 Jan 2022 18:53:48 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jon Hunter <jonathanh@nvidia.com>
-Cc:     Wander Costa <wcosta@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Wander Lairson Costa <wander@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
-Message-ID: <YfArHDfrVHw7ApDx@smile.fi.intel.com>
-References: <20211029201402.428284-1-wander@redhat.com>
- <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
- <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
- <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
- <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
- <CAAq0SU=9R3Y_SAdM+HaqavzWBRd1Li-b5bnZZLd5Opfgd0vnkQ@mail.gmail.com>
- <fa42a60c-954a-acc0-3962-f00427153f78@nvidia.com>
+        id S238916AbiAYRFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 12:05:51 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:54440
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1376950AbiAYRDO (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 12:03:14 -0500
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id AECEA3F1CB
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 17:03:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643130191;
+        bh=rw3iKwjHVF1T+M8vGLUxyKNks1I9pnaON9d7P08zG0k=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version:Content-Type;
+        b=cTm+Bsvs5cdjF6YbRi8GGCFZzHHJPieTzdu5pRTe08/BOS9qGDfaBYv7CXqcKsRH2
+         2EnGDxjYAv5zhOt1GdefRhbNgIukaC9iRamVesqG9khJvYIimQszWcwFCv4cVZmlQH
+         YGxBNGRBzLrMC2gBEkVu2GCi/QaQZRc1q7s3WxpVEKT5DmorMTtQzP2rKVc6oMihQx
+         ZMHY23fH92+2acs7Q6LRGgy4g4DwSR1FuvRdApQVExL0+JT3JcawBFIj2QGHiVNri/
+         z5wuC2H/mZWoxXRRWQdH5yVGBxEhFpfy244/apAaOLrkq1EHqRlujvqe7vum9ZyTRr
+         HGgEcdSy+F4Iw==
+Received: by mail-wm1-f70.google.com with SMTP id v185-20020a1cacc2000000b0034906580813so1446318wme.1
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 09:03:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rw3iKwjHVF1T+M8vGLUxyKNks1I9pnaON9d7P08zG0k=;
+        b=azqAncOgfH+KylSYJcwHVxQ9Qs44PFozrb2oXBCtBwz8AUWykes9VDVSb8nwXajnr5
+         x4bp3xhMMD1YHwPsG6kqpPU8JuMDZha47GDmml/brZ7/p4BmEcWjU/APLgFTsvpPaChW
+         zkyekb+dZuBoYScGAIKzZZ3S3iOXHpYvhcT5bUn0+FZmVzCtm8PvF89PLJWc60pSb9nZ
+         HL/gYYnSk3fXAhn9emHXGTp5kHJuITukrWu5FXMy6eqA96CHzMQ6nvGJl/LS4n+2U/Q9
+         OdgJz2GNsXPo7LCRCx2eML4rewGRdDhcQTneF5eYt5GKnRtYolF9mjcB57tB8N5b00R/
+         /cMw==
+X-Gm-Message-State: AOAM530jFK3CAvmE4EKsLlsTFVpxoofua85g9eHXQkWwFm73oenkq9yj
+        pB8JNWJD04U6r2s/hZI9wDjZSKzA650+WSWGxuKuTAQ/26BSlKwu9S8V5lCqcIpZTTWnXdgpinm
+        55s9OfKR+N+y4aTJQvfuQRVz9WykMNKkb7UT1xpZ8IQ==
+X-Received: by 2002:a05:600c:1912:: with SMTP id j18mr3688453wmq.155.1643130191282;
+        Tue, 25 Jan 2022 09:03:11 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJytGJ9TI5VtzIsjGQXHuW43/peZ43AFiVhcRxKrAIWgj3XRztUpx3XwN+qMJZWd1jMpp/rqWg==
+X-Received: by 2002:a05:600c:1912:: with SMTP id j18mr3688422wmq.155.1643130191014;
+        Tue, 25 Jan 2022 09:03:11 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id i3sm17162548wru.33.2022.01.25.09.03.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 09:03:10 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        Henrik Grimler <henrik@grimler.se>, virag.david003@gmail.com,
+        m.szyprowski@samsung.com, cw00.choi@samsung.com,
+        ~postmarketos/upstreaming@lists.sr.ht, alim.akhtar@samsung.com,
+        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, semen.protsenko@linaro.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH 0/2] ARM: dts: exynos: Add support for Samsung Klimt WiFi
+Date:   Tue, 25 Jan 2022 18:02:29 +0100
+Message-Id: <164313008959.78836.16815768434682839337.b4-ty@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220124131241.29946-1-henrik@grimler.se>
+References: <20220124131241.29946-1-henrik@grimler.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fa42a60c-954a-acc0-3962-f00427153f78@nvidia.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 12:40:27PM +0000, Jon Hunter wrote:
+On Mon, 24 Jan 2022 14:12:39 +0100, Henrik Grimler wrote:
+> Klimt WiFi has product name Samsung Galaxy Tab S 8.4" and was released
+> in 2014.  It has similar hardware to exynos5420-chagall-wifi and the
+> two devices can hence share a common base dtsi.
 > 
-> On 25/01/2022 10:29, Wander Costa wrote:
-> > On Tue, Jan 25, 2022 at 7:06 AM Jon Hunter <jonathanh@nvidia.com> wrote:
-> > > 
-> > > 
-> > > On 25/01/2022 09:36, Jiri Slaby wrote:
-> > > 
-> > > ...
-> > > 
-> > > > > The test is bogus:
-> > > > >           use_fifo = (up->capabilities & UART_CAP_FIFO) &&
-> > > > >                   port->fifosize > 1 &&
-> > > > >                   (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO)
-> > > > > 
-> > > > > FCR is write only. Reading it, one gets IIR contents.
-> > > > 
-> > > > In particular, the test is checking whether there is no interrupt
-> > > > pending (UART_FCR_ENABLE_FIFO == UART_IIR_NO_INT). So it oscillates
-> > > > between use_fifo and not, depending on the interrupt state of the chip.
-> > > > 
-> > > > Could you change it into something like this:
-> > > > --- a/drivers/tty/serial/8250/8250_port.c
-> > > > +++ b/drivers/tty/serial/8250/8250_port.c
-> > > > @@ -3396,7 +3396,7 @@ void serial8250_console_write(struct
-> > > > uart_8250_port *up, const char *s,
-> > > > 
-> > > >           use_fifo = (up->capabilities & UART_CAP_FIFO) &&
-> > > >                   port->fifosize > 1 &&
-> > > > -               (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
-> > > > +               (up->fcr & UART_FCR_ENABLE_FIFO) &&
-> > > >                   /*
-> > > >                    * After we put a data in the fifo, the controller will
-> > > > send
-> > > >                    * it regardless of the CTS state. Therefore, only use
-> > > > fifo
-> > > > 
-> > > > 
-> > > > And see whether it fixes the issue. Anyway, of what port type is the
-> > > > serial port (what says dmesg/setserial about that)?
-> > > 
-> > > 
-> > > Thanks. Unfortunately, this did not fix it. The port type is PORT_TEGRA ...
-> > > 
-> > >    70006000.serial: ttyS0 at MMIO 0x70006000 (irq = 72, base_baud = 25500000) is a Tegra
-> > 
-> > I see PORT_TEGRA has different values for fifosize and tx_loadsz.
-> > Maybe we should use tx_loadsz.
-> > Could you please give a try to this patch:
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_port.c
-> > b/drivers/tty/serial/8250/8250_port.c
-> > index 2abb3de11a48..d3a93e5d55f7 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -3343,7 +3343,7 @@ static void serial8250_console_fifo_write(struct
-> > uart_8250_port *up,
-> >   {
-> >          int i;
-> >          const char *end = s + count;
-> > -       unsigned int fifosize = up->port.fifosize;
-> > +       unsigned int fifosize = up->tx_loadsz;
-> >          bool cr_sent = false;
-> > 
-> >          while (s != end) {
-> > @@ -3409,8 +3409,8 @@ void serial8250_console_write(struct
-> > uart_8250_port *up, const char *s,
-> >          }
-> > 
-> >          use_fifo = (up->capabilities & UART_CAP_FIFO) &&
-> > -               port->fifosize > 1 &&
-> > -               (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
-> > +               up->tx_loadsz > 1 &&
-> > +               (up->fcr & UART_FCR_ENABLE_FIFO) &&
-> >                  /*
-> >                   * After we put a data in the fifo, the controller will send
-> >                   * it regardless of the CTS state. Therefore, only use fifo
-> > 
+> Same issues as for Chagall Wifi applies: CCI has to be disabled and
+> only 4 out of 8 CPUs are brought up at boot (see
+> https://lore.kernel.org/r/20220118185746.299832-4-henrik@grimler.se).
 > 
-> 
-> Thanks. Yes that does fix it.
-> 
-> Andy, does this work for X86?
+> [...]
 
-Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied, thanks!
 
-No, it does NOT fix an issue (I see it on a handful x86) with the legacy UART
-(means the 8250_pnp is in use). And I believe the same will be the case on LPSS
-ones (8250_dw / 8250_lpss) and HSU (8250_mid), because the patch influences on
-all of them.
+[1/2] dt-bindings: arm: samsung: document Klimt WiFi board binding
+      commit: 8d4d0d7c43e6f87df02a0acac206b50c265962d1
+[2/2] ARM: dts: exynos: Add support for Samsung Klimt WiFi
+      commit: 21fc732222559c7b5a8731571d30501d5fcb631c
 
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
