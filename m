@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F5DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F232C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 09:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455115AbiAYJC5 (ORCPT
+        id S1455217AbiAYJDc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:02:57 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:58610 "EHLO
+        Tue, 25 Jan 2022 04:03:32 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:59832 "EHLO
         mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1453989AbiAYI7a (ORCPT
+        with ESMTP id S1454585AbiAYJAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 03:59:30 -0500
-X-UUID: 7f37688ce62c48e7a03d0721c4ee35bc-20220125
-X-UUID: 7f37688ce62c48e7a03d0721c4ee35bc-20220125
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        Tue, 25 Jan 2022 04:00:03 -0500
+X-UUID: a83cf318e11d4c468dc149c4bf8bfa3c-20220125
+X-UUID: a83cf318e11d4c468dc149c4bf8bfa3c-20220125
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
         (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 701540767; Tue, 25 Jan 2022 16:58:43 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1731833165; Tue, 25 Jan 2022 16:59:32 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 25 Jan 2022 16:58:42 +0800
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 25 Jan 2022 16:59:30 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 25 Jan 2022 16:58:40 +0800
+ Transport; Tue, 25 Jan 2022 16:59:29 +0800
 From:   Yong Wu <yong.wu@mediatek.com>
 To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
         "Matthias Brugger" <matthias.bgg@gmail.com>,
@@ -45,9 +45,9 @@ CC:     Robin Murphy <robin.murphy@arm.com>,
         <angelogioacchino.delregno@collabora.com>,
         <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
         <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v4 13/35] iommu/mediatek: Remove the granule in the tlb flush
-Date:   Tue, 25 Jan 2022 16:56:12 +0800
-Message-ID: <20220125085634.17972-14-yong.wu@mediatek.com>
+Subject: [PATCH v4 19/35] iommu/mediatek: Allow IOMMU_DOMAIN_UNMANAGED for PCIe VFIO
+Date:   Tue, 25 Jan 2022 16:56:18 +0800
+Message-ID: <20220125085634.17972-20-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220125085634.17972-1-yong.wu@mediatek.com>
 References: <20220125085634.17972-1-yong.wu@mediatek.com>
@@ -58,46 +58,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The MediaTek IOMMU don't care about granule when tlb flushing.
-Remove this variable.
+Allow the type IOMMU_DOMAIN_UNMANAGED since vfio_iommu_type1.c always call
+iommu_domain_alloc. The PCIe EP works ok when going through vfio.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/iommu/mtk_iommu.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iommu/mtk_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 80d8333797fd..028b2192c414 100644
+index f676085af13d..cf042ab74fa7 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -219,7 +219,6 @@ static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
- }
- 
- static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
--					   size_t granule,
- 					   struct mtk_iommu_data *data)
+@@ -446,7 +446,7 @@ static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
  {
- 	struct list_head *head = data->hw_list;
-@@ -541,8 +540,7 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 	size_t length = gather->end - gather->start + 1;
+ 	struct mtk_iommu_domain *dom;
  
--	mtk_iommu_tlb_flush_range_sync(gather->start, length, gather->pgsize,
--				       dom->data);
-+	mtk_iommu_tlb_flush_range_sync(gather->start, length, dom->data);
- }
+-	if (type != IOMMU_DOMAIN_DMA)
++	if (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_UNMANAGED)
+ 		return NULL;
  
- static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-@@ -550,7 +548,7 @@ static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 
--	mtk_iommu_tlb_flush_range_sync(iova, size, size, dom->data);
-+	mtk_iommu_tlb_flush_range_sync(iova, size, dom->data);
- }
- 
- static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
 -- 
 2.18.0
 
