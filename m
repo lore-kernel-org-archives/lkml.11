@@ -2,220 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E70C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A38AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 06:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243719AbiAYGt2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 01:49:28 -0500
-Received: from esa2.mentor.iphmx.com ([68.232.141.98]:2460 "EHLO
-        esa2.mentor.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358497AbiAYGpy (ORCPT
+        id S1359389AbiAYGtn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 01:49:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358811AbiAYGq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 01:45:54 -0500
-IronPort-SDR: RavLzcctKxeWmPfeSVQq0/h5zi++CKjs+wR40FTuoPI91FkRRmWfCwlNsdt8mCTWoAHhJiWhEz
- 1A/osGKKPX+xgTj+Kv510RU6YsW/At6kse/y2ILH/H9Hv7LlqvAtgpknUiGE87IiVC7Tx+EjWa
- d9E0tF9H4EHlp7Rje0hmr2lmH5unf2U1Df+jiMy/brZbRr07W2zt9rk3+VpoXjDqDDQ0mnbPSu
- frq92heBJUYWnA+G9MPKziRYatr2IZjvhyPmdwMSeLJdEyGlvtrfYgJY2oDGsMPBFMd5rlaO9i
- i1zh22CU1pwxg1N28SOtNu4c
-X-IronPort-AV: E=Sophos;i="5.88,314,1635235200"; 
-   d="scan'208";a="71173504"
-Received: from orw-gwy-02-in.mentorg.com ([192.94.38.167])
-  by esa2.mentor.iphmx.com with ESMTP; 24 Jan 2022 22:45:47 -0800
-IronPort-SDR: twu5CcYaTiNsnA+NYdGL2X0/4vzJI8f01adpyAyQxPSMZaYlztDK4Dm2bMVvPq1mcRTS77pWG4
- OHvUqjtl9v+sisYWUersXHILqmetzMJt9WFll7qylz3MrFZbQXIu4EExt1w4exHXce0dZ6qzHa
- 6BNOnUbDgvuh0Xf74tQwHcPc3H8fSQNaCpDTrjSfE8Klk3nTke+COZ5ymW01Mj/GXu41i93ZSn
- 9Wl2Q5xurIdHVeyZxhv6B9B4fIOHhqub1TvSZ9BV+jrbu14nvIRKwhH7lOLfTWOWRYm2J2iuso
- JFg=
-From:   Andrew Gabbasov <andrew_gabbasov@mentor.com>
-To:     'Geert Uytterhoeven' <geert@linux-m68k.org>
-CC:     'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>,
-        'Linux I2C' <linux-i2c@vger.kernel.org>,
-        'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>,
-        'Wolfram Sang' <wsa+renesas@sang-engineering.com>,
-        "Surachari, Bhuvanesh" <Bhuvanesh_Surachari@mentor.com>
-References: <20210922160649.28449-1-andrew_gabbasov@mentor.com> <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>   
-In-Reply-To: 
-Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
-Date:   Tue, 25 Jan 2022 09:45:34 +0300
-Organization: Mentor Graphics Corporation
-Message-ID: <000001d811b7$2bd58310$83808930$@mentor.com>
+        Tue, 25 Jan 2022 01:46:28 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70828C02B76C
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:08:31 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id t14so13509199ljh.8
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 21:08:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GxSSyNnOqzCbDA/E9stdLnXQVVTk0qCNicklKSphmTE=;
+        b=XEpVz6JCzRlwvzrVHSlio1hJXN0I7Jo6RUS5WdJB14stes+pFX/TT0467/drOAtV4F
+         Fafx04YchRFLS+NrdBHCAVYSrZeyfGWQJgO4yCFWZ7TNS9nRbfOEXhHc0p8bLu2j1nGx
+         DGm/hPyrHFSepZnu3ufjhHKobDXEsFymq0ySxjPE+KB27IFzhaSyGizFo5pl1Etijd0i
+         0rWi31Vci8bBF2yteqOmvuMbBsxqQQm7x6M6rLK3Q1uvUO41150UWdvM2ZTZlf2m/5oH
+         iYRqc5B2RKbZYDT2Qmx+L78jmyd89HwnG+Dkzh+HrKzMJRoZ8tp5y6Pa4i29N916vZwE
+         xvAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GxSSyNnOqzCbDA/E9stdLnXQVVTk0qCNicklKSphmTE=;
+        b=hJvj07wrGGvVWbkYECpQEYFlDrIt3CyAXtFAwJgZ7tGFbkL2HCP+Tcoq5Martem42D
+         U4TudAGt2P1Ir+6igfmLET9cfFEPTGWztAaamk52Yh15yt8F51xZ2IWG1xpfIvHscM9m
+         MXt32gUjuyoJEzfZzTX/FuSl1LaheTHRef3nVcy/kwl+cW6bGLlpsgtiJGpx2kq8WSdz
+         OWr/0cO7tiX8geF88vSW0ogwSby0LdkOjxdEh1BHzzanMrw0Z0sWrc1V01Oi4XvhhEom
+         dqZv1fbUKPXr/R6Wre/udr49Mhv8f3RIHqL18pnHIbXxKZWmYwtdWqx5XDftDYkr9+nW
+         YGMw==
+X-Gm-Message-State: AOAM5321Ds2gn/9fxYZJ6u0FrNVSmyw/er5aptc4spp9VeKPRyhkRm76
+        i5nW2lZUt/Y3P19l68jS4TkP0EQOUjwgQQTrbkje2w==
+X-Google-Smtp-Source: ABdhPJz8G5O7CyRA7YfvnePDrgsxGm48JXzLciOKTXj+4VHnx7wVcDu1IeHFxk8DtOhTpLN4KlQ+FL8pGOHi0tssC/U=
+X-Received: by 2002:a2e:3604:: with SMTP id d4mr13188020lja.52.1643087309734;
+ Mon, 24 Jan 2022 21:08:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQHXue1eCQdNXjaiK021FrevUeTu7qvGRbCQgEMVGxCAUkv+EIAYU0UA
-Content-Language: en-us
-X-Originating-IP: [137.202.0.90]
-X-ClientProxiedBy: svr-ies-mbx-10.mgc.mentorg.com (139.181.222.10) To
- svr-ies-mbx-02.mgc.mentorg.com (139.181.222.2)
+References: <0d0b0a3ad703f5ef50611e2dd80439675bda666a.1642383007.git.zong.li@sifive.com>
+ <mhng-5b3e2596-3558-4534-9229-26885ee4cc5c@palmer-ri-x1c9>
+ <CANXhq0ruGxjO0WPUipzZ7QQM1oEapyHAvb_aVQ_CMqVxbjc_BQ@mail.gmail.com>
+ <CAMuHMdVh_cXpbUeOmr_1K0dOJwGHSO0Ao=W43j5mpgvOiNyV9w@mail.gmail.com> <CANXhq0oTrVMhY19odFHroJKXmW1dROdS5J5YR-osO9uwbr9GKA@mail.gmail.com>
+In-Reply-To: <CANXhq0oTrVMhY19odFHroJKXmW1dROdS5J5YR-osO9uwbr9GKA@mail.gmail.com>
+From:   Zong Li <zong.li@sifive.com>
+Date:   Tue, 25 Jan 2022 13:08:18 +0800
+Message-ID: <CANXhq0rODPACKVuUgz=7_S0JW0Rp+RGCQawPQ9ruYCQH87ZQoA@mail.gmail.com>
+Subject: Re: [PATCH v4 3/3] dmaengine: sf-pdma: Get number of channel by
+ device tree
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Bin Meng <bin.meng@windriver.com>,
+        Green Wan <green.wan@sifive.com>, Vinod <vkoul@kernel.org>,
+        dmaengine <dmaengine@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Geert, Wolfram,
-
-Any feedback on the patch, please?
-
-Thanks.
-
-Best regards,
-Andrew
-
-> -----Original Message-----
-> From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
-> Sent: Sunday, January 09, 2022 10:20 PM
-> To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
-> Cc: 'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>; 'Linux I2C' <linux-i2c@vger.kernel.org>; 'Linux Kernel
-> Mailing List' <linux-kernel@vger.kernel.org>; 'Wolfram Sang' <wsa+renesas@sang-engineering.com>; Surachari,
-> Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
-> Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
-> 
-> Hello Geert, Wolfram,
-> 
-> Could you please let me know your opinion on version 2 of this patch,
-> that addressed your earlier review comments?
-> 
-> https://lore.kernel.org/all/20211006182314.10585-1-andrew_gabbasov@mentor.com/
-> 
-> Does it still need any further modifications or are you going to promote it further upstream?
-> 
-> Thanks.
-> 
-> Best regards,
-> Andrew
-> 
-> > -----Original Message-----
-> > From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
-> > Sent: Thursday, November 18, 2021 1:35 PM
-> > To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
-> > Cc: 'Linux-Renesas' <linux-renesas-soc@vger.kernel.org>; 'Linux I2C' <linux-i2c@vger.kernel.org>; 'Linux Kernel
-> > Mailing List' <linux-kernel@vger.kernel.org>; 'Wolfram Sang' <wsa+renesas@sang-engineering.com>; Surachari,
-> > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
-> > Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
+On Fri, Jan 21, 2022 at 6:29 PM Zong Li <zong.li@sifive.com> wrote:
+>
+> On Fri, Jan 21, 2022 at 4:33 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 > >
-> > Hello Geert, Wolfram,
+> > Hi Zong, Palmer,
 > >
-> > Do you have any feedback on version 2 of this patch, that was submitted
-> > after your review comments below?
-> >
-> > https://lore.kernel.org/all/20211006182314.10585-1-andrew_gabbasov@mentor.com/
-> >
-> > Thanks!
-> >
-> > Best regards,
-> > Andrew
-> >
-> > > -----Original Message-----
-> > > From: Andrew Gabbasov <andrew_gabbasov@mentor.com>
-> > > Sent: Wednesday, October 06, 2021 9:12 PM
-> > > To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
-> > > Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>; Linux I2C <linux-i2c@vger.kernel.org>; Linux Kernel
-> > > Mailing List <linux-kernel@vger.kernel.org>; Wolfram Sang <wsa+renesas@sang-engineering.com>; Surachari,
-> > > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
-> > > Subject: RE: [PATCH] i2c: rcar: add SMBus block read support
-> > >
-> > > Hi Geert,
-> > >
-> > > Thank you for your review!
-> > >
-> > > > -----Original Message-----
-> > > > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > > Sent: Tuesday, October 05, 2021 4:32 PM
-> > > > To: Gabbasov, Andrew <Andrew_Gabbasov@mentor.com>
-> > > > Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>; Linux I2C <linux-i2c@vger.kernel.org>; Linux Kernel
-> > > > Mailing List <linux-kernel@vger.kernel.org>; Wolfram Sang <wsa+renesas@sang-engineering.com>; Surachari,
-> > > > Bhuvanesh <Bhuvanesh_Surachari@mentor.com>
-> > > > Subject: Re: [PATCH] i2c: rcar: add SMBus block read support
-> > > >
-> > > > Hi Andrew,
-> > > >
-> > > > On Wed, Sep 22, 2021 at 6:14 PM Andrew Gabbasov
-> > > > <andrew_gabbasov@mentor.com> wrote:
-> > > > > The smbus block read is not currently supported for rcar i2c devices.
-> > > > > This patchset adds the support to rcar i2c bus so that blocks of data
-> > > > > can be read using SMbus block reads.(using i2c_smbus_read_block_data()
-> > > > > function from the i2c-core-smbus.c).
+> > On Fri, Jan 21, 2022 at 3:21 AM Zong Li <zong.li@sifive.com> wrote:
+> > > On Fri, Jan 21, 2022 at 2:52 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
+> > > > On Sun, 16 Jan 2022 17:35:28 PST (-0800), zong.li@sifive.com wrote:
+> > > > > It currently assumes that there are always four channels, it would
+> > > > > cause the error if there is actually less than four channels. Change
+> > > > > that by getting number of channel from device tree.
 > > > > >
-> > > > > Inspired by commit 8e8782c71595 ("i2c: imx: add SMBus block read support")
+> > > > > For backwards-compatible, it uses the default value (i.e. 4) when there
+> > > > > is no 'dma-channels' information in dts.
+> > > >
+> > > > Some of the same wording issues here as those I pointed out in the DT
+> > > > bindings patch.
+> > > >
+> > > > > Signed-off-by: Zong Li <zong.li@sifive.com>
+> >
+> > > > > --- a/drivers/dma/sf-pdma/sf-pdma.c
+> > > > > +++ b/drivers/dma/sf-pdma/sf-pdma.c
+> > > > > @@ -482,9 +482,7 @@ static void sf_pdma_setup_chans(struct sf_pdma *pdma)
+> > > > >  static int sf_pdma_probe(struct platform_device *pdev)
+> > > > >  {
+> > > > >       struct sf_pdma *pdma;
+> > > > > -     struct sf_pdma_chan *chan;
+> > > > >       struct resource *res;
+> > > > > -     int len, chans;
+> > > > >       int ret;
+> > > > >       const enum dma_slave_buswidth widths =
+> > > > >               DMA_SLAVE_BUSWIDTH_1_BYTE | DMA_SLAVE_BUSWIDTH_2_BYTES |
+> > > > > @@ -492,13 +490,21 @@ static int sf_pdma_probe(struct platform_device *pdev)
+> > > > >               DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES |
+> > > > >               DMA_SLAVE_BUSWIDTH_64_BYTES;
 > > > > >
-> > > > > This patch (adapted) was tested with v4.14, but due to lack of real
-> > > > > hardware with SMBus block read operations support, using "simulation",
-> > > > > that is manual analysis of data, read from plain I2C devices with
-> > > > > SMBus block read request.
+> > > > > -     chans = PDMA_NR_CH;
+> > > > > -     len = sizeof(*pdma) + sizeof(*chan) * chans;
+> > > > > -     pdma = devm_kzalloc(&pdev->dev, len, GFP_KERNEL);
+> > > > > +     pdma = devm_kzalloc(&pdev->dev, sizeof(*pdma), GFP_KERNEL);
+> > > > >       if (!pdma)
+> > > > >               return -ENOMEM;
 > > > > >
-> > > > > Signed-off-by: Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>
-> > > > > Signed-off-by: Andrew Gabbasov <andrew_gabbasov@mentor.com>
+> > > > > -     pdma->n_chans = chans;
+> > > > > +     ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
+> > > > > +                                &pdma->n_chans);
+> > > > > +     if (ret) {
+> > > > > +             dev_notice(&pdev->dev, "set number of channels to default value: 4\n");
+> > > > > +             pdma->n_chans = PDMA_MAX_NR_CH;
+> > > > > +     }
+> > > > > +
+> > > > > +     if (pdma->n_chans > PDMA_MAX_NR_CH) {
+> > > > > +             dev_err(&pdev->dev, "the number of channels exceeds the maximum\n");
+> > > > > +             return -EINVAL;
 > > > >
-> > > > Thanks for your patch!
-> > > >
-> > > > > --- a/drivers/i2c/busses/i2c-rcar.c
-> > > > > +++ b/drivers/i2c/busses/i2c-rcar.c
-> > > > > @@ -429,9 +431,16 @@ static bool rcar_i2c_dma(struct rcar_i2c_priv *priv)
-> > > > >                 /*
-> > > > >                  * The last two bytes needs to be fetched using PIO in
-> > > > >                  * order for the STOP phase to work.
-> > > > > +                *
-> > > > > +                * For SMBus block read the first byte was received using PIO.
-> > > >
-> > > > So it might be easier to read, and more maintainable, to keep the
-> > > > old assignments:
-> > > >
-> > > >     buf = priv->msg->buf;
-> > > >     len = priv->msg->len - 2;
-> > > >
-> > > > and adjust them for SMBus afterwards:
-> > > >
-> > > >     if (block_data) {
-> > > >             /* For SMBus block read the first byte was received using PIO */
-> > > >             buf++;
-> > > >             len--;
-> > > >     }
-> > > >
-> > > > ?
-> > > >
-> > > > >                  */
-> > > > > -               buf = priv->msg->buf;
-> > > > > -               len = priv->msg->len - 2;
-> > > > > +               if (block_data) {
-> > > > > +                       buf = priv->msg->buf + 1;
-> > > > > +                       len = priv->msg->len - 3;
-> > > > > +               } else {
-> > > > > +                       buf = priv->msg->buf;
-> > > > > +                       len = priv->msg->len - 2;
-> > > > > +               }
-> > > > >         } else {
-> > > > >                 /*
-> > > > >                  * First byte in message was sent using PIO.
-> > > >
-> > > > And below we have another case handling buf and len :-(
-> > > >
-> > > > So perhaps:
-> > > >
-> > > >     buf = priv->msg->buf;
-> > > >     len = priv->msg->len;
-> > > >
-> > > >     if (read) {
-> > > >             /*
-> > > >              * The last two bytes needs to be fetched using PIO in
-> > > >              * order for the STOP phase to work.
-> > > >              */
-> > > >             len -= 2;
-> > > >     }
-> > > >     if (!read || block_data) {
-> > > >             /* First byte in message was sent using PIO *
-> > > >             buf++;
-> > > >             len--;
-> > > >     }
-> > >
-> > > Probably I was trying to minimize the changes ;-)
-> > >
-> > > However, I agree with you that the whole code fragment can be simplified
-> > > and your variant indeed looks more clean and understandable.
-> > > Thank you for your suggestion, I'll submit version 2 of the patch
-> > > with this fragment changed.
-> > >
-> > > Thanks!
-> > >
-> > > Best regards,
-> > > Andrew
+> > > > Can we get away with just using only the number of channels the driver
+> > > > actually supports?  ie, just never sending an op to the channels above
+> > > > MAX_NR_CH?  That should leave us with nothing to track.
+> >
+> > In theory we can...
+> >
+> > > It might be a bit like when pdma->n_chans is bigger than the maximum,
+> > > set the pdma->chans to PDMA_MAX_NR_CH, then we could ensure that we
+> > > don't access the channels above the maximum. If I understand
+> > > correctly, I gave the similar thought in the thread of v2 patch, and
+> > > there are some discussions on that, but this way seems to lead to
+> > > hard-to-track problems.
+> >
+> > ... but that would mean that when a new variant appears that supports
+> > more channels, no error is printed, and people might not notice
+> > immediately that the higher channels are never used.
+> >
+>
+> I guess people might need to follow the dt-bindings, so they couldn't
+> specify the number of channels to the value which is more than
+> maximum. But as you mentioned, if people don't notice that and specify
+> it more than maximum,  they wouldn't be aware that the higher channels
+> are never used. It seems to me that we could keep returning the error
+> there, or show a warning message and use PDMA_MAX_NR_CH in that
+> situation, both looks good to me.
+>
 
+Hi all, thank you for the review, I'd like to prepare the next version
+patch, if current implementation of this part is ok to you, I will
+keep it in the next version. Please let me know if anything can be
+improved. Thanks
+
+> > Gr{oetje,eeting}s,
+> >
+> >                         Geert
+> >
+> > --
+> > Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> >
+> > In personal conversations with technical people, I call myself a hacker. But
+> > when I'm talking to journalists I just say "programmer" or something like that.
+> >                                 -- Linus Torvalds
