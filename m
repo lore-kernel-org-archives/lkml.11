@@ -2,101 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BACBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A20CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 14:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580552AbiAYOxr (ORCPT
+        id S1358363AbiAYOys (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:53:47 -0500
-Received: from gproxy4-pub.mail.unifiedlayer.com ([69.89.23.142]:35041 "EHLO
-        gproxy4-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1580410AbiAYOtV (ORCPT
+        Tue, 25 Jan 2022 09:54:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:45077 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1580799AbiAYOwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:49:21 -0500
-Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
-        by progateway6.mail.pro1.eigbox.com (Postfix) with ESMTP id 444CD10048474
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 14:49:11 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id CN8AnHAhbnAlUCN8An9JQZ; Tue, 25 Jan 2022 14:49:11 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=QIOt+iHL c=1 sm=1 tr=0 ts=61f00de7
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=DghFqjY3_ZEA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=aQAIBmicJCSxrmNyH3iv9LFB+3idbl+44IkGVHzPsZQ=; b=Jx4qh/VKtn/MFl0Ep7ecOLLtGJ
-        cyPjOsoxdZL4ygKDRuJ3Afqak+u+Qp/IsQ7s7uz3Apw+KkURTn4sxBftgwwcR4SoOuOmCTeD6kk3t
-        p0gWR1TqOcyeJQEfmauEEFLj8;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:51644 helo=[10.0.1.23])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1nCN8A-000lzi-Ew; Tue, 25 Jan 2022 07:49:10 -0700
-Message-ID: <0ea51623-2455-4860-cca7-7e9765e3ae6f@w6rz.net>
-Date:   Tue, 25 Jan 2022 06:49:09 -0800
+        Tue, 25 Jan 2022 09:52:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643122351;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=000N8i0ck0tOaQfaIosTwzm6+d1XOHKA+Or39H8w7yU=;
+        b=U2g3dz1yPLwkFzEk0cboxsBoQzKHfH4LFvKe1vpLgOFDYEGX5C6w9c1CqgUd7c7fWUBjvd
+        QnVeVP1RIu0XUnF04pw6gV0QMtVNxLGsOH2p6CPPEmRq7P1CjW4xx82TkchMG4g4pky8zK
+        7Mc16yp+ouqPkXZyuORhh0Ki0c1Ichg=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-189-uMLFNgDPPuaAoTbFdeoK9w-1; Tue, 25 Jan 2022 09:52:29 -0500
+X-MC-Unique: uMLFNgDPPuaAoTbFdeoK9w-1
+Received: by mail-ed1-f70.google.com with SMTP id i22-20020a50fd16000000b00405039f2c59so11074543eds.1
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 06:52:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=000N8i0ck0tOaQfaIosTwzm6+d1XOHKA+Or39H8w7yU=;
+        b=119TT9S9BuihVtkNPzopOQ7+JUQ5VVs794mRyDgtOkfyOKsbTEUTLvYjwSbqn7+H42
+         awEuseaQ2Es6YWLGvgO4DLfJ/bcEIkyUEEaOXvhbmRihjLomwuUYWtvt8NYTeON3BPnF
+         JpaFZpQ++m2pmXcozcJ9G/mfvJUCB5wJQYWO8FiyIVQMFbXYfCokahg8VK7MmxKe3DvU
+         Ek9N16Ve4oDWcVrhak5KTs6Y01BQpTuLVxk66xFrxBhm/AIcW+vktJd4qYlB+8wT+7kl
+         12rqIKOWBzdD4/C1MTWTGg7HwrPEA5iFQb9qo2onPawdt8XiuXZ+hV0KodmnEITI+3/W
+         hLrg==
+X-Gm-Message-State: AOAM531Xr7cfTUYvnp+GFBm+Gja4j+u8CjLJGYZynZYwqASa1OvTj8Ww
+        RLQZDNfHG9zAS97Zvqj93eWvvMQaCb9kOSI0bqiCPpuzI0OVQwsigjHvgvomhwJcN4X2oscU06d
+        Eg/EYoDoMlvwe0vUCdt83IagX
+X-Received: by 2002:a17:906:5d0f:: with SMTP id g15mr16299069ejt.670.1643122348431;
+        Tue, 25 Jan 2022 06:52:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwuLAUZcxf2zf3QzTwsEbiyKjOaNCI+O1Cluqag6g3b96dEm1xslHqRRBbInR4PoPT/UamFPA==
+X-Received: by 2002:a17:906:5d0f:: with SMTP id g15mr16299058ejt.670.1643122348252;
+        Tue, 25 Jan 2022 06:52:28 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id t6sm6172259ejd.85.2022.01.25.06.52.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 06:52:27 -0800 (PST)
+Message-ID: <d0a79b9a-6ead-2fd3-00fe-7d96d4f7f428@redhat.com>
+Date:   Tue, 25 Jan 2022 15:52:25 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5.16 0000/1039] 5.16.3-rc1 review
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 0/9] KVM: SVM: Fix and clean up "can emulate" mess
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-References: <20220124184125.121143506@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Liam Merwick <liam.merwick@oracle.com>
+References: <20220120010719.711476-1-seanjc@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220120010719.711476-1-seanjc@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1nCN8A-000lzi-Ew
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:51644
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/24/22 10:29, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.3 release.
-> There are 1039 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.3-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On 1/20/22 02:07, Sean Christopherson wrote:
+> Revert an amusing/embarassing goof reported by Liam Merwick, where KVM
+> attempts to determine if RIP is backed by a valid memslot without first
+> translating RIP to its associated GPA/GFN.  Fix the underlying bug that
+> was "fixed" by the misguided memslots check by (a) never rejecting
+> emulation for !SEV guests and (b) using the #NPF error code to determine
+> if the fault happened on the code fetch or on guest page tables, which is
+> effectively what the memslots check attempted to do.
+> 
+> Further clean up, harden, and document SVM's "can emulate" helper, and
+> fix a #GP interception SEV bug found in the process of doing so.
+> 
+> Sean Christopherson (9):
+>    KVM: SVM: Never reject emulation due to SMAP errata for !SEV guests
+>    Revert "KVM: SVM: avoid infinite loop on NPF from bad address"
+>    KVM: SVM: Don't intercept #GP for SEV guests
+>    KVM: SVM: Explicitly require DECODEASSISTS to enable SEV support
+>    KVM: x86: Pass emulation type to can_emulate_instruction()
+>    KVM: SVM: WARN if KVM attempts emulation on #UD or #GP for SEV guests
+>    KVM: SVM: Inject #UD on attempted emulation for SEV guest w/o insn
+>      buffer
+>    KVM: SVM: Don't apply SEV+SMAP workaround on code fetch or PT access
+>    KVM: SVM: Don't kill SEV guest if SMAP erratum triggers in usermode
+> 
+>   arch/x86/include/asm/kvm_host.h |   3 +-
+>   arch/x86/kvm/svm/sev.c          |   9 +-
+>   arch/x86/kvm/svm/svm.c          | 162 ++++++++++++++++++++++----------
+>   arch/x86/kvm/vmx/vmx.c          |   7 +-
+>   arch/x86/kvm/x86.c              |  11 ++-
+>   virt/kvm/kvm_main.c             |   1 -
+>   6 files changed, 135 insertions(+), 58 deletions(-)
+> 
+> 
+> base-commit: edb9e50dbe18394d0fc9d0494f5b6046fc912d33
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+Queued, thanks.
 
-Tested-by: Ron Economos <re@w6rz.net>
+Paolo
 
