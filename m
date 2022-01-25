@@ -2,145 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D616C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D643C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 20:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232727AbiAYUxE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 15:53:04 -0500
-Received: from mail-ua1-f41.google.com ([209.85.222.41]:44666 "EHLO
-        mail-ua1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232648AbiAYUwg (ORCPT
+        id S232645AbiAYU51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 15:57:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43038 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232627AbiAYU50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 15:52:36 -0500
-Received: by mail-ua1-f41.google.com with SMTP id f24so39598794uab.11;
-        Tue, 25 Jan 2022 12:52:36 -0800 (PST)
+        Tue, 25 Jan 2022 15:57:26 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC6DC061744
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:57:25 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id a8so15531849pfa.6
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 12:57:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zNnJZ8cULoAFIJoo6anuEJ9z/gTYkfvN9kje7W7RV4o=;
+        b=nz81gq6QaZlSyl/2nVpfQTbtLIFlSJX0bcTS30c3i7dQ9JkjfUYWX+EyAC2dppdYLj
+         jYubDxKLkO/SvkRwVlxV4OwhWKn38NPbrcu9pedSYv0zJEg3D/sI2C5YEbaQ88a8HWDf
+         4IB96WsmKBm7jpWHs3pqpa+A/3bFXOAELKf0k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/PK+VsfalNcqPlg+OdOK8H00toRP5nx8q9De4RBT+0k=;
-        b=Reu64PYpW3KbPGhPhwo/dKW1CYihMs4xN2NBUQWp7kh0Avq4qSYMc8b8oDgCU/JYRz
-         HWMptWd6nXIYCQncpuw+AubC18yA30rcOzbzTyvT8UBUADBrr2G2LBCuH64YQ7mCdun6
-         Q9SBBAsYDSUZkEhebJ2fZgSgKQ8hjka1biIeThFA2LxdSL/KnEfjFo0yNQn7p8muEQX4
-         BydhCEPXM0rSyBLUgIFw5fFGwZhCcYB5Bk+i1DcWXxyWTGO7lyV7bZgFRPsoWsVlLJwD
-         DOaOTcI/ytMFDWuq2tRqG2vyyfYlrbvVcLHjCbSiIoBWBbi9ey7DYkE/kNu9glE+agII
-         baYA==
-X-Gm-Message-State: AOAM533liyUcLzDeE+zAS7/jdAN8SU5rOLNJkCBIBBidQaTYxv1sp8t7
-        7FXNmJMy1NWr/pZi6kw83XGXVee66PQ5IY5V
-X-Google-Smtp-Source: ABdhPJwkl1T2wViviMS3wn0U+Fof7ovoNAy0RDi5fJI5qpXMnWQyN+31WMPAt8zcHhHpID/v3iZa+A==
-X-Received: by 2002:a67:f5d7:: with SMTP id t23mr5614975vso.28.1643143955927;
-        Tue, 25 Jan 2022 12:52:35 -0800 (PST)
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
-        by smtp.gmail.com with ESMTPSA id n10sm3146930vso.34.2022.01.25.12.52.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 12:52:35 -0800 (PST)
-Received: by mail-ua1-f46.google.com with SMTP id 2so39751644uax.10;
-        Tue, 25 Jan 2022 12:52:35 -0800 (PST)
-X-Received: by 2002:a9f:3d89:: with SMTP id c9mr8620407uai.78.1643143955031;
- Tue, 25 Jan 2022 12:52:35 -0800 (PST)
-MIME-Version: 1.0
-References: <20220120090918.2646626-1-atishp@rivosinc.com> <20220120090918.2646626-7-atishp@rivosinc.com>
- <CAMuHMdXJoREF7jZaYWrDUjJqKUSCd82qDVaMEo7VO38ok8J-AA@mail.gmail.com> <CAOnJCULjqeL9Q27n=g19ALbOivzid6pc_gYv6JUF4iP=64kJ-Q@mail.gmail.com>
-In-Reply-To: <CAOnJCULjqeL9Q27n=g19ALbOivzid6pc_gYv6JUF4iP=64kJ-Q@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 25 Jan 2022 21:52:23 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWBF0XXXQLfAH81F=BczjsDeQFU454_A2C_-qLPKJGpiQ@mail.gmail.com>
-Message-ID: <CAMuHMdWBF0XXXQLfAH81F=BczjsDeQFU454_A2C_-qLPKJGpiQ@mail.gmail.com>
-Subject: Re: [PATCH v3 6/6] RISC-V: Do not use cpumask data structure for
- hartid bitmap
-To:     Atish Patra <atishp@atishpatra.org>
-Cc:     Atish Patra <atishp@rivosinc.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zNnJZ8cULoAFIJoo6anuEJ9z/gTYkfvN9kje7W7RV4o=;
+        b=AXvdvO7XJUoQ1Uy5JUoQyeUz9vJamYiZtpShvPW26XSHWGOxV4tlk5O8EGjzWkM2lE
+         Qr9sXEBn/iU4/9afFQ8GCGJD2j2nflYzlIf9+yOztP7+Gl4blU0Vpoz8iq1ohd1frLa4
+         KktSMvR9iOONxAVQLE7k1YS+0YGCeuT3uGKhCLHbz1KZe/nPC9QR4CHWQz0H4uVYNjZx
+         an9CXoot48sdJ/W8aERF6/nPVbQSFtnb9rhkWLrcJW8Di1zYsz/eWDqhd5/O7zwj5608
+         CAB2pJaHW3nw4rzrs8+h/REIzaqT5xCzrlc0AJFSsrGK2QxsM2epvQymgB14ujuHrU+u
+         HqTw==
+X-Gm-Message-State: AOAM531B281DS5nafisWJ1z4nYmmsEQmu8455yv/5aUrAmXMkDrsShJh
+        Z23NMH+kTmolsbrt3nFu8b0HIw==
+X-Google-Smtp-Source: ABdhPJzgvACB2egAfulYVCRGcnQXy//k48Ir8AaaGOefnXMaodm6XT6dVXWkZ6OQVqUnDywk2vV0Ig==
+X-Received: by 2002:a05:6a00:1589:b0:4c3:cc45:58e2 with SMTP id u9-20020a056a00158900b004c3cc4558e2mr20129245pfk.86.1643144245304;
+        Tue, 25 Jan 2022 12:57:25 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 198sm11472118pgg.4.2022.01.25.12.57.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 12:57:25 -0800 (PST)
+Date:   Tue, 25 Jan 2022 12:57:24 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Jisheng Zhang <jszhang@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the kspp tree
+Message-ID: <202201251256.CCCBE9851E@keescook>
+References: <20220125145006.677e3709@canb.auug.org.au>
+ <202201242230.C54A6BCDFE@keescook>
+ <20220125222732.98ce2e445726e773f40e122e@kernel.org>
+ <20220125233154.dac280ed36944c0c2fe6f3ac@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220125233154.dac280ed36944c0c2fe6f3ac@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Atish,
+On Tue, Jan 25, 2022 at 11:31:54PM +0900, Masami Hiramatsu wrote:
+> On Tue, 25 Jan 2022 22:27:32 +0900
+> Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> 
+> > > /*
+> > >  * struct trace_event_data_offsets_<call> {
+> > >  *      u32                             <item1>;
+> > >  *      u32                             <item2>;
+> > >  *      [...]
+> > >  * };
+> > >  *
+> > >  * The __dynamic_array() macro will create each u32 <item>, this is
+> > >  * to keep the offset of each array from the beginning of the event.
+> > >  * The size of an array is also encoded, in the higher 16 bits of
+> > >  * <item>.
+> > >  */
+> > > 
+> > > So, I think -Warray-bounds is refusing to see the destination as
+> > > anything except a u32, but being accessed at 4 (sizeof(u32)) + 8
+> > > (address && 0xffff) (?)
+> > 
+> > Ah, I got it. Yes, that's right. __data_loc() will access the data
+> > from the __entry, but the __rel_loc() points the same address from
+> > the encoded field ("__rel_loc_foo" in this case) itself.
+> > This is introduced for the user application event, which doesn't
+> > know the actual __entry size because the __entry includes some
+> > kernel internal defined fields.
+> > 
+> > > But if this is true, I would imagine there would be plenty of other
+> > > warnings? I'm currently stumped.
+> > 
+> > That is because __rel_loc is used only in the sample code in the kernel
+> > for testing. Other use-cases comes from user-space.
+> > Hmm, can we skip this boundary check for this example?
+> 
+> If the -Warray-bounds determines the destination array size from
+> the type of given pointer, we can just change the macro as below;
+> 
+> #define __get_rel_dynamic_array(field) 
+> 			((void *)__entry +                                 \
+> 			 offsetof(typeof(*__entry), __rel_loc_##field) +   \
+> 			 sizeof(__entry->__rel_loc_##field) +              \
+> 			 (__entry->__rel_loc_##field & 0xffff))
+> 
+> This must works same as __get_dynamic_array() macro.
+> 
+> Could you try this patch?
+> 
+> From 2982ba01367ec1f746a4f128512436e5325a7f9d Mon Sep 17 00:00:00 2001
+> From: Masami Hiramatsu <mhiramat@kernel.org>
+> Date: Tue, 25 Jan 2022 23:19:30 +0900
+> Subject: [PATCH] tracing: Avoid -Warray-bounds warning for __rel_loc macro
+> 
+> Since -Warray-bounds checks the destination size from the
+> type of given pointer, __assign_rel_str() macro gets warned
+> because it passes the pointer to the 'u32' field instead of
+> 'trace_event_raw_*' data structure.
+> Pass the data address calculated from the 'trace_event_raw_*'
+> instead of 'u32' __rel_loc field.
+> 
+> Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Cc: Kees Cook <keescook@chromium.org>
+> ---
+>  include/trace/trace_events.h | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/trace/trace_events.h b/include/trace/trace_events.h
+> index 8c6f7c433518..65d927e059d3 100644
+> --- a/include/trace/trace_events.h
+> +++ b/include/trace/trace_events.h
+> @@ -318,9 +318,10 @@ TRACE_MAKE_SYSTEM_STR();
+>  #define __get_str(field) ((char *)__get_dynamic_array(field))
+>  
+>  #undef __get_rel_dynamic_array
+> -#define __get_rel_dynamic_array(field)	\
+> -		((void *)(&__entry->__rel_loc_##field) +	\
+> -		 sizeof(__entry->__rel_loc_##field) +		\
+> +#define __get_rel_dynamic_array(field)					\
+> +		((void *)__entry + 					\
+> +		 offsetof(typeof(*__entry), __rel_loc_##field) +	\
+> +		 sizeof(__entry->__rel_loc_##field) +			\
+>  		 (__entry->__rel_loc_##field & 0xffff))
+>  
+>  #undef __get_rel_dynamic_array_len
 
-On Tue, Jan 25, 2022 at 9:17 PM Atish Patra <atishp@atishpatra.org> wrote:
-> On Tue, Jan 25, 2022 at 12:12 PM Geert Uytterhoeven
-> <geert@linux-m68k.org> wrote:
-> > On Thu, Jan 20, 2022 at 10:12 AM Atish Patra <atishp@rivosinc.com> wrote:
-> > > Currently, SBI APIs accept a hartmask that is generated from struct
-> > > cpumask. Cpumask data structure can hold upto NR_CPUs value. Thus, it
-> > > is not the correct data structure for hartids as it can be higher
-> > > than NR_CPUs for platforms with sparse or discontguous hartids.
-> > >
-> > > Remove all association between hartid mask and struct cpumask.
-> > >
-> > > Reviewed-by: Anup Patel <anup@brainfault.org> (For Linux RISC-V changes)
-> > > Acked-by: Anup Patel <anup@brainfault.org> (For KVM RISC-V changes)
-> > > Signed-off-by: Atish Patra <atishp@rivosinc.com>
-> >
-> > Thanks for your patch, which is now commit 26fb751ca37846c9 ("RISC-V:
-> > Do not use cpumask data structure for hartid bitmap") in v5.17-rc1.
-> >
-> > I am having an issue with random userspace SEGVs on Starlight Beta
-> > (which needs out-of-tree patches).  It doesn't always manifest
-> > itself immediately, so it took a while to bisect, but I suspect the
-> > above commit to be the culprit.
->
-> I have never seen one before during my testing. How frequently do you see them?
-> Does it happen while running anything or just idle user space results
-> in SEGVs randomly.
+This patch doesn't silence the warning, but now that I see the shape of
+things more clearly, let me see if I can find the right combo.
 
-Sometimes they happen during startup (lots of failures from systemd),
-sometimes they happen later, during interactive work.
-Sometimes while idle, and something runs in the background (e.g. mandb).
+Thanks!
 
-> Do you have a trace that I can look into ?
+-Kees
 
-# apt update
-[  807.499050] apt[258]: unhandled signal 11 code 0x1 at
-0xffffff8300060020 in libapt-pkg.so.6.0.0[3fa49ac000+174000]
-[  807.509548] CPU: 0 PID: 258 Comm: apt Not tainted
-5.16.0-starlight-11192-g26fb751ca378-dirty #153
-[  807.518674] Hardware name: BeagleV Starlight Beta (DT)
-[  807.524077] epc : 0000003fa4a47a0a ra : 0000003fa4a479fc sp :
-0000003fcb4b39b0
-[  807.531383]  gp : 0000002adcef4800 tp : 0000003fa43287b0 t0 :
-0000000000000001
-[  807.538603]  t1 : 0000000000000009 t2 : 00000000000003ff s0 :
-0000000000000000
-[  807.545887]  s1 : 0000002adcf3cb60 a0 : 0000000000000003 a1 :
-0000000000000000
-[  807.553167]  a2 : 0000003fcb4b3a30 a3 : 0000000000000000 a4 :
-0000002adcf3cc1c
-[  807.560390]  a5 : 0007000300060000 a6 : 0000000000000003 a7 :
-1999999999999999
-[  807.567654]  s2 : 0000003fcb4b3a28 s3 : 0000000000000002 s4 :
-0000003fcb4b3a30
-[  807.575039]  s5 : 0000003fa4baa810 s6 : 0000000000000010 s7 :
-0000002adcf19a40
-[  807.582363]  s8 : 0000003fcb4b4010 s9 : 0000003fa4baa810 s10:
-0000003fcb4b3e90
-[  807.589606]  s11: 0000003fa4b2a528 t3 : 0000000000000000 t4 :
-0000003fa47906a0
-[  807.596891]  t5 : 0000000000000005 t6 : ffffffffffffffff
-[  807.602302] status: 0000000200004020 badaddr: ffffff8300060020
-cause: 000000000000000d
-
-(-dirty due to Starlight DTS and driver updates)
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Kees Cook
