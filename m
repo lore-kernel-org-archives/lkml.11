@@ -2,77 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93531C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AECB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S255006AbiAYEx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:53:59 -0500
-Received: from out162-62-57-87.mail.qq.com ([162.62.57.87]:34847 "EHLO
-        out162-62-57-87.mail.qq.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1357922AbiAYEl2 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 23:41:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1643085678;
-        bh=7945bRSZNev1fxXSkPlWshLRauTragynEtURS2/Qcwk=;
-        h=From:To:Cc:Subject:Date;
-        b=iWTUipZzfnLiwCESfjSfwEnRhmbz67xL6xZXn0xyobZjOiSINFDSP17azsg/J1WBL
-         fA3RUhFyJDh5Q1TaUaAp+Gt9BijY77qkYemPSQuz86P4y1u97QzV1lLkn4dFymzbCX
-         BTsAixSxJff1DPbsg/h/imOV8+TAxZDDiN9rGugc=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
-        id 1F808456; Tue, 25 Jan 2022 12:07:56 +0800
-X-QQ-mid: xmsmtpt1643083676t5wn7vuix
-Message-ID: <tencent_C52895FD37802832A3E5B272D05008866F0A@qq.com>
-X-QQ-XMAILINFO: ObFHHlrAm440WFqxXpfy2OMEFUwmcfhEw6FCfS53x9Jq1IXUo3IRffNwG19du7
-         RFda4CCqLn7tKxMtg2r4ZJlfK7OIeRj8PxwhqhTsYLjMrvmT+MpphFrU/HqwQoDS0qF0zkUT/QkN
-         KK5rzw6P+UCzGljmG/7iTSDvk9KDtHciHw5m72OPt4Km1W+9P7u5+nidc9lPCSgEE9ZjEWOHZxRb
-         i0BrVbOiS3CgeXPIi4L+sbaYVmagqZJiFEh6WMkGdF+zpprInFxd7QnSGbh98lC8HHq7nSCYU13M
-         mFZMCRO5uTFH8E5FivSS+wgpbvLGHwMaBTYk33rLEm1gEa8lDrnJniLpKa35d0CbhSceO2/XCjL7
-         DJBdlnambp7sstXFU+BQcEbGYFVRw8+OkGjUvqwB/hZKvDFMwGjmNY2UOPRAV8u8sSNZZCtvLuJk
-         t4CUMtf6QRjubs+2wyFj0IvDjiJC8BaTbUMNt8SgGKogKbq2iowQJJm1hEjB5vjbKvnYs2ygIqL7
-         /tQ8Yj1mzOfFSnOdSkXI8yr+nU6+5gQJaJHk0+24sjaGcVvILs7RutH3/RBaYL3pRemjyYNbxX5L
-         9RW2Ioe6bOeGFXFWnXmqIT7S4b+QGgwcUHd06ddWva2yXCDw4xDcFTVfuzOHsadjOWreFNPeewQX
-         CecQp7hb/LaoETFR3g2G9k9+egWCTZqr8jjijNhQVL5yNwkt46gp200NHjq0j9R54ZzyeBSJ3hBX
-         dr4cX7sNgJXFQ7j8PPq9HGdoFVOmPiDVH5CxN1DwTrkO5xjzvrxCXi9Q+mGFk+RX2TozD3uBTDc6
-         h8FBPgylsNJcRegAdtdloJgc7HwD8CVZY4Q4t19sryAvDCERYE0N7KtLjRwwQd07xrlmvj94RgB1
-         O1QYkBEkBO4vV0Hpj8AAJfVtaa6HnTzkBJLPS0EJ5sKgA6gwPcOlCqfx2l3zlXpA==
-From:   xkernel.wang@foxmail.com
-To:     rostedt@goodmis.org, mingo@redhat.com
-Cc:     linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] tracing/histogram: fix a potential memory leak for kstrdup()
-Date:   Tue, 25 Jan 2022 12:07:15 +0800
-X-OQ-MSGID: <20220125040715.2057-1-xkernel.wang@foxmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+        id S254926AbiAYExg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 23:53:36 -0500
+Received: from mga06.intel.com ([134.134.136.31]:17064 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1326106AbiAYEoi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 23:44:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643085878; x=1674621878;
+  h=cc:subject:to:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=RHEqwCKoay/aJcjfpJzwezonfNdiVpJz/c7HuPxDFXQ=;
+  b=DOJSn57aMVvUcI8Ou5RowefsFtuyxujYPNMB1XLJuXKOB5Y6sbDezjqr
+   M35Ly93xomaymRNCYnelqbvR+weMUELo3z8Ucke+3dyNqao9xIsiY/MCz
+   fuoRn1hHodQgAR6QZvrGt+Ta7nd7umHbUgEkXSe5W6DugnXWsce8UR8Us
+   /wZb2HMX1TSY5Fxdrj0lL3SPLIHNepshyz943QLBQRxSzWvfQ4oOO/DbT
+   MB/7iZgb5EKUh+8AyfbL1VAZsVAHpDoqTG2mi133hjGJpk3WXIKG8H557
+   E9cOLP/D4ic6yPCkCqUVGeDh6lsGMDpUWIbJ8hETKYVlH7Yo7XRaXSb9Q
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="306932970"
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="306932970"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 20:44:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="534559345"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by orsmga008.jf.intel.com with ESMTP; 24 Jan 2022 20:44:28 -0800
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>
+References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+ <20220124071103.2097118-8-baolu.lu@linux.intel.com>
+ <Ye5zUapC/YcZs7kl@infradead.org> <20220124172418.GE966497@nvidia.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <256b0ae8-47c5-24ac-0ca9-8f0936505656@linux.intel.com>
+Date:   Tue, 25 Jan 2022 12:43:28 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220124172418.GE966497@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On 1/25/22 1:24 AM, Jason Gunthorpe wrote:
+> On Mon, Jan 24, 2022 at 01:37:21AM -0800, Christoph Hellwig wrote:
+>> On Mon, Jan 24, 2022 at 03:11:02PM +0800, Lu Baolu wrote:
+>>> Add a domain specific callback set, domain_ops, for vendor iommu driver
+>>> to provide domain specific operations. Move domain-specific callbacks
+>>> from iommu_ops to the domain_ops and hook them when a domain is allocated.
+>>
+>> Ah, that's what I meant earlier.  Perfect!
+>>
+>> Nit:  I don't think vendor is the right term here.
+> 
+> +1 please don't use the confusing 'vendor' in the kernel, if you feel
+> you want to write 'vendor' writing 'device driver' is usually a good
+> choice..
 
-kfree() is missing on an error path to free the memory allocated by
-kstrdup():
-> p = param = kstrdup(data->params[i], GFP_KERNEL);
-So it is better to free it via kfree(p).
+Sure!
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
- kernel/trace/trace_events_hist.c | 1 +
- 1 file changed, 1 insertion(+)
+> 
+> This whole series is nice, the few small notes aside, thanks for
+> making it!
 
-diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-index f01e442..1fac14c 100644
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -3578,6 +3578,7 @@ static int trace_action_create(struct hist_trigger_data *hist_data,
- 
- 			var_ref_idx = find_var_ref_idx(hist_data, var_ref);
- 			if (WARN_ON(var_ref_idx < 0)) {
-+				kfree(p);
- 				ret = var_ref_idx;
- 				goto err;
- 			}
--- 
+Thank you!
+
+> 
+> Jason
+> 
+
+Best regards,
+baolu
