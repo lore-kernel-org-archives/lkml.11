@@ -2,67 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D448DC63682
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:10:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5467AC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238804AbiAZJKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:10:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238789AbiAZJKt (ORCPT
+        id S238812AbiAZJLW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:11:22 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53018 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231248AbiAZJLO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:10:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEE1C06161C;
-        Wed, 26 Jan 2022 01:10:49 -0800 (PST)
+        Wed, 26 Jan 2022 04:11:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47719B81B99;
-        Wed, 26 Jan 2022 09:10:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC86C340E3;
-        Wed, 26 Jan 2022 09:10:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FC346135B;
+        Wed, 26 Jan 2022 09:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4186C340E3;
+        Wed, 26 Jan 2022 09:11:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643188246;
-        bh=EbY6JvAXqD+CkG3ubM/XShZR9U8dHFH0D6GHyMFVqpo=;
+        s=k20201202; t=1643188272;
+        bh=81J6WPzY+ci50rtR2WWy0x8FAKIC8UJUQHIK59zO96I=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pwL6+PnaOvEYrBgbAS72q/4wlMdOJzMXXyl/GYED5+OCC0TcMBO9Y2/aiEit6DsNF
-         YAwkaFXa+vlRqqIj/U/Uq/ggdjkPhu+X2tR4bV6XW3RQNfc2rNpqLcrfgNYavOQRuI
-         DcdisBXro8Q/bLCptYbVDunwTBqhVH5LKdQ6W4gFsqnp3NZqPhCb/9IcdmAucSIyv1
-         MtQZXvzcCtT/MOVrgvdGieCQbi/QtaZYJm8WMMX26o4I9W9tt+W0LxTlMXnY8g0/0b
-         hOb85pmzjt9YcGV3CPTir2S8Z7zVAnL1/Biz4Plek7q9XofscF1mrLB4tMVhFNorrq
-         dhA2LJETbr2AA==
-Date:   Wed, 26 Jan 2022 17:10:41 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Adam Ford <aford173@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org, tharvey@gateworks.com,
-        aford@beaconembedded.com, michael@amarulasolutions.com,
-        jagan@amarulasolutions.com, Lucas Stach <l.stach@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V5 6/9] arm64: dts: imx8mn: add GPC node
-Message-ID: <20220126091038.GI4686@dragon>
-References: <20211215004626.2241839-1-aford173@gmail.com>
- <20211215004626.2241839-7-aford173@gmail.com>
+        b=McAkAp5dZD7GpxrB2gHhx7l+taB5JCn8xsMZY5FJp3JIY3Vv1nqeAjaZn5HJMlbkW
+         tNbttNjiPfRD0fA0yDHJVGwjq3Cy7M+4DNTqL5EgbvOIo9iBerzAbvgjAwX5Gf+R0X
+         b+GqTvhVUM8j2N0nIPZt9S6oIAuq2BujY+p9wJGbyjdxhCBxng14pAsQk9P/wA2uGv
+         Ns3AWK1vdEfh3MalW6AGWael9UeWyu58w0YGInd50x/Uipb8k7Z+UytQd4xS94TjIW
+         myM1bGpxvsZgDKlsyn6IBZTOa5jAvNtIEveWUR7fOIlkUUWbUpFORHWD4tdF17nDbR
+         pUBBh3uXHj/Lw==
+Date:   Wed, 26 Jan 2022 10:11:04 +0100
+From:   Christian Brauner <brauner@kernel.org>
+To:     Stefan Berger <stefanb@linux.vnet.ibm.com>
+Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
+        serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Stefan Berger <stefanb@linux.ibm.com>
+Subject: Re: [PATCH v9 06/23] ima: Move arch_policy_entry into ima_namespace
+Message-ID: <20220126091104.jbedxrewojcmvy3u@wittgenstein>
+References: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
+ <20220125224645.79319-7-stefanb@linux.vnet.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20211215004626.2241839-7-aford173@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20220125224645.79319-7-stefanb@linux.vnet.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 06:46:23PM -0600, Adam Ford wrote:
-> Add the DT node for the GPC, including all the PGC power domains,
-> some of them are not fully functional yet, as they require interaction
-> with the blk-ctrls to properly power up/down the peripherals.
+On Tue, Jan 25, 2022 at 05:46:28PM -0500, Stefan Berger wrote:
+> From: Stefan Berger <stefanb@linux.ibm.com>
 > 
-> Signed-off-by: Adam Ford <aford173@gmail.com>
-> Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+> Move the arch_policy_entry pointer into ima_namespace.
+> 
+> When freeing the memory set the pointer to NULL.
+> 
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> ---
 
-Applied #6 ~ #9, thanks!
+Only relevant for the initial imans (for now) since it is derived from a
+boot parameter. Maybe mention this in the commit message.
+
+Move into struct ima_namespace looks good,
+Acked-by: Christian Brauner <brauner@kernel.org>
