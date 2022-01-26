@@ -2,77 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE3EC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75768C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:05:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241049AbiAZMDK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 07:03:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241045AbiAZMDJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 07:03:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144D1C061748
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 04:03:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3EC2B81CBD
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 12:03:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC006C340E3;
-        Wed, 26 Jan 2022 12:03:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643198586;
-        bh=LQmTP+KmRWl3m9v2Km0Z/hWKneKL6Li6IlRAbvPpx+E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HJLFjewCXAqFsgPogVd2jlu7dDix1vaWVBQGwc0a4bs9gv52iF/MBeZNNJtNoBfVX
-         CxpGz66LHWTpxuByvLdyGquzN2hVR66mvSXeEsTaH4gFhbLOKy8Hlmj+TPA64B7L/B
-         BhK+X+09SgypH+kwqwnCTbQ2kRY47shqj6KDomfo=
-Date:   Wed, 26 Jan 2022 13:03:03 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
-Cc:     realwakka@gmail.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] staging: pi433: add debugfs interface
-Message-ID: <YfE4d4UY1yIVvapC@kroah.com>
-References: <20220124042506.GA7662@mail.google.com>
- <20220124042721.GA8078@mail.google.com>
+        id S241055AbiAZMF3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 07:05:29 -0500
+Received: from foss.arm.com ([217.140.110.172]:35170 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233883AbiAZMF3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 07:05:29 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B5C3BD6E;
+        Wed, 26 Jan 2022 04:05:28 -0800 (PST)
+Received: from [10.57.68.47] (unknown [10.57.68.47])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 843A73F793;
+        Wed, 26 Jan 2022 04:05:27 -0800 (PST)
+Message-ID: <bf7fdba2-7850-9d38-157d-7a1e726512a5@arm.com>
+Date:   Wed, 26 Jan 2022 12:05:22 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220124042721.GA8078@mail.google.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2] add cpu frequency to cpuinfo in arm64
+Content-Language: en-GB
+To:     Chao Liu <liuchao173@huawei.com>, catalin.marinas@arm.com,
+        will@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        hewenliang4@huawei.com, zhoukang7@huawei.com
+References: <20220126092349.285642-1-liuchao173@huawei.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220126092349.285642-1-liuchao173@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 05:27:21PM +1300, Paulo Miguel Almeida wrote:
-> This adds debugfs interface that can be used for debugging possible
-> hardware/software issues.
-> 
-> It currently exposes the following debugfs entries for each SPI device
-> probed:
-> 
->   /sys/kernel/debug/pi433/<DEVICE>/regs
->   ...
-> 
-> The 'regs' file contains all rf69 uC registers values that are useful
-> for troubleshooting misconfigurations between 2 devices. It contains one
-> register per line so it should be easy to use normal filtering tools to
-> find the registers of interest if needed.
-> 
-> Signed-off-by: Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
+On 2022-01-26 09:23, Chao Liu wrote:
+> There is cpu frequency in /proc/cpuinfo in x86 but not in arm64
+
+arm64 cpuinfo also doesn't show the APIC ID or microcode version. 
+Different architectures are different.
+
+Besides, x86 cpuinfo only shows MHz if the CPU has X86_FEATURE_TSC, so 
+for compatibility we should only do this on AArch64 CPUs which have 
+X86_FEATURE_TSC.
+
+Robin.
+
+> Signed-off-by: Chao Liu <liuchao173@huawei.com>
 > ---
->  drivers/staging/pi433/pi433_if.c | 80 ++++++++++++++++++++++++++++++++
->  drivers/staging/pi433/rf69.c     |  2 +-
->  drivers/staging/pi433/rf69.h     |  1 +
->  3 files changed, 82 insertions(+), 1 deletion(-)
-
-Breaks the build:
-
-drivers/staging/pi433/pi433_if.c:1166:25: error: initialization of ‘int (*)(struct inode *, struct file *)’ from incompatible pointer type ‘ssize_t (*)(struct inode *, struct file *)’ {aka ‘long int (*)(struct inode *, struct file *)’} [-Werror=incompatible-pointer-types]
- 1166 |         .open =         pi433_debugfs_regs_open,
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~
-
-
+> Change in v2:
+> - fix spelling errors and remove remove redundant blank line
+> 
+>   arch/arm64/kernel/cpuinfo.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/arch/arm64/kernel/cpuinfo.c b/arch/arm64/kernel/cpuinfo.c
+> index 591c18a889a5..39a36e6e8079 100644
+> --- a/arch/arm64/kernel/cpuinfo.c
+> +++ b/arch/arm64/kernel/cpuinfo.c
+> @@ -24,6 +24,7 @@
+>   #include <linux/sched.h>
+>   #include <linux/smp.h>
+>   #include <linux/delay.h>
+> +#include <linux/cpufreq.h>
+>   
+>   /*
+>    * In case the boot CPU is hotpluggable, we record its initial state and
+> @@ -144,6 +145,7 @@ static int c_show(struct seq_file *m, void *v)
+>   	for_each_online_cpu(i) {
+>   		struct cpuinfo_arm64 *cpuinfo = &per_cpu(cpu_data, i);
+>   		u32 midr = cpuinfo->reg_midr;
+> +		unsigned int freq = cpufreq_quick_get(i);
+>   
+>   		/*
+>   		 * glibc reads /proc/cpuinfo to determine the number of
+> @@ -159,6 +161,10 @@ static int c_show(struct seq_file *m, void *v)
+>   			   loops_per_jiffy / (500000UL/HZ),
+>   			   loops_per_jiffy / (5000UL/HZ) % 100);
+>   
+> +		if (freq)
+> +			seq_printf(m, "cpu MHz\t\t: %u.%03u\n",
+> +				   freq / 1000, (freq % 1000));
+> +
+>   		/*
+>   		 * Dump out the common processor features in a single line.
+>   		 * Userspace should read the hwcaps with getauxval(AT_HWCAP)
