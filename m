@@ -2,167 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B4AC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEB6C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241868AbiAZNzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:55:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241810AbiAZNyk (ORCPT
+        id S241858AbiAZNz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:55:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:50052 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241826AbiAZNzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:54:40 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771F8C061770
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 05:54:38 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id e2so10537400wra.2
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 05:54:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BKsf6dGO619i7ojy2wbleRyI3TRP+wgyPNagaXmtvTU=;
-        b=c7yiZrG4/TyIvSNHYNZnb10q3lmZMebSVvAJlr3i5scF1Hj/EfHqt/z/P5a4ROFfKD
-         X/HgALPBPiHcpqCGJO/MOhRCv+Pu6OyK1llbwcHnJHvHvgjLdP77TacG714tWZNxz4ox
-         KEUsg396RWk1eZ+xniAh2m4X2ctOJb/cFnJ1HZ6HmJcz+8IMJrWfeydYDfoM8KYuy3aV
-         y9VXFq0SDfmhdClORdVj6TNW/8YiUyTBR8XD5VTfyerOBtTWBoM0wPmfOju4u/nNWCY8
-         jth/Ripzl5I52L6jb9Kh8aAVS+xJ5PIGg9AstgepmSP7RH8aI9TXJHqFxNEVqyeW5l5r
-         w+lw==
+        Wed, 26 Jan 2022 08:55:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643205314;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CEOtowb71/wW18nMRaLR4DhB2JeMdoSeUkA2PCB2rX0=;
+        b=Inktj+hNivx4tC6cRfeP4Tu/3eXf16+Qxn6pu+jg5q/bKtUO0naGswRbdlwLdn5qGP6JPA
+        iAvXjJL8tEy3nfrfDIfKTwEezAGQYyQrf7q9Jb6eJvVWYdxdJtAZ7H81Jp2GNREsMKbjBb
+        FBqyYZCQpsXzEIY7MVIsTAuTSF27vUQ=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-353-wc6-xaLKP7-hu9KIBAwU5A-1; Wed, 26 Jan 2022 08:55:13 -0500
+X-MC-Unique: wc6-xaLKP7-hu9KIBAwU5A-1
+Received: by mail-wr1-f71.google.com with SMTP id v28-20020adfa1dc000000b001dd1cb24081so1903121wrv.10
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 05:55:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BKsf6dGO619i7ojy2wbleRyI3TRP+wgyPNagaXmtvTU=;
-        b=IrsFJu89RofdHzeKvg2HTbRbK602dmcjHLt/YAprY4kxhJyVcSSNg2RyafsviBQNhr
-         czMbFbV97toxbanB3AFlFFAfODl+Y1tXwsOBO5VA/RlBCgVm89ekkB4wg0OxSchWfcD0
-         HuVzddWqPsVUNihkAZrqqLJQnSW10wPLgVq055VGmUaKnzrxUQRsA42BTgKStZn5mxEI
-         pT6NjJCO+N5qSK0dDdQbj2sbaBXjzHu2GxYUNNFVaqZE9w954mkEs+qK3BeMlQdVPIt5
-         M/sVCHYfnqgER/dRlh9amc5iGtvV93KqzsY50a+9KvrIj6N+vBb5VuIFgeRP0lOnGPrK
-         jHCg==
-X-Gm-Message-State: AOAM530AYdWe/zSujyx+HaC7FqumqzmnBGixiZ95mNydUt40baLCQGPO
-        +tsBPmwTvB7BGio3Prm5l6OdReknbxMUiQ==
-X-Google-Smtp-Source: ABdhPJzeRGH+zsgttK1iV0aSGOWXWhbvvWfYyqpBupgxLD/fRvNMwITNpQYK76Ot2fpf1trlYB0Vnw==
-X-Received: by 2002:adf:f7cd:: with SMTP id a13mr7502095wrq.517.1643205277045;
-        Wed, 26 Jan 2022 05:54:37 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id n15sm3356593wmr.26.2022.01.26.05.54.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 05:54:36 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     robh+dt@kernel.org, gregkh@linuxfoundation.org
-Cc:     devicetree@vger.kernel.org, ekangupt@qti.qualcomm.com,
-        bkumar@qti.qualcomm.com, linux-kernel@vger.kernel.org,
-        srini@kernel.org, bjorn.andersson@linaro.org,
-        linux-arm-msm@vger.kernel.org,
-        Vamsi Krishna Gattupalli <quic_vgattupa@quicinc.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v3 10/12] misc: fastrpc: Add fdlist implementation
-Date:   Wed, 26 Jan 2022 13:53:02 +0000
-Message-Id: <20220126135304.16340-11-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220126135304.16340-1-srinivas.kandagatla@linaro.org>
-References: <20220126135304.16340-1-srinivas.kandagatla@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=CEOtowb71/wW18nMRaLR4DhB2JeMdoSeUkA2PCB2rX0=;
+        b=x13maNHGFOvU7w9MYqjic3q4zWS4QNOMUqLWRvwvoJHClj8ntDx3R+qeB1VwFbiyb2
+         q5+mk74PKH4THZl6vM2QSo1oWYkBuaKqL68e9PbnHXOddOSSNrxLhctUCPaZCJ6Ly/Jr
+         2pQLqRJ+M5CIz88vo/FnPBT9+ixQOiBgQGNulwUvDhit6H18x7+Fka3+xANVkWaN+NSB
+         8Bs388zL44fMbIFVHg3mBUQnZoPpaavJ8CdFagry3xHDTRdDFWVO62rDBbfzzOtibmms
+         oKZ+cbwg7cVf97oRuq8HpFtWs+p4uIR431IqwVw7VIHWAFbrMwCjYV6rnxcgUvQ4ELAF
+         LCjg==
+X-Gm-Message-State: AOAM5313RVYDaEimKz9JT9KAmLxStEhNFhyBYo9BrFasRcObfnt8KT0q
+        kztsA3qBgGQf5Oq6KN3lbjFMLylTGdi6uP4Ars0+Td8YT3zumivxy4mMqvbz2E3UfpUw50KGVcs
+        +40UjpvdSIt7NP8Qa0bO1MpDR
+X-Received: by 2002:a5d:4a07:: with SMTP id m7mr22391321wrq.535.1643205311888;
+        Wed, 26 Jan 2022 05:55:11 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwRzW2PVEeSrabafFjjCUdlMm9xvAZuThHjt+FAiFVYNPbOd6/wn65zNkmJd9+Sj9WLoHbMqw==
+X-Received: by 2002:a5d:4a07:: with SMTP id m7mr22391298wrq.535.1643205311613;
+        Wed, 26 Jan 2022 05:55:11 -0800 (PST)
+Received: from ?IPV6:2003:cb:c709:2700:cdd8:dcb0:2a69:8783? (p200300cbc7092700cdd8dcb02a698783.dip0.t-ipconnect.de. [2003:cb:c709:2700:cdd8:dcb0:2a69:8783])
+        by smtp.gmail.com with ESMTPSA id n13sm15598929wrv.94.2022.01.26.05.55.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 05:55:11 -0800 (PST)
+Message-ID: <2190b8e2-74f2-0e31-0a40-0401fbd9966e@redhat.com>
+Date:   Wed, 26 Jan 2022 14:55:10 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
+Content-Language: en-US
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Khalid Aziz <khalid.aziz@oracle.com>,
+        akpm@linux-foundation.org, longpeng2@huawei.com, arnd@arndb.de,
+        dave.hansen@linux.intel.com, rppt@kernel.org, surenb@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Peter Xu <peterx@redhat.com>
+References: <cover.1642526745.git.khalid.aziz@oracle.com>
+ <20220125114212.ks2qtncaahi6foan@box.shutemov.name>
+ <Ye/5yUyEqO0ws0G5@casper.infradead.org>
+ <20220125135917.ezi6itozrchsdcxg@box.shutemov.name>
+ <YfAEqzTeBJSIOKcA@casper.infradead.org>
+ <20220125185705.wf7p2l77vggipfry@box.shutemov.name>
+ <YfBIpmxvc0+mFByf@casper.infradead.org>
+ <YfDIYKygRHX4RIri@casper.infradead.org>
+ <e164d7f4-406e-eed8-37d7-753f790b7560@redhat.com>
+ <YfFO6VyMTrW1bWuu@casper.infradead.org>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YfFO6VyMTrW1bWuu@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vamsi Krishna Gattupalli <quic_vgattupa@quicinc.com>
+On 26.01.22 14:38, Matthew Wilcox wrote:
+> On Wed, Jan 26, 2022 at 11:16:42AM +0100, David Hildenbrand wrote:
+>> A while ago I talked with Peter about an extended uffd (here: WP)
+>> mechanism that would work on fds instead of the process address space.
+> 
+> As far as I can tell, uffd is a grotesque hack that exists to work around
+> the poor choice to use anonymous memory instead of file-backed memory
+> in kvm.  Every time I see somebody mention it, I feel pain.
+> 
 
-Add fdlist implementation to support dma handles. fdlist is populated by
-DSP if any map is no longer used and it is freed during put_args.
+I might be missing something important, because KVM can deal with
+file-back memory just fine and uffd is used heavily outside of hypervisors.
 
-Signed-off-by: Vamsi Krishna Gattupalli <quic_vgattupa@quicinc.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- drivers/misc/fastrpc.c | 36 ++++++++++++++++++++++++++++++++----
- 1 file changed, 32 insertions(+), 4 deletions(-)
+I'd love to learn how to handle what ordinary uffd (handle
+missing/unpopulated pages) and uffd-wp (handle write access to pages)
+can do with files instead. Because if something like that already
+exists, it would be precisely what I am talking about.
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 1c1815bed2c2..6052a9cb9e2c 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -319,7 +319,8 @@ static void fastrpc_map_get(struct fastrpc_map *map)
- 		kref_get(&map->refcount);
- }
- 
--static int fastrpc_map_find(struct fastrpc_user *fl, int fd,
-+
-+static int fastrpc_map_lookup(struct fastrpc_user *fl, int fd,
- 			    struct fastrpc_map **ppmap)
- {
- 	struct fastrpc_map *map = NULL;
-@@ -327,7 +328,6 @@ static int fastrpc_map_find(struct fastrpc_user *fl, int fd,
- 	mutex_lock(&fl->mutex);
- 	list_for_each_entry(map, &fl->maps, node) {
- 		if (map->fd == fd) {
--			fastrpc_map_get(map);
- 			*ppmap = map;
- 			mutex_unlock(&fl->mutex);
- 			return 0;
-@@ -338,6 +338,17 @@ static int fastrpc_map_find(struct fastrpc_user *fl, int fd,
- 	return -ENOENT;
- }
- 
-+static int fastrpc_map_find(struct fastrpc_user *fl, int fd,
-+			    struct fastrpc_map **ppmap)
-+{
-+	int ret = fastrpc_map_lookup(fl, fd, ppmap);
-+
-+	if (!ret)
-+		fastrpc_map_get(*ppmap);
-+
-+	return ret;
-+}
-+
- static void fastrpc_buf_free(struct fastrpc_buf *buf)
- {
- 	dma_free_coherent(buf->dev, buf->size, buf->virt,
-@@ -410,7 +421,7 @@ static void fastrpc_context_free(struct kref *ref)
- 	ctx = container_of(ref, struct fastrpc_invoke_ctx, refcount);
- 	cctx = ctx->cctx;
- 
--	for (i = 0; i < ctx->nscalars; i++)
-+	for (i = 0; i < ctx->nbufs; i++)
- 		fastrpc_map_put(ctx->maps[i]);
- 
- 	if (ctx->buf)
-@@ -968,9 +979,19 @@ static int fastrpc_put_args(struct fastrpc_invoke_ctx *ctx,
- 			    u32 kernel)
- {
- 	struct fastrpc_remote_arg *rpra = ctx->rpra;
--	int i, inbufs;
-+	struct fastrpc_user *fl = ctx->fl;
-+	struct fastrpc_map *mmap = NULL;
-+	struct fastrpc_invoke_buf *list;
-+	struct fastrpc_phy_page *pages;
-+	u64 *fdlist;
-+	int i, inbufs, outbufs, handles;
- 
- 	inbufs = REMOTE_SCALARS_INBUFS(ctx->sc);
-+	outbufs = REMOTE_SCALARS_OUTBUFS(ctx->sc);
-+	handles = REMOTE_SCALARS_INHANDLES(ctx->sc) + REMOTE_SCALARS_OUTHANDLES(ctx->sc);
-+	list = fastrpc_invoke_buf_start(rpra, ctx->nscalars);
-+	pages = fastrpc_phy_page_start(list, ctx->nscalars);
-+	fdlist = (uint64_t *)(pages + inbufs + outbufs + handles);
- 
- 	for (i = inbufs; i < ctx->nbufs; ++i) {
- 		if (!ctx->maps[i]) {
-@@ -987,6 +1008,13 @@ static int fastrpc_put_args(struct fastrpc_invoke_ctx *ctx,
- 		}
- 	}
- 
-+	for (i = 0; i < FASTRPC_MAX_FDLIST; i++) {
-+		if (!fdlist[i])
-+			break;
-+		if (!fastrpc_map_lookup(fl, (int)fdlist[i], &mmap))
-+			fastrpc_map_put(mmap);
-+	}
-+
- 	return 0;
- }
- 
+Maybe mentioning uffd was a bad choice ;)
+
 -- 
-2.21.0
+Thanks,
+
+David / dhildenb
 
