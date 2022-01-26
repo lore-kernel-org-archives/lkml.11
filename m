@@ -2,162 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B69DC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 315C0C28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243816AbiAZRiB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 12:38:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47010 "EHLO
+        id S243819AbiAZRiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 12:38:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237187AbiAZRh7 (ORCPT
+        with ESMTP id S243765AbiAZRiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:37:59 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0096C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:37:59 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id p203so933725oih.10
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:37:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iIrTw8i7dKztJOX/sYlGyAZ9lt8KfEmb4oiF+8tim90=;
-        b=GXosuorlsbZSTIoLqTJ4aqraR5B8WtUPyB5p87RdoBP61dZzQKC0zJr3OMeiK5szNj
-         lXN9+e5GHcxYywns2WP460nGiiedXxfwSVbhPBBN0eRpMUaEa1BOJY5wEfMLLp34Cu4h
-         Dr50+YRbX5x1caRr39l1cBDuwN5MZ7y3mXEPfdErU0NALB6zakq+WFlF5IHr6aOk2ZhE
-         l9ywokSaDxf28UoytCSXCV8+VK0P9YI/a+6XLMWJR9jot31ZYtlDuC8H+agXxYTaVE8t
-         1QNSvrG7uYWzMaTLnsjPjOhXX5TwO6/vS+daX9fc+ONDxzGsgJvan+Kgq7OrmCRWODzb
-         Slaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iIrTw8i7dKztJOX/sYlGyAZ9lt8KfEmb4oiF+8tim90=;
-        b=AyKd5UcnqTL5XsWYdng+cz7wVjt+RTJcJ5uvhzt7CyuJTpVS5u7xuemAyw3xp7nsdv
-         hPynUQopJ+IhRl9xkcJNufje/Ou56buKsEuzOM1Hvs23PuWFXmJVOvZ5bsCEY3t47V0O
-         SNtsL3GqNGQx1b+t23eXJR3C0egS2EG5wUGgASH7T53jfDtWJ2xn+iBo7DL5UDS+7k8B
-         gSHvCOrkqEDnL1IKO8PWfwwtMhONHZ0UK4J/C80nw5t8j8Zmr48ccT1o0YRBaDZVPIxa
-         lyC4mfCrtnSe1umg8rMj9kKgzHwwO7xxm2dxDhlXEAM7czGhU//gM8TJ3uOVLcJgaqYD
-         mZ2g==
-X-Gm-Message-State: AOAM530JtMaj4stLod5xD8rirn6uI4KC/uc4/ZQzaMUQ0DqIjLftVHTb
-        jQtiQDmksjMENXdXyf/p+cXYZGOZq8s7aSOMy4WN7A==
-X-Google-Smtp-Source: ABdhPJxL+s8xP2UB0OAaXblsCrk/yP27ckjHdQwsZR2/KTe5QuygQoesjEJtKZVX544PWYOZPkucv33XqgqlhO63lFY=
-X-Received: by 2002:a05:6808:152b:: with SMTP id u43mr4233444oiw.307.1643218678694;
- Wed, 26 Jan 2022 09:37:58 -0800 (PST)
+        Wed, 26 Jan 2022 12:38:06 -0500
+Received: from mx1.mailbun.net (unknown [IPv6:2602:fd37:1::100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC96C06173B;
+        Wed, 26 Jan 2022 09:38:06 -0800 (PST)
+Received: from [2607:fb90:d98b:8818:5079:94eb:24d5:e5c3] (unknown [172.58.104.31])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: ariadne@dereferenced.org)
+        by mx1.mailbun.net (Postfix) with ESMTPSA id A045511A595;
+        Wed, 26 Jan 2022 17:38:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dereferenced.org;
+        s=mailbun; t=1643218685;
+        bh=cDleLCbBOwwONbneglMHpi+rUM2ZJO+uFBj5SQRt27A=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References;
+        b=JDJU564HgMIWY8EJaGmUKAK7tTwQMg7H6FUkUM5BGYmxx085N/m8KYgiGWtHqOCUf
+         C3w8+1iyBj7aOeEak3/MbKJ3zPWVGSYRN02xavPFmDq7bqaoQ9LvM/KeNf8zOJPjlK
+         yvY5IERzKPdJmVB5h4ReZTlTl1obP0SlBmOXgAFUm3Y1Li5qxzuGDxVl9W6T0Vwfg5
+         N9lDSTKgNZJy7MGRXfrLRoJFQAmDIQpOcERWQFQVseJSC3WG809jko9EIGGH7Rld7w
+         njPImFUEB4pPI6fxgh3+QZMgLwNLA+HWZylc8PFiNWEsq9G+rwLN/6NrYHZEQArWeI
+         yRbpLJrPIG/Og==
+Date:   Wed, 26 Jan 2022 11:37:58 -0600 (CST)
+From:   Ariadne Conill <ariadne@dereferenced.org>
+To:     Rich Felker <dalias@libc.org>
+cc:     Ariadne Conill <ariadne@dereferenced.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH] fs/exec: require argv[0] presence in
+ do_execveat_common()
+In-Reply-To: <20220126132729.GA7942@brightrain.aerifal.cx>
+Message-ID: <92b53c82-1588-36b3-b09b-e7c334e87e@dereferenced.org>
+References: <20220126043947.10058-1-ariadne@dereferenced.org> <20220126132729.GA7942@brightrain.aerifal.cx>
 MIME-Version: 1.0
-References: <20220126171232.2599547-1-jannh@google.com>
-In-Reply-To: <20220126171232.2599547-1-jannh@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 26 Jan 2022 18:37:47 +0100
-Message-ID: <CACT4Y+b8ty07hAANzktksbbe5HdDM=jm6TSYLKawctpBmPfatw@mail.gmail.com>
-Subject: Re: [PATCH] x86/csum: Add KASAN/KCSAN instrumentation
-To:     Jann Horn <jannh@google.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        kasan-dev@googlegroups.com, Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 26 Jan 2022 at 18:13, Jann Horn <jannh@google.com> wrote:
->
-> In the optimized X86 version of the copy-with-checksum helpers, use
-> instrument_*() before accessing buffers from assembly code so that KASAN
-> and KCSAN don't have blind spots there.
->
-> Signed-off-by: Jann Horn <jannh@google.com>
-> ---
->  arch/x86/lib/csum-partial_64.c  | 3 +++
->  arch/x86/lib/csum-wrappers_64.c | 9 +++++++++
->  2 files changed, 12 insertions(+)
->
-> diff --git a/arch/x86/lib/csum-partial_64.c b/arch/x86/lib/csum-partial_64.c
-> index 1f8a8f895173..8b0c353cd212 100644
-> --- a/arch/x86/lib/csum-partial_64.c
-> +++ b/arch/x86/lib/csum-partial_64.c
-> @@ -8,6 +8,7 @@
->
->  #include <linux/compiler.h>
->  #include <linux/export.h>
-> +#include <linux/instrumented.h>
->  #include <asm/checksum.h>
->  #include <asm/word-at-a-time.h>
->
-> @@ -37,6 +38,8 @@ __wsum csum_partial(const void *buff, int len, __wsum sum)
->         u64 temp64 = (__force u64)sum;
->         unsigned odd, result;
->
-> +       instrument_read(buff, len);
-> +
->         odd = 1 & (unsigned long) buff;
->         if (unlikely(odd)) {
->                 if (unlikely(len == 0))
-> diff --git a/arch/x86/lib/csum-wrappers_64.c b/arch/x86/lib/csum-wrappers_64.c
-> index 189344924a2b..087f3c4cb89f 100644
-> --- a/arch/x86/lib/csum-wrappers_64.c
-> +++ b/arch/x86/lib/csum-wrappers_64.c
-> @@ -6,6 +6,8 @@
->   */
->  #include <asm/checksum.h>
->  #include <linux/export.h>
-> +#include <linux/in6.h>
-> +#include <linux/instrumented.h>
->  #include <linux/uaccess.h>
->  #include <asm/smap.h>
->
-> @@ -26,6 +28,7 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
->         __wsum sum;
->
->         might_sleep();
-> +       instrument_write(dst, len);
->         if (!user_access_begin(src, len))
->                 return 0;
->         sum = csum_partial_copy_generic((__force const void *)src, dst, len);
-> @@ -51,6 +54,7 @@ csum_and_copy_to_user(const void *src, void __user *dst, int len)
->         __wsum sum;
->
->         might_sleep();
-> +       instrument_read(src, len);
+Hi,
 
-Nice!
+On Wed, 26 Jan 2022, Rich Felker wrote:
 
-Can these potentially be called with KERNEL_DS as in some compat
-syscalls? If so it's better to use instrument_copy_to/from_user.
-Or probably it's better to use them anyway b/c we also want to know
-about user accesses for uaccess logging and maybe other things.
+> On Wed, Jan 26, 2022 at 04:39:47AM +0000, Ariadne Conill wrote:
+>> The first argument to argv when used with execv family of calls is
+>> required to be the name of the program being executed, per POSIX.
+>
+> That's not quite the story. The relevant text is a "should", meaning
+> that to be "strictly conforming" an application has to follow the
+> convention, but still can't assume its invoker did. (Note that most
+> programs do not aim to be "strictly conforming"; it's not just the
+> word strictly applied as an adjective to conforming, but a definition
+> of its own imposing very stringent portability conditions beyond what
+> the standard already imposes.) Moreover, POSIX (following ISO C, after
+> this was changed from early C drafts) rejected making it a
+> requirement. This is documented in the RATIONALE for execve:
+>
+>    Early proposals required that the value of argc passed to main()
+>    be "one or greater". This was driven by the same requirement in
+>    drafts of the ISO C standard. In fact, historical implementations
+>    have passed a value of zero when no arguments are supplied to the
+>    caller of the exec functions. This requirement was removed from
+>    the ISO C standard and subsequently removed from this volume of
+>    POSIX.1-2017 as well. The wording, in particular the use of the
+>    word should, requires a Strictly Conforming POSIX Application to
+>    pass at least one argument to the exec function, thus guaranteeing
+>    that argc be one or greater when invoked by such an application.
+>    In fact, this is good practice, since many existing applications
+>    reference argv[0] without first checking the value of argc.
+>
+> Source: https://pubs.opengroup.org/onlinepubs/9699919799/functions/execve.html
+>
+> Note that despite citing itself as POSIX.1-2017 above, this is not a
+> change in the 2017 edition; it's just the way they self-cite. As far
+> as I can tell, the change goes back to prior to the first publication
+> of the standard.
 
+This was clarified in the v2 commit text.
 
+>> By validating this in do_execveat_common(), we can prevent execution
+>> of shellcode which invokes execv(2) family syscalls with argc < 1,
+>> a scenario which is disallowed by POSIX, thus providing a mitigation
+>> against CVE-2021-4034 and similar bugs in the future.
+>>
+>> The use of -EFAULT for this case is similar to other systems, such
+>> as FreeBSD and OpenBSD.
+>
+> I don't like this choice of error, since in principle EFAULT should
+> never happen when you haven't invoked memory-safety-violating UB.
+> Something like EINVAL would be more appropriate. But if the existing
+> practice for systems that do this is to use EFAULT, it's probably best
+> to do the same thing.
 
->         if (!user_access_begin(dst, len))
->                 return 0;
->         sum = csum_partial_copy_generic(src, (void __force *)dst, len);
-> @@ -71,6 +75,8 @@ EXPORT_SYMBOL(csum_and_copy_to_user);
->  __wsum
->  csum_partial_copy_nocheck(const void *src, void *dst, int len)
->  {
-> +       instrument_write(dst, len);
-> +       instrument_read(src, len);
->         return csum_partial_copy_generic(src, dst, len);
->  }
->  EXPORT_SYMBOL(csum_partial_copy_nocheck);
-> @@ -81,6 +87,9 @@ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
->  {
->         __u64 rest, sum64;
+It turns out that OpenBSD uses -EINVAL for this, see 
+https://github.com/openbsd/src/commit/74212563870067f5b1e271876e1ec5a2fdf2f2e0
+
 >
-> +       instrument_read(saddr, sizeof(*saddr));
-> +       instrument_read(daddr, sizeof(*daddr));
-> +
->         rest = (__force __u64)htonl(len) + (__force __u64)htons(proto) +
->                 (__force __u64)sum;
+>> Interestingly, Michael Kerrisk opened an issue about this in 2008,
+>> but there was no consensus to support fixing this issue then.
+>> Hopefully now that CVE-2021-4034 shows practical exploitative use
+>> of this bug in a shellcode, we can reconsider.
 >
->
-> base-commit: 0280e3c58f92b2fe0e8fbbdf8d386449168de4a8
-> --
-> 2.35.0.rc0.227.g00780c9af4-goog
->
+> I'm not really opposed to attempting to change this with consensus
+> (like, actually proposing it on the Austin Group tracker), but a less
+> invasive change would be just enforcing it for the case where exec is
+> a privilege boundary (suid/sgid/caps). There's really no motivation
+> for changing longstanding standard behavior in a
+> non-privilege-boundary case.
+
+It would be nice for the Austin Group to clarify this, but I think this is 
+a "common sense" issue.  I don't think execve(2) with argc < 1 is 
+"standard behavior" too, as many other systems outside Linux fail to 
+execve(2) when argc < 1.
+
+Ariadne
