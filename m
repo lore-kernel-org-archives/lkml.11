@@ -2,86 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 675EAC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8701FC5DF62
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:43:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237240AbiAZDms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 22:42:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50360 "EHLO
+        id S237247AbiAZDnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 22:43:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237249AbiAZDmj (ORCPT
+        with ESMTP id S237234AbiAZDm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 22:42:39 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777BFC06161C;
-        Tue, 25 Jan 2022 19:42:39 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id i30so2814884pfk.8;
-        Tue, 25 Jan 2022 19:42:39 -0800 (PST)
+        Tue, 25 Jan 2022 22:42:59 -0500
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B25BC06161C;
+        Tue, 25 Jan 2022 19:42:58 -0800 (PST)
+Received: by mail-ed1-x544.google.com with SMTP id u24so20863547eds.11;
+        Tue, 25 Jan 2022 19:42:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=K1WyeGYezne19214IRAQWvSDltEgxn3XDoQpdetw7bg=;
-        b=DsGAPtTFGfvOA61xg0f3nJvleU3CpPPq9W1cxQ5EwZXY8BOCe+QPNDLz8penIEiS+8
-         YZ7w+f5NaSpZ6Rd+lnwNrWcZFF3F8Jb3f8PcSttTe5OM12y5Ib1BGSaT0XYnrp02Ebin
-         YLjEjY+WSe91T8Mm0IROphypxUbDwozg8GYqMyMDSvN9uno+fAJA/0ex8+7X9KdMDDiD
-         6WlBSAHHUtcPQgRVxZHEQPTKOaInkl2d8RV9S8u9AT9h/ZG7+j5lAwYtbnXFdGzdKVf2
-         cJxcsj7azL/bFMtRgU2xUe0QLz6Mm7XDo4bnuHtfZ9vSrd81ySvVLjyC+fqAlrdHGlrV
-         0fSA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sJh6Gl0X5Jxqx/KBCv5jGNWBnDhkT6dufJwLR72NTuM=;
+        b=UcYqUe+0Bj1qOmuRE8vr8zwZy+xIshnzUejSCPOp0rOjO3OocyUZtfpULJ5++G8nEu
+         18ffB7iyrCEPTIf5AJa3IA6MTIU9ViGnhZ804wQB6V8jrjQ1nFdNHWRK+MBDXYmPlf73
+         5vNy08gZ/G6HD5bpm2MYtdr1LU/NBb1IumA4zdu8FOzoNTl4MAWtPr7p5Kw34NPIPf60
+         Q9aUhjVFRBpccb2hCKBFS+aixISK4dAFy4G+dRsSuQF8hewDhPGLtan79VHVdDz3fTNB
+         2nI5c4JzHOqdLraaEwSOIDn3bJlQvFa6s0mJNM1UUvYM0KdvXZGK53V1X8gV5jfV2Yp2
+         CsQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=K1WyeGYezne19214IRAQWvSDltEgxn3XDoQpdetw7bg=;
-        b=j0Dyt3ldRueZCewn7eTXjNkCkgNDWubOGAZdZaBTvs2lgOZknMwgXTIl4BMB5Dr4Zg
-         es3o2ueVCYCIf2iRAVny98dIcKTyeWXRjVfFlFpKIAUyZmgAjTAbPaH8/OifKVJN7BAP
-         q9kxz6U3aQ4bzSYBfz45EWD2hvpbsRfqqHrEVRiSJDTChWv3fca8wU3JsnF0OrdpJhDb
-         OyhAVVLHcnYgB/RvztMF3UlErFbE7Y3EyrbnpCmWMPPdonj3GWkhE6Smsrgnd1mNPbFS
-         j7dtgxtXuDA8vG+ni1DFWfJTg3cgoMLloq7gE+mwbYUYnOKi552aTipoL8WPdsjd/LLo
-         lSLA==
-X-Gm-Message-State: AOAM531gQXGeRTEWOT9IdTpk9chWwtw7HY1p0C3AU0vQLum7fD1oW2sB
-        1gctGUQDez8PxXMSYgdRlPw=
-X-Google-Smtp-Source: ABdhPJzl+/Yfm34IakLL/o9t/S/HumPeC6qSszNbPmuOFWiiVFyQs+hhAtl6LCCGwZMRyHScubFQrQ==
-X-Received: by 2002:a05:6a00:14c9:b0:4c7:f5db:5bd7 with SMTP id w9-20020a056a0014c900b004c7f5db5bd7mr15772616pfu.46.1643168558977;
-        Tue, 25 Jan 2022 19:42:38 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id n2sm15670408pga.39.2022.01.25.19.42.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 19:42:38 -0800 (PST)
-Message-ID: <e8a1ed56-ba04-45bf-8e89-3404ae1b3239@gmail.com>
-Date:   Tue, 25 Jan 2022 19:42:36 -0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sJh6Gl0X5Jxqx/KBCv5jGNWBnDhkT6dufJwLR72NTuM=;
+        b=vkxZ0pYsjCJoae2EBQxj4uxJz+ix4B+OQa4n+1gTIuUo5yr1tKNQPCDsou2L6AntGG
+         KFesFsLmLQEpcxJ2h3e2Vq0rf+JnWagbiQOZeKRcuNNftpaBYnyHUXKqTAHlt6QtbKuz
+         IWMDhFRn/43AITQDaHqDkc6TxgV909NDFIZY1o1VzYKGOHeTgEymXUgOwmiFT9Io/nXf
+         M8gjvuWNsTMsU2he1UFqv5yxvy3oVX5hcp/wNDfBFwI15VDXLlqra+dCd4kfhxFQZxVT
+         JoxgM7lFGFQlND9tcpSeF9Pd1ch1SfDYr4XLTKMEcDFYsVw1Vw3F6GcjVOWPddwz6Dwv
+         Zt5Q==
+X-Gm-Message-State: AOAM5311oWzfPLH9WXgV/+0GgP6FK4hPsatRfEBIatS9BGnz/MrNBwzn
+        rJRkJyKHnvWM+hORWMf3/XIJTLU09JiPSgYSOINQYFfO
+X-Google-Smtp-Source: ABdhPJxJEXuebIZ+PWX+MRXv3OdHNFNDKzr78cY3+GIryJ2nqAJtB8K9uKgMfEWQPxPWfEa79zUcXkXIvR7Clnex2n0=
+X-Received: by 2002:a05:6402:2812:: with SMTP id h18mr23749163ede.103.1643168577305;
+ Tue, 25 Jan 2022 19:42:57 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v7 14/16] net: dsa: qca8k: cache lo and hi for mdio
- write
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <20220123013337.20945-15-ansuelsmth@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220123013337.20945-15-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220124075955.1232426-1-imagedong@tencent.com> <20220125193826.58ee023f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220125193826.58ee023f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 26 Jan 2022 11:38:29 +0800
+Message-ID: <CADxym3ZJ14sXYVzoecQ97uqyuy_+N+mwjjh0x8Hyy_o7XTVCpw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: drop_monitor: support drop reason
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jan 26, 2022 at 11:38 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 24 Jan 2022 15:59:55 +0800 menglong8.dong@gmail.com wrote:
+> > @@ -606,6 +608,7 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
+> >  static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+> >                                    size_t payload_len)
+> >  {
+> > +     enum skb_drop_reason reason = NET_DM_SKB_CB(skb)->reason;
+> >       u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
+>
+> nit: maybe it's better to get a pointer to struct net_dm_skb_cb here
+> instead of local var for each field?
 
+Yeah, I think it's a good idea :/
 
-On 1/22/2022 5:33 PM, Ansuel Smith wrote:
->  From Documentation, we can cache lo and hi the same way we do with the
-> page. This massively reduce the mdio write as 3/4 of the time as we only
-> require to write the lo or hi part for a mdio write.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+>
+> >       char buf[NET_DM_MAX_SYMBOL_LEN];
+> >       struct nlattr *attr;
+> > @@ -623,6 +626,9 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+> >       if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
+> >               goto nla_put_failure;
+> >
+> > +     if (nla_put_u32(msg, NET_DM_ATTR_REASON, reason))
+> > +             goto nla_put_failure;
