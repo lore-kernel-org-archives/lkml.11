@@ -2,269 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FAE4C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 06:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAB66C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 06:10:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231664AbiAZGIZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 01:08:25 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:58620 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiAZGIY (ORCPT
+        id S234685AbiAZGK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 01:10:28 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:62984 "EHLO
+        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232212AbiAZGK0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 01:08:24 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id E35251F393;
-        Wed, 26 Jan 2022 06:08:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1643177302; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kUNJhijNcEYthlOB/CcCLZFMtwOnTh+E0qjf9uFivCk=;
-        b=LU7IKnIQnNf2gb4vTJfu1rdu0GPB2WZyeCptK0xEOb0BJUrYBbHKskMGnT7i+a1S8PMmPv
-        7+XXtvuuSymvoRiVNLEPbDl5V6S2bAgQ8cjRwgWWgMvtjgN1070kE4RbZauVK06U1f+hgH
-        koAxsjzqvM3jFNAcMFRtqlGkr51DhFA=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B4CBB13519;
-        Wed, 26 Jan 2022 06:08:22 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 92o8Klbl8GEybQAAMHmgww
-        (envelope-from <jgross@suse.com>); Wed, 26 Jan 2022 06:08:22 +0000
-Message-ID: <4609fe56-7d88-8176-a378-0f465670b37d@suse.com>
-Date:   Wed, 26 Jan 2022 07:08:22 +0100
+        Wed, 26 Jan 2022 01:10:26 -0500
+Received: from droid01-cd.amlogic.com (10.98.11.200) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Wed, 26 Jan 2022
+ 14:10:23 +0800
+From:   Shunzhou Jiang <shunzhou.jiang@amlogic.com>
+To:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+CC:     <narmstrong@baylibre.com>, <khilman@baylibre.com>,
+        <jbrunet@baylibre.com>, <martin.blumenstingl@googlemail.com>,
+        <jianxin.pan@amlogic.com>, <shunzhou.jiang@amlogic.com>
+Subject: [PATCH 0/2] Power: meson-s4: add s4 power domain driver
+Date:   Wed, 26 Jan 2022 14:10:16 +0800
+Message-ID: <20220126061018.705338-1-shunzhou.jiang@amlogic.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Content-Language: en-US
-To:     minyard@acm.org, Ingo Molnar <mingo@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-References: <20220125182737.GO34919@minyard.net>
-From:   Juergen Gross <jgross@suse.com>
-Subject: Re: Possible reproduction of CSD locking issue
-In-Reply-To: <20220125182737.GO34919@minyard.net>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------vDPoAOl0BlYPEQCGFURt3BTK"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.98.11.200]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------vDPoAOl0BlYPEQCGFURt3BTK
-Content-Type: multipart/mixed; boundary="------------YzwsB1r2jUauKja6nwlBvAlh";
- protected-headers="v1"
-From: Juergen Gross <jgross@suse.com>
-To: minyard@acm.org, Ingo Molnar <mingo@kernel.org>,
- "Paul E. McKenney" <paulmck@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>
-Message-ID: <4609fe56-7d88-8176-a378-0f465670b37d@suse.com>
-Subject: Re: Possible reproduction of CSD locking issue
-References: <20220125182737.GO34919@minyard.net>
-In-Reply-To: <20220125182737.GO34919@minyard.net>
+This patchset adds Power controller driver support for Meson-S4 SoC
+Likes Meson-A1, the power domains register only can access in secure world
 
---------------YzwsB1r2jUauKja6nwlBvAlh
-Content-Type: multipart/mixed; boundary="------------fneyco3OGV12CLL4HxR4TLMM"
+Shunzhou Jiang (2):
+  dt-bindings: power: add Amlogic s4 power domains bindings
+  soc: s4: Add support for power domains controller
 
---------------fneyco3OGV12CLL4HxR4TLMM
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+ .../power/amlogic,meson-sec-pwrc.yaml         |  3 ++-
+ drivers/soc/amlogic/meson-secure-pwrc.c       | 21 +++++++++++++++++++
+ include/dt-bindings/power/meson-s4-power.h    | 19 +++++++++++++++++
+ 3 files changed, 42 insertions(+), 1 deletion(-)
+ create mode 100644 include/dt-bindings/power/meson-s4-power.h
 
-T24gMjUuMDEuMjIgMTk6MjcsIENvcmV5IE1pbnlhcmQgd3JvdGU6DQo+IFdlIGhhdmUgYSBj
-dXN0b21lciB0aGF0IGhhZCBiZWVuIHNlZWluZyBDU0QgbG9jayBpc3N1ZXMgb24gYSBDZW50
-b3MgNw0KPiBrZXJuZWwgKHVuZm9ydHVuYXRlbHkpLiAgSSBjb3VsZG4ndCBmaW5kIGFueXRo
-aW5nIG9yIGFueSBrZXJuZWwgY2hhbmdlcw0KPiB0aGF0IG1pZ2h0IGZpeCBpdCwgc28gSSB3
-YXMgY29uc2RlcmluZyBpdCB3YXMgdGhlIENTRCBsb2NraW5nIGlzc3VlIHlvdQ0KPiBoYXZl
-IGJlZW4gY2hhc2luZyBmb3IgYSB3aGlsZS4NCg0KSXMgdGhpcyBvbiBiYXJlIG1ldGFsIG9y
-IGluIGEgdmlydHVhbGl6ZWQgZW52aXJvbm1lbnQ/DQoNClRoZSBidWcgSSB3YXMgaHVudGlu
-ZyBvY2N1cnJlZCB3aGVuIHJ1bm5pbmcgdW5kZXIgWGVuLCBhbmQgaW4gdGhlIGVuZCBJDQpm
-b3VuZCBhIHNjaGVkdWxpbmcgcHJvYmxlbSBpbiB0aGUgWGVuIGh5cGVydmlzb3IuDQoNCj4g
-DQo+IFNvIEkgYmFja3BvcnRlZCB0aGUgZGVidWcgcGF0Y2hlcy4gIEFuZCBvZiBjb3Vyc2Us
-IHRoZXkgc3RvcHBlZCBzZWVpbmcNCj4gdGhlIGlzc3VlLCBhdCBsZWFzdCBhcyBtdWNoLCBh
-bmQgdGhleSBoYWQgdHJvdWJsZSB3aXRoIHRoZSBleHRyYSBDUFUNCj4gdGltZSB0aGUgZGVi
-dWcgY29kZSB0b29rLiAgQnV0IHRoZXkganVzdCByZXByb2R1Y2VkIGl0LiAgSGVyZSBhcmUg
-dGhlDQo+IGxvZ3M6DQo+IA0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsy
-ODU3MzcuNTIyNzQzXSBjc2Q6IERldGVjdGVkIG5vbi1yZXNwb25zaXZlIENTRCBsb2NrICgj
-MSkgb24gQ1BVIzMsIHdhaXRpbmcgNTAwMDAwMDA0MiBucyBmb3IgQ1BVIzU1IGZsdXNoX3Rs
-Yl9mdW5jKzB4MC8weGIwKDB4ZmZmZjhlMGIzZTJhZmJlOCkuDQo+IEphbiAyMyAyMzozOTo0
-MyB3b3JrZXIwIGtlcm5lbDogWzI4NTczNy41MjI3NDRdICBjc2Q6IENTRCBsb2NrICgjMSkg
-dW5yZXNwb25zaXZlLg0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsyODU3
-MzcuNTIyNzQ3XSAgY3NkOiBjbnQoMDAwMDAwMCk6IDAwMDAtPjAwMDAgcXVldWUNCj4gSmFu
-IDIzIDIzOjM5OjQzIHdvcmtlcjAga2VybmVsOiBbMjg1NzM3LjUyMjc0OF0gIGNzZDogY250
-KDAwMDAwMDEpOiBmZmZmLT4wMDM3IGlkbGUNCj4gSmFuIDIzIDIzOjM5OjQzIHdvcmtlcjAg
-a2VybmVsOiBbMjg1NzM3LjUyMjc0OV0gIGNzZDogY250KDYzZDhkZDgpOiAwMDAzLT4wMDM3
-IGlwaQ0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsyODU3MzcuNTIyNzUw
-XSAgY3NkOiBjbnQoNjNkOGRkOSk6IDAwMDMtPjAwMzcgcGluZw0KPiBKYW4gMjMgMjM6Mzk6
-NDMgd29ya2VyMCBrZXJuZWw6IFsyODU3MzcuNTIyNzUwXSAgY3NkOiBjbnQoNjNkOGRkYSk6
-IDAwMDMtPmZmZmYgcGluZ2VkDQo+IEphbiAyMyAyMzozOTo0MyB3b3JrZXIwIGtlcm5lbDog
-WzI4NTczNy41MjI3NTFdICBjc2Q6IGNudCg2M2Q4ZGVhKTogMDAzNS0+MDAzNyBwaW5nZWQN
-Cj4gSmFuIDIzIDIzOjM5OjQzIHdvcmtlcjAga2VybmVsOiBbMjg1NzM3LjUyMjc1Ml0gIGNz
-ZDogY250KDYzZDhkZWIpOiBmZmZmLT4wMDM3IGdvdGlwaQ0KPiBKYW4gMjMgMjM6Mzk6NDMg
-d29ya2VyMCBrZXJuZWw6IFsyODU3MzcuNTIyNzUyXSAgY3NkOiBjbnQoNjNkOGRlYyk6IGZm
-ZmYtPjAwMzcgaGFuZGxlDQo+IEphbiAyMyAyMzozOTo0MyB3b3JrZXIwIGtlcm5lbDogWzI4
-NTczNy41MjI3NTNdICBjc2Q6IGNudCg2M2Q4ZGVkKTogZmZmZi0+MDAzNyBkZXF1ZXVlIChz
-cmMgQ1BVIDAgPT0gZW1wdHkpDQo+IEphbiAyMyAyMzozOTo0MyB3b3JrZXIwIGtlcm5lbDog
-WzI4NTczNy41MjI3NTRdICBjc2Q6IGNudCg2M2Q4ZGVlKTogZmZmZi0+MDAzNyBoZGxlbmQg
-KHNyYyBDUFUgMCA9PSBlYXJseSkNCj4gSmFuIDIzIDIzOjM5OjQzIHdvcmtlcjAga2VybmVs
-OiBbMjg1NzM3LjUyMjc1NF0gIGNzZDogY250KDYzZDhlMWYpOiAwMDAzLT4wMDM3IHF1ZXVl
-DQo+IEphbiAyMyAyMzozOTo0MyB3b3JrZXIwIGtlcm5lbDogWzI4NTczNy41MjI3NTVdICBj
-c2Q6IGNudCg2M2Q4ZTIwKTogMDAwMy0+MDAzNyBpcGkNCj4gSmFuIDIzIDIzOjM5OjQzIHdv
-cmtlcjAga2VybmVsOiBbMjg1NzM3LjUyMjc1Nl0gIGNzZDogY250KDYzZDhlMjEpOiAwMDAz
-LT4wMDM3IHBpbmcNCj4gSmFuIDIzIDIzOjM5OjQzIHdvcmtlcjAga2VybmVsOiBbMjg1NzM3
-LjUyMjc1Nl0gIGNzZDogY250KDYzZDhlMjIpOiAwMDAzLT4wMDM3IHF1ZXVlDQo+IEphbiAy
-MyAyMzozOTo0MyB3b3JrZXIwIGtlcm5lbDogWzI4NTczNy41MjI3NTddICBjc2Q6IGNudCg2
-M2Q4ZTIzKTogMDAwMy0+MDAzNyBub2lwaQ0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBr
-ZXJuZWw6IFsyODU3MzcuNTIyNzU3XSAgY3NkOiBjbnQgbm93OiA2M2ZlNGNkDQo+IEphbiAy
-MyAyMzozOTo0MyB3b3JrZXIwIGtlcm5lbDogWzI4NTczNy41MjI3NThdIFRhc2sgZHVtcCBm
-b3IgQ1BVIDU1Og0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsyODU3Mzcu
-NTIyNzYxXSBrdWJlbGV0ICAgICAgICAgUiAgcnVubmluZyB0YXNrICAgICAgICAwIDI3NzY5
-NSAgICAgIDEgMHgwMDA4MDAwMA0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6
-IFsyODU3MzcuNTIyNzYxXSBDYWxsIFRyYWNlOg0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2Vy
-MCBrZXJuZWw6IFsyODU3MzcuNTIyNzY5XSAgWzxmZmZmZmZmZjg0Mzc2YjZhPl0gPyBfX3Nj
-aGVkdWxlKzB4NDZhLzB4OTkwDQo+IEphbiAyMyAyMzozOTo0MyB3b3JrZXIwIGtlcm5lbDog
-WzI4NTczNy41MjI3NzRdICBbPGZmZmZmZmZmODNkYjYzNTM+XSA/IGNvbnRleHRfdHJhY2tp
-bmdfdXNlcl9lbnRlcisweDEzLzB4MjANCj4gSmFuIDIzIDIzOjM5OjQzIHdvcmtlcjAga2Vy
-bmVsOiBbMjg1NzM3LjUyMjc3Nl0gIFs8ZmZmZmZmZmY4NDM3NzViNT5dID8gc2NoZWR1bGVf
-dXNlcisweDQ1LzB4NTANCj4gSmFuIDIzIDIzOjM5OjQzIHdvcmtlcjAga2VybmVsOiBbMjg1
-NzM3LjUyMjc3OV0gIFs8ZmZmZmZmZmY4NDM3YjUxOD5dID8gcmV0aW50X2NhcmVmdWwrMHgx
-Ni8weDM0DQo+IEphbiAyMyAyMzozOTo0MyB3b3JrZXIwIGtlcm5lbDogWzI4NTczNy41MjI3
-ODBdIGNzZDogUmUtc2VuZGluZyBDU0QgbG9jayAoIzEpIElQSSBmcm9tIENQVSMwMyB0byBD
-UFUjNTUNCj4gSmFuIDIzIDIzOjM5OjQzIHdvcmtlcjAga2VybmVsOiBbMjg1NzM3LjUyMjc4
-OF0gQ1BVOiAzIFBJRDogNTQ2NzEgQ29tbTogcnVuYzpbMjpJTklUXSBLZHVtcDogbG9hZGVk
-IFRhaW50ZWQ6IEcgICAgICAgICAgIE9FICAtLS0tLS0tLS0tLS0gVCAzLjEwLjAtMTA2Mi4x
-Mi4xLnJ0NTYuMTA0Mi5tdmlzdGEudGVzdC4xNC5lbDcueDg2XzY0ICMxDQo+IEphbiAyMyAy
-MzozOTo0MyB3b3JrZXIwIGtlcm5lbDogWzI4NTczNy41MjI3ODldIEhhcmR3YXJlIG5hbWU6
-IERlbGwgSW5jLiBQb3dlckVkZ2UgUjc0MC8wWVdSN0QsIEJJT1MgMi45LjQgMTEvMDYvMjAy
-MA0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsyODU3MzcuNTIyNzg5XSBD
-YWxsIFRyYWNlOg0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsyODU3Mzcu
-NTIyNzkzXSAgWzxmZmZmZmZmZjg0MzcxOGJhPl0gZHVtcF9zdGFjaysweDE5LzB4MWINCj4g
-SmFuIDIzIDIzOjM5OjQzIHdvcmtlcjAga2VybmVsOiBbMjg1NzM3LjUyMjc5OF0gIFs8ZmZm
-ZmZmZmY4M2QwYmNkOD5dIF9fY3NkX2xvY2tfd2FpdCsweDFhOC8weDJhMA0KPiBKYW4gMjMg
-MjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsyODU3MzcuNTIyODAwXSAgWzxmZmZmZmZmZjgz
-YzZkODcwPl0gPyBsZWF2ZV9tbSsweDEyMC8weDEyMA0KPiBKYW4gMjMgMjM6Mzk6NDMgd29y
-a2VyMCBrZXJuZWw6IFsyODU3MzcuNTIyODAyXSAgWzxmZmZmZmZmZjgzZDBiZmE0Pl0gc21w
-X2NhbGxfZnVuY3Rpb25fc2luZ2xlKzB4YzQvMHgxYjANCj4gSmFuIDIzIDIzOjM5OjQzIHdv
-cmtlcjAga2VybmVsOiBbMjg1NzM3LjUyMjgwNF0gIFs8ZmZmZmZmZmY4M2M2ZDg3MD5dID8g
-bGVhdmVfbW0rMHgxMjAvMHgxMjANCj4gSmFuIDIzIDIzOjM5OjQzIHdvcmtlcjAga2VybmVs
-OiBbMjg1NzM3LjUyMjgwOV0gIFs8ZmZmZmZmZmY4M2UyNjg0Yj5dID8gcGFnZV9jb3VudGVy
-X3VuY2hhcmdlKzB4M2IvMHg3MA0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6
-IFsyODU3MzcuNTIyODExXSAgWzxmZmZmZmZmZjgzZDBjNjE0Pl0gc21wX2NhbGxfZnVuY3Rp
-b25fbWFueSsweDM0NC8weDM4MA0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6
-IFsyODU3MzcuNTIyODEzXSAgWzxmZmZmZmZmZjgzYzZkODcwPl0gPyBsZWF2ZV9tbSsweDEy
-MC8weDEyMA0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsyODU3MzcuNTIy
-ODE2XSAgWzxmZmZmZmZmZjgzYzZkYTM4Pl0gbmF0aXZlX2ZsdXNoX3RsYl9vdGhlcnMrMHhi
-OC8weGMwDQo+IEphbiAyMyAyMzozOTo0MyB3b3JrZXIwIGtlcm5lbDogWzI4NTczNy41MjI4
-MThdICBbPGZmZmZmZmZmODNjNmRjMjU+XSBmbHVzaF90bGJfcGFnZSsweDY1LzB4ZjANCj4g
-SmFuIDIzIDIzOjM5OjQzIHdvcmtlcjAga2VybmVsOiBbMjg1NzM3LjUyMjgyMV0gIFs8ZmZm
-ZmZmZmY4M2RmZGY5OD5dIHB0ZXBfY2xlYXJfZmx1c2grMHg2OC8weGEwDQo+IEphbiAyMyAy
-MzozOTo0MyB3b3JrZXIwIGtlcm5lbDogWzI4NTczNy41MjI4MjVdICBbPGZmZmZmZmZmODNk
-ZTY4MDY+XSB3cF9wYWdlX2NvcHkuaXNyYS44MysweDNkNi8weDY1MA0KPiBKYW4gMjMgMjM6
-Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsyODU3MzcuNTIyODI4XSAgWzxmZmZmZmZmZjgzZGU4
-Y2I0Pl0gZG9fd3BfcGFnZSsweGI0LzB4NzEwDQo+IEphbiAyMyAyMzozOTo0MyB3b3JrZXIw
-IGtlcm5lbDogWzI4NTczNy41MjI4MzJdICBbPGZmZmZmZmZmODNkZWNiYjQ+XSBoYW5kbGVf
-bW1fZmF1bHQrMHg4ODQvMHgxMzQwDQo+IEphbiAyMyAyMzozOTo0MyB3b3JrZXIwIGtlcm5l
-bDogWzI4NTczNy41MjI4MzVdICBbPGZmZmZmZmZmODNjZDc3OTk+XSA/IHVwZGF0ZV9jZnNf
-c2hhcmVzKzB4YTkvMHhmMA0KPiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsy
-ODU3MzcuNTIyODM5XSAgWzxmZmZmZmZmZjg0MzdlZmMzPl0gX19kb19wYWdlX2ZhdWx0KzB4
-MjEzLzB4NWEwDQo+IEphbiAyMyAyMzozOTo0MyB3b3JrZXIwIGtlcm5lbDogWzI4NTczNy41
-MjI4NDFdICBbPGZmZmZmZmZmODQzN2YzODU+XSBkb19wYWdlX2ZhdWx0KzB4MzUvMHg5MA0K
-PiBKYW4gMjMgMjM6Mzk6NDMgd29ya2VyMCBrZXJuZWw6IFsyODU3MzcuNTIyODQyXSAgWzxm
-ZmZmZmZmZjg0MzdiNzI4Pl0gcGFnZV9mYXVsdCsweDI4LzB4MzANCj4gSmFuIDIzIDIzOjM5
-OjQzIHdvcmtlcjAga2VybmVsOiBbMjg1NzM3LjUyMjg0NV0gY3NkOiBDU0QgbG9jayAoIzEp
-IGdvdCB1bnN0dWNrIG9uIENQVSMwMywgQ1BVIzU1IHJlbGVhc2VkIHRoZSBsb2NrLg0KPiAN
-Cj4gSG9wZWZ1bGx5IHRoaXMgaXMgdGhlIGlzc3VlIHlvdSBhcmUgY2hhc2luZyBhbmQgbm90
-IHNvbWV0aGluZyBlbHNlLg0KPiBJJ3ZlIGJlZW4gc3R1ZHlpbmcgdGhlbSB0byBzZWUgd2hh
-dCB0aGV5IG1lYW4sIGJ1dCBJIHRob3VnaHQgeW91IG1pZ2h0DQo+IGJlIGludGVyZXN0ZWQg
-dG8gZ2V0IHRoZW0gYXNhcC4NCg0KQXMgc2FpZCBiZWZvcmU6IEkndmUgc29sdmVkIG15IHBy
-b2JsZW0uDQoNCkJ1dCBJIGNhbiBzaGFyZSBzb21lIG1vcmUgaW5zaWdodCBmcm9tIG15IGV4
-cGVyaWVuY2U6DQoNCkRvbid0IGJlIHNvIHN1cmUgdGhhdCByZXNlbmRpbmcgdGhlIElQSSB3
-b2tlIHVwIHRoZSBjcHUgYWdhaW4uIEl0IG1pZ2h0DQpoYXZlIGJlZW4gdGhlIE5NSSBmb3Ig
-Z2V0dGluZyB0aGUgdGFyZ2V0IGNwdSdzIHN0YWNrdHJhY2Ugd2hpY2ggcmVzdWx0ZWQNCmlu
-IGxldHRpbmcgaXQgcnVuIGFnYWluLiBJIG1pc3NlZCB0aGlzIHBvc3NpYmlsaXR5IGluIHRo
-ZSBiZWdpbm5pbmcgYW5kDQp0aGlzIHdhcyB0aGUgcmVhc29uIEkgZGlzbWlzc2VkIHRoZSBY
-ZW4gc2NoZWR1bGluZyBpc3N1ZSB0b28gZWFybHkuDQoNCg0KSnVlcmdlbg0K
---------------fneyco3OGV12CLL4HxR4TLMM
-Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
+-- 
+2.34.1
 
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-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
-jR/i1DG86lem3iBDXzXsZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
-
---------------fneyco3OGV12CLL4HxR4TLMM--
-
---------------YzwsB1r2jUauKja6nwlBvAlh--
-
---------------vDPoAOl0BlYPEQCGFURt3BTK
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmHw5VYFAwAAAAAACgkQsN6d1ii/Ey98
-FAf9GG+HaN5mI3w30y7Sd1yamCAHpmHskPSHlGBWVQIbjtMljQwnr4PHorDeyKnNsBLwvWVTEyFQ
-sLCfDKU9rSyu9BcIw/vXG3Z1eo5RdbJl24AVjEYPXfzFairtHj2JQqHnIq75PSvG1Ycx6CHEfcV5
-wfpqO++d4tO/K+fbQ1Sd2/fYDS0HOHgpDAPE4rU44kKsUvAGy/rAd9271YWeHvYHlUI7OtOXPHWz
-Z4SOAlW8LiDee05UT/juFlzIm9S9yFbZKgXvxF873/6lDBM3gylqjghPlK/dTfHJkDIyhfOYTwpN
-mo4aJd10QoJLr3zzdOeB6bZDdXy11Fvd97LsgJDiDQ==
-=HB6W
------END PGP SIGNATURE-----
-
---------------vDPoAOl0BlYPEQCGFURt3BTK--
