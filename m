@@ -2,105 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7122C5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:16:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E15F4C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240562AbiAZLP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:15:59 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47730 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233480AbiAZLP6 (ORCPT
+        id S240566AbiAZLRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:17:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41448 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233480AbiAZLRf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:15:58 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B263B81CAA;
-        Wed, 26 Jan 2022 11:15:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4310DC340E3;
-        Wed, 26 Jan 2022 11:15:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643195755;
-        bh=+4rsfIJDJ4RCHu7OuW2tvtcRhL9lTvl+RI6cItq5TAo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JnwDZ8qRomlPUQLgU6z2cI1tStqj3Y3wu5rQ8Kjah36iZ1b8Q5ggGif26ysmeLjiX
-         sILKvqs4FtBU4K1nHotRLY8D2OnXaFv5J+gNeSmB4vmhkoZMpesOrBVYhVGqeiB1tI
-         qN1adwtil5CgHJZrpxUhzI5D3UfGSXvpvb8sevvE=
-Date:   Wed, 26 Jan 2022 12:15:48 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Helge Deller <deller@gmx.de>, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
-Message-ID: <YfEtZD0uYp9yngvq@kroah.com>
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
- <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
- <YfEmuGVQ+IlhdQDh@kroah.com>
- <CAKMK7uEiUH8vD3jUCDPXFbF2YS5LygJLVOosbnUnvMP0MU2kTg@mail.gmail.com>
+        Wed, 26 Jan 2022 06:17:35 -0500
+Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF64BC06161C;
+        Wed, 26 Jan 2022 03:17:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=metanate.com; s=stronger; h=In-Reply-To:Content-Type:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description; bh=h/+jy8zONBbPEtv/A67VifATmxWwSbkDPnarJPgcQS0=; b=73Bzu
+        gCJwQRhve2wwkOJRFfsB910Q1T+oS6L/8BpFXtIIj1AQkTxBcl/D0RZYqe6Y+UgbN8mbepUtvTxq8
+        j8tI2WJFug3+gBW3G499kTkoLn/fbO/3gLMR5ITONbIfKV8uThHhtHz1Z+JJy4T88eZVd+VnuHqvO
+        wkAZE+NfSLlvE4dXWvVPU5s+7HudhIt5srcsZU8ZsjP8u1+MngfYLDE08tFLuFR+9OeoOk8qFuNUW
+        0rk/rsN6HzW6HaghRg0pXlRQNhIwyG45qgB7i7I7dNdx5uD5M44B8YJUQji/H9wJOXJP9Db4s+XB8
+        5kjey2nPc/Qt5g+QmcGLd0eaPk/zw==;
+Received: from [81.174.171.191] (helo=donbot)
+        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <john@metanate.com>)
+        id 1nCgIn-0002fy-3t; Wed, 26 Jan 2022 11:17:25 +0000
+Date:   Wed, 26 Jan 2022 11:17:19 +0000
+From:   John Keeping <john@metanate.com>
+To:     Johan Jonker <jbx6244@gmail.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: dts: rockchip: fix MMC compatibles for rk3288
+Message-ID: <YfEtv+UIT7Y+d2lx@donbot>
+References: <20220125115007.3138311-1-john@metanate.com>
+ <7e935740-66a3-da07-a196-0584dab310b9@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKMK7uEiUH8vD3jUCDPXFbF2YS5LygJLVOosbnUnvMP0MU2kTg@mail.gmail.com>
+In-Reply-To: <7e935740-66a3-da07-a196-0584dab310b9@gmail.com>
+X-Authenticated: YES
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 11:52:16AM +0100, Daniel Vetter wrote:
-> On Wed, Jan 26, 2022 at 11:47 AM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Wed, Jan 26, 2022 at 12:02:36PM +0200, Andy Shevchenko wrote:
-> > > On Wed, Jan 26, 2022 at 10:52 AM Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> > > >
-> > > > Hi
-> > > >
-> > > > Am 25.01.22 um 21:21 schrieb Andy Shevchenko:
-> > > > > Since we got a maintainer for fbdev, I would like to
-> > > > > unorphan fbtft (with the idea of sending PRs to Helge)
-> > > > > and move it out of staging since there is no more clean
-> > > > > up work expected and no more drivers either.
-> > > > >
-> > > > > Thoughts?
-> > >
-> > > Thanks for sharing yours, my answers below.
-> > >
-> > > > But why? We already have DRM drivers for some of these devices.
-> > >
-> > > No, we do not (only a few are available).
-> > >
-> > > > Porting
-> > > > the others to DRM is such a better long-term plan.  OTOH, as no one has
-> > > > shown up and converted them, maybe they should be left dead or removed
-> > > > entirely.
-> > >
-> > > As I mentioned above there are devices that nobody will take time to
-> > > port to a way too complex DRM subsystem. But the devices are cheap and
-> > > quite widespread in the embedded world. I'm in possession of 3 or 4
-> > > different models and only 1 is supported by tiny DRM.
-> >
-> > Great, then let's just move the 2 models that you do not have support
-> > for in DRM, not the whole lot.  When we have real users for the drivers,
-> > we can move them out of staging, but until then, dragging all of them
-> > out does not make sense.
-> 
-> Can't we create drm drivers for these 2-3 models? Like we have drivers
-> which are below 300 lines with all the helpers taking care of
-> everything, this shouldn't be too tricky.
+Hi Johan,
 
-Agreed, having the hardware to test this with is the hardest part.
-Andy, this should be better to do in the longrun than trying to keep
-these other drivers "alive".
+On Tue, Jan 25, 2022 at 01:14:21PM +0100, Johan Jonker wrote:
+> MMC aliases should go in the dts board files.
+> Sort on reg address, based on availability and without number gab.
+> (For rk3288 a lot of boards to change. That's why it wasn't done
+> yet...Could someone pick that up?)
 
-thanks,
+Since there aren't any mmc aliases for rk3288 at the moment, I'll drop
+this and send a patch adding them for the one board I have access to.
 
-greg k-h
+At some point the nonstandard mshc aliases should be removed, but it
+may be best to keep them around for a while given that 5.17 will be the
+first kernel that doesn't use these as a weird mechanism for per-port
+settings.
+
+> On 1/25/22 12:50, John Keeping wrote:
+> > Prior to commit 4bac670aa5cb ("mmc: dw_mmc: rockchip: use common_caps")
+> > the mshcN aliases were used in an unusual way by the dw_mmc driver and
+> > affected behaviour.  Now that this has been fixed, rename the mmc
+> > aliases to use the standard form.
+> > 
+> > Signed-off-by: John Keeping <john@metanate.com>
+> > ---
+> >  arch/arm/boot/dts/rk3288.dtsi | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+> > index aaaa61875701..50fa0a4652b5 100644
+> > --- a/arch/arm/boot/dts/rk3288.dtsi
+> > +++ b/arch/arm/boot/dts/rk3288.dtsi
+> > @@ -25,10 +25,10 @@ aliases {
+> >  		i2c3 = &i2c3;
+> >  		i2c4 = &i2c4;
+> >  		i2c5 = &i2c5;
+> > -		mshc0 = &emmc;
+> > -		mshc1 = &sdmmc;
+> > -		mshc2 = &sdio0;
+> > -		mshc3 = &sdio1;
+> > +		mmc0 = &emmc;
+> > +		mmc1 = &sdmmc;
+> > +		mmc2 = &sdio0;
+> > +		mmc3 = &sdio1;
+> >  		serial0 = &uart0;
+> >  		serial1 = &uart1;
+> >  		serial2 = &uart2;
