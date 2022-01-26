@@ -2,78 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED53FC3526D
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:52:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA256C6369B
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241654AbiAZNwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:52:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:32884 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241646AbiAZNwU (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:52:20 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73D4CB80AAD;
-        Wed, 26 Jan 2022 13:52:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE873C340E3;
-        Wed, 26 Jan 2022 13:52:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643205138;
-        bh=uSJ0ZOYPJyZVA9tbsTEE513frvV72L1M7icrS+I9sCE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jUnY4yyhJOcYsw/W5FB8+xAOimFoR4ygkcucYYqX49TyQUAHBvSUPzjuoiXk+LHt+
-         gBUc3ZdfFA1Ex40FmjJP8sGfgHuIgAIzFeLr6N0r/YKD7InsK/DkDuV12rH8hyWj/G
-         B+YL6RMbt2a3de9S8nFQtuIdQe7LZ4t2j2WB0whY=
-Date:   Wed, 26 Jan 2022 14:52:15 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     daniel.starke@siemens.com
-Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] tty: n_gsm: fix SW flow control encoding/handling
-Message-ID: <YfFSD8WZiXs3yMmo@kroah.com>
-References: <20220120101857.2509-1-daniel.starke@siemens.com>
+        id S241674AbiAZNxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:53:45 -0500
+Received: from mga09.intel.com ([134.134.136.24]:45919 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240280AbiAZNxo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 08:53:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643205224; x=1674741224;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qJouR+ZViRGmunL8zNrrQRLVPQFGfDt48qPG03ibSbo=;
+  b=muIBuIsNrRAxi+lJ66bFEHHMK1aM+qs6tZNZrNE7hTVBWAXMr63mdt1E
+   QVwmvThWDDR5OsA63i6LQHhW7/m5TNQKZGjJlcWYjPFYN1kx06AFCt8NS
+   HEHQl8zPFjAoqtdgIERP0Eys0k8fG7KyrLj27CU64Rod+kuLpPTe0QkWB
+   51qOiqJ0jzT+ug+szarYgrhG1xcIi3Po+b4a/2i9Slrxu271iMl3uMqeX
+   Uhv53LcQ5JN44i2oBaxiAsMCM+s4A8nX3zh+c7Xa81jLLuEU4fVhQMVtd
+   CVLV9+Q/osEqCVb42L9TxIhT/Kz9N7Oes7lCMp+C9vysWK/3FC5x5eoSl
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="246330076"
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="246330076"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:53:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="624838921"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 26 Jan 2022 05:53:41 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id B3D5B15C; Wed, 26 Jan 2022 15:53:54 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andreas Kemnade <andreas@kemnade.info>,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v4 2/4] iio: adc: rn5t618: Re-use generic struct u16_fract
+Date:   Wed, 26 Jan 2022 15:53:51 +0200
+Message-Id: <20220126135353.24007-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220126135353.24007-1-andriy.shevchenko@linux.intel.com>
+References: <20220126135353.24007-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220120101857.2509-1-daniel.starke@siemens.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 02:18:57AM -0800, daniel.starke@siemens.com wrote:
-> n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-> See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-> The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-> the newer 27.010 here. Chapter 5.2.7.3 states that DC1 (XON) and DC3 (XOFF)
-> are the control characters defined in ISO/IEC 646. These shall be quoted if
-> seen in the data stream to avoid interpretation as flow control characters.
-> 
-> ISO/IEC 646 refers to the set of ISO standards described as the ISO
-> 7-bit coded character set for information interchange. Its final version
-> is also known as ITU T.50.
-> See https://www.itu.int/rec/T-REC-T.50-199209-I/en
-> 
-> To abide the standard it is needed to quote DC1 and DC3 correctly if these
-> are seen as data bytes and not as control characters. The current
-> implementation already tries to enforce this but fails to catch all
-> defined cases. 3GPP 27.010 chapter 5.2.7.3 clearly states that the most
-> significant bit shall be ignored for DC1 and DC3 handling. The current
-> implementation handles only the case with the most significant bit set 0.
-> Cases in which DC1 and DC3 have the most significant bit set 1 are left
-> unhandled.
-> 
-> This patch fixes this by masking the data bytes with ISO_IEC_646_MASK (only
-> the 7 least significant bits set 1) before comparing them with XON
-> (a.k.a. DC1) and XOFF (a.k.a. DC3) when testing which byte values need
-> quotation via byte stuffing.
-> 
-> Fixes: e1eaea46bb40 (tty: n_gsm line discipline, 2010-03-26)
+Instead of custom data type re-use generic struct u16_fract.
+No changes intended.
 
-Nit, no need for a date here, our tools get mad about stuff like this.
-Look at the proper format for "Fixes:" line in the documentation.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
 
-thanks,
+v4: no changes
+v3: no changes
+v2: no changes
 
-greg k-h
+ drivers/iio/adc/rn5t618-adc.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/drivers/iio/adc/rn5t618-adc.c b/drivers/iio/adc/rn5t618-adc.c
+index 7d891b4ea461..6bf32907f01d 100644
+--- a/drivers/iio/adc/rn5t618-adc.c
++++ b/drivers/iio/adc/rn5t618-adc.c
+@@ -42,11 +42,6 @@ struct rn5t618_adc_data {
+ 	int irq;
+ };
+ 
+-struct rn5t618_channel_ratios {
+-	u16 numerator;
+-	u16 denominator;
+-};
+-
+ enum rn5t618_channels {
+ 	LIMMON = 0,
+ 	VBAT,
+@@ -58,7 +53,7 @@ enum rn5t618_channels {
+ 	AIN0
+ };
+ 
+-static const struct rn5t618_channel_ratios rn5t618_ratios[8] = {
++static const struct u16_fract rn5t618_ratios[8] = {
+ 	[LIMMON] = {50, 32}, /* measured across 20mOhm, amplified by 32 */
+ 	[VBAT] = {2, 1},
+ 	[VADP] = {3, 1},
+-- 
+2.34.1
+
