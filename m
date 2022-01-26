@@ -2,131 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C885FC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B2BAC5DF62
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234301AbiAZLqK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:46:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48262 "EHLO
+        id S234175AbiAZLq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:46:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240936AbiAZLqF (ORCPT
+        with ESMTP id S234071AbiAZLqz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:46:05 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1AE6C061747
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:46:04 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id z10-20020a17090acb0a00b001b520826011so4339134pjt.5
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:46:04 -0800 (PST)
+        Wed, 26 Jan 2022 06:46:55 -0500
+Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDF1C06161C;
+        Wed, 26 Jan 2022 03:46:55 -0800 (PST)
+Received: by mail-ua1-x934.google.com with SMTP id u6so42948367uaq.0;
+        Wed, 26 Jan 2022 03:46:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Qlm9yJ5575SFpR6IPywQKZmVoP3waSVFMhfeayBNTbA=;
-        b=NxPkbSYmWFaN95PyEIyPwgodGezgxN3X9MixZlR066DnPRYP1cobNH9jAB0s36cd6Q
-         ySyqYaENca2IZRgGQsDbpuJFvsHU6cJdWGNL1curR2mCiF8abcRZQmPiQzg/zhsMQ5JJ
-         QNzC6lLAd3RwZnM+Jc1hmNjgk7ltV6+5WXz6vpdS9M41r9UxCnPIRDujIbXdLnDT1Brv
-         XGJniw06BlrVTKgOvTCCvzeU9yuE7ayYWiVJn3FRJs7KZJ7M0NtnU5zARFaFfXGrWMwM
-         DyggnPkk1X3mse6C96lNLVMsMReVj905raBJcjodRFOJ9LmxzzryAcFoB1vnmSUEoQ/Q
-         6t1Q==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N4CNUTqSVWn9bXn7l88zPRdfRlbtM6HbzeC8ZWljLDY=;
+        b=kZlc5lyneJxcG3mgrIIsGcOndeVBblAK0nKqJSIxp5XBRMZDtyWdX5FBwuNfSIkm9a
+         KEa3BbUfSUgVIEcWlYs98e72BJkdt70ayYnbXgyYLT2AGf8mBiDWdNBn4GM7fs4t9y7s
+         tv9chq0HqYSR4PmevC7Ay1dz4ZgO1zXBQaak7iVtaAqHzINmLVcIHjWHrY4iC9LBEQ1z
+         NvtFXX/fQh2btOfQHsd9ie7Hq9Jk9xKK8Yp+oomhROlf1ZbDVzK+Ph9Ciprme7e2np4f
+         a0Ioc50iPwG018CiaEhUt+3VNIM+BzYZITkX0FfQdiQ7uu7jlOfQGewH2itZbhggiEL2
+         z+Ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Qlm9yJ5575SFpR6IPywQKZmVoP3waSVFMhfeayBNTbA=;
-        b=5ORSk9yJunkUdKvJJO2xY0DYuShvVQcN9zHgl60+pISHi5Ra5OJulGTQnrzICGvmOU
-         HmgWdcE/EzQG/S+jfv0/7RQLmpuoS8W9kMefGeA2oH1+lJCsd3vqkZYZ0e5XmscPK3H6
-         iH5qT3rPyVQuXcfczxGCGqhkQ+GH1SFtXdgLX9yeVY6BuVfD7gWNiSPtyTMOAbGH6lmp
-         8gkTtYuPdTW4kurm39NW2PRu16n5tYWUFpUiP6Lq0dtuCcTVlBfp6EosuCzRUm8V6Z++
-         Qf8zIugC1NZ8h2L6Le4Bf2ZJTxhm6ZUrkcqCiYhKuYHGtA7DvHIBkPoFe9B9y2/5URqx
-         OQDA==
-X-Gm-Message-State: AOAM530VaBHYJBE+mquB4nsEyzBHeI64MsUgm1UAUp2D2/koMCHjfg9q
-        dUgboNdfu+hNhxAbQJfJhNtfIw==
-X-Google-Smtp-Source: ABdhPJx9kXQfLSUsJYLbLoE3i5jlnsAyM6/6+KfwVUFH8RIATnnVjIb0WUzj8hEixBetgKmmLHf28A==
-X-Received: by 2002:a17:902:8c97:b0:14a:ec66:bbb0 with SMTP id t23-20020a1709028c9700b0014aec66bbb0mr22332418plo.68.1643197564511;
-        Wed, 26 Jan 2022 03:46:04 -0800 (PST)
-Received: from localhost.localdomain ([122.167.221.23])
-        by smtp.gmail.com with ESMTPSA id nn2sm2994976pjb.35.2022.01.26.03.45.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 03:46:04 -0800 (PST)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>
-Cc:     Sandeep Tripathy <milun.tripathy@gmail.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Liush <liush@allwinnertech.com>,
-        Anup Patel <anup@brainfault.org>, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvm-riscv@lists.infradead.org, Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v10 8/8] RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt machine
-Date:   Wed, 26 Jan 2022 17:14:52 +0530
-Message-Id: <20220126114452.692512-9-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220126114452.692512-1-apatel@ventanamicro.com>
-References: <20220126114452.692512-1-apatel@ventanamicro.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N4CNUTqSVWn9bXn7l88zPRdfRlbtM6HbzeC8ZWljLDY=;
+        b=G+1nTM3BJ8Ay/6RvEYKzXjeYvPqlV24W3+Xruzcvc8a2kQDYyWPieLE4kHnwp6hrzh
+         gRCewYPva2lk94zzrDTjo4/5sTe+7/7ys4qX6IEkDjX0eYNPYD3QYxF/W+V3aPQE6Ffu
+         Kv2mR2bBmtLzx1QX6pRz0QKIEwBMhDxEhdzFPiCAN9xpBdaNABTGeuQQKXpR0idatfpU
+         zO49aDGp6rwmMDZzEi8iK6SKbRZQIa7+q3Jh6QN2FAupZ0S0kjoStEqM345YiVlS8IrR
+         58w9anhBVUSVKiQBm+uzwEfUIfYQFFziigYpzbMwcD/uL5H18WRXrtwyqwNOHiiU+jQL
+         nT0Q==
+X-Gm-Message-State: AOAM530TaFb7LcMq//RBnEBvwBpXhDA3wyyoON2D6+7D5AP+UE3nTv+c
+        K+E1GGlswn3xFF6nyA1AGviGNfdthaPPAdkCcxc=
+X-Google-Smtp-Source: ABdhPJwZR3GhqHW6vVDPMdvc5RfjPrPxRISo7AxE0yRaHiKPCLToutmaZ91KccUpC53UUHP3+xvCW8VUf4CPP4L+I4g=
+X-Received: by 2002:a67:c98d:: with SMTP id y13mr3479175vsk.43.1643197614279;
+ Wed, 26 Jan 2022 03:46:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220110114930.1406665-1-sergio.paracuellos@gmail.com>
+ <20220110114930.1406665-5-sergio.paracuellos@gmail.com> <d62d838872d26201b04a1014a925738d29ff3e48.camel@pengutronix.de>
+In-Reply-To: <d62d838872d26201b04a1014a925738d29ff3e48.camel@pengutronix.de>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Wed, 26 Jan 2022 12:46:43 +0100
+Message-ID: <CAMhs-H__SxEZ4OtdN_PFf4g+joWBRgRR0q7hHkZX3d=qZtpxUQ@mail.gmail.com>
+Subject: Re: [PATCH v8 4/4] staging: mt7621-dts: align resets with binding documentation
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
+        Greg KH <gregkh@linuxfoundation.org>,
+        NeilBrown <neil@brown.name>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anup Patel <anup.patel@wdc.com>
+Hi Greg,
 
-We enable RISC-V SBI CPU Idle driver for QEMU virt machine to test
-SBI HSM Supend on QEMU.
+On Mon, Jan 10, 2022 at 12:54 PM Philipp Zabel <p.zabel@pengutronix.de> wrote:
+>
+> On Mon, 2022-01-10 at 12:49 +0100, Sergio Paracuellos wrote:
+> > Binding documentation for compatible 'mediatek,mt7621-sysc' has been updated
+> > to be used as a reset provider. Align reset related bits and system controller
+> > node with binding documentation along the dtsi file.
+> >
+> > Signed-off-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+>
+> Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+>
+> regards
+> Philipp
 
-Signed-off-by: Anup Patel <anup.patel@wdc.com>
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- arch/riscv/Kconfig.socs           | 3 +++
- arch/riscv/configs/defconfig      | 1 +
- arch/riscv/configs/rv32_defconfig | 1 +
- 3 files changed, 5 insertions(+)
+Can I get your Acked-by on this patch to apply this series through the clk tree?
 
-diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
-index 6ec44a22278a..f4097a815201 100644
---- a/arch/riscv/Kconfig.socs
-+++ b/arch/riscv/Kconfig.socs
-@@ -36,6 +36,9 @@ config SOC_VIRT
- 	select GOLDFISH
- 	select RTC_DRV_GOLDFISH if RTC_CLASS
- 	select SIFIVE_PLIC
-+	select PM_GENERIC_DOMAINS if PM
-+	select PM_GENERIC_DOMAINS_OF if PM && OF
-+	select RISCV_SBI_CPUIDLE if CPU_IDLE
- 	help
- 	  This enables support for QEMU Virt Machine.
- 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index a5e0482a4969..b8c882b70b02 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -20,6 +20,7 @@ CONFIG_SOC_SIFIVE=y
- CONFIG_SOC_VIRT=y
- CONFIG_SMP=y
- CONFIG_HOTPLUG_CPU=y
-+CONFIG_PM=y
- CONFIG_CPU_IDLE=y
- CONFIG_VIRTUALIZATION=y
- CONFIG_KVM=m
-diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-index d1b87db54d68..6f9a7c89bff9 100644
---- a/arch/riscv/configs/rv32_defconfig
-+++ b/arch/riscv/configs/rv32_defconfig
-@@ -20,6 +20,7 @@ CONFIG_SOC_VIRT=y
- CONFIG_ARCH_RV32I=y
- CONFIG_SMP=y
- CONFIG_HOTPLUG_CPU=y
-+CONFIG_PM=y
- CONFIG_CPU_IDLE=y
- CONFIG_VIRTUALIZATION=y
- CONFIG_KVM=m
--- 
-2.25.1
+Thanks in advance for your time.
 
+Best regards,
+    Sergio Paracuellos
