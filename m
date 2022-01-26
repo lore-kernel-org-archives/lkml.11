@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0032DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:35:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80556C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233721AbiAZXfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 18:35:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
+        id S233810AbiAZXfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 18:35:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233687AbiAZXfb (ORCPT
+        with ESMTP id S233702AbiAZXfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 18:35:31 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FE6C061757
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:35:26 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id o131-20020a25d789000000b00614957c60dfso2409221ybg.15
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:35:26 -0800 (PST)
+        Wed, 26 Jan 2022 18:35:33 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523BDC06173B
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:35:32 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id b61-20020a25a243000000b006126ea65191so2368971ybi.19
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:35:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=lQ6TQFr4gRTQ/swcC+xKkGLDRXJXkBH2aopbD7J0zxg=;
-        b=Pr7U0hRPExaZ9E+ynBOo965LQe1h01cgDN+CxtcAFUYTSLjAxl+OLWJBk1LVQ/J1yi
-         fLRlyZ7av1/60b20IyH9nqcPf2YjVmQXbDieFeAKIjtXx408l6k60Br8y5eHsAyUMMjV
-         jWoJ6FDL+o91GKzZC+8PIIRHfqX/D6SzCEWSLDbXqUbdYVqBc3l5zYXaguPHD5EiRb/m
-         i19z24BAI2SMUwAT9goNJoOvjSY6FJHqxP/GeXDDbYb4z0kDK7/jDjIfAgfWBTFps6Pe
-         Xg55DAUCISBxc09a5+ueJxmFo4V3KJ2SkrX7EMIy5jAa9pZROUd5on9oVc/WH+oITCcm
-         cY1g==
+        bh=krIXxvC+be6RpLbuXXi+utIDD3YUAtbOGqDgMPL0DEs=;
+        b=Hhax+8QZ5G/HCsum9KF837edB16MSoRYszJlVboUSsOeFs2TWu4Ejy66qPAa/jNiYN
+         2qVACYjnGLOdNI8J9kjUz1yFCxNSPkfEP2A1GVvPSgX2twQsya3FzFgkHFTJ8gt1Ogl7
+         YpQzcyba0h1pICKXpuHlLrVVECli42Jyr1iVIvhE3/s66808IcHo/Zs0C0/K6wbT7nnI
+         OnSizWjMMkHPXPY5WMq5BWVEL8d/sKDiI98ZGKg8E3EW0guC4KfRDHOTiV9Xuy84JQa0
+         s4EXr1IbWHBwmwR45j6YE7s+1IpKEdH5Q2QtvZR+MSEXIhQfVqtGm1EU/0wMtPkgqscS
+         EVOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=lQ6TQFr4gRTQ/swcC+xKkGLDRXJXkBH2aopbD7J0zxg=;
-        b=N+KuVuQhhdV1UUXiigRPas8+88MYbD55tZuGxtUnpwcMJ2rNPbcZNhgBjU7PuefT7i
-         sModDNjThiQG6IovQWF3Hwl1vk5woQfXzHKgzmYpBmcYTD1C7q1lsRN8kb6jTZr98DaN
-         ZWTviTHuk6Kl9zewCzGCtPpeCZQtX6SrUqRZJkriQnMhXHeRoV6lfgtRRjKQTbSaeset
-         G6fRcTwXlWlN/m/XH8wYU9KvxUk6TK5urcDMBDSxL7F08Pxoq78IlxnUeEYj6F7FoJ/0
-         ZLXeufxQcdPxuO5cFZ6iG58L1yZe6gb+yHx2TZk2sWkJejb9KTlwzMduX26rizlUZhBZ
-         Kn/w==
-X-Gm-Message-State: AOAM531Cl8CUVlM4FU3EeZt5sGxPaIQCRcskbBFgTDb4G+37AdxlXzQL
-        8bfINX0GHXCy1KW6OoH9iZLvmtqVJLYFQvhPnHN0+kiVodajYAc90VogeVrzjyHWIP1CnB5qzt5
-        s/ant8pe+nxb5D4VDhnMHBAFaMLcLbfR3xYPq+uLXvEBMVge9d1Nb2D2+koSgUAjGkB8w0jPs
-X-Google-Smtp-Source: ABdhPJwPMK+zTZAwg7RhJoq5d38w//j01hjS0JDhy9D770OqdiD6H4hJ7KVdM5ckkTbIiTl3S97npMQFBK8V
+        bh=krIXxvC+be6RpLbuXXi+utIDD3YUAtbOGqDgMPL0DEs=;
+        b=HyX1so0Ws7kXZadrhnJT/wjo0S5zmhZ1KSePnt979lMHD1JF/aU4M1ycXvSRsyH/TP
+         mikXtEXgvmCrPL4QGex+olvlKAgVqtrCbDwAanZA/sPcoBGC/LMUCedPyt5tvrHFtnWa
+         8KZBwaSXQR8IiRuFWvQWVO5iHy11crI6KLlCkLGCzUuYrWaN34K9Y2exLBAUwsBC7MT/
+         AUMNF3Mekj4yy0pZ8m7oCrhkxRLJjwC2Y5NsVMsUpn48I0Y9gi5CZA6GPUu2m2j3UlTz
+         Sr59TvRe7F9dcj8r6yOBh77zOkTpDd6q2q2nPbOvSqQoQ4Z2s1ud9lEqzMbMz//2Vksf
+         ZaUQ==
+X-Gm-Message-State: AOAM533LBRkQiH3S7fQioI59l0+/CvpA8KKbbAU8dynAcJtIh2luR7F0
+        I2H+7XuVjTJR0OJIJwPPm2ZuNwkSe1LTiduGFVehjE25srzM8JuIwUPfGAZRM124nmnnyv0fAaw
+        wWK3zQzdZRWAdRDW9xGfWdam3N+X3H5a4+bMyx9SzcWqa4sewmT8mxjbsSYyDu+up9XL6unri
+X-Google-Smtp-Source: ABdhPJxXMhl/Jlo1Jnr1iVoExf3l+kpSJmjflXjpBgsIzrQJGSiHfC6ZprpgndKYVkArnQAN+KiT7PUhDNtc
 X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:9ce0:6f20:c145:eac])
- (user=eranian job=sendgmr) by 2002:a05:6902:1145:: with SMTP id
- p5mr1805667ybu.315.1643240125953; Wed, 26 Jan 2022 15:35:25 -0800 (PST)
-Date:   Wed, 26 Jan 2022 15:34:46 -0800
+ (user=eranian job=sendgmr) by 2002:a81:5594:: with SMTP id
+ j142mr1ywb.36.1643240130852; Wed, 26 Jan 2022 15:35:30 -0800 (PST)
+Date:   Wed, 26 Jan 2022 15:34:48 -0800
 In-Reply-To: <20220126233454.3362047-1-eranian@google.com>
-Message-Id: <20220126233454.3362047-6-eranian@google.com>
+Message-Id: <20220126233454.3362047-8-eranian@google.com>
 Mime-Version: 1.0
 References: <20220126233454.3362047-1-eranian@google.com>
 X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH v5 05/13] perf/x86/amd: enable branch sampling priv level filtering
+Subject: [PATCH v5 07/13] perf/x86/amd: make Zen3 branch sampling opt-in
 From:   Stephane Eranian <eranian@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
@@ -62,83 +62,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AMD Branch Sampling features does not provide hardware filtering by
-privilege level. The associated PMU counter does but not the branch sampling
-by itself. Given how BRS operates there is a possibility that BRS captures
-kernel level branches even though the event is programmed to count only at
-the user level. This patch implements a workaround in software by removing
-the branches which belong to the wrong privilege level. The privilege level
-is evaluated on the target of the branch and not the source so as to be
-compatible with other architectures. As a consequence of this patch, the
-number of entries in the PERF_RECORD_BRANCH_STACK buffer may be less than
-the maximum (16).  It could even be zero. Another consequence is that
-consecutive entries in the branch stack may not reflect actual code path and
-may have discontinuities, in case kernel branches were suppressed. But this
-is no different than what happens on other architectures.
+This patch adds a kernel config option to make support
+for AMD Zen3 Branch Sampling (BRS) an opt-in compile
+time option.
 
 Signed-off-by: Stephane Eranian <eranian@google.com>
 ---
- arch/x86/events/amd/brs.c | 26 ++++++++++++++++++++------
- 1 file changed, 20 insertions(+), 6 deletions(-)
+ arch/x86/events/Kconfig      |  8 ++++++
+ arch/x86/events/amd/Makefile |  3 ++-
+ arch/x86/events/perf_event.h | 49 ++++++++++++++++++++++++++++--------
+ 3 files changed, 49 insertions(+), 11 deletions(-)
 
-diff --git a/arch/x86/events/amd/brs.c b/arch/x86/events/amd/brs.c
-index 3c13c484c637..40461c3ce714 100644
---- a/arch/x86/events/amd/brs.c
-+++ b/arch/x86/events/amd/brs.c
-@@ -92,10 +92,6 @@ int amd_brs_setup_filter(struct perf_event *event)
- 	if ((type & ~PERF_SAMPLE_BRANCH_PLM_ALL) != PERF_SAMPLE_BRANCH_ANY)
- 		return -EINVAL;
+diff --git a/arch/x86/events/Kconfig b/arch/x86/events/Kconfig
+index d6cdfe631674..1dc002ef66da 100644
+--- a/arch/x86/events/Kconfig
++++ b/arch/x86/events/Kconfig
+@@ -44,4 +44,12 @@ config PERF_EVENTS_AMD_UNCORE
  
--	/* can only capture at all priv levels due to the way BRS works */
--	if ((type & PERF_SAMPLE_BRANCH_PLM_ALL) != PERF_SAMPLE_BRANCH_PLM_ALL)
--		return -EINVAL;
--
- 	return 0;
- }
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called 'amd-uncore'.
++
++config PERF_EVENTS_AMD_BRS
++	depends on PERF_EVENTS && CPU_SUP_AMD
++	tristate "AMD Zen3 Branch Sampling support"
++	help
++	  Enable AMD Zen3 branch sampling support (BRS) which samples up to
++	  16 consecutive taken branches in registers.
++
+ endmenu
+diff --git a/arch/x86/events/amd/Makefile b/arch/x86/events/amd/Makefile
+index cf323ffab5cd..b9f5d4610256 100644
+--- a/arch/x86/events/amd/Makefile
++++ b/arch/x86/events/amd/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+-obj-$(CONFIG_CPU_SUP_AMD)		+= core.o brs.o
++obj-$(CONFIG_CPU_SUP_AMD)		+= core.o
++obj-$(CONFIG_PERF_EVENTS_AMD_BRS)	+= brs.o
+ obj-$(CONFIG_PERF_EVENTS_AMD_POWER)	+= power.o
+ obj-$(CONFIG_X86_LOCAL_APIC)		+= ibs.o
+ obj-$(CONFIG_PERF_EVENTS_AMD_UNCORE)	+= amd-uncore.o
+diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
+index 25b037b571e4..4d050579dcbd 100644
+--- a/arch/x86/events/perf_event.h
++++ b/arch/x86/events/perf_event.h
+@@ -1218,6 +1218,8 @@ static inline bool fixed_counter_disabled(int i, struct pmu *pmu)
+ #ifdef CONFIG_CPU_SUP_AMD
  
-@@ -195,6 +191,21 @@ void amd_brs_disable_all(void)
- 		amd_brs_disable();
- }
+ int amd_pmu_init(void);
++
++#ifdef CONFIG_PERF_EVENTS_AMD_BRS
+ int amd_brs_init(void);
+ void amd_brs_disable(void);
+ void amd_brs_enable(void);
+@@ -1252,25 +1254,52 @@ static inline void amd_pmu_brs_del(struct perf_event *event)
  
-+static bool amd_brs_match_plm(struct perf_event *event, u64 to)
+ void amd_pmu_brs_sched_task(struct perf_event_context *ctx, bool sched_in);
+ 
+-/*
+- * check if BRS is activated on the CPU
+- * active defined as it has non-zero users and DBG_EXT_CFG.BRSEN=1
+- */
+-static inline bool amd_brs_active(void)
++static inline s64 amd_brs_adjust_period(s64 period)
+ {
+-	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
++	if (period > x86_pmu.lbr_nr)
++		return period - x86_pmu.lbr_nr;
+ 
+-	return cpuc->brs_active;
++	return period;
++}
++#else
++static inline int amd_brs_init(void)
 +{
-+	int type = event->attr.branch_sample_type;
-+	int plm_k = PERF_SAMPLE_BRANCH_KERNEL | PERF_SAMPLE_BRANCH_HV;
-+	int plm_u = PERF_SAMPLE_BRANCH_USER;
-+
-+	if (!(type & plm_k) && kernel_ip(to))
-+		return 0;
-+
-+	if (!(type & plm_u) && !kernel_ip(to))
-+		return 0;
-+
-+	return 1;
++	return 0;
+ }
++static inline void amd_brs_disable(void) {}
++static inline void amd_brs_enable(void) {}
++static inline void amd_brs_drain(void) {}
++static inline void amd_brs_lopwr_init(void) {}
++static inline void amd_brs_disable_all(void) {}
++static inline int amd_brs_setup_filter(struct perf_event *event)
++{
++	return 0;
++}
++static inline void amd_brs_reset(void) {}
+ 
+-static inline s64 amd_brs_adjust_period(s64 period)
++static inline void amd_pmu_brs_add(struct perf_event *event)
+ {
+-	if (period > x86_pmu.lbr_nr)
+-		return period - x86_pmu.lbr_nr;
 +}
 +
- /*
-  * Caller must ensure amd_brs_inuse() is true before calling
-  * return:
-@@ -252,8 +263,6 @@ void amd_brs_drain(void)
- 		if (to == BRS_POISON)
- 			break;
- 
--		rdmsrl(brs_from(brs_idx), from);
--
- 		/*
- 		 * Sign-extend SAMP_BR_TO to 64 bits, bits 61-63 are reserved.
- 		 * Necessary to generate proper virtual addresses suitable for
-@@ -261,6 +270,11 @@ void amd_brs_drain(void)
- 		 */
- 		to = (u64)(((s64)to << shift) >> shift);
- 
-+		if (!amd_brs_match_plm(event, to))
-+			continue;
++static inline void amd_pmu_brs_del(struct perf_event *event)
++{
++}
 +
-+		rdmsrl(brs_from(brs_idx), from);
-+
- 		perf_clear_branch_entry_bitfields(br+nr);
++static inline void amd_pmu_brs_sched_task(struct perf_event_context *ctx, bool sched_in)
++{
++}
  
- 		br[nr].from = from;
++static inline s64 amd_brs_adjust_period(s64 period)
++{
+ 	return period;
+ }
+ 
++static inline void amd_brs_enable_all(void)
++{
++}
++
++#endif
++
+ #else /* CONFIG_CPU_SUP_AMD */
+ 
+ static inline int amd_pmu_init(void)
 -- 
 2.35.0.rc0.227.g00780c9af4-goog
 
