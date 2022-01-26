@@ -2,63 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC08C63686
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 16:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 864A2C636C8
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 16:06:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236248AbiAZQF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 11:05:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
+        id S237013AbiAZQGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 11:06:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236114AbiAZQFw (ORCPT
+        with ESMTP id S236239AbiAZQF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 11:05:52 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66EF3C061747
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 08:05:52 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id c15so255253ljf.11
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 08:05:52 -0800 (PST)
+        Wed, 26 Jan 2022 11:05:56 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29403C06173B
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 08:05:56 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id z7so308140ljj.4
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 08:05:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=zF3IX+ZoZuEP5wIGog8Vz1x7D6J5qbB47X1+HgTp1Ro=;
-        b=ik07UYqRR/fgOvihUdeZBxy46SLo1jEawOHrQgsOSokIdvUBKoW6kiOuzx0XABMCUe
-         J4N8p1M0AAwC8lJd1+zjHU2l40GZfC7g+27/fG94k2Y5JW25pb5tNAR5qZQqmWfBwOuD
-         AXYTo9LpijDJbA1AJVPH6IyAvbeu/kWhPNQWgfuqJvSjvDcadThJogbuW3mpQVtM+eb1
-         4C47YUdMicmJjfb+KW07ZoaMoa15Jxi37LiM8cB4QQQF1Zin/MwbZbkJr0RYSL0a0A13
-         TVLUCAWqA12D+C2dfH+vDIfAm7WFhFrgAnd5bryepd88DLXU8a4M7JSJIHydQ1ebK2Jg
-         knDg==
+        bh=DKVSdC4qECIU2JwQ746MX/kDKwKhoierwoEybkVx8Ro=;
+        b=pqtPSS+5XTYyIPFKvC3zu1ZSjTFT4ZciZmckIJighy+OyMb1cv9L2ZgemJf+uPaUq4
+         Wu7fOSw5Q3cheSqIyj1iNG2czR3vw+KCTBajaS9FkXGhevVoXnj4yZq9L3dCixiooUO0
+         aRjOnerU/CCQMomM6bqfpmwaYt/SYBc9tdzkFQ3Pcc0attNs+/7wyneXt57tp8OAYKTp
+         50O9Svb9QVPw5m86Rl3M2mHHga+bK7Wv4T3XOcK7trHIn2ixurapSrT7FnF2Dv5USm5X
+         DvVO2zN1ZWla2d48xNwSNnwrsePjhR3Htf4L53fsbDWRF9nGY1rVjwkxiGNrnsCJwoIB
+         lsQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=zF3IX+ZoZuEP5wIGog8Vz1x7D6J5qbB47X1+HgTp1Ro=;
-        b=5tO6iieKX6JM/OZTJyuJ/Yl/EHvFPQ9LKrTFrZpbjzTdAnvtE/hhid/x9SBLDaFf/i
-         Da1RTUt4ZhMD6i1bu71Bhl0D8RLgFsZ1pcanAgKuLhqxj7+uRPQQMz+JXJkabSqI4ttb
-         oJc8UxtpX8STpbS6K16XXC/OTrNpebxAx14zgZ4EPnD7zQSB4NLbEJ1N9aloBIiKScy+
-         TuNWpB/lvZiNrm4fCzpaIUpY11jENJOcKZdy32OYSDzbillMXeRDq3o+Avv3Ykn7IjTm
-         W+2g+JcOX49al3NWKo3L78DbjjFSYcLJDTS9jEcvn2YYmPrZ7WkFhb/Ez2xkeIJ/qzyv
-         NT+w==
-X-Gm-Message-State: AOAM533FNxXxe/kEdaeeZ47KQobGVzBBjNmJ4VA3gKeIWdiZEpr+eIqW
-        yNjVJG5oo1iCkzfRY3T+Zkf/lA==
-X-Google-Smtp-Source: ABdhPJwRd7UsXBcQJGD1W7d+Jy7L1ysRcWJeJ1tVFL/lRHXd/asCPE1V2I18cUko0Sixa5mkyU/SLw==
-X-Received: by 2002:a2e:9e87:: with SMTP id f7mr19181390ljk.160.1643213150617;
-        Wed, 26 Jan 2022 08:05:50 -0800 (PST)
+        bh=DKVSdC4qECIU2JwQ746MX/kDKwKhoierwoEybkVx8Ro=;
+        b=3/KjzFsuw7AVP+HXLyVr47+nNa2zp2Gpzlb6a7GgL0oUfaYE7BOhHZh4VnN7wPSSFO
+         vVTatBy9gUSLwdGySqANb//FhCPPp6fx4qn+b1hWUqBj2hYiBnSgGzrrgiD95rsgTiXR
+         e6Al92IM931kUKtvnWTfwbT1gOhWEE3aB7VJcn5I16R4G69ThsuH0EK2c0BI6in4T/Nj
+         lP3INdxiZAzDtf50rMq+nyro8/qjh/n5FCuVwE5FfJe8XixJ3GwOqbQLXi9VOkqHTPGO
+         QLDxUZQtb4bvZd4RakUlr6GvLKkG1FLzeDdPVvf/GE9eovuImIIj5qdJwoCKAy2imUrJ
+         Hwsw==
+X-Gm-Message-State: AOAM533oQRIvQQ5/2CoFWmNoO4XgvztTl2m58VBE/r2JYvh64mYkY9Ug
+        ZxT33jr+pd8yX5PVN99ihQCe4A==
+X-Google-Smtp-Source: ABdhPJz9PZ33WyBsJQCu9MCgq4W3w1XBgp+BABOq0UX8+QuiSnuy+JnQsazzZKkDq6vRlvMxsNvhCw==
+X-Received: by 2002:a2e:9c10:: with SMTP id s16mr18190178lji.280.1643213154416;
+        Wed, 26 Jan 2022 08:05:54 -0800 (PST)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id p6sm1869984lfa.241.2022.01.26.08.05.49
+        by smtp.gmail.com with ESMTPSA id p6sm1869984lfa.241.2022.01.26.08.05.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 08:05:50 -0800 (PST)
+        Wed, 26 Jan 2022 08:05:54 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Scott Wood <scottwood@freescale.com>,
-        Shaohui Xie <Shaohui.Xie@freescale.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 1/5] dt-bindings: net: xgmac_mdio: Remove unsupported "bus-frequency"
-Date:   Wed, 26 Jan 2022 17:05:39 +0100
-Message-Id: <20220126160544.1179489-2-tobias@waldekranz.com>
+        Marcin Wojtas <mw@semihalf.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Markus Koch <markus@notsyncing.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net-next 3/5] net/fsl: xgmac_mdio: Support preamble suppression
+Date:   Wed, 26 Jan 2022 17:05:41 +0100
+Message-Id: <20220126160544.1179489-4-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220126160544.1179489-1-tobias@waldekranz.com>
 References: <20220126160544.1179489-1-tobias@waldekranz.com>
@@ -69,37 +68,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This property has never been supported by the driver. The kernel has
-settled on "clock-frequency" as the standard name for this binding, so
-once that is supported we will document that instead.
+Support the standard "suppress-preamble" attribute to disable preamble
+generation.
 
-Fixes: 7f93c9d90f4d ("power/fsl: add MDIO dt binding for FMan")
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- Documentation/devicetree/bindings/net/fsl-fman.txt | 9 ---------
- 1 file changed, 9 deletions(-)
+ drivers/net/ethernet/freescale/xgmac_mdio.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
-index 020337f3c05f..cd5288fb4318 100644
---- a/Documentation/devicetree/bindings/net/fsl-fman.txt
-+++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
-@@ -388,15 +388,6 @@ PROPERTIES
- 		Value type: <prop-encoded-array>
- 		Definition: A standard property.
+diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
+index 40442d64a247..18bf2370d45a 100644
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -39,6 +39,7 @@ struct tgec_mdio_controller {
+ #define MDIO_STAT_CLKDIV(x)	(((x>>1) & 0xff) << 8)
+ #define MDIO_STAT_BSY		BIT(0)
+ #define MDIO_STAT_RD_ER		BIT(1)
++#define MDIO_STAT_PRE_DIS	BIT(5)
+ #define MDIO_CTL_DEV_ADDR(x) 	(x & 0x1f)
+ #define MDIO_CTL_PORT_ADDR(x)	((x & 0x1f) << 5)
+ #define MDIO_CTL_PRE_DIS	BIT(10)
+@@ -254,6 +255,21 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 	return ret;
+ }
  
--- bus-frequency
--		Usage: optional
--		Value type: <u32>
--		Definition: Specifies the external MDIO bus clock speed to
--		be used, if different from the standard 2.5 MHz.
--		This may be due to the standard speed being unsupported (e.g.
--		due to a hardware problem), or to advertise that all relevant
--		components in the system support a faster speed.
--
- - interrupts
- 		Usage: required for external MDIO
- 		Value type: <prop-encoded-array>
++static void xgmac_mdio_set_suppress_preamble(struct mii_bus *bus)
++{
++	struct mdio_fsl_priv *priv = (struct mdio_fsl_priv *)bus->priv;
++	struct tgec_mdio_controller __iomem *regs = priv->mdio_base;
++	struct device *dev = bus->parent;
++	u32 mdio_stat;
++
++	if (!device_property_read_bool(dev, "suppress-preamble"))
++		return;
++
++	mdio_stat = xgmac_read32(&regs->mdio_stat, priv->is_little_endian);
++	mdio_stat |= MDIO_STAT_PRE_DIS;
++	xgmac_write32(mdio_stat, &regs->mdio_stat, priv->is_little_endian);
++}
++
+ static int xgmac_mdio_probe(struct platform_device *pdev)
+ {
+ 	struct fwnode_handle *fwnode;
+@@ -301,6 +317,8 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
+ 	priv->has_a011043 = device_property_read_bool(&pdev->dev,
+ 						      "fsl,erratum-a011043");
+ 
++	xgmac_mdio_set_suppress_preamble(bus);
++
+ 	fwnode = pdev->dev.fwnode;
+ 	if (is_of_node(fwnode))
+ 		ret = of_mdiobus_register(bus, to_of_node(fwnode));
 -- 
 2.25.1
 
