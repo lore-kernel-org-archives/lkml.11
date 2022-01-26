@@ -2,144 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E16B5C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:13:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD466C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243612AbiAZRNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 12:13:23 -0500
-Received: from mga02.intel.com ([134.134.136.20]:16279 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236965AbiAZRNT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:13:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643217199; x=1674753199;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=WIgJq1vWU6jw1/jQDPrNCQhuhtK+wLmdU8VzdaGKxSI=;
-  b=Si+22CeI8wyRO4aje3UNDOEIBFND29HdIWEdbxEB0/sKbU331vue70Sj
-   Pqp6DExiyMUiEYz9tJyD5goxLYcnE15IEZimVHB68hlJ0zwaLZ7kF1Izy
-   0prApXcMk7snNnDde0pbinpGqJSt4dyUSkztLq/Rov6AUZktTuF57StmR
-   7qEsMj2DeGR74ozPEzkd7Rg2tn7Wz6tzYbiCfR8nJskmyMSgUVnFkRHQ/
-   zDobfp+7qRNTDq9sSqeEdy+IyQUcvpQ9vJalhWlmtdrOSl/nQ8QapdAVF
-   VIB/ygyOL0XjMWc7RCIZWgC+IviOAd0GyzDHNxxzOfLCF0nrn9+UOYFC2
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="233975418"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="233975418"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 09:11:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="696302581"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 26 Jan 2022 09:11:04 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nClp1-000LRF-Et; Wed, 26 Jan 2022 17:11:03 +0000
-Date:   Thu, 27 Jan 2022 01:10:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Quentin Perret <qperret@google.com>,
-        Will Deacon <willdeacon@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-5.10
- 1026/9999] arch/arm64/kvm/hyp/include/hyp/switch.h:216:2: error: implicit
- declaration of function 'sve_cond_update_zcr_vq'
-Message-ID: <202201270116.Lw5fVBBz-lkp@intel.com>
+        id S243615AbiAZROZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 12:14:25 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:42758 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243590AbiAZROM (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 12:14:12 -0500
+Received: from [192.168.254.32] (unknown [47.187.212.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id D0EBA20B6C61;
+        Wed, 26 Jan 2022 09:14:10 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D0EBA20B6C61
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1643217251;
+        bh=qjst+qeWYxaDU+MRKQkL6zF+4RSRzRgazary5tstvLY=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=XtrB4oV5zRlyA6UFpPm1uaOM2KvUJchClLB2PNDJMzq/z7dDHar0dbVIIQ78/SgcT
+         Pz00QqrEL8silAQ/SwbN/N/8G0jAu+aKD8F0w+ySTEEdxPV1jgiaGl2MqvyP2w5V14
+         xFCoG4XyjjRh129nmkTz041zpJ5zX/y8ZWRLu3cE=
+Message-ID: <1a0e19db-a7f8-4c8e-0163-398fcd364d54@linux.microsoft.com>
+Date:   Wed, 26 Jan 2022 11:14:10 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v13 11/11] arm64: Select HAVE_RELIABLE_STACKTRACE
+Content-Language: en-US
+To:     "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "sjitindarsingh@gmail.com" <sjitindarsingh@gmail.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220117145608.6781-1-madvenka@linux.microsoft.com>
+ <20220117145608.6781-12-madvenka@linux.microsoft.com>
+ <TY2PR01MB5257518B8EB381E16D52B244855F9@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+ <825b8b72-c746-ba24-7142-3fff481e82d6@linux.microsoft.com>
+ <TY2PR01MB5257BE671A481D81F1A40E0185209@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+In-Reply-To: <TY2PR01MB5257BE671A481D81F1A40E0185209@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marc,
-
-FYI, the error/warning still remains.
-
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.10
-head:   4b1862e4fc6967bf326107ac0d5695157f32c25d
-commit: 1105b4d1cef4bc19ad20129a716194268c937eaf [1026/9999] BACKPORT: FROMGIT: KVM: arm64: Rework SVE host-save/guest-restore
-config: arm64-randconfig-r022-20220124 (https://download.01.org/0day-ci/archive/20220127/202201270116.Lw5fVBBz-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 2a1b7aa016c0f4b5598806205bdfbab1ea2d92c4)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/1105b4d1cef4bc19ad20129a716194268c937eaf
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.10
-        git checkout 1105b4d1cef4bc19ad20129a716194268c937eaf
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from arch/arm64/kvm/hyp/vhe/switch.c:8:
->> arch/arm64/kvm/hyp/include/hyp/switch.h:216:2: error: implicit declaration of function 'sve_cond_update_zcr_vq' [-Werror,-Wimplicit-function-declaration]
-           sve_cond_update_zcr_vq(vcpu_sve_max_vq(vcpu) - 1, SYS_ZCR_EL2);
-           ^
-   arch/arm64/kvm/hyp/vhe/switch.c:227:17: warning: no previous prototype for function 'kvm_unexpected_el2_exception' [-Wmissing-prototypes]
-   asmlinkage void kvm_unexpected_el2_exception(void)
-                   ^
-   arch/arm64/kvm/hyp/vhe/switch.c:227:12: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   asmlinkage void kvm_unexpected_el2_exception(void)
-              ^
-              static 
-   1 warning and 1 error generated.
---
-   In file included from arch/arm64/kvm/hyp/nvhe/switch.c:8:
->> arch/arm64/kvm/hyp/include/hyp/switch.h:216:2: error: implicit declaration of function 'sve_cond_update_zcr_vq' [-Werror,-Wimplicit-function-declaration]
-           sve_cond_update_zcr_vq(vcpu_sve_max_vq(vcpu) - 1, SYS_ZCR_EL2);
-           ^
-   arch/arm64/kvm/hyp/nvhe/switch.c:282:17: warning: no previous prototype for function 'kvm_unexpected_el2_exception' [-Wmissing-prototypes]
-   asmlinkage void kvm_unexpected_el2_exception(void)
-                   ^
-   arch/arm64/kvm/hyp/nvhe/switch.c:282:12: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   asmlinkage void kvm_unexpected_el2_exception(void)
-              ^
-              static 
-   1 warning and 1 error generated.
---
-   In file included from arch/arm64/kvm/hyp/nvhe/hyp-main.c:7:
->> arch/arm64/kvm/hyp/include/hyp/switch.h:216:2: error: implicit declaration of function 'sve_cond_update_zcr_vq' [-Werror,-Wimplicit-function-declaration]
-           sve_cond_update_zcr_vq(vcpu_sve_max_vq(vcpu) - 1, SYS_ZCR_EL2);
-           ^
-   arch/arm64/kvm/hyp/nvhe/hyp-main.c:233:6: warning: no previous prototype for function 'handle_trap' [-Wmissing-prototypes]
-   void handle_trap(struct kvm_cpu_context *host_ctxt)
-        ^
-   arch/arm64/kvm/hyp/nvhe/hyp-main.c:233:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void handle_trap(struct kvm_cpu_context *host_ctxt)
-   ^
-   static 
-   1 warning and 1 error generated.
---
-   In file included from arch/arm64/kvm/hyp/nvhe/mem_protect.c:15:
->> arch/arm64/kvm/hyp/include/hyp/switch.h:216:2: error: implicit declaration of function 'sve_cond_update_zcr_vq' [-Werror,-Wimplicit-function-declaration]
-           sve_cond_update_zcr_vq(vcpu_sve_max_vq(vcpu) - 1, SYS_ZCR_EL2);
-           ^
-   1 error generated.
 
 
-vim +/sve_cond_update_zcr_vq +216 arch/arm64/kvm/hyp/include/hyp/switch.h
+On 1/26/22 04:20, nobuta.keiya@fujitsu.com wrote:
+>> I have not seen any activity on that in a long time. IIRC, Julien quit RedHat.
+>> I don't know if anyone else has taken over this work in RedHat.
+>>
+>> Sorry, I don't have any more information.
+>>
+>> Madhavan
+> 
+> Thanks for your information.
+> 
+> By the way, I'm considering test code for arch_stack_walk_reliable().
+> Specifically, I apply Suraj's patch to enable livepatch, and added a function
+> that sleeps between SYM_CODE_START and SYM_CODE_END, then livepatch
+> checks if the task has an unreliable stack.
+> For now my internal test code working correctly, but my Kconfig excludes
+> STACK_VALIDATION dependency.
+> 
+> It seems that objtool will not be enabled yet, so I would like to test it easier.
+> If you are already testing with this patch, could you tell me how to do it?
+> 
+> 
 
-   213	
-   214	static inline void __hyp_sve_restore_guest(struct kvm_vcpu *vcpu)
-   215	{
- > 216		sve_cond_update_zcr_vq(vcpu_sve_max_vq(vcpu) - 1, SYS_ZCR_EL2);
-   217		__sve_restore_state(vcpu_sve_pffr(vcpu),
-   218				    &vcpu->arch.ctxt.fp_regs.fpsr);
-   219		write_sysreg_el1(__vcpu_sys_reg(vcpu, ZCR_EL1), SYS_ZCR);
-   220	}
-   221	
+For now, I have an instrumented kernel that directly invokes arch_stack_walk_reliable()
+from various places in the kernel (interrupt handlers, exception handlers, ftrace entry,
+kprobe handler, etc). I also have a test driver to induce conditions like null pointer
+dereference. I use this to test different cases where arch_stack_walk_reliable() should
+return an error.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+As for livepatch testing, I have enhanced objtool and the kernel so the frame pointer can
+be validated dynamically rather than statically. I have tested various different livepatch
+selftests successfully. I have also written my own livepatch tests to add to the selftests.
+I am currently working on preparing an RFC patch series for review. Basically, this series
+implements STACK_VALIDATION in a different way.
+
+I plan to publish my work soon (hopefully Feb 2022). I was going to do in December. However,
+my workload in Microsoft did not permit me to do that. I am also planning to set up a github
+repo so people can try out my changes, if they are interested.
+
+So, stay tuned.
+
+Madhavan
