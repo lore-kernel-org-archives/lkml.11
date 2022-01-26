@@ -2,279 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A257BC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:38:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96675C63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243841AbiAZRi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 12:38:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
+        id S243853AbiAZRkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 12:40:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243822AbiAZRit (ORCPT
+        with ESMTP id S229998AbiAZRkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:38:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAF9C06161C;
-        Wed, 26 Jan 2022 09:38:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60134B81CAE;
-        Wed, 26 Jan 2022 17:38:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88173C340E3;
-        Wed, 26 Jan 2022 17:38:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643218723;
-        bh=EFdscSLnaWLhYVWNI1QN+bbNVEh+ATXkGkbBTAYxJVU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QKMFT5JIOjKA4WSdOxxZoprP9S5gopg2K0wTG2r2HrnH2fsvbccXZe4hjNxu0SYAp
-         jIB1k3adqafrenS5Z1NabRPOFMZusn6sg3UQK4nhtpDtH9jBVmxDLsEHSdiptXmV62
-         li8OruZAgJdla3Dhv4Lzvp0EG3z9qgP1lx2cyEINGkFpaIXjW1la+H3FojZRBG5Xtk
-         vcE4nEGqnx9HFaG2qUCjcDKWDIKa+Wiu6k28OK8BKoFR4VhE4X5AF2jxxaXNOBsV0N
-         JSmpjuPNfitBM3tsSB/2PNgtRaqaryeZi+ma42g9YcyiBkLZiLp7N6TfD9qVdkJJhO
-         +2H1WnvFufsbw==
-Date:   Thu, 27 Jan 2022 01:31:05 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Samuel Holland <samuel@sholland.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: dwmac-sun8i: fix double disable and
- unprepare "stmmaceth" clk
-Message-ID: <YfGFWT5o3QW8pzsD@xhacker>
-References: <20220123132805.758-1-jszhang@kernel.org>
- <38c41c04-abde-4d55-ed7c-515b6bba9c54@sholland.org>
- <YfFkz1d9onk+ITGg@xhacker>
- <YfFwH9gHdN3fnx22@xhacker>
+        Wed, 26 Jan 2022 12:40:24 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81425C06161C;
+        Wed, 26 Jan 2022 09:40:23 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id e8so449696wrc.0;
+        Wed, 26 Jan 2022 09:40:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SMChCTUbPJn0KLnYEQbDS0l8nZYQGlwBBP39s3KW15U=;
+        b=PaEx50NLhLlXA3wmwHxA2aMToislHAwBjJjzJOMha5pY7v81kRTxkPRZG/NNjkwO3V
+         ICoe2j4ygbAqs0j5Ibmid1rcj9CeA6LDHKge+y7O4mXM5HflkC6ZSVtJDByyVWV9XuNW
+         brt5Gl07qDdyiPycQrSncPBhqF8KIDtI6oIZQAT3vVfeOFFDyuQVPFif7fsBrcSxAhCn
+         YTEgJpzV9jGVcGvoDQAepo+2/rJpXQG6fskfTmRrAdZYJxRQArNt3jpKO8gNchfLm1rZ
+         JsGL3+hl/OkroNAznQllflUUQ1Ql1WaK3dilojKrRE03lQHOGeARgMGUwI59ezQBdidp
+         crMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=SMChCTUbPJn0KLnYEQbDS0l8nZYQGlwBBP39s3KW15U=;
+        b=BsKE6cHxL3Oc3TsCJIwUysj8hPq6DOxZ4RxfDDOhpDv016yyYWVW8VHflNlNqsaKgQ
+         i8dLAZgN+bMFdjbf9ixJzuIjqQjXxQsLQMYM+LkMhko840lYQeUybf//GJZmiuIEJAhk
+         SLKOEytgjUKLupTE9HGrcLjNGhdKemqrlqYgGFSFZ3pcJwnzNpCFtyw3b7QBdkk81R/4
+         2BTnU7VpF+D63nJjvceFlS4xN/oGx9wP0jEPNSQ7pCx9V9lrt3hXNHz2Oyzg3sUGUZQm
+         azGj/EYM9EKeYObhUMGmBt8Zkot2ogchCF6Ax52h8r6hOErK/PEUIHVtx5iwHn60LZWu
+         oHdA==
+X-Gm-Message-State: AOAM531NHZGhKgsnrTX10ONnwhSo1Nh9tPQFvqb8+oEwEy/XGizVcwt4
+        tfM+UP7EzbT/CYmxF3mR6JGXVm1SGkU=
+X-Google-Smtp-Source: ABdhPJxzoBn3jcJbGK4NJB2cliF2NaB5BbOcxNlWIxBP0o9ce6Rb+hT/x0vwp273Hmg0bRpydJpcDw==
+X-Received: by 2002:adf:eac8:: with SMTP id o8mr22920992wrn.332.1643218822002;
+        Wed, 26 Jan 2022 09:40:22 -0800 (PST)
+Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
+        by smtp.gmail.com with ESMTPSA id y2sm3498451wmj.13.2022.01.26.09.40.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 09:40:21 -0800 (PST)
+Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+To:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/7] JH7100 Audio Clocks
+Date:   Wed, 26 Jan 2022 18:39:46 +0100
+Message-Id: <20220126173953.1016706-1-kernel@esmil.dk>
+X-Mailer: git-send-email 2.35.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YfFwH9gHdN3fnx22@xhacker>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 12:00:42AM +0800, Jisheng Zhang wrote:
-> On Wed, Jan 26, 2022 at 11:12:28PM +0800, Jisheng Zhang wrote:
-> > On Sun, Jan 23, 2022 at 01:43:37PM -0600, Samuel Holland wrote:
-> > > On 1/23/22 7:28 AM, Jisheng Zhang wrote:
-> > > > Fix warnings on Allwinner D1 platform:
-> > > > 
-> > > > [    1.604695] ------------[ cut here ]------------
-> > > > [    1.609328] bus-emac already disabled
-> > > > [    1.613015] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:952 clk_core_disable+0xcc/0xec
-> > > > [    1.621039] CPU: 0 PID: 38 Comm: kworker/u2:1 Not tainted 5.14.0-rc4#1
-> > > > [    1.627653] Hardware name: Allwinner D1 NeZha (DT)
-> > > > [    1.632443] Workqueue: events_unbound deferred_probe_work_func
-> > > > [    1.638286] epc : clk_core_disable+0xcc/0xec
-> > > > [    1.642561]  ra : clk_core_disable+0xcc/0xec
-> > > > [    1.646835] epc : ffffffff8023c2ec ra : ffffffff8023c2ec sp : ffffffd00411bb10
-> > > > [    1.654054]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : ffffffff80ed6a6f
-> > > > [    1.661272]  t1 : ffffffff80ed6a60 t2 : 0000000000000000 s0 : ffffffe001509e00
-> > > > [    1.668489]  s1 : 0000000000000001 a0 : 0000000000000019 a1 : ffffffff80e80bd8
-> > > > [    1.675707]  a2 : 00000000ffffefff a3 : 00000000000000f4 a4 : 0000000000000002
-> > > > [    1.682924]  a5 : 0000000000000001 a6 : 0000000000000030 a7 : 00000000028f5c29
-> > > > [    1.690141]  s2 : 0000000000000800 s3 : ffffffe001375000 s4 : ffffffe01fdf7a80
-> > > > [    1.697358]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
-> > > > [    1.704577]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
-> > > > [    1.711794]  s11: ffffffe001b80760 t3 : 0000000000000062 t4 : ffffffffffffffff
-> > > > [    1.719012]  t5 : ffffffff80e0f6d8 t6 : ffffffd00411b8f0
-> > > > [    1.724321] status: 8000000201800100 badaddr: 0000000000000000 cause: 0000000000000003
-> > > > [    1.732233] [<ffffffff8023c2ec>] clk_core_disable+0xcc/0xec
-> > > > [    1.737810] [<ffffffff80240430>] clk_disable+0x38/0x78
-> > > > [    1.742956] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
-> > > > [    1.748451] [<ffffffff8031a500>] stmmac_remove_config_dt+0x1c/0x4c
-> > > > [    1.754646] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
-> > > > [    1.760484] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
-> > > > [    1.765975] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
-> > > > [    1.771382] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
-> > > > [    1.777305] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
-> > > > [    1.783402] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
-> > > > [    1.789324] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
-> > > > [    1.795508] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
-> > > > [    1.802125] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
-> > > > [    1.807701] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
-> > > > [    1.813277] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
-> > > > [    1.818852] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
-> > > > [    1.825122] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
-> > > > [    1.830872] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
-> > > > [    1.836362] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-> > > > [    1.841335] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-> > > > [    1.846304] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
-> > > > [    1.852054] [<ffffffff80026564>] kthread+0x124/0x160
-> > > > [    1.857021] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
-> > > > [    1.862770] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
-> > > > [    1.868956] ---[ end trace 8d5c6046255f84a0 ]---
-> > > > [    1.873675] ------------[ cut here ]------------
-> > > > [    1.878366] bus-emac already unprepared
-> > > > [    1.882378] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:810 clk_core_unprepare+0xe4/0x168
-> > > > [    1.890673] CPU: 0 PID: 38 Comm: kworker/u2:1 Tainted: G        W	5.14.0-rc4 #1
-> > > > [    1.898674] Hardware name: Allwinner D1 NeZha (DT)
-> > > > [    1.903464] Workqueue: events_unbound deferred_probe_work_func
-> > > > [    1.909305] epc : clk_core_unprepare+0xe4/0x168
-> > > > [    1.913840]  ra : clk_core_unprepare+0xe4/0x168
-> > > > [    1.918375] epc : ffffffff8023d6cc ra : ffffffff8023d6cc sp : ffffffd00411bb10
-> > > > [    1.925593]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : 0000000000000002
-> > > > [    1.932811]  t1 : ffffffe01f743be0 t2 : 0000000000000040 s0 : ffffffe001509e00
-> > > > [    1.940029]  s1 : 0000000000000001 a0 : 000000000000001b a1 : ffffffe00143a800
-> > > > [    1.947246]  a2 : 0000000000000000 a3 : 00000000000000f4 a4 : 0000000000000001
-> > > > [    1.954463]  a5 : 0000000000000000 a6 : 0000000005fce2a5 a7 : 0000000000000001
-> > > > [    1.961680]  s2 : 0000000000000800 s3 : ffffffff80afeb90 s4 : ffffffe01fdf7a80
-> > > > [    1.968898]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
-> > > > [    1.976115]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
-> > > > [    1.983333]  s11: ffffffe001b80760 t3 : ffffffff80b39120 t4 : 0000000000000001
-> > > > [    1.990550]  t5 : 0000000000000000 t6 : ffffffe001600002
-> > > > [    1.995859] status: 8000000201800120 badaddr: 0000000000000000 cause: 0000000000000003
-> > > > [    2.003771] [<ffffffff8023d6cc>] clk_core_unprepare+0xe4/0x168
-> > > > [    2.009609] [<ffffffff802403a0>] clk_unprepare+0x24/0x3c
-> > > > [    2.014929] [<ffffffff8031a508>] stmmac_remove_config_dt+0x24/0x4c
-> > > > [    2.021125] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
-> > > > [    2.026965] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
-> > > > [    2.032463] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
-> > > > [    2.037871] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
-> > > > [    2.043795] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
-> > > > [    2.049892] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
-> > > > [    2.055815] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
-> > > > [    2.061999] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
-> > > > [    2.068616] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
-> > > > [    2.074193] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
-> > > > [    2.079769] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
-> > > > [    2.085345] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
-> > > > [    2.091616] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
-> > > > [    2.097367] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
-> > > > [    2.102858] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-> > > > [    2.107830] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-> > > > [    2.112800] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
-> > > > [    2.118551] [<ffffffff80026564>] kthread+0x124/0x160
-> > > > [    2.123520] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
-> > > > [    2.129268] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
-> > > > [    2.135455] ---[ end trace 8d5c6046255f84a1 ]---
-> > > > 
-> > > > the dwmmac-sun8i driver will get the "stmmaceth" clk as tx_clk during
-> > > > driver initialization. If stmmac_dvr_probe() fails due to various
-> > > > reasons, sun8i_dwmac_exit() will disable and unprepare the "stmmaceth"
-> > > > clk, then stmmac_remove_config_dt() will disable and unprepare the
-> > > > clk again.
-> > > 
-> > > This should still be balanced, because both stmmac_probe_config_dt and
-> > > sun8i_dwmac_init prepare/enable the clock, so the dwmac-sun8i glue layer calls
-> > > stmmac_dvr_probe with the clock having an enable count of 2. It looks like the
-> > > underlying issue is that commit 5ec55823438e ("net: stmmac: add clocks
-> > > management for gmac driver") introduces unbalanced runtime PM.
-> > 
-> > I added some printk then retested, the problem is triggered as below:
-> > 
-> > stmmac_probe_config_dt() enable the clk
-> > sun8i_dwmac_init() enble the clk again
-> > stmmac_dvr_probe() succeed, but it calls pm_runtime_put(), so rpm will
-> > disable the clk
-> > sun8i_dwmac_reset() fails due to various reason
-> > sun8i_dwmac_exit() disable the clk, this is fine
-> > stmmac_remove_config_dt() disable the clk again, so ccf complains.
-> > 
-> > The key here is: whether we should let stmmac_dvr_probe() calls
-> > pm_runtime_put() or let stmmac users to determine whether we could
-> > let rpm go?
-> > If we keep current behavior: stmmac users need to take care
-> > the code after stmmac_dvr_probe, including error handling code path,
-> > if we touch access registers, we need to call pm_runtime_get_sync()
-> > firstly.
-> > 
-> > Since the commit 5ec55823438e has been in for a long time, I'll submit
-> > a patch to follow this way.
-> > 
-> 
-> After reading the code and commit history, I found some users suffering
-> from the runtimepm issues, for example, dwmac-rk.c, so I changed my
-> idea. I think it's better to let stmmac users to call pm_runtime_put():
-> 
-> First of all, only the users know whether it's safe to finally
-> keep the mac runtime suspended after probe.
-> 
-> Secondly, if the users need to do platform specific operations after
-> stmmac_dvr_probe(), especially needs to access some registers, we have
-> to resume the mac firstly. The error handling code path also needs to
-> take care of it. It looks a bit strange resume immediately resume the
-> mac after suspending it.
-> 
-> Any suggestion is welcome.
-> 
-> PS: Since this would partially revert commit 5ec55823438e, I add Joakim
-> into the email thread.
-> 
-If we keep current behavior as is, and let stmmac users to take care
-necessary runtime resume before specific handling, we need similar
-patch as dwmac-sun8i below for all stmmac users, especially the error
-handling path:
+This series add support for the audio clocks on the StarFive JH7100
+RISC-V SoC, although the first two patches are fixes to the original
+addition of the basic clock driver. At least the first fix may be
+considered for 5.17.
 
+It turns out the SoC has several memory ranges for different clocks, but
+they all share the layout of the control registers. This could be
+modelled in 3 ways:
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 09644ab0d87a..ef2acea3d036 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -16,6 +16,7 @@
- #include <linux/of_net.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/regulator/consumer.h>
- #include <linux/regmap.h>
- #include <linux/stmmac.h>
-@@ -1254,6 +1255,7 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
- 	ndev = dev_get_drvdata(&pdev->dev);
- 	priv = netdev_priv(ndev);
- 
-+	pm_runtime_get_sync(&pdev->dev);
- 	/* The mux must be registered after parent MDIO
- 	 * so after stmmac_dvr_probe()
- 	 */
-@@ -1272,12 +1274,15 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
- 			goto dwmac_remove;
- 	}
- 
-+	pm_runtime_put(&pdev->dev);
-+
- 	return 0;
- 
- dwmac_mux:
- 	reset_control_put(gmac->rst_ephy);
- 	clk_put(gmac->ephy_clk);
- dwmac_remove:
-+	pm_runtime_put_noidle(&pdev->dev);
- 	stmmac_dvr_remove(&pdev->dev);
- dwmac_exit:
- 	sun8i_dwmac_exit(pdev, gmac);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 8ded4be08b00..2f9bd1eacb81 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7133,6 +7133,10 @@ int stmmac_dvr_remove(struct device *dev)
- 
- 	netdev_info(priv->dev, "%s: removing driver", __func__);
- 
-+	pm_runtime_get_sync(dev);
-+	pm_runtime_disable(dev);
-+	pm_runtime_put_noidle(dev);
-+
- 	stmmac_stop_all_dma(priv);
- 	stmmac_mac_set(priv, priv->ioaddr, false);
- 	netif_carrier_off(ndev);
-@@ -7151,8 +7155,6 @@ int stmmac_dvr_remove(struct device *dev)
- 	if (priv->plat->stmmac_rst)
- 		reset_control_assert(priv->plat->stmmac_rst);
- 	reset_control_assert(priv->plat->stmmac_ahb_rst);
--	pm_runtime_put(dev);
--	pm_runtime_disable(dev);
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI)
- 		stmmac_mdio_unregister(ndev);
+1) Model all the clocks as a single peripheral with multiple memory
+   ranges and have a single driver for them all. 
+2) Model each memory range as different, but related peripherals with a
+   single driver handling all of them.
+3) Model each memory range as different peripherals with separate
+   drivers that can share most code.
+
+Although the first option would require less code this series implements
+the 3rd option. The basic clock driver has to be built-in to boot the
+SoC, so separate drivers for the other registers means less code needs
+to be built-in and can be left as loadable modules.
+
+Emil Renner Berthing (7):
+  clk: starfive: jh7100: Don't round divisor up twice
+  clk: starfive: jh7100: Handle audio_div clock properly
+  dt-bindings: clock: Add JH7100 audio clock definitions
+  dt-bindings: clock: Add starfive,jh7100-audclk bindings
+  clk: starfive: jh7100: Make hw clock implementation reusable
+  clk: starfive: jh7100: Support more clock types
+  clk: starfive: Add JH7100 audio clock driver
+
+ .../clock/starfive,jh7100-audclk.yaml         |  57 ++++++
+ MAINTAINERS                                   |   8 +-
+ drivers/clk/starfive/Kconfig                  |   8 +
+ drivers/clk/starfive/Makefile                 |   1 +
+ .../clk/starfive/clk-starfive-jh7100-audio.c  | 170 +++++++++++++++++
+ drivers/clk/starfive/clk-starfive-jh7100.c    | 176 +++++++++---------
+ drivers/clk/starfive/clk-starfive-jh7100.h    | 112 +++++++++++
+ .../dt-bindings/clock/starfive-jh7100-audio.h |  41 ++++
+ 8 files changed, 482 insertions(+), 91 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/starfive,jh7100-audclk.yaml
+ create mode 100644 drivers/clk/starfive/clk-starfive-jh7100-audio.c
+ create mode 100644 drivers/clk/starfive/clk-starfive-jh7100.h
+ create mode 100644 include/dt-bindings/clock/starfive-jh7100-audio.h
+
+-- 
+2.34.1
+
