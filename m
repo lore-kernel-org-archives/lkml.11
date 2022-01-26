@@ -2,142 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94862C5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8769C5AC75
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237048AbiAZDLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 22:11:24 -0500
-Received: from mail-eopbgr60071.outbound.protection.outlook.com ([40.107.6.71]:13102
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236975AbiAZDLI (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 22:11:08 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TY0p1GBOB8trFSQvvel9akpq7Xr0p2xvop0+l13vxdv81QHGqzvmDVJnRJ0fPfSHuPhp9G61E02GkW6AjWdtmFHfOMSuc9tpQVi3fz7TYZH3GctRcrtWEFIG2E2f96X/Drs0ZlWaq/NcuWw8REA9kuFBb4N/iKV1oDp4kmdTodFoFKKr+Ih7ZLOZuurrIKV9apFmRqJqncEW6/S+MpLdPNVb0Y30Y0Xsz+qOmXmh+RksLBHhDYSxhfbegNxC+6w4dsjm6SeI26KZDsF4gCWww5I8efKyNbXsFki0saYi/QrCxAWSFDhdh3c0j4+M6t9j+1/JIh5d+Hq8HCDW38rsYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n28rS0Fd8JNwou/uVb69Hpd2c9bgZbAmlqiUrrb2Bqw=;
- b=Vpgy2QmXYGbxC9ZF9ny6F3hgEvu8t9wb8CVkVX8gDrcwT0AJMKz1VNp5o6UUSDt/zZbL9S4x5e+iz2+EJOJGob2S4nOKg6LCgrpmpu1Uw7DhJcvsK0hGsnHGZUrNxf31zY+a6doXL54hMUjdkdnNNbabz7dzCo4NWJ9HjTYapvo1PxM5cdUKap4fILWy++ol7X+YESQRGik9AITkS96lWBegoOIs53OkogjB7NwpnjuVpmQaAqZ8Ov0q/tMN/gqpZNPWnzwchvgO9NJYGPlijUR/xcUikbf0aKHJoX/LTTbHdl0OZ9ndD2htta9q7/AIqS3oYW8CDZrI6bGfR38l3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n28rS0Fd8JNwou/uVb69Hpd2c9bgZbAmlqiUrrb2Bqw=;
- b=HWME5U0xbC/kkMMVqkURjoB5EsdyghUcvStLr04EAqf08XBus8ZM/vvMXDvhFkSU9dKKo/2GMkgc+hpQ3ZZDZlY5WFDx8NCGmRjMjYzTz6MnqRvvT6nDNYkcK0I1xRrj0D8NBj2fnSKuIr7LnX+f5sNCQf7IjBkQrjdiePFTPVw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
- by VI1PR04MB5248.eurprd04.prod.outlook.com (2603:10a6:803:62::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Wed, 26 Jan
- 2022 03:11:00 +0000
-Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
- ([fe80::3d7e:6627:fdd0:9d13]) by AM6PR04MB6341.eurprd04.prod.outlook.com
- ([fe80::3d7e:6627:fdd0:9d13%4]) with mapi id 15.20.4930.015; Wed, 26 Jan 2022
- 03:10:59 +0000
-From:   Ming Qian <ming.qian@nxp.com>
-To:     mchehab@kernel.org, shawnguo@kernel.org, robh+dt@kernel.org,
-        s.hauer@pengutronix.de
-Cc:     hverkuil-cisco@xs4all.nl, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, aisheng.dong@nxp.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v15.1 13/13] MAINTAINERS: add AMPHION VPU CODEC V4L2 driver entry
-Date:   Wed, 26 Jan 2022 11:09:32 +0800
-Message-Id: <e42f0160e4affea33127fa6b175a4b522899f219.1643165765.git.ming.qian@nxp.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <cover.1643165764.git.ming.qian@nxp.com>
-References: <cover.1643165764.git.ming.qian@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR01CA0091.apcprd01.prod.exchangelabs.com
- (2603:1096:3:15::17) To AM6PR04MB6341.eurprd04.prod.outlook.com
- (2603:10a6:20b:d8::14)
+        id S237066AbiAZDL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 22:11:28 -0500
+Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net ([162.243.164.74]:45761
+        "HELO zg8tmtyylji0my4xnjqunzqa.icoremail.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with SMTP id S236856AbiAZDLK (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 22:11:10 -0500
+X-Greylist: delayed 149902 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jan 2022 22:11:10 EST
+Received: from localhost.localdomain (unknown [123.60.114.22])
+        by mail-app3 (Coremail) with SMTP id cC_KCgAnLRlSu_BhEcpFDA--.1414S2;
+        Wed, 26 Jan 2022 11:09:07 +0800 (CST)
+From:   lostway@zju.edu.cn
+To:     linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        bp@alien8.de, tony.luck@intel.com
+Subject: [PATCH v2] RAS: Report ARM processor information to userspace
+Date:   Wed, 26 Jan 2022 11:09:06 +0800
+Message-Id: <20220126030906.56765-1-lostway@zju.edu.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8b8413f7-2af5-45b2-7b92-08d9e0797a38
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5248:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5248E55978527738169CCA1EE7209@VI1PR04MB5248.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:296;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: h2wKcHNo+ZGO9vOt53EBKLMg/joN7XVtVqDuglL8DftXXhuSjwMQ7Lt9PYpvCDV02GD7+CH311aHIm+RVz1/EmpB7yJdPL2of2MVK4Mceh7kjnsfLp2SkUYqL7WWFXSUjv0r5PSxvhTjUg4995ttoZ78TU/jb0VGdgu960lrQDpSYC8Klb8YaQaR9PToy+EVzooZO9oNJH7YAm4HHN87j4UgJOegz3h2Bzid8v/H+/y4c1h9mQ56RLWTfkoNnvwQwW7hT+Suoe6KOMpIz4zSi0FSVivmUn0a+HSr2Mf4rnju3iFkwKvQ1sCdX3lkz2BBm9ex58JPlU7sVYejAykR53ONHYuFU70xaGB6oyONlPaSKSSfbe2bujnTEFl/wWQw/X33PtCCh3QOSZmyExGBD544yht553NfETJ3idrInc5iyEFgKMsHa2/aOwWztC2UftZ6PjuB6M4to2s6b6mnFP43y19hK24uxFmszCHUj52wMfcsfPh3/0YU/d8bC75x0a71ObP/6lIeHUG2ZPYhE91t2ZA0Y3X2+adWymk8JSdBHULehrVN1bpzcGNbo14o5A3cBlmjleFo4/oWW6Wyu/0x6i6DCbHjPG7goZOJV90KQJlGK+lX1Gtcrgi5MZAPkXSKT6K8CQ8Gyv5enpAKV0GBrijWNy0EhBuR6TRJeEM3N1NMeNX45EZryOSgm3Eyy4SNA/WyIrwse6t73cvA0g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38350700002)(2616005)(186003)(26005)(38100700002)(66946007)(8676002)(66476007)(7416002)(4744005)(2906002)(8936002)(66556008)(5660300002)(44832011)(36756003)(4326008)(86362001)(52116002)(6506007)(6512007)(6666004)(316002)(508600001)(6486002)(20210929001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Yo563IqCA+5/tqbHIL/9bf0BFSZ0odJdgdmdUJk42J9FRkgV6mosMeYPMru3?=
- =?us-ascii?Q?GcnEAIjp4tnAxYphnL632ZNTxOsqR5kXvEP03CX5Iih+YbfdPutLlHy5MUon?=
- =?us-ascii?Q?ay2/tyaOiiDKpXENgHvveX+raKHXeRiIdCSeZAeJ0ZsXRlkMF0O4EYgeuQhP?=
- =?us-ascii?Q?J0ir/nEhu3BkzfGM0xj0aJjVkriBiFNP7z2FRtLRn+mjrN4uXmtEEqtc9FLj?=
- =?us-ascii?Q?IV1ZtvnR02yAMUCPj8ItLPWa4aWOA0Eyik1Lv0EjTvLwzdSv82nio5ViGj9k?=
- =?us-ascii?Q?NKu99R/+b4d7d7qDuqW7sW6VajzIdDfZukq2yLBz0v1AGtAculo0Ukv1LYQ7?=
- =?us-ascii?Q?sq46Y6GIxtcSc+qF+5jTFx6eftyKjd4kIN5+PgQjC1nz2gZLvZtTkNiDFqL2?=
- =?us-ascii?Q?XDe31sy9pqme5i/3NyZTIPbhy72LUaoe1lRcl+jUzHUUf0ALmcGKiBMJ2wgr?=
- =?us-ascii?Q?+JAvg/DWRuXwXYDbGMZSfSAE/y4e4KKqm4KdHxdy29JyMlR7AtktZEthCT2v?=
- =?us-ascii?Q?Nq9nmottX6Huo62tNStJ3rImuZ35YhI7gbHaU+dpGXVzNP97cc5h9Kzi3zqJ?=
- =?us-ascii?Q?ObxqLcF7SG63kHLaSCMe6uWg8RaNvgiW0GDO0/TwsLC/VeqRxkGoYNd4Ljf9?=
- =?us-ascii?Q?6U4RMwBKsgXxhBi3K1WryYqmOxdrn2lp9y0A+eiPcXI6MItuSBJsLLd5Jszr?=
- =?us-ascii?Q?jK6XMMHfCqhPYQOUNl9xpspFGNrvAld78r0lNjfOD+i6yjFwG0tBCTkD+qmF?=
- =?us-ascii?Q?yp1SXI8KFiYZRPlde/DTr8ln4udrLHnDk5ZH9qCrU2oX1o8QfaLkgoGg3ueq?=
- =?us-ascii?Q?vZyGVBQAEr+kFyibyWq9k9g+yVoq6ojuBvF7iVZ/aFhRlkJNR4ZW2yI9y+Du?=
- =?us-ascii?Q?gFNAjzvNPwj+o/tsVVvkqTUNAwu/fFfDetVOjQRvsO8scv8eLhnf7z+DuFMp?=
- =?us-ascii?Q?E31dg9LhS6yOOvpb7LvP13A5xhmuQVUmys6QC9RfLZBRTzHR3eYvVuI7gCuz?=
- =?us-ascii?Q?lizErI0QsShkZLNoslnwvgRm9KKRqix6V4VQdyGZBO0y0g+FRCGHZM4rp6If?=
- =?us-ascii?Q?USIoO0IyHcGQw6BF7uzPepwumvhkZHYyyGSepf0nHRXYUSZZA7TqI+xdKV9q?=
- =?us-ascii?Q?5/YT+y4FRqmrhktGVLBeIk/XD20PpRuRjPj/pP7rHvmootX1TyAf2Nl0Bi3Z?=
- =?us-ascii?Q?2Elj3GD7CYji+R3QEqNL9s0gd2VIXVd4d3MKXDxo150k/poptZxG12ND4ra+?=
- =?us-ascii?Q?OJg2jjpJrGU0nXXDXHOEhUNcu4QLnMXqQ9TB4jxV+dXA5iEEmdQQYFEBduK5?=
- =?us-ascii?Q?tjUEz+8CYWPzwS/D0PhKaBY7bHUWp1US+bizEF0LPslbCBxxYbXIDcGj/JCW?=
- =?us-ascii?Q?skCNwLjz0sYVjgpfNc9WOKCcE6f9wbq/JF/YtQIIEyHm+shmJAl/vX3QQIFu?=
- =?us-ascii?Q?rMLIXBCRfwk5Y3829wdm2wwsyFY4h6ZkJ2w+8e8qBwM7PiH1C8N7Sgxz8NcS?=
- =?us-ascii?Q?li3PzdGRywjHCwTCX6EOSJ+OndXecWb6sEiu9zn8QuSJLFKZRPGuVJfPrn8N?=
- =?us-ascii?Q?9ABBrIfI0vUALIHAKxdwyAAhWjydKz0KhJLEREVukOMrDfLAM0G0odW1WuHj?=
- =?us-ascii?Q?INyGXR8DlrtqkaiYJ1c5fpM=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8b8413f7-2af5-45b2-7b92-08d9e0797a38
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 03:10:59.8478
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AhwFRa+WsOLaweEL2d3u2Hn4jljm1s1+MrqBnaaI8Nq9A55SGBBOSAi2M631+MRAQVE2dCwBDkgxDyehzPl4XQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5248
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: cC_KCgAnLRlSu_BhEcpFDA--.1414S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxtr4kuFWrKr18Kw47tr1xuFg_yoWxKrWDpF
+        n8CryYkr4rJFsxG3y3JFWF93y3Z34ruw1DK3sxXay7CFs5ur1qgFs0gr42kF93JF98J34a
+        q3Wqgry3Ca4DJrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUk0b7Iv0xC_KF4lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
+        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lw4CEc2x0rVAKj4xxMxAIw28I
+        cxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2
+        IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI
+        42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42
+        IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280
+        aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjxUcMmhUUUUU
+X-CM-SenderInfo: isrxjjaqquq6lmxovvfxof0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add AMPHION VPU CODEC v4l2 driver entry
+From: Shengwei Luo <luoshengwei@huawei.com>
 
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Signed-off-by: Shijie Qin <shijie.qin@nxp.com>
-Signed-off-by: Zhou Peng <eagle.zhou@nxp.com>
+The ARM processor error section includes several ARM processor error
+information, several ARM processor context information and several
+vendor specific error information structures. In addition to these
+info, there are error severity and cpu logical index about the event.
+Report all of these information to userspace via perf i/f.
+
+Original-Author: Jason Tian <jason@os.amperecomputing.com>
+Signed-off-by: Shengwei Luo <luoshengwei@huawei.com>
 ---
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+v1->v2: Cleaned up ci warnings
+---
+ drivers/acpi/apei/ghes.c |  3 +--
+ drivers/ras/ras.c        | 46 ++++++++++++++++++++++++++++++++++++--
+ include/linux/ras.h      | 15 +++++++++++--
+ include/ras/ras_event.h  | 48 +++++++++++++++++++++++++++++++++++-----
+ 4 files changed, 101 insertions(+), 11 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ea3e6c914384..c89dfc45c1c7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1030,6 +1030,15 @@ S:	Maintained
- F:	Documentation/hid/amd-sfh*
- F:	drivers/hid/amd-sfh-hid/
+diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
+index 0c5c9acc6254..f824c26057b1 100644
+--- a/drivers/acpi/apei/ghes.c
++++ b/drivers/acpi/apei/ghes.c
+@@ -490,9 +490,8 @@ static bool ghes_handle_arm_hw_error(struct acpi_hest_generic_data *gdata, int s
+ 	int sec_sev, i;
+ 	char *p;
  
-+AMPHION VPU CODEC V4L2 DRIVER
-+M:	Ming Qian <ming.qian@nxp.com>
-+M:	Shijie Qin <shijie.qin@nxp.com>
-+M:	Zhou Peng <eagle.zhou@nxp.com>
-+L:	linux-media@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/media/amphion,vpu.yaml
-+F:	drivers/media/platform/amphion/
+-	log_arm_hw_error(err);
+-
+ 	sec_sev = ghes_severity(gdata->error_severity);
++	log_arm_hw_error(err, sec_sev);
+ 	if (sev != GHES_SEV_RECOVERABLE || sec_sev != GHES_SEV_RECOVERABLE)
+ 		return false;
+ 
+diff --git a/drivers/ras/ras.c b/drivers/ras/ras.c
+index 95540ea8dd9d..2a7f424d59b9 100644
+--- a/drivers/ras/ras.c
++++ b/drivers/ras/ras.c
+@@ -21,9 +21,51 @@ void log_non_standard_event(const guid_t *sec_type, const guid_t *fru_id,
+ 	trace_non_standard_event(sec_type, fru_id, fru_text, sev, err, len);
+ }
+ 
+-void log_arm_hw_error(struct cper_sec_proc_arm *err)
++void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev)
+ {
+-	trace_arm_event(err);
++	u32 pei_len;
++	u32 ctx_len = 0;
++	s32 vsei_len;
++	u8 *pei_err;
++	u8 *ctx_err;
++	u8 *ven_err_data;
++	struct cper_arm_err_info *err_info;
++	struct cper_arm_ctx_info *ctx_info;
++	int n, sz;
++	int cpu;
 +
- AMS AS73211 DRIVER
- M:	Christian Eggers <ceggers@arri.de>
- L:	linux-iio@vger.kernel.org
++	pei_len = sizeof(struct cper_arm_err_info) * err->err_info_num;
++	pei_err = (u8 *)err + sizeof(struct cper_sec_proc_arm);
++
++	err_info = (struct cper_arm_err_info *)(err + 1);
++	ctx_info = (struct cper_arm_ctx_info *)(err_info + err->err_info_num);
++	ctx_err = (u8 *)ctx_info;
++	for (n = 0; n < err->context_info_num; n++) {
++		sz = sizeof(struct cper_arm_ctx_info) + ctx_info->size;
++		ctx_info = (struct cper_arm_ctx_info *)((long)ctx_info + sz);
++		ctx_len += sz;
++	}
++
++	vsei_len = err->section_length - (sizeof(struct cper_sec_proc_arm) +
++						pei_len + ctx_len);
++	if (vsei_len < 0) {
++		pr_warn(FW_BUG
++			"section length: %d\n", err->section_length);
++		pr_warn(FW_BUG
++			"section length is too small\n");
++		pr_warn(FW_BUG
++			"firmware-generated error record is incorrect\n");
++		vsei_len = 0;
++	}
++	ven_err_data = (u8 *)ctx_info;
++
++	cpu = GET_LOGICAL_INDEX(err->mpidr);
++	/* when return value is invalid, set cpu index to -1 */
++	if (cpu < 0)
++		cpu = -1;
++
++	trace_arm_event(err, pei_err, pei_len, ctx_err, ctx_len,
++			ven_err_data, (u32)vsei_len, sev, cpu);
+ }
+ 
+ static int __init ras_init(void)
+diff --git a/include/linux/ras.h b/include/linux/ras.h
+index 1f4048bf2674..4529775374d0 100644
+--- a/include/linux/ras.h
++++ b/include/linux/ras.h
+@@ -24,7 +24,7 @@ int __init parse_cec_param(char *str);
+ void log_non_standard_event(const guid_t *sec_type,
+ 			    const guid_t *fru_id, const char *fru_text,
+ 			    const u8 sev, const u8 *err, const u32 len);
+-void log_arm_hw_error(struct cper_sec_proc_arm *err);
++void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev);
+ #else
+ static inline void
+ log_non_standard_event(const guid_t *sec_type,
+@@ -32,7 +32,18 @@ log_non_standard_event(const guid_t *sec_type,
+ 		       const u8 sev, const u8 *err, const u32 len)
+ { return; }
+ static inline void
+-log_arm_hw_error(struct cper_sec_proc_arm *err) { return; }
++log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev) { return; }
+ #endif
+ 
++#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
++#include <asm/smp_plat.h>
++/*
++ * Include ARM specific SMP header which provides a function mapping mpidr to
++ * cpu logical index.
++ */
++#define GET_LOGICAL_INDEX(mpidr) get_logical_index(mpidr & MPIDR_HWID_BITMASK)
++#else
++#define GET_LOGICAL_INDEX(mpidr) -EINVAL
++#endif /* CONFIG_ARM || CONFIG_ARM64 */
++
+ #endif /* __RAS_H__ */
+diff --git a/include/ras/ras_event.h b/include/ras/ras_event.h
+index d0337a41141c..92cfb61bdb20 100644
+--- a/include/ras/ras_event.h
++++ b/include/ras/ras_event.h
+@@ -168,11 +168,24 @@ TRACE_EVENT(mc_event,
+  * This event is generated when hardware detects an ARM processor error
+  * has occurred. UEFI 2.6 spec section N.2.4.4.
+  */
++#define APEIL "ARM Processor Err Info data len"
++#define APEID "ARM Processor Err Info raw data"
++#define APECIL "ARM Processor Err Context Info data len"
++#define APECID "ARM Processor Err Context Info raw data"
++#define VSEIL "Vendor Specific Err Info data len"
++#define VSEID "Vendor Specific Err Info raw data"
+ TRACE_EVENT(arm_event,
+ 
+-	TP_PROTO(const struct cper_sec_proc_arm *proc),
++	TP_PROTO(const struct cper_sec_proc_arm *proc, const u8 *pei_err,
++			const u32 pei_len,
++			const u8 *ctx_err,
++			const u32 ctx_len,
++			const u8 *oem,
++			const u32 oem_len,
++			u8 sev,
++			int cpu),
+ 
+-	TP_ARGS(proc),
++	TP_ARGS(proc, pei_err, pei_len, ctx_err, ctx_len, oem, oem_len, sev, cpu),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(u64, mpidr)
+@@ -180,6 +193,14 @@ TRACE_EVENT(arm_event,
+ 		__field(u32, running_state)
+ 		__field(u32, psci_state)
+ 		__field(u8, affinity)
++		__field(u32, pei_len)
++		__dynamic_array(u8, buf, pei_len)
++		__field(u32, ctx_len)
++		__dynamic_array(u8, buf1, ctx_len)
++		__field(u32, oem_len)
++		__dynamic_array(u8, buf2, oem_len)
++		__field(u8, sev)
++		__field(int, cpu)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -199,12 +220,29 @@ TRACE_EVENT(arm_event,
+ 			__entry->running_state = ~0;
+ 			__entry->psci_state = ~0;
+ 		}
++		__entry->pei_len = pei_len;
++		memcpy(__get_dynamic_array(buf), pei_err, pei_len);
++		__entry->ctx_len = ctx_len;
++		memcpy(__get_dynamic_array(buf1), ctx_err, ctx_len);
++		__entry->oem_len = oem_len;
++		memcpy(__get_dynamic_array(buf2), oem, oem_len);
++		__entry->sev = sev;
++		__entry->cpu = cpu;
+ 	),
+ 
+-	TP_printk("affinity level: %d; MPIDR: %016llx; MIDR: %016llx; "
+-		  "running state: %d; PSCI state: %d",
++	TP_printk("cpu: %d; error: %d; affinity level: %d; MPIDR: %016llx; MIDR: %016llx; "
++		  "running state: %d; PSCI state: %d; "
++		  "%s: %d; %s: %s; %s: %d; %s: %s; %s: %d; %s: %s",
++		  __entry->cpu,
++		  __entry->sev,
+ 		  __entry->affinity, __entry->mpidr, __entry->midr,
+-		  __entry->running_state, __entry->psci_state)
++		  __entry->running_state, __entry->psci_state,
++		  APEIL, __entry->pei_len, APEID,
++		  __print_hex(__get_dynamic_array(buf), __entry->pei_len),
++		  APECIL, __entry->ctx_len, APECID,
++		  __print_hex(__get_dynamic_array(buf1), __entry->ctx_len),
++		  VSEIL, __entry->oem_len, VSEID,
++		  __print_hex(__get_dynamic_array(buf2), __entry->oem_len))
+ );
+ 
+ /*
 -- 
-2.33.0
+2.27.0
 
