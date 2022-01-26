@@ -2,138 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEFA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE37C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233438AbiAZWTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 17:19:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55388 "EHLO
+        id S233453AbiAZWWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 17:22:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233448AbiAZWSs (ORCPT
+        with ESMTP id S229637AbiAZWWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 17:18:48 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F3E6C061749
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 14:18:48 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id o11so976383pjf.0
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 14:18:48 -0800 (PST)
+        Wed, 26 Jan 2022 17:22:41 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BE5C06161C
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 14:22:40 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id 133so645060pgb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 14:22:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=smLLchNakDU/Y2gvweI/PTFSbD8LwmvcGg4bfjOOIU4=;
-        b=SZQpRx77W26mYz1aJh0WRCjXTe7xnesCHG/uFACh3EOTjS2L+jjY/xQ8r3drw7cFqM
-         7VI7PSzVvA4q8uG1ZWGKTwvCKsUQQAOcveiNP6ujSwtOINe160WkmqwKFhcudu1MR88C
-         vVzGtO2l/LG6m9vWuslxkVcPplEZs6/uSRs2P669FPJrm2Ds1CEuSYVeI0cpHNq52o/s
-         SrnJe021IMjvpiPQkOhMXTlwLhakBvBm94n5ewyPI2goVOYstwdxAAUb6+wu0zdsXuWs
-         x1hBxgqLfWKDrqA0Oo110jJghgMcbhae88+joOIkx2pA7LGsvDbgZsqwSvOPBAoOUd2m
-         DJEg==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bRwhL1NPkbRdnv8DYdCIqNEvEwK08/NeYumLy6TnqFI=;
+        b=GejB6uj8tAaqSUfWeYhJQ+YhhcQNMDVdWsrOd2KteNyszjDIibMmICgjVI0tdBPxHz
+         W4319Cq/TmYyRMjmyFBDFy8GN+9fEUgRxp8ajlWuiyP6fbZXz0LXqfFb5IBJq0MBvUbG
+         8sn4/8QYotyzcMZ1n/fJpCUXayvrrwsnEwnOs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=smLLchNakDU/Y2gvweI/PTFSbD8LwmvcGg4bfjOOIU4=;
-        b=W/RoK8ezqSBRwwD7e5G80bxePsZEXDhDM8JQVbJe9wXIyDum3Xj1GTE7MXTG32GADw
-         b6nZpj/pb4TEdmSLz9AEUlGncHcMdloif5bjilHcLcRsrPRsdwZ+7qS169rXr+c7u8V4
-         cn+Xk8J6OwRDPGeaiuiSw/ypCYi9zOLhWhEwQ1SuwCX46EloFJfF5clWAO5XXQqnAf7A
-         XBXgpWZ0h7+f+3pWR2US41wn4l3H1EegCTlYMl+/1K9iEOD1kLKbdJeAHSHbPONyiVrI
-         rSdMAguOIQs5lP9UK/FnsTctPkiFk/UFF2FrdwYYBu5DMvdxpfxOhH5k27eYKSeRVznc
-         mqug==
-X-Gm-Message-State: AOAM530xcQ5+QM1oygs1xQUwa6kVlZTsTyuuWc5LKO3Pb22PA5jy1DE4
-        IgZgIL9S7gxIG4wUU24zd1mwTQ==
-X-Google-Smtp-Source: ABdhPJymcC9c3BX4ZgqkLwz28Sd8Cp7BgoYdAxG7f4GWjF2VV8r2M5wJcXc1mlmzjLizKXFZW8jQ8A==
-X-Received: by 2002:a17:903:124f:: with SMTP id u15mr466795plh.15.1643235527588;
-        Wed, 26 Jan 2022 14:18:47 -0800 (PST)
-Received: from localhost.localdomain ([2401:4900:1f3a:4e9b:8fa7:36dc:a805:c73f])
-        by smtp.gmail.com with ESMTPSA id t17sm4233742pgm.69.2022.01.26.14.18.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bRwhL1NPkbRdnv8DYdCIqNEvEwK08/NeYumLy6TnqFI=;
+        b=V3Fs2QRn7eBHmZkimiLM0pDBO9PLJ8pZcsAS1k6apLE0SjtFUqlJHWySu2qqsjx9Ix
+         Na0eBldmPAM8DOVFpmkkA7/dYWVPaIM356pR4I9sxporJj81tiDeCjuONqwwjtM55+jk
+         BenQr/8Njyue4O5zxvXpGORJlsDenrSedi5O5ULBUjXaeEyGCi4WX+X0jpVH89q4qkM7
+         ODd33m+ye3AxGqUmg5O1UwzzIxopq1ez/CF5r0+qEBL6TVvYwS6LT6VWy+g5gVilY5d6
+         hf1RtuV9AyQB4zJvQJgPP4rbaeUgsdoh8dbOEicNuAg4P3qPMOBVO8/oQV88DZH4p1MO
+         erRQ==
+X-Gm-Message-State: AOAM5337OMehiYqDuOl6aSsdewjVepHRywfEnHsvoLe2PowDXKYX/5ir
+        fC6he6f3WUAm1RpMRDTmkEcZnw==
+X-Google-Smtp-Source: ABdhPJwW4gtXLi7FUbmqmsJLyKkC4nxO8knlYkooSPKifiMgPCNpALVd5g3uaIeh6lNY73omJA+5ow==
+X-Received: by 2002:a63:8bc4:: with SMTP id j187mr683449pge.536.1643235760574;
+        Wed, 26 Jan 2022 14:22:40 -0800 (PST)
+Received: from bleung.mtv.corp.google.com ([2620:15c:202:201:7499:b258:18ee:819f])
+        by smtp.gmail.com with ESMTPSA id q16sm3020769pfu.194.2022.01.26.14.22.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 14:18:47 -0800 (PST)
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, agross@kernel.org, sboyd@kernel.org,
-        tdas@codeaurora.org, mturquette@baylibre.com,
-        linux-clk@vger.kernel.org, bjorn.andersson@linaro.org,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 7/8] clk: qcom: gcc-sm8150: use runtime PM for the clock controller
-Date:   Thu, 27 Jan 2022 03:47:24 +0530
-Message-Id: <20220126221725.710167-8-bhupesh.sharma@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220126221725.710167-1-bhupesh.sharma@linaro.org>
-References: <20220126221725.710167-1-bhupesh.sharma@linaro.org>
+        Wed, 26 Jan 2022 14:22:40 -0800 (PST)
+From:   Benson Leung <bleung@chromium.org>
+To:     chrome-platform@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, bleung@google.com,
+        bleung@chromium.org, pmalani@chromium.org
+Subject: [PATCH] MAINTAINERS: platform-chrome: Add new chrome-platform@lists.linux.dev list
+Date:   Wed, 26 Jan 2022 14:22:33 -0800
+Message-Id: <20220126222233.2852280-1-bleung@chromium.org>
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On sm8150 emac clk registers are powered up by the GDSC power
-domain. Use runtime PM calls to make sure that required power domain is
-powered on while we access clock controller's registers.
-
-Cc: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Signed-off-by: Benson Leung <bleung@chromium.org>
 ---
- drivers/clk/qcom/gcc-sm8150.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+ MAINTAINERS | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/clk/qcom/gcc-sm8150.c b/drivers/clk/qcom/gcc-sm8150.c
-index ada755ad55f7..2e71afed81fd 100644
---- a/drivers/clk/qcom/gcc-sm8150.c
-+++ b/drivers/clk/qcom/gcc-sm8150.c
-@@ -5,6 +5,7 @@
- #include <linux/bitops.h>
- #include <linux/err.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-@@ -3792,19 +3793,41 @@ static const struct of_device_id gcc_sm8150_match_table[] = {
- };
- MODULE_DEVICE_TABLE(of, gcc_sm8150_match_table);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ea3e6c914384..cad7b0fff9f4 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4537,6 +4537,7 @@ F:	drivers/input/touchscreen/chipone_icn8505.c
  
-+static void gcc_sm8150_pm_runtime_disable(void *data)
-+{
-+	pm_runtime_disable(data);
-+}
-+
- static int gcc_sm8150_probe(struct platform_device *pdev)
- {
- 	struct regmap *regmap;
-+	int ret;
-+
-+	pm_runtime_enable(&pdev->dev);
-+
-+	ret = devm_add_action_or_reset(&pdev->dev, gcc_sm8150_pm_runtime_disable, &pdev->dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = pm_runtime_resume_and_get(&pdev->dev);
-+	if (ret)
-+		return ret;
+ CHROME HARDWARE PLATFORM SUPPORT
+ M:	Benson Leung <bleung@chromium.org>
++L:	chrome-platform@lists.linux.dev
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git
+ F:	drivers/platform/chrome/
+@@ -4544,6 +4545,7 @@ F:	drivers/platform/chrome/
+ CHROMEOS EC CODEC DRIVER
+ M:	Cheng-Yi Chiang <cychiang@chromium.org>
+ R:	Guenter Roeck <groeck@chromium.org>
++L:	chrome-platform@lists.linux.dev
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/sound/google,cros-ec-codec.yaml
+ F:	sound/soc/codecs/cros_ec_codec.*
+@@ -4551,6 +4553,7 @@ F:	sound/soc/codecs/cros_ec_codec.*
+ CHROMEOS EC SUBDRIVERS
+ M:	Benson Leung <bleung@chromium.org>
+ R:	Guenter Roeck <groeck@chromium.org>
++L:	chrome-platform@lists.linux.dev
+ S:	Maintained
+ F:	drivers/power/supply/cros_usbpd-charger.c
+ N:	cros_ec
+@@ -4558,11 +4561,13 @@ N:	cros-ec
  
- 	regmap = qcom_cc_map(pdev, &gcc_sm8150_desc);
--	if (IS_ERR(regmap))
-+	if (IS_ERR(regmap)) {
-+		pm_runtime_put(&pdev->dev);
- 		return PTR_ERR(regmap);
-+	}
+ CHROMEOS EC USB TYPE-C DRIVER
+ M:	Prashant Malani <pmalani@chromium.org>
++L:	chrome-platform@lists.linux.dev
+ S:	Maintained
+ F:	drivers/platform/chrome/cros_ec_typec.c
  
- 	/* Disable the GPLL0 active input to NPU and GPU via MISC registers */
- 	regmap_update_bits(regmap, 0x4d110, 0x3, 0x3);
- 	regmap_update_bits(regmap, 0x71028, 0x3, 0x3);
- 
--	return qcom_cc_really_probe(pdev, &gcc_sm8150_desc, regmap);
-+	ret = qcom_cc_really_probe(pdev, &gcc_sm8150_desc, regmap);
-+
-+	pm_runtime_put(&pdev->dev);
-+
-+	return ret;
- }
- 
- static struct platform_driver gcc_sm8150_driver = {
+ CHROMEOS EC USB PD NOTIFY DRIVER
+ M:	Prashant Malani <pmalani@chromium.org>
++L:	chrome-platform@lists.linux.dev
+ S:	Maintained
+ F:	drivers/platform/chrome/cros_usbpd_notify.c
+ F:	include/linux/platform_data/cros_usbpd_notify.h
 -- 
-2.34.1
+2.35.0.rc0.227.g00780c9af4-goog
 
