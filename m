@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A306C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 06:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6789FC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 06:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236710AbiAZGdC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 01:33:02 -0500
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:48556 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235931AbiAZGcv (ORCPT
+        id S236143AbiAZGdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 01:33:09 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:26860 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230400AbiAZGcz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 01:32:51 -0500
+        Wed, 26 Jan 2022 01:32:55 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643178771; x=1674714771;
+  t=1643178775; x=1674714775;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=dHMURxnIsgonyHWuwt/5fkDXVTWfVe9P2gTB2bgBiiA=;
-  b=cs7Xjc9U8ITEcqJxRSj2XPJ3/2K4gDAiAOPWOCh5HypmrRyFasj5sTlx
-   R32ljRl4lQuV+b9/TPbNRfD/808ymLOyrRZHJnqbOCxcpiLG4UPmEwt/w
-   pQ6WnWb9BxJimDt3LNKIV0ng2F1SLaWn+IazvGyJ54yluNiVXbHqXwWh1
-   k=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 25 Jan 2022 22:32:50 -0800
+  bh=HlBrxxqz8GrpwuEBJfdNjgmehq5A3syFPfEQuqOMWpg=;
+  b=xPbRHdCz8OZCPJv3pm05MP4tonf12341eWXWENDHNgWGV3AJcfrt1bJb
+   6i+HLHgjqkdNwayEmK9++wlWshtlYoebJytiZzHemlyKQ+nrHX4wMy5qZ
+   wXaGe/FgCAow30jmE8WygM8JUQ2YdECgZKVboSvMmk5QxjKPKWhh6PDgn
+   M=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 25 Jan 2022 22:32:54 -0800
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 22:32:47 -0800
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 22:32:53 -0800
 Received: from nalasex01c.na.qualcomm.com (10.47.97.35) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 25 Jan 2022 22:32:47 -0800
+ 15.2.922.19; Tue, 25 Jan 2022 22:32:53 -0800
 Received: from fenglinw-gv.qualcomm.com (10.80.80.8) by
  nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 25 Jan 2022 22:32:44 -0800
+ 15.2.922.19; Tue, 25 Jan 2022 22:32:50 -0800
 From:   Fenglin Wu <quic_fenglinw@quicinc.com>
 To:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sboyd@kernel.org>
-CC:     <collinsd@codeaurora.org>, <subbaram@codeaurora.org>,
-        <quic_fenglinw@quicinc.com>, <tglx@linutronix.de>, <maz@kernel.org>
-Subject: [PATCH v5 04/10] spmi: pmic-arb: check apid against limits before calling irq handler
-Date:   Wed, 26 Jan 2022 14:31:46 +0800
-Message-ID: <1643178713-17178-5-git-send-email-quic_fenglinw@quicinc.com>
+        <sboyd@kernel.org>, Kiran Gunda <kgunda@codeaurora.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        David Collins <collinsd@codeaurora.org>
+CC:     <subbaram@codeaurora.org>, <quic_fenglinw@quicinc.com>,
+        <tglx@linutronix.de>, <maz@kernel.org>
+Subject: [PATCH v5 06/10] spmi: pmic-arb: correct duplicate APID to PPID mapping logic
+Date:   Wed, 26 Jan 2022 14:31:48 +0800
+Message-ID: <1643178713-17178-7-git-send-email-quic_fenglinw@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1643178713-17178-1-git-send-email-quic_fenglinw@quicinc.com>
 References: <1643178713-17178-1-git-send-email-quic_fenglinw@quicinc.com>
@@ -57,55 +59,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Collins <collinsd@codeaurora.org>
 
-Check that the apid for an SPMI interrupt falls between the
-min_apid and max_apid that can be handled by the APPS processor
-before invoking the per-apid interrupt handler:
-periph_interrupt().
+Correct the way that duplicate PPID mappings are handled for PMIC
+arbiter v5.  The final APID mapped to a given PPID should be the
+one which has write owner = APPS EE, if it exists, or if not
+that, then the first APID mapped to the PPID, if it exists.
 
-This avoids an access violation in rare cases where the status
-bit is set for an interrupt that is not owned by the APPS
-processor.
-
+Fixes: 40f318f0ed67 ("spmi: pmic-arb: add support for HW version 5")
 Signed-off-by: David Collins <collinsd@codeaurora.org>
 Signed-off-by: Fenglin Wu <quic_fenglinw@quicinc.com>
 ---
- drivers/spmi/spmi-pmic-arb.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/spmi/spmi-pmic-arb.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/spmi/spmi-pmic-arb.c b/drivers/spmi/spmi-pmic-arb.c
-index 2bc3b88..e19eaec 100644
+index 56f2294..cf92abc 100644
 --- a/drivers/spmi/spmi-pmic-arb.c
 +++ b/drivers/spmi/spmi-pmic-arb.c
-@@ -625,21 +625,26 @@ static void pmic_arb_chained_irq(struct irq_desc *desc)
- 	struct spmi_pmic_arb *pmic_arb = irq_desc_get_handler_data(desc);
- 	const struct pmic_arb_ver_ops *ver_ops = pmic_arb->ver_ops;
- 	struct irq_chip *chip = irq_desc_get_chip(desc);
--	int first = pmic_arb->min_apid >> 5;
--	int last = pmic_arb->max_apid >> 5;
-+	int first = pmic_arb->min_apid;
-+	int last = pmic_arb->max_apid;
- 	u8 ee = pmic_arb->ee;
- 	u32 status, enable, handled = 0;
- 	int i, id, apid;
+@@ -1031,7 +1031,8 @@ static int pmic_arb_read_apid_map_v5(struct spmi_pmic_arb *pmic_arb)
+ 	 * version 5, there is more than one APID mapped to each PPID.
+ 	 * The owner field for each of these mappings specifies the EE which is
+ 	 * allowed to write to the APID.  The owner of the last (highest) APID
+-	 * for a given PPID will receive interrupts from the PPID.
++	 * which has the IRQ owner bit set for a given PPID will receive
++	 * interrupts from the PPID.
+ 	 */
+ 	for (i = 0; ; i++, apidd++) {
+ 		offset = pmic_arb->ver_ops->apid_map_offset(i);
+@@ -1054,16 +1055,16 @@ static int pmic_arb_read_apid_map_v5(struct spmi_pmic_arb *pmic_arb)
+ 		apid = pmic_arb->ppid_to_apid[ppid] & ~PMIC_ARB_APID_VALID;
+ 		prev_apidd = &pmic_arb->apid_data[apid];
  
- 	chained_irq_enter(chip, desc);
+-		if (valid && is_irq_ee &&
+-				prev_apidd->write_ee == pmic_arb->ee) {
++		if (!valid || apidd->write_ee == pmic_arb->ee) {
++			/* First PPID mapping or one for this EE */
++			pmic_arb->ppid_to_apid[ppid] = i | PMIC_ARB_APID_VALID;
++		} else if (valid && is_irq_ee &&
++			   prev_apidd->write_ee == pmic_arb->ee) {
+ 			/*
+ 			 * Duplicate PPID mapping after the one for this EE;
+ 			 * override the irq owner
+ 			 */
+ 			prev_apidd->irq_ee = apidd->irq_ee;
+-		} else if (!valid || is_irq_ee) {
+-			/* First PPID mapping or duplicate for another EE */
+-			pmic_arb->ppid_to_apid[ppid] = i | PMIC_ARB_APID_VALID;
+ 		}
  
--	for (i = first; i <= last; ++i) {
-+	for (i = first >> 5; i <= last >> 5; ++i) {
- 		status = readl_relaxed(
- 				ver_ops->owner_acc_status(pmic_arb, ee, i));
- 		while (status) {
- 			id = ffs(status) - 1;
- 			status &= ~BIT(id);
- 			apid = id + i * 32;
-+			if (apid < first || apid > last) {
-+				WARN_ONCE(true, "spurious spmi irq received for apid=%d\n",
-+					apid);
-+				continue;
-+			}
- 			enable = readl_relaxed(
- 					ver_ops->acc_enable(pmic_arb, apid));
- 			if (enable & SPMI_PIC_ACC_ENABLE_BIT)
+ 		apidd->ppid = ppid;
 -- 
 2.7.4
 
