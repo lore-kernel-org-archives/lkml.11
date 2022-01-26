@@ -2,199 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AA9C3526D
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:22:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E468CC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242747AbiAZPWa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 10:22:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:45994 "EHLO
+        id S242751AbiAZPXJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 10:23:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34657 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242741AbiAZPWU (ORCPT
+        by vger.kernel.org with ESMTP id S236135AbiAZPXH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 10:22:20 -0500
+        Wed, 26 Jan 2022 10:23:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643210539;
+        s=mimecast20190719; t=1643210586;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=AtISGxDKqp2+YL6RMZb18kawYorGajMtuStz3sh+IE8=;
-        b=h+P0mVDPQzglfJPKyIHsMyDKYJRCQTD9TWxGVZ7cljw0bm+vGwDTZgispwq1ssnJDBv7U5
-        BG3FL6IsGhFDyD4Gw4HObUj8rGhWaGpVfangvq1VjaASI6QIrQQ6WlzhEJ3eouG4KYW7Aq
-        5C/oKGjH5qjeKVmYemzOMParpJX2SGE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=4a54KaRYc7nXHLtavTkK/qlCZX6HnlHMPvKgqmWcUio=;
+        b=MZsyvij8h0uJgb/KkN0tv1nMUtBhMUnza8eFhMyg6G6PR+sU5Y23EOWOpJyhaHsdYGlgyx
+        FwOuiF7+AkSA1HM/BBwlU2HsB/YFcC+fum6WNojPHpuC8HTpnAkrT0f7wMZALWLMQA+Kx6
+        MNEZOOUicqNErX9a0iF+KfytHyWl3J0=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-375-IrvEyJjaNM2rGXiag1ouWQ-1; Wed, 26 Jan 2022 10:22:16 -0500
-X-MC-Unique: IrvEyJjaNM2rGXiag1ouWQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A0F0310168D8;
-        Wed, 26 Jan 2022 15:22:13 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5794B38E0F;
-        Wed, 26 Jan 2022 15:22:12 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     yang.zhong@intel.com, seanjc@google.com
-Subject: [PATCH 2/3] KVM: x86: add system attribute to retrieve full set of supported xsave states
-Date:   Wed, 26 Jan 2022 10:22:09 -0500
-Message-Id: <20220126152210.3044876-3-pbonzini@redhat.com>
-In-Reply-To: <20220126152210.3044876-1-pbonzini@redhat.com>
-References: <20220126152210.3044876-1-pbonzini@redhat.com>
+ us-mta-294-RNTbOyNiOS-x0r_cgmhOWw-1; Wed, 26 Jan 2022 10:23:05 -0500
+X-MC-Unique: RNTbOyNiOS-x0r_cgmhOWw-1
+Received: by mail-wm1-f72.google.com with SMTP id z2-20020a05600c220200b0034d2eb95f27so40424wml.1
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 07:23:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=4a54KaRYc7nXHLtavTkK/qlCZX6HnlHMPvKgqmWcUio=;
+        b=AKwLvxVEMQ1GjlKvJucwagnAOfyVUrvf/gPaleUaHM6ZB1dTE4DN7reHarbdfS5te2
+         dduc4Wi5VFmmbKDCGmj1z/WiPzYHZf+S4JZwDWIVAYov/gHNjcm5vqvCjnNpqarnq71g
+         kDe0r4tRPi3a3mV/xdEd/e0pkWAK/KaA5I71IHHQsi5Hcnu7dVbhHKiF319tjWzNLeYJ
+         vDyLKthXp2aJKZjYy375QyP6CzPna/+0Izxvn0lrdH5rynjyIfQYH+GPnm7iRTvl1gn3
+         BrVRGh70zkuzYSBBfQFwKoC8F0qjvMCGxFfnh6MMt9b3GJyu1SxiQfx0RnL0NPCXbxn7
+         LN2g==
+X-Gm-Message-State: AOAM531nqxPoaEkbg7SYY/ADmWSF5u5NxR2VEesjGKbn8gfzy938v8Fr
+        fU1cdnfe4G2c8Z+lopJEueDfbUJwAglp0nW4iog7kE9CoIWCZKIYNxZuzM6DJd5V8Soa5nnRaX8
+        WI2HR8Vvrv/r8qlD0EFi3lsSD
+X-Received: by 2002:a7b:cb18:: with SMTP id u24mr8034884wmj.15.1643210584096;
+        Wed, 26 Jan 2022 07:23:04 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw82k25wkMbrJVhNhjzzuRNIDR0IA7s/6PDVDf+0JaO6ZAgOVzYAYjs7DyqM0oyeoso8SH7Fw==
+X-Received: by 2002:a7b:cb18:: with SMTP id u24mr8034859wmj.15.1643210583850;
+        Wed, 26 Jan 2022 07:23:03 -0800 (PST)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id i11sm6080210wry.102.2022.01.26.07.23.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 07:23:03 -0800 (PST)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>
+Subject: Re: [PATCH] KVM: selftests: Don't skip L2's VMCALL in SMM test for
+ SVM guest
+In-Reply-To: <20220125221725.2101126-1-seanjc@google.com>
+References: <20220125221725.2101126-1-seanjc@google.com>
+Date:   Wed, 26 Jan 2022 16:23:02 +0100
+Message-ID: <87tudqh67d.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because KVM_GET_SUPPORTED_CPUID is meant to be passed (by simple-minded
-VMMs) to KVM_SET_CPUID2, it cannot include any dynamic xsave states that
-have not been enabled.  Probing those, for example so that they can be
-passed to ARCH_REQ_XCOMP_GUEST_PERM, requires a new ioctl or arch_prctl.
-The latter is in fact worse, even though that is what the rest of the
-API uses, because it would require supported_xcr0 to be moved from the
-KVM module to the kernel just for this use.  In addition, the value
-would be nonsensical (or an error would have to be returned) until
-the KVM module is loaded in.
+Sean Christopherson <seanjc@google.com> writes:
 
-KVM_CHECK_EXTENSION cannot be used because it only has 32 bits of
-output; in order to limit the growth of capabilities and ioctls, the
-series adds a /dev/kvm variant of KVM_{GET,HAS}_DEVICE_ATTR that
-can be used in the future and by other architectures.  It then
-implements it in x86 with just one group (0) and attribute
-(KVM_X86_XCOMP_GUEST_SUPP).
+> Don't skip the vmcall() in l2_guest_code() prior to re-entering L2, doing
+> so will result in L2 running to completion, popping '0' off the stack for
+> RET, jumping to address '0', and ultimately dying with a triple fault
+> shutdown.
+>
+> It's not at all obvious why the test re-enters L2 and re-executes VMCALL,
+> but presumably it serves a purpose.  
 
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- Documentation/virt/kvm/api.rst  |  4 ++-
- arch/x86/include/uapi/asm/kvm.h |  3 +++
- arch/x86/kvm/x86.c              | 45 +++++++++++++++++++++++++++++++++
- include/uapi/linux/kvm.h        |  1 +
- 4 files changed, 52 insertions(+), 1 deletion(-)
+I managed to forget everything but it seems my intentions were to test
+two things:
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index bb8cfddbb22d..a4267104db50 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -3268,6 +3268,7 @@ number.
- 
- :Capability: KVM_CAP_DEVICE_CTRL, KVM_CAP_VM_ATTRIBUTES for vm device,
-              KVM_CAP_VCPU_ATTRIBUTES for vcpu device
-+             KVM_CAP_SYS_ATTRIBUTES for system (/dev/kvm) device (no set)
- :Type: device ioctl, vm ioctl, vcpu ioctl
- :Parameters: struct kvm_device_attr
- :Returns: 0 on success, -1 on error
-@@ -3302,7 +3303,8 @@ transferred is defined by the particular attribute.
- ------------------------
- 
- :Capability: KVM_CAP_DEVICE_CTRL, KVM_CAP_VM_ATTRIBUTES for vm device,
--	     KVM_CAP_VCPU_ATTRIBUTES for vcpu device
-+             KVM_CAP_VCPU_ATTRIBUTES for vcpu device
-+             KVM_CAP_SYS_ATTRIBUTES for system (/dev/kvm) device
- :Type: device ioctl, vm ioctl, vcpu ioctl
- :Parameters: struct kvm_device_attr
- :Returns: 0 on success, -1 on error
-diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-index 2da3316bb559..bf6e96011dfe 100644
---- a/arch/x86/include/uapi/asm/kvm.h
-+++ b/arch/x86/include/uapi/asm/kvm.h
-@@ -452,6 +452,9 @@ struct kvm_sync_regs {
- 
- #define KVM_STATE_VMX_PREEMPTION_TIMER_DEADLINE	0x00000001
- 
-+/* attributes for system fd (group 0) */
-+#define KVM_X86_XCOMP_GUEST_SUPP	0
-+
- struct kvm_vmx_nested_state_data {
- 	__u8 vmcs12[KVM_STATE_NESTED_VMX_VMCS_SIZE];
- 	__u8 shadow_vmcs12[KVM_STATE_NESTED_VMX_VMCS_SIZE];
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 056e30f85424..b533301af95a 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4229,6 +4229,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_SREGS2:
- 	case KVM_CAP_EXIT_ON_EMULATION_FAILURE:
- 	case KVM_CAP_VCPU_ATTRIBUTES:
-+	case KVM_CAP_SYS_ATTRIBUTES:
- 		r = 1;
- 		break;
- 	case KVM_CAP_EXIT_HYPERCALL:
-@@ -4331,7 +4332,35 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 		break;
- 	}
- 	return r;
-+}
-+
-+static int kvm_x86_dev_get_attr(struct kvm_device_attr *attr)
-+{
-+	if (attr->group)
-+		return -ENXIO;
-+
-+	switch (attr->attr) {
-+	case KVM_X86_XCOMP_GUEST_SUPP:
-+		if (put_user(supported_xcr0, (u64 __user *)attr->addr))
-+			return -EFAULT;
-+		return 0;
-+	default:
-+		return -ENXIO;
-+		break;
-+	}
-+}
-+
-+static int kvm_x86_dev_has_attr(struct kvm_device_attr *attr)
-+{
-+	if (attr->group)
-+		return -ENXIO;
- 
-+	switch (attr->attr) {
-+	case KVM_X86_XCOMP_GUEST_SUPP:
-+		return 0;
-+	default:
-+		return -ENXIO;
-+	}
- }
- 
- long kvm_arch_dev_ioctl(struct file *filp,
-@@ -4422,6 +4451,22 @@ long kvm_arch_dev_ioctl(struct file *filp,
- 	case KVM_GET_SUPPORTED_HV_CPUID:
- 		r = kvm_ioctl_get_supported_hv_cpuid(NULL, argp);
- 		break;
-+	case KVM_GET_DEVICE_ATTR: {
-+		struct kvm_device_attr attr;
-+		r = -EFAULT;
-+		if (copy_from_user(&attr, (void __user *)arg, sizeof(attr)))
-+			break;
-+		r = kvm_x86_dev_get_attr(&attr);
-+		break;
-+	}
-+	case KVM_HAS_DEVICE_ATTR: {
-+		struct kvm_device_attr attr;
-+		r = -EFAULT;
-+		if (copy_from_user(&attr, (void __user *)arg, sizeof(attr)))
-+			break;
-+		r = kvm_x86_dev_has_attr(&attr);
-+		break;
-+	}
- 	default:
- 		r = -EINVAL;
- 		break;
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 9563d294f181..b46bcdb0cab1 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -1133,6 +1133,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_VM_MOVE_ENC_CONTEXT_FROM 206
- #define KVM_CAP_VM_GPA_BITS 207
- #define KVM_CAP_XSAVE2 208
-+#define KVM_CAP_SYS_ATTRIBUTES 209
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
+- "Enter SMM during L2 execution and check that we correctly return from
+  it."
+- "Perform save/restore while the guest is in SMM triggered during L2
+  execution" 
+
+the later could've been complemented with "and try running L2 after".
+
+> The VMX path doesn't skip vmcall(), and the test can't possibly have
+> passed on SVM
+
+Well, it kind of works for me (pre-patch) :-) I do see #DF in the trace
+but not #TF.
+
+>, so just do what VMX does.
+>
+
+Makes sense. I can't recall how "+= 3" appeared.
+
+> Fixes: d951b2210c1a ("KVM: selftests: smm_test: Test SMM enter from L2")
+> Cc: Maxim Levitsky <mlevitsk@redhat.com>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  tools/testing/selftests/kvm/x86_64/smm_test.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/kvm/x86_64/smm_test.c b/tools/testing/selftests/kvm/x86_64/smm_test.c
+> index 2da8eb8e2d96..a626d40fdb48 100644
+> --- a/tools/testing/selftests/kvm/x86_64/smm_test.c
+> +++ b/tools/testing/selftests/kvm/x86_64/smm_test.c
+> @@ -105,7 +105,6 @@ static void guest_code(void *arg)
+>  
+>  		if (cpu_has_svm()) {
+>  			run_guest(svm->vmcb, svm->vmcb_gpa);
+> -			svm->vmcb->save.rip += 3;
+>  			run_guest(svm->vmcb, svm->vmcb_gpa);
+>  		} else {
+>  			vmlaunch();
+>
+> base-commit: e2e83a73d7ce66f62c7830a85619542ef59c90e4
+
+Reviewed-and-tested-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+
 -- 
-2.31.1
-
+Vitaly
 
