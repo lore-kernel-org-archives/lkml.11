@@ -2,84 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A885EC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E511CC5DF62
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:21:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240614AbiAZLTx convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:19:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42012 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233567AbiAZLTw (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:19:52 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B03C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:19:51 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id DC356100002;
-        Wed, 26 Jan 2022 11:19:48 +0000 (UTC)
-Date:   Wed, 26 Jan 2022 12:19:47 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Christophe Kerello <christophe.kerello@foss.st.com>
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        <richard@nod.at>, <vigneshr@ti.com>, <robh+dt@kernel.org>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <devicetree@vger.kernel.org>, <chenshumin86@sina.com>
-Subject: Re: [PATCH 3/3] nvmem: core: Fix a conflict between MTD and NVMEM
- on wp-gpios property
-Message-ID: <20220126121947.79890a47@xps13>
-In-Reply-To: <9662651a-12d9-4893-95c2-aa1a3a10302d@foss.st.com>
-References: <20220105135734.271313-1-christophe.kerello@foss.st.com>
-        <20220105135734.271313-4-christophe.kerello@foss.st.com>
-        <3f9a9731-c096-bc9b-63df-bd1dff032737@linaro.org>
-        <9662651a-12d9-4893-95c2-aa1a3a10302d@foss.st.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S240622AbiAZLVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:21:39 -0500
+Received: from gate.crashing.org ([63.228.1.57]:60260 "EHLO gate.crashing.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233637AbiAZLVh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 06:21:37 -0500
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 20QBDv5f023172;
+        Wed, 26 Jan 2022 05:13:57 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 20QBDtdZ023171;
+        Wed, 26 Jan 2022 05:13:55 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Wed, 26 Jan 2022 05:13:55 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        x86@kernel.org, llvm@lists.linux.dev, linux-sparse@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-toolchains@vger.kernel.org, apinski@marvell.com
+Subject: Re: [PATCH] objtool: prefer memory clobber & %= to volatile & __COUNTER__
+Message-ID: <20220126111355.GU614@gate.crashing.org>
+References: <20220114010526.1776605-1-ndesaulniers@google.com> <YeQei0xNzMq7bFdg@zn.tnic> <20220118192256.jzk5dnceeusq7x7u@treble> <20220118230120.pivvson7qekfiqic@treble> <CAKwvOdmLzwz=02ypt0_1324_5-7i3Az7HizFaDMqZv__-D99uA@mail.gmail.com> <20220125233128.GT614@gate.crashing.org> <CAKwvOd=P0VAFrrUXV0z5dES9hYP2b8-KwTzyG5=ezeUve=K3QA@mail.gmail.com> <CAKwvOdnBT74081nCw2hcm2dxCacV0ume_noZ0=Q6e0UiBDF7wg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdnBT74081nCw2hcm2dxCacV0ume_noZ0=Q6e0UiBDF7wg@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
+Hi!
 
-christophe.kerello@foss.st.com wrote on Wed, 26 Jan 2022 12:08:38 +0100:
+On Tue, Jan 25, 2022 at 06:12:20PM -0800, Nick Desaulniers wrote:
+> Andrew clarified (thanks Andrew!) that %= can't be used as I imagined
+> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=104236#c4
+> and that I think was alluded to in
+> commit 3d1e236022cc ("objtool: Prevent GCC from merging annotate_unreachable()")
+> which is fine, so I'll just need to keep usage of __COUNTER__.
 
-> Hi Srinivas, Miquel,
-> 
-> On 1/25/22 11:44, Srinivas Kandagatla wrote:
-> > 
-> > 
-> > On 05/01/2022 13:57, Christophe Kerello wrote:  
-> >> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-> >> index e765d3d0542e..e11c74db64f9 100644
-> >> --- a/drivers/nvmem/core.c
-> >> +++ b/drivers/nvmem/core.c
-> >> @@ -769,7 +769,7 @@ struct nvmem_device *nvmem_register(const struct >> nvmem_config *config)
-> >>       if (config->wp_gpio)
-> >>           nvmem->wp_gpio = config->wp_gpio;
-> >> -    else
-> >> +    else if (config->reg_write)  
-> > This is clearly not going to work for everyone.
-> > 
-> > A flag in nvmem_config to indicate that wp gpio is managed by provider > driver would be the right thing to do here.  
-> 
-> Based on your inputs, I will add a new boolean flag in nvmen_config (proposal name: skip_wp_gpio) and I will set it to true in mtdcore.c when nvmen_config structure is initialized. It will be part of the V2.
+Aha.  Yes, %= *outputs* a unique number.  Before the assembler output
+is written %= is just a string (like any other piece of output
+template).  The output template is used for three things:
 
-Fine by me. Thanks for your work on this.
+1) Inline assembler statements with different output templates are not
+considered identical;
+2) Newlines and assembler statement separators (semicolons for most
+assembler dialects) are used to estimate the size of the machine code
+generated.  This is a pessimistic estimate, but within reason: for
+example you can write a million byte output with just a few characters
+of input, if you want to sabotage yourself;
+3) The output template is used at output time.
 
-> 
-> Regards,
-> Christophe Kerello.
-> 
-> >>           nvmem->wp_gpio = gpiod_get_optional(config->dev, "wp",
-> >>                               GPIOD_OUT_HIGH);  
-> > 
-> > --srini
-> >   
+The mentioned commit's message says "unfortunately older versions of GCC
+don't support it" which is mistaken.
 
-Cheers,
-Miquèl
+If you want two identical inline asm statements to not be considered
+identical by the compiler, you have to make them not identical.  Like by
+using __COUNTER__ for example, yes :-)
+
+
+Segher
