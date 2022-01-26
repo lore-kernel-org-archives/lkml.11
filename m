@@ -2,104 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 847E1C63682
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B0B3C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243747AbiAZRci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 12:32:38 -0500
-Received: from mout.kundenserver.de ([212.227.126.187]:46939 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236899AbiAZRch (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:32:37 -0500
-Received: from [192.168.100.1] ([82.142.25.174]) by mrelayeu.kundenserver.de
- (mreue012 [213.165.67.103]) with ESMTPSA (Nemesis) id
- 1MjxW4-1mWspV3dLE-00kQMA; Wed, 26 Jan 2022 18:32:10 +0100
-Message-ID: <e4e1995c-4fc2-96b7-c732-93aa67207802@vivier.eu>
-Date:   Wed, 26 Jan 2022 18:32:08 +0100
+        id S243755AbiAZRcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 12:32:47 -0500
+Received: from mx1.mailbun.net ([170.39.20.100]:35956 "EHLO mx1.mailbun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243784AbiAZRcq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 12:32:46 -0500
+Received: from [2607:fb90:d98b:8818:5079:94eb:24d5:e5c3] (unknown [172.58.109.194])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: ariadne@dereferenced.org)
+        by mx1.mailbun.net (Postfix) with ESMTPSA id BE499E0833;
+        Wed, 26 Jan 2022 17:32:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dereferenced.org;
+        s=mailbun; t=1643218365;
+        bh=VyVwJZxqM+mG+8S6BSOCPiJeMsH3GkOoTp5Rc87H+dE=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References;
+        b=bCeHXWfVGTsQAwzf5hSapW5Kc3+j+QInLMY4/CJCPjbCRYmZ7owzSNypUPvMr8jlR
+         BfsKDPnW0Ry6GmRCPqmYk9AZwcMOomaBoUdTmpyuA8AcYVf/EhZxzH0F7q0PSGv5XW
+         +e9On7A6KSf8SplOLXNpc6eywWotlRAK9lTw2HzdNHB2CHlPmGoGKIR5zuFxYSwXjy
+         Sygy0dDgHb82NR8kuPF42k2XWTAcG8AXD5fykfUs52d1Yx0KtyjOQzhx95FNNAlX1+
+         Hb+1gKpQpMEMVvTaRFuHhYhZ+eMw1mA/4cz040l4tmsmCp4eoW7F6SS2Jp8YD8Dw6q
+         srJvSy1Yk/wIg==
+Date:   Wed, 26 Jan 2022 11:32:38 -0600 (CST)
+From:   Ariadne Conill <ariadne@dereferenced.org>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+cc:     Matthew Wilcox <willy@infradead.org>,
+        Ariadne Conill <ariadne@dereferenced.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v2] fs/exec: require argv[0] presence in
+ do_execveat_common()
+In-Reply-To: <877damwi2u.fsf@email.froward.int.ebiederm.org>
+Message-ID: <9e276534-5c97-67fc-4bae-8de11bab57ab@dereferenced.org>
+References: <20220126114447.25776-1-ariadne@dereferenced.org> <YfFh6O2JS6MybamT@casper.infradead.org> <877damwi2u.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: fr
-To:     Greg KH <greg@kroah.com>
-Cc:     linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-m68k@lists.linux-m68k.org, Arnd Bergmann <arnd@arndb.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        John Stultz <john.stultz@linaro.org>, stable@vger.kernel.org
-References: <20220121200738.2577697-1-laurent@vivier.eu>
- <20220121200738.2577697-3-laurent@vivier.eu> <YfFPjOEELiTWr2uj@kroah.com>
-From:   Laurent Vivier <laurent@vivier.eu>
-Subject: Re: [PATCH v12 2/5] tty: goldfish: introduce
- gf_ioread32()/gf_iowrite32()
-In-Reply-To: <YfFPjOEELiTWr2uj@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:XvNu/dge3CNEYzBbvj4dsSiUzfG9ERgw/LyTB6b0Aj5yx6+KZ9M
- QGo8y1Km5kIVpSrPgBY0y6SzagwYAtktnB9GjfykwLFwRi9tZQVpxJ/BnwfUOfBmFpGBIkg
- cDPFukPmaZ1y9tua0fQ3T6PWrxQW36ZmPU4d0O3wbqDvUsIN2QVlZNqHOi/+3TAWAHnJAkN
- IjKh9Z5r4mvZQ046C54nA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:IUz2wLhHtK4=:YErz34dKXUUdhaRFFUq59Y
- uZ1krhP53qYSUmIzN/tcOXPkwWZ0LLwMu1OnckCFNi6IIeme5aShQRQGwrYn2g8692/Ln2qCr
- ypxE48BAfl5F/s47vkP+E5TAF291m1LB5YH9r1Kw9DlOxkGhSLFt8yBPLP4uEaeIpDYLZB1+V
- XSJ0O18w5g4NcRwSdEJiu0MdpZ0csxqvFt4br1QLqAqKscd1Vb6G3upYMtJXPxy+ZPv4QIyOd
- JAHd8fWgL1721LCPI8C2bIEKt3qSDdSiki21FRXeiaSljk9VWnrfCGi56jqtaZxdfDwgZ4k4U
- nTK1y/sccw/C1mk1YlhXrTsC4tjK5Nqf9W8vkb8u6/KDJIkRtcquMfyJgCwjidMPGpXfUFIl0
- KMrqJxwv3EAFIhUb8/QzmO0sSnNC3DVtluwYeIBQOjkUFpXQALToV8uPpX6878B0Yq/deBnkk
- lcfyTrSzyh9ygeLQIQsJ8UgG78nC4m0ixTWyM6UeT0YsZrLcCq8pGiL3X/q845lDJcJpriEkt
- pQRcHA7R5gaMDtcYG8A20FHAnVO/h/xfUXnP2imKAQo45PByF+YTwkDq2umrD3eth2o4qCdnL
- bAN44TFcq+XWvsfadMQofaXA/L4TjwGnWDZU/8Z4rdK+TtNAwR+FqhH/1HC0u8ghaq2T+ZZXS
- CnnEAo74CA35cOMfMbEJLQiXYUAFB+xRQ3ww9XkX76tEs2QhbB3Lg2QrPN9BL1j8kFCs=
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 26/01/2022 à 14:41, Greg KH a écrit :
-> On Fri, Jan 21, 2022 at 09:07:35PM +0100, Laurent Vivier wrote:
->> Revert
->> commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
-> 
-> Why?
-> 
->> and define gf_ioread32()/gf_iowrite32() to be able to use accessors
->> defined by the architecture.
-> 
-> What does this do?
-> 
+Hi,
+
+On Wed, 26 Jan 2022, Eric W. Biederman wrote:
+
+> Matthew Wilcox <willy@infradead.org> writes:
+>
+>> On Wed, Jan 26, 2022 at 11:44:47AM +0000, Ariadne Conill wrote:
+>>> Interestingly, Michael Kerrisk opened an issue about this in 2008[1],
+>>> but there was no consensus to support fixing this issue then.
+>>> Hopefully now that CVE-2021-4034 shows practical exploitative use
+>>> of this bug in a shellcode, we can reconsider.
+>>>
+>>> [0]: https://pubs.opengroup.org/onlinepubs/9699919799/functions/exec.html
+>>> [1]: https://bugzilla.kernel.org/show_bug.cgi?id=8408
 >>
->> Cc: stable@vger.kernel.org # v5.11+
->> Fixes: da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
->> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
->> ---
->>   drivers/tty/goldfish.c   | 20 ++++++++++----------
->>   include/linux/goldfish.h | 15 +++++++++++----
->>   2 files changed, 21 insertions(+), 14 deletions(-)
-...
->> -- 
->> 2.34.1
->>
-> 
-> This feels like a step backwards.  Why keep this level of indirection
-> for no good reason?
-> 
+>> Having now read 8408 ... if ABI change is a concern (and I really doubt
+>> it is), we could treat calling execve() with a NULL argv as if the
+>> caller had passed an array of length 1 with the first element set to
+>> NULL.  Just like we reopen fds 0,1,2 for suid execs if they were
+>> closed.
+>
+> Where do we reopen fds 0,1,2 for suid execs?  I feel silly but I looked
+> through the code fs/exec.c quickly and I could not see it.
+>
+>
+> I am attracted to the notion of converting an empty argv array passed
+> to the kernel into something we can safely pass to userspace.
+>
+> I think it would need to be having the first entry point to "" instead
+> of the first entry being NULL.  That would maintain the invariant that you
+> can always dereference a pointer in the argv array.
 
-It was proposed by Arnd on my previous iteration of the series when I wanted to update goldfish-rtc 
-in the same way:
+Yes, I think this is correct, because there's a lot of programs out there 
+which will try to blindly read from argv[0], assuming it is present. 
+Ensuring we wind up with {"", NULL} would be the way I would want to 
+approach this if we go that route.
 
-https://lore.kernel.org/all/CAK8P3a1H6-sd_+FqnOq0Zhj=L51EWuW5VCcYeTENcp3+PkTC4Q@mail.gmail.com/
+This approach would solve the problem with pkexec, but I still think there 
+is some wisdom in denying with -EFAULT outright like other systems do.
 
-Keeping __raw_XXX() functions works on most of the cases except if the current CPU endianness can 
-differ from the architecture one (like a ppc64le kernel (little-endian) running a ppc64 machine 
-(big-endian)).
-
-The best solution would be to update QEMU to set the device as a little-endian one, but google 
-didn't merge its implemention in upstream QEMU and this would break all other OSes using goldfish 
-devices on big-endian architectures.
-
-Thanks,
-Laurent
+Ariadne
