@@ -2,142 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E5DC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C81C63682
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239557AbiAZKBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 05:01:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38391 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239545AbiAZKBR (ORCPT
+        id S239545AbiAZKDP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 05:03:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233188AbiAZKDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 05:01:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643191276;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WDmpWapjP9Wkuqng2NIRJk/6UxFibcIxNF2eScAVq98=;
-        b=MBHl5fsjl8hdT8EsqBKz9X0XDBVir4mTVYQbpAXp5u931yyyOVZQSVvgpqkWMC/DgZBwIh
-        yvHpYbzBHHjFewFj62OqPyMzetTMNyy7XaM5fjz7VA1osg1tzlP+vG6W6XzaF9uoYKCtTo
-        btTZ9mQUJq7UTtbnsqx+oChGs/aPS7g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-458-Vz9PWdCbMzKfu4dycLa_hQ-1; Wed, 26 Jan 2022 05:01:13 -0500
-X-MC-Unique: Vz9PWdCbMzKfu4dycLa_hQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A63A9190B2AE;
-        Wed, 26 Jan 2022 10:01:10 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.241])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7BF5D1F2F3;
-        Wed, 26 Jan 2022 10:01:04 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH RFC v2 9/9] mm/huge_memory: remove stale locking logic from __split_huge_pmd()
-Date:   Wed, 26 Jan 2022 10:55:57 +0100
-Message-Id: <20220126095557.32392-10-david@redhat.com>
-In-Reply-To: <20220126095557.32392-1-david@redhat.com>
-References: <20220126095557.32392-1-david@redhat.com>
+        Wed, 26 Jan 2022 05:03:14 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D43C06161C;
+        Wed, 26 Jan 2022 02:03:14 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id a18so68006258edj.7;
+        Wed, 26 Jan 2022 02:03:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=88bX5phc4QD5WEP/ZiuDpl6z06FPpsvQ8tmIbTmmvfM=;
+        b=JOOHPlvVkJI+l+SLmq8YHGPbVPhSP3jpctav1+zJyTBAuPq51FLOHTC6iu25uqbpk1
+         gZ8UPPYNfw73crMI36sEKutbnpdbV1g61rwjWNBVY9SZ5PRXhNz2IMQqIcUw4mOIaHCh
+         mwiQbl8mGpViRBfEgExjk48q+7kftZCnX5g4JrcCwTk4KwDkiv5ZN+RoSdz0xCCFTivp
+         WTxX/fc1xqEDI6EXkK8niYFj0CUFtj9xsSS0vYAWk7c7FC9FpOJ0g8e2ZVQWwnMO+80a
+         GC0uDztgNMPagLsCnlVtvAWVXh/fsxIS3JswqES6Y1jwWtcAc/HuwC7Iarha0ZnNGrKo
+         3mKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=88bX5phc4QD5WEP/ZiuDpl6z06FPpsvQ8tmIbTmmvfM=;
+        b=ZiqJ3T4sFtb3o4/ehgpLNnbNy9La/dfI5Sd+TiBlLLpfVEjQrIpBpazp2PaBXIlUPf
+         sWjy0R7fCtNNkox9gj3wwnyDx/Nt9cHvI+i8FhDS7pwS51Nt+wqL1AWcuXgVIEDuctUI
+         p/XRgcuPs0UXfTSl1CabnvzaG5ggaRzYT1zVOjS70ucCfjrcLlagiSquuRtWTau7fbN7
+         RIlj1rkGTUPdmo3kyJYMoZpnAEoG9dnqPyU2z5hg4FAWxgSeY4mayXJ0wf2OPqCyfXpI
+         NyRsLYdQqi34ygl/3H49x4OfQpb6j/HYn5c22jkzCQggg5Q06PbZjCsvhf9GlcwaK1WN
+         jzOA==
+X-Gm-Message-State: AOAM533n0wbLzisAZpI0vwagz4wm5UbR07saGMJVm4RjCldYlZMPIav9
+        M4WXZ/xFxCEMnzIiNu08fgGIvAYtLoW5g72QB7o=
+X-Google-Smtp-Source: ABdhPJw72+G5oWbFGdfMsLrwcGS/NyTH58SB7avPo0MWV7s1x0/JTHE5M0LGJ1I+tXGIVrnFSz5eE4YPZHT8G6BfGm0=
+X-Received: by 2002:aa7:cf0e:: with SMTP id a14mr24216028edy.296.1643191392761;
+ Wed, 26 Jan 2022 02:03:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com> <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
+In-Reply-To: <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 26 Jan 2022 12:02:36 +0200
+Message-ID: <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
+Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Lee Jones <lee.jones@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Carlis <zhangxuezhi1@yulong.com>, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Helge Deller <deller@gmx.de>, Andy Shevchenko <andy@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's remove the stale logic that was required for reuse_swap_page().
+On Wed, Jan 26, 2022 at 10:52 AM Thomas Zimmermann <tzimmermann@suse.de> wrote:
+>
+> Hi
+>
+> Am 25.01.22 um 21:21 schrieb Andy Shevchenko:
+> > Since we got a maintainer for fbdev, I would like to
+> > unorphan fbtft (with the idea of sending PRs to Helge)
+> > and move it out of staging since there is no more clean
+> > up work expected and no more drivers either.
+> >
+> > Thoughts?
 
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- mm/huge_memory.c | 32 +-------------------------------
- 1 file changed, 1 insertion(+), 31 deletions(-)
+Thanks for sharing yours, my answers below.
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 863c933b3b1e..5cc438f92548 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2158,8 +2158,6 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- {
- 	spinlock_t *ptl;
- 	struct mmu_notifier_range range;
--	bool do_unlock_page = false;
--	pmd_t _pmd;
- 
- 	mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, vma->vm_mm,
- 				address & HPAGE_PMD_MASK,
-@@ -2178,35 +2176,9 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- 			goto out;
- 	}
- 
--repeat:
- 	if (pmd_trans_huge(*pmd)) {
--		if (!page) {
-+		if (!page)
- 			page = pmd_page(*pmd);
--			/*
--			 * An anonymous page must be locked, to ensure that a
--			 * concurrent reuse_swap_page() sees stable mapcount;
--			 * but reuse_swap_page() is not used on shmem or file,
--			 * and page lock must not be taken when zap_pmd_range()
--			 * calls __split_huge_pmd() while i_mmap_lock is held.
--			 */
--			if (PageAnon(page)) {
--				if (unlikely(!trylock_page(page))) {
--					get_page(page);
--					_pmd = *pmd;
--					spin_unlock(ptl);
--					lock_page(page);
--					spin_lock(ptl);
--					if (unlikely(!pmd_same(*pmd, _pmd))) {
--						unlock_page(page);
--						put_page(page);
--						page = NULL;
--						goto repeat;
--					}
--					put_page(page);
--				}
--				do_unlock_page = true;
--			}
--		}
- 		if (PageMlocked(page))
- 			clear_page_mlock(page);
- 	} else if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
-@@ -2214,8 +2186,6 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- 	__split_huge_pmd_locked(vma, pmd, range.start, freeze);
- out:
- 	spin_unlock(ptl);
--	if (do_unlock_page)
--		unlock_page(page);
- 	/*
- 	 * No need to double call mmu_notifier->invalidate_range() callback.
- 	 * They are 3 cases to consider inside __split_huge_pmd_locked():
+> But why? We already have DRM drivers for some of these devices.
+
+No, we do not (only a few are available).
+
+> Porting
+> the others to DRM is such a better long-term plan.  OTOH, as no one has
+> shown up and converted them, maybe they should be left dead or removed
+> entirely.
+
+As I mentioned above there are devices that nobody will take time to
+port to a way too complex DRM subsystem. But the devices are cheap and
+quite widespread in the embedded world. I'm in possession of 3 or 4
+different models and only 1 is supported by tiny DRM.
+
+On top of that the subtle fact people forgot about FBTFT is that it
+does support parallel interface (yes, I know that it's not performant,
+but one of the displays I have is with that type of interface).
+
+P.S. For the record, I will personally NAK any attempts to remove that
+driver from the kernel. And this is another point why it's better not
+to be under the staging.
+
 -- 
-2.34.1
-
+With Best Regards,
+Andy Shevchenko
