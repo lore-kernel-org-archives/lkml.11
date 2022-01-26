@@ -2,171 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31426C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E03CC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239958AbiAZK35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 05:29:57 -0500
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:32212 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232627AbiAZK3y (ORCPT
+        id S239968AbiAZKa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 05:30:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:24813 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232627AbiAZKa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 05:29:54 -0500
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20Q9s9mC004064;
-        Wed, 26 Jan 2022 10:29:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=2yNSlbLkdLBZkbUunOS2trYmpJbUBQ8Aav6Ld/TULvo=;
- b=gNcphO1HGZyrOgUWtOvzpGA+Cu3zASLI+aNs4JTKHQ4Ehhwm0WocX6Zz2GEh5HTVbjSQ
- h92isSvWDoU6ooijSV9gCyMJNpaGU4iRKh3Z2JlGrTze6+JrXEauZjBsba5KcneuDAhe
- auma7l5rvSUXrmKGe/3XVUk/Z9ACI0MCIrqUCakDZ5sEFLG8/c4VRxjlDbH1RBXxZaph
- knJ6RhHdKIeJwdEa+0Ve6FXgBP/AFixBWldixldQwX1lF9bDjn14eBVcdfduDb5LaEze
- iC4GIF5SXkSKwMgdwoXm7MoG9J8UIpq+Dju1iTQLjg5s3GwmCSi7k6Pockuh/i2ZUrzs Qw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dsxaadt7s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 26 Jan 2022 10:29:27 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20QAAUkM018657;
-        Wed, 26 Jan 2022 10:29:26 GMT
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2042.outbound.protection.outlook.com [104.47.57.42])
-        by userp3020.oracle.com with ESMTP id 3drbcqs749-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 26 Jan 2022 10:29:26 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PI8FdOZfga6Fahl1l5p3Scarr7uWMz5LQU3zA0Yb85Tn05V3OX2oZIZBBWfFJ+iDk0AKRM34V3I3xbHl8Cak79MfRKcTODhoL/lQDtr/HYL+r2yPo+kKEGYkf66KdB6PZVJDEUzNeLRaUJeGW01vUjV9JmexGM2HnQZN57O5gOgv1xxFV6ps7T3osm6igHNvBk89/y62LasQdib+YoC0mcRFcsFyEMexTFLeJB+N4LZFSJCJXOdBsbwaNxxXFYTwE/rUDSt7yGoQk9mo5lyJJ7BwY/8iFC0GGeDfgYwWEfP14lMFTf3bAhE2yGqAMI1i/Cu5UTSN9hwOF6BTnqgobQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2yNSlbLkdLBZkbUunOS2trYmpJbUBQ8Aav6Ld/TULvo=;
- b=c6+gqabafwAuMs0vFjJifXwkge5G3tURh++Lw0Vu02nkKMj1554wFMeqV9jPfwFW9aKUI1wT7HA4ncrAq8nMWDgsngchK93U74lXCNBy8R5n/S1UyfLlFgPFACzetcA+6Dkd+AWgiB70Mbtd5P1CnE8hFqO+E5rFFU+ElDm+suNwxatiBZHgQVT41QU2khVnniuygMX2a/yPQg9K4YoomoR1wWCBulnZEnmddwWPA9q8a42x/tSWUWlZlVUI0dlxZ/8ft5C4sH34h8aw3w1BXvjAP3vYVwMjH0wD96wLqpZeKtpfqB9ZYMhRHEJ6lLBo2ZYfpHfokf84Q0twm+4YzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2yNSlbLkdLBZkbUunOS2trYmpJbUBQ8Aav6Ld/TULvo=;
- b=PiHgxwOQab1fibme8vqYB0xgJGFZRjAd7nBpVCtqj/jM/Xrui5D+6IXf6WBMNTKa5yfr4Fl83yvw61mSmx0sR38kfmvzBwb1cwkeuih+23PR29Onya2gdJ7FKF0ptSxOXZfFNWak/o4IWTeV7f0qlXQ1TL8HWIKwK0b6/ERKwog=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BYAPR10MB2552.namprd10.prod.outlook.com
- (2603:10b6:a02:ad::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.11; Wed, 26 Jan
- 2022 10:29:24 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::c13b:5812:a403:6d96]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::c13b:5812:a403:6d96%6]) with mapi id 15.20.4909.019; Wed, 26 Jan 2022
- 10:29:23 +0000
-Date:   Wed, 26 Jan 2022 13:28:58 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-staging@lists.linux.dev,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Helge Deller <deller@gmx.de>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
-Message-ID: <20220126102858.GX1951@kadam>
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
- <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
- <CAHp75Vd7oaYPKx6bxjCqNnm6fieeQFrtq5K4YYrxYbXoXFy=+Q@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vd7oaYPKx6bxjCqNnm6fieeQFrtq5K4YYrxYbXoXFy=+Q@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0018.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::30)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Wed, 26 Jan 2022 05:30:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643193056;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UubSK79H70oFANpnvDvcn6CpXD+L3h0EOu8ydy44qyw=;
+        b=SBsETc6+oFRp8zdr92MPCVx+41oTWEimCIb2Ciim9SJl7cE/WooNe+tf2mXU1zHeqF5vxd
+        Yi0OO5GCaKNiAwb6nBZHDCokuvdRU3DGjNT18lgax4t+9RuSbWVTrUbI17k734qqyXDHHQ
+        +HLCc8wgCALNTpwRI6/OD/UDUtCmfm8=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-344-6QofVZW6NXixS948BAQxqw-1; Wed, 26 Jan 2022 05:30:55 -0500
+X-MC-Unique: 6QofVZW6NXixS948BAQxqw-1
+Received: by mail-wr1-f72.google.com with SMTP id t13-20020adfa2cd000000b001d09443ee4fso4107284wra.3
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:30:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=UubSK79H70oFANpnvDvcn6CpXD+L3h0EOu8ydy44qyw=;
+        b=05+RGm/qmnG5QQgEzsOI6QtBKI7FXICE4TC1Ut/k/dyyjPMGRG10HQf9JJZnb/EKwF
+         asr/rbX9Hz7k+vcOLupfukDPT7xaEP3DnURYHtsU7Dwr4TYUsuHBQIzSxK+sypEZJG9+
+         L2r6ZVuo8vAw1NbPWRDR2AK8ggG6Q0H5XaQT8rXEMAuMfqj3hLsCdHLy4WndsPIuQq09
+         bCd16PywR8cRfX0MAxo+VFGALhyROU+TazfG9JM/LSfpx7VBYJDz8jvP+F4/hci5vUJQ
+         rdtZAbMm6nzgGN6izZMywJ3mZ/TLVAPes+ZKXnnjwAzLtRXi9mczJzLGD5292EjZ7L1c
+         UBSA==
+X-Gm-Message-State: AOAM531WxXmc8jurWS48nuMn5D91TFk+Wy3NbpzE9Z3JwIVjx9gjTxl9
+        TYZAu+QBSPjoVEv4EnjCnLiCLFW15VOSBcfDApxDk5yPXUklv1yx2KoxiR/pi4FYfhPqkYtTlZK
+        yOY//ABmgHu469ok+7HVvRTwX
+X-Received: by 2002:a05:600c:1d95:: with SMTP id p21mr6908489wms.22.1643193054597;
+        Wed, 26 Jan 2022 02:30:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxfedV9iNOgbZIGoHJjzRip7P1/4Su/b92NZuu4SdlqPQ8lkKHWSM7/N7R40iy386f1/fX2Uw==
+X-Received: by 2002:a05:600c:1d95:: with SMTP id p21mr6908470wms.22.1643193054396;
+        Wed, 26 Jan 2022 02:30:54 -0800 (PST)
+Received: from ?IPV6:2003:cb:c709:2700:cdd8:dcb0:2a69:8783? (p200300cbc7092700cdd8dcb02a698783.dip0.t-ipconnect.de. [2003:cb:c709:2700:cdd8:dcb0:2a69:8783])
+        by smtp.gmail.com with ESMTPSA id f8sm19875802wry.46.2022.01.26.02.30.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 02:30:53 -0800 (PST)
+Message-ID: <65fdd873-1f93-56e3-c7a5-98d621c5dbd8@redhat.com>
+Date:   Wed, 26 Jan 2022 11:30:52 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1fe0543f-73ab-4bec-e36c-08d9e0b6b88e
-X-MS-TrafficTypeDiagnostic: BYAPR10MB2552:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR10MB25522DC0A9ADD241A8DCAB458E209@BYAPR10MB2552.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6i2V99fme586pRyKI4S4aKtevG4VtaaAs5hzDOAKgetu/JLjf+V194AmzJMwETfrIXdQGOFU2nbkfj54NiBR4V308WV1qgy4XoU4hM6Qs7gOA/ytNca9fkIM9Nc+YUd/5yDGowzp0n2BfSpALZEEWSBuwx1aBbt/LxARp40rEyJmOG4spe94gXb7PFlHwQp+hYjwIGUzM1l4MwVsEkEmZ7FDVoV6Dm8HJ9vHTOkm21zBAtx5K5atn193QiYsjcz2QP9KA5HW6pQ7YsaeVbWlKGR7PuZ/0puZeIAszFYDouWzUQLyaaX66hsAB++vuxJurMyYVVXXbbgK/I+lIvZefhCJPEWwlJ6L7AFPaoy8jnUztxS84oAPIBfVRJZ7/porpUHlOnk6jIbNHg9k9xZU2wnRnktxa6ERldrb2ntomFeA5dZSZqqAhMF7dAM9Wh95GzkPpmtLIEzFETMbWPgEEKkywd4Dhj5ligg64KtMuHPwtF+UOUpiDpChuifz/caFlKXaGgrKYA0ZlajR77DikWpkmzb9k+3juD91KMFKkjbJ3X/FOvQeS7/vBu7+KDM+ARASvZRKo5G6ChpnFSXLSZOEZknW673WiKbEyMel6W8pd6p1UQS+XbXhOtPd2xDM9E8DKCO25HVw2IaR44kMKBBCYuQT+VnoYwmFWVwjojQPuHr+fVCQgjocmSKEcEAjPys+ni7t06Kx05e8xBkabg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(4326008)(1076003)(508600001)(7416002)(6512007)(9686003)(6506007)(4744005)(53546011)(33656002)(6486002)(26005)(186003)(8676002)(6916009)(52116002)(38350700002)(316002)(86362001)(38100700002)(33716001)(66476007)(44832011)(5660300002)(2906002)(6666004)(66556008)(66946007)(8936002)(54906003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hb9As2ryS7s9nINt0NzrnCYyPQreCEft7nvcolfoIHzDe4toi1+W92GR3J/g?=
- =?us-ascii?Q?4PO7EMVpeuA763VUo+Id+LF8ayRBPZL4h2dqqwHWCohUvbFqnUFnHt81eryD?=
- =?us-ascii?Q?qJ7T0sE2EeoL+qHtFcIOuymLOHP9sATdMDeXd3zCj+QnPly4ctQEjMRIWxk3?=
- =?us-ascii?Q?7QKDRQQF4AcsPtVzX6R2JM4DuAkIR6B9mIezC8THeGhH14rzyUjUJfqg42kt?=
- =?us-ascii?Q?vUottzNwuE3FqqK/87a6WX/OVaNYWUWWntx1ejjf85PPFV/Ow7ELn/HP6br0?=
- =?us-ascii?Q?+8/UedaJzc4CB4MzkyAc6MJNvGgUxxwPyOz5FhbGRGKOgSVSbDbB/vGM7JH8?=
- =?us-ascii?Q?5Lf6kX6+Ynq2xNvmh44mkEnpkYyoSAgo7uwzLrC10wLqQIajBH36JShEIcFy?=
- =?us-ascii?Q?WSQs6VrPb0R+6R4IydFAvq9jIWoq9px8+8tw7flZ5UPwNmXNUNGOw12kTZH6?=
- =?us-ascii?Q?erX0bB6eVJu53SrpGJXSgv2+I/GB9eOlAFo7s1IGhWZh6OPhQI557qbKc88w?=
- =?us-ascii?Q?yH3m6sNIC5PCapBumTO87G0zdEE+ibwqrLkQVynqEqqu+xAhdqbHrqePPbhS?=
- =?us-ascii?Q?hyX0gnC1XLivIXlPLOTgRGU9+Wl8clUrOxAedvnqtgZK67T3u3EGfFQavhaR?=
- =?us-ascii?Q?55lvTxLbXJ53UMRN8EvRHRe6VE0x0P1uVM3SrsSWlRYFrF9Ift8Ot83e311x?=
- =?us-ascii?Q?7H8pY0htXS27KCqWlezt/KRMxPZ09cDEbjXqHqi4aTbd8Atsma/FeDo4etAT?=
- =?us-ascii?Q?OLLsZzv2wvT5I0XUSzPNxu13KyVTTmIrEtUOHhf2XRo4xcGMeFbFOIzujwmz?=
- =?us-ascii?Q?un1zU6Hgl5SdioE4rCGGfHcDJsy4i9HVsKBuQr/jAXw66MI22xldQTX5X9WJ?=
- =?us-ascii?Q?QTffDD3UpV2CgoN7n/1NJnOYsN18nOBK7HxkrD4GEmgciZlLzlzye83q38kt?=
- =?us-ascii?Q?3sE7Fo3SP33EGmTIjC3CvCnd4pM6G+/CiZ4L826dlfcVsB3eOZlHl+8nzvIi?=
- =?us-ascii?Q?ZhrSh+1mIr+pAnDf+5qJ3iY3/kgDU+V3y75dj8UVHMVJHmKdkIwtqcw3FSC1?=
- =?us-ascii?Q?Kijh3fOc8w19vgh5O+3JCWUoPQ+ttjzJ8chj0Gy4v0nvus1LZTeKxvwEq2JT?=
- =?us-ascii?Q?JLDyrii/XSJSY9B/WIlGtio/2z3yL8xCrQ4EcLK9EvRIydxR/RNgF0LX+pK3?=
- =?us-ascii?Q?dTe53J7PZDoio+ulNfNdAco/saFmRZi2NKMJvKYnDKPC8AvNwyZqS/Q8RUp0?=
- =?us-ascii?Q?HlK7tpmxwUVglgtLAgFkG8rK1QVfB93YdTwxeEfQNGHZYROEvWECdrOTSJlr?=
- =?us-ascii?Q?cRdvQrp6fDxqOTaw0HhWIPaXr/W7iGTTCHCwPspDA0sKUY1Nr8Sj2eJGsiaX?=
- =?us-ascii?Q?nF/rRDMLIdkZ3MXcQl3oIbM/bZcx3d9S+iNKZnP3PET0XwWD+Mggtdr7OTTL?=
- =?us-ascii?Q?yx8/zHnJaURc++lHODux9j2FeAGaOMMMsE3oML5oGyxcNv7BphBAkpi4gt4f?=
- =?us-ascii?Q?hENXH6Mmd+Eh1IJZTTNG4RAiT/0+FyRqaxUS4QvK689ft/pCNti/wzpqFWhd?=
- =?us-ascii?Q?OPX/AhOWaBe6LY3F+gJmJ4lEdW77xH6RCxuwnMGejYPzHomT/k0xaZRmAv8y?=
- =?us-ascii?Q?xU7uCGWRWGNJBut+O0njDIubQM9xVtJKOa8Pmdq9rlMf1eWRTflhAa9fHlcz?=
- =?us-ascii?Q?AU4v/s6bjLUPmzgxVIy0aHUsk5g=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1fe0543f-73ab-4bec-e36c-08d9e0b6b88e
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 10:29:23.7489
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: T1echXZwhjOY8JX4sGrAPrf4Mvb9Xir6kWb4vlmFV2Kbd9CI72bR3CfPkM6g2Vh9R5eOyndb/wwjnFTvXI9tJVoyzsrP9S8tOXBv2pUVFXE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2552
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10238 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0 malwarescore=0
- spamscore=0 phishscore=0 suspectscore=0 adultscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2201260060
-X-Proofpoint-GUID: alxFIX3r71ouRqkBE2rGXGjJ-Vm8Cdj-
-X-Proofpoint-ORIG-GUID: alxFIX3r71ouRqkBE2rGXGjJ-Vm8Cdj-
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v3] arm64/mm: avoid fixmap race condition when create pud
+ mapping
+Content-Language: en-US
+To:     Jianyong Wu <Jianyong.Wu@arm.com>, Ard Biesheuvel <ardb@kernel.org>
+Cc:     Justin He <Justin.He@arm.com>,
+        Catalin Marinas <Catalin.Marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        Anshuman Khandual <Anshuman.Khandual@arm.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "quic_qiancai@quicinc.com" <quic_qiancai@quicinc.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "gshan@redhat.com" <gshan@redhat.com>, nd <nd@arm.com>
+References: <20211216082812.165387-1-jianyong.wu@arm.com>
+ <YdXdjcJ7jbnkFsqp@arm.com>
+ <AM9PR08MB7276E0DE6B4224C22B20A89CF44C9@AM9PR08MB7276.eurprd08.prod.outlook.com>
+ <YdcRLohx777jzWah@arm.com>
+ <AM9PR08MB7276B412F02CA0431E30E06CF44D9@AM9PR08MB7276.eurprd08.prod.outlook.com>
+ <YdgZJ/mBG+BCxmEv@arm.com>
+ <DB7PR08MB3737631DEE8D6625D3A9E393F7209@DB7PR08MB3737.eurprd08.prod.outlook.com>
+ <CAMj1kXF7DJ5UeMn=9gw_Hs3Fa525OFEPsriO=ZprT3rN83=qtQ@mail.gmail.com>
+ <AM9PR08MB72763D5DA0C5F22D2126ABF4F4209@AM9PR08MB7276.eurprd08.prod.outlook.com>
+ <CAMj1kXGjAxd2xb0u1PLSLGAe8jJdhJm3wR+y=7qB4C1J6Ebgcw@mail.gmail.com>
+ <3e6513f9-77ca-79e5-d185-7e9a11ec7689@redhat.com>
+ <AM9PR08MB72764111B775352448D75CD9F4209@AM9PR08MB7276.eurprd08.prod.outlook.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <AM9PR08MB72764111B775352448D75CD9F4209@AM9PR08MB7276.eurprd08.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 12:04:26PM +0200, Andy Shevchenko wrote:
-> On Wed, Jan 26, 2022 at 12:02 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Wed, Jan 26, 2022 at 10:52 AM Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> > > Am 25.01.22 um 21:21 schrieb Andy Shevchenko:
+On 26.01.22 11:28, Jianyong Wu wrote:
+> Hi David,
 > 
-> ...
+>> -----Original Message-----
+>> From: David Hildenbrand <david@redhat.com>
+>> Sent: Wednesday, January 26, 2022 6:18 PM
+>> To: Ard Biesheuvel <ardb@kernel.org>; Jianyong Wu
+>> <Jianyong.Wu@arm.com>
+>> Cc: Justin He <Justin.He@arm.com>; Catalin Marinas
+>> <Catalin.Marinas@arm.com>; will@kernel.org; Anshuman Khandual
+>> <Anshuman.Khandual@arm.com>; akpm@linux-foundation.org;
+>> quic_qiancai@quicinc.com; linux-kernel@vger.kernel.org; linux-arm-
+>> kernel@lists.infradead.org; gshan@redhat.com; nd <nd@arm.com>
+>> Subject: Re: [PATCH v3] arm64/mm: avoid fixmap race condition when create
+>> pud mapping
+>>
+>> On 26.01.22 11:12, Ard Biesheuvel wrote:
+>>> On Wed, 26 Jan 2022 at 11:09, Jianyong Wu <Jianyong.Wu@arm.com>
+>> wrote:
+>>>>
+>>>> Hi Ard,
+>>>>
+>>>>> -----Original Message-----
+>>>>> From: Ard Biesheuvel <ardb@kernel.org>
+>>>>> Sent: Wednesday, January 26, 2022 4:37 PM
+>>>>> To: Justin He <Justin.He@arm.com>
+>>>>> Cc: Catalin Marinas <Catalin.Marinas@arm.com>; Jianyong Wu
+>>>>> <Jianyong.Wu@arm.com>; will@kernel.org; Anshuman Khandual
+>>>>> <Anshuman.Khandual@arm.com>; akpm@linux-foundation.org;
+>>>>> david@redhat.com; quic_qiancai@quicinc.com; linux-
+>>>>> kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
+>>>>> gshan@redhat.com; nd <nd@arm.com>
+>>>>> Subject: Re: [PATCH v3] arm64/mm: avoid fixmap race condition when
+>>>>> create pud mapping
+>>>>>
+>>>>> On Wed, 26 Jan 2022 at 05:21, Justin He <Justin.He@arm.com> wrote:
+>>>>>>
+>>>>>> Hi Catalin
+>>>>>>
+>>>>>>> -----Original Message-----
+>>>>>>> From: Catalin Marinas <catalin.marinas@arm.com>
+>>>>>>> Sent: Friday, January 7, 2022 6:43 PM
+>>>>>>> To: Jianyong Wu <Jianyong.Wu@arm.com>
+>>>>>>> Cc: will@kernel.org; Anshuman Khandual
+>>>>> <Anshuman.Khandual@arm.com>;
+>>>>>>> akpm@linux-foundation.org; david@redhat.com;
+>>>>>>> quic_qiancai@quicinc.com; ardb@kernel.org;
+>>>>>>> linux-kernel@vger.kernel.org; linux-arm-
+>>>>>>> kernel@lists.infradead.org; gshan@redhat.com; Justin He
+>>>>>>> <Justin.He@arm.com>; nd <nd@arm.com>
+>>>>>>> Subject: Re: [PATCH v3] arm64/mm: avoid fixmap race condition when
+>>>>>>> create pud mapping
+>>>>>>>
+>>>>>>> On Fri, Jan 07, 2022 at 09:10:57AM +0000, Jianyong Wu wrote:
+>>>>>>>> Hi Catalin,
+>>>>>>>>
+>>>>>>>> I roughly find the root cause.
+>>>>>>>>  alloc_init_pud will be called at the very beginning of kernel
+>>>>>>>> boot in
+>>>>>>> create_mapping_noalloc where no memory allocator is initialized.
+>>>>>>> But lockdep check may need allocate memory. So, kernel take
+>>>>>>> exception when acquire lock.(I have not found the exact code that
+>>>>>>> cause this
+>>>>>>> issue) that's say we may not be able to use a lock so early.
+>>>>>>>>
+>>>>>>>> I come up with 2 methods to address it.
+>>>>>>>> 1) skip dead lock check at the very beginning of kernel boot in
+>>>>>>>> lockdep
+>>>>>>> code.
+>>>>>>>> 2) provided 2 two versions of __create_pgd_mapping, one with lock
+>>>>>>>> in it and the other without. There may be no possible of race for
+>>>>>>>> memory mapping at the very beginning time of kernel boot, thus we
+>>>>>>>> can use the no lock version of __create_pgd_mapping safely.
+>>>>>>>> In my test, this issue is gone if there is no lock held in
+>>>>>>>> create_mapping_noalloc. I think create_mapping_noalloc is called
+>>>>>>>> early enough to avoid the race conditions of memory mapping,
+>>>>>>>> however, I have not proved it.
+>>>>>>>
+>>>>>>> I think method 2 would work better but rather than implementing
+>>>>>>> new nolock functions I'd add a NO_LOCK flag and check it in
+>>>>>>> alloc_init_pud() before mutex_lock/unlock. Also add a comment
+>> when
+>>>>>>> passing the NO_LOCK flag on why it's needed and why there wouldn't
+>>>>>>> be any races at that stage (early boot etc.)
+>>>>>>>
+>>>>>> The problematic code path is:
+>>>>>> __primary_switched
+>>>>>>         early_fdt_map->fixmap_remap_fdt
+>>>>>>                 create_mapping_noalloc->alloc_init_pud
+>>>>>>                         mutex_lock (with Jianyong's patch)
+>>>>>>
+>>>>>> The problem seems to be that we will clear BSS segment twice if
+>>>>>> kaslr is enabled. Hence, some of the static variables in lockdep
+>>>>>> init process were messed up. That is to said, with kaslr enabled we
+>>>>>> might initialize lockdep twice if we add mutex_lock/unlock in
+>> alloc_init_pud().
+>>>>>>
+>>>>>
+>>>>> Thanks for tracking that down.
+>>>>>
+>>>>> Note that clearing the BSS twice is not the root problem here. The
+>>>>> root problem is that we set global state while the kernel runs at
+>>>>> the default link time address, and then refer to it again after the
+>>>>> entire kernel has been shifted in the kernel VA space. Such global
+>>>>> state could consist of mutable pointers to statically allocated data
+>>>>> (which would be reset to their default values after the relocation code
+>> runs again), or global pointer variables in BSS.
+>>>>> In either case, relying on such a global variable after the second
+>>>>> relocation performed by KASLR would be risky, and so we should avoid
+>>>>> manipulating global state at all if it might involve pointer to
+>>>>> statically allocated data structures.
+>>>>>
+>>>>>> In other ways, if we invoke mutex_lock/unlock in such a early booting
+>> stage.
+>>>>>> It might be unsafe because lockdep inserts lock_acquire/release as
+>>>>>> the complex hooks.
+>>>>>>
+>>>>>> In summary, would it better if Jianyong splits these early boot and
+>>>>>> late boot case? e.g. introduce a nolock version for
+>>>>> create_mapping_noalloc().
+>>>>>>
+>>>>>> What do you think of it?
+>>>>>>
+>>>>>
+>>>>> The pre-KASLR case definitely doesn't need a lock. But given that
+>>>>> create_mapping_noalloc() is only used to map the FDT, which happens
+>>>>> very early one way or the other, wouldn't it be better to move the
+>>>>> lock/unlock into other callers of __create_pgd_mapping()? (and make
+>>>>> sure no other users of the fixmap slots exist)
+>>>>
+>>>> There are server callers of __create_pgd_mapping. I think some of them
+>> need no fixmap lock as they are called so early. I figure out all of them here:
+>>>> create_mapping_noalloc:   no lock
+>>>> create_pgd_mapping:   no lock
+>>>> __map_memblock:    no lock
+>>>> map_kernel_segment:  no lock
+>>>> map_entry_trampoline: no lock
+>>>> update_mapping_prot:    need lock
+>>>> arch_add_memory:  need lock
+>>>>
+>>>> WDYT?
+>>>>
+>>>
+>>> That seems reasonable, but it needs to be documented clearly in the code.
+>>>
+>>
+>> Just a random thought, could we rely on system_state to do the locking
+>> conditionally?
 > 
-> > > But why? We already have DRM drivers for some of these devices.
-> >
-> > No, we do not (only a few are available).
+> I can't see the point. At the early stages of kernel boot, we definitely need no lock. Also, I think we should keep it simple.
 > 
-> Sorry, I missed your word 'some'. Some == almost none from the list (I
-> don't remember exact numbers but something like 2 out of 10 are
-> supported by tiny DRM and see about interfaces).
 
-Could we get an exact list?
+Is e.g.,
 
-regards,
-dan carpenter
+if (system_state < SYSTEM_RUNNING)
+	/* lock */
+
+if (system_state < SYSTEM_RUNNING)
+	/* unlock */
+
+more complicated than checking individual users and eventually getting
+it wrong?
+
+> Thanks
+> Jianyong
+
+
+-- 
+Thanks,
+
+David / dhildenb
 
