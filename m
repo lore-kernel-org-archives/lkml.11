@@ -2,101 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CD1C63686
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 20:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D235CC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 20:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231280AbiAZUgm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 15:36:42 -0500
-Received: from mga01.intel.com ([192.55.52.88]:9982 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230527AbiAZUge (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 15:36:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643229394; x=1674765394;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=IrlXjlrSWxXOy2UwGYcFGyJqa/q0NhSjnDXBLVc54aM=;
-  b=FqpofSRbgvaR6lMfozaw2Cl3YmTpyQoogo2Tjh4B2IIk0Q7jiUQS7CgT
-   BTiUBCIDogOC9z2N0VmjOwM/GzDRrpilbyVdV0orqlUrKZ8782oJE179V
-   uu1IovWSYNWYcMClPD7LEuHZWeRTWDwzkYO4FcPNq9vTPEqkAzAOG9P9H
-   1faxjSWQgiVk6wCWUAUQtoljkp/gvVlRDwuCVZ/StkMGvFh7oYCRvYJgp
-   3c9mb/rm3FdLGTAEzhyKveBPz8TMiUFeePuMRl4jtEtgS8Og78pgJXTWS
-   E2u8uDoIDprkByqGv/jTdS6Uamz9XG6kA7oIcT5kgXtIPGODgULJpr9NU
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="271098470"
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="271098470"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 12:36:26 -0800
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="581221519"
-Received: from lucas-s2600cw.jf.intel.com ([10.165.21.202])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 12:36:23 -0800
-From:   Lucas De Marchi <lucas.demarchi@intel.com>
-To:     intel-gfx@lists.freedesktop.org
-Cc:     dri-devel@lists.freedesktop.org,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 09/19] dma-buf-map: Add wrapper over memset
-Date:   Wed, 26 Jan 2022 12:36:52 -0800
-Message-Id: <20220126203702.1784589-10-lucas.demarchi@intel.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220126203702.1784589-1-lucas.demarchi@intel.com>
-References: <20220126203702.1784589-1-lucas.demarchi@intel.com>
+        id S231259AbiAZUhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 15:37:04 -0500
+Received: from out01.mta.xmission.com ([166.70.13.231]:58802 "EHLO
+        out01.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230527AbiAZUhC (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 15:37:02 -0500
+Received: from in02.mta.xmission.com ([166.70.13.52]:50984)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nCp2K-005s7P-9x; Wed, 26 Jan 2022 13:37:00 -0700
+Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:43320 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nCp2I-005myI-Cu; Wed, 26 Jan 2022 13:36:59 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>,
+        Ariadne Conill <ariadne@dereferenced.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Rich Felker <dalias@libc.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20220126175747.3270945-1-keescook@chromium.org>
+        <CAG48ez3hN8+zNCmLVP0yU0A5op6BAS+A-rs05aiLm4RQvzzBpg@mail.gmail.com>
+        <a89bb47f-677f-4ce7-fd-d3893fe0abbd@dereferenced.org>
+        <CAG48ez3iEUDbM03axYSjWOSW+zt-khgzf8CfX1DHmf_6QZap6Q@mail.gmail.com>
+        <202201261157.9C3D3C36@keescook>
+        <YfGqLnE9wNieTsAg@casper.infradead.org>
+        <202201261210.E0E7EB83@keescook>
+Date:   Wed, 26 Jan 2022 14:31:16 -0600
+In-Reply-To: <202201261210.E0E7EB83@keescook> (Kees Cook's message of "Wed, 26
+        Jan 2022 12:13:16 -0800")
+Message-ID: <87ilu6utm3.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nCp2I-005myI-Cu;;;mid=<87ilu6utm3.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX19Ur+F517FsWLf4Zd5izF0aDx++eGyOVhI=
+X-SA-Exim-Connect-IP: 68.110.24.146
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH] fs/binfmt_elf: Add padding NULL when argc == 0
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just like memcpy_toio(), there is also need to write a direct value to a
-memory block. Add dma_buf_map_memset() to abstract memset() vs memset_io()
+Kees Cook <keescook@chromium.org> writes:
 
-Cc: Matt Roper <matthew.d.roper@intel.com>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>
-Cc: Christian König <christian.koenig@amd.com>
-Cc: linux-media@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: linaro-mm-sig@lists.linaro.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
----
- include/linux/dma-buf-map.h | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+> On Wed, Jan 26, 2022 at 08:08:14PM +0000, Matthew Wilcox wrote:
+>> On Wed, Jan 26, 2022 at 11:58:39AM -0800, Kees Cook wrote:
+>> > We can't mutate argc; it'll turn at least some userspace into an
+>> > infinite loop:
+>> > https://sources.debian.org/src/valgrind/1:3.18.1-1/none/tests/execve.c/?hl=22#L22
+>> 
+>> How does that become an infinite loop?  We obviously wouldn't mutate
+>> argc in the caller, just the callee.
+>
+> Oh, sorry, I misread. It's using /bin/true, not argv[0] (another bit of
+> code I found was using argv[0]). Yeah, {"", NULL} could work.
+>
+>> Also, there's a version of this where we only mutate argc if we're
+>> executing a setuid program, which would remove the privilege
+>> escalation part of things.
+>
+> True; though I'd like to keep the logic as non-specialized as possible.
+> I don't like making stuff conditional on privilege boundaries if we can
+> make it always happen.
 
-diff --git a/include/linux/dma-buf-map.h b/include/linux/dma-buf-map.h
-index 3514a859f628..c9fb04264cd0 100644
---- a/include/linux/dma-buf-map.h
-+++ b/include/linux/dma-buf-map.h
-@@ -317,6 +317,23 @@ static inline void dma_buf_map_memcpy_to(struct dma_buf_map *dst, const void *sr
- 		memcpy(dst->vaddr, src, len);
- }
- 
-+/**
-+ * dma_buf_map_memset - Memset into dma-buf mapping
-+ * @dst:	The dma-buf mapping structure
-+ * @value:	The value to set
-+ * @len:	The number of bytes to set in dst
-+ *
-+ * Set value in dma-buf mapping. Depending on the buffer's location, the helper
-+ * picks the correct method of accessing the memory.
-+ */
-+static inline void dma_buf_map_memset(struct dma_buf_map *dst, int value, size_t len)
-+{
-+	if (dst->is_iomem)
-+		memset_io(dst->vaddr_iomem, value, len);
-+	else
-+		memset(dst->vaddr, value, len);
-+}
-+
- /**
-  * dma_buf_map_incr - Increments the address stored in a dma-buf mapping
-  * @map:	The dma-buf mapping structure
--- 
-2.35.0
+Which I think means turning the argc == 0 case into { "", NULL }.
+I think we can always do that, and it is already valid in userspace.
+
+The only case I can imagine breaking would be an explicitly testing
+for argc == 0 and behaving completely differently if that is passed
+to the program.
+
+Eric
+
 
