@@ -2,79 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0771DC2BA4C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1799C28CF5
 	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236857AbiAZRBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 12:01:02 -0500
-Received: from mga09.intel.com ([134.134.136.24]:63232 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243411AbiAZRAh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:00:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643216437; x=1674752437;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=dzazaE73zTV4hB458jhskjVKMSp/vV5S4qBm+l1Os0A=;
-  b=B27SzUC0MEg6MYibHEdnfwEjBYsM/M5ORllO3WzlX9dlkHnuYkAW0dW6
-   WVfPvS8sDE0QvfTwne1N8vVXI+ZnMMTPlut+8yyNTWWC9WVaPUuGKo0ta
-   Xw5+RCj2MENZYxRVmXl1LtpyMgGRWoDdJOVACRW9ayd8E+TLLOShQ5GTF
-   ZnjSh7aWscT5ZkRx6xlJvLb6H4Un8pDJoC6jI14FWupxTXaFvmUyf4C69
-   Fa6jspBg5QVjS3XhmlCkgHxtY+eBhOcrWU626TgfgYbQ0PTFeO/bVblvk
-   9EPo7jZNUDJFXe0CrxBxGkAbUfcaq8tmi5IYx3WvZ2SkhFJg37m6Ef7k7
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="246372662"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="246372662"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 09:00:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="581161714"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Jan 2022 09:00:03 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCleM-000LPr-Hv; Wed, 26 Jan 2022 17:00:02 +0000
-Date:   Thu, 27 Jan 2022 00:59:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hans Verkuil <hverkuil@xs4all.nl>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [hverkuil-media-tree:extron 101/103]
- ./usr/include/linux/cec.h:150:19: error: unknown type name 'bool'
-Message-ID: <202201270048.Xzuv297t-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S243413AbiAZRBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 12:01:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236882AbiAZRAm (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 12:00:42 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9BEC06173B
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:00:42 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id i65so249240pfc.9
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:00:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ajou.ac.kr; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=Onl1JpmjZEa6zJu2g35kLpJMmMBIoxN/vI9o07uZnSE=;
+        b=vG81hp3GKcDmDaHOEl5NZqjWXqgKUrX8vpZ4U+RfzlWC0F5JUgHlxzbXhrzgfjS//A
+         HUeiYP+XaNjRlzyClU0pNEVdAgc/UC/0hICDjqLbIw8LfYGJ4jUW+PffSJFnRHLctw6A
+         0V627+CXnH7SJVSr2BOcS8aAGbFY3INNRdSF0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=Onl1JpmjZEa6zJu2g35kLpJMmMBIoxN/vI9o07uZnSE=;
+        b=uP8lSuLxA6xc/hS0YdkZLij23x9wzWNkw1YBoOI8QksTLMS9yHiE5BrQxH8iZ0S6lL
+         T+Nfrtab5D8A9wIjhw4enYdE19RaVs/uhAodiuu4ht7FX/MYiFI0E21Rvg0aHPrrAeVf
+         wwvW+4ueRod0+Q/XF1p16Yos57nCPxhXKEO72EQCyf6ceVhMMNdIvCSlFtAEkLOimLKU
+         IdloQ9JacrNgg6wlE6dvd2I1P73d5Un2vCpW4x+MZV83ZGdnWNLbuvKFG1ZzVVfUjBAi
+         GOP3xWiq6lw1WGlMpzTqpOiBu5MytRvt+rg7YnXLo3rnc2n2Jpl8OYAMGIWy2UnnS5YP
+         Ubag==
+X-Gm-Message-State: AOAM533WZrSTgEtY6zkmKcgQSj5jWc7PZKxzAuugC+sHj95CdQEUuGJK
+        upMfLjur461yYj6wom+MuhTasA==
+X-Google-Smtp-Source: ABdhPJzhTWxkvUgBtwM91u+cYKbIdx3dFiNFTCB+D62IGdpTAENUFNPgH4+d0xS7tt+MSUEXK5AAeQ==
+X-Received: by 2002:aa7:9009:0:b0:4c6:fe2f:6a94 with SMTP id m9-20020aa79009000000b004c6fe2f6a94mr11307661pfo.25.1643216441424;
+        Wed, 26 Jan 2022 09:00:41 -0800 (PST)
+Received: from localhost.localdomain ([210.107.197.32])
+        by smtp.googlemail.com with ESMTPSA id q6sm17540644pgb.85.2022.01.26.09.00.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 09:00:41 -0800 (PST)
+From:   Jonghyeon Kim <tome01@ajou.ac.kr>
+To:     dan.j.williams@intel.com
+Cc:     vishal.l.verma@intel.com, dave.jiang@intel.com,
+        akpm@linux-foundation.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Jonghyeon Kim <tome01@ajou.ac.kr>
+Subject: [PATCH 2/2] dax/kmem: Update spanned page stat of origin device node
+Date:   Thu, 27 Jan 2022 02:00:02 +0900
+Message-Id: <20220126170002.19754-2-tome01@ajou.ac.kr>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220126170002.19754-1-tome01@ajou.ac.kr>
+References: <20220126170002.19754-1-tome01@ajou.ac.kr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://linuxtv.org/hverkuil/media_tree.git extron
-head:   54377f21d8b2084a9f5993230bdab8e8cd55bb22
-commit: d679f6adf24b7fef91e8a3b3584b48587e9cf0a2 [101/103] cec.h: add cec_msg_recv_is_tx_result() helper
-config: x86_64-randconfig-a004 (https://download.01.org/0day-ci/archive/20220127/202201270048.Xzuv297t-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
-        git fetch --no-tags hverkuil-media-tree extron
-        git checkout d679f6adf24b7fef91e8a3b3584b48587e9cf0a2
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+When device memory adds to the online NUMA node, the number of spanned
+pages of the original device NUMA node should be updated.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+By this patch, we can monitor the current spanned pages of each node
+more accurately.
 
-All errors (new ones prefixed by >>):
-
-   In file included from ./usr/include/linux/cec-funcs.h:11,
-                    from <command-line>:32:
->> ./usr/include/linux/cec.h:150:19: error: unknown type name 'bool'
-     150 | static __inline__ bool cec_msg_recv_is_tx_result(const struct cec_msg *msg)
-         |                   ^~~~
-
+Signed-off-by: Jonghyeon Kim <tome01@ajou.ac.kr>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/dax/kmem.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/dax/kmem.c b/drivers/dax/kmem.c
+index a37622060fff..f63a739ac790 100644
+--- a/drivers/dax/kmem.c
++++ b/drivers/dax/kmem.c
+@@ -11,6 +11,7 @@
+ #include <linux/fs.h>
+ #include <linux/mm.h>
+ #include <linux/mman.h>
++#include <linux/memory_hotplug.h>
+ #include "dax-private.h"
+ #include "bus.h"
+ 
+@@ -48,6 +49,7 @@ static int dev_dax_kmem_probe(struct dev_dax *dev_dax)
+ 	struct dax_kmem_data *data;
+ 	int i, rc, mapped = 0;
+ 	int numa_node;
++	int dev_node;
+ 
+ 	/*
+ 	 * Ensure good NUMA information for the persistent memory.
+@@ -147,6 +149,18 @@ static int dev_dax_kmem_probe(struct dev_dax *dev_dax)
+ 
+ 	dev_set_drvdata(dev, data);
+ 
++	/* Update spanned_pages of the device numa node */
++	dev_node = dev_to_node(dev);
++	if (dev_node != numa_node && dev_node < numa_node) {
++		struct pglist_data *pgdat = NODE_DATA(dev_node);
++		struct zone *zone = &pgdat->node_zones[ZONE_DEVICE];
++		unsigned long start_pfn = zone->zone_start_pfn;
++		unsigned long nr_pages = NODE_DATA(numa_node)->node_spanned_pages;
++
++		shrink_zone_span(zone, start_pfn, start_pfn + nr_pages);
++		update_pgdat_span(pgdat);
++	}
++
+ 	return 0;
+ 
+ err_request_mem:
+-- 
+2.17.1
+
