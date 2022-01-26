@@ -2,134 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2922DC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B34BC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242787AbiAZPXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 10:23:21 -0500
-Received: from mail-mw2nam10on2041.outbound.protection.outlook.com ([40.107.94.41]:21921
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S242785AbiAZPXT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 10:23:19 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aYtdzWGZtVdhw8DcriFNPS9M0gvMevldnzEBfI62RSCezqEGc49+4H5RR4NwKe1Ex+0HIR2W4h93YvI7Xuu/9IzoP7G9jR+kPiCS2hcPZEu0fRJdzyXCYrElO2C9gXbQ1zYB7+4jFzjtRN3K9lLCkUbiSX0akWBoDiBrjxuNP0og3Gg1LrTrgun/WBy74c16YnW9zCoNFeMxOjL1t3b6vbGwPTStfGXkSzlUyvWot/ADG6tGoEHJG2tNTvmqDmIpn39p0W4YW4BP/ILc795f9XyLRRt3/geVkXcli+kgHWuRwKlfQP8lbC9ARL6iueF+DdX5pIVKeZHe/cPZk7wDSQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I59a/cJoIEEbcnLt4X9O1M6tJxwYsCriST2wKIHDnn8=;
- b=MN8kHaS57szt99iTuHt07+ORdBMJgsJQtPpwbrg12d1xkr7m+NCC71gwtiXf+hng9p6eRN84PniKFrLtWwJeKbKK3d1sTpz/T7oac8XYvZ6/d5e8TQPHz/3F2cGDYpfrj85Up1AlYb7pcxVv1cYxYYBndUGTBwqR83D8Y8E4D/2xeqpXjeFJ8vdfLQew5pzVGzZwoVVQwwGUdLbvSuU4+GU1clpXb74KFEVmzqvSxgzX9jfNpL0uyvtVVo+I4JaWIKtA3zNswAsKGz25dGY8nbKoP8Y1F7OVma+ZVabCMto38WEd9//XKQ8Ph7gK0jbVzhHrKJw6kofjUn0HohigYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I59a/cJoIEEbcnLt4X9O1M6tJxwYsCriST2wKIHDnn8=;
- b=5qefqZb+Ne0+K2SB1KWsVXLCYMi8aPCyconteqfYl0dyK5sQriD4KbQ3neSrtrYxeDsHvr7u1fFNjXBB3xpoRnYi77rq1anh6NEdDugi50PS/FIttxCrG2MrbasR4Q6dzde1eci9jg3l8CHtI7mW7LSHkH5qqMymrdWtF9IxgCU=
-Received: from DM5PR13CA0055.namprd13.prod.outlook.com (2603:10b6:3:117::17)
- by BL0PR12MB2385.namprd12.prod.outlook.com (2603:10b6:207:4d::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Wed, 26 Jan
- 2022 15:23:16 +0000
-Received: from DM6NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:117:cafe::5a) by DM5PR13CA0055.outlook.office365.com
- (2603:10b6:3:117::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.6 via Frontend
- Transport; Wed, 26 Jan 2022 15:23:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT026.mail.protection.outlook.com (10.13.172.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4930.15 via Frontend Transport; Wed, 26 Jan 2022 15:23:15 +0000
-Received: from ethanolx1ade-milan-b0-babu.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Wed, 26 Jan 2022 09:23:14 -0600
-From:   Carlos Bilbao <carlos.bilbao@amd.com>
-To:     <peterz@infradead.org>, <juri.lelli@redhat.com>
-CC:     <vincent.guittot@linaro.org>, <mingo@redhat.com>,
-        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
-        <linux-kernel@vger.kernel.org>,
-        Carlos Bilbao <carlos.bilbao@amd.com>
-Subject: [PATCH] kernel/sched: Update schedstats when migrating threads
-Date:   Wed, 26 Jan 2022 09:22:23 -0600
-Message-ID: <20220126152222.5429-1-carlos.bilbao@amd.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 73d28150-d77b-43bf-c895-08d9e0dfc63a
-X-MS-TrafficTypeDiagnostic: BL0PR12MB2385:EE_
-X-Microsoft-Antispam-PRVS: <BL0PR12MB2385DEAFD42AC84574945999F8209@BL0PR12MB2385.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pqj3Mll6SH32ak7CPNCS5IAeC8jxyHOyQ+oWedkl9gMwXuEuaMbsPoJ8a6iB4vwkwNQJIgON/AgPfdohwdxKc6UFupf0vn6/zxTg9WrUAyKpahWhtyiYMxhOIlffJ5R85yNZSP1xAv6MFR12SWuoEEvm0KmTLzgAPlu/YP/JhyoWLtZrDXzUU3CnASkUTfdu56w8OnNZ5sIYuU3RpoKa78d93S0/7sIBmRZ/lTpaXhkzn3nioOpBkbgq6G7BnDt7iERAKj5dHbAMuCI5cKvuVzw5gEm65osq461VCCRLNSnO/QbRU0tIxqmebwnxkzByU390zP9nM+QFs2qgpTTM+QtG2B+ofcAFlyJFwT5NImxAVkJUw8kXu3XViDZcOLKcZPIrJ4KWEWbUSFTKbFvcpOTAqLPcDSfalQNUvKy0lZYrlCRrGhTamR5kH8j77EBfsF7ScW4PepWg6q80/lFmW4hfSfCbwjjiAGwKQbjoac7oteNYYKJnwXePVpgv/TaEXl62WD2BBmk6C185FfQxLchAaYCqfcAOqsLRXyGQc29/r0OzXatVQA6+N/XoUCpEBbHwaJlKF7biGa+5G5vVQ7kNtrc6Hvn4LSOE+NujdjzZQH/SHDx5RKKuIvpGuW6JIeaY2NwLFzx1O6y8YngUB4imwuoXVmSKaacWgCmJOrPO+VqS/iGr3qQDH21j3fnhhhbaVeUeZ8Ux+hss6CKAbQ==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(36860700001)(508600001)(6666004)(44832011)(7416002)(2906002)(5660300002)(7696005)(86362001)(36756003)(26005)(110136005)(16526019)(316002)(8676002)(81166007)(4326008)(54906003)(70206006)(8936002)(70586007)(83380400001)(40460700003)(82310400004)(426003)(2616005)(47076005)(356005)(336012)(186003)(1076003)(36900700001)(20210929001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 15:23:15.6455
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73d28150-d77b-43bf-c895-08d9e0dfc63a
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT026.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2385
+        id S242777AbiAZPYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 10:24:37 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:37366 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236079AbiAZPYh (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 10:24:37 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 343C01F3B0;
+        Wed, 26 Jan 2022 15:24:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643210676; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9CXY7MFbJ1saOKK9+Yf3pb9u+zx6DrRm92wfkukypJU=;
+        b=j9C4LuPOb5XoFVk6uxHIO8WC5JbJfuf9jmV9L6Kx2lRSXZEqcFPNULeh0IL+8Klm088Mhv
+        VVABBZSIxItC72DaJhTo4TIEe8RAPpl51T+Jup4gOlFOoA78p9Rg2std/7tu5wRVElYPkj
+        5rM1DiS2T2ol6/t79eDHWxsAlWOJRfA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643210676;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9CXY7MFbJ1saOKK9+Yf3pb9u+zx6DrRm92wfkukypJU=;
+        b=Zcv47eTlQd7aDCA72boLRhzkKoNf/ZcDAsLb7bnW2iDfHVLc2QbqnzOKDYdAl7axDb5SQH
+        b6sfpqO/K/rKaIBA==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 1D799A3B81;
+        Wed, 26 Jan 2022 15:24:36 +0000 (UTC)
+Date:   Wed, 26 Jan 2022 16:24:36 +0100
+Message-ID: <s5ho83yldu3.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Alexander Sergeyev <sergeev917@gmail.com>
+Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
+        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
+        Kailang Yang <kailang@realtek.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jian-Hong Pan <jhp@endlessos.org>,
+        Hui Wang <hui.wang@canonical.com>,
+        PeiSen Hou <pshou@realtek.com>
+Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855 G8
+In-Reply-To: <20220122205637.7gzurdu7xl4sthxw@localhost.localdomain>
+References: <20220112201824.qmphnz2hx4frda6e@localhost.localdomain>
+        <s5h8rvk85uy.wl-tiwai@suse.de>
+        <20220113183141.kla37mbqmo4x6wxp@localhost.localdomain>
+        <s5ha6fy46jt.wl-tiwai@suse.de>
+        <20220114183720.n46wealclg6spxkp@localhost.localdomain>
+        <s5hsftp3027.wl-tiwai@suse.de>
+        <20220115152215.kprws5nja2i43qax@localhost.localdomain>
+        <s5hilugw0l0.wl-tiwai@suse.de>
+        <20220119093249.eaxem33bjqjxcher@localhost.localdomain>
+        <20220122190522.ycaygrqcen7d3hj2@localhost.localdomain>
+        <20220122205637.7gzurdu7xl4sthxw@localhost.localdomain>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kernel manages per-task scheduler statistics or schedstats. Such
-counters should be reinitialized when the thread is migrated to a
-different core rq, except for the values recording number of migrations.
+On Sat, 22 Jan 2022 21:56:37 +0100,
+Alexander Sergeyev wrote:
+> 
+> On Sat, Jan 22, 2022 at 10:05:24PM +0300, Alexander Sergeyev wrote:
+> > I'm not sure about kernel log buffering or maybe the device support for 
+> > pipelining, but is it okay that alc_update_coefex_idx() seem to overlap?
+> 
+> Given that the CPU number is the same in alc_update_coefex_idx(), it seems 
+> these calls execution is interrupted and interleaved on the same core.
+> 
+> And, actually, there are two LEDs to set (mute and micmute). Am I onto 
+> something here?
 
-Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
+That's an interesting finding, and yes, such a race is quite
+possible.  Below is a quick fix as an attempt to cover it.
+Could you give it a try?
+
+BTW, the fix for the unbind problem was submitted.  It's a slightly
+more simplified version than what I posted here beforehand.
+
+
+thanks,
+
+Takashi
+
+-- 8< --
+From: Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH] ALSA: hda: realtek: Fix race at concurrent COEF updates
+
+The COEF access is done with two steps: setting the index then read or
+write the data.  When multiple COEF accesses are performed
+concurrently, the index and data might be paired unexpectedly.
+In most cases, this isn't a big problem as the COEF setup is done at
+the initialization, but some dynamic changes like the mute LED may hit
+such a race.
+
+For avoiding the racy COEF accesses, this patch introduces a new
+mutex coef_mutex to alc_spec, and wrap the COEF accessing functions
+with it.
+
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 ---
- kernel/sched/core.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c | 61 ++++++++++++++++++++++++++++-------
+ 1 file changed, 50 insertions(+), 11 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index fe53e510e711..d64c2a290176 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -8757,6 +8757,7 @@ bool sched_smp_initialized __read_mostly;
- int migrate_task_to(struct task_struct *p, int target_cpu)
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 668274e52674..a5677be0a405 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -98,6 +98,7 @@ struct alc_spec {
+ 	unsigned int gpio_mic_led_mask;
+ 	struct alc_coef_led mute_led_coef;
+ 	struct alc_coef_led mic_led_coef;
++	struct mutex coef_mutex;
+ 
+ 	hda_nid_t headset_mic_pin;
+ 	hda_nid_t headphone_mic_pin;
+@@ -137,8 +138,8 @@ struct alc_spec {
+  * COEF access helper functions
+  */
+ 
+-static int alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
+-			       unsigned int coef_idx)
++static int __alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
++				 unsigned int coef_idx)
  {
- 	struct migration_arg arg = { p, target_cpu };
-+	uint64_t forced_migrations, migrations_cold;
- 	int curr_cpu = task_cpu(p);
+ 	unsigned int val;
  
- 	if (curr_cpu == target_cpu)
-@@ -8765,7 +8766,14 @@ int migrate_task_to(struct task_struct *p, int target_cpu)
- 	if (!cpumask_test_cpu(target_cpu, p->cpus_ptr))
- 		return -EINVAL;
+@@ -147,28 +148,61 @@ static int alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
+ 	return val;
+ }
  
--	/* TODO: This is not properly updating schedstats */
-+	if (schedstat_enabled()) {
-+		forced_migrations = schedstat_val(p->stats.nr_forced_migrations);
-+		migrations_cold = schedstat_val(p->stats.nr_migrations_cold);
-+		memset(&p->stats, 0, sizeof(p->stats));
-+		schedstat_set(p->stats.nr_forced_migrations, forced_migrations);
-+		schedstat_set(p->stats.nr_migrations_cold, migrations_cold);
-+		schedstat_inc(p->stats.nr_migrations_cold);
-+	}
++static int alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
++			       unsigned int coef_idx)
++{
++	struct alc_spec *spec = codec->spec;
++	unsigned int val;
++
++	mutex_lock(&spec->coef_mutex);
++	val = __alc_read_coefex_idx(codec, nid, coef_idx);
++	mutex_unlock(&spec->coef_mutex);
++	return val;
++}
++
+ #define alc_read_coef_idx(codec, coef_idx) \
+ 	alc_read_coefex_idx(codec, 0x20, coef_idx)
  
- 	trace_sched_move_numa(p, curr_cpu, target_cpu);
- 	return stop_one_cpu(curr_cpu, migration_cpu_stop, &arg);
+-static void alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
+-				 unsigned int coef_idx, unsigned int coef_val)
++static void __alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
++				   unsigned int coef_idx, unsigned int coef_val)
+ {
+ 	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_COEF_INDEX, coef_idx);
+ 	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_PROC_COEF, coef_val);
+ }
+ 
++static void alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
++				 unsigned int coef_idx, unsigned int coef_val)
++{
++	struct alc_spec *spec = codec->spec;
++
++	mutex_lock(&spec->coef_mutex);
++	__alc_write_coefex_idx(codec, nid, coef_idx, coef_val);
++	mutex_unlock(&spec->coef_mutex);
++}
++
+ #define alc_write_coef_idx(codec, coef_idx, coef_val) \
+ 	alc_write_coefex_idx(codec, 0x20, coef_idx, coef_val)
+ 
++static void __alc_update_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
++				    unsigned int coef_idx, unsigned int mask,
++				    unsigned int bits_set)
++{
++	unsigned int val = __alc_read_coefex_idx(codec, nid, coef_idx);
++
++	if (val != -1)
++		__alc_write_coefex_idx(codec, nid, coef_idx,
++				       (val & ~mask) | bits_set);
++}
++
+ static void alc_update_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
+ 				  unsigned int coef_idx, unsigned int mask,
+ 				  unsigned int bits_set)
+ {
+-	unsigned int val = alc_read_coefex_idx(codec, nid, coef_idx);
++	struct alc_spec *spec = codec->spec;
+ 
+-	if (val != -1)
+-		alc_write_coefex_idx(codec, nid, coef_idx,
+-				     (val & ~mask) | bits_set);
++	mutex_lock(&spec->coef_mutex);
++	__alc_update_coefex_idx(codec, nid, coef_idx, mask, bits_set);
++	mutex_unlock(&spec->coef_mutex);
+ }
+ 
+ #define alc_update_coef_idx(codec, coef_idx, mask, bits_set)	\
+@@ -201,13 +235,17 @@ struct coef_fw {
+ static void alc_process_coef_fw(struct hda_codec *codec,
+ 				const struct coef_fw *fw)
+ {
++	struct alc_spec *spec = codec->spec;
++
++	mutex_lock(&spec->coef_mutex);
+ 	for (; fw->nid; fw++) {
+ 		if (fw->mask == (unsigned short)-1)
+-			alc_write_coefex_idx(codec, fw->nid, fw->idx, fw->val);
++			__alc_write_coefex_idx(codec, fw->nid, fw->idx, fw->val);
+ 		else
+-			alc_update_coefex_idx(codec, fw->nid, fw->idx,
+-					      fw->mask, fw->val);
++			__alc_update_coefex_idx(codec, fw->nid, fw->idx,
++						fw->mask, fw->val);
+ 	}
++	mutex_unlock(&spec->coef_mutex);
+ }
+ 
+ /*
+@@ -1153,6 +1191,7 @@ static int alc_alloc_spec(struct hda_codec *codec, hda_nid_t mixer_nid)
+ 	codec->spdif_status_reset = 1;
+ 	codec->forced_resume = 1;
+ 	codec->patch_ops = alc_patch_ops;
++	mutex_init(&spec->coef_mutex);
+ 
+ 	err = alc_codec_rename_from_preset(codec);
+ 	if (err < 0) {
 -- 
-2.27.0
+2.31.1
 
