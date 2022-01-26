@@ -2,156 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA7BCC3526D
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 16:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F008C63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 16:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237358AbiAZQHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 11:07:36 -0500
-Received: from foss.arm.com ([217.140.110.172]:50036 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236823AbiAZQHe (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 11:07:34 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CED85D6E;
-        Wed, 26 Jan 2022 08:07:33 -0800 (PST)
-Received: from ip-10-252-15-108.eu-west-1.compute.internal (unknown [10.252.15.108])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8151C3F766;
-        Wed, 26 Jan 2022 08:07:31 -0800 (PST)
-From:   German Gomez <german.gomez@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-Cc:     German Gomez <german.gomez@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH] perf test: Add perf_event_attr tests for the arm_spe event
-Date:   Wed, 26 Jan 2022 16:07:09 +0000
-Message-Id: <20220126160710.32983-1-german.gomez@arm.com>
-X-Mailer: git-send-email 2.25.1
+        id S238099AbiAZQIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 11:08:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236420AbiAZQIJ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 11:08:09 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD13C061747
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 08:08:08 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id n32so137209pfv.11
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 08:08:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RXbr9ZV0Py1ZrZ3gePRRUjbiJrxRVqlHjZYB9UaSH3c=;
+        b=hsj2vCaycqgImUlDVo/2tN6tdut4f4lJogQ3VzmgwHjxJ8fsgs6S8lrRUME699j7KM
+         WhNzh3Kpehe9jy3sn4AdPT1GbqOUP808iCWHWbpHW8/B06Ij6i3vjFtX6rY3LS0KrHDw
+         OhfwHHtEUc17ZFoaLuGrQYbkDFnokSeKEwCgIy09YsA+0BSfKv5OsUvaL5JVWedkwgC4
+         Sa91RGLcaG00AOcUCCgygiLOI5QUKUmgSgHXiF0ccNYswh++H/XckpSWL7X2P87hZEc5
+         R8l/quDbDS0KOaJ+z1XSBvqLBlY2lxSNx/quUl3f/Te5xAU3W2Nv9YDDX85KOyTZhZUM
+         kDxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RXbr9ZV0Py1ZrZ3gePRRUjbiJrxRVqlHjZYB9UaSH3c=;
+        b=ANqkfBASSRTlzxaskPzeL0CtfgF1wU5B/YT6HHTqb4F3T58dYM6Bosi9XaNitbD9Y/
+         UTtHRizg3xjyZs5x71fKBVGldCFw+WmDZ5oOffNPnkCgyVuQ9rnzowwPwQ7h7vMnOXG4
+         6ZSi2JWwYxid0M55EsNeOLbzdB/d/bbt65ONSTPe6d7DchwsBzCvYT5Vz1Dd9re5a0ki
+         O8gNElN60IeIAO5u+k55FK5IhoTonGSKXC+UzDCwEY5jzbJAxEhR8Lf3c3ZjLLJHZ2fo
+         kla2ZBx4GW1zPP7zOZFiD5ks/pcFl6KQS1KDXssrU9HGlBQyEkKuah4RIZA3/5mySz0/
+         tb7w==
+X-Gm-Message-State: AOAM533cPHryv7Cp5zsl0TF/X1PNUoGAuqCCcEs7D2uSuVsArZMRwTF6
+        A4Jg0at7kzEo01kiVeC1D+8QIw==
+X-Google-Smtp-Source: ABdhPJy5BvxtkYVC/XIW5ZxQCaspp66xlzK/p2zYKQaW31dS3ics9CHm2fQLWB8jT8Z3Jglzoat/lg==
+X-Received: by 2002:a63:f610:: with SMTP id m16mr19556229pgh.69.1643213288237;
+        Wed, 26 Jan 2022 08:08:08 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id y13sm11923042pgi.8.2022.01.26.08.08.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 08:08:07 -0800 (PST)
+Date:   Wed, 26 Jan 2022 16:08:04 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com
+Subject: Re: [PATCH] KVM: x86: Forcibly leave nested virt when SMM state is
+ toggled
+Message-ID: <YfFx5LZ2rMMtbDWG@google.com>
+References: <20220125220358.2091737-1-seanjc@google.com>
+ <7eb8c6722a522e42f8e8974c084c7cab3098d9fa.camel@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7eb8c6722a522e42f8e8974c084c7cab3098d9fa.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds a couple of perf_event_attr tests for the fix introduced in [1].
-The tests check that the correct sample_period value is set in the
-struct perf_event_attr of the arm_spe events.
+On Wed, Jan 26, 2022, Maxim Levitsky wrote:
+> On Tue, 2022-01-25 at 22:03 +0000, Sean Christopherson wrote:
+> > Peeking at QEMU source, AFAICT QEMU restores nested state before events,
+> > but I don't see how that can possibly work.  I assume QEMU does something
+> > where it restores the "run" state first and then does a full restore?
+> 
+> Well, according to my testing, nested migration with SMM *is* still quite broken,
+> (on both SVM and VMX)
+> resulting in various issues up to L1 crash. 
+> 
+> When I last tackled SMM, I fixed most issues that
+> happen just when the L2 is running and I inject flood of SMIs to L1 - even that
+> was crashing things all around, so this might be as well the reason for that.
 
-[1]: https://lore.kernel.org/all/20220118144054.2541-1-german.gomez@arm.com/
-
-Signed-off-by: German Gomez <german.gomez@arm.com>
----
- tools/perf/tests/attr/README                  |  2 +
- tools/perf/tests/attr/base-record-spe         | 40 +++++++++++++++++++
- tools/perf/tests/attr/test-record-spe-period  | 12 ++++++
- .../tests/attr/test-record-spe-period-term    | 12 ++++++
- 4 files changed, 66 insertions(+)
- create mode 100644 tools/perf/tests/attr/base-record-spe
- create mode 100644 tools/perf/tests/attr/test-record-spe-period
- create mode 100644 tools/perf/tests/attr/test-record-spe-period-term
-
-diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
-index 1116fc6bf2ac..454505d343fa 100644
---- a/tools/perf/tests/attr/README
-+++ b/tools/perf/tests/attr/README
-@@ -58,6 +58,8 @@ Following tests are defined (with perf commands):
-   perf record -c 100 -P kill                    (test-record-period)
-   perf record -c 1 --pfm-events=cycles:period=2 (test-record-pfm-period)
-   perf record -R kill                           (test-record-raw)
-+  perf record -c 2 -e arm_spe_0// -- kill       (test-record-spe-period)
-+  perf record -e arm_spe_0/period=3/ -- kill    (test-record-spe-period-term)
-   perf stat -e cycles kill                      (test-stat-basic)
-   perf stat kill                                (test-stat-default)
-   perf stat -d kill                             (test-stat-detailed-1)
-diff --git a/tools/perf/tests/attr/base-record-spe b/tools/perf/tests/attr/base-record-spe
-new file mode 100644
-index 000000000000..08fa96b59240
---- /dev/null
-+++ b/tools/perf/tests/attr/base-record-spe
-@@ -0,0 +1,40 @@
-+[event]
-+fd=*
-+group_fd=-1
-+flags=*
-+cpu=*
-+type=*
-+size=*
-+config=*
-+sample_period=*
-+sample_type=*
-+read_format=*
-+disabled=*
-+inherit=*
-+pinned=*
-+exclusive=*
-+exclude_user=*
-+exclude_kernel=*
-+exclude_hv=*
-+exclude_idle=*
-+mmap=*
-+comm=*
-+freq=*
-+inherit_stat=*
-+enable_on_exec=*
-+task=*
-+watermark=*
-+precise_ip=*
-+mmap_data=*
-+sample_id_all=*
-+exclude_host=*
-+exclude_guest=*
-+exclude_callchain_kernel=*
-+exclude_callchain_user=*
-+wakeup_events=*
-+bp_type=*
-+config1=*
-+config2=*
-+branch_sample_type=*
-+sample_regs_user=*
-+sample_stack_user=*
-diff --git a/tools/perf/tests/attr/test-record-spe-period b/tools/perf/tests/attr/test-record-spe-period
-new file mode 100644
-index 000000000000..75f8c9cd8e3f
---- /dev/null
-+++ b/tools/perf/tests/attr/test-record-spe-period
-@@ -0,0 +1,12 @@
-+[config]
-+command = record
-+args    = --no-bpf-event -c 2 -e arm_spe_0// -- kill >/dev/null 2>&1
-+ret     = 1
-+arch    = aarch64
-+
-+[event-10:base-record-spe]
-+sample_period=2
-+freq=0
-+
-+# dummy event
-+[event-1:base-record-spe]
-diff --git a/tools/perf/tests/attr/test-record-spe-period-term b/tools/perf/tests/attr/test-record-spe-period-term
-new file mode 100644
-index 000000000000..8f60a4fec657
---- /dev/null
-+++ b/tools/perf/tests/attr/test-record-spe-period-term
-@@ -0,0 +1,12 @@
-+[config]
-+command = record
-+args    = --no-bpf-event -e arm_spe_0/period=3/ -- kill >/dev/null 2>&1
-+ret     = 1
-+arch    = aarch64
-+
-+[event-10:base-record-spe]
-+sample_period=3
-+freq=0
-+
-+# dummy event
-+[event-1:base-record-spe]
--- 
-2.25.1
-
+Heh, that would certainly explain why QEMU's code looks broken.  Thanks!
