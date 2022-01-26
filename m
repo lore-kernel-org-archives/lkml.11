@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC31C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 21:05:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E4A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 21:05:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231717AbiAZVFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 16:05:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38352 "EHLO
+        id S231827AbiAZVFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 16:05:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231767AbiAZVE5 (ORCPT
+        with ESMTP id S231585AbiAZVEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 16:04:57 -0500
+        Wed, 26 Jan 2022 16:04:54 -0500
 Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB79C06173B
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 13:04:57 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id j5-20020a05600c1c0500b0034d2e956aadso607176wms.4
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 13:04:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F95C061747
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 13:04:53 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id r126so556033wma.0
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 13:04:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=snYrFJ12aUfxHMb2aqbQr58aBrO9I7pzj7+8V1Dw+/A=;
-        b=4ulCosohtZpKHKk1OWZvg15RfCT5UKS1+RX7vVL4SOremHHI031JCQQpK4rmR26rrz
-         sncnRcjqlcn/aNLuhLe4gpkJdGxAwSaAVhujtXACxeo0tMhyIzkskAWEDshjgajbUUoL
-         MbRYqeK7HlPbBOuLGz2L6FtBtVuHO34J9qm0UEcmJkTXsxGQbUKvq+K8PWToMHofCpNG
-         wd+ln/PqR7hEzYAsc9qOup9JfzLBm7EN+RLBDTgA+lb5G0AnXlIjaGZhzAMnW5gxEoKx
-         c/dstabSdqeOY1eOIDthWf6qFk12kiX5Hfz5wlAg5/tyBbYSkbpR6JTqUYSVEBVkWTh3
-         zOkA==
+        bh=UxtlnkkXzgY9MYBwxijbABK2S3Zir1EPcNhEeIERW3k=;
+        b=uVMO09/XOuXmt4x6PARdjy4vvpLXI1ZXFgAAaumTVy2NmU1V9Si3lx4byYIB3x7chj
+         08qFPwH2UMUkXhDW5u4nBlrpLnp9pJ5dKEJRvTCu5PlK24n+cqMnrU1o2WPb+NzFb3Vl
+         sGcbk/v5Z3EN1mJu2s8+S0gzCNlEQNLja4JS9JsNNN6W+KCkLOPDnOl8dLK9HRLp5HJq
+         IEIX7k6TCn8B/7LseEBCNhhkj9RLE5ZhE5GJOmvu5iBtjGO6ObKMmENvmsLW3Q5c0lZb
+         3l24cLpAD2OWv0E3s/wj9x85O/+hfBZdd7q9//l/qodAgHe2kl7Exi/VFCBjTsTVx9tx
+         Es+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=snYrFJ12aUfxHMb2aqbQr58aBrO9I7pzj7+8V1Dw+/A=;
-        b=lFpFToTzvd3P74zoXcmRazow7xlRhErm9nM2b5TjG7yugl+ziGyScBXKxnFBNpDY5n
-         tEBco5uzwSMskR4TJeuSbAtOw1rScAnRH6xAfV71jZdq0AVszO4y77jqfF3W6SLvSQZy
-         tmXYyQ2LYx700mUZl2u3/I04J78i6G8A4qTGTeltGy6n4gSx/nSooUeNJJG3Wt+5gi7w
-         3P5q05ZzLu8vu0P7RRp/lXLv61RgetANhVSMIQR/Km9VgweIZn4QMT/1JBtJoHi5aXux
-         pn6CTHA9t39Z8iugxfs70Qe2FkR83OkMVyl8ZRWfEGD3hWRNLpfe157c4WhZHBpftLRO
-         8sQQ==
-X-Gm-Message-State: AOAM5301ziizy5HSYC4cik5PL3Rp+AK9NHV7C2tWtbU4WfU9G4hi8ES8
-        VKuIgVrxHB9Iux5FZPNQk8Njsw==
-X-Google-Smtp-Source: ABdhPJw+yWKxm6iGT9HIPz6Vr8isQ+lpFIiKvyXZgf1R+aoAldml+w5ZXDElVXNYI3y5J0Jnqz5IVA==
-X-Received: by 2002:a7b:c3c3:: with SMTP id t3mr488729wmj.94.1643231095799;
-        Wed, 26 Jan 2022 13:04:55 -0800 (PST)
+        bh=UxtlnkkXzgY9MYBwxijbABK2S3Zir1EPcNhEeIERW3k=;
+        b=gkLDTZI9pmY25+t8u219sPbji4Q15gR1985etLT8bSiJ01EgmAF0SUpl5Zb5THA3Gn
+         5BiY4oBSam5iPcYUEkvfJAtisZFPowqg8BwmcDTD3KTivk71J0JIbGu4Xjczv80xq4Gb
+         tyq7SW+a/8Iyc4xynaYawXuLUod4Y5w0n4/HccmFrNp4AkUy1tmPsGDsgctetwQMQB9E
+         vxOKGrsCrdNsnQhd9PGh22ntvNwoLF7JOHgYjbbRMMYNBZDnDP5MMEGjYXsMT968zhjY
+         /UFh+Lho69vBDBAgujrmKnOZFh2wq7p8uJ+ZGgRKAxFUMaMcJsuaIXWFhotGTd+f7pWI
+         i6WA==
+X-Gm-Message-State: AOAM530CcilVha6HvKETzKfjSIjsCPIAYYBTIR4jifQpwUBQdQCeCp4e
+        T3UfG06SQjhjEKWB5t85m+lefA==
+X-Google-Smtp-Source: ABdhPJyp6AGL1pT2Yn3YZ1lp/S6Ybp9E/UyigNbrZETxbAsiW7nMj83b0b2T42c9NT/o4PKPzyokVw==
+X-Received: by 2002:a05:600c:35c5:: with SMTP id r5mr435934wmq.195.1643231092344;
+        Wed, 26 Jan 2022 13:04:52 -0800 (PST)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id j19sm4948611wmq.17.2022.01.26.13.04.54
+        by smtp.googlemail.com with ESMTPSA id j19sm4948611wmq.17.2022.01.26.13.04.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 13:04:55 -0800 (PST)
+        Wed, 26 Jan 2022 13:04:51 -0800 (PST)
 From:   Corentin Labbe <clabbe@baylibre.com>
 To:     davem@davemloft.net, herbert@gondor.apana.org.au,
         jernej.skrabec@gmail.com, mripard@kernel.org, wens@csie.org
 Cc:     linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
         linux-sunxi@googlegroups.com, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH 6/8] crypto: sun8i-ss: remove redundant test
-Date:   Wed, 26 Jan 2022 21:04:39 +0000
-Message-Id: <20220126210441.3661782-7-clabbe@baylibre.com>
+Subject: [PATCH 3/8] crypto: sun8i-ss: handle zero sized sg
+Date:   Wed, 26 Jan 2022 21:04:36 +0000
+Message-Id: <20220126210441.3661782-4-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220126210441.3661782-1-clabbe@baylibre.com>
 References: <20220126210441.3661782-1-clabbe@baylibre.com>
@@ -66,40 +66,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some fallback tests were redundant with what sun8i_ss_hash_need_fallback() already do.
+sun8i-ss does not handle well the possible zero sized sg.
 
+Fixes: d9b45418a917 ("crypto: sun8i-ss - support hash algorithms")
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
-index ef3020bc9547..7ebd11d3ff7d 100644
+index 3c073eb3db03..2557bb3fe7aa 100644
 --- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
 +++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
-@@ -287,21 +287,11 @@ int sun8i_ss_hash_digest(struct ahash_request *areq)
- 	struct sun8i_ss_alg_template *algt;
- 	struct sun8i_ss_dev *ss;
- 	struct crypto_engine *engine;
--	struct scatterlist *sg;
--	int nr_sgs, e, i;
-+	int e;
+@@ -379,13 +379,21 @@ int sun8i_ss_hash_run(struct crypto_engine *engine, void *breq)
+ 	}
  
- 	if (sun8i_ss_hash_need_fallback(areq))
- 		return sun8i_ss_hash_digest_fb(areq);
- 
--	nr_sgs = sg_nents(areq->src);
--	if (nr_sgs > MAX_SG - 1)
--		return sun8i_ss_hash_digest_fb(areq);
--
+ 	len = areq->nbytes;
 -	for_each_sg(areq->src, sg, nr_sgs, i) {
--		if (sg->length % 4 || !IS_ALIGNED(sg->offset, sizeof(u32)))
--			return sun8i_ss_hash_digest_fb(areq);
--	}
--
- 	algt = container_of(alg, struct sun8i_ss_alg_template, alg.hash);
- 	ss = algt->ss;
- 
++	sg = areq->src;
++	i = 0;
++	while (len > 0 && sg) {
++		if (sg_dma_len(sg) == 0) {
++			sg = sg_next(sg);
++			continue;
++		}
+ 		rctx->t_src[i].addr = sg_dma_address(sg);
+ 		todo = min(len, sg_dma_len(sg));
+ 		rctx->t_src[i].len = todo / 4;
+ 		len -= todo;
+ 		rctx->t_dst[i].addr = addr_res;
+ 		rctx->t_dst[i].len = digestsize / 4;
++		sg = sg_next(sg);
++		i++;
+ 	}
+ 	if (len > 0) {
+ 		dev_err(ss->dev, "remaining len %d\n", len);
 -- 
 2.34.1
 
