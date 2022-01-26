@@ -2,151 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39869C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 06:33:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A35C28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 06:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236261AbiAZGdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 01:33:24 -0500
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:48613 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236799AbiAZGdH (ORCPT
+        id S230516AbiAZGdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 01:33:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232418AbiAZGde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 01:33:07 -0500
+        Wed, 26 Jan 2022 01:33:34 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40200C06161C;
+        Tue, 25 Jan 2022 22:33:34 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id c6so68473871ybk.3;
+        Tue, 25 Jan 2022 22:33:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643178787; x=1674714787;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=9W8MONWCB3nHa5cG39eCdoNQ68ZRf4zFDKZRUOobOfU=;
-  b=uuZ5+aN6+FsJbxYJWtQYtXIEHW/+7GLYPByEi8zJWBYPDzSCgRXd1jIC
-   QCeNCmI4+AlwxOZV6gE6RSBbr/FMbDA+6dUpsBO4NocU7hwe8Mv0GsUH0
-   0rz+X+iN5G56FshRIfeM5PuGP95VEP2j9GeHyTOIiCxDigXtbZFR4vK2r
-   o=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 25 Jan 2022 22:33:06 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 22:33:03 -0800
-Received: from nalasex01c.na.qualcomm.com (10.47.97.35) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 25 Jan 2022 22:33:02 -0800
-Received: from fenglinw-gv.qualcomm.com (10.80.80.8) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 25 Jan 2022 22:32:59 -0800
-From:   Fenglin Wu <quic_fenglinw@quicinc.com>
-To:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sboyd@kernel.org>
-CC:     <collinsd@codeaurora.org>, <subbaram@codeaurora.org>,
-        <quic_fenglinw@quicinc.com>, <tglx@linutronix.de>, <maz@kernel.org>
-Subject: [PATCH v5 09/10] spmi: pmic-arb: make interrupt support optional
-Date:   Wed, 26 Jan 2022 14:31:51 +0800
-Message-ID: <1643178713-17178-10-git-send-email-quic_fenglinw@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1643178713-17178-1-git-send-email-quic_fenglinw@quicinc.com>
-References: <1643178713-17178-1-git-send-email-quic_fenglinw@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ChJmRDJEm5pXcjV3RhCmm6g5TfXTFkO1Rcc6sHnIoj4=;
+        b=GhWYMsUW3Qbr9HHuE1hilXCPJIChi71Nm2odYfcUOh34TGObPJ6KOcMJ+S/hQuxHV5
+         F+W+7Msf0GoOhpLBKO05zSE8oWLEp3XTqstMnSDTh7ucRYF+L1RJw58oS5Gby58MOtUC
+         LssQfspxrjVVfjjBD5VDWKj7ajonyXUMjFEvFojFx1ET3d3yo6SmYlpibRrbhmc7vYsx
+         U0uhAruxNq+sOCzJo6bqt6YqZvyK8ZtKm/m7cvPM6YQIqXgf9emV8BAVuU9E1tiP4ez5
+         ILuGa68x6JrWOh8QCeDL2ZNdtxqOD0w4kWaT2xtK7MJ4l2Uv8UT+Fbn8eq9ks8PZMgdy
+         AwXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ChJmRDJEm5pXcjV3RhCmm6g5TfXTFkO1Rcc6sHnIoj4=;
+        b=CN+oIciFpwJrtkKfftFfuzZM500ik0F8tdKMmm0JzhOKDEw48HSB7iTBkkgvCO4D3Y
+         nKH4RUI1CkgoktnEnKVKGX3HmZPS/z1GCSEBPXh88piVmJsNA4kBlpFe2ZBjY717twjR
+         wKVIHvz5IYdyOJrgLcZ0hbNLaye7mw8nyz6dXLVIM/1CJDomOFpVPnikMJb4+QN+T9Am
+         8PcRSLf2UbmfqyRTgkuiwTcBNgVvAU0NPOJjWhLhQPwsMChVBAbF/SQGFAfsJ4I8mFn9
+         rKyXpNkjUDZae8UJ0crHl7X56Xnf/3rBjI4sdDT6Khks64c79tyUwWJ4XZy0HDf6ypqt
+         PThw==
+X-Gm-Message-State: AOAM530BqqBsM+ZtXVAGCdad0pC7SnvV4Ui1JguouPhfcNxdY/ebVDfd
+        bPQWaYyQnLfAEJqOM88Cne4mDElvzn2Ycc+C0A0=
+X-Google-Smtp-Source: ABdhPJyVOElZioeXwIvY64lBpQdHS4C6bPEoMaUFuCbrg+JVWJA/pH6s/0VZ7VCo2DXoBCw92rWh/r2oABcZTMP35VE=
+X-Received: by 2002:a05:6902:1107:: with SMTP id o7mr30485838ybu.270.1643178813246;
+ Tue, 25 Jan 2022 22:33:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
+References: <20220124003342.1457437-1-ztong0001@gmail.com> <202201241937.i9KSsyAj-lkp@intel.com>
+ <20220124151611.30db4381d910c853fc0c9728@linux-foundation.org>
+ <CADJHv_vh03bhn1FX2-jc6JoH3Hm6cRiWs+iXFO-coGy_yUY1Mw@mail.gmail.com> <CAA5qM4Btrnp9Te2pm0s=OuDk0ASTE3-LyLt8nf0fXKxhehXUgA@mail.gmail.com>
+In-Reply-To: <CAA5qM4Btrnp9Te2pm0s=OuDk0ASTE3-LyLt8nf0fXKxhehXUgA@mail.gmail.com>
+From:   Tong Zhang <ztong0001@gmail.com>
+Date:   Tue, 25 Jan 2022 22:33:22 -0800
+Message-ID: <CAA5qM4DdvMNeG-PndWR9vb_jXTZ3v9aBXpW9QjV66DQFny65Wg@mail.gmail.com>
+Subject: Re: [PATCH v1] binfmt_misc: fix crash when load/unload module
+To:     Murphy Zhou <jencce.kernel@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        kernel test robot <lkp@intel.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Collins <collinsd@codeaurora.org>
+On Tue, Jan 25, 2022 at 9:23 PM Tong Zhang <ztong0001@gmail.com> wrote:
+>
+> On Tue, Jan 25, 2022 at 9:04 PM Murphy Zhou <jencce.kernel@gmail.com> wrote:
+> >
+> > Still panic with this patch on Linux-next tree:
+> >
+> > [ 1128.275515] LTP: starting binfmt_misc02 (binfmt_misc02.sh)
+> > [ 1128.303975] CPU: 1 PID: 107182 Comm: modprobe Kdump: loaded
+> > Tainted: G        W         5.17.0-rc1-next-20220125+ #1
+> > [ 1128.305264] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+> > [ 1128.305992] Call Trace:
+> > [ 1128.306376]  <TASK>
+> > [ 1128.306682]  dump_stack_lvl+0x34/0x44
+> > [ 1128.307211]  __register_sysctl_table+0x2c7/0x4a0
+> > [ 1128.307846]  ? load_module+0xb37/0xbb0
+> > [ 1128.308339]  ? 0xffffffffc01b6000
+> > [ 1128.308762]  init_misc_binfmt+0x32/0x1000 [binfmt_misc]
+> > [ 1128.309402]  do_one_initcall+0x44/0x200
+> > [ 1128.309937]  ? kmem_cache_alloc_trace+0x163/0x2c0
+> > [ 1128.310535]  do_init_module+0x5c/0x260
+> > [ 1128.311045]  __do_sys_finit_module+0xb4/0x120
+> > [ 1128.311603]  do_syscall_64+0x3b/0x90
+> > [ 1128.312088]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > [ 1128.312755] RIP: 0033:0x7f929ab85fbd
+> >
+> > Testing patch on Linus tree.
+>
+> Hi Murphy,
+> Did you apply this patch?
+> Link: https://lkml.kernel.org/r/20220124181812.1869535-2-ztong0001@gmail.com
+> I tested it on top of the current master branch and it works on my
+> setup using the reproducer I mentioned.
+> Could you share your test script?
+> Thanks,
+> - Tong
 
-Make the support of PMIC peripheral interrupts optional for
-spmi-pmic-arb devices.  This is useful in situations where
-SPMI address mapping is required without the need for IRQ
-support.
+I can find binfmt_misc02.sh on github, and running the following
+command shows: failed 0.
 
-Signed-off-by: David Collins <collinsd@codeaurora.org>
-Signed-off-by: Fenglin Wu <quic_fenglinw@quicinc.com>
----
- drivers/spmi/spmi-pmic-arb.c | 45 +++++++++++++++++++++++++++-----------------
- 1 file changed, 28 insertions(+), 17 deletions(-)
+./runltp -s binfmt_misc
+Running tests.......
+<<<test_start>>>
+tag=binfmt_misc01 stime=1643178454
+cmdline="binfmt_misc01.sh"
+contacts=""
+analysis=exit
+<<<test_output>>>
+[   90.908282] LTP: starting binfmt_misc01 (binfmt_misc01.sh)
+binfmt_misc01 1 TINFO: timeout per run is 0h 5m 0s
+binfmt_misc01 1 TPASS: Failed to register a binary type
+binfmt_misc01 2 TPASS: Failed to register a binary type
+binfmt_misc01 3 TPASS: Failed to register a binary type
+binfmt_misc01 4 TPASS: Failed to register a binary type
+binfmt_misc01 5 TPASS: Failed to register a binary type
+binfmt_misc01 6 TPASS: Failed to register a binary type
+binfmt_misc01 7 TPASS: Failed to register a binary type
+binfmt_misc01 8 TPASS: Failed to register a binary type
+binfmt_misc01 9 TPASS: Failed to register a binary type
 
-diff --git a/drivers/spmi/spmi-pmic-arb.c b/drivers/spmi/spmi-pmic-arb.c
-index 39f25bc..0496e5d 100644
---- a/drivers/spmi/spmi-pmic-arb.c
-+++ b/drivers/spmi/spmi-pmic-arb.c
-@@ -1386,10 +1386,12 @@ static int spmi_pmic_arb_probe(struct platform_device *pdev)
- 		goto err_put_ctrl;
- 	}
- 
--	pmic_arb->irq = platform_get_irq_byname(pdev, "periph_irq");
--	if (pmic_arb->irq < 0) {
--		err = pmic_arb->irq;
--		goto err_put_ctrl;
-+	if (of_find_property(pdev->dev.of_node, "interrupt-controller", NULL)) {
-+		pmic_arb->irq = platform_get_irq_byname(pdev, "periph_irq");
-+		if (pmic_arb->irq < 0) {
-+			err = pmic_arb->irq;
-+			goto err_put_ctrl;
-+		}
- 	}
- 
- 	err = of_property_read_u32(pdev->dev.of_node, "qcom,channel", &channel);
-@@ -1449,17 +1451,22 @@ static int spmi_pmic_arb_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	dev_dbg(&pdev->dev, "adding irq domain\n");
--	pmic_arb->domain = irq_domain_add_tree(pdev->dev.of_node,
--					 &pmic_arb_irq_domain_ops, pmic_arb);
--	if (!pmic_arb->domain) {
--		dev_err(&pdev->dev, "unable to create irq_domain\n");
--		err = -ENOMEM;
--		goto err_put_ctrl;
-+	if (pmic_arb->irq > 0) {
-+		dev_dbg(&pdev->dev, "adding irq domain\n");
-+		pmic_arb->domain = irq_domain_add_tree(pdev->dev.of_node,
-+					    &pmic_arb_irq_domain_ops, pmic_arb);
-+		if (!pmic_arb->domain) {
-+			dev_err(&pdev->dev, "unable to create irq_domain\n");
-+			err = -ENOMEM;
-+			goto err_put_ctrl;
-+		}
-+
-+		irq_set_chained_handler_and_data(pmic_arb->irq,
-+						pmic_arb_chained_irq, pmic_arb);
-+	} else {
-+		dev_dbg(&pdev->dev, "not supporting PMIC interrupts\n");
- 	}
- 
--	irq_set_chained_handler_and_data(pmic_arb->irq, pmic_arb_chained_irq,
--					pmic_arb);
- 	err = spmi_controller_add(ctrl);
- 	if (err)
- 		goto err_domain_remove;
-@@ -1467,8 +1474,10 @@ static int spmi_pmic_arb_probe(struct platform_device *pdev)
- 	return 0;
- 
- err_domain_remove:
--	irq_set_chained_handler_and_data(pmic_arb->irq, NULL, NULL);
--	irq_domain_remove(pmic_arb->domain);
-+	if (pmic_arb->irq > 0) {
-+		irq_set_chained_handler_and_data(pmic_arb->irq, NULL, NULL);
-+		irq_domain_remove(pmic_arb->domain);
-+	}
- err_put_ctrl:
- 	spmi_controller_put(ctrl);
- 	return err;
-@@ -1479,8 +1488,10 @@ static int spmi_pmic_arb_remove(struct platform_device *pdev)
- 	struct spmi_controller *ctrl = platform_get_drvdata(pdev);
- 	struct spmi_pmic_arb *pmic_arb = spmi_controller_get_drvdata(ctrl);
- 	spmi_controller_remove(ctrl);
--	irq_set_chained_handler_and_data(pmic_arb->irq, NULL, NULL);
--	irq_domain_remove(pmic_arb->domain);
-+	if (pmic_arb->irq > 0) {
-+		irq_set_chained_handler_and_data(pmic_arb->irq, NULL, NULL);
-+		irq_domain_remove(pmic_arb->domain);
-+	}
- 	spmi_controller_put(ctrl);
- 	return 0;
- }
--- 
-2.7.4
+Summary:
+passed   9
+failed   0
+broken   0
+skipped  0
+warnings 0
+<<<execution_status>>>
+initiation_status="ok"
+duration=0 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=17
+<<<test_end>>>
+<<<test_start>>>
+tag=binfmt_misc02 stime=1643178454
+cmdline="binfmt_misc02.sh"
+contacts=""
+analysis=exit
+<<<test_output>>>
+[   91.133399] LTP: starting binfmt_misc02 (binfmt_misc02.sh)
+incrementing stop
+binfmt_misc02 1 TINFO: timeout per run is 0h 5m 0s
+binfmt_misc02 1 TPASS: Recognise and unrecognise a binary type as expected
+binfmt_misc02 2 TPASS: Recognise and unrecognise a binary type as expected
+binfmt_misc02 3 TPASS: Recognise and unrecognise a binary type as expected
+binfmt_misc02 4 TPASS: Recognise and unrecognise a binary type as expected
+binfmt_misc02 5 TPASS: Fail to recognise a binary type
+binfmt_misc02 6 TPASS: Fail to recognise a binary type
 
+Summary:
+passed   6
+failed   0
+broken   0
+skipped  0
+warnings 0
+<<<execution_status>>>
+initiation_status="ok"
+duration=0 termination_type=exited termination_id=0 corefile=no
+cutime=3 cstime=25
+<<<test_end>>>
+INFO: ltp-pan reported all tests PASS
+LTP Version: 20220121-9-g010e4f783
+
+       ###############################################################
+
+            Done executing testcases.
+            LTP Version:  20220121-9-g010e4f783
+       ###############################################################
