@@ -2,93 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9CCC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:11:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F550C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233081AbiAZWLH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 17:11:07 -0500
-Received: from mail-oi1-f182.google.com ([209.85.167.182]:43693 "EHLO
-        mail-oi1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232997AbiAZWLC (ORCPT
+        id S231754AbiAZWMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 17:12:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229591AbiAZWMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 17:11:02 -0500
-Received: by mail-oi1-f182.google.com with SMTP id p203so2296284oih.10;
-        Wed, 26 Jan 2022 14:11:01 -0800 (PST)
+        Wed, 26 Jan 2022 17:12:53 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2639C06161C;
+        Wed, 26 Jan 2022 14:12:52 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id z199so1319568iof.10;
+        Wed, 26 Jan 2022 14:12:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rhXHrSPTLOS4pRVESabVF3pQQP/mJ2JTnR9miTNwFf4=;
+        b=VzXocjntTph7UWrJ1xKum5qjVkrdp2soC0a+SXb5VKfiPnPi3lGU3f1Bu3rromCSW7
+         OxnWAkPwNeEbw/Kb9TBF9mTImyJ6g+LrriUC4/HFH+jeYCwYpjJNjeqB8iFrQj9MxDey
+         ZQVC11TqXw2fta1LTPfCFi+81IOvaLR52dO4lW+GlDOL7QupkTv5QKvREYUaf4r8TFLR
+         gmiT2fiWI2+fYuSIr45Qo5mRTMbcbFiuhgh2vvTRRlGjT897LzkYDbSH0N6NVE/Eh0MV
+         QqIESGjv+IzcUuUTj1c5e5tnP9ZR/P97/+T+gwvj7Xm3ldFVPms+nmapc+ZdnT5qETdR
+         ty5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=QEBmmXY/w14IkJPvP4tfoWBs7S4k/e361MpXKSCcDwQ=;
-        b=pTvqzFBbL24wrN7/yqy1OILZvymXIMjqjzIXE+HoOe4COyksQmHwkAuoYBBHG+Muqt
-         ZefWTUVm+UOOJawDWFi64ggIRzIbEO+QwFbOOSvl2Jszg9AmhfKaCztG1VN93X18oUSZ
-         6EAlb5UN5NiXkn8mLE9IwfvYDT2mv8Nbzr/5MH97dxadYFoQecQiTkTnEnszphAlcCME
-         n6piDJ5bXNtcD5Eox+IW6weMcYJyagLY+GBQO7f1CSV071z70vUkXQUVbSbS+G+XF1Ja
-         vf/gb9/Py6Q1UAtv8SyygWBH6zjyd1n5HSobTrbXM/j1JDDk4Cg6GFuqqrTm2RvA/jXA
-         4RhA==
-X-Gm-Message-State: AOAM531rXTGAPE+FqtuHF6JIz9emvkoC6gUOfrtdu/8ZFvwov+HFsr2c
-        bSTtms8C1fKF3ImMuY/fapVtczHivA==
-X-Google-Smtp-Source: ABdhPJxs9I0NzNRvqp2+Lx+8NbRjWD0I/BTpvalZLOrPhW0GxvleuRy5CNXcqTpBOW70lA8yWRXm/A==
-X-Received: by 2002:a54:4e06:: with SMTP id a6mr428051oiy.224.1643235061535;
-        Wed, 26 Jan 2022 14:11:01 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id k13sm1074619ots.48.2022.01.26.14.11.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 14:11:00 -0800 (PST)
-Received: (nullmailer pid 1535102 invoked by uid 1000);
-        Wed, 26 Jan 2022 22:10:52 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, jdelvare@suse.com
-In-Reply-To: <20220126200350.3633576-1-clabbe@baylibre.com>
-References: <20220126200350.3633576-1-clabbe@baylibre.com>
-Subject: Re: [PATCH] dt-bindings: hwmon: gpio-fan: convert to YAML
-Date:   Wed, 26 Jan 2022 16:10:52 -0600
-Message-Id: <1643235052.887619.1535101.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rhXHrSPTLOS4pRVESabVF3pQQP/mJ2JTnR9miTNwFf4=;
+        b=VNobSp5JVXSnC+4/K+31dgVgRRmo3b5LKMGEJZVD6YQ7H409sBLPPEjLxzP8sf/7qQ
+         1SdZ1AQoeXVSdlUoOuGYS/GjrlceQYxk/UM27o6BnAR5glBgkJGXItsrVjCza6AGAY7T
+         65EiIYe9z4wwiH2eTgqiIdxmjKvOepiOq8Vd33LL+IFGZdAVLv2lAKRPaO2WYuI29JDE
+         P3Lr52bzYnyBt9NzCaDOJiGd8P0T+uFsopcH1OoOfnjeOR/NgI5KTqph0dtihvRBmifn
+         ++yhQNl7f9ZJoO+6ijaK6Lnvfwm0FUA942933JK7zB/0MsiuJIBSu07hl5qRLpRDx4fx
+         l9jQ==
+X-Gm-Message-State: AOAM530Txdsi+KwByt020m1MIARiI6VQz4wR4EZuMHldfpa078I0xEcI
+        4TWSWK5CHnX51apiK7UC1w3SMVnRiPek/xpGuzY=
+X-Google-Smtp-Source: ABdhPJwrr3Hq8ZddbuK7p5tL6bFDcjE2tqdDKLW9pRG65b27MoTJTSf/Eyj+GHkDBsEjzAmfR74d9HdwxSw4F2Ddgak=
+X-Received: by 2002:a05:6638:516:: with SMTP id i22mr417959jar.71.1643235172226;
+ Wed, 26 Jan 2022 14:12:52 -0800 (PST)
+MIME-Version: 1.0
+References: <20220126205214.2149936-1-jannh@google.com>
+In-Reply-To: <20220126205214.2149936-1-jannh@google.com>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Wed, 26 Jan 2022 23:12:41 +0100
+Message-ID: <CA+fCnZe_p+JwUWwumgGm185vWSdAK_z-UFDp7-HWKANB4YjA=g@mail.gmail.com>
+Subject: Re: [PATCH] usb: raw-gadget: fix handling of dual-direction-capable endpoints
+To:     Jann Horn <jannh@google.com>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 26 Jan 2022 20:03:50 +0000, Corentin Labbe wrote:
-> Converts hwmon/gpio-fan.txt to YAML
-> 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+On Wed, Jan 26, 2022 at 9:52 PM Jann Horn <jannh@google.com> wrote:
+>
+> Under dummy_hcd, every available endpoint is *either* IN or OUT capable.
+> But with some real hardware, there are endpoints that support both IN and
+> OUT. In particular, the PLX 2380 has four available endpoints that each
+> support both IN and OUT.
+>
+> raw-gadget currently gets confused and thinks that any endpoint that is
+> usable as an IN endpoint can never be used as an OUT endpoint.
+>
+> Fix it by looking at the direction in the configured endpoint descriptor
+> instead of looking at the hardware capabilities.
+>
+> With this change, I can use the PLX 2380 with raw-gadget.
+>
+> Fixes: f2c2e717642c ("usb: gadget: add raw-gadget interface")
+> Signed-off-by: Jann Horn <jannh@google.com>
 > ---
-> 
-> I didnt found any clear maintainer and since DT yaml mandates a
-> maintainer section, I set devicetree@vger.kernel.org.
-> 
->  .../devicetree/bindings/hwmon/gpio-fan.txt    | 41 --------
->  .../devicetree/bindings/hwmon/gpio-fan.yaml   | 96 +++++++++++++++++++
->  2 files changed, 96 insertions(+), 41 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/hwmon/gpio-fan.txt
->  create mode 100644 Documentation/devicetree/bindings/hwmon/gpio-fan.yaml
-> 
+>  drivers/usb/gadget/legacy/raw_gadget.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
+> index c5a2c734234a..d86c3a36441e 100644
+> --- a/drivers/usb/gadget/legacy/raw_gadget.c
+> +++ b/drivers/usb/gadget/legacy/raw_gadget.c
+> @@ -1004,7 +1004,7 @@ static int raw_process_ep_io(struct raw_dev *dev, struct usb_raw_ep_io *io,
+>                 ret = -EBUSY;
+>                 goto out_unlock;
+>         }
+> -       if ((in && !ep->ep->caps.dir_in) || (!in && ep->ep->caps.dir_in)) {
+> +       if (in != usb_endpoint_dir_in(ep->ep->desc)) {
+>                 dev_dbg(&dev->gadget->dev, "fail, wrong direction\n");
+>                 ret = -EINVAL;
+>                 goto out_unlock;
+>
+> base-commit: 0280e3c58f92b2fe0e8fbbdf8d386449168de4a8
+> --
+> 2.35.0.rc0.227.g00780c9af4-goog
+>
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Awesome! Thanks for finding this!
 
-yamllint warnings/errors:
+What do you think about using
 
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/hwmon/gpio-fan.example.dt.yaml:0:0: /example-0/gpio@4d000000: failed to match any schema with compatible: ['cortina,gemini-gpio', 'faraday,ftgpio010']
-Documentation/devicetree/bindings/hwmon/gpio-fan.example.dt.yaml:0:0: /example-0/gpio@4d000000: failed to match any schema with compatible: ['cortina,gemini-gpio', 'faraday,ftgpio010']
-Documentation/devicetree/bindings/hwmon/gpio-fan.example.dt.yaml:0:0: /example-1/gpio@4d000000: failed to match any schema with compatible: ['cortina,gemini-gpio', 'faraday,ftgpio010']
-Documentation/devicetree/bindings/hwmon/gpio-fan.example.dt.yaml:0:0: /example-1/gpio@4d000000: failed to match any schema with compatible: ['cortina,gemini-gpio', 'faraday,ftgpio010']
+if ((in && !ep->ep->caps.dir_in) || (!in && !ep->ep->caps.dir_out))
 
-doc reference errors (make refcheckdocs):
+instead?
 
-See https://patchwork.ozlabs.org/patch/1584654
+It looks less cryptic: if (in and no in caps) or (out and no out caps) => fail.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+FTR, I tested both changes with the net2280 hardware that I have, and
+they work. At least gadget.c from the test suite enumerates properly.
+Most of the tests still fail. But with g_zero, even more of them fail.
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+P.S. I wonder why everyone suddenly got interested in Raw Gadget lately? :)
