@@ -2,121 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4697EC63684
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:52:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9078C63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240291AbiAZKwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 05:52:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240289AbiAZKw2 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 05:52:28 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20058C061748
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:52:28 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id x193so36801308oix.0
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:52:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hNuGvUirpZLgviiUUWup/Or/h967yV7FWMRVHEHBy84=;
-        b=XuQJ2QuaOAH1guMFs+7qJK7Usxs3OIJFOFUJh3Kg+W+9uVg8Ypcz+nzh+l6fpvZNNr
-         WFfm2rMdpfX28Su8mn1xY2IpJUW6FmKhs4toEMVo5qSEu1Omchn0rkkbwdI5t9edO7yt
-         BMwnEqCn0Ci7qjy9Yx8Fxa3ZoSb96QLGfI/nY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hNuGvUirpZLgviiUUWup/Or/h967yV7FWMRVHEHBy84=;
-        b=VQbUuPfNu0kLDPq/P5GPe5kg+Th3omCfOYmdm4oU1ZweAtjwiSzVIRVCnaVHihaT9w
-         NezSxd7p3FnWi+GofFLzMZ9OXkATHLWc4QqFPGragGQc7thUiTWphT0VEwOHe1GeuWCL
-         8ypJLIVXqhb+qd52NUyZne5NkqbYMHxKGpSx8C3eXgfBKW9Gd0s3nNsLoYDsOiyqRxek
-         Fto2hKACdpnHlCHG8T9K0NiN6yOXASz64Jqxq2hwTREdL9HhBPGSulpuGkpxf1oHLFoS
-         qACUSjWgnYBBvoiVGFXUpZSY5pXp7Pto6KtlIceEtWDsrt/TRZ7UKaRzXAa+Jw97DFx2
-         pMZA==
-X-Gm-Message-State: AOAM530dQUtrbmYE2L5FC0tmeFpm97syww0lCrZ8dJPZk1GllzZBHEiy
-        xDPcOq5nqF3ql2IK7h1CfR9Gv6NANDgR37NNQqMeCw==
-X-Google-Smtp-Source: ABdhPJzPYkubRtpxhbQ9mgH5mK8ga1ADV0xj1R2SeDADNqICmknnx/N/28B3XxA4NLAA3/9nww800A/xqxovI/pIEAE=
-X-Received: by 2002:aca:ab4a:: with SMTP id u71mr3195965oie.176.1643194347425;
- Wed, 26 Jan 2022 02:52:27 -0800 (PST)
+        id S240305AbiAZKwy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 05:52:54 -0500
+Received: from mga01.intel.com ([192.55.52.88]:19403 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240328AbiAZKwu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 05:52:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643194370; x=1674730370;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=vK8S3U4ZMTunCKxUMp3DknqdR/8wZMDXhn4ijOgZxow=;
+  b=d0rsmH6I5iPjakYGEPtAeyJ9/JMPKEHRFgCo7z4hU49roT+GT/ZLqeCP
+   7OIvgOcnPzDuqGUNR3uXHu2F68pGUk4CSy1GSJDALSBHUQZCNyYKfpJZu
+   Kih6ES6ynDquNsJe554UUsZAOzPdfEN+FfhbnXisGmf7RpxNXelte8agG
+   qyJKptAeSYNERybIvh9SBvsCAfOomRVA8n/GuoCFFVeWokhuklcxdN1zj
+   PEiD/U34rup914GlZQdHyVJjd4xE2uQhSr+v+Q5VReCu3WaBM67EtBE7y
+   MqZB7hdoRfIb2ybuL29pdyospGJ/+Epy4aSkeTgSLFCi2LGVpRnHCBPWE
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="270976033"
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="270976033"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 02:52:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="477447050"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 26 Jan 2022 02:52:47 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCfux-000L66-5N; Wed, 26 Jan 2022 10:52:47 +0000
+Date:   Wed, 26 Jan 2022 18:52:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     James Morse <james.morse@arm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [morse:mpam/snapshot/v5.16 91/137]
+ drivers/platform/mpam/mpam_devices.c:230:5: warning: no previous prototype
+ for 'mpam_msc_drv_remove'
+Message-ID: <202201261848.Ojsmqjmk-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <991e988b-7225-881b-a59a-33c3eae044be@suse.de> <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
- <YfEmuGVQ+IlhdQDh@kroah.com>
-In-Reply-To: <YfEmuGVQ+IlhdQDh@kroah.com>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Wed, 26 Jan 2022 11:52:16 +0100
-Message-ID: <CAKMK7uEiUH8vD3jUCDPXFbF2YS5LygJLVOosbnUnvMP0MU2kTg@mail.gmail.com>
-Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Helge Deller <deller@gmx.de>, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 11:47 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Jan 26, 2022 at 12:02:36PM +0200, Andy Shevchenko wrote:
-> > On Wed, Jan 26, 2022 at 10:52 AM Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> > >
-> > > Hi
-> > >
-> > > Am 25.01.22 um 21:21 schrieb Andy Shevchenko:
-> > > > Since we got a maintainer for fbdev, I would like to
-> > > > unorphan fbtft (with the idea of sending PRs to Helge)
-> > > > and move it out of staging since there is no more clean
-> > > > up work expected and no more drivers either.
-> > > >
-> > > > Thoughts?
-> >
-> > Thanks for sharing yours, my answers below.
-> >
-> > > But why? We already have DRM drivers for some of these devices.
-> >
-> > No, we do not (only a few are available).
-> >
-> > > Porting
-> > > the others to DRM is such a better long-term plan.  OTOH, as no one has
-> > > shown up and converted them, maybe they should be left dead or removed
-> > > entirely.
-> >
-> > As I mentioned above there are devices that nobody will take time to
-> > port to a way too complex DRM subsystem. But the devices are cheap and
-> > quite widespread in the embedded world. I'm in possession of 3 or 4
-> > different models and only 1 is supported by tiny DRM.
->
-> Great, then let's just move the 2 models that you do not have support
-> for in DRM, not the whole lot.  When we have real users for the drivers,
-> we can move them out of staging, but until then, dragging all of them
-> out does not make sense.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/snapshot/v5.16
+head:   364c1c42b229912132e1615c2ce15be7154e2156
+commit: 166780f7cb6bac22a4707a368a2580bc6899e38f [91/137] arm_mpam: Add probe/remove for mpam msc driver and kbuild boiler plate
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220126/202201261848.Ojsmqjmk-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/commit/?id=166780f7cb6bac22a4707a368a2580bc6899e38f
+        git remote add morse https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git
+        git fetch --no-tags morse mpam/snapshot/v5.16
+        git checkout 166780f7cb6bac22a4707a368a2580bc6899e38f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/platform/mpam/
 
-Can't we create drm drivers for these 2-3 models? Like we have drivers
-which are below 300 lines with all the helpers taking care of
-everything, this shouldn't be too tricky.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-And if no one cares enough for that, then imo let's just keep this in
-staging and let it quietly&slowly pass away. At least from the people
-who've been active in any kind of display development the past 6+
-years (which is roughly when Tomi abandoned fbdev as last active
-maintainer) the consensus _is_ that drm drivers are simpler, quicker
-to type (once you got hold of the subsystem and all its helpers at
-least), and adding new fbdev drivers just makes no sense at all.
--Daniel
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+All warnings (new ones prefixed by >>):
+
+>> drivers/platform/mpam/mpam_devices.c:230:5: warning: no previous prototype for 'mpam_msc_drv_remove' [-Wmissing-prototypes]
+     230 | int mpam_msc_drv_remove(struct platform_device *pdev)
+         |     ^~~~~~~~~~~~~~~~~~~
+
+
+vim +/mpam_msc_drv_remove +230 drivers/platform/mpam/mpam_devices.c
+
+   229	
+ > 230	int mpam_msc_drv_remove(struct platform_device *pdev)
+   231	{
+   232		struct mpam_msc *msc = platform_get_drvdata(pdev);
+   233	
+   234		if (!msc)
+   235			return 0;
+   236	
+   237		mutex_lock(&mpam_list_lock);
+   238		mpam_num_msc--;
+   239		platform_set_drvdata(pdev, NULL);
+   240		list_del_rcu(&msc->glbl_list);
+   241		synchronize_rcu();
+   242		mutex_unlock(&mpam_list_lock);
+   243	
+   244		return 0;
+   245	}
+   246	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
