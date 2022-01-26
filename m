@@ -2,178 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 942D4C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A257BC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:38:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243843AbiAZRi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 12:38:29 -0500
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:9814 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243822AbiAZRiT (ORCPT
+        id S243841AbiAZRi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 12:38:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243822AbiAZRit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:38:19 -0500
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20QFoiXt029667;
-        Wed, 26 Jan 2022 17:37:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : in-reply-to : references : date : message-id : content-type :
- mime-version; s=corp-2021-07-09;
- bh=Z7X/EjYx6HCPlCal4H69ozBf9t5e2gt7ieIMCe8cPUY=;
- b=sBrT77IiUjkQkfLUCvrIVGDb+LpInFToe/jLn7n0xVtqpeKuPLLvSFboIklmf36NNZ2j
- ZuegCL8bjXYcey8/xAmIypv/9OFU5mIoTrj5+uad22QyMBN1locgWa/NHBb2nW3HHZgf
- 4Vl45VFNotEPPNOAyium/rluqhdBiFkOOwBlWN3o5dTuborJzgdm5i2Ine1ATeD3yplh
- js8SaOHwkvkEDJJkZ7Ij4esuwdCWfoPlUArdpvA7gCq4gGVdgczEDidqeFEJsmXTi/rb
- RTMB4HBGmmWRP314NI3USUQ7P9ABrdBhUKpRr2DDpQl7t/OkfpwVqTGTE1SU4dRqAf5E Sg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dsxvfpkjv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 26 Jan 2022 17:37:54 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20QHUVGP069574;
-        Wed, 26 Jan 2022 17:37:52 GMT
-Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam07lp2049.outbound.protection.outlook.com [104.47.51.49])
-        by userp3020.oracle.com with ESMTP id 3drbcrm55a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 26 Jan 2022 17:37:52 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mO4r1lgSwpxjPQGQF4AZy9Y1DDp5zjm+BuVk5H+0mwCcrJrLiM7dCZritnoHeOTqWR4sQR5BZ/bJD/pr9JyDPuYBX7iIboAPTjXOOc8YYUdq0v6s3doxaLSoX+m+5WXNDkIUGKs7DV4BxOY6LkiPRqxnYkJWj9wUtk1PTwPb+h0hdB7EF+qAM6KM5qSBM/FEpU6wJCCsf1HM6z8ksV3myrp/bxMrLJvBd70xLjkC9GYKuT+I64q1wGcy8ElzOzj1qptODVQ4TZnG8rEUg8ammYYe97Nv/2+0ge2+Chmf1GBBSXH/gkfoBXlSbM7cPMSGP/EUuF67/1nfMCRS3iWSSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Z7X/EjYx6HCPlCal4H69ozBf9t5e2gt7ieIMCe8cPUY=;
- b=MR6xFzwbLGTAiJ0+sW+82VOw9xfhA/U/2ixkzbeg4n2NS7eBuyWI/czo2+c734dmppyA8PxuU4QyIRsojRxfdhH1EAnQcKBdr/YxpJapWBVWIZXI/CEZhi7om5p6B2cGoWVmpwbKC469JjulvvKpzo04+LoLhsxyjatAeH7JJUZh5mKYP0XnklaSlQEtiS9NsVNdnBD3k5bJC17x2ZTtJ7Wh/8UbNAoKk+1ykYsoFHLK2O2U1aUzsBgfNNnJBjqyR9rsblHQdFXh9iXf9PMTLr1wghepLPb2lgeiTAW9d6RrRg/hfcs8g6fv6YESRd+P3y0NxFyD944euiGhChwr3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z7X/EjYx6HCPlCal4H69ozBf9t5e2gt7ieIMCe8cPUY=;
- b=qpBSrXWg4tlKwZYtoN3fvig6cDjYrJ0r/IppnVcwM1aqcLTzZx2dt3FYkhwdaCdtB0XJhd4+vzJNgYkY3vnkL0WPDC9JWluhVz6XSdeKThp/0oMNMlrUAaNF4Qqz99HN/Uu0WPimUMSguC93tIuGaAde0ldmnQgdWezH2L8kf8Q=
-Received: from CH2PR10MB4166.namprd10.prod.outlook.com (2603:10b6:610:78::20)
- by DM5PR10MB1881.namprd10.prod.outlook.com (2603:10b6:3:10c::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Wed, 26 Jan
- 2022 17:37:50 +0000
-Received: from CH2PR10MB4166.namprd10.prod.outlook.com
- ([fe80::f4d7:8817:4bf5:8f2a]) by CH2PR10MB4166.namprd10.prod.outlook.com
- ([fe80::f4d7:8817:4bf5:8f2a%5]) with mapi id 15.20.4930.017; Wed, 26 Jan 2022
- 17:37:49 +0000
-From:   Stephen Brennan <stephen.s.brennan@oracle.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Wed, 26 Jan 2022 12:38:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAF9C06161C;
+        Wed, 26 Jan 2022 09:38:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60134B81CAE;
+        Wed, 26 Jan 2022 17:38:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88173C340E3;
+        Wed, 26 Jan 2022 17:38:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643218723;
+        bh=EFdscSLnaWLhYVWNI1QN+bbNVEh+ATXkGkbBTAYxJVU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QKMFT5JIOjKA4WSdOxxZoprP9S5gopg2K0wTG2r2HrnH2fsvbccXZe4hjNxu0SYAp
+         jIB1k3adqafrenS5Z1NabRPOFMZusn6sg3UQK4nhtpDtH9jBVmxDLsEHSdiptXmV62
+         li8OruZAgJdla3Dhv4Lzvp0EG3z9qgP1lx2cyEINGkFpaIXjW1la+H3FojZRBG5Xtk
+         vcE4nEGqnx9HFaG2qUCjcDKWDIKa+Wiu6k28OK8BKoFR4VhE4X5AF2jxxaXNOBsV0N
+         JSmpjuPNfitBM3tsSB/2PNgtRaqaryeZi+ma42g9YcyiBkLZiLp7N6TfD9qVdkJJhO
+         +2H1WnvFufsbw==
+Date:   Thu, 27 Jan 2022 01:31:05 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Samuel Holland <samuel@sholland.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev,
+        linux-stm32@st-md-mailman.stormreply.com,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] panic: Add panic_in_progress helper
-In-Reply-To: <Ye/jhjBaN35L76BF@alley>
-References: <20220121190222.572694-1-stephen.s.brennan@oracle.com>
- <20220121190222.572694-2-stephen.s.brennan@oracle.com>
- <Ye/jhjBaN35L76BF@alley>
-Date:   Wed, 26 Jan 2022 09:37:51 -0800
-Message-ID: <87v8y6wg7k.fsf@stepbren-lnx.us.oracle.com>
-Content-Type: text/plain
-X-ClientProxiedBy: CY5P221CA0110.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:930:1f::8) To CH2PR10MB4166.namprd10.prod.outlook.com
- (2603:10b6:610:78::20)
+Subject: Re: [PATCH] net: stmmac: dwmac-sun8i: fix double disable and
+ unprepare "stmmaceth" clk
+Message-ID: <YfGFWT5o3QW8pzsD@xhacker>
+References: <20220123132805.758-1-jszhang@kernel.org>
+ <38c41c04-abde-4d55-ed7c-515b6bba9c54@sholland.org>
+ <YfFkz1d9onk+ITGg@xhacker>
+ <YfFwH9gHdN3fnx22@xhacker>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6dfcb827-20ec-4c35-c36c-08d9e0f292a0
-X-MS-TrafficTypeDiagnostic: DM5PR10MB1881:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR10MB1881DA400835A59FAD503F57DB209@DM5PR10MB1881.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MYMIui4VK5ZKNY1jUwMeq1k8SpqQzQLGQpEjf/MEyRsCjx4ZMtqfotnPIj+6Q8rd3BQL8XQ+SQd6tdlD+GljnvEE/GGUb05aXcwu4UOrKg7cJMdoKHz5aWuepG/4yKmaTcArbvn4Ia9ZFy9QVrjpV+MkQpcA1/ctdpepq8mjrcaqoqyM7ZvhXqQXoxTsJpu5ST2kgF4Mp7Ugo3T9MndZ3BBTZrA3B5MyPNUaC6Dn513GkeovqLbblCiQxDYBu3IpTUG8YihxR+dL9ZaRzgWI5y+/Ks/4mtdsHQDQotGznIvwpF7eab32yKLPNCe2W4R4a9rQ7fAPIBAANHyX9cCsACBRe8eD0TMZ92AgBnaI9Nv77vFHpVybEOKboPIJ+0kObrYZxt2qAuiaxLS0KfOp8/9UG1xWAMXplnyevN/vLBk1gsuRguDcshL0euon/+mZ242hpG3WdgIQ3tjJMe4uQnVBMDGgsq4o+Kj8JVO6wgidJHMMKYB05jKBneOg4wyzFvYH/ViWB4F5XuRb2EcI+9wJxvhDq7z7/e/dHGRaay4HRLYAv7x2DKkQZ47okg3NXvVtJmNl+FGGcgflhcAOPfm5DxUx2dakYRvzZ27gpVktrC6226nEcqP8wmPbBkMRnX8Jk/xrkCyWDm3vVI9qCVg6aipE3b8C4EGNuVhfd6Wh77VcBKmSupYUKI0i4cUx
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR10MB4166.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(83380400001)(66476007)(6916009)(8936002)(4326008)(8676002)(54906003)(26005)(38350700002)(86362001)(38100700002)(186003)(6486002)(2906002)(66946007)(6512007)(66556008)(6506007)(52116002)(508600001)(6666004)(5660300002)(20210929001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QtCjW9hyJjE58yZ1aOHRXaUy6xsW7wVarMuoM8vU3n7NR6578+VXbLi9nLSw?=
- =?us-ascii?Q?lUBTaBH0WcB+K163oKi305NwtMYGJ+XqoB3Br6NWVJ+Imal1IUzTorFJWm7N?=
- =?us-ascii?Q?Xh/343bKnoIRFVHgO/ZSLGa2DCVhytoGnjV3bK2CnO/+rHxMEtxlCEcXULsk?=
- =?us-ascii?Q?Agqs+FUqgV4eSblbhI/zLmwEL+katdzUfohwywGQSRSEh1lUO2yZ1TPQ+U5a?=
- =?us-ascii?Q?GFjTYlHc4sJtLI0F5XVuWx/F164oGXYBI3R0xKyOOu9RhowlEBIAeysV2NTC?=
- =?us-ascii?Q?T+RX9hoSuFVlw8l+3Vm/xFFlmEORC6omv6EfNOdJTcQbnJY2YffEChlHKVPx?=
- =?us-ascii?Q?EMhPiiUZIgM2iOLM880LqdGfB7dasnZm8b2Azqqw+DPEVuWS4BCqUNl8NixZ?=
- =?us-ascii?Q?PzkUvqVcVuBU6jDzNGFt3ajY53TCRwYGMOOqPYDl0I/9Hjkj0qfbbbeLKHnK?=
- =?us-ascii?Q?PGNjP8cQHJsIR2Jx1Tgx+UM8G9l03eGuYjYTOxZodRzs4GW7pal5mtteM0Qw?=
- =?us-ascii?Q?/TPK+DrPqHcXU/ixn6MzeboJUOS4z+vNE27v7tl/z2+bAzFn/HULYRi92kMl?=
- =?us-ascii?Q?MO6bQAxtqM+bBBi25Ks3w6N6CLWxEuxxd/pmEMR4gtKRxwJ/iyW2n+UUPU83?=
- =?us-ascii?Q?i0vN1FeqfQRn95znNlD0RiPeGcvIxVl9E6iat4K7viVEHIuu+2bJ6DdNPOl9?=
- =?us-ascii?Q?oT8+OTfSklTobgkUGbmcOlo8TQPkUmik73xZXHtr9y0bwjfXW4wRHZU9TKLP?=
- =?us-ascii?Q?eHbL6xGFSpK+pCd4Qs/5BGvcRIIeWatpCzQTN4gKf3bmijJ35HOGsDAmGdpa?=
- =?us-ascii?Q?y7c1ZJ1rBX2fJqSLSD+Db7V1hAF3iRI04fteKO2TeHTeFk11ei4EUBbLD/eU?=
- =?us-ascii?Q?v7F3r082aop+ibxTp9jHbA+kzTzrSKyAv0oGV/7DDRJAmNPmSfW5l5XCZJJn?=
- =?us-ascii?Q?v94rAj+l/09rDxUgXm9CmZMoBZhegKcjssiwLTuf7hLnvyPd6D01omF0iKoC?=
- =?us-ascii?Q?qH43Qwu3LPU2q493ErulQaYK8LubAzj4irqQITEgWg6woFneKnYZU/8tUSkZ?=
- =?us-ascii?Q?9yTBWnX3n4Di71Vt6c/crpC8XZlxZRQB3rzQOggAWZfRomfVVInukBUE/TkE?=
- =?us-ascii?Q?ZAz/eFJBOF5IigX7Gz+m57yV0paSD53nkw0VOc9HEvVP5QWC0ZlZaHOAimIt?=
- =?us-ascii?Q?IHzd2vJqYtOoHgzDebbZkrLS1cu8iAqabXS1lkCmF4/EwaZ5K0y6ThBL4sh6?=
- =?us-ascii?Q?1wFH45WIJk6adAT3MHiQI7jZnYoLaK0KnMLvVhB3hdwf2n3qxMMSCcwNifY3?=
- =?us-ascii?Q?3Qc8ZgMkVszLgDzSe55ECBKnJh3KniUEf23auvHUCIGjJIP/61KQ/LbNiiYR?=
- =?us-ascii?Q?OwXHhWEb08RXcxuvYsP4RQCsiT9OkITargYZIa8cVxH608Qy6WdmZ+pI1JxI?=
- =?us-ascii?Q?RsqsdtvwHUdNTIxUZA2D5NP4fITzJShc30CgP2YdcqLypWfpBSC/y7U7n/O6?=
- =?us-ascii?Q?WyBJO9sXvlNB9OA2lfcG6eLMPLeEMsH3m6OlXFTI5XdfzpbPHuxbI6hVFSTk?=
- =?us-ascii?Q?x80Is5/J5L/L0wU7GzV8lBdRjumk4VQq8omlc+WxcdP44BMeayQV3f0eGAyI?=
- =?us-ascii?Q?PR/W/FA3vMz0bfD0NfqaTJFiitHSvxUu0RcFrKfmpl0gW7ma2Q4SmTeolKKz?=
- =?us-ascii?Q?Jdr6Nw=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6dfcb827-20ec-4c35-c36c-08d9e0f292a0
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR10MB4166.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 17:37:49.9334
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NZFvyoyQrR7aqzkhIJVawJTCClLG7j7Po9fE0Ei6pHG7kSgF80ANIcna3a+fO6PeYCPVu4xyNmFNc5u0yeL6bfu20Z41Fupft2Wk5/oP4nM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1881
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10239 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0 malwarescore=0
- spamscore=0 phishscore=0 suspectscore=0 adultscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2201260107
-X-Proofpoint-GUID: b8AUu6xozdBjSrJe9UHiXN0aK64pKS0t
-X-Proofpoint-ORIG-GUID: b8AUu6xozdBjSrJe9UHiXN0aK64pKS0t
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YfFwH9gHdN3fnx22@xhacker>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Petr Mladek <pmladek@suse.com> writes:
+On Thu, Jan 27, 2022 at 12:00:42AM +0800, Jisheng Zhang wrote:
+> On Wed, Jan 26, 2022 at 11:12:28PM +0800, Jisheng Zhang wrote:
+> > On Sun, Jan 23, 2022 at 01:43:37PM -0600, Samuel Holland wrote:
+> > > On 1/23/22 7:28 AM, Jisheng Zhang wrote:
+> > > > Fix warnings on Allwinner D1 platform:
+> > > > 
+> > > > [    1.604695] ------------[ cut here ]------------
+> > > > [    1.609328] bus-emac already disabled
+> > > > [    1.613015] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:952 clk_core_disable+0xcc/0xec
+> > > > [    1.621039] CPU: 0 PID: 38 Comm: kworker/u2:1 Not tainted 5.14.0-rc4#1
+> > > > [    1.627653] Hardware name: Allwinner D1 NeZha (DT)
+> > > > [    1.632443] Workqueue: events_unbound deferred_probe_work_func
+> > > > [    1.638286] epc : clk_core_disable+0xcc/0xec
+> > > > [    1.642561]  ra : clk_core_disable+0xcc/0xec
+> > > > [    1.646835] epc : ffffffff8023c2ec ra : ffffffff8023c2ec sp : ffffffd00411bb10
+> > > > [    1.654054]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : ffffffff80ed6a6f
+> > > > [    1.661272]  t1 : ffffffff80ed6a60 t2 : 0000000000000000 s0 : ffffffe001509e00
+> > > > [    1.668489]  s1 : 0000000000000001 a0 : 0000000000000019 a1 : ffffffff80e80bd8
+> > > > [    1.675707]  a2 : 00000000ffffefff a3 : 00000000000000f4 a4 : 0000000000000002
+> > > > [    1.682924]  a5 : 0000000000000001 a6 : 0000000000000030 a7 : 00000000028f5c29
+> > > > [    1.690141]  s2 : 0000000000000800 s3 : ffffffe001375000 s4 : ffffffe01fdf7a80
+> > > > [    1.697358]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
+> > > > [    1.704577]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
+> > > > [    1.711794]  s11: ffffffe001b80760 t3 : 0000000000000062 t4 : ffffffffffffffff
+> > > > [    1.719012]  t5 : ffffffff80e0f6d8 t6 : ffffffd00411b8f0
+> > > > [    1.724321] status: 8000000201800100 badaddr: 0000000000000000 cause: 0000000000000003
+> > > > [    1.732233] [<ffffffff8023c2ec>] clk_core_disable+0xcc/0xec
+> > > > [    1.737810] [<ffffffff80240430>] clk_disable+0x38/0x78
+> > > > [    1.742956] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+> > > > [    1.748451] [<ffffffff8031a500>] stmmac_remove_config_dt+0x1c/0x4c
+> > > > [    1.754646] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
+> > > > [    1.760484] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+> > > > [    1.765975] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
+> > > > [    1.771382] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
+> > > > [    1.777305] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
+> > > > [    1.783402] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
+> > > > [    1.789324] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
+> > > > [    1.795508] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
+> > > > [    1.802125] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
+> > > > [    1.807701] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
+> > > > [    1.813277] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
+> > > > [    1.818852] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
+> > > > [    1.825122] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
+> > > > [    1.830872] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
+> > > > [    1.836362] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > > > [    1.841335] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > > > [    1.846304] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
+> > > > [    1.852054] [<ffffffff80026564>] kthread+0x124/0x160
+> > > > [    1.857021] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
+> > > > [    1.862770] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
+> > > > [    1.868956] ---[ end trace 8d5c6046255f84a0 ]---
+> > > > [    1.873675] ------------[ cut here ]------------
+> > > > [    1.878366] bus-emac already unprepared
+> > > > [    1.882378] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:810 clk_core_unprepare+0xe4/0x168
+> > > > [    1.890673] CPU: 0 PID: 38 Comm: kworker/u2:1 Tainted: G        W	5.14.0-rc4 #1
+> > > > [    1.898674] Hardware name: Allwinner D1 NeZha (DT)
+> > > > [    1.903464] Workqueue: events_unbound deferred_probe_work_func
+> > > > [    1.909305] epc : clk_core_unprepare+0xe4/0x168
+> > > > [    1.913840]  ra : clk_core_unprepare+0xe4/0x168
+> > > > [    1.918375] epc : ffffffff8023d6cc ra : ffffffff8023d6cc sp : ffffffd00411bb10
+> > > > [    1.925593]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : 0000000000000002
+> > > > [    1.932811]  t1 : ffffffe01f743be0 t2 : 0000000000000040 s0 : ffffffe001509e00
+> > > > [    1.940029]  s1 : 0000000000000001 a0 : 000000000000001b a1 : ffffffe00143a800
+> > > > [    1.947246]  a2 : 0000000000000000 a3 : 00000000000000f4 a4 : 0000000000000001
+> > > > [    1.954463]  a5 : 0000000000000000 a6 : 0000000005fce2a5 a7 : 0000000000000001
+> > > > [    1.961680]  s2 : 0000000000000800 s3 : ffffffff80afeb90 s4 : ffffffe01fdf7a80
+> > > > [    1.968898]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
+> > > > [    1.976115]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
+> > > > [    1.983333]  s11: ffffffe001b80760 t3 : ffffffff80b39120 t4 : 0000000000000001
+> > > > [    1.990550]  t5 : 0000000000000000 t6 : ffffffe001600002
+> > > > [    1.995859] status: 8000000201800120 badaddr: 0000000000000000 cause: 0000000000000003
+> > > > [    2.003771] [<ffffffff8023d6cc>] clk_core_unprepare+0xe4/0x168
+> > > > [    2.009609] [<ffffffff802403a0>] clk_unprepare+0x24/0x3c
+> > > > [    2.014929] [<ffffffff8031a508>] stmmac_remove_config_dt+0x24/0x4c
+> > > > [    2.021125] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
+> > > > [    2.026965] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+> > > > [    2.032463] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
+> > > > [    2.037871] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
+> > > > [    2.043795] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
+> > > > [    2.049892] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
+> > > > [    2.055815] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
+> > > > [    2.061999] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
+> > > > [    2.068616] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
+> > > > [    2.074193] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
+> > > > [    2.079769] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
+> > > > [    2.085345] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
+> > > > [    2.091616] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
+> > > > [    2.097367] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
+> > > > [    2.102858] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > > > [    2.107830] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > > > [    2.112800] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
+> > > > [    2.118551] [<ffffffff80026564>] kthread+0x124/0x160
+> > > > [    2.123520] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
+> > > > [    2.129268] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
+> > > > [    2.135455] ---[ end trace 8d5c6046255f84a1 ]---
+> > > > 
+> > > > the dwmmac-sun8i driver will get the "stmmaceth" clk as tx_clk during
+> > > > driver initialization. If stmmac_dvr_probe() fails due to various
+> > > > reasons, sun8i_dwmac_exit() will disable and unprepare the "stmmaceth"
+> > > > clk, then stmmac_remove_config_dt() will disable and unprepare the
+> > > > clk again.
+> > > 
+> > > This should still be balanced, because both stmmac_probe_config_dt and
+> > > sun8i_dwmac_init prepare/enable the clock, so the dwmac-sun8i glue layer calls
+> > > stmmac_dvr_probe with the clock having an enable count of 2. It looks like the
+> > > underlying issue is that commit 5ec55823438e ("net: stmmac: add clocks
+> > > management for gmac driver") introduces unbalanced runtime PM.
+> > 
+> > I added some printk then retested, the problem is triggered as below:
+> > 
+> > stmmac_probe_config_dt() enable the clk
+> > sun8i_dwmac_init() enble the clk again
+> > stmmac_dvr_probe() succeed, but it calls pm_runtime_put(), so rpm will
+> > disable the clk
+> > sun8i_dwmac_reset() fails due to various reason
+> > sun8i_dwmac_exit() disable the clk, this is fine
+> > stmmac_remove_config_dt() disable the clk again, so ccf complains.
+> > 
+> > The key here is: whether we should let stmmac_dvr_probe() calls
+> > pm_runtime_put() or let stmmac users to determine whether we could
+> > let rpm go?
+> > If we keep current behavior: stmmac users need to take care
+> > the code after stmmac_dvr_probe, including error handling code path,
+> > if we touch access registers, we need to call pm_runtime_get_sync()
+> > firstly.
+> > 
+> > Since the commit 5ec55823438e has been in for a long time, I'll submit
+> > a patch to follow this way.
+> > 
+> 
+> After reading the code and commit history, I found some users suffering
+> from the runtimepm issues, for example, dwmac-rk.c, so I changed my
+> idea. I think it's better to let stmmac users to call pm_runtime_put():
+> 
+> First of all, only the users know whether it's safe to finally
+> keep the mac runtime suspended after probe.
+> 
+> Secondly, if the users need to do platform specific operations after
+> stmmac_dvr_probe(), especially needs to access some registers, we have
+> to resume the mac firstly. The error handling code path also needs to
+> take care of it. It looks a bit strange resume immediately resume the
+> mac after suspending it.
+> 
+> Any suggestion is welcome.
+> 
+> PS: Since this would partially revert commit 5ec55823438e, I add Joakim
+> into the email thread.
+> 
+If we keep current behavior as is, and let stmmac users to take care
+necessary runtime resume before specific handling, we need similar
+patch as dwmac-sun8i below for all stmmac users, especially the error
+handling path:
 
-> On Fri 2022-01-21 11:02:19, Stephen Brennan wrote:
->
-> Please, add explanation why the new helper is added. It will be
-> used in printk code to reduce risk of deadlocks during panic().
->
->> Suggested-by: Petr Mladek <pmladek@suse.com>
->> Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
->> ---
->> We cannot define a static inline without including linux/atomic.h, so
->> I just added a macro for convenience in later patches. Since macros were
->> the only option, I didn't include a helper for
->> panic_in_progress_different_cpu().
->
-> What is the exact problem with including atomic.h and using static
-> inline, please?
 
-Hi Petr,
-
-linux/panic.h is a commonly included header, and so I didn't want to
-pollute the namespaces of many other compilation units. (In fact, for
-stable kernels we avoid changing headers to avoid changing the hashes
-produced by genksyms). It could impact compile time too.
-
-But I suppose I was prematurely optimizing. I can make them proper
-static inlines instead :)
-
-Stephen
-
->
-> IMHO, the define is not a real solution. The macro won't be usable
-> without including atomic.h. So, it would work only by chance.
->
-> But it is possible that I miss something.
->
-> Best Regards,
-> Petr
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index 09644ab0d87a..ef2acea3d036 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -16,6 +16,7 @@
+ #include <linux/of_net.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/regmap.h>
+ #include <linux/stmmac.h>
+@@ -1254,6 +1255,7 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 	ndev = dev_get_drvdata(&pdev->dev);
+ 	priv = netdev_priv(ndev);
+ 
++	pm_runtime_get_sync(&pdev->dev);
+ 	/* The mux must be registered after parent MDIO
+ 	 * so after stmmac_dvr_probe()
+ 	 */
+@@ -1272,12 +1274,15 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 			goto dwmac_remove;
+ 	}
+ 
++	pm_runtime_put(&pdev->dev);
++
+ 	return 0;
+ 
+ dwmac_mux:
+ 	reset_control_put(gmac->rst_ephy);
+ 	clk_put(gmac->ephy_clk);
+ dwmac_remove:
++	pm_runtime_put_noidle(&pdev->dev);
+ 	stmmac_dvr_remove(&pdev->dev);
+ dwmac_exit:
+ 	sun8i_dwmac_exit(pdev, gmac);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 8ded4be08b00..2f9bd1eacb81 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7133,6 +7133,10 @@ int stmmac_dvr_remove(struct device *dev)
+ 
+ 	netdev_info(priv->dev, "%s: removing driver", __func__);
+ 
++	pm_runtime_get_sync(dev);
++	pm_runtime_disable(dev);
++	pm_runtime_put_noidle(dev);
++
+ 	stmmac_stop_all_dma(priv);
+ 	stmmac_mac_set(priv, priv->ioaddr, false);
+ 	netif_carrier_off(ndev);
+@@ -7151,8 +7155,6 @@ int stmmac_dvr_remove(struct device *dev)
+ 	if (priv->plat->stmmac_rst)
+ 		reset_control_assert(priv->plat->stmmac_rst);
+ 	reset_control_assert(priv->plat->stmmac_ahb_rst);
+-	pm_runtime_put(dev);
+-	pm_runtime_disable(dev);
+ 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
+ 	    priv->hw->pcs != STMMAC_PCS_RTBI)
+ 		stmmac_mdio_unregister(ndev);
