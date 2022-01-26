@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6FFAC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:38:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DD4C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232228AbiAZDib (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 22:38:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49428 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231830AbiAZDi3 (ORCPT
+        id S232637AbiAZDkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 22:40:43 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57294 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230085AbiAZDkm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 22:38:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C8FC06161C;
-        Tue, 25 Jan 2022 19:38:29 -0800 (PST)
+        Tue, 25 Jan 2022 22:40:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7C93616F7;
-        Wed, 26 Jan 2022 03:38:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCB66C340E3;
-        Wed, 26 Jan 2022 03:38:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 053ACB81BAA;
+        Wed, 26 Jan 2022 03:40:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68B31C340E3;
+        Wed, 26 Jan 2022 03:40:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643168308;
-        bh=YrT0X0ihycvNsGpgFSU6siPAt6t2EfDiz6/xejc9MkA=;
+        s=k20201202; t=1643168439;
+        bh=YILwlodCyd4mdH5DL4bOcMKvZ745VRwUzzjYehTweJ0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=udilF3BWz+9QtxaxXyqQTW5IlTYnNzT3MqygYePWn3uKgxKLWkDXscTzrwAtGXTpN
-         QIABQ9RHUZm/wfstzEg7l2eL8hGTVGsrD8ZBB8vfg1yppxMNpI4tc0xCCGDeePP1DP
-         70K8y8lY7mEyYGLi6uOin0AY+OOGBYL0Poc7f7HOedRnZiQQ4g5V78ucWDiCDOE8QS
-         9kQ3/VzsPjHsunO5Spzmrt3S4wAdqjnZzV5Z9BGJRusb+UtfYcuj1pSHumZsWVTCEp
-         84dBypcNXaiKkmIwdNi3Zie3Qsy28PBfdyGTCyAzs6EYfwI7poXLeYdf33XMOGxyP7
-         zc6CcSKi/FpFw==
-Date:   Tue, 25 Jan 2022 19:38:26 -0800
+        b=b2ywctUMiZxNPwLdRX94rGjTss4FNogBgcpctz7UZGex59ZECtuAheH6P3tkitkC+
+         6EsGv2IsdX4ns8jcim7ao56cBbOF+ffvhEqLFg9uDuAXIZ2I8ViWdNENAKk2ikeDMP
+         xbmwiYST2aqX06zI9rUx6c4Oj0+NzT+zGJT9OIoRH+SsuBrX3T19kOfzmK3A1+e/fI
+         rFsJAt+/JuTTv4AzPhvC72v9uqgtJrnpeEuHMLuNG05Pbm+HauhS8XZFCytzC6EZCn
+         Lwm4TIc9/SolMY5aGrqfhnCXqB8iKqijr+EqEcJ+RGxPumv+ucypOBHaIWP4dlh6aT
+         BEZo20uNoHpcg==
+Date:   Tue, 25 Jan 2022 19:40:38 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     menglong8.dong@gmail.com
-Cc:     nhorman@tuxdriver.com, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dsahern@kernel.org,
-        rostedt@goodmis.org, Menglong Dong <imagedong@tencent.com>
-Subject: Re: [PATCH net-next] net: drop_monitor: support drop reason
-Message-ID: <20220125193826.58ee023f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220124075955.1232426-1-imagedong@tencent.com>
-References: <20220124075955.1232426-1-imagedong@tencent.com>
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: stmmac: don't stop RXC during LPI
+Message-ID: <20220125194038.4bfa2007@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220123141245.1060-1-jszhang@kernel.org>
+References: <20220123141245.1060-1-jszhang@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -49,22 +50,23 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 24 Jan 2022 15:59:55 +0800 menglong8.dong@gmail.com wrote:
-> @@ -606,6 +608,7 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
->  static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
->  				     size_t payload_len)
->  {
-> +	enum skb_drop_reason reason = NET_DM_SKB_CB(skb)->reason;
->  	u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
+On Sun, 23 Jan 2022 22:12:45 +0800 Jisheng Zhang wrote:
+> I met can't receive rx pkt issue with below steps:
+> 0.plug in ethernet cable then boot normal and get ip from dhcp server
+> 1.quickly hotplug out then hotplug in the ethernet cable
+> 2.trigger the dhcp client to renew lease
+> 
+> tcpdump shows that the request tx pkt is sent out successfully,
+> but the mac can't receive the rx pkt.
+> 
+> The issue can easily be reproduced on platforms with PHY_POLL external
+> phy. If we don't allow the phy to stop the RXC during LPI, the issue
+> is gone. I think it's unsafe to stop the RXC during LPI because the mac
+> needs RXC clock to support RX logic.
+> 
+> And the 2nd param clk_stop_enable of phy_init_eee() is a bool, so use
+> false instead of 0.
 
-nit: maybe it's better to get a pointer to struct net_dm_skb_cb here
-instead of local var for each field?
-
->  	char buf[NET_DM_MAX_SYMBOL_LEN];
->  	struct nlattr *attr;
-> @@ -623,6 +626,9 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
->  	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
->  		goto nla_put_failure;
->  
-> +	if (nla_put_u32(msg, NET_DM_ATTR_REASON, reason))
-> +		goto nla_put_failure;
+FWIW this is marked Changes Requested in pw, TBH I'm not sure what 
+the conclusion is but if the patch is good please try to fold the
+information requested in the discussion into the commit msg and repost.
