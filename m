@@ -2,130 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EABE8C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 08:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4012AC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 08:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238644AbiAZI7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 03:59:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36866 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230348AbiAZI7a (ORCPT
+        id S238668AbiAZI7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 03:59:54 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:41962 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S238653AbiAZI7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 03:59:30 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F557C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 00:59:30 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id s18so24435963wrv.7
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 00:59:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zQvPFjLLRa6HRJk2BgAUClUH4j39/b6WfUyuXMyTxSI=;
-        b=cfsCz7sXyWW5krNSpKoaHoTX5s0nujhme9eVeP1qfPdFmBBsGRmMkhaTmRUPUnH8qO
-         2JX4jfT+KFRCK8dAT2AnaWQ1yp4fWgXEn7aQHMuQP71ZLbzHEao8RwmV9jzE7bGgAXd7
-         jKNRKEsqlxwoM6a3l0nTwxDksjV4+NRmy0We5YsSn32XwgH/wCEUEVUFbODxqJD8mcVp
-         mBejbDKNmLfqZn8NVf0JSC5bcYr/2Sj9wLhAO6r3Q451QWeS7EXGonSdhPXTCQgbI68g
-         rncB9ey5yu/zIBA3kPbLiF/IEZ+EM7WCHRvjSj9QNBRop4QybU5Wq93zQDGi3JuJ+lYk
-         kKmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zQvPFjLLRa6HRJk2BgAUClUH4j39/b6WfUyuXMyTxSI=;
-        b=RyeeLpGS0d/yn9cgzSBEEUAxVcAFtpfFAegjR9zhPXVHuyI9ktL1EvPCV9SodbmCmr
-         xK0z3JU+9Ot/nFkwoPhmvnzHjOJ7hcoWw8GEES+KcWaBXu6vYtcTPJgQFs/P2YSNWbQX
-         dLCKx9ueCMzs1nzEh3OvPvW08R7LdwawXQcHeXd0yYnQrPMwx3veF/NVRTMWeJBqh2A/
-         Rq1rPwzla51NB+7kR1veCvX0CslSW/YbtBhix5R2DDfItpkUb//r3+Mc39B0oofklt4v
-         Ay9IjHkaxMnH/GZCFrvIlVHGjUqpyAFGjFHHGFbh0ehPNjnwlOhxveOpB/23SB4DkRdJ
-         UGiw==
-X-Gm-Message-State: AOAM533kbW/GJeCZYsOxgrXrCKnF0zF6lezmE6M1TTkK8ev0IaUdfVhg
-        2OEovcH7xbfvggvRxRBg+FxhMw==
-X-Google-Smtp-Source: ABdhPJxSgbRAoHwRBT6vs3teem1jRvlCGwMFxR+ltfzIVOEkF7dCgOl8o3YAVd87qh729pqmb7sdDQ==
-X-Received: by 2002:a5d:4050:: with SMTP id w16mr5335831wrp.662.1643187568636;
-        Wed, 26 Jan 2022 00:59:28 -0800 (PST)
-Received: from ?IPv6:2a01:e34:ed2f:f020:f589:cf7d:b2ee:bb5e? ([2a01:e34:ed2f:f020:f589:cf7d:b2ee:bb5e])
-        by smtp.googlemail.com with ESMTPSA id m14sm12466672wrp.4.2022.01.26.00.59.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Jan 2022 00:59:28 -0800 (PST)
-Subject: Re: [PATCH 0/5] clocksource/drivers/imx: several updates
-To:     Peng Fan <peng.fan@nxp.com>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
-Cc:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20211214120737.1611955-1-peng.fan@oss.nxp.com>
- <DU0PR04MB94177F777E854B92C665303488519@DU0PR04MB9417.eurprd04.prod.outlook.com>
- <DU0PR04MB9417BA24DB13CD6C98BE47CF88209@DU0PR04MB9417.eurprd04.prod.outlook.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <c7584787-838f-97b8-5e2a-c7f271d8a406@linaro.org>
-Date:   Wed, 26 Jan 2022 09:59:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Wed, 26 Jan 2022 03:59:53 -0500
+X-UUID: 49444759154247c9bd22bfdb75bf04ad-20220126
+X-UUID: 49444759154247c9bd22bfdb75bf04ad-20220126
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <miles.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 649423601; Wed, 26 Jan 2022 16:59:48 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 26 Jan 2022 16:59:47 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 26 Jan 2022 16:59:47 +0800
+From:   Miles Chen <miles.chen@mediatek.com>
+To:     <wenst@chromium.org>
+CC:     <chun-jie.chen@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
+        <mturquette@baylibre.com>, <sboyd@kernel.org>
+Subject: Re: [PATCH 31/31] clk: mediatek: Warn if clk IDs are duplicated
+Date:   Wed, 26 Jan 2022 16:59:47 +0800
+Message-ID: <20220126085947.31507-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220122091731.283592-32-wenst@chromium.org>
+References: <20220122091731.283592-32-wenst@chromium.org>
 MIME-Version: 1.0
-In-Reply-To: <DU0PR04MB9417BA24DB13CD6C98BE47CF88209@DU0PR04MB9417.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 26/01/2022 09:24, Peng Fan wrote:
-> Daniel,
+>The Mediatek clk driver library handles duplicate clock IDs in two
+>different ways: either ignoring the duplicate entry, or overwriting
+>the old clk. Either way may cause unexpected behavior, and the latter
+>also causes an orphan clk that cannot be cleaned up.
+>
+>Align the behavior so that later duplicate entries are ignored, and
+>a warning printed. The warning will also aid in making the issue
+>noticeable.
+>
+>Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+>---
+> drivers/clk/mediatek/clk-cpumux.c |  6 ++++++
+> drivers/clk/mediatek/clk-gate.c   |  5 ++++-
+> drivers/clk/mediatek/clk-mtk.c    | 18 ++++++++++++++----
+> drivers/clk/mediatek/clk-mux.c    |  5 ++++-
+> drivers/clk/mediatek/clk-pll.c    |  6 ++++++
+> 5 files changed, 34 insertions(+), 6 deletions(-)
+>
+>diff --git a/drivers/clk/mediatek/clk-cpumux.c b/drivers/clk/mediatek/clk-cpumux.c
+>index 499c60432280..c11b3fae622e 100644
+>--- a/drivers/clk/mediatek/clk-cpumux.c
+>+++ b/drivers/clk/mediatek/clk-cpumux.c
+>@@ -120,6 +120,12 @@ int mtk_clk_register_cpumuxes(struct device_node *node,
+> 	for (i = 0; i < num; i++) {
+> 		const struct mtk_composite *mux = &clks[i];
 > 
->> Subject: RE: [PATCH 0/5] clocksource/drivers/imx: several updates
+>+		if (!IS_ERR_OR_NULL(clk_data->clks[mux->id])) {
+>+			pr_warn("%pOF: Trying to register duplicate clock ID: %d\n",
+>+				node, mux->id);
+>+			continue;
+
+%pOF is an useful information when this happens.
+
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+
+>+		}
+>+
+> 		clk = mtk_clk_register_cpumux(mux, regmap);
+> 		if (IS_ERR(clk)) {
+> 			pr_err("Failed to register clk %s: %pe\n", mux->name, clk);
+>diff --git a/drivers/clk/mediatek/clk-gate.c b/drivers/clk/mediatek/clk-gate.c
+>index 631ff170b7b9..da52023f8455 100644
+>--- a/drivers/clk/mediatek/clk-gate.c
+>+++ b/drivers/clk/mediatek/clk-gate.c
+>@@ -224,8 +224,11 @@ int mtk_clk_register_gates_with_dev(struct device_node *node,
+> 	for (i = 0; i < num; i++) {
+> 		const struct mtk_gate *gate = &clks[i];
 > 
-> Do you have time to give a look?
-
-Yeah, sorry for the delay
-
-They sounds good, I'll pick them up
-
-Thanks
-
-  -- Daniel
-
-
->>> Subject: [PATCH 0/5] clocksource/drivers/imx: several updates
->>>
->>> From: Peng Fan <peng.fan@nxp.com>
->>>
->>> This patchset includes several update of i.MX sysctr and tpm driver.
->>
->> Ping..
->>
->> Thanks,
->> Peng.
->>
->>>
->>> Peng Fan (5):
->>>   clocksource/drivers/imx-sysctr: drop IRQF_IRQPOLL
->>>   clocksource/drivers/imx-tpm: drop IRQF_IRQPOLL
->>>   clocksource/drivers/imx-tpm: mark two variable with __ro_after_init
->>>   clocksource/drivers/imx-tpm: add CLOCK_EVT_FEAT_DYNIRQ
->>>   clocksource/drivers/imx-tpm: update name of clkevt
->>>
->>>  drivers/clocksource/timer-imx-sysctr.c |  2 +-
->>>  drivers/clocksource/timer-imx-tpm.c    | 10 +++++-----
->>>  2 files changed, 6 insertions(+), 6 deletions(-)
->>>
->>> --
->>> 2.25.1
+>-		if (!IS_ERR_OR_NULL(clk_data->clks[gate->id]))
+>+		if (!IS_ERR_OR_NULL(clk_data->clks[gate->id])) {
+>+			pr_warn("%pOF: Trying to register duplicate clock ID: %d\n",
+>+				node, gate->id);
+> 			continue;
+>+		}
 > 
-
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+> 		clk = mtk_clk_register_gate(gate->name, gate->parent_name,
+> 					    regmap,
+>diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
+>index 6d0b8842971b..b2a3568922b2 100644
+>--- a/drivers/clk/mediatek/clk-mtk.c
+>+++ b/drivers/clk/mediatek/clk-mtk.c
+>@@ -65,8 +65,10 @@ int mtk_clk_register_fixed_clks(const struct mtk_fixed_clk *clks, int num,
+> 	for (i = 0; i < num; i++) {
+> 		const struct mtk_fixed_clk *rc = &clks[i];
+> 
+>-		if (!IS_ERR_OR_NULL(clk_data->clks[rc->id]))
+>+		if (!IS_ERR_OR_NULL(clk_data->clks[rc->id])) {
+>+			pr_warn("Trying to register duplicate clock ID: %d\n", rc->id);
+> 			continue;
+>+		}
+> 
+> 		clk = clk_register_fixed_rate(NULL, rc->name, rc->parent, 0,
+> 					      rc->rate);
+>@@ -128,8 +130,10 @@ int mtk_clk_register_factors(const struct mtk_fixed_factor *clks, int num,
+> 	for (i = 0; i < num; i++) {
+> 		const struct mtk_fixed_factor *ff = &clks[i];
+> 
+>-		if (!IS_ERR_OR_NULL(clk_data->clks[ff->id]))
+>+		if (!IS_ERR_OR_NULL(clk_data->clks[ff->id])) {
+>+			pr_warn("Trying to register duplicate clock ID: %d\n", ff->id);
+> 			continue;
+>+		}
+> 
+> 		clk = clk_register_fixed_factor(NULL, ff->name, ff->parent_name,
+> 				CLK_SET_RATE_PARENT, ff->mult, ff->div);
+>@@ -300,8 +304,11 @@ int mtk_clk_register_composites(const struct mtk_composite *mcs, int num,
+> 	for (i = 0; i < num; i++) {
+> 		const struct mtk_composite *mc = &mcs[i];
+> 
+>-		if (clk_data && !IS_ERR_OR_NULL(clk_data->clks[mc->id]))
+>+		if (!IS_ERR_OR_NULL(clk_data->clks[mc->id])) {
+>+			pr_warn("Trying to register duplicate clock ID: %d\n",
+>+				mc->id);
+> 			continue;
+>+		}
+> 
+> 		clk = mtk_clk_register_composite(mc, base, lock);
+> 
+>@@ -363,8 +370,11 @@ int mtk_clk_register_dividers(const struct mtk_clk_divider *mcds, int num,
+> 	for (i = 0; i <  num; i++) {
+> 		const struct mtk_clk_divider *mcd = &mcds[i];
+> 
+>-		if (!IS_ERR_OR_NULL(clk_data->clks[mcd->id]))
+>+		if (!IS_ERR_OR_NULL(clk_data->clks[mcd->id])) {
+>+			pr_warn("Trying to register duplicate clock ID: %d\n",
+>+				mcd->id);
+> 			continue;
+>+		}
+> 
+> 		clk = clk_register_divider(NULL, mcd->name, mcd->parent_name,
+> 			mcd->flags, base +  mcd->div_reg, mcd->div_shift,
+>diff --git a/drivers/clk/mediatek/clk-mux.c b/drivers/clk/mediatek/clk-mux.c
+>index f51e67650f03..21ad5a4afd65 100644
+>--- a/drivers/clk/mediatek/clk-mux.c
+>+++ b/drivers/clk/mediatek/clk-mux.c
+>@@ -208,8 +208,11 @@ int mtk_clk_register_muxes(const struct mtk_mux *muxes,
+> 	for (i = 0; i < num; i++) {
+> 		const struct mtk_mux *mux = &muxes[i];
+> 
+>-		if (!IS_ERR_OR_NULL(clk_data->clks[mux->id]))
+>+		if (!IS_ERR_OR_NULL(clk_data->clks[mux->id])) {
+>+			pr_warn("%pOF: Trying to register duplicate clock ID: %d\n",
+>+				node, mux->id);
+> 			continue;
+>+		}
+> 
+> 		clk = mtk_clk_register_mux(mux, regmap, lock);
+> 
+>diff --git a/drivers/clk/mediatek/clk-pll.c b/drivers/clk/mediatek/clk-pll.c
+>index 1dd15f560659..e5e9c188be99 100644
+>--- a/drivers/clk/mediatek/clk-pll.c
+>+++ b/drivers/clk/mediatek/clk-pll.c
+>@@ -386,6 +386,12 @@ int mtk_clk_register_plls(struct device_node *node,
+> 	for (i = 0; i < num_plls; i++) {
+> 		const struct mtk_pll_data *pll = &plls[i];
+> 
+>+		if (!IS_ERR_OR_NULL(clk_data->clks[pll->id])) {
+>+			pr_warn("%pOF: Trying to register duplicate clock ID: %d\n",
+>+				node, pll->id);
+>+			continue;
+>+		}
+>+
+> 		clk = mtk_clk_register_pll(pll, base);
+> 
+> 		if (IS_ERR(clk)) {
+>-- 
+>2.35.0.rc0.227.g00780c9af4-goog
+>
+>
