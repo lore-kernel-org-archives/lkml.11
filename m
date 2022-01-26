@@ -2,143 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 412F2C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A889C63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:08:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241911AbiAZOFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 09:05:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235083AbiAZOFD (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 09:05:03 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43AB9C06161C;
-        Wed, 26 Jan 2022 06:05:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=LDOLYM2UfrQAiWJ+eM2UXKMwCeFJxxfa8YNvPPKmDCc=; b=ELrBa3qC7jTSTLpOImhQz3dzEz
-        K5WpZ/YZNRUQTA5GRRhG6YiSdHMRVkodurb0Am0X6SmfvxxM4e30HzzO0Bq+Eya4Z4YKZsqyZnHRq
-        WUbgL69McwYa9JEsI5oTYalj84FVvlFriG5wyGGcjvvUqF3QFnjgJERnCaHSyuuX1VWvdDmH9ubgF
-        fJKVKswc9GsTI7CfyMfotquwNpIzpjlt+9i2tvGaowEnY0/GTHW4z87fV/3J6mP9njzNubFGlAfz7
-        fq2jpcbaKAgrY6uR1AMaqLdZfQnwioMKBvnr6oeatrRB6eM1WA2W2FyfS5VrAE1X84P7KWS611JLB
-        HGQIVHaA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nCiuj-003os7-UP; Wed, 26 Jan 2022 14:04:46 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 501733002C5;
-        Wed, 26 Jan 2022 15:04:44 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id E9FC72B36E787; Wed, 26 Jan 2022 15:04:43 +0100 (CET)
-Date:   Wed, 26 Jan 2022 15:04:43 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Liang, Kan" <kan.liang@linux.intel.com>
-Cc:     Kyle Huey <me@kylehuey.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Robert O'Callahan <rocallahan@gmail.com>,
-        Keno Fischer <keno@juliacomputing.com>,
-        Andi Kleen <ak@linux.intel.com>
-Subject: Re: [PATCH] x86/perf: Default freeze_on_smi on for Comet Lake and
- later.
-Message-ID: <YfFU+2nMjEC1Mo3m@hirez.programming.kicks-ass.net>
-References: <20220122072644.92292-1-khuey@kylehuey.com>
- <Ye6Z31keWVPrsNWU@hirez.programming.kicks-ass.net>
- <3c35dc76-c187-8d3f-7fc9-75de32e7cbf6@linux.intel.com>
- <CAP045ArbX7cYKyv0H4X2SxUJWycB1VoLZWLME=_RXttBFBfP3A@mail.gmail.com>
- <7ef1bf66-4184-7f5b-c0bd-351ec743d4e9@linux.intel.com>
+        id S239018AbiAZOIA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 09:08:00 -0500
+Received: from mga12.intel.com ([192.55.52.136]:18857 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235353AbiAZOH6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 09:07:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643206078; x=1674742078;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ATWiAh5adUik4jh9DAaJE+s1YCh+W1I+c+EDEhALlV0=;
+  b=QRZGS2JA7djqw65FCRjCn/huuSNPto02OUB8Y6UE+VAB3d5+uXxKx/wV
+   yvWriZ2Cy3cCmGQ0qXlrmGmmF5qtrFR9VjNmKhD93nCdTzm+eqgQpwD9i
+   RRH4sCZB7wgYU14dp1bwJ7UWrKxdVAbxMe9F79+fEk6cNgEor7VaZkzS7
+   jStoDckCasxXh3E5sRJIGw+gc9DQ+872EN+fzo+DG4wWWnbma3I0xA5IX
+   3aKclcBTZUyBec0Qq7RPbW12c8hnK/h1tG6yMjPNdKMcVU918ZyCdiJGv
+   8YPabIyMV7/PgcvB6IY4OYDrSombPvqyMMGTzq0ON4FVNNAFiQiTF9B5p
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="226531926"
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="226531926"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:07:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="628311015"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 26 Jan 2022 06:07:56 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCixn-000LH9-Df; Wed, 26 Jan 2022 14:07:55 +0000
+Date:   Wed, 26 Jan 2022 22:07:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Maciej W. Rozycki" <macro@embecosm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     kbuild-all@lists.01.org, Christoph Hellwig <hch@infradead.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v3] tty: Partially revert the removal of the Cyclades
+ public API
+Message-ID: <202201262147.FNYhDmDi-lkp@intel.com>
+References: <alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7ef1bf66-4184-7f5b-c0bd-351ec743d4e9@linux.intel.com>
+In-Reply-To: <alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 08:57:09AM -0500, Liang, Kan wrote:
-> I see. I was thought the unprivileged user can observe the SMM code on the
-> previous platforms. The CML+ change only makes part of the SMM code CPL0.
-> Seems I'm wrong. The change looks like changing the previous CPL0 code to
-> CPL3 code. If so, yes, I think we should prevent the information leaks for
-> the unprivileged user.
+Hi "Maciej,
 
-Right.
+I love your patch! Perhaps something to improve:
 
-> Changing it to all platforms seems a too big hammer. I agree we should limit
-> it to the impacted platforms.
-> 
-> I've contacted the author of the white paper. I was told that the change is
-> for the client vPro platforms. They are not sure whether it impacts Server
-> platform or Atom platforms. I'm still working on it. I will let you and
-> Peter know once I get more information.
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on linus/master hch-configfs/for-next v5.17-rc1 next-20220125]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-For now I've updated the patch as per the below. I'm tempted to simply
-apply it as is and let it be.
+url:    https://github.com/0day-ci/linux/commits/Maciej-W-Rozycki/tty-Partially-revert-the-removal-of-the-Cyclades-public-API/20220126-172520
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: i386-buildonly-randconfig-r002-20220124 (https://download.01.org/0day-ci/archive/20220126/202201262147.FNYhDmDi-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/c9e707e313f471adbe057300f4fb163113cf062c
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Maciej-W-Rozycki/tty-Partially-revert-the-removal-of-the-Cyclades-public-API/20220126-172520
+        git checkout c9e707e313f471adbe057300f4fb163113cf062c
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Having different defaults for vPro vs !vPro chips seems more confusing
-than not.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-We should also very much get this change reverted for future chips.
+All warnings (new ones prefixed by >>):
 
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -6094,6 +6094,16 @@ __init int intel_pmu_init(void)
- 			x86_pmu.commit_scheduling = intel_tfa_commit_scheduling;
- 		}
- 
-+		if (boot_cpu_data.x86_model == INTEL_FAM6_COMETLAKE_L ||
-+		    boot_cpu_data.x86_model == INTEL_FAM6_COMETLAKE) {
-+			/*
-+			 * For some idiotic reason SMM is visible to USR
-+			 * counters. Since this is a privilege issue, default
-+			 * disable counters in SMM for these chips.
-+			 */
-+			x86_pmu.attr_freeze_on_smi = 1;
-+		}
-+
- 		pr_cont("Skylake events, ");
- 		name = "skylake";
- 		break;
-@@ -6135,6 +6145,8 @@ __init int intel_pmu_init(void)
- 		x86_pmu.num_topdown_events = 4;
- 		x86_pmu.update_topdown_event = icl_update_topdown_event;
- 		x86_pmu.set_topdown_event_period = icl_set_topdown_event_period;
-+		/* SMM visible in USR, see above */
-+		x86_pmu.attr_freeze_on_smi = 1;
- 		pr_cont("Icelake events, ");
- 		name = "icelake";
- 		break;
-@@ -6172,6 +6184,8 @@ __init int intel_pmu_init(void)
- 		x86_pmu.num_topdown_events = 8;
- 		x86_pmu.update_topdown_event = icl_update_topdown_event;
- 		x86_pmu.set_topdown_event_period = icl_set_topdown_event_period;
-+		/* SMM visible in USR, see above */
-+		x86_pmu.attr_freeze_on_smi = 1;
- 		pr_cont("Sapphire Rapids events, ");
- 		name = "sapphire_rapids";
- 		break;
-@@ -6217,6 +6231,8 @@ __init int intel_pmu_init(void)
- 		 * x86_pmu.rtm_abort_event.
- 		 */
- 		x86_pmu.rtm_abort_event = X86_CONFIG(.event=0xc9, .umask=0x04);
-+		/* SMM visible in USR, see above */
-+		x86_pmu.attr_freeze_on_smi = 1;
- 
- 		td_attr = adl_hybrid_events_attrs;
- 		mem_attr = adl_hybrid_mem_attrs;
+   In file included from <command-line>:32:
+>> ./usr/include/linux/cyclades.h:6:2: warning: #warning "Support for features provided by this header has been removed" [-Wcpp]
+       6 | #warning "Support for features provided by this header has been removed"
+         |  ^~~~~~~
+>> ./usr/include/linux/cyclades.h:7:2: warning: #warning "Please consider updating your code" [-Wcpp]
+       7 | #warning "Please consider updating your code"
+         |  ^~~~~~~
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
