@@ -2,127 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BBDC3525A
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C745C63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237001AbiAZDRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 22:17:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44686 "EHLO
+        id S237049AbiAZDSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 22:18:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236959AbiAZDRe (ORCPT
+        with ESMTP id S237229AbiAZDSF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 22:17:34 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A06C06173B
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 19:17:34 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so4867270pjb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 19:17:34 -0800 (PST)
+        Tue, 25 Jan 2022 22:18:05 -0500
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A078C06161C;
+        Tue, 25 Jan 2022 19:18:04 -0800 (PST)
+Received: by mail-ed1-x542.google.com with SMTP id a18so66626814edj.7;
+        Tue, 25 Jan 2022 19:18:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YQgBsY1o7VwdSddDX8vhLNlKqs5Ri3GdNvKIl4FyJaw=;
-        b=nfbWGzPnFzWkrKMJfEXt3Q+5NsNv9X0y88iep76Qzo2kqyzXzeTDvswJI0gqN0MKsH
-         rJ1KoOfLkK0v1G/qPyBJG2YxBXyE3KoTC2u/wlNvA8jqDIwvLbCW/R5bl9N6zhFa1S+o
-         lg18M2NeCjVw4EwPhPbiImVceGqBbcY7Jusao=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nGwKJWYONIElZDTFR99HkZ3dGKG6mpKfNsXZp31Ut3E=;
+        b=f4maGwavYSH1ugNaxseEKuv79y5ex54drx/p9lD2G9Fiu9K5ajRXEp+R72M5HBA1at
+         o24cZVNmk6eoK81cgRXNpfkMoij7I29Hz0Y24PhySUZqqVPHUv1VAqAyLTEIW1aiBikc
+         DTrbjaoxwFbUMcJ9PKNWB6xpjBY83hkzGSVmd2e2Jt/VRGuePq0AV2U9RZtZD4BuIM82
+         XSo30ca8XkyC2nzmKGWjoZwlYaR3PWB77GLMtVaj8L5/J/XF32RTVZ89FqtJfN2k60mB
+         g8paoeDwpM92zXB/yd2gG4E1OdIdOAnMnrkokNudxg2Lwn71qNH5+50ur2+18QDFtbZw
+         jrAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YQgBsY1o7VwdSddDX8vhLNlKqs5Ri3GdNvKIl4FyJaw=;
-        b=bSbh34YJSTXg4ou3+KTHhmcv0LsUfLJbTFqFX33M+L+7LgV2qXv0Xg4vCFoD4CbpQN
-         uj4CyuiXnFOvglz3ogQdJryi2zW/3K+uE1a0wRG9UbvBq/Q4+8QdqemcegDCVqKcDyV6
-         4V+QFHVc7IyesN1R6+69dXvyrMC2NpunslH6VrDI9WRnK0Qel9VFnq3qqALqj9aKBmpa
-         n+yDNqz7riXfSYBdjo14z22RLhzYzeeMgaca4O9FCVaWB9JF6+DVglc9pDnoPdiqQxWm
-         kcmYyrqeUjXEDySlG/JPPbA2hi//IrDGZZiJ1C+7eM7AScCEs2ABFLBDbGhtP9axnSPX
-         3l0Q==
-X-Gm-Message-State: AOAM5314iIkak+VNk3eGmLvH8wJNN1F39ff2kZmi5DiVBoiTV7/P1UQX
-        9bdV5KNxXjtlSuWmtF+feW5EeA==
-X-Google-Smtp-Source: ABdhPJzI/Pd7Bs8gll9wyDNxq7JxvB/aUnVfP47c4GhWSocc5/OzudBwnKSgwkp0PLKQCY1rG2oA2g==
-X-Received: by 2002:a17:902:c401:b0:14b:89ce:3832 with SMTP id k1-20020a170902c40100b0014b89ce3832mr2151064plk.78.1643167053982;
-        Tue, 25 Jan 2022 19:17:33 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d20sm383781pfv.74.2022.01.25.19.17.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 19:17:33 -0800 (PST)
-Date:   Tue, 25 Jan 2022 19:17:32 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>
-Subject: Re: linux-next: build failure after merge of the kspp tree
-Message-ID: <202201251914.9377C63D16@keescook>
-References: <20220125145006.677e3709@canb.auug.org.au>
- <202201242230.C54A6BCDFE@keescook>
- <20220125222732.98ce2e445726e773f40e122e@kernel.org>
- <20220125233154.dac280ed36944c0c2fe6f3ac@kernel.org>
- <202201251256.CCCBE9851E@keescook>
- <20220125162326.3d1ca960@gandalf.local.home>
- <20220125162859.2b3cc8a0@gandalf.local.home>
- <202201251402.0FB08DB@keescook>
- <20220125172114.6807ed8f@gandalf.local.home>
- <20220126093538.893fb44a7cb0a7cd840c7fdb@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nGwKJWYONIElZDTFR99HkZ3dGKG6mpKfNsXZp31Ut3E=;
+        b=4OwPkzWamfdLFXMK8C/pwm3TmPOI7lpc/fi8UMdz/iZ8AEK24EAzA3wI+Tdlh/8uuz
+         5YtA79bodNjIsCBKBacXQ7wHWHWI6to9Q4+FgwCFS34Zs6knef7JSzQ1w9ehxFYHxCKc
+         5gLNowh43LtPvy2kO9R7DzwL2K/+wQld5iuk5L8tZcVMUA2rD0d+orPJ1IGK6X5PoZp/
+         ry/9iFZn6cqOIZHSEU+gNvyb2YGQJphvJq5JCkbuLHwP1ZUJ/E6a3rr53jdoNUWCXr1h
+         azOwYwuX2kQbmnVwE7V6UJKiD7vQmQM6cJtFT2i7X4DobNWwcExaz3NbQisQGVYyOiuQ
+         PZcw==
+X-Gm-Message-State: AOAM530F9OhkO8oZD1Nxu6lc0ivWpVess6FFeLquOg7Vax6A+KAbhRGj
+        RHYQjkgTe33KsSJH3LZBLBqvcGS+xDhD9hHXHv4=
+X-Google-Smtp-Source: ABdhPJxgFkyj1zvsBe7fIwyDUghW8HcgNWcznQZiYp3Hf5SBqM5nN32i8nIqMCR/bBLgT5HK+hmKayduOmwYrB3+sBs=
+X-Received: by 2002:aa7:d949:: with SMTP id l9mr10167058eds.137.1643167083224;
+ Tue, 25 Jan 2022 19:18:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126093538.893fb44a7cb0a7cd840c7fdb@kernel.org>
+References: <20220124131538.1453657-1-imagedong@tencent.com>
+ <20220124131538.1453657-4-imagedong@tencent.com> <5201dd8b-e84c-89a0-568f-47a2211b88cb@gmail.com>
+ <CADxym3YpyWh59cjtUqxGXxpb2+2Ywb-n4Jpz1KJG3AYRf5cenA@mail.gmail.com> <926e3d3d-1af0-7155-e0ac-aee7d804a645@gmail.com>
+In-Reply-To: <926e3d3d-1af0-7155-e0ac-aee7d804a645@gmail.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 26 Jan 2022 11:13:35 +0800
+Message-ID: <CADxym3Y5Ld-BcM4-Y=vJZiwsCEfRZpBqd1oj6ct+Xeu8F=wXew@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/6] net: ipv4: use kfree_skb_reason() in ip_rcv_finish_core()
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, pablo@netfilter.org,
+        kadlec@netfilter.org, Florian Westphal <fw@strlen.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Eric Dumazet <edumazet@google.com>, alobakin@pm.me,
+        paulb@nvidia.com, Paolo Abeni <pabeni@redhat.com>,
+        talalahmad@google.com, haokexin@gmail.com,
+        Kees Cook <keescook@chromium.org>, memxor@gmail.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, Cong Wang <cong.wang@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 09:35:38AM +0900, Masami Hiramatsu wrote:
-> Hi Steve,
-> (Ccing Beau)
-> 
-> On Tue, 25 Jan 2022 17:21:14 -0500
-> Steven Rostedt <rostedt@goodmis.org> wrote:
-> 
-> > On Tue, 25 Jan 2022 14:07:14 -0800
-> > Kees Cook <keescook@chromium.org> wrote:
-> > 
-> > > > The tstruct is the TP_STRUCT__entry() and for each __rel_dynamic_array() or
-> > > > __dynamic_array(), the __data_size gets updated and saved into the
-> > > > __data_offsets that holds where each item is.
-> > > > 
-> > > > The rel versions sets the offset from its location to the data, where as
-> > > > the non rel versions sets the offset from the beginning of the event to the
-> > > > data.  
-> > > 
-> > > Could this just be
-> > > 
-> > > #define __get_rel_dynamic_array(field) \
-> > > 	((void *)(&__entry->data[__entry->__rel_loc_##field & 0xffff])
-> > > 
-> > > ?
-> > 
-> > This is currently user space defined. But since the only user of the rel_*
-> > version hasn't been upstreamed yet, we could change it. But it also
-> > requires changing libtraceevent as it depends on this code too.
-> 
-> I think Kees' idea seems better. If you and Beau are good, I will update
-> the macros for __rel_loc. (This requires to change some user-space
-> application which Beau is making too.)
-> 
-> > 
-> > I'm surprised that it doesn't break with the __get_dynamic_array()
-> > versions, or is that because it's based off of __entry?
-> 
-> I think so. Gcc seems to check the size of the data structure where the
-> original base address points.
+On Wed, Jan 26, 2022 at 10:57 AM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 1/25/22 7:36 PM, Menglong Dong wrote:
+> > Is't it meaningful? I name it from the meaning of 'ip route lookup or validate
+> > failed in input path', can't it express this information?
+>
+>
+> ip_route_input_noref has many failures and not all of them are FIB
+> lookups. ip_route_input_slow has a bunch of EINVAL cases for example.
+>
+> Returning a 'reason' as the code function name has no meaning to a user
+> and could actually be misleading in some cases. I would skip this one
+> for now.
 
-Right, and it's pretty good these days at navigating through casts and
-inlines, etc, which is appreciated in all the cases where it has found
-real bugs. :)
-
-The "offset from __entry" solution works as well as "offset from
-__entry->data", so I don't care which is used. If "offset from data"
-makes more sense for this API, yeah, I guess change it now while it's
-possible. :)
-
-Thanks for helping track this down!
-
--- 
-Kees Cook
+Yeah, the real reason can be complex. I'll skip this case for now.
