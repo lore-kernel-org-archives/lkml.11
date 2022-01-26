@@ -2,66 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC89C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 08:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA5C8C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 08:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238474AbiAZIaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 03:30:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58440 "EHLO
+        id S238483AbiAZIaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 03:30:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230223AbiAZIaV (ORCPT
+        with ESMTP id S230223AbiAZIam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 03:30:21 -0500
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F8DC06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 00:30:21 -0800 (PST)
-Received: from martin by viti.kaiser.cx with local (Exim 4.89)
-        (envelope-from <martin@viti.kaiser.cx>)
-        id 1nCdgw-00017u-RR; Wed, 26 Jan 2022 09:30:10 +0100
-Date:   Wed, 26 Jan 2022 09:30:10 +0100
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] staging: r8188eu: ODM_RF_CALIBRATION is always set
-Message-ID: <20220126083010.g7cw77wcliydh3im@viti.kaiser.cx>
-References: <20220122170547.68378-1-martin@kaiser.cx>
- <20220122170547.68378-4-martin@kaiser.cx>
- <20220126074917.GW1951@kadam>
+        Wed, 26 Jan 2022 03:30:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6F8C06161C;
+        Wed, 26 Jan 2022 00:30:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A485CB81C13;
+        Wed, 26 Jan 2022 08:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC646C340E3;
+        Wed, 26 Jan 2022 08:30:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643185839;
+        bh=qKazU28NFPi1JaZnJrqSAMht8qRDH0NxIN7MLjkqLqE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NPWQNvgAyMwwqb0Ni1Ase2Q9wL5sOBkJ+9hRMUWNP3bxm9BiQH7CnQIH2dxzcSszN
+         g0z5UOqsQQDEHg50yZDClr4pXnj/GNXR4sQkqc1tREwWE+grwOvcOGo/DMfpoxEDsp
+         VKpKpqBBhYB9gjcZPAaSENV7OstEIHozmvf+wLJ7/Onnl5TTPbSUZySgr2m5k79+Pu
+         22xVzNSkGljlVJmdTmRbF643FrqBvft1U/9Vrt5BA6irynPpNr/lVoesnWMviLvNVe
+         XNIuhb/liA9PytK1+dOMbcXmolTxksY2cnbwfrBCtyG3H2jlShcOg+beYjCWrOUJm7
+         VMWP2wMUmUvVw==
+Date:   Wed, 26 Jan 2022 09:30:30 +0100
+From:   Christian Brauner <brauner@kernel.org>
+To:     Stefan Berger <stefanb@linux.vnet.ibm.com>
+Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
+        serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Stefan Berger <stefanb@linux.ibm.com>
+Subject: Re: [PATCH v9 01/23] ima: Remove ima_policy file before directory
+Message-ID: <20220126083030.theijkt7v3w3fwm5@wittgenstein>
+References: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
+ <20220125224645.79319-2-stefanb@linux.vnet.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220126074917.GW1951@kadam>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Sender: Martin Kaiser <martin@viti.kaiser.cx>
+In-Reply-To: <20220125224645.79319-2-stefanb@linux.vnet.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dan,
+On Tue, Jan 25, 2022 at 05:46:23PM -0500, Stefan Berger wrote:
+> From: Stefan Berger <stefanb@linux.ibm.com>
+> 
+> The removal of ima_dir currently fails since ima_policy still exists, so
+> remove the ima_policy file before removing the directory.
+> 
+> Fixes: 4af4662fa4a9 ("integrity: IMA policy")
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> ---
 
-Thus wrote Dan Carpenter (dan.carpenter@oracle.com):
-
-> On Sat, Jan 22, 2022 at 06:05:46PM +0100, Martin Kaiser wrote:
-> > @@ -36,10 +35,6 @@ static void Init_ODM_ComInfo_88E(struct adapter *Adapter)
-> >  	ODM_CmnInfoInit(dm_odm, ODM_CMNINFO_MP_TEST_CHIP, IS_NORMAL_CHIP(hal_data->VersionID));
-
-> >  	ODM_CmnInfoInit(dm_odm, ODM_CMNINFO_RF_ANTENNA_TYPE, hal_data->TRxAntDivType);
-> > -
-> > -	pdmpriv->InitODMFlag =	ODM_RF_CALIBRATION;
-> > -
-> > -	ODM_CmnInfoUpdate(dm_odm, ODM_CMNINFO_ABILITY, pdmpriv->InitODMFlag);
-
-> Wait, why did you remove the ODM_CmnInfoUpdate()?
-
-I removed the last item that Init_ODM_ComInfo_88E added to
-pdmpriv->InitODMFlag. Init_ODM_ComInfo_88E does no longer modify
-pdmpriv->InitODMFlag, there's no need for updating the odm internal
-status.
-
-Best regards,
-
-   Martin
+Looks good,
+Acked-by: Christian Brauner <brauner@kernel.org>
