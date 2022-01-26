@@ -2,124 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED66EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 21:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D92AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 21:25:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232241AbiAZVWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 16:22:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42542 "EHLO
+        id S232191AbiAZVZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 16:25:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232086AbiAZVWs (ORCPT
+        with ESMTP id S231665AbiAZVZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 16:22:48 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E0CC06161C;
-        Wed, 26 Jan 2022 13:22:48 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id l68so2808551ybl.0;
-        Wed, 26 Jan 2022 13:22:48 -0800 (PST)
+        Wed, 26 Jan 2022 16:25:29 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0BEC06173B
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 13:25:29 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id b15so748934plg.3
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 13:25:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=SY0GeizykbQp0sWmEDcL6vm+zpq2S6X1Nj2tMV7OyfA=;
-        b=Faee7/lninHeofHlJRvsrUsWmAtXQkCIGpwWNq4cVdhnIKH/FoVqnwe1fO1V5z02Qe
-         WMQgPoD9toT1d/NmeS4OjmvdUQpFCaZU4zPLnjyLnmcbeHLcseelRmcRWD5IARKKgxz0
-         nY3T7iltCyWeJFnPYqBXor1Z3Z88xkWnBaE+bNHu5h6bKvfrC3zFIyOOm++VM4OM1KVT
-         QkuIowu5SRYlYH7kNwJOPJTVOEgRpu3a4bg6EtolRKvTRhm9s34JFRg3RjgYfEts27+j
-         PYcmRzgimnsNpFkuc/MDfiFN4XqhPHG0ajzFXjsJOVvT9n2dUCbTGeobRbHzQu/A7qDD
-         2JXg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8cYOSIzBeCCvl67dzxyoTm+jt5+mbY2FFXmHT/tqjIQ=;
+        b=PCUgqceqh1J8Pg5J8m0EehUb0kzu76DXX1+6cMdvMptnq/vniCHtGOLU1kymRnNNj8
+         vfoe9Q2AzKsC92YdsV+tGK0PI6dDTHsNV4N/7V19vQS6OH5s1Geq0610TguiEtogA/zR
+         ygAUle1h34TgIhnKGKOkGszhzJb6S6BxjKZXQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SY0GeizykbQp0sWmEDcL6vm+zpq2S6X1Nj2tMV7OyfA=;
-        b=hfvBe0vT5fwDt8Hu65Oqng0zZ1jimLUceIOl/L27q3KnTScVUCHBUi5GeWDhu9+47K
-         VO58iSO+/iqXI7Q2E6cbQhMLau5EJSAg5xe/FBs6rj1EPP6EXDNIdB2dYEdJnd7cqw8g
-         c/ctXzjVRAl5BrazUU+MQMoDd0+s8WSsSZTao29JvjWMVRlsmqc9gIXifWNX+1m9Ctd4
-         +xb5Y+4ZlKV9umuW0IoE7GSUjdQV4UZ8p8UmL22nINq7qNm3GUCVHC+9KNxWS/FXOl3U
-         PK1xZVbQkm3j4UuY01CLWyrPgmvPHANiMnvurhiUsiBepr0DzOtnBmoEvJWOecADEV7l
-         OGLA==
-X-Gm-Message-State: AOAM531QgCcovWpeHWwjXaMuxZ1Xdr8t62Dm43uxxAvxsG+idnK6KvEY
-        sB5lKqP+fQRYq43xlemsDBb8/VP7Br5ptuU5CZ8=
-X-Google-Smtp-Source: ABdhPJyafzx7vAkOAqjKeOVASDon0U7hIxbUz+s78QV5FhaIbQpwrW1X3zniNfMPAAt4DT7C7ZzSSnMsXoMlOcedHAk=
-X-Received: by 2002:a25:d4c9:: with SMTP id m192mr1158031ybf.526.1643232167745;
- Wed, 26 Jan 2022 13:22:47 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8cYOSIzBeCCvl67dzxyoTm+jt5+mbY2FFXmHT/tqjIQ=;
+        b=bOlF9athhNdVp5oZ1R0JkaY/Rk2nzwRTCkwZldm76YE0rDmRyun2uYHMASdWIDtQiv
+         C0vHpr36rE7EsPuyKEHQMkpeJNauDFhh+HZMgI01INapcdhyjaWxwrludZ/YogPODDxD
+         F1a9s0+GW0jgLHQE3tAiAl+vhTvmgE+hjP3x8iz0NOVtK0U3jtlxkWQe3hhWzdKDdTtH
+         Hn0DAIEWRr356RX/4s4fUV7MBglNQ1zBIp6yPvjE10PK/i1Qme2IAuduBaRS7m9HKk+J
+         5Gq5+HXcqpV0yUKnBbolxktqeJFVzpEr+vJGNad98M4vSWaIV428PzNDUwYnNjg2TJ++
+         T03w==
+X-Gm-Message-State: AOAM5330eOwQ08IEBLSUtXu3jEXl6nChtbhWt414xFZfuRdCO0/EtOyd
+        +nmSk4fyo2jpWJHgLXyvD0GvbuLOdiUetQ==
+X-Google-Smtp-Source: ABdhPJzZkMjLb/kAeRvM5EtITBXTJXdFe7H7QLq1NH2HE2lwIkyTbbOxzNtSIZL7KwDC4i9mayEjLg==
+X-Received: by 2002:a17:902:7d8c:: with SMTP id a12mr528436plm.75.1643232328685;
+        Wed, 26 Jan 2022 13:25:28 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id a13sm4839110pgv.27.2022.01.26.13.25.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 13:25:28 -0800 (PST)
+Date:   Wed, 26 Jan 2022 13:25:27 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Ariadne Conill <ariadne@dereferenced.org>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v2] fs/exec: require argv[0] presence in
+ do_execveat_common()
+Message-ID: <202201261323.9499FA51@keescook>
+References: <20220126114447.25776-1-ariadne@dereferenced.org>
+ <202201261202.EC027EB@keescook>
+ <a8fef39-27bf-b25f-7cfe-21782a8d3132@dereferenced.org>
+ <202201261239.CB5D7C991A@keescook>
+ <5e963fab-88d4-2039-1cf4-6661e9bd16b@dereferenced.org>
 MIME-Version: 1.0
-References: <20220114081542.698002137@linuxfoundation.org> <20220114081542.746291845@linuxfoundation.org>
- <CA+res+S1GcDzM6hnmar+s1k3ggswURZ+_8BqweifShCTjVJ2aQ@mail.gmail.com> <YfFk7guenfgvrDlD@bender.morinfr.org>
-In-Reply-To: <YfFk7guenfgvrDlD@bender.morinfr.org>
-From:   Jack Wang <jack.wang.usish@gmail.com>
-Date:   Wed, 26 Jan 2022 22:22:36 +0100
-Message-ID: <CA+res+SmjdYYsvJO5t4BQ6ZXxdJibDbV_gU0Q_fNb0jzw+H3-Q@mail.gmail.com>
-Subject: Re: [PATCH 5.10 01/25] md: revert io stats accounting
-To:     Guillaume Morin <guillaume@morinfr.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable <stable@vger.kernel.org>,
-        Guoqing Jiang <jiangguoqing@kylinos.cn>,
-        Song Liu <song@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5e963fab-88d4-2039-1cf4-6661e9bd16b@dereferenced.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Guillaume Morin <guillaume@morinfr.org> =E4=BA=8E2022=E5=B9=B41=E6=9C=8826=
-=E6=97=A5=E5=91=A8=E4=B8=89 16:12=E5=86=99=E9=81=93=EF=BC=9A
->
-> On 26 Jan 11:09, Jack Wang wrote:
-> > >
-> > > -       if (bio->bi_end_io !=3D md_end_io) {
-> > > -               struct md_io *md_io;
-> > > -
-> > > -               md_io =3D mempool_alloc(&mddev->md_io_pool, GFP_NOIO)=
-;
-> > > -               md_io->mddev =3D mddev;
-> > > -               md_io->orig_bi_end_io =3D bio->bi_end_io;
-> > > -               md_io->orig_bi_private =3D bio->bi_private;
-> > > -
-> > > -               bio->bi_end_io =3D md_end_io;
-> > > -               bio->bi_private =3D md_io;
-> > > -
-> > > -               md_io->start_time =3D part_start_io_acct(mddev->gendi=
-sk,
-> > > -                                                      &md_io->part, =
-bio);
-> > > -       }
-> > > -
-> > > +       /*
-> > > +        * save the sectors now since our bio can
-> > > +        * go away inside make_request
-> > > +        */
-> > > +       sectors =3D bio_sectors(bio);
-> > This code snip is not inside the original patch, and it's not in
-> > latest upstream too.
-> > >         /* bio could be mergeable after passing to underlayer */
-> > >         bio->bi_opf &=3D ~REQ_NOMERGE;
-> > >
-> > >         md_handle_request(mddev, bio);
-> > >
-> > > +       part_stat_lock();
-> > > +       part_stat_inc(&mddev->gendisk->part0, ios[sgrp]);
-> > > +       part_stat_add(&mddev->gendisk->part0, sectors[sgrp], sectors)=
-;
-> > > +       part_stat_unlock();
-> > > +
-> > same here, this code snip is not inside the original patch, and it's
-> > not in latest upstream too.
->
-> Both snippets came from the code before 41d2d848e5c0 that the patch is
-> being reverted here.  As I explained in my original message, upstream is
-> different because of 99dfc43ecbf6 which is not in 5.10.
-oh, I missed it, you are right.
->
-> > I think would be good keep it as the upstream version.
->
-> If you don't include these lines, isn't this worse as it's not calling
-> either part_start_io_acct or bio_start_io_acct (in 99dfc43ecbf6)?
+On Wed, Jan 26, 2022 at 03:13:10PM -0600, Ariadne Conill wrote:
+> Looks good to me, but I wonder if we shouldn't set an argv of
+> {bprm->filename, NULL} instead of {"", NULL}.  Discussion in IRC led to the
+> realization that multicall programs will try to use argv[0] and might crash
+> in this scenario.  If we're going to fake an argv, I guess we should try to
+> do it right.
 
-Your patch is correct.
-Sorry for the noise.
+They're crashing currently, though, yes? I think the goal is to move
+toward making execve(..., NULL, NULL) just not work at all. Using the
+{"", NULL} injection just gets us closer to protecting a bad userspace
+program. I think things _should_ crash if they try to start depending
+on this work-around.
 
->
-> --
-> Guillaume Morin <guillaume@morinfr.org>
+-- 
+Kees Cook
