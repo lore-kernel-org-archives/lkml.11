@@ -2,325 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50899C63684
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 07:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F62AC63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 07:07:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237582AbiAZHHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 02:07:54 -0500
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:26945 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237575AbiAZHHr (ORCPT
+        id S237606AbiAZHH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 02:07:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237575AbiAZHHz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 02:07:47 -0500
+        Wed, 26 Jan 2022 02:07:55 -0500
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F36C061744;
+        Tue, 25 Jan 2022 23:07:54 -0800 (PST)
+Received: by mail-lj1-x231.google.com with SMTP id e9so7896360ljq.1;
+        Tue, 25 Jan 2022 23:07:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643180867; x=1674716867;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MjaAHw6izXbNh5I4IvkhbU0EiB1SMMyzgVlk8+jq0Ao=;
-  b=IgfsF8Q/Q9uqxF9wL9c2tt0+ZOUAIAGijcAxvEa4qkhYkbEGjz3Ooemf
-   GgtaoeVgNv20lOxkFOVEiASQqVjlQenmhy5RE5ThW1cN4wVnG8Coo+AYU
-   Mvyw8sUvGediLEbEDXg3pmMZZh+1vNS6/tTYZjR4hhzNcRYQ0+pXvaqoG
-   8=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 25 Jan 2022 23:07:46 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 23:07:46 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 25 Jan 2022 23:07:46 -0800
-Received: from [10.253.77.50] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 25 Jan
- 2022 23:07:41 -0800
-Message-ID: <24c09945-bcda-81e4-f53c-af871f696094@quicinc.com>
-Date:   Wed, 26 Jan 2022 15:07:38 +0800
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5PfYCVcr1In8W9+MgZIF3icYx9fo+vY33A1S1gqsP34=;
+        b=n42hCN/HYREN+SnwV2Pnhw036LJMATzNeFmmCSTpPlPLVZP+xX/SiBljHM+4/HQLCX
+         cg5nyQZ+DfVwXaOwyZD305PfQyWsPViZiXvJ0RsA3VfNkS2P9VPkRVV1RUQIHfNxxIjJ
+         t1Bl+NcHbBo8vSFaNrZlqzPW849DR+X5smwiKgGq6G6Xw18osN5AkH9XXaKvdtB8MToj
+         njnhh9sJ3mfRxa/0tPC6AsKUfEBpm6yilKDaIMG0JAjlEsoQ0d683oOeNMQAr7uxssWa
+         xiLj0LLPA2OkGot+jljqWodIyT3vjuWoY04DUrx47em876KalbN8JbQV0IKLz6GZfPlc
+         oPWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5PfYCVcr1In8W9+MgZIF3icYx9fo+vY33A1S1gqsP34=;
+        b=4EtiHywJHh4IA3oZ8b9XPFmJmMHeb7jo23hJcu/4XoH+ShntkiNnXce1EiVHUlHlmE
+         G2QvWbgzZdSScIAqE2dTaCkszJA6Fx6tyQvLm+YthcxVzDTH34DVIHjsns8WHYTq+DEz
+         pzm3jT81sYtJi7bpnsjxvt8yjJUIpGONnqgFg9tfrNIsGDBKUMEjYN2WZVKF3RkAtf3k
+         1/FXT4xzNf6zObK4LVuk6StITrWGmQUa5i14PkcImAU7MnROEM/5K48NXh1nDAGLLN8C
+         FSlNVU16wKFqlbQ/8VQOBmDjL8YdvpyHrcdOKNy+EXLHev8SKgrQMfuRIXYXS3yDNU8w
+         5etQ==
+X-Gm-Message-State: AOAM530IORawBtWsmXI6PjMPoFS5msWNUVh2h30OkCw/brcdMrVry7ch
+        +tbzFUErRn4+gZLtY2/Y/Vg=
+X-Google-Smtp-Source: ABdhPJz/pMWKdr30TUV8F5L8mcYQkfbr49L33tXc0XYI5XxtaBk2w0Bnf6pcTZlX0EVFBGP1mrPOBQ==
+X-Received: by 2002:a05:651c:93:: with SMTP id 19mr5357663ljq.175.1643180873008;
+        Tue, 25 Jan 2022 23:07:53 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id b39sm1465764ljr.88.2022.01.25.23.07.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 23:07:52 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Michael Walle <michael@walle.cc>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH REBASED 1/2] dt-bindings: nvmem: extract NVMEM cell to separated file
+Date:   Wed, 26 Jan 2022 08:07:44 +0100
+Message-Id: <20220126070745.32305-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220125180114.12286-1-zajec5@gmail.com>
+References: <20220125180114.12286-1-zajec5@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v2 2/9] Coresight: Add coresight TPDM source driver
-Content-Language: en-US
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     Mike Leach <mike.leach@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        <coresight@lists.linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>
-References: <20211209141543.21314-1-quic_jinlmao@quicinc.com>
- <20211209141543.21314-3-quic_jinlmao@quicinc.com>
- <20211214185714.GB1549991@p14s>
- <85ad17fb-c885-831d-d841-4c6f10920355@quicinc.com>
- <CAJ9a7Vh2d79Ro72ZDsbQSVS8VrH3c+X+xo8849yGS4Z73+yq_w@mail.gmail.com>
- <20211216190223.GA78825@p14s>
- <2703bf83-3a87-e69f-2392-7e0568e91712@quicinc.com>
- <20220121171552.GA1811357@p14s>
-From:   Jinlong Mao <quic_jinlmao@quicinc.com>
-In-Reply-To: <20220121171552.GA1811357@p14s>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mathieu,
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Good afternoon.
+This will allow adding binding for more specific cells and reusing
+(sharing) common code.
 
-On 1/22/2022 1:15 AM, Mathieu Poirier wrote:
-> Hey Jinlong,
->
-> On Fri, Jan 21, 2022 at 10:01:47PM +0800, Jinlong Mao wrote:
->> Hi Mathieu,
->>
->> Good Day.
->>
->> On 12/17/2021 3:02 AM, Mathieu Poirier wrote:
->>> [...]
->>>
->>>>>>> +
->>>>>>> +static void tpdm_init_default_data(struct tpdm_drvdata *drvdata)
->>>>>>> +{
->>>>>>> +    static int traceid = TPDM_TRACE_ID_START;
->>>>>>> +
->>>>>>> +    drvdata->traceid = traceid++;
->>>>>>> +}
->>>>>> I have been specific on how to properly do this in the last revision.  Given the
->>>>>> above about the MAINTAINERS file, I am not sure that I will continue reviewing this set.
->>>>>>
->>>>>> There is also no need to rush another revision as I won't have the bandwidth to
->>>>>> process it before the holidays.
->>>>>>
->>>>>> Thanks,
->>>>>> Mathieu
->>>>> Hi Mathieu,
->>>>>
->>>>> Sorry, not addressed your previous comments here.
->>>>>
->>>>> For the trace id, each coresight component has 7 bits to store the trace
->>>>> id. So the trace id should be from 1 to 127 as 0 is invalid.
->>>> IDs 0x70 - 0x7F (`112 - 127 ) are reserved - see the ARM Coresight
->>>> Architecture specification v3.0
->>>>
->>> Correct
->>>
->>>>> Apart from TPDMs/STM/ETMs, we also have other coresight components in
->>>>> our internal device. About 80 ids are already used.
->>>>>
->>>>> Some components have fixed trace id in HW. If we use functions below to
->>>>> count the trace id, there will be conflict to other components.
->>>>>
->>>>> Can we use 1-15 for etm trace ids  and 16 - 127 for other coresight
->>>>> components ? And handle trace ids in its' own driver ?
->>>>>
->>>> This will limit systems to 15 cores - some have more!
->>>>
->>> Correct
->>>
->>>>> static inline int coresight_get_system_trace_id(int id)
->>>>> {
->>>>>            /* Start system IDs above the highest per CPU trace ID. */
->>>>>            return coresigth_get_trace_id(cpumask_last(cpu_possible_mask) + 1);
->>>>> }
->>> Looking at my own suggestion again this won't work since it returns the same traceID
->>> when called multiple times.
->>>
->>> For this patchset and _without_ taking into account internal devices that have
->>> their traceID set in HW:
->>>
->>> 1. Define a bitmask that is 7 bit wide.
->> Should it be a 128 bit wide bitmask  (0--127)?
-> Yes, you are correct.
->
->>> 2. By default, set bits under 0x10 and between 0x70 - 0x7F.
->>> 3. In coresight_get_system_trace_id(), drop the @id parameter and allocate the
->>> first available bit after cpumask_last(cpu_possible_mask) + 1.
->> Should it allocate the first available bit after (cpumask_last(cpu_possible_mask) *2 ) + 0x10 ?
->> Return the first zero bit position as the trace id and set the bit.
-> I need to clarify something with Mike on this - I will get back to you on
-> Monday.
-Do you have more comments on this ?
->
->>> 4. Define a new function called coresight_put_system_trace_id(int id) that
->>> clears the bit in the mask corresponding to @id.
->>>
->>> For now that should work.
->>>
->>>>> static inline int coresight_get_trace_id(int cpu)
->>>>> {
->>>>>        /*
->>>>>         * A trace ID of value 0 is invalid, so let's start at some
->>>>>         * random value that fits in 7 bits and go from there.  Since
->>>>>         * the common convention is to have data trace IDs be I(N) + 1,
->>>>>         * set instruction trace IDs as a function of the CPU number.
->>>>>         */
->>>>>        return (CORESIGHT_ETM_PMU_SEED + (cpu * 2));
->>>>> }
->>>>>
->>>> This fixed relationship between cpu and trace ID is used in the perf
->>>> tooling to populate the elements in the perf.data file to correctly
->>>> allow association between CPU and trace data, and thus allow correct
->>>> trace decode.
->>> TraceIDs associated to CPUs are communicated to the perf tooling by way of the
->>> perf header - theoretically we should be able to change the allocation scheme
->>> without impacting the decoding process.
->>>
->>>> It should be possible to create another more dynamic mapping scheme -
->>>> but this must include a way to support the perf requirements too.
->>>>
->>> TraceIDs have been a lurking problem for as long as the subsystem has existed.
->>> For now what I have suggested above should be sufficient to provide an
->>> in-between solution that doesn't hold back this patchset.
->>>
->>> That being said, we need to start thinking about the best way to do this.  I
->>> will put a patchset together in the new year that aims in that direction.
->>>
->>>> Regards
->>>>
->>>> Mike
->>>>
->>>>> Thanks
->>>>>
->>>>> Jinlong Mao
->>>>>
->>>>>>> +
->>>>>>> +static int tpdm_probe(struct amba_device *adev, const struct amba_id *id)
->>>>>>> +{
->>>>>>> +    struct device *dev = &adev->dev;
->>>>>>> +    struct coresight_platform_data *pdata;
->>>>>>> +    struct tpdm_drvdata *drvdata;
->>>>>>> +    struct coresight_desc desc = { 0 };
->>>>>>> +
->>>>>>> +    desc.name = coresight_alloc_device_name(&tpdm_devs, dev);
->>>>>>> +    if (!desc.name)
->>>>>>> +            return -ENOMEM;
->>>>>>> +    pdata = coresight_get_platform_data(dev);
->>>>>>> +    if (IS_ERR(pdata))
->>>>>>> +            return PTR_ERR(pdata);
->>>>>>> +    adev->dev.platform_data = pdata;
->>>>>>> +
->>>>>>> +    drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
->>>>>>> +    if (!drvdata)
->>>>>>> +            return -ENOMEM;
->>>>>>> +    drvdata->dev = &adev->dev;
->>>>>>> +    dev_set_drvdata(dev, drvdata);
->>>>>>> +
->>>>>>> +    drvdata->base = devm_ioremap_resource(dev, &adev->res);
->>>>>>> +    if (!drvdata->base)
->>>>>>> +            return -ENOMEM;
->>>>>>> +
->>>>>>> +    mutex_init(&drvdata->lock);
->>>>>>> +
->>>>>>> +    desc.type = CORESIGHT_DEV_TYPE_SOURCE;
->>>>>>> +    desc.subtype.source_subtype = CORESIGHT_DEV_SUBTYPE_SOURCE_SYS;
->>>>>>> +    desc.ops = &tpdm_cs_ops;
->>>>>>> +    desc.pdata = adev->dev.platform_data;
->>>>>>> +    desc.dev = &adev->dev;
->>>>>>> +    drvdata->csdev = coresight_register(&desc);
->>>>>>> +    if (IS_ERR(drvdata->csdev))
->>>>>>> +            return PTR_ERR(drvdata->csdev);
->>>>>>> +
->>>>>>> +    tpdm_init_default_data(drvdata);
->>>>>>> +    pm_runtime_put(&adev->dev);
->>>>>>> +
->>>>>>> +    return 0;
->>>>>>> +}
->>>>>>> +
->>>>>>> +static void __exit tpdm_remove(struct amba_device *adev)
->>>>>>> +{
->>>>>>> +    struct tpdm_drvdata *drvdata = dev_get_drvdata(&adev->dev);
->>>>>>> +
->>>>>>> +    coresight_unregister(drvdata->csdev);
->>>>>>> +}
->>>>>>> +
->>>>>>> +static struct amba_id tpdm_ids[] = {
->>>>>>> +    {
->>>>>>> +            .id = 0x000f0e00,
->>>>>>> +            .mask = 0x000fff00,
->>>>>>> +    },
->>>>>>> +    { 0, 0},
->>>>>>> +};
->>>>>>> +
->>>>>>> +static struct amba_driver tpdm_driver = {
->>>>>>> +    .drv = {
->>>>>>> +            .name   = "coresight-tpdm",
->>>>>>> +            .owner  = THIS_MODULE,
->>>>>>> +            .suppress_bind_attrs = true,
->>>>>>> +    },
->>>>>>> +    .probe          = tpdm_probe,
->>>>>>> +    .id_table       = tpdm_ids,
->>>>>>> +};
->>>>>>> +
->>>>>>> +module_amba_driver(tpdm_driver);
->>>>>>> +
->>>>>>> +MODULE_LICENSE("GPL v2");
->>>>>>> +MODULE_DESCRIPTION("Trace, Profiling & Diagnostic Monitor driver");
->>>>>>> diff --git a/drivers/hwtracing/coresight/coresight-tpdm.h b/drivers/hwtracing/coresight/coresight-tpdm.h
->>>>>>> new file mode 100644
->>>>>>> index 000000000000..980ae90ff1c8
->>>>>>> --- /dev/null
->>>>>>> +++ b/drivers/hwtracing/coresight/coresight-tpdm.h
->>>>>>> @@ -0,0 +1,31 @@
->>>>>>> +/* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> +/*
->>>>>>> + * Copyright (c) 2021 Qualcomm Innovation Center, Inc. All rights reserved.
->>>>>>> + */
->>>>>>> +
->>>>>>> +#ifndef _CORESIGHT_CORESIGHT_TPDM_H
->>>>>>> +#define _CORESIGHT_CORESIGHT_TPDM_H
->>>>>>> +
->>>>>>> +/* Default value of the traceid */
->>>>>>> +#define TPDM_TRACE_ID_START 128
->>>>>>> +
->>>>>>> +/**
->>>>>>> + * struct tpdm_drvdata - specifics associated to an TPDM component
->>>>>>> + * @base:       memory mapped base address for this component.
->>>>>>> + * @dev:        The device entity associated to this component.
->>>>>>> + * @csdev:      component vitals needed by the framework.
->>>>>>> + * @lock:       lock for the enable value.
->>>>>>> + * @enable:     enable status of the component.
->>>>>>> + * @traceid:    value of the current ID for this component.
->>>>>>> + */
->>>>>>> +
->>>>>>> +struct tpdm_drvdata {
->>>>>>> +    void __iomem            *base;
->>>>>>> +    struct device           *dev;
->>>>>>> +    struct coresight_device *csdev;
->>>>>>> +    struct mutex            lock;
->>>>>>> +    bool                    enable;
->>>>>>> +    int                     traceid;
->>>>>>> +};
->>>>>>> +
->>>>>>> +#endif  /* _CORESIGHT_CORESIGHT_TPDM_H */
->>>>>>> diff --git a/include/linux/coresight.h b/include/linux/coresight.h
->>>>>>> index 93a2922b7653..e48d463be63b 100644
->>>>>>> --- a/include/linux/coresight.h
->>>>>>> +++ b/include/linux/coresight.h
->>>>>>> @@ -65,6 +65,7 @@ enum coresight_dev_subtype_source {
->>>>>>>        CORESIGHT_DEV_SUBTYPE_SOURCE_PROC,
->>>>>>>        CORESIGHT_DEV_SUBTYPE_SOURCE_BUS,
->>>>>>>        CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE,
->>>>>>> +    CORESIGHT_DEV_SUBTYPE_SOURCE_SYS,
->>>>>>>     };
->>>>>>>
->>>>>>>     enum coresight_dev_subtype_helper {
->>>>>>> --
->>>>>>> 2.17.1
->>>>>>>
->>>>
->>>> -- 
->>>> Mike Leach
->>>> Principal Engineer, ARM Ltd.
->>>> Manchester Design Centre. UK
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+ .../devicetree/bindings/nvmem/cells/cell.yaml | 34 +++++++++++++++++++
+ .../devicetree/bindings/nvmem/nvmem.yaml      | 22 +-----------
+ 2 files changed, 35 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/cells/cell.yaml
+
+diff --git a/Documentation/devicetree/bindings/nvmem/cells/cell.yaml b/Documentation/devicetree/bindings/nvmem/cells/cell.yaml
+new file mode 100644
+index 000000000000..adfc2e639f43
+--- /dev/null
++++ b/Documentation/devicetree/bindings/nvmem/cells/cell.yaml
+@@ -0,0 +1,34 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/nvmem/cells/cell.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NVMEM cell
++
++maintainers:
++  - Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
++
++description: NVMEM cell is a data entry of NVMEM device.
++
++properties:
++  reg:
++    maxItems: 1
++    description:
++      Offset and size in bytes within the storage device.
++
++  bits:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    items:
++      - minimum: 0
++        maximum: 7
++        description:
++          Offset in bit within the address range specified by reg.
++      - minimum: 1
++        description:
++          Size in bit within the address range specified by reg.
++
++required:
++  - reg
++
++additionalProperties: true
+diff --git a/Documentation/devicetree/bindings/nvmem/nvmem.yaml b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+index 43ed7e32e5ac..b79b51e98ee8 100644
+--- a/Documentation/devicetree/bindings/nvmem/nvmem.yaml
++++ b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+@@ -41,27 +41,7 @@ properties:
+ 
+ patternProperties:
+   "@[0-9a-f]+(,[0-7])?$":
+-    type: object
+-
+-    properties:
+-      reg:
+-        maxItems: 1
+-        description:
+-          Offset and size in bytes within the storage device.
+-
+-      bits:
+-        $ref: /schemas/types.yaml#/definitions/uint32-array
+-        items:
+-          - minimum: 0
+-            maximum: 7
+-            description:
+-              Offset in bit within the address range specified by reg.
+-          - minimum: 1
+-            description:
+-              Size in bit within the address range specified by reg.
+-
+-    required:
+-      - reg
++    $ref: cells/cell.yaml#
+ 
+ additionalProperties: true
+ 
+-- 
+2.31.1
+
