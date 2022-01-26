@@ -2,88 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFAEC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:26:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AABEC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:26:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239088AbiAZJ0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:26:03 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:32060 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiAZJ0C (ORCPT
+        id S239105AbiAZJ0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:26:08 -0500
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:51475 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239089AbiAZJ0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:26:02 -0500
-Received: from kwepemi100012.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JkJC20RGtz1FD1X;
-        Wed, 26 Jan 2022 17:22:06 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- kwepemi100012.china.huawei.com (7.221.188.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 26 Jan 2022 17:26:00 +0800
-Received: from huawei.com (10.175.101.6) by kwepemm600010.china.huawei.com
- (7.193.23.86) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 26 Jan
- 2022 17:25:59 +0800
-From:   Chao Liu <liuchao173@huawei.com>
-To:     <catalin.marinas@arm.com>, <will@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <hewenliang4@huawei.com>,
-        <zhoukang7@huawei.com>
-Subject: [PATCH v2] add cpu frequency to cpuinfo in arm64
-Date:   Wed, 26 Jan 2022 09:23:49 +0000
-Message-ID: <20220126092349.285642-1-liuchao173@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Wed, 26 Jan 2022 04:26:06 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V2ucTth_1643189162;
+Received: from 30.240.122.215(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0V2ucTth_1643189162)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 26 Jan 2022 17:26:03 +0800
+Message-ID: <8d89ffe0-6e34-a82d-09f0-9dd803fc256f@linux.alibaba.com>
+Date:   Wed, 26 Jan 2022 17:26:01 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH v5 0/2] EDAC/ghes: refactor memory error reporting to
+ avoid code duplication
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     rric@kernel.org, mchehab@kernel.org, tony.luck@intel.com,
+        james.morse@arm.com, ardb@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        zhangliguang@linux.alibaba.com, zhuo.song@linux.alibaba.com
+References: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
+ <20220126081702.55167-1-xueshuai@linux.alibaba.com>
+ <YfEEN0ATgS+TakLV@zn.tnic>
+From:   Shuai Xue <xueshuai@linux.alibaba.com>
+In-Reply-To: <YfEEN0ATgS+TakLV@zn.tnic>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is cpu frequency in /proc/cpuinfo in x86 but not in arm64
+Hi, Borislav,
 
-Signed-off-by: Chao Liu <liuchao173@huawei.com>
----
-Change in v2:
-- fix spelling errors and remove remove redundant blank line
+在 2022/1/26 PM4:20, Borislav Petkov 写道:
+> On Wed, Jan 26, 2022 at 04:17:00PM +0800, Shuai Xue wrote:
+>> ghes_edac_report_mem_error() in ghes_edac.c is a Long Method and have
+>> Duplicated Code with cper_mem_err_location(), cper_dimm_err_location(), and
+>> cper_mem_err_type_str() in drivers/firmware/efi/cper.c. In addition, the
+>> cper_print_mem() in drivers/firmware/efi/cper.c only reports the error
+>> status and misses its description.
+> 
+> Dude, what about
+> 
+> 	wait for a week or until the patchset has been fully reviewed
+> 
+> don't you understand?!
+> 
+> Please let me know what about the review process is not clear to you so
+> that we can document it better.
 
- arch/arm64/kernel/cpuinfo.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Emmm, when I received your replied email, I thought you had fully reviewed them. So
+I work to address your comments and reply as soon as possible. Sorry, I misunderstood.
 
-diff --git a/arch/arm64/kernel/cpuinfo.c b/arch/arm64/kernel/cpuinfo.c
-index 591c18a889a5..39a36e6e8079 100644
---- a/arch/arm64/kernel/cpuinfo.c
-+++ b/arch/arm64/kernel/cpuinfo.c
-@@ -24,6 +24,7 @@
- #include <linux/sched.h>
- #include <linux/smp.h>
- #include <linux/delay.h>
-+#include <linux/cpufreq.h>
- 
- /*
-  * In case the boot CPU is hotpluggable, we record its initial state and
-@@ -144,6 +145,7 @@ static int c_show(struct seq_file *m, void *v)
- 	for_each_online_cpu(i) {
- 		struct cpuinfo_arm64 *cpuinfo = &per_cpu(cpu_data, i);
- 		u32 midr = cpuinfo->reg_midr;
-+		unsigned int freq = cpufreq_quick_get(i);
- 
- 		/*
- 		 * glibc reads /proc/cpuinfo to determine the number of
-@@ -159,6 +161,10 @@ static int c_show(struct seq_file *m, void *v)
- 			   loops_per_jiffy / (500000UL/HZ),
- 			   loops_per_jiffy / (5000UL/HZ) % 100);
- 
-+		if (freq)
-+			seq_printf(m, "cpu MHz\t\t: %u.%03u\n",
-+				   freq / 1000, (freq % 1000));
-+
- 		/*
- 		 * Dump out the common processor features in a single line.
- 		 * Userspace should read the hwcaps with getauxval(AT_HWCAP)
--- 
-2.23.0
+Of course, I can wait. As I said before, take your time.
 
+By the way, I have a question about review process: after waiting for a period
+of time, how can I tell whether you have no comments or are still in review process?
+
+Best Regards,
+Shuai
