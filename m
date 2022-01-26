@@ -2,113 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2CE8C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 19:45:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0DBC5DF62
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 19:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244504AbiAZTpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 14:45:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
+        id S244513AbiAZTso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 14:48:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbiAZTpY (ORCPT
+        with ESMTP id S232077AbiAZTsl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 14:45:24 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2EC8C06161C;
-        Wed, 26 Jan 2022 11:45:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ACAyZTvosBZV5f3Muo3XS+bWrJuj3fQ11EBT7uBZp5w=; b=VP45iQ0ChXDykOM7S+unP06z5a
-        oDnFAamCR+F7PiYpBDm0wtBWM/6D1KeIhAlrPAQDuwWM5jy3jtZlTXkx2/M7Bcp1Tm1AXqQtssZqT
-        vm+O1K9e6lzmfFohVMH+Ql7sITbOnIuvT+v/1AgFVWFKKqn1LpqUVy7kjbUo7Wc7JurI5MDT5FuXm
-        IGSPTYyLJrX8PCPJT3NMyjNWBAOLSfokfSV5At8f34dW+zJDUY/t7QX6KAqyfCb0WfMWRVNUbdGTi
-        1/oJyl75PcqmSdz/zRNdfrN8hYoGkSh7gVQgxcIl7Ytk7zVt3wi2cBeBjvH9q6mqgGxDFLlv/DWSK
-        /ATx8L7Q==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nCoEA-004NlA-QO; Wed, 26 Jan 2022 19:45:11 +0000
-Date:   Wed, 26 Jan 2022 19:45:10 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        linux-m68k@lists.linux-m68k.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        william.kucharski@oracle.com,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        schmitzmic@gmail.com, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <guro@fb.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Paul Turner <pjt@google.com>, Hugh Dickins <hughd@google.com>
-Subject: Re: [PATCH v3 1/9] mm: add overflow and underflow checks for
- page->_refcount
-Message-ID: <YfGkxtQd0KE8YNXt@casper.infradead.org>
-References: <20220126183429.1840447-1-pasha.tatashin@soleen.com>
- <20220126183429.1840447-2-pasha.tatashin@soleen.com>
- <YfGZ/0hhkqVeX04p@casper.infradead.org>
- <CA+CK2bDHkOQbTrK=GbsGbojAj_6gaAX_8w3cBCd_LWqXt--yZA@mail.gmail.com>
+        Wed, 26 Jan 2022 14:48:41 -0500
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B343C06161C
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 11:48:41 -0800 (PST)
+Received: by mail-qk1-x72b.google.com with SMTP id 13so545173qkd.13
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 11:48:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cnaHKagfwHGqaznD5wm3EjdQSvy1XNpSCppZJHrSIys=;
+        b=aGK97rakYCe9gtm+vNOzkSTyJolrONWbZ2NnD9qv8O+uupRm9HbODyTEdYDKGwqyfw
+         eaJRbjvPqJlKnLVLWFxBfMNyyTuO+af5C/c11/hnXA/g57VtO+Y0nCxWYwFulgIoVFF7
+         YxD07u+wy/R+NlTHMhpICG1UdViVU9ig95K42g31xhHuB3swuZPH9AcqL4tJBURZDmNs
+         NWQA5kPDpffdLTHusFW8rrzpTCjPhMMaSYL0GBQcIbMPxS+E87YuUaTmIjD5vCURAtP8
+         fZP2DLxhpLki+8DFHIpfVJwxW/A57IlJhbXvIompriWORNmJ40RTqWuXNVTc0KNHREzF
+         Yf9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cnaHKagfwHGqaznD5wm3EjdQSvy1XNpSCppZJHrSIys=;
+        b=19uE2QnNHfqjwLps0/QazJNDSIHoH5oH+8z4k1UEV9jfJN9GEBJl4jE6vMGwAruwkw
+         l5ZxRcIM6izb/4NFvlH5ZdiBo7vZEkkvDsUZ4cNU0kZ0GkrY9e8zw/tD9VQN2yxvf0I7
+         bT/56uHpJgeAAvb7Iv6fmCCm1evQ7i6l15t+m4/v+2CnCfG+sV/peWdV+ldir6HsVqCQ
+         mQOj4Dw3H/Ay1QxKlVE+ujdMqbphqm9JmaRlCOGuiceMbdcQmSeRGCLlg8d1tvCEAeLV
+         o8eBO5Yz6IAZ/7kOdWWF9POZANfNXJx0s2lAo1Pw2aakv3vcjVY1Xh9ayzKNBH7gqBes
+         XT6w==
+X-Gm-Message-State: AOAM533z8W0e7oMRDpGWMmaOrNNejKiL0anh/HQiqDqet4I0JD7VzZ/T
+        g222eIOKTt/FsdXqNOtwL+Q9nF2kIlPwkA==
+X-Google-Smtp-Source: ABdhPJyt3NXcmKd1A/0E+XHc7xXKnQSpbQx+rb7XFiJW9mvwHA7ZYU1u822P32XYn5DgApDo+ociPA==
+X-Received: by 2002:a37:b0c:: with SMTP id 12mr211117qkl.667.1643226520231;
+        Wed, 26 Jan 2022 11:48:40 -0800 (PST)
+Received: from localhost (rfs.netwinder.org. [206.248.184.2])
+        by smtp.gmail.com with ESMTPSA id f2sm101432qti.61.2022.01.26.11.48.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 11:48:39 -0800 (PST)
+Date:   Wed, 26 Jan 2022 14:48:39 -0500
+From:   Ralph Siemsen <ralph.siemsen@linaro.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jiri Prchal <jiri.prchal@aksignal.cz>,
+        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH -next] eeprom: at25: Replace strncpy() with strscpy()
+Message-ID: <20220126194839.GA3763384@maple.netwinder.org>
+References: <20220118182047.3385295-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <CA+CK2bDHkOQbTrK=GbsGbojAj_6gaAX_8w3cBCd_LWqXt--yZA@mail.gmail.com>
+In-Reply-To: <20220118182047.3385295-1-keescook@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 02:22:26PM -0500, Pasha Tatashin wrote:
-> On Wed, Jan 26, 2022 at 1:59 PM Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > On Wed, Jan 26, 2022 at 06:34:21PM +0000, Pasha Tatashin wrote:
-> > > The problems with page->_refcount are hard to debug, because usually
-> > > when they are detected, the damage has occurred a long time ago. Yet,
-> > > the problems with invalid page refcount may be catastrophic and lead to
-> > > memory corruptions.
-> > >
-> > > Reduce the scope of when the _refcount problems manifest themselves by
-> > > adding checks for underflows and overflows into functions that modify
-> > > _refcount.
-> >
-> > If you're chasing a bug like this, presumably you turn on page
-> > tracepoints.  So could we reduce the cost of this by putting the
-> > VM_BUG_ON_PAGE parts into __page_ref_mod() et al?  Yes, we'd need to
-> > change the arguments to those functions to pass in old & new, but that
-> > should be a cheap change compared to embedding the VM_BUG_ON_PAGE.
-> 
-> This is not only about chasing a bug. This also about preventing
-> memory corruption and information leaking that are caused by ref_count
-> bugs from happening.
-> Several months ago a memory corruption bug was discovered by accident:
-> an engineer was studying a process core from a production system and
-> noticed that some memory does not look like it belongs to the original
-> process. We tried to manually reproduce that bug but failed. However,
-> later analysis by our team, explained that the problem occured due to
-> ref_count bug in Linux, and the bug itself was root caused and fixed
-> (mentioned in the cover letter).  This work would have prevented
-> similar ref_count bugs from yielding to the memory corruption
-> situation.
+Hi Kees,
 
-But the VM_BUG_ON_PAGE tells us next to nothing useful.  To take
-your first example [1] as the kind of thing you say this is going to
-help fix:
+On Tue, Jan 18, 2022 at 10:20:47AM -0800, Kees Cook wrote:
+>Use strscpy() instead of strncpy(), since its use has been deprecated[1].
+>
+>[1] 
+>https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings
 
-1. Page p is allocated by thread a (refcount 1)
-2. Thread b gets mistaken pointer to p
-3. Thread b calls put_page(), __put_page(), page goes to memory
-   allocator.
-4. Thread c calls alloc_page(), also gets page p (refcount 1 again).
-5. Thread a calls put_page(), __put_page()
-6. Thread c calls put_page() and gets a VM_BUG_ON_PAGE.
+Along with your other fix to restore the missing kzalloc(), I tested 
+this change on 32-bit arm system, and it worked as expected.
 
-How do we find thread b's involvement?  I don't think we can even see
-thread a's involvement in all of this!  All we know is a backtrace
-pointing to thread c, who is a completely innocent bystander.  I think
-you have to enable page tracepoints to have any shot at finding thread
-b's involvement.
+Tested-by: Ralph Siemsen <ralph.siemsen@linaro.org>
 
-[1] https://lore.kernel.org/stable/20211122171825.1582436-1-gthelen@google.com/
+Cheers,
+-Ralph
