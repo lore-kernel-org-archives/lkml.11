@@ -2,66 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 270F4C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA62DC63682
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231532AbiAZJHz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:07:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238771AbiAZJHt (ORCPT
+        id S238771AbiAZJIq convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:08:46 -0500
+Received: from lithops.sigma-star.at ([195.201.40.130]:51450 "EHLO
+        lithops.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231573AbiAZJIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:07:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027A2C06161C;
-        Wed, 26 Jan 2022 01:07:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C55BCB81C22;
-        Wed, 26 Jan 2022 09:07:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D264AC340E7;
-        Wed, 26 Jan 2022 09:07:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643188066;
-        bh=DNatj+Dsq6W5MUfSar+GgYazfcAWtvPdt4mne1lgnZQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YeZedHSNzDVukcesmbQwaw6vPulikfGGAQqpjRQ1cMSIzsv2PyozQslTz1vlMrJ0r
-         ghOk89mIpVSYKMM30dAP3g4sORFOQw3r3GqE6io8ZMVorFAcLqAOTKfLoKU5TpoqYC
-         cSlTFoZV+hnc5NiphH0OXTqLHXzbXwBjG0jUqeVXyMX16oWWfaRcl1ZwrbcHXlynwq
-         b3UfZ+qpm7xwT2/AnKtmVXxuzxcYvzOwFp5CUf2J+BCSkVU9n+d02KxTIutUamvNhF
-         EzSOpClVKhvNdtBf1Ehk22DsrGrWccsqH7NHVMi2CHbFz7fIEnAM3Ap+NUhXRbG6fE
-         mJdd3LOcGD47Q==
-Date:   Wed, 26 Jan 2022 17:07:40 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] arm64: dts: imx8m{m,n}_venice*: add gpio-line-names
-Message-ID: <20220126090739.GH4686@dragon>
-References: <20211215001812.9006-1-tharvey@gateworks.com>
+        Wed, 26 Jan 2022 04:08:45 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id CD33060F6B7A;
+        Wed, 26 Jan 2022 10:08:43 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id dIlqLNVsVTqD; Wed, 26 Jan 2022 10:08:43 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 5043362DA600;
+        Wed, 26 Jan 2022 10:08:43 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id EiNRw8Th-YAu; Wed, 26 Jan 2022 10:08:43 +0100 (CET)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 2A48A62DA5F6;
+        Wed, 26 Jan 2022 10:08:43 +0100 (CET)
+Date:   Wed, 26 Jan 2022 10:08:43 +0100 (CET)
+From:   Richard Weinberger <richard@nod.at>
+To:     David Decotigny <decot+git@google.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        David Decotigny <ddecotig@google.com>
+Message-ID: <1788102040.295765.1643188123063.JavaMail.zimbra@nod.at>
+In-Reply-To: <20220126085735.575625-1-decot+git@google.com>
+References: <20220126085735.575625-1-decot+git@google.com>
+Subject: Re: [PATCH RFC v1 1/1] mtd_blkdevs: avoid soft lockups with some
+ mtd/spi devices
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211215001812.9006-1-tharvey@gateworks.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF96 (Linux)/8.8.12_GA_3809)
+Thread-Topic: mtd_blkdevs: avoid soft lockups with some mtd/spi devices
+Thread-Index: 7VNwHvC77lwvVOD8Pm7M1mqeog4vaw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 04:18:12PM -0800, Tim Harvey wrote:
-> Add gpio-line-names for the various GPIO's used on Gateworks Venice
-> boards. Note that these GPIO's are typically 'configured' in Boot
-> Firmware via gpio-hog therefore we only configure line names to keep the
-> boot firmware configuration from changing on kernel init.
+David,
+
+----- Ursprüngliche Mail -----
+> Von: "David Decotigny" <decot+git@google.com>
+> An: "linux-kernel" <linux-kernel@vger.kernel.org>
+> CC: "Miquel Raynal" <miquel.raynal@bootlin.com>, "richard" <richard@nod.at>, "Vignesh Raghavendra" <vigneshr@ti.com>,
+> "linux-mtd" <linux-mtd@lists.infradead.org>, "David Decotigny" <ddecotig@google.com>
+> Gesendet: Mittwoch, 26. Januar 2022 09:57:35
+> Betreff: [PATCH RFC v1 1/1] mtd_blkdevs: avoid soft lockups with some mtd/spi devices
+
+> From: David Decotigny <ddecotig@google.com>
 > 
-> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+> With some spi devices, the heavy cpu usage due to polling the spi
+> registers may lead to netdev timeouts, RCU complaints, etc. This can
+> be acute in the absence of CONFIG_PREEMPT. This patch allows to give
+> enough breathing room to avoid those false positives.
 
-It doesn't apply to my imx/dt64 branch.  Could you rebase?
+is the problem real or not? From your description it is not clear to me.
+Please include lockdep splats and/or hung-task logs in the commit message.
 
-Shawn
+I have no problem with adding a cond_resched() but first we need to
+understand the issue a little better.
+
+Thanks,
+//richard
