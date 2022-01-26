@@ -2,160 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF90C63697
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 19:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DEC1C28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 19:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244569AbiAZTvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 14:51:14 -0500
-Received: from relmlor2.renesas.com ([210.160.252.172]:62469 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S244546AbiAZTvI (ORCPT
+        id S244642AbiAZTvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 14:51:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244571AbiAZTvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 26 Jan 2022 14:51:08 -0500
-X-IronPort-AV: E=Sophos;i="5.88,319,1635174000"; 
-   d="scan'208";a="108403304"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 27 Jan 2022 04:51:07 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 66EE94008541;
-        Thu, 27 Jan 2022 04:51:04 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [RFC PATCH 3/5] misc: pci_endpoint_test: Add driver data for Renesas RZ/G2{EHMN}
-Date:   Wed, 26 Jan 2022 19:50:41 +0000
-Message-Id: <20220126195043.28376-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220126195043.28376-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220126195043.28376-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A08C061748
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 11:51:08 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id b9so986395lfq.6
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 11:51:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zuNchwIZAGymNJC1SQWN7Ldl6BhEKsuYVz79xP7hsik=;
+        b=O8OLscWgdo8HIVwwfzb5dza2dJnXOZndHiDf93M0yfSU4tRodlztvMJGdacXImWFvT
+         A4bYsx1Mbprxlx5fVLCI461Tn/UrA6CYFDOhYredwv63xNGXFUShGpNuzDAOw5ahH/wy
+         fku0dNyYzo7gA9deEfIX9Ymwmf9QKMCC+oudZWHsLMyD1zQulwYSPfLrvVR5/6dhtLMv
+         i8Rpx83onnbgfc/fJMHs6Eo3x2Az2PeOWwaGFbSZDbJrXy7zvLbHFcwkKlszP4w5ibDU
+         SdzVZ4DBXl12xuVCuvS3fMEjBBVETtA+hOE3GdrcD8ofv5KDpVKOl0uPkj5L+7ETEBsq
+         8PvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zuNchwIZAGymNJC1SQWN7Ldl6BhEKsuYVz79xP7hsik=;
+        b=AVuKK1F7x04RKw1CQWc83a+KgFE6gFZS0nGrU4USgjWqQ1t5BhjJYCooVyBBX5Omjp
+         NbQIxqBl+ydyblszNbvu0PzYgwg9EI4aBip1uz0N0KNwxxAJsOepWZZwcAeJXKG9SLIX
+         QcukqyoVBWiOgM2uKbtKhsYdaq1THGMsxdnffXWg57MG2rFjIIT7hVID8GdJrh0hTcNG
+         VQ84Fmrly5KWzKxQlHfCLMZlLINLqA43T7ZC0zXd/3AQNQWTCJcUILnc35qzfP0LKYbj
+         RaxLVBmeIurOUn9TPNJsqEmjZM0hefHcfPZuWfqXbx0f7c0Gj9wQQ5upDcq+4Tz9k2Qd
+         5fbQ==
+X-Gm-Message-State: AOAM531cdC9/oNFZS64UViLFGc6e6+P3MLK5ovvJGN3s3wVuHXqHJa/c
+        LREw+B/scVfDR09Xon7Njp7g1tnIY1r/kbLbQaMb9A==
+X-Google-Smtp-Source: ABdhPJyF5hb3Or3tNa1mRtH02IzvJBYrARKvzKe6UO+oIpe5xZpket39De33nXm3uzERNauernfMMMz2FTRtxCHRJ/I=
+X-Received: by 2002:a19:ee13:: with SMTP id g19mr384157lfb.288.1643226666411;
+ Wed, 26 Jan 2022 11:51:06 -0800 (PST)
+MIME-Version: 1.0
+References: <20220126175747.3270945-1-keescook@chromium.org>
+ <CAG48ez3hN8+zNCmLVP0yU0A5op6BAS+A-rs05aiLm4RQvzzBpg@mail.gmail.com> <a89bb47f-677f-4ce7-fd-d3893fe0abbd@dereferenced.org>
+In-Reply-To: <a89bb47f-677f-4ce7-fd-d3893fe0abbd@dereferenced.org>
+From:   Jann Horn <jannh@google.com>
+Date:   Wed, 26 Jan 2022 20:50:39 +0100
+Message-ID: <CAG48ez3iEUDbM03axYSjWOSW+zt-khgzf8CfX1DHmf_6QZap6Q@mail.gmail.com>
+Subject: Re: [PATCH] fs/binfmt_elf: Add padding NULL when argc == 0
+To:     Ariadne Conill <ariadne@dereferenced.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Rich Felker <dalias@libc.org>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add "dmac_data_alignment" member (indicating the alignment requirement
-for internal DMAC for data transfers) to struct pci_endpoint_test_data
-and add driver_data to Renesas RZ/G2{EHMN}.
+On Wed, Jan 26, 2022 at 7:42 PM Ariadne Conill <ariadne@dereferenced.org> wrote:
+> On Wed, 26 Jan 2022, Jann Horn wrote:
+> > On Wed, Jan 26, 2022 at 6:58 PM Kees Cook <keescook@chromium.org> wrote:
+> >> Quoting Ariadne Conill:
+> >>
+> >> "In several other operating systems, it is a hard requirement that the
+> >> first argument to execve(2) be the name of a program, thus prohibiting
+> >> a scenario where argc < 1. POSIX 2017 also recommends this behaviour,
+> >> but it is not an explicit requirement[1]:
+> >>
+> >>     The argument arg0 should point to a filename string that is
+> >>     associated with the process being started by one of the exec
+> >>     functions.
+> >> ...
+> >> Interestingly, Michael Kerrisk opened an issue about this in 2008[2],
+> >> but there was no consensus to support fixing this issue then.
+> >> Hopefully now that CVE-2021-4034 shows practical exploitative use[3]
+> >> of this bug in a shellcode, we can reconsider."
+> >>
+> >> An examination of existing[4] users of execve(..., NULL, NULL) shows
+> >> mostly test code, or example rootkit code. While rejecting a NULL argv
+> >> would be preferred, it looks like the main cause of userspace confusion
+> >> is an assumption that argc >= 1, and buggy programs may skip argv[0]
+> >> when iterating. To protect against userspace bugs of this nature, insert
+> >> an extra NULL pointer in argv when argc == 0, so that argv[1] != envp[0].
+> >>
+> >> Note that this is only done in the argc == 0 case because some userspace
+> >> programs expect to find envp at exactly argv[argc]. The overlap of these
+> >> two misguided assumptions is believed to be zero.
+> >
+> > Will this result in the executed program being told that argc==0 but
+> > having an extra NULL pointer on the stack?
+> > If so, I believe this breaks the x86-64 ABI documented at
+> > https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf - page 29,
+> > figure 3.9 describes the layout of the initial process stack.
+>
+> I'm presently compiling a kernel with the patch to see if it works or not.
+>
+> > Actually, does this even work? Can a program still properly access its
+> > environment variables when invoked with argc==0 with this patch
+> > applied? AFAIU the way userspace locates envv on x86-64 is by
+> > calculating 8*(argc+1)?
+>
+> In the other thread, it was suggested that perhaps we should set up an
+> argv of {"", NULL}.  In that case, it seems like it would be safe to claim
+> argc == 1.
+>
+> What do you think?
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- drivers/misc/pci_endpoint_test.c | 40 ++++++++++++++++++++++++++------
- 1 file changed, 33 insertions(+), 7 deletions(-)
+Sounds good to me, since that's something that could also happen
+normally if userspace calls execve(..., {"", NULL}, ...).
 
-diff --git a/drivers/misc/pci_endpoint_test.c b/drivers/misc/pci_endpoint_test.c
-index 8f786a225dcf..0a00d45830e9 100644
---- a/drivers/misc/pci_endpoint_test.c
-+++ b/drivers/misc/pci_endpoint_test.c
-@@ -116,6 +116,7 @@ struct pci_endpoint_test {
- 	struct miscdevice miscdev;
- 	enum pci_barno test_reg_bar;
- 	size_t alignment;
-+	size_t dmac_data_alignment;
- 	const char *name;
- };
- 
-@@ -123,6 +124,7 @@ struct pci_endpoint_test_data {
- 	enum pci_barno test_reg_bar;
- 	size_t alignment;
- 	int irq_type;
-+	size_t dmac_data_alignment;
- };
- 
- static inline u32 pci_endpoint_test_readl(struct pci_endpoint_test *test,
-@@ -368,8 +370,11 @@ static bool pci_endpoint_test_copy(struct pci_endpoint_test *test,
- 		goto err;
- 
- 	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
--	if (use_dma)
-+	if (use_dma) {
- 		flags |= FLAG_USE_DMA;
-+		if (test->dmac_data_alignment)
-+			size =  ALIGN(size, test->dmac_data_alignment);
-+	}
- 
- 	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
- 		dev_err(dev, "Invalid IRQ type option\n");
-@@ -502,8 +507,11 @@ static bool pci_endpoint_test_write(struct pci_endpoint_test *test,
- 		goto err;
- 
- 	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
--	if (use_dma)
-+	if (use_dma) {
- 		flags |= FLAG_USE_DMA;
-+		if (test->dmac_data_alignment)
-+			size =  ALIGN(size, test->dmac_data_alignment);
-+	}
- 
- 	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
- 		dev_err(dev, "Invalid IRQ type option\n");
-@@ -600,8 +608,11 @@ static bool pci_endpoint_test_read(struct pci_endpoint_test *test,
- 		goto err;
- 
- 	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
--	if (use_dma)
-+	if (use_dma) {
- 		flags |= FLAG_USE_DMA;
-+		if (test->dmac_data_alignment)
-+			size =  ALIGN(size, test->dmac_data_alignment);
-+	}
- 
- 	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
- 		dev_err(dev, "Invalid IRQ type option\n");
-@@ -787,6 +798,7 @@ static int pci_endpoint_test_probe(struct pci_dev *pdev,
- 		test->test_reg_bar = test_reg_bar;
- 		test->alignment = data->alignment;
- 		irq_type = data->irq_type;
-+		test->dmac_data_alignment = data->dmac_data_alignment;
- 	}
- 
- 	init_completion(&test->irq_raised);
-@@ -948,6 +960,12 @@ static const struct pci_endpoint_test_data j721e_data = {
- 	.irq_type = IRQ_TYPE_MSI,
- };
- 
-+static const struct pci_endpoint_test_data renesas_rzg2x_data = {
-+	.test_reg_bar = BAR_0,
-+	.irq_type = IRQ_TYPE_MSI,
-+	.dmac_data_alignment = 8,
-+};
-+
- static const struct pci_device_id pci_endpoint_test_tbl[] = {
- 	{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_DRA74x),
- 	  .driver_data = (kernel_ulong_t)&default_data,
-@@ -965,10 +983,18 @@ static const struct pci_device_id pci_endpoint_test_tbl[] = {
- 	{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_AM654),
- 	  .driver_data = (kernel_ulong_t)&am654_data
- 	},
--	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774A1),},
--	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774B1),},
--	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774C0),},
--	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774E1),},
-+	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774A1),
-+	 .driver_data = (kernel_ulong_t)&renesas_rzg2x_data,
-+	},
-+	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774B1),
-+	 .driver_data = (kernel_ulong_t)&renesas_rzg2x_data,
-+	},
-+	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774C0),
-+	 .driver_data = (kernel_ulong_t)&renesas_rzg2x_data,
-+	},
-+	{ PCI_DEVICE(PCI_VENDOR_ID_RENESAS, PCI_DEVICE_ID_RENESAS_R8A774E1),
-+	 .driver_data = (kernel_ulong_t)&renesas_rzg2x_data,
-+	},
- 	{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_J721E),
- 	  .driver_data = (kernel_ulong_t)&j721e_data,
- 	},
--- 
-2.25.1
-
+(I'd like it even better if we could just bail out with an error code,
+but I guess the risk of breakage might be too high with that
+approach?)
