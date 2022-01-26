@@ -2,120 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B8DC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 873B6C3526D
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 16:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234159AbiAZP63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 10:58:29 -0500
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:54999 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230408AbiAZP60 (ORCPT
+        id S234309AbiAZQAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 11:00:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229764AbiAZQAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 10:58:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1643212706; x=1674748706;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ErYDq09UFT0S4fAZwr7R81XHAZgdbQsfSFczNPNGrlA=;
-  b=fILmKinJwKWmbt3xacuw5/do64O53ptqNGM9mwNxL67IVlJd+Ut7zJXE
-   61n/CCFSk417CabLiBfriuuW/c8J86/5f6I9wdg2Rr39V5hBv/a9r6uBS
-   UdhZDJUpxpPJXqtEs9Dazpood2HlTHOpVat+f8zfvAi7Jm+etZRQI/ncg
-   o=;
-X-IronPort-AV: E=Sophos;i="5.88,318,1635206400"; 
-   d="scan'208";a="190079288"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-1f9d5b26.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 26 Jan 2022 15:58:25 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-1f9d5b26.us-west-2.amazon.com (Postfix) with ESMTPS id 1764541AE9;
-        Wed, 26 Jan 2022 15:58:25 +0000 (UTC)
-Received: from EX13D02UWB002.ant.amazon.com (10.43.161.160) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Wed, 26 Jan 2022 15:58:24 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
- EX13D02UWB002.ant.amazon.com (10.43.161.160) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Wed, 26 Jan 2022 15:58:24 +0000
-Received: from dev-dsk-alisaidi-i31e-9f3421fe.us-east-1.amazon.com
- (10.200.138.153) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
- Server id 15.0.1497.28 via Frontend Transport; Wed, 26 Jan 2022 15:58:23
- +0000
-Received: by dev-dsk-alisaidi-i31e-9f3421fe.us-east-1.amazon.com (Postfix, from userid 5131138)
-        id D074721B6E; Wed, 26 Jan 2022 15:58:23 +0000 (UTC)
-From:   Ali Saidi <alisaidi@amazon.com>
-To:     <german.gomez@arm.com>
-CC:     <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
-        <alisaidi@amazon.com>, <andrew.kilroy@arm.com>,
-        <benh@kernel.crashing.org>, <james.clark@arm.com>,
-        <john.garry@huawei.com>, <jolsa@redhat.com>, <leo.yan@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
-        <mingo@redhat.com>, <namhyung@kernel.org>, <peterz@infradead.org>,
-        <will@kernel.org>
-Subject: Re: [PATCH 1/2] perf arm-spe: Add arm_spe_record to synthesized
-Date:   Wed, 26 Jan 2022 15:58:20 +0000
-Message-ID: <20220126155820.21929-1-alisaidi@amazon.com>
-X-Mailer: git-send-email 2.24.4.AMZN
-In-Reply-To: <5ca990a5-eedd-0edb-26d3-b5e16c36ac34@arm.com>
-References: <5ca990a5-eedd-0edb-26d3-b5e16c36ac34@arm.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Wed, 26 Jan 2022 11:00:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E162C06161C;
+        Wed, 26 Jan 2022 08:00:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C079CB81F03;
+        Wed, 26 Jan 2022 15:59:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4E9CC340E6;
+        Wed, 26 Jan 2022 15:59:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643212798;
+        bh=X+RmX5LveR/DElha+H9g+z55A6Rjf/XcNDFPYxv/WHk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nWldkKNrXR+KFVYNGhlWGOo0277tEiT3oaCIKp3KoD/Ux7kulKTIzau9dhz3Dgx+r
+         jmS8Y9zjmJpEFfJduRqsoZg0jqGJ96f7XXfaKMUo8e+v4PLuY6fm7QbSLg5siQ6gHk
+         n6cwv99n7eNy45xPNXt5FubG7ffOczJ+2y68v57Bacorf3/ajYTWeD5l4I6Dplf/yd
+         QfhbDhcnS0TGGtcihwq+gYRO1tVi6TAvpo8jOufEVsGAuY6WRV3HvQUj6j+FTZtwDw
+         /o+G1tckj1rPi0u9tpI7OunrCnDmc3rNVKoR+aynKTd0J38NDy+TlVa3rqNpUZ2its
+         yCGHK5c0jVe4w==
+Date:   Thu, 27 Jan 2022 00:59:52 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v5 2/9] fprobe: Add ftrace based probe APIs
+Message-Id: <20220127005952.42dd07ff5f275e61be638283@kernel.org>
+In-Reply-To: <20220126115022.fda21a3face4e97684f5bab9@kernel.org>
+References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
+        <164311271777.1933078.9066058105807126444.stgit@devnote2>
+        <YfAoMW6i4gqw2Na0@krava>
+        <YfA9aC5quQNc89Hc@krava>
+        <20220126115022.fda21a3face4e97684f5bab9@kernel.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi German,
->Hi Ali,
->
->On 25/01/2022 19:20, Ali Saidi wrote:
->> Providing the arm_spe_record as raw data to the synthesized SPE samples
->> allows perf scripts to read and separately process the data in ways
->> existing perf tools don't support and mirrors functionality available
->> for PEBS.
->> Signed-off-by: Ali Saidi <alisaidi@amazon.com>
->> ---
->>  tools/perf/util/arm-spe.c | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
->> index d2b64e3f588b..a7499cde6fc0 100644
->> --- a/tools/perf/util/arm-spe.c
->> +++ b/tools/perf/util/arm-spe.c
->> @@ -336,6 +336,8 @@ static int arm_spe__synth_mem_sample(struct arm_spe_queue *speq,
->>  	sample.phys_addr = record->phys_addr;
->>  	sample.data_src = data_src;
->>  	sample.weight = record->latency;
->> +	sample.raw_size = sizeof(*record);
->> +	sample.raw_data = record;
->
->Have you tried this with perf-inject? I think it would need the PERF_SAMPLE_RAW bit in the sample_type,
+On Wed, 26 Jan 2022 11:50:22 +0900
+Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-Yes I've tried the following and it worked as expected with the original
-perf.data or the perf.data.jitted after perf-inject. 
+> > one more question..
+> > 
+> > I'm adding support for user to pass function symbols to bpf fprobe link
+> > and I thought I'd pass symbols array to register_fprobe, but I'd need to
+> > copy the whole array of strings from user space first, which could take
+> > lot of memory considering attachment of 10k+ functions
+> > 
+> > so I'm thinking better way is to resolve symbols already in bpf fprobe
+> > link code and pass just addresses to register_fprobe
+> 
+> That is OK. Fprobe accepts either ::syms or ::addrs.
+> 
+> > 
+> > I assume you want to keep symbol interface, right? could we have some
+> > flag ensuring the conversion code is skipped, so we don't go through
+> > it twice?
+> 
+> Yeah, we still have many unused bits in fprobe::flags. :)
 
-perf record -e arm_spe_0/jitter=1/ -k 1 java ...
-perf  inject -f --jit -i perf.data -o perf.data.jitted
-perf script -i perf.data -s t1.py --itrace=i1i
+Instead of that, according to Steve's comment, I would like to introduce
+3 registration APIs.
 
->
->Although I quickly looked over the perf inject code and it looks like it's expecting some type of padding:
->
->  // synthetic-events.c
->  if (type & PERF_SAMPLE_RAW) {
->    result += sizeof(u32);
->    result += sample->raw_size;
->  }
->
->I'm seeing some comments in utils/event.h related to this on the intel events.
+int register_fprobe(struct fprobe *fp, const char *filter, const char *notrace);
+int register_fprobe_ips(struct fprobe *fp, unsigned long *addrs, int num);
+int register_fprobe_syms(struct fprobe *fp, const char **syms, int num);
 
-Yes i noticed this too,but looking at how the raw data is added to the same
-other places like intel-pt.c:1703 the perf_synth__raw*() functions are used to
-strip away the 4 bytes bytes before the data is added to the sample. The other
-places i can find the padding used is in builtin-script.c but given we have the
---dump-raw-trace option it's not clear to me that it's needed to wrap the
-arm_spe_event in another struct with padding like perf_synth_intel_ptwrite?
+The register_fprobe_ips() will not touch the @addrs. You have to set the
+correct ftrace location address in the @addrs.
 
-Thanks,
-Ali
+Thank you,
 
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
