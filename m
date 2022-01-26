@@ -2,91 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64EA1C3526D
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:35:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 082D2C28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:36:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240241AbiAZNfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:35:52 -0500
-Received: from mga06.intel.com ([134.134.136.31]:27196 "EHLO mga06.intel.com"
+        id S240281AbiAZNg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:36:57 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55466 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235061AbiAZNfv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:35:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643204151; x=1674740151;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cXGNTr5J5iMmzg+/ShSMdmmAjgQmyI/sGWK0ORhpF3k=;
-  b=FXimzd0aKattG8fitN7WHaDaAYQzlKj1tBGpuxLh4IUqGP+ecAPPw0oL
-   /ToFS6cYGZ8x0iwQIbm5WJqd67DSvxD8svttwcOupD8vQY2PYE6HoLhcy
-   daZppcFFUpnHZscQTTmHPX7PcDg7ydV7Rv1jaapABRTIkqM1qiSlW6QUU
-   PoL2CvNOnji/G8FUbaA+QZ10z7XrVtv9YL6xqN7Ou5+jNFuQaD6OTiPXt
-   YH59ujHlARYkMFDWMgP3zAOReei6qFyxC99VY0o8TP/R7T4953Umjy8Vu
-   LKqURb95pTdxHoInOzDBd2MAmPkyi4GuHsGdpplyd7k6gb1ias0/7ve/D
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="307263605"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="307263605"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:35:50 -0800
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="628303941"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:35:47 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nCiRd-00Ebvw-G8;
-        Wed, 26 Jan 2022 15:34:41 +0200
-Date:   Wed, 26 Jan 2022 15:34:41 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wander Costa <wcosta@redhat.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Wander Lairson Costa <wander@redhat.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
-Message-ID: <YfFN8Q0o2RxXcE7y@smile.fi.intel.com>
-References: <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
- <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
- <CAAq0SU=9R3Y_SAdM+HaqavzWBRd1Li-b5bnZZLd5Opfgd0vnkQ@mail.gmail.com>
- <fa42a60c-954a-acc0-3962-f00427153f78@nvidia.com>
- <YfArHDfrVHw7ApDx@smile.fi.intel.com>
- <YfArWaKJ13+OC/7w@smile.fi.intel.com>
- <CAAq0SU=U3UY+DUdd1fjj25Yt_QZriShZTSFTsq5B4tPnOYhQvQ@mail.gmail.com>
- <YfELyq5AmxiZxjme@kroah.com>
- <YfE6AiIgXrd+5qvk@smile.fi.intel.com>
- <CAAq0SU=ivwiGPZoD=BsD67A4A4pvuh0S02L2Udhg8vmjnmCAAw@mail.gmail.com>
+        id S233208AbiAZNg4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 08:36:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/5ue71kmL2h4LWcj6pXkYjWtIJCP5T9x8ay3aCSwqhM=; b=mHueb7dI9SdXd/Oaw8DN23GYUI
+        Ycf5aktSYPmd3r6tdSdJragw4sKlk9rLDgZVU0oIW/Pw2DgAGTeLZ6tOgAQlD6V6wK2ud5tF9/vGG
+        8gJOY7iBfYVJ3HCZI9ETTpDxMOWpMsFvs/D2+QmT+wGm7hh6Xxt9dCvF70gRp7GOsIfw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nCiTk-002oTB-U5; Wed, 26 Jan 2022 14:36:52 +0100
+Date:   Wed, 26 Jan 2022 14:36:52 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 5/5] dt-bindings: net: xgmac_mdio: Add
+ "clock-frequency" and "suppress-preamble"
+Message-ID: <YfFOdGa7iVFQK7EZ@lunn.ch>
+References: <20220126101432.822818-1-tobias@waldekranz.com>
+ <20220126101432.822818-6-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAAq0SU=ivwiGPZoD=BsD67A4A4pvuh0S02L2Udhg8vmjnmCAAw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220126101432.822818-6-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 10:23:57AM -0300, Wander Costa wrote:
-> On Wed, Jan 26, 2022 at 9:10 AM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > On Wed, Jan 26, 2022 at 09:52:26AM +0100, Greg Kroah-Hartman wrote:
-
-...
-
-> > Wander, if you need a test for something new, I may help to perform on
-> > our (sub)set of x86 machines.
+On Wed, Jan 26, 2022 at 11:14:32AM +0100, Tobias Waldekranz wrote:
+> The driver now supports the standard "clock-frequency" and
+> "suppress-preamble" properties, do document them in the binding
+> description.
 > 
-> Thanks, Andy. I will let you know when I have new patches.
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 
-Just Cc me that time.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
--- 
-With Best Regards,
-Andy Shevchenko
+However, you could convert to yaml as well, if you wanted.
 
+> +- clocks
+> +		Usage: optional
+> +		Value type: <phandle>
+> +		Definition: A reference to the input clock of the controller
+> +		from which the MDC frequency is derived.
 
+That answers my question. However, in the presence of a
+'clock-frequency' property it cannot be optional, so -ENODEV seems
+reasonable if it is missing. Potentially you also need to handle
+-EPROBE_DEFER, although it seems quiet unlikely for an internal SoC
+clock.
+
+	Andrew
