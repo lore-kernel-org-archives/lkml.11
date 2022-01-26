@@ -2,77 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E981C5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 01:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6357DC3525A
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 01:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235937AbiAZBnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 20:43:04 -0500
-Received: from mailgw.kylinos.cn ([123.150.8.42]:5332 "EHLO nksmu.kylinos.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235863AbiAZBnC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 20:43:02 -0500
-X-UUID: 0210256d97bd42a4a8887a9e4d1cccef-20220126
-X-CPASD-INFO: 88fb96bf2ded4c56ad9dbd597cdd4cbc@gYiggmZokJZehKewg6aAcIGVaZSSkFW
-        IeZ2ElGKTjoOVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3h3qggmlkkg==
-X-CPASD-FEATURE: 0.0
-X-CLOUD-ID: 88fb96bf2ded4c56ad9dbd597cdd4cbc
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,EXT:0.0,OB:0.0,URL:-5,T
-        VAL:173.0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:113.0,IP:-2.0,MAL:0.0,ATTNUM:0
-        .0,PHF:-5.0,PHC:-5.0,SPF:4.0,EDMS:-3,IPLABEL:4488.0,FROMTO:0,AD:0,FFOB:0.0,CF
-        OB:0.0,SPC:0.0,SIG:-5,AUF:104,DUF:31763,ACD:175,DCD:277,SL:0,AG:0,CFC:0.229,C
-        FSR:0.148,UAT:0,RAF:0,VERSION:2.3.4
-X-CPASD-ID: 0210256d97bd42a4a8887a9e4d1cccef-20220126
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1, 1
-X-UUID: 0210256d97bd42a4a8887a9e4d1cccef-20220126
-X-User: yinxiujiang@kylinos.cn
-Received: from localhost.localdomain [(118.26.139.139)] by nksmu.kylinos.cn
-        (envelope-from <yinxiujiang@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 1017235085; Wed, 26 Jan 2022 09:55:38 +0800
-From:   Yin Xiujiang <yinxiujiang@kylinos.cn>
-To:     skashyap@marvell.com, jhasan@marvell.com,
-        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] scsi: bnx2fc: Make use of the helper macro kthread_run()
-Date:   Wed, 26 Jan 2022 09:42:48 +0800
-Message-Id: <20220126014248.466806-1-yinxiujiang@kylinos.cn>
-X-Mailer: git-send-email 2.30.0
+        id S235950AbiAZBsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 20:48:18 -0500
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:31690 "EHLO
+        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235863AbiAZBsQ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 20:48:16 -0500
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 20Q1eoOV090812;
+        Wed, 26 Jan 2022 09:40:50 +0800 (GMT-8)
+        (envelope-from jammy_huang@aspeedtech.com)
+Received: from JammyHuang-PC.aspeed.com (192.168.2.115) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 Jan
+ 2022 09:48:13 +0800
+From:   Jammy Huang <jammy_huang@aspeedtech.com>
+To:     <eajames@linux.ibm.com>, <mchehab@kernel.org>, <joel@jms.id.au>,
+        <andrew@aj.id.au>, <linux-media@vger.kernel.org>,
+        <openbmc@lists.ozlabs.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 2/2] media: aspeed: Fix unstable timing detection
+Date:   Wed, 26 Jan 2022 09:47:25 +0800
+Message-ID: <20220126014725.1511-3-jammy_huang@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220126014725.1511-1-jammy_huang@aspeedtech.com>
+References: <20220126014725.1511-1-jammy_huang@aspeedtech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.115]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 20Q1eoOV090812
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Repalce kthread_create/wake_up_process() with kthread_run()
-to simplify the code.
+Using stable-signal in resolution detection, and try detection again
+if unstable.
 
-Signed-off-by: Yin Xiujiang <yinxiujiang@kylinos.cn>
+VE_MODE_DETECT_EXTSRC_ADC: 1 if video source is from ADC output.
+VE_MODE_DETECT_H_STABLE: 1 if horizontal signal detection is stable.
+VE_MODE_DETECT_V_STABLE: 1 if vertical signal detection is stable.
+
+Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
 ---
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/media/platform/aspeed-video.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-index 71fa62bd3083..5edc2b812646 100644
---- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-+++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-@@ -2723,14 +2723,13 @@ static int __init bnx2fc_mod_init(void)
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index 5d1ec3de50ad..eb9c17ac0e14 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -153,9 +153,14 @@
  
- 	bg = &bnx2fc_global;
- 	skb_queue_head_init(&bg->fcoe_rx_list);
--	l2_thread = kthread_create(bnx2fc_l2_rcv_thread,
-+	l2_thread = kthread_run(bnx2fc_l2_rcv_thread,
- 				   (void *)bg,
- 				   "bnx2fc_l2_thread");
- 	if (IS_ERR(l2_thread)) {
- 		rc = PTR_ERR(l2_thread);
- 		goto free_wq;
- 	}
--	wake_up_process(l2_thread);
- 	spin_lock_bh(&bg->fcoe_rx_list.lock);
- 	bg->kthread = l2_thread;
- 	spin_unlock_bh(&bg->fcoe_rx_list.lock);
+ #define VE_MODE_DETECT_STATUS		0x098
+ #define  VE_MODE_DETECT_H_PERIOD	GENMASK(11, 0)
++#define  VE_MODE_DETECT_EXTSRC_ADC	BIT(12)
++#define  VE_MODE_DETECT_H_STABLE	BIT(13)
++#define  VE_MODE_DETECT_V_STABLE	BIT(14)
+ #define  VE_MODE_DETECT_V_LINES		GENMASK(27, 16)
+ #define  VE_MODE_DETECT_STATUS_VSYNC	BIT(28)
+ #define  VE_MODE_DETECT_STATUS_HSYNC	BIT(29)
++#define  VE_MODE_DETECT_VSYNC_RDY	BIT(30)
++#define  VE_MODE_DETECT_HSYNC_RDY	BIT(31)
+ 
+ #define VE_SYNC_STATUS			0x09c
+ #define  VE_SYNC_STATUS_HSYNC		GENMASK(11, 0)
+@@ -909,6 +914,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 	bool invalid_resolution = true;
+ 	int rc;
+ 	int tries = 0;
++	u32 mds;
+ 	u32 src_lr_edge;
+ 	u32 src_tb_edge;
+ 	struct v4l2_bt_timings *det = &video->detected_timings;
+@@ -939,6 +945,13 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 			return;
+ 		}
+ 
++		mds = aspeed_video_read(video, VE_MODE_DETECT_STATUS);
++		// try detection again if current signal isn't stable
++		if (!(mds & VE_MODE_DETECT_H_STABLE) ||
++		    !(mds & VE_MODE_DETECT_V_STABLE) ||
++		    (mds & VE_MODE_DETECT_EXTSRC_ADC))
++			continue;
++
+ 		aspeed_video_check_and_set_polarity(video);
+ 
+ 		aspeed_video_enable_mode_detect(video);
 -- 
-2.30.0
+2.25.1
 
