@@ -2,109 +2,288 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CAD3C3526D
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C176C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241840AbiAZOJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 09:09:45 -0500
-Received: from mga07.intel.com ([134.134.136.100]:46235 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233834AbiAZOJn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 09:09:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643206183; x=1674742183;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+bpZlvDIlAqOTrKi8qQY7oqDaN358NSulwLrW+ejnTU=;
-  b=cN4OVl5BU86577/2bbBE5xvGU4lRlgfc+4wCdkAN2CNpoYbqFlIzCFxe
-   AC8KzvBty3GAbRdtEXkXHYTQBV5rgY6m0pCpCM7fufwrOL1r5un7hhgRW
-   rHCqNwolv25gxPTN67jWSWQaMF4auoZYwEI4F4uID58A0pH9oIDXgY+H5
-   36vr5gmADE+X5oBikmxpzQAECb7oEKkblvn2sXH5z3bjP4Klq61oW8DTL
-   3/vayOwfFG4Ocz94gTxjixZqx56qopkied73kpVQwG2XlLcFphZ4EG0q6
-   AZpSr5FYGTiRee/dkYm0Df7WeRTZEIv0W6d46qkHuLSsTTZYDBjYSltG/
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="309869018"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="309869018"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:09:42 -0800
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="581113085"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:09:39 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nCiyO-00EcSP-TH;
-        Wed, 26 Jan 2022 16:08:32 +0200
-Date:   Wed, 26 Jan 2022 16:08:32 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Helge Deller <deller@gmx.de>, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v1 1/4] fbtft: Unorphan the driver
-Message-ID: <YfFV4EJosayH+e6C@smile.fi.intel.com>
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <20220125202118.63362-2-andriy.shevchenko@linux.intel.com>
- <YfEG2qVO9K9G+g1d@kroah.com>
- <CAKMK7uGoRC9a4cMCADTipV67oivfWvTw=6RYm2kOthB_bhWnXQ@mail.gmail.com>
- <f671a112-880d-1526-a395-360947b40c5a@gmx.de>
- <YfEv7OQs98O9wJdJ@kroah.com>
- <YfFIpBb7lL4ukWjm@smile.fi.intel.com>
- <b8eb7111-43aa-cc8a-a1bc-f08e0f2987ed@redhat.com>
+        id S241853AbiAZOLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 09:11:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233834AbiAZOLB (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 09:11:01 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4074AC06161C;
+        Wed, 26 Jan 2022 06:11:01 -0800 (PST)
+Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nCj0j-0007UV-QM; Wed, 26 Jan 2022 15:10:57 +0100
+Message-ID: <c8d7228a-2df5-df92-6d53-c3e940274dad@leemhuis.info>
+Date:   Wed, 26 Jan 2022 15:10:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b8eb7111-43aa-cc8a-a1bc-f08e0f2987ed@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-BS
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     workflows@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        regressions@lists.linux.dev,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+References: <cover.1643110442.git.linux@leemhuis.info>
+ <f97738d6250050bc982bf2947587f1c73f37446f.1643110442.git.linux@leemhuis.info>
+ <87sftbwemg.fsf@meer.lwn.net>
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+Subject: Re: [PATCH v3 1/2] docs: add a document about regression handling
+In-Reply-To: <87sftbwemg.fsf@meer.lwn.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1643206261;b335d8f8;
+X-HE-SMSGID: 1nCj0j-0007UV-QM
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 02:46:08PM +0100, Javier Martinez Canillas wrote:
-> On 1/26/22 14:12, Andy Shevchenko wrote:
-> > On Wed, Jan 26, 2022 at 12:26:36PM +0100, Greg Kroah-Hartman wrote:
-> >> On Wed, Jan 26, 2022 at 12:17:08PM +0100, Helge Deller wrote:
-> >>> On 1/26/22 11:31, Daniel Vetter wrote:
-> > 
-> > ...
-> > 
-> >>> You are describing a transitioning over to DRM - which is Ok.
-> >>> But on that way there is no need to ignore, deny or even kill usage scenarios
-> >>> which are different compared to your usage scenarios (e.g. embedded devices,
-> >>> old platforms, slow devices, slow busses, no 3D hardware features,
-> >>> low-color devices, ...).
-> >>
-> >> All of those should be handled by the drm layer, as Daniel keeps
-> >> pointing out.  If not, then the tinydrm layer needs to be enhanced to do
-> >> so.
-> >>
-> >> Anyone have a pointer to hardware I can buy that is one of these fbtft
-> >> drivers that I could do a port to drm to see just how much work is
-> >> really needed here?
-> > 
-> > I have bought myself (for other purposes, I mean not to convert the driver(s))
-> > SSD1306 based display (SPI), SSD1331 (SPI), HX88347d (parallel).
-> >
+
+On 26.01.22 00:59, Jonathan Corbet wrote:
+> Thorsten Leemhuis <linux@leemhuis.info> writes:
 > 
-> I've just bought a SSD1306 (I2C) based one and will attempt to write a DRM
-> driver using drivers/staging/fbtft/fb_ssd1306.c as a reference.
+>> Create a document explaining various aspects around regression handling
+>> and tracking both for users and developers. Among others describe the
+>> first rule of Linux kernel development and what it means in practice.
+>> Also explain what a regression actually is and how to report one
+>> properly. The text additionally provides a brief introduction to the bot
+>> the kernel's regression tracker uses to facilitate his work. To sum
+>> things up, provide a few quotes from Linus to show how serious he takes
+>> regressions.
+>>
+> [...]
 
-You should take ssd1307fb.c instead. And basically create a MIPI based driver
-for I2C. Then we won't go same road again for other similar devices.
+Many thx for your feedback, much appreciated. I trimmed the reply to not
+mention all the places where I fixed things as suggested.
 
-> I didn't find one with a SPI interface but we can later add a transport for
-> that if I succeed.
+>> +   Note: Only the content of this RST file as found in the Linux kernel sources
+>> +   is available under CC-BY-4.0, as versions of this text that were processed
+>> +   (for example by the kernel's build system) might contain content taken from
+>> +   files which use a more restrictive license.
+> 
+> I wonder if we could put this boilerplate at the bottom, with a single
+> "see the bottom for redistribution information" line here?  Most readers
+> won't care about this stuff and shouldn't have to slog through it to get
+> to what they want to read.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Totally fine with me. When I touch reporting-issues.rst the next time
+I'll move it downwards as well.
+
+>> +Regressions
+>> ++++++++++++
+>> +
+>> +The first rule of Linux kernel development: '*We don't cause regressions*'.
+>> +Linux founder and lead developer Linus Torvalds strictly enforces the rule
+>> +himself. This document describes what it means in practice and how the Linux
+>> +kernel's development model ensures all reported regressions are addressed.
+>> +The text covers aspects relevant for both users and developers.
+> 
+> So that last line makes me a bit nervous; I've really been trying to get
+> us to organize our documentation for the readers.  So, without having
+> read what follows in depth yet, I wonder if we don't really want two
+> different documents: a developer document (which maybe belongs in
+> Documentation/process) and a user document?
+
+Fun fact: I also got nervous when I added that sentence, as it lead to a
+similar thought in my head already. :-/ After some internal debate I
+decided that quite a few things overlap and continued to keep it in one
+document, but after the text grew somewhat more I guess I have to agree.
+More on this below.
+
+>> +The important bits for people affected by regressions
+>> +=====================================================
+>> +
+>> +It's a regression if something running fine with one Linux kernel works worse or
+>> +not at all with a newer version. Note, the newer kernel has to be compiled using
+>> +a similar configuration -- for this and other fine print, check out below
+>> +section "What is a 'regression' and what is the 'no regressions rule'?".
+> Can we be consistent with either single or double quotes?  I'd suggest
+> "double quotes" but won't make a fuss about that.
+
+Changed to "double quotes" everywhere in the text. But just to make sure
+I get things right: in this particular case this will result in
+
+...section "What is a "regression" and what is the "no regressions rule"?".
+
+This looks a bit strange to me. Something in me really would like to
+quote the section's header in single quotes, but I guess grammar rules
+do not allow that, so whatever. :-D
+
+>> +Report your regression as outlined in
+>> +`Documentation/admin-guide/reporting-issues.rst`, it already covers all aspects
+> No need to quote the file name.
+
+Okay, I thought I had seen some commit or instructions that it's better
+to use them in this case, but my brain must have imagined it.
+
+>> +When submitting fixes for regressions, add "Link:" tags pointing to all places
+>> +where the issue was reported, as tools like the Linux kernel regression bot
+>> +'regzbot' heavily rely on them. These pointers are also of great value when
+>> +looking into the issue months or years later, that's why
+>> +`Documentation/process/submitting-patches.rst` and
+>> +:ref:`Documentation/process/5.Posting.rst <development_posting>` mandate their
+>> +use::
+>> +
+>> +       Link: https://lore.kernel.org/r/30th.anniversary.repost@klaava.Helsinki.FI/
+>> +       Link: https://bugzilla.kernel.org/show_bug.cgi?id=1234567890
+> 
+> What is this literal block here for?
+
+It's meant as an example. Should I simply add a ", e.g. like this" after
+the "use"?
+
+>> +Let the Linux kernel's regression tracker and all other subscribers of the
+>> +`regression mailing list <https://lore.kernel.org/regressions/>`_
+>> +(regressions@lists.linux.dev) quickly know about newly reported regressions:
+> You've already linked this above, not sure it's needed again.
+
+When I started this document I didn't mean it to be read from top to
+bottom and repeated some things. But with the split this will likely
+change somewhat.
+
+>> +What is a 'regression' and what is the 'no regressions rule'?
+>> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> +
+>> +It's a regression if some application or practical use case running fine with
+>> +one Linux kernel works worse or not at all with a newer version compiled using a
+>> +similar configuration. The 'no regressions rule' forbids this to take place; if
+> 
+> So this is something you already said above.
+
+That above was more like a "TLDR", guess I'll call it that after
+splitting things up.
 
 
+>> +How is the rule enforced?
+>> +~~~~~~~~~~~~~~~~~~~~~~~~~
+>> +
+>> +It's the duty of the subsystem maintainers, which are watched and supported by
+>> +Linus Torvalds for mainline or stable/longterm tree maintainers like Greg
+>> +Kroah-Hartman. All of them are supported by Thorsten Leemhuis: he's acting as
+>> +'regressions tracker' for the Linux kernel and trying to ensure all regression
+>> +reports are acted upon in a timely manner.
+>> +
+>> +The distributed and slightly unstructured nature of the Linux kernel's
+>> +development makes tracking regressions hard. That's why Thorsten relies on the
+>> +help of his Linux kernel regression tracking robot 'regzbot'. It watches mailing
+>> +lists and git trees to semi-automatically associate regression reports with
+>> +patch submissions and commits fixing the issue, as this provides all necessary
+>> +insights into the fixing progress.
+>> +
+>> +Note, the regression tracker can only ensure no regression falls through the
+>> +cracks, if someone tells him or his bot about every regression found. That's why
+>> +each report needs to be CCed or forwarded to the regressions mailing list
+>> +(ideally with a 'regzbot command' in the mail), as explained in the next
+>> +section.
+> 
+> So this isn't really enforcement information, it's tracking, which is
+> different...  If you really want to talk about enforcement, you might
+> mention that offending patches can be reverted if they are not fixed in
+> a timely manner.
+
+Well, I'd say tracking is part of enforcing, but whatever, I see your
+point and will address it in the next version.
+
+
+>> +Placing such a 'regzbot command' is in your interest, as it will ensure the
+>> +report won't fall through the cracks unnoticed. If you omit this, the Linux
+>> +kernel's regressions tracker will take care of telling regzbot about your
+>> +regression, as long as you send a copy to the regressions mailing lists. But the
+>> +regression tracker is just one human which sometimes has to rest or occasionally
+>> +might even enjoy some time away from computers (as crazy as that might sound).
+> 
+> Naw, we don't allow that, sorry :)
+
+:-D
+
+>> +Who needs to find the commit causing a regression?
+>> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> +
+>> +It's the reporter's duty to find the culprit, but developers of the affected
+>> +subsystem should offer advice and reasonably help where they can.
+> 
+> Is it really our policy that *reporters* need to find the offending
+> commit?  That's certainly not my view of things, anyway?
+
+Well, do we have something on that written down somewhere or a few
+quotes from Linus that might help to clarify things?
+
+Anyway: I was not totally happy with it either, as I found the first
+part of the sentence to strong, and the second to soft. But I had
+trouble finding something better, maybe a native speaker could help out
+here. Maybe something along these lines?
+
+```
+The developers of the affected code area should try their best to
+identify what's causing the regression. But that might be impossible
+with reasonable effort, as quite a few regressions only occur in a
+particular environment (Linux distro, hardware, configuration, ...).
+That's why in the end it's often up to the reporter to locate the
+culprit; to make this easy, developers should offer advice and
+reasonably help where they can.
+```
+
+As that's what things boil down to in practice, don't they?
+
+>> +More details about regressions relevant for reporters
+>> +-----------------------------------------------------
+>> +
+>> +Does a regression need to be fixed, if it can be avoided by updating some other software?
+> 
+> It would be nice to keep to 80 columns if possible.  These long section
+> headings aren't great for readability.
+
+I know and already tried to keep them shorter, but I sometimes simply
+failed to do so. Thing is: more descriptive section IMHO make is easier
+to skim over the document and just read the sections one is interested
+in (kinda FAQ style). And that was my goal, as I don't expect many
+people to read the text from top to bottom in these interesting times.
+That's why I think the benefits outweigh the downsides in times where we
+even allow code to exceed the old 80 character limit when it makes sense.
+
+I'll give it another shot to make them shorter, but I can't promise I'll
+manage -- as as you wrote "It would be *nice* to keep" I for now assume
+that's okay.
+
+>> +How to create a configuration similar to the one of an older kernel?
+>> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> +
+>> +Start a known-good kernel and configure the newer Linux version with ``make
+> Start *with* a ... ?
+
+Hmmm. I went for "Start *your machine with* a" to make it really obvious
+what to start.
+
+> OK, now that I'm at the end, I would like to suggest splitting this
+> material up.  Few people will make it through that whole thing...  It
+> seems to me that we need is:
+> 
+>  - How to report and track a regression (admin guide probably)
+>  - Regression sermon for developers including Linus quotes (process)
+>  - Reference guide for regzbot directives (process or tools)
+> 
+> That should get each of them to a manageable length where readers will
+> be able to get to the information they are looking for at the time.  I
+> would think this would mostly be a matter of hacking out pieces from the
+> above and putting them in the proper place.
+> 
+> See what I'm getting at?  Does that make sense to you?
+
+Sure, I as mentioned earlier, I had thought about this already.
+
+But I'll try to avoid a separate document for regzbot as see how this
+works out. I fear splitting this off is a bad idea, as reporters
+otherwise need to look into too many documents for one task, as they
+already need to deal with reporting-issue.rst as well.
+
+Thx again!
+
+Ciao, Thorsten
