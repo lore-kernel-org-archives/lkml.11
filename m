@@ -2,205 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAFEC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 08:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B7EFC63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 08:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238203AbiAZILP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 03:11:15 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:17813 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238182AbiAZILI (ORCPT
+        id S238213AbiAZIMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 03:12:50 -0500
+Received: from so254-9.mailgun.net ([198.61.254.9]:52467 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238182AbiAZIMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 03:11:08 -0500
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JkGbZ3D4gz9sJq;
-        Wed, 26 Jan 2022 16:09:46 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 26 Jan 2022 16:11:06 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>,
-        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
-        <tim.c.chen@linux.intel.com>, <gautham.shenoy@amd.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <bristot@redhat.com>,
-        <prime.zeng@huawei.com>, <yangyicong@hisilicon.com>,
-        <jonathan.cameron@huawei.com>, <ego@linux.vnet.ibm.com>,
-        <srikar@linux.vnet.ibm.com>, <linuxarm@huawei.com>,
-        <21cnbao@gmail.com>, <song.bao.hua@hisilicon.com>,
-        <guodong.xu@linaro.org>
-Subject: [PATCH v2 2/2] sched/fair: Scan cluster before scanning LLC in wake-up path
-Date:   Wed, 26 Jan 2022 16:09:47 +0800
-Message-ID: <20220126080947.4529-3-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220126080947.4529-1-yangyicong@hisilicon.com>
-References: <20220126080947.4529-1-yangyicong@hisilicon.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+        Wed, 26 Jan 2022 03:12:48 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1643184768; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=QZIdWUM7EPihOXq4BzDQyWtb+54DT11WKYyYespSlLk=; b=mgXX6Ua9JI1oaFKKpB12EFqmw8JfNbFW++5SIXtGTD+3YvtTG5hjDYVkWexHFcVpxxBEN6aJ
+ h5Znuw6/Oa2UEgJCrj3rB0rGVt/x472kzq/DzASQ+UmSDjj/pMbuYoWtRvdPtOhc9FaIopyA
+ KAv2cE+MEphaLq1GCs75Ue9oyUU=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 61f1027f62864ab10185f249 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 26 Jan 2022 08:12:47
+ GMT
+Sender: tdas=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 0C7EBC4360C; Wed, 26 Jan 2022 08:12:47 +0000 (UTC)
+Received: from hu-tdas-hyd.qualcomm.com (unknown [202.46.22.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: tdas)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D56E1C4360D;
+        Wed, 26 Jan 2022 08:12:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org D56E1C4360D
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Taniya Das <tdas@codeaurora.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        =?UTF-8?q?Michael=20Turquette=20=C2=A0?= <mturquette@baylibre.com>
+Cc:     Rajendra Nayak <rnayak@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh@kernel.org, robh+dt@kernel.org,
+        Taniya Das <tdas@codeaurora.org>
+Subject: [PATCH v4 0/2] Add support for LPASS Core and Audio Clock for SC7280
+Date:   Wed, 26 Jan 2022 13:42:34 +0530
+Message-Id: <20220126081236.25255-1-tdas@codeaurora.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Barry Song <song.bao.hua@hisilicon.com>
+[v4]
+ * Cleanup header file inclusion in the clock controller files.
+ * Update the regmap_config max_registers in all clock controller
+   probes.
 
-For platforms having clusters like Kunpeng920, CPUs within the same
-cluster have lower latency when synchronizing and accessing shared
-resources like cache. Thus, this patch tries to find an idle cpu
-within the cluster of the target CPU before scanning the whole LLC
-to gain lower latency.
+[v3]
+ * Fix 'pm_clk_suspend' expansion warning in lpass_audio_cc_sc7280_probe
+   and lpass_aon_cc_sc7280_probe.
+ * Update the vco table frequencies.
+ * Update 'regmap_config' name for all clock controllers.
+ * Fix the missing 'const' for clk_init_data.
+ * Update the binding for 'lpass_aon' CC.
 
-Note neither Kunpeng920 nor x86 Jacobsville supports SMT, so this
-patch doesn't consider SMT for this moment.
+[v2]
+ * Drop code for "Add support for clock voting from GDSC" from
+   drivers/clk/qcom/gdsc.c
+ * Add support for runtime PM get/put from clk_summary.
+ * Update commit message for PLL detect lock timeout increase.
+ * Fix documentation bindings errors reported by DT_CHECKER_FLAGS.
+ * Update the driver code to take care of the following
+    - KCONFIG to add "select QCOM_GDSC"
+    - Use of "const" for pll_vco and clk_init_data
+    - Use of index instead of fw_name.
+    - Fix extra space, remove 'lpass_create_pm_clks' and corresponding code.
+    - cleanup 'lpass_hm_core_probe' and 'lpass_hm_sc7280_match_table'.
 
-Testing has been done on Kunpeng920 by pinning tasks to one numa
-and two numa. On Kunpeng920, Each numa has 8 clusters and each
-cluster has 4 CPUs.
+[v1]
+This patchset supports the following.
+- Few PLLs might require to a higher time to detect lock, thus increase the
+  polling time.
+- GDSC which require clocks to be explicitly enabled before access.
+- LPASS core and audio clock driver support for SC7280.
 
-With this patch, We noticed enhancement on tbench within one
-numa or cross two numa.
 
-On numa 0:
-                            5.17-rc1                patched
-Hmean     1        324.73 (   0.00%)      378.01 *  16.41%*
-Hmean     2        645.36 (   0.00%)      754.63 *  16.93%*
-Hmean     4       1302.09 (   0.00%)     1507.54 *  15.78%*
-Hmean     8       2612.03 (   0.00%)     2982.57 *  14.19%*
-Hmean     16      5307.12 (   0.00%)     5886.66 *  10.92%*
-Hmean     32      9354.22 (   0.00%)     9908.13 *   5.92%*
-Hmean     64      7240.35 (   0.00%)     7278.78 *   0.53%*
-Hmean     128     6186.40 (   0.00%)     6187.85 (   0.02%)
 
-On numa 0-1:
-                            5.17-rc1                patched
-Hmean     1        320.01 (   0.00%)      378.44 *  18.26%*
-Hmean     2        643.85 (   0.00%)      752.52 *  16.88%*
-Hmean     4       1287.36 (   0.00%)     1505.62 *  16.95%*
-Hmean     8       2564.60 (   0.00%)     2955.29 *  15.23%*
-Hmean     16      5195.69 (   0.00%)     5814.74 *  11.91%*
-Hmean     32      9769.16 (   0.00%)    10872.63 *  11.30%*
-Hmean     64     15952.50 (   0.00%)    17281.98 *   8.33%*
-Hmean     128    13113.77 (   0.00%)    13895.20 *   5.96%*
-Hmean     256    10997.59 (   0.00%)    11244.69 *   2.25%*
-Hmean     512    14623.60 (   0.00%)    15526.25 *   6.17%*
+*** BLURB HERE ***
 
-This will also help to improve the MySQL. With MySQL server
-running on numa 0 and client running on numa 1, both QPS and
-latency is imporved on read-write case:
-                        5.17-rc1        patched
-QPS-16threads        143333.2633    145077.4033(+1.22%)
-QPS-24threads        195085.9367    202719.6133(+3.91%)
-QPS-32threads        241165.6867      249020.74(+3.26%)
-QPS-64threads        244586.8433    253387.7567(+3.60%)
-avg-lat-16threads           2.23           2.19(+1.19%)
-avg-lat-24threads           2.46           2.36(+3.79%)
-avg-lat-36threads           2.66           2.57(+3.26%)
-avg-lat-64threads           5.23           5.05(+3.44%)
+Taniya Das (2):
+  dt-bindings: clock: Add YAML schemas for LPASS clocks on SC7280
+  clk: qcom: lpass: Add support for LPASS clock controller for SC7280
 
-Tested-by: Yicong Yang <yangyicong@hisilicon.com>
-Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
----
- kernel/sched/fair.c | 46 +++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 42 insertions(+), 4 deletions(-)
+ .../clock/qcom,sc7280-lpasscorecc.yaml        | 172 ++++
+ drivers/clk/qcom/Kconfig                      |  10 +
+ drivers/clk/qcom/Makefile                     |   1 +
+ drivers/clk/qcom/lpassaudiocc-sc7280.c        | 838 ++++++++++++++++++
+ drivers/clk/qcom/lpasscorecc-sc7280.c         | 431 +++++++++
+ .../clock/qcom,lpassaudiocc-sc7280.h          |  43 +
+ .../clock/qcom,lpasscorecc-sc7280.h           |  26 +
+ 7 files changed, 1521 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
+ create mode 100644 drivers/clk/qcom/lpassaudiocc-sc7280.c
+ create mode 100644 drivers/clk/qcom/lpasscorecc-sc7280.c
+ create mode 100644 include/dt-bindings/clock/qcom,lpassaudiocc-sc7280.h
+ create mode 100644 include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 5146163bfabb..2f84a933aedd 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -6262,12 +6262,46 @@ static inline int select_idle_smt(struct task_struct *p, struct sched_domain *sd
- 
- #endif /* CONFIG_SCHED_SMT */
- 
-+#ifdef CONFIG_SCHED_CLUSTER
-+/*
-+ * Scan the cluster domain for idle CPUs and clear cluster cpumask after scanning
-+ */
-+static inline int scan_cluster(struct task_struct *p, int prev_cpu, int target)
-+{
-+	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
-+	struct sched_domain *sd = rcu_dereference(per_cpu(sd_cluster, target));
-+	int cpu, idle_cpu;
-+
-+	/* TODO: Support SMT case while a machine with both cluster and SMT born */
-+	if (!sched_smt_active() && sd) {
-+		for_each_cpu_and(cpu, cpus, sched_domain_span(sd)) {
-+			idle_cpu = __select_idle_cpu(cpu, p);
-+			if ((unsigned int)idle_cpu < nr_cpumask_bits)
-+				return idle_cpu;
-+		}
-+
-+		/* Don't ping-pong tasks in and out cluster frequently */
-+		if (cpus_share_resources(target, prev_cpu))
-+			return target;
-+
-+		cpumask_andnot(cpus, cpus, sched_domain_span(sd));
-+	}
-+
-+	return -1;
-+}
-+#else
-+static inline int scan_cluster(struct task_struct *p, int prev_cpu, int target)
-+{
-+	return -1;
-+}
-+#endif
-+
- /*
-  * Scan the LLC domain for idle CPUs; this is dynamically regulated by
-  * comparing the average scan cost (tracked in sd->avg_scan_cost) against the
-  * average idle time for this rq (as found in rq->avg_idle).
-  */
--static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool has_idle_core, int target)
-+static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool has_idle_core, int prev_cpu, int target)
- {
- 	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
- 	int i, cpu, idle_cpu = -1, nr = INT_MAX;
-@@ -6282,6 +6316,10 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
- 
- 	cpumask_and(cpus, sched_domain_span(sd), p->cpus_ptr);
- 
-+	idle_cpu = scan_cluster(p, prev_cpu, target);
-+	if ((unsigned int)idle_cpu < nr_cpumask_bits)
-+		return idle_cpu;
-+
- 	if (sched_feat(SIS_PROP) && !has_idle_core) {
- 		u64 avg_cost, avg_idle, span_avg;
- 		unsigned long now = jiffies;
-@@ -6416,7 +6454,7 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
- 	/*
- 	 * If the previous CPU is cache affine and idle, don't be stupid:
- 	 */
--	if (prev != target && cpus_share_cache(prev, target) &&
-+	if (prev != target && cpus_share_resources(prev, target) &&
- 	    (available_idle_cpu(prev) || sched_idle_cpu(prev)) &&
- 	    asym_fits_capacity(task_util, prev))
- 		return prev;
-@@ -6442,7 +6480,7 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
- 	p->recent_used_cpu = prev;
- 	if (recent_used_cpu != prev &&
- 	    recent_used_cpu != target &&
--	    cpus_share_cache(recent_used_cpu, target) &&
-+	    cpus_share_resources(recent_used_cpu, target) &&
- 	    (available_idle_cpu(recent_used_cpu) || sched_idle_cpu(recent_used_cpu)) &&
- 	    cpumask_test_cpu(p->recent_used_cpu, p->cpus_ptr) &&
- 	    asym_fits_capacity(task_util, recent_used_cpu)) {
-@@ -6483,7 +6521,7 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
- 		}
- 	}
- 
--	i = select_idle_cpu(p, sd, has_idle_core, target);
-+	i = select_idle_cpu(p, sd, has_idle_core, prev, target);
- 	if ((unsigned)i < nr_cpumask_bits)
- 		return i;
- 
--- 
-2.24.0
+--
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc.is a member
+of the Code Aurora Forum, hosted by the  Linux Foundation.
 
