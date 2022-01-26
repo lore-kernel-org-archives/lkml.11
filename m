@@ -2,102 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1E2C5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 01:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B7CC63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 01:22:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235819AbiAZBWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 20:22:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235791AbiAZBWa (ORCPT
+        id S235826AbiAZBWg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 20:22:36 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:41892 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S235789AbiAZBWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 20:22:30 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D771C06173B
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 17:22:30 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id nn16-20020a17090b38d000b001b56b2bce31so4599288pjb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 17:22:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LdSOUDJOxJ2WJV+wp0309W4y0HIj4q+nszAoAMP8o48=;
-        b=izneacJQ48V3dSINuH1Vf8QzRnoI9JpB5B7IaiL47YZaSFllsPG6bTMyIYk8ZLeoR4
-         bo1PovmM4cUmS7CEEw0mhr9GZxBKDxyKVTC1afu9SGHR64TSMFVageToFqRC0P2eb0kh
-         V+/Etx0l0fEwO6PUeODM9eiE2oiox2LjEKrc4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LdSOUDJOxJ2WJV+wp0309W4y0HIj4q+nszAoAMP8o48=;
-        b=o3T7LniULkeCuN0d6d989bh8WpJR5oELlchxNLvVm5gC+JLnKVcN1DFRXiEmYhBDjN
-         tEgfOqLks7MDPAdJxe9xs5yEN+z19ru6eOTBoRcdNn2tu7WdYPKaylYYtPOlNNmWM6jm
-         WjG5OjzoJFINwH6rqukC17IPmUsSjY/mlbnYEP8s1mnSKk5xNi+6CK7RVj635KFwxTuU
-         0RgihZIhyq47+EGQrWDI/iHMfZsLRAmVsUiPuumZuzIyCZ3Pqo0bwQyXgGwH3nM+ZMmx
-         BXXR7A9hcKYx1BwwD1qvvab9ScmJlBh5jQPmwmb6q0NmENhml9pMEcJvH2KHMLCpHXWH
-         Hu7w==
-X-Gm-Message-State: AOAM532K5ckICQuzoh7HWHK2hkqi3GCKatwTiX3dYbJ9irf0tOhoeYnl
-        dupY5MUW6oCWJJYv4L8XEC8Gq0q545NwfA==
-X-Google-Smtp-Source: ABdhPJywG65e7VwaY3TECQGCG+qp6sRfcj/9SyNh0j2d0BJju164w/jt3fmN2cBgEnXCzU6ZI6BbDg==
-X-Received: by 2002:a17:90b:3b8f:: with SMTP id pc15mr625392pjb.23.1643160149756;
-        Tue, 25 Jan 2022 17:22:29 -0800 (PST)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id g22sm227922pfc.141.2022.01.25.17.22.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 17:22:29 -0800 (PST)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Prashant Malani <pmalani@chromium.org>, Alyssa Ross <hi@alyssa.is>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH] platform/chrome: cros_ec_typec: Check for EC device
-Date:   Wed, 26 Jan 2022 01:22:03 +0000
-Message-Id: <20220126012203.2979709-1-pmalani@chromium.org>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+        Tue, 25 Jan 2022 20:22:32 -0500
+X-UUID: b68215f317e8436093934fc8cc4202cc-20220126
+X-UUID: b68215f317e8436093934fc8cc4202cc-20220126
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <stanley.chu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 428989841; Wed, 26 Jan 2022 09:22:29 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 26 Jan 2022 09:22:28 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 26 Jan 2022 09:22:28 +0800
+Message-ID: <40986ecb6c81812a1e1ab24d93e46eda75974c4e.camel@mediatek.com>
+Subject: Re: [PATCH v2] scsi: ufs: disable auto hibern8 while entering
+ suspend
+From:   Stanley Chu <stanley.chu@mediatek.com>
+To:     SEO HOYOUNG <hy50.seo@samsung.com>, <linux-scsi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <alim.akhtar@samsung.com>,
+        <avri.altman@wdc.com>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <beanhuo@micron.com>,
+        <asutoshd@codeaurora.org>, <cang@codeaurora.org>,
+        <bvanassche@acm.org>, <bhoon95.kim@samsung.com>,
+        <kwmad.kim@samsung.com>
+CC:     kernel test robot <lkp@intel.com>, <peter.wang@mediatek.com>
+Date:   Wed, 26 Jan 2022 09:22:28 +0800
+In-Reply-To: <20220124180637.160524-1-hy50.seo@samsung.com>
+References: <CGME20220125062155epcas2p15da28303164091b1bf5a00dcf99fe59b@epcas2p1.samsung.com>
+         <20220124180637.160524-1-hy50.seo@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Type C ACPI device on older Chromebooks is not generated correctly
-(since their EC firmware doesn't support the new commands required). In
-such cases, the crafted ACPI device doesn't have an EC parent, and it is
-therefore not useful (it shouldn't be generated in the first place since
-the EC firmware doesn't support any of the Type C commands).
+Hi Hoyoung,
 
-To handle devices which use these older firmware revisions, check for
-the parent EC device handle, and fail the probe if it's not found.
+On Tue, 2022-01-25 at 03:06 +0900, SEO HOYOUNG wrote:
+> v1-> v2: fixed no previous prototype warning
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> > > drivers/scsi/ufs/ufshcd.c:4207:6: warning: no previous prototype 
+> 
+> for 'ufshcd_auto_hibern8_disable' [-Wmissing-prototypes]
+> 4207 | void ufshcd_auto_hibern8_disable(struct ufs_hba *hba)
+> 
+> If using auto hibern8 mode, need to disable auto hibern8 while
+> entering suspend.
+> When using auto hibern8 mode, it does not seem right to send a uic
+> command
 
-Fixes: fdc6b21e2444 ("platform/chrome: Add Type C connector class driver")
-Reported-by: Alyssa Ross <hi@alyssa.is>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+The UFSHCI spec does not mention the above rule.
+Why would you need to disable AH8 before using UIC command to enter H8?
 
-Alyssa, could you kindly test this with your existing setup? Thanks!
-
- drivers/platform/chrome/cros_ec_typec.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
-index 5de0bfb0bc4d..7188f1d72f68 100644
---- a/drivers/platform/chrome/cros_ec_typec.c
-+++ b/drivers/platform/chrome/cros_ec_typec.c
-@@ -1076,6 +1076,12 @@ static int cros_typec_probe(struct platform_device *pdev)
- 
- 	typec->dev = dev;
- 	typec->ec = dev_get_drvdata(pdev->dev.parent);
-+
-+	if (!typec->ec) {
-+		dev_err(dev, "couldn't find parent EC device\n");
-+		return -ENODEV;
-+	}
-+
- 	platform_set_drvdata(pdev, typec);
- 
- 	ret = cros_typec_get_cmd_version(typec);
--- 
-2.35.0.rc0.227.g00780c9af4-goog
+> for entry into hibern8 in the next
+> line(ufshcd_lik_state_transition(..))
+> It seem right to send after disable auto hibern8.
+> 
+> In addition, if the auto hibern8 mode supported, it is enabled in
+> resume.
+> So it seems that it will be paired only when auto hibern8 is disabled
+> while entering suspend.
+> 
+> Signed-off-by: SEO HOYOUNG <hy50.seo@samsung.com>
+> ---
+>  drivers/scsi/ufs/ufshcd.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+> index 460d2b440d2e..a6edbbd8ca2c 100644
+> --- a/drivers/scsi/ufs/ufshcd.c
+> +++ b/drivers/scsi/ufs/ufshcd.c
+> @@ -254,6 +254,7 @@ static void
+> ufshcd_wb_toggle_flush_during_h8(struct ufs_hba *hba, bool set);
+>  static inline void ufshcd_wb_toggle_flush(struct ufs_hba *hba, bool
+> enable);
+>  static void ufshcd_hba_vreg_set_lpm(struct ufs_hba *hba);
+>  static void ufshcd_hba_vreg_set_hpm(struct ufs_hba *hba);
+> +static void ufshcd_auto_hibern8_disable(struct ufs_hba *hba);
+>  
+>  static inline void ufshcd_enable_irq(struct ufs_hba *hba)
+>  {
+> @@ -4204,6 +4205,18 @@ void ufshcd_auto_hibern8_update(struct ufs_hba
+> *hba, u32 ahit)
+>  }
+>  EXPORT_SYMBOL_GPL(ufshcd_auto_hibern8_update);
+>  
+> +static void ufshcd_auto_hibern8_disable(struct ufs_hba *hba)
+> +{
+> +	unsigned long flags;
+> +
+> +	if (!ufshcd_is_auto_hibern8_supported(hba))
+> +		return;
+> +
+> +	spin_lock_irqsave(hba->host->host_lock, flags);
+> +	ufshcd_writel(hba, 0, REG_AUTO_HIBERNATE_IDLE_TIMER);
+> +	spin_unlock_irqrestore(hba->host->host_lock, flags);
+> +}
+> +
+>  void ufshcd_auto_hibern8_enable(struct ufs_hba *hba)
+>  {
+>  	unsigned long flags;
+> @@ -8925,6 +8938,7 @@ static int __ufshcd_wl_suspend(struct ufs_hba
+> *hba, enum ufs_pm_op pm_op)
+>  	 * with the link off, so do not check for bkops.
+>  	 */
+>  	check_for_bkops = !ufshcd_is_ufs_dev_deepsleep(hba);
+> +	ufshcd_auto_hibern8_disable(hba);
+>  	ret = ufshcd_link_state_transition(hba, req_link_state,
+> check_for_bkops);
+>  	if (ret)
+>  		goto set_dev_active;
 
