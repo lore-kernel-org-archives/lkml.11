@@ -2,154 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77012C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 19:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D546C63686
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 19:54:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbiAZTyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 14:54:21 -0500
-Received: from mga12.intel.com ([192.55.52.136]:51623 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234640AbiAZTyR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 14:54:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643226857; x=1674762857;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=4UGc3CeO/OspTG3NRY/RBwL+r4c3O6Xlmt3tmC0uRWE=;
-  b=QPP5qX4XeSDsvCaMEO3LhYxpVPoPw/hfCocRoIxPze8GGMqZ3BjusLvX
-   nZ2wIaE9fsqYYZ3sZiD0XuvTiznSOcsDvOTSIvY4R2J4+QzmV8yL8X/1e
-   cxJFuwaxmysOBsK3tSZvrsEd87kneBIQBSKgMT/f3LzpjD+Rq6T3DUjMd
-   kizMOj0LgNT+MA3pkHlzSVVYfO0LIeUEq4PuFsDWmTLnzWblqX/lzXf+F
-   d0M8EL209O0wkpRrO7B6h/T2eUHTgFwuDD+b+O3yg1SzEqedsE8nh6hqE
-   jsTs7g8ivrJWRcCqprSb/l4b/mIwhKFqTd/u+gtYLPEtKkFVqZw1q6PVe
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="226614564"
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="226614564"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 11:54:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="477588538"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 26 Jan 2022 11:54:15 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCoMw-000Lao-PP; Wed, 26 Jan 2022 19:54:14 +0000
-Date:   Thu, 27 Jan 2022 03:53:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Qais Yousef <qais.yousef@arm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [peterz-queue:sched/core 5/8] kernel/sched/sched.h:3006:32: warning:
- passing argument 1 of 'cpu_util_cfs' makes integer from pointer without a
- cast
-Message-ID: <202201270319.tmnG6ICK-lkp@intel.com>
+        id S244590AbiAZTy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 14:54:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244558AbiAZTy4 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 14:54:56 -0500
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0EF0C06173B
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 11:54:55 -0800 (PST)
+Received: by mail-qv1-xf33.google.com with SMTP id o9so787537qvy.13
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 11:54:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=toxicpanda-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=/b9yrYylsR3IXw2MBkgKmnslMTaks1EUQq+pWFo3vMU=;
+        b=jIM+Tc+JfN7AxN6yCV944hevmEwbziOmVrsSDKFKhxcK5czEdfwuGa1+JKEm5p153D
+         slLmda6m/yCZO8ZIHlLZl6IqweIwHdlxDpwmS9sacFA2fhuXmFY8LEFoX+85O/+Bx4OE
+         iGciw+hNYyVKtUVlJOaV2lZ+sKD0MAsMcI/LQl+lQZdZ70jf6CnR8vIw7OtQFvUwfrZJ
+         lhlzFUgt9mOyvy8aEn4Oyx65EgV/2T/N1fYGTTkn2R2iHkCpwr0QXQR7i6xi6krzpt4Q
+         B7QgV0Cbl2yPbyxMuyZmyWX6EsCRk/5btemPGasR9kB/RKqdVkmYF45VVp+Q7EiGvBjs
+         T3MQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=/b9yrYylsR3IXw2MBkgKmnslMTaks1EUQq+pWFo3vMU=;
+        b=L1mQJUb92rZ8A0zkqXmsWpSqP0W+Wk5Wn1FUY7NlbR5uBEkAvbk+iaTU/y7fhj+3QW
+         5gYIk2eNumL85G/G5y7FbP2nZEAMw2UxO9C74OMIqk3/kNRen9lp2d+RW2QmyzcKiMGp
+         mrzbbjUVEbs86qFl1ZeduV6dtC/cvn4d4ET4PkTt+ChDSD3HpFsk4z54lkWFS3gsOd4/
+         sYgSadWNuztjUEBbAtob81WB87lhkbRJXLBIu8COCndrVHHcdwjL1tlk2cccUoIqZ1Ef
+         xuScKScVXet/mBwGzbcHl5RcKqq8sceEqa/kXOl9U6JTJHb5BsYS2t+1edzM8XGyXAA5
+         Oj1w==
+X-Gm-Message-State: AOAM531Yiioc+THdErGdX5biUoHHnJ+uUkFc/H+cEBqZM2xVsb8chtoB
+        ZGbyEbuHhuQPN6R+fGGPC8mWWA==
+X-Google-Smtp-Source: ABdhPJzDiy8lWJPalTqmHodK4vLPsn5OI+iOGQeHou4Hn9uAp27KEpv7ql8yuu4Af0KUxh9Hg0NE3g==
+X-Received: by 2002:a05:6214:e45:: with SMTP id o5mr364368qvc.10.1643226894754;
+        Wed, 26 Jan 2022 11:54:54 -0800 (PST)
+Received: from localhost (cpe-174-109-172-136.nc.res.rr.com. [174.109.172.136])
+        by smtp.gmail.com with ESMTPSA id bs33sm148633qkb.103.2022.01.26.11.54.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 11:54:54 -0800 (PST)
+Date:   Wed, 26 Jan 2022 14:54:53 -0500
+From:   Josef Bacik <josef@toxicpanda.com>
+To:     lsf-pc@lists.linuxfoundation.org
+Cc:     linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-nvme@lists.infradead.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: LSF/MM/BPF: 2022: Call for Proposals
+Message-ID: <YfGnDRM/Pe4jzbSr@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git sched/core
-head:   dbaafd0f1651b35e07c20e33f8c3f133fc65705e
-commit: 6dd3d475cf576edd705885c66b6f1d638a6818f4 [5/8] sched/sugov: Ignore 'busy' filter when rq is capped by uclamp_max
-config: ia64-allmodconfig (https://download.01.org/0day-ci/archive/20220127/202201270319.tmnG6ICK-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=6dd3d475cf576edd705885c66b6f1d638a6818f4
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue sched/core
-        git checkout 6dd3d475cf576edd705885c66b6f1d638a6818f4
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash kernel/
+The annual Linux Storage, Filesystem, Memory Management, and BPF
+(LSF/MM/BPF) Summit for 2022 will be held from May 2 to May 4 at The
+Margaritaville Resort Palm Springs in Palm Springs, California.
+LSF/MM/BPF is an invitation-only technical workshop to map out
+improvements to the Linux storage, filesystem, BPF, and memory
+management subsystems that will make their way into the mainline kernel
+within the coming years.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+COVID is at the front of our minds as we attempt to put together the
+best and safest conference we can arrange.  The logistics of how to hold
+an in person event will change and evolve as we get closer to the actual
+date, but rest assured we will do everything recommended by public
+health officials.
 
-All warnings (new ones prefixed by >>):
+LSF/MM/BPF 2022 will be a three day, stand-alone conference with four
+subsystem-specific tracks, cross-track discussions, as well as BoF and
+hacking sessions.
 
-   In file included from kernel/sched/core.c:13:
-   kernel/sched/sched.h: In function 'uclamp_rq_is_capped':
->> kernel/sched/sched.h:3006:32: warning: passing argument 1 of 'cpu_util_cfs' makes integer from pointer without a cast [-Wint-conversion]
-    3006 |         rq_util = cpu_util_cfs(rq) + cpu_util_rt(rq);
-         |                                ^~
-         |                                |
-         |                                struct rq *
-   kernel/sched/sched.h:2919:46: note: expected 'int' but argument is of type 'struct rq *'
-    2919 | static inline unsigned long cpu_util_cfs(int cpu)
-         |                                          ~~~~^~~
-   kernel/sched/core.c: At top level:
-   kernel/sched/core.c:3454:6: warning: no previous prototype for 'sched_set_stop_task' [-Wmissing-prototypes]
-    3454 | void sched_set_stop_task(int cpu, struct task_struct *stop)
-         |      ^~~~~~~~~~~~~~~~~~~
---
-   In file included from kernel/sched/loadavg.c:9:
-   kernel/sched/sched.h: In function 'uclamp_rq_is_capped':
->> kernel/sched/sched.h:3006:32: warning: passing argument 1 of 'cpu_util_cfs' makes integer from pointer without a cast [-Wint-conversion]
-    3006 |         rq_util = cpu_util_cfs(rq) + cpu_util_rt(rq);
-         |                                ^~
-         |                                |
-         |                                struct rq *
-   kernel/sched/sched.h:2919:46: note: expected 'int' but argument is of type 'struct rq *'
-    2919 | static inline unsigned long cpu_util_cfs(int cpu)
-         |                                          ~~~~^~~
---
-   In file included from kernel/sched/fair.c:23:
-   kernel/sched/sched.h: In function 'uclamp_rq_is_capped':
->> kernel/sched/sched.h:3006:32: warning: passing argument 1 of 'cpu_util_cfs' makes integer from pointer without a cast [-Wint-conversion]
-    3006 |         rq_util = cpu_util_cfs(rq) + cpu_util_rt(rq);
-         |                                ^~
-         |                                |
-         |                                struct rq *
-   kernel/sched/sched.h:2919:46: note: expected 'int' but argument is of type 'struct rq *'
-    2919 | static inline unsigned long cpu_util_cfs(int cpu)
-         |                                          ~~~~^~~
-   kernel/sched/fair.c: At top level:
-   kernel/sched/fair.c:11049:6: warning: no previous prototype for 'task_vruntime_update' [-Wmissing-prototypes]
-   11049 | void task_vruntime_update(struct rq *rq, struct task_struct *p, bool in_fi)
-         |      ^~~~~~~~~~~~~~~~~~~~
---
-   In file included from kernel/sched/rt.c:6:
-   kernel/sched/sched.h: In function 'uclamp_rq_is_capped':
->> kernel/sched/sched.h:3006:32: warning: passing argument 1 of 'cpu_util_cfs' makes integer from pointer without a cast [-Wint-conversion]
-    3006 |         rq_util = cpu_util_cfs(rq) + cpu_util_rt(rq);
-         |                                ^~
-         |                                |
-         |                                struct rq *
-   kernel/sched/sched.h:2919:46: note: expected 'int' but argument is of type 'struct rq *'
-    2919 | static inline unsigned long cpu_util_cfs(int cpu)
-         |                                          ~~~~^~~
-   kernel/sched/rt.c: At top level:
-   kernel/sched/rt.c:680:6: warning: no previous prototype for 'sched_rt_bandwidth_account' [-Wmissing-prototypes]
-     680 | bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+On behalf of the committee I am issuing a call for agenda proposals
+that are suitable for cross-track discussion as well as technical
+subjects for the breakout sessions.
 
+If advance notice is required for visa applications then please point
+that out in your proposal or request to attend, and submit the topic as
+soon as possible.
 
-vim +/cpu_util_cfs +3006 kernel/sched/sched.h
+This years instructions are similar to our previous attempts.  We're
+asking that you please let us know you want to be invited by March 1,
+2022.  We realize that travel is an ever changing target, but it helps
+us get an idea of possible attendance numbers.  Clearly things can and
+will change, so consider the request to attend deadline more about
+planning and less about concrete plans.
 
-  2996	
-  2997	/* Is the rq being capped/throttled by uclamp_max? */
-  2998	static inline bool uclamp_rq_is_capped(struct rq *rq)
-  2999	{
-  3000		unsigned long rq_util;
-  3001		unsigned long max_util;
-  3002	
-  3003		if (!static_branch_likely(&sched_uclamp_used))
-  3004			return false;
-  3005	
-> 3006		rq_util = cpu_util_cfs(rq) + cpu_util_rt(rq);
-  3007		max_util = READ_ONCE(rq->uclamp[UCLAMP_MAX].value);
-  3008	
-  3009		return max_util != SCHED_CAPACITY_SCALE && rq_util >= max_util;
-  3010	}
-  3011	
+1) Fill out the following Google form to request attendance and
+suggest any topics
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+	https://forms.gle/uD5tbZYGpaRXPnE19
+
+In previous years we have accidentally missed people's attendance
+requests because they either didn't cc lsf-pc@ or we simply missed them
+in the flurry of emails we get.  Our community is large and our
+volunteers are busy, filling this out will help us make sure we don't
+miss anybody.
+
+2) Proposals for agenda topics should still be sent to the following
+lists to allow for discussion among your peers.  This will help us
+figure out which topics are important for the agenda.
+
+        lsf-pc@lists.linux-foundation.org
+
+and CC the mailing lists that are relevant for the topic in question:
+
+        FS:     linux-fsdevel@vger.kernel.org
+        MM:     linux-mm@kvack.org
+        Block:  linux-block@vger.kernel.org
+        ATA:    linux-ide@vger.kernel.org
+        SCSI:   linux-scsi@vger.kernel.org
+        NVMe:   linux-nvme@lists.infradead.org
+        BPF:    bpf@vger.kernel.org
+
+Please tag your proposal with [LSF/MM/BPF TOPIC] to make it easier to
+track. In addition, please make sure to start a new thread for each
+topic rather than following up to an existing one. Agenda topics and
+attendees will be selected by the program committee, but the final
+agenda will be formed by consensus of the attendees on the day.
+
+We will try to cap attendance at around 25-30 per track to facilitate
+discussions although the final numbers will depend on the room sizes
+at the venue.
+
+For discussion leaders, slides and visualizations are encouraged to
+outline the subject matter and focus the discussions. Please refrain
+from lengthy presentations and talks; the sessions are supposed to be
+interactive, inclusive discussions.
+
+There will be no recording or audio bridge. However, we expect that
+written minutes will be published as we did in previous years:
+
+2019: https://lwn.net/Articles/lsfmm2019/
+
+2018: https://lwn.net/Articles/lsfmm2018/
+
+2017: https://lwn.net/Articles/lsfmm2017/
+
+2016: https://lwn.net/Articles/lsfmm2016/
+
+2015: https://lwn.net/Articles/lsfmm2015/
+
+2014: http://lwn.net/Articles/LSFMM2014/
+
+3) If you have feedback on last year's meeting that we can use to
+improve this year's, please also send that to:
+
+        lsf-pc@lists.linux-foundation.org
+
+Thank you on behalf of the program committee:
+
+        Josef Bacik (Filesystems)
+        Amir Goldstein (Filesystems)
+        Martin K. Petersen (Storage)
+        Omar Sandoval (Storage)
+        Michal Hocko (MM)
+        Dan Williams (MM)
+        Alexei Starovoitov (BPF)
+        Daniel Borkmann (BPF)
