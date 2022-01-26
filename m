@@ -2,68 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB46DC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 610CAC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239497AbiAZKAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 05:00:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239509AbiAZKAJ (ORCPT
+        id S239525AbiAZKAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 05:00:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:22092 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233121AbiAZKAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 05:00:09 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32BCC061744
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:00:08 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id i62so23372438ybg.5
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:00:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gK7bszl+FUXRrhnEheiDpnk/jqDd/Le7Dxn0utoVoj8=;
-        b=GhCTQRyPY7E3qzL0iF+8nQ5xk2TXL0XJ43s8X7lqCalrWDuHw7QbggUmvVmy5LBmkh
-         bnb4pRCOhq+iuJdPddnsqzmxKTODiHBjn7O3mPKyalPKi8d/YG6zQJpuyJpgaFOeMBGq
-         GfP+9AnmoUAtmS/F+g5ql9bRikmtbuwWHnSQsJI9wsGvlqWMo6VdFkNpopqonMsdIQVb
-         jz4u8yEiqJ1gcEbpNASsdqbSZWxYHBCUdkcbHu5k+oIDFuPfyjuzqg3LsJurZUGUUIzI
-         62PWxNzYHXMLKXaVge4nkC6hPlXtSFyfvIUBLENwR6caYw5cu9207LtotFw2r0SUmZlj
-         V0VQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gK7bszl+FUXRrhnEheiDpnk/jqDd/Le7Dxn0utoVoj8=;
-        b=bJwmzdW4BEZhh95aXE0BAQXDr/CKy6SlGM1/NbPfNh2LPJLYDWQTaa3j/NpX6Xpitd
-         Mn/JkyWKpd/yaothRJTu/hahA6QdtuQSTlVmi49DNHsc8pSYMYYqPVLhKTGqMyy+ygVi
-         T657oKdCuFC+UAJOL3/iXm1B/Bi0RVETwknScqVtu6fUbAIBiSCrBvgeW7+blkNJu6+E
-         jjZVBqax/EnN3PQXEnYcCbzRTvLvzkf19qil1ShwuY2PqPfr+DQaWVWelt0J3CrUM7me
-         DwIuhT/1DOkK8RI0IIUrv48pEgteGtVHB5pOeRoFni/AAqlwYOxZa86/MPFQsVKG4tzF
-         lpGA==
-X-Gm-Message-State: AOAM5308XrBlYqMydPJKZAhHmDRjaRlyPft+8s38WrATBok9gaYyh+6c
-        kBBFv7l2OD6S/4u50ENz4pMD6dmoOIhWXOTNWfZM9w==
-X-Google-Smtp-Source: ABdhPJy8rw1zn0vMv+DMB8N+z1pB8uO0eqAMBVWVctba0N642+H7wxAZyEfghR/ChCdkI5wnC9IBc8lzEsiRxGHWuBg=
-X-Received: by 2002:a25:d107:: with SMTP id i7mr34234702ybg.495.1643191208184;
- Wed, 26 Jan 2022 02:00:08 -0800 (PST)
-MIME-Version: 1.0
-References: <20220126092542.64659-1-linmiaohe@huawei.com>
-In-Reply-To: <20220126092542.64659-1-linmiaohe@huawei.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Wed, 26 Jan 2022 17:59:32 +0800
-Message-ID: <CAMZfGtWYkA_vs1_p5ok0T3J4WWamPE5ZNd00wsOOUiUCPnkP8g@mail.gmail.com>
-Subject: Re: [PATCH] mm/highmem: remove unnecessary done label
-To:     Miaohe Lin <linmiaohe@huawei.com>
+        Wed, 26 Jan 2022 05:00:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643191249;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZADr9hVxfhKENIr/VRsnRFwtDwaPlig2N4uKOY4hLWc=;
+        b=Ao5saezab47NldOsG1OkzQ9dQzNbdlM4Y6LFfWGKE96ZuG39cuOCMS7UOMUrNg1OpKxzaS
+        4+x+1Spn7ZRGBoj33XRDx3ASRE6K8e8PqZ6hrJUWwrrTxZb5GmSgzFVkeYq+XmVfmzQXdk
+        waoUtxaunqLu1MnYta5oM0hRRlfyjcA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-589-doMA_xzJMmKguE09hrMqCQ-1; Wed, 26 Jan 2022 05:00:45 -0500
+X-MC-Unique: doMA_xzJMmKguE09hrMqCQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9B87486A060;
+        Wed, 26 Jan 2022 10:00:42 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.241])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5324D1F2E8;
+        Wed, 26 Jan 2022 10:00:01 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH RFC v2 5/9] mm/huge_memory: streamline COW logic in do_huge_pmd_wp_page()
+Date:   Wed, 26 Jan 2022 10:55:53 +0100
+Message-Id: <20220126095557.32392-6-david@redhat.com>
+In-Reply-To: <20220126095557.32392-1-david@redhat.com>
+References: <20220126095557.32392-1-david@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 5:26 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
->
-> Remove unnecessary done label to simplify the code.
->
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+We currently have a different COW logic for anon THP than we have for
+ordinary anon pages in do_wp_page(): the effect is that the issue reported
+in CVE-2020-29374 is currently still possible for anon THP: an unintended
+information leak from the parent to the child.
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Let's apply the same logic (page_count() == 1), with similar
+optimizations to remove additional references first as we really want to
+avoid PTE-mapping the THP and copying individual pages best we can.
+
+If we end up with a page that has page_count() != 1, we'll have to PTE-map
+the THP and fallback to do_wp_page(), which will always copy the page.
+
+Note that KSM does not apply to THP.
+
+I. Interaction with the swapcache and writeback
+
+While a THP is in the swapcache, the swapcache holds one reference on each
+subpage of the THP. So with PageSwapCache() set, we expect as many
+additional references as we have subpages. If we manage to remove the
+THP from the swapcache, all these references will be gone.
+
+Usually, a THP is not split when entered into the swapcache and stays a
+compound page. However, try_to_unmap() will PTE-map the THP and use PTE
+swap entries. There are no PMD swap entries for that purpose, consequently,
+we always only swapin subpages into PTEs.
+
+Removing a page from the swapcache can fail either when there are remaining
+swap entries (in which case COW is the right thing to do) or if the page is
+currently under writeback.
+
+Having a locked, R/O PMD-mapped THP that is in the swapcache seems to be
+possible only in corner cases, for example, if try_to_unmap() failed
+after adding the page to the swapcache. However, it's comparatively easy to
+handle.
+
+As we have to fully unmap a THP before starting writeback, and swapin is
+always done on the PTE level, we shouldn't find a R/O PMD-mapped THP in the
+swapcache that is under writeback. This should at least leave writeback
+out of the picture.
+
+II. Interaction with GUP references
+
+Having a R/O PMD-mapped THP with GUP references (i.e., R/O references)
+will result in PTE-mapping the THP on a write fault. Similar to ordinary
+anon pages, do_wp_page() will have to copy sub-pages and result in a
+disconnect between the GUP references and the pages actually mapped into
+the page tables. To improve the situation in the future, we'll need
+additional handling to mark anonymous pages as definitely exclusive to a
+single process, only allow GUP pins on exclusive anon pages, and
+disallow sharing of exclusive anon pages with GUP pins e.g., during
+fork().
+
+III. Interaction with references from LRU pagevecs
+
+Similar to ordinary anon pages, we can have LRU pagevecs referencing our
+THP. Reliably removing such references requires draining LRU pagevecs on
+all CPUs -- lru_add_drain_all() -- a possibly expensive operation that can
+sleep. For now, similar do do_wp_page(), let's conditionally drain the
+local LRU pagevecs only if we detect !PageLRU().
+
+IV. Interaction with speculative/temporary references
+
+Similar to ordinary anon pages, other speculative/temporary references on
+the THP, for example, from the pagecache or page migration code, will
+disallow exclusive reuse of the page. We'll have to PTE-map the THP.
+
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ mm/huge_memory.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 406a3c28c026..b6ba88a98266 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -1286,6 +1286,7 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
+ 	struct page *page;
+ 	unsigned long haddr = vmf->address & HPAGE_PMD_MASK;
+ 	pmd_t orig_pmd = vmf->orig_pmd;
++	int swapcache_refs = 0;
+ 
+ 	vmf->ptl = pmd_lockptr(vma->vm_mm, vmf->pmd);
+ 	VM_BUG_ON_VMA(!vma->anon_vma, vma);
+@@ -1303,7 +1304,6 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
+ 	page = pmd_page(orig_pmd);
+ 	VM_BUG_ON_PAGE(!PageHead(page), page);
+ 
+-	/* Lock page for reuse_swap_page() */
+ 	if (!trylock_page(page)) {
+ 		get_page(page);
+ 		spin_unlock(vmf->ptl);
+@@ -1319,10 +1319,20 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
+ 	}
+ 
+ 	/*
+-	 * We can only reuse the page if nobody else maps the huge page or it's
+-	 * part.
++	 * See do_wp_page(): we can only map the page writable if there are
++	 * no additional references.
+ 	 */
+-	if (reuse_swap_page(page)) {
++	if (PageSwapCache(page))
++		swapcache_refs = thp_nr_pages(page);
++	if (page_count(page) > 1 + swapcache_refs + !PageLRU(page))
++		goto unlock_fallback;
++	if (!PageLRU(page))
++		lru_add_drain();
++	if (page_count(page) > 1 + swapcache_refs)
++		goto unlock_fallback;
++	if (swapcache_refs)
++		try_to_free_swap(page);
++	if (page_count(page) == 1) {
+ 		pmd_t entry;
+ 		entry = pmd_mkyoung(orig_pmd);
+ 		entry = maybe_pmd_mkwrite(pmd_mkdirty(entry), vma);
+@@ -1333,6 +1343,7 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
+ 		return VM_FAULT_WRITE;
+ 	}
+ 
++unlock_fallback:
+ 	unlock_page(page);
+ 	spin_unlock(vmf->ptl);
+ fallback:
+-- 
+2.34.1
+
