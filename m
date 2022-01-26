@@ -2,228 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB07C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C68BC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238888AbiAZJNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:13:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57607 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230488AbiAZJNP (ORCPT
+        id S238876AbiAZJOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:14:55 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:2200 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238855AbiAZJOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:13:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643188394;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TbF5nBuKPMmTArNpLGRbqMvSQSqoxoYLQ8/fNj7LKlI=;
-        b=BYV9CC5CKx4FARw5o1GZPBW3XyBlCYkmnChNfHQIyorQ7rqxPbkxrS738H/+2rYq+Qq4JX
-        CeEKPME7VyDQexG3ZQQEFmHREnAM0RYAdCjawryz4ztzmHPthp5ht3IbfLJpwkrxBrDiTn
-        p3CaWDvtHh217hn4zISqxtj5Dz87QS4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-304-BJqPuhZBMwKpSQv1453c-A-1; Wed, 26 Jan 2022 04:13:09 -0500
-X-MC-Unique: BJqPuhZBMwKpSQv1453c-A-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4424C8144E1;
-        Wed, 26 Jan 2022 09:13:07 +0000 (UTC)
-Received: from localhost (ovpn-12-215.pek2.redhat.com [10.72.12.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EFD6B60C45;
-        Wed, 26 Jan 2022 09:12:46 +0000 (UTC)
-Date:   Wed, 26 Jan 2022 17:12:43 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v3 6/6] crash hp: Add x86 crash hotplug support
-Message-ID: <20220126091243.GB6588@MiWiFi-R3L-srv>
-References: <20220110195727.1682-1-eric.devolder@oracle.com>
- <20220110195727.1682-7-eric.devolder@oracle.com>
- <20220119102323.GB6349@MiWiFi-R3L-srv>
- <280485c9-4612-892c-0e3e-9e8b09e60cf9@oracle.com>
-MIME-Version: 1.0
+        Wed, 26 Jan 2022 04:14:54 -0500
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20Q4hWmt006719;
+        Wed, 26 Jan 2022 09:14:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
+ bh=xCF+T+rK2nI+1di1wmwFv9Ycqg2CVTBhIq5c0fYg9oM=;
+ b=x16YQU1aGI1rDahy5fwCPbFHib+qGk+d0u7aQ8TPfS1upHCo4JyHpoFmWegAS0RnOEpP
+ eu0edPGXxDFW3O4a00UoulCi+hlJRUr/5EUKE4vkTUpVNgc2H+Ft20iz8HUvcPDkJ4XK
+ QcgEG/RAbcuvAWThmVy+dcZELKSFbE2TuSS6uqB2xhzOBEQXS6waPiVL3kDQCE7ucvo6
+ GgkvyQLsTl1SXAN7o5kVOhXvVYEJJP5sHzC0l2UEUK9BAhLpzRRHdaUxJleQdAF8797T
+ 8+00/LD1UB6frqMZPsk4ffeSobclokut0qHkPDyyntL++7nLlqTburv1BRiHaexReRmI Fg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dsvmje5ky-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 26 Jan 2022 09:14:46 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20Q95JUC122123;
+        Wed, 26 Jan 2022 09:14:45 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2106.outbound.protection.outlook.com [104.47.70.106])
+        by aserp3030.oracle.com with ESMTP id 3dr7yhbkk2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 26 Jan 2022 09:14:45 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SWGeg2UsqKoET5FTMxG5NK55KTb2wuvekzDjczT4omn/WS9vD6Eeh6nN0ygcq16UtxYLqrTbfwSC/qxX4eMpVUmx4lzXIeFx+/FEhF7z9OGYzVqWsQSRuXiREQFRuazwEWLgebVZsC0e/OcDKEgNybDKtSKPpJhMFnifLmdWES7O5uyHhXjlAHwbUkY3YGcbtpmpLVKIQHCu98trMsyy1vQLQGOmfi7pKFWxNUD7dvRvjZueHOSWFaQEPBycZFyM2nja9Mqw79xYVrLGYy2a/69/gB/8ZxNpIULIFqMFZxIrKU6BKcfOLQxBDLFTgxx69TAaVMaOenqLnQZ5KRThag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xCF+T+rK2nI+1di1wmwFv9Ycqg2CVTBhIq5c0fYg9oM=;
+ b=hoAENDiFYabMDVHEjwXwnrAWAH5yFENiw8lsTx0uultIHnmRDZqhMmq9SAyFHoTSDaUBw0iBC/94iBmmLweyyrgPi/FZVmukbFDbeUWfDk2YZmwpT/sDtv5//viWmfQsqV9iu8bRvFaJIyP2a7ogXVnrlJxDeYfyRATvT1ZqTiKjFAprDkdH+YIfifH8Ek19F3nWlPgMonKZLSxIpf9Qj0F1rVBdYtDXPb30U1s6twURmAT5MrtC/xBy3Jn0D/+qakedoAFgsEBZVBdEwXi0klLDJjAP+LWmS6Y5R6K6YtBaCuI+1EoZ9GGvanANufkfs8ADlmwzGk1zKP4OjNLb2Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xCF+T+rK2nI+1di1wmwFv9Ycqg2CVTBhIq5c0fYg9oM=;
+ b=Fe1H9/Ep9M6j3IOaU/UIqJ5cb0X6h0N9r2IL/Av05dhZHbd6avsEQGavW0Yc6VOV748m35WIm8LbWX+HzDMBjM8O4U/3HdzN4kxmNk0a0uS9C4/Evo1yZyV65L8gi9Jra/F1tb435pBx++khTpzL8X66CvLWSdvSSF9orMW8QkY=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by SN6PR10MB2928.namprd10.prod.outlook.com
+ (2603:10b6:805:d2::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Wed, 26 Jan
+ 2022 09:14:43 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::c13b:5812:a403:6d96]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::c13b:5812:a403:6d96%6]) with mapi id 15.20.4909.019; Wed, 26 Jan 2022
+ 09:14:43 +0000
+Date:   Wed, 26 Jan 2022 12:14:22 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Mihail Chindris <mihail.chindris@analog.com>
+Cc:     lkp@intel.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: drivers/iio/dac/ad3552r.c:688 ad3552r_reset() warn: impossible
+ condition '(val < 0) => (0-u16max < 0)'
+Message-ID: <202201242005.NNLuFLzZ-lkp@intel.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <280485c9-4612-892c-0e3e-9e8b09e60cf9@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNXP275CA0017.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::29)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8fc9f68c-76a9-409c-d746-08d9e0ac4a00
+X-MS-TrafficTypeDiagnostic: SN6PR10MB2928:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR10MB29285C1D1323ABE1835046AC8E209@SN6PR10MB2928.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:63;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Z9xnhNEbAYoh9ceQfXaVZi8/GEutz1p0wA/yArsczQRZE+/1p+AdEi5XJIaxu+echtGthpRES2fbkzM8Vq3zBaawwArbwU4/lBj0I7tIVBIzcua5ZO0rnsQZDvu6/S6fKFocLhBn93bQ1AK12bSlVn20mskwPbSEvo0VGRcgBWC/zTOx6nyRMDf4N9wZrAa+NOg3RphijzDbGSS/NI0lEH0737+asrEmYuQXp2LMaVuuzENcu0Ffvoj86z8tmWpH3KpOJ+/Tym88doLfbULCjAUulbDp6eLlWeH5iKq3L6rycI7r84nhgYnxZWQXjtqirC3dc+pniHOLTibTnz5oE/VpMekmNiCf4iZTS5TOwUNUijSjDEGZ1Mu1S5JGIM8SntEDWd0k0asKr2mpW0JZI3BepbJK/p6Ef55Q+WPJb+peVtBpCwsbNrZSvTQSYAFbyQ0zR3Q/vInS9AmMHUSCn6l0ouu+O3lyFxW4VYXbxLajHWwzjH6gYIDLPk7EMoXQHtkkgBIKJoDGsLgholmzcVSouCoDk5Wdb8JBH7LjO1mfwMw/fCO/oJOmYr8zqlSkDfevlMtCVcDT/j22E3jamfDb12ur1osUH91DF/AXn0qeozY5ja4C7Dy0nu2ff5rLqzMMVHQRXUDephpioL4gSizKaMfP/U7iAklWRRNzr6P0RuvSuuoCqtfKZwxqCCZFqbMI+k8P4OWk4Q760JJhMTwR7aNojMtlk952rv+r+6GQDz23KMeyfe1euZEfEd17VDfS+lDwb+B5+OgP3DaZZ6zoxsYrGvPr3WTpIOcAimwry28Yit0XpBfh85l83TZl4WAXMZk/hTxAjMt6BLkgiA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:ro;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(9686003)(86362001)(6512007)(8676002)(83380400001)(38100700002)(38350700002)(2906002)(1076003)(316002)(6486002)(508600001)(36756003)(26005)(4326008)(6506007)(4001150100001)(966005)(66946007)(52116002)(6666004)(44832011)(66556008)(66476007)(5660300002)(8936002)(6916009)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vWcgaZ/FcswgydnkLxofTp7T+LJq0T/vfpzDK1OBeao7ygPAoc31s6CHGrve?=
+ =?us-ascii?Q?rBgyz7MFtS+/4jNd0G3IuCl5EqU6yKTFGbUAXq8CC2hVfI4ONfItx/sw9UGc?=
+ =?us-ascii?Q?OEpjsfgR7u2jmaj9DApzNHnq5Sayx5Xd5/MUI0/8k9sTfzt4WN9QGZjT17Hd?=
+ =?us-ascii?Q?ECAgEsFCOKlYDPKA1CyfaUsgT08kgExfsPDet0qq8/A9/OIQaXiyd41ZFS2M?=
+ =?us-ascii?Q?XZFbU/u5QsyrqT1UpHoUErzCqG8oz/1OH7DJytZdYbWAthwzQWyY4bQc7q73?=
+ =?us-ascii?Q?+D2LEJQfmLvx0Xp1aPnW3jrPVB8ILR7EOXDqPxrl7+Ueg9lQGcSNBLoPNrnF?=
+ =?us-ascii?Q?a3cRiWzsBG9T4KDVFDaUjlFHPrqoCeZszFUEJMQ/ZNMqazk3UcI+4mrvzXOJ?=
+ =?us-ascii?Q?85cFgEYlQppQt6N2Kux72gytANPMroUFLSFkqx84/n0C1fgb4ryIlnQunJQw?=
+ =?us-ascii?Q?Vfmw7LD+8HCb+Ay3VXQh7FJ3pssZDV+X+bZLLGw+mvAbkYAs8vTKKOCtKgJu?=
+ =?us-ascii?Q?z0cazILx25hEPqzcmKDZVqZVoDP/TGNadMKiY33ThSxrRaErWv9A3uX9me4I?=
+ =?us-ascii?Q?0bU/fZsNbrCJ+U5P9BnaJMOkafpWQ5qR78oIJrd2ppjALxAU/E28FBOZoX9m?=
+ =?us-ascii?Q?RG5ThBHizUb8f+eoyn796a26fDDzOPnaeuVRLIDPbcqB486ZCVpGayPJk2Na?=
+ =?us-ascii?Q?6fks1SrljqJ2BHaYdikZ+hGmV1DUMBzqD9mGe2Jvk0bnrf9JNDXUyzdnPssa?=
+ =?us-ascii?Q?1Ixsf7EkaKpLoldIJoVvaI1UkhcLuSiy+Qw5Jn+7iUhZohEEGxvt/o1cPGUr?=
+ =?us-ascii?Q?rKgtrSR5lvyUGZmSBRkA3TxmJ0trEW0/8EysG7tOi+i/s/Ov6gVhLdb8/QQv?=
+ =?us-ascii?Q?RO9PjIrJgprs5Dgqr0pGzW3VrjaXHvIpPk+RZHM0tHrrzh1kKI28l7+EG/xZ?=
+ =?us-ascii?Q?7BIWlGTv3xnWhQ6anUn0r4isknbTfc+xmeA0DvFAmPnSbR2grU1In53/nnhs?=
+ =?us-ascii?Q?eYaXQqiZD6QgjQgXDt7M1bylyPnFfDXe269Z6SBM9Q+rkLYxUyMx4NEafU8E?=
+ =?us-ascii?Q?UtlxW0WDGOobeplisKYNI7L+4MEn4tm3ky+b4vITCD3GIGEzPpRDFmDBcECm?=
+ =?us-ascii?Q?eUz7fjn9mQ3QTzui27t6o0Y3Kk7lOONTf/Rp8VRloKO6Gyg0amLMEF2DzZzQ?=
+ =?us-ascii?Q?XnummT/sxRiy5uzNyA5AAE50joCBLWTQmbv5+wN28lNR2TyedIT7pG2lovCk?=
+ =?us-ascii?Q?BYPpdC24tryhRYGpbGtndi7kG3cWXJMJ6qPIFmsvaqaia2xX+p4zHvHfozVD?=
+ =?us-ascii?Q?VsrosgHKwucgfd3noJfrzzEYuzfq9l2RXmX8QEm0JTDM8/4Pk3DBa7pTUxSh?=
+ =?us-ascii?Q?064HIT9vBcBJeh9Nd8rR8SrKhA3+fC+GMHQdLIBXI1L0Ck2eIwmTFCovxYxc?=
+ =?us-ascii?Q?cqkb1reVdH4/DvYikGJWAQFyaYSk8wVK3fYcse/r4UC4FJEcSOcQ/t+xUSzM?=
+ =?us-ascii?Q?9NwBDcYzkX4tnFsbRc7J1ZEzmwLInocNnMgMTiAw63JtYi5xEaIxpxSZpR8V?=
+ =?us-ascii?Q?r7cyqMZfRGRgExG4ZtD9lxxhRISndDl7/W2IEp/5L61hV0NkkfYf8/btdaIB?=
+ =?us-ascii?Q?f9jjGmIsP2GqvlRRR1VS1eujbrFvL77rhcAqdc17C5k8FZW7TxGtEPM2pO77?=
+ =?us-ascii?Q?L+RC3ff92Z2LcWiIDDQhOXpuhzM=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8fc9f68c-76a9-409c-d746-08d9e0ac4a00
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 09:14:43.1764
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wuwZmLyZjNrykE3xiwoKpWyySVchlrNqyj6qlAWn4scCdTQdVlN1XSe4+UrS177QvvmNC+uK8pxS1dbH1G0OgvVa3ckNBXbLnTURrtoW2FQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB2928
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10238 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0 bulkscore=0
+ suspectscore=0 malwarescore=0 adultscore=0 mlxlogscore=999 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2201260053
+X-Proofpoint-GUID: Jg2OFCJUF-LI732gK19zIgwY5usZoGow
+X-Proofpoint-ORIG-GUID: Jg2OFCJUF-LI732gK19zIgwY5usZoGow
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/21/22 at 08:06am, Eric DeVolder wrote:
-......
-> > >   arch/x86/kernel/crash.c | 138 +++++++++++++++++++++++++++++++++++++++-
-> > >   1 file changed, 137 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
-> > > index 9730c88530fc..d185137b33d4 100644
-> > > --- a/arch/x86/kernel/crash.c
-> > > +++ b/arch/x86/kernel/crash.c
-> > > @@ -25,6 +25,7 @@
-> > >   #include <linux/slab.h>
-> > >   #include <linux/vmalloc.h>
-> > >   #include <linux/memblock.h>
-> > > +#include <linux/highmem.h>
-> > >   #include <asm/processor.h>
-> > >   #include <asm/hardirq.h>
-> > > @@ -265,7 +266,8 @@ static int prepare_elf_headers(struct kimage *image, void **addr,
-> > >   		goto out;
-> > >   	/* By default prepare 64bit headers */
-> > > -	ret =  crash_prepare_elf64_headers(cmem, IS_ENABLED(CONFIG_X86_64), addr, sz);
-> > > +	ret =  crash_prepare_elf64_headers(image, cmem,
-> > > +				IS_ENABLED(CONFIG_X86_64), addr, sz);
-> > >   out:
-> > >   	vfree(cmem);
-> > > @@ -397,7 +399,17 @@ int crash_load_segments(struct kimage *image)
-> > >   	image->elf_headers = kbuf.buffer;
-> > >   	image->elf_headers_sz = kbuf.bufsz;
-> > > +#ifdef CONFIG_CRASH_HOTPLUG
-> > > +	/* Ensure elfcorehdr segment large enough for hotplug changes */
-> > > +	kbuf.memsz = CONFIG_CRASH_HOTPLUG_ELFCOREHDR_SZ;
-> > 
-> > I would define a default value for the size, meantime provide a Kconfig
-> > option to allow user to customize.
-> 
-> In patch 2/6 of this series, "crash hp: Introduce CRASH_HOTPLUG
-> configuration options", I provide the following:
-> 
-> +config CRASH_HOTPLUG_ELFCOREHDR_SZ
-> +   depends on CRASH_HOTPLUG
-> +   int
-> +   default 131072
-> +   help
-> +     Specify the maximum size of the elfcorehdr buffer/segment.
-> 
-> which defines a default value of 128KiB, and can be overriden at configure time.
-> 
-> Are you asking for a different technique?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
+commit: 8f2b54824b28ba8317c60947b5941d686e3df70d drivers:iio:dac: Add AD3552R driver support
+config: nios2-randconfig-m031-20220124 (https://download.01.org/0day-ci/archive/20220124/202201242005.NNLuFLzZ-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.2.0
 
-I thought to define a global variable, like
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-/* Defaults to ahve 128K elfcorehdr buffer which contains 2048 entries.*/
-unsigned long crash_hotplug_elfcorehdr_size = 0x20000;
+New smatch warnings:
+drivers/iio/dac/ad3552r.c:688 ad3552r_reset() warn: impossible condition '(val < 0) => (0-u16max < 0)'
 
-Then initialize it in crash_hotplug_init() if CONFIG_CRASH_HOTPLUG_ELFCOREHDR_SZ
-is enabled.
+Old smatch warnings:
+drivers/iio/dac/ad3552r.c:699 ad3552r_reset() warn: impossible condition '(val < 0) => (0-u16max < 0)'
 
-Seems using the config directly is also OK. Let's keep it and see if
-other people have comment.
+vim +688 drivers/iio/dac/ad3552r.c
 
-> 
-> > 
-> > > +	/* For marking as usable to crash kernel */
-> > > +	image->elf_headers_sz = kbuf.memsz;
-> > > +	/* Record the index of the elfcorehdr segment */
-> > > +	image->elf_index = image->nr_segments;
-> > > +	image->elf_index_valid = true;
-> > > +#else
-> > >   	kbuf.memsz = kbuf.bufsz;
-> > > +#endif
-> > >   	kbuf.buf_align = ELF_CORE_HEADER_ALIGN;
-> > >   	kbuf.mem = KEXEC_BUF_MEM_UNKNOWN;
-> > >   	ret = kexec_add_buffer(&kbuf);
-> > > @@ -412,3 +424,127 @@ int crash_load_segments(struct kimage *image)
-> > >   	return ret;
-> > >   }
-> > >   #endif /* CONFIG_KEXEC_FILE */
-> > > +
-> > > +#ifdef CONFIG_CRASH_HOTPLUG
-> > 
-> > These two helper function should be carved out into a separate patch as
-> > a preparatory one. I am considering how to rearrange and split the
-> > patches, will reply to cover letter.
-> 
-> OK, I look forward to that insight!
-> 
-> > 
-> > > +void *map_crash_pages(unsigned long paddr, unsigned long size)
-> > > +{
-> > > +	/*
-> > > +	 * NOTE: The addresses and sizes passed to this routine have
-> > > +	 * already been fully aligned on page boundaries. There is no
-> > > +	 * need for massaging the address or size.
-> > > +	 */
-> > > +	void *ptr = NULL;
-> > > +
-> > > +	/* NOTE: requires arch_kexec_[un]protect_crashkres() for write access */
-> > > +	if (size > 0) {
-> > > +		struct page *page = pfn_to_page(paddr >> PAGE_SHIFT);
-> > > +
-> > > +		ptr = kmap(page);
-> > > +	}
-> > > +
-> > > +	return ptr;
-> > > +}
-> > > +
-> > > +void unmap_crash_pages(void **ptr)
-> > > +{
-> > > +	if (ptr) {
-> > > +		if (*ptr)
-> > > +			kunmap(*ptr);
-> > > +		*ptr = NULL;
-> > > +	}
-> > > +}
-> > > +
-> > > +void arch_crash_hotplug_handler(struct kimage *image,
-> > > +	unsigned int hp_action, unsigned long a, unsigned long b)
-> > > +{
-> > > +	/*
-> > > +	 * To accurately reflect hot un/plug changes, the elfcorehdr (which
-> > > +	 * is passed to the crash kernel via the elfcorehdr= parameter)
-> > > +	 * must be updated with the new list of CPUs and memories. The new
-> > > +	 * elfcorehdr is prepared in a kernel buffer, and if no errors,
-> > > +	 * then it is written on top of the existing/old elfcorehdr.
-> > > +	 *
-> > > +	 * Due to the change to the elfcorehdr, purgatory must explicitly
-> > > +	 * exclude the elfcorehdr from the list of segments it checks.
-> > > +	 */
-> > 
-> > Please move this code comment to above function as kernel-doc if you
-> > this it benefits the entire function. Otherwise should move them above
-> > the code block they are explaining. For this place, I think moving them
-> > to above arch_crash_hotplug_handler() is better.
-> 
-> ok, I will do that!
-> 
-> > 
-> > > +	struct kexec_segment *ksegment;
-> > > +	unsigned char *ptr = NULL;
-> > > +	unsigned long elfsz = 0;
-> > > +	void *elfbuf = NULL;
-> > > +	unsigned long mem, memsz;
-> > > +	unsigned int n;
-> > > +
-> > > +	/*
-> > > +	 * When the struct kimage is alloced, it is wiped to zero, so
-> > > +	 * the elf_index_valid defaults to false. It is set on the
-> > > +	 * kexec_file_load path, or here for kexec_load.
-> > > +	 */
-> > 
-> > I think this kexec loading part should be taken out and post after this
-> > whole patchset being accepted. At least, it's worth to put them in a
-> > separate patch.
-> 
-> This little bit of code that identifies the incoming elfcorehdr is all that
-> is needed to support kexec_load (and the userspace changes of course). I'm
-> happy to split as a separate patch, but I would think that be maintaining it
-> with this series, then when it is accepted, both the kexec_load and
-> kexec_file_load paths would be supported? Your call.
+8f2b54824b28ba Mihail Chindris 2021-12-13  655  static int ad3552r_reset(struct ad3552r_desc *dac)
+8f2b54824b28ba Mihail Chindris 2021-12-13  656  {
+8f2b54824b28ba Mihail Chindris 2021-12-13  657  	struct reg_addr_pool addr;
+8f2b54824b28ba Mihail Chindris 2021-12-13  658  	int ret;
+8f2b54824b28ba Mihail Chindris 2021-12-13  659  	u16 val;
+                                                        ^^^^^^^
 
-Hmm, at first, let's split it out from this patch since it's an
-independent action to kdump. I would suggest we don't carry it in this
-series. After this series is done, you can post another patchset
-including this part as kernel patch, and also the code change in
-kexec_tools as user space patch.
+8f2b54824b28ba Mihail Chindris 2021-12-13  660  
+8f2b54824b28ba Mihail Chindris 2021-12-13  661  	dac->gpio_reset = devm_gpiod_get_optional(&dac->spi->dev, "reset",
+8f2b54824b28ba Mihail Chindris 2021-12-13  662  						  GPIOD_OUT_LOW);
+8f2b54824b28ba Mihail Chindris 2021-12-13  663  	if (IS_ERR(dac->gpio_reset))
+8f2b54824b28ba Mihail Chindris 2021-12-13  664  		return dev_err_probe(&dac->spi->dev, PTR_ERR(dac->gpio_reset),
+8f2b54824b28ba Mihail Chindris 2021-12-13  665  				     "Error while getting gpio reset");
+8f2b54824b28ba Mihail Chindris 2021-12-13  666  
+8f2b54824b28ba Mihail Chindris 2021-12-13  667  	if (dac->gpio_reset) {
+8f2b54824b28ba Mihail Chindris 2021-12-13  668  		/* Perform hardware reset */
+8f2b54824b28ba Mihail Chindris 2021-12-13  669  		usleep_range(10, 20);
+8f2b54824b28ba Mihail Chindris 2021-12-13  670  		gpiod_set_value_cansleep(dac->gpio_reset, 1);
+8f2b54824b28ba Mihail Chindris 2021-12-13  671  	} else {
+8f2b54824b28ba Mihail Chindris 2021-12-13  672  		/* Perform software reset if no GPIO provided */
+8f2b54824b28ba Mihail Chindris 2021-12-13  673  		ret = ad3552r_update_reg_field(dac,
+8f2b54824b28ba Mihail Chindris 2021-12-13  674  					       AD3552R_REG_ADDR_INTERFACE_CONFIG_A,
+8f2b54824b28ba Mihail Chindris 2021-12-13  675  					       AD3552R_MASK_SOFTWARE_RESET,
+8f2b54824b28ba Mihail Chindris 2021-12-13  676  					       AD3552R_MASK_SOFTWARE_RESET);
+8f2b54824b28ba Mihail Chindris 2021-12-13  677  		if (ret < 0)
+8f2b54824b28ba Mihail Chindris 2021-12-13  678  			return ret;
+8f2b54824b28ba Mihail Chindris 2021-12-13  679  
+8f2b54824b28ba Mihail Chindris 2021-12-13  680  	}
+8f2b54824b28ba Mihail Chindris 2021-12-13  681  
+8f2b54824b28ba Mihail Chindris 2021-12-13  682  	addr.dac = dac;
+8f2b54824b28ba Mihail Chindris 2021-12-13  683  	addr.addr = AD3552R_REG_ADDR_INTERFACE_CONFIG_B;
+8f2b54824b28ba Mihail Chindris 2021-12-13  684  	ret = readx_poll_timeout(ad3552r_read_reg_wrapper, &addr, val,
+8f2b54824b28ba Mihail Chindris 2021-12-13  685  				 val == AD3552R_DEFAULT_CONFIG_B_VALUE ||
+8f2b54824b28ba Mihail Chindris 2021-12-13  686  				 val < 0,
+                                                                                 ^^^^^^^
 
-......
+8f2b54824b28ba Mihail Chindris 2021-12-13  687  				 5000, 50000);
+8f2b54824b28ba Mihail Chindris 2021-12-13 @688  	if (val < 0)
+                                                            ^^^^^^^
+
+8f2b54824b28ba Mihail Chindris 2021-12-13  689  		ret = val;
+8f2b54824b28ba Mihail Chindris 2021-12-13  690  	if (ret) {
+8f2b54824b28ba Mihail Chindris 2021-12-13  691  		dev_err(&dac->spi->dev, "Error while resetting");
+8f2b54824b28ba Mihail Chindris 2021-12-13  692  		return ret;
+8f2b54824b28ba Mihail Chindris 2021-12-13  693  	}
+8f2b54824b28ba Mihail Chindris 2021-12-13  694  
+8f2b54824b28ba Mihail Chindris 2021-12-13  695  	ret = readx_poll_timeout(ad3552r_read_reg_wrapper, &addr, val,
+8f2b54824b28ba Mihail Chindris 2021-12-13  696  				 !(val & AD3552R_MASK_INTERFACE_NOT_READY) ||
+8f2b54824b28ba Mihail Chindris 2021-12-13  697  				 val < 0,
+                                                                                 ^^^^^^^
+8f2b54824b28ba Mihail Chindris 2021-12-13  698  				 5000, 50000);
+8f2b54824b28ba Mihail Chindris 2021-12-13  699  	if (val < 0)
+                                                            ^^^^^^^
+
+Impossible
+
+8f2b54824b28ba Mihail Chindris 2021-12-13  700  		ret = val;
+8f2b54824b28ba Mihail Chindris 2021-12-13  701  	if (ret) {
+8f2b54824b28ba Mihail Chindris 2021-12-13  702  		dev_err(&dac->spi->dev, "Error while resetting");
+8f2b54824b28ba Mihail Chindris 2021-12-13  703  		return ret;
+8f2b54824b28ba Mihail Chindris 2021-12-13  704  	}
+8f2b54824b28ba Mihail Chindris 2021-12-13  705  
+8f2b54824b28ba Mihail Chindris 2021-12-13  706  	return ad3552r_update_reg_field(dac,
+8f2b54824b28ba Mihail Chindris 2021-12-13  707  					addr_mask_map[AD3552R_ADDR_ASCENSION][0],
+8f2b54824b28ba Mihail Chindris 2021-12-13  708  					addr_mask_map[AD3552R_ADDR_ASCENSION][1],
+8f2b54824b28ba Mihail Chindris 2021-12-13  709  					val);
+8f2b54824b28ba Mihail Chindris 2021-12-13  710  }
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
