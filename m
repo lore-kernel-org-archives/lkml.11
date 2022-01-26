@@ -2,137 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA120C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 888B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233170AbiAZXM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 18:12:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39636 "EHLO
+        id S233514AbiAZXNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 18:13:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233121AbiAZXMz (ORCPT
+        with ESMTP id S233300AbiAZXM4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 18:12:55 -0500
-Received: from mail-wm1-x34a.google.com (mail-wm1-x34a.google.com [IPv6:2a00:1450:4864:20::34a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8472BC061748
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:12:54 -0800 (PST)
-Received: by mail-wm1-x34a.google.com with SMTP id f7-20020a1cc907000000b0034b63f314ccso604425wmb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:12:54 -0800 (PST)
+        Wed, 26 Jan 2022 18:12:56 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938A7C06161C
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:12:55 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id z20so1710182ljo.6
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:12:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=sw/3yITQaa2AI87O7smfBOiWG12oWUzPV7X0KBcd7nk=;
-        b=BUsie+AXwt7AWpY9TnHNZeIiyXHyQbqfkwIHzGrhFTBME5i3WqC4AhEpN0QrKhePz8
-         oN5+d4TWoIM3pQGBs/WOxhmKn2QTVg9Bbv/jydyhatTZjl4+MGJXuSgg/pNKVkmV68WZ
-         5ykuX/mWFbFHFihLfpWCXDJzP9MydnZ6miL5YZlDPdS+/72FCFW8vTe20igyekIvcPv1
-         AdGW2iETcQk0g6BF9vzbW9fQFNI+Bxg4c7ct+vUJFN0ekMZpuQTWdS8xcNuLaLCF6351
-         Ut1CGYowO16eiz/1jpVIQar4AhFStMKjG/FBSbAsA0ClSmFlH0i7HBmTjuxJxhcKHnjC
-         qx4A==
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=G9Hu+JeymXvWuatFDwPB/oJw84mqyQsQKnr50lHjCVs=;
+        b=ZylTsiYlkM5bSFlaXvMfbJ2nPRWztPZCRUYR66IzkY1yBZig/210jDM8waw+fJrPmn
+         P3icxCvofFj258zwjgD9ZqgVYYo8xSsbD62lT7GPfWN23gkpO8zFlK0njmv0btVh0SGh
+         WfAf6TN3eEtrVgqhGbphOmmY3KdVtMzyrMpg1dta/RLAlJG3p/51xLGgCzQDWH79cSyF
+         jsG6TDz1gnp2kdw0heMaMIxBZopmwHpX5Yp51g7vJ0N5jLAjjYT+3/yGroTjQXgoJHN0
+         Wz+tDplZxqoZBxmMjMPu8xWHrR8520GYkv3m1yVLdrNH6mCdcezz7XPCcczTYlf76V+Z
+         V24A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=sw/3yITQaa2AI87O7smfBOiWG12oWUzPV7X0KBcd7nk=;
-        b=uH1/g5WVnBBPBGBd7xnovSY55c0VTu+xHXl4RjdVxNRjok5bpuzYLbLMtbmG6+I0Dh
-         IO7dvVal2wlKIc2ZY2bhzrXoga3H1PJr0fjNPTYT/o+jYXk2xLztlPkvSJ1k4PMiCzWk
-         OyoaWtH4iCx8wI54jR9u53m4Sl1lbOcpFiVMzrKFO6dGeaVw/UA9UI5yQO7ng19yeTID
-         1TQjQTYTJSHX7YgYdPuH7K1rae4GRPrjOkJBFGwXuXBzMBVrg4/G7sAIotyxY20kGFty
-         CBdraUOb1CWWoTnYawfatNhDYAj4ete7Haj5g5cKmfdE4zejGorrnG5zJ5nD3DkHv9fd
-         doBg==
-X-Gm-Message-State: AOAM531HM1b3rY54FamZPCCHDx9leSjJykxHoJozfb2Wi+aMnTybKB1e
-        yX58KofcfE15A6w9DRmgZnTn43rdQh0Fag==
-X-Google-Smtp-Source: ABdhPJyBPaSI9+WP8jN2fbeMWC9uetOno56Gd95R4SghhzY2jtECOKhrp5yPSmXzxXBe+UYvC6hdSCo4XutxAg==
-X-Received: from dbrazdil.lon.corp.google.com ([2a00:79e0:d:209:bd2e:4d3b:b065:fa46])
- (user=dbrazdil job=sendgmr) by 2002:a1c:a5d2:: with SMTP id
- o201mr809207wme.82.1643238773138; Wed, 26 Jan 2022 15:12:53 -0800 (PST)
-Date:   Wed, 26 Jan 2022 23:12:36 +0000
-In-Reply-To: <20220126231237.529308-1-dbrazdil@google.com>
-Message-Id: <20220126231237.529308-2-dbrazdil@google.com>
-Mime-Version: 1.0
-References: <20220126231237.529308-1-dbrazdil@google.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH v7 1/2] dt-bindings: reserved-memory: Open Profile for DICE
-From:   David Brazdil <dbrazdil@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        David Brazdil <dbrazdil@google.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Scull <ascull@google.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=G9Hu+JeymXvWuatFDwPB/oJw84mqyQsQKnr50lHjCVs=;
+        b=bzCWk2yPpTffdyLoP9I2waAs2ILTjISVVII5CnnKqFv42RswD3O/Dg1y4+430E2KqU
+         CqE5zC956dsuX5C/dyWh7c1aSiJ6VluA8cQEgVu3/6Jg2eHELChpZfWKtDVIwTS/VRaZ
+         fm2eJr8xL060esxY6A9YpuleaE2XFpqcPO8l7rViUfJJPgrY1ifIgd02fUE7fZzDuW++
+         sR3+K/MOtAV7xRT18N6LbHmtq4Sh+Qvg5aBnxFhpjqZsCqqAtGo9u3nvnfrCAfQlWBX1
+         Pm78CKOxeFD31gq1eTWmflh+QJnNLFrby5cxG5UOjH1P3jsRv59TzZRxG34N6s260non
+         hJAQ==
+X-Gm-Message-State: AOAM531UB76MpF4cwnWhAkr3664em65rYKNouqCobnkzHej2coYXNZ6D
+        wXT5uCByJpfobYKR4quRJK9V8w==
+X-Google-Smtp-Source: ABdhPJxfwFAn/ctQGGBzoRN89vhxvau3FkI7yFI8xwhLLRtSVdrKkafz/Q0jM7lgr+1rrfDCOLqZAw==
+X-Received: by 2002:a2e:bf15:: with SMTP id c21mr971797ljr.396.1643238773890;
+        Wed, 26 Jan 2022 15:12:53 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id p28sm1529335lfo.79.2022.01.26.15.12.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 15:12:52 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/2] net: dsa: mv88e6xxx: Improve performance of busy bit polling
+Date:   Thu, 27 Jan 2022 00:12:38 +0100
+Message-Id: <20220126231239.1443128-2-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220126231239.1443128-1-tobias@waldekranz.com>
+References: <20220126231239.1443128-1-tobias@waldekranz.com>
+MIME-Version: 1.0
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DeviceTree bindings for Open Profile for DICE, an open protocol for
-measured boot. Firmware uses DICE to measure the hardware/software
-combination and generates Compound Device Identifier (CDI) certificates.
-These are stored in memory and the buffer is described in the DT as
-a reserved memory region compatible with 'google,open-dice'.
+Avoid a long delay when a busy bit is still set and has to be polled
+again.
 
-'no-map' is required to ensure the memory region is never treated by
-the kernel as system memory.
+Measurements on a system with 2 Opals (6097F) and one Agate (6352)
+show that even with this much tighter loop, we have about a 50% chance
+of the bit being cleared on the first poll, all other accesses see the
+bit being cleared on the second poll.
 
-Signed-off-by: David Brazdil <dbrazdil@google.com>
+On a standard MDIO bus running MDC at 2.5MHz, a single access with 32
+bits of preamble plus 32 bits of data takes 64*(1/2.5MHz) = 25.6us.
+
+This means that mv88e6xxx_smi_direct_wait took 26us + CPU overhead in
+the fast scenario, but 26us + 1500us + 26us + CPU overhead in the slow
+case - bringing the average close to 1ms.
+
+With this change in place, the slow case is closer to 2*26us + CPU
+overhead, with the average well below 100us - a 10x improvement.
+
+This translates to real-world winnings. On a 3-chip 20-port system,
+the modprobe time drops by 88%:
+
+Before:
+
+root@coronet:~# time modprobe mv88e6xxx
+real    0m 15.99s
+user    0m 0.00s
+sys     0m 1.52s
+
+After:
+
+root@coronet:~# time modprobe mv88e6xxx
+real    0m 2.21s
+user    0m 0.00s
+sys     0m 1.54s
+
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- .../reserved-memory/google,open-dice.yaml     | 46 +++++++++++++++++++
- 1 file changed, 46 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/reserved-memory/google,open-dice.yaml
+ drivers/net/dsa/mv88e6xxx/chip.c | 8 ++++----
+ drivers/net/dsa/mv88e6xxx/smi.c  | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/reserved-memory/google,open-dice.yaml b/Documentation/devicetree/bindings/reserved-memory/google,open-dice.yaml
-new file mode 100644
-index 000000000000..257a0b51994a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/reserved-memory/google,open-dice.yaml
-@@ -0,0 +1,46 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/reserved-memory/google,open-dice.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Open Profile for DICE Device Tree Bindings
-+
-+description: |
-+  This binding represents a reserved memory region containing data
-+  generated by the Open Profile for DICE protocol.
-+
-+  See https://pigweed.googlesource.com/open-dice/
-+
-+maintainers:
-+  - David Brazdil <dbrazdil@google.com>
-+
-+allOf:
-+  - $ref: "reserved-memory.yaml"
-+
-+properties:
-+  compatible:
-+    const: google,open-dice
-+
-+  reg:
-+    description: page-aligned region of memory containing DICE data
-+
-+required:
-+  - compatible
-+  - reg
-+  - no-map
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    reserved-memory {
-+        #address-cells = <2>;
-+        #size-cells = <1>;
-+
-+        dice: dice@12340000 {
-+            compatible = "google,open-dice";
-+            reg = <0x00 0x12340000 0x2000>;
-+            no-map;
-+        };
-+    };
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 58ca684d73f7..3566617143cf 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -86,12 +86,12 @@ int mv88e6xxx_write(struct mv88e6xxx_chip *chip, int addr, int reg, u16 val)
+ int mv88e6xxx_wait_mask(struct mv88e6xxx_chip *chip, int addr, int reg,
+ 			u16 mask, u16 val)
+ {
++	const unsigned long timeout = jiffies + msecs_to_jiffies(50);
+ 	u16 data;
+ 	int err;
+-	int i;
+ 
+ 	/* There's no bus specific operation to wait for a mask */
+-	for (i = 0; i < 16; i++) {
++	do {
+ 		err = mv88e6xxx_read(chip, addr, reg, &data);
+ 		if (err)
+ 			return err;
+@@ -99,8 +99,8 @@ int mv88e6xxx_wait_mask(struct mv88e6xxx_chip *chip, int addr, int reg,
+ 		if ((data & mask) == val)
+ 			return 0;
+ 
+-		usleep_range(1000, 2000);
+-	}
++		cpu_relax();
++	} while (time_before(jiffies, timeout));
+ 
+ 	dev_err(chip->dev, "Timeout while waiting for switch\n");
+ 	return -ETIMEDOUT;
+diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
+index 282fe08db050..a59f32243e08 100644
+--- a/drivers/net/dsa/mv88e6xxx/smi.c
++++ b/drivers/net/dsa/mv88e6xxx/smi.c
+@@ -55,11 +55,11 @@ static int mv88e6xxx_smi_direct_write(struct mv88e6xxx_chip *chip,
+ static int mv88e6xxx_smi_direct_wait(struct mv88e6xxx_chip *chip,
+ 				     int dev, int reg, int bit, int val)
+ {
++	const unsigned long timeout = jiffies + msecs_to_jiffies(50);
+ 	u16 data;
+ 	int err;
+-	int i;
+ 
+-	for (i = 0; i < 16; i++) {
++	do {
+ 		err = mv88e6xxx_smi_direct_read(chip, dev, reg, &data);
+ 		if (err)
+ 			return err;
+@@ -67,8 +67,8 @@ static int mv88e6xxx_smi_direct_wait(struct mv88e6xxx_chip *chip,
+ 		if (!!(data & BIT(bit)) == !!val)
+ 			return 0;
+ 
+-		usleep_range(1000, 2000);
+-	}
++		cpu_relax();
++	} while (time_before(jiffies, timeout));
+ 
+ 	return -ETIMEDOUT;
+ }
 -- 
-2.35.0.rc0.227.g00780c9af4-goog
+2.25.1
 
