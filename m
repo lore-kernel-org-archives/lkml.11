@@ -2,258 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A51CC3526D
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E26ACC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242720AbiAZPT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 10:19:59 -0500
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:21530 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235943AbiAZPT6 (ORCPT
+        id S242725AbiAZPUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 10:20:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44596 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242719AbiAZPUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 10:19:58 -0500
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20QEidW7007713;
-        Wed, 26 Jan 2022 15:19:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=vXV6mSsxv65+ZGv7h+vu9IVHFE543pMgBx8UC9ojq/0=;
- b=TxGhfLkr2fUi7mvDSIYpFQf5lyksQhTJliBBD5JwexrSSl+1c40F9+Td3qshNCo4aOib
- nvLH0buzWrlGH+/jcOIUdqnavgEqJYQlEs90buLQbCgWgz78pWeJoCfUtsRIn4r5OPIR
- 2wE9ueq/KeNT7Ay6d+1i4Ytd7FaACuCx6YyhG2L1/1O91wC+zCkVuQjXZXbxNGAph4+W
- G9Nfwl+Sm9MYZ3O8mJ4ydm4zGMa7/MqLEynRemL5URzkPul7HeDH91jmyn9Mc/tWbmb7
- DIUWdNcT9MqlQ7HP05nEK/iJxuhn3b4Gv3vjThoOezvwLTghENCkKsfC3BDoNsB1b/iR Jw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dsy9s696u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 26 Jan 2022 15:19:25 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20QFGoc4169845;
-        Wed, 26 Jan 2022 15:19:24 GMT
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2101.outbound.protection.outlook.com [104.47.58.101])
-        by aserp3020.oracle.com with ESMTP id 3dtax8k9vv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 26 Jan 2022 15:19:24 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dVNqMEYv3CaHQMUUW7aymmE29IeZrTr0HOIEVA8UUjs20OAotYlk/hXO9ZWcSVUMwFPwzi0NW8D9qU6FRdprbDYf8TM1aS10Iuj1vwcjVpLM2R4vDH3Sokx2WlwD72AadSag45MUxgVndo2Muf7nMq/xj2t+z+1TjIeEKkcFSpUut/Osn1LcFdOS20Bvk+7kovUPYCUcG0JZFVdk8mSdWs+Ba8G7s/1Kh+C+KjDDbPu/qmTrF/xodID/CkNscXnyDNzovrLE7bf/uqNtpWGvODE4tkPpL3Bq1izUygtU5CUJt+/M27RbJo1kVeqFSn31MG3P9QLn0hg2WBu4uQCRaA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vXV6mSsxv65+ZGv7h+vu9IVHFE543pMgBx8UC9ojq/0=;
- b=STVNdE9FAeD4AOSQQhF+X9rwcSptLDYsKhpykpNlvvS8n7dGGcH+5vQT5iEVkSkR10V42yfCWNUW3Bx3XiPnIA8IwY+KSSo/9DqFdezXuj3by1ee1dpryERIt6UATRR/z3sts1Xa9NLRM+pJ46HjG/PqFCvOX8NiZA/JM5a5jUt+RvEVvcMeCY0G9em7WglSqTYwko0clHb9b96mtLovBZRaQ9X1PeyYpNZ8CZnJlGZda0Y1iUdD4QOzilnNQEkvrMDFWPAEtDy7Q9kqlaSXx6ScBv9icrJjYSOdtb2iiN4HDgDmUuAyTzNZOreJdRNcxanpbd68cQKiL0S/1eNpow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vXV6mSsxv65+ZGv7h+vu9IVHFE543pMgBx8UC9ojq/0=;
- b=qrW1LRMjJyQld76us+AIJhqUFjmSHG90tFGMxyoOvDOfqoanU4PV1433MKu7BuqL4fBkIYKaM+ieBCH9UxkOiB8d7SJQ/HzRn8o58IfKuKxCuD+2j63eLPjHCzD4cEhuJ2cflvq6gcNbqVPDZN6TazEQvOT/FYii0G+UgN2lDeU=
-Received: from CO1PR10MB4722.namprd10.prod.outlook.com (2603:10b6:303:9e::12)
- by BY5PR10MB3842.namprd10.prod.outlook.com (2603:10b6:a03:1f9::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Wed, 26 Jan
- 2022 15:19:22 +0000
-Received: from CO1PR10MB4722.namprd10.prod.outlook.com
- ([fe80::30b4:4c4c:82df:29f6]) by CO1PR10MB4722.namprd10.prod.outlook.com
- ([fe80::30b4:4c4c:82df:29f6%6]) with mapi id 15.20.4930.017; Wed, 26 Jan 2022
- 15:19:22 +0000
-Message-ID: <87fee388-fe72-4c87-577d-aae07a4a6da0@oracle.com>
-Date:   Wed, 26 Jan 2022 09:19:04 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.0
-Subject: Re: [PATCH v20 4/5] of: fdt: Add memory for devices by DT property
- "linux,usable-memory-range"
-Content-Language: en-US
-To:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-References: <20220124084708.683-1-thunder.leizhen@huawei.com>
- <20220124084708.683-5-thunder.leizhen@huawei.com>
-From:   john.p.donnelly@oracle.com
-In-Reply-To: <20220124084708.683-5-thunder.leizhen@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0005.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:150::10) To CO1PR10MB4722.namprd10.prod.outlook.com
- (2603:10b6:303:9e::12)
+        Wed, 26 Jan 2022 10:20:00 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5E93B81EAB;
+        Wed, 26 Jan 2022 15:19:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D746C340E3;
+        Wed, 26 Jan 2022 15:19:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643210397;
+        bh=n6r5NLPu48M24FdnE1DRwiL0ETeAUov3E04nHml1+OA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iR9aeJVCn3IY4N9J7ST0e4Sezv4Q73Kn2q9XpFbvsjfWvjaIsfcuLaBOXGCxBECDM
+         +ZrvFScmw/keHW4ZbZVZBWvnrVdA1KEB/Q823A4eQ8B3VTZRM096vK66kI4QfECcW+
+         7rvwYuZWlQsFOsTjG2VMWoWGJhmADxRmp9E2Vv9kbygFrRJIhlf/FOj90b28oTMwPA
+         TRhIr0TEhK7vOHUcSiR5C3tYW8z8Lg3uFVA/Wnv8mt2gBdGESaUjXE2kve6JOPBHGM
+         JAj8sqlocrOmmR3WA9/RsCB54SrgWi491DLsoNpj8zu4xGMWT4bbxMEJCdyHVtiVAr
+         WD0dh0eVPBQyw==
+Date:   Wed, 26 Jan 2022 23:12:15 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-kernel@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: Re: [PATCH] net: stmmac: dwmac-sun8i: fix double disable and
+ unprepare "stmmaceth" clk
+Message-ID: <YfFkz1d9onk+ITGg@xhacker>
+References: <20220123132805.758-1-jszhang@kernel.org>
+ <38c41c04-abde-4d55-ed7c-515b6bba9c54@sholland.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fbd349e5-e128-4d9c-ef48-08d9e0df3ae3
-X-MS-TrafficTypeDiagnostic: BY5PR10MB3842:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR10MB3842455D131DF7E9584D0925C7209@BY5PR10MB3842.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p10/BmBJL45qOpZzAsQXqYyV1EepqhzO9QdU1tUzT+ZGitUYVpVtTNvXso5lK/v2mISlD8eWP86O2Mc6u4N5QnYuf7qYefsVtQsaIEuRbo9bOuXbJP4z6pmVod3q7IIuxxAMDISz63VdShHePVk5sQ/vx+aM1ma4V+wpAgKPaMWdltEXXmxiayUHEda2RPJO2wQHHveLFmpQWiqp3VhZr5ZAOmw5by3KzfWGnSW7CKhUjdNScnSmAQYZtqmjwMUUvU2fAz6PiBLCVGwHYrLVfrmsFQgdyX8VzBdhZ+6HAFZRqDSJcq2DgMwW6g+Ad4zGGhDe99Is/OiYifMdAUDTbcOHRRo277ainUoDFTusaBGRJr/nMgwW2QZUkx4JGHmK0O608blQfhEuT4Ut+ThbO12hyFF32uHhbhHLNSUpi+WU1bWDXLbxwFAfuACuBMKCuW1uj3qHGWAi3M59mtrnPzq3AHBxk5SR/E1/rb5XaqwvWd0YwMjeSu9pROh1OL2bA2prk+36kN1OY+Wd2xqTwUzs93Ao6qQXkfW8xmF2PQ5d+AEXfiKyMU+o6GIWt0SfPCQqJZODD5kTAT+NmP7ASBuM5ynxmjVbyG54HNcF//xcPKUCR4nPauAP+jn4JuNm2gh417h39aEcpacjB4z8Biw1faRGLx1jrmvW/B0Z4R0uRazucRfumX2Ow68zy4Dxk3IfYfLAYBJjmEwVq3gNjXCffl+7BQYOnP0BkLUpQdw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4722.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(107886003)(38100700002)(83380400001)(921005)(66946007)(66556008)(66476007)(6506007)(8676002)(54906003)(7416002)(9686003)(316002)(110136005)(86362001)(2906002)(31696002)(31686004)(4326008)(5660300002)(8936002)(508600001)(36756003)(6666004)(6512007)(53546011)(186003)(26005)(6486002)(2616005)(43740500002)(20210929001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TFJaKzNmejZKN2t6bUJjUWFoUDN3eXA3ZnI3dzJTN2JUdUhTaDVzSUNtWldh?=
- =?utf-8?B?aWJ5Yjd1RGdFOVA2dERVUDNoQzlZZTJrUjBNUitsc3BuN0lhd2FBUlhaVExR?=
- =?utf-8?B?djducWJ5aDV4QXBnZUFuQ2VKdUFPaGVOWUlWaTQ5UHVMclNUMWNtR2Y4OFVw?=
- =?utf-8?B?eDMzNW1lcnY3aURJT3ZmUlVKTHNQSU84cmV0S2w1Y09FRUQvcDF5NGkyV0pS?=
- =?utf-8?B?bnRvYmc5eWtyWEZJRXdRYmxSaWVXdzRCQmRpMCs4NEJGOVVYcjE1dUtRWjlY?=
- =?utf-8?B?QVd2YnlWOEJJOUN4cEJ0Qm03aEJMOUNKNzh0THBWNEM4VURodk9yS1hqbitz?=
- =?utf-8?B?SDZMRHBiRTZWdU1aN2VudEl2MHRkMzNnU1g5R2k1dnArQko2Z05TWTZGcWdG?=
- =?utf-8?B?UVBZK0U0TUdiMW10cFpnT2loMVZyU043NU1VaFdya21LRjFtUEtvNE9OdFBp?=
- =?utf-8?B?WDJFMjA4RjJ6U2lkeG9wc1I0YTUyMUFHTDVmVndvcG90aWQ1b2FYZHcvQzhB?=
- =?utf-8?B?dUNlc0NIOW82bVhpbXpVNndHKzA5NUlpdCtYZkg1NE1pL0ZadXRIQUJRTU15?=
- =?utf-8?B?R0YvUnZrd0R0bFFBYWdxTnhvK3FEdG0rZ0hOSE1uSmhMM3B6V1BmZmNEc0Rm?=
- =?utf-8?B?Rm5BRU80bml4cjVXOUdpL3BjbTAvb01HK2I0NlNaYnZXbTdvWWc3ZXdZNmlT?=
- =?utf-8?B?K3RTeFRpRTZ2VVorSjI4SHBMS3Mva3BPREFqcWVmL2gwdFhKL2hmOXZUeXY0?=
- =?utf-8?B?TUlvOXA2eVVFaWhoUHNtM3VITG5KblNBVk10NnA0NFZCWGRZNHV0WWVoNFhN?=
- =?utf-8?B?WVlkT041ekRzekxiZkZveE9GWFE4cmo1MGhTR0pFSGhGbTVzZFBWNkxFTW1m?=
- =?utf-8?B?aW5VK0tHMTZKRTZYS1FIY3dSS0haMitXS2ZzODB5RFArWVpkTDhXNENJNDBz?=
- =?utf-8?B?Z1BJMXZWbFNUM0JXVmtrNWppZWYwNG1UUkJmT3l0a0Rld1VsazltNVNKVm9j?=
- =?utf-8?B?MVZ3TkFWcWgyOWdBTzV2WDlubzZYQ013bU1YQ3h2clUwQTQvenh6dEI0STBo?=
- =?utf-8?B?eSt1RlBKT2ZmVFdBNVVFU1hRT3l0ZTVvMithNENtKzBONlJiQlZIWHhENHBv?=
- =?utf-8?B?ZFFkR3dlSkNhQS80bW96Zm9yczlCc1pYWlJXcEgrYk9mcTEwaE5mZDMwSTI1?=
- =?utf-8?B?MFU1WjNCOWVaNVRwVWRDVmRXOGhJTjB1dVdxdXhLNHlPY2lnUi94MkZWU0Rl?=
- =?utf-8?B?UVBaYUIwRTBhNVJjYnJOV0taMkRYaE51UXJzNjdta3ZxM0d3WTU0QWVxVXBK?=
- =?utf-8?B?WkFiSnRnMlQvUEh1VDVtWTVRWkVQWkpOa2FtUzRNRmJoTkNVL1MrYlZ4b0Zy?=
- =?utf-8?B?UlBVdHdLcG5WK0tWQUtsNmxrM1U2MjhETkQrMmdBMVQ1N3I5UnoyY29xRWU3?=
- =?utf-8?B?anBheFdWWWZyQStNQ3RHSU5wRHM2emZaNWZJOEN5REFIWEpaRk9xNVVZTHhj?=
- =?utf-8?B?aEsxdHRsaExxMzA4WHQzU1phblBBWkxiemN4TDIvTGdhYk9DcU5QWXJpTzhl?=
- =?utf-8?B?RTA1aE1mVDBYOUhBVkVLaXJQSkIwNnhWSUxtRW5HQ0NPQnFFM2kxMVZZY2xv?=
- =?utf-8?B?aWxWWUVhaE1rWnBoTXFLelp0dVdNZCtZQXBBZnlFeTFhRk9MeFdkdThITWpX?=
- =?utf-8?B?OXFuU1d2c0pWQlhaOVg1Z2FBeER1b1RGbzFhT3VnNms1NjY4NVdyMjg1N3Zy?=
- =?utf-8?B?R05yMDdaeE9HL3VLdVF5QnFQaE14b3ZNOXRGaDNCT3M5Z3JQVEN1cTY2dEVV?=
- =?utf-8?B?ak5pNzdhYnFZTW1RbjYwU2JnSzJUYXVtZ2ZQWm9lOHRFZVRjdEIxQVk2Y3Jm?=
- =?utf-8?B?dFFlWFFxMlVpd0RMaDQ3bDVBNFUvNVo5b0JOR0JEQVpERmxyOVE2YTRWVjZp?=
- =?utf-8?B?MWVENnBHSDJMSGRzcGlNRjVBTHlSSmlGaWFyM3liT1ZFTkVsZWxsRkFPU1lq?=
- =?utf-8?B?ZC9KTG91MXhsWC9iUXB2UkZFdWx4MlJiekNBYURHVGtkWHFxVkY5OVh1aTUv?=
- =?utf-8?B?emppN004OWc5TzZXMzhMTnhleWVtOTBvcXlyUmR5L2pCTVV3SkhpSDZqSU9n?=
- =?utf-8?B?RXplS040RWVYTFVqQk42Z3dadHhnMEpXNEtZT1ltUFlTQlRQUFpOQ201QzBR?=
- =?utf-8?B?VEU5R2VJb1dkelAvM3YwMEN2QUd5WVVMRnBWQmxDcy9ud2FKRUFBVjdNc0VB?=
- =?utf-8?B?a1B5cFVTeTNSa1p3Ym13Z1dvUG53PT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fbd349e5-e128-4d9c-ef48-08d9e0df3ae3
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4722.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 15:19:22.1868
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sMAoHZptLGK5hXlvJrY8jERljXILQJ2boCv6ARSovknvDPC3z+hrM3+jgIoF515iRLUrV2qTiRxgZPSmW0DN/71rsjfDEDV1jiKOvTslPUc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB3842
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10238 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0 mlxscore=0
- phishscore=0 suspectscore=0 spamscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2201260095
-X-Proofpoint-GUID: ttafpjC5hbHG1llFqmHzfgVwTIbN3jJT
-X-Proofpoint-ORIG-GUID: ttafpjC5hbHG1llFqmHzfgVwTIbN3jJT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <38c41c04-abde-4d55-ed7c-515b6bba9c54@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/24/22 2:47 AM, Zhen Lei wrote:
-> From: Chen Zhou <chenzhou10@huawei.com>
+On Sun, Jan 23, 2022 at 01:43:37PM -0600, Samuel Holland wrote:
+> On 1/23/22 7:28 AM, Jisheng Zhang wrote:
+> > Fix warnings on Allwinner D1 platform:
+> > 
+> > [    1.604695] ------------[ cut here ]------------
+> > [    1.609328] bus-emac already disabled
+> > [    1.613015] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:952 clk_core_disable+0xcc/0xec
+> > [    1.621039] CPU: 0 PID: 38 Comm: kworker/u2:1 Not tainted 5.14.0-rc4#1
+> > [    1.627653] Hardware name: Allwinner D1 NeZha (DT)
+> > [    1.632443] Workqueue: events_unbound deferred_probe_work_func
+> > [    1.638286] epc : clk_core_disable+0xcc/0xec
+> > [    1.642561]  ra : clk_core_disable+0xcc/0xec
+> > [    1.646835] epc : ffffffff8023c2ec ra : ffffffff8023c2ec sp : ffffffd00411bb10
+> > [    1.654054]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : ffffffff80ed6a6f
+> > [    1.661272]  t1 : ffffffff80ed6a60 t2 : 0000000000000000 s0 : ffffffe001509e00
+> > [    1.668489]  s1 : 0000000000000001 a0 : 0000000000000019 a1 : ffffffff80e80bd8
+> > [    1.675707]  a2 : 00000000ffffefff a3 : 00000000000000f4 a4 : 0000000000000002
+> > [    1.682924]  a5 : 0000000000000001 a6 : 0000000000000030 a7 : 00000000028f5c29
+> > [    1.690141]  s2 : 0000000000000800 s3 : ffffffe001375000 s4 : ffffffe01fdf7a80
+> > [    1.697358]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
+> > [    1.704577]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
+> > [    1.711794]  s11: ffffffe001b80760 t3 : 0000000000000062 t4 : ffffffffffffffff
+> > [    1.719012]  t5 : ffffffff80e0f6d8 t6 : ffffffd00411b8f0
+> > [    1.724321] status: 8000000201800100 badaddr: 0000000000000000 cause: 0000000000000003
+> > [    1.732233] [<ffffffff8023c2ec>] clk_core_disable+0xcc/0xec
+> > [    1.737810] [<ffffffff80240430>] clk_disable+0x38/0x78
+> > [    1.742956] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+> > [    1.748451] [<ffffffff8031a500>] stmmac_remove_config_dt+0x1c/0x4c
+> > [    1.754646] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
+> > [    1.760484] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+> > [    1.765975] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
+> > [    1.771382] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
+> > [    1.777305] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
+> > [    1.783402] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
+> > [    1.789324] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
+> > [    1.795508] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
+> > [    1.802125] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
+> > [    1.807701] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
+> > [    1.813277] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
+> > [    1.818852] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
+> > [    1.825122] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
+> > [    1.830872] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
+> > [    1.836362] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > [    1.841335] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > [    1.846304] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
+> > [    1.852054] [<ffffffff80026564>] kthread+0x124/0x160
+> > [    1.857021] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
+> > [    1.862770] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
+> > [    1.868956] ---[ end trace 8d5c6046255f84a0 ]---
+> > [    1.873675] ------------[ cut here ]------------
+> > [    1.878366] bus-emac already unprepared
+> > [    1.882378] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:810 clk_core_unprepare+0xe4/0x168
+> > [    1.890673] CPU: 0 PID: 38 Comm: kworker/u2:1 Tainted: G        W	5.14.0-rc4 #1
+> > [    1.898674] Hardware name: Allwinner D1 NeZha (DT)
+> > [    1.903464] Workqueue: events_unbound deferred_probe_work_func
+> > [    1.909305] epc : clk_core_unprepare+0xe4/0x168
+> > [    1.913840]  ra : clk_core_unprepare+0xe4/0x168
+> > [    1.918375] epc : ffffffff8023d6cc ra : ffffffff8023d6cc sp : ffffffd00411bb10
+> > [    1.925593]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : 0000000000000002
+> > [    1.932811]  t1 : ffffffe01f743be0 t2 : 0000000000000040 s0 : ffffffe001509e00
+> > [    1.940029]  s1 : 0000000000000001 a0 : 000000000000001b a1 : ffffffe00143a800
+> > [    1.947246]  a2 : 0000000000000000 a3 : 00000000000000f4 a4 : 0000000000000001
+> > [    1.954463]  a5 : 0000000000000000 a6 : 0000000005fce2a5 a7 : 0000000000000001
+> > [    1.961680]  s2 : 0000000000000800 s3 : ffffffff80afeb90 s4 : ffffffe01fdf7a80
+> > [    1.968898]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
+> > [    1.976115]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
+> > [    1.983333]  s11: ffffffe001b80760 t3 : ffffffff80b39120 t4 : 0000000000000001
+> > [    1.990550]  t5 : 0000000000000000 t6 : ffffffe001600002
+> > [    1.995859] status: 8000000201800120 badaddr: 0000000000000000 cause: 0000000000000003
+> > [    2.003771] [<ffffffff8023d6cc>] clk_core_unprepare+0xe4/0x168
+> > [    2.009609] [<ffffffff802403a0>] clk_unprepare+0x24/0x3c
+> > [    2.014929] [<ffffffff8031a508>] stmmac_remove_config_dt+0x24/0x4c
+> > [    2.021125] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
+> > [    2.026965] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+> > [    2.032463] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
+> > [    2.037871] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
+> > [    2.043795] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
+> > [    2.049892] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
+> > [    2.055815] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
+> > [    2.061999] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
+> > [    2.068616] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
+> > [    2.074193] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
+> > [    2.079769] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
+> > [    2.085345] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
+> > [    2.091616] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
+> > [    2.097367] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
+> > [    2.102858] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > [    2.107830] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > [    2.112800] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
+> > [    2.118551] [<ffffffff80026564>] kthread+0x124/0x160
+> > [    2.123520] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
+> > [    2.129268] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
+> > [    2.135455] ---[ end trace 8d5c6046255f84a1 ]---
+> > 
+> > the dwmmac-sun8i driver will get the "stmmaceth" clk as tx_clk during
+> > driver initialization. If stmmac_dvr_probe() fails due to various
+> > reasons, sun8i_dwmac_exit() will disable and unprepare the "stmmaceth"
+> > clk, then stmmac_remove_config_dt() will disable and unprepare the
+> > clk again.
 > 
-> When reserving crashkernel in high memory, some low memory is reserved
-> for crash dump kernel devices and never mapped by the first kernel.
-> This memory range is advertised to crash dump kernel via DT property
-> under /chosen,
->          linux,usable-memory-range = <BASE1 SIZE1 [BASE2 SIZE2]>
-> 
-> We reused the DT property linux,usable-memory-range and made the low
-> memory region as the second range "BASE2 SIZE2", which keeps compatibility
-> with existing user-space and older kdump kernels.
-> 
-> Crash dump kernel reads this property at boot time and call memblock_add()
-> to add the low memory region after memblock_cap_memory_range() has been
-> called.
-> 
-> Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
-> Co-developed-by: Zhen Lei <thunder.leizhen@huawei.com>
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Tested-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+> This should still be balanced, because both stmmac_probe_config_dt and
+> sun8i_dwmac_init prepare/enable the clock, so the dwmac-sun8i glue layer calls
+> stmmac_dvr_probe with the clock having an enable count of 2. It looks like the
+> underlying issue is that commit 5ec55823438e ("net: stmmac: add clocks
+> management for gmac driver") introduces unbalanced runtime PM.
 
-Acked-by: John Donnelly  <john.p.donnelly@oracle.com>
+I added some printk then retested, the problem is triggered as below:
 
-> ---
->   drivers/of/fdt.c | 33 +++++++++++++++++++++++----------
->   1 file changed, 23 insertions(+), 10 deletions(-)
+stmmac_probe_config_dt() enable the clk
+sun8i_dwmac_init() enble the clk again
+stmmac_dvr_probe() succeed, but it calls pm_runtime_put(), so rpm will
+disable the clk
+sun8i_dwmac_reset() fails due to various reason
+sun8i_dwmac_exit() disable the clk, this is fine
+stmmac_remove_config_dt() disable the clk again, so ccf complains.
+
+The key here is: whether we should let stmmac_dvr_probe() calls
+pm_runtime_put() or let stmmac users to determine whether we could
+let rpm go?
+If we keep current behavior: stmmac users need to take care
+the code after stmmac_dvr_probe, including error handling code path,
+if we touch access registers, we need to call pm_runtime_get_sync()
+firstly.
+
+Since the commit 5ec55823438e has been in for a long time, I'll submit
+a patch to follow this way.
+
+Thanks
+>  - stmmac_dvr_probe calls pm_runtime_get_noresume and pm_runtime_set_active,
+> since it assumes the clocks are already enabled. This is fine.
+>  - If stmmac_dvr_probe fails, it calls stmmac_bus_clks_config(priv, false),
+> which drops the enable count down to 1. This is a bug, not just in this case,
+> but also because it will unbalance the clocks if runtime PM is disabled.
+>  - If stmmac_dvr_probe fails, it never calls pm_runtime_disable if the failure
+> occurs after the call to pm_runtime_enable. This is also a bug.
 > 
-> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> index ad85ff6474ff139..df4b9d2418a13d4 100644
-> --- a/drivers/of/fdt.c
-> +++ b/drivers/of/fdt.c
-> @@ -973,16 +973,24 @@ static void __init early_init_dt_check_for_elfcorehdr(unsigned long node)
->   
->   static unsigned long chosen_node_offset = -FDT_ERR_NOTFOUND;
->   
-> +/*
-> + * The main usage of linux,usable-memory-range is for crash dump kernel.
-> + * Originally, the number of usable-memory regions is one. Now there may
-> + * be two regions, low region and high region.
-> + * To make compatibility with existing user-space and older kdump, the low
-> + * region is always the last range of linux,usable-memory-range if exist.
-> + */
-> +#define MAX_USABLE_RANGES		2
-> +
->   /**
->    * early_init_dt_check_for_usable_mem_range - Decode usable memory range
->    * location from flat tree
->    */
->   void __init early_init_dt_check_for_usable_mem_range(void)
->   {
-> -	const __be32 *prop;
-> -	int len;
-> -	phys_addr_t cap_mem_addr;
-> -	phys_addr_t cap_mem_size;
-> +	struct memblock_region rgn[MAX_USABLE_RANGES] = {0};
-> +	const __be32 *prop, *endp;
-> +	int len, i;
->   	unsigned long node = chosen_node_offset;
->   
->   	if ((long)node < 0)
-> @@ -991,16 +999,21 @@ void __init early_init_dt_check_for_usable_mem_range(void)
->   	pr_debug("Looking for usable-memory-range property... ");
->   
->   	prop = of_get_flat_dt_prop(node, "linux,usable-memory-range", &len);
-> -	if (!prop || (len < (dt_root_addr_cells + dt_root_size_cells)))
-> +	if (!prop || (len % (dt_root_addr_cells + dt_root_size_cells)))
->   		return;
->   
-> -	cap_mem_addr = dt_mem_next_cell(dt_root_addr_cells, &prop);
-> -	cap_mem_size = dt_mem_next_cell(dt_root_size_cells, &prop);
-> +	endp = prop + (len / sizeof(__be32));
-> +	for (i = 0; i < MAX_USABLE_RANGES && prop < endp; i++) {
-> +		rgn[i].base = dt_mem_next_cell(dt_root_addr_cells, &prop);
-> +		rgn[i].size = dt_mem_next_cell(dt_root_size_cells, &prop);
->   
-> -	pr_debug("cap_mem_start=%pa cap_mem_size=%pa\n", &cap_mem_addr,
-> -		 &cap_mem_size);
-> +		pr_debug("cap_mem_regions[%d]: base=%pa, size=%pa\n",
-> +			 i, &rgn[i].base, &rgn[i].size);
-> +	}
->   
-> -	memblock_cap_memory_range(cap_mem_addr, cap_mem_size);
-> +	memblock_cap_memory_range(rgn[0].base, rgn[0].size);
-> +	for (i = 1; i < MAX_USABLE_RANGES && rgn[i].size; i++)
-> +		memblock_add(rgn[i].base, rgn[i].size);
->   }
->   
->   #ifdef CONFIG_SERIAL_EARLYCON
-
+> It looks like at some point stmmac_dvr_remove was expected to leave all of the
+> clocks disabled, but it must leave them enabled as of commit 8f269102baf7 ("net:
+> stmmac: disable clocks in stmmac_remove_config_dt()"), since
+> stmmac_remove_config_dt is called after stmmac_dvr_remove in stmmac_pltfr_remove.
+>  - If stmmac_dvr_probe succeeds, it calls pm_runtime_put. This allows runtime PM
+> to suspend the device, dropping the clock enable count to 1. This is fine.
+>  - But then stmmac_dvr_remove calls pm_runtime_put as well. It needs to do the
+> opposite. It must ensure the device is runtime resumed, so the clock enable
+> count matches what it was before stmmac_dvr_probe was called (in this case: 2).
+> 
+> > Currently, there's no other usage of tx_clk except preparing and
+> > enabling, we can fix the above warnings by simply removing the tx_clk
+> > and all its usage, we rely on the common stmmac_probe_config_dt()
+> > routine to prepare and enable the stmmaceth clk.
+> 
+> This is a good change to make, as indeed this code is now unnecessary, and
+> removing it will allow runtime PM to actually disable the clock. But I am not
+> sure how this resolves the warnings you are seeing, as the sun8i_dwmac_init/exit
+> calls should have been balanced already.
+> 
+> Can you check if the PHY regulator is also getting unbalanced? Unbalanced calls
+> to sun8i_dwmac_exit would also underflow the regulator use count, which should
+> trigger its own warning.
+> 
+> Regards,
+> Samuel
+> 
+> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> > ---
+> >  .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 20 +------------------
+> >  1 file changed, 1 insertion(+), 19 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> > index 617d0e4c6495..d97469825e53 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> > @@ -57,7 +57,6 @@ struct emac_variant {
+> >  };
+> >  
+> >  /* struct sunxi_priv_data - hold all sunxi private data
+> > - * @tx_clk:	reference to MAC TX clock
+> >   * @ephy_clk:	reference to the optional EPHY clock for the internal PHY
+> >   * @regulator:	reference to the optional regulator
+> >   * @rst_ephy:	reference to the optional EPHY reset for the internal PHY
+> > @@ -68,7 +67,6 @@ struct emac_variant {
+> >   * @mux_handle:	Internal pointer used by mdio-mux lib
+> >   */
+> >  struct sunxi_priv_data {
+> > -	struct clk *tx_clk;
+> >  	struct clk *ephy_clk;
+> >  	struct regulator *regulator;
+> >  	struct reset_control *rst_ephy;
+> > @@ -579,22 +577,14 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
+> >  		}
+> >  	}
+> >  
+> > -	ret = clk_prepare_enable(gmac->tx_clk);
+> > -	if (ret) {
+> > -		dev_err(&pdev->dev, "Could not enable AHB clock\n");
+> > -		goto err_disable_regulator;
+> > -	}
+> > -
+> >  	if (gmac->use_internal_phy) {
+> >  		ret = sun8i_dwmac_power_internal_phy(netdev_priv(ndev));
+> >  		if (ret)
+> > -			goto err_disable_clk;
+> > +			goto err_disable_regulator;
+> >  	}
+> >  
+> >  	return 0;
+> >  
+> > -err_disable_clk:
+> > -	clk_disable_unprepare(gmac->tx_clk);
+> >  err_disable_regulator:
+> >  	if (gmac->regulator)
+> >  		regulator_disable(gmac->regulator);
+> > @@ -1043,8 +1033,6 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
+> >  	if (gmac->variant->soc_has_internal_phy)
+> >  		sun8i_dwmac_unpower_internal_phy(gmac);
+> >  
+> > -	clk_disable_unprepare(gmac->tx_clk);
+> > -
+> >  	if (gmac->regulator)
+> >  		regulator_disable(gmac->regulator);
+> >  }
+> > @@ -1167,12 +1155,6 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+> >  		return -EINVAL;
+> >  	}
+> >  
+> > -	gmac->tx_clk = devm_clk_get(dev, "stmmaceth");
+> > -	if (IS_ERR(gmac->tx_clk)) {
+> > -		dev_err(dev, "Could not get TX clock\n");
+> > -		return PTR_ERR(gmac->tx_clk);
+> > -	}
+> > -
+> >  	/* Optional regulator for PHY */
+> >  	gmac->regulator = devm_regulator_get_optional(dev, "phy");
+> >  	if (IS_ERR(gmac->regulator)) {
+> > 
+> 
