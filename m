@@ -2,158 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA54C5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B80C5DF62
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240733AbiAZL37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:29:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233661AbiAZL35 (ORCPT
+        id S240738AbiAZLbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:31:45 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:33176 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230384AbiAZLbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:29:57 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE68C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:29:57 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id e17so7790673ljk.5
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:29:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1H4TX89ja5S3N5cue2AVcwFf2OWJSThV+YouY9Q38K8=;
-        b=r80jr47FEo4Z/0ygMN7drqnf+UdyJMPl8SG3HAeDzUrdKD6dy1wfBMnugdWaTWwmmJ
-         u3TWqlpKcFeKKGb3XnRrmUbay5NY8DNLkTgdslIR+h116lrvcHr6DJ6+nZfrR0VUU96X
-         fz6wl0ekX6P80ym6TB81BE0gLMNLB4Mquly+KZGGRfYRaYLND74O1YowypO9AyQwgP83
-         mVjiyWGJdkeCZzFnR2O6tPaCQxccJzh1rajWdeg3wO53kZ1H+dWP0Hp/acWhlZDQN1Zs
-         oXULKG/Rd5hCnYSSODH4hK0IjzYxCQAsO0Emo4siMdAEG4Wz1WB90ZH0HQTmTWnGSxMY
-         5IyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1H4TX89ja5S3N5cue2AVcwFf2OWJSThV+YouY9Q38K8=;
-        b=5GorPPrI4bSP4Y2U1aQYFVXRwOn4Z4q4sfmaDWl0qLMzBYKu3nKqOqOgR5U9yM8C/J
-         qrOyc+7s8F7PZhklsl+wwqM2AdqBDDi+7W/WcAxE/6ZClrnYBXPds5G3uNjyVmpEkZ5h
-         SXTJOIbtGwUDWGP1e2HZ3r8yvhQaJvMTr9jhj/Dx3RijPEEgUGCGxYvdUtgH/aEus/oO
-         uYOGTE4KX7LjuRt3l8ptg4zfpjiOcc52dVUNi/JYt0a3x4IF3Ai/xAhKWLH9xNFedaJp
-         ymMponmwEIer2Ak9IBPRsed3Aph0LhSMJolKYaTezd8txTJU4VQD44+ojqWXlRi94wOA
-         6nPw==
-X-Gm-Message-State: AOAM533DUwodyDzd1VnEkI9c5Ykdwajw77oAa3erAsZdJOH98wyTNiG7
-        Iz3MHOXRw+/GZcoBGi36ow1l7DGg6qAqyqufIxoqlQ==
-X-Google-Smtp-Source: ABdhPJxjkndNpVASW0t22x5z1Tbj0oqh/6XRERVOQiF6tUtRYGL1mJ1ymX2XrixkxLew4L+OQ+i3arF061hRndVK2oI=
-X-Received: by 2002:a2e:9d8b:: with SMTP id c11mr10212542ljj.47.1643196595278;
- Wed, 26 Jan 2022 03:29:55 -0800 (PST)
+        Wed, 26 Jan 2022 06:31:43 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id DB3B81F397;
+        Wed, 26 Jan 2022 11:31:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643196701; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8ZQ1UFjCevFb0oD3n1b1lyFJPNiNbvmW/0bM6sT4KUg=;
+        b=IB+3QwaiisJzQfr1Ppsx4IcB6rIKr1GMzBNIWOcLvkIQ+Xreay4wmiFnBCK5uz1guANDw9
+        J32q2xvJPNz8RkrMIYOc3ED2iXQ0T+7hlUXNb3q68liVRoh3fW8bWpkUgcvL+p4aFsuNDl
+        43XQVgso/ca1l3M50+tEQ5tMHCPSOqo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643196701;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8ZQ1UFjCevFb0oD3n1b1lyFJPNiNbvmW/0bM6sT4KUg=;
+        b=eMcBQHxH451xz2rg/zhHS7uJNbPuap1OKe8L9wOKS1vLcuRg2VNWHSzesymEJlmsaisvb5
+        K5Ft+gGGoMWSJYAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8E3E213BA2;
+        Wed, 26 Jan 2022 11:31:41 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id GRCiIR0x8WHsEwAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Wed, 26 Jan 2022 11:31:41 +0000
+Message-ID: <ebb9b4f4-32cd-c8a4-ed2d-e94b4759a984@suse.de>
+Date:   Wed, 26 Jan 2022 12:31:40 +0100
 MIME-Version: 1.0
-References: <20220120202805.3369-1-shy828301@gmail.com> <af603cbe-4a38-9947-5e6d-9a9328b473fb@redhat.com>
-In-Reply-To: <af603cbe-4a38-9947-5e6d-9a9328b473fb@redhat.com>
-From:   Jann Horn <jannh@google.com>
-Date:   Wed, 26 Jan 2022 12:29:27 +0100
-Message-ID: <CAG48ez1xuZdELb=5ed1i0ruoFu5kAaWsf0LgRXEGhrDAcHz8fw@mail.gmail.com>
-Subject: Re: [v2 PATCH] fs/proc: task_mmu.c: don't read mapcount for migration entry
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Yang Shi <shy828301@gmail.com>, kirill.shutemov@linux.intel.com,
-        willy@infradead.org, akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 1/4] fbtft: Unorphan the driver
+Content-Language: en-US
+To:     Helge Deller <deller@gmx.de>, Daniel Vetter <daniel@ffwll.ch>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Carlis <zhangxuezhi1@yulong.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
+ <20220125202118.63362-2-andriy.shevchenko@linux.intel.com>
+ <YfEG2qVO9K9G+g1d@kroah.com>
+ <CAKMK7uGoRC9a4cMCADTipV67oivfWvTw=6RYm2kOthB_bhWnXQ@mail.gmail.com>
+ <f671a112-880d-1526-a395-360947b40c5a@gmx.de>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <f671a112-880d-1526-a395-360947b40c5a@gmx.de>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------UpuzuH0MqO0ygaSx5SNNSl9y"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 11:51 AM David Hildenbrand <david@redhat.com> wrote:
-> On 20.01.22 21:28, Yang Shi wrote:
-> > The syzbot reported the below BUG:
-> >
-> > kernel BUG at include/linux/page-flags.h:785!
-> > invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> > CPU: 1 PID: 4392 Comm: syz-executor560 Not tainted 5.16.0-rc6-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > RIP: 0010:PageDoubleMap include/linux/page-flags.h:785 [inline]
-> > RIP: 0010:__page_mapcount+0x2d2/0x350 mm/util.c:744
-> > Code: e8 d3 16 d1 ff 48 c7 c6 c0 00 b6 89 48 89 ef e8 94 4e 04 00 0f 0b e8 bd 16 d1 ff 48 c7 c6 60 01 b6 89 48 89 ef e8 7e 4e 04 00 <0f> 0b e8 a7 16 d1 ff 48 c7 c6 a0 01 b6 89 4c 89 f7 e8 68 4e 04 00
-> > RSP: 0018:ffffc90002b6f7b8 EFLAGS: 00010293
-> > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> > RDX: ffff888019619d00 RSI: ffffffff81a68c12 RDI: 0000000000000003
-> > RBP: ffffea0001bdc2c0 R08: 0000000000000029 R09: 00000000ffffffff
-> > R10: ffffffff8903e29f R11: 00000000ffffffff R12: 00000000ffffffff
-> > R13: 00000000ffffea00 R14: ffffc90002b6fb30 R15: ffffea0001bd8001
-> > FS:  00007faa2aefd700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00007fff7e663318 CR3: 0000000018c6e000 CR4: 00000000003506e0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > Call Trace:
-> >  <TASK>
-> >  page_mapcount include/linux/mm.h:837 [inline]
-> >  smaps_account+0x470/0xb10 fs/proc/task_mmu.c:466
-> >  smaps_pte_entry fs/proc/task_mmu.c:538 [inline]
-> >  smaps_pte_range+0x611/0x1250 fs/proc/task_mmu.c:601
-> >  walk_pmd_range mm/pagewalk.c:128 [inline]
-> >  walk_pud_range mm/pagewalk.c:205 [inline]
-> >  walk_p4d_range mm/pagewalk.c:240 [inline]
-> >  walk_pgd_range mm/pagewalk.c:277 [inline]
-> >  __walk_page_range+0xe23/0x1ea0 mm/pagewalk.c:379
-> >  walk_page_vma+0x277/0x350 mm/pagewalk.c:530
-> >  smap_gather_stats.part.0+0x148/0x260 fs/proc/task_mmu.c:768
-> >  smap_gather_stats fs/proc/task_mmu.c:741 [inline]
-> >  show_smap+0xc6/0x440 fs/proc/task_mmu.c:822
-> >  seq_read_iter+0xbb0/0x1240 fs/seq_file.c:272
-> >  seq_read+0x3e0/0x5b0 fs/seq_file.c:162
-> >  vfs_read+0x1b5/0x600 fs/read_write.c:479
-> >  ksys_read+0x12d/0x250 fs/read_write.c:619
-> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > RIP: 0033:0x7faa2af6c969
-> > Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> > RSP: 002b:00007faa2aefd288 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-> > RAX: ffffffffffffffda RBX: 00007faa2aff4418 RCX: 00007faa2af6c969
-> > RDX: 0000000000002025 RSI: 0000000020000100 RDI: 0000000000000003
-> > RBP: 00007faa2aff4410 R08: 00007faa2aefd700 R09: 0000000000000000
-> > R10: 00007faa2aefd700 R11: 0000000000000246 R12: 00007faa2afc20ac
-> > R13: 00007fff7e6632bf R14: 00007faa2aefd400 R15: 0000000000022000
-> >  </TASK>
-> > Modules linked in:
-> > ---[ end trace 24ec93ff95e4ac3d ]---
-> > RIP: 0010:PageDoubleMap include/linux/page-flags.h:785 [inline]
-> > RIP: 0010:__page_mapcount+0x2d2/0x350 mm/util.c:744
-> > Code: e8 d3 16 d1 ff 48 c7 c6 c0 00 b6 89 48 89 ef e8 94 4e 04 00 0f 0b e8 bd 16 d1 ff 48 c7 c6 60 01 b6 89 48 89 ef e8 7e 4e 04 00 <0f> 0b e8 a7 16 d1 ff 48 c7 c6 a0 01 b6 89 4c 89 f7 e8 68 4e 04 00
-> > RSP: 0018:ffffc90002b6f7b8 EFLAGS: 00010293
-> > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> > RDX: ffff888019619d00 RSI: ffffffff81a68c12 RDI: 0000000000000003
-> > RBP: ffffea0001bdc2c0 R08: 0000000000000029 R09: 00000000ffffffff
-> > R10: ffffffff8903e29f R11: 00000000ffffffff R12: 00000000ffffffff
-> > R13: 00000000ffffea00 R14: ffffc90002b6fb30 R15: ffffea0001bd8001
-> > FS:  00007faa2aefd700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00007fff7e663318 CR3: 0000000018c6e000 CR4: 00000000003506e0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> >
->
-> Does this point at the bigger issue that reading the mapcount without
-> having the page locked is completely unstable?
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------UpuzuH0MqO0ygaSx5SNNSl9y
+Content-Type: multipart/mixed; boundary="------------dlfExxp6uaAJi3utM946Zklv";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Helge Deller <deller@gmx.de>, Daniel Vetter <daniel@ffwll.ch>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
+ Michael Hennerich <michael.hennerich@analog.com>,
+ linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, Phillip Potter <phil@philpotter.co.uk>,
+ Carlis <zhangxuezhi1@yulong.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Lee Jones <lee.jones@linaro.org>, Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <ebb9b4f4-32cd-c8a4-ed2d-e94b4759a984@suse.de>
+Subject: Re: [PATCH v1 1/4] fbtft: Unorphan the driver
+References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
+ <20220125202118.63362-2-andriy.shevchenko@linux.intel.com>
+ <YfEG2qVO9K9G+g1d@kroah.com>
+ <CAKMK7uGoRC9a4cMCADTipV67oivfWvTw=6RYm2kOthB_bhWnXQ@mail.gmail.com>
+ <f671a112-880d-1526-a395-360947b40c5a@gmx.de>
+In-Reply-To: <f671a112-880d-1526-a395-360947b40c5a@gmx.de>
 
-(See also https://lore.kernel.org/all/CAG48ez0M=iwJu=Q8yUQHD-+eZDg6ZF8QCF86Sb=CN1petP=Y0Q@mail.gmail.com/
-for context.)
+--------------dlfExxp6uaAJi3utM946Zklv
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-I'm not sure what you mean by "unstable". Do you mean "the result is
-not guaranteed to still be valid when the call returns", "the result
-might not have ever been valid", or "the call might crash because the
-page's state as a compound page is unstable"?
+SGkNCg0KQW0gMjYuMDEuMjIgdW0gMTI6MTcgc2NocmllYiBIZWxnZSBEZWxsZXI6DQo+IE9u
+IDEvMjYvMjIgMTE6MzEsIERhbmllbCBWZXR0ZXIgd3JvdGU6DQo+PiBPbiBXZWQsIEphbiAy
+NiwgMjAyMiBhdCA5OjMxIEFNIEdyZWcgS3JvYWgtSGFydG1hbg0KPj4gPGdyZWdraEBsaW51
+eGZvdW5kYXRpb24ub3JnPiB3cm90ZToNCj4+Pg0KPj4+IE9uIFR1ZSwgSmFuIDI1LCAyMDIy
+IGF0IDEwOjIxOjE0UE0gKzAyMDAsIEFuZHkgU2hldmNoZW5rbyB3cm90ZToNCj4+Pj4gTGV0
+J3MgbWFpbnRhaW4gb2NjYXNpb25hbCBmaXhlcyB0byB0aGUgZmJ0ZnQgZHJpdmVyLg0KPj4+
+Pg0KPj4+PiBTaWduZWQtb2ZmLWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHJpeS5zaGV2Y2hl
+bmtvQGxpbnV4LmludGVsLmNvbT4NCj4+Pj4gLS0tDQo+Pj4+ICAgTUFJTlRBSU5FUlMgfCA0
+ICsrKy0NCj4+Pj4gICAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAxIGRlbGV0
+aW9uKC0pDQo+Pj4+DQo+Pj4+IGRpZmYgLS1naXQgYS9NQUlOVEFJTkVSUyBiL01BSU5UQUlO
+RVJTDQo+Pj4+IGluZGV4IGVhM2U2YzkxNDM4NC4uMTZlNjE0NjA2YWMxIDEwMDY0NA0KPj4+
+PiAtLS0gYS9NQUlOVEFJTkVSUw0KPj4+PiArKysgYi9NQUlOVEFJTkVSUw0KPj4+PiBAQCAt
+NzM3Miw5ICs3MzcyLDExIEBAIEY6ICAgICBEb2N1bWVudGF0aW9uL2ZhdWx0LWluamVjdGlv
+bi8NCj4+Pj4gICBGOiAgIGxpYi9mYXVsdC1pbmplY3QuYw0KPj4+Pg0KPj4+PiAgIEZCVEZU
+IEZyYW1lYnVmZmVyIGRyaXZlcnMNCj4+Pj4gK006ICAgQW5keSBTaGV2Y2hlbmtvIDxhbmR5
+QGtlcm5lbC5vcmc+DQo+Pj4+ICAgTDogICBkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Au
+b3JnDQo+Pj4+ICAgTDogICBsaW51eC1mYmRldkB2Z2VyLmtlcm5lbC5vcmcNCj4+Pj4gLVM6
+ICAgT3JwaGFuDQo+Pj4+ICtTOiAgIE1haW50YWluZWQNCj4+Pj4gK1Q6ICAgZ2l0IGdpdDov
+L2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9hbmR5L2xpbnV4LWZi
+dGZ0LmdpdA0KPj4+DQo+Pj4gSSdtIG9rIHdpdGggdGhlIGZpbGVzIG1vdmluZyBpZiB0aGUg
+ZHJpIGRldmVsb3BlcnMgYWdyZWUgd2l0aCBpdC4gIEl0J3MNCj4+PiB1cCB0byB0aGVtLCBu
+b3QgbWUuDQo+Pg0KPj4gT24gb25lIGhhbmQgSSdtIGhhcHB5IGFueXRpbWUgc29tZW9uZSB2
+b2x1bnRlZXJzIHRvIGhlbHAgb3V0Lg0KPj4NCj4+IE9uIHRoZSBvdGhlciBoYW5kIC4uLiB3
+aHkgZG9lcyBpdCBoYXZlIHRvIGJlIHJlc3VycmVjdGluZyBmYmRldj8NCj4+IFRoZXJlJ3Mg
+YW4gZW50aXJlIGNvbW11bml0eSBvZiBwZW9wbGUgd2hvIHJlYWxseSBrbm93IGdyYXBoaWNz
+IGFuZA0KPj4gZGlzcGxheSBhbmQgc3BlbnQgY29uc2lkZXJhYmxlIGFtb3VudCBvZiBlZmZv
+cnQgb24gY3JlYXRpbmcgdXNlZnVsIGFuZA0KPj4gZG9jdW1lbnRlZCBoZWxwZXJzIGZvciBw
+cmV0dHkgbXVjaCBhbnl0aGluZyB5b3UgbWlnaHQgZXZlciB3YW50IHRvIGRvLg0KPj4gQW5k
+IHNvbWVob3cgd2UgaGF2ZSB0byBnbyBiYWNrIHRvIHR5cGluZyBvdXQgdGhpbmdzIHRoZSBo
+YXJkIHdheSwgd2l0aA0KPj4gZnVsbCB2ZXJib3NpdHksIGZvciBhbiB1YXBpIHRoYXQgZGlz
+dHJvcyBhcmUgYWJhbmRvbmluZyAoZS5nLiBldmVuIGZvcg0KPj4gc2RsIHRoZSBkaXJlY3Rp
+b24gaXMgdG8gcnVuIGl0IG9uIHRvcCBvZiBkcm0gd2l0aCBhIGNvbXBhdCBsYXllciwNCj4+
+IGFmYWl1aSBmZWRvcmEgaXMgY29tcGxldGVseSBkaXRjaGluZyBhbnkgdXNlcnNwYWNlIHRo
+YXQgc3RpbGwgZXZlbg0KPj4gdXNlcyAvZGV2L2ZiLzApLiBBbmQgeWVzIEkga25vdyB0aGVy
+ZSdzIHN0aWxsIHNvbWUgZ2FwcyBpbiBkcm0sDQo+PiBsYXJnZWx5IGZvciBkaXNwbGF5IGZl
+YXR1cmVzIHdoaWNoIHdlcmUgcmVhbGx5IGVuIHZvZ3VlIGFib3V0IDIwIHllYXJzDQo+PiBh
+Z28uIEFuZCB3ZSdyZSBoYXBweSB0byBhZGQgdGhhdCBzdXBwb3J0LCBpZiBzb21lb25lIHdo
+byBzdGlsbCBoYXMNCj4+IHN1Y2ggaGFyZHdhcmUgY2FuIHB1dCBpbiB0aGUgbGl0dGxlIGJp
+dCBvZiB3b3JrIG5lZWRlZCAuLi4NCj4+DQo+PiBJIGRvbid0IGdldCB0aGlzLg0KPiANCj4g
+WW91IGFyZSBkZXNjcmliaW5nIGEgdHJhbnNpdGlvbmluZyBvdmVyIHRvIERSTSAtIHdoaWNo
+IGlzIE9rLg0KPiBCdXQgb24gdGhhdCB3YXkgdGhlcmUgaXMgbm8gbmVlZCB0byBpZ25vcmUs
+IGRlbnkgb3IgZXZlbiBraWxsIHVzYWdlIHNjZW5hcmlvcw0KPiB3aGljaCBhcmUgZGlmZmVy
+ZW50IGNvbXBhcmVkIHRvIHlvdXIgdXNhZ2Ugc2NlbmFyaW9zIChlLmcuIGVtYmVkZGVkIGRl
+dmljZXMsDQo+IG9sZCBwbGF0Zm9ybXMsIHNsb3cgZGV2aWNlcywgc2xvdyBidXNzZXMsIG5v
+IDNEIGhhcmR3YXJlIGZlYXR1cmVzLA0KPiBsb3ctY29sb3IgZGV2aWNlcywgLi4uKS4NCg0K
+QW5kIG5vbmUgb2YgdGhvc2UgZXhhbXBsZXMgaXMgb3V0LXJ1bGVkIGJ5IERSTS4gSW4gZmFj
+dCB3ZSBkbyBzdXBwb3J0IA0KZGV2aWNlcyB0aGF0IGZhbGwgaW4gdGhvc2UgY2F0ZWdvcmll
+cy4NCg0KVGhpcyBpcyBsYXN0IHdlZWsncyBkaXNjdXNzaW9uIGFsbCBvdmVyIGFnYWluLg0K
+DQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQo+IA0KPiBIZWxnZQ0KDQotLSANClRob21hcyBa
+aW1tZXJtYW5uDQpHcmFwaGljcyBEcml2ZXIgRGV2ZWxvcGVyDQpTVVNFIFNvZnR3YXJlIFNv
+bHV0aW9ucyBHZXJtYW55IEdtYkgNCk1heGZlbGRzdHIuIDUsIDkwNDA5IE7DvHJuYmVyZywg
+R2VybWFueQ0KKEhSQiAzNjgwOSwgQUcgTsO8cm5iZXJnKQ0KR2VzY2jDpGZ0c2bDvGhyZXI6
+IEl2byBUb3Rldg0K
 
-In case you mean "the result is not guaranteed to still be valid when
-the call returns":
-We're just collecting stats for userspace, and by the time we return
-to userspace, the numbers will be outdated anyway, so that doesn't
-matter.
+--------------dlfExxp6uaAJi3utM946Zklv--
 
-In case you mean "the result might not have ever been valid":
-Yes, even with this patch applied, in theory concurrent THP splits
-could cause us to count some page mappings twice. Arguably that's not
-entirely correct.
+--------------UpuzuH0MqO0ygaSx5SNNSl9y
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-In case you mean "the call might crash because the page's state as a
-compound page could concurrently change":
-As long as we have our own mapping of the page, the page can't be
-split, so this patch fixes that problem.
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmHxMR0FAwAAAAAACgkQlh/E3EQov+BR
+Pg/9Grj31Vj0bM7meomljxyTuAaZNv7NpFGQQ8XOTHfQpefillv50tcyCVAqIInA+xqkT+QBr81C
+9PY73vxL/JXfZqTbFNVjD7Ty3TijNorYHfSF7DnZwLI5KYga9uKddZo7D/OnIfz3XA7fZYRKk3Pb
+U0goa7mXHXwaPjvRVTq8/b9Ox/ZxQ2O3cdO/bLjb4rgkqiN5ovbBP2whD4v8AjUaeaJdXaZVoK4y
+3AvV0pScfuNHRp2vfa2WDxnLoHz6JzrQr9MHYJaPE7LLPpcvZcVxorBlDjYQw8j4Oc4rL1Bpdel1
+kW5+wTHcgaEZVbMLjL+OvwYLxYRVcCZLPjuUtV54bCNvPPyayQJW0oe/lESQzr+Ex8esLPbRMtZr
+ASNR4geyOfqDuLgAZJXv676jdlpzrI8RS+JOzOwfXcMKcawaQtNq1CaGSH/uSmRWEgHtsIDNrpJ9
+9abMMxdOua5G+dXrm4bPgWze40x8GS3WcP8/uv15IPRcZL7GVM4YKNkqJb1kD6sFnvP1VMNAHpHM
+N53TWw2J55d86QABEqxngqVhhk1nJeuFX3oirFyMjcPEksAOrv6FrmBJ5xwXM2A/wvRqmHViNOs/
+hiFiNSrV9KFRheKJlZS6NFHycYVXpr5JtDb80G/pBM44S7F3u/gy7froyINhMsGSeea7x7EQ82s4
+fRc=
+=myeE
+-----END PGP SIGNATURE-----
+
+--------------UpuzuH0MqO0ygaSx5SNNSl9y--
