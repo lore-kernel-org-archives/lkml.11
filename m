@@ -2,115 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DC3C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C969C63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:30:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239148AbiAZJ1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:27:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239117AbiAZJ1u (ORCPT
+        id S239167AbiAZJaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:30:16 -0500
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:40161 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231742AbiAZJaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:27:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5D1C06161C;
-        Wed, 26 Jan 2022 01:27:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9250B81C25;
-        Wed, 26 Jan 2022 09:27:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D99C340E3;
-        Wed, 26 Jan 2022 09:27:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643189267;
-        bh=vhq9IzfZY0Kkx/iKL/tX8aAEwobUSIlwyapbLm1SG0c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u6aW7MD6w+srRDr2esmBrnP+5wgDjCkAElIkKryBN6VkGdyagIqHWsVDi8TghiJnl
-         LyAmq1M0bueEVSPpk7iU49oakTEfv2kWppLeOc3loLvMi8ZVJdPiFNO92LIN5H+1oq
-         zc4JDaHdpMdxMLJTnZdokPj7NY7TUiLzKLic8LIOXh9vaIrkq0AHwC/uGuUfDksPeP
-         DjkxGzYwPwx+L3ppbJiEwY+TNYSKoAV/Y66Na+EGkneAUCqDQ1Kdd8FMo5DSVhqYwU
-         403Ho+S1GaU4hQnsatw9WBphT6xR6nhmn2QR+xtR7iGaU5Eq+P4rzQe377L4Ru5SWH
-         Ew9n3rsZZt0gA==
-Date:   Wed, 26 Jan 2022 17:27:42 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Andrej Picej <andrej.picej@norik.com>
-Cc:     robh+dt@kernel.org, s.hauer@pengutronix.de,
-        devicetree@vger.kernel.org, festevam@gmail.com,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        y.bas@phytec.com
-Subject: Re: [PATCH RESEND 2/2] ARM: dts: imx6qdl: Handle unneeded
- MFD-subdevices correctly
-Message-ID: <20220126092741.GK4686@dragon>
-References: <20211216115529.2331475-1-andrej.picej@norik.com>
- <20211216115529.2331475-2-andrej.picej@norik.com>
+        Wed, 26 Jan 2022 04:30:13 -0500
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id EEF6058044A;
+        Wed, 26 Jan 2022 04:30:12 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Wed, 26 Jan 2022 04:30:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=zmX5h2jV3EHx3yzNE12hU7F6WuB4iwZH2e1xCG
+        J9lzs=; b=XzCwmHYomZaj4oeGGDLIa5U9L4jNa4gHNnQze5oUFWo4p1T6gZoRBv
+        f0GTimCbIcNENLLJrWnzEhKr2q0tlR9XlXG/+vBA+mlvpKKPgqJ5FELbWuxM8L9p
+        7OG+mNvk34ScZ4RvGWzpXoOPWBDvd/0r6hOiCZjRGFycvLdxxvkO3NBEr122w/tk
+        I9hPL392fiPRPl0BCfwMi3CJy4iKyxn0ryyvOgLw0MzJGwEEjqpiXviEExKBuuaZ
+        oh7soEv74bhGF/H0+OJh6eVHmsmLQ/UPMChXra+6YKyf3RPq57uSg0Wnha6y1HiB
+        Mfb2I4YPyJouL390ZgV/j5SKhgovc2oA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=zmX5h2jV3EHx3yzNE
+        12hU7F6WuB4iwZH2e1xCGJ9lzs=; b=PG8tgOisD2oLuFl/GOdEAQv9cSlxtsGbn
+        qsy3UyDqykILHXZsMmBGTsSH7Y9SOsdYUjm1k2fITRdZ3l34QZjYTZ6y5WwbBGO9
+        2ot5b46otnvVGFvGJWXScvAh1Q6IZkzz93wl/pDJgwDkWZYfyWiCFUTw3tSLGrPO
+        GfgGYEBanxwZ/PnPpWkzFL5P691cWJcDJd/Fj3gTKrwAK9VukU0fbouwWUxb4y9d
+        IJ6kCpxX7ObSDXN4dfprBNhiWRfpGJWJGiqsyinaPXzw/7EPcD3wTGS+QGvxTQtx
+        x9+QCBxEfbvapaRuvMYVI2UmFp9x3vSEBEpUWOy8kC+QUE4cGG8nA==
+X-ME-Sender: <xms:oxTxYRzZwawrAUjoPg_qIwd37LDc53-NANfS3zcqqW3seesLcbCwlg>
+    <xme:oxTxYRS1Xm2WdQifiJJa-_2ac_YNz76T6spL4NwOUi4DWfBGCX9y-JyIi8uEynwsD
+    dBvFKIDDYITvg>
+X-ME-Received: <xmr:oxTxYbVp0-URbNATHgMFwMz10bTCN1BcoKsxUhzTu1-rEEjLcf9LrfUxMU6tyDj4rzJznSJiEuf6_Za0a7_J2v4Ov_6a7vYh>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrfedugddtgecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttdertd
+    dttddvnecuhfhrohhmpefirhgvghcumffjuceoghhrvghgsehkrhhorghhrdgtohhmqeen
+    ucggtffrrghtthgvrhhnpeevueehjefgfffgiedvudekvdektdelleelgefhleejieeuge
+    egveeuuddukedvteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhl
+    fhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:oxTxYTgMvHlsz3Nna5o3Te1JC5vmOWlXnVny60ws5sKN2NXhhjEfUA>
+    <xmx:oxTxYTBI79cBfAaK14fD4YI_KEblxua0qBwKgIrqoytGCiTgauiw6Q>
+    <xmx:oxTxYcJ445hJ8Kw2ejgG0O9xae5rYybhJUwiUvl2z0iYuTOF0U9l1A>
+    <xmx:pBTxYUtBQqC4XDTe8D-dzXYEdzEW1SCGwRTJT3lCr_bGo4Qu05lRkg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 26 Jan 2022 04:30:10 -0500 (EST)
+Date:   Wed, 26 Jan 2022 10:30:02 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+Cc:     linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, pure.logic@nexus-software.ie,
+        bjorn.andersson@linaro.org, robh@kernel.org,
+        linux-kernel@vger.kernel.org, quic_tsoni@quicinc.com,
+        quic_psodagud@quicinc.com, quic_satyap@quicinc.com,
+        quic_pheragu@quicinc.com, quic_rjendra@quicinc.com,
+        quic_sibis@quicinc.com, quic_saipraka@quicinc.com
+Subject: Re: [PATCH V4 3/6] soc: qcom: eud: Add driver support for Embedded
+ USB Debugger(EUD)
+Message-ID: <YfEUmuglZluWwsg2@kroah.com>
+References: <cover.1642768837.git.quic_schowdhu@quicinc.com>
+ <7ccee5ae484e6917f5838c8abde368680ec63d05.1642768837.git.quic_schowdhu@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211216115529.2331475-2-andrej.picej@norik.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <7ccee5ae484e6917f5838c8abde368680ec63d05.1642768837.git.quic_schowdhu@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 12:55:29PM +0100, Andrej Picej wrote:
-> From: Yunus Bas <y.bas@phytec.de>
+On Fri, Jan 21, 2022 at 07:23:48PM +0530, Souradeep Chowdhury wrote:
+> Add support for control peripheral of EUD (Embedded USB Debugger) to
+> listen to events such as USB attach/detach, pet EUD to indicate software
+> is functional.Reusing the platform device kobj, sysfs entry 'enable' is
+> created to enable or disable EUD.
 > 
-> The proper way to handle partly used MFD devices are to describe all MFD
-> subdevices in the devicetree and disable the not used ones. This
-> suppresses any warnings that may arise as a result.
+> To enable the eud the following needs to be done
+> echo 1 > /sys/bus/platform/.../enable
 > 
-> Signed-off-by: Yunus Bas <y.bas@phytec.de>
-> Signed-off-by: Andrej Picej <andrej.picej@norik.com>
-
-Use subject prefix like
-
-  ARM: dts: imx6qdl-phytec: ...
-
-Shawn
-
+> To disable eud, following is the command
+> echo 0 > /sys/bus/platform/.../enable
+> 
+> Signed-off-by: Souradeep Chowdhury <quic_schowdhu@quicinc.com>
 > ---
->  arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi      |  5 +++++
->  arch/arm/boot/dts/imx6qdl-phytec-phycore-som.dtsi | 10 ++++++++++
->  2 files changed, 15 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi b/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi
-> index 2ec154756bbc..3590f439adf5 100644
-> --- a/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi
-> +++ b/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi
-> @@ -213,6 +213,11 @@ pmic_rtc: rtc {
->  		da9063_wdog: wdt {
->  			compatible = "dlg,da9063-watchdog";
->  		};
-> +
-> +		onkey {
-> +			compatible = "dlg,da9063-onkey";
-> +			status = "disabled";
-> +		};
->  	};
->  };
->  
-> diff --git a/arch/arm/boot/dts/imx6qdl-phytec-phycore-som.dtsi b/arch/arm/boot/dts/imx6qdl-phytec-phycore-som.dtsi
-> index 94b254bfd054..28a805384668 100644
-> --- a/arch/arm/boot/dts/imx6qdl-phytec-phycore-som.dtsi
-> +++ b/arch/arm/boot/dts/imx6qdl-phytec-phycore-som.dtsi
-> @@ -116,6 +116,16 @@ watchdog {
->  			dlg,use-sw-pm;
->  		};
->  
-> +		thermal {
-> +			compatible = "dlg,da9062-thermal";
-> +			status = "disabled";
-> +		};
-> +
-> +		gpio {
-> +			compatible = "dlg,da9062-gpio";
-> +			status = "disabled";
-> +		};
-> +
->  		regulators {
->  			vdd_arm: buck1 {
->  				regulator-name = "vdd_arm";
-> -- 
-> 2.25.1
-> 
+>  Documentation/ABI/testing/sysfs-driver-eud |   9 ++
+>  drivers/soc/qcom/Kconfig                   |  10 ++
+>  drivers/soc/qcom/Makefile                  |   1 +
+>  drivers/soc/qcom/qcom_eud.c                | 250 +++++++++++++++++++++++++++++
+
+This should go under drivers/usb/ as it's creating a USB generic
+user/kernel api that all future devices of this type must follow.
+
+thanks,
+
+greg k-h
