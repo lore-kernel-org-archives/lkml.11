@@ -2,164 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF2DC5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CACE9C28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240843AbiAZLm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:42:58 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58792 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240850AbiAZLmt (ORCPT
+        id S240865AbiAZLo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:44:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240849AbiAZLoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:42:49 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 26 Jan 2022 06:44:54 -0500
+X-Greylist: delayed 25499 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 26 Jan 2022 03:44:53 PST
+Received: from mx1.mailbun.net (unknown [IPv6:2602:fd37:1::100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB25AC06161C;
+        Wed, 26 Jan 2022 03:44:53 -0800 (PST)
+Received: from localhost.localdomain (unknown [170.39.20.82])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DE05B81620;
-        Wed, 26 Jan 2022 11:42:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B71D1C340E3;
-        Wed, 26 Jan 2022 11:42:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643197367;
-        bh=t9+X/e4kJrfvP+h2PpV77QbmVxkh7QVcipQpoeJ2Kwg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JQRELume7i1k+Rq1xY8eBFiq0oCnOAccaKsOGV8BOMAfOofEsx5a+1g5FN6Pm9BYg
-         5hDOuB0YaIKpmdD5V4OlKeG+hc1M3bCslNuhFURpO9omiTMFzpF6Qsj0+jR2LZt+sC
-         aHNid9PV/ym0ZjrzYRCEnw1iIKJIOv26vUsVW+Ic=
-Date:   Wed, 26 Jan 2022 12:42:44 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jack Wang <jack.wang.usish@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, stable <stable@vger.kernel.org>,
-        Guoqing Jiang <jiangguoqing@kylinos.cn>,
-        Song Liu <song@kernel.org>,
-        Guillaume Morin <guillaume@morinfr.org>
-Subject: Re: [PATCH 5.10 01/25] md: revert io stats accounting
-Message-ID: <YfEztOTIhGjm3Hvs@kroah.com>
-References: <20220114081542.698002137@linuxfoundation.org>
- <20220114081542.746291845@linuxfoundation.org>
- <CA+res+S1GcDzM6hnmar+s1k3ggswURZ+_8BqweifShCTjVJ2aQ@mail.gmail.com>
+        (Authenticated sender: ariadne@dereferenced.org)
+        by mx1.mailbun.net (Postfix) with ESMTPSA id 5B84E11A00E;
+        Wed, 26 Jan 2022 11:44:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dereferenced.org;
+        s=mailbun; t=1643197493;
+        bh=7jHNM//m/eDez5fIS/+4IvS3dV2J8nwkZpSA6zP+u9o=;
+        h=From:To:Cc:Subject:Date;
+        b=VgBw86tQRL0O699JNWWaPXipe4ag7eWzYI397GBI5hsEzItf1dcEMDNJSDSwH8HZd
+         cIG/+B2Kj5Iy7AHJuz/lpSTGx1gtSxDPnQGPZwYxuw3LMBvg4hdo6V/hBLYJKj5XjS
+         8PjE26Y4LXWK7dVJRT1V7QIEaYSgQu1z+7ZjM2JiZpb1AMP50RO+ePabw3eY/bHcfc
+         wHQLfFUHVOq4eiKiuW9qmBDrR6LtTLUnsNTg6SxHSLk8NTsQFrWPdispjD1aV8Tzwy
+         7WoWnRjfMKIPIbZnR33a+du0pVdLs2ZI45175M4aGGVviBty8KHJkLHD8VTYjiFC6h
+         11LWmxjGcIqYQ==
+From:   Ariadne Conill <ariadne@dereferenced.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-fsdevel@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Ariadne Conill <ariadne@dereferenced.org>
+Subject: [PATCH v2] fs/exec: require argv[0] presence in do_execveat_common()
+Date:   Wed, 26 Jan 2022 11:44:47 +0000
+Message-Id: <20220126114447.25776-1-ariadne@dereferenced.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+res+S1GcDzM6hnmar+s1k3ggswURZ+_8BqweifShCTjVJ2aQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 11:09:46AM +0100, Jack Wang wrote:
-> Hi,
-> 
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> 于2022年1月14日周五 19:57写道：
-> >
-> > From: Guoqing Jiang <jgq516@gmail.com>
-> >
-> > commit ad3fc798800fb7ca04c1dfc439dba946818048d8 upstream.
-> >
-> > The commit 41d2d848e5c0 ("md: improve io stats accounting") could cause
-> > double fault problem per the report [1], and also it is not correct to
-> > change ->bi_end_io if md don't own it, so let's revert it.
-> >
-> > And io stats accounting will be replemented in later commits.
-> >
-> > [1]. https://lore.kernel.org/linux-raid/3bf04253-3fad-434a-63a7-20214e38cf26@gmail.com/T/#t
-> >
-> > Fixes: 41d2d848e5c0 ("md: improve io stats accounting")
-> > Signed-off-by: Guoqing Jiang <jiangguoqing@kylinos.cn>
-> > Signed-off-by: Song Liu <song@kernel.org>
-> > [GM: backport to 5.10-stable]
-> > Signed-off-by: Guillaume Morin <guillaume@morinfr.org>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >  drivers/md/md.c |   57 +++++++++++---------------------------------------------
-> >  drivers/md/md.h |    1
-> >  2 files changed, 12 insertions(+), 46 deletions(-)
-> >
-> > --- a/drivers/md/md.c
-> > +++ b/drivers/md/md.c
-> > @@ -459,34 +459,12 @@ check_suspended:
-> >  }
-> >  EXPORT_SYMBOL(md_handle_request);
-> >
-> > -struct md_io {
-> > -       struct mddev *mddev;
-> > -       bio_end_io_t *orig_bi_end_io;
-> > -       void *orig_bi_private;
-> > -       unsigned long start_time;
-> > -       struct hd_struct *part;
-> > -};
-> > -
-> > -static void md_end_io(struct bio *bio)
-> > -{
-> > -       struct md_io *md_io = bio->bi_private;
-> > -       struct mddev *mddev = md_io->mddev;
-> > -
-> > -       part_end_io_acct(md_io->part, bio, md_io->start_time);
-> > -
-> > -       bio->bi_end_io = md_io->orig_bi_end_io;
-> > -       bio->bi_private = md_io->orig_bi_private;
-> > -
-> > -       mempool_free(md_io, &mddev->md_io_pool);
-> > -
-> > -       if (bio->bi_end_io)
-> > -               bio->bi_end_io(bio);
-> > -}
-> > -
-> >  static blk_qc_t md_submit_bio(struct bio *bio)
-> >  {
-> >         const int rw = bio_data_dir(bio);
-> > +       const int sgrp = op_stat_group(bio_op(bio));
-> >         struct mddev *mddev = bio->bi_disk->private_data;
-> > +       unsigned int sectors;
-> >
-> >         if (mddev == NULL || mddev->pers == NULL) {
-> >                 bio_io_error(bio);
-> > @@ -507,26 +485,21 @@ static blk_qc_t md_submit_bio(struct bio
-> >                 return BLK_QC_T_NONE;
-> >         }
-> >
-> > -       if (bio->bi_end_io != md_end_io) {
-> > -               struct md_io *md_io;
-> > -
-> > -               md_io = mempool_alloc(&mddev->md_io_pool, GFP_NOIO);
-> > -               md_io->mddev = mddev;
-> > -               md_io->orig_bi_end_io = bio->bi_end_io;
-> > -               md_io->orig_bi_private = bio->bi_private;
-> > -
-> > -               bio->bi_end_io = md_end_io;
-> > -               bio->bi_private = md_io;
-> > -
-> > -               md_io->start_time = part_start_io_acct(mddev->gendisk,
-> > -                                                      &md_io->part, bio);
-> > -       }
-> > -
-> > +       /*
-> > +        * save the sectors now since our bio can
-> > +        * go away inside make_request
-> > +        */
-> > +       sectors = bio_sectors(bio);
-> This code snip is not inside the original patch, and it's not in
-> latest upstream too.
-> >         /* bio could be mergeable after passing to underlayer */
-> >         bio->bi_opf &= ~REQ_NOMERGE;
-> >
-> >         md_handle_request(mddev, bio);
-> >
-> > +       part_stat_lock();
-> > +       part_stat_inc(&mddev->gendisk->part0, ios[sgrp]);
-> > +       part_stat_add(&mddev->gendisk->part0, sectors[sgrp], sectors);
-> > +       part_stat_unlock();
-> > +
-> same here, this code snip is not inside the original patch, and it's
-> not in latest upstream too.
+In several other operating systems, it is a hard requirement that the
+first argument to execve(2) be the name of a program, thus prohibiting
+a scenario where argc < 1.  POSIX 2017 also recommends this behaviour,
+but it is not an explicit requirement[0]:
 
-Is it a problem?
+    The argument arg0 should point to a filename string that is
+    associated with the process being started by one of the exec
+    functions.
 
-> I think would be good keep it as the upstream version.
+To ensure that execve(2) with argc < 1 is not a useful gadget for
+shellcode to use, we can validate this in do_execveat_common() and
+fail for this scenario, effectively blocking successful exploitation
+of CVE-2021-4034 and similar bugs which depend on this gadget.
 
-Can you send a revert of this commit (it is in 5.10.92), and a backport
-of the correct fix?
+The use of -EFAULT for this case is similar to other systems, such
+as FreeBSD, OpenBSD and Solaris.  QNX uses -EINVAL for this case.
 
-thanks,
+Interestingly, Michael Kerrisk opened an issue about this in 2008[1],
+but there was no consensus to support fixing this issue then.
+Hopefully now that CVE-2021-4034 shows practical exploitative use
+of this bug in a shellcode, we can reconsider.
 
-greg k-h
+[0]: https://pubs.opengroup.org/onlinepubs/9699919799/functions/exec.html
+[1]: https://bugzilla.kernel.org/show_bug.cgi?id=8408
+
+Changes from v1:
+- Rework commit message significantly.
+- Make the argv[0] check explicit rather than hijacking the error-check
+  for count().
+
+Signed-off-by: Ariadne Conill <ariadne@dereferenced.org>
+---
+ fs/exec.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/fs/exec.c b/fs/exec.c
+index 79f2c9483302..e52c41991aab 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -1899,6 +1899,10 @@ static int do_execveat_common(int fd, struct filename *filename,
+ 	retval = count(argv, MAX_ARG_STRINGS);
+ 	if (retval < 0)
+ 		goto out_free;
++	if (retval == 0) {
++		retval = -EFAULT;
++		goto out_free;
++	}
+ 	bprm->argc = retval;
+ 
+ 	retval = count(envp, MAX_ARG_STRINGS);
+-- 
+2.34.1
+
