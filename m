@@ -2,70 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E07D9C3526D
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:03:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF129C3526D
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:03:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233582AbiAZNDK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:03:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231630AbiAZNDJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:03:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2DEC06161C;
-        Wed, 26 Jan 2022 05:03:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B071161A5C;
-        Wed, 26 Jan 2022 13:03:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E8E8C340E3;
-        Wed, 26 Jan 2022 13:03:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643202188;
-        bh=I/sYGDx/XyXGayEEK+UDUv1Ro8EyPNYU+/FL/SgC0Sg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g6G36H1ZimcP9WAjchnqyB2PyL54aAfm39ckwcon06tV5/ptTzm/2apZmy/O6RjNf
-         TFEUhRiJwoRCpD4Z+lJo5MrDdRbAk7rfrCPrA/BjsxASCDl/GvY31eU9XTdj9bFwbQ
-         9XYHDFnyEOlJjgFFsf8fLqIPEluFCORQGtZthfBx1CfdeeoaPu+11NH8FctU0bcHdy
-         C2inkqMMlPQLRzyuX63QBHaZAmKKr0nacprXc9NiQApbL/OGlennI0xjUhQue2PWa9
-         Z/rgytKkbx7fDkTRiVB7vw+oIK7MkczCy2N4LuxIBB1xqbNuwm1TNuBBTdM7DvLN7b
-         F3JRQOB1zwVdg==
-Date:   Wed, 26 Jan 2022 20:55:22 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: don't stop RXC during LPI
-Message-ID: <YfFEulZJKzuRQfeG@xhacker>
-References: <20220123141245.1060-1-jszhang@kernel.org>
- <Ye15va7tFWMgKPEE@lunn.ch>
- <Ye19bHxcQ5Plx0v9@xhacker>
- <Ye2SznI2rNKAUDIq@lunn.ch>
+        id S232623AbiAZNDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:03:52 -0500
+Received: from mga09.intel.com ([134.134.136.24]:42709 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231904AbiAZNDv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 08:03:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643202231; x=1674738231;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mSnFOYWb2NTAiZJ6gl/F22Fq/rOFI1cKTn49lNqjzw4=;
+  b=SOoxsq2mC+ryPptauJSMGHYP81Tt1KfoTTiDalzjDodfpxrl+Jg0F4eM
+   mAuCcOcb0KLCsY/8CdkgUmbrhOMTH6cQPePOeWqATOUmb1Dm+Ynt7KMUB
+   su1CtRxgk2xzd8v55A34UQM9lHxfp0fm17NMcAlV1Vlpbxz8fzc2jVE4X
+   gNi6EK0KqcZrKDuQJsHAxrwCFHuQR3tEzfgSYyp9dgtNPJgAkS2Xt3WhE
+   R3E/fhsswUAW7mruWSkzICKkaVp3VmFj/m1UL+vxn0k1L+DQInQdkb1rO
+   Wo+BhZy40XzmPs8KHc5QdvmFtf4sKt81PUcxsDPTQFMsNpOPnBuKpM3fI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="246322107"
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="246322107"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:03:50 -0800
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="617957353"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:03:47 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nChwe-00EbPb-NL;
+        Wed, 26 Jan 2022 15:02:40 +0200
+Date:   Wed, 26 Jan 2022 15:02:40 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Lee Jones <lee.jones@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Carlis <zhangxuezhi1@yulong.com>, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Helge Deller <deller@gmx.de>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 4/4] fbtft: Replace 'depends on FB_TFT' by 'if FB_TFT
+ ... endif'
+Message-ID: <YfFGcEDnQwdDSwOx@smile.fi.intel.com>
+References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
+ <20220125202118.63362-5-andriy.shevchenko@linux.intel.com>
+ <e12b11d20e22123736e5d8728286947e971c489f.camel@perches.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ye2SznI2rNKAUDIq@lunn.ch>
+In-Reply-To: <e12b11d20e22123736e5d8728286947e971c489f.camel@perches.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 23, 2022 at 06:39:26PM +0100, Andrew Lunn wrote:
-> > I think this is a common issue because the MAC needs phy's RXC for RX
-> > logic. But it's better to let other stmmac users verify. The issue
-> > can easily be reproduced on platforms with PHY_POLL external phy.
+On Wed, Jan 26, 2022 at 12:54:13AM -0800, Joe Perches wrote:
+> On Tue, 2022-01-25 at 22:21 +0200, Andy Shevchenko wrote:
+> > Replace 'depends on FB_TFT' by 'if FB_TFT ... endif'
+> > for the sake of deduplication.
+> []
+> > diff --git a/drivers/video/fbtft/Kconfig b/drivers/video/fbtft/Kconfig
+> []
+> > @@ -10,87 +10,75 @@ menuconfig FB_TFT
+> >  	select FB_DEFERRED_IO
+> >  	select FB_BACKLIGHT
+> >  
+> > +if FB_TFT
+> > +
+> []
+> >  config FB_TFT_PCD8544
+> >  	tristate "FB driver for the PCD8544 LCD Controller"
+> > -	depends on FB_TFT
+> >  	help
+> >  	  Generic Framebuffer support for PCD8544
+> >  
+> > @@ -108,62 +96,52 @@ config FB_TFT_S6D02A1
 > 
-> What is the relevance of PHY polling here? Are you saying if the PHY
-> is using interrupts you do not see this issue?
+> Looks like you missed a couple.
 
-I tried these two days, if the PHY is using interrupts, I can't
-reproduce the issue. It looks a bit more complex. Any suggestions?
+Thanks! I'll incorporate it, if the series has a continuation.
 
-Thanks in advance
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
