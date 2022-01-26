@@ -2,106 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFF9C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:41:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B36BEC63682
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239321AbiAZJlk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:41:40 -0500
-Received: from mail-vk1-f179.google.com ([209.85.221.179]:34491 "EHLO
-        mail-vk1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239369AbiAZJkv (ORCPT
+        id S239301AbiAZJlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:41:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239305AbiAZJlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:40:51 -0500
-Received: by mail-vk1-f179.google.com with SMTP id j185so10303328vkc.1;
-        Wed, 26 Jan 2022 01:40:50 -0800 (PST)
+        Wed, 26 Jan 2022 04:41:39 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35962C061749
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 01:41:39 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id j5-20020a05600c1c0500b0034d2e956aadso3806345wms.4
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 01:41:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DgC3fBf+JMernk9UtJYHLs3WXUQ4WF2uVpf9z50+mN4=;
+        b=KSl6lTYmsVi33WHBN3QnElkvHgGznKo+f/d/ZSM8+9YhM6kZn6ta1q4C0eEBpR7H7H
+         q2pHOPd4qHOfapjgox1untAEzse5dCyt6yyT3CefQZZRFK8z0sNVUWu4xyM9qaQ/lCmz
+         +UfOOiLYGJw99mue93gUeV/HldhzX3TQrtN5o5o/ka41LY2jN0+yuckYPwxVyrDXvIKN
+         D7y6CqTsUwSdza5+t0tNt8p0zDQi9zhZNVyhiANXZjPp2NifE/JOmirFKQeBVO8hTTiq
+         2PmDXc+706mQQ+8M4xyBRdTU9kB6hy0N6wsGZXqd3kgdyQb7qUDcIchacnRsxDTVOvjt
+         Faog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hAy2zgm466oxNuRFWuwR8M0eUPIcptlYMjnsJ3k50hs=;
-        b=E5Pj4tsrNvdpnjvv+HAt4cAq4Fic1kLma3lHfsoibGHfTgwhSJhcU8cd1urdzr0up0
-         VU3zCOxtIgN0HEZWFSo3jRcjM+W5YFt0L8uLgKg8MNVT0OB8IxhGlvkyZAuAOu5IVwde
-         FwtwkWs9cx0XYgW8uLcyqw0+llPd4Ol4P54onIluY08pDEYK1coFITgSwvMkpwjS/T9e
-         PFrjuLLH2ogrUoqK4ogjYBxVkYb1RZGsxjFsZDpnjgO3RrrMHNjDhngk7+nXZ0i4BdAT
-         1+gibCU1VPEMfp6NlkvyGDk0U5YWvcfkFOehbg9EkKWAgVVU0ySIJp9dRquKAoG0nhov
-         zJqw==
-X-Gm-Message-State: AOAM530PeWckAx0QnWt+3Zf67R52miO38Yq/t2Uny9wM/d6+X8guUiLD
-        y3fFqkciSNMoLVQWqrAShzJEha05lWp9MKr9
-X-Google-Smtp-Source: ABdhPJxfCcHvBam4yzeX/pM3bK/rLp1bumxgoxSEMw+aq0Y2HiCTtpHoz5j/6Qg4CwkEwqaXLfAnHg==
-X-Received: by 2002:ac5:cc42:: with SMTP id l2mr265388vkm.38.1643190050151;
-        Wed, 26 Jan 2022 01:40:50 -0800 (PST)
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
-        by smtp.gmail.com with ESMTPSA id e66sm2590676vkh.35.2022.01.26.01.40.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Jan 2022 01:40:49 -0800 (PST)
-Received: by mail-ua1-f47.google.com with SMTP id f24so42200884uab.11;
-        Wed, 26 Jan 2022 01:40:49 -0800 (PST)
-X-Received: by 2002:a67:a401:: with SMTP id n1mr5189111vse.38.1643190049539;
- Wed, 26 Jan 2022 01:40:49 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DgC3fBf+JMernk9UtJYHLs3WXUQ4WF2uVpf9z50+mN4=;
+        b=gKQt/nEHR7owe7wMcGGSmHZH+TFDl+ck4lNewnvgZkG8FOvaCiE+dkkcQSRjkMO/aU
+         E10AZGG/DmzAbpCWmokECvBjszL7HE6v3J9WjxTt6SwAZgzAKfkTE0ZKd8R2qNfvtU56
+         B/0HEY3FDboarwa9naAcjbtWYKKTvdrvlX7lPSDWHhe2W3BdIHHlH+DuSdXiyaBZ+KCo
+         q7Ek7lblL73aBYMScWvXXV/lLvr+Tocenutw+KxAQgR6a1eSyEBQAyrbeFYxd51dj38U
+         HVP5X+bBrZHp6z4nIqHFkn8fEf1qjHP99y6fGXlfI24lGsATkpQquq+Jyvdvp8EXi1Aj
+         oVug==
+X-Gm-Message-State: AOAM533EHTskJ4pSBQVeHGuB2Q9+5kdeRnAFPsHxwd84xVZH9HmNx19m
+        amo0Fowq+gKO0Nyfsp9gIjiTXg==
+X-Google-Smtp-Source: ABdhPJyX5OAK0KhXelGAEpKETNqy81bEQDZkxHDK+f3lOrdKefGHj06CmnX/XERSYPKAu/YjnUtCJg==
+X-Received: by 2002:a05:600c:4a09:: with SMTP id c9mr6475785wmp.83.1643190097727;
+        Wed, 26 Jan 2022 01:41:37 -0800 (PST)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id m4sm2710543wmc.1.2022.01.26.01.41.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 01:41:36 -0800 (PST)
+Date:   Wed, 26 Jan 2022 09:41:13 +0000
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        David Airlie <airlied@linux.ie>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>
+Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
+Message-ID: <YfEXOegPuG846NEb@myrica>
+References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+ <20220124071103.2097118-8-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276BE30652988271878E78C8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Ye58Zxi+F9TQszgQ@myrica>
+ <20220124163302.GC966497@nvidia.com>
 MIME-Version: 1.0
-References: <20220125171809.1273269-1-daniel.lezcano@linaro.org> <20220125171809.1273269-6-daniel.lezcano@linaro.org>
-In-Reply-To: <20220125171809.1273269-6-daniel.lezcano@linaro.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 26 Jan 2022 10:40:37 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXZEYNjFh2T4beWdfn8av_qXaPbg4yFk=9whESnLBaFAQ@mail.gmail.com>
-Message-ID: <CAMuHMdXZEYNjFh2T4beWdfn8av_qXaPbg4yFk=9whESnLBaFAQ@mail.gmail.com>
-Subject: Re: [PATCH v7 5/5] rockchip/soc/drivers: Add DTPM description for rk3399
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Rob Herring <robh@kernel.org>, lukasz.luba@arm.com,
-        Heiko Stuebner <heiko@sntech.de>, arnd@linaro.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "moderated list:ARM/Rockchip SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC support" 
-        <linux-rockchip@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124163302.GC966497@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+On Mon, Jan 24, 2022 at 12:33:02PM -0400, Jason Gunthorpe wrote:
+> On Mon, Jan 24, 2022 at 10:16:07AM +0000, Jean-Philippe Brucker wrote:
+> > On Mon, Jan 24, 2022 at 09:58:18AM +0000, Tian, Kevin wrote:
+> > > > From: Lu Baolu <baolu.lu@linux.intel.com>
+> > > > Sent: Monday, January 24, 2022 3:11 PM
+> > > > +/**
+> > > > + * struct domain_ops - per-domain ops
+> > > > + * @attach_dev: attach an iommu domain to a device
+> > > > + * @detach_dev: detach an iommu domain from a device
+> > > 
+> > > What is the criteria about whether an op should be iommu_ops or domain_ops
+> > > when it requires both domain and device pointers like above two (and future
+> > > PASID-based attach)?
+> > > 
+> > > Other examples include:
+> > > 	@apply_resv_region
+> > > 	@is_attach_deferred
+> > 
+> > Could attach_dev() be an IOMMU op?  So a driver could set the domain ops
+> > in attach_dev() rather than domain_alloc(). That would allow to install
+> > map()/unmap() ops that are tailored for the device's IOMMU, which we don't
+> > know at domain_alloc() time. 
+> 
+> I think we should be moving toward 'domain_alloc' returning the
+> correct domain and the way the driver implements the domain shouldn't
+> change after that.
+> 
+> > I'm thinking about a guest that has both physical and virtual
+> > endpoints, which would ideally use different kinds of domain ops to
+> > support both efficiently (caching mode vs page tables)
+> 
+> In this case shouldn't domain_alloc() reached from the struct device
+> already do the correct thing?
 
-On Tue, Jan 25, 2022 at 6:18 PM Daniel Lezcano
-<daniel.lezcano@linaro.org> wrote:
-> The DTPM framework does support now the hierarchy description.
->
-> The platform specific code can call the hierarchy creation function
-> with an array of struct dtpm_node pointing to their parent.
->
-> This patch provides a description of the big / Little CPUs and the
-> GPU and tie them together under a virtual 'package' name. Only rk3399 is
-> described now.
->
-> The description could be extended in the future with the memory
-> controller with devfreq.
->
-> The description is always a module and it describes the soft
-> dependencies. The userspace has to load the softdeps module in the
-> right order.
->
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Sure, if we can finalise the domains before attach that could also clean
+up the drivers a bit.
 
-Thanks for your patch!
-
-> ---
-
-Can you please insert a changelog here, especially if you don't CC all
-parties on the cover letter?
-Yes, I can get it from lore, but it's easier for the audience if it's included
-here.
-
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks,
+Jean
