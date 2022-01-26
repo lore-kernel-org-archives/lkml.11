@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D11CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:34:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA64C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233571AbiAZXem (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 18:34:42 -0500
-Received: from mail-os0jpn01on2063.outbound.protection.outlook.com ([40.107.113.63]:56964
+        id S233630AbiAZXfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 18:35:06 -0500
+Received: from mail-os0jpn01on2074.outbound.protection.outlook.com ([40.107.113.74]:53984
         "EHLO JPN01-OS0-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229725AbiAZXel (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 18:34:41 -0500
+        id S229725AbiAZXfE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 18:35:04 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RnVmBzdk66Omyt886SXpa9cfAQoY8RMm8U+wjSzzv3hf4eWIgJQdEnYBm3Xf7Rrdwd1oKrG0vs3+0CE9CKHLXJ/9qyhZDrhH6XGSl/f99pzyKwZuBQwdQ0ODnykE9CDt1cuvxmpA8z09rp4vsgHA4qVFWvkGQdx3lSLPYC5RcQ6zgJwdhXKUYC3F14xllazKamxHT1GdiwNS+lBycxIXPGqX+azS3uKZpqwB5RRcvDeDPFlR3yNpqHaLU15EiB6t/KCJQmTbFuvXD4GiG6bcv8M6sZjqIcjYuZScJ9TcI6GzhPNKRW5WH6Eiwn4O0EdN9AgEv5n9xI1hZbPVEs47QA==
+ b=bB3cVSw1Blx9UIoL6C1akdkbx5mT0rOV9ZRDP21eQhAhuYPnoUXBEd3ZGlVX/xBClTkT+JQDNUat6hFja2rczVV1k1/MIpA2hinye8gpGou/7aTYU40A1c41UodSAj2qc8u54G3X7r3Lr7ovseH1RSNkVUVPkS8iUALxKfpMC4H1IX/cJG2akrf6TMHMEoTnqK5sZwbXnouwiRJfAK1ktg/T4jKu39X6XIxgWHl6iQkvAIdhEg2hKmXfODsjlSUwbsvFTVxwfRu5B5bBmGNsLxaqWAhmFdzye/e3S12z5XFiS+4Iy3XdlNDx4er9oawiWurNoLh3yYk7300e4Ql6fg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+2NTKlVEiRN0VV5m/LQkVTqc0JdsKsVYZx4JYL7L0Vk=;
- b=CxB9ElDxi7Md4C/rL95RYrADw6Bze8xXUknIIujWY/X/CVY6aSqtdTv0ZTYXE4BwG6E80KW7NVpbpoB0/4tf2/KjO989hstejf6zxnv86aCfI2LOuSMMNaq7dMAYJ7GQ/xhF7zzB/Vu7yEqt0g+c5JEojUEmjJCE4Mhma4lLEKp3/5lrba5Ex0heth27erwqWZFZ57sN7Nvb648GpK+0XvT2xozj3gX24asNYmC/wHKdyXoO7TU0Jn64ikO9UqU8+gutUYga6YpEVrbnLpfm79Qc3S8ErXk6Nbpwq1yl71j56DxfP9WUy7/NaqZ6tS5DOqt/oDUKUYiCm/R2sNoeqg==
+ bh=HM0OJSGBh6bIdaf88V3w2zbMBnmTiCb/Le1Bxoh337w=;
+ b=JtX68lE/RO2YZacRfXb6XhYo3by2C+EV/SUVX8cX6Lzf2AI89NYpkdh8EvdYC3UDM+f3kuEh+wJoagarFboViioSwJYk2lb/GxgMnuX660e0jrF0p1WqWXtvMRKd55o4RewEW+9TnvLEG6b/JxxwT/RtqNvBD36tHu6DN+XVslerUz/jOpzgi267zevX9M0Run2bSdCKfsUsF5vPA0P870TRCO81pWUKYMvTQ3e/XC12SYDSOkj+BffKK7/mosAQbi3g9IVTnOFSKFVzs44IzI6hqXiaahQo/Tq6xidREzDQalTpUjPsRcjtkKuQpdoDtLyU+tyfmJRVclbq9/E7Hg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+2NTKlVEiRN0VV5m/LQkVTqc0JdsKsVYZx4JYL7L0Vk=;
- b=hKycsVkZBYgepLYikD2PQejsDqXC4wTes04Q8kKOhfuDLl1Hb0SInUeZCkrX8b0tWpzXIUP+FTzYPqqBGwjEkl3CKl2gAfMaCyxBgctfDqn9oa01Sjl7tZC+M05JnjmZRb5Jb4ew5StXSn4wA0N57gmmI3rSZCDLlbIh6PLwLlY=
+ bh=HM0OJSGBh6bIdaf88V3w2zbMBnmTiCb/Le1Bxoh337w=;
+ b=mQkzble5pcoinH0i6J9wFgEXFL1lINUhDAHjOXBe5akd1TkyNU1cYbrSloKm5zOFgPkHoAf8TY7l/+oP+vH2lH5ola0ch/vZRzth/0jFjDaP4reNQWXWgcc6OwN0fmrDQdUUqJF4SkNejc92nbcC/8WdyUhTdDpYNcXW1n3kDKk=
 Received: from TYCPR01MB8190.jpnprd01.prod.outlook.com (2603:1096:400:103::9)
  by TY2PR01MB3691.jpnprd01.prod.outlook.com (2603:1096:404:dc::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.11; Wed, 26 Jan
- 2022 23:34:39 +0000
+ 2022 23:35:02 +0000
 Received: from TYCPR01MB8190.jpnprd01.prod.outlook.com
  ([fe80::81f9:7ce5:226b:6237]) by TYCPR01MB8190.jpnprd01.prod.outlook.com
  ([fe80::81f9:7ce5:226b:6237%7]) with mapi id 15.20.4909.017; Wed, 26 Jan 2022
- 23:34:39 +0000
+ 23:35:02 +0000
 From:   =?iso-2022-jp?B?VEFUU1VLQVdBIEtPU1VLRSgbJEJOKUBuISE5PjJwGyhCKQ==?= 
         <tatsu-ab1@nec.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Jiri Slaby <jirislaby@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] n_tty: wake up poll(POLLRDNORM) on receiving data 
-Thread-Topic: [PATCH] n_tty: wake up poll(POLLRDNORM) on receiving data 
-Thread-Index: AQHYEw1Jxn0XOa6SIUqUi15Ymxz4KQ==
-Date:   Wed, 26 Jan 2022 23:34:39 +0000
-Message-ID: <TYCPR01MB81901234932D9FD1327DF093A5209@TYCPR01MB8190.jpnprd01.prod.outlook.com>
-In-Reply-To: <YfFRVkmtSsXPanS5@kroah.com> 
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2] n_tty: wake up poll(POLLRDNORM) on receiving data
+Thread-Topic: [PATCH v2] n_tty: wake up poll(POLLRDNORM) on receiving data
+Thread-Index: AQHYEw1Xw7tuGFtGzkGN0Ezm5vc7sg==
+Date:   Wed, 26 Jan 2022 23:35:02 +0000
+Message-ID: <TYCPR01MB81901C0F932203D30E452B3EA5209@TYCPR01MB8190.jpnprd01.prod.outlook.com>
 Accept-Language: ja-JP, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -52,153 +51,149 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nec.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 19110e99-c981-4720-9468-08d9e1246bb9
+x-ms-office365-filtering-correlation-id: 3f1f9c19-162c-4b72-fc9a-08d9e12479cc
 x-ms-traffictypediagnostic: TY2PR01MB3691:EE_
-x-microsoft-antispam-prvs: <TY2PR01MB36918363F8F5BC28C62F8B1BA5209@TY2PR01MB3691.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-microsoft-antispam-prvs: <TY2PR01MB369180D1F2C91234EA7D5513A5209@TY2PR01MB3691.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:972;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2Bwbwk+kl+GI/hDFczUesPyPxbP6kNn0r7djzfyYdkkNKhX656kKcp9d00RYydbeSgsvIyc+r8F4MUD/tdEJuq3MRF2MPFE5VVX/BHaTLGp6ZrLt3TZ/QLWmrnPtjUvzzqVneTfio84ccstJ5QKXUlltBD+PHKP5/5coUK8HWqTst2VlfocskkH7kiC4EwU7VaIBhcrWLe1vP2O0lXV1KisRxFFT6RDfLccCll1d1AKFP5Pt/MEkhbcAhx3O52M4BV2VTJ5BB2tKqToLD88dEKgO9lO7aiEBlgQ5UoBljlrMi4jqtwbosNspxB+ZDLvS3G6nDHb/jypBCMyWIozLkzw+igCvnqgODcUG95PMOZQdKAek5+m+5/8cJhjrPCzRdtRyY0HcdkH6IrxYpJzU3Hl0dWQ+Jn+hla78urPgq2JTG+Ae9l3LjZeScYlonImx9acsY4LRiAVQCMO7HRXfeZRYNg6ijBo3IjelH2fUf1OJ/4QYPoO9d3kHhsQfcZHcX0dMFF7vWZ3TN1xbwMs1tBAwhj7IwgXsYYPsvqfQgiW8dC7FNlBVeJ/c0urgGTl3gMVH6hZAybN1OOGiWG4hKRksgErUl/QHuKDTBG9ybctpOpvsowWqTsJ/t/EXC95HcTjUbIGR1sp4imR0zwUVdNWjDwMz6UXMtezZQEmp0JxyJcnV1btRbWpGoErOOiPC/L04ZBPEThr38NNKRUBYRg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCPR01MB8190.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52536014)(64756008)(71200400001)(38070700005)(66556008)(66476007)(66446008)(66946007)(5660300002)(7696005)(82960400001)(122000001)(316002)(2906002)(55016003)(38100700002)(85182001)(76116006)(54906003)(6916009)(83380400001)(8676002)(9686003)(186003)(6506007)(4743002)(86362001)(8936002)(55236004)(4326008)(33656002)(26005)(508600001);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: GcuZNJ6Rq5+BRS9XnO7BLzxn6wpR212siojdKsF5ZweCOqP+M+JHyQTPmBXppr3vm14R4YobI6K4vW07/MBQud51tTvTRuSyTd9mPMiQ+TzDBiXYiV6oPfkZZoxnPXKxqvET4SJji7pyYEGZjAOFAbxFRWC3RX6drJggJp8UylbELCeldqEw0497ysOv99+DhRRCaNa7nwgut+HORWL4+WzdVsKWrb95RI5e5D5r3NE67yoM/YtZkyxcZl0DyKkuEvc8EGel1N68Y1WB/UKgzm5i15WgNt1bdrwTt131Uxbk/+ds5Xoe02GkjkUNunqVszJgj7GGxeh5Xf7vkkKzs7UtpMuRqJDSykDDdrUHz0bd2U0qhBO93AbP2HAEoJz5bubUa798yBzrU0oK/n6gJd/A4XZ88SQAlp2H/bMbipw3Z0Hb2C/7xUH8+yLc1qxgK1mbKAB/dZh87NiaevhVRMH4jC5/k3qZkOPsef++u15CfsQSwR9EvVf4L1J2A5M8shJ4wGC5ArBe64gALYCf3N8seJwQOCMRZARAJOqpEEuvV/7vj6Cfab5iT+Bm3YWsUbsVVgSlLuaQMKfoDRQ0S232ottJfZIiEhDK2yVubtCT6HN96sVIlPDSLX9DJU6VObphT5+q5BVYQ5eyTXoXfUMdAvvNWC8u8yaHvT1UqKh913TAQBvwGyqCTWaH0l6lRsvfAMjAD2GGohn6Z442Uw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCPR01MB8190.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52536014)(64756008)(71200400001)(38070700005)(66556008)(66476007)(66446008)(66946007)(5660300002)(7696005)(82960400001)(122000001)(316002)(2906002)(55016003)(38100700002)(110136005)(85182001)(76116006)(83380400001)(8676002)(9686003)(186003)(6506007)(86362001)(8936002)(55236004)(4326008)(33656002)(26005)(508600001);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-2022-jp?B?YU04aGl0NGxrV3VKcDVZSWZUcVV5cWQ3TnpqblVOdTdvYjRBWEtNWFNP?=
- =?iso-2022-jp?B?YnJ2SDI3NllhZzd2OGF0TU1uVDRpUEZsUm5NaXd2SG0zWGQ5bVRBMmpE?=
- =?iso-2022-jp?B?bjQ5YzRkazcyVFdOV25BMzA4bVpQQjJ4L3R6V2dQZTRXTDYrOHNCMWht?=
- =?iso-2022-jp?B?RWx6cSt2YTZCK2tKMGZCNkpsaCtVWmVHZ0t4NFREOTh0RmRBZFF4VjJC?=
- =?iso-2022-jp?B?TU1FMTN0cXd3eGJHSE1BNjVqakNpb0t4SG8wS0tZbUsxNXlkSWNBOGdT?=
- =?iso-2022-jp?B?dmF2c1FXRUxCbDc1ODY3WENuOFBtN0hjMUJDUWVSeGt3NjdIZzZIcFBC?=
- =?iso-2022-jp?B?dVVobTBoREtXdHZTYWdhWmt0elUrSWhyVllzYTd6Yy92VGlmNDNrQ1A2?=
- =?iso-2022-jp?B?SisyVFRJWlplcFBsSER3UHFDWWVrejBaaXJVS3V2ZWdoOWVxRVBhQXdH?=
- =?iso-2022-jp?B?WTMyRk12Z3JnWjl5MlJURXJmVEsxVGd2cVlCWlVsR01helYyZWM2MVRl?=
- =?iso-2022-jp?B?QjJBS3phK1BwTXlYUURWa2x6d1BDemdEM3lxbVBUSjNBZCswYVlPbHVK?=
- =?iso-2022-jp?B?SitOL0U5NUQwS3dVWGh2b3dpTS9kc2I4dWRHY2JkZmJKVXo1ZHloK1hQ?=
- =?iso-2022-jp?B?TTZIWmdldDFuUEpJSENERVFkKzNUS3JVZDZob2tSbnNvOFliclU0UDdQ?=
- =?iso-2022-jp?B?djFyLzhJTU1lcHYzOVR6T3dYc2U1RGlvOE1YUHVpRzl5bTRkRkdBT3Vi?=
- =?iso-2022-jp?B?N3pnaTd1MDNkdHJiTFU3WTFtZC9ob0xydzE0NThWZnVYQ1NuTTI3RDd4?=
- =?iso-2022-jp?B?Um9uUlQzNWRhMzJXUzRrYmlxVFhvTHJtanpGUnlwdWxRTklUb1lRWDBQ?=
- =?iso-2022-jp?B?dnQ0TTV4Y1EyMVBNbFNmajYvNTJGT1NqTFBhczJlWnZycnA4TldpalNh?=
- =?iso-2022-jp?B?bnQxQ2dlL0xSMDc5UDZrMTlPZ0Jua3hTbDRSQXN3TFduWkZsMjVkSjNi?=
- =?iso-2022-jp?B?Wk9nUm5IR3JLd0N3aTBEdERuRWRJYlVxQVlLNURmVm1NbXJnMFVFVzBF?=
- =?iso-2022-jp?B?Z2xtUW9nR094cmVMNktFcWFNS2VETW4xbjJjeHB3MVZGRW1yclVtSEZa?=
- =?iso-2022-jp?B?NVRWRXBtbU1JSms1ZDBFa0JOYzhwK3VhTWtiU3VUcUtoM1B2ZkRvRGpT?=
- =?iso-2022-jp?B?UkZQeTc4dWdQdjJEc0RIWkNFcSt6M2E0NTRHcjE2Mzl3Zld6N1VWQk03?=
- =?iso-2022-jp?B?cUpoSUcxL212Mm1wN3BpR2VGVTNpUUZwTzBMb1o0VDcySVB5bkZybkoy?=
- =?iso-2022-jp?B?c0N0cGk2bVcycGFYZmJ5bGhUMWFkMFRqZHV0ckpsWUxXMlFRcE5zd3hT?=
- =?iso-2022-jp?B?WkVPWWlncDRCanA0bCtseHpHMnBSaDFQRHArbEtxZFNPdTE0Yys5ckdW?=
- =?iso-2022-jp?B?NDh1UWY5SHd6WWo3eXQwaDBGNVIyVzd5MzZlVUptZWVTa1Q1T1RBVjNY?=
- =?iso-2022-jp?B?bk1nTVZ1SGhFMUErQnN0emllb1hMVHFiKzlzSVBwcDZNVHZrRVhpMDlM?=
- =?iso-2022-jp?B?OEhZOGhsT2o3NWhJM04yL0ZUS0t1OEdqdk5uRDlmL1k3M1FXVzNwRkJp?=
- =?iso-2022-jp?B?WFNFRWY0NVVwUytVOHNOM1Z2T2xFNWdabE1sYTFXTTV2K3JscTFNK213?=
- =?iso-2022-jp?B?b0dTYng1dGNlWnZ1eFBNZWs2TTZXNVZoNDEycDEzVzk4eTdrZjUxY2lj?=
- =?iso-2022-jp?B?dVY2dkMyWU5jRVNKTU8rZ0YzNFpYaGRtdUVFcmNQemlrVmEyd2RKN2p1?=
- =?iso-2022-jp?B?NmdrMysveHVuOWNhRVYxQWxCMTRFTCtITEwwalRlcTAzQkw4VVQ2RXFB?=
- =?iso-2022-jp?B?bDh3S292MzYyT2xVMWQ3MG9WTVp1cExoMUswWjNkaVZvRzRHS2dqZFJV?=
- =?iso-2022-jp?B?ZDFSL2JmSVdRLzEwTWxlNGxOUVRHYTNMSHlrYnc1OXh0ZkMwNXB1L3I2?=
- =?iso-2022-jp?B?VFVUb1Z5aUpNcGJONk53dlh3NW8xVlRVb3Yva3NZS241RTlaZDdtcXph?=
- =?iso-2022-jp?B?N0pzdW9nbjVtRXRSNVhlNkFvTVdVcEpRY0Zkbnh6WjBBSlRKeTQ5VTl0?=
- =?iso-2022-jp?B?VmJ6aHF2c0RUUDZ2K0ErUHYwb0FuSnZuMDZzZXR0K09YL09sMXBncFBN?=
- =?iso-2022-jp?B?QXczZ05kSjMvUkhBUHZUR1J2bjZCTFJDcHV3UGE3VmNrQzRWQy9WV1pQ?=
- =?iso-2022-jp?B?cTZPRXNCdHN1aHVNR2xaSVVBM01TOWtrSTRlcmRCT3htLzYzdnU2bGEz?=
- =?iso-2022-jp?B?M2R1WFdPd2xNNGVEc09rOUJoMzR4SEVxZ1lMUGNreXoyODRua3BlZEZm?=
- =?iso-2022-jp?B?dzM5OE4zbEpUMmFCbDU2SlBrbDJTVFhRSXY=?=
+x-ms-exchange-antispam-messagedata-0: =?iso-2022-jp?B?OURZRytqeHh3UGNtRzlxN3ptMUg4ckw4QnZKTE9XRmtBRndSVmJKWHdm?=
+ =?iso-2022-jp?B?OVFqM3RQMktFVzRSdExsTWRNa3puWDNsbjlDRnQyaDRvdk5kNm5zYkFK?=
+ =?iso-2022-jp?B?NzZ1T3VHR00xcXAxQlZIMC8zSDhMUEtCa3hHVTMvb1dMSnhwYjQzWGEv?=
+ =?iso-2022-jp?B?akg1RC96c3J5ekxDYjJJMWRDWnU3clBkSjZ4STNBQkNQdWFDNnM2emxh?=
+ =?iso-2022-jp?B?enM4ZUN6WGJmUW1NYkRMSjhDTUs1U01NdUptamF3SDZtWUFIRmpqRmg0?=
+ =?iso-2022-jp?B?anRIYmM1MlV6MGpxOTFMc1U5OFBNRE0rWWViNUc1WHUzR0tzZ3lKU2M5?=
+ =?iso-2022-jp?B?dTAybnhCNTRrTEprbGNjRG15MXo2QlZNTzZray92Mmx6UUREK2xyVmlI?=
+ =?iso-2022-jp?B?Qi96WE5GYTNIV3JkWnBIUnJLMUxCWXpCd01UeTlHVGNINXhTOVIzaDNN?=
+ =?iso-2022-jp?B?cSsrOHZkQ3M1KzNCRm13R21ER2JsM3gzNkdlb0V6aVRITU9vVkhwVXE3?=
+ =?iso-2022-jp?B?cWY3Qzl5dGNjdDVBOVhmQyttL3NOWGFxdEtXWEFMbEJtWHZxTVNCcXFX?=
+ =?iso-2022-jp?B?eUgweWJVWmtpSlNLOGVmOXBsOEpWQlJmWDBRUy9JREhydzZaYm0xMy9z?=
+ =?iso-2022-jp?B?ZHlBbmpmNVE0MVNYaEx6ellwK2ZSV0FzcWhjWm51Uk9EL2sxdkMydjBM?=
+ =?iso-2022-jp?B?ZThNaUQzNHcvMlhTNHgrYWNGSUMzTlZHVElxZ0VnMkpqaytOOGsrMWtT?=
+ =?iso-2022-jp?B?TjlXMngyNDh1STQwY05hSTJtR3lhTExIWnkvOVFWYUphNjEwUUNHZlpW?=
+ =?iso-2022-jp?B?NFIwTHRPVGFVazIxRDJ6TkMvQWhKRVBaOVV1cXlISmgzWU83TjFaMUlm?=
+ =?iso-2022-jp?B?NVBoaEdqM2JEaWl6Z21LWkx4bGxWMlYwT09nRGVHZG9zQTBxM2s0Z0pC?=
+ =?iso-2022-jp?B?NVFXN1hZSTdFb3VxalhEeFlQYmE4a3MwaTVTc0tMV2lwaGYwTDN3K1RF?=
+ =?iso-2022-jp?B?ZC9VOGpscVIwdFllTUNlR0VKS2RtMVFQeVVwemZsdmZXMWFkM1RGRnla?=
+ =?iso-2022-jp?B?YjNNMnR5ZXpvVGVWczRRc1BVU29vYWtLNWdmVm1uc0ZFMXQ3dnR3dDIv?=
+ =?iso-2022-jp?B?c0N3cC82V3RQZ0F4OEIwNWpFUTNKMk9iVlVGM1FlemhjbDJkWkJIVGtk?=
+ =?iso-2022-jp?B?cnRDcUFXUVE4TmFCSEUzamJlbE9jcEhmVFZ6NENBZFA5VEUrNU5pMzI3?=
+ =?iso-2022-jp?B?eXAxN0IvMEtJaXR0MW12b0U0VWdwbElnWXNhRHZtZUZyRnVia2NkQjFt?=
+ =?iso-2022-jp?B?UkRtT1VEU2tjRUh1ekN4QnFnQnpqQTYvTEYzN3d0RzdhdWVoWHQwUkxZ?=
+ =?iso-2022-jp?B?U2sxNlgxcU5sblhiZ2VuVDgxT3FhMkVLcFUxdEJUdks0WnJVNTRMbCth?=
+ =?iso-2022-jp?B?YkJyS0lJWWF2VkpXeU9ZeEluU2ViN3JtYTZITk1YcU02d3FPMUluZFZW?=
+ =?iso-2022-jp?B?TEE0MDFEMjdPRUdoK29WSlJBUXhQcVFuVklwUkpPcDB6MVVXRlNRdkpl?=
+ =?iso-2022-jp?B?TWN1bkJBWUs0VVpLcXRvOXVjb2IyTENhVFM3dlZyazdLR0U0NERBTmVT?=
+ =?iso-2022-jp?B?N0ZsZTZDUU5YT2NVenFnRi9FNFBVMGl5TkxESEZxUHBIKzc2V1R1aXo4?=
+ =?iso-2022-jp?B?MDN6aUFkT1E3S1N4VUpEK1pLMUFtTDVWUGtYeUNLVm5NYnlQQkZINHl2?=
+ =?iso-2022-jp?B?NW5PV0RKdjlWWE5meEU1QjNWZlFNYkxkbHpKNm8zNTFxY2h0S0JWYkVn?=
+ =?iso-2022-jp?B?QkJhUVFnVXArcW9HakFveG05aXRxdXYyS3VvODV0MHQ1WDBkbStqUFdj?=
+ =?iso-2022-jp?B?WmxLUGZBeGc2azBHeUxoS2tyQlJURmYvb2pGYUV1OUNDTS9FTm4wNnJK?=
+ =?iso-2022-jp?B?MmdwWDlzbW55aVhaWGRpUWNTeVlTNEhFdTJvNFVTWkZXRlVwRldSOFdx?=
+ =?iso-2022-jp?B?RDJaY2FMOE5xV3hqWGhKekR2cW95bzFvMy9pT2JyS1poWVZ6MkdRWDNo?=
+ =?iso-2022-jp?B?Q3RmU1k1MENHTzNtcHBiUFFNRlBDeGZkRXBTRFVraHNBUTJjcEx5RjBa?=
+ =?iso-2022-jp?B?Z2RTWnVsTDBaRnNPc3VlNmFmdzFtL0JZZGMwNHg2NUlIYVpEaXk2bFlS?=
+ =?iso-2022-jp?B?K0pCZmtYaDVsdkFrQzhtZVJIYmthVm9hUTFXeGRpYjZ1MWlHUDZmb0F0?=
+ =?iso-2022-jp?B?WGhkckU1QW9OdlN1M2dYV2dVaGZlQllKREEzaEZvTWMzam5RYXprY0w2?=
+ =?iso-2022-jp?B?UVQ0U3VITGcyOWZabldCeUNISU9MM1J1RW9VMXVYZ0dKaE92eEcvWHNU?=
+ =?iso-2022-jp?B?THFYYVBLaEF2YzA3RWpWdjRWcm85djk2Yno=?=
 Content-Type: text/plain; charset="iso-2022-jp"
-Content-ID: <47E09DE835629B45A195609D1B0519F2@jpnprd01.prod.outlook.com>
+Content-ID: <07AC1A20DE1AD94DBF294104D9497A41@jpnprd01.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nec.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: TYCPR01MB8190.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19110e99-c981-4720-9468-08d9e1246bb9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jan 2022 23:34:39.0747
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f1f9c19-162c-4b72-fc9a-08d9e12479cc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jan 2022 23:35:02.7538
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: o4+nOdU1Dh6tAOaveWBw8AgIYZ/VOyIuax4XOPzefQm/0sTs5EcyiM35MNW257YxZvCpZWfrnxxb9d9QtD2YIg==
+X-MS-Exchange-CrossTenant-userprincipalname: yTDzlxwzvtfYju+oR6n5AGM4S6G2AlaNxxkxmD1v/S9s1GvW3VFdYqkaoseKOOsFtc3zyG5g5Po8xKm2jVhpjw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB3691
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, thank you for the reply.
-
-> On Mon, Jan 24, 2022 at 08:17:22AM +0000, TATSUKAWA KOSUKE(=1B$BN)@n=1B(B=
- =1B$B9>2p=1B(B) wrote:
-> > Event POLLRDNORM should be equivalent to POLLIN when used as event in
-> > poll().
->=20
-> Where is that documented?
-
-It's in "man poll".  Below is an excerpt from the man page.
+The poll man page says POLLRDNORM is equivalent to POLLIN when used as
+an event.
+$ man poll
+<snip>
               POLLRDNORM
                      Equivalent to POLLIN.
 
-I'll send a v2 patch in a separate message.
+However, in n_tty driver, POLLRDNORM does not return until timeout even
+if there is terminal input, whereas POLLIN returns.
 
-Many other calls to wake_up_interruptible_poll() in the kernel source
-code already specify "POLLIN | POLLRDNORM", but there are places under
-drivers/tty which only passes POLLIN (i.e. pty.c, tty_io.c,
-tty_ldisc.c).  I haven't yet made test programs to hit the other
-locations and I wasn't sure if they should also be fixed just for
-consistency.
+The following test program works until kernel-3.17, but the test stops
+in poll() after commit 57087d515441 ("tty: Fix spurious poll() wakeups").
 
-Best regards.
+[Steps to run test program]
+  $ cc -o test-pollrdnorm test-pollrdnorm.c
+  $ ./test-pollrdnorm
+  foo          <-- Type in something from the terminal followed by [RET].
+                   The string should be echoed back.
 
+  ------------------------< test-pollrdnorm.c >------------------------
+  #include <stdio.h>
+  #include <errno.h>
+  #include <poll.h>
+  #include <unistd.h>
 
-> > However, in n_tty driver, POLLRDNORM does not return until
-> > timeout even if there is terminal input, whereas POLLIN returns.
-> >=20
-> > The following test program works until kernel-3.17, but the test stops
-> > in poll() after commit 57087d515441 ("tty: Fix spurious poll() wakeups"=
-).
-> >=20
-> > [Steps to run test program]
-> >   $ cc -o test-pollrdnorm test-pollrdnorm.c
-> >   $ ./test-pollrdnorm
-> >   foo          <-- Type in something from the terminal followed by [RET=
-].
-> >                    The string should be echoed back.
-> >=20
-> >   ------------------------< test-pollrdnorm.c >------------------------
-> >   #include <stdio.h>
-> >   #include <errno.h>
-> >   #include <poll.h>
-> >   #include <unistd.h>
-> >=20
-> >   void main(void)
-> >   {
-> > 	int		n;
-> > 	unsigned char	buf[8];
-> > 	struct pollfd	fds[1] =3D {{ 0, POLLRDNORM, 0 }};
-> >=20
-> > 	n =3D poll(fds, 1, -1);
-> > 	if (n < 0)
-> > 		perror("poll");
-> > 	n =3D read(0, buf, 8);
-> > 	if (n < 0)
-> > 		perror("read");
-> > 	if (n > 0)
-> > 		write(1, buf, n);
-> >   }
-> >   ---------------------------------------------------------------------=
+  void main(void)
+  {
+	int		n;
+	unsigned char	buf[8];
+	struct pollfd	fds[1] =3D {{ 0, POLLRDNORM, 0 }};
+
+	n =3D poll(fds, 1, -1);
+	if (n < 0)
+		perror("poll");
+	n =3D read(0, buf, 8);
+	if (n < 0)
+		perror("read");
+	if (n > 0)
+		write(1, buf, n);
+  }
+  ------------------------------------------------------------------------
+
+The attached patch fixes this problem.  Many calls to
+wake_up_interruptible_poll() in the kernel source code already specify
+"POLLIN | POLLRDNORM".
+
+Signed-off-by: Kosuke Tatsukawa <tatsu-ab1@nec.com>
+Fixes: 57087d515441 ("tty: Fix spurious poll() wakeups")
+Cc: stable@vger.kernel.org
 ---
-> >=20
-> > The attached patch fixes this problem.
-> >=20
-> > Signed-off-by: Kosuke Tatsukawa <tatsu-ab1@nec.com>
-> > Fixes: commit 57087d515441 ("tty: Fix spurious poll() wakeups")
->=20
-> No need for "commit" here, please remove as the documentation asks you
-> to.
->=20
-> Can you resend this with this fixed up, and a pointer to where the
-> documentation is for this functionality.
->=20
-> thanks,
->=20
-> greg k-h
----
-Kosuke TATSUKAWA  | 1st Platform Software Division
-                  | NEC Solution Innovators
-                  | tatsu-ab1@nec.com=
+ drivers/tty/n_tty.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 5be6d02..b2b98fe 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1369,7 +1369,7 @@ static void n_tty_receive_char_special(struct tty_str=
+uct *tty, unsigned char c)
+ 			put_tty_queue(c, ldata);
+ 			smp_store_release(&ldata->canon_head, ldata->read_head);
+ 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+-			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
++			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
+ 			return;
+ 		}
+ 	}
+@@ -1589,7 +1589,7 @@ static void __receive_buf(struct tty_struct *tty, con=
+st unsigned char *cp,
+=20
+ 	if (read_cnt(ldata)) {
+ 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+-		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
++		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
+ 	}
+ }
+ =
