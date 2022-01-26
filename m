@@ -2,100 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F15C3C63686
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:16:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA9BC63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:16:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241151AbiAZMQ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        id S241162AbiAZMQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 07:16:28 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45958 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234027AbiAZMQ1 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 26 Jan 2022 07:16:27 -0500
-Received: from mga01.intel.com ([192.55.52.88]:24474 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233973AbiAZMQ0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 07:16:26 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="270988224"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="270988224"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 04:16:26 -0800
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="674341619"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 04:16:19 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1nChCh-00Eaiw-DB;
-        Wed, 26 Jan 2022 14:15:11 +0200
-Date:   Wed, 26 Jan 2022 14:15:11 +0200
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Lucas De Marchi <lucas.demarchi@intel.com>
-Cc:     Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
-        nouveau@lists.freedesktop.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel@lists.freedesktop.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        amd-gfx@lists.freedesktop.org, Ben Skeggs <bskeggs@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Leo Li <sunpeng.li@amd.com>, intel-gfx@lists.freedesktop.org,
-        Raju Rangoju <rajur@chelsio.com>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [Intel-gfx] [PATCH v2 09/11] drm: Convert open-coded yes/no
- strings to yesno()
-Message-ID: <YfE7T7gl+0GrlFt/@smile.fi.intel.com>
-References: <20220126093951.1470898-1-lucas.demarchi@intel.com>
- <20220126093951.1470898-10-lucas.demarchi@intel.com>
- <CAHp75Vd+TmShx==d_JHZUu0Q-9X7CmZEOFdKnSrcRKs81Gxn3g@mail.gmail.com>
- <20220126104345.r6libof7z7tqjqxi@ldmartin-desk2>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9F6EB81CB4;
+        Wed, 26 Jan 2022 12:16:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 048D3C340E3;
+        Wed, 26 Jan 2022 12:16:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643199384;
+        bh=HCJF5AT6oZiIHzqC/sgDY2NWB0+NIjbeeOvKVGlv0Xk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SJhDFw9MHJQrtSmEcTWUp/fAGDuu4ADIDB5duLZvFq8tlZmsKjqsh4+5BknpC93R+
+         AmZuZdhBfiWtzo3p0TqnZe44ibS0BgfcOIKVMV+SDTNJxiDuLQp00n/AjY/IjN8zEb
+         Lq7lAHrXP0BPytn1FAsfyvhguQr/Q49FZksyO334=
+Date:   Wed, 26 Jan 2022 13:16:21 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
+        NeilBrown <neil@brown.name>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: Re: [PATCH v8 4/4] staging: mt7621-dts: align resets with binding
+ documentation
+Message-ID: <YfE7ld1YIhX3rv6j@kroah.com>
+References: <20220110114930.1406665-1-sergio.paracuellos@gmail.com>
+ <20220110114930.1406665-5-sergio.paracuellos@gmail.com>
+ <d62d838872d26201b04a1014a925738d29ff3e48.camel@pengutronix.de>
+ <CAMhs-H__SxEZ4OtdN_PFf4g+joWBRgRR0q7hHkZX3d=qZtpxUQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220126104345.r6libof7z7tqjqxi@ldmartin-desk2>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <CAMhs-H__SxEZ4OtdN_PFf4g+joWBRgRR0q7hHkZX3d=qZtpxUQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 02:43:45AM -0800, Lucas De Marchi wrote:
-> On Wed, Jan 26, 2022 at 12:12:50PM +0200, Andy Shevchenko wrote:
-> > On Wed, Jan 26, 2022 at 11:39 AM Lucas De Marchi
-> > <lucas.demarchi@intel.com> wrote:
-
-...
-
-> > >  411986   10490    6176  428652   68a6c drm.ko.old
-> > >  411986   10490    6176  428652   68a6c drm.ko
-> > >   98129    1636     264  100029   186bd dp/drm_dp_helper.ko.old
-> > >   98129    1636     264  100029   186bd dp/drm_dp_helper.ko
-> > > 1973432  109640    2352 2085424  1fd230 nouveau/nouveau.ko.old
-> > > 1973432  109640    2352 2085424  1fd230 nouveau/nouveau.ko
-> > 
-> > This probably won't change for modules, but if you compile in the
-> > linker may try to optimize it. Would be nice to see the old-new for
-> > `make allyesconfig` or equivalent.
+On Wed, Jan 26, 2022 at 12:46:43PM +0100, Sergio Paracuellos wrote:
+> Hi Greg,
 > 
-> just like it would already do, no? I can try and see what happens, but
-> my feeling is that we won't have any change.
+> On Mon, Jan 10, 2022 at 12:54 PM Philipp Zabel <p.zabel@pengutronix.de> wrote:
+> >
+> > On Mon, 2022-01-10 at 12:49 +0100, Sergio Paracuellos wrote:
+> > > Binding documentation for compatible 'mediatek,mt7621-sysc' has been updated
+> > > to be used as a reset provider. Align reset related bits and system controller
+> > > node with binding documentation along the dtsi file.
+> > >
+> > > Signed-off-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+> >
+> > Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+> >
+> > regards
+> > Philipp
+> 
+> Can I get your Acked-by on this patch to apply this series through the clk tree?
 
-Maybe not or maybe a small win. Depends how compiler puts / linker sees
-that in two cases. (Yeah, likely it should be no differences if all
-instances are already caught by linker)
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
