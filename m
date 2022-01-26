@@ -2,122 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46987C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 21:26:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7175C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 21:28:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232359AbiAZV0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 16:26:23 -0500
-Received: from mga09.intel.com ([134.134.136.24]:21460 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231665AbiAZV0W (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 16:26:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643232382; x=1674768382;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yh/tZymlE+Mu2oTh2CfURRIWv+Fup7UwHpHXOXfeH9Q=;
-  b=mMur0l6QOxLqYDfpjhvDuI458F3luN0iao6HG/rMFLjgicdaxIBbN3Yz
-   UObE3Grurim7pNWpvuceDnWETc7bJv5kVF6dmjwyboXpKiL2OHXzKqfPd
-   MVNFL2wFHorA+b+12ZCs09IlvRWMhJQpQRP8HJaO5aYOnfSganBYwz08h
-   c66DVVsmRTcYvraDmYboT8IiZZY+yVuGqOSRynO/FKwPXTeDEKyj4d3nd
-   xpsKztBVqDnSxNM2iSv2mw6QOnxzIgMrkEG1iWic6kJ0pQjw0EFg4ip8L
-   mQJ3VSMXAlWCkILMEynJxC/xrCJKytfbvEzIjKGsRx9CKy1TUS3RnmcPm
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="246433000"
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="246433000"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 13:26:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="563540899"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 26 Jan 2022 13:26:18 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCpo1-000Lg3-Cc; Wed, 26 Jan 2022 21:26:17 +0000
-Date:   Thu, 27 Jan 2022 05:25:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Carlos Bilbao <carlos.bilbao@amd.com>, john.stultz@linaro.org,
-        tglx@linutronix.de
-Cc:     kbuild-all@lists.01.org, geert@linux-m68k.org,
-        linux-kernel@vger.kernel.org, sboyd@kernel.org,
-        linux-arm-kernel@lists.infradead.org, rostedt@goodmis.org,
-        boon.leong.ong@intel.com, mhiramat@kernel.org, bilbao@vt.edu
-Subject: Re: [PATCH] include: linux: Reorganize timekeeping and ktime headers
-Message-ID: <202201270546.CQtmCsGw-lkp@intel.com>
-References: <20220126200749.12090-1-carlos.bilbao@amd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        id S232439AbiAZV2e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 16:28:34 -0500
+Received: from mail-mw2nam12on2083.outbound.protection.outlook.com ([40.107.244.83]:26657
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231297AbiAZV23 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 16:28:29 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Cgadzw7s0YC0ExPnAuTawteR0e2Vu+WZjC/5i5850OTYoNr/HtKlN5zUfrBP6LRxqnqeeX36M4i0I4g/o1J6ACFVzZGhmpW2SlFB2udya0hhTI9PXspf8C+TUgcp34uHQPuaVK+06Kk1pWYomAj7acCC5b/hqnNyPd81V7wIm62rzhDuFwl/KA1WguC5CVWgr7vsud+YlPjO4E8mhyd3fdKrTd6oMiRFb8Z+CG1EG/SrJr02XhjkNXVvUeuFYgHFPQmZcAA6izT767fWZm2JflDW2YqLIkFXWiFeymVB7I9WTLKdyEYbtODsJ7wb3UbVZWnU+uyfDPwFIxq0Ff4sCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3Rx1wueTyoB4x61u0P7Y/8jQuOkj/CeOIW/zolDmcQY=;
+ b=oAnH9g5lhc9bowl7tnUdfywLGML12nffCW53IUqn1CTRYSEZ1V08XIpMlSM10+ab0aiz5j7SZWq/vDyyfpR5NCcHWpgIUbCaTd13QZvD7b21ULiMpaKffquy1jpL7eJLP/m8rOw3jgKDkdZf8ots1hsQQB/nZYA0Dc9iETgANv7DsxpyXi8rWKVISXrhgKsfzYD01YAKAr+kj2RnxEv6cEfBzt83Zfb1QH6XYUC0BPuCNpXVmLDTjzgTBLNwZMFJVV4VeXT+MkfhEt8UZpbnZRe9tSPdwMuZy82MiJMh6jSe+ZqLFxqFnNQWHlF2yt4y4VDyfW6rxSsA2alBrn9tGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3Rx1wueTyoB4x61u0P7Y/8jQuOkj/CeOIW/zolDmcQY=;
+ b=YwGKmW64WrE9pNuoRYJ8tZ1QPt07xmHbgFo44MSyQo/tErjcXeh62r+3it4bJbGOPaMahjmuBTxLa1IWZN5AfLZxLtYmlPyGs5u13sCprJJq1TbH5x5+TcSMWruJDQvoAwAehaFIXnAInPD1yJlxkUyNiVzwVXwjGHwVpzsLw0V3jpbiMtyE1KyBJiTl0EsxAex/F6/jhm/N+PfBUi1afPKJQSl0CboAJRHr/HPKE3vWG6IeFJDAjNEQo5VV/8HACjqoLCaH9q6ujY6YQ1Put1dEoOP6CUySjgsjzsGXcrOe1PtWxSYSPI9drEP1N9jh/nesYVy3Sy9v0tDQ3WYW3g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
+ by DM6PR12MB3465.namprd12.prod.outlook.com (2603:10b6:5:3a::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Wed, 26 Jan
+ 2022 21:28:27 +0000
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::35a1:8b68:d0f7:7496]) by BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::35a1:8b68:d0f7:7496%4]) with mapi id 15.20.4930.017; Wed, 26 Jan 2022
+ 21:28:27 +0000
+Date:   Wed, 26 Jan 2022 13:28:25 -0800
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2 RESEND] net/mlx5e: Avoid field-overflowing memcpy()
+Message-ID: <20220126212825.ph3w3umkwvpvtokx@sx1>
+References: <20220124172028.2410761-1-keescook@chromium.org>
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220126200749.12090-1-carlos.bilbao@amd.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220124172028.2410761-1-keescook@chromium.org>
+X-ClientProxiedBy: SJ0PR03CA0155.namprd03.prod.outlook.com
+ (2603:10b6:a03:338::10) To BY5PR12MB4209.namprd12.prod.outlook.com
+ (2603:10b6:a03:20d::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f1989e22-f02e-4cc3-fd08-08d9e112ca4f
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3465:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB34650F881788030C2CE85C12B3209@DM6PR12MB3465.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: P5vzU1nJGOChMvdmkYThdWl4/t2gi3WZbrIpCWtNWd4IFXHpHO0x89F9ncqopa9q0CWuD8/C0uvl4EnPWyVHj0V6JqvTk7QOA4EUyqsmwaEkM09mdrhx8v/wuen/sdJd7EKFwDh7HGMU1Fhm5WDLrnDmztX4CVk2f0ps0Z3OT07B45X/SXdpp9H+wL6ormcLwp7CZ4PBaxjqaDD9A3T57MNguiYMAXFV+/Vw2QKKuT+kJcTGO3nZlNmiPJDcWXzLg2sUdMAWVlGe2cta4uf+kCjccbMsQ3FS5TpHu0erOvPMmKh9osv/MQUyjNzdziJCzjougRGCmFBayWk20EON67bqgZuAm6C5gJxpBoYCqINvxLya6RofJdJ7tr7/etaL66XCehVWOOE1jw9Gv1nCNjPyBIUzcZaqGFUR4AEmmqvAZX1z4y3/mlziEYLafCNPRoWNPpym0ybg/tH5OXLlS2tSdIEkmSTo7lE5duy7UdqozqDbwu6//KV3Cdu3ruVVLmt5p111vZ30vyFqs6UMHmZfUmpm0OnEUfreUulFESc6r4zaW/U7z+GGsdPlMyHVUNP/N/c2KR8mYGmcJUY2WbxfSu9c9D0TuNXKCgeUggLPs54Id7mo472cZTfzfkshNmShVfUT05Qgnkwljbe1NBR1eEmCaU9DXi1cToN8tW6wY80VUAgZBdqA+WidASxSQRxECZpqfnvzoT5uiGW0Gw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(6486002)(6916009)(6506007)(186003)(26005)(54906003)(66946007)(9686003)(52116002)(5660300002)(6512007)(1076003)(4326008)(2906002)(8936002)(86362001)(7416002)(8676002)(66476007)(66556008)(38350700002)(33716001)(38100700002)(316002)(508600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?B7DqMBeE7kVM8SHJVG+opUTta3s4g00TJHM0g8EWedxb4y8cUOoULcUsU0Ra?=
+ =?us-ascii?Q?0tJx/ALKxYWf7o/pJ7EpOjjSp6j2E+lLToTgJ70rpIO0wtS20OyXDz1d5mXe?=
+ =?us-ascii?Q?g6oEEMAlDxYRg9nGFN/G5lv5oO9+NK35eSKZGBLUjuzbnJEFmrI0MGAUIdck?=
+ =?us-ascii?Q?4OfQmzJKujTy44rd/MSwjKeJpGuJ2OI+wBeiWt7HlNvXNOJiFw7off7CQ9Cf?=
+ =?us-ascii?Q?f88NPwB7+boQOIB0gX78MNRdSP3iuErCajQwm5MtSwBWqwWr6NVanilUsLrN?=
+ =?us-ascii?Q?qmPVbOZgF3j09ydukXBA6uq3msMzI9m3aSJijW01oV1x/ulbcCfGUWyiUrnV?=
+ =?us-ascii?Q?KhZ+bop0tAg6sBstyxHu58/F+UkqPQjgjCdHGHJg5SICM/31ilByEDLhSReW?=
+ =?us-ascii?Q?0FlRH2oqPmE941IflGrbiV12cLuiB1lVo8Pj9XOvStqZQaOoeonY0CYEs/hk?=
+ =?us-ascii?Q?oB2Nis86zZVSzGZBrIJv+x9kgpLwPxx3+VDIMsRbeWVckUxdMjBjpMY4P+/V?=
+ =?us-ascii?Q?1JGbvHIB69as2PXjfng2a9bCHM0T1ztGGm/KQC65QwbnVbAIZfym9B4jpsxv?=
+ =?us-ascii?Q?fX7jJHOGI1nLz6LCJFS62jBNbXqauC47dK0neYZzVFYZs5XbVytDwz4f3g+I?=
+ =?us-ascii?Q?BU52Mu7VyyxgRYoNcKS3TYZbpljwa3mPqfNbJ9PAXYJxYtIHUWq/elxJU/8P?=
+ =?us-ascii?Q?eTTvo/KdP0Jo0PAhTIu/NXRQ6XnAoNFLKv5XYcjtT8UTPDLCl/P9NEKdff2q?=
+ =?us-ascii?Q?lqKTRHDyon58gFwOYP/T/5T9lZHSkgbZ7DBYR3oGtyAYNfUJzEqQf2On63FE?=
+ =?us-ascii?Q?UCMx4MG6ZqpSWaIp99eCQv6Hz/MAhntDqv+y/xc4i8aetNkvrzv2CAmlzWcK?=
+ =?us-ascii?Q?GbHCrKBLORsFpARyQw8NjsCBAdMQLFOoQm2OyLuoDSFdDTdP+evoiNa1D3X6?=
+ =?us-ascii?Q?PR0AA3TVt6QYQWK/7jMCJkUh+8X/PqT9fCVYcLed2SaKoVvti14gYns2B0Jw?=
+ =?us-ascii?Q?yLttWDefTiUGGzye1AtaCT/0veLrP0WF6KfW75OEO9EzZsICjPmAoU5gR8eP?=
+ =?us-ascii?Q?HTwKi6lfaVs3sadQ6Z0Wv7PaeAHZiDA9U/VCjed37NeUDbAGpc4JTQiElRfC?=
+ =?us-ascii?Q?Rs4rQCYHP+osMAb8b9kybvL2mMbcD4oY5bMtHSU1pDWvRzSqDxuvhCV5QMn0?=
+ =?us-ascii?Q?y1l5J/S0wuclNJcVwwl97HwM8l9iBNj130tZIg32ef6LduR3KXAO9AcPS7OD?=
+ =?us-ascii?Q?aGXkpZ+xCsUwwjOJRGKg5Xg1BD093RePlaJtnnYiRu7MvVNEtW0XFEVDzAkx?=
+ =?us-ascii?Q?VBs0btdEb9YhKyD+dWKSayzb7o1aF7DxWQ2tC+ZkwuhxIIXmpkAYZHEKYGte?=
+ =?us-ascii?Q?UKeVehvw85/5dTNmY+kwZQEjy7Nj9KubLEki+U/jIR/kmSzOTWRr0VznuOvG?=
+ =?us-ascii?Q?6ponuEqKEpqIAf0AJ6djyosdluoGO5K8lmvMlbK8ojjNxZhkDImIr1B6RI95?=
+ =?us-ascii?Q?o3jCNetWQID5u+AL0d7Hu5eJyTK2mSKAWN7vAZphE7OA+9wsLTcDatDlarzA?=
+ =?us-ascii?Q?V95FBN0Y8Vv8FUED/yEirfs/KZMihlxSpWgMGBxztzOEqVRhSvcWsDqxOhuW?=
+ =?us-ascii?Q?KZ3GpA4M9zA4+64Fh8VkpVE=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1989e22-f02e-4cc3-fd08-08d9e112ca4f
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 21:28:27.1737
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UFTCEm83FxUIY6N2I5YMzcpvmwDPE124ynf7m/bVPK1EmjmYD9L8N7NkMcV/HPuNrdZZF+WZC50TjP08cGvx0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3465
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Carlos,
+On 24 Jan 09:20, Kees Cook wrote:
+>In preparation for FORTIFY_SOURCE performing compile-time and run-time
+>field bounds checking for memcpy(), memmove(), and memset(), avoid
+>intentionally writing across neighboring fields.
+>
+>Use flexible arrays instead of zero-element arrays (which look like they
+>are always overflowing) and split the cross-field memcpy() into two halves
+>that can be appropriately bounds-checked by the compiler.
+>
+>We were doing:
+>
+>	#define ETH_HLEN  14
+>	#define VLAN_HLEN  4
+>	...
+>	#define MLX5E_XDP_MIN_INLINE (ETH_HLEN + VLAN_HLEN)
+>	...
+>        struct mlx5e_tx_wqe      *wqe  = mlx5_wq_cyc_get_wqe(wq, pi);
+>	...
+>        struct mlx5_wqe_eth_seg  *eseg = &wqe->eth;
+>        struct mlx5_wqe_data_seg *dseg = wqe->data;
+>	...
+>	memcpy(eseg->inline_hdr.start, xdptxd->data, MLX5E_XDP_MIN_INLINE);
+>
+>target is wqe->eth.inline_hdr.start (which the compiler sees as being
+>2 bytes in size), but copying 18, intending to write across start
+>(really vlan_tci, 2 bytes). The remaining 16 bytes get written into
+>wqe->data[0], covering byte_count (4 bytes), lkey (4 bytes), and addr
+>(8 bytes).
+>
+>struct mlx5e_tx_wqe {
+>        struct mlx5_wqe_ctrl_seg   ctrl;                 /*     0    16 */
+>        struct mlx5_wqe_eth_seg    eth;                  /*    16    16 */
+>        struct mlx5_wqe_data_seg   data[];               /*    32     0 */
+>
+>        /* size: 32, cachelines: 1, members: 3 */
+>        /* last cacheline: 32 bytes */
+>};
+>
+>struct mlx5_wqe_eth_seg {
+>        u8                         swp_outer_l4_offset;  /*     0     1 */
+>        u8                         swp_outer_l3_offset;  /*     1     1 */
+>        u8                         swp_inner_l4_offset;  /*     2     1 */
+>        u8                         swp_inner_l3_offset;  /*     3     1 */
+>        u8                         cs_flags;             /*     4     1 */
+>        u8                         swp_flags;            /*     5     1 */
+>        __be16                     mss;                  /*     6     2 */
+>        __be32                     flow_table_metadata;  /*     8     4 */
+>        union {
+>                struct {
+>                        __be16     sz;                   /*    12     2 */
+>                        u8         start[2];             /*    14     2 */
+>                } inline_hdr;                            /*    12     4 */
+>                struct {
+>                        __be16     type;                 /*    12     2 */
+>                        __be16     vlan_tci;             /*    14     2 */
+>                } insert;                                /*    12     4 */
+>                __be32             trailer;              /*    12     4 */
+>        };                                               /*    12     4 */
+>
+>        /* size: 16, cachelines: 1, members: 9 */
+>        /* last cacheline: 16 bytes */
+>};
+>
+>struct mlx5_wqe_data_seg {
+>        __be32                     byte_count;           /*     0     4 */
+>        __be32                     lkey;                 /*     4     4 */
+>        __be64                     addr;                 /*     8     8 */
+>
+>        /* size: 16, cachelines: 1, members: 3 */
+>        /* last cacheline: 16 bytes */
+>};
+>
+>So, split the memcpy() so the compiler can reason about the buffer
+>sizes.
+>
+>"pahole" shows no size nor member offset changes to struct mlx5e_tx_wqe
+>nor struct mlx5e_umr_wqe. "objdump -d" shows no meaningful object
+>code changes (i.e. only source line number induced differences and
+>optimizations).
+>
+>Cc: Saeed Mahameed <saeedm@nvidia.com>
+>Cc: Leon Romanovsky <leon@kernel.org>
+>Cc: "David S. Miller" <davem@davemloft.net>
+>Cc: Jakub Kicinski <kuba@kernel.org>
+>Cc: Alexei Starovoitov <ast@kernel.org>
+>Cc: Daniel Borkmann <daniel@iogearbox.net>
+>Cc: Jesper Dangaard Brouer <hawk@kernel.org>
+>Cc: John Fastabend <john.fastabend@gmail.com>
+>Cc: netdev@vger.kernel.org
+>Cc: linux-rdma@vger.kernel.org
+>Cc: bpf@vger.kernel.org
+>Signed-off-by: Kees Cook <keescook@chromium.org>
+>---
+>Since this results in no binary differences, I will carry this in my tree
+>unless someone else wants to pick it up. It's one of the last remaining
+>clean-ups needed for the next step in memcpy() hardening.
 
-Thank you for the patch! Perhaps something to improve:
+applied to net-next-mlx5.
 
-[auto build test WARNING on geert-m68k/for-next]
-[also build test WARNING on tip/timers/core tip/x86/core linus/master v5.17-rc1 next-20220125]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Carlos-Bilbao/include-linux-Reorganize-timekeeping-and-ktime-headers/20220127-041038
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git for-next
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220127/202201270546.CQtmCsGw-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/3c432f5cbb3c550c1cef6747c4281b65a7d9d708
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Carlos-Bilbao/include-linux-Reorganize-timekeeping-and-ktime-headers/20220127-041038
-        git checkout 3c432f5cbb3c550c1cef6747c4281b65a7d9d708
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash arch/m68k/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/m68k/kernel/time.c:67:6: warning: no previous prototype for 'read_persistent_clock64' [-Wmissing-prototypes]
-      67 | void read_persistent_clock64(struct timespec64 *ts)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/m68k/kernel/time.c:145:13: warning: no previous prototype for 'time_init' [-Wmissing-prototypes]
-     145 | void __init time_init(void)
-         |             ^~~~~~~~~
-
-
-vim +/read_persistent_clock64 +67 arch/m68k/kernel/time.c
-
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  64  
-065f109f2506d6b Arnd Bergmann 2018-04-23  65  #ifdef CONFIG_M68KCLASSIC
-065f109f2506d6b Arnd Bergmann 2018-04-23  66  #if !IS_BUILTIN(CONFIG_RTC_DRV_GENERIC)
-065f109f2506d6b Arnd Bergmann 2018-04-23 @67  void read_persistent_clock64(struct timespec64 *ts)
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  68  {
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  69  	struct rtc_time time;
-b65769fc013edb7 Finn Thain    2018-04-23  70  
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  71  	ts->tv_sec = 0;
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  72  	ts->tv_nsec = 0;
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  73  
-b65769fc013edb7 Finn Thain    2018-04-23  74  	if (!mach_hwclk)
-b65769fc013edb7 Finn Thain    2018-04-23  75  		return;
-b65769fc013edb7 Finn Thain    2018-04-23  76  
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  77  	mach_hwclk(0, &time);
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  78  
-065f109f2506d6b Arnd Bergmann 2018-04-23  79  	ts->tv_sec = mktime64(time.tm_year + 1900, time.tm_mon + 1, time.tm_mday,
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  80  			      time.tm_hour, time.tm_min, time.tm_sec);
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  81  }
-065f109f2506d6b Arnd Bergmann 2018-04-23  82  #endif
-fa7f9e7fade8457 Greg Ungerer  2012-01-23  83  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Thanks,
+Saeed
