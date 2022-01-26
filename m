@@ -2,87 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF9DC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF29DC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241434AbiAZMkh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 07:40:37 -0500
-Received: from selene.zem.fi ([178.62.79.47]:43204 "EHLO selene.zem.fi"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234178AbiAZMkf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 07:40:35 -0500
-X-Greylist: delayed 385 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jan 2022 07:40:35 EST
-Received: by selene.zem.fi (Postfix, from userid 1000)
-        id F22BF4DC4C; Wed, 26 Jan 2022 12:33:39 +0000 (GMT)
-Date:   Wed, 26 Jan 2022 12:33:39 +0000
-From:   Heikki Kallasjoki <heikki.kallasjoki@iki.fi>
-To:     Ariadne Conill <ariadne@dereferenced.org>
-Cc:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org,
-        Eric Biederman <ebiederm@xmission.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH] fs/exec: require argv[0] presence in do_execveat_common()
-Message-ID: <YfE/owUY+gVnn2b/@selene.zem.fi>
-References: <20220126043947.10058-1-ariadne@dereferenced.org>
- <202201252241.7309AE568F@keescook>
- <39480927-B17F-4573-B335-7FCFD81AB997@chromium.org>
- <44b4472d-1d50-c43f-dbb1-953532339fb4@dereferenced.org>
+        id S241442AbiAZMmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 07:42:46 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:56766 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234178AbiAZMmh (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 07:42:37 -0500
+Date:   Wed, 26 Jan 2022 13:42:35 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643200956;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p4Z3/9H3m0tgy9S7Cn+tHZ7uEy9cj/q5+j+ZZeCfQFQ=;
+        b=jKMLGHRKXERkqVWuObOXmlgVE/lhS+RReXlLhn6vAfdOjMFPb7Uv2bCIAU4+t0H8o+mSzl
+        tfTmEKGiiZNMI+9ez1bJ2tPU/nip1SdWOVVJEccA4xQZv6Qvo5ApS4mxh1UYjqwfnBa7Dp
+        xEn6o30nAXl77pbPWLwUwro1EeSQvHEariWlpHUh0gXH/8Pbw2ZII8fUZpRA+vLmv6ecWS
+        vOcNgD+apxZpYsHoidnUVsXPa0Amcq/YrFALygwbb9DMKLkcYSdRfUMhUiLQ5b2Q2il92B
+        nCKePj9fSLF7tgGwj5htJt09RxOO6hhDXf2lGg6YH76npcZ3bSizOaS61ledjw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643200956;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p4Z3/9H3m0tgy9S7Cn+tHZ7uEy9cj/q5+j+ZZeCfQFQ=;
+        b=B3aJ8TgeEcHWPbMY63fScX6yaeo+fHxAeyJcLdwqAcpfzlbDjSE8IiSx+dj6jWm6hDgWFi
+        7EGFiUM2DEcfKQDA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     kernel test robot <lkp@intel.com>
+Cc:     John Ogness <john.ogness@linutronix.de>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [rt-devel:linux-5.16.y-rt-rebase 8/132]
+ kernel/printk/printk.c:2628:2: error: implicit declaration of function
+ 'boot_delay_msec'
+Message-ID: <YfFBuyZstHF1zx+q@linutronix.de>
+References: <202201220950.sysXbxm5-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <44b4472d-1d50-c43f-dbb1-953532339fb4@dereferenced.org>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <202201220950.sysXbxm5-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 05:18:58AM -0600, Ariadne Conill wrote:
-> On Tue, 25 Jan 2022, Kees Cook wrote:
-> > Lots of stuff likes to do:
-> > execve(path, NULL, NULL);
-> 
-> I looked at these, and these seem to basically be lazily-written test cases
-> which should be fixed.  I didn't see any example of real-world applications
-> doing this.  As noted in some of the test cases, there are comments like
-> "Solaris doesn't support this," etc.
+On 2022-01-22 09:13:20 [+0800], kernel test robot wrote:
+=E2=80=A6
+>    kernel/printk/printk.c: In function 'console_emit_next_record':
+> >> kernel/printk/printk.c:2628:2: error: implicit declaration of function=
+ 'boot_delay_msec' [-Werror=3Dimplicit-function-declaration]
+>     2628 |  boot_delay_msec(r.info->level);
+>          |  ^~~~~~~~~~~~~~~
+> >> kernel/printk/printk.c:2629:2: error: implicit declaration of function=
+ 'printk_delay'; did you mean 'print_dev_t'? [-Werror=3Dimplicit-function-d=
+eclaration]
+>     2629 |  printk_delay();
+>          |  ^~~~~~~~~~~~
+>          |  print_dev_t
+>    cc1: some warnings being treated as errors
 
-See also the (small) handful of instances of `execlp(cmd, NULL);` out
-there, which I imagine would start to fail:
-https://codesearch.debian.net/search?q=execlp%3F%5Cs*%5C%28%5B%5E%2C%5D%2B%2C%5Cs*NULL&literal=0
+I'm going to fold this in:
 
-Two of the hits (ispell, nauty) would seem to be non-test use cases.
-
-As an aside, saying POSIX "disallows" argc == 0 might be overstating it
-a little. As far as I can tell (quotes below), while a Strictly
-Conforming POSIX Application must provide argc >= 1 to a program it
-executes, the argc == 0 case isn't entirely disallowed.
-
-https://pubs.opengroup.org/onlinepubs/9699919799.2018edition/basedefs/V1_chap01.html
-
-"should -- describes a feature or behavior that is recommended but not
-mandatory. An application should not rely on the existence of the
-feature or behavior."
-
-https://pubs.opengroup.org/onlinepubs/9699919799.2018edition/functions/execve.html
-
-"The value in argv[0] *should* point to a filename string that is
-associated with the process --" (emphasis added)
-
-"Early proposals required that the value of argc passed to main() be
-"one or greater". This was driven by the same requirement in drafts of
-the ISO C standard. In fact, historical implementations have passed a
-value of zero when no arguments are supplied to the caller of the exec
-functions. This requirement was removed from the ISO C standard and
-subsequently removed from this volume of POSIX.1-2017 as well. The
-wording, in particular the use of the word should, requires a Strictly
-Conforming POSIX Application to pass at least one argument to the exec
-function, thus guaranteeing that argc be one or greater when invoked by
-such an application. In fact, this is good practice, since many existing
-applications reference argv[0] without first checking the value of
-argc."
-
-Just to be clear, not disputing the part that disallowing `argc == 0`
-would be a reasonable idea, or claiming that there's a valid use case.
-Just the part where POSIX would *require* the system to disallow this.
-
--- 
-Heikki Kallasjoki
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 60c351afe7aa0..ae0cccf66b3cb 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2265,6 +2265,8 @@ static void console_lock_spinning_enable(void) { }
+ static int console_lock_spinning_disable_and_check(void) { return 0; }
+ static void call_console_driver(struct console *con, const char *text, siz=
+e_t len) {}
+ static bool suppress_message_printing(int level) { return false; }
++static inline void boot_delay_msec(int level) { }
++static inline void printk_delay(void) { }
+=20
+ #endif /* CONFIG_PRINTK */
+=20
+Sebastian
