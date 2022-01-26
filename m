@@ -2,108 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4250FC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 16:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57851C3526D
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 16:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239088AbiAZQIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 11:08:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
+        id S239486AbiAZQLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 11:11:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239497AbiAZQIR (ORCPT
+        with ESMTP id S238913AbiAZQLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 11:08:17 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D07C06173B
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 08:08:16 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id 9so117308iou.2
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 08:08:16 -0800 (PST)
+        Wed, 26 Jan 2022 11:11:09 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09BB7C06161C;
+        Wed, 26 Jan 2022 08:11:09 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id j10so9333657pgc.6;
+        Wed, 26 Jan 2022 08:11:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DN8RvaHx5+77rk1/ysZjfhhFRASzKh3gGZwBlj41YRo=;
-        b=nkLcw33OzZeDSgM/QdR+Uwjfl2uHPTsSuQARGXJ3DpzPJrZeFm9jTDuMOu+OGo6Mqo
-         w60V3c73O+tVuA/TJlW7lMWrMUxiz3apgNPBHdp71o7RHa1/8SlQ3pnkj8zPUJxr05aC
-         /DJlf9QXIck91Ui7drWLz++Sh0t55vLL+WIFs=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FJlQgMOdzOpMdf2t1XhINYD9th+quD5vXgXLujbMrXw=;
+        b=R4Bfn186yJ2h2iAnn75qDBMXPx31A+KGAptApzHgK9YFmMr7rPTZIejMEO4GV1Izzq
+         u27ZAELgpedJodaq/uQ6lnGeqUmgeyu3FOuKWIJsIvUhxpCkgELzb72CB8vjtGceqyth
+         1SeTvg1CV3xjZ9OUDVsrIHcbmJN201BFEBkOlEWtPW90dwx7MbS7dg99u1YOjxBafKQB
+         qpzeKD97jLFdQgo/ot3uC7Hjuv/3tNQ9/LksoxXiZ+CokPWG1g6Sn/PcNHx/mOwQ03DA
+         ulEFltjT2HhW/ipjaynwoI/0orSVYpLSBuaFoJRZ0k8Ab999NsDf1rVI4Si/sQMIbMf8
+         1nkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DN8RvaHx5+77rk1/ysZjfhhFRASzKh3gGZwBlj41YRo=;
-        b=FBSDZX+tknUxh5mhbZyfP/GM2W7GxmITwEnlD7sVm4dVYI9d6eDrrleg3S8xiT+oVq
-         3C9W3yf2NltNzTZEvUYObr8Ii4saMNM7Qzc/QQQUwBkmNAk+GSZ3vdnTBbZ1r0oAKODo
-         0xGOkDISl9ifTm8cyJ/kpx5nuKrt1GGBE3CccHA3Vb6oxpZEznFA9MXJ8yqqY+YojC80
-         D8pmFo2cvtkRkMPcQrUvXAp2DwhzzdTHMHMF65/7gY5VzRz8dwjh+bEOJR0locOPydEN
-         YuEc5o8J50hy4L+xx9J0P2u8IkJOvkJCsqwF4DUDtMGiXzyJL6+OoVMYh7xD5dvSgUCC
-         HBJw==
-X-Gm-Message-State: AOAM532safWOgU4KGgnYu/rMZFazb63CtQVuEbybhFcyaFFiiBFk5gbq
-        iAB/c3fvdd3zuBwTt4IThDD+vrTKewuCag==
-X-Google-Smtp-Source: ABdhPJz15uMuCQhgrX9vUPulibi9qlqY+CVhgIlRLKtAQKPPNIq78XGWkaR2k9SAe1Hfb9u/YhnxHg==
-X-Received: by 2002:a05:6602:1409:: with SMTP id t9mr14129760iov.166.1643213295520;
-        Wed, 26 Jan 2022 08:08:15 -0800 (PST)
-Received: from mail-io1-f44.google.com (mail-io1-f44.google.com. [209.85.166.44])
-        by smtp.gmail.com with ESMTPSA id g10sm1029246iov.22.2022.01.26.08.08.09
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Jan 2022 08:08:11 -0800 (PST)
-Received: by mail-io1-f44.google.com with SMTP id q204so78116iod.8
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 08:08:09 -0800 (PST)
-X-Received: by 2002:a5e:de05:: with SMTP id e5mr1173380iok.136.1643213289315;
- Wed, 26 Jan 2022 08:08:09 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FJlQgMOdzOpMdf2t1XhINYD9th+quD5vXgXLujbMrXw=;
+        b=gnHyCuqNEb8Q02mj0CuyglhW+AEPr+iFA3vrhkVBHCP9dNICWqqE9j33hxIr1TVnYw
+         tAPuGhArv6Z32hbsKIkzBlAwg5OhmGQRs7T1VuswOFs7473GTOB/z/8b8kYZb9jzdAFY
+         J3QOK3Wq0K6+piFtmr5+/4E1xhP2Z9R1qBnREavV8rpye1SkOqtDICTGB0OfkwSZbUgx
+         LliSazqAJoTt0DklG0YVmCsq43ugP1XLtRwX7Q4ldYrub+0Tu0k3T1l5dEQAvcI1Pygr
+         iS4Z5JOvpLEfkKJVHnrcQ/xtLB2ZkK+7eEoxHaajKI9XO5AkcfW9yBl/m5oCGEma+bzl
+         KyMw==
+X-Gm-Message-State: AOAM532I94jPs35IZSNtxx/defq29euJf/G3nJ9jkRR1j9eg2s5F/3My
+        1Tab7PymTgfZzhszGW/ziBWE+92UAW0=
+X-Google-Smtp-Source: ABdhPJzTD24IB15DhwEOQaTAU9UVRYQRs92SBHaR2aTpmWbIBqvbdG21oKDt0iSc/VgjlbVpBNKFrA==
+X-Received: by 2002:a05:6a00:a20:b0:4bb:95f6:93b3 with SMTP id p32-20020a056a000a2000b004bb95f693b3mr23480200pfh.77.1643213468515;
+        Wed, 26 Jan 2022 08:11:08 -0800 (PST)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:35:cf50:7507:71bb:9b04])
+        by smtp.gmail.com with ESMTPSA id b9sm2555534pfm.154.2022.01.26.08.11.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 08:11:08 -0800 (PST)
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, hch@infradead.org,
+        m.szyprowski@samsung.com, robin.murphy@arm.com,
+        michael.h.kelley@microsoft.com
+Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vkuznets@redhat.com,
+        brijesh.singh@amd.com, konrad.wilk@oracle.com, hch@lst.de,
+        parri.andrea@gmail.com, thomas.lendacky@amd.com
+Subject: [PATCH 0/2] x86/hyperv/Swiotlb: Add swiotlb_alloc_from_low_pages switch
+Date:   Wed, 26 Jan 2022 11:10:51 -0500
+Message-Id: <20220126161053.297386-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220120064457.1.I337b8db7efaba8eb9c0ffd4da0d8c8133faf6f19@changeid>
- <CAD=FV=VEes8afsYDFT2z=AGeEPGqm93VzqK03aojePe=phH1BA@mail.gmail.com>
-In-Reply-To: <CAD=FV=VEes8afsYDFT2z=AGeEPGqm93VzqK03aojePe=phH1BA@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 26 Jan 2022 08:07:57 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=UQXr16pKphfTmJWe4hKqGZ2QzSA2FJvRoTF8pRk1KMkg@mail.gmail.com>
-Message-ID: <CAD=FV=UQXr16pKphfTmJWe4hKqGZ2QzSA2FJvRoTF8pRk1KMkg@mail.gmail.com>
-Subject: Re: [PATCH] gpu: drm: panel-edp: Add panels planned for sc7180-trogdor-pazquel
-To:     Grace Mi <grace.mi@ecs.corp-partner.google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Yunlong Jia <yunlong.jia@ecs.com.tw>,
-        Henry Sun <henrysun@google.com>,
-        Bob Moragues <moragues@chromium.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thierry Reding <thierry.reding@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-On Thu, Jan 20, 2022 at 8:26 AM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Wed, Jan 19, 2022 at 10:45 PM Grace Mi
-> <grace.mi@ecs.corp-partner.google.com> wrote:
-> >
-> > From: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
-> >
-> > We have added corresponding information:
-> >     [BOE]NV116WHM-N45 use delay_200_500_e50
-> >     [KDB]116N29-30NK-C007 use delay_200_500_e80_d50
-> >     [STA]2081116HHD028001-51D use delay_100_500_e200
-> > Add 3 panels & 2 delay.
-> >
-> > Signed-off-by: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
-> > Signed-off-by: Grace Mi <grace.mi@ecs.corp-partner.google.com>
-> > ---
-> >
-> >  drivers/gpu/drm/panel/panel-edp.c | 17 +++++++++++++++++
-> >  1 file changed, 17 insertions(+)
->
-> This looks good to me. I'll plan on landing it in drm-misc-next
-> sometime next week unless there are objections.
->
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Hyper-V Isolation VM may fail to allocate swiotlb bounce buffer due
+to there is no enough contiguous memory from 0 to 4G in some cases.
+Current swiotlb code allocate bounce buffer in the low end memory.
+This patchset adds a switch "swiotlb_alloc_from_low_pages" and it's
+set to true by default. Platform may clear it if necessary. Devices
+in Hyper-V Isolation VM may use memory above 4G as DMA memory and set
+the switch to false in order to avoid no enough contiguous memory in
+low end address space.
 
-Pushed to drm-misc-next:
+Tianyu Lan (2):
+  Swiotlb: Add swiotlb_alloc_from_low_pages switch
+  x86/hyperv: Set swiotlb_alloc_from_low_pages to false
 
-b889d89ad45f gpu: drm: panel-edp: Add panels planned for sc7180-trogdor-pazquel
+ arch/x86/kernel/cpu/mshyperv.c |  1 +
+ include/linux/swiotlb.h        |  1 +
+ kernel/dma/swiotlb.c           | 13 +++++++++++--
+ 3 files changed, 13 insertions(+), 2 deletions(-)
+
+-- 
+2.25.1
+
