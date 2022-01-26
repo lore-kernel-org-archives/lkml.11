@@ -2,228 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04385C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B179C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:57:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239441AbiAZJ5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:57:35 -0500
-Received: from foss.arm.com ([217.140.110.172]:56138 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232086AbiAZJ5d (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:57:33 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0B8531FB;
-        Wed, 26 Jan 2022 01:57:33 -0800 (PST)
-Received: from lpieralisi (e121166-lin.cambridge.arm.com [10.1.196.255])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3F66A3F766;
-        Wed, 26 Jan 2022 01:57:32 -0800 (PST)
-Date:   Wed, 26 Jan 2022 09:57:26 +0000
-From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        kernel-team@android.com, Jay Chen <jkchen@linux.alibaba.com>
-Subject: Re: [PATCH v3] irqchip/gic-v3-its: Reset each ITS's BASERn register
- before probe
-Message-ID: <20220126095726.GA23794@lpieralisi>
-References: <20220124133809.1291195-1-maz@kernel.org>
+        id S239450AbiAZJ5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:57:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25464 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239492AbiAZJ5q (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 04:57:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643191065;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NAAIIFATEqd80W11R9L9MXwM4GCrPUNUZiPXyoAGr5M=;
+        b=jMKqRpRmJE0M0ohH7TnybmXwLZcmtoGC/wCpoIK4wczvUXFsRXTbz4VMUTuuDLM7XzIyAd
+        S2b4ZmR+J/1MhypSmVKL8nLjes0JMciMmc1uj9VYsgqz9cbS1WyUHiv+XHxL7dmNac1mcw
+        C+2D06Ki61gO3jPv+2+hG4wBCsUtFA4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-672-B2JjIRltNDiDbXZcfa4JDQ-1; Wed, 26 Jan 2022 04:57:42 -0500
+X-MC-Unique: B2JjIRltNDiDbXZcfa4JDQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E5DE2100C62A;
+        Wed, 26 Jan 2022 09:57:39 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.241])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B3BA21F2FB;
+        Wed, 26 Jan 2022 09:56:57 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>,
+        Nadav Amit <nadav.amit@gmail.com>
+Subject: [PATCH RFC v2 1/9] mm: optimize do_wp_page() for exclusive pages in the swapcache
+Date:   Wed, 26 Jan 2022 10:55:49 +0100
+Message-Id: <20220126095557.32392-2-david@redhat.com>
+In-Reply-To: <20220126095557.32392-1-david@redhat.com>
+References: <20220126095557.32392-1-david@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124133809.1291195-1-maz@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 01:38:09PM +0000, Marc Zyngier wrote:
-> A recent bug report outlined that the way GICv4.1 is handled across
-> kexec is pretty bad. We can end-up in a situation where ITSs share
-> memory (this is the case when SVPET==1) and reprogram the base
-> registers, creating a situation where ITSs that are part of a given
-> affinity group see different pointers. Which is illegal. Boo.
-> 
-> In order to restore some sanity, reset the BASERn registers to 0
-> *before* probing any ITS. Although this isn't optimised at all,
-> this is only a once-per-boot cost, which shouldn't show up on
-> anyone's radar.
-> 
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Jay Chen <jkchen@linux.alibaba.com>
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-> Link: https://lore.kernel.org/r/20211216190315.GA14220@lpieralisi
-> ---
->  drivers/irqchip/irq-gic-v3-its.c | 114 +++++++++++++++++++++++++------
->  1 file changed, 93 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-> index 7b8f1ec0ff78..c09d99d5b637 100644
-> --- a/drivers/irqchip/irq-gic-v3-its.c
-> +++ b/drivers/irqchip/irq-gic-v3-its.c
-> @@ -4856,6 +4856,38 @@ static struct syscore_ops its_syscore_ops = {
->  	.resume = its_restore_enable,
->  };
->  
-> +static void __init __iomem *its_map_one(struct resource *res, int *err)
-> +{
-> +	void __iomem *its_base;
-> +	u32 val;
-> +
-> +	its_base = ioremap(res->start, SZ_64K);
-> +	if (!its_base) {
-> +		pr_warn("ITS@%pa: Unable to map ITS registers\n", &res->start);
-> +		*err = -ENOMEM;
-> +		return NULL;
-> +	}
-> +
-> +	val = readl_relaxed(its_base + GITS_PIDR2) & GIC_PIDR2_ARCH_MASK;
-> +	if (val != 0x30 && val != 0x40) {
-> +		pr_warn("ITS@%pa: No ITS detected, giving up\n", &res->start);
-> +		*err = -ENODEV;
-> +		goto out_unmap;
-> +	}
-> +
-> +	*err = its_force_quiescent(its_base);
-> +	if (*err) {
-> +		pr_warn("ITS@%pa: Failed to quiesce, giving up\n", &res->start);
-> +		goto out_unmap;
-> +	}
-> +
-> +	return its_base;
-> +
-> +out_unmap:
-> +	iounmap(its_base);
-> +	return NULL;
-> +}
-> +
->  static int its_init_domain(struct fwnode_handle *handle, struct its_node *its)
->  {
->  	struct irq_domain *inner_domain;
-> @@ -4963,29 +4995,14 @@ static int __init its_probe_one(struct resource *res,
->  {
->  	struct its_node *its;
->  	void __iomem *its_base;
-> -	u32 val, ctlr;
->  	u64 baser, tmp, typer;
->  	struct page *page;
-> +	u32 ctlr;
->  	int err;
->  
-> -	its_base = ioremap(res->start, SZ_64K);
-> -	if (!its_base) {
-> -		pr_warn("ITS@%pa: Unable to map ITS registers\n", &res->start);
-> -		return -ENOMEM;
-> -	}
-> -
-> -	val = readl_relaxed(its_base + GITS_PIDR2) & GIC_PIDR2_ARCH_MASK;
-> -	if (val != 0x30 && val != 0x40) {
-> -		pr_warn("ITS@%pa: No ITS detected, giving up\n", &res->start);
-> -		err = -ENODEV;
-> -		goto out_unmap;
-> -	}
-> -
-> -	err = its_force_quiescent(its_base);
-> -	if (err) {
-> -		pr_warn("ITS@%pa: Failed to quiesce, giving up\n", &res->start);
-> -		goto out_unmap;
-> -	}
-> +	its_base = its_map_one(res, &err);
-> +	if (!its_base)
-> +		return err;
->  
->  	pr_info("ITS %pR\n", res);
->  
-> @@ -5249,6 +5266,23 @@ static int its_cpu_memreserve_lpi(unsigned int cpu)
->  	return ret;
->  }
->  
-> +/* Mark all the BASER registers as invalid before they get reprogrammed */
-> +static int __init its_reset_one(struct resource *res)
-> +{
-> +	void __iomem *its_base;
-> +	int err, i;
-> +
-> +	its_base = its_map_one(res, &err);
-> +	if (!its_base)
-> +		return err;
-> +
-> +	for (i = 0; i < GITS_BASER_NR_REGS; i++)
-> +		gits_write_baser(0, its_base + GITS_BASER + (i << 3));
-> +
-> +	iounmap(its_base);
-> +	return 0;
-> +}
-> +
->  static const struct of_device_id its_device_id[] = {
->  	{	.compatible	= "arm,gic-v3-its",	},
->  	{},
-> @@ -5259,6 +5293,26 @@ static int __init its_of_probe(struct device_node *node)
->  	struct device_node *np;
->  	struct resource res;
->  
-> +	/*
-> +	 * Make sure *all* the ITS are reset before we probe any, as
-> +	 * they may be sharing memory. If any of the ITS fails to
-> +	 * reset, don't even try to go any further, as this could
-> +	 * result in something even worse.
-> +	 */
-> +	for (np = of_find_matching_node(node, its_device_id); np;
-> +	     np = of_find_matching_node(np, its_device_id)) {
-> +		int err;
-> +
-> +		if (!of_device_is_available(np) ||
-> +		    !of_property_read_bool(np, "msi-controller") ||
-> +		    of_address_to_resource(np, 0, &res))
-> +			continue;
-> +
-> +		err = its_reset_one(&res);
-> +		if (err)
-> +			return err;
-> +	}
-> +
->  	for (np = of_find_matching_node(node, its_device_id); np;
->  	     np = of_find_matching_node(np, its_device_id)) {
->  		if (!of_device_is_available(np))
-> @@ -5421,11 +5475,29 @@ static int __init gic_acpi_parse_madt_its(union acpi_subtable_headers *header,
->  	return err;
->  }
->  
-> +static int __init its_acpi_reset(union acpi_subtable_headers *header,
-> +				 const unsigned long end)
-> +{
-> +	struct acpi_madt_generic_translator *its_entry;
-> +	struct resource res;
-> +
-> +	its_entry = (struct acpi_madt_generic_translator *)header;
-> +	res = (struct resource) {
-> +		.start	= its_entry->base_address,
-> +		.end	= its_entry->base_address + ACPI_GICV3_ITS_MEM_SIZE - 1,
-> +		.flags	= IORESOURCE_MEM,
-> +	};
-> +
-> +	return its_reset_one(&res);
-> +}
-> +
->  static void __init its_acpi_probe(void)
->  {
->  	acpi_table_parse_srat_its();
-> -	acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_TRANSLATOR,
-> -			      gic_acpi_parse_madt_its, 0);
-> +	if (acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_TRANSLATOR,
-> +				  its_acpi_reset, 0) > 0)
-> +		acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_TRANSLATOR,
-> +				      gic_acpi_parse_madt_its, 0);
+Liang Zhang reported [1] that the current COW logic in do_wp_page() is
+sub-optimal when it comes to swap+read fault+write fault of anonymous
+pages that have a single user, visible via a performance degradation in
+the redis benchmark. Something similar was previously reported [2] by
+Nadav with a simple reproducer.
 
-Maybe it is worth adding a comment here as you did for DT if you
-can before merging it - to clarify the first acpi_table_parse_madt()
-call logic.
+Let's optimize for pages that have been added to the swapcache but only
+have an exclusive owner. Try removing the swapcache reference if there is
+hope that we're the exclusive user.
 
-Other than that:
+We will fail removing the swapcache reference in two scenarios:
+(1) There are additional swap entries referencing the page: copying
+    instead of reusing is the right thing to do.
+(2) The page is under writeback: theoretically we might be able to reuse
+    in some cases, however, we cannot remove the additional reference
+    and will have to copy.
 
-Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Further, we might have additional references from the LRU pagevecs,
+which will force us to copy instead of being able to reuse. We'll try
+handling such references for some scenarios next. Concurrent writeback
+cannot be handled easily and we'll always have to copy.
 
->  	acpi_its_srat_maps_free();
->  }
->  #else
-> -- 
-> 2.34.1
-> 
+While at it, remove the superfluous page_mapcount() check: it's
+implicitly covered by the page_count() for ordinary anon pages.
+
+[1] https://lkml.kernel.org/r/20220113140318.11117-1-zhangliang5@huawei.com
+[2] https://lkml.kernel.org/r/0480D692-D9B2-429A-9A88-9BBA1331AC3A@gmail.com
+
+Reported-by: Liang Zhang <zhangliang5@huawei.com>
+Reported-by: Nadav Amit <nadav.amit@gmail.com>
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ mm/memory.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
+
+diff --git a/mm/memory.c b/mm/memory.c
+index c125c4969913..bcd3b7c50891 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3291,19 +3291,27 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
+ 	if (PageAnon(vmf->page)) {
+ 		struct page *page = vmf->page;
+ 
+-		/* PageKsm() doesn't necessarily raise the page refcount */
+-		if (PageKsm(page) || page_count(page) != 1)
++		/*
++		 * We have to verify under page lock: these early checks are
++		 * just an optimization to avoid locking the page and freeing
++		 * the swapcache if there is little hope that we can reuse.
++		 *
++		 * PageKsm() doesn't necessarily raise the page refcount.
++		 */
++		if (PageKsm(page) || page_count(page) > 1 + PageSwapCache(page))
+ 			goto copy;
+ 		if (!trylock_page(page))
+ 			goto copy;
+-		if (PageKsm(page) || page_mapcount(page) != 1 || page_count(page) != 1) {
++		if (PageSwapCache(page))
++			try_to_free_swap(page);
++		if (PageKsm(page) || page_count(page) != 1) {
+ 			unlock_page(page);
+ 			goto copy;
+ 		}
+ 		/*
+-		 * Ok, we've got the only map reference, and the only
+-		 * page count reference, and the page is locked,
+-		 * it's dark out, and we're wearing sunglasses. Hit it.
++		 * Ok, we've got the only page reference from our mapping
++		 * and the page is locked, it's dark out, and we're wearing
++		 * sunglasses. Hit it.
+ 		 */
+ 		unlock_page(page);
+ 		wp_page_reuse(vmf);
+-- 
+2.34.1
+
