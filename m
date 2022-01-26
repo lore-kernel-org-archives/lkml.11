@@ -2,184 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BE8C63697
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C885FC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:46:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234265AbiAZLqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:46:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
+        id S234301AbiAZLqK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:46:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240984AbiAZLqD (ORCPT
+        with ESMTP id S240936AbiAZLqF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:46:03 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF04C061757
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:45:59 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id e28so17966828pfj.5
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:45:59 -0800 (PST)
+        Wed, 26 Jan 2022 06:46:05 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1AE6C061747
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:46:04 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id z10-20020a17090acb0a00b001b520826011so4339134pjt.5
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:46:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ventanamicro.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=b2YyWOge0M5kIT2ntqlrnr8NQs2OgZVVCHIbAnzaaKE=;
-        b=WWfym4P+R3+IwpIxkHRmeB3tynZEscCZnnZFQ1YzNukA01mkuDYl6d6i0ahPydblHO
-         AtQpFKqiEmopvLkUdF8SPT3UCWN2zo2PkJlketuHAyWOJs1Egydvx1C7wfNtGJK3pGsx
-         DIv2rwUpj/l6XDgrxw6d+aHzeeIJY8aBeKMyjw4HWN5NOIWWRTfyS4FCNE9ccyWlkGdb
-         Zf1j5vo2fJosqpjNgc7nwLvJaGWi9wGl1DB3ZFhfTbcFI9HvS1pX3SnT2qLvg3fnH0Ey
-         NWyuC6ckMkdcCBYNd2PTyVoqfPtqgAPpS6Lg/cUpo1nJY6xGWBu6z+Fnegr/1N7X2+1M
-         Hzhw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Qlm9yJ5575SFpR6IPywQKZmVoP3waSVFMhfeayBNTbA=;
+        b=NxPkbSYmWFaN95PyEIyPwgodGezgxN3X9MixZlR066DnPRYP1cobNH9jAB0s36cd6Q
+         ySyqYaENca2IZRgGQsDbpuJFvsHU6cJdWGNL1curR2mCiF8abcRZQmPiQzg/zhsMQ5JJ
+         QNzC6lLAd3RwZnM+Jc1hmNjgk7ltV6+5WXz6vpdS9M41r9UxCnPIRDujIbXdLnDT1Brv
+         XGJniw06BlrVTKgOvTCCvzeU9yuE7ayYWiVJn3FRJs7KZJ7M0NtnU5zARFaFfXGrWMwM
+         DyggnPkk1X3mse6C96lNLVMsMReVj905raBJcjodRFOJ9LmxzzryAcFoB1vnmSUEoQ/Q
+         6t1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b2YyWOge0M5kIT2ntqlrnr8NQs2OgZVVCHIbAnzaaKE=;
-        b=HmfHFirpYGMcgIoee+/caAqLVClmXYaTr7wGyJQTuKEzBHpqthrjDOB6JI/2Cf2qXP
-         1uHYHKSvtHtPjDfwtofIjw15MV6nRo2uJKvgbHNv9WJbv6CrohqMkxsP5iAHRVdzGATW
-         HgLQBiwgk6kk7hy9Krnn4ZopkGGxYOKNcBddR73SG2XEu5+ogGbNF4x4Ck6Rnn1+5/Bx
-         8Gh4PgnMhAtofEmPhya0kC+uCi0Nj4KuAT9qstZOeJxco5AehyLaOtbPpya31A9lDtaZ
-         BgTTzyouLqunyFnSByuQez6ee1kBxNur8rp3r+CuJ0hffV8jQ/iJIUkw+6++1zWHirRm
-         NZPg==
-X-Gm-Message-State: AOAM532LMtEDEeMLB4Gof0WbYFxlkQ3ycMoHmFc8KqiZjzo/DmNm1OJU
-        erI9x1nRbdVsJJB++pLQVH9ZDA==
-X-Google-Smtp-Source: ABdhPJyzaxql9iVXuLykTnyDGM1rb4BxxzxCMBfHaQkTumc+35DPn7h/HgwDnFeQSyGT+oLQfq6hHQ==
-X-Received: by 2002:a63:6f07:: with SMTP id k7mr18454510pgc.574.1643197558636;
-        Wed, 26 Jan 2022 03:45:58 -0800 (PST)
-Received: from sunil-ThinkPad-T490 ([49.206.3.187])
-        by smtp.gmail.com with ESMTPSA id na7sm3055210pjb.23.2022.01.26.03.45.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Qlm9yJ5575SFpR6IPywQKZmVoP3waSVFMhfeayBNTbA=;
+        b=5ORSk9yJunkUdKvJJO2xY0DYuShvVQcN9zHgl60+pISHi5Ra5OJulGTQnrzICGvmOU
+         HmgWdcE/EzQG/S+jfv0/7RQLmpuoS8W9kMefGeA2oH1+lJCsd3vqkZYZ0e5XmscPK3H6
+         iH5qT3rPyVQuXcfczxGCGqhkQ+GH1SFtXdgLX9yeVY6BuVfD7gWNiSPtyTMOAbGH6lmp
+         8gkTtYuPdTW4kurm39NW2PRu16n5tYWUFpUiP6Lq0dtuCcTVlBfp6EosuCzRUm8V6Z++
+         Qf8zIugC1NZ8h2L6Le4Bf2ZJTxhm6ZUrkcqCiYhKuYHGtA7DvHIBkPoFe9B9y2/5URqx
+         OQDA==
+X-Gm-Message-State: AOAM530VaBHYJBE+mquB4nsEyzBHeI64MsUgm1UAUp2D2/koMCHjfg9q
+        dUgboNdfu+hNhxAbQJfJhNtfIw==
+X-Google-Smtp-Source: ABdhPJx9kXQfLSUsJYLbLoE3i5jlnsAyM6/6+KfwVUFH8RIATnnVjIb0WUzj8hEixBetgKmmLHf28A==
+X-Received: by 2002:a17:902:8c97:b0:14a:ec66:bbb0 with SMTP id t23-20020a1709028c9700b0014aec66bbb0mr22332418plo.68.1643197564511;
+        Wed, 26 Jan 2022 03:46:04 -0800 (PST)
+Received: from localhost.localdomain ([122.167.221.23])
+        by smtp.gmail.com with ESMTPSA id nn2sm2994976pjb.35.2022.01.26.03.45.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 03:45:58 -0800 (PST)
-Date:   Wed, 26 Jan 2022 17:15:49 +0530
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
+        Wed, 26 Jan 2022 03:46:04 -0800 (PST)
+From:   Anup Patel <apatel@ventanamicro.com>
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Heinrich Schuchardt <xypron.glpk@gmx.de>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        Abner Chang <abner.chang@hpe.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>
-Subject: Re: [RFC PATCH 1/1] riscv/efi_stub: Add support for
- RISCV_EFI_BOOT_PROTOCOL
-Message-ID: <20220126114549.GA35654@sunil-ThinkPad-T490>
-References: <20220126110615.33371-1-sunilvl@ventanamicro.com>
- <20220126110615.33371-2-sunilvl@ventanamicro.com>
- <CAMj1kXGaBJX9qVXQXiFHPySfDz7SWYQ6+cbHvV5v3sw3tEv0Ow@mail.gmail.com>
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>
+Cc:     Sandeep Tripathy <milun.tripathy@gmail.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Liush <liush@allwinnertech.com>,
+        Anup Patel <anup@brainfault.org>, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvm-riscv@lists.infradead.org, Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH v10 8/8] RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt machine
+Date:   Wed, 26 Jan 2022 17:14:52 +0530
+Message-Id: <20220126114452.692512-9-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220126114452.692512-1-apatel@ventanamicro.com>
+References: <20220126114452.692512-1-apatel@ventanamicro.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXGaBJX9qVXQXiFHPySfDz7SWYQ6+cbHvV5v3sw3tEv0Ow@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 12:13:42PM +0100, Ard Biesheuvel wrote:
-> Hello Sunil,
-> 
-> On Wed, 26 Jan 2022 at 12:06, Sunil V L <sunilvl@ventanamicro.com> wrote:
-> >
-> > This patch adds the support for getting the boot hart ID in
-> > Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL.
-> >
-> > Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
-> > ---
-> >  drivers/firmware/efi/libstub/efistub.h    | 15 ++++++++++++
-> >  drivers/firmware/efi/libstub/riscv-stub.c | 28 ++++++++++++++++++++---
-> >  include/linux/efi.h                       |  1 +
-> >  3 files changed, 41 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-> > index edb77b0621ea..0428f8816942 100644
-> > --- a/drivers/firmware/efi/libstub/efistub.h
-> > +++ b/drivers/firmware/efi/libstub/efistub.h
-> > @@ -720,6 +720,21 @@ union efi_tcg2_protocol {
-> >         } mixed_mode;
-> >  };
-> >
-> > +typedef union riscv_efi_boot_protocol riscv_efi_boot_protocol_t;
-> > +
-> > +union riscv_efi_boot_protocol {
-> > +       struct {
-> > +               u64 revision;
-> > +               efi_status_t (__efiapi *get_boot_hartid)(
-> > +                                                        riscv_efi_boot_protocol_t *,
-> > +                                                        size_t *);
-> > +       };
-> > +       struct {
-> > +               u32 revision;
-> > +               u32 get_boot_hartid;
-> > +       } mixed_mode;
-> > +};
-> > +
-> 
-> You don't the mixed mode member here - this is for X64 kernels on IA32
-> firmware only.
+From: Anup Patel <anup.patel@wdc.com>
 
-Ah OK. Thanks for the feedback, Ard. Will remove it in next version.
+We enable RISC-V SBI CPU Idle driver for QEMU virt machine to test
+SBI HSM Supend on QEMU.
 
-Thanks
-Sunil
-> 
-> >  typedef union efi_load_file_protocol efi_load_file_protocol_t;
-> >  typedef union efi_load_file_protocol efi_load_file2_protocol_t;
-> >
-> > diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
-> > index 380e4e251399..c7add4eb5453 100644
-> > --- a/drivers/firmware/efi/libstub/riscv-stub.c
-> > +++ b/drivers/firmware/efi/libstub/riscv-stub.c
-> > @@ -46,12 +46,34 @@ static u32 get_boot_hartid_from_fdt(void)
-> >         return fdt32_to_cpu(*prop);
-> >  }
-> >
-> > +static u32 get_boot_hartid_from_efi(void)
-> > +{
-> > +       efi_guid_t boot_protocol_guid = RISCV_EFI_BOOT_PROTOCOL_GUID;
-> > +       efi_status_t status;
-> > +       riscv_efi_boot_protocol_t *boot_protocol;
-> > +       size_t boot_hart_id;
-> > +
-> > +       status = efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
-> > +                            (void **)&boot_protocol);
-> > +       if (status == EFI_SUCCESS) {
-> > +               status = efi_call_proto(boot_protocol,
-> > +                                       get_boot_hartid, &boot_hart_id);
-> > +               if (status == EFI_SUCCESS) {
-> > +                       return (u32)boot_hart_id;
-> > +               }
-> > +       }
-> > +       return U32_MAX;
-> > +}
-> > +
-> >  efi_status_t check_platform_features(void)
-> >  {
-> > -       hartid = get_boot_hartid_from_fdt();
-> > +       hartid = get_boot_hartid_from_efi();
-> >         if (hartid == U32_MAX) {
-> > -               efi_err("/chosen/boot-hartid missing or invalid!\n");
-> > -               return EFI_UNSUPPORTED;
-> > +               hartid = get_boot_hartid_from_fdt();
-> > +               if (hartid == U32_MAX) {
-> > +                       efi_err("/chosen/boot-hartid missing or invalid!\n");
-> > +                       return EFI_UNSUPPORTED;
-> > +               }
-> >         }
-> >         return EFI_SUCCESS;
-> >  }
-> > diff --git a/include/linux/efi.h b/include/linux/efi.h
-> > index ccd4d3f91c98..9822c730207c 100644
-> > --- a/include/linux/efi.h
-> > +++ b/include/linux/efi.h
-> > @@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
-> >  #define EFI_CONSOLE_OUT_DEVICE_GUID            EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
-> >  #define APPLE_PROPERTIES_PROTOCOL_GUID         EFI_GUID(0x91bd12fe, 0xf6c3, 0x44fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
-> >  #define EFI_TCG2_PROTOCOL_GUID                 EFI_GUID(0x607f766c, 0x7455, 0x42be,  0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
-> > +#define RISCV_EFI_BOOT_PROTOCOL_GUID           EFI_GUID(0xccd15fec, 0x6f73, 0x4eec,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
-> >  #define EFI_LOAD_FILE_PROTOCOL_GUID            EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
-> >  #define EFI_LOAD_FILE2_PROTOCOL_GUID           EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
-> >  #define EFI_RT_PROPERTIES_TABLE_GUID           EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
-> > --
-> > 2.25.1
-> >
+Signed-off-by: Anup Patel <anup.patel@wdc.com>
+Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+---
+ arch/riscv/Kconfig.socs           | 3 +++
+ arch/riscv/configs/defconfig      | 1 +
+ arch/riscv/configs/rv32_defconfig | 1 +
+ 3 files changed, 5 insertions(+)
+
+diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+index 6ec44a22278a..f4097a815201 100644
+--- a/arch/riscv/Kconfig.socs
++++ b/arch/riscv/Kconfig.socs
+@@ -36,6 +36,9 @@ config SOC_VIRT
+ 	select GOLDFISH
+ 	select RTC_DRV_GOLDFISH if RTC_CLASS
+ 	select SIFIVE_PLIC
++	select PM_GENERIC_DOMAINS if PM
++	select PM_GENERIC_DOMAINS_OF if PM && OF
++	select RISCV_SBI_CPUIDLE if CPU_IDLE
+ 	help
+ 	  This enables support for QEMU Virt Machine.
+ 
+diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+index a5e0482a4969..b8c882b70b02 100644
+--- a/arch/riscv/configs/defconfig
++++ b/arch/riscv/configs/defconfig
+@@ -20,6 +20,7 @@ CONFIG_SOC_SIFIVE=y
+ CONFIG_SOC_VIRT=y
+ CONFIG_SMP=y
+ CONFIG_HOTPLUG_CPU=y
++CONFIG_PM=y
+ CONFIG_CPU_IDLE=y
+ CONFIG_VIRTUALIZATION=y
+ CONFIG_KVM=m
+diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
+index d1b87db54d68..6f9a7c89bff9 100644
+--- a/arch/riscv/configs/rv32_defconfig
++++ b/arch/riscv/configs/rv32_defconfig
+@@ -20,6 +20,7 @@ CONFIG_SOC_VIRT=y
+ CONFIG_ARCH_RV32I=y
+ CONFIG_SMP=y
+ CONFIG_HOTPLUG_CPU=y
++CONFIG_PM=y
+ CONFIG_CPU_IDLE=y
+ CONFIG_VIRTUALIZATION=y
+ CONFIG_KVM=m
+-- 
+2.25.1
+
