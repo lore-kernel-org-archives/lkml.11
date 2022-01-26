@@ -2,131 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7408CC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:56:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68321C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233033AbiAZP4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 10:56:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:46189 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231444AbiAZP4F (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 10:56:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643212565;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FJWfgd90wDJ2caykgoOLYgRtS2Ouj0kY/I7mDEGleaM=;
-        b=PFsO1Nw9B3Y7WPti18QPRwchp+u2QqgBxCZ+jQgYvBJzBSSQhtlHRiDN4pEDq548ysySbz
-        bkBf+vcGG7zckPPeVIz4Lc8SaVeF5Ugbl8wleG/3GYN8qlvGXeltv5ZaqNKZllvNPxPAul
-        JvapjCz+KKCFLuKpYpl7CrE5Yvop+/0=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-209-MvTSPmT-OcWeLw1xVDMh0g-1; Wed, 26 Jan 2022 10:56:03 -0500
-X-MC-Unique: MvTSPmT-OcWeLw1xVDMh0g-1
-Received: by mail-wr1-f72.google.com with SMTP id s25-20020adfa299000000b001d8d032255fso4461211wra.14
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 07:56:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=FJWfgd90wDJ2caykgoOLYgRtS2Ouj0kY/I7mDEGleaM=;
-        b=h5/Dm7RNnbfPf44WvRtLZka16IzCIumeqVPWlJNCRE3juXdkR5FbPkeAWM/yg9iWQB
-         vaujmFfkTtqCu7rilRPv2e9t6atytXUwN6Cf5eDZKeVheHvT2ma275wIOMCY0dYmwNSV
-         iRfMVd1FDZq2alSwJRCUyLsLK5JyI8lQmUug6RsgFtROZeLrX66JfrcSlF2V7aMp0tzq
-         VE7Qnj3W0/ixO5JC1JsLcUu/kXyy9D6DSMHhpx5h40UkqDsL+FqfMLBw1P4z/dJm4mhA
-         Dj0BN8QbB0oyrKGYoHkytpmdjSZUc8Am4Y+BOqjrzdsO587YlLsXZWn5se4SNwvTUJRL
-         SezQ==
-X-Gm-Message-State: AOAM533o0MvPYkbxmFUIVYXB6/YvGhf5ofIa2mPqOrXGyvkoJV6Ur1SV
-        rGh1Eg5QwKXRofkYRVpahtizwbRNONhSENO7SZ2P+BN/EP/Wan1ogMiF32RWEj5wRcADE/pJ2Cj
-        XfN51VLCQ8yGnHdLmnInfqJ/iHKiG3s10Lgy3mNXZQwq2GTxE0n0Vf7RGA3NZ5iQiXX6peTUYPD
-        Qo
-X-Received: by 2002:a05:600c:3551:: with SMTP id i17mr7941102wmq.21.1643212562531;
-        Wed, 26 Jan 2022 07:56:02 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwRQ8DNnI8KrRxxFt7FdCM/y7wG2icqG9UafMU81NHIVWpIdY0LeJq8CZHEpbDd1boleaNUkA==
-X-Received: by 2002:a05:600c:3551:: with SMTP id i17mr7941071wmq.21.1643212562161;
-        Wed, 26 Jan 2022 07:56:02 -0800 (PST)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id l15sm3328294wmh.6.2022.01.26.07.56.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 07:56:01 -0800 (PST)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: nVMX: WARN on any attempt to allocate shadow VMCS
- for vmcs02
-In-Reply-To: <20220125220527.2093146-1-seanjc@google.com>
-References: <20220125220527.2093146-1-seanjc@google.com>
-Date:   Wed, 26 Jan 2022 16:56:00 +0100
-Message-ID: <87r18uh4of.fsf@redhat.com>
+        id S233428AbiAZP4W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 10:56:22 -0500
+Received: from mout.gmx.net ([212.227.15.15]:53185 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233161AbiAZP4U (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 10:56:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1643212548;
+        bh=E7ISE7GQD0/qoufruRmrS+ak1BLXOdtSXna02CfJuqE=;
+        h=X-UI-Sender-Class:Date:To:Cc:References:From:Subject:In-Reply-To;
+        b=Cror795FglamWfFgkSa+Z07laV66Fm+edlkcYlRiOJAYHlObebVw3UN20jJvzujlj
+         RbWvksoKzHnfTdndb7GMRXreo5Bx+6bQhUUzg4lVBU0zZ8wL60fX5aH+TJcGEcyxtp
+         Z4uwxeHeFkSvegc9qtizTzZyRioE6AL+90jMiRT4=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.143.57]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MRCOE-1mrnUG2sdQ-00NE5d; Wed, 26
+ Jan 2022 16:55:48 +0100
+Message-ID: <ac4e7277-d18d-fe2a-6bc8-9a003b21d5d0@gmx.de>
+Date:   Wed, 26 Jan 2022 16:54:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Content-Language: en-US
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Carlis <zhangxuezhi1@yulong.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
+ <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
+ <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
+ <3877516e-3db3-f732-b44f-7fe12b175226@gmx.de>
+ <75a10e6f-ade7-01d9-9523-9a1936f8a2cc@suse.de>
+ <YfFNhsPr4kS2/LXa@smile.fi.intel.com>
+ <df377b35-8913-a8c6-760b-073f462780cc@suse.de>
+From:   Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
+In-Reply-To: <df377b35-8913-a8c6-760b-073f462780cc@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:wLeX3lW85cf04BQA7+bhtz676rHQMTVZ4yZFry1X8quEdLDGNDN
+ 80kzr00Fs9Gk7oyOQx3m49TbT83qHKm9jCXlRejPx8sqILNasEeWRYrzBAg04s0HXuNdLAu
+ SqK7z87HbjY0Sh6ddxF+xL/xhDTK1x335kBGwuVj2SyzCnDOqua9W8PXmG4yLG21n8ruotj
+ AYP/XvyPGa6/7cJsOdViQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:lrySdbHoy2s=:fa2jRWfRaC0uf7ZMaZzVFT
+ xlqbQBSc7+Eerzi9kGXMhWjtJyxQ17EO63VknZkTGaB+j4SWSxJfVDBuDefsIl0d/xwjZOqtO
+ Nc6DoM7Im4XpjDd+FPDyqJwm006y3WkPqbPqJLhHc9S55QaWL78/sTNuNvYbWKo99sRw1HuCq
+ APb+oyT10QK3w5cpEnOGXjEzV3RdnlNmAtqz1zC5Y4RTTsZqmrN732uo8u5KpSn6mjRiMR7NV
+ XTasq+WI8fx0g9ip/TuDsOboemx6H8dgh2kzLy8IcANGXijoCWrFo75exsuq/VC2OI4OqwB9z
+ ajjgcf5+Ddj+85MttPofixjdpCC8Dme2YVBk1RP4HHSx4mzojM81gsNwgPxglNYqgWKMQcKTP
+ FIN2Ei9P6KyM3BPL0V29XTq6JfUFg0B/C1i5JlmfvfG2E0U5SYnMpd7kzYu0OLElvZ5g6fenG
+ p8HCDAA+TlKAOqAd5crJdFfV2W+DJ/AbH5oxD3aRhfRqwG/W8L3W79qiiIHNTZczV4hg+Qt2+
+ h5kSrHKr+O0lg2pbTDTVRImQ1JNjKP3FV/ew+/sKQhMUpcD8kBvKAhXhGYoiZsiOtPYM5RkOb
+ e+m7q7idd7ciOP20QNl2xuvWhifohWTLN3TICeeF2xL0myw8JfA8g+o+ANg20uveTs9x0Oo9k
+ N2galMyIMPUzlrWWepiKOXw2d3nGZt3PAy49/hpwVpya3aehtp8m2E6vIbPHlirTN2WtIKQuD
+ ApeSOQzY7fnCNWNthnHaBjZc8dczGXSBXyzleh/Ie60a9WnJhU620pzW1QmQJKO669U1AocgU
+ JZAdVLN0rcrkh0lJFLFOHVLvkzBCC3I2kEM8N+/ZImfMIwODAmdlkOgdkdQCJJatzG2GZOtU/
+ TGNm1j87iWiDVfRL29ohBSiahVpWrd6zVF/I/NCOQA7ZkHVbPCNuhZ6EuaBfALmuTfiFHNlfx
+ VRdJUWNFzhyEkENP58ilTZXLIGtSTZL3aOAJs/O60ADzGXoQ2Y+aEiBLqEnXfTmgJnkZnISqP
+ 79TnNQEsmlXMMTHFM2xlfAYZSEMk0ni38bEEc+19fYKt00kfqkIzWn7Geb/cqE0qiSW1mnbIn
+ D1UQB+8wjWo/EA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
-
-> WARN if KVM attempts to allocate a shadow VMCS for vmcs02.  KVM emulates
-> VMCS shadowing but doesn't virtualize it, i.e. KVM should never allocate
-> a "real" shadow VMCS for L2.
+On 1/26/22 16:02, Thomas Zimmermann wrote:
+> Hi
 >
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/vmx/nested.c | 22 ++++++++++++----------
->  1 file changed, 12 insertions(+), 10 deletions(-)
+> Am 26.01.22 um 14:32 schrieb Andy Shevchenko:
+>> On Wed, Jan 26, 2022 at 12:41:41PM +0100, Thomas Zimmermann wrote:
+>>> Am 26.01.22 um 11:59 schrieb Helge Deller:
+>>
+>> ...
+>>
+>>
+>>> It's always for the same reason: the hw is old and devs have moved on.
+>>
+>> It's pity to have a working system with an old hardware that no one in
+>> the kernel community gives a shit about because simply they are not in
+>> the same boat. Try to be on the people's position...
 >
-> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> index f235f77cbc03..92ee0d821a06 100644
-> --- a/arch/x86/kvm/vmx/nested.c
-> +++ b/arch/x86/kvm/vmx/nested.c
-> @@ -4851,18 +4851,20 @@ static struct vmcs *alloc_shadow_vmcs(struct kvm_vcpu *vcpu)
->  	struct loaded_vmcs *loaded_vmcs = vmx->loaded_vmcs;
->  
->  	/*
-> -	 * We should allocate a shadow vmcs for vmcs01 only when L1
-> -	 * executes VMXON and free it when L1 executes VMXOFF.
-> -	 * As it is invalid to execute VMXON twice, we shouldn't reach
-> -	 * here when vmcs01 already have an allocated shadow vmcs.
-> +	 * KVM allocates a shadow VMCS only when L1 executes VMXON and frees it
-> +	 * when L1 executes VMXOFF or the vCPU is forced out of nested
-> +	 * operation.  VMXON faults if the CPU is already post-VMXON, so it
-> +	 * should be impossible to already have an allocated shadow VMCS.  KVM
-> +	 * doesn't support virtualization of VMCS shadowing, so vmcs01 should
-> +	 * always be the loaded VMCS.
->  	 */
-> -	WARN_ON(loaded_vmcs == &vmx->vmcs01 && loaded_vmcs->shadow_vmcs);
-> +	if (WARN_ON(loaded_vmcs != &vmx->vmcs01 || loaded_vmcs->shadow_vmcs))
-> +		return loaded_vmcs->shadow_vmcs;
+> Yes, I do care about old hardware.
 
-Stupid question: why do we want to care about 'loaded_vmcs' at all,
-i.e. why can't we hardcode 'vmx->vmcs01' in alloc_shadow_vmcs()? The
-only caller is enter_vmx_operation() and AFAIU 'loaded_vmcs' will always
-be pointing to 'vmx->vmcs01' (as enter_vmx_operation() allocates
-&vmx->nested.vmcs02 so 'loaded_vmcs' can't point there!).
+Yes, I know. I saw various articles about it.
 
-> +
-> +	loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
-> +	if (loaded_vmcs->shadow_vmcs)
-> +		vmcs_clear(loaded_vmcs->shadow_vmcs);
->  
-> -	if (!loaded_vmcs->shadow_vmcs) {
-> -		loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
-> -		if (loaded_vmcs->shadow_vmcs)
-> -			vmcs_clear(loaded_vmcs->shadow_vmcs);
-> -	}
->  	return loaded_vmcs->shadow_vmcs;
->  }
->  
+> I made helpers for converting fbdev drivers to DRM. I even made the
+> initial commits for those drivers where I could find the HW on Ebay. [1]=
+> [1] https://gitlab.freedesktop.org/tzimmermann/linux/-/tree/fbconv-plus-=
+drivers
+
+Just out of curiosity, does the tgui driver you patched there
+is now supported by DRM? I couldn't find it (just the tridentfb fbdev driv=
+er),
+so I assume it's somehow handled by simpledrm instead?
+
+> I made sure that every single of them at least gets fbcon onto the
+> screen. So interested devs could start immediately. Yet, no one ever
+> showed up to convert even a single driver.
+Both Geert wrote about that he was trying to convert a driver. The same
+is true for Sven where he came up with a prelimarary visualizefx driver...
+Both had issues which currently prevent that those drivers get finished.
+
+> As it stands, 90s PCI hardware is currently supported by DRM's
+> simpledrm as long as the device has VESA.
+
+Good. Some of the drivers in fbdev are for non-x86 architectures
+and don't have a VESA BIOS. Is is possible that simpledrm could (theoretic=
+ally)
+support those too?
+
+> The performance is at least usable on AthlonXP-era computers. Now the
+> owners of these devices at least have a chance of using modern
+> graphics userspace.
+Yes.
+
+> That userspace is important: graphics drivers don't live in a vacuum.
+> There's no point in having one if it requires extra support from all
+> other components. And there's more:
 >
-> base-commit: edb9e50dbe18394d0fc9d0494f5b6046fc912d33
+> =C2=A0* Occasionally, fbdev gets in the way of DRM. Just this week, we f=
+ixed a related bug. [2]
+>
+> =C2=A0* Fbdev's mmap semantics is the reason why it's hard to do fast in=
+ DRM.
+>
+> =C2=A0* Maintaining both stacks, DRM and fbdev, adds work to kernel, use=
+rspace and distro devs.
+>
+> Therefore, anything we do that keeps fbdev alive is a step backwards and=
+ a burden on the overall Linux graphics community.
 
--- 
-Vitaly
+That's understood and I don't disagree.
+The earlier drivers are converted to DRM the better.
+I probably don't even have any issues with dropping fbdev & drivers for th=
+e
+x86, ARM64, s390x & ppc64 platforms - I think many older cards aren't used=
+ either
+used (anymore),
+or your simpledrm may cover the most common cards.
+I think the patches we currently jointly develop to disable fbcon accelera=
+tion
+is exactly going into this direction.
 
+The problems I see are mostly on non-x86 architectures or corner-case usag=
+es
+like embedded devices or special machines. They may be oldish, but still b=
+eing used.
+Those machines would completely loose their console without fbdev.
+
+> Please excuse my ranting, but fbdev proponents seem to be ignorant to
+> all these points. It's apparently all about 'my console is slow'.
+
+Your ranting is fair, but I wouldn't say I'm ignorant to your arguments.
+Of course performance is relevant, or would you exchange your car which
+today is capable to drive 100 mph with another car which only
+drives a maximum 10 mph?  (Yes, that's around the factor of speed decrease=
+ I see).
+Or even worse: suddenly not being allowed/able to drive your car at all?
+
+Helge
