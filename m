@@ -2,117 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AEB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BE72C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231963AbiAZW12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 17:27:28 -0500
-Received: from mga04.intel.com ([192.55.52.120]:55651 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229637AbiAZW1Z (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 17:27:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643236045; x=1674772045;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FiUdITY5Eu5ZGdXWjoskPBCnS9kcaGk9t5jjocwL+nc=;
-  b=Z7hxhhkMPclGjhCu5Rdt48eUd/WhjnreCR6Dxpn4/g6VzdgNM5pVwwC9
-   H+eqAv2QEqM+RCAjpi6mG6AhQ53RBYoNKPzNe7nuTx1r8PBPJx5PHodEg
-   le1FJ3O1zdOuKAc0cRlA1SWM10P3DM1FeJUYIHEWqAK7G71m19tGiIMsk
-   1e6RNfEYGOxg/rIlGHXK7kH/mFVvRBAmZNgcDJtDCsOJ963h8Zp+HuCLk
-   +TKeECzNeEBgpWAuiiTOddIk7OZB/TjTyrrDo0ujpiLXL+dhyicKRKFgK
-   oug8CjchNm+GR1iiLjfRRhQ01y3yf01BUklFFeZ+OYCSiPZ+hJ2Wou0dR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="245503598"
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="245503598"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 14:27:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="696391770"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 26 Jan 2022 14:27:23 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCql8-000Lj7-BJ; Wed, 26 Jan 2022 22:27:22 +0000
-Date:   Thu, 27 Jan 2022 06:26:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Quentin Perret <qperret@google.com>,
-        Will Deacon <willdeacon@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-trusty-5.10
- 4728/5866] arch/arm64/kvm/fpsimd.c:129:5: error: implicit declaration of
- function 'sve_cond_update_zcr_vq'
-Message-ID: <202201270637.CwoQKBGC-lkp@intel.com>
+        id S229953AbiAZWbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 17:31:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229597AbiAZWbP (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 17:31:15 -0500
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E40BC06173B
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 14:31:14 -0800 (PST)
+Received: by mail-ot1-x331.google.com with SMTP id o9-20020a9d7189000000b0059ee49b4f0fso753982otj.2
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 14:31:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cspukaFlNuPpy4+8Cpeu4TXQ6/rweaZWRIglmARlXtI=;
+        b=HKCNnx+jGJJkADStNKMs4G9pgWeOHv9cJloYZfNPZggjJ50vn6T4vNRKuHrgq1/Npu
+         IjUM1bKfceM0gOV10gxAzfz16RUhXSTB4OmNMI3psbedk66R8L9slNMWIi5sdTZ/DKzC
+         WPOX46tSKJx4Zh5CMaSt5jaynDyQl4p76rTrs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cspukaFlNuPpy4+8Cpeu4TXQ6/rweaZWRIglmARlXtI=;
+        b=3SEq6IMHlmgGOoH3TZdR0kmztA4dfLrpnQCiVLBOF16PX8jo4219rIxlVid66o0jNh
+         ihHymUQPSp+oxOLG0pBfkdWsDRfs1WyfrqDGvGMLG8Xp2b2TFo+FBewrdEheu9BBm6vB
+         CA2jpAHq976AJOfki2GbqP9R2h9X9Ld2y/OAj5QdGZYP+UL1ftKX3X7zOX8hBUdyE9t7
+         Njs9Z3a2PJBBt2+/jUmtojfMdj7Fa9pb2o5s6jkkGs7eI3hNC77OTNFGuHjXpwwqyq9M
+         z5vD0inhhpN92xr3/0XjrzUE+yaCT6Tdl6VeOgAykd/MS6p1LY8pdbsOYb1hY0yzK09y
+         njRg==
+X-Gm-Message-State: AOAM531XDob+JI0lYlY+KuEM+mSFhNNqZvP+beNekEsHlDlDaPjr7kSX
+        pk8asdNeu4QgYsCJq3fpHuNnq+MIiKz8NQw6tqnbkA==
+X-Google-Smtp-Source: ABdhPJwFd4e23GnR4SX0gCqw43jALR8CbpTM+5jsdmpC+ksI6IzORmC0SPijyruIE5/dthHYq1aiZgd2e6JbzaOqHxg=
+X-Received: by 2002:a05:6830:2b25:: with SMTP id l37mr533241otv.323.1643236273720;
+ Wed, 26 Jan 2022 14:31:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
+ <991e988b-7225-881b-a59a-33c3eae044be@suse.de> <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
+ <3877516e-3db3-f732-b44f-7fe12b175226@gmx.de> <b13c0634-e766-74db-ab1f-672f5d0c04d6@redhat.com>
+ <YfFMSkhbvHaR0YNE@smile.fi.intel.com> <f6ffe9bb-8683-4061-c876-1d559267ebae@redhat.com>
+ <YfFWmmJFtEB93jUi@smile.fi.intel.com> <3430838d-1c63-da49-b774-c5a883e7085f@redhat.com>
+ <YfFZkgE3wfPXLpYA@kroah.com> <20220126144524.GB1951@kadam>
+In-Reply-To: <20220126144524.GB1951@kadam>
+From:   Daniel Vetter <daniel@ffwll.ch>
+Date:   Wed, 26 Jan 2022 23:31:02 +0100
+Message-ID: <CAKMK7uGEFW4nd+W6PiT=uwSPz=pA6HKZXj6ePcdsAGiMDb3BxA@mail.gmail.com>
+Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Helge Deller <deller@gmx.de>, linux-staging@lists.linux.dev,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Carlis <zhangxuezhi1@yulong.com>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Lee Jones <lee.jones@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marc,
+dOn Wed, Jan 26, 2022 at 3:46 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> The other advantage of staging is the I don't think syzbot enables it.
+> I guess it's easier to persuade Dmitry to ignore STAGING than it was to
+> get him to disable FBDEV.  :P
+>
+> The memory corruption in fbdev was a real headache for everyone because
+> the stack traces ended up all over the kernel.
 
-FYI, the error/warning still remains.
+Uh Dmitry disabled all of FBDEV? That's a bit too much, since there's
+still a lot of distros shipping things. I don't recommend enabling
+neither fbdev nor fbcon and some hardening checks look for these
+(forgot which one). But if syzbot stops checking fbcon and fbdev stuff
+on top of drm drivers (where most of the problems should be gone
+because you can't change the resolution through the current fbdev
+emulation) then that essentially means fbdev really needs to be
+disabled in distros asap.
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-trusty-5.10
-head:   52cdd137fae0b001197a51646289e3cbdda921d5
-commit: b0e15c8c44275afef4aacfb1560e38b974b02ac8 [4728/5866] FROMGIT: KVM: arm64: Save/restore SVE state for nVHE
-config: arm64-randconfig-r022-20220124 (https://download.01.org/0day-ci/archive/20220127/202201270637.CwoQKBGC-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 2a1b7aa016c0f4b5598806205bdfbab1ea2d92c4)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/b0e15c8c44275afef4aacfb1560e38b974b02ac8
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-trusty-5.10
-        git checkout b0e15c8c44275afef4aacfb1560e38b974b02ac8
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
+Disabling the entire pile of hw drivers makes sense, because that's
+pretty hopeless imo.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Adding Dmitry to confirm.
 
-All errors (new ones prefixed by >>):
-
->> arch/arm64/kvm/fpsimd.c:129:5: error: implicit declaration of function 'sve_cond_update_zcr_vq' [-Werror,-Wimplicit-function-declaration]
-                                   sve_cond_update_zcr_vq(vcpu_sve_max_vq(vcpu) - 1,
-                                   ^
-   1 error generated.
-
-
-vim +/sve_cond_update_zcr_vq +129 arch/arm64/kvm/fpsimd.c
-
-   108	
-   109	/*
-   110	 * Write back the vcpu FPSIMD regs if they are dirty, and invalidate the
-   111	 * cpu FPSIMD regs so that they can't be spuriously reused if this vcpu
-   112	 * disappears and another task or vcpu appears that recycles the same
-   113	 * struct fpsimd_state.
-   114	 */
-   115	void kvm_arch_vcpu_put_fp(struct kvm_vcpu *vcpu)
-   116	{
-   117		unsigned long flags;
-   118		bool host_has_sve = system_supports_sve();
-   119		bool guest_has_sve = vcpu_has_sve(vcpu);
-   120	
-   121		local_irq_save(flags);
-   122	
-   123		if (vcpu->arch.flags & KVM_ARM64_FP_ENABLED) {
-   124			if (guest_has_sve) {
-   125				__vcpu_sys_reg(vcpu, ZCR_EL1) = read_sysreg_el1(SYS_ZCR);
-   126	
-   127				/* Restore the VL that was saved when bound to the CPU */
-   128				if (!has_vhe())
- > 129					sve_cond_update_zcr_vq(vcpu_sve_max_vq(vcpu) - 1,
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-Daniel
+--
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
