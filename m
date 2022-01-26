@@ -2,119 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF177C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 20:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B31C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 20:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbiAZU5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 15:57:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36432 "EHLO
+        id S231478AbiAZU5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 15:57:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231425AbiAZU44 (ORCPT
+        with ESMTP id S231445AbiAZU5G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 15:56:56 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E947BC061747
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 12:56:55 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id c6so2496717ybk.3
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 12:56:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iRMR5V4vy0P4D7D6HxdHshjQs9Ym01noa/r6EwRPAu0=;
-        b=oes9XtJSyShtzx2CSBVGbMTDKHa0l4kalzCjnYYyxsVbTsQorvNCdxvHS6Xl+X54y6
-         pdqAiycUiIq6AAx0LYmnhXnSo2d0kn4xhNIlipzNVIZp8lwNer0tDWyJl3TEi4bQ4KB+
-         SWMAKF9ezNb6zBFz1hY7fyxFEA16hGRfz7WXTKbfSZ4V3alS9s6Ade6Ae20COXz5oZEq
-         Tu6C+RwPdefEiuexRtHqXilwQRvbmBRACea3Dz/nFO0uikBYQr0R2ZfWRUVWryW/S6KD
-         pq3FQ4xTzz1llkK2fKyrnFYmacEZ6JR1V6pXmNRd5hvwEUU69UFjfvmwQlr8TvF05+9c
-         dUcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iRMR5V4vy0P4D7D6HxdHshjQs9Ym01noa/r6EwRPAu0=;
-        b=1bAVAZDpW0DjXweGAENp64l+agKhc1QLkAxSUchk3Fc56tf1l0euLM7BmexRbn2BKb
-         A3kVSAu+TpxxjLYXTXh6BQRmiXQSCWr1PflFIkAOFQ8daBYhvmRglOt6E4yxKAwCMrHN
-         1hCyw0Yr/GoK1zEJIgJVReMvGYRftiyK8MANyWuBQcpKckDj5KAHJ2QYkAC16iOfRE4U
-         H5yfVW9ThKkpw5ZacCKfjvhPtHXwRlyXg4QIs+hQ/oMyjMRSdD8LtKJ9XVBGcH3GPGV2
-         5ad70mTSR5P19X9NhpaHPJpjq2Oq4jOq2tzA29+GcBCP4RrrbSwJ2GumDVwVd8JtZaG+
-         EhWQ==
-X-Gm-Message-State: AOAM531BOCjlsPb6cGn4S7EzXsTNclUMdmnXX1WsgGOOhwcR2/a0kv/K
-        kTys9oJNZVQy47B4VzKI5BsFI7TsHuBQhs6Q7OyqKA==
-X-Google-Smtp-Source: ABdhPJz5X7xefsqfdpcr/O0hB6Yp3iMquc+kP8ciOakKuBqThWgY0V24etdk6Xb6ydBgpI8kSaTtR9k+jdyNoEDGFEo=
-X-Received: by 2002:a25:b11e:: with SMTP id g30mr1202035ybj.328.1643230614970;
- Wed, 26 Jan 2022 12:56:54 -0800 (PST)
+        Wed, 26 Jan 2022 15:57:06 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B725C06161C;
+        Wed, 26 Jan 2022 12:57:06 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jkbcw0LRfz4xmx;
+        Thu, 27 Jan 2022 07:57:03 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1643230625;
+        bh=cjuTzKhDkCsuuyLW9b96xzPl6QhdHMRo44uq08vCYms=;
+        h=Date:From:To:Cc:Subject:From;
+        b=EIgIIWetf8yFVGQHZc+zkqlkKeY6ufzzGm4FO39lFqtr292YNV696BmrRJb5mAOjV
+         wiH/mcWFZxlxjSjtcIXffHrC6xIzTCbVP8W7bvsPLh/ciXrOPBORmGIhCPNczqZ15c
+         fJFUIjG/U5i9hw5lP8HDt59GKiqC5Q62b2szkr74nU/G6akJZVWzt6A3h8lCcD3MOO
+         TGwIlnpzbgJkjblkjoZtAccs/nx3uh/WqcJgQ/NP5xy8JLEpAtSUlqvC+UfewhoBTr
+         6cjq8qaKPZDiM7bqKKHgXc0JZQ1tczD95+shzMGhfcQRUEnWj7MaxnNn5mIXWPRrGs
+         U16mqkg80ntUw==
+Date:   Thu, 27 Jan 2022 07:57:02 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commits in the net-next tree
+Message-ID: <20220127075702.1b0b73c2@canb.auug.org.au>
 MIME-Version: 1.0
-References: <CA++MVV3Jse4WZ-zr-SUWQz3Gk_dByU6JduVfUkvQNW+jgm9O4Q@mail.gmail.com>
- <YfFe9+XDPDIdSqF1@iki.fi> <YfFf8fvsDm8lQJgJ@iki.fi>
-In-Reply-To: <YfFf8fvsDm8lQJgJ@iki.fi>
-From:   Yael Tiomkin <yaelt@google.com>
-Date:   Wed, 26 Jan 2022 15:56:44 -0500
-Message-ID: <CAKoutNsaHNriobnsQ1X0Qfs=K+YN3JvfhTBnQqPL01AvjRm5EA@mail.gmail.com>
-Subject: Re: [PATCH v4] KEYS: encrypted: Instantiate key with user-provided
- decrypted data
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     Martin Ross <mross@pobox.com>, corbet@lwn.net, dhowells@redhat.com,
-        jejb@linux.ibm.com, jmorris@namei.org, keyrings@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module <linux-security-module@vger.kernel.org>,
-        serge@hallyn.com, Mimi Zohar <zohar@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/ho3yJJm664Ov7YLS+Zw88gM";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 9:51 AM Jarkko Sakkinen <jarkko@kernel.org> wrote:
->
-> On Wed, Jan 26, 2022 at 04:47:22PM +0200, Jarkko Sakkinen wrote:
-> > On Tue, Jan 18, 2022 at 01:26:05PM -0500, Martin Ross wrote:
-> > > Hi Jarkko,
-> > >
-> > > I have been working with Yael on this project so I thought I might add
-> > > a bit of background here around the use case that this series of
-> > > patches is trying to address.
-> > >
-> > > At a high level we are trying to provide users of encryption that have
-> > > key management hierarchies a better tradeoff between security and
-> > > availability.  For available and performance reasons master keys often
-> > > need to be released (or derived/wrapped keys created) outside of a KMS
-> > > to clients (which may in turn further wrap those keys in a series of
-> > > levels).  What we are trying to do is provide a mechanism where the
-> > > wrapping/unwrapping of these keys is not dependent on a remote call at
-> > > runtime.  e.g.  To unwrap a key if you are using AWS KMS or Google
-> > > Service you need to make an RPC.  In practice to defend against
-> > > availability or performance issues, designers end up building their
-> > > own kms and effectively encrypting everything with a DEK.  The DEK
-> > > encrypts same set as the master key thereby eliminating the security
-> > > benefit of keeping the master key segregated in the first place.
->
-> Mainly this part (would be enough to explain why it is there).
->
-> BR, Jarkko
+--Sig_/ho3yJJm664Ov7YLS+Zw88gM
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Hi Jarkko,
+Hi all,
 
-As for the commit message, WDYT about the following:
+Commits
 
-KEYS: encrypted: Instantiate key with user-provided decrypted data
+  04a0683f7db4 ("net: stmmac: convert to phylink_generic_validate()")
+  f4c296c90976 ("net: stmmac: remove phylink_config.pcs_poll usage")
+  d194923d51c9 ("net: stmmac: fill in supported_interfaces")
+  92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
+  be6ec5b70266 ("net: xpcs: add support for retrieving supported interface =
+modes")
 
-For availability and performance reasons master keys often need to be
-released outside of a KMS to clients. It would be beneficial to provide a
-mechanism where the wrapping/unwrapping of DEKs is not dependent
-on a remote call at runtime yet security is not (or only minimally) compromised.
-Master keys could be securely stored in the Kernel and be used to wrap/unwrap
-keys from userspace.
+are missing a Signed-off-by from their author.
 
-The encrypted.c class supports instantiation of encrypted keys with
-either an already-encrypted key material, or by generating new key
-material based on random numbers. This patch defines a new datablob
-format: [<format>] <master-key name> <decrypted data length>
-<decrypted data> that allows to inject and encrypt user-provided
-decrypted data.
+--=20
+Cheers,
+Stephen Rothwell
 
+--Sig_/ho3yJJm664Ov7YLS+Zw88gM
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-I want to make sure we're on the same page before publishing a new version.
+-----BEGIN PGP SIGNATURE-----
 
-Thanks,
-Yael
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHxtZ4ACgkQAVBC80lX
+0Gw4sAf9FhJRCPchnhM+UlW0VC/k89qoLcm6DAiZolMvGa2RVHkBIbKRJtjir0BH
+pmE/nQzOmFB+FvPSMST0TOk1CIoYglqz6gvZFkGx8vcQAU0iR+V3oT6zHBDwa5tu
+tqhMfNjoOe4ITQfEN8TXs2gg9f82DJ74+1XBkD9bWwjAKn+FBTiaICmXDsKf6Y+g
+jjNjt843AIegCaP1uwDBHZmDF0MdBI6dR80EMZctXpBN4DEr9rQdV6fDRb+lwCqy
+c3bsMjKJiztc3QvC8lD50DOy8PdYOTvN+exhDOI38nagSkTvpEbUl4XQlJaCPtvY
+kGW9Z38kYTrfxnJwWuLxMM3yXVKUSw==
+=SxhN
+-----END PGP SIGNATURE-----
+
+--Sig_/ho3yJJm664Ov7YLS+Zw88gM--
