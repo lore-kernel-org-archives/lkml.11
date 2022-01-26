@@ -2,213 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90405C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E5AAC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241793AbiAZNyh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:54:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241742AbiAZNyd (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:54:33 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A26C06174E
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 05:54:32 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id e8so24124344wrc.0
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 05:54:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=j5DHw++5tAvddKPWEbwkZrPCz25+eyIcBMQLIaqDR8M=;
-        b=QK2qVWjRWqo4582sMfMyTFMmXQAeowdYiAtWbCvyrrJ1qanCjHUYEHiu4tc2OCFmDp
-         pwh6MUZIH4MYMlBJSSG5EXdjOhIGzKcYyhVUr2hAs8OMpdXJ0HtNEq1vD4zpyB+RUbhS
-         HDADZ4VDqvd5PbHOWd9/wZj7+H3sNomRXTUTuO2UOzDjCUrOQ4jTAZ4kj+SOuzkneFZY
-         1uLnfuYjP4IMbdaQtqDHbHNGHNtaAdnRSt3RxkVFTa2acrrzDbB2rbMaq69BDskKd/bz
-         eKmJv0GvUUQekLp9G6ppcHqoBEDv7GcQEYNhnZ5uOJS8G6TQny1YPK7fe0vTlHkfC39q
-         /Zgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=j5DHw++5tAvddKPWEbwkZrPCz25+eyIcBMQLIaqDR8M=;
-        b=Tsf5U5ngaIhCDBC2VdMChis+oBOcZBWGxGmxiuHEycmDGoaflNGsVFVQqfUyKCQgX/
-         dkrOhqH+mss0+C/EyJMNQCEqDTHs5U7L09JPLwhEKtTQE/JCiaFtWpqYVw9M4Z6w3faw
-         u7mp9VrKZGWhTzyPlJwEI55AE4Z8Wo1DeChsbYMmaV+vyAwYVGhuPuQ8+u/9GqH15ZNo
-         /aNgEmbGdLV+JoNV+M5nCHOnNy5t3kRStK23UdmK9PXJ+yYU+HArzeILeyCv2lU14Mem
-         0xUexJvpFRMCytZfXfh0LvOBnMtFurdmDMaZ+ji7k10Qhee6gbX0ZRyDhkgZQ+5MWYYI
-         h0rg==
-X-Gm-Message-State: AOAM5311gZrOQfNyzSn6nKtxgIhUb92RyFn6UdiM2yDbPE5xOPH9N/PP
-        gjqT3UT1KeW7ImHjPpMZWvJTnA==
-X-Google-Smtp-Source: ABdhPJzfSxA2l/rkEBSRpeFoNTwKJgB6mIseDCE+80R4gA9/cEAhWvL+LUgMyWex/xS4dHjA5PF4kw==
-X-Received: by 2002:a5d:6a4f:: with SMTP id t15mr23339777wrw.392.1643205271153;
-        Wed, 26 Jan 2022 05:54:31 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id n15sm3356593wmr.26.2022.01.26.05.54.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 05:54:30 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     robh+dt@kernel.org, gregkh@linuxfoundation.org
-Cc:     devicetree@vger.kernel.org, ekangupt@qti.qualcomm.com,
-        bkumar@qti.qualcomm.com, linux-kernel@vger.kernel.org,
-        srini@kernel.org, bjorn.andersson@linaro.org,
-        linux-arm-msm@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v3 05/12] misc: fastrpc: add secure domain support
-Date:   Wed, 26 Jan 2022 13:52:57 +0000
-Message-Id: <20220126135304.16340-6-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220126135304.16340-1-srinivas.kandagatla@linaro.org>
-References: <20220126135304.16340-1-srinivas.kandagatla@linaro.org>
+        id S241822AbiAZNyl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:54:41 -0500
+Received: from foss.arm.com ([217.140.110.172]:41392 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241745AbiAZNye (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 08:54:34 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F007C1FB;
+        Wed, 26 Jan 2022 05:54:32 -0800 (PST)
+Received: from [192.168.178.6] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A06E23F793;
+        Wed, 26 Jan 2022 05:54:29 -0800 (PST)
+Subject: Re: [PATCH v3] sched/fair: Fix fault in reweight_entity
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>, peterz@infradead.org
+Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        Daniel Jordan <daniel.m.jordan@oracle.com>,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+References: <20220125193403.778497-1-tadeusz.struk@linaro.org>
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+Message-ID: <bb01425b-0f6a-e69f-c24b-567821c1472f@arm.com>
+Date:   Wed, 26 Jan 2022 14:53:50 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20220125193403.778497-1-tadeusz.struk@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ADSP/MDSP/SDSP are by default secured, which means it can only be loaded
-with a Signed process.
-Where as CDSP can be either be secured/unsecured. non-secured Compute DSP
-would allow users to load unsigned process and run hexagon instructions,
-but blocking access to secured hardware within the DSP. Where as signed
-process with secure CDSP would be allowed to access all the dsp resources.
+On 25/01/2022 20:34, Tadeusz Struk wrote:
+> Syzbot found a GPF in reweight_entity. This has been bisected to commit
+> 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
+> 
+> There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
+> within a thread group that causes a null-ptr-deref in reweight_entity()
+> in CFS. The scenario is that the main process spawns number of new
+> threads, which then call setpriority(PRIO_PGRP, 0, -20), wait, and exit.
+> For each of the new threads the copy_process() gets invoked, which adds
+> the new task_struct and calls sched_post_fork() for it.
+> 
+> In the above scenario there is a possibility that setpriority(PRIO_PGRP)
+> and set_one_prio() will be called for a thread in the group that is just
+> being created by copy_process(), and for which the sched_post_fork() has
+> not been executed yet. This will trigger a null pointer dereference in
+> reweight_entity(), as it will try to access the run queue pointer, which
+> hasn't been set. This results it a crash as shown below:
+> 
+> KASAN: null-ptr-deref in range [0x00000000000000a0-0x00000000000000a7]
+> CPU: 0 PID: 2392 Comm: reduced_repro Not tainted 5.16.0-11201-gb42c5a161ea3
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
+> RIP: 0010:reweight_entity+0x15d/0x440
+> RSP: 0018:ffffc900035dfcf8 EFLAGS: 00010006
+> Call Trace:
+> <TASK>
+> reweight_task+0xde/0x1c0
+> set_load_weight+0x21c/0x2b0
+> set_user_nice.part.0+0x2d1/0x519
+> set_user_nice.cold+0x8/0xd
+> set_one_prio+0x24f/0x263
+> __do_sys_setpriority+0x2d3/0x640
+> __x64_sys_setpriority+0x84/0x8b
+> do_syscall_64+0x35/0xb0
+> entry_SYSCALL_64_after_hwframe+0x44/0xae
+> </TASK>
+> ---[ end trace 9dc80a9d378ed00a ]---
+> 
+> Before the mentioned change the cfs_rq pointer for the task  has been
+> set in sched_fork(), which is called much earlier in copy_process(),
+> before the new task is added to the thread_group.
+> Now it is done in the sched_post_fork(), which is called after that.
+> To fix the issue the update_load condition passed to set_load_weight()
+> in set_user_nice() and __sched_setscheduler() has been changed from
+> always true to true if the task->state != TASK_NEW.
+> 
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Juri Lelli <juri.lelli@redhat.com>
+> Cc: Vincent Guittot <vincent.guittot@linaro.org>
+> Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Ben Segall <bsegall@google.com>
+> Cc: Mel Gorman <mgorman@suse.de>
+> Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
+> Cc: Zhang Qiao <zhangqiao22@huawei.com>
+> Cc: Daniel Jordan <daniel.m.jordan@oracle.com>
+> Cc: stable@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> 
+> Link: https://syzkaller.appspot.com/bug?id=9d9c27adc674e3a7932b22b61c79a02da82cbdc1
+> Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
+> Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+> ---
+> Changes in v3:
+> - Removed the new check and changed the update_load condition from
+>   always true to true if p->state != TASK_NEW
+> 
+> Changes in v2:
+> - Added a check in set_user_nice(), and return from there if the task
+>   is not fully setup instead of returning from reweight_entity()
+> ---
+> ---
+>  kernel/sched/core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index 848eaa0efe0e..3d7ede06b971 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -6921,7 +6921,7 @@ void set_user_nice(struct task_struct *p, long nice)
+>  		put_prev_task(rq, p);
+>  
+>  	p->static_prio = NICE_TO_PRIO(nice);
+> -	set_load_weight(p, true);
+> +	set_load_weight(p, !(READ_ONCE(p->__state) & TASK_NEW));
+>  	old_prio = p->prio;
+>  	p->prio = effective_prio(p);
+>  
+> @@ -7212,7 +7212,7 @@ static void __setscheduler_params(struct task_struct *p,
+>  	 */
+>  	p->rt_priority = attr->sched_priority;
+>  	p->normal_prio = normal_prio(p);
+> -	set_load_weight(p, true);
+> +	set_load_weight(p, !(READ_ONCE(p->__state) & TASK_NEW));
+>  }
 
-This patch adds basic code to create device nodes as per device tree property.
+Can we then not get rid of `bool update_load` parameter of
+set_load_weight() completely?
 
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- drivers/misc/fastrpc.c | 57 ++++++++++++++++++++++++++++++++++--------
- 1 file changed, 47 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index d5fafbe3c709..9eadbcf451ef 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -240,12 +240,15 @@ struct fastrpc_channel_ctx {
- 	/* Flag if dsp attributes are cached */
- 	bool valid_attributes;
- 	u32 dsp_attributes[FASTRPC_MAX_DSP_ATTRIBUTES];
-+	struct fastrpc_device *secure_fdevice;
- 	struct fastrpc_device *fdevice;
-+	bool secure;
- };
+@@ -1214,8 +1214,9 @@ int tg_nop(struct task_group *tg, void *data)
+ }
+ #endif
  
- struct fastrpc_device {
- 	struct fastrpc_channel_ctx *cctx;
- 	struct miscdevice miscdev;
-+	bool secure;
- };
- 
- struct fastrpc_user {
-@@ -1683,7 +1686,7 @@ static int fastrpc_req_mem_map(struct fastrpc_user *fl, char __user *argp)
- 		return -EFAULT;
- 
- 	/* create SMMU mapping */
--	err = fastrpc_map_create(fl, req.fd, req.length, &map);
-+	err = fastrpc_map_create(fl, req.fd, req.length, 0, &map);
- 	if (err) {
- 		dev_err(dev, "failed to map buffer, fd = %d\n", req.fd);
- 		return err;
-@@ -1878,7 +1881,7 @@ static struct platform_driver fastrpc_cb_driver = {
- };
- 
- static int fastrpc_device_register(struct device *dev, struct fastrpc_channel_ctx *cctx,
--				   const char *domain)
-+				   bool is_secured, const char *domain)
+-static void set_load_weight(struct task_struct *p, bool update_load)
++static void set_load_weight(struct task_struct *p)
  {
- 	struct fastrpc_device *fdev;
- 	int err;
-@@ -1887,15 +1890,21 @@ static int fastrpc_device_register(struct device *dev, struct fastrpc_channel_ct
- 	if (!fdev)
- 		return -ENOMEM;
++       int task_new = READ_ONCE(p->__state) & TASK_NEW;
+        int prio = p->static_prio - MAX_RT_PRIO;
+        struct load_weight *load = &p->se.load;
  
-+	fdev->secure = is_secured;
- 	fdev->cctx = cctx;
- 	fdev->miscdev.minor = MISC_DYNAMIC_MINOR;
- 	fdev->miscdev.fops = &fastrpc_fops;
--	fdev->miscdev.name = devm_kasprintf(dev, GFP_KERNEL, "fastrpc-%s", domain);
-+	fdev->miscdev.name = devm_kasprintf(dev, GFP_KERNEL, "fastrpc-%s%s",
-+					    domain, is_secured ? "-secure" : "");
- 	err = misc_register(&fdev->miscdev);
--	if (err)
-+	if (err) {
- 		kfree(fdev);
--	else
--		cctx->fdevice = fdev;
-+	} else {
-+		if (is_secured)
-+			cctx->secure_fdevice = fdev;
-+		else
-+			cctx->fdevice = fdev;
-+	}
- 
- 	return err;
- }
-@@ -1906,6 +1915,7 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
- 	struct fastrpc_channel_ctx *data;
- 	int i, err, domain_id = -1;
- 	const char *domain;
-+	bool secure_dsp;
- 
- 	err = of_property_read_string(rdev->of_node, "label", &domain);
- 	if (err) {
-@@ -1929,10 +1939,31 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
- 	if (!data)
- 		return -ENOMEM;
- 
--	err = fastrpc_device_register(rdev, data, domains[domain_id]);
--	if (err) {
--		kfree(data);
--		return err;
-+
-+	secure_dsp = !(of_property_read_bool(rdev->of_node, "qcom,non-secure-domain"));
-+	data->secure = secure_dsp;
-+
-+	switch (domain_id) {
-+	case ADSP_DOMAIN_ID:
-+	case MDSP_DOMAIN_ID:
-+	case SDSP_DOMAIN_ID:
-+		err = fastrpc_device_register(rdev, data, secure_dsp, domains[domain_id]);
-+		if (err)
-+			goto fdev_error;
-+		break;
-+	case CDSP_DOMAIN_ID:
-+		/* Create both device nodes so that we can allow both Signed and Unsigned PD */
-+		err = fastrpc_device_register(rdev, data, true, domains[domain_id]);
-+		if (err)
-+			goto fdev_error;
-+
-+		err = fastrpc_device_register(rdev, data, false, domains[domain_id]);
-+		if (err)
-+			goto fdev_error;
-+		break;
-+	default:
-+		err = -EINVAL;
-+		goto fdev_error;
- 	}
- 
- 	kref_init(&data->refcount);
-@@ -1946,6 +1977,9 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
- 	data->rpdev = rpdev;
- 
- 	return of_platform_populate(rdev->of_node, NULL, NULL, rdev);
-+fdev_error:
-+	kfree(data);
-+	return err;
- }
- 
- static void fastrpc_notify_users(struct fastrpc_user *user)
-@@ -1972,6 +2006,9 @@ static void fastrpc_rpmsg_remove(struct rpmsg_device *rpdev)
- 	if (cctx->fdevice)
- 		misc_deregister(&cctx->fdevice->miscdev);
- 
-+	if (cctx->secure_fdevice)
-+		misc_deregister(&cctx->secure_fdevice->miscdev);
-+
- 	of_platform_depopulate(&rpdev->dev);
- 
- 	cctx->rpdev = NULL;
--- 
-2.21.0
+@@ -1232,7 +1233,7 @@ static void set_load_weight(struct task_struct *p, bool update_load)
+         * SCHED_OTHER tasks have to update their load when changing their
+         * weight
+         */
+-       if (update_load && p->sched_class == &fair_sched_class) {
++       if (!task_new && p->sched_class == &fair_sched_class) {
+                reweight_task(p, prio);
+        } else {
+                load->weight = scale_load(sched_prio_to_weight[prio]);
 
+
+p in sched_fork() would have `p->__state = TASK_NEW` and in sched_init()
+`init_task->sched_class is NULL so != &fair_sched_class`.
