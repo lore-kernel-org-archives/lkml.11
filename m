@@ -2,96 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E13C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 621CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232727AbiAZX5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 18:57:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49860 "EHLO
+        id S232783AbiAZX6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 18:58:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiAZX5l (ORCPT
+        with ESMTP id S229823AbiAZX6M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 18:57:41 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803CFC06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:57:41 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id r59so1120787pjg.4
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:57:41 -0800 (PST)
+        Wed, 26 Jan 2022 18:58:12 -0500
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D03AC06161C
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:58:12 -0800 (PST)
+Received: by mail-pj1-x104a.google.com with SMTP id w15-20020a17090aea0f00b001b53b829d6bso656472pjy.5
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:58:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aKDJjrxw99oaoGuyysDvfB2GBHozPwxZDO5K9D5Zwlo=;
-        b=JVlZvzaGbk5Kh3oX3SgJL9OdKPOpg8MmZJPCl0V43218KTTRvE/FXF/bz2FwhwgROo
-         1pbAcoufXGeqNAS7IsLS20/8w0eo0snQsrBTr2o0zEJe6zLlBPsPNDSL0l/Ea0E7Uhx3
-         EW48vhsDEUGnBQY0IwwTSv2N50UXHbdjcXuu5m5vktRPK5ycCGb69geMjtozDAQMI+nR
-         9siWzcu/q8I6QbfUputbNeS/Hj1Jb4NrGg7EIZo4ZinaFpIKvEUEe8AtRmKRJK/FwRLP
-         AGgzTXR6BpnxNXgX0x66elkTwqUF8YwLPkaWXSPE4aN9LL3VmF4hsPjsXSXMWqYf9d0/
-         /FfA==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=okrQu2VSlzKkLZmDYcnmzL0C8aPu3r9sPHmlPe5ENII=;
+        b=Mt8LOMhIs1dO4iJ8XfSrZOam3/YWQbcEFBfKm6JvixzqsAeChMqG2N0u2zPKpVRJBB
+         DpTTta8O8spSNnZwCB+PAycUj3qpfr6xP6aoo2sHQN1g7sLocm/W6gtP8akRWCSS7NlT
+         TdsE8145oQssomt3rUzLuP4IgOxONlw/S20ksU+xHSuONEQ5z0vxzAGYK4lwfR6zCRWQ
+         7SY1qFF8Y8Dtk1Zna0ZFj7xWDx9zjqDT6ae/Tu/W785s6pif+AjFOWYVnBUdDatWAcMH
+         IJ6XixGMTMYX6PQzcMYlBhgOG0qUBXSoJMKB+s+kiiTV4so+MtmqnzDCSRqS3Q0UvKfN
+         b+ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aKDJjrxw99oaoGuyysDvfB2GBHozPwxZDO5K9D5Zwlo=;
-        b=NZReVANWBLfiIR53o9LIkDEWTLIQZ4haIGMRS87e31p6cpychymndqXX7sJ7GdGU9c
-         80uNPwTma/ZB653PXtlAr6hhnz0/zbMM5hz8pw2UH+ue62keMJhkJFbr6xSfz7FUuE/n
-         yiWucxECgF+jlQxh51QvyOq4a/97PQuwOVjWusRo8eDCk6cB9yQ9RCkszP1cpWP4p34Y
-         Ms7KizMt1vUWba1dHprfgM6cgmfdy45k5wMYIXCR22ogjt/UFjqPz8vRVcvNFnDhyNUp
-         t6vB8z9WLQqaV2ELC0A93k4eCyW1Io9IATarONSPvy7XZ+ojmL/V/kTmxKUbjA9rC2N+
-         M3AQ==
-X-Gm-Message-State: AOAM533hjLC3BiNGZ7/g338reILkFP4P1lJuARB7hKS/kwcaJ2AlkKk5
-        /w6KP5XjnACg0lDSUs7Uy0w=
-X-Google-Smtp-Source: ABdhPJwzgqWb0mqT6jUi/+qs1jAD9USgSpE2wrj5W8iphk9NJCE8wbjq+XwuqUW9r/7vWK4+uYK/rQ==
-X-Received: by 2002:a17:902:6a82:: with SMTP id n2mr731804plk.129.1643241461123;
-        Wed, 26 Jan 2022 15:57:41 -0800 (PST)
-Received: from localhost.localdomain (192.243.120.23.16clouds.com. [192.243.120.23])
-        by smtp.gmail.com with ESMTPSA id f8sm3465701pfj.177.2022.01.26.15.57.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 15:57:40 -0800 (PST)
-From:   davidcomponentone@gmail.com
-To:     jk@ozlabs.org
-Cc:     davidcomponentone@gmail.com, joel@jms.id.au, alistair@popple.id.au,
-        eajames@linux.ibm.com, linux-fsi@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] fsi: master-ast-cf: replace snprintf with sysfs_emit
-Date:   Thu, 27 Jan 2022 07:57:28 +0800
-Message-Id: <07ad7a3621b9f92e291710ec58225a5e4580a46e.1643183118.git.yang.guang5@zte.com.cn>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=okrQu2VSlzKkLZmDYcnmzL0C8aPu3r9sPHmlPe5ENII=;
+        b=5BgauU3Nj5LqA0yeXF/jthZyMu8o0qgetjML651xrQJMNhbBwoahzSt3uVAuqzrrN0
+         3LBUllOI2UP/X7/4hpYq+ZhL17Fh322d7W9gxk1w5dYaH96jV5dDAdpJzHJXoQ0u6ADP
+         vwG1NtTVrY/kzEg4mqDpFgegjABdnyotqDVyJkNFXDfY01cKk20ROZwrM4MAFkieGdKY
+         5t22QW5b8q8EAYtclIuB0pNZKV0SsTcv+XpBu2bFs9Nur11fH4aVxgdBXwT8KfAA/hq+
+         olnZoq5khUCT/TyDlfz37L9fq4eMSAuHQ2oDrX1jbEhCRqSPKRam/jEnN2zgQZr9WT0w
+         8w1A==
+X-Gm-Message-State: AOAM532S3YaghR9+t6XtH83IWiW/jTbE/aChwEnNFK5Ez/rDwJSVcj1y
+        EQLRD+75iZn/NCTyPA/1nAvvkF8G1zfviA==
+X-Google-Smtp-Source: ABdhPJzUAryUJdlCf6CchFAhgLHT/3EeL7pC2SF8tvOaQvVpONSgmaVYy4N3LRnXp0to4bDTgcgXH2jCM5doLA==
+X-Received: from wonchungspecialist.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1440])
+ (user=wonchung job=sendgmr) by 2002:a05:6a00:b82:: with SMTP id
+ g2mr1128038pfj.33.1643241491582; Wed, 26 Jan 2022 15:58:11 -0800 (PST)
+Date:   Wed, 26 Jan 2022 23:58:07 +0000
+Message-Id: <20220126235807.3164317-1-wonchung@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+Subject: [PATCH] ACPI: device_sysfs: Add sysfs support for _PLD
+From:   Won Chung <wonchung@google.com>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Won Chung <wonchung@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+When ACPI table includes _PLD fields for a device, create a new file
+(pld) in sysfs to share _PLD fields.
 
-coccinelle report:
-./drivers/fsi/fsi-master-ast-cf.c:1086:8-16:
-WARNING: use scnprintf or sprintf
-
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Signed-off-by: Won Chung <wonchung@google.com>
 ---
- drivers/fsi/fsi-master-ast-cf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/device_sysfs.c | 42 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/drivers/fsi/fsi-master-ast-cf.c b/drivers/fsi/fsi-master-ast-cf.c
-index 24292acdbaf8..e33c1cfb44cd 100644
---- a/drivers/fsi/fsi-master-ast-cf.c
-+++ b/drivers/fsi/fsi-master-ast-cf.c
-@@ -1083,7 +1083,7 @@ static ssize_t external_mode_show(struct device *dev,
- {
- 	struct fsi_master_acf *master = dev_get_drvdata(dev);
- 
--	return snprintf(buf, PAGE_SIZE - 1, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			master->external_mode ? 1 : 0);
+diff --git a/drivers/acpi/device_sysfs.c b/drivers/acpi/device_sysfs.c
+index d5d6403ba07b..8d4df5fb1c45 100644
+--- a/drivers/acpi/device_sysfs.c
++++ b/drivers/acpi/device_sysfs.c
+@@ -509,6 +509,40 @@ static ssize_t status_show(struct device *dev, struct device_attribute *attr,
  }
+ static DEVICE_ATTR_RO(status);
  
++static ssize_t pld_show(struct device *dev, struct device_attribute *attr,
++			char *buf)
++{
++	struct acpi_device *acpi_dev = to_acpi_device(dev);
++	acpi_status status;
++	struct acpi_pld_info *pld;
++
++	status = acpi_get_physical_device_location(acpi_dev->handle, &pld);
++	if (ACPI_FAILURE(status))
++		return -ENODEV;
++
++	return sprintf(buf, "GROUP_TOKEN=%u\n"
++		"GROUP_POSITION=%u\n"
++		"USER_VISIBLE=%u\n"
++		"DOCK=%u\n"
++		"BAY=%u\n"
++		"LID=%u\n"
++		"PANEL=%u\n"
++		"HORIZONTAL_POSITION=%u\n"
++		"VERTICAL_POSITION=%u\n"
++		"SHAPE=%u\n",
++		pld->group_token,
++		pld->group_position,
++		pld->user_visible,
++		pld->dock,
++		pld->bay,
++		pld->lid,
++		pld->panel,
++		pld->horizontal_position,
++		pld->vertical_position,
++		pld->shape);
++}
++static DEVICE_ATTR_RO(pld);
++
+ /**
+  * acpi_device_setup_files - Create sysfs attributes of an ACPI device.
+  * @dev: ACPI device object.
+@@ -595,6 +629,12 @@ int acpi_device_setup_files(struct acpi_device *dev)
+ 						    &dev_attr_real_power_state);
+ 	}
+ 
++	if (acpi_has_method(dev->handle, "_PLD")) {
++		result = device_create_file(&dev->dev, &dev_attr_pld);
++		if (result)
++			goto end;
++	}
++
+ 	acpi_expose_nondev_subnodes(&dev->dev.kobj, &dev->data);
+ 
+ end:
+@@ -645,4 +685,6 @@ void acpi_device_remove_files(struct acpi_device *dev)
+ 		device_remove_file(&dev->dev, &dev_attr_status);
+ 	if (dev->handle)
+ 		device_remove_file(&dev->dev, &dev_attr_path);
++	if (acpi_has_method(dev->handle, "_PLD"))
++		device_remove_file(&dev->dev, &dev_attr_pld);
+ }
 -- 
-2.30.2
+2.35.0.rc0.227.g00780c9af4-goog
 
