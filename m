@@ -2,96 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BECEDC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3FA8C28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239636AbiAZKIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 05:08:42 -0500
-Received: from mga12.intel.com ([192.55.52.136]:11913 "EHLO mga12.intel.com"
+        id S239649AbiAZKJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 05:09:09 -0500
+Received: from foss.arm.com ([217.140.110.172]:56834 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232002AbiAZKIk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 05:08:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643191720; x=1674727720;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9DdtvZ7yMVpfqtYl7aRfb2H95FdCk00oZ2LfZcvlals=;
-  b=ODNemuJ2HaVLkN5DsuGz2TDK9EM7wr4IoT87cDhvwu/KL13tOvYB/qwS
-   qE2wembYwZt+eRnEV5yjNe0Fj/q+EN5BsVsnkihA7Zc7Mb54EbgnUWcTg
-   GejotZmNN5bUrvIsLQkA3wlFT2XJzjvWTpAjCe4m5VPSh6S0f7YQ51vUe
-   LOrHe2lu71Vf4Vx+tc6YaHuiB5hRbblpDQbeCZldzEb1GB9bsrx1Z0amu
-   AavbSXttPU/Jx4FCDQ+wkvGyctQSzM7KkWn2a0tal9EjgTojQzMQxwIAo
-   PSQ/wAyrk5GbMAgMpsWtbQgruQYnVcypQVdoojPYfaRUdcEJft/VLFvj7
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="226496171"
-X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
-   d="scan'208";a="226496171"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 02:08:39 -0800
-X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
-   d="scan'208";a="581061617"
-Received: from mburchar-mobl.amr.corp.intel.com (HELO [10.212.54.252]) ([10.212.54.252])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 02:08:37 -0800
-Message-ID: <a1defc48-6b7c-8a4c-fff1-3baebab9a4f4@linux.intel.com>
-Date:   Wed, 26 Jan 2022 10:08:36 +0000
+        id S232002AbiAZKJH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 05:09:07 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 725C81FB;
+        Wed, 26 Jan 2022 02:09:07 -0800 (PST)
+Received: from bogus (unknown [10.57.39.189])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3864E3F766;
+        Wed, 26 Jan 2022 02:09:06 -0800 (PST)
+Date:   Wed, 26 Jan 2022 10:08:31 +0000
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Chao Liu <liuchao173@huawei.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        hewenliang4@huawei.com, zhoukang7@huawei.com
+Subject: Re: [PATCH v2] add cpu frequency to cpuinfo in arm64
+Message-ID: <20220126100831.vrjid6c6k5qafd6a@bogus>
+References: <20220126092349.285642-1-liuchao173@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH][next] drm/i915/guc: Use struct_size() helper in kmalloc()
-Content-Language: en-US
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20220125180726.GA68646@embeddedor>
-From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Organization: Intel Corporation UK Plc
-In-Reply-To: <20220125180726.GA68646@embeddedor>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220126092349.285642-1-liuchao173@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jan 26, 2022 at 09:23:49AM +0000, Chao Liu wrote:
+> There is cpu frequency in /proc/cpuinfo in x86 but not in arm64
+>
 
-On 25/01/2022 18:07, Gustavo A. R. Silva wrote:
-> Make use of the struct_size() helper instead of an open-coded version,
-> in order to avoid any potential type mistakes or integer overflows that,
-> in the worst scenario, could lead to heap overflows.
-> 
-> Also, address the following sparse warnings:
-> drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c:792:23: warning: using sizeof on a flexible structure
-> 
-> Link: https://github.com/KSPP/linux/issues/174
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> ---
->   drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c
-> index aa6dd6415202..e352a1aad228 100644
-> --- a/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c
-> +++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c
-> @@ -789,7 +789,7 @@ static struct ct_incoming_msg *ct_alloc_msg(u32 num_dwords)
->   {
->   	struct ct_incoming_msg *msg;
->   
-> -	msg = kmalloc(sizeof(*msg) + sizeof(u32) * num_dwords, GFP_ATOMIC);
-> +	msg = kmalloc(struct_size(msg, msg, num_dwords), GFP_ATOMIC);
->   	if (msg)
->   		msg->size = num_dwords;
->   	return msg;
-> 
+This has been repeatedly rejected in the past for valid reasons. I
+could find this link[1] quickly, but I am sure you can find a handful of
+such attempts in the past.
 
-Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-
-Thanks for the patch, will merge shortly.
-
+-- 
 Regards,
+Sudeep
 
-Tvrtko
+[1] https://patchwork.kernel.org/project/linux-arm-kernel/patch/1386924222-23169-1-git-send-email-vkale@apm.com/
