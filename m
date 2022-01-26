@@ -2,164 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A21C63686
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75862C5DF62
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240928AbiAZLpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:45:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240913AbiAZLph (ORCPT
+        id S240930AbiAZLpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:45:44 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:43760 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S240933AbiAZLpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:45:37 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56B9C061747
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:45:36 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id z5so8258416plg.8
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:45:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lyNDT6gMUVd7XADlZEueFFVmp7iqGlnv4um7W4NGQTo=;
-        b=X/glJO/YXqUfegb4WPXVEs5tC0FQx5MOWhX8pyx+pqRXQiUOisuqU2dVXA01T5DC9c
-         SDfhm5o7uSL9nxx4sr+5SPwCINVjHNsrdr142Jx4eYcd76Zqx8SWFZD8nNPEUvueYkAB
-         AP9YiDlNKPWFur9wtrGmfKHrjiV+AYVdXRosdP2jsYeQqGJk/MjG19qyujAC9IltGfvS
-         /1CLgmqFazoZ6/GjjdgLOowm5JSzoGLeCOqhMvH4dlfGl0EOVcmxHGz9xKhoBy7sW/5i
-         OZ2wETRk1posLrUmU9fPqV17/10aUaaOGkit6zhYSs0CHDlv2NXZ3D7twGJaO6Jw3MY5
-         B2Yg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lyNDT6gMUVd7XADlZEueFFVmp7iqGlnv4um7W4NGQTo=;
-        b=eZkEKWbXnqaIDGpfh7huNXg76vBghMo3Kk5VfP2T2ajeQHqS98bOwSLDxzuMdI9Jml
-         Rpan4kXh/mfysTAwa2F8d6M/eSTJgaP9ZCqrPIzDPOEZ/kmEZacBNEf2o01BFZ65BrXS
-         Mcz4CHogv0Xih6TLfu6sAvGd6G5m+KfOjjK7031Ze4YuvqRrB6Mp8+13ppZxSK2qoj6V
-         qrYR/0y0iUwr8Aa2XRS1x6PRlPBwjuX4dC2w32x64lYecMzLQ3WQES4bLCV7CB3yUepw
-         ttMNGSwvWs+ezHOau561uHfkcm8Ft89uEWCv2cvUrGcyDQY36G+bNWdTn5ADEkR0pNpm
-         WyLw==
-X-Gm-Message-State: AOAM531OGCL7/qqmLGe0tr7dVbH5UjNnt/sktEa29wArh3mzAmZPn7eA
-        58lP8oIT56gMSIdju7TzzUCsmA==
-X-Google-Smtp-Source: ABdhPJzar3JqtFOygpsMZMlMib3kuQuQ5BO1QD+6o2GkOnwRAIT8zA+tjj+e5DF9gaRHipW3gQZ1pw==
-X-Received: by 2002:a17:90a:c901:: with SMTP id v1mr8224362pjt.203.1643197536474;
-        Wed, 26 Jan 2022 03:45:36 -0800 (PST)
-Received: from localhost.localdomain ([122.167.221.23])
-        by smtp.gmail.com with ESMTPSA id nn2sm2994976pjb.35.2022.01.26.03.45.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 03:45:35 -0800 (PST)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>
-Cc:     Sandeep Tripathy <milun.tripathy@gmail.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Liush <liush@allwinnertech.com>,
-        Anup Patel <anup@brainfault.org>, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvm-riscv@lists.infradead.org, Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v10 4/8] RISC-V: Add SBI HSM suspend related defines
-Date:   Wed, 26 Jan 2022 17:14:48 +0530
-Message-Id: <20220126114452.692512-5-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220126114452.692512-1-apatel@ventanamicro.com>
-References: <20220126114452.692512-1-apatel@ventanamicro.com>
+        Wed, 26 Jan 2022 06:45:40 -0500
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20QBfa3P018405;
+        Wed, 26 Jan 2022 11:45:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : references : date : in-reply-to : message-id : mime-version :
+ content-type; s=pp1; bh=lVqDhrvnWrGuSL53mC1c1JVNCqrWUAZFD8NYSkNdxZ8=;
+ b=ZR5diKuuG4vsmtZG11w0wcV2DhbnMee0WUa0chyJptnoKjvvqR/vFPe8SfdaokINFRve
+ 89i0z4eBZIrna1YlWgvhLV0AcHeV2xyNWvn/7qZZ//Wod3doHmreSKcCEsqbOzJV/mT/
+ Gs/0m9LVbfpWo5lHtJRMSCaWr3U2KsF2b+Maf3uZmwIJiY5d99j5zkIcTz/s70/SC8BH
+ Hk6QR10lom7J+rHkAS9UupWdDE6+RyDgBwnEPMg1w+aeX8tk1eXeucuYhfNz1sv7HDB4
+ +u4NMHS79RjRadzZ1oHeHS0C1x2vOUk4rT3Cwgw5Lh/L3pQfCGMgE8rOI372XaDfUISE xw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3du5n401ua-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 26 Jan 2022 11:45:29 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20QBhOq6025478;
+        Wed, 26 Jan 2022 11:45:28 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3du5n401tu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 26 Jan 2022 11:45:28 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20QBh3r9021698;
+        Wed, 26 Jan 2022 11:45:26 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04fra.de.ibm.com with ESMTP id 3dr9j9kt9u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 26 Jan 2022 11:45:26 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20QBjOoh44368276
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 26 Jan 2022 11:45:24 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0DC314C04A;
+        Wed, 26 Jan 2022 11:45:24 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 88B744C052;
+        Wed, 26 Jan 2022 11:45:23 +0000 (GMT)
+Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Wed, 26 Jan 2022 11:45:23 +0000 (GMT)
+From:   Sven Schnelle <svens@linux.ibm.com>
+To:     Helge Deller <deller@gmx.de>
+Cc:     Daniel Vetter <daniel@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Carlis <zhangxuezhi1@yulong.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
+References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
+        <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
+        <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
+        <3877516e-3db3-f732-b44f-7fe12b175226@gmx.de>
+        <b13c0634-e766-74db-ab1f-672f5d0c04d6@redhat.com>
+        <CAKMK7uEqwyZuVheqyNG33Un4WK1cd1B+WBYbCmi20fZi0qVG2w@mail.gmail.com>
+        <88ea01b8-3fdd-72cc-c3d8-e2890c68533b@gmx.de>
+Date:   Wed, 26 Jan 2022 12:45:23 +0100
+In-Reply-To: <88ea01b8-3fdd-72cc-c3d8-e2890c68533b@gmx.de> (Helge Deller's
+        message of "Wed, 26 Jan 2022 12:38:09 +0100")
+Message-ID: <yt9d35lara98.fsf@linux.ibm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: KhTGlHgQGrGYCalPGTfk1eZo6K604Rli
+X-Proofpoint-GUID: RJBF4AwI7_gWpF38_Wai-x95Bwn9_1-D
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-26_03,2022-01-26_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 mlxscore=0 bulkscore=0 lowpriorityscore=0 spamscore=0
+ adultscore=0 mlxlogscore=999 suspectscore=0 phishscore=0 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201260068
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anup Patel <anup.patel@wdc.com>
+Helge Deller <deller@gmx.de> writes:
 
-We add defines related to SBI HSM suspend call and also
-update HSM states naming as-per latest SBI specification.
+> On 1/26/22 12:24, Daniel Vetter wrote:
+>> And that point was about 5 years ago, and has been discussed at some
+>> plumbers meanwhile, resulting in the staging TODO patches to make
+>> these drm drivers to destage them.
+>>
+>> Fixing bugs in fbdev is all fine, reopening it for merging new drivers is not.
+>
+> We are on the same page!
+> I'm not at all proposing to include new drivers for (relatively) new
+> hardware into fbdev, which is capable to be written as DRM driver.
 
-Signed-off-by: Anup Patel <anup.patel@wdc.com>
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- arch/riscv/include/asm/sbi.h    | 27 ++++++++++++++++++++++-----
- arch/riscv/kernel/cpu_ops_sbi.c |  2 +-
- arch/riscv/kvm/vcpu_sbi_hsm.c   |  4 ++--
- 3 files changed, 25 insertions(+), 8 deletions(-)
+In my opinion that should be decided depending on the main usecase: If
+it's X11 or similar, it should go to DRM. If its main use case is kernel
+text console, it should go to fbdev.
 
-diff --git a/arch/riscv/include/asm/sbi.h b/arch/riscv/include/asm/sbi.h
-index d1c37479d828..06133b4f8e20 100644
---- a/arch/riscv/include/asm/sbi.h
-+++ b/arch/riscv/include/asm/sbi.h
-@@ -71,15 +71,32 @@ enum sbi_ext_hsm_fid {
- 	SBI_EXT_HSM_HART_START = 0,
- 	SBI_EXT_HSM_HART_STOP,
- 	SBI_EXT_HSM_HART_STATUS,
-+	SBI_EXT_HSM_HART_SUSPEND,
- };
- 
--enum sbi_hsm_hart_status {
--	SBI_HSM_HART_STATUS_STARTED = 0,
--	SBI_HSM_HART_STATUS_STOPPED,
--	SBI_HSM_HART_STATUS_START_PENDING,
--	SBI_HSM_HART_STATUS_STOP_PENDING,
-+enum sbi_hsm_hart_state {
-+	SBI_HSM_STATE_STARTED = 0,
-+	SBI_HSM_STATE_STOPPED,
-+	SBI_HSM_STATE_START_PENDING,
-+	SBI_HSM_STATE_STOP_PENDING,
-+	SBI_HSM_STATE_SUSPENDED,
-+	SBI_HSM_STATE_SUSPEND_PENDING,
-+	SBI_HSM_STATE_RESUME_PENDING,
- };
- 
-+#define SBI_HSM_SUSP_BASE_MASK			0x7fffffff
-+#define SBI_HSM_SUSP_NON_RET_BIT		0x80000000
-+#define SBI_HSM_SUSP_PLAT_BASE			0x10000000
-+
-+#define SBI_HSM_SUSPEND_RET_DEFAULT		0x00000000
-+#define SBI_HSM_SUSPEND_RET_PLATFORM		SBI_HSM_SUSP_PLAT_BASE
-+#define SBI_HSM_SUSPEND_RET_LAST		SBI_HSM_SUSP_BASE_MASK
-+#define SBI_HSM_SUSPEND_NON_RET_DEFAULT		SBI_HSM_SUSP_NON_RET_BIT
-+#define SBI_HSM_SUSPEND_NON_RET_PLATFORM	(SBI_HSM_SUSP_NON_RET_BIT | \
-+						 SBI_HSM_SUSP_PLAT_BASE)
-+#define SBI_HSM_SUSPEND_NON_RET_LAST		(SBI_HSM_SUSP_NON_RET_BIT | \
-+						 SBI_HSM_SUSP_BASE_MASK)
-+
- enum sbi_ext_srst_fid {
- 	SBI_EXT_SRST_RESET = 0,
- };
-diff --git a/arch/riscv/kernel/cpu_ops_sbi.c b/arch/riscv/kernel/cpu_ops_sbi.c
-index dae29cbfe550..2e16f6732cdf 100644
---- a/arch/riscv/kernel/cpu_ops_sbi.c
-+++ b/arch/riscv/kernel/cpu_ops_sbi.c
-@@ -111,7 +111,7 @@ static int sbi_cpu_is_stopped(unsigned int cpuid)
- 
- 	rc = sbi_hsm_hart_get_status(hartid);
- 
--	if (rc == SBI_HSM_HART_STATUS_STOPPED)
-+	if (rc == SBI_HSM_STATE_STOPPED)
- 		return 0;
- 	return rc;
- }
-diff --git a/arch/riscv/kvm/vcpu_sbi_hsm.c b/arch/riscv/kvm/vcpu_sbi_hsm.c
-index 2e383687fa48..1ac4b2e8e4ec 100644
---- a/arch/riscv/kvm/vcpu_sbi_hsm.c
-+++ b/arch/riscv/kvm/vcpu_sbi_hsm.c
-@@ -60,9 +60,9 @@ static int kvm_sbi_hsm_vcpu_get_status(struct kvm_vcpu *vcpu)
- 	if (!target_vcpu)
- 		return -EINVAL;
- 	if (!target_vcpu->arch.power_off)
--		return SBI_HSM_HART_STATUS_STARTED;
-+		return SBI_HSM_STATE_STARTED;
- 	else
--		return SBI_HSM_HART_STATUS_STOPPED;
-+		return SBI_HSM_STATE_STOPPED;
- }
- 
- static int kvm_sbi_ext_hsm_handler(struct kvm_vcpu *vcpu, struct kvm_run *run,
--- 
-2.25.1
+I think the main concern/trouble about fbdev is the userspace interface,
+and i personally would be totally fine seeing that go away (except the
+ability to change video mode with fbset). For me its important as kernel
+console for old systems, and don't want to run X11 on them.
 
+Given the ongoing discussion about performance and drm, i don't expect
+DRM gaining HW acceleration capabilities for text consoles. So i think
+both should exist, just for different usecases.
