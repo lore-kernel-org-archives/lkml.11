@@ -2,119 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6285C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D5BC5DF62
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237388AbiAZDzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 22:55:36 -0500
-Received: from mga06.intel.com ([134.134.136.31]:6960 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237380AbiAZDzf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 22:55:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643169335; x=1674705335;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=O93prw6CJ5wDa3VU3xPiAEskA2D8fhPmwUdGvdBtYMI=;
-  b=BPYPxx60y9S+twnuyOWx3gxERt9I8vT6g1jw8clHA9rIR0kgkpJzeH9N
-   hXhOa4bg8eagfRJM3Q5kcFR0+aY2ujltRZT9lM5GWZCkeUricbP/tNq8S
-   +2XSQrAb7DtUHZ84hP5gD+tjfHLPqj43pSEVmlnKruILkynfENjCcMlnv
-   jSh24bIiLt4ql7AZBBu2lb7BDQ0kW4ubbDN2MTS2NuRTpy80viGkh+0Qw
-   e4aeMDooy5EL/thzQzWygZFTvamLdNsQUOkzHY137AlOxwo9Gxlf0v9Jy
-   meD1U/r0yAoamKzKkLe+NE+wBUDb+0uEfCu90XP40ft3G4Thf0RRfHQE0
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="307191158"
-X-IronPort-AV: E=Sophos;i="5.88,316,1635231600"; 
-   d="scan'208";a="307191158"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 19:55:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,316,1635231600"; 
-   d="scan'208";a="479757727"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 25 Jan 2022 19:55:32 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCZP9-000KlQ-Sq; Wed, 26 Jan 2022 03:55:31 +0000
-Date:   Wed, 26 Jan 2022 11:55:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Hersen Wu <hersenxs.wu@amd.com>
-Subject: [agd5f:drm-next 150/190]
- drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_mst_types.c:213:6:
- warning: no previous prototype for 'retrieve_downstream_port_device'
-Message-ID: <202201261139.VvN01ApM-lkp@intel.com>
+        id S237399AbiAZD5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 22:57:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237380AbiAZD5O (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 22:57:14 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB8EC06161C;
+        Tue, 25 Jan 2022 19:57:14 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id w190so15391468pfw.7;
+        Tue, 25 Jan 2022 19:57:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=YV1zTxzK/cL80YKh5C7Q+2qU/mN/EUwAAXT6OGx6VQc=;
+        b=IMl1VzH/GwBMc+2r/CP5K7NMsuoyzlpL8Yozj1pJypKFAfUGkv6VVeoxF8t3I/433t
+         ATP5/a/gURAVJ1+v35RAAD+iUSVcnpiFXDOR1SNqptMLBIELCD3RNsC5jfDICGdGc8TT
+         IZ+RjMGDFiqWCtSitgY7wQJUccRTdCceJIiSTsioSM6bK+yxKaPvKhFqBUJ8r6l2mBC3
+         sCA7lbc1sXjBJ6RePqMZ6H7daMbnZh7Cg1MxBHbmMIxaroJb/SXTjAAGjphSuxvnPjdC
+         +Sn0v089fmaO4C1xqCWcp+ZrOug+NOk9zET7dPPu65QUWIxw+yUyroZ86HFrJ9UGpw0q
+         UIxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YV1zTxzK/cL80YKh5C7Q+2qU/mN/EUwAAXT6OGx6VQc=;
+        b=V4NTRcHi1Suy2/XO5Ytoe7G0CEjikfb5hxiwHREtB2rvkW9SlG/63YQuQwlzivmqWh
+         0CoB/YIurZMevWtgD/auJ6JEuh0oSrmjZmaalMFpA8hU8K1SmyDLAF69l2AbcLEEuBuR
+         zKNf3Nnu6NQg4qLjmI5HcC48GPhV7kW5lgh9BwpvyqoOGrPTnSa8RWA6q6b5IdgY0eGA
+         xj7dz0CjE2ogF9h6ITDNR1zPLrD0WecXqu8jcR+lYV7pR7ANYy6ELq4UtXn+C7/tvdh9
+         Bmiw3zkkL1e3QM+RNcuUDcicb4kiEZ19tJFs32MPbRqJa0LjKQqmb0LVDS4l5aYKqzFY
+         w/Hw==
+X-Gm-Message-State: AOAM533RQyaXFQZ/Bwl4GJPAbUV2/Ub2Iw4V2dmRWF7tmlLRt/m0z39T
+        ZgO6DhKA2i4sky5EOzm25y8=
+X-Google-Smtp-Source: ABdhPJxoMcbeHTERBg3AEQZqz2BnaL3IosjmeGG9n3aZMtsZ4opUmRFfem7PHjxh2QYk5jQxnFVdmw==
+X-Received: by 2002:a63:6b85:: with SMTP id g127mr17257525pgc.409.1643169433963;
+        Tue, 25 Jan 2022 19:57:13 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id y42sm482786pfa.5.2022.01.25.19.57.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 19:57:13 -0800 (PST)
+Message-ID: <b5d362d1-3b08-73bf-d8ac-712cfe953569@gmail.com>
+Date:   Tue, 25 Jan 2022 19:57:11 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH v7 06/16] net: dsa: tag_qca: add define for handling
+ mgmt Ethernet packet
+Content-Language: en-US
+To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220123013337.20945-1-ansuelsmth@gmail.com>
+ <20220123013337.20945-7-ansuelsmth@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220123013337.20945-7-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
-head:   63e583c8843f305a3e334a96d5de00435f4d38a2
-commit: 09db246ceef70bc6bd9c3e0d02b3c855f8fc25fb [150/190] drm/amd/display: Retrieve MST Downstream Port Status
-config: x86_64-buildonly-randconfig-r001-20220124 (https://download.01.org/0day-ci/archive/20220126/202201261139.VvN01ApM-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f drm-next
-        git checkout 09db246ceef70bc6bd9c3e0d02b3c855f8fc25fb
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_mst_types.c:43:
-   drivers/gpu/drm/amd/amdgpu/../display/dmub/inc/dmub_cmd.h: In function 'dmub_rb_flush_pending':
-   drivers/gpu/drm/amd/amdgpu/../display/dmub/inc/dmub_cmd.h:2918:12: warning: variable 'temp' set but not used [-Wunused-but-set-variable]
-    2918 |   uint64_t temp;
-         |            ^~~~
-   drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_mst_types.c: At top level:
->> drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_mst_types.c:213:6: warning: no previous prototype for 'retrieve_downstream_port_device' [-Wmissing-prototypes]
-     213 | bool retrieve_downstream_port_device(struct amdgpu_dm_connector *aconnector)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/dc_link_ddc.h:29,
-                    from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_mst_types.c:38:
-   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:124:22: warning: 'DP_SINK_DEVICE_STR_ID_2' defined but not used [-Wunused-const-variable=]
-     124 | static const uint8_t DP_SINK_DEVICE_STR_ID_2[] = {7, 1, 8, 7, 5, 0};
-         |                      ^~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:123:22: warning: 'DP_SINK_DEVICE_STR_ID_1' defined but not used [-Wunused-const-variable=]
-     123 | static const uint8_t DP_SINK_DEVICE_STR_ID_1[] = {7, 1, 8, 7, 3, 0};
-         |                      ^~~~~~~~~~~~~~~~~~~~~~~
 
 
-vim +/retrieve_downstream_port_device +213 drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_mst_types.c
+On 1/22/2022 5:33 PM, Ansuel Smith wrote:
+> Add all the required define to prepare support for mgmt read/write in
+> Ethernet packet. Any packet of this type has to be dropped as the only
+> use of these special packet is receive ack for an mgmt write request or
+> receive data for an mgmt read request.
+> A struct is used that emulates the Ethernet header but is used for a
+> different purpose.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>   include/linux/dsa/tag_qca.h | 44 +++++++++++++++++++++++++++++++++++++
+>   net/dsa/tag_qca.c           | 13 ++++++++---
+>   2 files changed, 54 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/dsa/tag_qca.h b/include/linux/dsa/tag_qca.h
+> index c02d2d39ff4a..1a02f695f3a3 100644
+> --- a/include/linux/dsa/tag_qca.h
+> +++ b/include/linux/dsa/tag_qca.h
+> @@ -12,10 +12,54 @@
+>   #define QCA_HDR_RECV_FRAME_IS_TAGGED	BIT(3)
+>   #define QCA_HDR_RECV_SOURCE_PORT	GENMASK(2, 0)
+>   
+> +/* Packet type for recv */
+> +#define QCA_HDR_RECV_TYPE_NORMAL	0x0
+> +#define QCA_HDR_RECV_TYPE_MIB		0x1
+> +#define QCA_HDR_RECV_TYPE_RW_REG_ACK	0x2
+> +
+>   #define QCA_HDR_XMIT_VERSION		GENMASK(15, 14)
+>   #define QCA_HDR_XMIT_PRIORITY		GENMASK(13, 11)
+>   #define QCA_HDR_XMIT_CONTROL		GENMASK(10, 8)
+>   #define QCA_HDR_XMIT_FROM_CPU		BIT(7)
+>   #define QCA_HDR_XMIT_DP_BIT		GENMASK(6, 0)
+>   
+> +/* Packet type for xmit */
+> +#define QCA_HDR_XMIT_TYPE_NORMAL	0x0
+> +#define QCA_HDR_XMIT_TYPE_RW_REG	0x1
+> +
+> +/* Check code for a valid mgmt packet. Switch will ignore the packet
+> + * with this wrong.
+> + */
+> +#define QCA_HDR_MGMT_CHECK_CODE_VAL	0x5
+> +
+> +/* Specific define for in-band MDIO read/write with Ethernet packet */
+> +#define QCA_HDR_MGMT_SEQ_LEN		4 /* 4 byte for the seq */
+> +#define QCA_HDR_MGMT_COMMAND_LEN	4 /* 4 byte for the command */
+> +#define QCA_HDR_MGMT_DATA1_LEN		4 /* First 4 byte for the mdio data */
+> +#define QCA_HDR_MGMT_HEADER_LEN		(QCA_HDR_MGMT_SEQ_LEN + \
+> +					QCA_HDR_MGMT_COMMAND_LEN + \
+> +					QCA_HDR_MGMT_DATA1_LEN)
+> +
+> +#define QCA_HDR_MGMT_DATA2_LEN		12 /* Other 12 byte for the mdio data */
+> +#define QCA_HDR_MGMT_PADDING_LEN	34 /* Padding to reach the min Ethernet packet */
+> +
+> +#define QCA_HDR_MGMT_PKG_LEN		(QCA_HDR_MGMT_HEADER_LEN + \
+> +					QCA_HDR_LEN + \
+> +					QCA_HDR_MGMT_DATA2_LEN + \
+> +					QCA_HDR_MGMT_PADDING_LEN)
+> +
+> +#define QCA_HDR_MGMT_SEQ_NUM		GENMASK(31, 0)  /* 63, 32 */
+> +#define QCA_HDR_MGMT_CHECK_CODE		GENMASK(31, 29) /* 31, 29 */
+> +#define QCA_HDR_MGMT_CMD		BIT(28)		/* 28 */
+> +#define QCA_HDR_MGMT_LENGTH		GENMASK(23, 20) /* 23, 20 */
+> +#define QCA_HDR_MGMT_ADDR		GENMASK(18, 0)  /* 18, 0 */
+> +
+> +/* Special struct emulating a Ethernet header */
+> +struct mgmt_ethhdr {
+> +	u32 command;		/* command bit 31:0 */
+> +	u32 seq;		/* seq 63:32 */
+> +	u32 mdio_data;		/* first 4byte mdio */
+> +	__be16 hdr;		/* qca hdr */
+> +} __packed;
+> +
+>   #endif /* __TAG_QCA_H */
+> diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
+> index f8df49d5956f..c57d6e1a0c0c 100644
+> --- a/net/dsa/tag_qca.c
+> +++ b/net/dsa/tag_qca.c
+> @@ -32,10 +32,10 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
+>   
+>   static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+>   {
+> -	u8 ver;
+> -	u16  hdr;
+> -	int port;
+> +	u16 hdr, pk_type;
 
-   212	
- > 213	bool retrieve_downstream_port_device(struct amdgpu_dm_connector *aconnector)
-   214	{
-   215		union dp_downstream_port_present ds_port_present;
-   216	
-   217		if (!aconnector->dsc_aux)
-   218			return false;
-   219	
-   220		if (drm_dp_dpcd_read(aconnector->dsc_aux, DP_DOWNSTREAMPORT_PRESENT, &ds_port_present, 1) < 0) {
-   221			DRM_INFO("Failed to read downstream_port_present 0x05 from DFP of branch device\n");
-   222			return false;
-   223		}
-   224	
-   225		aconnector->mst_downstream_port_present = ds_port_present;
-   226		DRM_INFO("Downstream port present %d, type %d\n",
-   227				ds_port_present.fields.PORT_PRESENT, ds_port_present.fields.PORT_TYPE);
-   228	
-   229		return true;
-   230	}
-   231	#endif
-   232	
+Should pk_type be u8 since there are only 5 bits for QCA_HDR_RECV_TYPE?
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+With Vladimir's comments addressed:
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
