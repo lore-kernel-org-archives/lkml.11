@@ -2,98 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF699C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CD6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232974AbiAZWLB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 17:11:01 -0500
-Received: from mail-ot1-f51.google.com ([209.85.210.51]:39702 "EHLO
-        mail-ot1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232901AbiAZWK5 (ORCPT
+        id S233017AbiAZWLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 17:11:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229508AbiAZWK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 17:10:57 -0500
-Received: by mail-ot1-f51.google.com with SMTP id c3-20020a9d6c83000000b00590b9c8819aso689339otr.6;
-        Wed, 26 Jan 2022 14:10:56 -0800 (PST)
+        Wed, 26 Jan 2022 17:10:58 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272C2C06173B;
+        Wed, 26 Jan 2022 14:10:58 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id v67so2307474oie.9;
+        Wed, 26 Jan 2022 14:10:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=21ZfAX7z//yYX98NOI1emY/4VG55lyxDMWDLG9aXmHM=;
+        b=NURkmVW1jvd6P6HsGBe4RRlTS3L8VK4hukdmV9d7DGEWEZt0L84SHI8atfpPRjCNms
+         lkXlEGJ/S8fjcILXMEwhR8yDQuIuOwMF8OzWTOrmk8uNPILDKB+iCg3zML93LXrG+WQY
+         OtZjI3iBUSk2Iends2M3PBZ8dW8x6doZwdojDc7eTbgTfEUQcjbk9m3M45k1QgrAiNS8
+         pGTXyw2qfmvcIQHtompgxTTUsLwDwi5wPB2SLIgGHnXYbh530YA2JU9e9TZvnzHS2Gor
+         h0G4hfsUdZ39iEcYlMDso4/rS6hk1WQmSGaCOVh7J7yzfuOKxmkG9BJS5cxVqpPXyZi9
+         wOTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=ErA2xJGyfWSYJZEIE4ymjWq+FHZjiaQLmgdO3g2KNUc=;
-        b=nNkfgUjnFJpXvcgvN4xBa4ZJNjcekXkuZiXAi19Tsa3/uc7HQQGVUVk2TFS+ycDGyo
-         8pHReW14/iq+Shww4peZfxxJcSyYM9gpO+AMvKs7HUPCJIu1MgwDHmj6SjqE1Xh/ztpO
-         JAusvhMZfC6AI7g3U8o00eeHNYkOllGGOtWaA11Fj4oS8UJstoYjC6y4YZXGEIza0gP2
-         /Og092SYMG+x8J8sbztHb8Hg302wviO7W7ga3v7enH+CmmRJA1L2j0Yk16J2/xNYu21Q
-         ClUaogwkIvmq6XjEJNTg6qqJMllpXGGmeka3V29YAzZz11z1M77iKskUB+PPaospICrA
-         4LeA==
-X-Gm-Message-State: AOAM532OxMOyEBam7Nv9NSneggEZaKgEPVaEihQgW3FhfjRX0OQoeQ2Y
-        v7WhFW4XwLjUg9C7k9giNiw7br9xgA==
-X-Google-Smtp-Source: ABdhPJxTBZ7c6Wq5DHgltU/Q1WMSaZYDKppblBxy9TQyb8u7AQ+3YgLWJ4jobGbI7xEs0woA2CBcMg==
-X-Received: by 2002:a9d:4c0f:: with SMTP id l15mr538154otf.104.1643235056485;
-        Wed, 26 Jan 2022 14:10:56 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id b8sm6704762otk.36.2022.01.26.14.10.55
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=21ZfAX7z//yYX98NOI1emY/4VG55lyxDMWDLG9aXmHM=;
+        b=j5BKp/jQFflddJrjDj2kMYOkurXS0TUgUnPVFjnB9aPDODG0GO3gByAnFK1bybXtOT
+         EOCtutkuSv/71L6Rs+z1/NrM9jYAR7ZsE0Kpw7joYltBqRWWPxWILIWHcU+x5dZqdAuX
+         lTSVmj4Mc+/BNVCjgeyprt1qFdj+CwWlJH4cdWvMOzwKEjkXmJJkPC9tl/kfFGPnsSGa
+         5CKbd7JdZ4ymH+tbzoa2CI2OkFGrj57TMz4kNVEjcX5yGVJSYIAAk65Wh3T1gYOZ8Dlx
+         JUEiY4dfHt6PttTvhNgB3F6CC7pLHJ95YQxXNWjjaTDPfe6Fwr+yUKB3AtpP66oI+6ha
+         4OCw==
+X-Gm-Message-State: AOAM533y8M4UkE0rrD81RIWgpEdBIhL96/Wwtbpdvk2BBbshQVTvZuSP
+        5Xxang9xQNBah/4cjqg+oBg=
+X-Google-Smtp-Source: ABdhPJxgaSc8/eVC4azfcz1wopvdNHvVvd0s28sQXB/F90K2yk6hRZ/zEF97bOXEODITtiTH5EmqEg==
+X-Received: by 2002:a05:6808:ec6:: with SMTP id q6mr438206oiv.244.1643235057548;
+        Wed, 26 Jan 2022 14:10:57 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id p5sm2940740oou.39.2022.01.26.14.10.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 14:10:55 -0800 (PST)
-Received: (nullmailer pid 1535098 invoked by uid 1000);
-        Wed, 26 Jan 2022 22:10:52 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Yingjoe Chen <yingjoe.chen@mediatek.com>,
-        Fengping Yu <fengping.yu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-kernel@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        linux-mediatek@lists.infradead.org, linux-input@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220126153519.3637496-2-mkorpershoek@baylibre.com>
-References: <20220126153519.3637496-1-mkorpershoek@baylibre.com> <20220126153519.3637496-2-mkorpershoek@baylibre.com>
-Subject: Re: [PATCH v19 1/3] dt-bindings: input: Add bindings for Mediatek matrix keypad
-Date:   Wed, 26 Jan 2022 16:10:52 -0600
-Message-Id: <1643235052.864878.1535097.nullmailer@robh.at.kernel.org>
+        Wed, 26 Jan 2022 14:10:56 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 26 Jan 2022 14:10:55 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 4.9 000/155] 4.9.298-rc2 review
+Message-ID: <20220126221055.GB3650606@roeck-us.net>
+References: <20220125155253.051565866@linuxfoundation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220125155253.051565866@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 26 Jan 2022 16:35:17 +0100, Mattijs Korpershoek wrote:
-> From: "fengping.yu" <fengping.yu@mediatek.com>
+On Tue, Jan 25, 2022 at 05:31:50PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.298 release.
+> There are 155 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> This patch add devicetree bindings for Mediatek matrix keypad driver.
-> 
-> Signed-off-by: fengping.yu <fengping.yu@mediatek.com>
-> Reviewed-by: Marco Felsch <m.felsch@pengutronix.de>
-> Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
-> ---
->  .../input/mediatek,mt6779-keypad.yaml         | 80 +++++++++++++++++++
->  1 file changed, 80 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml
+> Responses should be made by Thu, 27 Jan 2022 15:52:30 +0000.
+> Anything received after that time might be too late.
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Build results:
+	total: 163 pass: 163 fail: 0
+Qemu test results:
+	total: 397 pass: 397 fail: 0
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml:28:13: [warning] wrong indentation: expected 14 but found 12 (indentation)
-./Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml:43:8: [warning] wrong indentation: expected 6 but found 7 (indentation)
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-dtschema/dtc warnings/errors:
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1584526
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Guenter
