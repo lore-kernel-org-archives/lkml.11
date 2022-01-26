@@ -2,138 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4153DC63697
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E30C63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235611AbiAZOwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 09:52:07 -0500
-Received: from mga18.intel.com ([134.134.136.126]:52046 "EHLO mga18.intel.com"
+        id S242391AbiAZOxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 09:53:09 -0500
+Received: from mga05.intel.com ([192.55.52.43]:27414 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242393AbiAZOwB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 09:52:01 -0500
+        id S235644AbiAZOxF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 09:53:05 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643208721; x=1674744721;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+C7GbNvdhhupsiddx9nyBA2kLdGmDvK2B+OFoSsBS2A=;
-  b=lBIehyv5ZcqCNTcVcY22vJnTvHWgmJhgKUujnC1GIaH5SoRnbzTj5ECX
-   UPyopMkTIeJ84XSizZkQ4/OmV9v5rIL0Y2MwdqqZcfaA4/9Ypehvmk8If
-   0/cGAHSarb+yAok6fS9FROEo6pneH1z3T8ynRr2vySe4ydiEThmfw1Y7s
-   cgEiG0d6hF2+SKXFhT6nlB+Fk5XJCw7JEbV4Jq4EfmbNRb1ObZ/zz2LDR
-   3N7ckSQ7nuMngowD9Wjs+MY1WcCkdWa7PM5FzfTBf66nGMyh4TRDKng/m
-   f7VduCIYkmssF0157ydMaQBoq+zITh9c5Gz/crUAomOeDA1PcZtc/IPRB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="230137337"
+  t=1643208785; x=1674744785;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=7n8kP29+3QJkGEyq+fGxF09Qxaj32zhHfyUa9OrAKE0=;
+  b=hRsjMEwxxl2F8Q07KpwvY/59y5XI86DOtvEj26l8s+djMq0CU+MeFxhG
+   VcOxmXV5DVFME2tUG8ZsnJEam5w9KqtNgcTB/nOOJGBczPQntVA32wAcT
+   GUrtwzJ726DWwzrrPn3eb5CXdMkeap4iip1hDp7SbqkSm+HRjJwSzvtam
+   Rvnmf6E11mO0NQh/qc/grUnMNGpqFaoRNejuyOy4I85irumjTYEdLsIiB
+   T7b9ZkwzRO415PjB+5E8aJXWskmg1/LIDXmNpRHVgz3hDoy/4y5fhaMXt
+   +hk2vtzkdMQPhzdrMidxpMGynCn0mC5cu1Z8bD1bHB78khy+KoYSdoEHw
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="332918084"
 X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="230137337"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:52:00 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="332918084"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:53:04 -0800
 X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="617981478"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by FMSMGA003.fm.intel.com with ESMTP; 26 Jan 2022 06:51:52 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20QEpn8P004691;
-        Wed, 26 Jan 2022 14:51:49 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        linux-hardening@vger.kernel.org, x86@kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+   d="scan'208";a="520821374"
+Received: from nbasu-mobl.ger.corp.intel.com (HELO localhost) ([10.252.16.197])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:52:53 -0800
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Christian =?utf-8?Q?K=C3=B6nig?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
         "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v9 05/15] x86: support ASM function sections
-Date:   Wed, 26 Jan 2022 15:49:52 +0100
-Message-Id: <20220126144952.851066-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <YerMYcin4woehiL9@zn.tnic>
-References: <20211223002209.1092165-1-alexandr.lobakin@intel.com> <20211223002209.1092165-6-alexandr.lobakin@intel.com> <YerMYcin4woehiL9@zn.tnic>
+        Emma Anholt <emma@anholt.net>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>, Petr Mladek <pmladek@suse.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: Re: [PATCH v2 02/11] drm/i915: Fix trailing semicolon
+In-Reply-To: <20220126093951.1470898-3-lucas.demarchi@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220126093951.1470898-1-lucas.demarchi@intel.com>
+ <20220126093951.1470898-3-lucas.demarchi@intel.com>
+Date:   Wed, 26 Jan 2022 16:52:50 +0200
+Message-ID: <874k5qzgzh.fsf@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@alien8.de>
-Date: Fri, 21 Jan 2022 16:08:17 +0100
+On Wed, 26 Jan 2022, Lucas De Marchi <lucas.demarchi@intel.com> wrote:
+> Remove the trailing semicolon, as correctly warned by checkpatch:
+>
+> 	-:1189: WARNING:TRAILING_SEMICOLON: macros should not use a trailing semicolon
+> 	#1189: FILE: drivers/gpu/drm/i915/intel_device_info.c:119:
+> 	+#define PRINT_FLAG(name) drm_printf(p, "%s: %s\n", #name, yesno(info->display.name));
+>
+> Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
 
-> On Thu, Dec 23, 2021 at 01:21:59AM +0100, Alexander Lobakin wrote:
-> > Address places which need special care and enable
-> > CONFIG_ARCH_SUPPORTS_ASM_FUNCTION_SECTIONS.
-> > 
-> > Notably:
-> >  - propagate --sectname-subst to aflags in x86/boot/Makefile and
-> >    x86/boot/compressed/Makefile as both override aflags;
-> 
-> s/aflags/KBUILD_AFLAGS/
-> 
-> Let's be more precise pls.
-> 
-> >  - symbols starting with a dot (like ".Lbad_gs") should be handled
-> >    manually with SYM_*_START_SECT(.Lbad_gs, bad_gs) as "two dots"
-> >    is a special (and CPP doesn't want to concatenate two dots in
-> >    general);
-> >  - some symbols explicitly need to reside in one section (like
-> >    kexec control code, hibernation page etc.);
-> >  - macros creating aliases for functions (like __memcpy() for
-> >    memcpy() etc.) should go after the main declaration (as
-> >    aliases should be declared in the same section and they
-> >    don't have SYM_PUSH_SECTION() inside);
-> >  - things like ".org", ".align" should be manually pushed to
-> >    the same section the next symbol goes to;
-> >  - expand indirect_thunk and .fixup wildcards in vmlinux.lds.S
-> 
-> $ git grep -E "\.fixup" arch/x86/*.S
-> $
-> 
-> I guess I'll continue with your new version since a bunch of stuff
-> has changed in arch/x86/ in the meantime so that that set would need
-> refreshing.
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
 
-Yeah, sure. .fixup usage was removed in particular.
-I'll queue v10 soon.
+> ---
+>  drivers/gpu/drm/i915/intel_device_info.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/i915/intel_device_info.c b/drivers/gpu/drm/i915/intel_device_info.c
+> index 93b251b25aba..94da5aa37391 100644
+> --- a/drivers/gpu/drm/i915/intel_device_info.c
+> +++ b/drivers/gpu/drm/i915/intel_device_info.c
+> @@ -114,7 +114,7 @@ void intel_device_info_print_static(const struct intel_device_info *info,
+>  	DEV_INFO_FOR_EACH_FLAG(PRINT_FLAG);
+>  #undef PRINT_FLAG
+>  
+> -#define PRINT_FLAG(name) drm_printf(p, "%s: %s\n", #name, yesno(info->display.name));
+> +#define PRINT_FLAG(name) drm_printf(p, "%s: %s\n", #name, yesno(info->display.name))
+>  	DEV_INFO_DISPLAY_FOR_EACH_FLAG(PRINT_FLAG);
+>  #undef PRINT_FLAG
+>  }
 
-> 
-> Thx.
-> 
-> -- 
-> Regards/Gruss,
->     Boris.
-
-Thanks for the reviews,
-Al
-
-> 
-> https://people.kernel.org/tglx/notes-about-netiquette
+-- 
+Jani Nikula, Intel Open Source Graphics Center
