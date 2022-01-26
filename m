@@ -2,133 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE49C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:26:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF57C63686
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:26:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241251AbiAZM0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 07:26:22 -0500
-Received: from foss.arm.com ([217.140.110.172]:36326 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241247AbiAZM0U (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 07:26:20 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C76E0D6E;
-        Wed, 26 Jan 2022 04:26:19 -0800 (PST)
-Received: from e119884-lin.cambridge.arm.com (e119884-lin.cambridge.arm.com [10.1.196.72])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C6AA23F793;
-        Wed, 26 Jan 2022 04:26:18 -0800 (PST)
-From:   Vincenzo Frascino <vincenzo.frascino@arm.com>
-To:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     vincenzo.frascino@arm.com, Shuah Khan <shuah@kernel.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Cristian Marussi <cristian.marussi@arm.com>
-Subject: [PATCH] kselftest: Fix vdso_test_abi return status
-Date:   Wed, 26 Jan 2022 12:26:08 +0000
-Message-Id: <20220126122608.54061-1-vincenzo.frascino@arm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220126102723.23300-3-cristian.marussi@arm.com>
-References: <20220126102723.23300-3-cristian.marussi@arm.com>
+        id S241271AbiAZM0r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 07:26:47 -0500
+Received: from smtp117.ord1c.emailsrvr.com ([108.166.43.117]:49028 "EHLO
+        smtp117.ord1c.emailsrvr.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241256AbiAZM0q (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 07:26:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
+        s=20190130-41we5z8j; t=1643199583;
+        bh=ReKzEeMpEzLebnKabwkFlt+2OGOIe/9umBBTSRYIrCA=;
+        h=Date:Subject:To:From:From;
+        b=Xq2kMAvt7iEMJOeCphPlF49ooY3LBCSet4g97IAfgbsPtlL605ZBjCxKBXz/8R2a3
+         QQNf0RWKxuYgkXG9+nwEhLEM1/jb3VZlOMxm/cv4sl9hnW9vOh/1kYDqxLYaNuZt5d
+         2VALeFwc0HcCrx48aaedIK5dXiRXbXKmD6RAfLyM=
+X-Auth-ID: abbotti@mev.co.uk
+Received: by smtp15.relay.ord1c.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id F3DA32013E;
+        Wed, 26 Jan 2022 07:19:42 -0500 (EST)
+Message-ID: <43b079ef-1c4a-b4c4-62b3-10d6a62a3bac@mev.co.uk>
+Date:   Wed, 26 Jan 2022 12:19:42 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH][next] comedi: das16: Use struct_size() helper in
+ comedi_alloc_spriv()
+Content-Language: en-GB
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        H Hartley Sweeten <hsweeten@visionengravers.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20220125232525.GA80228@embeddedor>
+From:   Ian Abbott <abbotti@mev.co.uk>
+Organization: MEV Ltd.
+In-Reply-To: <20220125232525.GA80228@embeddedor>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Classification-ID: 26608a2a-c2d7-4583-ba07-c77b0de1dce9-1-1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vdso_test_abi contains a batch of tests that verify the validity of the
-vDSO ABI.
+On 25/01/2022 23:25, Gustavo A. R. Silva wrote:
+> Make use of the struct_size() helper instead of an open-coded version,
+> in order to avoid any potential type mistakes or integer overflows that,
+> in the worst scenario, could lead to heap overflows.
+> 
+> Also, address the following sparse warnings:
+> drivers/comedi/drivers/das16.c:964:45: warning: using sizeof on a flexible structure
+> drivers/comedi/drivers/das16.c:998:45: warning: using sizeof on a flexible structure
+> 
+> Link: https://github.com/KSPP/linux/issues/174
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> ---
+>   drivers/comedi/drivers/das16.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/comedi/drivers/das16.c b/drivers/comedi/drivers/das16.c
+> index 937a69ce0977..728dc02156c8 100644
+> --- a/drivers/comedi/drivers/das16.c
+> +++ b/drivers/comedi/drivers/das16.c
+> @@ -961,7 +961,7 @@ static const struct comedi_lrange *das16_ai_range(struct comedi_device *dev,
+>   
+>   		/* allocate single-range range table */
+>   		lrange = comedi_alloc_spriv(s,
+> -					    sizeof(*lrange) + sizeof(*krange));
+> +					    struct_size(lrange, range, 1));
+>   		if (!lrange)
+>   			return &range_unknown;
+>   
+> @@ -995,7 +995,7 @@ static const struct comedi_lrange *das16_ao_range(struct comedi_device *dev,
+>   
+>   		/* allocate single-range range table */
+>   		lrange = comedi_alloc_spriv(s,
+> -					    sizeof(*lrange) + sizeof(*krange));
+> +					    struct_size(lrange, range, 1));
+>   		if (!lrange)
+>   			return &range_unknown;
+>   
 
-When a vDSO symbol is not found the relevant test is skipped reporting
-KSFT_SKIP. All the tests return values are then added in a single
-variable which is checked to verify failures. This approach can have
-side effects which result in reporting the wrong kselftest exit status.
+Looks like a nice tidy-up, thanks!
 
-Fix vdso_test_abi verifying the return code of each test separately.
+Reviewed-by: Ian Abbott <abbotti@mev.co.uk>
 
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Reported-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
----
- tools/testing/selftests/vDSO/vdso_test_abi.c | 27 +++++++++++---------
- 1 file changed, 15 insertions(+), 12 deletions(-)
+(Note, I do not have anywhere to commit it, personally.)
 
-diff --git a/tools/testing/selftests/vDSO/vdso_test_abi.c b/tools/testing/selftests/vDSO/vdso_test_abi.c
-index 3d603f1394af..3a4efb91b9b2 100644
---- a/tools/testing/selftests/vDSO/vdso_test_abi.c
-+++ b/tools/testing/selftests/vDSO/vdso_test_abi.c
-@@ -184,10 +184,12 @@ static inline int vdso_test_clock(clockid_t clock_id)
- 	return ret0;
- }
- 
-+#define VDSO_TESTS_MAX	9
-+
- int main(int argc, char **argv)
- {
- 	unsigned long sysinfo_ehdr = getauxval(AT_SYSINFO_EHDR);
--	int ret;
-+	int ret[VDSO_TESTS_MAX] = {0};
- 
- 	if (!sysinfo_ehdr) {
- 		printf("AT_SYSINFO_EHDR is not present!\n");
-@@ -201,44 +203,45 @@ int main(int argc, char **argv)
- 
- 	vdso_init_from_sysinfo_ehdr(getauxval(AT_SYSINFO_EHDR));
- 
--	ret = vdso_test_gettimeofday();
-+	ret[0] = vdso_test_gettimeofday();
- 
- #if _POSIX_TIMERS > 0
- 
- #ifdef CLOCK_REALTIME
--	ret += vdso_test_clock(CLOCK_REALTIME);
-+	ret[1] = vdso_test_clock(CLOCK_REALTIME);
- #endif
- 
- #ifdef CLOCK_BOOTTIME
--	ret += vdso_test_clock(CLOCK_BOOTTIME);
-+	ret[2] = vdso_test_clock(CLOCK_BOOTTIME);
- #endif
- 
- #ifdef CLOCK_TAI
--	ret += vdso_test_clock(CLOCK_TAI);
-+	ret[3] = vdso_test_clock(CLOCK_TAI);
- #endif
- 
- #ifdef CLOCK_REALTIME_COARSE
--	ret += vdso_test_clock(CLOCK_REALTIME_COARSE);
-+	ret[4] = vdso_test_clock(CLOCK_REALTIME_COARSE);
- #endif
- 
- #ifdef CLOCK_MONOTONIC
--	ret += vdso_test_clock(CLOCK_MONOTONIC);
-+	ret[5] = vdso_test_clock(CLOCK_MONOTONIC);
- #endif
- 
- #ifdef CLOCK_MONOTONIC_RAW
--	ret += vdso_test_clock(CLOCK_MONOTONIC_RAW);
-+	ret[6] = vdso_test_clock(CLOCK_MONOTONIC_RAW);
- #endif
- 
- #ifdef CLOCK_MONOTONIC_COARSE
--	ret += vdso_test_clock(CLOCK_MONOTONIC_COARSE);
-+	ret[7] = vdso_test_clock(CLOCK_MONOTONIC_COARSE);
- #endif
- 
- #endif
- 
--	ret += vdso_test_time();
-+	ret[8] = vdso_test_time();
- 
--	if (ret > 0)
--		return KSFT_FAIL;
-+	for (int i = 0; i < VDSO_TESTS_MAX; i++)
-+		if (ret[i] == KSFT_FAIL)
-+			return KSFT_FAIL;
- 
- 	return KSFT_PASS;
- }
 -- 
-2.34.1
-
+-=( Ian Abbott <abbotti@mev.co.uk> || MEV Ltd. is a company  )=-
+-=( registered in England & Wales.  Regd. number: 02862268.  )=-
+-=( Regd. addr.: S11 & 12 Building 67, Europa Business Park, )=-
+-=( Bird Hall Lane, STOCKPORT, SK3 0XA, UK. || www.mev.co.uk )=-
