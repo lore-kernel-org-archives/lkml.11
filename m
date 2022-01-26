@@ -2,81 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1086CC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4153DC63697
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242370AbiAZOvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 09:51:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242359AbiAZOvw (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 09:51:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E330C06161C;
-        Wed, 26 Jan 2022 06:51:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09C7AB81E7D;
-        Wed, 26 Jan 2022 14:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18344C340E3;
-        Wed, 26 Jan 2022 14:51:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643208709;
-        bh=BfQsXByWn3JPY8Qa8YYeS8YTm9L6z6Xi8uDKWKMdcTs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=M5boXbX3q7PqM2UoCgFfeo2u+ew8eGGSDD9fxHU7SLeU3CWEDEWgwrdZGo02DuIp1
-         IE1ty/vEuN3NdeMhzEO/6QveRLK4h925gAo7fECGgf64JDSP8FPggspq7wwEJw2rPJ
-         j4IyhPyZ3M1ksdu49nUVtyYgIRiCTovwaAfN0CHNGq5Xq0akMaHvIs0bpGXYJFeMdq
-         75tS+GWtlzZyYbyH4E/03QQeaYnfjydQ8LrygjE16//PRocrvgXkbG2Y+q2DnWWWuV
-         +oYvXMHyprUaxYrYBpW4rPtuiw7V060p6YEIMdLaHVtYPkgurBTNv0cz4HRhRtNyS5
-         u83gh5E2PvZ0g==
-Date:   Wed, 26 Jan 2022 16:51:29 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Martin Ross <mross@pobox.com>
-Cc:     corbet@lwn.net, dhowells@redhat.com, jejb@linux.ibm.com,
-        jmorris@namei.org, keyrings@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, serge@hallyn.com,
-        Yael Tiomkin <yaelt@google.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: Re: [PATCH v4] KEYS: encrypted: Instantiate key with user-provided
- decrypted data
-Message-ID: <YfFf8fvsDm8lQJgJ@iki.fi>
-References: <CA++MVV3Jse4WZ-zr-SUWQz3Gk_dByU6JduVfUkvQNW+jgm9O4Q@mail.gmail.com>
- <YfFe9+XDPDIdSqF1@iki.fi>
+        id S235611AbiAZOwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 09:52:07 -0500
+Received: from mga18.intel.com ([134.134.136.126]:52046 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242393AbiAZOwB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 09:52:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643208721; x=1674744721;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+C7GbNvdhhupsiddx9nyBA2kLdGmDvK2B+OFoSsBS2A=;
+  b=lBIehyv5ZcqCNTcVcY22vJnTvHWgmJhgKUujnC1GIaH5SoRnbzTj5ECX
+   UPyopMkTIeJ84XSizZkQ4/OmV9v5rIL0Y2MwdqqZcfaA4/9Ypehvmk8If
+   0/cGAHSarb+yAok6fS9FROEo6pneH1z3T8ynRr2vySe4ydiEThmfw1Y7s
+   cgEiG0d6hF2+SKXFhT6nlB+Fk5XJCw7JEbV4Jq4EfmbNRb1ObZ/zz2LDR
+   3N7ckSQ7nuMngowD9Wjs+MY1WcCkdWa7PM5FzfTBf66nGMyh4TRDKng/m
+   f7VduCIYkmssF0157ydMaQBoq+zITh9c5Gz/crUAomOeDA1PcZtc/IPRB
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="230137337"
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="230137337"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:52:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="617981478"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by FMSMGA003.fm.intel.com with ESMTP; 26 Jan 2022 06:51:52 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20QEpn8P004691;
+        Wed, 26 Jan 2022 14:51:49 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v9 05/15] x86: support ASM function sections
+Date:   Wed, 26 Jan 2022 15:49:52 +0100
+Message-Id: <20220126144952.851066-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <YerMYcin4woehiL9@zn.tnic>
+References: <20211223002209.1092165-1-alexandr.lobakin@intel.com> <20211223002209.1092165-6-alexandr.lobakin@intel.com> <YerMYcin4woehiL9@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfFe9+XDPDIdSqF1@iki.fi>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 04:47:22PM +0200, Jarkko Sakkinen wrote:
-> On Tue, Jan 18, 2022 at 01:26:05PM -0500, Martin Ross wrote:
-> > Hi Jarkko,
-> > 
-> > I have been working with Yael on this project so I thought I might add
-> > a bit of background here around the use case that this series of
-> > patches is trying to address.
-> > 
-> > At a high level we are trying to provide users of encryption that have
-> > key management hierarchies a better tradeoff between security and
-> > availability.  For available and performance reasons master keys often
-> > need to be released (or derived/wrapped keys created) outside of a KMS
-> > to clients (which may in turn further wrap those keys in a series of
-> > levels).  What we are trying to do is provide a mechanism where the
-> > wrapping/unwrapping of these keys is not dependent on a remote call at
-> > runtime.  e.g.  To unwrap a key if you are using AWS KMS or Google
-> > Service you need to make an RPC.  In practice to defend against
-> > availability or performance issues, designers end up building their
-> > own kms and effectively encrypting everything with a DEK.  The DEK
-> > encrypts same set as the master key thereby eliminating the security
-> > benefit of keeping the master key segregated in the first place.
+From: Borislav Petkov <bp@alien8.de>
+Date: Fri, 21 Jan 2022 16:08:17 +0100
 
-Mainly this part (would be enough to explain why it is there).
+> On Thu, Dec 23, 2021 at 01:21:59AM +0100, Alexander Lobakin wrote:
+> > Address places which need special care and enable
+> > CONFIG_ARCH_SUPPORTS_ASM_FUNCTION_SECTIONS.
+> > 
+> > Notably:
+> >  - propagate --sectname-subst to aflags in x86/boot/Makefile and
+> >    x86/boot/compressed/Makefile as both override aflags;
+> 
+> s/aflags/KBUILD_AFLAGS/
+> 
+> Let's be more precise pls.
+> 
+> >  - symbols starting with a dot (like ".Lbad_gs") should be handled
+> >    manually with SYM_*_START_SECT(.Lbad_gs, bad_gs) as "two dots"
+> >    is a special (and CPP doesn't want to concatenate two dots in
+> >    general);
+> >  - some symbols explicitly need to reside in one section (like
+> >    kexec control code, hibernation page etc.);
+> >  - macros creating aliases for functions (like __memcpy() for
+> >    memcpy() etc.) should go after the main declaration (as
+> >    aliases should be declared in the same section and they
+> >    don't have SYM_PUSH_SECTION() inside);
+> >  - things like ".org", ".align" should be manually pushed to
+> >    the same section the next symbol goes to;
+> >  - expand indirect_thunk and .fixup wildcards in vmlinux.lds.S
+> 
+> $ git grep -E "\.fixup" arch/x86/*.S
+> $
+> 
+> I guess I'll continue with your new version since a bunch of stuff
+> has changed in arch/x86/ in the meantime so that that set would need
+> refreshing.
 
-BR, Jarkko
+Yeah, sure. .fixup usage was removed in particular.
+I'll queue v10 soon.
+
+> 
+> Thx.
+> 
+> -- 
+> Regards/Gruss,
+>     Boris.
+
+Thanks for the reviews,
+Al
+
+> 
+> https://people.kernel.org/tglx/notes-about-netiquette
