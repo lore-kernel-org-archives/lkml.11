@@ -2,144 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B28EAC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC54C28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239862AbiAZKXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 05:23:46 -0500
-Received: from mailgw.kylinos.cn ([123.150.8.42]:57874 "EHLO nksmu.kylinos.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229517AbiAZKXo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 05:23:44 -0500
-X-UUID: 36ae1a71b7094682906f579959aa6dce-20220126
-X-CPASD-INFO: a848a1cacdb948c69cbffc1f3d057405@qohuWI5jkZGPhKSFg3uucFmUkpaWj1G
-        1dZ5QZWVkXFWVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3sHpuWJFfkw==
-X-CPASD-FEATURE: 0.0
-X-CLOUD-ID: a848a1cacdb948c69cbffc1f3d057405
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,EXT:0.0,OB:0.0,URL:-5,T
-        VAL:143.0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:288.0,IP:-2.0,MAL:0.0,ATTNUM:0
-        .0,PHF:-5.0,PHC:-5.0,SPF:4.0,EDMS:-3,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CF
-        OB:0.0,SPC:0.0,SIG:-5,AUF:11,DUF:31851,ACD:176,DCD:278,SL:0,AG:0,CFC:0.801,CF
-        SR:0.034,UAT:0,RAF:2,VERSION:2.3.4
-X-CPASD-ID: 36ae1a71b7094682906f579959aa6dce-20220126
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1, 1
-X-UUID: 36ae1a71b7094682906f579959aa6dce-20220126
-X-User: xiehongyu1@kylinos.cn
-Received: from [192.168.123.123] [(116.128.244.169)] by nksmu.kylinos.cn
-        (envelope-from <xiehongyu1@kylinos.cn>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256 128/128)
-        with ESMTP id 169201271; Wed, 26 Jan 2022 18:36:22 +0800
-Message-ID: <c7f6a8bb-76b6-cd2d-7551-b599a8276f5c@kylinos.cn>
-Date:   Wed, 26 Jan 2022 18:22:45 +0800
+        id S239884AbiAZK0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 05:26:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239873AbiAZK0M (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 05:26:12 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08840C061747
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:26:11 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id x7so62079369lfu.8
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:26:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JBuWtik7LMy3F0tZeItzrFUrCNM6hkXa3Q1aN59RsBA=;
+        b=Ekgs2EYw50nyD1x1t3pixFS8bs8OxZICI/3+cxOHhZ0vbKJtbmNnyfq4jc2uKKZkC6
+         iAB07lg3EW9dtTB0ieXIh4//aeK6Ojxp6QlKj+QhSdnQXW6302ZcbyyN6PRrA5a7AYfm
+         WbweAJ9MvYTnoozdA7VtCJgjKUuprS86MjERUTWCK3dM/yJSF/Ug/+UxsPZmW9DxfvgL
+         ctzsmM03KAoSXof/dH8nyxv4Gkm02gj7ZCXjCXU2EXDdV/Y76tiWjJkiS0yWEJ16TO//
+         WN5QQedd34NlZFMVVRI+5u0g1Pmyym6WAKvqMzVlq6iOH+9TtyE/Htj0p5KcYgNv+AR5
+         cpHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JBuWtik7LMy3F0tZeItzrFUrCNM6hkXa3Q1aN59RsBA=;
+        b=0YSHagwWntZt8+Gahd2eL7hK6vrvCXcylLF9gP/JCkwetWEPVQSGe/EVzz7AwhSXkA
+         p7c4ncA0jjttZRbEuEAVZWpnJXQOnXZFFywhyMbkVkdE1irTck6S2oKYYKYFykI+qSTh
+         hiKj2mtcCmb4vFiHo4QPWOaNVt9yludN6cp6mAEHR+B0RP1D7mNsrLv5R/jZ9K4J1ogO
+         78nIWLkWdvJ/KdpCnohlSjVsqZYpPmpDY0yhdSIrg8/hxnH8VrutjcopDV2psOtUBbD6
+         SCX0YKvdCDI43Z9J5F7ZgbbTeAQ4UNFAR/elHxOSpp/wFEM124cXLZ06ePcLJh0oY0E0
+         CTLw==
+X-Gm-Message-State: AOAM530SWlxqU1SEtUCmAmOG7tQWPZc3Q8w/QXHdGLcrM2nLtAs2s7qY
+        uCgL6b52CrlaVQE2UO/hoKU=
+X-Google-Smtp-Source: ABdhPJwKwnsRBlqvUoLKTHrSyQj8uUXFSX/FmudG4LYAu5KSPT2vGMNNTQ04zW2W9f3M6m2tpPVgeA==
+X-Received: by 2002:a05:6512:10d2:: with SMTP id k18mr19638544lfg.167.1643192770102;
+        Wed, 26 Jan 2022 02:26:10 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.227.208])
+        by smtp.gmail.com with ESMTPSA id b39sm1516962ljr.88.2022.01.26.02.26.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 02:26:09 -0800 (PST)
+Message-ID: <b5bbe488-ac43-fd89-7c65-36bfa9c903a6@gmail.com>
+Date:   Wed, 26 Jan 2022 13:26:08 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH -next] xhci: fix two places when dealing with return value
- of function xhci_check_args
+Subject: Re: [PATCH 06/10] staging: r8188eu: remove DBG_88E calls from
+ os_dep/ioctl_linux.c
 Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Hongyu Xie <xy521521@gmail.com>
-Cc:     mathias.nyman@intel.com, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, 125707942@qq.com, stable@vger.kernel.org
-References: <20220126094126.923798-1-xy521521@gmail.com>
- <YfEZFtf9K8pFC8Mw@kroah.com>
-From:   =?UTF-8?B?6LCi5rOT5a6H?= <xiehongyu1@kylinos.cn>
-In-Reply-To: <YfEZFtf9K8pFC8Mw@kroah.com>
+To:     Phillip Potter <phil@philpotter.co.uk>
+Cc:     gregkh@linuxfoundation.org, dan.carpenter@oracle.com,
+        Larry.Finger@lwfinger.net, straube.linux@gmail.com,
+        martin@kaiser.cx, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20220124224415.831-1-phil@philpotter.co.uk>
+ <20220124224415.831-7-phil@philpotter.co.uk>
+ <a681a562-eb41-9dc8-703a-5b235c15a3a1@gmail.com> <YfCgQbFxfVZXw9Fg@equinox>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <YfCgQbFxfVZXw9Fg@equinox>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-1."What problem?
-r8152_submit_rx needs to detach netdev if -ENODEV happened, but -ENODEV 
-will never happen
-because xhci_urb_enqueue only returns -EINVAL if the return value of 
-xhci_check_args <= 0. So
-r8152_submit_rx will will call napi_schedule to re-submit that urb, and 
-this will cause infinite urb
-submission.
-The whole point is, if xhci_check_args returns value A, 
-xhci_urb_enqueque shouldn't return any
-other value, because that will change some driver's behavior(like r8152.c).
+Hi Phillip,
 
-2."So if 0 is returned, you will now return that here, is that ok?
-That is a change in functionality.
-But this can only ever be the case for a root hub, is that ok?"
+On 1/26/22 04:13, Phillip Potter wrote:
 
-It's the same logic, but now xhci_urb_enqueue can return -ENODEV if xHC 
-is halted.
-If it happens on a root hub,  xhci_urb_enqueue won't be called.
+[snip]
 
-3."Again, this means all is good?  Why is this being called for a root hub?"
+}
+>> 
+>> And here you also removes the reads. I guess, some kind of magic pattern is
+>> used
+>> 
+> 
+> So these calls are macro arguments, they would never be executed under
+> normal circumstances anyway, unless the rtw_debug kernel module was
+> passed in as 5 or more - it is 1 by default. The DBG_88E macro would
+> expand during preprocessing phase to (for example):
+> 
+> do {
+> 	if (5 <= GlobalDebugLevel)
+> 		pr_info("R8188EU: " "dbg(0x450) = 0x%x\n", rtw_read32(padapter, 0x450));
+> } while (0)
+> 
+> As this is never executed under normal circumstances anyway, I would say
+> calls like these are therefore safe to remove. Happy to be convinced
+> though :-) Many thanks.
+> 
 
-It is the same logic with the old one, but now 
-xhci_check_streams_endpoint can return -ENODEV if xHC is halted.
+I see your point, thanks for explanation.
+
+Well, in this case, you may left all reads, that are executed during 
+normal lifetime of a driver. We know, that there is at least 1 place, 
+where read() call removal can break things. Might be there are couple of 
+other places we don't know about.
+
+IMHO the best thing you can do is to leave these reads and leave a 
+comment like "hey, please remove me and test". One day useless reads 
+should be anyway removed, since ideally rtw_read family must get 
+__must_check annotation + normal error handling.
+
+Thanks :)
 
 
-thanks
-
-Hongyu Xie
 
 
-On Tue, 25 Jan 2022 at 22:02, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org>  wrote:
-
-> On Wed, Jan 26, 2022 at 05:41:26PM +0800, Hongyu Xie wrote:
->> From: Hongyu Xie <xiehongyu1@kylinos.cn>
->>
->> xhci_check_args returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
->> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
->> the return value of xhci_check_args <= 0.
->> This will cause a problem.
-> What problem?
->
->> For example, r8152_submit_rx calling usb_submit_urb in
->> drivers/net/usb/r8152.c.
->> r8152_submit_rx will never get -ENODEV after submiting an urb
->> when xHC is halted,
->> because xhci_urb_enqueue returns -EINVAL in the very beginning.
->>
->> Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
->> Cc: stable@vger.kernel.org
->> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
->> ---
->>   drivers/usb/host/xhci.c | 9 ++++++---
->>   1 file changed, 6 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
->> index dc357cabb265..a7a55dd206fe 100644
->> --- a/drivers/usb/host/xhci.c
->> +++ b/drivers/usb/host/xhci.c
->> @@ -1604,9 +1604,12 @@ static int xhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb, gfp_t mem_flag
->>   	struct urb_priv	*urb_priv;
->>   	int num_tds;
->>   
->> -	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
->> -					true, true, __func__) <= 0)
->> +	if (!urb)
->>   		return -EINVAL;
->> +	ret = xhci_check_args(hcd, urb->dev, urb->ep,
->> +					true, true, __func__);
->> +	if (ret <= 0)
->> +		return ret;
-> So if 0 is returned, you will now return that here, is that ok?
-> That is a change in functionality.
->
-> But this can only ever be the case for a root hub, is that ok?
->
->>   
->>   	slot_id = urb->dev->slot_id;
->>   	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
->> @@ -3323,7 +3326,7 @@ static int xhci_check_streams_endpoint(struct xhci_hcd *xhci,
->>   		return -EINVAL;
->>   	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
->>   	if (ret <= 0)
->> -		return -EINVAL;
->> +		return ret;
-> Again, this means all is good?  Why is this being called for a root hub?
->
-> thanks,
->
-> greg k-h
+With regards,
+Pavel Skripkin
