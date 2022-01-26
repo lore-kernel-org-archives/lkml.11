@@ -2,167 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A8BC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24ED9C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240457AbiAZLGg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:06:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240462AbiAZLGd (ORCPT
+        id S240480AbiAZLJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:09:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58407 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240462AbiAZLJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:06:33 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED499C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:06:32 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id e16so11516290pgn.4
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:06:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YKOxeAFs8Emmc3fhmzQkKbSXzeM4KV2nj8OXlHcTbRc=;
-        b=Qs/qsEDDuKtEoofAiibv7eMKY8JF2iTOALoGwBLBm6gTRvPztMZOI/oV09l3bECE8S
-         HbbIzy2bkijESpND9yJcLDqsqolSdFiF1hs1ZBPi13J603abakFE0qPy8gNJIHwfvsiK
-         SD/GoLAZfU+COhAKph8wK9wbP6JXUfEoYqg+9GHhBnEfjo+0naD1VmUf8xo0BP+mqijJ
-         tmpBm+qAg1CJE/n2T1kyoGCVy0K/I6yH3u4s7yxh04kEZRrZp0hgoeNY/7Qz6XS8rPTA
-         Et5wcAMS/ZxXwK31nlkDjx6Xh2UnI8nXTuMQSN6xJyrYRCcK7gooOkt/nowwXctIXhZn
-         eBAQ==
+        Wed, 26 Jan 2022 06:09:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643195339;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hPtwTDwHghQtVyxWRc+Fq5g+xzmJLLojUxCSBluBiYo=;
+        b=VmXvMu6uli0+sYiiCxIur/HSuspf+qdY38HyEjeBOFnKU4D9+gunA7UGZq/y6wiKdDJU3p
+        LPsPLYtGjTBlcP6HM/tWM3iPUIgS0wpQvpJRacN9TIg/5e0RNuiUnBaXy8zeIqb1nwfsAj
+        1N49nX/5HAVyhpAGMNraA2yuwvxFlwg=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-278-l2sYW9rKN6q9lzoLsmHlsg-1; Wed, 26 Jan 2022 06:08:58 -0500
+X-MC-Unique: l2sYW9rKN6q9lzoLsmHlsg-1
+Received: by mail-ed1-f70.google.com with SMTP id bc24-20020a056402205800b00407cf07b2e0so6036398edb.8
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:08:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YKOxeAFs8Emmc3fhmzQkKbSXzeM4KV2nj8OXlHcTbRc=;
-        b=tWowl17m95IHfanV07043jjoAIZ40IrDxaUusP6S7t8oiYaWOcyrCcabcVzTsG9+Pu
-         WOGq+61G6s1+g4+0JoKOhDvxJDULkv6kVmA9Se57Sg7WKW59s9ZmD7crxwMKLpdg5CeE
-         xK0FkJpj8Tl9JCp/LcIfN6URkLB9zRSLuxADAmf/J6VihDAZDtTLsgDF564NirCoSNZe
-         yEEk/m5wpBRqGSA6hBnkf8mBmV9g8ydsOSVSAMoD45ca+OvDL6Xuw2ZeHulOU+Ws4GgK
-         EP7gMKswTyjFZF96wCMlJBZehEc5iK93NX8fBOE9hFgczxtPX8jg0ZsmibIP4LDINzFE
-         B5RA==
-X-Gm-Message-State: AOAM531FqE2V8NWUmUvuV4PVYm8dz0kWDyEKZTBaZnBl9lGiL2vUkP0U
-        /vS9a4j9EV9iIsD0hbWzpfMu1Q==
-X-Google-Smtp-Source: ABdhPJyrozMJzK7uXJz7QXVrc55G1XxvDHKRrhDehcrXchiGbxAxGQWWo8T0lVPkuVswCE/5A1+B5w==
-X-Received: by 2002:a05:6a00:cc2:b0:4c9:f07d:6abe with SMTP id b2-20020a056a000cc200b004c9f07d6abemr10317842pfv.17.1643195192179;
-        Wed, 26 Jan 2022 03:06:32 -0800 (PST)
-Received: from sunil-ThinkPad-T490.dc1.ventanamicro.com ([49.206.3.187])
-        by smtp.gmail.com with ESMTPSA id r11sm1811792pff.81.2022.01.26.03.06.27
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=hPtwTDwHghQtVyxWRc+Fq5g+xzmJLLojUxCSBluBiYo=;
+        b=o4GOR618LVqQDM4Sjx3I9Hr8lkF6RbrD+p6KQLcP++drOzsyX/GL/K82kM/OciGvdn
+         3uRyTbrNT9aPQ2IxVDFNTOMwRJ8PnoV6f6CxryfGQ17Se3LBZOeyt5ZjU+Y/AbS9Vc87
+         cqLniV4bEQsID1SDwiG7WuMhSgbHOT/HD7G2Jokyd6xiTtPKK370zwmgjjZSgYYa9M6E
+         ECv2cE0FTCj9wg8dPNFw4+B4yyQ0+hp5S1XKiWiw08P2j/kV4dylCMYchtvgIRlVC4TS
+         3FVNzzzMAnA24FCUx+wLY9bH+i+ELvUt5ADCeQVFp0WxoKtcyNmTac5u6Mlxj3xbcWjE
+         AZaA==
+X-Gm-Message-State: AOAM533giUkD3P2aPjibpWh5gP2FLz6ZG/I0GxepWmkatf9QQJK9jhDl
+        QTQAdz3YvGixHLU00WnzClA2S2Fd0qOk8PZVQy0nZbqrfuJ/RXcn+om11jbSA/vvYHW0G3Qa8Yd
+        Jp9JTwYCh0nzdlNu+oFHfoFTH
+X-Received: by 2002:a17:907:7ea8:: with SMTP id qb40mr12708724ejc.541.1643195337424;
+        Wed, 26 Jan 2022 03:08:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwdUKeSXIU4o2kPWVGr2pmhV25aDoIatAXpL9c40+cFEd5lpNFyesBxrQl6LE484+Sgc9ijKA==
+X-Received: by 2002:a17:907:7ea8:: with SMTP id qb40mr12708697ejc.541.1643195337159;
+        Wed, 26 Jan 2022 03:08:57 -0800 (PST)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id dc24sm7251220ejb.201.2022.01.26.03.08.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 03:06:31 -0800 (PST)
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Ard Biesheuvel <ardb@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org,
-        Heinrich Schuchardt <xypron.glpk@gmx.de>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        Abner Chang <abner.chang@hpe.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>,
-        Sunil V L <sunilvl@ventanamicro.com>
-Subject: [RFC PATCH 1/1] riscv/efi_stub: Add support for RISCV_EFI_BOOT_PROTOCOL
-Date:   Wed, 26 Jan 2022 16:36:15 +0530
-Message-Id: <20220126110615.33371-2-sunilvl@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220126110615.33371-1-sunilvl@ventanamicro.com>
-References: <20220126110615.33371-1-sunilvl@ventanamicro.com>
+        Wed, 26 Jan 2022 03:08:56 -0800 (PST)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+be576ad7655690586eec@syzkaller.appspotmail.com
+Subject: Re: [PATCH] KVM: x86: Free kvm_cpuid_entry2 array on post-KVM_RUN
+ KVM_SET_CPUID{,2}
+In-Reply-To: <20220125210445.2053429-1-seanjc@google.com>
+References: <20220125210445.2053429-1-seanjc@google.com>
+Date:   Wed, 26 Jan 2022 12:08:55 +0100
+Message-ID: <875yq6iwjc.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the support for getting the boot hart ID in
-Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL.
+Sean Christopherson <seanjc@google.com> writes:
 
-Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
----
- drivers/firmware/efi/libstub/efistub.h    | 15 ++++++++++++
- drivers/firmware/efi/libstub/riscv-stub.c | 28 ++++++++++++++++++++---
- include/linux/efi.h                       |  1 +
- 3 files changed, 41 insertions(+), 3 deletions(-)
+> Free the "struct kvm_cpuid_entry2" array on successful post-KVM_RUN
+> KVM_SET_CPUID{,2} to fix a memory leak, the callers of kvm_set_cpuid()
+> free the array only on failure.
+>
+>  BUG: memory leak
+>  unreferenced object 0xffff88810963a800 (size 2048):
+>   comm "syz-executor025", pid 3610, jiffies 4294944928 (age 8.080s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 00 00 00 00 0d 00 00 00  ................
+>     47 65 6e 75 6e 74 65 6c 69 6e 65 49 00 00 00 00  GenuntelineI....
+>   backtrace:
+>     [<ffffffff814948ee>] kmalloc_node include/linux/slab.h:604 [inline]
+>     [<ffffffff814948ee>] kvmalloc_node+0x3e/0x100 mm/util.c:580
+>     [<ffffffff814950f2>] kvmalloc include/linux/slab.h:732 [inline]
+>     [<ffffffff814950f2>] vmemdup_user+0x22/0x100 mm/util.c:199
+>     [<ffffffff8109f5ff>] kvm_vcpu_ioctl_set_cpuid2+0x8f/0xf0 arch/x86/kvm/cpuid.c:423
+>     [<ffffffff810711b9>] kvm_arch_vcpu_ioctl+0xb99/0x1e60 arch/x86/kvm/x86.c:5251
+>     [<ffffffff8103e92d>] kvm_vcpu_ioctl+0x4ad/0x950 arch/x86/kvm/../../../virt/kvm/kvm_main.c:4066
+>     [<ffffffff815afacc>] vfs_ioctl fs/ioctl.c:51 [inline]
+>     [<ffffffff815afacc>] __do_sys_ioctl fs/ioctl.c:874 [inline]
+>     [<ffffffff815afacc>] __se_sys_ioctl fs/ioctl.c:860 [inline]
+>     [<ffffffff815afacc>] __x64_sys_ioctl+0xfc/0x140 fs/ioctl.c:860
+>     [<ffffffff844a3335>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>     [<ffffffff844a3335>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>     [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+>
+> Fixes: c6617c61e8fe ("KVM: x86: Partially allow KVM_SET_CPUID{,2} after KVM_RUN")
+> Cc: stable@vger.kernel.org
+> Reported-by: syzbot+be576ad7655690586eec@syzkaller.appspotmail.com
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/cpuid.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+> index 3902c28fb6cb..0a08db384fb9 100644
+> --- a/arch/x86/kvm/cpuid.c
+> +++ b/arch/x86/kvm/cpuid.c
+> @@ -346,8 +346,14 @@ static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+>  	 * KVM_SET_CPUID{,2} again. To support this legacy behavior, check
+>  	 * whether the supplied CPUID data is equal to what's already set.
+>  	 */
+> -	if (vcpu->arch.last_vmentry_cpu != -1)
+> -		return kvm_cpuid_check_equal(vcpu, e2, nent);
+> +	if (vcpu->arch.last_vmentry_cpu != -1) {
+> +		r = kvm_cpuid_check_equal(vcpu, e2, nent);
+> +		if (r)
+> +			return r;
+> +
+> +		kvfree(e2);
+> +		return 0;
+> +	}
+>  
+>  	r = kvm_check_cpuid(vcpu, e2, nent);
+>  	if (r)
+>
+> base-commit: e2e83a73d7ce66f62c7830a85619542ef59c90e4
 
-diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-index edb77b0621ea..0428f8816942 100644
---- a/drivers/firmware/efi/libstub/efistub.h
-+++ b/drivers/firmware/efi/libstub/efistub.h
-@@ -720,6 +720,21 @@ union efi_tcg2_protocol {
- 	} mixed_mode;
- };
- 
-+typedef union riscv_efi_boot_protocol riscv_efi_boot_protocol_t;
-+
-+union riscv_efi_boot_protocol {
-+	struct {
-+		u64 revision;
-+		efi_status_t (__efiapi *get_boot_hartid)(
-+							 riscv_efi_boot_protocol_t *,
-+							 size_t *);
-+	};
-+	struct {
-+		u32 revision;
-+		u32 get_boot_hartid;
-+	} mixed_mode;
-+};
-+
- typedef union efi_load_file_protocol efi_load_file_protocol_t;
- typedef union efi_load_file_protocol efi_load_file2_protocol_t;
- 
-diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
-index 380e4e251399..c7add4eb5453 100644
---- a/drivers/firmware/efi/libstub/riscv-stub.c
-+++ b/drivers/firmware/efi/libstub/riscv-stub.c
-@@ -46,12 +46,34 @@ static u32 get_boot_hartid_from_fdt(void)
- 	return fdt32_to_cpu(*prop);
- }
- 
-+static u32 get_boot_hartid_from_efi(void)
-+{
-+	efi_guid_t boot_protocol_guid = RISCV_EFI_BOOT_PROTOCOL_GUID;
-+	efi_status_t status;
-+	riscv_efi_boot_protocol_t *boot_protocol;
-+	size_t boot_hart_id;
-+
-+	status = efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
-+			     (void **)&boot_protocol);
-+	if (status == EFI_SUCCESS) {
-+		status = efi_call_proto(boot_protocol,
-+					get_boot_hartid, &boot_hart_id);
-+		if (status == EFI_SUCCESS) {
-+			return (u32)boot_hart_id;
-+		}
-+	}
-+	return U32_MAX;
-+}
-+
- efi_status_t check_platform_features(void)
- {
--	hartid = get_boot_hartid_from_fdt();
-+	hartid = get_boot_hartid_from_efi();
- 	if (hartid == U32_MAX) {
--		efi_err("/chosen/boot-hartid missing or invalid!\n");
--		return EFI_UNSUPPORTED;
-+		hartid = get_boot_hartid_from_fdt();
-+		if (hartid == U32_MAX) {
-+			efi_err("/chosen/boot-hartid missing or invalid!\n");
-+			return EFI_UNSUPPORTED;
-+		}
- 	}
- 	return EFI_SUCCESS;
- }
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ccd4d3f91c98..9822c730207c 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
- #define EFI_CONSOLE_OUT_DEVICE_GUID		EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
- #define APPLE_PROPERTIES_PROTOCOL_GUID		EFI_GUID(0x91bd12fe, 0xf6c3, 0x44fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
- #define EFI_TCG2_PROTOCOL_GUID			EFI_GUID(0x607f766c, 0x7455, 0x42be,  0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
-+#define RISCV_EFI_BOOT_PROTOCOL_GUID		EFI_GUID(0xccd15fec, 0x6f73, 0x4eec,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
- #define EFI_LOAD_FILE_PROTOCOL_GUID		EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
- #define EFI_LOAD_FILE2_PROTOCOL_GUID		EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
- #define EFI_RT_PROPERTIES_TABLE_GUID		EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
+Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+
+Thanks!
+
 -- 
-2.25.1
+Vitaly
 
