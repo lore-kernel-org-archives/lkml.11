@@ -2,198 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA64C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:35:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:35:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233630AbiAZXfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 18:35:06 -0500
-Received: from mail-os0jpn01on2074.outbound.protection.outlook.com ([40.107.113.74]:53984
-        "EHLO JPN01-OS0-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229725AbiAZXfE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 18:35:04 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bB3cVSw1Blx9UIoL6C1akdkbx5mT0rOV9ZRDP21eQhAhuYPnoUXBEd3ZGlVX/xBClTkT+JQDNUat6hFja2rczVV1k1/MIpA2hinye8gpGou/7aTYU40A1c41UodSAj2qc8u54G3X7r3Lr7ovseH1RSNkVUVPkS8iUALxKfpMC4H1IX/cJG2akrf6TMHMEoTnqK5sZwbXnouwiRJfAK1ktg/T4jKu39X6XIxgWHl6iQkvAIdhEg2hKmXfODsjlSUwbsvFTVxwfRu5B5bBmGNsLxaqWAhmFdzye/e3S12z5XFiS+4Iy3XdlNDx4er9oawiWurNoLh3yYk7300e4Ql6fg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HM0OJSGBh6bIdaf88V3w2zbMBnmTiCb/Le1Bxoh337w=;
- b=JtX68lE/RO2YZacRfXb6XhYo3by2C+EV/SUVX8cX6Lzf2AI89NYpkdh8EvdYC3UDM+f3kuEh+wJoagarFboViioSwJYk2lb/GxgMnuX660e0jrF0p1WqWXtvMRKd55o4RewEW+9TnvLEG6b/JxxwT/RtqNvBD36tHu6DN+XVslerUz/jOpzgi267zevX9M0Run2bSdCKfsUsF5vPA0P870TRCO81pWUKYMvTQ3e/XC12SYDSOkj+BffKK7/mosAQbi3g9IVTnOFSKFVzs44IzI6hqXiaahQo/Tq6xidREzDQalTpUjPsRcjtkKuQpdoDtLyU+tyfmJRVclbq9/E7Hg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HM0OJSGBh6bIdaf88V3w2zbMBnmTiCb/Le1Bxoh337w=;
- b=mQkzble5pcoinH0i6J9wFgEXFL1lINUhDAHjOXBe5akd1TkyNU1cYbrSloKm5zOFgPkHoAf8TY7l/+oP+vH2lH5ola0ch/vZRzth/0jFjDaP4reNQWXWgcc6OwN0fmrDQdUUqJF4SkNejc92nbcC/8WdyUhTdDpYNcXW1n3kDKk=
-Received: from TYCPR01MB8190.jpnprd01.prod.outlook.com (2603:1096:400:103::9)
- by TY2PR01MB3691.jpnprd01.prod.outlook.com (2603:1096:404:dc::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.11; Wed, 26 Jan
- 2022 23:35:02 +0000
-Received: from TYCPR01MB8190.jpnprd01.prod.outlook.com
- ([fe80::81f9:7ce5:226b:6237]) by TYCPR01MB8190.jpnprd01.prod.outlook.com
- ([fe80::81f9:7ce5:226b:6237%7]) with mapi id 15.20.4909.017; Wed, 26 Jan 2022
- 23:35:02 +0000
-From:   =?iso-2022-jp?B?VEFUU1VLQVdBIEtPU1VLRSgbJEJOKUBuISE5PjJwGyhCKQ==?= 
-        <tatsu-ab1@nec.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] n_tty: wake up poll(POLLRDNORM) on receiving data
-Thread-Topic: [PATCH v2] n_tty: wake up poll(POLLRDNORM) on receiving data
-Thread-Index: AQHYEw1Xw7tuGFtGzkGN0Ezm5vc7sg==
-Date:   Wed, 26 Jan 2022 23:35:02 +0000
-Message-ID: <TYCPR01MB81901C0F932203D30E452B3EA5209@TYCPR01MB8190.jpnprd01.prod.outlook.com>
-Accept-Language: ja-JP, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nec.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3f1f9c19-162c-4b72-fc9a-08d9e12479cc
-x-ms-traffictypediagnostic: TY2PR01MB3691:EE_
-x-microsoft-antispam-prvs: <TY2PR01MB369180D1F2C91234EA7D5513A5209@TY2PR01MB3691.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:972;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: GcuZNJ6Rq5+BRS9XnO7BLzxn6wpR212siojdKsF5ZweCOqP+M+JHyQTPmBXppr3vm14R4YobI6K4vW07/MBQud51tTvTRuSyTd9mPMiQ+TzDBiXYiV6oPfkZZoxnPXKxqvET4SJji7pyYEGZjAOFAbxFRWC3RX6drJggJp8UylbELCeldqEw0497ysOv99+DhRRCaNa7nwgut+HORWL4+WzdVsKWrb95RI5e5D5r3NE67yoM/YtZkyxcZl0DyKkuEvc8EGel1N68Y1WB/UKgzm5i15WgNt1bdrwTt131Uxbk/+ds5Xoe02GkjkUNunqVszJgj7GGxeh5Xf7vkkKzs7UtpMuRqJDSykDDdrUHz0bd2U0qhBO93AbP2HAEoJz5bubUa798yBzrU0oK/n6gJd/A4XZ88SQAlp2H/bMbipw3Z0Hb2C/7xUH8+yLc1qxgK1mbKAB/dZh87NiaevhVRMH4jC5/k3qZkOPsef++u15CfsQSwR9EvVf4L1J2A5M8shJ4wGC5ArBe64gALYCf3N8seJwQOCMRZARAJOqpEEuvV/7vj6Cfab5iT+Bm3YWsUbsVVgSlLuaQMKfoDRQ0S232ottJfZIiEhDK2yVubtCT6HN96sVIlPDSLX9DJU6VObphT5+q5BVYQ5eyTXoXfUMdAvvNWC8u8yaHvT1UqKh913TAQBvwGyqCTWaH0l6lRsvfAMjAD2GGohn6Z442Uw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCPR01MB8190.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52536014)(64756008)(71200400001)(38070700005)(66556008)(66476007)(66446008)(66946007)(5660300002)(7696005)(82960400001)(122000001)(316002)(2906002)(55016003)(38100700002)(110136005)(85182001)(76116006)(83380400001)(8676002)(9686003)(186003)(6506007)(86362001)(8936002)(55236004)(4326008)(33656002)(26005)(508600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-2022-jp?B?OURZRytqeHh3UGNtRzlxN3ptMUg4ckw4QnZKTE9XRmtBRndSVmJKWHdm?=
- =?iso-2022-jp?B?OVFqM3RQMktFVzRSdExsTWRNa3puWDNsbjlDRnQyaDRvdk5kNm5zYkFK?=
- =?iso-2022-jp?B?NzZ1T3VHR00xcXAxQlZIMC8zSDhMUEtCa3hHVTMvb1dMSnhwYjQzWGEv?=
- =?iso-2022-jp?B?akg1RC96c3J5ekxDYjJJMWRDWnU3clBkSjZ4STNBQkNQdWFDNnM2emxh?=
- =?iso-2022-jp?B?enM4ZUN6WGJmUW1NYkRMSjhDTUs1U01NdUptamF3SDZtWUFIRmpqRmg0?=
- =?iso-2022-jp?B?anRIYmM1MlV6MGpxOTFMc1U5OFBNRE0rWWViNUc1WHUzR0tzZ3lKU2M5?=
- =?iso-2022-jp?B?dTAybnhCNTRrTEprbGNjRG15MXo2QlZNTzZray92Mmx6UUREK2xyVmlI?=
- =?iso-2022-jp?B?Qi96WE5GYTNIV3JkWnBIUnJLMUxCWXpCd01UeTlHVGNINXhTOVIzaDNN?=
- =?iso-2022-jp?B?cSsrOHZkQ3M1KzNCRm13R21ER2JsM3gzNkdlb0V6aVRITU9vVkhwVXE3?=
- =?iso-2022-jp?B?cWY3Qzl5dGNjdDVBOVhmQyttL3NOWGFxdEtXWEFMbEJtWHZxTVNCcXFX?=
- =?iso-2022-jp?B?eUgweWJVWmtpSlNLOGVmOXBsOEpWQlJmWDBRUy9JREhydzZaYm0xMy9z?=
- =?iso-2022-jp?B?ZHlBbmpmNVE0MVNYaEx6ellwK2ZSV0FzcWhjWm51Uk9EL2sxdkMydjBM?=
- =?iso-2022-jp?B?ZThNaUQzNHcvMlhTNHgrYWNGSUMzTlZHVElxZ0VnMkpqaytOOGsrMWtT?=
- =?iso-2022-jp?B?TjlXMngyNDh1STQwY05hSTJtR3lhTExIWnkvOVFWYUphNjEwUUNHZlpW?=
- =?iso-2022-jp?B?NFIwTHRPVGFVazIxRDJ6TkMvQWhKRVBaOVV1cXlISmgzWU83TjFaMUlm?=
- =?iso-2022-jp?B?NVBoaEdqM2JEaWl6Z21LWkx4bGxWMlYwT09nRGVHZG9zQTBxM2s0Z0pC?=
- =?iso-2022-jp?B?NVFXN1hZSTdFb3VxalhEeFlQYmE4a3MwaTVTc0tMV2lwaGYwTDN3K1RF?=
- =?iso-2022-jp?B?ZC9VOGpscVIwdFllTUNlR0VKS2RtMVFQeVVwemZsdmZXMWFkM1RGRnla?=
- =?iso-2022-jp?B?YjNNMnR5ZXpvVGVWczRRc1BVU29vYWtLNWdmVm1uc0ZFMXQ3dnR3dDIv?=
- =?iso-2022-jp?B?c0N3cC82V3RQZ0F4OEIwNWpFUTNKMk9iVlVGM1FlemhjbDJkWkJIVGtk?=
- =?iso-2022-jp?B?cnRDcUFXUVE4TmFCSEUzamJlbE9jcEhmVFZ6NENBZFA5VEUrNU5pMzI3?=
- =?iso-2022-jp?B?eXAxN0IvMEtJaXR0MW12b0U0VWdwbElnWXNhRHZtZUZyRnVia2NkQjFt?=
- =?iso-2022-jp?B?UkRtT1VEU2tjRUh1ekN4QnFnQnpqQTYvTEYzN3d0RzdhdWVoWHQwUkxZ?=
- =?iso-2022-jp?B?U2sxNlgxcU5sblhiZ2VuVDgxT3FhMkVLcFUxdEJUdks0WnJVNTRMbCth?=
- =?iso-2022-jp?B?YkJyS0lJWWF2VkpXeU9ZeEluU2ViN3JtYTZITk1YcU02d3FPMUluZFZW?=
- =?iso-2022-jp?B?TEE0MDFEMjdPRUdoK29WSlJBUXhQcVFuVklwUkpPcDB6MVVXRlNRdkpl?=
- =?iso-2022-jp?B?TWN1bkJBWUs0VVpLcXRvOXVjb2IyTENhVFM3dlZyazdLR0U0NERBTmVT?=
- =?iso-2022-jp?B?N0ZsZTZDUU5YT2NVenFnRi9FNFBVMGl5TkxESEZxUHBIKzc2V1R1aXo4?=
- =?iso-2022-jp?B?MDN6aUFkT1E3S1N4VUpEK1pLMUFtTDVWUGtYeUNLVm5NYnlQQkZINHl2?=
- =?iso-2022-jp?B?NW5PV0RKdjlWWE5meEU1QjNWZlFNYkxkbHpKNm8zNTFxY2h0S0JWYkVn?=
- =?iso-2022-jp?B?QkJhUVFnVXArcW9HakFveG05aXRxdXYyS3VvODV0MHQ1WDBkbStqUFdj?=
- =?iso-2022-jp?B?WmxLUGZBeGc2azBHeUxoS2tyQlJURmYvb2pGYUV1OUNDTS9FTm4wNnJK?=
- =?iso-2022-jp?B?MmdwWDlzbW55aVhaWGRpUWNTeVlTNEhFdTJvNFVTWkZXRlVwRldSOFdx?=
- =?iso-2022-jp?B?RDJaY2FMOE5xV3hqWGhKekR2cW95bzFvMy9pT2JyS1poWVZ6MkdRWDNo?=
- =?iso-2022-jp?B?Q3RmU1k1MENHTzNtcHBiUFFNRlBDeGZkRXBTRFVraHNBUTJjcEx5RjBa?=
- =?iso-2022-jp?B?Z2RTWnVsTDBaRnNPc3VlNmFmdzFtL0JZZGMwNHg2NUlIYVpEaXk2bFlS?=
- =?iso-2022-jp?B?K0pCZmtYaDVsdkFrQzhtZVJIYmthVm9hUTFXeGRpYjZ1MWlHUDZmb0F0?=
- =?iso-2022-jp?B?WGhkckU1QW9OdlN1M2dYV2dVaGZlQllKREEzaEZvTWMzam5RYXprY0w2?=
- =?iso-2022-jp?B?UVQ0U3VITGcyOWZabldCeUNISU9MM1J1RW9VMXVYZ0dKaE92eEcvWHNU?=
- =?iso-2022-jp?B?THFYYVBLaEF2YzA3RWpWdjRWcm85djk2Yno=?=
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-ID: <07AC1A20DE1AD94DBF294104D9497A41@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: nec.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYCPR01MB8190.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f1f9c19-162c-4b72-fc9a-08d9e12479cc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jan 2022 23:35:02.7538
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yTDzlxwzvtfYju+oR6n5AGM4S6G2AlaNxxkxmD1v/S9s1GvW3VFdYqkaoseKOOsFtc3zyG5g5Po8xKm2jVhpjw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB3691
+        id S233651AbiAZXfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 18:35:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233650AbiAZXfO (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 18:35:14 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C09FC061748
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:35:14 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id n198-20020a2540cf000000b00614c2ee23b7so2443154yba.9
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:35:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=uRxu1ekh/P1Cn+pjTYdSfUMUg0bD8ZbpLT/iEdHDF5M=;
+        b=VlNcAikAcD9umMDwRpax0ZtWmVeSiodBQ2W0hotrOGg+DY7SypIvp9jbuJyFk+kroA
+         CwV1o8P8UI38+wGNhifQlEaWCrVQZBJ0nBsr2BfK9skJozQFWQ2FHl1h42qbb3NncR/0
+         65N+wKXN/YhotxXVIgJsijxM69Dc3aD3uLD0u0Vz9EzhDbQDmJQ9JqxvYoe2/RV4Qg/a
+         Eh6cgz4ucslWn/nMM9vMxrqpuCP2mqzJ/trxLKTiYd3nDYjBiKosdzbhJBt2CIpDoJVR
+         L8tyeIBu86YKhhX30cTKTxKcb935ZOtNRCgR9bPbXlo5GM5xr7SPTY2FVGpU2kmIqhOc
+         5iag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=uRxu1ekh/P1Cn+pjTYdSfUMUg0bD8ZbpLT/iEdHDF5M=;
+        b=tHNhIk3EMyecvT3ed/CjjEVkRUXYYIslkT6AHQoAH3uBaZaF7tKYCyl0Wonnd6cS5/
+         VSXt6lu1VHjueXCSkujwLKBNKkbSZLSjMb7XAiwzMS/WYnzib+TJ4WHC18EWLs75HrbZ
+         LggJ1BR98bNAhH+R19fCI3I4/BdCnTgNNZovWAw1FWDHt0sYMNe5VrgVsVOqho8cAkFu
+         zivqBj5Uju+vXSRp96QETA3J5vVY7hGhIL5QPrpfhxNbgfxK09fk9bMDI6JuwxMOwRW6
+         ioY4YnubsbB1nogU0f4a4S2FU0m9AHbteTi2LiwvLluys/ALMV/cfzXHfsqyoKwPhrwf
+         5pRw==
+X-Gm-Message-State: AOAM532CuP4yQRbPLs5dAtKLbZ8sLiAc7IYENiYZTOZy9FwGCovb4EbE
+        KmV5fuOb0ivzJzieP3XQGz+Ldd7sJPX2ICC8VwDMOTQRTE77FXaNIo38ZBp0z4BLJLKZx/5XzCO
+        GQFJ9yCd/fMwHFxpPq+LIyNcX+ChhRJcueLUlNlv0MbuRE2X3krRG6tr4fXUx0DtrP5VYcunH
+X-Google-Smtp-Source: ABdhPJz7Mx659eGeNmi0icgJGS4N/x32BCugUapRRezaoIyejVlcCkdstacPZmyt7AjZHoe8BxPpvJlhDDiF
+X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:9ce0:6f20:c145:eac])
+ (user=eranian job=sendgmr) by 2002:a25:ca0c:: with SMTP id
+ a12mr2096767ybg.446.1643240113149; Wed, 26 Jan 2022 15:35:13 -0800 (PST)
+Date:   Wed, 26 Jan 2022 15:34:41 -0800
+Message-Id: <20220126233454.3362047-1-eranian@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+Subject: [PATCH v5 00/14] perf/x86/amd: Add AMD Fam19h Branch Sampling support
+From:   Stephane Eranian <eranian@google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
+        jolsa@redhat.com, songliubraving@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The poll man page says POLLRDNORM is equivalent to POLLIN when used as
-an event.
-$ man poll
-<snip>
-              POLLRDNORM
-                     Equivalent to POLLIN.
+This patch series adds support for the AMD Fam19h 16-deep branch sampling
+feature as described in the AMD PPR Fam19h Model 01h Revision B1 section
+2.1.13. This is a model specific extension. It is not an architected AMD
+feature.
 
-However, in n_tty driver, POLLRDNORM does not return until timeout even
-if there is terminal input, whereas POLLIN returns.
+The Branch Sampling Feature (BRS) provides the statistical taken branch
+information necessary to enable autoFDO-style optimization by compilers,
+i.e., basic block execution counts.
 
-The following test program works until kernel-3.17, but the test stops
-in poll() after commit 57087d515441 ("tty: Fix spurious poll() wakeups").
+BRS operates with a 16-deep saturating buffer in MSR registers. There is no
+hardware branch type filtering. All control flow changes are captured. BRS
+relies on specific programming of the core PMU of Fam19h.  In particular,
+the following requirements must be met:
+ - the sampling period be greater than 16 (BRS depth)
+ - the sampling period must use fixed and not frequency mode
 
-[Steps to run test program]
-  $ cc -o test-pollrdnorm test-pollrdnorm.c
-  $ ./test-pollrdnorm
-  foo          <-- Type in something from the terminal followed by [RET].
-                   The string should be echoed back.
+BRS interacts with the NMI interrupt as well. Because enabling BRS is
+expensive, it is only activated after P event occurrences, where P is the
+desired sampling period. At P occurrences of the event, the counter
+overflows, the CPU catches the NMI interrupt, activates BRS for 16 branches
+until it saturates, and then delivers the NMI to the kernel. Between the
+overflow and the time BRS activates more branches may be executed skewing the
+period. All along, the sampling event keeps counting. The skid may be
+attenuated by reducing the sampling period by 16.
 
-  ------------------------< test-pollrdnorm.c >------------------------
-  #include <stdio.h>
-  #include <errno.h>
-  #include <poll.h>
-  #include <unistd.h>
+BRS is integrated into perf_events seamlessly via the same
+PERF_RECORD_BRANCH_STACK sample format. BRS generates branch
+perf_branch_entry records in the sampling buffer. There is no prediction or
+latency information supported. The branches are stored in reverse order of
+execution.  The most recent branch is the first entry in each record.
 
-  void main(void)
-  {
-	int		n;
-	unsigned char	buf[8];
-	struct pollfd	fds[1] =3D {{ 0, POLLRDNORM, 0 }};
+Because BRS must be stopped when a CPU goes into low power mode, the series
+includes patches to add callbacks on ACPI low power entry and exit which is
+used on AMD processors.
 
-	n =3D poll(fds, 1, -1);
-	if (n < 0)
-		perror("poll");
-	n =3D read(0, buf, 8);
-	if (n < 0)
-		perror("read");
-	if (n > 0)
-		write(1, buf, n);
-  }
-  ------------------------------------------------------------------------
+Given that there is no privilege filterting with BRS, the kernel implements
+filtering on privlege level.
 
-The attached patch fixes this problem.  Many calls to
-wake_up_interruptible_poll() in the kernel source code already specify
-"POLLIN | POLLRDNORM".
+This version adds a few simple modifications to perf record and report.
+1. add the branch-brs event as a builtin such as it can used directly:
+   perf record -e branch-brs ...
+2. improve error handling for AMD IBS and is contributed by Kim Phillips.
+3. use the better error handling to improve error handling for BRS.
+4. add two new sort dimensions to help display the branch sampling
+   information. Because there is no latency information associated with the
+   branch sampling feature perf report would collapse all samples within a
+   function into a single histogram entry. This is expected because the
+   default sort mode for PERF_SAMPLE_BRANCH_STACK is symbol_from/symbol_to.
+   This propagates to the annotation.
 
-Signed-off-by: Kosuke Tatsukawa <tatsu-ab1@nec.com>
-Fixes: 57087d515441 ("tty: Fix spurious poll() wakeups")
-Cc: stable@vger.kernel.org
----
- drivers/tty/n_tty.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+For more detailed view of the branch samples, the new sort dimensions
+addr_from,addr_to can be used instead as follows:
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 5be6d02..b2b98fe 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1369,7 +1369,7 @@ static void n_tty_receive_char_special(struct tty_str=
-uct *tty, unsigned char c)
- 			put_tty_queue(c, ldata);
- 			smp_store_release(&ldata->canon_head, ldata->read_head);
- 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
--			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
-+			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
- 			return;
- 		}
- 	}
-@@ -1589,7 +1589,7 @@ static void __receive_buf(struct tty_struct *tty, con=
-st unsigned char *cp,
-=20
- 	if (read_cnt(ldata)) {
- 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
--		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
-+		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
- 	}
- }
- =
+$ perf report --sort=overhead,comm,dso,addr_from,addr_to 
+# Overhead  Command    Shared Object     Source Address   Target Address
+# ........  .......... ..............  ..............     ..............
+#
+     4.21%  test_prg   test_prg       [.] test_threa+0x3c [.] test_threa+0x4
+     4.14%  test_prg   test_prg       [.] test_threa+0x3e [.] test_threa+0x2
+     4.10%  test_prg   test_prg       [.] test_threa+0x4  [.] test_threa+0x3a
+     4.07%  test_prg   test_prg       [.] test_threa+0x2  [.] test_threa+0x3c
+
+Versus the default output:
+
+$ perf report 
+# Overhead  Command   Source Shared Object Source Symbol    Target Symbol      Basic Block Cycles
+# ........  ......... .................... ................ .................  ..................
+#
+    99.52%  test_prg  test_prg             [.] test_thread  [.] test_thread    -                 
+
+BRS can be used with any sampling event. However, it is recommended to use
+the RETIRED_BRANCH event because it matches what the BRS captures. For
+convenience, a pseudo event matching the branches captured by BRS is
+exported by the kernel (branch-brs):
+
+$ perf record -b -e cpu/branch-brs/ -c 1000037 test
+
+$ perf report -D
+56531696056126 0x193c000 [0x1a8]: PERF_RECORD_SAMPLE(IP, 0x2): 18122/18230: 0x401d24 period: 1000037 addr: 0
+... branch stack: nr:16
+.....  0: 0000000000401d24 -> 0000000000401d5a 0 cycles      0
+.....  1: 0000000000401d5c -> 0000000000401d24 0 cycles      0
+.....  2: 0000000000401d22 -> 0000000000401d5c 0 cycles      0
+.....  3: 0000000000401d5e -> 0000000000401d22 0 cycles      0
+.....  4: 0000000000401d20 -> 0000000000401d5e 0 cycles      0
+.....  5: 0000000000401d3e -> 0000000000401d20 0 cycles      0
+.....  6: 0000000000401d42 -> 0000000000401d3e 0 cycles      0
+.....  7: 0000000000401d3c -> 0000000000401d42 0 cycles      0
+.....  8: 0000000000401d44 -> 0000000000401d3c 0 cycles      0
+.....  9: 0000000000401d3a -> 0000000000401d44 0 cycles      0
+..... 10: 0000000000401d46 -> 0000000000401d3a 0 cycles      0
+..... 11: 0000000000401d38 -> 0000000000401d46 0 cycles      0
+..... 12: 0000000000401d48 -> 0000000000401d38 0 cycles      0
+..... 13: 0000000000401d36 -> 0000000000401d48 0 cycles      0
+..... 14: 0000000000401d4a -> 0000000000401d36 0 cycles      0
+..... 15: 0000000000401d34 -> 0000000000401d4a 0 cycles      0
+ ... thread: test:18230
+ ...... dso: test
+
+Special thanks to Kim Phillips @ AMD for the testing, reviews and
+contributions.
+
+V2 makes the following changes:
+  - the low power callback code has be reworked completly. It is not
+    impacting the generic perf_events code anymore. This is all handled
+    via x86 code and only for ACPI low power driver which seems to be the
+    default on AMD. The change in acpi_pad.c and processor_idle.c has no
+    impact on non x86 architectures, on Intel x86 or AMD without BRS, a
+    jump label is used to void the code unless necessary
+  - BRS is an opt-in compile time option for the kernel
+  - branch_stack bit clearing helper is introduced
+  - As for the fact that BRS holds the NMI and that it may conflict with
+    other sampling events and introduced skid, this is not really a problem
+    because AMD PMI skid is already very large prompting special handling in
+    amd_pmu_wait_on_overflow(), so adding a few cycles while the CPU executes
+    at most 16 taken branches is not a problem.
+
+
+V3 makes the following changes:
+   - simplifies the handling of BRS enable/disable to mimic the Intel LBR code
+     path more closely. That removes some callbacks in generic x86 code
+   - add config option to compile BRS as an opt-in (off by default)
+   - updated perf tool error reporting patch updates by Kim Phillips
+
+V4 makes the following changes:
+   - rebase to latest tip.git (commit 6f5ac142e5df)
+   - integrate Kim Phillips latest perf tool error handling patches
+
+
+V5 makes the following changes:
+   - rebased to 5.17-rc1
+   - integrated feedback from PeterZ about AMD perf_events callbacks
+   - fix cpufeature macros name X86_FEATURE_BRS
+   - integrated all perf tool error handling from kim Phillips
+
+Kim Phillips (2):
+  perf evsel: Make evsel__env always return a valid env
+  perf tools: Improve IBS error handling
+
+Stephane Eranian (11):
+  perf/core: add perf_clear_branch_entry_bitfields() helper
+  x86/cpufeatures: add AMD Fam19h Branch Sampling feature
+  perf/x86/amd: add AMD Fam19h Branch Sampling support
+  perf/x86/amd: add branch-brs helper event for Fam19h BRS
+  perf/x86/amd: enable branch sampling priv level filtering
+  perf/x86/amd: add AMD branch sampling period adjustment
+  perf/x86/amd: make Zen3 branch sampling opt-in
+  ACPI: add perf low power callback
+  perf/x86/amd: add idle hooks for branch sampling
+  perf tools: Improve error handling of AMD Branch Sampling
+  perf report: add addr_from/addr_to sort dimensions
+
+ arch/x86/events/Kconfig            |   8 +
+ arch/x86/events/amd/Makefile       |   1 +
+ arch/x86/events/amd/brs.c          | 363 +++++++++++++++++++++++++++++
+ arch/x86/events/amd/core.c         | 217 ++++++++++++++++-
+ arch/x86/events/core.c             |  17 +-
+ arch/x86/events/intel/lbr.c        |  36 ++-
+ arch/x86/events/perf_event.h       | 143 ++++++++++--
+ arch/x86/include/asm/cpufeatures.h |   1 +
+ arch/x86/include/asm/msr-index.h   |   4 +
+ arch/x86/include/asm/perf_event.h  |  21 ++
+ drivers/acpi/acpi_pad.c            |   6 +
+ drivers/acpi/processor_idle.c      |   5 +
+ include/linux/perf_event.h         |  22 ++
+ tools/perf/util/evsel.c            |  40 +++-
+ tools/perf/util/hist.c             |   2 +
+ tools/perf/util/hist.h             |   2 +
+ tools/perf/util/sort.c             | 128 ++++++++++
+ tools/perf/util/sort.h             |   2 +
+ 18 files changed, 977 insertions(+), 41 deletions(-)
+ create mode 100644 arch/x86/events/amd/brs.c
+
+-- 
+2.35.0.rc0.227.g00780c9af4-goog
+
