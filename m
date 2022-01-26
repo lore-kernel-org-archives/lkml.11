@@ -2,140 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C17C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78042C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238524AbiAZNSm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:18:42 -0500
-Received: from mga06.intel.com ([134.134.136.31]:26123 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238386AbiAZNSi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:18:38 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="307261092"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="307261092"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:18:38 -0800
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="581101464"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:18:34 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1nCiAx-00Ebfj-Q9;
-        Wed, 26 Jan 2022 15:17:27 +0200
-Date:   Wed, 26 Jan 2022 15:17:27 +0200
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helge Deller <deller@gmx.de>, linux-staging@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
-Message-ID: <YfFJ5ykgMi+wBc2f@smile.fi.intel.com>
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
- <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
- <CAHp75Vd7oaYPKx6bxjCqNnm6fieeQFrtq5K4YYrxYbXoXFy=+Q@mail.gmail.com>
- <20220126102858.GX1951@kadam>
- <1b665bb8-7acb-519b-0a02-ef0f2dd4b524@redhat.com>
+        id S238473AbiAZNTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:19:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45626 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238176AbiAZNTS (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 08:19:18 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E804B80CB1;
+        Wed, 26 Jan 2022 13:19:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3ECDC340E3;
+        Wed, 26 Jan 2022 13:19:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643203155;
+        bh=lKH8YDY04maTeVFEgXG3vRNVow0n8FFojBX2uObASL4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eyIJyOY4AwdCrefrN53yw5S60cWw5bG6H46HrMjDBuUfr9pDvdXYIEJlCI52QIOaN
+         CePfyKY59M+eyz4Vz/dJPQW/QmBoYe4qVAMtHjesWsBgua1I0ES+j8KS/Mfi3tZxC/
+         X4w0C9wvjmpTmwNHwSFCS59FXqN/i7BL0rtL5z3uFJ+h0ZA5hgZJf4JIMiXDNeIpPl
+         RXw9MFHi5N0V43qS5A3ZR9dACrhH+MhBa+ks6zuz+li1ZRxsG4sVKutRv71Jv/WWcl
+         AGwGSPF+qutru6BJto/Uh9VJHnLC3I0S6FhV+OBREKbmsOY3nuyI9CpGHu3ZZdKMV4
+         kLHRFn3VU6/ow==
+Date:   Wed, 26 Jan 2022 14:19:07 +0100
+From:   Christian Brauner <brauner@kernel.org>
+To:     Stefan Berger <stefanb@linux.vnet.ibm.com>
+Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
+        serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Stefan Berger <stefanb@linux.ibm.com>
+Subject: Re: [PATCH v9 00/23] ima: Namespace IMA with audit support in IMA-ns
+Message-ID: <20220126131907.5fauajyjfbcnienp@wittgenstein>
+References: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1b665bb8-7acb-519b-0a02-ef0f2dd4b524@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 01:37:00PM +0100, Javier Martinez Canillas wrote:
-> On 1/26/22 11:28, Dan Carpenter wrote:
-> > On Wed, Jan 26, 2022 at 12:04:26PM +0200, Andy Shevchenko wrote:
-> >> On Wed, Jan 26, 2022 at 12:02 PM Andy Shevchenko
-> >> <andy.shevchenko@gmail.com> wrote:
-> >>> On Wed, Jan 26, 2022 at 10:52 AM Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> >>>> Am 25.01.22 um 21:21 schrieb Andy Shevchenko:
-> >>
-> >> ...
-> >>
-> >>>> But why? We already have DRM drivers for some of these devices.
-> >>>
-> >>> No, we do not (only a few are available).
-> >>
-> >> Sorry, I missed your word 'some'. Some == almost none from the list (I
-> >> don't remember exact numbers but something like 2 out of 10 are
-> >> supported by tiny DRM and see about interfaces).
-> > 
-> > Could we get an exact list?
-> > 
+On Tue, Jan 25, 2022 at 05:46:22PM -0500, Stefan Berger wrote:
+> From: Stefan Berger <stefanb@linux.ibm.com>
 > 
-> The list AFAICT is the following. I'm not familiar with these so please
-> feel free to correct anything I got wrong here.
+> The goal of this series of patches is to start with the namespacing of
+> IMA and support auditing within an IMA namespace (IMA-ns) as the first
+> step.
 > 
-> I've marked with '?' if found references to the device supported by the
-> fbdev driver in a DRM driver, but it's not clear if support the same HW.
+> In this series the IMA namespace is piggy backing on the user namespace
+> and therefore an IMA namespace is created when a user namespace is
+> created, although this is done late when SecurityFS is mounted inside
+> a user namespace. The advantage of piggy backing on the user namespace
+> is that the user namespace can provide the keys infrastructure that IMA
+> appraisal support will need later on.
 > 
-> Drivers in drivers/staging/fbtft:
+> We chose the goal of supporting auditing within an IMA namespace since it
+> requires the least changes to IMA. Following this series, auditing within
+> an IMA namespace can be activated by a user running the following lines
+> that rely on a statically linked busybox to be installed on the host for
+> execution within the minimal container environment:
+> 
+> mkdir -p rootfs/{bin,mnt,proc}
+> cp /sbin/busybox rootfs/bin
+> cp /sbin/busybox rootfs/bin/busybox2
+> echo >> rootfs/bin/busybox2
+> PATH=/bin unshare --user --map-root-user --mount-proc --pid --fork \
+>   --root rootfs busybox sh -c \
+>  "busybox mount -t securityfs /mnt /mnt; \
+>   busybox echo 1 > /mnt/ima/active; \
+>   busybox echo 'audit func=BPRM_CHECK mask=MAY_EXEC' > /mnt/ima/policy; \
 
-Thanks!
+I think we need to limit the number of rules that can be added to an ima
+namespace to prevent DOS attacks. The current implementation allows
+users to write as many ima rules as they want.
 
-Note, there is no support for the devices with parallel interface in the DRM.
-So, basically we can't kill even a single one from fbtft if there is a user
-for it.
+My suggestion would be that you look at real-world data to figure out
+what a fairly common number of rules is that people write. Then use this
+as the hard-coded limit for a first implementation. If the use-case
+arises you can later make this limit configurable by introducing a
+ucount for ima rules via /proc/sys/user/max_ima_rules.
 
->    fb_agm1264k-fl.c
->    fb_bd663474.c
->    fb_hx8340bn.c
->    fb_hx8347d.c (DRM driver in drivers/gpu/drm/tiny/hx8357d.c)
->    fb_hx8353d.c
->    fb_hx8357d.c (DRM driver in drivers/gpu/drm/tiny/hx8357d.c)
->    fb_ili9163.c (DRM driver in drivers/gpu/drm/tiny/ili9163.c)
->    fb_ili9320.c
->    fb_ili9325.c
-
->    fb_ili9340.c (DRM driver in drivers/gpu/drm/tiny/mi0283qt.c ?)
-
-Not sure.
-
->    fb_ili9341.c (DRM driver in drivers/gpu/drm/tiny/mi0283qt.c ?)
-
-Yes and for the fact there are two drivers for the same chip in the DRM.
-Overall there are three different drivers for Ilitek 9341.
-
->    fb_ili9481.c
->    fb_ili9486.c (DRM driver in drivers/gpu/drm/tiny/ili9486.c)
->    fb_pcd8544.c
->    fb_ra8875.c
->    fb_s6d02a1.c
->    fb_s6d1121.c
->    fb_seps525.c
->    fb_sh1106.c
->    fb_ssd1289.c
->    fb_ssd1305.c
->    fb_ssd1306.c
->    fb_ssd1325.c
->    fb_ssd1331.c
->    fb_ssd1351.c
->    fb_st7735r.c (DRM driver in drivers/gpu/drm/tiny/st7735r.c)
->    fb_st7789v.c (DRM driver in drivers/gpu/drm/panel/panel-sitronix-st7789v.c)
->    fb_tinylcd.c
->    fb_tls8204.c
->    fb_uc1611.c
->    fb_uc1701.c
->    fb_upd161704.c
->    fb_watterott.c
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Additionally, you should probably switch a lot of ima allocations from
+GFP_KERNEL to GFP_KERNEL_ACCOUNT as allocations triggerable from userns
+should be treated as untrusted.
