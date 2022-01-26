@@ -2,132 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F4BC63686
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8646BC63682
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238914AbiAZJQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:16:02 -0500
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:60843 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238893AbiAZJQA (ORCPT
+        id S238926AbiAZJQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:16:40 -0500
+Received: from mail-ua1-f50.google.com ([209.85.222.50]:42509 "EHLO
+        mail-ua1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238893AbiAZJQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:16:00 -0500
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220126091559euoutp0209bc852415edf1146ab87ddaa6a04da4~Nx0n_Gp-L2059420594euoutp02b
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:15:59 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220126091559euoutp0209bc852415edf1146ab87ddaa6a04da4~Nx0n_Gp-L2059420594euoutp02b
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1643188559;
-        bh=qM0mXsmOB4O+Tpm3UVRQJrXR3PRdA/yYzgrio555SKU=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=JkkrG0GrmrkFdunEX0F/m6GrnL6xfIdJUJ0ciu9qUJGEGi0njU0i4/tjOQDgfm7qe
-         uV511bZpL+3JO9UpDZdGic58aGBlWfHWkrPx/ybCAjztFoWqpNgOC99ZIQi0SJ8HTy
-         W7MUJIw+pw0MlPIP1nw1R4FibLFIJw5LQ+44TCd8=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220126091559eucas1p2c62968dbbae1e9e3c380b5d8a35849c1~Nx0ns35zb2789827898eucas1p21;
-        Wed, 26 Jan 2022 09:15:59 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id 3A.DE.10009.F4111F16; Wed, 26
-        Jan 2022 09:15:59 +0000 (GMT)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220126091558eucas1p2baa8e70d360b870e0d7ea616ec8aeff8~Nx0nHLfIH2801828018eucas1p2B;
-        Wed, 26 Jan 2022 09:15:58 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220126091558eusmtrp1faa119d1a8ac096cfcb25caf96c77628~Nx0nGLcG31443214432eusmtrp1S;
-        Wed, 26 Jan 2022 09:15:58 +0000 (GMT)
-X-AuditID: cbfec7f2-e7fff70000002719-a1-61f1114f52f7
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 9F.52.09404.E4111F16; Wed, 26
-        Jan 2022 09:15:58 +0000 (GMT)
-Received: from [106.210.134.141] (unknown [106.210.134.141]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220126091557eusmtip1515526e62dd6667e88a713fa5452ef16~Nx0l-RnVo2192821928eusmtip1Z;
-        Wed, 26 Jan 2022 09:15:57 +0000 (GMT)
-Message-ID: <e2893572-66d2-a7e5-e9e3-7feec8738881@samsung.com>
-Date:   Wed, 26 Jan 2022 10:15:57 +0100
+        Wed, 26 Jan 2022 04:16:37 -0500
+Received: by mail-ua1-f50.google.com with SMTP id e17so3387243uad.9
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 01:16:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=F8fyLjneVpTkQwxgneMNmICjJve2m3jg836j6+UHKfc=;
+        b=Bd75r9pMP+N69US+r8ZzIxS2PfxuXZvMRirppOnrLNCtEcO/hUyLb3ekfJDGuUFQHR
+         rr2ZpYDe14VkwGVGLWJcuogHJvejUzYjXfDWHJaSmmRadRP7aGDyTay8wl1t8TJj2u6m
+         xwhMd0oM5AwBfvsNGfL8uIIlAmfbzCEsWtEzO0aQzwagJ6O3zo0Xqz1CqXG6BnvNwnBN
+         dRnnHXr4ne1/HCT2AnoyjKE5y4sptmRaT7mj+xNGd/Jooh1bVbS/XEz8CvibRZ957+ff
+         PZICnTroAgh2fAiFP1JV8wkikDq2MHRJlJIh2CO+IVxB4V/6U6C3TMlc3yFG0CwzoNsb
+         es7Q==
+X-Gm-Message-State: AOAM532tXMQl3tHYG5aK0rnvGmcA4vLSb2kK3LmkK2oHM3Es8v9pXIhY
+        E0guaz59p3nnKXFikRhtIGl8xiBwBVBmc1pU
+X-Google-Smtp-Source: ABdhPJwrXy9pVym5l3mIGdVX+ZdTslWoYHTSVcdaBFqUsKFWCvQWOY/nzZCZN/fmGUHKPr0xm35I0Q==
+X-Received: by 2002:a67:f7d5:: with SMTP id a21mr4993461vsp.24.1643188596395;
+        Wed, 26 Jan 2022 01:16:36 -0800 (PST)
+Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com. [209.85.221.172])
+        by smtp.gmail.com with ESMTPSA id w124sm3434866vke.20.2022.01.26.01.16.35
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 01:16:36 -0800 (PST)
+Received: by mail-vk1-f172.google.com with SMTP id j185so10272185vkc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 01:16:35 -0800 (PST)
+X-Received: by 2002:a1f:384b:: with SMTP id f72mr9684107vka.0.1643188595735;
+ Wed, 26 Jan 2022 01:16:35 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
-        Gecko/20100101 Thunderbird/91.5.0
-Subject: Re: [PATCH v5 06/16] clk: samsung: fsd: Add cmu_fsys0 clock
- information
-Content-Language: en-US
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, olof@lixom.net, arnd@arndb.de,
-        linus.walleij@linaro.org, catalin.marinas@arm.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
-        sboyd@kernel.org, linux-fsd@tesla.com,
-        Shradha Todi <shradha.t@samsung.com>,
-        Jayati Sahu <jayati.sahu@samsung.com>,
-        Ajay Kumar <ajaykumar.rs@samsung.com>
-From:   Sylwester Nawrocki <s.nawrocki@samsung.com>
-In-Reply-To: <20220124141644.71052-7-alim.akhtar@samsung.com>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrAKsWRmVeSWpSXmKPExsWy7djP87r+gh8TDRbf47A48P4gi8WDedvY
-        LP5OOsZu8X5ZD6PF/CPnWC2OnFrCZLHx7Q8miyl/ljNZbHp8jdXiY889VouHr8ItLu+aw2Yx
-        4/w+JotT1z+zWSza+oXdonXvEXaLf9c2slj0Hq61eHz9D5uDsMeaeWsYPX7/msToMauhl81j
-        06pONo871/aweWxeUu9x5UQTq0ffllWMHv+a5rJ7fN4kF8AVxWWTkpqTWZZapG+XwJUx91xx
-        wUWWinMzFzM3MDawdDFyckgImEgs/rKRsYuRi0NIYAWjxPc7O5ggnC+MEq+e97NBOJ8ZJbZv
-        uQTXcu1/K1TLckaJs883skM4HxklnnStYAOp4hWwk1j1fDWYzSKgKnG85yEzRFxQ4uTMJ0CT
-        ODhEBZIkelqcQcLCAkES+3ZNZwexmQXEJW49mc8EYosI5Ev8/LeTBWQ+s8A2Zomd6+eAXcEm
-        YCjRe7SPEcTmFLCVuLl0MwtEs7zE9rdzmEEaJASucUo0bjvLBnG2i8Tur/uhXhCWeHV8CzuE
-        LSNxenIPC0RDM6NEz+7b7BDOBEaJ+8cXMEJUWUvcOfeLDeRsZgFNifW79CHCjhKXLzUzgYQl
-        BPgkbrwVhDiCT2LStunMEGFeiY42IYhqFYnfq6YzQdhSEt1P/rNMYFSahRQss5D8PwvJO7MQ
-        9i5gZFnFKJ5aWpybnlpsmJdarlecmFtcmpeul5yfu4kRmChP/zv+aQfj3Fcf9Q4xMnEwHmKU
-        4GBWEuH97/0+UYg3JbGyKrUoP76oNCe1+BCjNAeLkjhvcuaGRCGB9MSS1OzU1ILUIpgsEwen
-        VAOTTB6znETxoi+qRYXXEjJLDLhL8zxDKmMfvvNd8TIlinXXtrnP939RvxqWZHn8hwXTti/C
-        pxbkXk089jVCOXq/3Wo/l1Nc3Du+qE5pS3aRSlgvZHc48tHG9h7DiunVT/IZ2OrcfbU/C1xr
-        lJVqP8zyJGW7c/7TAmvDvu+3UrJkTMpmVV3z/PiJK70leZZa3P7vE7Vazqo1uexjP6umXfTA
-        dNLVX7HsbYxTv5cZCc1zaNF/PNWvV1VDQZ0jcjXzJaOfBntOqIbqXqsKsS1afd3nh5/uygM2
-        HV9e8Cxo7DZKLH5isG7Ot4dO5X0eFtdZDxRcfNOfn2wqGPXnh/Z+98wa2Z+mu6d4t3EyP/s2
-        VYmlOCPRUIu5qDgRALSxNz8DBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrPIsWRmVeSWpSXmKPExsVy+t/xu7p+gh8TDR5Plbc48P4gi8WDedvY
-        LP5OOsZu8X5ZD6PF/CPnWC2OnFrCZLHx7Q8miyl/ljNZbHp8jdXiY889VouHr8ItLu+aw2Yx
-        4/w+JotT1z+zWSza+oXdonXvEXaLf9c2slj0Hq61eHz9D5uDsMeaeWsYPX7/msToMauhl81j
-        06pONo871/aweWxeUu9x5UQTq0ffllWMHv+a5rJ7fN4kF8AVpWdTlF9akqqQkV9cYqsUbWhh
-        pGdoaaFnZGKpZ2hsHmtlZKqkb2eTkpqTWZZapG+XoJcx91xxwUWWinMzFzM3MDawdDFyckgI
-        mEhc+9/K2MXIxSEksJRR4vmRx6xdjBxACSmJ+S1KEDXCEn+udbFB1LxnlFjTsYcVJMErYCex
-        6vlqNhCbRUBV4njPQ2aIuKDEyZlPwBaICiRJNBzrBqsRFgiS2LdrOjuIzSwgLnHryXwmEFtE
-        IF/iT/9HVoj4NmaJ54flIZYdZpRofjCDESTBJmAo0Xu0D8zmFLCVuLl0MwvIocwC6hLr5wlB
-        9MpLbH87h3kCo9AsJGfMQrJuFkLHLCQdCxhZVjGKpJYW56bnFhvpFSfmFpfmpesl5+duYgSm
-        hG3Hfm7Zwbjy1Ue9Q4xMHIyHGCU4mJVEeP97v08U4k1JrKxKLcqPLyrNSS0+xGgKDIqJzFKi
-        yfnApJRXEm9oZmBqaGJmaWBqaWasJM7rWdCRKCSQnliSmp2aWpBaBNPHxMEp1cCUYs61iJFV
-        uqPL0PTdq1eBmxNVwq/ui0zqdXtazac1uS7qb9VBs3vFbF+jbqds7sq0s9S7tHJ1jkH4UrMe
-        zaVJ64NeeDyTfzjXR/L3i+WOq648L7Bm1TreldebYxbO4Fn+sMLZqorlC1+4+bss151H1s2s
-        lppRHD9fX9FVWpQzOavqk4VDl7fgm26ukvubc+ROXOdjL/tr8T1z2j3NjK+17m8m3vB0lQ++
-        HF3Tdnz6P+m9rIV/nnpaL3yy2O1UY4mQpsOH/QpXVv6Ndd70Kka+foKFR4r6ycM7uma53eRY
-        OuXf080Ltvsy2Keovpj3TWOZ0PfZ0f191Quz/04obP70VFqSs6hgSkkfb6WBgRJLcUaioRZz
-        UXEiAEW46pqSAwAA
-X-CMS-MailID: 20220126091558eucas1p2baa8e70d360b870e0d7ea616ec8aeff8
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220124142919epcas5p3232941c11ef3c5ac8de2ca89b21131e2
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220124142919epcas5p3232941c11ef3c5ac8de2ca89b21131e2
-References: <20220124141644.71052-1-alim.akhtar@samsung.com>
-        <CGME20220124142919epcas5p3232941c11ef3c5ac8de2ca89b21131e2@epcas5p3.samsung.com>
-        <20220124141644.71052-7-alim.akhtar@samsung.com>
+References: <20220125073137.1.83124@7e6451f583e7> <CAMuHMdVYhwpP0vSK4LT+50ZqB9opD8gcm-2aor8wAc49=GR+-w@mail.gmail.com>
+ <CAAH8bW93TUpyn8GaZfB83pu8Kvrsz9PHPCBHcG3+UStU7v=s=A@mail.gmail.com> <31219CC3-CEE4-4CFA-A416-B98F2115A527@chromium.org>
+In-Reply-To: <31219CC3-CEE4-4CFA-A416-B98F2115A527@chromium.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 26 Jan 2022 10:16:24 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUwd=2KGk9JkZPSZsvAWG4wddxZFxd5bFfbrtZi3JynQA@mail.gmail.com>
+Message-ID: <CAMuHMdUwd=2KGk9JkZPSZsvAWG4wddxZFxd5bFfbrtZi3JynQA@mail.gmail.com>
+Subject: Re: kisskb: FAILED linux-next/m68k-allmodconfig/m68k-gcc8 Tue Jan 25, 18:24
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24.01.2022 15:16, Alim Akhtar wrote:
-> CMU_FSYS0 block has IPs like UFS, EQOS, PCIe etc, lets add
-> the related clock information for the same.
-> 
-> Cc: linux-fsd@tesla.com
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Signed-off-by: Pankaj Dubey <pankaj.dubey@samsung.com>
-> Signed-off-by: Shradha Todi <shradha.t@samsung.com>
-> Signed-off-by: Jayati Sahu <jayati.sahu@samsung.com>
-> Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
-> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+Hi Kees
 
-Acked-by: Sylwester Nawrocki <s.nawrocki@samsung.com>
+On Wed, Jan 26, 2022 at 9:54 AM Kees Cook <keescook@chromium.org> wrote:
+> On January 25, 2022 10:02:56 AM PST, Yury Norov <yury.norov@gmail.com> wrote:
+> >On Tue, Jan 25, 2022 at 12:47 AM Geert Uytterhoeven
+> ><geert@linux-m68k.org> wrote:
+> >> On Tue, Jan 25, 2022 at 8:31 AM <noreply@ellerman.id.au> wrote:
+> >> > FAILED linux-next/m68k-allmodconfig/m68k-gcc8 Tue Jan 25, 18:24
+> >> >
+> >> > http://kisskb.ellerman.id.au/kisskb/buildresult/14688953/
+> >> >
+> >> > Commit:   Add linux-next specific files for 20220125
+> >> >           d25ee88530253138d0b20d43511ca5acbda4e9f7
+> >> > Compiler: m68k-linux-gcc (GCC) 8.1.0 / GNU ld (GNU Binutils) 2.30
+> >> >
+> >> > Possible errors
+> >> > ---------------
+> >> >
+> >> > arch/m68k/include/asm/bitops.h:329:20: error: array subscript 2 is above array bounds of 'long unsigned int[1]' [-Werror=array-bounds]
+> >
+> >The array-bounds warning has been enabled just recently. CC Kees Cook for this.
+> >
+> >> > cc1: all warnings being treated as errors
+> >> > make[4]: *** [scripts/Makefile.build:289: drivers/net/ipa/ipa_mem.o] Error 1
+> >> > make[3]: *** [scripts/Makefile.build:572: drivers/net/ipa] Error 2
+> >> > make[2]: *** [scripts/Makefile.build:572: drivers/net] Error 2
+> >> > make[1]: *** [Makefile:1965: drivers] Error 2
+> >> > make: *** [Makefile:226: __sub-make] Error 2
+> >> >
+> >> > No warnings found in log.
+> >>
+> >> The code that causes this is drivers/net/ipa/ipa_mem.c:ipa_mem_valid():
+> >>
+> >>         DECLARE_BITMAP(regions, IPA_MEM_COUNT) = { };
+> >>         ...
+> >>         for_each_clear_bit(mem_id, regions, IPA_MEM_COUNT) {
+> >>                 if (ipa_mem_id_required(ipa, mem_id))
+> >>                         dev_err(dev, "required memory region %u missing\n",
+> >>                                 mem_id);
+> >>         }
+> >>
+> >> This only happens with gcc-8, not with gcc-9, so it might be a
+> >> compiler bug. I don't see anything wrong with c:ipa_mem_valid()
+> >> nor with m68k's find_first_zero_bit().
+> >
+> >I don't see any problems about how this code uses bitmap API.
+> >The m68k version of find_first_zero_bit() looks correct as well.
+>
+> The trouble is with "enum ipa_mem_id mem_id;" which is an int, and the bitmap API requires unsigned long. I tried to fix this[1] at the source, but the maintainers want each[2] call site to fix it instead. :(
 
+Sorry, I don't get it. "mem_id" is not used as the bitmap, "regions" is,
+and the latter has the correct type?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
