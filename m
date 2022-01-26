@@ -2,117 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E3FC63684
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3526DC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240033AbiAZKcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 05:32:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58894 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240018AbiAZKcB (ORCPT
+        id S240030AbiAZKcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 05:32:13 -0500
+Received: from gateway24.websitewelcome.com ([192.185.50.66]:49213 "EHLO
+        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240044AbiAZKcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 05:32:01 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE296C061747
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:31:57 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id s185so19774617oie.3
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:31:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PARYSeIeXIRXwXqFcnW3Wz91jHJIg+/6lKoOo1XNXrI=;
-        b=I3kUr8qfahBfszwo6LNqD5ZWF9kbC+G+AIHcoBCRezvQYE3SqIfzljpjCVjfIeUbKL
-         /hb68PKQhFaCjgZOyHw+gYJ/ei9uM4swYOiN4djukilmM5j6y7WPe4l6XWAgd0gufDNh
-         xhsFCpIAtqhF8Nluu4DTHaEsI1zgLKLsFCHtA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PARYSeIeXIRXwXqFcnW3Wz91jHJIg+/6lKoOo1XNXrI=;
-        b=UJrvRroyeEvX/i9hvDcoZV4Kb7cxbZ/BcptSsrmBe+LzPXZWEJvUJN5zBJBgWSDENa
-         JqoeYpcHqK38s6hLii4d8W8IFuvpoaWbIVz8hpmeGf7mV8vPK6C8lifa82EG+GFj9lrO
-         aEQb0xKKAZ8AiBQqHCxUzHG+mCD2QOZMXkJHPcxneqGWFYvs9lsJPypCKasBK3VqzjZ+
-         ODYA5JF46y/2J1qG5/BsKnKdYKar6Nd1akTVyj0dffQ96GUB/I8BWX+rxUtkVxXSDnx8
-         V+lSLCwpZNU7AD33gHQ8TSMuiafeub9swSWWriIYyeBOv0mU+YWJ8VKYRNdKaYauEg4p
-         s4AA==
-X-Gm-Message-State: AOAM533eKbP6VwiKkqKhehCezfGfzIJoByidKC5kzTWsHgpb/QuZ3Sov
-        nK/bvZkCQlFJsxvRnQJPQ1OcCphRaGbMum0Q6QkMJQ==
-X-Google-Smtp-Source: ABdhPJzjwv/0sLlbLiWvmxRAGel0mMOAKI6UYaYppLOrZDc1WgZAwnk5CLyfI1LGm6q5W5cApZ7TCM6rQd58C8u5svs=
-X-Received: by 2002:a05:6808:f03:: with SMTP id m3mr3247262oiw.330.1643193116706;
- Wed, 26 Jan 2022 02:31:56 -0800 (PST)
+        Wed, 26 Jan 2022 05:32:08 -0500
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 0C35F1D562
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 04:32:06 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id Cfavne83P22u3Cfawn8odr; Wed, 26 Jan 2022 04:32:06 -0600
+X-Authority-Reason: nr=8
+Received: from host-79-47-126-144.retail.telecomitalia.it ([79.47.126.144]:46578 helo=[10.0.0.238])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1nCfav-001LCX-IB; Wed, 26 Jan 2022 04:32:05 -0600
+Message-ID: <86189da9-92b5-c211-e406-5d8b10eb3a77@kernel.org>
+Date:   Wed, 26 Jan 2022 11:32:02 +0100
 MIME-Version: 1.0
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <20220125202118.63362-2-andriy.shevchenko@linux.intel.com> <YfEG2qVO9K9G+g1d@kroah.com>
-In-Reply-To: <YfEG2qVO9K9G+g1d@kroah.com>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Wed, 26 Jan 2022 11:31:45 +0100
-Message-ID: <CAKMK7uGoRC9a4cMCADTipV67oivfWvTw=6RYm2kOthB_bhWnXQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/4] fbtft: Unorphan the driver
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Helge Deller <deller@gmx.de>, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] rtla: make doc build optional
+Content-Language: en-US
+To:     Shuah Khan <skhan@linuxfoundation.org>, rostedt@goodmis.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220126001301.79096-1-skhan@linuxfoundation.org>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <20220126001301.79096-1-skhan@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 79.47.126.144
+X-Source-L: No
+X-Exim-ID: 1nCfav-001LCX-IB
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-79-47-126-144.retail.telecomitalia.it ([10.0.0.238]) [79.47.126.144]:46578
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 1
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 9:31 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Jan 25, 2022 at 10:21:14PM +0200, Andy Shevchenko wrote:
-> > Let's maintain occasional fixes to the fbtft driver.
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > ---
-> >  MAINTAINERS | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index ea3e6c914384..16e614606ac1 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -7372,9 +7372,11 @@ F:     Documentation/fault-injection/
-> >  F:   lib/fault-inject.c
-> >
-> >  FBTFT Framebuffer drivers
-> > +M:   Andy Shevchenko <andy@kernel.org>
-> >  L:   dri-devel@lists.freedesktop.org
-> >  L:   linux-fbdev@vger.kernel.org
-> > -S:   Orphan
-> > +S:   Maintained
-> > +T:   git git://git.kernel.org/pub/scm/linux/kernel/git/andy/linux-fbtft.git
->
-> I'm ok with the files moving if the dri developers agree with it.  It's
-> up to them, not me.
+On 1/26/22 01:13, Shuah Khan wrote:
+> rtla build fails due to doc build dependency on rst2man. Make
+> doc build optional so rtla could be built without docs. Leave
+> the install dependency on doc_install alone.
+> 
+> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 
-On one hand I'm happy anytime someone volunteers to help out.
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-On the other hand ... why does it have to be resurrecting fbdev?
-There's an entire community of people who really know graphics and
-display and spent considerable amount of effort on creating useful and
-documented helpers for pretty much anything you might ever want to do.
-And somehow we have to go back to typing out things the hard way, with
-full verbosity, for an uapi that distros are abandoning (e.g. even for
-sdl the direction is to run it on top of drm with a compat layer,
-afaiui fedora is completely ditching any userspace that still even
-uses /dev/fb/0). And yes I know there's still some gaps in drm,
-largely for display features which were really en vogue about 20 years
-ago. And we're happy to add that support, if someone who still has
-such hardware can put in the little bit of work needed ...
+Thanks, Shuah!
+-- Daniel
 
-I don't get this.
--Daniel
+> ---
+>  tools/tracing/rtla/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+> index 2d52ff0bff7d..7c39728d08de 100644
+> --- a/tools/tracing/rtla/Makefile
+> +++ b/tools/tracing/rtla/Makefile
+> @@ -59,7 +59,7 @@ endif
+>  .PHONY:	all
+>  all:	rtla
+>  
+> -rtla: $(OBJ) doc
+> +rtla: $(OBJ)
+>  	$(CC) -o rtla $(LDFLAGS) $(OBJ) $(LIBS)
+>  
+>  static: $(OBJ)
 
-
---
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
