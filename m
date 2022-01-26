@@ -2,79 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE77C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2829C3526D
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:13:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241971AbiAZONv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 09:13:51 -0500
-Received: from mga12.intel.com ([192.55.52.136]:19421 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235281AbiAZONu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S241984AbiAZONw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 09:13:52 -0500
+Received: from ste-pvt-msa1.bahnhof.se ([213.80.101.70]:31022 "EHLO
+        ste-pvt-msa1.bahnhof.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232541AbiAZONu (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 26 Jan 2022 09:13:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643206430; x=1674742430;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=69IwR4MRt1UJaVt9klo3HOzfBpM8++sjavE1VkWUzjw=;
-  b=V+Bvr9sUHxpULOJ6E59FbhEoxfXp1jzHS/lGMkd/sAmG/l1W08Hxfc03
-   C9lMZTzNd6k+1pybQJ7q6LhF7EJUikbkAusvKzeOMM2FfQHQ7aujK8o1a
-   L+ozDqEvWZSuF0VwkgXO6dKAuOyJ0sR+gzHiwsaocVzPcuKzzAEn7Gl9y
-   RbcN6Z8et8g31aRLnxLaZLgCm7u5VfdinpYXRCSDFtgfj0ALk7YVTU8zQ
-   sL+CxTFUHZoZ2MWi7ptM7cC6kb4tUWCm8gYu4v0E/BL0l/JG6p6Pi9V1W
-   1mxhxQLAyb/9mpzKdH1WxktJovZEbdbORyuYk9S+NmvK0Z2kZ4fjCVeLo
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="226533468"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="226533468"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:13:49 -0800
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="597472761"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:13:47 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nCj2P-00EcWv-Rl;
-        Wed, 26 Jan 2022 16:12:41 +0200
-Date:   Wed, 26 Jan 2022 16:12:41 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andreas Kemnade <andreas@kemnade.info>,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v4 1/4] math.h: Introduce data types for fractional
- numbers
-Message-ID: <YfFW2ejWZQnQuivs@smile.fi.intel.com>
-References: <20220126135353.24007-1-andriy.shevchenko@linux.intel.com>
+X-Greylist: delayed 471 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jan 2022 09:13:50 EST
+Received: from localhost (localhost [127.0.0.1])
+        by ste-pvt-msa1.bahnhof.se (Postfix) with ESMTP id E2CB73F689;
+        Wed, 26 Jan 2022 15:05:56 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at bahnhof.se
+Authentication-Results: ste-pvt-msa1.bahnhof.se (amavisd-new);
+        dkim=pass (1024-bit key) header.d=shipmail.org
+Received: from ste-pvt-msa1.bahnhof.se ([127.0.0.1])
+        by localhost (ste-pvt-msa1.bahnhof.se [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id hMX6J1oMPg-X; Wed, 26 Jan 2022 15:05:56 +0100 (CET)
+Received: by ste-pvt-msa1.bahnhof.se (Postfix) with ESMTPA id 293F03F66F;
+        Wed, 26 Jan 2022 15:05:53 +0100 (CET)
+Received: from [192.168.0.209] (unknown [192.55.55.54])
+        by mail1.shipmail.org (Postfix) with ESMTPSA id 2B3B33626AA;
+        Wed, 26 Jan 2022 15:05:48 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=shipmail.org; s=mail;
+        t=1643205953; bh=0MTfgcCysP/q4eVXnuzFoCi2k0Jnuri0D10FI7Hd3AM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=RsLQLxnyua74FxEE2/64ThYR5+k3uN1bMz9T9qsxrPQ1BBbccs1J23+KBzWmVyycK
+         fpvxv6rm07BNAZdm2ViUlwSDsmVVJQAtVlSH4bjf5Q7Hx6dKWMn3UeKr4FAXKxk811
+         oaT7tYG4JF1jHX1nFr7EF/NUCkPQpW/pox9SPkCE=
+Message-ID: <b6e9a900-435f-148c-826f-a8f6c188df94@shipmail.org>
+Date:   Wed, 26 Jan 2022 15:05:44 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126135353.24007-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [Intel-gfx] [PATCH v5 4/5] drm/i915: add gtt misalignment test
+Content-Language: en-US
+To:     Robert Beckett <bob.beckett@collabora.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220125193530.3272386-1-bob.beckett@collabora.com>
+ <20220125193530.3272386-5-bob.beckett@collabora.com>
+From:   =?UTF-8?Q?Thomas_Hellstr=c3=b6m_=28Intel=29?= 
+        <thomas_os@shipmail.org>
+In-Reply-To: <20220125193530.3272386-5-bob.beckett@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 03:53:50PM +0200, Andy Shevchenko wrote:
-> Introduce a macro to produce data types like
-> 
-> 	struct TYPE_fract {
-> 		__TYPE numerator;
-> 		__TYPE denominator;
-> 	};
-> 
-> to be used in the code wherever it's needed.
-> 
-> In the following changes convert some users to it.
 
-The context of v4 is the dropped AFE patches.
+On 1/25/22 20:35, Robert Beckett wrote:
+> add test to check handling of misaligned offsets and sizes
+>
+> v4:
+> 	* remove spurious blank lines
+> 	* explicitly cast intel_region_id to intel_memory_type in misaligned_pin
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+> ---
+>   drivers/gpu/drm/i915/selftests/i915_gem_gtt.c | 128 ++++++++++++++++++
+>   1 file changed, 128 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+> index b80788a2b7f9..f082b5ff3b5e 100644
+> --- a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+> +++ b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+> @@ -22,10 +22,12 @@
+>    *
+>    */
+>   
+> +#include "gt/intel_gtt.h"
+>   #include <linux/list_sort.h>
+>   #include <linux/prime_numbers.h>
+>   
+>   #include "gem/i915_gem_context.h"
+> +#include "gem/i915_gem_region.h"
+>   #include "gem/selftests/mock_context.h"
+>   #include "gt/intel_context.h"
+>   #include "gt/intel_gpu_commands.h"
+> @@ -1067,6 +1069,120 @@ static int shrink_boom(struct i915_address_space *vm,
+>   	return err;
+>   }
+>   
+> +static int misaligned_case(struct i915_address_space *vm, struct intel_memory_region *mr,
+> +			   u64 addr, u64 size, unsigned long flags)
+> +{
+> +	struct drm_i915_gem_object *obj;
+> +	struct i915_vma *vma;
+> +	int err = 0;
+> +	u64 expected_vma_size, expected_node_size;
+> +
+> +	obj = i915_gem_object_create_region(mr, size, 0, 0);
+> +	if (IS_ERR(obj))
+> +		return PTR_ERR(obj);
+> +
+> +	vma = i915_vma_instance(obj, vm, NULL);
+> +	if (IS_ERR(vma)) {
+> +		err = PTR_ERR(vma);
+> +		goto err_put;
+> +	}
+> +
+> +	err = i915_vma_pin(vma, 0, 0, addr | flags);
+> +	if (err)
+> +		goto err_put;
+> +	i915_vma_unpin(vma);
+> +
+> +	if (!drm_mm_node_allocated(&vma->node)) {
+> +		err = -EINVAL;
+> +		goto err_put;
+> +	}
+> +
+> +	if (i915_vma_misplaced(vma, 0, 0, addr | flags)) {
+> +		err = -EINVAL;
+> +		goto err_put;
+> +	}
+> +
+> +	expected_vma_size = round_up(size, 1 << (ffs(vma->resource->page_sizes_gtt) - 1));
+> +	expected_node_size = expected_vma_size;
+> +
+> +	if (IS_DG2(vm->i915) && i915_gem_object_is_lmem(obj)) {
+> +		/* dg2 should expand lmem node to 2MB */
 
--- 
-With Best Regards,
-Andy Shevchenko
+Should this test be NEEDS_COMPACT_PT()?
+
+Otherwise LGTM. Reviewed-by: Thomas Hellström 
+<thomas.hellstrom@linux.intel.com>
 
 
