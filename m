@@ -2,135 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D586C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E400C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239486AbiAZJ7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:59:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51040 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233122AbiAZJ7E (ORCPT
+        id S239499AbiAZJ7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:59:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:31260 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239488AbiAZJ7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:59:04 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75081C061744
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 01:59:04 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1nCf4s-0000R5-C2; Wed, 26 Jan 2022 10:58:58 +0100
-Message-ID: <d5a15039255d13cf4321bf1c18f49a9cdb666607.camel@pengutronix.de>
-Subject: Re: [PATCH] arm64: dts: imx8mn-venice-gw7902: disable gpu
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Shawn Guo <shawnguo@kernel.org>, Tim Harvey <tharvey@gateworks.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Adam Ford <aford173@gmail.com>
-Date:   Wed, 26 Jan 2022 10:58:56 +0100
-In-Reply-To: <20220126093558.GL4686@dragon>
-References: <20211216161227.31960-1-tharvey@gateworks.com>
-         <20220126093558.GL4686@dragon>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Wed, 26 Jan 2022 04:59:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643191149;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rwvlrvac61lF3gQ6F6uZri0xKYAPflsQBOJgJdyNeH0=;
+        b=UTXMtdGSs/8bh4nKI94w0xAW1AB8363Ein9qtOysvfyfQEeAeCB+KsAeHO7hpMfqAqyGAX
+        gfKBHQ4TL8ZlYksLbhSJHJ8vCxkFQxkGscUWjU4Z4il7ZsIl9MgeBE6uMeZiWYZqEhWCEY
+        2YHNWK/LYkbXDLUofk0yk9HjigPGEw4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-416-_NkElsNjPvOI0gEAXXjxxg-1; Wed, 26 Jan 2022 04:59:05 -0500
+X-MC-Unique: _NkElsNjPvOI0gEAXXjxxg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2F163100C663;
+        Wed, 26 Jan 2022 09:59:03 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.241])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3E2211F2FD;
+        Wed, 26 Jan 2022 09:58:20 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH RFC v2 3/9] mm: slightly clarify KSM logic in do_swap_page()
+Date:   Wed, 26 Jan 2022 10:55:51 +0100
+Message-Id: <20220126095557.32392-4-david@redhat.com>
+In-Reply-To: <20220126095557.32392-1-david@redhat.com>
+References: <20220126095557.32392-1-david@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Mittwoch, dem 26.01.2022 um 17:35 +0800 schrieb Shawn Guo:
-> On Thu, Dec 16, 2021 at 08:12:27AM -0800, Tim Harvey wrote:
-> > Since commit 99aa29932271 ("arm64: dts: imx8mn: Enable GPU")
-> > imx8mn-venice-gw7902 will hang during kernel init because it uses
-> > a MIMX8MN5CVTI which does not have a GPU.
-> 
-> I do not quite follow on this.  i.MX8MN integrates a GPU, and
-> MIMX8MN5CVTI is built on i.MX8MN, correct?  If so, how comes
-> MIMX8MN5CVTI doesn't have a GPU?
-> 
-It's a fused-down variant of the i.MX8MN that has the GPU disabled by
-fuses.
+Let's make it clearer that KSM might only have to copy a page
+in case we have a page in the swapcache, not if we allocated a fresh
+page and bypassed the swapcache. While at it, add a comment why this is
+usually necessary and merge the two swapcache conditions.
 
-> > 
-> > Disable pgc_gpumix to work around this. We also disable the GPU devices
-> > that depend on the gpumix power domain and pgc_gpu to avoid them staying
-> > in a probe deferred state forever.
-> 
-> Is this an indication that GPU should be disabled in imx8mn.dtsi and
-> enabled board by board?
-> 
-There's a trade-off here: most boards will probably use the full
-variants that include the GPU, so probably less boards will need to
-disable the GPU, as done here, than boards that need to enable it when
-the base DT disables the GPU.
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ mm/memory.c | 38 +++++++++++++++++++++++---------------
+ 1 file changed, 23 insertions(+), 15 deletions(-)
 
-Same story as with the i.MX6 where there are some SKUs that disable the
-VPU by fuses: we enable it in the base DT and if you happen to build a
-very low-cost board that uses the fused-down version you need to
-disable it in the board DT.
-
-Regards,
-Lucas
-
-> Shawn
-> 
-> > 
-> > Cc: Adam Ford <aford173@gmail.com>
-> > Cc: Lucas Stach <l.stach@pengutronix.de>
-> > Signed-off-by: Tim Harvey <tharvey@gateworks.com>
-> > ---
-> >  .../boot/dts/freescale/imx8mn-venice-gw7902.dts      | 12 ++++++++++++
-> >  1 file changed, 12 insertions(+)
-> > 
-> > diff --git a/arch/arm64/boot/dts/freescale/imx8mn-venice-gw7902.dts b/arch/arm64/boot/dts/freescale/imx8mn-venice-gw7902.dts
-> > index 236f425e1570..2d58005d20e4 100644
-> > --- a/arch/arm64/boot/dts/freescale/imx8mn-venice-gw7902.dts
-> > +++ b/arch/arm64/boot/dts/freescale/imx8mn-venice-gw7902.dts
-> > @@ -220,6 +220,10 @@
-> >  	};
-> >  };
-> >  
-> > +&disp_blk_ctrl {
-> > +	status = "disabled";
-> > +};
-> > +
-> >  /* off-board header */
-> >  &ecspi2 {
-> >  	pinctrl-names = "default";
-> > @@ -251,6 +255,10 @@
-> >  	};
-> >  };
-> >  
-> > +&gpu {
-> > +	status = "disabled";
-> > +};
-> > +
-> >  &i2c1 {
-> >  	clock-frequency = <100000>;
-> >  	pinctrl-names = "default";
-> > @@ -546,6 +554,10 @@
-> >  	status = "okay";
-> >  };
-> >  
-> > +&pgc_gpumix {
-> > +	status = "disabled";
-> > +};
-> > +
-> >  /* off-board header */
-> >  &sai3 {
-> >  	pinctrl-names = "default";
-> > -- 
-> > 2.17.1
-> > 
-
+diff --git a/mm/memory.c b/mm/memory.c
+index 61d67ceef734..ab3153252cfe 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3617,21 +3617,29 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
+ 		goto out_release;
+ 	}
+ 
+-	/*
+-	 * Make sure try_to_free_swap or reuse_swap_page or swapoff did not
+-	 * release the swapcache from under us.  The page pin, and pte_same
+-	 * test below, are not enough to exclude that.  Even if it is still
+-	 * swapcache, we need to check that the page's swap has not changed.
+-	 */
+-	if (unlikely((!PageSwapCache(page) ||
+-			page_private(page) != entry.val)) && swapcache)
+-		goto out_page;
+-
+-	page = ksm_might_need_to_copy(page, vma, vmf->address);
+-	if (unlikely(!page)) {
+-		ret = VM_FAULT_OOM;
+-		page = swapcache;
+-		goto out_page;
++	if (swapcache) {
++		/*
++		 * Make sure try_to_free_swap or reuse_swap_page or swapoff did
++		 * not release the swapcache from under us.  The page pin, and
++		 * pte_same test below, are not enough to exclude that.  Even if
++		 * it is still swapcache, we need to check that the page's swap
++		 * has not changed.
++		 */
++		if (unlikely(!PageSwapCache(page) ||
++			     page_private(page) != entry.val))
++			goto out_page;
++
++		/*
++		 * KSM sometimes has to copy on read faults, for example, if
++		 * page->index of !PageKSM() pages would be nonlinear inside the
++		 * anon VMA -- PageKSM() is lost on actual swapout.
++		 */
++		page = ksm_might_need_to_copy(page, vma, vmf->address);
++		if (unlikely(!page)) {
++			ret = VM_FAULT_OOM;
++			page = swapcache;
++			goto out_page;
++		}
+ 	}
+ 
+ 	cgroup_throttle_swaprate(page, GFP_KERNEL);
+-- 
+2.34.1
 
