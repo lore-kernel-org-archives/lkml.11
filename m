@@ -2,84 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40374C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 18:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87FA6C63682
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 18:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244047AbiAZSCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 13:02:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57404 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbiAZSCb (ORCPT
+        id S244068AbiAZSEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 13:04:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229491AbiAZSEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 13:02:31 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56C5DB81EA3
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 18:02:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7589EC340E7;
-        Wed, 26 Jan 2022 18:02:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643220149;
-        bh=AiX+hvOYWgbA+Mt9TrYxXVNB/AScaEEn/BB/TGNZJxE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EPtsvkuV4I8ipT4ElE71TA+29vkdME9gmXphrDb2U7PNTtBciaMSZ9s+53FLm4fQZ
-         DZ4aohz5dI20tAVXgPWfLEISUVmR590umadFM/ymmeqmDLthdwI9QTKY6UCfNl7ZL1
-         7tJrmb4ZduQV7iGXM1UMAenJr9FPhpFY6rk5pj64=
-Date:   Wed, 26 Jan 2022 19:02:26 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Alfasys <alfred@alfasys.se>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Damian Hobson-Garcia <dhobsong@igel.co.jp>
-Subject: Re: [PATCH 001/001] UIO: allow binding uio_dmem_genirq to devices
- using command line options
-Message-ID: <YfGMsujnTxIxlXp4@kroah.com>
-References: <qFul607Amxy21SnrHljzWlk1zF1aanKgSpEIH0--hvj9t9wRzQR5xx80eFgl_2I6pppi8NNFp0TTHwkQw0uQD0Xl-8vth8-KOsbfwrLIHNg=@alfasys.se>
+        Wed, 26 Jan 2022 13:04:00 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F823C06161C;
+        Wed, 26 Jan 2022 10:03:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=91pY7WHsiZcMLE/SeJIJM6HsjUa7+6H46gg9u/uUPng=; b=vKVRrchafi1klVzAPWTWhsPIdw
+        eQaps9a3g35CEMfkAzjbuKVO7wNtD7O7qlI4DwYoCoi68KaJV3iNgRz3IE6ofLFz3EZsVAFatN7kS
+        wClec6snlHX4x6lzsaNJ3Do3U7ZJnP7rtQcWSsJ82aMPa1FGc6t59vtsAKA6BlWHHMUyTFk8nLXkb
+        rN49WRzlPpfpgSrmJ3MGHI4dq1Y5+UvtINcGhjTepm9ukdME037+3dkmiidKwOgDIebzgsnFWGWuc
+        VJhTvlv8xJdwMonSPezB0mznSndiUftphLgS671GSF9S5lvpNhJSkI/H/vDMv0v1aaks+x6v3uINu
+        51FDZWwQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nCme7-004Hx7-44; Wed, 26 Jan 2022 18:03:51 +0000
+Date:   Wed, 26 Jan 2022 18:03:51 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Ariadne Conill <ariadne@dereferenced.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v2] fs/exec: require argv[0] presence in
+ do_execveat_common()
+Message-ID: <YfGNBz0gigWwNnHn@casper.infradead.org>
+References: <20220126114447.25776-1-ariadne@dereferenced.org>
+ <YfFh6O2JS6MybamT@casper.infradead.org>
+ <877damwi2u.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <qFul607Amxy21SnrHljzWlk1zF1aanKgSpEIH0--hvj9t9wRzQR5xx80eFgl_2I6pppi8NNFp0TTHwkQw0uQD0Xl-8vth8-KOsbfwrLIHNg=@alfasys.se>
+In-Reply-To: <877damwi2u.fsf@email.froward.int.ebiederm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 15, 2022 at 04:42:02PM +0000, Alfasys wrote:
-> Add an option to bind the uio_dmem_genirq driver to a given device
-> using command line options.
-> Make uio_dmem_genirq match uio_pdrv_genirq functionality added in
-> commit 05c3e0bb5629 ("UIO: allow binding uio_pdrv_genirq.c to devices 
+On Wed, Jan 26, 2022 at 10:57:29AM -0600, Eric W. Biederman wrote:
+> Matthew Wilcox <willy@infradead.org> writes:
 > 
-> using command line option")
+> > On Wed, Jan 26, 2022 at 11:44:47AM +0000, Ariadne Conill wrote:
+> >> Interestingly, Michael Kerrisk opened an issue about this in 2008[1],
+> >> but there was no consensus to support fixing this issue then.
+> >> Hopefully now that CVE-2021-4034 shows practical exploitative use
+> >> of this bug in a shellcode, we can reconsider.
+> >> 
+> >> [0]: https://pubs.opengroup.org/onlinepubs/9699919799/functions/exec.html
+> >> [1]: https://bugzilla.kernel.org/show_bug.cgi?id=8408
+> >
+> > Having now read 8408 ... if ABI change is a concern (and I really doubt
+> > it is), we could treat calling execve() with a NULL argv as if the
+> > caller had passed an array of length 1 with the first element set to
+> > NULL.  Just like we reopen fds 0,1,2 for suid execs if they were
+> > closed.
 > 
-> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CC: Damian Hobson-Garcia <dhobsong@igel.co.jp>
-> Signed-off-by: Alfred Patriksson <alfred@alfasys.se>
-> 
-> ---
-> 
-> git diff c9e6606c7fe92 #(tag: v5.16-rc8)
-> diff --git a/drivers/uio/uio_dmem_genirq.c b/drivers/uio/uio_dmem_genirq.c
-> index 6b5cfa5b0673..7f6c9b594dd4 100644
-> --- a/drivers/uio/uio_dmem_genirq.c
-> +++ b/drivers/uio/uio_dmem_genirq.c
-> @@ -317,10 +317,13 @@ static const struct dev_pm_ops uio_dmem_genirq_dev_pm_ops = {
->  };
->  
-> 
->  #ifdef CONFIG_OF
-> -static const struct of_device_id uio_of_genirq_match[] = {
-> -       { /* empty for now */ },
-> +static struct of_device_id uio_of_genirq_match[] = {
-> +       { /* This is filled with module_parm */ },
-> +       { /* Sentinel */ },
->  };
->  MODULE_DEVICE_TABLE(of, uio_of_genirq_match);
-> +module_param_string(of_id, uio_of_genirq_match[0].compatible, 128, 0);
-> +MODULE_PARM_DESC(of_id, "Openfirmware id of the device to be handled by uio");
+> Where do we reopen fds 0,1,2 for suid execs?  I feel silly but I looked
+> through the code fs/exec.c quickly and I could not see it.
 
-I do not want to add new module parameters, this is not the 1990's
-anymore.
+I'm wondering if I misremembered and it's being done in ld.so
+rather than in the kernel?  That might be the right place to put
+this fix too.
 
-thanks,
+> I am attracted to the notion of converting an empty argv array passed
+> to the kernel into something we can safely pass to userspace.
+> 
+> I think it would need to be having the first entry point to "" instead
+> of the first entry being NULL.  That would maintain the invariant that you
+> can always dereference a pointer in the argv array.
 
-greg k-h
+Yes, I like that better than NULL.
