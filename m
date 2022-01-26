@@ -2,98 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D196C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1384C63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243700AbiAZRWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 12:22:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243632AbiAZRWd (ORCPT
+        id S243686AbiAZRW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 12:22:57 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:41860 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243638AbiAZRWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:22:33 -0500
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1FD9C06173B
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:22:32 -0800 (PST)
-Received: by mail-pj1-x1049.google.com with SMTP id x4-20020a17090ab00400b001b58c484826so2723472pjq.0
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:22:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=I97TBKC/A0lzYm9EyTPn+bNZHuyeg/4OQD1iS2bFokU=;
-        b=Diz3M/ixEXmXl1TJVUtoJ/8drmR6UmZS/0Up/LHI/Tl7IeTBwPCb9fwNQFbgsp1jJ7
-         dCNLqc2OpizZR22Z67B7iOOTVgNn6EJQS72LraPBAGLHppvogdQaIM5aUizSUh6Ea17o
-         wxUaQ64ZW5ZHj182kdVZRN7+ApaZvcgfzpTV0qkibqV8omSysdq93BCea5PHM/jzS60y
-         W6A7Kc8ZA3KMs2iPl3aklRi8kYsXlt9gAHsMtSfyl2yVRMnBkwkwzQaimkyO5ve4F1yd
-         sR3hJ1woqT+BeCkFf/oDauJlEQ7MevxDG3heiraWUT5+n2bw7xs/49+rwAa3bCGbDHLz
-         69ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=I97TBKC/A0lzYm9EyTPn+bNZHuyeg/4OQD1iS2bFokU=;
-        b=WJIf41PlQU46FYZ3Qv2sIpGwm9tgmiYzEJ62AEXSIm1ntTbGMrwFVIBB4GQ6HoksBY
-         /Xol9dlYbPDr1UqOYdTr8bVhMBWUDTEJ868JVpK8PgpeD3m1qwszjcA+0IH+GRxDeQn/
-         SQT8+fO9X6CSjOM8QfWCJPOHFR43AekiTed0+Ln+i6TbFla3N6YWPQE8pQsX5b0fFFcW
-         j20JHyMlpqfHOq0Lt5AYuv1RKxruiK+z5w8/pYlZoTONNXQ2e00UyOY/KL9iBOXhIq2c
-         7ihrWxz8p0qNcKgSdeYms3pbiVbzuPemsUdgBgGG8WlVnL9a0l8WUSMkgIiDMq1imJCm
-         JtAg==
-X-Gm-Message-State: AOAM530eCPI9gWbz/0DgT97l4KHIyprBWDfxWOYIoAFx/vBXMTsR00fM
-        2tuwzBejZLMaMzKTk5yzk0eSHbvjYU4=
-X-Google-Smtp-Source: ABdhPJx/fxMSR+nLX2SWcl3AxwUoej9VntUca9BeiBQI0SDJMoSiocmF8Hs/oCci/Iw1mQ3IYVnsS8qdls0=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:22d1:b0:14b:3bbd:82df with SMTP id
- y17-20020a17090322d100b0014b3bbd82dfmr17533342plg.101.1643217752422; Wed, 26
- Jan 2022 09:22:32 -0800 (PST)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 26 Jan 2022 17:22:25 +0000
-In-Reply-To: <20220126172226.2298529-1-seanjc@google.com>
-Message-Id: <20220126172226.2298529-3-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220126172226.2298529-1-seanjc@google.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH 2/3] KVM: x86: Update vCPU's runtime CPUID on write to MSR_IA32_XSS
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xiaoyao Li <xiaoyao.li@intel.com>,
-        Like Xu <likexu@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 26 Jan 2022 12:22:54 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id 8A1A71F44B34
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1643217773;
+        bh=KRPjC0F//Rs7+XHQCvSSYdfp5fg6sMkAfNwgxe4p6qo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=d5ECevzAgDFBVGTWmzfd0URx4elZ3RoL39HBbNFPwjtm9jCEG5/ywEJOn27gKFSLT
+         xEQbTapy0hzenvYXZVkZVt8VQwC4AcNIuUs0CnwK4SluX3Ok8stN/Rh6qVpYOdvXIM
+         dOjjC3F5CqhYZQAykMxy87gZGqMVwMBBl8x6LMtQKQA85NBVcZUFO2clMkWGIF6Jjv
+         7oJCPLsqXBxnc+tMxHxq+8jKdCpgW+B7Gu6wu3anJvwWT0Q7gcuf+3ZvAa+vUAnrPq
+         GDIY3Z/Y78noq24e6AhHN9FqQDrqtS8cArv8aQGybu0jSLTez0S5odTB6STKQcbB1s
+         nolWZkIiRaCcw==
+Message-ID: <60c29fb8-06a8-8daa-3cef-092d6b8d0323@collabora.com>
+Date:   Wed, 26 Jan 2022 17:22:51 +0000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [Intel-gfx] [PATCH v5 4/5] drm/i915: add gtt misalignment test
+Content-Language: en-US
+To:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m_=28Intel=29?= 
+        <thomas_os@shipmail.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220125193530.3272386-1-bob.beckett@collabora.com>
+ <20220125193530.3272386-5-bob.beckett@collabora.com>
+ <b6e9a900-435f-148c-826f-a8f6c188df94@shipmail.org>
+From:   Robert Beckett <bob.beckett@collabora.com>
+In-Reply-To: <b6e9a900-435f-148c-826f-a8f6c188df94@shipmail.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
 
-Do a runtime CPUID update for a vCPU if MSR_IA32_XSS is written, as the
-size in bytes of the XSAVE area is affected by the states enabled in XSS.
 
-Fixes: 203000993de5 ("kvm: vmx: add MSR logic for XSAVES")
-Cc: stable@vger.kernel.org
-Signed-off-by: Like Xu <likexu@tencent.com>
-[sean: split out as a separate patch, adjust Fixes tag]
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/x86.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index c0727939684e..13793582f26d 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3535,6 +3535,7 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		if (data & ~supported_xss)
- 			return 1;
- 		vcpu->arch.ia32_xss = data;
-+		kvm_update_cpuid_runtime(vcpu);
- 		break;
- 	case MSR_SMI_COUNT:
- 		if (!msr_info->host_initiated)
--- 
-2.35.0.rc0.227.g00780c9af4-goog
-
+On 26/01/2022 14:05, Thomas Hellström (Intel) wrote:
+> 
+> On 1/25/22 20:35, Robert Beckett wrote:
+>> add test to check handling of misaligned offsets and sizes
+>>
+>> v4:
+>>     * remove spurious blank lines
+>>     * explicitly cast intel_region_id to intel_memory_type in 
+>> misaligned_pin
+>> Reported-by: kernel test robot <lkp@intel.com>
+>>
+>> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+>> ---
+>>   drivers/gpu/drm/i915/selftests/i915_gem_gtt.c | 128 ++++++++++++++++++
+>>   1 file changed, 128 insertions(+)
+>>
+>> diff --git a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c 
+>> b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+>> index b80788a2b7f9..f082b5ff3b5e 100644
+>> --- a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+>> +++ b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+>> @@ -22,10 +22,12 @@
+>>    *
+>>    */
+>> +#include "gt/intel_gtt.h"
+>>   #include <linux/list_sort.h>
+>>   #include <linux/prime_numbers.h>
+>>   #include "gem/i915_gem_context.h"
+>> +#include "gem/i915_gem_region.h"
+>>   #include "gem/selftests/mock_context.h"
+>>   #include "gt/intel_context.h"
+>>   #include "gt/intel_gpu_commands.h"
+>> @@ -1067,6 +1069,120 @@ static int shrink_boom(struct 
+>> i915_address_space *vm,
+>>       return err;
+>>   }
+>> +static int misaligned_case(struct i915_address_space *vm, struct 
+>> intel_memory_region *mr,
+>> +               u64 addr, u64 size, unsigned long flags)
+>> +{
+>> +    struct drm_i915_gem_object *obj;
+>> +    struct i915_vma *vma;
+>> +    int err = 0;
+>> +    u64 expected_vma_size, expected_node_size;
+>> +
+>> +    obj = i915_gem_object_create_region(mr, size, 0, 0);
+>> +    if (IS_ERR(obj))
+>> +        return PTR_ERR(obj);
+>> +
+>> +    vma = i915_vma_instance(obj, vm, NULL);
+>> +    if (IS_ERR(vma)) {
+>> +        err = PTR_ERR(vma);
+>> +        goto err_put;
+>> +    }
+>> +
+>> +    err = i915_vma_pin(vma, 0, 0, addr | flags);
+>> +    if (err)
+>> +        goto err_put;
+>> +    i915_vma_unpin(vma);
+>> +
+>> +    if (!drm_mm_node_allocated(&vma->node)) {
+>> +        err = -EINVAL;
+>> +        goto err_put;
+>> +    }
+>> +
+>> +    if (i915_vma_misplaced(vma, 0, 0, addr | flags)) {
+>> +        err = -EINVAL;
+>> +        goto err_put;
+>> +    }
+>> +
+>> +    expected_vma_size = round_up(size, 1 << 
+>> (ffs(vma->resource->page_sizes_gtt) - 1));
+>> +    expected_node_size = expected_vma_size;
+>> +
+>> +    if (IS_DG2(vm->i915) && i915_gem_object_is_lmem(obj)) {
+>> +        /* dg2 should expand lmem node to 2MB */
+> 
+> Should this test be NEEDS_COMPACT_PT()?
+> 
+> Otherwise LGTM. Reviewed-by: Thomas Hellström 
+> <thomas.hellstrom@linux.intel.com>
+Thanks. Good catch, forgot to retrofit the new macro here.
+> 
+> 
