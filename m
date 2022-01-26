@@ -2,173 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F9A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 21:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 21:36:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232587AbiAZVdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 16:33:14 -0500
-Received: from mx0b-000eb902.pphosted.com ([205.220.177.212]:43500 "EHLO
-        mx0b-000eb902.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229516AbiAZVdN (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 16:33:13 -0500
-X-Greylist: delayed 1169 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jan 2022 16:33:12 EST
-Received: from pps.filterd (m0220299.ppops.net [127.0.0.1])
-        by mx0a-000eb902.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20QCEDHY006062;
-        Wed, 26 Jan 2022 15:13:42 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pps1;
- bh=nlgMFj8DR7I9rDGvNrfInP42UeavYzJIDdkPhRBfySI=;
- b=kZISzbux4uXXK76cVSmF7r2EmlKx7CuvmPqdDVIXHDNehN/UpiRVs4ixbpPY+vYT7QnA
- 04PVhJ+ncjXZCP8Thq6n3s8IorLVhU+1BTPmeh1eSeUYcN9/fX1kG//ElfsDpYOEPLrS
- YRyg4HPjPHIkpygiue4gsCT/m2jKNb5/au32ffcGq2uCT909DIkbxavlGxqqAI+pfo62
- qVoK9KZewdeW/4PBnZzizLhOQuGmKsSQlHopaZbFfRGTPh4S0+bdHzPlIkxOfcZZOYo0
- OGS9CxZsV5rZHM2MhAEbD8sQ5xS5aeWDUyFNiPXbcZseNhj+qKYS+Vc3rXiqSJxIqFR4 Kw== 
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2172.outbound.protection.outlook.com [104.47.58.172])
-        by mx0a-000eb902.pphosted.com (PPS) with ESMTPS id 3du4bmrwwe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 26 Jan 2022 15:13:41 -0600
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JPgiLVDh8oQdFPAaGxnVql58YKF9TFjZZY6/ZdXRFi6oBx8rgYUCo640gb9cezS4X/qALyiFCDnPMEg6eaV1uOpRx0Hfgr+b6Jh6AO4xYWcz7Wbb+BBuTVYb8S/oBrpBBaEwhKBn6MudQDxqKTl36qo+fc8jEgTVfeAv6NoUnx4aIa0HijSMvvbMw8zoRfMwmSHBm7A/CGq8FVvqeiHLdJScdB3sIe7T03pVq97HcCaIAFNXSMzNUln2Vh4F1EeIUkQ+F+hpNF5c0poOGI4D7nA69zuUsnS9YvyQA+1xwyvnZ45Y9hDGF24yg/WgDRlWMMmS9Q2uBBgWxFdTLMXuhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nlgMFj8DR7I9rDGvNrfInP42UeavYzJIDdkPhRBfySI=;
- b=NlrI7qiZ2NIE7hMJz/D+iBrxUHiUQSESOuSI9eHobGPQ0Uc4pQfIJ2iR0Huk2yMGO1q8n9IeVuE+NIco4XXsUpCqY3BiQfXY5uAHJ+hJIrTDRepmIXrW8GoBx2OuJDZGk6Y2r7Gw8aAItweCLjtNgcmgo+kGa5uAMFGFi7LWW7SHA9XtxiS8jkex0n6oQhCY35D8LpejUX6Cfl/1OP+GrDHHcnk3nqnEAGWUmLWL78iRIBUb/L6tdYa7MVUS1RZZElVsL6eZUdmwLuoZuiidlzmSTZEdjkpoOgwqoyy3YaxCxStSpJjPC7/sqjHxl4mc1MUWttSwWxeQN4f+vDDnVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=temperror (sender ip
- is 204.77.163.244) smtp.rcpttodomain=gmail.com smtp.mailfrom=garmin.com;
- dmarc=temperror action=none header.from=garmin.com; dkim=none (message not
- signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=garmin.onmicrosoft.com; s=selector1-garmin-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nlgMFj8DR7I9rDGvNrfInP42UeavYzJIDdkPhRBfySI=;
- b=ADsu7rO/BX52JlGprMBOUneHHe8uqPfmJ51GeRmzHDV07oCv9BfJ4tYtDm/w4eJLDtt0b8E3ItGnc2VtWqah9NrSsZIjbeIJP+U8NdxIvEvjWirrvsXLActhEtPkjT0JGaU/dqW4NY/AXiXw6L9WMaOCSoV0cODTJxCe3S1c3iS7zIWzpihCr9QfJ/qKjW1x6Zz10oQDqYTsfEJuRgYpOvt4Gd3MG/zdnNsspwDr9uubB0sqaANcBxFjHVPkOI1iBJBsaXPXZam3wjv/qogSziK49ivDIxH26Gn0WYTQ6aWim1mPRh0bYR/qDZM1vULQ4wbgOR85OPqk8MaxlEYewA==
-Received: from CO2PR04CA0080.namprd04.prod.outlook.com (2603:10b6:102:1::48)
- by DM5PR04MB0796.namprd04.prod.outlook.com (2603:10b6:3:100::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Wed, 26 Jan
- 2022 21:13:40 +0000
-Received: from MW2NAM10FT054.eop-nam10.prod.protection.outlook.com
- (2603:10b6:102:1:cafe::ff) by CO2PR04CA0080.outlook.office365.com
- (2603:10b6:102:1::48) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15 via Frontend
- Transport; Wed, 26 Jan 2022 21:13:40 +0000
-X-MS-Exchange-Authentication-Results: spf=temperror (sender IP is
- 204.77.163.244) smtp.mailfrom=garmin.com; dkim=none (message not signed)
- header.d=none;dmarc=temperror action=none header.from=garmin.com;
-Received-SPF: TempError (protection.outlook.com: error in processing during
- lookup of garmin.com: DNS Timeout)
-Received: from edgetransport.garmin.com (204.77.163.244) by
- MW2NAM10FT054.mail.protection.outlook.com (10.13.155.191) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4930.15 via Frontend Transport; Wed, 26 Jan 2022 21:13:39 +0000
-Received: from OLAWPA-EXMB11.ad.garmin.com (10.5.144.11) by
- olawpa-edge1.garmin.com (10.60.4.227) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 26 Jan 2022 15:11:13 -0600
-Received: from cv1wpa-exmb1.ad.garmin.com (10.5.144.71) by
- OLAWPA-EXMB11.ad.garmin.com (10.5.144.11) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Wed, 26 Jan 2022 15:13:38 -0600
-Received: from OLA-DKH2RP2.ad.garmin.com (10.5.209.17) by smtp.garmin.com
- (10.5.144.71) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Wed, 26 Jan 2022 15:13:38 -0600
-From:   Shelby Heffron <Shelby.Heffron@garmin.com>
-To:     <dmitry.torokhov@gmail.com>, <linux-input@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Shelby Heffron <Shelby.Heffron@garmin.com>
-Subject: [PATCH v2] input: Add Marine Navigation Keycodes
-Date:   Wed, 26 Jan 2022 15:12:24 -0600
-Message-ID: <20220126211224.28590-1-Shelby.Heffron@garmin.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210622235708.8828-1-matthew.stephenson2@garmin.com>
-References: <20210622235708.8828-1-matthew.stephenson2@garmin.com>
+        id S232630AbiAZVgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 16:36:22 -0500
+Received: from mga11.intel.com ([192.55.52.93]:11770 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229516AbiAZVgU (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 16:36:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643232980; x=1674768980;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bqRTT9ljm8wAPAWjm/qjSQ+Xc2PXWiU5LgkFzLANjPk=;
+  b=k4hYJMXF0HsXeSgOqwJEpan2CMMXKzhl+BCosEV8Qwl4b+lVfOQcXEoE
+   6yDbAw49WisrXNvMHt1umnkibHFyJ+qUSyZ/sxJLxcTC+PqmCTPlfkbQo
+   QN1/e/Qc25DWE2Y5trc3axcpsLOxkwkeD1Za3fkwe/K3XEeZ3n017CwPF
+   IAk0CEEYkLSxad4pYdIgDs92DM/YnQclCO+3celKF6zGIJ4FewJJoRaY1
+   l+7P5hXxUWuqCrZpwTza/+tgTn8fyhuqEL99zObR+tKCV8JFcx58l6UHI
+   JoGMDtJqXSUTj9Dy2woveB+TWU/MUfTle6fvofJIb1ddVulC62bSQYNxo
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="244256208"
+X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
+   d="scan'208";a="244256208"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 13:36:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
+   d="scan'208";a="563543478"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 26 Jan 2022 13:36:18 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCpxh-000Lgj-Lg; Wed, 26 Jan 2022 21:36:17 +0000
+Date:   Thu, 27 Jan 2022 05:35:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] PCI: ACPI: Replace acpi_bus_get_device()
+Message-ID: <202201270503.XIRGkUJE-lkp@intel.com>
+References: <4389553.LvFx2qVVIh@kreacher>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 40c26230-6b3f-49ab-7e6b-08d9e110b92c
-X-MS-TrafficTypeDiagnostic: DM5PR04MB0796:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR04MB0796D136905D4D9FA366E71AF2209@DM5PR04MB0796.namprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ECiFp5AZKEpw1OHw4JzTOpeYl99GJ0EtkUlWuhDRWgmI9aCdZ6SngwmSMsEqZy9TYG7D18hd10VBpsTOCUBA41KR4/X0dxlft0PVjrzQJI3PDDKiXwulaxibTIGRbdzC6dj9r9SLxHjfnXp66JVaFPe0SgG16KLIipvE3AZ0/prau3EouQ/RpGWdtSuO4CJJwtAovSx2NrQthsGTchJgWMXRo9Z5U/GSS+fiYMs0B66D51/Dvp4vb3DexNFFFhVundztAS+YjgwjFub1TdQsrCil0ryafzIkmSXqPGduA/Inac+gyMzSbobWdo4iDN7tv8kus2dUGcxFAc5eFpfP6oLxd7KRXzysjvHFp5362+osVOWb9VyL5U2pzY2qePXoK3ndD72PYXSyGaCEPkP75htFypNm5V7C8ThWhzGVt53bXNlY8BY1ABboJty26F3dzAIglzGICPN7o+VmWoXFlfMzVaMbMlfkw+TIIY/+XxR0IcEM47Rg2pHNH8LYChO+ojrWNklLEvuSNoEbIYpTOAJPvxq9L6NlVCwkZjo/bN7CJZjnyyrTChbxX/LgccmhofcKPxZAlBiKceaK8ciPP13q45UNhH4vy5gNEfSHCjutbPxRZV/03yaeUr0YHOk2Os/UClCVgQzxtx+gJd4yb0cu5uwmRa4IR+o0iRoDH0MNta5y9wFaXS0IJlgCAOEdPMI+wPVqGwIRVbnAab5onPp2OMJdlyBNmwvPpUhv1ulvuholtZFwMpYHgQ34xrCJZ3+dM3I7jDqKb07K/bWqFw==
-X-Forefront-Antispam-Report: CIP:204.77.163.244;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:edgetransport.garmin.com;PTR:extedge.garmin.com;CAT:NONE;SFS:(46966006)(36840700001)(40470700004)(86362001)(63370400001)(7696005)(66574015)(36756003)(336012)(36860700001)(2616005)(82310400004)(70586007)(426003)(356005)(47076005)(26005)(63350400001)(6666004)(8936002)(7636003)(2906002)(8676002)(5660300002)(107886003)(1076003)(40460700003)(316002)(186003)(110136005)(4326008)(70206006)(508600001);DIR:OUT;SFP:1102;
-X-OriginatorOrg: garmin.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 21:13:39.0656
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 40c26230-6b3f-49ab-7e6b-08d9e110b92c
-X-MS-Exchange-CrossTenant-Id: 38d0d425-ba52-4c0a-a03e-2a65c8e82e2d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38d0d425-ba52-4c0a-a03e-2a65c8e82e2d;Ip=[204.77.163.244];Helo=[edgetransport.garmin.com]
-X-MS-Exchange-CrossTenant-AuthSource: MW2NAM10FT054.eop-nam10.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR04MB0796
-X-Proofpoint-ORIG-GUID: 1i4T5CkZvpbbqCipgvyV2vAgxohEmMfa
-X-Proofpoint-GUID: 1i4T5CkZvpbbqCipgvyV2vAgxohEmMfa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-26_08,2022-01-26_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=720
- priorityscore=1501 malwarescore=0 mlxscore=0 impostorscore=0
- lowpriorityscore=0 clxscore=1011 phishscore=0 adultscore=0 spamscore=0
- bulkscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201260123
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4389553.LvFx2qVVIh@kreacher>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add keycodes that are used by marine navigation devices
+Hi "Rafael,
 
-Signed-off-by: Shelby Heffron <Shelby.Heffron@garmin.com>
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on rafael-pm/linux-next]
+[also build test ERROR on helgaas-pci/next v5.17-rc1 next-20220125]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Rafael-J-Wysocki/PCI-ACPI-Replace-acpi_bus_get_device/20220127-034410
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
+config: ia64-allmodconfig (https://download.01.org/0day-ci/archive/20220127/202201270503.XIRGkUJE-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/f04b15e5b428aa6258b15b7e9bd9091cbf175e2f
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Rafael-J-Wysocki/PCI-ACPI-Replace-acpi_bus_get_device/20220127-034410
+        git checkout f04b15e5b428aa6258b15b7e9bd9091cbf175e2f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/pci/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All error/warnings (new ones prefixed by >>):
+
+   drivers/pci/hotplug/acpiphp_ibm.c: In function 'ibm_acpiphp_init':
+>> drivers/pci/hotplug/acpiphp_ibm.c:437:21: error: expected statement before ')' token
+     437 |         if (!device)) {
+         |                     ^
+>> drivers/pci/hotplug/acpiphp_ibm.c:437:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+     437 |         if (!device)) {
+         |         ^~
+   drivers/pci/hotplug/acpiphp_ibm.c:437:23: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+     437 |         if (!device)) {
+         |                       ^
+
+
+vim +437 drivers/pci/hotplug/acpiphp_ibm.c
+
+   418	
+   419	static int __init ibm_acpiphp_init(void)
+   420	{
+   421		int retval = 0;
+   422		acpi_status status;
+   423		struct acpi_device *device;
+   424		struct kobject *sysdir = &pci_slots_kset->kobj;
+   425	
+   426		pr_debug("%s\n", __func__);
+   427	
+   428		if (acpi_walk_namespace(ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
+   429				ACPI_UINT32_MAX, ibm_find_acpi_device, NULL,
+   430				&ibm_acpi_handle, NULL) != FOUND_APCI) {
+   431			pr_err("%s: acpi_walk_namespace failed\n", __func__);
+   432			retval = -ENODEV;
+   433			goto init_return;
+   434		}
+   435		pr_debug("%s: found IBM aPCI device\n", __func__);
+   436		device = acpi_fetch_acpi_dev(ibm_acpi_handle);
+ > 437		if (!device)) {
+   438			pr_err("%s: acpi_fetch_acpi_dev failed\n", __func__);
+   439			retval = -ENODEV;
+   440			goto init_return;
+   441		}
+   442		if (acpiphp_register_attention(&ibm_attention_info)) {
+   443			retval = -ENODEV;
+   444			goto init_return;
+   445		}
+   446	
+   447		ibm_note.device = device;
+   448		status = acpi_install_notify_handler(ibm_acpi_handle,
+   449				ACPI_DEVICE_NOTIFY, ibm_handle_events,
+   450				&ibm_note);
+   451		if (ACPI_FAILURE(status)) {
+   452			pr_err("%s: Failed to register notification handler\n",
+   453					__func__);
+   454			retval = -EBUSY;
+   455			goto init_cleanup;
+   456		}
+   457	
+   458		ibm_apci_table_attr.size = ibm_get_table_from_acpi(NULL);
+   459		retval = sysfs_create_bin_file(sysdir, &ibm_apci_table_attr);
+   460	
+   461		return retval;
+   462	
+   463	init_cleanup:
+   464		acpiphp_unregister_attention(&ibm_attention_info);
+   465	init_return:
+   466		return retval;
+   467	}
+   468	
+
 ---
- include/uapi/linux/input-event-codes.h | 28 ++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
-
-diff --git a/include/uapi/linux/input-event-codes.h b/include/uapi/linux/input-event-codes.h
-index 225ec87d4f22..26b6a2f482ab 100644
---- a/include/uapi/linux/input-event-codes.h
-+++ b/include/uapi/linux/input-event-codes.h
-@@ -660,6 +660,34 @@
- /* Select an area of screen to be copied */
- #define KEY_SELECTIVE_SCREENSHOT	0x27a
- 
-+/* Toggle the focus in or out */
-+#define KEY_FOCUS_TOGGLE		0x27b
-+
-+/* Move between highlightable items */
-+#define KEY_NEXT_HIGHLIGHT		0x27c
-+#define KEY_PREVIOUS_HIGHLIGHT		0x27d
-+
-+/* Toggle Autopilot enagement */
-+#define KEY_AUTOPILOT_ENGAGE_TOGGLE	0x27e
-+
-+/* Navigate Displays */
-+#define KEY_NEXT_DISPLAY		0x27f
-+#define KEY_PREVIOUS_DISPLAY		0x280
-+
-+/* Shortcut Keys */
-+#define KEY_MARK_WAYPOINT		0x281
-+#define KEY_SOS			0x282
-+#define KEY_NAV_CHART			0x283
-+#define KEY_FISHING_CHART		0x284
-+#define KEY_SINGLE_RANGE_RADAR		0x285
-+#define KEY_DUAL_RANGE_RADAR		0x286
-+#define KEY_RADAR_OVERLAY		0x287
-+#define KEY_TRADITIONAL_SONAR		0x288
-+#define KEY_CLEARVU_SONAR		0x289
-+#define KEY_SIDEVU_SONAR		0x28a
-+#define KEY_NAV_INFO			0x28b
-+#define KEY_BRIGHTNESS_MENU		0x28c
-+
- /*
-  * Some keyboards have keys which do not have a defined meaning, these keys
-  * are intended to be programmed / bound to macros by the user. For most
--- 
-2.32.0
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
