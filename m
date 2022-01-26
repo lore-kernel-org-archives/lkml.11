@@ -2,69 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB32C63682
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 07:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6EF2C28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 07:09:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237614AbiAZHIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 02:08:53 -0500
-Received: from out0.migadu.com ([94.23.1.103]:35712 "EHLO out0.migadu.com"
+        id S237615AbiAZHJk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 02:09:40 -0500
+Received: from mga12.intel.com ([192.55.52.136]:56754 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233595AbiAZHIw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 02:08:52 -0500
-Date:   Wed, 26 Jan 2022 08:08:48 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1643180930;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=50JRhj8xCHSINhFVtiOpyz+7LBIPM7mTDYfmvY3z2Ac=;
-        b=AsnH4MllKFzskTP0jOJLUk3M/KhBDtMc9M1LgK75vHLG4kPlcc8eu6TK2m3KQKnSbCr2vo
-        cSPoUGYrxeIeUUNQLjMe/GDc4LJc+KqZbEkg67m+sonr8RXsjGE6zY4Ny5zASoA/Ki0flu
-        FZJ6xcGRWsyoUV75jGN0tC0HIT+rhoo=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Richard Leitner <richard.leitner@linux.dev>
-To:     Tommaso Merciai <tomm.merciai@gmail.com>
-Cc:     Richard Leitner - SKIDATA <Richard.Leitner@skidata.com>,
-        "linuxfancy@googlegroups.com" <linuxfancy@googlegroups.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] usb: usb251xb: add boost-up property support
-Message-ID: <YfDzgPwhkIpFv+yR@ltleri2>
-References: <20220121232612.7283-1-tomm.merciai@gmail.com>
- <Ye5PUpp9eMX9jSRe@ltleri2>
- <20220125214245.GA4196@tom-ThinkPad-T470p>
+        id S229449AbiAZHJi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 02:09:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643180978; x=1674716978;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=3LxuYhn+DPcDbYi9QL4BEi76zfJYJiigC2SK/UTOTu4=;
+  b=hQighq1oOKa0cq37QCfviMt+vhx6u/gkCzOZ7EC80YKVQ7DjNSis2ckZ
+   zQ2mKfPdodUmRMU8H+VqypRakwHVFzL/oTSbCCuuItUFlZxJzapXFPFkQ
+   P/OyRyDFCyH5SjKTybqBga6R6QK63jRq224HT5pvvSTZ1s4QQLooxPSB+
+   1W9i47jzXN8gkNeoAGpv96yVHi5ts9eBX6igEsv+BvA7J+FsfCPa60MX1
+   NMQJ3aqwicedWDt45hWDPDsyp/DCjOB6bv3OiXONiiG+6m7OnPnAIjnhH
+   4Vkpy0HPfLGV/lczhelPRUdfRkZsdJAYI4npUw8JDWGKQX1eTR57KUgmY
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="226471580"
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="226471580"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 23:09:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="696127828"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 25 Jan 2022 23:09:37 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCcQy-000KuL-Cg; Wed, 26 Jan 2022 07:09:36 +0000
+Date:   Wed, 26 Jan 2022 15:08:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Helge Deller <deller@gmx.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: arch/parisc/kernel/setup.c:64 setup_cmdline() warn: inconsistent
+ indenting
+Message-ID: <202201261513.lCbDYZFQ-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220125214245.GA4196@tom-ThinkPad-T470p>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 10:42:45PM +0100, Tommaso Merciai wrote:
-> On Mon, Jan 24, 2022 at 07:03:57AM +0000, Richard Leitner - SKIDATA wrote:
-> > On Sat, Jan 22, 2022 at 12:26:12AM +0100, Tommaso Merciai wrote:
-> > >  
-> > > +	if (!of_property_read_u8(np, "boost-up", &property_u8)){
-> > > +		hub->boost_up = property_u8;
-> > 
-> > IMHO we don't need the property_u8 var here as you could pass
-> > &hub->boost_up directly to of_property_read_u8() ?
-> 
-> Hi Richard,
-> Thanks for your reply. You mean like:
-> 
-> if (!of_property_read_u8(np, "boost-up", &hub->boost_up))
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   0280e3c58f92b2fe0e8fbbdf8d386449168de4a8
+commit: 5f7ee6e37a3cadefe45378c17c4285fa41141d92 parisc: Autodetect default output device and set console= kernel parameter
+date:   5 days ago
+config: parisc-randconfig-m031-20220126 (https://download.01.org/0day-ci/archive/20220126/202201261513.lCbDYZFQ-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
 
-exactly.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> 
-> Let me know. I'll fix that in v2.
-> 
+smatch warnings:
+arch/parisc/kernel/setup.c:64 setup_cmdline() warn: inconsistent indenting
 
-great!
+vim +64 arch/parisc/kernel/setup.c
 
-thanks & regards;rl
+    47	
+    48	void __init setup_cmdline(char **cmdline_p)
+    49	{
+    50		extern unsigned int boot_args[];
+    51		char *p;
+    52	
+    53		/* Collect stuff passed in from the boot loader */
+    54	
+    55		/* boot_args[0] is free-mem start, boot_args[1] is ptr to command line */
+    56		if (boot_args[0] < 64) {
+    57			/* called from hpux boot loader */
+    58			boot_command_line[0] = '\0';
+    59		} else {
+    60			strscpy(boot_command_line, (char *)__va(boot_args[1]),
+    61				COMMAND_LINE_SIZE);
+    62	
+    63		/* autodetect console type (if not done by palo yet) */
+  > 64		p = boot_command_line;
+    65		if (!str_has_prefix(p, "console=") && !strstr(p, " console=")) {
+    66			strlcat(p, " console=", COMMAND_LINE_SIZE);
+    67			if (PAGE0->mem_cons.cl_class == CL_DUPLEX)
+    68				strlcat(p, "ttyS0", COMMAND_LINE_SIZE);
+    69			else
+    70				strlcat(p, "tty0", COMMAND_LINE_SIZE);
+    71		}
+    72	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
