@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36968C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB02BC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239942AbiAZK1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 05:27:55 -0500
-Received: from foss.arm.com ([217.140.110.172]:57884 "EHLO foss.arm.com"
+        id S239948AbiAZK15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 05:27:57 -0500
+Received: from foss.arm.com ([217.140.110.172]:57912 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232519AbiAZK1k (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 05:27:40 -0500
+        id S239917AbiAZK1n (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 05:27:43 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EAE1C11D4;
-        Wed, 26 Jan 2022 02:27:39 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8D2F811B3;
+        Wed, 26 Jan 2022 02:27:43 -0800 (PST)
 Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 23E173F766;
-        Wed, 26 Jan 2022 02:27:38 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6F7A83F766;
+        Wed, 26 Jan 2022 02:27:42 -0800 (PST)
 From:   Cristian Marussi <cristian.marussi@arm.com>
 To:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     shuah@kernel.org, Cristian Marussi <cristian.marussi@arm.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>
-Subject: [PATCH 2/5] kselftest: Fix vdso_test_time to pass on skips
-Date:   Wed, 26 Jan 2022 10:27:20 +0000
-Message-Id: <20220126102723.23300-3-cristian.marussi@arm.com>
+        Aleksa Sarai <cyphar@cyphar.com>
+Subject: [PATCH 5/5] selftests: openat2: Skip testcases that fail with EOPNOTSUPP
+Date:   Wed, 26 Jan 2022 10:27:23 +0000
+Message-Id: <20220126102723.23300-6-cristian.marussi@arm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220126102723.23300-1-cristian.marussi@arm.com>
 References: <20220126102723.23300-1-cristian.marussi@arm.com>
@@ -31,68 +31,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a vDSO symbol is not found, all the testcases in vdso_test_abi usually
-report a SKIP, which, in turn, is reported back to Kselftest as a PASS.
+Skip testcases that fail since the requested valid flags combination is not
+supported by the underlying filesystem.
 
-Testcase vdso_test_time, instead, reporting a SKIP, causes the whole set of
-tests within vdso_test_abi to be considered FAIL when symbol is not found.
-
-Fix it reporting a PASS when vdso_test_time cannot find the vdso symbol.
-
-Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Cc: Aleksa Sarai <cyphar@cyphar.com>
 Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 ---
-Seen as a failure on both a JUNO and a Dragonboard on both recent and old
-kernels/testruns:
+ tools/testing/selftests/openat2/openat2_test.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-root@deb-buster-arm64:~# /opt/ksft/vDSO/vdso_test_abi
-[vDSO kselftest] VDSO_VERSION: LINUX_2.6.39
-The time is 1637922136.675304
-The time is 1637922136.675361000
-The resolution is 0 1
-clock_id: CLOCK_REALTIME [PASS]
-The time is 1927.760604900
-The resolution is 0 1
-clock_id: CLOCK_BOOTTIME [PASS]
-The time is 1637922136.675649700
-The resolution is 0 1
-clock_id: CLOCK_TAI [PASS]
-The time is 1637922136.672000000
-The resolution is 0 4000000
-clock_id: CLOCK_REALTIME_COARSE [PASS]
-The time is 1927.761005600
-The resolution is 0 1
-clock_id: CLOCK_MONOTONIC [PASS]
-The time is 1927.761132780
-The resolution is 0 1
-clock_id: CLOCK_MONOTONIC_RAW [PASS]
-The time is 1927.757093740
-The resolution is 0 4000000
-clock_id: CLOCK_MONOTONIC_COARSE [PASS]
-Could not find __kernel_time              <<< This caused a FAIL as a whole
-root@deb-buster-arm64:~# echo $?
-1
-
-e.g.: https://lkft.validation.linaro.org/scheduler/job/2192570#L27778
----
- tools/testing/selftests/vDSO/vdso_test_abi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/vDSO/vdso_test_abi.c b/tools/testing/selftests/vDSO/vdso_test_abi.c
-index 3d603f1394af..7dcc66d1cecf 100644
---- a/tools/testing/selftests/vDSO/vdso_test_abi.c
-+++ b/tools/testing/selftests/vDSO/vdso_test_abi.c
-@@ -90,8 +90,9 @@ static int vdso_test_time(void)
- 		(vdso_time_t)vdso_sym(version, name[2]);
+diff --git a/tools/testing/selftests/openat2/openat2_test.c b/tools/testing/selftests/openat2/openat2_test.c
+index 1bddbe934204..7fb902099de4 100644
+--- a/tools/testing/selftests/openat2/openat2_test.c
++++ b/tools/testing/selftests/openat2/openat2_test.c
+@@ -259,6 +259,16 @@ void test_openat2_flags(void)
+ 		unlink(path);
  
- 	if (!vdso_time) {
-+		/* Skip if symbol not found: consider skipped tests as passed */
- 		printf("Could not find %s\n", name[2]);
--		return KSFT_SKIP;
-+		return KSFT_PASS;
+ 		fd = sys_openat2(AT_FDCWD, path, &test->how);
++		if (fd < 0 && fd == -EOPNOTSUPP) {
++			/*
++			 * Skip the testcase if it failed because not supported
++			 * by FS. (e.g. a valid O_TMPFILE combination on NFS)
++			 */
++			ksft_test_result_skip("openat2 with %s fails with %d (%s)\n",
++					      test->name, fd, strerror(-fd));
++			goto next;
++		}
++
+ 		if (test->err >= 0)
+ 			failed = (fd < 0);
+ 		else
+@@ -303,7 +313,7 @@ void test_openat2_flags(void)
+ 		else
+ 			resultfn("openat2 with %s fails with %d (%s)\n",
+ 				 test->name, test->err, strerror(-test->err));
+-
++next:
+ 		free(fdpath);
+ 		fflush(stdout);
  	}
- 
- 	long ret = vdso_time(NULL);
 -- 
 2.17.1
 
