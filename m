@@ -2,83 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64086C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:17:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B55C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233053AbiAZWRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 17:17:51 -0500
-Received: from mga06.intel.com ([134.134.136.31]:8826 "EHLO mga06.intel.com"
+        id S233093AbiAZWR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 17:17:57 -0500
+Received: from foss.arm.com ([217.140.110.172]:43020 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229490AbiAZWRv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 17:17:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643235470; x=1674771470;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=xooQbuHivbMOOs9OpcyfoNfdN4za7A4ATPcdg05Z0lw=;
-  b=KgRcHRtNIcVaPRavsJBtjigjXKXJ9q/YvA2AZwJVoedUZ6uj4GSguGc7
-   Y4M2ogFkHStyaOpUTcQkX0dea7B/lEx4JTDUui4XKJ0a7qvV8b9mhbR60
-   /tSpjhrd+0BnC3qhSsvINFbZ7GSG9lbH0UNB19KEmj9l+EW58bOYXiz/8
-   j+VaBW42mVLzSZlRcwBTGQbDt8jwU1CBgSnTa8RB/utTkpOnRCsCG9fRK
-   B91awRWPeIJEZEw7CvXZLMJifPDT9RrEZxuKWRMV1a32VMDKjyQzQfDGW
-   EQGwIYu16U2OiGpXorfDy4Vi/WyhM1oDrHjdN9+ByQTkLPSqoi8logzw7
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="307379875"
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="307379875"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 14:17:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="480040840"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 26 Jan 2022 14:17:22 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCqbR-000LiT-W6; Wed, 26 Jan 2022 22:17:21 +0000
-Date:   Thu, 27 Jan 2022 06:16:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hans Verkuil <hverkuil@xs4all.nl>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [hverkuil-media-tree:extron 101/103]
- ./usr/include/linux/cec.h:150:19: error: unknown type name 'bool'
-Message-ID: <202201270613.3EEZBJH4-lkp@intel.com>
+        id S229490AbiAZWR4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 17:17:56 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 719E4D6E;
+        Wed, 26 Jan 2022 14:17:55 -0800 (PST)
+Received: from e107158-lin.cambridge.arm.com (e107158-lin.cambridge.arm.com [10.1.196.44])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BFEB43F793;
+        Wed, 26 Jan 2022 14:17:54 -0800 (PST)
+Date:   Wed, 26 Jan 2022 22:17:52 +0000
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [peterz-queue:sched/core 5/8] kernel/sched/sched.h:3006:32:
+ warning: passing argument 1 of 'cpu_util_cfs' makes integer from pointer
+ without a cast
+Message-ID: <20220126221752.5yaftiwk32jrifll@e107158-lin.cambridge.arm.com>
+References: <202201270319.tmnG6ICK-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <202201270319.tmnG6ICK-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://linuxtv.org/hverkuil/media_tree.git extron
-head:   54377f21d8b2084a9f5993230bdab8e8cd55bb22
-commit: d679f6adf24b7fef91e8a3b3584b48587e9cf0a2 [101/103] cec.h: add cec_msg_recv_is_tx_result() helper
-config: i386-randconfig-a012-20220124 (https://download.01.org/0day-ci/archive/20220127/202201270613.3EEZBJH4-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 2a1b7aa016c0f4b5598806205bdfbab1ea2d92c4)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
-        git fetch --no-tags hverkuil-media-tree extron
-        git checkout d679f6adf24b7fef91e8a3b3584b48587e9cf0a2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On 01/27/22 03:53, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git sched/core
+> head:   dbaafd0f1651b35e07c20e33f8c3f133fc65705e
+> commit: 6dd3d475cf576edd705885c66b6f1d638a6818f4 [5/8] sched/sugov: Ignore 'busy' filter when rq is capped by uclamp_max
+> config: ia64-allmodconfig (https://download.01.org/0day-ci/archive/20220127/202201270319.tmnG6ICK-lkp@intel.com/config)
+> compiler: ia64-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=6dd3d475cf576edd705885c66b6f1d638a6818f4
+>         git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+>         git fetch --no-tags peterz-queue sched/core
+>         git checkout 6dd3d475cf576edd705885c66b6f1d638a6818f4
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash kernel/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    In file included from kernel/sched/core.c:13:
+>    kernel/sched/sched.h: In function 'uclamp_rq_is_capped':
+> >> kernel/sched/sched.h:3006:32: warning: passing argument 1 of 'cpu_util_cfs' makes integer from pointer without a cast [-Wint-conversion]
+>     3006 |         rq_util = cpu_util_cfs(rq) + cpu_util_rt(rq);
+>          |                                ^~
+>          |                                |
+>          |                                struct rq *
+>    kernel/sched/sched.h:2919:46: note: expected 'int' but argument is of type 'struct rq *'
+>     2919 | static inline unsigned long cpu_util_cfs(int cpu)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Seems cpu_utils_cfs() definition has changed since I posted my patch. Below
+ought to fix it.
 
-All errors (new ones prefixed by >>):
+Thanks!
 
-   In file included from <built-in>:1:
-   In file included from ./usr/include/linux/cec-funcs.h:11:
->> ./usr/include/linux/cec.h:150:19: error: unknown type name 'bool'
-   static __inline__ bool cec_msg_recv_is_tx_result(const struct cec_msg *msg)
-                     ^
-   1 error generated.
+--
+Qais Yousef
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+--->8---
+
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index c7bf5309c162..9b33ba9c3c42 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -3003,7 +3003,7 @@ static inline bool uclamp_rq_is_capped(struct rq *rq)
+        if (!static_branch_likely(&sched_uclamp_used))
+                return false;
+
+-       rq_util = cpu_util_cfs(rq) + cpu_util_rt(rq);
++       rq_util = cpu_util_cfs(cpu_of(rq)) + cpu_util_rt(rq);
+        max_util = READ_ONCE(rq->uclamp[UCLAMP_MAX].value);
+
+        return max_util != SCHED_CAPACITY_SCALE && rq_util >= max_util;
