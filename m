@@ -2,305 +2,321 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A55D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 21:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 21:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231977AbiAZVKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 16:10:15 -0500
-Received: from relmlor2.renesas.com ([210.160.252.172]:48525 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230384AbiAZVKN (ORCPT
+        id S232022AbiAZVLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 16:11:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39958 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231985AbiAZVLh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 16:10:13 -0500
-X-IronPort-AV: E=Sophos;i="5.88,319,1635174000"; 
-   d="scan'208";a="108407700"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 27 Jan 2022 06:10:11 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 2A3854010DC3;
-        Thu, 27 Jan 2022 06:10:09 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v3] dt-bindings: clock: Add R9A07G054 CPG Clock and Reset Definitions
-Date:   Wed, 26 Jan 2022 21:10:03 +0000
-Message-Id: <20220126211003.6675-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 26 Jan 2022 16:11:37 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319ECC061747
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 13:11:37 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id m14so937867wrg.12
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 13:11:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3FEiW1X94C/i5Fq6cjS066qKz7PGloLVknC6qoY6ptc=;
+        b=sIVUmRPSjRmA0WryHY9N3K0BzQiklgGLUixhH7/sCvIlLCPLNashx6S/yeqiyuCZkg
+         Fg5m8vpqfDxrWwC8dXeNW3RWuvXGVPh7ZFMEi7D4UVnVAnJB4JrZsHhTOqGKPQ7OJQgq
+         huXJ5AwSUqfVg4ULjzna/E5rtIugcX3OERTJbFbkUMYItCZyA/QoRmaZ3Dh61fVH2Mlp
+         w1gOYNHp8T2ypQBembErR33xuCIvuWOzLzwDwuTxQ7jS4yO9y9AKrWlNAdhkAY2mN2hC
+         KMHYH6PHxKSiBYZwGERCuiK9mFHm0BxbWA6dxhBAj6S9xJ+prmL8U2sFcFGLQSZ3AP5S
+         xc0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3FEiW1X94C/i5Fq6cjS066qKz7PGloLVknC6qoY6ptc=;
+        b=8QTIcukNmugsK02yHqzvyXx8kZIfLqPG1M3TL12Hqs02RP4bf+J4KLIvfXeEEbukPG
+         /kTDnG2+gXIY8r6V7m32+IE1i82CB7wEtC7kiODfzxHXp6De2b1p5847eH+zVAes8vor
+         PSf/OqC0xv782NSKyPek3zNFAkEFBW1zao8YinTUUTN9aOUxcxNQqPPijQ8MbNH9R+/A
+         mrytLKNS7lgNFhThNwKpTwB8ggfY20BSGuG5//hWPSofprOwAbCd9/fqRWuYltLTXiM/
+         HMLcEA2+UTTWF+/gmObdWNb9moVmQeAp3kCLTWQq8WMUzltI5HkhUWvBGGaB3K2AJ7dK
+         xxdg==
+X-Gm-Message-State: AOAM532azTZNwacs0LrCQFyImlnHMgZb+7gaZVeMg0VhcQNNw3mly6wD
+        j08LRNnzCnDw7/FfjSQ2yKeKJg==
+X-Google-Smtp-Source: ABdhPJw97joQxHgaHu23aJL8beZot82hawRW4Lo7gEBLPS/ZOA9YnLR2SjZfiiKRrxwSMfvP91aD2A==
+X-Received: by 2002:a5d:59af:: with SMTP id p15mr368115wrr.488.1643231495636;
+        Wed, 26 Jan 2022 13:11:35 -0800 (PST)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id o12sm342178wmq.41.2022.01.26.13.11.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 13:11:35 -0800 (PST)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
+        robh+dt@kernel.org, ulli.kroll@googlemail.com
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH] dt-bindings: net: convert net/cortina,gemini-ethernet to yaml
+Date:   Wed, 26 Jan 2022 21:11:28 +0000
+Message-Id: <20220126211128.3663486-1-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+Converts net/cortina,gemini-ethernet.txt to yaml
+This permits to detect some missing properties like interrupts
 
-Define RZ/V2L (R9A07G054) Clock Pulse Generator Core Clock and module
-clock outputs, as listed in Table 7.1.4.2 ("Clock List r1.0") and also
-add Reset definitions referring to registers CPG_RST_* in Section 7.2.3
-("Register configuration") of the RZ/V2L Hardware User's Manual (Rev.1.00,
-Nov.2021).
-
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
-Hi All,
+ .../bindings/net/cortina,gemini-ethernet.txt  |  92 ------------
+ .../bindings/net/cortina,gemini-ethernet.yaml | 138 ++++++++++++++++++
+ 2 files changed, 138 insertions(+), 92 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
+ create mode 100644 Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
 
-This patch is from series [0]. Just re-sending this patch as
-rest are queued.
-
-v2->v3:
-* Added DRP core clocks
-* Included RB and ACK
-
-[0] https://patchwork.kernel.org/project/linux-renesas-soc/
-cover/20220110134659.30424-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
-
-Cheers,
-Prabhakar
----
- include/dt-bindings/clock/r9a07g054-cpg.h | 229 ++++++++++++++++++++++
- 1 file changed, 229 insertions(+)
- create mode 100644 include/dt-bindings/clock/r9a07g054-cpg.h
-
-diff --git a/include/dt-bindings/clock/r9a07g054-cpg.h b/include/dt-bindings/clock/r9a07g054-cpg.h
+diff --git a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
+deleted file mode 100644
+index 6c559981d110..000000000000
+--- a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
++++ /dev/null
+@@ -1,92 +0,0 @@
+-Cortina Systems Gemini Ethernet Controller
+-==========================================
+-
+-This ethernet controller is found in the Gemini SoC family:
+-StorLink SL3512 and SL3516, also known as Cortina Systems
+-CS3512 and CS3516.
+-
+-Required properties:
+-- compatible: must be "cortina,gemini-ethernet"
+-- reg: must contain the global registers and the V-bit and A-bit
+-  memory areas, in total three register sets.
+-- syscon: a phandle to the system controller
+-- #address-cells: must be specified, must be <1>
+-- #size-cells: must be specified, must be <1>
+-- ranges: should be state like this giving a 1:1 address translation
+-  for the subnodes
+-
+-The subnodes represents the two ethernet ports in this device.
+-They are not independent of each other since they share resources
+-in the parent node, and are thus children.
+-
+-Required subnodes:
+-- port0: contains the resources for ethernet port 0
+-- port1: contains the resources for ethernet port 1
+-
+-Required subnode properties:
+-- compatible: must be "cortina,gemini-ethernet-port"
+-- reg: must contain two register areas: the DMA/TOE memory and
+-  the GMAC memory area of the port
+-- interrupts: should contain the interrupt line of the port.
+-  this is nominally a level interrupt active high.
+-- resets: this must provide an SoC-integrated reset line for
+-  the port.
+-- clocks: this should contain a handle to the PCLK clock for
+-  clocking the silicon in this port
+-- clock-names: must be "PCLK"
+-
+-Optional subnode properties:
+-- phy-mode: see ethernet.txt
+-- phy-handle: see ethernet.txt
+-
+-Example:
+-
+-mdio-bus {
+-	(...)
+-	phy0: ethernet-phy@1 {
+-		reg = <1>;
+-		device_type = "ethernet-phy";
+-	};
+-	phy1: ethernet-phy@3 {
+-		reg = <3>;
+-		device_type = "ethernet-phy";
+-	};
+-};
+-
+-
+-ethernet@60000000 {
+-	compatible = "cortina,gemini-ethernet";
+-	reg = <0x60000000 0x4000>, /* Global registers, queue */
+-	      <0x60004000 0x2000>, /* V-bit */
+-	      <0x60006000 0x2000>; /* A-bit */
+-	syscon = <&syscon>;
+-	#address-cells = <1>;
+-	#size-cells = <1>;
+-	ranges;
+-
+-	gmac0: ethernet-port@0 {
+-		compatible = "cortina,gemini-ethernet-port";
+-		reg = <0x60008000 0x2000>, /* Port 0 DMA/TOE */
+-		      <0x6000a000 0x2000>; /* Port 0 GMAC */
+-		interrupt-parent = <&intcon>;
+-		interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
+-		resets = <&syscon GEMINI_RESET_GMAC0>;
+-		clocks = <&syscon GEMINI_CLK_GATE_GMAC0>;
+-		clock-names = "PCLK";
+-		phy-mode = "rgmii";
+-		phy-handle = <&phy0>;
+-	};
+-
+-	gmac1: ethernet-port@1 {
+-		compatible = "cortina,gemini-ethernet-port";
+-		reg = <0x6000c000 0x2000>, /* Port 1 DMA/TOE */
+-		      <0x6000e000 0x2000>; /* Port 1 GMAC */
+-		interrupt-parent = <&intcon>;
+-		interrupts = <2 IRQ_TYPE_LEVEL_HIGH>;
+-		resets = <&syscon GEMINI_RESET_GMAC1>;
+-		clocks = <&syscon GEMINI_CLK_GATE_GMAC1>;
+-		clock-names = "PCLK";
+-		phy-mode = "rgmii";
+-		phy-handle = <&phy1>;
+-	};
+-};
+diff --git a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
 new file mode 100644
-index 000000000000..43f4dbda872c
+index 000000000000..294977fd32f7
 --- /dev/null
-+++ b/include/dt-bindings/clock/r9a07g054-cpg.h
-@@ -0,0 +1,229 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+ *
-+ * Copyright (C) 2022 Renesas Electronics Corp.
-+ */
-+#ifndef __DT_BINDINGS_CLOCK_R9A07G054_CPG_H__
-+#define __DT_BINDINGS_CLOCK_R9A07G054_CPG_H__
++++ b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
+@@ -0,0 +1,138 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/cortina,gemini-ethernet.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#include <dt-bindings/clock/renesas-cpg-mssr.h>
++title: Cortina Systems Gemini Ethernet Controller
 +
-+/* R9A07G054 CPG Core Clocks */
-+#define R9A07G054_CLK_I			0
-+#define R9A07G054_CLK_I2		1
-+#define R9A07G054_CLK_G			2
-+#define R9A07G054_CLK_S0		3
-+#define R9A07G054_CLK_S1		4
-+#define R9A07G054_CLK_SPI0		5
-+#define R9A07G054_CLK_SPI1		6
-+#define R9A07G054_CLK_SD0		7
-+#define R9A07G054_CLK_SD1		8
-+#define R9A07G054_CLK_M0		9
-+#define R9A07G054_CLK_M1		10
-+#define R9A07G054_CLK_M2		11
-+#define R9A07G054_CLK_M3		12
-+#define R9A07G054_CLK_M4		13
-+#define R9A07G054_CLK_HP		14
-+#define R9A07G054_CLK_TSU		15
-+#define R9A07G054_CLK_ZT		16
-+#define R9A07G054_CLK_P0		17
-+#define R9A07G054_CLK_P1		18
-+#define R9A07G054_CLK_P2		19
-+#define R9A07G054_CLK_AT		20
-+#define R9A07G054_OSCCLK		21
-+#define R9A07G054_CLK_P0_DIV2		22
-+#define R9A07G054_CLK_DRP_M		23
-+#define R9A07G054_CLK_DRP_D		24
-+#define R9A07G054_CLK_DRP_A		25
++maintainers:
++  - Linus Walleij <linus.walleij@linaro.org>
 +
-+/* R9A07G054 Module Clocks */
-+#define R9A07G054_CA55_SCLK		0
-+#define R9A07G054_CA55_PCLK		1
-+#define R9A07G054_CA55_ATCLK		2
-+#define R9A07G054_CA55_GICCLK		3
-+#define R9A07G054_CA55_PERICLK		4
-+#define R9A07G054_CA55_ACLK		5
-+#define R9A07G054_CA55_TSCLK		6
-+#define R9A07G054_GIC600_GICCLK		7
-+#define R9A07G054_IA55_CLK		8
-+#define R9A07G054_IA55_PCLK		9
-+#define R9A07G054_MHU_PCLK		10
-+#define R9A07G054_SYC_CNT_CLK		11
-+#define R9A07G054_DMAC_ACLK		12
-+#define R9A07G054_DMAC_PCLK		13
-+#define R9A07G054_OSTM0_PCLK		14
-+#define R9A07G054_OSTM1_PCLK		15
-+#define R9A07G054_OSTM2_PCLK		16
-+#define R9A07G054_MTU_X_MCK_MTU3	17
-+#define R9A07G054_POE3_CLKM_POE		18
-+#define R9A07G054_GPT_PCLK		19
-+#define R9A07G054_POEG_A_CLKP		20
-+#define R9A07G054_POEG_B_CLKP		21
-+#define R9A07G054_POEG_C_CLKP		22
-+#define R9A07G054_POEG_D_CLKP		23
-+#define R9A07G054_WDT0_PCLK		24
-+#define R9A07G054_WDT0_CLK		25
-+#define R9A07G054_WDT1_PCLK		26
-+#define R9A07G054_WDT1_CLK		27
-+#define R9A07G054_WDT2_PCLK		28
-+#define R9A07G054_WDT2_CLK		29
-+#define R9A07G054_SPI_CLK2		30
-+#define R9A07G054_SPI_CLK		31
-+#define R9A07G054_SDHI0_IMCLK		32
-+#define R9A07G054_SDHI0_IMCLK2		33
-+#define R9A07G054_SDHI0_CLK_HS		34
-+#define R9A07G054_SDHI0_ACLK		35
-+#define R9A07G054_SDHI1_IMCLK		36
-+#define R9A07G054_SDHI1_IMCLK2		37
-+#define R9A07G054_SDHI1_CLK_HS		38
-+#define R9A07G054_SDHI1_ACLK		39
-+#define R9A07G054_GPU_CLK		40
-+#define R9A07G054_GPU_AXI_CLK		41
-+#define R9A07G054_GPU_ACE_CLK		42
-+#define R9A07G054_ISU_ACLK		43
-+#define R9A07G054_ISU_PCLK		44
-+#define R9A07G054_H264_CLK_A		45
-+#define R9A07G054_H264_CLK_P		46
-+#define R9A07G054_CRU_SYSCLK		47
-+#define R9A07G054_CRU_VCLK		48
-+#define R9A07G054_CRU_PCLK		49
-+#define R9A07G054_CRU_ACLK		50
-+#define R9A07G054_MIPI_DSI_PLLCLK	51
-+#define R9A07G054_MIPI_DSI_SYSCLK	52
-+#define R9A07G054_MIPI_DSI_ACLK		53
-+#define R9A07G054_MIPI_DSI_PCLK		54
-+#define R9A07G054_MIPI_DSI_VCLK		55
-+#define R9A07G054_MIPI_DSI_LPCLK	56
-+#define R9A07G054_LCDC_CLK_A		57
-+#define R9A07G054_LCDC_CLK_P		58
-+#define R9A07G054_LCDC_CLK_D		59
-+#define R9A07G054_SSI0_PCLK2		60
-+#define R9A07G054_SSI0_PCLK_SFR		61
-+#define R9A07G054_SSI1_PCLK2		62
-+#define R9A07G054_SSI1_PCLK_SFR		63
-+#define R9A07G054_SSI2_PCLK2		64
-+#define R9A07G054_SSI2_PCLK_SFR		65
-+#define R9A07G054_SSI3_PCLK2		66
-+#define R9A07G054_SSI3_PCLK_SFR		67
-+#define R9A07G054_SRC_CLKP		68
-+#define R9A07G054_USB_U2H0_HCLK		69
-+#define R9A07G054_USB_U2H1_HCLK		70
-+#define R9A07G054_USB_U2P_EXR_CPUCLK	71
-+#define R9A07G054_USB_PCLK		72
-+#define R9A07G054_ETH0_CLK_AXI		73
-+#define R9A07G054_ETH0_CLK_CHI		74
-+#define R9A07G054_ETH1_CLK_AXI		75
-+#define R9A07G054_ETH1_CLK_CHI		76
-+#define R9A07G054_I2C0_PCLK		77
-+#define R9A07G054_I2C1_PCLK		78
-+#define R9A07G054_I2C2_PCLK		79
-+#define R9A07G054_I2C3_PCLK		80
-+#define R9A07G054_SCIF0_CLK_PCK		81
-+#define R9A07G054_SCIF1_CLK_PCK		82
-+#define R9A07G054_SCIF2_CLK_PCK		83
-+#define R9A07G054_SCIF3_CLK_PCK		84
-+#define R9A07G054_SCIF4_CLK_PCK		85
-+#define R9A07G054_SCI0_CLKP		86
-+#define R9A07G054_SCI1_CLKP		87
-+#define R9A07G054_IRDA_CLKP		88
-+#define R9A07G054_RSPI0_CLKB		89
-+#define R9A07G054_RSPI1_CLKB		90
-+#define R9A07G054_RSPI2_CLKB		91
-+#define R9A07G054_CANFD_PCLK		92
-+#define R9A07G054_GPIO_HCLK		93
-+#define R9A07G054_ADC_ADCLK		94
-+#define R9A07G054_ADC_PCLK		95
-+#define R9A07G054_TSU_PCLK		96
-+#define R9A07G054_STPAI_INITCLK		97
-+#define R9A07G054_STPAI_ACLK		98
-+#define R9A07G054_STPAI_MCLK		99
-+#define R9A07G054_STPAI_DCLKIN		100
-+#define R9A07G054_STPAI_ACLK_DRP	101
++description: |
++  This ethernet controller is found in the Gemini SoC family:
++  StorLink SL3512 and SL3516, also known as Cortina Systems
++  CS3512 and CS3516.
 +
-+/* R9A07G054 Resets */
-+#define R9A07G054_CA55_RST_1_0		0
-+#define R9A07G054_CA55_RST_1_1		1
-+#define R9A07G054_CA55_RST_3_0		2
-+#define R9A07G054_CA55_RST_3_1		3
-+#define R9A07G054_CA55_RST_4		4
-+#define R9A07G054_CA55_RST_5		5
-+#define R9A07G054_CA55_RST_6		6
-+#define R9A07G054_CA55_RST_7		7
-+#define R9A07G054_CA55_RST_8		8
-+#define R9A07G054_CA55_RST_9		9
-+#define R9A07G054_CA55_RST_10		10
-+#define R9A07G054_CA55_RST_11		11
-+#define R9A07G054_CA55_RST_12		12
-+#define R9A07G054_GIC600_GICRESET_N	13
-+#define R9A07G054_GIC600_DBG_GICRESET_N	14
-+#define R9A07G054_IA55_RESETN		15
-+#define R9A07G054_MHU_RESETN		16
-+#define R9A07G054_DMAC_ARESETN		17
-+#define R9A07G054_DMAC_RST_ASYNC	18
-+#define R9A07G054_SYC_RESETN		19
-+#define R9A07G054_OSTM0_PRESETZ		20
-+#define R9A07G054_OSTM1_PRESETZ		21
-+#define R9A07G054_OSTM2_PRESETZ		22
-+#define R9A07G054_MTU_X_PRESET_MTU3	23
-+#define R9A07G054_POE3_RST_M_REG	24
-+#define R9A07G054_GPT_RST_C		25
-+#define R9A07G054_POEG_A_RST		26
-+#define R9A07G054_POEG_B_RST		27
-+#define R9A07G054_POEG_C_RST		28
-+#define R9A07G054_POEG_D_RST		29
-+#define R9A07G054_WDT0_PRESETN		30
-+#define R9A07G054_WDT1_PRESETN		31
-+#define R9A07G054_WDT2_PRESETN		32
-+#define R9A07G054_SPI_RST		33
-+#define R9A07G054_SDHI0_IXRST		34
-+#define R9A07G054_SDHI1_IXRST		35
-+#define R9A07G054_GPU_RESETN		36
-+#define R9A07G054_GPU_AXI_RESETN	37
-+#define R9A07G054_GPU_ACE_RESETN	38
-+#define R9A07G054_ISU_ARESETN		39
-+#define R9A07G054_ISU_PRESETN		40
-+#define R9A07G054_H264_X_RESET_VCP	41
-+#define R9A07G054_H264_CP_PRESET_P	42
-+#define R9A07G054_CRU_CMN_RSTB		43
-+#define R9A07G054_CRU_PRESETN		44
-+#define R9A07G054_CRU_ARESETN		45
-+#define R9A07G054_MIPI_DSI_CMN_RSTB	46
-+#define R9A07G054_MIPI_DSI_ARESET_N	47
-+#define R9A07G054_MIPI_DSI_PRESET_N	48
-+#define R9A07G054_LCDC_RESET_N		49
-+#define R9A07G054_SSI0_RST_M2_REG	50
-+#define R9A07G054_SSI1_RST_M2_REG	51
-+#define R9A07G054_SSI2_RST_M2_REG	52
-+#define R9A07G054_SSI3_RST_M2_REG	53
-+#define R9A07G054_SRC_RST		54
-+#define R9A07G054_USB_U2H0_HRESETN	55
-+#define R9A07G054_USB_U2H1_HRESETN	56
-+#define R9A07G054_USB_U2P_EXL_SYSRST	57
-+#define R9A07G054_USB_PRESETN		58
-+#define R9A07G054_ETH0_RST_HW_N		59
-+#define R9A07G054_ETH1_RST_HW_N		60
-+#define R9A07G054_I2C0_MRST		61
-+#define R9A07G054_I2C1_MRST		62
-+#define R9A07G054_I2C2_MRST		63
-+#define R9A07G054_I2C3_MRST		64
-+#define R9A07G054_SCIF0_RST_SYSTEM_N	65
-+#define R9A07G054_SCIF1_RST_SYSTEM_N	66
-+#define R9A07G054_SCIF2_RST_SYSTEM_N	67
-+#define R9A07G054_SCIF3_RST_SYSTEM_N	68
-+#define R9A07G054_SCIF4_RST_SYSTEM_N	69
-+#define R9A07G054_SCI0_RST		70
-+#define R9A07G054_SCI1_RST		71
-+#define R9A07G054_IRDA_RST		72
-+#define R9A07G054_RSPI0_RST		73
-+#define R9A07G054_RSPI1_RST		74
-+#define R9A07G054_RSPI2_RST		75
-+#define R9A07G054_CANFD_RSTP_N		76
-+#define R9A07G054_CANFD_RSTC_N		77
-+#define R9A07G054_GPIO_RSTN		78
-+#define R9A07G054_GPIO_PORT_RESETN	79
-+#define R9A07G054_GPIO_SPARE_RESETN	80
-+#define R9A07G054_ADC_PRESETN		81
-+#define R9A07G054_ADC_ADRST_N		82
-+#define R9A07G054_TSU_PRESETN		83
-+#define R9A07G054_STPAI_ARESETN		84
++properties:
++  compatible:
++    const: cortina,gemini-ethernet
 +
-+#endif /* __DT_BINDINGS_CLOCK_R9A07G054_CPG_H__ */
++  reg:
++    minItems: 3
++    description: must contain the global registers and the V-bit and A-bit
++      memory areas, in total three register sets.
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 1
++
++  ranges: true
++
++#The subnodes represents the two ethernet ports in this device.
++#They are not independent of each other since they share resources
++#in the parent node, and are thus children.
++patternProperties:
++  "^ethernet-port@[0-9]+$":
++    type: object
++    description: contains the resources for ethernet port
++    allOf:
++      - $ref: ethernet-controller.yaml#
++    properties:
++      compatible:
++        const: cortina,gemini-ethernet-port
++
++      reg:
++        minItems: 2
++        items:
++          - description: DMA/TOE memory
++          - description: GMAC memory area of the port
++
++      interrupts:
++        maxItems: 1
++        description: should contain the interrupt line of the port.
++                     this is nominally a level interrupt active high.
++
++      resets:
++        maxItems: 1
++        description: this must provide an SoC-integrated reset line for the port.
++
++      clocks:
++        maxItems: 1
++        description: this should contain a handle to the PCLK clock for
++                     clocking the silicon in this port
++
++      clock-names:
++        const: PCLK
++
++    required:
++      - reg
++      - compatible
++      - interrupts
++      - resets
++      - clocks
++      - clock-names
++
++required:
++  - compatible
++  - reg
++  - ranges
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/clock/cortina,gemini-clock.h>
++    #include <dt-bindings/reset/cortina,gemini-reset.h>
++    mdio0: mdio {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      phy0: ethernet-phy@1 {
++        reg = <1>;
++        device_type = "ethernet-phy";
++      };
++      phy1: ethernet-phy@3 {
++        reg = <3>;
++        device_type = "ethernet-phy";
++      };
++    };
++
++
++    ethernet@60000000 {
++        compatible = "cortina,gemini-ethernet";
++        reg = <0x60000000 0x4000>, /* Global registers, queue */
++              <0x60004000 0x2000>, /* V-bit */
++              <0x60006000 0x2000>; /* A-bit */
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges;
++
++        gmac0: ethernet-port@0 {
++    		compatible = "cortina,gemini-ethernet-port";
++    		reg = <0x60008000 0x2000>, /* Port 0 DMA/TOE */
++    		      <0x6000a000 0x2000>; /* Port 0 GMAC */
++    		interrupt-parent = <&intcon>;
++    		interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
++    		resets = <&syscon GEMINI_RESET_GMAC0>;
++    		clocks = <&syscon GEMINI_CLK_GATE_GMAC0>;
++    		clock-names = "PCLK";
++    		phy-mode = "rgmii";
++    		phy-handle = <&phy0>;
++    	};
++
++    	gmac1: ethernet-port@1 {
++    		compatible = "cortina,gemini-ethernet-port";
++    		reg = <0x6000c000 0x2000>, /* Port 1 DMA/TOE */
++    		      <0x6000e000 0x2000>; /* Port 1 GMAC */
++    		interrupt-parent = <&intcon>;
++    		interrupts = <2 IRQ_TYPE_LEVEL_HIGH>;
++    		resets = <&syscon GEMINI_RESET_GMAC1>;
++    		clocks = <&syscon GEMINI_CLK_GATE_GMAC1>;
++    		clock-names = "PCLK";
++    		phy-mode = "rgmii";
++    		phy-handle = <&phy1>;
++    	};
++    };
 -- 
-2.17.1
+2.34.1
 
