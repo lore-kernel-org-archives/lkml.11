@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 146F0C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 06:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB5FC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 06:33:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236447AbiAZGdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 01:33:14 -0500
+        id S236888AbiAZGdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 01:33:17 -0500
 Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:48572 "EHLO
         alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236524AbiAZGdA (ORCPT
+        by vger.kernel.org with ESMTP id S236369AbiAZGdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 01:33:00 -0500
+        Wed, 26 Jan 2022 01:33:09 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643178780; x=1674714780;
+  t=1643178789; x=1674714789;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=JGow5gSyCVGGIvARjpIWCWieeUWr8i3gh6AHITcaPMM=;
-  b=zo9rHKCD9ljSyLjKJ06lspVNTYL7jueHwdhvmg4qAfikwckvKxztDJJc
-   QIKV345UG1co1TTJrro6qeHohTi/ccIBqRriMFytY+VxmtFcTJRfHwK4N
-   Oj15x6Dv09/PWoASpFE8DXC/t7iWKQc/8ZBCoFuVSod1exv6V9KMopEgr
-   U=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 25 Jan 2022 22:33:00 -0800
+  bh=Ht5tFAx/b0oY9oX+FB+kzZOocBM2sta/Sgzs8nZLw/o=;
+  b=eSQbXq9GVwiekz/tpTfv91eM0eU7IDevrrI/XMvl7qwZk4u9AkiXeVh5
+   7XUHo7N0blDPRQcpgRbC+FMB1jbfp11zwrpv8a8p4Zymzdc5dBFHFjZyo
+   GvT5y0VdybZ+tu/Sfo7czwsUNvn118+AynkB0lbyqWPVT8YnXE1JWhHuh
+   A=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 25 Jan 2022 22:33:07 -0800
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 22:32:59 -0800
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 22:33:05 -0800
 Received: from nalasex01c.na.qualcomm.com (10.47.97.35) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 25 Jan 2022 22:32:59 -0800
+ 15.2.922.19; Tue, 25 Jan 2022 22:33:04 -0800
 Received: from fenglinw-gv.qualcomm.com (10.80.80.8) by
  nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 25 Jan 2022 22:32:56 -0800
+ 15.2.922.19; Tue, 25 Jan 2022 22:33:02 -0800
 From:   Fenglin Wu <quic_fenglinw@quicinc.com>
 To:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sboyd@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
+        <sboyd@kernel.org>
 CC:     <collinsd@codeaurora.org>, <subbaram@codeaurora.org>,
         <quic_fenglinw@quicinc.com>, <tglx@linutronix.de>, <maz@kernel.org>
-Subject: [PATCH v5 08/10] bindings: spmi: spmi-pmic-arb: mark interrupt properties as optional
-Date:   Wed, 26 Jan 2022 14:31:50 +0800
-Message-ID: <1643178713-17178-9-git-send-email-quic_fenglinw@quicinc.com>
+Subject: [PATCH v5 10/10] spmi: pmic-arb: increase SPMI transaction timeout delay
+Date:   Wed, 26 Jan 2022 14:31:52 +0800
+Message-ID: <1643178713-17178-11-git-send-email-quic_fenglinw@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1643178713-17178-1-git-send-email-quic_fenglinw@quicinc.com>
 References: <1643178713-17178-1-git-send-email-quic_fenglinw@quicinc.com>
@@ -59,30 +57,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Collins <collinsd@codeaurora.org>
 
-Mark all interrupt related properties as optional instead of
-required.  Some boards do not required PMIC IRQ support and it
-isn't needed to handle SPMI bus transactions, so specify it as
-optional.
+Increase the SPMI transaction timeout delay from 100 us to
+1000 us in order to account for the slower execution time
+found on some simulator targets.
 
 Signed-off-by: David Collins <collinsd@codeaurora.org>
 Signed-off-by: Fenglin Wu <quic_fenglinw@quicinc.com>
 ---
- Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.txt | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/spmi/spmi-pmic-arb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.txt b/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.txt
-index ca645e2..6332507 100644
---- a/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.txt
-+++ b/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.txt
-@@ -29,6 +29,8 @@ Required properties:
- - #size-cells : must be set to 0
- - qcom,ee : indicates the active Execution Environment identifier (0-5)
- - qcom,channel : which of the PMIC Arb provided channels to use for accesses (0-5)
-+
-+Optional properties:
- - interrupts : interrupt list for the PMIC Arb controller, must contain a
-                single interrupt entry for the peripheral interrupt
- - interrupt-names : corresponding interrupt names for the interrupts
+diff --git a/drivers/spmi/spmi-pmic-arb.c b/drivers/spmi/spmi-pmic-arb.c
+index 0496e5d..45f9344 100644
+--- a/drivers/spmi/spmi-pmic-arb.c
++++ b/drivers/spmi/spmi-pmic-arb.c
+@@ -91,7 +91,7 @@ enum pmic_arb_channel {
+ 
+ /* Maximum number of support PMIC peripherals */
+ #define PMIC_ARB_MAX_PERIPHS		512
+-#define PMIC_ARB_TIMEOUT_US		100
++#define PMIC_ARB_TIMEOUT_US		1000
+ #define PMIC_ARB_MAX_TRANS_BYTES	(8)
+ 
+ #define PMIC_ARB_APID_MASK		0xFF
 -- 
 2.7.4
 
