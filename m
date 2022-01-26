@@ -2,284 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D0BC5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 709A3C5AC75
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236949AbiAZDLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 22:11:52 -0500
-Received: from mail-eopbgr00041.outbound.protection.outlook.com ([40.107.0.41]:62220
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236896AbiAZDLa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 22:11:30 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SdxozRh6B11Vv5xIMVNe7Imp6VNkb2wGR5hWqEpGpSuDZIg6MUZm9J2NQcjThEf8Ua7CUIkEX0iST0Gf5rijoClXOS7YA/oE60/iMjZOY5NQ2np6QDdA7mw3j55a2GkAjmd9g5CsP4/KT16L7JqJusGb7ndqCAxFjl2lDvgbtE3po3drP2odMtNZH0fHZXu+v3LVJOnonHPmu5oIQTqBNlRxCqBYql+3Nn4bO8+fUiHmkeZSfdbN9ZSGo/QeWDCwkN/NH8ZMn93pqjqzUL0m5B/LvyDBBnV2aAhXtQrDoSFC/H1yIMnRJCDz5OBhV7TkIGmvsDrizKCFlq89Csfqmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9snIUJxZAQmyg0P1CwtP+CdexAr8Di5UM5LQUFu/BVA=;
- b=N1vNkilbXG9NIA20FWRyWUucIRpxWr1JX/9Iu60eRLJ0csp5xalAFzg7yuucLdvW4H2SeAH2gV0dkVCVpfrnWMdwWiiEWdu3meiEDyR633b6ggx4hX+7jtb5rJeN8JTCU+A4q0bu4nMBMIPN6P3kgMDSj48jDFEX5u7MNsVB63MUfSLOGIWJM0W6XWIrVFhGePpCHFhWuR885uhvPr8XZG8gToXj3EmmmBStARXe5qpV2vPmNwVgM0/dU/CzcUcMOxSwXD97sX+YgBCOIwmXcD8BYY/ChcMn6yS7d0Y7tV9f07geoDroTlHD56+//a06BYcAp4/HwQksn9Yd/TWg0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9snIUJxZAQmyg0P1CwtP+CdexAr8Di5UM5LQUFu/BVA=;
- b=cTnE+JmVASkixOPoegtZpnR4AEzEq5oH0OTPLKuHkLS53NOeRZLzv99HoSZQnWrCzHhHAqzTcG1ZotVS0ekxmc8gRel7ZsNjRKPX7lvH+LzW/QWXHbja5xJktsk70ka5TvHaM2/wrKFL2JvCExBJ+pnX1eCPBmcZpnIBeB/LeRw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
- by AM6PR0402MB3319.eurprd04.prod.outlook.com (2603:10a6:209:e::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Wed, 26 Jan
- 2022 03:10:51 +0000
-Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
- ([fe80::3d7e:6627:fdd0:9d13]) by AM6PR04MB6341.eurprd04.prod.outlook.com
- ([fe80::3d7e:6627:fdd0:9d13%4]) with mapi id 15.20.4930.015; Wed, 26 Jan 2022
- 03:10:51 +0000
-From:   Ming Qian <ming.qian@nxp.com>
-To:     mchehab@kernel.org, shawnguo@kernel.org, robh+dt@kernel.org,
-        s.hauer@pengutronix.de
-Cc:     hverkuil-cisco@xs4all.nl, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, aisheng.dong@nxp.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v15.1 11/13] ARM64: dts: freescale: imx8q: add imx vpu codec entries
-Date:   Wed, 26 Jan 2022 11:09:30 +0800
-Message-Id: <7f8db91ae941309e38684a17ae1d3c088e72b209.1643165765.git.ming.qian@nxp.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <cover.1643165764.git.ming.qian@nxp.com>
-References: <cover.1643165764.git.ming.qian@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR01CA0091.apcprd01.prod.exchangelabs.com
- (2603:1096:3:15::17) To AM6PR04MB6341.eurprd04.prod.outlook.com
- (2603:10a6:20b:d8::14)
+        id S236958AbiAZDRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 22:17:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230339AbiAZDRJ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 22:17:09 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3892C06161C
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 19:17:08 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id c23so7620114wrb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 19:17:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pBMdlXBwnvmmPNUewfDMh0H5M/2d+zAT6/3Iwl0rMhQ=;
+        b=2hkCjLJXNAlhQ1LUkJt6pNjDvtjs2OnmxqENbtatgOTh31p8z+9Mqv0niYVwX/l8pk
+         ClUB570vDbOr8k+Hx/Wv50Q3w8GihVLYUXdu+K/erHBbDgrId+MwHePcdsI5oxQelBYk
+         f3QyqP/p8SIgane+7W7yUZJB5V5R28ZWAhfXrR5CihS0gmQIaBEZguge6Rb9RNaQpxbK
+         eS8k3FKGThIhtR0JXPdSDOPVmHz6h+XMI8NOQQ5bhcn4hJBRxbTQOMTN/P0aGOFl500p
+         3hEq88NaviARy1N5+PY122QI+rKZ+PVwRH/cospStOzCn0Itee/z7g6P6Emn2HpJbfR+
+         fkcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pBMdlXBwnvmmPNUewfDMh0H5M/2d+zAT6/3Iwl0rMhQ=;
+        b=mBsQom3HLdXRpDtZov0XZ66CERwvPCgSrIxk6YmZjNxltuJSDD/3oY3kbmgxILO1Qw
+         XxC0sFB+StKAPlLLgsDB1S4ONEq2PNlArtmOmr2Q2EUiDjujje0d4bJuOmUc/rZqKYW5
+         VySVetUrC66Z48kSTOdom9FS8G7Ovbgwm3aPqJVhLhRLmN9BqAOVMM+7nIF+v1xuffOs
+         aZGmv+OlVLnNTPh619c+vmSiXDbwe64NSpLuC8XKunZc4An1WhfXgSDu2eBip14rqoLM
+         DxkXEgRzVCqd+4hZI98nQmM3EhdCdicYo8HKD9Fh14uaXj9fVS8rY06AOHfcpmgfJzjK
+         UW4w==
+X-Gm-Message-State: AOAM530QApDDUdsPcEZ8kw1Hlnvaqwqghj/7yRqYf1KeCMCt+eqPYNyP
+        DJ29DIgSvMz/gclHH9hfKx3PMfbzrB8Fq8YiHM14mQ==
+X-Google-Smtp-Source: ABdhPJxdxO1ha84zyG2XFtqED0Da/EibQF9M6ja/rcn0/bthKWmiRfAlC1qUAPC1GknjblLeVACVRH+7+qe5Q7KXvVE=
+X-Received: by 2002:a5d:584e:: with SMTP id i14mr20897127wrf.690.1643167027245;
+ Tue, 25 Jan 2022 19:17:07 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 30d9dd2c-be3d-4f46-3d55-08d9e0797557
-X-MS-TrafficTypeDiagnostic: AM6PR0402MB3319:EE_
-X-Microsoft-Antispam-PRVS: <AM6PR0402MB3319CB6EB26EB9DDE2E22A03E7209@AM6PR0402MB3319.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2449;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: S2e4aplgOff+OZVMtWUxySHX2DExrlguWGvdivY2ojITmHuaOH7GQ2Kcjhk7Sw5ul0ixnv2Mqiv5erF78TI3J77YU1qJSuy6LLVYwRFhw5uLN6RcgaeFgw1Ad1TvmpSFLv6+OIDydViSryJLJvMEpPYn5UZazjbmHZ2A/aRRw0H3f2xFzeldgJ/lb925J9OaQr65KJOq5OiAVW3dqwrFa56EsodMlpJ6DJVkYvpBVsDOEj5wyUXlNfn1dqh2wPRviauOT0nwZLW2EkZM/NHeDLnuFAcvNxZW+wmlKdlYb5GBwu4lm+VZ1Pg3+j94xQ0F1TUeJbsnCB3dtyZF3uSISIAVjzEI9+/oUb/BtbhlumOGOswwuN9AUoEknb6+oFbhvpCaF7a8NFTL0ePTOxMiPYdbOZeLsVcKkLHhk8k+cND4TsMaytfMZDuQ0DqsSCCQMQbcGTk0DIiqhKum52Kb0Qpjy07bRP1ov5LBLR/ZR6BRKfiRiw02m5WCbJr4UDKnN8rl4/Za98xOyQ6i9pWHNTkor80Qke2MNMbHfKPUYB5Sdl1mhQx/0GfzvjZkANqKZT9odk3TeREbl/KFR6FPhW8mTqiWamHa9j7Zp7r6oc13RQT6v/pP+ZPgINMKSBpXSW9eIoWscPD3EHtzNrEAt7yvA8xaRN5NCxfWV/eY5CA85pfzzR72FU/dpQtpuSfPECBEs+NCL33jm7QX+JiVea2uX/s0+g/iTpL10LEk0EHOtcGBYmLbBrAOBbMe00x565Wvu/IyeY2EHyaFpzdaXw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(508600001)(2616005)(36756003)(316002)(186003)(26005)(6486002)(66946007)(66476007)(66556008)(8676002)(5660300002)(4326008)(86362001)(52116002)(6666004)(6506007)(6512007)(44832011)(7416002)(8936002)(38100700002)(38350700002)(2906002)(32563001)(414714003)(473944003)(20210929001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?j+VIooWmEqu0VfZWyJfiH+eM1eM+08FBUS1+bf1oJSCsof1ygK+zo+lvLc1M?=
- =?us-ascii?Q?yMpzW8IyxB5gC21+jkInS9OpZBKXMjdDJHjhmvYJY1+gU0OtYnbM9rD7AvY6?=
- =?us-ascii?Q?jRq1oUw3Ur6DjEMgx1y75V0aoaaF+q8kdpaXI1PqKfzUfJkdndSNVTaJv++F?=
- =?us-ascii?Q?e4jz1UBCR7uEPASBb4aaBPSfMkYYv0yW56Y/zj4TeENLWryg/5siggczBlfZ?=
- =?us-ascii?Q?OuXRtzy3k0haH/U0JYmWayfFKnYU1AiBk5UZKpXoU18LWv98AbmWKsXs/BuP?=
- =?us-ascii?Q?B1BZ4jGP6aCt1FALhhwJVeDfIdWq0veivEilcWudf57H/iaasC+6ilFqTYPZ?=
- =?us-ascii?Q?PZ4JRJ4FnboAfpM+PtCoGXH0dWTHdU+8V8N1CyX0SqFWlOIDKvvB1ctDUvcW?=
- =?us-ascii?Q?ksnzEhPdfr24FLhwyRJSG+92H9C6SXpfafdCJyrRcPQZosnJax9FZrHhz9Bu?=
- =?us-ascii?Q?b6Mhvj0/MRERLh56OVzPE1nHWUcavC4xBvUTPD1w77eGdPgluheswEhKSNpB?=
- =?us-ascii?Q?Z7T1VjhNkUCbbxgiDDgVPluvoA7fChq/7CcncDGuHH9KEqZB1mQ7r1bXu9+v?=
- =?us-ascii?Q?S3SZB60aXJdQZH5kjMS6HJ52jNm7Q6yMp9TAXP1WfsVYjjhxguRk2WBTc6dD?=
- =?us-ascii?Q?V53fvZPBi3tOaRSvxnOC6/w6bjhGm/PDfsRqwRkMEjBJzB2hGhEuDszdiRnO?=
- =?us-ascii?Q?SPy6eBXBb5jFBjIlIg0M8hRL20p9ytT2zOaHP1Git/SOzkoDpBjwBKTJjG6N?=
- =?us-ascii?Q?/55j7Oz5RBsEiMJJgJAnGXVISCB/CEhtAZwcei8hjnbAsJrtpDVnMdDmqRNU?=
- =?us-ascii?Q?IX4MJFpmTsWYELKSk+X2Ees/cwAjwdtVLJ7p2lFKf+l5vbSfUOZkqPSwQBor?=
- =?us-ascii?Q?FhseFNJGWjtr6ZUeDAl7m8B0bKTvuurqNB9lWwDdFvCOWQDgnx1yW/ND4Aoj?=
- =?us-ascii?Q?C6CkVldyxZ8l/OP6imhVHA7gMVimVpQkN9I4mqKxdUJKlH7mGZlHMXYshwjZ?=
- =?us-ascii?Q?EwIsQ2wNlOWOHXr03qFWIvPP1U1CynBlWIhlHiszLfpz3DyXmJU5NSwAtGgt?=
- =?us-ascii?Q?v2I+fRfS6miS47CSLAnVTMd37JUBQYUuBHTxpZUYZhfbZFAGdNYg54ya75x4?=
- =?us-ascii?Q?P0ZLenT0TiVZQqsxRPZlzn6LdwI+AZMUF+egtMyF11pOgFN889w2TLFwjN+R?=
- =?us-ascii?Q?7j0PxjRvO0cOwtSP06e9evSljAMi4QsR+VNPRJPAsXGdYtk5tXUHmC8qMwWl?=
- =?us-ascii?Q?pmO6d9b6vOZg8h2GAcm7RZ8aF8+LKezeBNbUOwZOh5B21CT3BvUYfB8zjnL8?=
- =?us-ascii?Q?a4cqVcNKZt4TGW6dXl0PXFIXvwe35vDiWu37vl5XwU9h6L8kq48sPLOxrLDg?=
- =?us-ascii?Q?yvdtNM3jQqpufIIbZcjFtxKU7rWWXTxJGW2+BRIzXptXDJrLXEf8qUvh9J+E?=
- =?us-ascii?Q?s5aN3viLdkEtfoZk/sZfzcQQHj5+8JE0Gw2j/K3e21xqAvDox0CKIyHvwp22?=
- =?us-ascii?Q?juaL6aHA03gCG56oHFoREZcS7uClPIvAYgu2wv7fCMlKvt0K5qN/V+rrxd+P?=
- =?us-ascii?Q?1VHHqJUPzt2BkkV1er8VJ4zmeHUqeuDtkafaQmhLc0nTqPFkCnXNZgQr068R?=
- =?us-ascii?Q?Yk8Gy0hw/b95M0dRZRFi36k=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30d9dd2c-be3d-4f46-3d55-08d9e0797557
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 03:10:51.5358
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: b0q2c1H7TfVbkvL/qGBV3XYv0xmqVV+jxKoo59pF00nzidlir4pC39GZaHMeCyd+Es5eXg5TNYGIcbqZDTCvvQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3319
+References: <20220125054217.383482-1-apatel@ventanamicro.com>
+ <20220125054217.383482-3-apatel@ventanamicro.com> <87lez37k8h.wl-maz@kernel.org>
+In-Reply-To: <87lez37k8h.wl-maz@kernel.org>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Wed, 26 Jan 2022 08:46:55 +0530
+Message-ID: <CAAhSdy0NrB4Q-mYtMH_HCtbfm5OXi-cxXhiu1AxKdCkTv4cskQ@mail.gmail.com>
+Subject: Re: [PATCH 2/6] irqchip/riscv-intc: Set intc domain as the default host
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Anup Patel <apatel@ventanamicro.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the Video Processing Unit node for IMX8Q SoC.
+On Tue, Jan 25, 2022 at 11:47 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On Tue, 25 Jan 2022 05:42:13 +0000,
+> Anup Patel <apatel@ventanamicro.com> wrote:
+> >
+> > We have quite a few RISC-V drivers (such as RISC-V SBI IPI driver,
+> > RISC-V timer driver, RISC-V PMU driver, etc) which do not have a
+> > dedicated DT/ACPI fwnode. This patch makes intc domain as the default
+> > host so that these drivers can directly create local interrupt mapping
+> > using standardized local interrupt numbers
+> >
+> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > ---
+> >  drivers/clocksource/timer-riscv.c | 17 +----------------
+> >  drivers/irqchip/irq-riscv-intc.c  |  9 +++++++++
+> >  2 files changed, 10 insertions(+), 16 deletions(-)
+> >
+> > diff --git a/drivers/clocksource/timer-riscv.c b/drivers/clocksource/timer-riscv.c
+> > index 1767f8bf2013..dd6916ae6365 100644
+> > --- a/drivers/clocksource/timer-riscv.c
+> > +++ b/drivers/clocksource/timer-riscv.c
+> > @@ -102,8 +102,6 @@ static irqreturn_t riscv_timer_interrupt(int irq, void *dev_id)
+> >  static int __init riscv_timer_init_dt(struct device_node *n)
+> >  {
+> >       int cpuid, hartid, error;
+> > -     struct device_node *child;
+> > -     struct irq_domain *domain;
+> >
+> >       hartid = riscv_of_processor_hartid(n);
+> >       if (hartid < 0) {
+> > @@ -121,20 +119,7 @@ static int __init riscv_timer_init_dt(struct device_node *n)
+> >       if (cpuid != smp_processor_id())
+> >               return 0;
+> >
+> > -     domain = NULL;
+> > -     child = of_get_compatible_child(n, "riscv,cpu-intc");
+> > -     if (!child) {
+> > -             pr_err("Failed to find INTC node [%pOF]\n", n);
+> > -             return -ENODEV;
+> > -     }
+> > -     domain = irq_find_host(child);
+> > -     of_node_put(child);
+> > -     if (!domain) {
+> > -             pr_err("Failed to find IRQ domain for node [%pOF]\n", n);
+> > -             return -ENODEV;
+> > -     }
+> > -
+> > -     riscv_clock_event_irq = irq_create_mapping(domain, RV_IRQ_TIMER);
+> > +     riscv_clock_event_irq = irq_create_mapping(NULL, RV_IRQ_TIMER);
+> >       if (!riscv_clock_event_irq) {
+> >               pr_err("Failed to map timer interrupt for node [%pOF]\n", n);
+> >               return -ENODEV;
+> > diff --git a/drivers/irqchip/irq-riscv-intc.c b/drivers/irqchip/irq-riscv-intc.c
+> > index b65bd8878d4f..9f0a7a8a5c4d 100644
+> > --- a/drivers/irqchip/irq-riscv-intc.c
+> > +++ b/drivers/irqchip/irq-riscv-intc.c
+> > @@ -125,6 +125,15 @@ static int __init riscv_intc_init(struct device_node *node,
+> >               return rc;
+> >       }
+> >
+> > +     /*
+> > +      * Make INTC as the default domain which will allow drivers
+> > +      * not having dedicated DT/ACPI fwnode (such as RISC-V SBI IPI
+> > +      * driver, RISC-V timer driver, RISC-V PMU driver, etc) can
+> > +      * directly create local interrupt mapping using standardized
+> > +      * local interrupt numbers.
+> > +      */
+> > +     irq_set_default_host(intc_domain);
+>
+> No, please. This really is a bad idea. This sort of catch-all have
+> constantly proven to be a nuisance, because they discard all the
+> topology information. Eventually, you realise that you need to know
+> where this is coming from, but it really is too late.
+>
+> I'd rather you *synthesise* a fwnode (like ACPI does) rather then do
+> this.
 
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Signed-off-by: Shijie Qin <shijie.qin@nxp.com>
-Signed-off-by: Zhou Peng <eagle.zhou@nxp.com>
----
- .../arm64/boot/dts/freescale/imx8-ss-vpu.dtsi | 72 +++++++++++++++++++
- arch/arm64/boot/dts/freescale/imx8qxp-mek.dts | 17 +++++
- arch/arm64/boot/dts/freescale/imx8qxp.dtsi    | 24 +++++++
- 3 files changed, 113 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8-ss-vpu.dtsi
+In absence of INTC as the default domain, currently we have various
+drivers looking up INTC irq_domain from DT (or ACPI). This is quite a
+bit of duplicate code across various drivers.
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8-ss-vpu.dtsi b/arch/arm64/boot/dts/freescale/imx8-ss-vpu.dtsi
-new file mode 100644
-index 000000000000..f2dde6d14ca3
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8-ss-vpu.dtsi
-@@ -0,0 +1,72 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright 2021 NXP
-+ *	Dong Aisheng <aisheng.dong@nxp.com>
-+ */
-+
-+vpu: vpu@2c000000 {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+	ranges = <0x2c000000 0x0 0x2c000000 0x2000000>;
-+	reg = <0 0x2c000000 0 0x1000000>;
-+	power-domains = <&pd IMX_SC_R_VPU>;
-+	status = "disabled";
-+
-+	mu_m0: mailbox@2d000000 {
-+		compatible = "fsl,imx6sx-mu";
-+		reg = <0x2d000000 0x20000>;
-+		interrupts = <GIC_SPI 469 IRQ_TYPE_LEVEL_HIGH>;
-+		#mbox-cells = <2>;
-+		power-domains = <&pd IMX_SC_R_VPU_MU_0>;
-+		status = "okay";
-+	};
-+
-+	mu1_m0: mailbox@2d020000 {
-+		compatible = "fsl,imx6sx-mu";
-+		reg = <0x2d020000 0x20000>;
-+		interrupts = <GIC_SPI 470 IRQ_TYPE_LEVEL_HIGH>;
-+		#mbox-cells = <2>;
-+		power-domains = <&pd IMX_SC_R_VPU_MU_1>;
-+		status = "okay";
-+	};
-+
-+	mu2_m0: mailbox@2d040000 {
-+		compatible = "fsl,imx6sx-mu";
-+		reg = <0x2d040000 0x20000>;
-+		interrupts = <GIC_SPI 474 IRQ_TYPE_LEVEL_HIGH>;
-+		#mbox-cells = <2>;
-+		power-domains = <&pd IMX_SC_R_VPU_MU_2>;
-+		status = "disabled";
-+	};
-+
-+	vpu_core0: vpu_core@2d080000 {
-+		reg = <0x2d080000 0x10000>;
-+		compatible = "nxp,imx8q-vpu-decoder";
-+		power-domains = <&pd IMX_SC_R_VPU_DEC_0>;
-+		mbox-names = "tx0", "tx1", "rx";
-+		mboxes = <&mu_m0 0 0>,
-+			<&mu_m0 0 1>,
-+			<&mu_m0 1 0>;
-+		status = "disabled";
-+	};
-+	vpu_core1: vpu_core@2d090000 {
-+		reg = <0x2d090000 0x10000>;
-+		compatible = "nxp,imx8q-vpu-encoder";
-+		power-domains = <&pd IMX_SC_R_VPU_ENC_0>;
-+		mbox-names = "tx0", "tx1", "rx";
-+		mboxes = <&mu1_m0 0 0>,
-+			<&mu1_m0 0 1>,
-+			<&mu1_m0 1 0>;
-+		status = "disabled";
-+	};
-+	vpu_core2: vpu_core@2d0a0000 {
-+		reg = <0x2d0a0000 0x10000>;
-+		compatible = "nxp,imx8q-vpu-encoder";
-+		power-domains = <&pd IMX_SC_R_VPU_ENC_1>;
-+		mbox-names = "tx0", "tx1", "rx";
-+		mboxes = <&mu2_m0 0 0>,
-+			<&mu2_m0 0 1>,
-+			<&mu2_m0 1 0>;
-+		status = "disabled";
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/freescale/imx8qxp-mek.dts b/arch/arm64/boot/dts/freescale/imx8qxp-mek.dts
-index 863232a47004..05495b60beb8 100644
---- a/arch/arm64/boot/dts/freescale/imx8qxp-mek.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8qxp-mek.dts
-@@ -196,6 +196,23 @@ &usdhc2 {
- 	status = "okay";
- };
- 
-+&vpu {
-+	compatible = "nxp,imx8qxp-vpu";
-+	status = "okay";
-+};
-+
-+&vpu_core0 {
-+	reg = <0x2d040000 0x10000>;
-+	memory-region = <&decoder_boot>, <&decoder_rpc>;
-+	status = "okay";
-+};
-+
-+&vpu_core1 {
-+	reg = <0x2d050000 0x10000>;
-+	memory-region = <&encoder_boot>, <&encoder_rpc>;
-+	status = "okay";
-+};
-+
- &iomuxc {
- 	pinctrl_fec1: fec1grp {
- 		fsl,pins = <
-diff --git a/arch/arm64/boot/dts/freescale/imx8qxp.dtsi b/arch/arm64/boot/dts/freescale/imx8qxp.dtsi
-index dbec7c106e0b..a041b85d612b 100644
---- a/arch/arm64/boot/dts/freescale/imx8qxp.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8qxp.dtsi
-@@ -46,6 +46,9 @@ aliases {
- 		serial1 = &lpuart1;
- 		serial2 = &lpuart2;
- 		serial3 = &lpuart3;
-+		vpu_core0 = &vpu_core0;
-+		vpu_core1 = &vpu_core1;
-+		vpu_core2 = &vpu_core2;
- 	};
- 
- 	cpus {
-@@ -162,10 +165,30 @@ reserved-memory {
- 		#size-cells = <2>;
- 		ranges;
- 
-+		decoder_boot: decoder-boot@84000000 {
-+			reg = <0 0x84000000 0 0x2000000>;
-+			no-map;
-+		};
-+
-+		encoder_boot: encoder-boot@86000000 {
-+			reg = <0 0x86000000 0 0x200000>;
-+			no-map;
-+		};
-+
-+		decoder_rpc: decoder-rpc@0x92000000 {
-+			reg = <0 0x92000000 0 0x100000>;
-+			no-map;
-+		};
-+
- 		dsp_reserved: dsp@92400000 {
- 			reg = <0 0x92400000 0 0x2000000>;
- 			no-map;
- 		};
-+
-+		encoder_rpc: encoder-rpc@0x94400000 {
-+			reg = <0 0x94400000 0 0x700000>;
-+			no-map;
-+		};
- 	};
- 
- 	pmu {
-@@ -287,6 +310,7 @@ map0 {
- 
- 	/* sorted in register address */
- 	#include "imx8-ss-img.dtsi"
-+	#include "imx8-ss-vpu.dtsi"
- 	#include "imx8-ss-adma.dtsi"
- 	#include "imx8-ss-conn.dtsi"
- 	#include "imx8-ss-ddr.dtsi"
--- 
-2.33.0
+How about having a irq_domain lookup routine (riscv_intc_find_irq_domain())
+exported by the RISC-V INTC driver or arch/riscv ?
+OR
+Do you have an alternative suggestion ?
 
+Regards,
+Anup
+
+>
+>         M.
+>
+> --
+> Without deviation from the norm, progress is not possible.
