@@ -2,78 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C09E7C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D289C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:46:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237278AbiAZDqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 22:46:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51224 "EHLO
+        id S237293AbiAZDqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 22:46:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237262AbiAZDqS (ORCPT
+        with ESMTP id S237281AbiAZDql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 22:46:18 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BAEC061744
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 19:46:17 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id k17so12427816ybk.6
-        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 19:46:17 -0800 (PST)
+        Tue, 25 Jan 2022 22:46:41 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCF5C06161C
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 19:46:41 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id g9-20020a17090a67c900b001b4f1d71e4fso4917993pjm.4
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 19:46:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=zagVcLcxW/306zQ95MLQdaR817NjpVNSNXTFCb2vwNM=;
-        b=FpJr/rdGsJKk5iPxlVsB2ENh0i8xgNEGbbPu6t+Tx7aw41QuydVieaMAYWaUkhxdGd
-         L5DQGIUDul8c9f0UyUqF6Z8DlhHE/Wpq8a/G/Xl0Ws/s7FB2g3KlKrqTMyDbS6p2ZCSI
-         27aNR/0vhNESca8Yd9kQGHxPyLlM6aGpJw8EegC1GxIw8Oquy89LT8Eqier1mPTPHdRL
-         DhJWJQ+89N7S+zaPU2qYjuaqRVl2GcalhPjzwNxSB7hJU+O78lwYhg0/QZs88EpYUMG4
-         bI3P9EbH/OGwHTtfdxBObxqIue5BudY4N1cERlXMqX/5Ueo51SMVFc9scvA+ROpIyX1k
-         q1rQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pI42JEyzuhM9XP9S2B0qht3sN8ahR7m3AOT5MMQP4FQ=;
+        b=D6kT0sP/t1E3PbdkyvGmKM6apVV9zZpYhxNU1dIXDhsy3fYvpDfBP1PNMJVzmvjqng
+         DwTg6FO+MAuKkmSj8Op7sWZFo49YVdGZNHu0eceL2w1bpalQwEJ1B3x09FI7XTUtunx+
+         qpXrgsQzkaNDJZSwTTsOtXSeDg3sA72Ijv8UAaPCoPXHFPeTJGuR0ds+rucjAC8z1kc4
+         Vztdf2ihgdfx5ANU8Uh+vJm5Yox9DrLTyMk6rAOG1eXIGeqG/CvVhgF1U/rDiM1gop9+
+         alVr4o78r2Be4keKyUkwOO5yuSYd/3mPGsUQaMHmQyxNkMh88JNo+rNjDJ0YM8mMGydR
+         D7QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=zagVcLcxW/306zQ95MLQdaR817NjpVNSNXTFCb2vwNM=;
-        b=MIloT6sNJ8KP7+s64xpfn7rsQTgy++ABWwZWpSGDchXKSa4skPwZXa831F1Nkm1KJI
-         HK/PD84hkgR6IWiQstj4OuhK0dTQBSKsHQeQS4Pw6J4RyGlGaRY8BNU9nOeOYU5pSzWg
-         cz/79KSyFJ8CpfvVAs8OatD/X0VNsiroYeBuU1Ok3iscmgh2np+D3mrq6lNjnrDgLMPR
-         84hyj89QS4yvcreHRelyzwISxqoORZ+gyrfxdNHLKpfK+KF/oENP2CnAts3He74Ueh4T
-         WYEH+aetQyLbpy0JezytYQNBkesxWL0HCpSQauFAwEjsutWBfCUcZ60kHNZKyGPLuOgw
-         XTvQ==
-X-Gm-Message-State: AOAM533imYj3Qrff1nSNlVtNOop7Txy6+z3Jf97KeLrAaUJBq7RDNEOo
-        wWZlfXu8MiUMPtInuG2DGl2ujb0ZW8yd7XRc+tYdM8971Nk=
-X-Google-Smtp-Source: ABdhPJwWOuZTNstXu1gAx61m06SEgUumKLVHt+fhYawa0tif34I+N9ojyP6jF7B2Eh6k73GppraZmQft40K++2kJmrw=
-X-Received: by 2002:a25:afd2:: with SMTP id d18mr33511928ybj.709.1643168776676;
- Tue, 25 Jan 2022 19:46:16 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pI42JEyzuhM9XP9S2B0qht3sN8ahR7m3AOT5MMQP4FQ=;
+        b=4cUzF96EsXeR6Y/ShnYpA2TrYPA0NFlxmOvlZkIdPCNZBEIhrf/pHktLajDkt+udN/
+         ykUd8cDh2GyupwvDoejC2sWEdrFVJxInhz1YL9wUeJXwBvzj97NTeQdC7q4aa5rb2Dep
+         BYaLEBRNqtrvytSPoMgWd8oij58+b3uhoScwFtwgnlO+qEQyI2EQ8gtYq7XR9RwQl84k
+         esrrhbpIwiRpa8EIVt39BwkHx4YAHZNqzyfxBn7vd3lCfwkyLsStwWrIBpwf+D1v1e7g
+         rTonAgWMWA/wrYZAuUwglju44zgGVNkNZk/lUOf9UzzBaUloG0h8FC/HhM764ul2jfbq
+         Bzvw==
+X-Gm-Message-State: AOAM533yPO41W8h/HN8ozsT6/lNWocSImS7B2xWo3uASHOchOjZ0wW2V
+        SCJBN3WPCjv656UwlHml8Cf/tg==
+X-Google-Smtp-Source: ABdhPJyWyj2aq6Rt9HOz4rbheeewVvi27szFsChfclVNFfScINlb/JGt2ooBV0UBGVcm+23MbbMmkQ==
+X-Received: by 2002:a17:902:db0b:b0:14b:28f9:cb92 with SMTP id m11-20020a170902db0b00b0014b28f9cb92mr17961252plx.65.1643168801099;
+        Tue, 25 Jan 2022 19:46:41 -0800 (PST)
+Received: from google.com ([2401:fa00:1:10:69af:7f25:2010:2c85])
+        by smtp.gmail.com with ESMTPSA id 20sm15310319pgz.59.2022.01.25.19.46.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 19:46:40 -0800 (PST)
+Date:   Wed, 26 Jan 2022 11:46:38 +0800
+From:   Tzung-Bi Shih <tzungbi@google.com>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, Alyssa Ross <hi@alyssa.is>,
+        Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH] platform/chrome: cros_ec_typec: Check for EC device
+Message-ID: <YfDEHoYkLc6zjSxj@google.com>
+References: <20220126012203.2979709-1-pmalani@chromium.org>
 MIME-Version: 1.0
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 25 Jan 2022 19:45:40 -0800
-Message-ID: <CAGETcx_4ATDk3nNfu6kBwUVN4nfxcHHUMnCKYsLTDoA1TFLmrw@mail.gmail.com>
-Subject: Relation between MMC_CAP_WAIT_WHILE_BUSY and card_busy()
-To:     Jaehoon Chung <jh80.chung@samsung.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Linux MMC List <linux-mmc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Android Kernel Team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220126012203.2979709-1-pmalani@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm trying to understand the MMC suspend path a bit.
+On Wed, Jan 26, 2022 at 01:22:03AM +0000, Prashant Malani wrote:
+> Fixes: fdc6b21e2444 ("platform/chrome: Add Type C connector class driver")
+> Reported-by: Alyssa Ross <hi@alyssa.is>
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
 
-I looked at the commit message of 6fa79651cc808f68db6f6f297be5a950ccd5dffb.
+With a minor comment,
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
 
-IIUC, if MMC_CAP_WAIT_WHILE_BUSY is set then the mmc framework is
-going to depend on the card_busy() op to ensure correctness instead of
-using the S_A_TIMEOUT value from the card.
+> @@ -1076,6 +1076,12 @@ static int cros_typec_probe(struct platform_device *pdev)
+>  
+>  	typec->dev = dev;
+>  	typec->ec = dev_get_drvdata(pdev->dev.parent);
+> +
 
-But I see a lot of mmc host drivers that implement card_busy() but
-don't set the MMC_CAP_WAIT_WHILE_BUSY flag. That doesn't seem right to
-me if my understanding is correct.
+I would prefer to remove the blank line to make it look like an integrated block.
 
-If it's supposed to be "we'll use card_busy() if
-MMC_CAP_WAIT_WHILE_BUSY isn't set", then why do we have some mmc host
-drivers that have both?
-
-What am I misunderstanding?
-
--Saravana
+> +	if (!typec->ec) {
+> +		dev_err(dev, "couldn't find parent EC device\n");
+> +		return -ENODEV;
+> +	}
+> +
