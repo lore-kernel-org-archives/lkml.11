@@ -2,114 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4950C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A970C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242372AbiAZOzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 09:55:25 -0500
-Received: from mx1.riseup.net ([198.252.153.129]:47108 "EHLO mx1.riseup.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242415AbiAZOzT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 09:55:19 -0500
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4JkRbW3PjkzF4TX;
-        Wed, 26 Jan 2022 06:55:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1643208919; bh=FF68SLiqc8b5fH7Zc/D77KvbJQeyA0oyuLSsKGxo1l0=;
-        h=Subject:From:To:Cc:In-Reply-To:References:Date:From;
-        b=ORnQiz/JkGZs0/0i3ikX/PDVzc/cmiPjbDpMdAAhhIbSaIhUX8QUqab2T1A1uNvl8
-         XFiclKMiCDX2HMBVKswwlTkPsMCZze3NKzuiTHed8J8zZJgwTJbYlwT3VoWHytNVIy
-         6b8kALNXvO10Q/un+PaAK8E0592XfcAdtBQxjbrk=
-X-Riseup-User-ID: 4C4FACAA98837759C447321967370CADB64E81B0CFA66B90AE86480C2FF5498C
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4JkRbT5vxqz5vkm;
-        Wed, 26 Jan 2022 06:55:17 -0800 (PST)
-Message-ID: <15ef80cc2ecdcc993043aa0c1d5ea88f41f9b67b.camel@riseup.net>
-Subject: Re: [PATCH] HID: logitech-dj: add new lightspeed receiver id
-From:   Filipe =?ISO-8859-1?Q?La=EDns?= <lains@riseup.net>
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Lucas Zampieri <lzampier@redhat.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Nestor Lopez Casado <nlopezcasad@logitech.com>
-In-Reply-To: <CAO-hwJ+KyV+Ks38DDF8EuT9kEc9jd9SvNn=nGyTwjkD3GOQ+RA@mail.gmail.com>
-References: <20220126144400.130797-1-lzampier@redhat.com>
-         <CAO-hwJ+KyV+Ks38DDF8EuT9kEc9jd9SvNn=nGyTwjkD3GOQ+RA@mail.gmail.com>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-ZtH0jJT5Y0ZBG7kBkzTc"
-Date:   Wed, 26 Jan 2022 14:54:33 +0000
+        id S242427AbiAZOzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 09:55:42 -0500
+Received: from mail-ua1-f49.google.com ([209.85.222.49]:43826 "EHLO
+        mail-ua1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242390AbiAZOze (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 09:55:34 -0500
+Received: by mail-ua1-f49.google.com with SMTP id 2so43372840uax.10;
+        Wed, 26 Jan 2022 06:55:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TH0bFfUTxCFwO035EK2v1qt5dAANLfsGM9lhFwB4w6Y=;
+        b=1eTYo29rO1Wd5aSjB5nHbAMI10HNnuUMtGIhME+IKqJ/IJ2Aa/+jadgjS8kcXG38TX
+         4JeEMN3XpQiU6tOHPO5SuXDobdlnf5Q2SQ+V9S60L37xgf7/8D92ST3pq7aS/QMcKNNQ
+         8wn/dD1P4T7NqhQfNPf3e4v7ZPgz0yPmXKJZMSovjd6NsHTT7NA9mglF+tOyEJRjNDZF
+         zHrpoEpMU939axmxZhcvY8i2vYTnYUiNeR+UuNGEoVeBj92ZsBeTJE8ByGEfNIHWCMuv
+         NlQxOQQOmUWqBJoqyggohUaQ4RZYL12+6V1bsZQZZwjZuzFEQTi6O548GQ0OsN3fKrC2
+         pd0A==
+X-Gm-Message-State: AOAM532bIgmm/PMhXa9/ZEuX93kpbDkKN91Ar97o/YugnOqzeJ1YRIv9
+        K0SxCyxbfw2Cd7zP5vcWLgkXXh20UUOKdbnS
+X-Google-Smtp-Source: ABdhPJzDucwm/Y9p5URnV3rkG3ftCUPu/eOEEfv9niRN8IE1EttuM99A+wViW2hrK9cwXt+hg8jHDQ==
+X-Received: by 2002:a9f:2a8b:: with SMTP id z11mr9411221uai.47.1643208933475;
+        Wed, 26 Jan 2022 06:55:33 -0800 (PST)
+Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
+        by smtp.gmail.com with ESMTPSA id e1sm983356vsh.19.2022.01.26.06.55.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 06:55:33 -0800 (PST)
+Received: by mail-ua1-f47.google.com with SMTP id w21so43280313uan.7;
+        Wed, 26 Jan 2022 06:55:33 -0800 (PST)
+X-Received: by 2002:a67:b009:: with SMTP id z9mr6352633vse.57.1643208932830;
+ Wed, 26 Jan 2022 06:55:32 -0800 (PST)
 MIME-Version: 1.0
+References: <20220112205205.4082026-1-nikita.yoush@cogentembedded.com>
+In-Reply-To: <20220112205205.4082026-1-nikita.yoush@cogentembedded.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 26 Jan 2022 15:55:21 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdU0h+VaAbwOqJE5YRK2f69H8JrVgtXsoYNwvNgGJKH7mQ@mail.gmail.com>
+Message-ID: <CAMuHMdU0h+VaAbwOqJE5YRK2f69H8JrVgtXsoYNwvNgGJKH7mQ@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: renesas: ulcb-kf: add 9-asix sensor device
+To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Nikita,
 
---=-ZtH0jJT5Y0ZBG7kBkzTc
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Thanks for your patch!
 
-On Wed, 2022-01-26 at 15:47 +0100, Benjamin Tissoires wrote:
-> On Wed, Jan 26, 2022 at 3:44 PM Lucas Zampieri <lzampier@redhat.com> wrot=
-e:
-> >=20
-> > As of logitech lightspeed receiver fw version 04.02.B0009,
-> > HIDPP_PARAM_DEVICE_INFO is being reported as 0x11.
-> >=20
-> > With patch "HID: logitech-dj: add support for the new lightspeed receiv=
-er
-> > iteration", the mouse starts to error out with:
-> > =C2=A0 logitech-djreceiver: unusable device of type UNKNOWN (0x011) con=
-nected on
-> > =C2=A0 slot 1
-> > and becomes unusable.
-> >=20
-> > This has been noticed on a Logitech G Pro X Superlight fw MPM 25.01.B00=
-18.
->=20
-> The patch looks good to me.
->=20
-> Reviewed-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->=20
-> Ideally, Nestor, can you confirm this is expected and that we won't
-> have any bad surprises there?
->=20
-> I think we probably want this to be Cc-ed to stable once it gets
-> merged (we can add the tag as we merge it).
->=20
-> Cheers,
-> Benjamin
+On Wed, Jan 12, 2022 at 9:52 PM Nikita Yushchenko
+<nikita.yoush@cogentembedded.com> wrote:
+> This adds nodes for lsm9ds0 sensor installed on the KF board.
+>
+> With this patch, the sensor data becomes available over iio sysfs
+> interface.
+>
+> Interrupt definition is not added yet, because the interrupt lines of
+> lsm9ds0 are pulled to VCC on the board, which implies need for
+> active-low configuration. But st_sensors drivers currently can't work
+> with active-low interrupts on this chip.
 
-This is likely a different connection type, so it should probably get its o=
-wn
-case statement, but let's let Nestor confirm :)
+That's unfortunate, as DT describes hardware, not limitations of the
+software stack.
 
-Cheers,
-Filipe La=C3=ADns
+> Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
 
---=-ZtH0jJT5Y0ZBG7kBkzTc
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
+> --- a/arch/arm64/boot/dts/renesas/ulcb-kf.dtsi
+> +++ b/arch/arm64/boot/dts/renesas/ulcb-kf.dtsi
+> @@ -66,6 +66,13 @@ hdmi_3v3: regulator-hdmi-3v3 {
+>                 regulator-max-microvolt = <3300000>;
+>         };
+>
+> +       accel_3v3: regulator-acc-3v3 {
+> +               compatible = "regulator-fixed";
+> +               regulator-name = "accel-3v3";
+> +               regulator-min-microvolt = <3300000>;
+> +               regulator-max-microvolt = <3300000>;
+> +       };
+> +
+>         hdmi1-out {
+>                 compatible = "hdmi-connector";
+>                 type = "a";
+> @@ -208,6 +215,22 @@ pcm3168a_endpoint_c: endpoint {
+>                                         };
+>                                 };
+>                         };
+> +
+> +                       lsm9ds0_acc_mag@1d {
 
------BEGIN PGP SIGNATURE-----
+Please use standard node names: accelerometer@1d?
 
-iQIzBAABCAAdFiEE0jW0leqs33gyftiw+JPGdIFqqV0FAmHxYKkACgkQ+JPGdIFq
-qV38xhAAnjELLgF7c3FigXFEzvruKFTxNgNyxMnmFmuAp0baGSbK6BaPn0b6U00x
-0crpSY9q1/uxoIludufS5D1+f6r8GZnYwgghA72Y80HFOFIA1YqoZCmpKpPXMK0n
-YUu8HU+yqq1NGfSITFSR5rYq3lwnR2sVU6t5e0LYhW4q96sUrBP1udoE0BoEOxWv
-I6APDgGdvfy9BuC0+eJ+xUfDILc0wUuUgtYexUraKpIMxRldylYiwb9VQgTrshvU
-kwVfvv2+HOY4HBlIab0K9/aYIGkJUFQPlKnnxgUpE25nE9NKnrgI+ECDupzpAYRC
-87kf2JdrpqfVpXarHzSCGciQ861hSg7eQe+oDf9qwygTJu66UDqDAEE65DrA71g1
-3u9PBZtowsWwr6AJgt0MmEi3doBfqcdn8qZHGliRDLiWCUszw19h9x1835FRbXsJ
-iijr11o7BCs6dttmb3d2YkKIJZ1E/2p9V+WWmDBV+2OOOFMZ8S90GQXUgZAzaP0P
-87qzXgBkXoy855DSxOsAaeDcp4Q9riAeFcXs75fiJzkXpq/q+XVYxechOZ9mUM2M
-cHv+XmuTaSiPhZCt49RfIeFHOELnj1EOAS8TZavudoubo/HkgY9tRXvLBXNXhVFL
-u2tN19cNDtJpy866157RH5Sx0tD1MhA/1NxJQYUcwgBQxt4xYI8=
-=XWgf
------END PGP SIGNATURE-----
+> +                               compatible = "st,lsm9ds0-imu";
+> +                               reg = <0x1d>;
+> +
+> +                               vdd-supply = <&accel_3v3>;
+> +                               vddio-supply = <&accel_3v3>;
 
---=-ZtH0jJT5Y0ZBG7kBkzTc--
+According to the bindings, the supplies are not required, so you can
+leave them out? Or are the bindings wrong?
+(The bindings also say "interrupts: maxItems 2", while the "interrupts:
+ description" says up to three interrupts, doh...)
+
+> +                       };
+> +
+> +                       lsm9ds0_gyro@6b {
+
+gyroscope@6b?
+
+> +                               compatible = "st,lsm9ds0-gyro";
+> +                               reg = <0x6b>;
+> +
+> +                               vdd-supply = <&accel_3v3>;
+> +                               vddio-supply = <&accel_3v3>;
+> +                       };
+>                 };
+>         };
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
