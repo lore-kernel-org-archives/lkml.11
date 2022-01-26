@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BB0C3525A
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 01:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE2DCC5AC75
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 01:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235803AbiAZBSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        id S235673AbiAZBSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
         Tue, 25 Jan 2022 20:18:18 -0500
-Received: from mga09.intel.com ([134.134.136.24]:5195 "EHLO mga09.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:5200 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235744AbiAZBSB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 20:18:01 -0500
+        id S235758AbiAZBSH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 25 Jan 2022 20:18:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643159881; x=1674695881;
+  t=1643159887; x=1674695887;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=ktNU35jvB6Wlvb2Vej7NMspOL8Sc09iGaTQH2Ct64/4=;
-  b=FcqxsUjRAqgdoMIShFY8eatdY9tvbdEfSJUSxAkOsb2vfJ039pmIFTQJ
-   NtUU9f3mpabQNAYt7bIgNPSfscSxzJngfRGu62XC8vqMEAcRsmQ7I5wO2
-   roZUJt/2GBks5UKY1Wa7EGnxx/iDoztcNU5H0AC/d0ahWZ2Hgy5yH4pRq
-   BBO2AKAKzQ2x6F1iRFvax6OKMtNbVTMJyyvg7B7yO+GSTIX+QaPMg2ili
-   iUCjyIem74w8jH9F+Ej+rNXmP8PZrtTQRn0w95wfezaP8T5GHYoF1Ap3U
-   wyH3/2rVnidi6JLCVRsdb6QA2RCLi7Hi0yLdECpheXud+Ug4hB7qbWXq2
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="246236207"
+  bh=b59jTAE/DjKDRknOz4w/Dz0RG6Sqxw3hnLnDkfdbU/4=;
+  b=Lpr0kNKrZOK5E1ES2zS3XffEic64W47WBBf4TbZsCuMvFOtt0kfMcNFz
+   idctONwlleHThUFJarAC29O7xNB4P3kvR7bCsGHsT2zK4g3Gww3r1aMmV
+   boTm/OnkTAOZf+gCCLEBnoeXoCjwJaNAPswJ1rsdPI/4yk+BPaApFP/T3
+   O06YZdMIAlElURFumoT6VYHehCWkUUn8yahaCELIwvPkNEoCBQURkQC0A
+   wR8VKU8LIXjzD1H9psz1hUBNln6Lhlgn6AJetpelXe/NY6xrL5niOkizj
+   3mHpOyUJ6FOKcNHwsdQOs75P1eKD5fAOifKas+YQuxkfHwVIZt9SGLjzD
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="246236219"
 X-IronPort-AV: E=Sophos;i="5.88,316,1635231600"; 
-   d="scan'208,217";a="246236207"
+   d="scan'208,217";a="246236219"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 17:18:01 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 17:18:06 -0800
 X-IronPort-AV: E=Sophos;i="5.88,316,1635231600"; 
-   d="scan'208,217";a="520617564"
+   d="scan'208,217";a="520617617"
 Received: from bard-ubuntu.sh.intel.com ([10.239.185.57])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 17:17:59 -0800
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 17:18:04 -0800
 From:   Bard Liao <yung-chuan.liao@linux.intel.com>
 To:     alsa-devel@alsa-project.org, vkoul@kernel.org
 Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org,
         gregkh@linuxfoundation.org, srinivas.kandagatla@linaro.org,
         pierre-louis.bossart@linux.intel.com, sanyog.r.kale@intel.com,
         bard.liao@intel.com
-Subject: [PATCH 12/19] soundwire: stream: split sdw_alloc_slave_rt() in alloc and config
-Date:   Wed, 26 Jan 2022 09:17:08 +0800
-Message-Id: <20220126011715.28204-13-yung-chuan.liao@linux.intel.com>
+Subject: [PATCH 14/19] soundwire: stream: rename and move master/slave_rt_free routines
+Date:   Wed, 26 Jan 2022 09:17:10 +0800
+Message-Id: <20220126011715.28204-15-yung-chuan.liao@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220126011715.28204-1-yung-chuan.liao@linux.intel.com>
 References: <20220126011715.28204-1-yung-chuan.liao@linux.intel.com>
@@ -51,96 +51,149 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-Split the two parts so that we can do multiple configurations during
-ALSA/ASoC hw_params stage. Also follow existing convention
-sdw_<object>_<action> used at lower level.
+The naming is rather inconsistent, use the sdw_<object>_<action>
+convention, and move the free routine after alloc/config.
 
-No functionality change here.
+No functionality change beyond rename/move.
 
 Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Rander Wang <rander.wang@intel.com>
 Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
 ---
- drivers/soundwire/stream.c | 35 +++++++++++++++++++++++++----------
- 1 file changed, 25 insertions(+), 10 deletions(-)
+ drivers/soundwire/stream.c | 72 +++++++++++++++++++-------------------
+ 1 file changed, 36 insertions(+), 36 deletions(-)
 
 diff --git a/drivers/soundwire/stream.c b/drivers/soundwire/stream.c
-index eef2e5fd245e..b7ccfa5a9cfc 100644
+index b0f21f2ca599..e57920ee4c55 100644
 --- a/drivers/soundwire/stream.c
 +++ b/drivers/soundwire/stream.c
-@@ -1055,16 +1055,14 @@ struct sdw_stream_runtime *sdw_alloc_stream(const char *stream_name)
- EXPORT_SYMBOL(sdw_alloc_stream);
- 
- /**
-- * sdw_alloc_slave_rt() - Allocate and initialize Slave runtime handle.
-+ * sdw_slave_rt_alloc() - Allocate a Slave runtime handle.
-  *
-  * @slave: Slave handle
-- * @stream_config: Stream configuration
-  *
-  * This function is to be called with bus_lock held.
-  */
- static struct sdw_slave_runtime
--*sdw_alloc_slave_rt(struct sdw_slave *slave,
--		    struct sdw_stream_config *stream_config)
-+*sdw_slave_rt_alloc(struct sdw_slave *slave)
- {
- 	struct sdw_slave_runtime *s_rt;
- 
-@@ -1073,13 +1071,28 @@ static struct sdw_slave_runtime
- 		return NULL;
- 
- 	INIT_LIST_HEAD(&s_rt->port_list);
--	s_rt->ch_count = stream_config->ch_count;
--	s_rt->direction = stream_config->direction;
- 	s_rt->slave = slave;
- 
- 	return s_rt;
+@@ -1054,6 +1054,33 @@ static int sdw_slave_rt_config(struct sdw_slave_runtime *s_rt,
+ 	return 0;
  }
  
 +/**
-+ * sdw_slave_rt_config() - Configure a Slave runtime handle.
++ * sdw_slave_rt_free() - Free Slave(s) runtime handle
 + *
-+ * @s_rt: Slave runtime handle
-+ * @stream_config: Stream configuration
++ * @slave: Slave handle.
++ * @stream: Stream runtime handle.
 + *
 + * This function is to be called with bus_lock held.
 + */
-+static int sdw_slave_rt_config(struct sdw_slave_runtime *s_rt,
-+			       struct sdw_stream_config *stream_config)
++static void sdw_slave_rt_free(struct sdw_slave *slave,
++			      struct sdw_stream_runtime *stream)
 +{
-+	s_rt->ch_count = stream_config->ch_count;
-+	s_rt->direction = stream_config->direction;
++	struct sdw_slave_runtime *s_rt, *_s_rt;
++	struct sdw_master_runtime *m_rt;
 +
-+	return 0;
++	list_for_each_entry(m_rt, &stream->master_list, stream_node) {
++		/* Retrieve Slave runtime handle */
++		list_for_each_entry_safe(s_rt, _s_rt,
++					 &m_rt->slave_rt_list, m_rt_node) {
++			if (s_rt->slave == slave) {
++				list_del(&s_rt->m_rt_node);
++				kfree(s_rt);
++				return;
++			}
++		}
++	}
 +}
 +
  static struct sdw_master_runtime
  *sdw_master_rt_find(struct sdw_bus *bus,
  		    struct sdw_stream_runtime *stream)
-@@ -1423,16 +1436,18 @@ int sdw_stream_add_slave(struct sdw_slave *slave,
- 		goto stream_error;
+@@ -1119,51 +1146,24 @@ static int sdw_master_rt_config(struct sdw_master_runtime *m_rt,
+ }
  
- skip_alloc_master_rt:
--	s_rt = sdw_alloc_slave_rt(slave, stream_config);
-+	s_rt = sdw_slave_rt_alloc(slave);
- 	if (!s_rt) {
--		dev_err(&slave->dev,
--			"Slave runtime config failed for stream:%s\n",
--			stream->name);
-+		dev_err(&slave->dev, "Slave runtime alloc failed for stream:%s\n", stream->name);
- 		ret = -ENOMEM;
- 		goto stream_error;
+ /**
+- * sdw_release_slave_stream() - Free Slave(s) runtime handle
+- *
+- * @slave: Slave handle.
+- * @stream: Stream runtime handle.
+- *
+- * This function is to be called with bus_lock held.
+- */
+-static void sdw_release_slave_stream(struct sdw_slave *slave,
+-				     struct sdw_stream_runtime *stream)
+-{
+-	struct sdw_slave_runtime *s_rt, *_s_rt;
+-	struct sdw_master_runtime *m_rt;
+-
+-	list_for_each_entry(m_rt, &stream->master_list, stream_node) {
+-		/* Retrieve Slave runtime handle */
+-		list_for_each_entry_safe(s_rt, _s_rt,
+-					 &m_rt->slave_rt_list, m_rt_node) {
+-			if (s_rt->slave == slave) {
+-				list_del(&s_rt->m_rt_node);
+-				kfree(s_rt);
+-				return;
+-			}
+-		}
+-	}
+-}
+-
+-/**
+- * sdw_release_master_stream() - Free Master runtime handle
++ * sdw_master_rt_free() - Free Master runtime handle
+  *
+  * @m_rt: Master runtime node
+  * @stream: Stream runtime handle.
+  *
+  * This function is to be called with bus_lock held
+  * It frees the Master runtime handle and associated Slave(s) runtime
+- * handle. If this is called first then sdw_release_slave_stream() will have
++ * handle. If this is called first then sdw_slave_rt_free() will have
+  * no effect as Slave(s) runtime handle would already be freed up.
+  */
+-static void sdw_release_master_stream(struct sdw_master_runtime *m_rt,
+-				      struct sdw_stream_runtime *stream)
++static void sdw_master_rt_free(struct sdw_master_runtime *m_rt,
++			       struct sdw_stream_runtime *stream)
+ {
+ 	struct sdw_slave_runtime *s_rt, *_s_rt;
+ 
+ 	list_for_each_entry_safe(s_rt, _s_rt, &m_rt->slave_rt_list, m_rt_node) {
+ 		sdw_slave_port_free(s_rt->slave, stream);
+-		sdw_release_slave_stream(s_rt->slave, stream);
++		sdw_slave_rt_free(s_rt->slave, stream);
  	}
- 	list_add_tail(&s_rt->m_rt_node, &m_rt->slave_rt_list);
  
-+	ret = sdw_slave_rt_config(s_rt, stream_config);
-+	if (ret)
-+		goto stream_error;
-+
- 	ret = sdw_config_stream(&slave->dev, stream, stream_config, true);
- 	if (ret)
- 		goto stream_error;
+ 	list_del(&m_rt->stream_node);
+@@ -1860,7 +1860,7 @@ int sdw_stream_add_master(struct sdw_bus *bus,
+ 	goto unlock;
+ 
+ stream_error:
+-	sdw_release_master_stream(m_rt, stream);
++	sdw_master_rt_free(m_rt, stream);
+ unlock:
+ 	mutex_unlock(&bus->bus_lock);
+ 	return ret;
+@@ -1888,7 +1888,7 @@ int sdw_stream_remove_master(struct sdw_bus *bus,
+ 			continue;
+ 
+ 		sdw_master_port_free(m_rt);
+-		sdw_release_master_stream(m_rt, stream);
++		sdw_master_rt_free(m_rt, stream);
+ 		stream->m_rt_count--;
+ 	}
+ 
+@@ -1987,7 +1987,7 @@ int sdw_stream_add_slave(struct sdw_slave *slave,
+ 	 * we hit error so cleanup the stream, release all Slave(s) and
+ 	 * Master runtime
+ 	 */
+-	sdw_release_master_stream(m_rt, stream);
++	sdw_master_rt_free(m_rt, stream);
+ error:
+ 	mutex_unlock(&slave->bus->bus_lock);
+ 	return ret;
+@@ -2008,7 +2008,7 @@ int sdw_stream_remove_slave(struct sdw_slave *slave,
+ 	mutex_lock(&slave->bus->bus_lock);
+ 
+ 	sdw_slave_port_free(slave, stream);
+-	sdw_release_slave_stream(slave, stream);
++	sdw_slave_rt_free(slave, stream);
+ 
+ 	mutex_unlock(&slave->bus->bus_lock);
+ 
 -- 
 2.17.1
 
