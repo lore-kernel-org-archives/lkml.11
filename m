@@ -2,107 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 257FFC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD7AC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbiAZNG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:06:58 -0500
-Received: from mga11.intel.com ([192.55.52.93]:30249 "EHLO mga11.intel.com"
+        id S235797AbiAZNHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:07:50 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55346 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234750AbiAZNG4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:06:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643202416; x=1674738416;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=XjWMcWPURe33zryHgBxjpCyZGZWbFlH2+4e/kRAz0KE=;
-  b=W0w0nVTSdkevENXXrv06v5yAZV6r0BiQ37YYm50Y4ZEhEaTv3DCC4Wpw
-   QrY4MKe1+u54yjddvZTSws+dkXmpH2vW00M3dMLWa5U4aKONyt5rRx2ru
-   KNmerH7f7bgABALPFPu9XQvS1yf8SnxpCVMuEl7IzglIbRQqagzQLhF3U
-   qFZj3wegygcXOmPTDp6VqFQYLwANKlVTZ3y5v27jD1kH7DJmaSv2dWt+3
-   NHOfq1PbXo1qQlY/KI5YC+j/v02d6skuGJPASsL9mhhq3vUZvndxSOtPh
-   uoaidC0uD1bK0sse/dv28mJrW02QNPhgTiAevb8P+Mocf568G8ObdYx1Y
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="244142975"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="244142975"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:06:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="563404328"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 26 Jan 2022 05:06:55 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCi0k-000LEo-F1; Wed, 26 Jan 2022 13:06:54 +0000
-Date:   Wed, 26 Jan 2022 21:06:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     James Morse <james.morse@arm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [morse:mpam/snapshot/v5.16 94/137]
- drivers/platform/mpam/mpam_devices.c:660:6: warning: no previous prototype
- for 'mpam_enable_once'
-Message-ID: <202201262115.SStlJyqy-lkp@intel.com>
+        id S234750AbiAZNHs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 08:07:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=iyaK/5RcSx3Af2ZoGVfePYGS3+zGe9ADowEH6CDKC3o=; b=PtQUEVisYfRC/bB+eQ5/IqQD5m
+        q8UaOIW/t252E2Zjzd1rycHp+i1O9T4mFeXEuIlh+ADJZQCag3842NewxtNSaJvDp9nNbRFAWJ3Q9
+        IssGzJFxD5MKl4Im6I0DhzsweqNw/9OsCGnun/JQNl8OOGjIUX/1vHlscALZD1kBjX7A=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nCi1S-002o9W-LJ; Wed, 26 Jan 2022 14:07:38 +0100
+Date:   Wed, 26 Jan 2022 14:07:38 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Marcin Wojtas <mw@semihalf.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Markus Koch <markus@notsyncing.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 4/5] net/fsl: xgmac_mdio: Support setting the
+ MDC frequency
+Message-ID: <YfFHmkFXtlVus9IW@lunn.ch>
+References: <20220126101432.822818-1-tobias@waldekranz.com>
+ <20220126101432.822818-5-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220126101432.822818-5-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/snapshot/v5.16
-head:   364c1c42b229912132e1615c2ce15be7154e2156
-commit: 33a96085f6c98eddf4ae74babf67cf03c979e2fb [94/137] arm_mpam: Add cpuhp callbacks to probe MSC hardware
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220126/202201262115.SStlJyqy-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/commit/?id=33a96085f6c98eddf4ae74babf67cf03c979e2fb
-        git remote add morse https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git
-        git fetch --no-tags morse mpam/snapshot/v5.16
-        git checkout 33a96085f6c98eddf4ae74babf67cf03c979e2fb
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/platform/mpam/
+Hi Tobias
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+>  struct mdio_fsl_priv {
+>  	struct	tgec_mdio_controller __iomem *mdio_base;
+> +	struct clk *enet_clk;
 
-All warnings (new ones prefixed by >>):
+It looks like there is a whitespace issue here?
 
-   drivers/platform/mpam/mpam_devices.c:299:5: warning: no previous prototype for 'mpam_ris_get_affinity' [-Wmissing-prototypes]
-     299 | int mpam_ris_get_affinity(struct mpam_msc *msc, cpumask_t *affinity,
-         |     ^~~~~~~~~~~~~~~~~~~~~
-   drivers/platform/mpam/mpam_devices.c:332:5: warning: no previous prototype for 'mpam_ris_create_locked' [-Wmissing-prototypes]
-     332 | int mpam_ris_create_locked(struct mpam_msc *msc, u8 ris_idx,
-         |     ^~~~~~~~~~~~~~~~~~~~~~
->> drivers/platform/mpam/mpam_devices.c:660:6: warning: no previous prototype for 'mpam_enable_once' [-Wmissing-prototypes]
-     660 | void mpam_enable_once(void)
-         |      ^~~~~~~~~~~~~~~~
-   drivers/platform/mpam/mpam_devices.c:700:5: warning: no previous prototype for 'mpam_msc_drv_remove' [-Wmissing-prototypes]
-     700 | int mpam_msc_drv_remove(struct platform_device *pdev)
-         |     ^~~~~~~~~~~~~~~~~~~
+> +	u32	mdc_freq;
+>  	bool	is_little_endian;
+>  	bool	has_a009885;
+>  	bool	has_a011043;
+> @@ -255,6 +258,34 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+>  	return ret;
+>  }
+>  
+> +static void xgmac_mdio_set_mdc_freq(struct mii_bus *bus)
+> +{
+> +	struct mdio_fsl_priv *priv = (struct mdio_fsl_priv *)bus->priv;
+> +	struct tgec_mdio_controller __iomem *regs = priv->mdio_base;
+> +	struct device *dev = bus->parent;
+> +	u32 mdio_stat, div;
+> +
+> +	if (device_property_read_u32(dev, "clock-frequency", &priv->mdc_freq))
+> +		return;
+> +
+> +	priv->enet_clk = devm_clk_get(dev, NULL);
+> +	if (IS_ERR(priv->enet_clk)) {
+> +		dev_err(dev, "Input clock unknown, not changing MDC frequency");
 
+Is the clock optional or mandatory?
 
-vim +/mpam_enable_once +660 drivers/platform/mpam/mpam_devices.c
+If mandatory, then i would prefer -ENODEV and fail the probe.
 
-   659	
- > 660	void mpam_enable_once(void)
-   661	{
-   662		mutex_lock(&mpam_cpuhp_state_lock);
-   663		cpuhp_remove_state(mpam_cpuhp_state);
-   664		mpam_cpuhp_state = 0;
-   665		mutex_unlock(&mpam_cpuhp_state_lock);
-   666	
-   667		mpam_register_cpuhp_callbacks(mpam_cpu_online);
-   668	
-   669		pr_info("MPAM enabled\n");
-   670	}
-   671	
+> +		return;
+> +	}
+> +
+> +	div = ((clk_get_rate(priv->enet_clk) / priv->mdc_freq) - 1) / 2;
+> +	if (div < 5 || div > 0x1ff) {
+> +		dev_err(dev, "Requested MDC frequecy is out of range, ignoring");
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+and here return -EINVAL.
+
+I always think it is best to make it obvious something is broken. One
+additional line on the console can be missed for a while. All the
+Ethernet devices missing because the PHYs are missing, because the
+MDIO bus is missing is going to get noticed very quickly.
+
+     Andrew
