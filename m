@@ -2,172 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68321C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F3FC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233428AbiAZP4W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 10:56:22 -0500
-Received: from mout.gmx.net ([212.227.15.15]:53185 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233161AbiAZP4U (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 10:56:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643212548;
-        bh=E7ISE7GQD0/qoufruRmrS+ak1BLXOdtSXna02CfJuqE=;
-        h=X-UI-Sender-Class:Date:To:Cc:References:From:Subject:In-Reply-To;
-        b=Cror795FglamWfFgkSa+Z07laV66Fm+edlkcYlRiOJAYHlObebVw3UN20jJvzujlj
-         RbWvksoKzHnfTdndb7GMRXreo5Bx+6bQhUUzg4lVBU0zZ8wL60fX5aH+TJcGEcyxtp
-         Z4uwxeHeFkSvegc9qtizTzZyRioE6AL+90jMiRT4=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.143.57]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MRCOE-1mrnUG2sdQ-00NE5d; Wed, 26
- Jan 2022 16:55:48 +0100
-Message-ID: <ac4e7277-d18d-fe2a-6bc8-9a003b21d5d0@gmx.de>
-Date:   Wed, 26 Jan 2022 16:54:35 +0100
+        id S233478AbiAZP4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 10:56:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233459AbiAZP42 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 10:56:28 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B9CC06161C
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 07:56:28 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id k17so6209plk.0
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 07:56:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1geGSu+egCHyXH+GEeh4Fh8FJrnDZ8GAZN4GNe7VFSE=;
+        b=fhy0nMADqT0kgtbLAN3m/Y3M7C3QNtDy9otwevxfHRrcoGKtoVTvAaxbuQwrIc759i
+         pyd3tnChhZTRwxCN3i7QbBi3Qa+MyWf/seYQSt8x4nMI/l/4d0ILRcgMbo1sdjtZbAzJ
+         4SG1yVRjIPn7CSYtzz5C20Jj25pBxi/bEes66knLT7EQRx40hkItLm7Zpgg2bqOGy+zw
+         hkkv5IZl8/I15PmZx8DBjV91wcES79CR5/wNc/+y+CyCRWFy+tpE0Yp04CsWyYKYvvso
+         yhjBzvzRdCUw1zqdd2ERTZ2SdybPh1Zvq86K07O8r52qncTUzSxbqyxqVhKDx/kMcJRR
+         fz1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1geGSu+egCHyXH+GEeh4Fh8FJrnDZ8GAZN4GNe7VFSE=;
+        b=zUjP7fIhXmSdbc5WZbb3XQQd5h+MLw0yzmZf3k7tuJ1E4LVST+iObX8zBi+KzXGINT
+         LNellRc+nMKzu7RbY4kWco8aFb4aMNksrgllxK0FhIKfdoLm01HBkpLlGpCr+nhnGUQZ
+         Ur2AUbnksiGOwUDCVW80+P51L9zr8yLbRfALKj2DS2fVNhaC1I8y5wI8LgTBpNLTHwxv
+         ITMo66S6O5oFhYjeXvuVorohknUJKi7DRiIzgpR5W+JdDLWsnBc79jULMok3zGDv3TU/
+         UXdOza5p1ZZQhbPitQzFPx4Cz+6+tFfC8PviURuigZMi7Fr9RfpHvKvYuFxbVDaV48Im
+         VfJg==
+X-Gm-Message-State: AOAM530fd9OMPipveCXa40/FrsujiDqOqY1Cd5S5NX0mfFGaqM+sbOQz
+        6q4NAck+4pSBsd4ylHwVO6+McjnX/1mJT1Ldeus=
+X-Google-Smtp-Source: ABdhPJyUGfQWmNoBUiG8GUU9NfHa+VWhTXiz+FQzCX06V322Z3D9sVI/CKz2T4LLNgnQQd5dEMFIZ+GCLZGWOjlF+7o=
+X-Received: by 2002:a17:902:a5c6:b0:149:c926:7c31 with SMTP id
+ t6-20020a170902a5c600b00149c9267c31mr24236146plq.141.1643212587832; Wed, 26
+ Jan 2022 07:56:27 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Content-Language: en-US
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
+References: <20220123183925.1052919-1-yury.norov@gmail.com>
+ <20220123183925.1052919-28-yury.norov@gmail.com> <Ye6egq/6It3LZs19@smile.fi.intel.com>
+In-Reply-To: <Ye6egq/6It3LZs19@smile.fi.intel.com>
+From:   Yury Norov <yury.norov@gmail.com>
+Date:   Wed, 26 Jan 2022 07:56:16 -0800
+Message-ID: <CAAH8bW-i5C==goN8GoVG70Hivobf1F53vj42VCBwWBHZ8iEcdw@mail.gmail.com>
+Subject: Re: [PATCH 27/54] lib/bitmap: add bitmap_weight_{cmp, eq, gt, ge, lt,
+ le} functions
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
- <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
- <3877516e-3db3-f732-b44f-7fe12b175226@gmx.de>
- <75a10e6f-ade7-01d9-9523-9a1936f8a2cc@suse.de>
- <YfFNhsPr4kS2/LXa@smile.fi.intel.com>
- <df377b35-8913-a8c6-760b-073f462780cc@suse.de>
-From:   Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
-In-Reply-To: <df377b35-8913-a8c6-760b-073f462780cc@suse.de>
-Content-Type: text/plain; charset=UTF-8
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:wLeX3lW85cf04BQA7+bhtz676rHQMTVZ4yZFry1X8quEdLDGNDN
- 80kzr00Fs9Gk7oyOQx3m49TbT83qHKm9jCXlRejPx8sqILNasEeWRYrzBAg04s0HXuNdLAu
- SqK7z87HbjY0Sh6ddxF+xL/xhDTK1x335kBGwuVj2SyzCnDOqua9W8PXmG4yLG21n8ruotj
- AYP/XvyPGa6/7cJsOdViQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:lrySdbHoy2s=:fa2jRWfRaC0uf7ZMaZzVFT
- xlqbQBSc7+Eerzi9kGXMhWjtJyxQ17EO63VknZkTGaB+j4SWSxJfVDBuDefsIl0d/xwjZOqtO
- Nc6DoM7Im4XpjDd+FPDyqJwm006y3WkPqbPqJLhHc9S55QaWL78/sTNuNvYbWKo99sRw1HuCq
- APb+oyT10QK3w5cpEnOGXjEzV3RdnlNmAtqz1zC5Y4RTTsZqmrN732uo8u5KpSn6mjRiMR7NV
- XTasq+WI8fx0g9ip/TuDsOboemx6H8dgh2kzLy8IcANGXijoCWrFo75exsuq/VC2OI4OqwB9z
- ajjgcf5+Ddj+85MttPofixjdpCC8Dme2YVBk1RP4HHSx4mzojM81gsNwgPxglNYqgWKMQcKTP
- FIN2Ei9P6KyM3BPL0V29XTq6JfUFg0B/C1i5JlmfvfG2E0U5SYnMpd7kzYu0OLElvZ5g6fenG
- p8HCDAA+TlKAOqAd5crJdFfV2W+DJ/AbH5oxD3aRhfRqwG/W8L3W79qiiIHNTZczV4hg+Qt2+
- h5kSrHKr+O0lg2pbTDTVRImQ1JNjKP3FV/ew+/sKQhMUpcD8kBvKAhXhGYoiZsiOtPYM5RkOb
- e+m7q7idd7ciOP20QNl2xuvWhifohWTLN3TICeeF2xL0myw8JfA8g+o+ANg20uveTs9x0Oo9k
- N2galMyIMPUzlrWWepiKOXw2d3nGZt3PAy49/hpwVpya3aehtp8m2E6vIbPHlirTN2WtIKQuD
- ApeSOQzY7fnCNWNthnHaBjZc8dczGXSBXyzleh/Ie60a9WnJhU620pzW1QmQJKO669U1AocgU
- JZAdVLN0rcrkh0lJFLFOHVLvkzBCC3I2kEM8N+/ZImfMIwODAmdlkOgdkdQCJJatzG2GZOtU/
- TGNm1j87iWiDVfRL29ohBSiahVpWrd6zVF/I/NCOQA7ZkHVbPCNuhZ6EuaBfALmuTfiFHNlfx
- VRdJUWNFzhyEkENP58ilTZXLIGtSTZL3aOAJs/O60ADzGXoQ2Y+aEiBLqEnXfTmgJnkZnISqP
- 79TnNQEsmlXMMTHFM2xlfAYZSEMk0ni38bEEc+19fYKt00kfqkIzWn7Geb/cqE0qiSW1mnbIn
- D1UQB+8wjWo/EA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/26/22 16:02, Thomas Zimmermann wrote:
-> Hi
+On Mon, Jan 24, 2022 at 4:42 AM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
 >
-> Am 26.01.22 um 14:32 schrieb Andy Shevchenko:
->> On Wed, Jan 26, 2022 at 12:41:41PM +0100, Thomas Zimmermann wrote:
->>> Am 26.01.22 um 11:59 schrieb Helge Deller:
->>
->> ...
->>
->>
->>> It's always for the same reason: the hw is old and devs have moved on.
->>
->> It's pity to have a working system with an old hardware that no one in
->> the kernel community gives a shit about because simply they are not in
->> the same boat. Try to be on the people's position...
+> On Sun, Jan 23, 2022 at 10:38:58AM -0800, Yury Norov wrote:
+> > Many kernel users use bitmap_weight() to compare the result against
+> > some number or expression:
+> >
+> >       if (bitmap_weight(...) > 1)
+> >               do_something();
+> >
+> > It works OK, but may be significantly improved for large bitmaps: if
+> > first few words count set bits to a number greater than given, we can
+> > stop counting and immediately return.
+> >
+> > The same idea would work in other direction: if we know that the number
+> > of set bits that we counted so far is small enough, so that it would be
+> > smaller than required number even if all bits of the rest of the bitmap
+> > are set, we can stop counting earlier.
+> >
+> > This patch adds new bitmap_weight_cmp() as suggested by Micha=C5=82 Mir=
+os=C5=82aw
+> > and a family of eq, gt, ge, lt and le wrappers to allow this optimizati=
+on.
 >
-> Yes, I do care about old hardware.
-
-Yes, I know. I saw various articles about it.
-
-> I made helpers for converting fbdev drivers to DRM. I even made the
-> initial commits for those drivers where I could find the HW on Ebay. [1]=
-> [1] https://gitlab.freedesktop.org/tzimmermann/linux/-/tree/fbconv-plus-=
-drivers
-
-Just out of curiosity, does the tgui driver you patched there
-is now supported by DRM? I couldn't find it (just the tridentfb fbdev driv=
-er),
-so I assume it's somehow handled by simpledrm instead?
-
-> I made sure that every single of them at least gets fbcon onto the
-> screen. So interested devs could start immediately. Yet, no one ever
-> showed up to convert even a single driver.
-Both Geert wrote about that he was trying to convert a driver. The same
-is true for Sven where he came up with a prelimarary visualizefx driver...
-Both had issues which currently prevent that those drivers get finished.
-
-> As it stands, 90s PCI hardware is currently supported by DRM's
-> simpledrm as long as the device has VESA.
-
-Good. Some of the drivers in fbdev are for non-x86 architectures
-and don't have a VESA BIOS. Is is possible that simpledrm could (theoretic=
-ally)
-support those too?
-
-> The performance is at least usable on AthlonXP-era computers. Now the
-> owners of these devices at least have a chance of using modern
-> graphics userspace.
-Yes.
-
-> That userspace is important: graphics drivers don't live in a vacuum.
-> There's no point in having one if it requires extra support from all
-> other components. And there's more:
+> lt, and le
 >
-> =C2=A0* Occasionally, fbdev gets in the way of DRM. Just this week, we f=
-ixed a related bug. [2]
+> > The following patches apply new functions where appropriate.
 >
-> =C2=A0* Fbdev's mmap semantics is the reason why it's hard to do fast in=
- DRM.
->
-> =C2=A0* Maintaining both stacks, DRM and fbdev, adds work to kernel, use=
-rspace and distro devs.
->
-> Therefore, anything we do that keeps fbdev alive is a step backwards and=
- a burden on the overall Linux graphics community.
+> What I missed in the above message is the rough statistics like some of t=
+hem
+> are used more often, some less, and some, perhaps, just added for the sak=
+e of
+> symmetry (the latter is what would be important to see if there are APIs =
+which
+> have no users at all).
 
-That's understood and I don't disagree.
-The earlier drivers are converted to DRM the better.
-I probably don't even have any issues with dropping fbdev & drivers for th=
-e
-x86, ARM64, s390x & ppc64 platforms - I think many older cards aren't used=
- either
-used (anymore),
-or your simpledrm may cover the most common cards.
-I think the patches we currently jointly develop to disable fbcon accelera=
-tion
-is exactly going into this direction.
+These are my grep numbers. Some lines are declarations and comments, so min=
+us
+6 or 8 for each number, but all new functions have actual users.
 
-The problems I see are mostly on non-x86 architectures or corner-case usag=
-es
-like embedded devices or special machines. They may be oldish, but still b=
-eing used.
-Those machines would completely loose their console without fbdev.
-
-> Please excuse my ranting, but fbdev proponents seem to be ignorant to
-> all these points. It's apparently all about 'my console is slow'.
-
-Your ranting is fair, but I wouldn't say I'm ignorant to your arguments.
-Of course performance is relevant, or would you exchange your car which
-today is capable to drive 100 mph with another car which only
-drives a maximum 10 mph?  (Yes, that's around the factor of speed decrease=
- I see).
-Or even worse: suddenly not being allowed/able to drive your car at all?
-
-Helge
+$ git grep weight_eq|wc -l
+35
+$ git grep weight_gt|wc -l
+20
+$ git grep weight_ge|wc -l
+25
+$ git grep weight_lt|wc -l
+14
+$ git grep weight_le|wc -l
+18
