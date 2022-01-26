@@ -2,112 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F7AC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2EB0C636D5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 15:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242946AbiAZPfb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 10:35:31 -0500
-Received: from mail-ua1-f44.google.com ([209.85.222.44]:33417 "EHLO
-        mail-ua1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242917AbiAZPf1 (ORCPT
+        id S242936AbiAZPfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 10:35:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242912AbiAZPf0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 10:35:27 -0500
-Received: by mail-ua1-f44.google.com with SMTP id u6so43640160uaq.0;
-        Wed, 26 Jan 2022 07:35:27 -0800 (PST)
+        Wed, 26 Jan 2022 10:35:26 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E49FC061749
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 07:35:26 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id h21so8909695wrb.8
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 07:35:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=tj0guoNH4q4novDmtBoOtGAutOOdll1d2XmoKB6eeJQ=;
+        b=KLDGbuNMN9AsrespV+rifmAQkBzvZnJJSTQRykm8Ve53hmVPqybnoLNAuP5qZ0+pMi
+         l8TgXuBqYOTW+Kcn8Ug6O/JBDHeiOmZ1STSMk8uLpWNMP/IEoea9IpUlj41BhVOKB2ap
+         tDsUpRwhvERDpDD6Oj+8MJtSG6+0Pxzs1xKqQdg0KcDxfSh4yeasNF7mEVrb5KSKs+jW
+         Ag1eYx6in8ux1Frg6+JlhYd3ZP707cWCoc1eUi7mUIAGWdZMK04VE6v+SLyrrh3mv5hd
+         kzRqv5YwA9VyrH43ttV+O6+k4gsr058EB92IpujSfJeS3oWZmPbjYwHVF7AKUsr5rnhP
+         Cz7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f+VI0Hfc96C23EZYLDB91lCJyEYrscQJm5YA9s3qTNM=;
-        b=UZ6mm/764eD8LeDwA5AeGHUcAP2Ecnw/Q1iawK07ctkqwdnOVnT+e6PlXWpswWaOj2
-         TFz9IBUjDtE4wvkk9HT7IYrJKeDNaXc6mc5sjSD078TnTIeUL4amNpVB7gO3D3JcE3by
-         Oq5FuD5BgYWhQO110xQM4Yws0/cxdlPiPeyjobZrXKzcJW6A/r+yt9dFpvtmj4WdD8m6
-         SPfx7QaD6OpZWnvqssSb2+v5XhdvFx2y/NFsh/MOwG7/Xl8TynzVvrWxG5ZxlB6XdhwM
-         tXz6JFXmYTyCI/5JLDU66DPqZNOXeFzrA9UeuEP3BlFiBkyyoifsQC0XcvwgYdQmjUXp
-         s4pw==
-X-Gm-Message-State: AOAM531Pn4Uay1I7T+QMGkmRha/PARAHS231DZi3ADHmE6Nc5ktOWkvF
-        pQD9EPX3Gx+oSyQRIcrTfO7wDakkKLcnidQA
-X-Google-Smtp-Source: ABdhPJzEC9aXeiP92DGXdnI7dGQ8nW3w9cruF2taTCmDI7jEUnW9PquUtrYT95E71uKw7MQT2+hbuA==
-X-Received: by 2002:a67:ec82:: with SMTP id h2mr10506948vsp.53.1643211326608;
-        Wed, 26 Jan 2022 07:35:26 -0800 (PST)
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com. [209.85.222.54])
-        by smtp.gmail.com with ESMTPSA id e18sm1292620vsb.29.2022.01.26.07.35.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Jan 2022 07:35:26 -0800 (PST)
-Received: by mail-ua1-f54.google.com with SMTP id b37so25873327uad.12;
-        Wed, 26 Jan 2022 07:35:25 -0800 (PST)
-X-Received: by 2002:a05:6102:a04:: with SMTP id t4mr4333511vsa.77.1643211325726;
- Wed, 26 Jan 2022 07:35:25 -0800 (PST)
-MIME-Version: 1.0
-References: <20220112205205.4082026-1-nikita.yoush@cogentembedded.com>
- <CAMuHMdU0h+VaAbwOqJE5YRK2f69H8JrVgtXsoYNwvNgGJKH7mQ@mail.gmail.com> <a30c55ad-ec14-6cb8-0384-b07b79212351@cogentembedded.com>
-In-Reply-To: <a30c55ad-ec14-6cb8-0384-b07b79212351@cogentembedded.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 26 Jan 2022 16:35:14 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWWu=be9pxh3QQSy-xnFjOs60JZt9mr-Q=rkQnBKFKMjQ@mail.gmail.com>
-Message-ID: <CAMuHMdWWu=be9pxh3QQSy-xnFjOs60JZt9mr-Q=rkQnBKFKMjQ@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: renesas: ulcb-kf: add 9-asix sensor device
-To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=tj0guoNH4q4novDmtBoOtGAutOOdll1d2XmoKB6eeJQ=;
+        b=jgFDOYedFEgqlaaEbaPmivs4fWFgdTQ/3IDkFUk4MUV2y/fmssDE1Wbc2t51ZunRbY
+         niwi3f0aE2+uwE6oPFGKcpNq6Jvfz8RgoQ00pgvjcHB8hMQ82hz5La+1QAp/nMeR8XJ5
+         Nub8tsUcr1LQ+esxS8ecOMeMSNl99y/CZHZsPT0Avc8C93VQ3vgBZZ/M1V3p8BL7RIYk
+         bo6nz7/ZIp1l7aWF2gs9w7C/QLfkibBHkMRkmtfuU45OcbTXnk2XzR/r7fmTRfNhbzdh
+         YX0HAgWMJKeS80qnbJoTb93v1sBOFv/SfN4FCPjF6foTBzIU9xDhoEzttHsJ2VGskSCR
+         OEkQ==
+X-Gm-Message-State: AOAM530aLDhmaHJAvVoASDOpqgdM/ZeorpuQ+bMAf8qAilIemZGHvB2Q
+        Dz/jjY/z0PsYklmEPXz/Dn8koQ==
+X-Google-Smtp-Source: ABdhPJxDVe28gY+kPTckZyTnR7HQC2FGkOhdqzuq6gh4Nnq6nenw4euktvSatUsoFs70CM1rv2AJTA==
+X-Received: by 2002:a05:6000:18a2:: with SMTP id b2mr14030363wri.282.1643211324822;
+        Wed, 26 Jan 2022 07:35:24 -0800 (PST)
+Received: from mkorpershoek-XPS-13-9370.. (laubervilliers-656-1-151-143.w92-154.abo.wanadoo.fr. [92.154.18.143])
+        by smtp.gmail.com with ESMTPSA id n10sm3360958wmr.25.2022.01.26.07.35.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 07:35:24 -0800 (PST)
+From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marco Felsch <m.felsch@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Fengping Yu <fengping.yu@mediatek.com>,
+        Yingjoe Chen <yingjoe.chen@mediatek.com>
+Cc:     Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v19 1/3] dt-bindings: input: Add bindings for Mediatek matrix keypad
+Date:   Wed, 26 Jan 2022 16:35:17 +0100
+Message-Id: <20220126153519.3637496-2-mkorpershoek@baylibre.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220126153519.3637496-1-mkorpershoek@baylibre.com>
+References: <20220126153519.3637496-1-mkorpershoek@baylibre.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nikita,
+From: "fengping.yu" <fengping.yu@mediatek.com>
 
-On Wed, Jan 26, 2022 at 4:28 PM Nikita Yushchenko
-<nikita.yoush@cogentembedded.com> wrote:
-> >> Interrupt definition is not added yet, because the interrupt lines of
-> >> lsm9ds0 are pulled to VCC on the board, which implies need for
-> >> active-low configuration. But st_sensors drivers currently can't work
-> >> with active-low interrupts on this chip.
-> >
-> > That's unfortunate, as DT describes hardware, not limitations of the
-> > software stack.
->
-> Unfortunately, if interrupt definition is added, driver does wrong things and causes board hang.
+This patch add devicetree bindings for Mediatek matrix keypad driver.
 
-OK.
+Signed-off-by: fengping.yu <fengping.yu@mediatek.com>
+Reviewed-by: Marco Felsch <m.felsch@pengutronix.de>
+Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+---
+ .../input/mediatek,mt6779-keypad.yaml         | 80 +++++++++++++++++++
+ 1 file changed, 80 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml
 
-> >> +                               vdd-supply = <&accel_3v3>;
-> >> +                               vddio-supply = <&accel_3v3>;
-> >
-> > According to the bindings, the supplies are not required, so you can
-> > leave them out? Or are the bindings wrong?
->
-> If supplies are not defined, warning messages about dummy regulator are logged.
+diff --git a/Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml b/Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml
+new file mode 100644
+index 000000000000..2c76029224a0
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml
+@@ -0,0 +1,80 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/input/mediatek,mt6779-keypad.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek's Keypad Controller device tree bindings
++
++maintainers:
++  - Fengping Yu <fengping.yu@mediatek.com>
++
++allOf:
++  - $ref: "/schemas/input/matrix-keymap.yaml#"
++
++description: |
++  Mediatek's Keypad controller is used to interface a SoC with a matrix-type
++  keypad device. The keypad controller supports multiple row and column lines.
++  A key can be placed at each intersection of a unique row and a unique column.
++  The keypad controller can sense a key-press and key-release and report the
++  event using a interrupt to the cpu.
++
++properties:
++  compatible:
++    oneOf:
++      - const: mediatek,mt6779-keypad
++      - items:
++          - enum:
++            - mediatek,mt6873-keypad
++          - const: mediatek,mt6779-keypad
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    description: Names of the clocks listed in clocks property in the same order
++    items:
++       - const: kpd
++
++  wakeup-source:
++    description: use any event on keypad as wakeup event
++    type: boolean
++
++  mediatek,debounce-us:
++    description: |
++      Debounce interval in microseconds, if not specified, the default
++      value is 16000
++    maximum: 256000
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/input/input.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        kp@10010000 {
++          compatible = "mediatek,mt6779-keypad";
++          reg = <0 0x10010000 0 0x1000>;
++          interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_FALLING>;
++          clocks = <&clk26m>;
++          clock-names = "kpd";
++        };
++    };
+-- 
+2.32.0
 
-OK.
-
-> > (The bindings also say "interrupts: maxItems 2", while the "interrupts:
-> >   description" says up to three interrupts, doh...)
->
-> Chip has 3 interrupt outputs. On KF board, all those are ANDed together and result connected to SoC's
-> gpio that is expected to be used as a shared active-low interrupt. Driver currently claims that this
-> chip does not support active-low interrupts. Per datasheet, this is not true. But driver's way to set up
-> interrupt registers does not scale to the case when interrupts have to be configured by different bits
-> in several registers, that part of the driver has to be somehow rewritten. I guess nobody has ever tried
-> to make these drivers (st_*) to drive a compound device (accel+gyro) with interrupts.
->
-> At the same time, the device is perfectly useful without interrupts, and that is how it is enabled in
-> the vendor BSP.
-
-OK, will queue in renesas-devel for v5.18, with the low-hanging fruits
-(node names, order) fixed.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
