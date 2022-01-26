@@ -2,164 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF0EC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 18:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 443D5C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 18:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244139AbiAZSMO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 13:12:14 -0500
-Received: from mga02.intel.com ([134.134.136.20]:21554 "EHLO mga02.intel.com"
+        id S243796AbiAZSNd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 13:13:33 -0500
+Received: from mga04.intel.com ([192.55.52.120]:35276 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242522AbiAZSML (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 13:12:11 -0500
+        id S235901AbiAZSNc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 13:13:32 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643220731; x=1674756731;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=az5Wt9xCsorUJWjt8307al+UFuZjWk8jDEINqzSSdKo=;
-  b=Hzh/C7q0DJC//H0cozNhIrru6tnShP4Pm7TJXxO85lADGfPPuw/xLMlV
-   ZeWxFw70l5c1q/29uKaYQQvC7W2HKSU0lcDtWorBEaL2Pjf2gqXWzJ97g
-   O0zkO8DzuRSCwSrKQL+/BgeYak1c/cslgENVVUAPDCUli1IqevSl10y45
-   yXsxzLjay4ntk1EHEH7dlPYFPzlbfi10JFwxL6AfE0D2PMvdP05remjhs
-   Ls7+VpKLwclBXEVDFfw9+AuDyVkQllVEKr792YWUElBOG1bJj63QL7XXv
-   uc2IwU6PeA6wVGGtfvudB/885UuhU0aegTSG7Jbf5Rwqb3TkRR9dyiwxY
+  t=1643220812; x=1674756812;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=CFhBhSP843Q8YZaso+hCoDq89yEO5QSnWt7DycdSiFg=;
+  b=F2/rqSuwUatGk+C2K40PRuixHk0srkaiOEY77XUiB0nAcevpbdsspjHY
+   8iajk2j2QaZDHduhA7Fk53nU8Dyd4/2vFnfbb6Rx5mhO6M6AQlviK0x4N
+   JEuI7ZzRk/RV1ru/kPLZtNP/3wljKvE3dZB5h6E8IQS5lk4v8DsGq4r3m
+   bEhh6dWJMtxQy9pIxqp907F6BQVIA/hR2FCP5TKNVA6NvRo6/GSqXwwwe
+   RX1wSutb4lzCcJlgyhJ4g968ViAfARodBv1IrJFao7SNZi+9wztXvUs4C
+   J8l4bSiPLDaP9M/zEQZlYdhXFCxrBiojsr4vctjE0ZD1A5W69EvD4jLqx
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="233989449"
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="245447640"
 X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="233989449"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 10:12:11 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="245447640"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 10:13:31 -0800
 X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="479968611"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 26 Jan 2022 10:12:09 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCmm8-000LUW-Qb; Wed, 26 Jan 2022 18:12:08 +0000
-Date:   Thu, 27 Jan 2022 02:11:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jason Ekstrand <jason@jlekstrand.net>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Subject: [mlankhorst:xe 73/165] drivers/gpu/drm/xe/xe_lrc.c:699:21: error:
- format '%lu' expects argument of type 'long unsigned int', but argument 2
- has type 'size_t' {aka 'unsigned int'}
-Message-ID: <202201270258.G5cjI9fM-lkp@intel.com>
+   d="scan'208";a="674431515"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 10:13:29 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nCmmM-00EhmW-Rw;
+        Wed, 26 Jan 2022 20:12:22 +0200
+Date:   Wed, 26 Jan 2022 20:12:22 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        kernel test robot <lkp@intel.com>,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: Re: [PATCH v3 1/3] string: Make stpcpy() possible to use
+Message-ID: <YfGPBi2VWlRHqxXe@smile.fi.intel.com>
+References: <20220126141917.75399-1-andriy.shevchenko@linux.intel.com>
+ <CAKwvOdkBAe4qMdFgDFWNLHMsJrW+PBwa7-hAL5T9fReQqNiF7g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKwvOdkBAe4qMdFgDFWNLHMsJrW+PBwa7-hAL5T9fReQqNiF7g@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://people.freedesktop.org/~mlankhorst/linux xe
-head:   4bc3039b4403c76a13d58f7ac1f7c07dca6f88d8
-commit: 042df60b091fb02d7761297f9db6cfdaf1be7be1 [73/165] xe/lrc: Improve the ring space check
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220127/202201270258.G5cjI9fM-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        git remote add mlankhorst git://people.freedesktop.org/~mlankhorst/linux
-        git fetch --no-tags mlankhorst xe
-        git checkout 042df60b091fb02d7761297f9db6cfdaf1be7be1
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Wed, Jan 26, 2022 at 09:49:38AM -0800, Nick Desaulniers wrote:
+> On Wed, Jan 26, 2022 at 6:19 AM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> >
+> > It is a good rule to avoid submitting code without users.
+> > Currently the stpcpy() is unusable due to missed declaration.
+> > Any attempts to use it will bring something like:
+> >
+> >   error: implicit declaration of function ‘stpcpy’ [-Werror=implicit-function-declaration]
+> >
+> > Move declaration to the header and guard it as other string functions.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+...
 
-All errors (new ones prefixed by >>):
+> Recall the discussion from Kees:
+> https://lore.kernel.org/lkml/CAK7LNAQXo5-5W6hvNMEVPBPf3tRWaf-pQdSR-0OHyi4RCGhjsQ@mail.gmail.com/
+> and
+> https://lore.kernel.org/lkml/202008150921.B70721A359@keescook/
 
-   In file included from drivers/gpu/drm/xe/xe_lrc.c:9:
-   drivers/gpu/drm/xe/xe_lrc.c: In function 'set_context_control':
-   drivers/gpu/drm/xe/xe_lrc.c:557:27: error: 'CTX_CTRL_INHIBIT_SYN_CTX_SWITCH' undeclared (first use in this function)
-     557 |  ctl = _MASKED_BIT_ENABLE(CTX_CTRL_INHIBIT_SYN_CTX_SWITCH);
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/xe/../i915/i915_reg.h:189:41: note: in definition of macro '_MASKED_BIT_ENABLE'
-     189 | #define _MASKED_BIT_ENABLE(a) ({ typeof(a) _a = (a); _MASKED_FIELD(_a, _a); })
-         |                                         ^
-   drivers/gpu/drm/xe/xe_lrc.c:557:27: note: each undeclared identifier is reported only once for each function it appears in
-     557 |  ctl = _MASKED_BIT_ENABLE(CTX_CTRL_INHIBIT_SYN_CTX_SWITCH);
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/xe/../i915/i915_reg.h:189:41: note: in definition of macro '_MASKED_BIT_ENABLE'
-     189 | #define _MASKED_BIT_ENABLE(a) ({ typeof(a) _a = (a); _MASKED_FIELD(_a, _a); })
-         |                                         ^
-   drivers/gpu/drm/xe/xe_lrc.c:558:29: error: 'CTX_CTRL_ENGINE_CTX_RESTORE_INHIBIT' undeclared (first use in this function)
-     558 |  ctl |= _MASKED_BIT_DISABLE(CTX_CTRL_ENGINE_CTX_RESTORE_INHIBIT);
-         |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/xe/../i915/i915_reg.h:181:27: note: in definition of macro '_MASKED_FIELD'
-     181 |  if (__builtin_constant_p(mask))        \
-         |                           ^~~~
-   drivers/gpu/drm/xe/xe_lrc.c:558:9: note: in expansion of macro '_MASKED_BIT_DISABLE'
-     558 |  ctl |= _MASKED_BIT_DISABLE(CTX_CTRL_ENGINE_CTX_RESTORE_INHIBIT);
-         |         ^~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/xe/xe_lrc.c:562:30: error: 'CTX_CTRL_ENGINE_CTX_SAVE_INHIBIT' undeclared (first use in this function)
-     562 |   ctl |= _MASKED_BIT_DISABLE(CTX_CTRL_ENGINE_CTX_SAVE_INHIBIT |
-         |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/xe/../i915/i915_reg.h:181:27: note: in definition of macro '_MASKED_FIELD'
-     181 |  if (__builtin_constant_p(mask))        \
-         |                           ^~~~
-   drivers/gpu/drm/xe/xe_lrc.c:562:10: note: in expansion of macro '_MASKED_BIT_DISABLE'
-     562 |   ctl |= _MASKED_BIT_DISABLE(CTX_CTRL_ENGINE_CTX_SAVE_INHIBIT |
-         |          ^~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/xe/xe_lrc.c:563:9: error: 'CTX_CTRL_RS_CTX_ENABLE' undeclared (first use in this function)
-     563 |         CTX_CTRL_RS_CTX_ENABLE);
-         |         ^~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/xe/../i915/i915_reg.h:181:27: note: in definition of macro '_MASKED_FIELD'
-     181 |  if (__builtin_constant_p(mask))        \
-         |                           ^~~~
-   drivers/gpu/drm/xe/xe_lrc.c:562:10: note: in expansion of macro '_MASKED_BIT_DISABLE'
-     562 |   ctl |= _MASKED_BIT_DISABLE(CTX_CTRL_ENGINE_CTX_SAVE_INHIBIT |
-         |          ^~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/xe/xe_lrc.c: In function 'xe_lrc_init':
-   drivers/gpu/drm/xe/xe_lrc.c:654:23: error: implicit declaration of function 'RING_CTL_SIZE' [-Werror=implicit-function-declaration]
-     654 |  regs[CTX_RING_CTL] = RING_CTL_SIZE(lrc->ring_size) | RING_VALID;
-         |                       ^~~~~~~~~~~~~
-   drivers/gpu/drm/xe/xe_lrc.c:654:55: error: 'RING_VALID' undeclared (first use in this function)
-     654 |  regs[CTX_RING_CTL] = RING_CTL_SIZE(lrc->ring_size) | RING_VALID;
-         |                                                       ^~~~~~~~~~
-   In file included from arch/x86/include/asm/bug.h:84,
-                    from include/linux/bug.h:5,
-                    from include/drm/drm_mm.h:40,
-                    from drivers/gpu/drm/xe/xe_bo.h:10,
-                    from drivers/gpu/drm/xe/xe_lrc.h:9,
-                    from drivers/gpu/drm/xe/xe_lrc.c:7:
-   drivers/gpu/drm/xe/xe_lrc.c: In function 'xe_lrc_assert_ring_space':
->> drivers/gpu/drm/xe/xe_lrc.c:699:21: error: format '%lu' expects argument of type 'long unsigned int', but argument 2 has type 'size_t' {aka 'unsigned int'} [-Werror=format=]
-     699 |  WARN(size > space, "Insufficient ring space: %lu > %u", size, space);
-         |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~
-         |                                                          |
-         |                                                          size_t {aka unsigned int}
-   include/asm-generic/bug.h:99:17: note: in definition of macro '__WARN_printf'
-      99 |   __warn_printk(arg);     \
-         |                 ^~~
-   drivers/gpu/drm/xe/xe_lrc.c:699:2: note: in expansion of macro 'WARN'
-     699 |  WARN(size > space, "Insufficient ring space: %lu > %u", size, space);
-         |  ^~~~
-   drivers/gpu/drm/xe/xe_lrc.c:699:49: note: format string is defined here
-     699 |  WARN(size > space, "Insufficient ring space: %lu > %u", size, space);
-         |                                               ~~^
-         |                                                 |
-         |                                                 long unsigned int
-         |                                               %u
-   cc1: all warnings being treated as errors
+For the record :-)
+https://lore.kernel.org/lkml/CAHp75VfniSw3AFTyyDk2OoAChGx7S6wF7sZKpJXNHmk97BoRXA@mail.gmail.com/
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-vim +699 drivers/gpu/drm/xe/xe_lrc.c
-
-   692	
-   693	static void xe_lrc_assert_ring_space(struct xe_lrc *lrc, size_t size)
-   694	{
-   695	#if XE_EXTRA_DEBUG
-   696		uint32_t space = xe_lrc_ring_space(lrc);
-   697	
-   698		BUG_ON(size > lrc->ring_size);
- > 699		WARN(size > space, "Insufficient ring space: %lu > %u", size, space);
-   700	#endif
-   701	}
-   702	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
