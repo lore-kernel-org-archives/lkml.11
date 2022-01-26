@@ -2,136 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8629EC63684
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:13:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1979DC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 10:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239729AbiAZKNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 05:13:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
+        id S239736AbiAZKOx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 05:14:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239718AbiAZKN2 (ORCPT
+        with ESMTP id S229726AbiAZKOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 05:13:28 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46738C06161C;
-        Wed, 26 Jan 2022 02:13:28 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id m11so68147256edi.13;
-        Wed, 26 Jan 2022 02:13:28 -0800 (PST)
+        Wed, 26 Jan 2022 05:14:51 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEC0C061747
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:14:50 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id z19so25380302lfq.13
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 02:14:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7of4j6tXJsQTj96IqMsKqWsSKbGVqn3ZKiSJTHPl75E=;
-        b=QHZGNvAuvGw7dVgE+zNRdndvuugGnChjIbsMvjjz/ITotAgWGyNwZuN48EXCo8az5D
-         RWQMdAopz5nv/RRobC4VoRcuLtfo/RrKWSAUysAnG5W/5/9h/OvMXETCBuAkEbn4m9Vh
-         ZRKNjulT52tFSx8jl00TJVZCKzHeKwvhagWm2XuDHHRI67mQUHyXyGjJwC3tgnpudBHK
-         CUPg3gPeW91RE8SwaJcaX/cvKSHU6keIf7UPLJbzDiBXtJyAMK7gupAvOKDHHEKJh+F3
-         9WpCas3I2OiV7CjbJWwV6SnsGTJS7yhn6+3ULU7z0WtzzLGHTl8R51wyt+Vu1KuStZpj
-         M64Q==
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=oT7VXAYr1RlKcC98jWVV1AYCja1UpLRPiR4q3wejxVA=;
+        b=NvRuai8lXax1U7sBNU4VPS/k14T3EaNJRElshLx90nevrt12JEU4w7LNjtgaGeHU/U
+         7If6Ltrt2sE4Umo+ltVazzcWnstLrrUR6Qk3X0glvqP9W3nJdDvZUjD6H1FBM/bHh+CR
+         0tGbiigcM7H9yKqJFxQlapVNQgiL9RBGzcW69ZoHx0EHAIFZxvJfbb1t1wFEz38pm6JI
+         qRLKHLYs0Nt3xKcs27kEXlm1bJeWeM5ZVj4bIveXRIIkLnpQjaGTa/cL489ujko/V8gi
+         ANQmeKzNzp31vXxfxzcssYFcSsFaXiht+4wIBAZde9Yqovz5jF6A1lPFYfP8tVpv3MzU
+         fQJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7of4j6tXJsQTj96IqMsKqWsSKbGVqn3ZKiSJTHPl75E=;
-        b=q1t0IviRPdFarPCBKA6U2xj6mBJiT6/hkdmgmCzxQKFsawbX/M0vG0rjTq5HD+I2W+
-         ia3c+IpAySABXPFubpGx+oRXKZ7oJwu8t6nDNNeUl2SQDUN3SPVS4hQ0sRJDeENsoMN3
-         K0iLU32WBYSU0CJ3rkrUFFZ+F5QD1OOAtn7cFdtRHUxQ4dhYJfWVJIn6i6av178vpWxo
-         yfzchJEsO8ykrCFMF37LTtfFY8NVyVjicfBZ18oAniEwf7hoASBlG6jYtzK22Liqa6Yk
-         nv0BCb+by6r3zrD5QCEBRxXl9G+IqIuOghodF32XToMubmldX5p41Q85KouMbdHaUKkU
-         yeyA==
-X-Gm-Message-State: AOAM531yvUun8sq+fjOqHIVTWroyMwgHzkm38qVeJCJ0zbcAnyVUARI4
-        AiZR8LwIuRlYeFrdPq2J9HQOwRkm/RTSDHbhaNI=
-X-Google-Smtp-Source: ABdhPJynLKvQGv/H0FG+uuXI+OlMGiphzh5iPLeSuydUEWE4P8tlRcmMs/osAZq4tj+XuWR5dY63TLHMcK+DIJhiiao=
-X-Received: by 2002:a05:6402:35d5:: with SMTP id z21mr17032960edc.29.1643192006805;
- Wed, 26 Jan 2022 02:13:26 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=oT7VXAYr1RlKcC98jWVV1AYCja1UpLRPiR4q3wejxVA=;
+        b=eQ6HZh//O9qu3dNJex69xhkRn/ZWjnAF+xUONMYZE/TWgBUEjTPBaxHvGSii3xRR5u
+         aJtYvd02MESWFtcm6AvAKlcBbI8LpVoS9/ykun5V0SYIiWPskkgzCaUlwHP3wSM5V3KU
+         askLuZFhOeXV19hPKRigZ6YDNxy+Ja2K0bD/R9WPcQ0MemwaX+rzZBguN3207kADxnL1
+         DaMeHuhSo+jOADfVCZueOarBFAYh0M54f2mmXtDErfz/dvBxGH6CiBpY8lNKrGvLblCX
+         kxA2dXHeBm1SQKPKhw8IWDcqxsr81Y+nshEa4JpwUA8vK3FB3kwbzslv7P/P0XS9lapD
+         KL0w==
+X-Gm-Message-State: AOAM530P+10e6dBPSB9JpVeGZJ6D8MV2lH1uV06PkWukBK61SMXB5lh5
+        Cf3W2I59wBMk4C0rvImwgY3etg==
+X-Google-Smtp-Source: ABdhPJyfKp3pZx4gkqPihioKFMszACC2nq5auF0qwUCkwVvR4ZEvusm7VaGL+LurbX6E5VROm45fjw==
+X-Received: by 2002:ac2:596a:: with SMTP id h10mr14507077lfp.528.1643192089053;
+        Wed, 26 Jan 2022 02:14:49 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id h13sm1351906lfv.100.2022.01.26.02.14.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 02:14:48 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Madalin Bucur <madalin.bucur@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shaohui Xie <Shaohui.Xie@freescale.com>,
+        Scott Wood <scottwood@freescale.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/5] dt-bindings: net: xgmac_mdio: Remove unsupported "bus-frequency"
+Date:   Wed, 26 Jan 2022 11:14:28 +0100
+Message-Id: <20220126101432.822818-2-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220126101432.822818-1-tobias@waldekranz.com>
+References: <20220126101432.822818-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-References: <20220126093951.1470898-1-lucas.demarchi@intel.com> <20220126093951.1470898-10-lucas.demarchi@intel.com>
-In-Reply-To: <20220126093951.1470898-10-lucas.demarchi@intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 26 Jan 2022 12:12:50 +0200
-Message-ID: <CAHp75Vd+TmShx==d_JHZUu0Q-9X7CmZEOFdKnSrcRKs81Gxn3g@mail.gmail.com>
-Subject: Re: [PATCH v2 09/11] drm: Convert open-coded yes/no strings to yesno()
-To:     Lucas De Marchi <lucas.demarchi@intel.com>
-Cc:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        linux-security-module@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "David S. Miller" <davem@davemloft.net>,
-        Emma Anholt <emma@anholt.net>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Leo Li <sunpeng.li@amd.com>, Petr Mladek <pmladek@suse.com>,
-        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vishal Kulkarni <vishal@chelsio.com>
-Content-Type: text/plain; charset="UTF-8"
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 11:39 AM Lucas De Marchi
-<lucas.demarchi@intel.com> wrote:
->
-> linux/string_helpers.h provides a helper to return "yes"/"no" strings.
-> Replace the open coded versions with str_yes_no(). The places were
-> identified with the following semantic patch:
->
->         @@
->         expression b;
->         @@
->
->         - b ? "yes" : "no"
->         + str_yes_no(b)
->
-> Then the includes were added, so we include-what-we-use, and parenthesis
-> adjusted in drivers/gpu/drm/v3d/v3d_debugfs.c. After the conversion we
-> still see the same binary sizes:
->
->    text    data     bss     dec     hex filename
->   51149    3295     212   54656    d580 virtio/virtio-gpu.ko.old
->   51149    3295     212   54656    d580 virtio/virtio-gpu.ko
-> 1441491   60340     800 1502631  16eda7 radeon/radeon.ko.old
-> 1441491   60340     800 1502631  16eda7 radeon/radeon.ko
-> 6125369  328538   34000 6487907  62ff63 amd/amdgpu/amdgpu.ko.old
-> 6125369  328538   34000 6487907  62ff63 amd/amdgpu/amdgpu.ko
->  411986   10490    6176  428652   68a6c drm.ko.old
->  411986   10490    6176  428652   68a6c drm.ko
->   98129    1636     264  100029   186bd dp/drm_dp_helper.ko.old
->   98129    1636     264  100029   186bd dp/drm_dp_helper.ko
-> 1973432  109640    2352 2085424  1fd230 nouveau/nouveau.ko.old
-> 1973432  109640    2352 2085424  1fd230 nouveau/nouveau.ko
+This property has never been supported by the driver. The kernel has
+settled on "clock-frequency" as the standard name for this binding, so
+once that is supported we will document that instead.
 
-This probably won't change for modules, but if you compile in the
-linker may try to optimize it. Would be nice to see the old-new for
-`make allyesconfig` or equivalent.
+Fixes: 7f93c9d90f4d ("power/fsl: add MDIO dt binding for FMan")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
+ Documentation/devicetree/bindings/net/fsl-fman.txt | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-...
-
->         seq_printf(m, "\tDP branch device present: %s\n",
-> -                  branch_device ? "yes" : "no");
-> +                  str_yes_no(branch_device));
-
-Can it be now on one line? Same Q for all similar cases in the entire series.
-
+diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
+index 020337f3c05f..cd5288fb4318 100644
+--- a/Documentation/devicetree/bindings/net/fsl-fman.txt
++++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
+@@ -388,15 +388,6 @@ PROPERTIES
+ 		Value type: <prop-encoded-array>
+ 		Definition: A standard property.
+ 
+-- bus-frequency
+-		Usage: optional
+-		Value type: <u32>
+-		Definition: Specifies the external MDIO bus clock speed to
+-		be used, if different from the standard 2.5 MHz.
+-		This may be due to the standard speed being unsupported (e.g.
+-		due to a hardware problem), or to advertise that all relevant
+-		components in the system support a faster speed.
+-
+ - interrupts
+ 		Usage: required for external MDIO
+ 		Value type: <prop-encoded-array>
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
