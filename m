@@ -2,89 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C745C63684
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7C4C5AC75
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237049AbiAZDSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 22:18:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
+        id S237069AbiAZDS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 22:18:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237229AbiAZDSF (ORCPT
+        with ESMTP id S233506AbiAZDSy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 22:18:05 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A078C06161C;
-        Tue, 25 Jan 2022 19:18:04 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id a18so66626814edj.7;
-        Tue, 25 Jan 2022 19:18:04 -0800 (PST)
+        Tue, 25 Jan 2022 22:18:54 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98401C06173B
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 19:18:54 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id q63so17349411pja.1
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 19:18:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nGwKJWYONIElZDTFR99HkZ3dGKG6mpKfNsXZp31Ut3E=;
-        b=f4maGwavYSH1ugNaxseEKuv79y5ex54drx/p9lD2G9Fiu9K5ajRXEp+R72M5HBA1at
-         o24cZVNmk6eoK81cgRXNpfkMoij7I29Hz0Y24PhySUZqqVPHUv1VAqAyLTEIW1aiBikc
-         DTrbjaoxwFbUMcJ9PKNWB6xpjBY83hkzGSVmd2e2Jt/VRGuePq0AV2U9RZtZD4BuIM82
-         XSo30ca8XkyC2nzmKGWjoZwlYaR3PWB77GLMtVaj8L5/J/XF32RTVZ89FqtJfN2k60mB
-         g8paoeDwpM92zXB/yd2gG4E1OdIdOAnMnrkokNudxg2Lwn71qNH5+50ur2+18QDFtbZw
-         jrAQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ms93Tf5+B1g1bkXUooNpnBjjRbW/hUxGhOgw4jO0/o0=;
+        b=cb2GBvpT9QSp/lfwe4USjmLrgGBlf6OaZVZjb3jPCbvrOTY3MN6FfrYSvCT8Bvkr79
+         lpHdwKuxQoooo3vy/6+7ocZME+hBoPeQQgvrzGmhx3i+ISXSSOYy0JFuMMtRU2G0UiGO
+         f71G5mtOHdg0snY9tdfuxOs7/vQjtydHqE24Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nGwKJWYONIElZDTFR99HkZ3dGKG6mpKfNsXZp31Ut3E=;
-        b=4OwPkzWamfdLFXMK8C/pwm3TmPOI7lpc/fi8UMdz/iZ8AEK24EAzA3wI+Tdlh/8uuz
-         5YtA79bodNjIsCBKBacXQ7wHWHWI6to9Q4+FgwCFS34Zs6knef7JSzQ1w9ehxFYHxCKc
-         5gLNowh43LtPvy2kO9R7DzwL2K/+wQld5iuk5L8tZcVMUA2rD0d+orPJ1IGK6X5PoZp/
-         ry/9iFZn6cqOIZHSEU+gNvyb2YGQJphvJq5JCkbuLHwP1ZUJ/E6a3rr53jdoNUWCXr1h
-         azOwYwuX2kQbmnVwE7V6UJKiD7vQmQM6cJtFT2i7X4DobNWwcExaz3NbQisQGVYyOiuQ
-         PZcw==
-X-Gm-Message-State: AOAM530F9OhkO8oZD1Nxu6lc0ivWpVess6FFeLquOg7Vax6A+KAbhRGj
-        RHYQjkgTe33KsSJH3LZBLBqvcGS+xDhD9hHXHv4=
-X-Google-Smtp-Source: ABdhPJxgFkyj1zvsBe7fIwyDUghW8HcgNWcznQZiYp3Hf5SBqM5nN32i8nIqMCR/bBLgT5HK+hmKayduOmwYrB3+sBs=
-X-Received: by 2002:aa7:d949:: with SMTP id l9mr10167058eds.137.1643167083224;
- Tue, 25 Jan 2022 19:18:03 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ms93Tf5+B1g1bkXUooNpnBjjRbW/hUxGhOgw4jO0/o0=;
+        b=Yj0wvclvfvFA4gKOM/vX9KvkViD2EGj4lqygwNC/s0r1kEWD+QLUEDQwBPJU2iZmdf
+         ugVBX6xG9+0jdCjn3wO/rFpAfLCXfKL+2Kr91LbcmdsVul/rG544T3ogqHbCqcoTtDYV
+         BBACE1cApg+L75QyWpDTCNUZmkcbimh3xibKn1rAbTj8VJXwM/0D3TGuAWwoeFf41dfM
+         HCz1kzmA3n1yBOCJynd6U3eOjIMdHSBUeF9SLVyc/Xyus7n/xEmB02N6tkY47qPv0e0j
+         CS7ePHD5cR08b54z2n6vi3YsJ4NrP/poHn/jhNsvFH14mEqFQ8gAsJIHBRJy5XrTS2uS
+         7TVg==
+X-Gm-Message-State: AOAM530BMnevyHgtNqN+HW0t6kaR+q0JU7BYPHrkGLr5bfuVsPrRPWM6
+        RciLJJ1vBVkAr+KUgnXfl0r48A==
+X-Google-Smtp-Source: ABdhPJypF8yyN/J8h6AC4bMd7Z0bQIlCgxeESRc5f2MsbX0nCbQ1RbZZEDaV3xOEfNN2tWUwvmkAwg==
+X-Received: by 2002:a17:903:41c9:b0:14b:54e6:c6b7 with SMTP id u9-20020a17090341c900b0014b54e6c6b7mr11297322ple.36.1643167134144;
+        Tue, 25 Jan 2022 19:18:54 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id c2sm16001201pgi.55.2022.01.25.19.18.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 19:18:53 -0800 (PST)
+Date:   Tue, 25 Jan 2022 19:18:53 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Beau Belgrave <beaub@linux.microsoft.com>
+Subject: Re: linux-next: build failure after merge of the kspp tree
+Message-ID: <202201251917.18361B4F6@keescook>
+References: <202201242230.C54A6BCDFE@keescook>
+ <20220125222732.98ce2e445726e773f40e122e@kernel.org>
+ <20220125233154.dac280ed36944c0c2fe6f3ac@kernel.org>
+ <202201251256.CCCBE9851E@keescook>
+ <20220125162326.3d1ca960@gandalf.local.home>
+ <20220125162859.2b3cc8a0@gandalf.local.home>
+ <202201251402.0FB08DB@keescook>
+ <20220125172114.6807ed8f@gandalf.local.home>
+ <20220126093538.893fb44a7cb0a7cd840c7fdb@kernel.org>
+ <20220125201634.698cc777@gandalf.local.home>
 MIME-Version: 1.0
-References: <20220124131538.1453657-1-imagedong@tencent.com>
- <20220124131538.1453657-4-imagedong@tencent.com> <5201dd8b-e84c-89a0-568f-47a2211b88cb@gmail.com>
- <CADxym3YpyWh59cjtUqxGXxpb2+2Ywb-n4Jpz1KJG3AYRf5cenA@mail.gmail.com> <926e3d3d-1af0-7155-e0ac-aee7d804a645@gmail.com>
-In-Reply-To: <926e3d3d-1af0-7155-e0ac-aee7d804a645@gmail.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Wed, 26 Jan 2022 11:13:35 +0800
-Message-ID: <CADxym3Y5Ld-BcM4-Y=vJZiwsCEfRZpBqd1oj6ct+Xeu8F=wXew@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/6] net: ipv4: use kfree_skb_reason() in ip_rcv_finish_core()
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, pablo@netfilter.org,
-        kadlec@netfilter.org, Florian Westphal <fw@strlen.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>, alobakin@pm.me,
-        paulb@nvidia.com, Paolo Abeni <pabeni@redhat.com>,
-        talalahmad@google.com, haokexin@gmail.com,
-        Kees Cook <keescook@chromium.org>, memxor@gmail.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Cong Wang <cong.wang@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220125201634.698cc777@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 10:57 AM David Ahern <dsahern@gmail.com> wrote:
->
-> On 1/25/22 7:36 PM, Menglong Dong wrote:
-> > Is't it meaningful? I name it from the meaning of 'ip route lookup or validate
-> > failed in input path', can't it express this information?
->
->
-> ip_route_input_noref has many failures and not all of them are FIB
-> lookups. ip_route_input_slow has a bunch of EINVAL cases for example.
->
-> Returning a 'reason' as the code function name has no meaning to a user
-> and could actually be misleading in some cases. I would skip this one
-> for now.
+On Tue, Jan 25, 2022 at 08:16:34PM -0500, Steven Rostedt wrote:
+> On Wed, 26 Jan 2022 09:35:38 +0900
+> Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> 
+> > I think Kees' idea seems better. If you and Beau are good, I will update
+> > the macros for __rel_loc. (This requires to change some user-space
+> > application which Beau is making too.)
+> 
+> If Beau is OK with it, I'm OK with it too. I need to release a new version
+> of libtraceevent anyway, and I can make the update for that too.
+> 
+> Who's adding the patch (if Beau says it's OK), you or Kees?
 
-Yeah, the real reason can be complex. I'll skip this case for now.
+I don't know anything about libtraceevent, so hopefully not me! :) The
+patches Masami and I already sent fix the warning, so I leave it you
+y'all to decide if you want to make the internals a bit simpler.
+
+-- 
+Kees Cook
