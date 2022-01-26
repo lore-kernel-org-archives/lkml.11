@@ -2,238 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4518C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2944FC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241172AbiAZMS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 07:18:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241163AbiAZMS1 (ORCPT
+        id S241193AbiAZMUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 07:20:18 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:59346
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232021AbiAZMUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 07:18:27 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BD1C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 04:18:27 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id k17so15589309ybk.6
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 04:18:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=pzG5gVW6OLq5ALyV/2L4JM19C/owtDngOvjGjJb1zUc=;
-        b=L3hHvkd7KUwErnOcM92GqbjApftKtzquie/egc6t2z8SQGI/s9MNw4JpN7JvRuQxYb
-         mZNlnszAP0qOhleOc8lkXILqo7pyBoN9k6gaw3wQ3VnL1jWP3qW4yp8q47kE+yBucPnR
-         d+O4Egyqhw8A/aK99ymGBZsnTIkkbCXSNC4Uq4lyuVko7zQJveqvfz6d1mK++Y9Ef9OC
-         jBC4VXJ5lZG+1ULRLGJHcrFxyrBpXmN8HghFFV7T16OV4beyS47/zZph+x/YqmRpcxb7
-         WIWonDc6lBJKWmG+rsPGQkaZ3KH9jjcR+r2TA45Szyz66lb/pQwJxxzUmqwPwZBIFxZK
-         pIqQ==
+        Wed, 26 Jan 2022 07:20:15 -0500
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 2CB493F1B3
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 12:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643199614;
+        bh=Zy1mWsJIGrWjngZWHcXr/+Qcbe/NYONm87sNBe72gBM=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=bugqfrJaZb9GYlBqvooakLl8ZqtCMB0fVi7WfuHPUHeWGUMbvYMSOfPVy+oK5f4mC
+         oWYuzqelwLVaDTzkmt4LQcnOFw3RW+USmrcOm/oseMuTt98Gi+/mJSHRYWEN2yrqXg
+         X2X103hF8HmCaCP6q+aFPY0LYB5Hx0YPbhUurGCxPCKD+KgWac2ADFObvCyrkK2GyE
+         b2Q+xk6ZIMgJDO8mrx20LRIbLp5LJvXZhsYp2i/muV/pr/1Gf0VpM4uazZOiAf44fJ
+         eCvyo4wNgtEASDjfZnVbABEyGNtJR42kidhhJsif0hU9gJl4of4BdXRSpgpm3lRyQM
+         eiRj5S65ZzFgA==
+Received: by mail-ej1-f69.google.com with SMTP id q3-20020a17090676c300b006a9453c33b0so4779744ejn.13
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 04:20:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=pzG5gVW6OLq5ALyV/2L4JM19C/owtDngOvjGjJb1zUc=;
-        b=EM9phocUMJAAyCSawHKT3WhUQ8w4BFQbUOhiRn38ygyOAQrJX19J/DzbjmPoCn4Jb1
-         jRmv9eh6ARcapO0XJOMwax0s9Wu3+VsgHGaW8VsVKVASVp2YJ9XR9NJ5d+Y62IyZQQLp
-         tFSKrRJgAQkvPia7OjrFWQZgqAtE2V9kSOseDGCAFkVoA5BXEgyInTrwK/LEdRk6M4Pw
-         AwiMXNfagfGBb+5me54PxkHv2G21HGpLNvouk8ksWE7BFJjpvEZtXPkM7iKojKCSPXlq
-         81/JhYLzsZ26C5mAxOBaEYpAD/Ez45iOqVp3HtBt7EKIxegaAXh3bgjQzKAsWglSDsVJ
-         8sGQ==
-X-Gm-Message-State: AOAM530ZdGH1eq9K5gBxJSS+rz24uN1fQNhCFWfmp9Jvwd566ny/MEzg
-        LiAVAvdHFJUoF9OBKyV4jcKVhl2RBkPQ/soo/0gu8A==
-X-Google-Smtp-Source: ABdhPJwmj1lMbjnaTAFe/3Wp/1OQf1qyC+XG34Bkqxme3NBMyJ3bVD/LHNzKufsLk0VF6lL+TECDhvMXKhPy1FMPRFA=
-X-Received: by 2002:a25:4284:: with SMTP id p126mr37690485yba.108.1643199506486;
- Wed, 26 Jan 2022 04:18:26 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=Zy1mWsJIGrWjngZWHcXr/+Qcbe/NYONm87sNBe72gBM=;
+        b=4VAs/aW9dwE0/jaWSSbr9+OjtMKnkjO6aFbFVikgtM8uqzDT3b+Oq1au2aZ+cXv9VD
+         JUOnwP061ZfV76Jaf9RXTvdyTuJY6AJ/t0v5HQW3MunPllNDYVmVVwuCGeeyqjNvECao
+         pPaf6SmwX5Y9hlsnbCSNRdUfUHqMFDN9MNk/9v1nrbqPpPVZQUSEdlGRva8UfNwP76Y/
+         OWQNxRU3WKs2g5UX31dQisfXC0qp5sEcrNELuNMIyYnjpZh9/PUF5LDjXA8M1cgHB6Gs
+         19EgtTLLQUEpYVj6yhdqfWKDikPUfUzrX/CwN7Y4w1MHpQXYMKVpeDGmbkmu3Fdla/a1
+         Y0Zg==
+X-Gm-Message-State: AOAM532tEzhOMbamU2tCpg7VJnaYiPwoeH1K8C6huk1d4EylsRQ9zsyO
+        U3KwbkKWgqAtL/bkUJQ5/xK/bW3tv5uooWunOB1WKnqcrCI/uMjiynQnzo0KT4Hj5hLXqqIMVyq
+        nm8GXySzmJO4RkaHC1CokFQk24/jClutk+ETCFGS5XRb47vbhu4flJmUWgA==
+X-Received: by 2002:aa7:d9d4:: with SMTP id v20mr25242665eds.234.1643199613873;
+        Wed, 26 Jan 2022 04:20:13 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwPDDizeCtdPTrTut64wf6EiUCUrIfWcLoLXQhowkQAazriFsywtmIt6LfySdWJze1nv+DKgt/4Jih/Izt5wng=
+X-Received: by 2002:aa7:d9d4:: with SMTP id v20mr25242649eds.234.1643199613727;
+ Wed, 26 Jan 2022 04:20:13 -0800 (PST)
 MIME-Version: 1.0
-References: <20220125155257.311556629@linuxfoundation.org>
-In-Reply-To: <20220125155257.311556629@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 26 Jan 2022 17:48:15 +0530
-Message-ID: <CA+G9fYthP97HFYPV3+7rH0KQeVt0scGRw9rm+zGvFR6D1cg_QA@mail.gmail.com>
-Subject: Re: [PATCH 4.14 000/184] 4.14.263-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, stable@vger.kernel.org
+References: <20220122132554.65192-1-krzysztof.kozlowski@canonical.com>
+ <164313029072.79782.14492454091056440886.b4-ty@canonical.com> <c4a6d5a4-647a-f80c-e487-a5434e744bae@linaro.org>
+In-Reply-To: <c4a6d5a4-647a-f80c-e487-a5434e744bae@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Date:   Wed, 26 Jan 2022 13:20:02 +0100
+Message-ID: <CA+Eumj6rUZ=e6oOZyRMEEoXn2uh0FpuUQbJaT3rsX3rhXT67pQ@mail.gmail.com>
+Subject: Re: (subset) [PATCH 1/3] ARM: dts: exynos: drop old thermal
+ properties from Exynos4210
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
+        linux-pm@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 at 22:02, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Wed, 26 Jan 2022 at 12:57, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
 >
-> This is the start of the stable review cycle for the 4.14.263 release.
-> There are 184 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+> On 25/01/2022 18:04, Krzysztof Kozlowski wrote:
+> > On Sat, 22 Jan 2022 14:25:52 +0100, Krzysztof Kozlowski wrote:
+> >> The samsung,tmu_gain and samsung,tmu_reference_voltage properties of
+> >> Exynos Thermal Management Unit driver are not used since April 2018.
+> >> They were removed with commit fccfe0993b5d ("thermal: exynos: remove
+> >> parsing of samsung,tmu_gain property") and commit 61020d189dbc
+> >> ("thermal: exynos: remove parsing of samsung, tmu_reference_voltage
+> >> property"), so drop them also from Exynos4210 DTS.
+> >>
+> >> [...]
+> >
+> > Applied, thanks!
+> >
+> > [1/3] ARM: dts: exynos: drop old thermal properties from Exynos4210
+> >       commit: e20bd06fc421fba4099be51d3f56b9b1741b499b
+> >
 >
-> Responses should be made by Thu, 27 Jan 2022 15:52:30 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
-4.14.263-rc2.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-4.14.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+> I guess up to me to pick 2 and 3
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Yes, please.
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-## Build
-* kernel: 4.14.263-rc2
-* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
-rc.git
-* git branch: linux-4.14.y
-* git commit: 1cb56422263318b84ec74390135d405f17a73e5c
-* git describe: v4.14.262-185-g1cb564222633
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.14.y/build/v4.14=
-.262-185-g1cb564222633
-
-## Test Regressions (compared to v4.14.262-187-gb75a88cc2107)
-No test regressions found.
-
-## Metric Regressions (compared to v4.14.262-187-gb75a88cc2107)
-No metric regressions found.
-
-## Test Fixes (compared to v4.14.262-187-gb75a88cc2107)
-No test fixes found.
-
-## Metric Fixes (compared to v4.14.262-187-gb75a88cc2107)
-No metric fixes found.
-
-## Test result summary
-total: 80406, pass: 64815, fail: 659, skip: 12790, xfail: 2142
-
-## Build Summary
-* arm: 250 total, 242 passed, 8 failed
-* arm64: 32 total, 32 passed, 0 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 19 total, 19 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 22 total, 22 passed, 0 failed
-* powerpc: 52 total, 0 passed, 52 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 31 total, 31 passed, 0 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-arm64/arm64.btitest.bti_c_func
-* kselftest-arm64/arm64.btitest.bti_j_func
-* kselftest-arm64/arm64.btitest.bti_jc_func
-* kselftest-arm64/arm64.btitest.bti_none_func
-* kselftest-arm64/arm64.btitest.nohint_func
-* kselftest-arm64/arm64.btitest.paciasp_func
-* kselftest-arm64/arm64.nobtitest.bti_c_func
-* kselftest-arm64/arm64.nobtitest.bti_j_func
-* kselftest-arm64/arm64.nobtitest.bti_jc_func
-* kselftest-arm64/arm64.nobtitest.bti_none_func
-* kselftest-arm64/arm64.nobtitest.nohint_func
-* kselftest-arm64/arm64.nobtitest.paciasp_func
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kvm-unit-tests
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* rcutorture
-* v4l2-compliance
-
---
-Linaro LKFT
-https://lkft.linaro.org
+Best regards,
+Krzysztof
