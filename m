@@ -2,110 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:49:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A317C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:51:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231933AbiAZXth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 18:49:37 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:40549 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiAZXtg (ORCPT
+        id S232004AbiAZXvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 18:51:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48366 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229812AbiAZXu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 18:49:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643240616;
-    s=strato-dkim-0002; d=ko-hh.de;
-    h=Message-ID:Subject:Cc:To:From:Date:Cc:Date:From:Subject:Sender;
-    bh=rUwf4V6VfjCh/Tz0lFpBY98CSKOMaoI/ZlA6KjECeLc=;
-    b=Gyt0I8d1vrwyVdd9BPP+goGYbnc0j8x6TKG1RRT1FSae8MCKMpCgt4ICPViamIWx/B
-    7fZhlz4/uQNBD1Ie+9+lI2PukTlQi2N7DTJ4HnICI6qHOKYPBzRn5AcBMm1qG88JIR+p
-    63bmhAVtc8Hzh6HO7MYnaOWsTYeG6VZzrvKtGnzOW05cpFQL6daAuuem8sw4SeFCNIXe
-    J+SJBxChlaIWe+1fZVd6uoEcn+87gOIvBk5Bgd4RsxYhcThTRluy78O2obNSuwBbP6pu
-    UjFRkT1GM061AqCOa05TpL+Kd9NFkLrFLE15C7/G9OYsEbWeqrzaP7WstXNFbWzJ7fNn
-    1EWg==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":OGQBeUWjaN+znm36YqWmJEx4lU5vgP4am+jDJsl40KLIzDO7mhvQTIqpxZoDGXXc/Nut"
-X-RZG-CLASS-ID: mo00
-Received: from odroid-VirtualBox
-    by smtp.strato.de (RZmta 47.38.0 DYNA|AUTH)
-    with ESMTPSA id L5f488y0QNhZk0e
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Thu, 27 Jan 2022 00:43:35 +0100 (CET)
-Date:   Thu, 27 Jan 2022 00:43:25 +0100
-From:   Lutz Koschorreck <theleks@ko-hh.de>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: meson-sm1-odroid: use correct enable-gpio pin
- for tf-io regulator
-Message-ID: <20220126234325.GA7363@odroid-VirtualBox>
+        Wed, 26 Jan 2022 18:50:59 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6C1C06161C
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:50:59 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id c3so1007694pls.5
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 15:50:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=cBxJNeicoRzjXh+eEmDsU4Z8ycQDuwzwWKSyLyKYjXU=;
+        b=WDTTt0fddCEhZQRAz+lyxdMB8Et0DAN1Bv3xBNQXrslbekeFaKcxFedz7j7v9I5ObM
+         VgdLgPgxv5ZWO48+/hYqObsjQwiomzjtOveQ5BcOli0h0QH9he40zBt765mxWC0Czy3W
+         g86g/debboCyRaCX18VAlylAtTIs9gKZarTr12u3LjIr/cqAHsF3V6WVBwMg1a92O9hr
+         0BEME9fAn9moT4q7Bg4V0+lFIJExTI8c21dH66vjwtOml+7uRRs8rIsRXQJC2hS3BYhJ
+         CejyYws0tGz/b6cFq6pPPYeKR7gNGzH2wTbbAVDbtJNjOVkHYd8dpPcAwaOXkORXMTRN
+         0AfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=cBxJNeicoRzjXh+eEmDsU4Z8ycQDuwzwWKSyLyKYjXU=;
+        b=xonMaCkjRT5fyNsFZavL+t3mzohSbnmA2eKGI0bTqOTv3+uwguvbtIi9/O0E+3jJwb
+         9KHBrvjpYtEKg914Uw5I9g6brkF6ShFtBS23n8mGLdtzZNPCe92Xmx4K4pNbIpThtQBt
+         OHop4qX2J9BWQ6X0al1i3VXqDBVsKHZl9feOBxcgC5uffuaJ3R3PWtztwk73xjUsXfy0
+         3chrkwzvb5/DUdcogL14Ihit7UGvRhekHndDQWqIkj+vgTjlDPesqBYYmNujQSyirnng
+         aNLkNNhLain1m9hUNv8v6o8cZz3UuzHgsKq9vcXtbXYG5NevQPO8Xn3YH7FVifaFzgML
+         XHlA==
+X-Gm-Message-State: AOAM532U/zqCZnLljthXjZPTxFFjUTGZyD2ADscs8W7Yn7heMEAOEn9F
+        lZL1K4yLi5/ElLZO8nXViWwk3Q==
+X-Google-Smtp-Source: ABdhPJykrJ2uOm8OEbe0IzU4Bthtxc99KDRuTVbvLsgTgp6ISyZ9HrqIrN5a+OcWk6ZkhecwMja/zA==
+X-Received: by 2002:a17:902:ea0b:: with SMTP id s11mr1274542plg.133.1643241058942;
+        Wed, 26 Jan 2022 15:50:58 -0800 (PST)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id s7sm3381389pfu.133.2022.01.26.15.50.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 15:50:58 -0800 (PST)
+Message-ID: <a4eccced-44d9-d5ae-27b3-5b2832d22561@linaro.org>
+Date:   Wed, 26 Jan 2022 15:50:57 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>, peterz@infradead.org
+Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        Daniel Jordan <daniel.m.jordan@oracle.com>,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+References: <20220125193403.778497-1-tadeusz.struk@linaro.org>
+ <bb01425b-0f6a-e69f-c24b-567821c1472f@arm.com>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: Re: [PATCH v3] sched/fair: Fix fault in reweight_entity
+In-Reply-To: <bb01425b-0f6a-e69f-c24b-567821c1472f@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The interrupt pin of the external ethernet phy is used, instead of the
-enable-gpio pin of the tf-io regulator. The GPIOE_2 pin is located in
-the gpio_ao bank.
-Using open drain prevents reboot issues.
+On 1/26/22 05:53, Dietmar Eggemann wrote:
+> Can we then not get rid of `bool update_load` parameter of
+> set_load_weight() completely?
+> 
+> @@ -1214,8 +1214,9 @@ int tg_nop(struct task_group *tg, void *data)
+>   }
+>   #endif
+>   
+> -static void set_load_weight(struct task_struct *p, bool update_load)
+> +static void set_load_weight(struct task_struct *p)
+>   {
+> +       int task_new = READ_ONCE(p->__state) & TASK_NEW;
+>          int prio = p->static_prio - MAX_RT_PRIO;
+>          struct load_weight *load = &p->se.load;
+>   
+> @@ -1232,7 +1233,7 @@ static void set_load_weight(struct task_struct *p, bool update_load)
+>           * SCHED_OTHER tasks have to update their load when changing their
+>           * weight
+>           */
+> -       if (update_load && p->sched_class == &fair_sched_class) {
+> +       if (!task_new && p->sched_class == &fair_sched_class) {
+>                  reweight_task(p, prio);
+>          } else {
+>                  load->weight = scale_load(sched_prio_to_weight[prio]);
 
-This causes phy interrupt problems at system startup.
-[   76.645190] irq 36: nobody cared (try booting with the "irqpoll" option)
-[   76.649617] CPU: 0 PID: 1416 Comm: irq/36-0.0:00 Not tainted 5.16.0 #2
-[   76.649629] Hardware name: Hardkernel ODROID-HC4 (DT)
-[   76.649635] Call trace:
-[   76.649638]  dump_backtrace+0x0/0x1c8
-[   76.649658]  show_stack+0x14/0x60
-[   76.649667]  dump_stack_lvl+0x64/0x7c
-[   76.649676]  dump_stack+0x14/0x2c
-[   76.649683]  __report_bad_irq+0x38/0xe8
-[   76.649695]  note_interrupt+0x220/0x3a0
-[   76.649704]  handle_irq_event_percpu+0x58/0x88
-[   76.649713]  handle_irq_event+0x44/0xd8
-[   76.649721]  handle_fasteoi_irq+0xa8/0x130
-[   76.649730]  generic_handle_domain_irq+0x38/0x58
-[   76.649738]  gic_handle_irq+0x9c/0xb8
-[   76.649747]  call_on_irq_stack+0x28/0x38
-[   76.649755]  do_interrupt_handler+0x7c/0x80
-[   76.649763]  el1_interrupt+0x34/0x80
-[   76.649772]  el1h_64_irq_handler+0x14/0x20
-[   76.649781]  el1h_64_irq+0x74/0x78
-[   76.649788]  irq_finalize_oneshot.part.56+0x68/0xf8
-[   76.649796]  irq_thread_fn+0x5c/0x98
-[   76.649804]  irq_thread+0x13c/0x260
-[   76.649812]  kthread+0x144/0x178
-[   76.649822]  ret_from_fork+0x10/0x20
-[   76.649830] handlers:
-[   76.653170] [<0000000025a6cd31>] irq_default_primary_handler threaded [<0000000093580eb7>] phy_interrupt
-[   76.661256] Disabling IRQ #36
+That will also work. Let's agree on the best way to fix it.
+Peter, what's your preference?
 
-Fixes: 1f80a5cf74a6 ("arm64: dts: meson-sm1-odroid: add missing enable gpio and supply for tf_io regulator")
-
-Signed-off-by: Lutz Koschorreck <theleks@ko-hh.de>
----
- arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
-index 0bd1e98a0eef..ddb1b345397f 100644
---- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
-@@ -48,7 +48,7 @@ tf_io: gpio-regulator-tf_io {
- 		regulator-max-microvolt = <3300000>;
- 		vin-supply = <&vcc_5v>;
- 
--		enable-gpio = <&gpio GPIOE_2 GPIO_ACTIVE_HIGH>;
-+		enable-gpio = <&gpio_ao GPIOE_2 GPIO_OPEN_DRAIN>;
- 		enable-active-high;
- 		regulator-always-on;
- 
 -- 
-2.25.1
-
+Thanks,
+Tadeusz
