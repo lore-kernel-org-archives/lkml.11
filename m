@@ -2,105 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5131FC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 18:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D748C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 18:09:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244127AbiAZSIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 13:08:50 -0500
-Received: from mga11.intel.com ([192.55.52.93]:59238 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236949AbiAZSIt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 13:08:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643220529; x=1674756529;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=630S9s/e9vVdb20f/VudwkoJcZwibuloW7Wrp/l56J4=;
-  b=KVDjhZDfsIY047V98+sEvBVb1VFIxHLxYJHBXwptd0uuhZsaDXymanBj
-   LU29PXtZD5Fz8iDHXWrc8597N7EYAFPK9EGLh8/cSuvYspiNtKhysyIGO
-   ZP+G/8vJcnrb0EO91ECqcYcheWkoRmD7DkY0MwFJ/wsgxf7cpC3xOBmx9
-   dNWeZ/atWlFD27y43nEihMRMBjvwQLVsSzwNt1XAv0npUW8lP9giO0GvS
-   hQZgF+FvAZpEXYLxE+XC4sAq4QWxbPZ0ghEWYjtgdpS+wKDiifORxj+sN
-   L8WqveENdY1idzRva6BzLfdkSRDJ5yZ2UdYkxa1ngwRna28QcJbk0KqN8
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="244212239"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="244212239"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 10:08:49 -0800
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="563485914"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 10:08:45 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nCmhn-00EheX-LF;
-        Wed, 26 Jan 2022 20:07:39 +0200
-Date:   Wed, 26 Jan 2022 20:07:39 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: Re: [PATCH v3 1/3] string: Make stpcpy() possible to use
-Message-ID: <YfGN6xOP4PTL3k3P@smile.fi.intel.com>
-References: <20220126141917.75399-1-andriy.shevchenko@linux.intel.com>
- <CAKwvOdkBAe4qMdFgDFWNLHMsJrW+PBwa7-hAL5T9fReQqNiF7g@mail.gmail.com>
+        id S243660AbiAZSJq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 13:09:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:42388 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236949AbiAZSJq (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 13:09:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643220585;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vuZuCSoJ7IOU5R0KlMC3hriY2wg4jAss4q/D4xsgQ7E=;
+        b=drm60M67+H1Oe25A0auAuaHLmjmBy/1Td/b1kTHJrCT//FHEHZEC3jAxdcw3qNS+Nr4R35
+        Us841PNqQbSijciijhBMIL9Hx+OlN/NxexPUgVX0tlAG+XgAGxgsViXxMbjULiXEtSSxr3
+        4mi303m2Z11OWqLRCjPz4/snCcQ/Lew=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-166-pHznS-IqPpWydbDGSn3rSw-1; Wed, 26 Jan 2022 13:09:42 -0500
+X-MC-Unique: pHznS-IqPpWydbDGSn3rSw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A33486A8B3;
+        Wed, 26 Jan 2022 18:09:41 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-4.gru2.redhat.com [10.97.112.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9710A74E8D;
+        Wed, 26 Jan 2022 18:09:40 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id C71E2416D8BE; Wed, 26 Jan 2022 15:03:45 -0300 (-03)
+Date:   Wed, 26 Jan 2022 15:03:45 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>
+Subject: Re: [patch v8 01/10] add basic task isolation prctl interface
+Message-ID: <YfGNAXOpwTfKH01L@fuller.cnet>
+References: <20211208161000.654492429@fuller.cnet>
+ <20220120174301.GA213170@lothringen>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKwvOdkBAe4qMdFgDFWNLHMsJrW+PBwa7-hAL5T9fReQqNiF7g@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220120174301.GA213170@lothringen>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 09:49:38AM -0800, Nick Desaulniers wrote:
-> On Wed, Jan 26, 2022 at 6:19 AM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > It is a good rule to avoid submitting code without users.
-> > Currently the stpcpy() is unusable due to missed declaration.
-> > Any attempts to use it will bring something like:
-> >
-> >   error: implicit declaration of function ‘stpcpy’ [-Werror=implicit-function-declaration]
-> >
-> > Move declaration to the header and guard it as other string functions.
-
-...
-
-> Recall the discussion from Kees:
-> https://lore.kernel.org/lkml/CAK7LNAQXo5-5W6hvNMEVPBPf3tRWaf-pQdSR-0OHyi4RCGhjsQ@mail.gmail.com/
-> and
-> https://lore.kernel.org/lkml/202008150921.B70721A359@keescook/
-
-> I'm guessing that the 0day bot report was on the third patch in this
-> series, which looks to use stpcpy:
-> https://lore.kernel.org/lkml/20220126141917.75399-3-andriy.shevchenko@linux.intel.com/
+On Thu, Jan 20, 2022 at 06:43:01PM +0100, Frederic Weisbecker wrote:
+> On Wed, Dec 08, 2021 at 01:09:07PM -0300, Marcelo Tosatti wrote:
+> > +int __copy_task_isolation(struct task_struct *tsk)
+> > +{
+> > +	struct isol_info *info, *new_info;
+> > +
+> > +	info = current->isol_info;
+> > +	if (!(info->inherit_mask & (ISOL_INHERIT_CONF|ISOL_INHERIT_ACTIVE)))
+> > +		return 0;
+> > +
+> > +	new_info = tsk_isol_alloc_context();
+> > +	if (IS_ERR(new_info))
+> > +		return PTR_ERR(new_info);
+> > +
+> > +	new_info->inherit_mask = info->inherit_mask;
 > 
-> for patch 3,
+> Ok then it might be worth mentioning in the docs that the inheritance
+> propagates to all the descendants and not just the immediate children,
+> unless the inheritance is explicitly reconfigured by some children of course.
 
-Yes. It was Rasmus' suggestion.
+v9 has:
 
-> I'd s/"compress"/de-duplicate/ or s/"compress"/merge/.
+**PR_ISOL_CFG_SET**:
 
-I'll fix it locally.
+        Set task isolation configuration.
+        The general format is::
 
-> Kees, I'm curious if we can do something like require the string
-> length to be known at compile time otherwise BUILD_BUG_ON?
+                prctl(PR_ISOL_CFG_SET, what, arg3, arg4, arg5);		
 
-Perhaps static_assert() is better.
+	...
 
--- 
-With Best Regards,
-Andy Shevchenko
+                - Bit ISOL_INHERIT_ACTIVE: Inherit task isolation activation
+                  (requires ISOL_INHERIT_CONF to be set). The new task
+                  should behave, after fork/clone, in the same manner
+                  as the parent task after it executed:
 
+                        prctl(PR_ISOL_ACTIVATE_SET, &mask, ...);
+
+                Note: the inheritance propagates to all the descendants and not
+                just the immediate children, unless the inheritance is explicitly
+                reconfigured by some children.
+
+> 
+> > +
+> > +	if (info->inherit_mask & ISOL_INHERIT_CONF) {
+> > +		new_info->quiesce_mask = info->quiesce_mask;
+> 
+> Looks like if the parent has oneshot quiesce features configured, those
+> will be inherited as non-oneshot.
+
+Good catch. v9 has:
+
++       if (info->inherit_mask & ISOL_INHERIT_CONF) {
++               new_info->quiesce_mask = info->quiesce_mask;
++               new_info->conf_mask = info->conf_mask;
++               new_info->oneshot_mask = info->oneshot_mask;
++       }
+
+> 
+> > +		new_info->conf_mask = info->conf_mask;
+> > +	}
+> > +
+> > +	if (info->inherit_mask & ISOL_INHERIT_ACTIVE)
+> > +		new_info->active_mask = info->active_mask;
+> > +
+> > +	tsk->isol_info = new_info;
+> > +
+> > +	return 0;
+> > +}
+> 
+> Other than that:
+> 
+> Acked-by: Frederic Weisbecker <frederic@kernel.org>
+
+OK, with the fixes above, i'll add your Acked-by to patches 1 and 2.
+Let me know otherwise.
 
