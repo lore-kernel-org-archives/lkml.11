@@ -2,105 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 308B8C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:19:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6310C3526D
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242065AbiAZOTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 09:19:11 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42618 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbiAZOTJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
+        id S242071AbiAZOTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 09:19:12 -0500
+Received: from mga05.intel.com ([192.55.52.43]:24800 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242049AbiAZOTJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 26 Jan 2022 09:19:09 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE2456175F
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 14:19:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABF39C340E3;
-        Wed, 26 Jan 2022 14:19:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643206748;
-        bh=W1L1pIumJOUK3UmO17es5PZtmpZRwBpcqUO2tjQQsOM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ty+pUTnTqWyQhlRMY7OVCiRaETM2+ONRVT2XgXXmf/JdmDt5cZo42Y9NdrHGd8ddd
-         OXJ0KLgFwgVfvy96AwMMO9dDJnBRGQJrGwnBGR62anfiXql15veBoIyM7cKV8/hwF8
-         1K0W8YppLfAUSNXDHi1zNEOn1CTjJK9xjYkHsbVonsk4kEcJeT5xLWzBfpFkV35ekJ
-         GIU0oN1VkJ0TgJlSFzuYIBfVGS0P0eNGFNivhEsSDP+NvKTMSReRs+Dmj2itLuXv1U
-         BcMZLbjXtRmwJE3LtffGZ0gpJ4DiUhO8m1NIfcYDZASAvLvFt3jwQHRYbQF4O9AmbA
-         +sz+PlewMlQQQ==
-Date:   Wed, 26 Jan 2022 16:18:57 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     "Kirill A. Shutemov" <kirill@shutemov.name>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Khalid Aziz <khalid.aziz@oracle.com>,
-        akpm@linux-foundation.org, longpeng2@huawei.com, arnd@arndb.de,
-        dave.hansen@linux.intel.com, david@redhat.com, surenb@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
-Message-ID: <YfFYUWOieZw9wap7@kernel.org>
-References: <cover.1642526745.git.khalid.aziz@oracle.com>
- <20220125114212.ks2qtncaahi6foan@box.shutemov.name>
- <Ye/5yUyEqO0ws0G5@casper.infradead.org>
- <20220125135917.ezi6itozrchsdcxg@box.shutemov.name>
- <YfAEqzTeBJSIOKcA@casper.infradead.org>
- <20220125185705.wf7p2l77vggipfry@box.shutemov.name>
- <YfBIpmxvc0+mFByf@casper.infradead.org>
- <YfDIYKygRHX4RIri@casper.infradead.org>
- <20220126134247.fadtwbvyknh3ejpe@box.shutemov.name>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643206749; x=1674742749;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=M5CVTpx1kCF7uGC0Cq1C+XvwMU894qljqfUNz/+mZvA=;
+  b=ma8gm5OPCrWL/o2/fiqQMTRI7gwexQnqaXsuUMXPsBYsvcoABbgfME5/
+   VfIFq9fUwg7RnL8GRO31BV3gL6NfCikxL5Krc0UcbG3ult7urF1w54MLz
+   5Ms5zgadQI25sq2mn3yEbVVBEzSlSURVMT7PKcsDqrlySQtX/Dxvy1ZvR
+   F3viKijxBb31RPgF45rIeNesVMKXnDWHRw9jqoQOtM8N2Ra6s0MShyQ/3
+   ZpOar3AKZU2cH1pZfCW2Q1ELyQQjg/H/PMe4MAxeVXjja896urpvIvxJs
+   8XzLdrezEPmKr1I/tBcY6QNuWpQe7OrGX3FjanbarW/bV3tn6O/BqWdOm
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="332911686"
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="332911686"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:19:09 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="581116025"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 26 Jan 2022 06:19:06 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id D254715C; Wed, 26 Jan 2022 16:19:19 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Kees Cook <keescook@chromium.org>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org
+Cc:     Andy Shevchenko <andy@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>
+Subject: [PATCH v3 2/3] vsprintf: Fix potential unaligned access
+Date:   Wed, 26 Jan 2022 16:19:16 +0200
+Message-Id: <20220126141917.75399-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220126141917.75399-1-andriy.shevchenko@linux.intel.com>
+References: <20220126141917.75399-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126134247.fadtwbvyknh3ejpe@box.shutemov.name>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 04:42:47PM +0300, Kirill A. Shutemov wrote:
-> On Wed, Jan 26, 2022 at 04:04:48AM +0000, Matthew Wilcox wrote:
-> > On Tue, Jan 25, 2022 at 06:59:50PM +0000, Matthew Wilcox wrote:
-> > > On Tue, Jan 25, 2022 at 09:57:05PM +0300, Kirill A. Shutemov wrote:
->
-> > So how about something like this ...
-> > 
-> > int mcreate(const char *name, int flags, mode_t mode);
-> > 
-> > creates a new mm_struct with a refcount of 2.  returns an fd (one
-> > of the two refcounts) and creates a name for it (inside msharefs,
-> > holds the other refcount).
-> > 
-> > You can then mmap() that fd to attach it to a chunk of your address
-> > space.  Once attached, you can start to populate it by calling
-> > mmap() and specifying an address inside the attached mm as the first
-> > argument to mmap().
-> 
-> That is not what mmap() would normally do to an existing mapping. So it
-> requires special treatment.
-> 
-> In general mmap() of a mm_struct scares me. I can't wrap my head around
-> implications.
-> 
-> Like how does it work on fork()?
-> 
-> How accounting works? What happens on OOM?
-> 
-> What prevents creating loops, like mapping a mm_struct inside itself?
-> 
-> What mremap()/munmap() do to such mapping? Will it affect mapping of
-> mm_struct or will it target mapping inside the mm_sturct?
-> 
-> Maybe it just didn't clicked for me, I donno.
+The %p4cc specifier in some cases might get an unaligned pointer.
+Due to this we need to make copy to local variable once to avoid
+potential crashes on some architectures due to improper access.
 
-My understanding was that the new mm_struct would be rather stripped and
-will be used more as an abstraction for the shared page table, maybe I'm
-totally wrong :)
+Fixes: af612e43de6d ("lib/vsprintf: Add support for printing V4L2 and DRM fourccs")
+Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+---
+v3: no changes
+ lib/vsprintf.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 61528094ec87..4e8f3e9acb99 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -49,6 +49,7 @@
  
-> > Maybe mcreate() is just a library call, and it's really a thin wrapper
-> > around open() that happens to know where msharefs is mounted.
-> 
-> -- 
->  Kirill A. Shutemov
-
+ #include <asm/page.h>		/* for PAGE_SIZE */
+ #include <asm/byteorder.h>	/* cpu_to_le16 */
++#include <asm/unaligned.h>
+ 
+ #include <linux/string_helpers.h>
+ #include "kstrtox.h"
+@@ -1762,7 +1763,7 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
+ 	char output[sizeof("0123 little-endian (0x01234567)")];
+ 	char *p = output;
+ 	unsigned int i;
+-	u32 val;
++	u32 orig, val;
+ 
+ 	if (fmt[1] != 'c' || fmt[2] != 'c')
+ 		return error_string(buf, end, "(%p4?)", spec);
+@@ -1770,21 +1771,22 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
+ 	if (check_pointer(&buf, end, fourcc, spec))
+ 		return buf;
+ 
+-	val = *fourcc & ~BIT(31);
++	orig = get_unaligned(fourcc);
++	val = orig & ~BIT(31);
+ 
+-	for (i = 0; i < sizeof(*fourcc); i++) {
++	for (i = 0; i < sizeof(u32); i++) {
+ 		unsigned char c = val >> (i * 8);
+ 
+ 		/* Print non-control ASCII characters as-is, dot otherwise */
+ 		*p++ = isascii(c) && isprint(c) ? c : '.';
+ 	}
+ 
+-	strcpy(p, *fourcc & BIT(31) ? " big-endian" : " little-endian");
++	strcpy(p, orig & BIT(31) ? " big-endian" : " little-endian");
+ 	p += strlen(p);
+ 
+ 	*p++ = ' ';
+ 	*p++ = '(';
+-	p = special_hex_number(p, output + sizeof(output) - 2, *fourcc, sizeof(u32));
++	p = special_hex_number(p, output + sizeof(output) - 2, orig, sizeof(u32));
+ 	*p++ = ')';
+ 	*p = '\0';
+ 
 -- 
-Sincerely yours,
-Mike.
+2.34.1
+
