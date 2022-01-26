@@ -2,72 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4D3C5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 00:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6B7C5AC75
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 00:16:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233330AbiAZAOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 19:14:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59864 "EHLO
+        id S234440AbiAZAQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 19:16:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232124AbiAZAOR (ORCPT
+        with ESMTP id S233947AbiAZAQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 19:14:17 -0500
+        Tue, 25 Jan 2022 19:16:17 -0500
 Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58450C06161C;
-        Tue, 25 Jan 2022 16:14:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE55C06161C;
+        Tue, 25 Jan 2022 16:16:17 -0800 (PST)
 Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 07DD7383;
-        Wed, 26 Jan 2022 00:14:16 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 07DD7383
+        by ms.lwn.net (Postfix) with ESMTPSA id 6B212383;
+        Wed, 26 Jan 2022 00:16:17 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 6B212383
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1643156057; bh=jznSEapcUo+3Aq5KyBfFLHbReyAvoHjrY4InTDYlV6g=;
+        t=1643156177; bh=Vk8OWoiBSEPrB/jgtobB703X7p3CtfIrPbAGBh1H48c=;
         h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=OhpMjDrQd3mIA1FrNusk8Y05T5t6Gxwx+jX5iNZT28HO0/K3CL5YwqqwrcLJVCDUW
-         hA6vfClGKHDW5BflY7U5+Fo3+WKDi6nAhDoYGmLtuLhcT7A4ekhVXa8kMaGGqlN2py
-         5cGCuV+de8IDnlF2VySS9sKJTC9XsVsqfakjC2JGRxQzr1sGL4YYyB9pqCjgRoAeII
-         fAjG5wyTMWPSO10/6BhwDxSg/2gzPxPcRa9QCIOANTVmQLZrBuMhr32cW2vmCMIxHA
-         UQTdTOuIDJcGuf3WX7snLJoTwjt/JW09KJ6wptzk0vEJnORYv7pL9S42qWsr+DTQIl
-         UtroPO/pEQhmQ==
+        b=MUTQNyw3NIudqvekkheT1kHE8Vv9d/0cZpSW8g/f6F/Xq9y0E3YRgbNp/x8Vf9c/l
+         SUCDTSzH3LHTup7tIndnkAnJjbtG2bDfbxaaoP2tzNtacYmsbZY4Xu9l6zQQoWw7ho
+         XQZMCmIuE2RjnbVxI1d2tVtBo79WvAXQh9LwGnrhasdtyUgBxEWYbLZdmwndhElv6x
+         nmw1kgpwbUC9v+8MCKMwUESLFJQOT7Lh6gaHHEEb2brhgZvp5CrjG11I7Qkt7aRkwC
+         5DhVS7xb9Q0Op9qRex+GDPwcL5oLrwQ0ehd1jZ1x9FF2KLBHt2f2zCrFnmp+b+lVN4
+         bTZJVNsxykIbA==
 From:   Jonathan Corbet <corbet@lwn.net>
-To:     GUO Zihua <guozihua@huawei.com>, zohar@linux.ibm.com
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        roberto.sassu@huawei.com, wangweiyang2@huawei.com,
-        xiujianfeng@huawei.com, linux-integrity@vger.kernel.org,
-        guozihua@huawei.com
-Subject: Re: [RESEND][PATCH] Documentation: added order requirement for
- ima_hash=
-In-Reply-To: <20220125090237.120357-1-guozihua@huawei.com>
-References: <20220125090237.120357-1-guozihua@huawei.com>
-Date:   Tue, 25 Jan 2022 17:14:45 -0700
-Message-ID: <87o83zwdxm.fsf@meer.lwn.net>
+To:     Takahiro Itazuri <itazur@amazon.com>, linux-doc@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, trivial@kernel.org,
+        Takahiro Itazuri <zulinx86@gmail.com>,
+        Takahiro Itazuri <itazur@amazon.com>
+Subject: Re: [PATCH] docs: fix typo in Documentation/kernel-hacking/locking.rst
+In-Reply-To: <20220124081447.34066-1-itazur@amazon.com>
+References: <20220124081447.34066-1-itazur@amazon.com>
+Date:   Tue, 25 Jan 2022 17:16:45 -0700
+Message-ID: <87k0enwdua.fsf@meer.lwn.net>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GUO Zihua <guozihua@huawei.com> writes:
+Takahiro Itazuri <itazur@amazon.com> writes:
 
-> From: Guo Zihua <guozihua@huawei.com>
+> Change copy_from_user*( to copy_from_user() .
 >
-> Commandline parameter ima_hash= and ima_template= has order requirement
-> for them to work correctly together. Namely ima_hash= must be
-> specified after ima_template=, otherwise ima_template= will be ignored.
+> Signed-off-by: Takahiro Itazuri <itazur@amazon.com>
+> ---
+>  Documentation/kernel-hacking/locking.rst | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> The reason is that when handling ima_hash=, ima template would be set to
-> the default value if it has not been initialized already, and that value
-> cannot be changed afterwards by ima_template=.
->
-> This patch adds this limitation to the documentation.
->
-> Reviewed-by: Roberto Sassu <roberto.sassu@huawei.com>
-> Signed-off-by: Guo Zihua <guozihua@huawei.com>
+> diff --git a/Documentation/kernel-hacking/locking.rst b/Documentation/kernel-hacking/locking.rst
+> index e6cd40663ea5..4cbd50edf277 100644
+> --- a/Documentation/kernel-hacking/locking.rst
+> +++ b/Documentation/kernel-hacking/locking.rst
+> @@ -295,7 +295,7 @@ Pete Zaitcev gives the following summary:
+>  
+>  -  If you are in a process context (any syscall) and want to lock other
+>     process out, use a mutex. You can take a mutex and sleep
+> -   (``copy_from_user*(`` or ``kmalloc(x,GFP_KERNEL)``).
+> +   (``copy_from_user()`` or ``kmalloc(x,GFP_KERNEL)``).
+>  
 
-I've applied this, but I'm wondering: where did this review take place?
-I can't find it on the lists...
-
-Thanks,
+Applied, thanks.
 
 jon
