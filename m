@@ -2,108 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B38BC63684
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 847E1C63682
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243720AbiAZR33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 12:29:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236899AbiAZR31 (ORCPT
+        id S243747AbiAZRci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 12:32:38 -0500
+Received: from mout.kundenserver.de ([212.227.126.187]:46939 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236899AbiAZRch (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:29:27 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE90C06161C;
-        Wed, 26 Jan 2022 09:29:27 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id d15-20020a17090a110f00b001b4e7d27474so335196pja.2;
-        Wed, 26 Jan 2022 09:29:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=o7yVQ6gsvTTab9fYp8q+lCU+rLwohNUxOjiCLgJGdGM=;
-        b=O6zfBzmd+BywBFqXzIfiy3ycqMOwjnMfDYKV8Xlu61A5NUaAdxjhLjXRk91Zxmp379
-         0Zfjblp8ROfH7rGfRhEtsP/JWG6yw+G/qBGkEN722dXIW53FMFuWEu01agN9bdHb9we0
-         XOfCUvJMOBV/VWzq7SmjsTPdvjJ7m8E7DPaqPCR2KdqEhdKUcN20ZgDnwHGrUrZ6+I3h
-         8R/tO/SPoduJvlIslRZbhDKzQDuMNWYkbGxVq/ggvEDK6IeFnDzjVzrDuCHhUptS6yE3
-         zTZNooS0kFSqw6KKe8jJQpHWqMqYs1PMrHkCKAl3tpRiDJB4Eimn0LqYUPgEWvGJZSkJ
-         kK4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=o7yVQ6gsvTTab9fYp8q+lCU+rLwohNUxOjiCLgJGdGM=;
-        b=l2cEOGO1p2/3I7N4HQz0BC9A0nojRP7a/1rdpe1Hx1e2CjpOr8TGNa0HLg6xByehIM
-         sG15LnT3sLLOideTEXk0rx8m5JS8uTT+XXy43uzLaE6azSMH2/IedWJthyDgGlCvHvNm
-         yD9dV/B07Q16NcSz4fTllrqn4KQ5f0fhQFxXV7gQpUJq9Fi8OPB33CMeXnjy4KVTVVUb
-         zVKvopY+PWUj0yxLotUJgodtB9dDGs5vbKG5PQ1RFkAIicx5asFwo9Erv0c7t/Kpgs9v
-         KEnHS640zBcZXmoyuJ1t7zWaMk7GEyIWapf8p/eZRFrsLlOYXiKOxkjPOetnOqzKr+QD
-         /C2Q==
-X-Gm-Message-State: AOAM532k/FQrp4pi9uHL10HPwqMUuUWrsqUnvggE/14umfFIAAdCklF8
-        FcOpQUs4uICAqK9VNr/qJoEjouEWLRZ3mw==
-X-Google-Smtp-Source: ABdhPJxyUHtO42sVayvKd1TwY8fWw8c2ZGvly5R/fAkkk2S/qM6qTyEIqTSco7v2TNmyUpldFs4JGQ==
-X-Received: by 2002:a17:903:1212:: with SMTP id l18mr10132plh.45.1643218166669;
-        Wed, 26 Jan 2022 09:29:26 -0800 (PST)
-Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
-        by smtp.gmail.com with ESMTPSA id h18sm2699799pfv.216.2022.01.26.09.29.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 09:29:26 -0800 (PST)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Wed, 26 Jan 2022 07:29:24 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     axboe@kernel.dk, cgroups@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH -next] blk-throttle: enable io throttle for root in
- cgroup v2
-Message-ID: <YfGE9L4i7DtNTo08@slm.duckdns.org>
-References: <20220114093000.3323470-1-yukuai3@huawei.com>
+        Wed, 26 Jan 2022 12:32:37 -0500
+Received: from [192.168.100.1] ([82.142.25.174]) by mrelayeu.kundenserver.de
+ (mreue012 [213.165.67.103]) with ESMTPSA (Nemesis) id
+ 1MjxW4-1mWspV3dLE-00kQMA; Wed, 26 Jan 2022 18:32:10 +0100
+Message-ID: <e4e1995c-4fc2-96b7-c732-93aa67207802@vivier.eu>
+Date:   Wed, 26 Jan 2022 18:32:08 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220114093000.3323470-1-yukuai3@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: fr
+To:     Greg KH <greg@kroah.com>
+Cc:     linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, Arnd Bergmann <arnd@arndb.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        John Stultz <john.stultz@linaro.org>, stable@vger.kernel.org
+References: <20220121200738.2577697-1-laurent@vivier.eu>
+ <20220121200738.2577697-3-laurent@vivier.eu> <YfFPjOEELiTWr2uj@kroah.com>
+From:   Laurent Vivier <laurent@vivier.eu>
+Subject: Re: [PATCH v12 2/5] tty: goldfish: introduce
+ gf_ioread32()/gf_iowrite32()
+In-Reply-To: <YfFPjOEELiTWr2uj@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:XvNu/dge3CNEYzBbvj4dsSiUzfG9ERgw/LyTB6b0Aj5yx6+KZ9M
+ QGo8y1Km5kIVpSrPgBY0y6SzagwYAtktnB9GjfykwLFwRi9tZQVpxJ/BnwfUOfBmFpGBIkg
+ cDPFukPmaZ1y9tua0fQ3T6PWrxQW36ZmPU4d0O3wbqDvUsIN2QVlZNqHOi/+3TAWAHnJAkN
+ IjKh9Z5r4mvZQ046C54nA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IUz2wLhHtK4=:YErz34dKXUUdhaRFFUq59Y
+ uZ1krhP53qYSUmIzN/tcOXPkwWZ0LLwMu1OnckCFNi6IIeme5aShQRQGwrYn2g8692/Ln2qCr
+ ypxE48BAfl5F/s47vkP+E5TAF291m1LB5YH9r1Kw9DlOxkGhSLFt8yBPLP4uEaeIpDYLZB1+V
+ XSJ0O18w5g4NcRwSdEJiu0MdpZ0csxqvFt4br1QLqAqKscd1Vb6G3upYMtJXPxy+ZPv4QIyOd
+ JAHd8fWgL1721LCPI8C2bIEKt3qSDdSiki21FRXeiaSljk9VWnrfCGi56jqtaZxdfDwgZ4k4U
+ nTK1y/sccw/C1mk1YlhXrTsC4tjK5Nqf9W8vkb8u6/KDJIkRtcquMfyJgCwjidMPGpXfUFIl0
+ KMrqJxwv3EAFIhUb8/QzmO0sSnNC3DVtluwYeIBQOjkUFpXQALToV8uPpX6878B0Yq/deBnkk
+ lcfyTrSzyh9ygeLQIQsJ8UgG78nC4m0ixTWyM6UeT0YsZrLcCq8pGiL3X/q845lDJcJpriEkt
+ pQRcHA7R5gaMDtcYG8A20FHAnVO/h/xfUXnP2imKAQo45PByF+YTwkDq2umrD3eth2o4qCdnL
+ bAN44TFcq+XWvsfadMQofaXA/L4TjwGnWDZU/8Z4rdK+TtNAwR+FqhH/1HC0u8ghaq2T+ZZXS
+ CnnEAo74CA35cOMfMbEJLQiXYUAFB+xRQ3ww9XkX76tEs2QhbB3Lg2QrPN9BL1j8kFCs=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 05:30:00PM +0800, Yu Kuai wrote:
-> RFC patch: https://lkml.org/lkml/2021/9/9/1432
+Le 26/01/2022 à 14:41, Greg KH a écrit :
+> On Fri, Jan 21, 2022 at 09:07:35PM +0100, Laurent Vivier wrote:
+>> Revert
+>> commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
 > 
-> There is a proformance problem in our environment:
+> Why?
 > 
-> A host can provide a remote device to difierent client. If one client is
-> under high io pressure, other clients might be affected.
+>> and define gf_ioread32()/gf_iowrite32() to be able to use accessors
+>> defined by the architecture.
 > 
-> Limit the overall iops/bps(io.max) from the client can fix the problem,
-> however, config files do not exist in root cgroup currently, which makes
-> it impossible.
+> What does this do?
 > 
-> This patch enables io throttle for root cgroup:
->  - enable "io.max" and "io.low" in root
->  - don't skip root group in tg_iops_limit() and tg_bps_limit()
->  - don't skip root group in tg_conf_updated()
+>>
+>> Cc: stable@vger.kernel.org # v5.11+
+>> Fixes: da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
+>> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+>> ---
+>>   drivers/tty/goldfish.c   | 20 ++++++++++----------
+>>   include/linux/goldfish.h | 15 +++++++++++----
+>>   2 files changed, 21 insertions(+), 14 deletions(-)
+...
+>> -- 
+>> 2.34.1
+>>
 > 
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+> This feels like a step backwards.  Why keep this level of indirection
+> for no good reason?
+> 
 
-Yeah, I'm kinda split. It's a simple change with some utility, but it's also
-something which doesn't fit with the cgroup feature or interface. It's
-regulating the whole system behavior. There's no reason for any of the
-control "groups" to be involved here and semantically the interface would
-fit a lot better under /proc, /sys or some other system-wide location. Here
-are some points to consider:
+It was proposed by Arnd on my previous iteration of the series when I wanted to update goldfish-rtc 
+in the same way:
 
-* As a comparison, it'd be rather absurd to enable memory.max at system root
-  in terms of interface and most likely break whole lot of mm operations.
+https://lore.kernel.org/all/CAK8P3a1H6-sd_+FqnOq0Zhj=L51EWuW5VCcYeTENcp3+PkTC4Q@mail.gmail.com/
 
-* Resource control knobs of a cgroup belong to the parent as the parent is
-  responsible for divvying up the available resources to its children. Here
-  too, the knobs are making sense because there's a higher level parent
-  (whether that's hypervisor or some network server).
+Keeping __raw_XXX() functions works on most of the cases except if the current CPU endianness can 
+differ from the architecture one (like a ppc64le kernel (little-endian) running a ppc64 machine 
+(big-endian)).
 
-Is your use case VMs or network attached storage?
+The best solution would be to update QEMU to set the device as a little-endian one, but google 
+didn't merge its implemention in upstream QEMU and this would break all other OSes using goldfish 
+devices on big-endian architectures.
 
-Thanks.
-
--- 
-tejun
+Thanks,
+Laurent
