@@ -2,83 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1BA8C3526D
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F5DC28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:20:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238551AbiAZNTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:19:50 -0500
-Received: from mga14.intel.com ([192.55.52.115]:47593 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234798AbiAZNTs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:19:48 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="246764661"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="246764661"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:19:48 -0800
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="628300420"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:19:44 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1nCiC5-00Ebgm-A1;
-        Wed, 26 Jan 2022 15:18:37 +0200
-Date:   Wed, 26 Jan 2022 15:18:37 +0200
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Helge Deller <deller@gmx.de>, linux-staging@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
-Message-ID: <YfFKLfSKUdo1UVfF@smile.fi.intel.com>
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
- <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
- <CAHp75Vd7oaYPKx6bxjCqNnm6fieeQFrtq5K4YYrxYbXoXFy=+Q@mail.gmail.com>
- <20220126102858.GX1951@kadam>
- <1b665bb8-7acb-519b-0a02-ef0f2dd4b524@redhat.com>
- <YfFE61IQus3SMQRZ@kroah.com>
+        id S238682AbiAZNUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:20:17 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:45488 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238596AbiAZNUQ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 08:20:16 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id D37AD1F397;
+        Wed, 26 Jan 2022 13:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1643203214; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oJL4Adj+H6C1XkGFJGLoj0TBC596419DIcULA/qs6RA=;
+        b=c7g4DAAdYkWL4aUuiDJ1skfsjqgtSvGuAgQKrVZkC/XsKu8yV9BMFqQG4Rf7B8jKSv2Wgf
+        IbG/yTrhYYLTmO64rTBxrkFfNz1YLywAptmVUOIcsCpUKN813hD/SxAJD4wrOvBaVagtDm
+        1CbK0CfmDIt5+Nnjx35Dqrjc+woFIuo=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 23D67A3B83;
+        Wed, 26 Jan 2022 13:20:14 +0000 (UTC)
+Date:   Wed, 26 Jan 2022 14:20:10 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        HATAYAMA Daisuke <d.hatayama@jp.fujitsu.com>,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dyoung@redhat.com, linux-doc@vger.kernel.org, vgoyal@redhat.com,
+        stern@rowland.harvard.edu, akpm@linux-foundation.org,
+        andriy.shevchenko@linux.intel.com, corbet@lwn.net,
+        halves@canonical.com, kernel@gpiccoli.net,
+        Will Deacon <will@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juergen Gross <jgross@suse.com>, mikelley@microsoft.com
+Subject: Re: [PATCH V4] notifier/panic: Introduce panic_notifier_filter
+Message-ID: <YfFKiscTVckEy2E8@alley>
+References: <20220108153451.195121-1-gpiccoli@igalia.com>
+ <Yel8WQiBn/HNQN83@alley>
+ <ccd9332e-2917-3020-3590-447fa660ff56@igalia.com>
+ <20220122105514.GA18258@MiWiFi-R3L-srv>
+ <20220123220711.44f1484c9b510eea8cda9c47@kernel.org>
+ <20220124135902.GB8305@MiWiFi-R3L-srv>
+ <ff3bc2cf-80bf-3bb0-0dcd-7f9cacdae45a@igalia.com>
+ <20220126031039.GA26064@MiWiFi-R3L-srv>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YfFE61IQus3SMQRZ@kroah.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220126031039.GA26064@MiWiFi-R3L-srv>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 01:56:11PM +0100, Greg Kroah-Hartman wrote:
-> On Wed, Jan 26, 2022 at 01:37:00PM +0100, Javier Martinez Canillas wrote:
-> > On 1/26/22 11:28, Dan Carpenter wrote:
-
-...
-
-> >    fb_hx8347d.c (DRM driver in drivers/gpu/drm/tiny/hx8357d.c)
-> >    fb_hx8357d.c (DRM driver in drivers/gpu/drm/tiny/hx8357d.c)
-> >    fb_ili9163.c (DRM driver in drivers/gpu/drm/tiny/ili9163.c)
-> >    fb_ili9341.c (DRM driver in drivers/gpu/drm/tiny/mi0283qt.c ?)
-> >    fb_ili9486.c (DRM driver in drivers/gpu/drm/tiny/ili9486.c)
-> >    fb_st7735r.c (DRM driver in drivers/gpu/drm/tiny/st7735r.c)
-> >    fb_st7789v.c (DRM driver in drivers/gpu/drm/panel/panel-sitronix-st7789v.c)
+On Wed 2022-01-26 11:10:39, Baoquan He wrote:
+> On 01/24/22 at 11:48am, Guilherme G. Piccoli wrote:
+> > On 24/01/2022 10:59, Baoquan He wrote:
+> > > [...]
+> > > About pre_dump, if the dump is crash dump, hope those pre_dump notifiers
+> > > will be executed under conditional check, e.g only if 'crash_kexec_post_notifiers'
+> > > is specified in kernel cmdline. 
+> > 
+> > Hi Baoquan, based on Petr's suggestion, I think pre_dump would be
+> > responsible for really *non-intrusive/non-risky* tasks and should be
+> > always executed in the panic path (before kdump), regardless of
+> > "crash_kexec_post_notifiers".
+> > 
+> > The idea is that the majority of the notifiers would be executed in the
+> > post_dump portion, and for that, we have the
+> > "crash_kexec_post_notifiers" conditional. I also suggest we have
+> > blacklist options (based on function names) for both notifiers, in order
+> > to make kdump issues debug easier.
+> > 
+> > Do you agree with that? Feel free to comment with suggestions!
+> > Cheers,
 > 
-> I'll gladly take a patch that deletes the fb_* files that are already
-> handled by a DRM driver like you list here.
+> I would say "please NO" cautiously.
+> 
+> As Petr said, kdump mostly works only if people configure it correctly.
+> That's because we try best to switch to kdump kernel from the fragile
+> panicked kernel immediately. When we try to add anthing before the switching,
+> please consider carefully and ask if that adding is mandatory, otherwise
+> switching into kdump kernel may fail. If the answer is yes, the adding
+> is needed and welcomed. Othewise, any unnecessary action, including any
+> "non-intrusive/non-risky" tasks, would be unwelcomed.
 
-None of the DRM driver supports parallel interface for these devices.
+I still do not have the complete picture. But it seems that some
+actions make always sense even for kdump:
 
--- 
-With Best Regards,
-Andy Shevchenko
+    + Super safe operations that might disable churn from broken
+      system. For examle, disabling watchdogs by setting a single
+      variable, see rcu_panic() notifier
+
+    + Actions needed that allow to kexec the crash kernel a safe
+      way under some hypervisor, see
+      https://lore.kernel.org/r/MWHPR21MB15933573F5C81C5250BF6A1CD75E9@MWHPR21MB1593.namprd21.prod.outlook.com
 
 
+> Surely, we don't oppose the "non-intrusive/non-risky" or completely
+> "intrusive/risky" action adding before kdump kernel switching, with a
+> conditional limitation. When we handle customers' kdump support, we
+> explicitly declare we only support normal and default kdump operation.
+> If any action which is done before switching into kdump kernel is specified,
+> e.g panic_notifier, panic_print, they need take care of their own kdump
+> failure.
+
+All this actually started because of kmsg_dump. It might make sense to
+allow both kmsg_dump and kdump together. The messages stored by
+kmsg_dump might be better than nothing when kdump fails.
+
+It actually seems to be the main motivation to introduce
+"crash_kexec_post_notifier" parameter, see the commit
+f06e5153f4ae2e2f3b03 ("kernel/panic.c: add "crash_kexec_post_notifiers"
+option for kdump after panic_notifers").
+
+And this patch introduces panic_notifier_filter that tries to select
+notifiers that are helpful and harmful. IMHO, it is almost unusable.
+It seems that even kernel developers do not understand what exactly
+some notifiers do and why they are needed. Usually only the author
+and people familiar with the subsystem have some idea. It makes
+it pretty hard for anyone to create a reasonable filter.
+
+I am pretty sure that we could do better. I propose to add more
+notifier lists that will be called at various places with reasonable
+rules and restrictions. Then the susbsystem maintainers could decide
+where exactly a given action must be done.
+
+The result might be that we will need only few options that will
+enable/disable some well defined optional features.
+
+Best Regards,
+Petr
