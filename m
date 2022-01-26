@@ -2,272 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9292C5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF9DC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:40:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241423AbiAZMjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 07:39:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49278 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234178AbiAZMjR (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 07:39:17 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E44A761A11;
-        Wed, 26 Jan 2022 12:39:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CF0BC340E3;
-        Wed, 26 Jan 2022 12:39:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643200756;
-        bh=xljfkSW5EOUxkIzXQglwFnRTwhw+nyf/3Ow0W6XX3Z8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LM+uoaziStbdr/lVGp7RVl8lcWdP71RQfpmIkI3pGoiaRTpwJpE7cimvx0+KoG5FT
-         zIiyeG0nU/tsVYEsLLal/YUrcHtj5m3A9SLLiDGQ+BvNvdRCKqpKmfkhum14gibfI1
-         A0lYcFl+j3eXbkwGWkynYmL28SfHmNj7iwhnmyGoz+5Oks1setkWc0TZrH2P6zxqW9
-         SkfRGzQYKotXd4d9bwKOxb2mT6Rqcwz1AHODftvC8FpwT9mkMTQf4HMQp9RyQyhBve
-         XiPPCDntq7dVabQTS+H5ebal5I2lOe3pKNkeN9CmAbM84rkuSZxpluCP2InW+FWm8W
-         dI8Idnu6kVaeQ==
-Date:   Wed, 26 Jan 2022 13:39:08 +0100
-From:   Christian Brauner <brauner@kernel.org>
-To:     Stefan Berger <stefanb@linux.vnet.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
-        serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        Stefan Berger <stefanb@linux.ibm.com>
-Subject: Re: [PATCH v9 15/23] ima: Implement hierarchical processing of file
- accesses
-Message-ID: <20220126123908.q65wgvr2v52lmxpw@wittgenstein>
-References: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
- <20220125224645.79319-16-stefanb@linux.vnet.ibm.com>
+        id S241434AbiAZMkh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 07:40:37 -0500
+Received: from selene.zem.fi ([178.62.79.47]:43204 "EHLO selene.zem.fi"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234178AbiAZMkf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 07:40:35 -0500
+X-Greylist: delayed 385 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jan 2022 07:40:35 EST
+Received: by selene.zem.fi (Postfix, from userid 1000)
+        id F22BF4DC4C; Wed, 26 Jan 2022 12:33:39 +0000 (GMT)
+Date:   Wed, 26 Jan 2022 12:33:39 +0000
+From:   Heikki Kallasjoki <heikki.kallasjoki@iki.fi>
+To:     Ariadne Conill <ariadne@dereferenced.org>
+Cc:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH] fs/exec: require argv[0] presence in do_execveat_common()
+Message-ID: <YfE/owUY+gVnn2b/@selene.zem.fi>
+References: <20220126043947.10058-1-ariadne@dereferenced.org>
+ <202201252241.7309AE568F@keescook>
+ <39480927-B17F-4573-B335-7FCFD81AB997@chromium.org>
+ <44b4472d-1d50-c43f-dbb1-953532339fb4@dereferenced.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220125224645.79319-16-stefanb@linux.vnet.ibm.com>
+In-Reply-To: <44b4472d-1d50-c43f-dbb1-953532339fb4@dereferenced.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 05:46:37PM -0500, Stefan Berger wrote:
-> From: Stefan Berger <stefanb@linux.ibm.com>
+On Wed, Jan 26, 2022 at 05:18:58AM -0600, Ariadne Conill wrote:
+> On Tue, 25 Jan 2022, Kees Cook wrote:
+> > Lots of stuff likes to do:
+> > execve(path, NULL, NULL);
 > 
-> Implement hierarchical processing of file accesses in IMA namespaces by
-> walking the list of user namespaces towards the root. This way file
-> accesses can be audited in an IMA namespace and also be evaluated against
-> the IMA policies of parent IMA namespaces.
-> 
-> Pass the user_namespace into process_measurement since we will be walking
-> the hierarchy of user_namespaces towards the init_user_ns and we can easily
-> derive the ima_namespace from the user_namespace.
-> 
-> __process_measurement() returns either 0 or -EACCES. For hierarchical
-> processing remember the -EACCES returned by this function but continue
-> to the parent user namespace. At the end either return 0 or -EACCES
-> if an error occurred in one of the IMA namespaces.
-> 
-> Currently the ima_ns pointer of the user_namespace is always NULL except
-> at the init_user_ns, so test ima_ns for NULL pointer and skip the call to
-> __process_measurement() if it is NULL. Once IMA namespacing is fully
-> enabled, the pointer may still be NULL due to late initialization of the
-> IMA namespace.
-> 
-> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-> 
-> ---
-> 
-> v9:
->   - Switch callers to pass user_namespace rather than ima_namespace with
->     potential NULL pointer
->   - Add default case to switch statement and warn if this happens
->   - Implement ima_ns_from_user_ns() in this patch now
-> ---
->  security/integrity/ima/ima.h      |  8 ++++
->  security/integrity/ima/ima_main.c | 75 +++++++++++++++++++++++--------
->  2 files changed, 64 insertions(+), 19 deletions(-)
-> 
-> diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
-> index 0057b1fd6c18..aea8fb8d2854 100644
-> --- a/security/integrity/ima/ima.h
-> +++ b/security/integrity/ima/ima.h
-> @@ -493,4 +493,12 @@ struct user_namespace *ima_user_ns_from_file(const struct file *filp)
->  	return file_inode(filp)->i_sb->s_user_ns;
->  }
->  
-> +static inline struct ima_namespace
-> +*ima_ns_from_user_ns(struct user_namespace *user_ns)
-> +{
-> +	if (user_ns == &init_user_ns)
-> +		return &init_ima_ns;
-> +	return NULL;
-> +}
-> +
->  #endif /* __LINUX_IMA_H */
-> diff --git a/security/integrity/ima/ima_main.c b/security/integrity/ima/ima_main.c
-> index ae0e9b14554a..3385221ca1d5 100644
-> --- a/security/integrity/ima/ima_main.c
-> +++ b/security/integrity/ima/ima_main.c
-> @@ -196,10 +196,10 @@ void ima_file_free(struct file *file)
->  	ima_check_last_writer(iint, inode, file);
->  }
->  
-> -static int process_measurement(struct ima_namespace *ns,
-> -			       struct file *file, const struct cred *cred,
-> -			       u32 secid, char *buf, loff_t size, int mask,
-> -			       enum ima_hooks func)
-> +static int __process_measurement(struct ima_namespace *ns,
-> +				 struct file *file, const struct cred *cred,
-> +				 u32 secid, char *buf, loff_t size, int mask,
-> +				 enum ima_hooks func)
->  {
->  	struct inode *inode = file_inode(file);
->  	struct integrity_iint_cache *iint = NULL;
-> @@ -391,6 +391,41 @@ static int process_measurement(struct ima_namespace *ns,
->  	return 0;
->  }
->  
-> +static int process_measurement(struct user_namespace *user_ns,
-> +			       struct file *file, const struct cred *cred,
-> +			       u32 secid, char *buf, loff_t size, int mask,
-> +			       enum ima_hooks func)
-> +{
-> +	struct ima_namespace *ns;
-> +	int ret = 0;
-> +
-> +	while (user_ns) {
-> +		ns = ima_ns_from_user_ns(user_ns);
-> +		if (ns) {
-> +			int rc;
-> +
-> +			rc = __process_measurement(ns, file, cred, secid, buf,
-> +						   size, mask, func);
-> +			switch (rc) {
-> +			case 0:
-> +				break;
-> +			case -EACCES:
-> +				/* return this error at the end but continue */
-> +				ret = -EACCES;
-> +				break;
-> +			default:
-> +				/* should not happen */
-> +				ret = -EACCES;
-> +				WARN_ON_ONCE(true);
-> +			}
-> +		}
-> +
-> +		user_ns = user_ns->parent;
-> +	};
-> +
-> +	return ret;
-> +}
-> +
->  /**
->   * ima_file_mmap - based on policy, collect/store measurement.
->   * @file: pointer to the file to be measured (May be NULL)
-> @@ -404,13 +439,14 @@ static int process_measurement(struct ima_namespace *ns,
->   */
->  int ima_file_mmap(struct file *file, unsigned long prot)
->  {
-> -	struct ima_namespace *ns = &init_ima_ns;
-> +	struct user_namespace *user_ns = current_user_ns();
->  	u32 secid;
->  
->  	if (file && (prot & PROT_EXEC)) {
->  		security_task_getsecid_subj(current, &secid);
-> -		return process_measurement(ns, file, current_cred(), secid,
-> -					   NULL, 0, MAY_EXEC, MMAP_CHECK);
-> +		return process_measurement(user_ns, file, current_cred(),
-> +					   secid, NULL, 0, MAY_EXEC,
-> +					   MMAP_CHECK);
->  	}
->  
->  	return 0;
-> @@ -485,19 +521,19 @@ int ima_file_mprotect(struct vm_area_struct *vma, unsigned long prot)
->   */
->  int ima_bprm_check(struct linux_binprm *bprm)
->  {
-> -	struct ima_namespace *ns = &init_ima_ns;
-> +	struct user_namespace *user_ns = current_user_ns();
->  	int ret;
->  	u32 secid;
->  
->  	security_task_getsecid_subj(current, &secid);
-> -	ret = process_measurement(ns, bprm->file, current_cred(), secid, NULL,
-> -				  0, MAY_EXEC, BPRM_CHECK);
-> +	ret = process_measurement(user_ns, bprm->file, current_cred(), secid,
-> +				  NULL, 0, MAY_EXEC, BPRM_CHECK);
->  	if (ret)
->  		return ret;
->  
->  	security_cred_getsecid(bprm->cred, &secid);
-> -	return process_measurement(ns, bprm->file, bprm->cred, secid, NULL, 0,
-> -				   MAY_EXEC, CREDS_CHECK);
-> +	return process_measurement(user_ns, bprm->file, bprm->cred, secid,
-> +				   NULL, 0, MAY_EXEC, CREDS_CHECK);
->  }
->  
->  /**
-> @@ -512,11 +548,12 @@ int ima_bprm_check(struct linux_binprm *bprm)
->   */
->  int ima_file_check(struct file *file, int mask)
->  {
-> -	struct ima_namespace *ns = &init_ima_ns;
-> +	struct user_namespace *user_ns = current_user_ns();
->  	u32 secid;
->  
->  	security_task_getsecid_subj(current, &secid);
-> -	return process_measurement(ns, file, current_cred(), secid, NULL, 0,
-> +	return process_measurement(user_ns, file, current_cred(), secid,
-> +				   NULL, 0,
->  				   mask & (MAY_READ | MAY_WRITE | MAY_EXEC |
->  					   MAY_APPEND), FILE_CHECK);
->  }
-> @@ -698,7 +735,7 @@ void ima_post_path_mknod(struct user_namespace *mnt_userns,
->  int ima_read_file(struct file *file, enum kernel_read_file_id read_id,
->  		  bool contents)
->  {
-> -	struct ima_namespace *ns = &init_ima_ns;
-> +	struct user_namespace *user_ns = current_user_ns();
->  	enum ima_hooks func;
->  	u32 secid;
->  
-> @@ -721,7 +758,7 @@ int ima_read_file(struct file *file, enum kernel_read_file_id read_id,
->  	/* Read entire file for all partial reads. */
->  	func = read_idmap[read_id] ?: FILE_CHECK;
->  	security_task_getsecid_subj(current, &secid);
-> -	return process_measurement(ns, file, current_cred(), secid, NULL,
-> +	return process_measurement(user_ns, file, current_cred(), secid, NULL,
->  				   0, MAY_READ, func);
->  }
->  
-> @@ -749,7 +786,7 @@ const int read_idmap[READING_MAX_ID] = {
->  int ima_post_read_file(struct file *file, void *buf, loff_t size,
->  		       enum kernel_read_file_id read_id)
->  {
-> -	struct ima_namespace *ns = &init_ima_ns;
-> +	struct user_namespace *user_ns = current_user_ns();
+> I looked at these, and these seem to basically be lazily-written test cases
+> which should be fixed.  I didn't see any example of real-world applications
+> doing this.  As noted in some of the test cases, there are comments like
+> "Solaris doesn't support this," etc.
 
-That'll break compilation as youre checking:
+See also the (small) handful of instances of `execlp(cmd, NULL);` out
+there, which I imagine would start to fail:
+https://codesearch.debian.net/search?q=execlp%3F%5Cs*%5C%28%5B%5E%2C%5D%2B%2C%5Cs*NULL&literal=0
 
-ns == &init_ima_ns below.
+Two of the hits (ispell, nauty) would seem to be non-test use cases.
 
-security/integrity/ima/ima_main.c: In function ‘ima_post_read_file’:
-security/integrity/ima/ima_main.c:798:7: error: ‘ns’ undeclared (first use in this function); did you mean ‘insl’?
-  798 |   if (ns == &init_ima_ns &&
-      |       ^~
-      |       insl
-security/integrity/ima/ima_main.c:798:7: note: each undeclared identifier is reported only once for each function it appears in
+As an aside, saying POSIX "disallows" argc == 0 might be overstating it
+a little. As far as I can tell (quotes below), while a Strictly
+Conforming POSIX Application must provide argc >= 1 to a program it
+executes, the argc == 0 case isn't entirely disallowed.
 
-it's fixed later in the series but you might want to fix this up here as
-well.
+https://pubs.opengroup.org/onlinepubs/9699919799.2018edition/basedefs/V1_chap01.html
 
-Fwiw, a good strategy is to:
+"should -- describes a feature or behavior that is recommended but not
+mandatory. An application should not rely on the existence of the
+feature or behavior."
 
-git rebase -i -x "make LOCALVERSION=-imans" v5.16-rc2
+https://pubs.opengroup.org/onlinepubs/9699919799.2018edition/functions/execve.html
+
+"The value in argv[0] *should* point to a filename string that is
+associated with the process --" (emphasis added)
+
+"Early proposals required that the value of argc passed to main() be
+"one or greater". This was driven by the same requirement in drafts of
+the ISO C standard. In fact, historical implementations have passed a
+value of zero when no arguments are supplied to the caller of the exec
+functions. This requirement was removed from the ISO C standard and
+subsequently removed from this volume of POSIX.1-2017 as well. The
+wording, in particular the use of the word should, requires a Strictly
+Conforming POSIX Application to pass at least one argument to the exec
+function, thus guaranteeing that argc be one or greater when invoked by
+such an application. In fact, this is good practice, since many existing
+applications reference argv[0] without first checking the value of
+argc."
+
+Just to be clear, not disputing the part that disallowing `argc == 0`
+would be a reasonable idea, or claiming that there's a valid use case.
+Just the part where POSIX would *require* the system to disallow this.
+
+-- 
+Heikki Kallasjoki
