@@ -2,87 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52193C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 08:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C41E4C28CF5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 08:51:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238554AbiAZIra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 03:47:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230222AbiAZIr3 (ORCPT
+        id S238568AbiAZIvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 03:51:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:60051 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238557AbiAZIvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 03:47:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106DDC06161C;
-        Wed, 26 Jan 2022 00:47:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 26 Jan 2022 03:51:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643187110;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pfOp64U0iYvSw+YJXe3pmYBUfoothO/ocAN1AyLo5xI=;
+        b=iNv6FgCr2RzZBFMt/oAuSjVBhgEodPib8UPS9zGaQ5SmlRv3z9QkdJ+ws9yzMXNH2qu5AP
+        URGfYotPfCrbjzGnp8zqKLct8awiYAnrbkNziZurjvSrp/FqAg6CprZLCRighrApH/SByz
+        33NQmGjwGlkACGNDVmMc2xoh5kGB0qY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-528-8QxKUfNEP4SBWpgli8BY4w-1; Wed, 26 Jan 2022 03:51:44 -0500
+X-MC-Unique: 8QxKUfNEP4SBWpgli8BY4w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 807C760A51;
-        Wed, 26 Jan 2022 08:47:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8114C340E3;
-        Wed, 26 Jan 2022 08:47:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643186847;
-        bh=fYjYvin/ncOZkgLTguVdtStT4rh5GTFzqtSVTzTJ5zc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fz3RmuSXApVcPfd2W5IX7BNuEBYQ4d/CA4tiX/LmenrLmCpArMF2qcdlYLQqGghN4
-         kcz87olbwJ69uqNx2KuvfDqsGLid6phMh1y7QQ6ZDZkna1T3qDXoi3B54/PL4HxhAk
-         qjJsJKbt74o7ckNIdM5WXtP8wLuxGZmlqPPeZxACkgBgoxnPLDQBDsYvZlNZCeEMYg
-         r72iPq8g4MXzgih9XPna4tWSThd95NHiJg2TUilTWFMRaid5MshhbHKH9ve+Zx7u3i
-         PhGYuWoPHAEXHVLJnnqfliypniJ+DOQbrG9blbksF7BIhGznT10Mb5v+/tRN/MW5b7
-         Yn5BnOWWVQrcA==
-Date:   Wed, 26 Jan 2022 09:47:15 +0100
-From:   Christian Brauner <brauner@kernel.org>
-To:     Stefan Berger <stefanb@linux.vnet.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
-        serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        Stefan Berger <stefanb@linux.ibm.com>
-Subject: Re: [PATCH v9 05/23] ima: Define ima_namespace struct and start
- moving variables into it
-Message-ID: <20220126084715.b2wtmlbzoaqtipbp@wittgenstein>
-References: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
- <20220125224645.79319-6-stefanb@linux.vnet.ibm.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2D402100C609;
+        Wed, 26 Jan 2022 08:51:43 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BAD2B56F6A;
+        Wed, 26 Jan 2022 08:51:36 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <8f88459a-97e0-8b8d-3ec9-260d482a0d38@linux.alibaba.com>
+References: <8f88459a-97e0-8b8d-3ec9-260d482a0d38@linux.alibaba.com> <20220118131216.85338-1-jefflexu@linux.alibaba.com> <2815558.1643127330@warthog.procyon.org.uk>
+To:     JeffleXu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 00/20] fscache,erofs: fscache-based demand-read semantics
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220125224645.79319-6-stefanb@linux.vnet.ibm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <100894.1643187095.1@warthog.procyon.org.uk>
+Date:   Wed, 26 Jan 2022 08:51:35 +0000
+Message-ID: <100895.1643187095@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 05:46:27PM -0500, Stefan Berger wrote:
-> From: Stefan Berger <stefanb@linux.ibm.com>
-> 
-> Define the ima_namespace structure and the ima_namespace variable
-> init_ima_ns for the host's IMA namespace. Implement basic functions for
-> namespacing support.
-> 
-> Move variables related to the IMA policy into the ima_namespace. This way
-> the IMA policy of an IMA namespace can be set and displayed using a
-> front-end like securityfs.
-> 
-> Implement ima_ns_from_file() to get the IMA namespace via the user
-> namespace of the securityfs superblock that a file belongs to.
-> 
-> To get the current ima_namespace use &init_ima_ns when a function
-> that is related to a policy rule is called.
-> 
-> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-> 
-> ---
+JeffleXu <jefflexu@linux.alibaba.com> wrote:
 
-For the approach of introducing struct ima_namespace and moving a bunch
-of variables in there at the same time to prepare subsequent further
-namespacing:
+> "/path/to/file+offset"
+> 		^
+> 
+> Besides, what does the 'offset' mean?
 
-Acked-by: Christian Brauner <brauner@kernel.org>
+Assuming you're storing multiple erofs files within the same backend file, you
+need to tell the the cache backend how to find the data.  Assuming the erofs
+data is arranged such that each erofs file is a single contiguous region, then
+you need a pathname and a file offset to find one of them.
 
-I can't speak to the actual ima changes.
+David
+
