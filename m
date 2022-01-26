@@ -2,63 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB831C63686
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 02:26:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51555C3525A
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 02:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236355AbiAZC0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 21:26:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36544 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236319AbiAZC0B (ORCPT
+        id S236361AbiAZC0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 21:26:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236337AbiAZC0F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 21:26:01 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00F9FB81BDF;
-        Wed, 26 Jan 2022 02:26:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C02A8C340E0;
-        Wed, 26 Jan 2022 02:25:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643163958;
-        bh=RmgzmvNM3U88+c1923i7TOMfJnQBr8QzL2GLg1H5+ug=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=In4Rrh/bYyNC6EHa3YVOy+PmmZTzXzW2TtCDuW6jazHo1cQCGBFoZcl6d2e0oY/3b
-         QXTvHSnTmxQni9PZRkEf3+ZANu+mdl/lNPOgFfUYAwXgvp3Rhaoiek47BriA5JHhel
-         AxmA6wf8Fn++WP2v+37pA0GvRPFx9I5IVEs+1YELa4QVi+dnvkSEAjMhKttk+5zHvH
-         1xF+ZT8HTVOUz46u0k201ipNnjZ8pgaa/dCn7w3cL4xzp7kYTYCqAknfvFjv+qtbr7
-         XE7pQ3K73xd3qPsXARmznPqD+Kk53Z5KkMmQKBuDYe5cWA1QNDyliI9V4DbC2Unuia
-         H3s2YRwobxuxA==
-Date:   Wed, 26 Jan 2022 10:25:52 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     l.stach@pengutronix.de, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, marcel.ziswiler@toradex.com,
-        tharvey@gateworks.com, kishon@ti.com, vkoul@kernel.org,
-        robh@kernel.org, galak@kernel.crashing.org,
-        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Subject: Re: [PATCH v7 6/8] arm64: dts: imx8mm: Add the pcie support
-Message-ID: <20220126022552.GC4686@dragon>
-References: <1638432158-4119-1-git-send-email-hongxing.zhu@nxp.com>
- <1638432158-4119-7-git-send-email-hongxing.zhu@nxp.com>
+        Tue, 25 Jan 2022 21:26:05 -0500
+Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E897C06173B
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 18:26:05 -0800 (PST)
+Received: by mail-oo1-xc2d.google.com with SMTP id f11-20020a4abb0b000000b002e9abf6bcbcso1910086oop.0
+        for <linux-kernel@vger.kernel.org>; Tue, 25 Jan 2022 18:26:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxtx.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=l4BdSQcYkI7Tg6m9Z/JRw5Xx2nGZP7Dqic5XeVsukdg=;
+        b=J1FFAFb7vBaVzRQ23VWBQWxT47F+6OcV2pTl6aUARYldxGriME6fiNscI5fFMa28IN
+         pyxFvIIToDnYSS+s78DW11HZxDxhkFLhHjM2JMFikfPlA2b12yLRFoSKIxQFqvhZ0vuw
+         d+7D8xE78U4f7M9t85Jbe7MQR86VHvEEF0wZE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=l4BdSQcYkI7Tg6m9Z/JRw5Xx2nGZP7Dqic5XeVsukdg=;
+        b=SUAmkx25L0XNbeIN0cz/18ZavAhdlGRshEa0CccnEQCgJMO+Y6c0SfsNt4YQMCP1pV
+         bOgUe0A5Qnck2nrQPx65B9WT1zV+BjhrbT9DnLGaKBX3sddx9zqZX2ILLwBncw6RuDQU
+         oi3sm1U10naa4KzEQJxnF0VZVhXxUYtxSFIbCdWIqtzGM79dPZURyEZe/Id5RnK4XI4e
+         WgN22qdcvkfrA3m1Q0SW8yZfXne51kWzs14a68ry6HaikU6ankhXK415Af7eA+SwAEkI
+         ggw+1J9N/X659QNlBW9a8S/3PSZMnQFnWQj2k/rXAafbjlJY8rV8L9+NSwC3INhTF6g3
+         UHgA==
+X-Gm-Message-State: AOAM531rvW2W76OzL55F5AngWNNMQAlkVqtszd5S8BB1El0NpG4hi1Im
+        Kicoi4776F2gzJsUShZ1JFzEZA==
+X-Google-Smtp-Source: ABdhPJw+nrU/qkapwjf3gFM4N0QgVLATa/twB7tT6hkq5TfgdIPM2W6n+AGTrmA4cDAHBJ1mStiy/g==
+X-Received: by 2002:a4a:dc16:: with SMTP id p22mr14546157oov.85.1643163964828;
+        Tue, 25 Jan 2022 18:26:04 -0800 (PST)
+Received: from fedora64.linuxtx.org (104-189-158-32.lightspeed.rcsntx.sbcglobal.net. [104.189.158.32])
+        by smtp.gmail.com with ESMTPSA id g4sm7544923otl.1.2022.01.25.18.26.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 18:26:04 -0800 (PST)
+Date:   Tue, 25 Jan 2022 20:26:02 -0600
+From:   Justin Forbes <jmforbes@linuxtx.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 5.16 0000/1033] 5.16.3-rc2 review
+Message-ID: <YfCxOpu4fTON5ded@fedora64.linuxtx.org>
+References: <20220125155447.179130255@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1638432158-4119-7-git-send-email-hongxing.zhu@nxp.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20220125155447.179130255@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Dec 02, 2021 at 04:02:36PM +0800, Richard Zhu wrote:
-> Add the PCIe support on i.MX8MM platforms.
+On Tue, Jan 25, 2022 at 05:33:08PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.3 release.
+> There are 1033 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-> Tested-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> Reviewed-by: Tim Harvey <tharvey@gateworks.com>
-> Tested-by: Tim Harvey <tharvey@gateworks.com>
+> Responses should be made by Thu, 27 Jan 2022 15:52:30 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.3-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Applied, thanks!
+Tested rc2 against the Fedora build system (aarch64, armv7, ppc64le,
+s390x, x86_64), and boot tested x86_64. No regressions noted.
+
+Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
