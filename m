@@ -2,151 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C355C28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:29:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 384B5C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 03:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237210AbiAZD3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 25 Jan 2022 22:29:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:29902 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237206AbiAZD3g (ORCPT
+        id S237215AbiAZDaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 25 Jan 2022 22:30:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229989AbiAZDaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 25 Jan 2022 22:29:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643167776;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cgymQfGSuilmwHq8hbN9u09QSfRSsdRkrdxNQudh6GM=;
-        b=jBKA6KJ0KSt3SiN0qlCsqLVq2jRBcFJkTUBfmarUNm/2lWgkPemJAtVbKIuY9f3Jcr+Rx5
-        obt2HKxcJSGbsuGYA/pfizM7HplA4pokpuz7ynh10q+ZeLHcI1+ZxseZpNRk3Sri5bawb6
-        d+TZahDgwJ7oV23jxIyxS+kE+eO4fsE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-661-XpXrAHkVMhOIpAcPZt8Wig-1; Tue, 25 Jan 2022 22:29:32 -0500
-X-MC-Unique: XpXrAHkVMhOIpAcPZt8Wig-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A2DA91DDE9;
-        Wed, 26 Jan 2022 03:29:30 +0000 (UTC)
-Received: from localhost (ovpn-12-215.pek2.redhat.com [10.72.12.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 46BD54E2B7;
-        Wed, 26 Jan 2022 03:29:21 +0000 (UTC)
-Date:   Wed, 26 Jan 2022 11:29:19 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, kernel@gpiccoli.net,
-        senozhatsky@chromium.org, rostedt@goodmis.org,
-        john.ogness@linutronix.de, feng.tang@intel.com,
-        kexec@lists.infradead.org, dyoung@redhat.com,
-        keescook@chromium.org, anton@enomsg.org, ccross@android.com,
-        tony.luck@intel.com
-Subject: Re: [PATCH V3] panic: Move panic_print before kmsg dumpers
-Message-ID: <20220126032919.GB2086@MiWiFi-R3L-srv>
-References: <20220114183046.428796-1-gpiccoli@igalia.com>
- <20220119071318.GA4977@MiWiFi-R3L-srv>
- <YegytkfED+QI56Y8@alley>
- <20220120085115.GB18398@MiWiFi-R3L-srv>
- <63621138-2a41-26c2-524e-d889068f157a@igalia.com>
- <20220121023119.GB4579@MiWiFi-R3L-srv>
- <c7796467-ee32-942f-6011-860a3600f4ef@igalia.com>
- <20220122103121.GB2596@MiWiFi-R3L-srv>
- <ed18ba1e-4792-22c5-3ece-4d518a8a4a2d@igalia.com>
+        Tue, 25 Jan 2022 22:30:14 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D8DC06161C;
+        Tue, 25 Jan 2022 19:30:13 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id h2so27029254qkp.10;
+        Tue, 25 Jan 2022 19:30:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E7anDpLimRE6bYis5gbdpa/RPki6eh1XfOHxrRk/P/4=;
+        b=SXRlHFjRWC2Mv38MUu2FfMqDEb49bJZfxYE559Kw+D0Pn2YltH77SpBW3HH0YW5AsE
+         m8kzbCMD9MZIkkdaMBt1JMXzZvL87DNz+apl6ePX/TZd6D1vEa2xLP9paVzPlpB014h9
+         6RZ8KymN/gMgkdABfFHWVpzVAjSf0rYQjS5yktG4rHR6VGF8OAEdq4nqpvvJE1pRreRm
+         qEtmS903LkbFXgqIFXymoOB30fFzO7Q+H8PFLqPdEYHjfqzuqV+Z7QsD3pCwq/2lJ9gm
+         h+TZI7RIh7QW5QG05fDEDYNnEhfg5DP4DhdGFoRo5ptPvIqzokYrOMe0xQ5f3KanUOae
+         L9AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E7anDpLimRE6bYis5gbdpa/RPki6eh1XfOHxrRk/P/4=;
+        b=W9b3muUZtQSM6z1Db2YJp1EIHjTSbauHnZjLptqs+BluknAo4kUDTIPzlOiTLtCeWm
+         8cTroX5iLZ3ATLp2QsTtGn51RoIKLas4YOi+aF/10zugUO3zT8V3P1A4oyixYQghLrxW
+         P0tM15Nn6uvN0Q7JUch1g5YX0gLmhRPA4JH5hEA1k6M17wtCk09p5PL2L8zTTi6bt6VI
+         JrUd3YfDCsS0M64GFfBkHr+c07L847s+UtnDAi55CtjtiDi+qxsQZzq/ucyPtzOiogJ0
+         fulSrnXZBBLJqpk0t5IUYDIkSopWFDrACFXubbybP5Q8uX3NZFhcQ5xBycgkwAjN7KJd
+         AAdg==
+X-Gm-Message-State: AOAM5309rFMrcHmOlWomzrc3lGkVchFm7g8tpErzstf0uqz6za6qh55g
+        kILTOXUY5wo4+t4ZUVryu+iUpRXhORDNXqoITTI=
+X-Google-Smtp-Source: ABdhPJzOxLW8ANKOJuqP39xeWiTHWhbAJym/4GNx7fbso6asTpJBhG97tat7EMYA2eWqagLzlBUDXMJW3yhDFcy0HzY=
+X-Received: by 2002:a05:620a:d95:: with SMTP id q21mr16790410qkl.74.1643167812983;
+ Tue, 25 Jan 2022 19:30:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ed18ba1e-4792-22c5-3ece-4d518a8a4a2d@igalia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+References: <20220125021353.GA29777@embeddedor>
+In-Reply-To: <20220125021353.GA29777@embeddedor>
+From:   Baolin Wang <baolin.wang7@gmail.com>
+Date:   Wed, 26 Jan 2022 11:30:55 +0800
+Message-ID: <CADBw62opvW1kdZbjxc0SBidjn0teYLsrfxTqfKoua6x9O84Neg@mail.gmail.com>
+Subject: Re: [PATCH][next] hwspinlock: stm32: Use struct_size() helper in devm_kzalloc()
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-remoteproc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/22/22 at 10:49am, Guilherme G. Piccoli wrote:
-> On 22/01/2022 07:31, Baoquan He wrote:
-> > [...]
-> > From my old POV, I took pstore as a necessity on handheld devices or
-> > embeded system, e.g on Andriod. In that case, reserving crashkernel
-> > memory to enable kdump to save kernel log, it sounds not so
-> > cost-effective, since memory on those systems is usually not big.
-> > I am also interested in any new use case where people deploy these
-> > and why it's needed, to widen my view.
-> 
-> Hi Baoquan, that's great to hear. Indeed, I feel pstore is unfortunately
-> not very used in non-embedded devices - if you see kdump/error-report
-> userspace tooling, like on Red Hat/Fedora, Debian/Ubuntu and so on, they
-> never rely on pstore. And the configuration is not straightforward for
-> the users...I think that's a good thing to change, since pstore is much
-> less resource consuming than kdump.
-> But of course, not a discussion related to this patch specifically, just
-> me thinking out loud heh
-> 
-> 
-> > [...] 
-> > It's my bad. My thought is panic_print and kmsg_dump can be coupled, but
-> > they should decouple with panic_notifier. When panic_print is enabled,
-> > we do not expect to execute panic_notifier? My personal opinion.
-> > 
-> > I missed the change at line 8, sorry for the caused misunderstanding. 
-> > Now the chance of holding C-programmer-prize of the year comes back
-> > again.
-> > 
-> >   void panic()
-> >   {
-> > 1         if (!_crash_kexec_post_notifiers && !panic_print) {
-> > 2                 __crash_kexec(NULL);
-> > 3                 smp_send_stop();
-> > 4         } else {
-> > 5                 crash_smp_send_stop();
-> > 6         }
-> >   
-> >   	if (_crash_kexec_post_notifiers)
-> > 8  		atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
-> > 9  	panic_print_sys_info(false);
-> > 10  	kmsg_dump(KMSG_DUMP_PANIC);
-> > 11  	if (_crash_kexec_post_notifiers || panic_print)
-> > 12                 __crash_kexec(NULL);
-> >   	...
-> >   	debug_locks_off();
-> >           console_flush_on_panic(CONSOLE_FLUSH_PENDING);
-> >           panic_print_sys_info(true);
-> 
-> Hmm, yeah, I still don't think I'm a brilliant C programmer heh
-> Again, in the code above, I can't see how we would reach
-> "__crash_kexec(NULL)" after printing the extra info of panic_print, if
-> we don't have panic notifiers enabled.
+On Tue, Jan 25, 2022 at 10:07 AM Gustavo A. R. Silva
+<gustavoars@kernel.org> wrote:
+>
+> Make use of the struct_size() helper instead of an open-coded version,
+> in order to avoid any potential type mistakes or integer overflows that,
+> in the worst scenario, could lead to heap overflows.
+>
+> Also, address the following sparse warnings:
+> drivers/hwspinlock/stm32_hwspinlock.c:84:32: warning: using sizeof on a flexible structure
+>
+> Link: https://github.com/KSPP/linux/issues/174
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Missed this one.
+LGTM.
+Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
 
-Above code will allow any of _crash_kexec_post_notifiers and panic_print
-to execute, then crash dump in L11.
-   L5 -> L11
+> ---
+>  drivers/hwspinlock/stm32_hwspinlock.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/hwspinlock/stm32_hwspinlock.c b/drivers/hwspinlock/stm32_hwspinlock.c
+> index 5bd11a7fab65..716ad4401249 100644
+> --- a/drivers/hwspinlock/stm32_hwspinlock.c
+> +++ b/drivers/hwspinlock/stm32_hwspinlock.c
+> @@ -73,15 +73,14 @@ static int stm32_hwspinlock_probe(struct platform_device *pdev)
+>         struct device *dev = &pdev->dev;
+>         struct stm32_hwspinlock *hw;
+>         void __iomem *io_base;
+> -       size_t array_size;
+>         int i, ret;
+>
+>         io_base = devm_platform_ioremap_resource(pdev, 0);
+>         if (IS_ERR(io_base))
+>                 return PTR_ERR(io_base);
+>
+> -       array_size = STM32_MUTEX_NUM_LOCKS * sizeof(struct hwspinlock);
+> -       hw = devm_kzalloc(dev, sizeof(*hw) + array_size, GFP_KERNEL);
+> +       hw = devm_kzalloc(dev, struct_size(hw, bank.lock, STM32_MUTEX_NUM_LOCKS),
+> +                         GFP_KERNEL);
+>         if (!hw)
+>                 return -ENOMEM;
+>
+> --
+> 2.27.0
+>
 
-Since you have posted v4, let's ignore it anyway.
 
-> 
-> So, indeed the code currently don't really tightly couple "panic_print"
-> with the panic notifiers. We could change that in another patch series,
-> based on what Petr suggested in the filter thread (I know you're
-> following there as well, thanks bu the way!), but for now, they are
-> completely independent. My plan, following Petr suggestions here and if
-> you agree, is to re-submit this patch with some changes, but in the end
-> the code will allow users that have kdump enabled + panic_print
-> -"crash_kexec_post_notifiers" to have "panic_print_sys_info(false)"
-> executing before the "__crash_kexec(NULL)".
-> 
-> But also, we can add "crash_kexec_post_notifiers" and it will still
-> work; finally, pstore is gonna be able to collect the logs from
-> "panic_print" as well (the main purpose of this patch).
-> 
-> Once that's all resolved, my goal is to jump into the panic notifiers
-> refactor suggested in the other thread. Let me know if you agree with
-> these steps/plans, and I'll work them.
-
-I am glad to see any improvement from refactory. As for panic_notifier,
-I have expressed my concern and worry about the plan. So, if no any
-new action added before kdump switching, it's welcomed.
-
+-- 
+Baolin Wang
