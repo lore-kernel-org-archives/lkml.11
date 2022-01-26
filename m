@@ -2,103 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EADAC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:49:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FCE2C3526D
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241628AbiAZNtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:49:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49124 "EHLO
+        id S241640AbiAZNuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:50:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235498AbiAZNtN (ORCPT
+        with ESMTP id S241631AbiAZNuS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:49:13 -0500
+        Wed, 26 Jan 2022 08:50:18 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36F7C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 05:49:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81ADCC06161C;
+        Wed, 26 Jan 2022 05:50:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61738615BE
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 13:49:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4426FC340E3;
-        Wed, 26 Jan 2022 13:49:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EB7F6135E;
+        Wed, 26 Jan 2022 13:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC05BC340E3;
+        Wed, 26 Jan 2022 13:50:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643204952;
-        bh=cpWJJshLDCMrF55Gm/ZYi8fsRUiUxk7EZ0xMpwks95w=;
+        s=korg; t=1643205017;
+        bh=9mDXCoeqsja8rXJhe52fHHw9XzlnXG7asjLqfZfZcZ4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oqcoUuwHjTJ9QhGzXvyeJXnf1/xZk8lJAJg809zxorpnTaG3AwG8jkWOp9nUP5JO/
-         ghTaEVU7c6SD6vmYLrRR3T8eQCEypne2gaQIFWY4c64LxF//BVG8qoKJkUrGqPmAle
-         RbSTXZCfZ4OWmRLqcW6AGOYlib70chbjdCGte10k=
-Date:   Wed, 26 Jan 2022 14:49:10 +0100
+        b=taWxoPenqHi5/N2FoZdUABm1Z1CwBtaxeHzAMMuZzVlUoFzlgWwpbCyllHoNeLtXC
+         hsemCiRRI1YHCsuV0C3WAk+ZvS2d3ZDCxxV63in9EWXAA7VjjXRn9Waa8MD0Wx7PxU
+         Qd2Vs0LaylFbY5N3hnuPcy9vI8SMpbgr5jnz49zc=
+Date:   Wed, 26 Jan 2022 14:50:13 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     TATSUKAWA =?utf-8?B?S09TVUtFKOeri+W3neOAgOaxn+S7iyk=?= 
-        <tatsu-ab1@nec.com>
+To:     "Maciej W. Rozycki" <macro@embecosm.com>
 Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] n_tty: wake up poll(POLLRDNORM) on receiving data
-Message-ID: <YfFRVkmtSsXPanS5@kroah.com>
-References: <TYCPR01MB81902ACABDEC2602282FB81DA55E9@TYCPR01MB8190.jpnprd01.prod.outlook.com>
+        Christoph Hellwig <hch@infradead.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v3] tty: Partially revert the removal of the Cyclades
+ public API
+Message-ID: <YfFRlbKw4cV+ISfk@kroah.com>
+References: <alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <TYCPR01MB81902ACABDEC2602282FB81DA55E9@TYCPR01MB8190.jpnprd01.prod.outlook.com>
+In-Reply-To: <alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 08:17:22AM +0000, TATSUKAWA KOSUKE(立川 江介) wrote:
-> Event POLLRDNORM should be equivalent to POLLIN when used as event in
-> poll().
+On Wed, Jan 26, 2022 at 09:22:54AM +0000, Maciej W. Rozycki wrote:
+> Fix a user API regression introduced with commit f76edd8f7ce0 ("tty: 
+> cyclades, remove this orphan"), which removed a part of the API and 
+> caused compilation errors for user programs using said part, such as 
+> GCC 9 in its libsanitizer component[1]:
+> 
+> .../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
+>   160 | #include <linux/cyclades.h>
+>       |          ^~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
+> 
+> As the absolute minimum required bring `struct cyclades_monitor' and 
+> ioctl numbers back then so as to make the library build again.  Add a 
+> preprocessor warning as to the obsolescence of the features provided.
+> 
+> References:
+> 
+> [1] GCC PR sanitizer/100379, "cyclades.h is removed from linux kernel 
+>     header files", <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100379>
+> 
+> Signed-off-by: Maciej W. Rozycki <macro@embecosm.com>
+> Fixes: f76edd8f7ce0 ("tty: cyclades, remove this orphan")
+> Cc: stable@vger.kernel.org # v5.13+
+> ---
+> Changes from v2:
+> 
+> - Add #warning directives.
 
-Where is that documented?
-
-> However, in n_tty driver, POLLRDNORM does not return until
-> timeout even if there is terminal input, whereas POLLIN returns.
-> 
-> The following test program works until kernel-3.17, but the test stops
-> in poll() after commit 57087d515441 ("tty: Fix spurious poll() wakeups").
-> 
-> [Steps to run test program]
->   $ cc -o test-pollrdnorm test-pollrdnorm.c
->   $ ./test-pollrdnorm
->   foo          <-- Type in something from the terminal followed by [RET].
->                    The string should be echoed back.
-> 
->   ------------------------< test-pollrdnorm.c >------------------------
->   #include <stdio.h>
->   #include <errno.h>
->   #include <poll.h>
->   #include <unistd.h>
-> 
->   void main(void)
->   {
-> 	int		n;
-> 	unsigned char	buf[8];
-> 	struct pollfd	fds[1] = {{ 0, POLLRDNORM, 0 }};
-> 
-> 	n = poll(fds, 1, -1);
-> 	if (n < 0)
-> 		perror("poll");
-> 	n = read(0, buf, 8);
-> 	if (n < 0)
-> 		perror("read");
-> 	if (n > 0)
-> 		write(1, buf, n);
->   }
->   ------------------------------------------------------------------------
-> 
-> The attached patch fixes this problem.
-> 
-> Signed-off-by: Kosuke Tatsukawa <tatsu-ab1@nec.com>
-> Fixes: commit 57087d515441 ("tty: Fix spurious poll() wakeups")
-
-No need for "commit" here, please remove as the documentation asks you
-to.
-
-Can you resend this with this fixed up, and a pointer to where the
-documentation is for this functionality.
-
-thanks,
+Thanks, that looks good, now queued up.
 
 greg k-h
