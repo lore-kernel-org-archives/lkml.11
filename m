@@ -2,83 +2,259 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6FFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 20:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D7CC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 20:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231409AbiAZU4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 15:56:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36324 "EHLO
+        id S231426AbiAZU5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 15:57:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231379AbiAZU4a (ORCPT
+        with ESMTP id S231416AbiAZU4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 15:56:30 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A825C06173B
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 12:56:30 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id s5so1274097ejx.2
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 12:56:30 -0800 (PST)
+        Wed, 26 Jan 2022 15:56:55 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38EAC06161C
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 12:56:54 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id i65so758717pfc.9
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 12:56:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=kQGUfbOiSlrXMWUB18ru2iMPwWDRo+fWaUgVereZ2qk=;
-        b=wLSlYUEyQWUG6vKfQCq9KI7LXIXNt34AGU/mX3JinGyH12FdYVo8kEIoeU60EXb2mZ
-         MlkSLV03PttxOVmBXcXapCY45/8sfSGnRCQjsFMu2jR/es/RTBNUvz5qCi7OVf77WU+Y
-         7TYrLd/2nXd2fdynCbmwqrkopOJ//NxOX8JquCNQTFVNCdcvrovlNahGrjOeJCnWVe8T
-         ClW8pOYYtQoYXf0ySW5WvNAvhg5ri22vqrNO95dE5Gs7F5hkx3tqm+WgAToLfQzKE1dJ
-         ysuu8e5xSzUKHCAkUkWox443UH/2Wm/qo5oSTcrFa5gLXa+XOi5duQcq4910WWaIEkD7
-         WRgg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9ZwIq4eguK8bjpndwvt9UIq9IEoCw/zcQla69AcmA50=;
+        b=RQ10Tio1poE3AXTsW5p/YVJVY6U709VCN2+mvYw90Av7V1glFMm+9ySOSOJPS8QbIv
+         YxUWXGj1mt1MoTLmtvZcBu7fq2jDfS8B9rSc5FMa9DqetFRTDEpRP3Wl5o8yGhJhQa94
+         CQ3s4tCQ+qe23rOYnJj14TsbpOsX/g55l+AII=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=kQGUfbOiSlrXMWUB18ru2iMPwWDRo+fWaUgVereZ2qk=;
-        b=rOLxEjs9z8Y55c0cNTQ65xS9Yeoatk9bo5tVU8SAjBGojqWS/Am+VB0Mt65Sojlv2c
-         pzd9pWscCoDIavDH3sW1+tEli0VjT9ovd0JXOGiLzLgRjMeP8vLWKyoii9+TfHAYUBi4
-         3bO+/lT6O0XqY0aHiV3nPNRzQJROCmZL9oozRcrqA62cMMsL4uBVsvTDSqCoFInjc9LD
-         Cb3vc+urTPOozMo1dXwJ/ZvZUmP773TpVni8P1PeBfLi6W7X/lyhbRelcYYPGBhph8XR
-         QiqWwhdZxeSqMrSr88GV9sz7TSYJdAIR7xsXO8C5PwvJzP1fgJguLPWnHU2opuOpfmuF
-         IiTw==
-X-Gm-Message-State: AOAM530AfS4erLq4p9Hyzoy8lF/Z9Z99up73dK944ZtbTjB1Njul6Bot
-        Yf1gUE3Xg2+25xFQ9FUaiPh6mgFHq2mgWlvLLr+V
-X-Google-Smtp-Source: ABdhPJyPolSj1HislWpwcc7wwWj76EMmcvl2tq9+mcpygxOEbytuu7jmEd/aqFx0WAIvqedUrEaqZY4du6iFu3T5ETM=
-X-Received: by 2002:a17:907:3e8a:: with SMTP id hs10mr504091ejc.112.1643230588804;
- Wed, 26 Jan 2022 12:56:28 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9ZwIq4eguK8bjpndwvt9UIq9IEoCw/zcQla69AcmA50=;
+        b=lTnFOOLWoSTHWfAgYAXaD3ytFvsotQV0nAkLVLrshRrKkiQsPT9FXbduGROizq6Ohu
+         5GFDjDAMno1hMbS5Pa+hmqcmvOmin4gmxAN8PSiCvvK87Y1xmSP6L/4vBvS8piTKkYCd
+         xDOg/2vz1CYQjJ1+hbeqdbq8aUvI6dxiQHlQHCT3Y8L7QQY+nSWXJeGe0+N4TXSbl+oL
+         MjZy9bwF3Hi1gNtS/FLkjum9m2Si1lm0F6/XTKshN4YDpU3aU8QvpVHZBkc7RMv/XvBv
+         ENeBkPdj7ShdDz/2rk2HyLXBtToiVIxvuZhWSkNtVfHVMj+BMMUQILIWQD5R/q3YiRyW
+         B+pQ==
+X-Gm-Message-State: AOAM530dxvHj2XKxM4NKpA3NZJ7jeN/+VbYhNSqonRWvMGRAnDSIemJs
+        1DRXzm0/1NtYAxDgUU2kb+MCE21Q9Rh6KA==
+X-Google-Smtp-Source: ABdhPJzrbvvBPSry0l58yYYNwOMPr0OGtfx9yO0cujWD32y6i9dDGbqlr2UF6MjyaoPG9r6ijn4UIg==
+X-Received: by 2002:a05:6a00:b91:: with SMTP id g17mr110228pfj.27.1643230614317;
+        Wed, 26 Jan 2022 12:56:54 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id c20sm2826072pfn.190.2022.01.26.12.56.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 12:56:54 -0800 (PST)
+Date:   Wed, 26 Jan 2022 12:56:53 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Ariadne Conill <ariadne@dereferenced.org>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v2] fs/exec: require argv[0] presence in
+ do_execveat_common()
+Message-ID: <202201261239.CB5D7C991A@keescook>
+References: <20220126114447.25776-1-ariadne@dereferenced.org>
+ <202201261202.EC027EB@keescook>
+ <a8fef39-27bf-b25f-7cfe-21782a8d3132@dereferenced.org>
 MIME-Version: 1.0
-References: <20220125141422.32655-1-cgzones@googlemail.com> <20220125141422.32655-6-cgzones@googlemail.com>
-In-Reply-To: <20220125141422.32655-6-cgzones@googlemail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 26 Jan 2022 15:56:17 -0500
-Message-ID: <CAHC9VhQP+xpEQCppx-Qvyd0hW9rcANfaw9F6972zo2PwCk_ZyQ@mail.gmail.com>
-Subject: Re: [PATCH 7/9] selinux: do not discard const qualifier in cast
-To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
-Cc:     selinux@vger.kernel.org,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Jeff Vander Stoep <jeffv@google.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a8fef39-27bf-b25f-7cfe-21782a8d3132@dereferenced.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 9:14 AM Christian G=C3=B6ttsche
-<cgzones@googlemail.com> wrote:
->
-> Do not discard the const qualifier on the cast from const void* to
-> __be32*; the addressed value is not modified.
->
-> Reported by clang [-Wcast-qual]
->
-> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
-> ---
->  security/selinux/netnode.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+On Wed, Jan 26, 2022 at 02:23:59PM -0600, Ariadne Conill wrote:
+> Hi,
+> 
+> On Wed, 26 Jan 2022, Kees Cook wrote:
+> 
+> > On Wed, Jan 26, 2022 at 11:44:47AM +0000, Ariadne Conill wrote:
+> > > In several other operating systems, it is a hard requirement that the
+> > > first argument to execve(2) be the name of a program, thus prohibiting
+> > > a scenario where argc < 1.  POSIX 2017 also recommends this behaviour,
+> > > but it is not an explicit requirement[0]:
+> > > 
+> > >     The argument arg0 should point to a filename string that is
+> > >     associated with the process being started by one of the exec
+> > >     functions.
+> > > 
+> > > To ensure that execve(2) with argc < 1 is not a useful gadget for
+> > > shellcode to use, we can validate this in do_execveat_common() and
+> > > fail for this scenario, effectively blocking successful exploitation
+> > > of CVE-2021-4034 and similar bugs which depend on this gadget.
+> > > 
+> > > The use of -EFAULT for this case is similar to other systems, such
+> > > as FreeBSD, OpenBSD and Solaris.  QNX uses -EINVAL for this case.
+> > > 
+> > > Interestingly, Michael Kerrisk opened an issue about this in 2008[1],
+> > > but there was no consensus to support fixing this issue then.
+> > > Hopefully now that CVE-2021-4034 shows practical exploitative use
+> > > of this bug in a shellcode, we can reconsider.
+> > > 
+> > > [0]: https://pubs.opengroup.org/onlinepubs/9699919799/functions/exec.html
+> > > [1]: https://bugzilla.kernel.org/show_bug.cgi?id=8408
+> > > 
+> > > Changes from v1:
+> > > - Rework commit message significantly.
+> > > - Make the argv[0] check explicit rather than hijacking the error-check
+> > >   for count().
+> > > 
+> > > Signed-off-by: Ariadne Conill <ariadne@dereferenced.org>
+> > > ---
+> > >  fs/exec.c | 4 ++++
+> > >  1 file changed, 4 insertions(+)
+> > > 
+> > > diff --git a/fs/exec.c b/fs/exec.c
+> > > index 79f2c9483302..e52c41991aab 100644
+> > > --- a/fs/exec.c
+> > > +++ b/fs/exec.c
+> > > @@ -1899,6 +1899,10 @@ static int do_execveat_common(int fd, struct filename *filename,
+> > >  	retval = count(argv, MAX_ARG_STRINGS);
+> > >  	if (retval < 0)
+> > >  		goto out_free;
+> > > +	if (retval == 0) {
+> > > +		retval = -EFAULT;
+> > > +		goto out_free;
+> > > +	}
+> > >  	bprm->argc = retval;
+> > > 
+> > >  	retval = count(envp, MAX_ARG_STRINGS);
+> > > --
+> > > 2.34.1
+> > 
+> > Okay, so, the dangerous condition is userspace iterating through envp
+> > when it thinks it's iterating argv.
+> > 
+> > Assuming it is not okay to break valgrind's test suite:
+> > https://sources.debian.org/src/valgrind/1:3.18.1-1/none/tests/execve.c/?hl=22#L22
+> > we cannot reject a NULL argv (test will fail), and we cannot mutate
+> > argc=0 into argc=1 (test will enter infinite loop).
+> > 
+> > Perhaps we need to reject argv=NULL when envp!=NULL, and add a
+> > pr_warn_once() about using a NULL argv?
+> 
+> Sure, I can rework the patch to do it for only the envp != NULL case.
+> 
+> I think we should combine it with the {NULL, NULL} padding patch in this
+> case though, since it appears to work, that way the execve(..., NULL, NULL)
+> case gets some protection.
 
-Merged, thanks.
+I don't think the padding will actually work correctly, for the reason
+Jann pointed out. My testing shows that suddenly my envp becomes NULL,
+but libc is just counting argc to find envp to pass into main.
 
---=20
-paul-moore.com
+> > I note that glibc already warns about NULL argv:
+> > argc0.c:7:3: warning: null argument where non-null required (argument 2)
+> > [-Wnonnull]
+> >    7 |   execve(argv[0], NULL, envp);
+> >      |   ^~~~~~
+> > 
+> > in the future we could expand this to only looking at argv=NULL?
+> 
+> I don't think musl's headers generate a diagnostic for this, but main(0,
+> {NULL}) is not a supported use-case at least as far as Alpine is concerned.
+> I am sure it is the same with the other musl distributions.
+> 
+> Will send a v3 patch with this logic change and move to EINVAL shortly.
+
+I took a spin too. Refuses execve(..., NULL, !NULL), injects "" argv[0]
+for execve(..., NULL, NULL):
+
+
+diff --git a/fs/exec.c b/fs/exec.c
+index a098c133d8d7..0565089d5f9e 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -1917,9 +1917,40 @@ static int do_execveat_common(int fd, struct filename *filename,
+ 	if (retval < 0)
+ 		goto out_free;
+ 
+-	retval = copy_strings(bprm->argc, argv, bprm);
+-	if (retval < 0)
+-		goto out_free;
++	if (likely(bprm->argc > 0)) {
++		retval = copy_strings(bprm->argc, argv, bprm);
++		if (retval < 0)
++			goto out_free;
++	} else {
++		const char * const argv0 = "";
++
++		/*
++		 * Start making some noise about the argc == NULL case that
++		 * POSIX doesn't like and other Unix-like systems refuse.
++		 */
++		pr_warn_once("process '%s' used a NULL argv\n", bprm->filename);
++
++		/*
++		 * Refuse to execute when argc == 0 and envc > 0, since this
++		 * can lead to userspace iterating envp if it fails to check
++		 * for argc == 0.
++		 *
++		 * i.e. continue to allow: execve(path, NULL, NULL);
++		 */
++		if (bprm->envc > 0) {
++			retval = -EINVAL;
++			goto out_free;
++		}
++
++		/*
++		 * Force an argv of {"", NULL} if argc == 0 so that broken
++		 * userspace that assumes argc != 0 will not be surprised.
++		 */
++		bprm->argc = 1;
++		retval = copy_strings_kernel(bprm->argc, &argv0, bprm);
++		if (retval < 0)
++			goto out_free;
++	}
+ 
+ 	retval = bprm_execve(bprm, fd, filename, flags);
+ out_free:
+
+
+$ cat argc0.c
+#include <stdio.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[], char *envp[])
+{
+        if (argv[0][0] != '\0') {
+                printf("execve(argv[0], NULL, envp);\n");
+                execve(argv[0], NULL, envp);
+                perror("execve");
+                printf("execve(argv[0], NULL, NULL);\n");
+                execve(argv[0], NULL, NULL);
+                return 0;
+        }
+        printf("argc=%d\n", argc);
+        printf("argv[0]%p=%s\n", &argv[0], argv[0]);
+        printf("argv[1]%p=%s\n", &argv[1], argv[1]);
+        printf("envp[0]%p=%s\n", &envp[0], envp[0]);
+        return 0;
+}
+
+$ gcc -Wall argc0.c -o argc0
+argc0.c: In function 'main':
+argc0.c:8:3: warning: null argument where non-null required (argument 2) [-Wnonnull]
+    8 |   execve(argv[0], NULL, envp);
+      |   ^~~~~~
+argc0.c:11:3: warning: null argument where non-null required (argument 2) [-Wnonnull]
+   11 |   execve(argv[0], NULL, NULL);
+      |   ^~~~~~
+
+$ ./argc0
+execve(argv[0], NULL, envp);
+execve: Invalid argument
+execve(argv[0], NULL, NULL);
+argc=1
+argv[0]0x7fff1f577bd8=
+argv[1]0x7fff1f577be0=(null)
+envp[0]0x7fff1f577be8=(null)
+
+$ dmesg | tail -n1
+[   20.748467] process './argc0' used a NULL argv
+
+
+-- 
+Kees Cook
