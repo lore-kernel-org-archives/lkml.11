@@ -2,87 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C5FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B8EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 23:45:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbiAZXm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 18:42:56 -0500
-Received: from gandalf.ozlabs.org ([150.107.74.76]:37413 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233082AbiAZXmy (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 18:42:54 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JkgJD3XN7z4xjx;
-        Thu, 27 Jan 2022 10:42:52 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1643240572;
-        bh=Yu6++roH7LHBMllyG+A8ccQ16RNfz/JX1ppO+BpEPBA=;
-        h=Date:From:To:Cc:Subject:From;
-        b=VAwEbcG+yH5zjzSDtBYlscoWJ4Vroy9PRqCvJjjHetc5z+hBH2l8gPjL4FDXvfoFm
-         cTQZXKbuhGkBpyGecaS37hwOy8YllvZmxch3/JuEnLNPhidSGyRkDyhLP7UaCIy2gs
-         Au6w8ySi+v2DPTe7kIZNxKK9h21C239m8s/bP2C/cH0l0XjE7NEfSYDygeon/E6oQs
-         PkKghtKyZBeo2TXL6d6xUzJK2Kg52vZWrNMgCB5s/o5SPQummlbfTeklsl1W/T6sJl
-         XCoSI4T+aySydtZiMWcRnwSV2uY9fmrB4JwdvA3IDGL1grJZHxW4wi+dL5sImvtcFM
-         9wrwl8/XsVxIA==
-Date:   Thu, 27 Jan 2022 10:42:51 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     Tim Huang <tim.huang@amd.com>, Tim Huang <xiaohu.huang@amd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the amdgpu tree
-Message-ID: <20220127104251.5a63a107@canb.auug.org.au>
+        id S230408AbiAZXp0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 18:45:26 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:56538 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229451AbiAZXpT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 18:45:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=KtETfU1+wqNMppMn4Ma2jeShcVH64evaxx2kWzZVGG8=; b=GUCG7xO1z7VQ6MisHEWzT+utQp
+        +DXEPSm1F4TbRCBm2yeQVrAIxBghnENx689AWvbxjbF1eMG6OcFzPZd298SnTDAdWavU4iLSQgZ1v
+        V7DHmd8R+cpZAs7mEIOO7ZC5JuPH2Q5lmby54uPTLzMMUDXXn5BzSxYHqDgps4V9LTRI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nCryS-002sOg-8K; Thu, 27 Jan 2022 00:45:12 +0100
+Date:   Thu, 27 Jan 2022 00:45:12 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] net: dsa: mv88e6xxx: Improve performance of
+ busy bit polling
+Message-ID: <YfHdCDIUvpaYpDSF@lunn.ch>
+References: <20220126231239.1443128-1-tobias@waldekranz.com>
+ <20220126231239.1443128-2-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/EkqJh6pAIPv4xV.DxrL7kUt";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220126231239.1443128-2-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/EkqJh6pAIPv4xV.DxrL7kUt
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+> @@ -86,12 +86,12 @@ int mv88e6xxx_write(struct mv88e6xxx_chip *chip, int addr, int reg, u16 val)
+>  int mv88e6xxx_wait_mask(struct mv88e6xxx_chip *chip, int addr, int reg,
+>  			u16 mask, u16 val)
+>  {
+> +	const unsigned long timeout = jiffies + msecs_to_jiffies(50);
+>  	u16 data;
+>  	int err;
+> -	int i;
+>  
+>  	/* There's no bus specific operation to wait for a mask */
+> -	for (i = 0; i < 16; i++) {
+> +	do {
+>  		err = mv88e6xxx_read(chip, addr, reg, &data);
+>  		if (err)
+>  			return err;
+> @@ -99,8 +99,8 @@ int mv88e6xxx_wait_mask(struct mv88e6xxx_chip *chip, int addr, int reg,
+>  		if ((data & mask) == val)
+>  			return 0;
+>  
+> -		usleep_range(1000, 2000);
+> -	}
+> +		cpu_relax();
+> +	} while (time_before(jiffies, timeout));
 
-Hi all,
+I don't know if this is an issue or not...
 
-After merging the amdgpu tree, today's linux-next build (x86_64
-allmodconfig) failed like this:
+There are a few bit-banging systems out there. For those, i wonder if
+50ms is too short? With the old code, they had 16 chances, no matter
+how slow they were. With the new code, if they take 50ms for one
+transaction, they don't get a second chance.
 
-drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c: In function 'd=
-m_dmub_hw_init':
-drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:1030:20: error:=
- unused variable 'dc' [-Werror=3Dunused-variable]
- 1030 |         struct dc *dc =3D adev->dm.dc;
-      |                    ^~
+But if they have taken 50ms, around 37ms has been spent with the
+preamble, start, op, phy address, and register address. I assume at
+that point the switch actually looks at the register, and given your
+timings, it really should be ready, so a second loop is probably not
+required?
 
-Caused by commit
+O.K, so this seems safe.
 
-  3b36f50d3a69 ("drm/amd/display: convert to DCE IP version checking")
-
-I have used the amdgu tree from next-20220125 for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/EkqJh6pAIPv4xV.DxrL7kUt
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHx3HsACgkQAVBC80lX
-0GxQ2Qf/XhXciA8O2LnpDA5c2hxFam7ETz4FYPyJ3MFd4exkd4QZrx9gfExd1J3z
-5YbbMSbrgbl2r6Nu+saDMj1f3KsV1ONS60Wgxh+SpKMYNx/0CWSOobnl/7cDVLqd
-r+LvGbFK+0szHoAk+xM3NF5RlDc3Mp1M59KwwGKbrWxzNOcizSGBlUomSEHw651y
-sUOS0i34pyTaOnc8z9RIJ1bzEFrTHrQ/HdRc42F/QoxEM/Lt0hPDej8idcdBlEcY
-035xs3fqrhzcmNJyex7qXCT+xkPg8zliUQjX6/oW0bCcJ/36m5w3utOXBHurPDqn
-vTZlO5RJ/KcYNpswyUhLkWOGWWPD8g==
-=N+cv
------END PGP SIGNATURE-----
-
---Sig_/EkqJh6pAIPv4xV.DxrL7kUt--
+     Andrew
