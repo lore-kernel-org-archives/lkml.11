@@ -2,82 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03098C63682
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 18:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 030D7C63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 18:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240930AbiAZS6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 13:58:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37522 "EHLO
+        id S242278AbiAZS7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 13:59:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244394AbiAZS6K (ORCPT
+        with ESMTP id S231244AbiAZS7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 13:58:10 -0500
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57154C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 10:58:10 -0800 (PST)
-Received: by mail-io1-xd35.google.com with SMTP id n17so766813iod.4
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 10:58:10 -0800 (PST)
+        Wed, 26 Jan 2022 13:59:21 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2C1C06173B
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 10:59:21 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id e28so524518pfj.5
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 10:59:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wyngZyIrlUk01+iEOlsom8ih3d/SEkgg9mdbfxMjBKY=;
-        b=nSPmP24HtC8iu/VFrAUpvAwud6+rPMJ5yo6pAqXOvx8fFTj3qP8h2gt4oObElaUDxR
-         f3geinsOxRWyAkvxpMQMuC6w9f+VVqdUcLJZHjBFjS8O4FWjdtYWpO05/XfvZQ1jv+G6
-         A12hipy+TxNMvNjpcKjyouHTj0MU3iYbtGCgzgZnzq95SFX3ybqPxkLD3yKVBLiK2qEW
-         eVwkYkNemK6Lhy0uuo+/ByG56hxXfHg5XVTjDT2xeEb3pK9/lBCVknk3CHIW5uU/FGbj
-         3khZbEz1vNmkBKlYExdxxnYFNA4GZWHVxRLE1jHfl8bYfTr0FSOIopw44OxnNB3UpTC0
-         yajQ==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=htAuwYZ3OmGEPnY+LJpYxP5vH8dhFgPG/7ZJxqa35es=;
+        b=O2aQxJZIjAKkjNGzGHhqLHYiQDC5XpLrw6f0sTdmJB4nDn1Q0YR5rLicYfEb0qq/Ae
+         0AdN7Uwu40HVyvWuAJ4LMhM5/hloFln9pZ9kbXIRR0ieJTnJJIdM2LpOi3SqlCbs/Cac
+         4s/ubThgXjHw3ydfZYl+saxLYEmyiL8POKIfvvCV1zveDOPgeVe1TVX1iuccg5JYKzFQ
+         wti4+eoxOtjqIP2H+q7e9CuHAPLKF+0qbtlqRgR9DiOKhxgGZfpdTgQr8jf/xruEzoIm
+         kuF+km0KISTlOLAcjFeOu4Sl72hbEFTeXhAJLD/FcvegzxfjDe6gyUgKzfb1xjXHRdu4
+         o1bQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wyngZyIrlUk01+iEOlsom8ih3d/SEkgg9mdbfxMjBKY=;
-        b=z5oaukOodyPYZwmHInKfCIhn+UWY6wpB5BeVE7ZFUaONrZ4KPxeMEyvVwfb7QXzirA
-         S1rMNMimMYXBQnIzBySQ6Ar1heHbGTHEtPlsmdeFDVCI7uWhqrXv/509rGnyGRL72YUs
-         CFKeMtzmEB9tC6W2Qr+Nwg1ldTAVnM7ajic/579I+f3wqbvzlgbErVkw1wx2UeAVbEUC
-         52F9EfJQNZT2jlAiKZZiUV7WzAi0hnv8sM89H4fnGzvyrF9ksTr38r5Dr+2dBfAUp9Ys
-         9WL7WeGg5GPW+sWFB8pRX+sxRFQdDBEaC9A02y0rY4PNAJfDCBRIvrJ349RTwtcx3UYt
-         zqMw==
-X-Gm-Message-State: AOAM5331DxfN+EOz3XTRU+tNf7i26MFuQ5M5ZDSyxKXjQ+Ywq/Fq2ccS
-        7uycDMmc1lYaC9zO9AiB2MdqdayEaPqIMBpP8xVzlBAkxk4=
-X-Google-Smtp-Source: ABdhPJwtMLliBG3wT1Y/vWDYL0Er0UPdS0WQquBtClo6suuooJ1hlgFqLRErD+rAPDLXUnNKXmqNSNQM0vMBhinPeq0=
-X-Received: by 2002:a05:6602:2d49:: with SMTP id d9mr14348785iow.64.1643223489670;
- Wed, 26 Jan 2022 10:58:09 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=htAuwYZ3OmGEPnY+LJpYxP5vH8dhFgPG/7ZJxqa35es=;
+        b=NHvB/OKF/1JBCiDWVl5QHjh9AaTONLov772p0QJrSpvvUYwhI/E5AukcrF+4YKE6U7
+         r+15CjCtgeyA0gj+RkYtN5wjZgWrrnfzaIItULhehTQD3MGHRvoplDwRdUcb554HsuNA
+         YC++mbD4yo0GFds+zqB8iSQ9ZStI6udjXBZRJizaCiGQiwI+mKBpig5Dkoo0kvQDGfE8
+         j6AHO1iXm6XNCaS1ITBkPOv9b1tiMbeGTMcwuruCBoT2zc3lCQQR69CFUoVzYqcEJhhm
+         hRBkbtoITX/Byh6RPJt0MZpZiYdH1QDETMQ51mKwjb0fxpuXY7x5uIZfuQZI4z+aCeqN
+         tcHQ==
+X-Gm-Message-State: AOAM532jGAe15Cwbgy+DxdgUbzR3gjBxZUDWpyIS2B/nWrL3GXkQXNTV
+        GE/wghgR+F9NcAiBKOgFm5bIvOw6AGT5jw==
+X-Google-Smtp-Source: ABdhPJxAMrmNR7jfqJlI6sl/Pyg0blwMw4uOKY0mmR1MA3vQWxAwn6j5TVX/bMHosc/Z0AaoDXkndA==
+X-Received: by 2002:a05:6a00:1755:b0:4c7:f879:5577 with SMTP id j21-20020a056a00175500b004c7f8795577mr18026880pfc.71.1643223560646;
+        Wed, 26 Jan 2022 10:59:20 -0800 (PST)
+Received: from [2620:15c:29:204:925c:a455:6d75:1ac8] ([2620:15c:29:204:925c:a455:6d75:1ac8])
+        by smtp.gmail.com with ESMTPSA id s9sm11829470pgm.76.2022.01.26.10.59.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 10:59:20 -0800 (PST)
+Date:   Wed, 26 Jan 2022 10:59:19 -0800 (PST)
+From:   David Rientjes <rientjes@google.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/highmem: remove unnecessary done label
+In-Reply-To: <20220126092542.64659-1-linmiaohe@huawei.com>
+Message-ID: <119c7436-6f-dec5-9b5f-fd4c299bc8be@google.com>
+References: <20220126092542.64659-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-References: <CANiq72n_FmDx=r-o9J8gYc6LpwRL5EGmhM6Xzwv27Xc7h1TNDw@mail.gmail.com>
- <cf6ac499-4190-cbe5-255c-f9edf07a4786@kaod.org>
-In-Reply-To: <cf6ac499-4190-cbe5-255c-f9edf07a4786@kaod.org>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Wed, 26 Jan 2022 19:57:58 +0100
-Message-ID: <CANiq72mV3AzmBDVJM+tQriEoDu_9LFBrK_vR6GC4qEmLw0UepQ@mail.gmail.com>
-Subject: Re: ppc: hard lockup / hang in v5.17-rc1 under QEMU
-To:     =?UTF-8?Q?C=C3=A9dric_Le_Goater?= <clg@kaod.org>
-Cc:     linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Nicholas Piggin <npiggin@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 4:03 PM C=C3=A9dric Le Goater <clg@kaod.org> wrote:
->
-> Indeed. I could reproduce.
+On Wed, 26 Jan 2022, Miaohe Lin wrote:
 
-Thanks for the quick confirmation!
+> Remove unnecessary done label to simplify the code.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-> Could you please send the QEMU command line and the full dmesg ? and
-> possibly open an issue on :
->
->    https://gitlab.com/qemu-project/qemu/-/issues/
->
-> I guess it's a QEMU modeling issue.
-
-Of course -- done (details there):
-
-    https://gitlab.com/qemu-project/qemu/-/issues/842
-
-Cheers,
-Miguel
+Acked-by: David Rientjes <rientjes@google.com>
