@@ -2,112 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA33FC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D6CBC63684
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238237AbiAZNQt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:16:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234563AbiAZNQq (ORCPT
+        id S238084AbiAZNSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:18:06 -0500
+Received: from mail-ej1-f50.google.com ([209.85.218.50]:38651 "EHLO
+        mail-ej1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229759AbiAZNSF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:16:46 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF2DC06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 05:16:46 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id g9-20020a17090a67c900b001b4f1d71e4fso6071593pjm.4
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 05:16:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :in-reply-to;
-        bh=ZJ2ildf3QiBMHovq0bFBc+IVRyOrQ2Kia2hTCFkSaXU=;
-        b=omPtv3zRA8ItW34e93h+eMSKkXAWv/QPwX25Qu2GprOaPQn8xlirCF0o+IbPEMpz5e
-         jNTkaduO+WAe+ZW1OqrHh6XtufqCcEx/dQvUcn+z07XIqU1UlXYV569kNHp0+xqhmi67
-         ec0LN6xkQOn7QCGXDxfpRidI0XvhsChKBtU1exNZacK1Xaupegl6FdDjaUdmD8GsWhsr
-         lJEVOO7J5uERSddgXtLng9H6Zw1vwRUH54aDStqk1esXxrV9XCjW5aNeK4ECzLMJUHBy
-         gtAwgpubTihioNthQIxYlPFn9M8uvOxYmmUuSsQ//eTYsj3g0NWYrBz4FgM3b7ORY5cw
-         93gQ==
+        Wed, 26 Jan 2022 08:18:05 -0500
+Received: by mail-ej1-f50.google.com with SMTP id k25so38732177ejp.5;
+        Wed, 26 Jan 2022 05:18:04 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZJ2ildf3QiBMHovq0bFBc+IVRyOrQ2Kia2hTCFkSaXU=;
-        b=0z6Qyy1JrRl8BoTSj18ysyWeZ3dtDbF9Y0h7FJAfuaF7ipnD3ibyKB43DyKakUz43V
-         tPfzOtAzimIzEqBlYSBnIZ8B0nMaRYQZ9SvTMz4bZ9XVe5Q+ZrkhVcdkJFeCvRII8dDZ
-         m3+SUjOnomx49IeCw7sgOgeuK0XTizmAZLoYE/pL3d5rwIftTxcY0hfF3pxy1OiSHlGN
-         aKYcHHDtEcj3v33x+deMzn/I7eMrHV1fvMAZqUFfKRkCE4YDnwPlC6redVgWrkRR6tUJ
-         S7q/e2Oz79xIuF9uvDFS5vLPejyW4yVa3LfgtI9Dyg/YbReuBJTjBFuqbmVMJ2YWDb4f
-         yw/g==
-X-Gm-Message-State: AOAM533MHttQX9Zpnh5ZXky25g+jLFITGIg9qnJBdHrISLKvRiWhQ76P
-        9s8Ugl0soTyrvRNDYoj4QHfxGA02O5rsRw==
-X-Google-Smtp-Source: ABdhPJxNPMLnvEMci4ZiqtzNx5lcGarl6yQVSI6FrAYTEYurYvoJgO+fgc25L+lXtfRxd3HpBJxZ9Q==
-X-Received: by 2002:a17:903:41c1:b0:14b:8819:cfe2 with SMTP id u1-20020a17090341c100b0014b8819cfe2mr4208093ple.98.1643203006276;
-        Wed, 26 Jan 2022 05:16:46 -0800 (PST)
-Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
-        by smtp.gmail.com with ESMTPSA id d4sm2175504pfj.82.2022.01.26.05.16.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 05:16:45 -0800 (PST)
-Date:   Wed, 26 Jan 2022 13:16:41 +0000
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     jwiedmann.dev@gmail.com
-Cc:     Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sameeh Jubran <sameehj@amazon.com>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: ena: Do not waste napi skb cache
-Message-ID: <YfFJuQQBLJRxIJR+@ip-172-31-19-208.ap-northeast-1.compute.internal>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5a56Q3xrktFSBfArPwuTW7EIlQ6o8Gi3WpON/C2HkWU=;
+        b=H2x1iz1Mz4cFSMr82Wab2jr6QJZcNvxSKr6jFFXEg+r+2HjcyjMERinDyhLmqLUim2
+         UN5eQ9zWzg5nCfu6rwUj1cB4K6+/vpQ3cMfkr2WXsAIsj+qJEfslyzu0+uW5pRgGv+RH
+         9MzjrT+cE/Nwt/5rIORID1DXdaTlV6yccrhH4SKKx01lwqW6h4h4BiJbprCdM5hppwum
+         n/iEUakMGfOsDK8p9SuVm9jWpHAVTLT2rbghrwqr2NZrCUdU/5NLw2eowBu7AcBd6u6N
+         2SMqjR6sZ7985J5Av+qx0lnaG1bHE4B+Yz8rGAbOTKcSTb4eADUGuWXOqcCf+IZ02A4i
+         5bZQ==
+X-Gm-Message-State: AOAM531vnVjvTEHhu2erodDcC3CvgQpziwPIIibEza4tdn8nqzGlXC8R
+        kWKDyVI8fk/vigdfcoBPgbA=
+X-Google-Smtp-Source: ABdhPJyUdWRKUQgcEPFQ5pgnLjvWK0FJCel3yrZqr4kf1I+V6Cg6MEsyD7T9PmGE474WOkgKFf+VVQ==
+X-Received: by 2002:a17:907:6093:: with SMTP id ht19mr7751043ejc.741.1643203084115;
+        Wed, 26 Jan 2022 05:18:04 -0800 (PST)
+Received: from [192.168.0.60] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.googlemail.com with ESMTPSA id v10sm9810908edx.36.2022.01.26.05.18.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 05:18:03 -0800 (PST)
+Message-ID: <2c65c342-5c04-bcf4-fd75-5c11d26f0b33@kernel.org>
+Date:   Wed, 26 Jan 2022 14:18:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220123115623.94843-1-42.hyeyoo@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 2/2] pwm: Add clock based PWM output driver
+Content-Language: en-US
+To:     Nikita Travkin <nikita@trvn.ru>, thierry.reding@gmail.com,
+        lee.jones@linaro.org
+Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
+        sboyd@kernel.org, linus.walleij@linaro.org, masneyb@onstation.org,
+        sean.anderson@seco.com, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht
+References: <20220126125849.75572-1-nikita@trvn.ru>
+ <20220126125849.75572-3-nikita@trvn.ru>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220126125849.75572-3-nikita@trvn.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-By profiling, discovered that ena device driver allocates skb by
-build_skb() and frees by napi_skb_cache_put(). Because the driver
-does not use napi skb cache in allocation path, napi skb cache is
-periodically filled and flushed. This is waste of napi skb cache.
+On 26/01/2022 13:58, Nikita Travkin wrote:
+> Some systems have clocks exposed to external devices. If the clock
+> controller supports duty-cycle configuration, such clocks can be used as
+> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
+> similar way and an "opposite" driver already exists (clk-pwm). Add a
+> driver that would enable pwm devices to be used via clk subsystem.
+> 
+> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+> --
+> 
+> Changes in v2:
+>  - Address Uwe's review comments:
+>    - Round set clk rate up
+>    - Add a description with limitations of the driver
+>    - Disable and unprepare clock before removing pwmchip
+> Changes in v3:
+>  - Use 64bit version of div round up
+>  - Address Uwe's review comments:
+>    - Reword the limitations to avoid incorrect claims
+>    - Move the clk_enabled flag assignment
+>    - Drop unnecessary statements
+> ---
+>  drivers/pwm/Kconfig   |  10 +++
+>  drivers/pwm/Makefile  |   1 +
+>  drivers/pwm/pwm-clk.c | 139 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 150 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-clk.c
+> 
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 21e3b05a5153..daa2491a4054 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -140,6 +140,16 @@ config PWM_BRCMSTB
+>  	  To compile this driver as a module, choose M Here: the module
+>  	  will be called pwm-brcmstb.c.
+>  
+> +config PWM_CLK
+> +	tristate "Clock based PWM support"
+> +	depends on HAVE_CLK || COMPILE_TEST
+> +	help
+> +	  Generic PWM framework driver for outputs that can be
+> +	  muxed to clocks.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-clk.
+> +
+>  config PWM_CLPS711X
+>  	tristate "CLPS711X PWM support"
+>  	depends on ARCH_CLPS711X || COMPILE_TEST
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 708840b7fba8..4a860103c470 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -10,6 +10,7 @@ obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
+>  obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
+>  obj-$(CONFIG_PWM_BERLIN)	+= pwm-berlin.o
+>  obj-$(CONFIG_PWM_BRCMSTB)	+= pwm-brcmstb.o
+> +obj-$(CONFIG_PWM_CLK)		+= pwm-clk.o
+>  obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
+>  obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
+>  obj-$(CONFIG_PWM_CROS_EC)	+= pwm-cros-ec.o
+> diff --git a/drivers/pwm/pwm-clk.c b/drivers/pwm/pwm-clk.c
+> new file mode 100644
+> index 000000000000..b3bfa12a0e73
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-clk.c
+> @@ -0,0 +1,139 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Clock based PWM controller
+> + *
+> + * Copyright (c) 2021 Nikita Travkin <nikita@trvn.ru>
+> + *
+> + * This is an "adapter" driver that allows PWM consumers to use
+> + * system clocks with duty cycle control as PWM outputs.
+> + *
+> + * Limitations:
+> + * - Glitches are possible when new pwm state is applied.
+> + * - Due to the fact that exact behavior depends on the underlying
+> + *   clock driver, various limitations are possible.
+> + * - Period depends on the clock and, in general, not guaranteed.
+> + * - Underlying clock may not be able to give 0% or 100% duty cycle
+> + *   (constant off or on), exact behavior will depend on the clock.
+> + * - When the PWM is disabled, the clock will be disabled as well,
+> + *   line state will depend on the clock.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/math64.h>
+> +#include <linux/err.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/clk.h>
+> +#include <linux/pwm.h>
+> +
+> +struct pwm_clk_chip {
+> +	struct pwm_chip chip;
+> +	struct clk *clk;
+> +	bool clk_enabled;
+> +};
+> +
+> +#define to_pwm_clk_chip(_chip) container_of(_chip, struct pwm_clk_chip, chip)
+> +
+> +static int pwm_clk_apply(struct pwm_chip *pwm_chip, struct pwm_device *pwm,
+> +			 const struct pwm_state *state)
+> +{
+> +	struct pwm_clk_chip *chip = to_pwm_clk_chip(pwm_chip);
+> +	int ret;
+> +	u32 rate;
+> +	u64 period = state->period;
+> +	u64 duty_cycle = state->duty_cycle;
+> +
+> +	if (!state->enabled) {
+> +		if (pwm->state.enabled) {
+> +			clk_disable(chip->clk);
+> +			chip->clk_enabled = false;
+> +		}
+> +		return 0;
+> +	} else if (!pwm->state.enabled) {
+> +		ret = clk_enable(chip->clk);
+> +		if (ret)
+> +			return ret;
+> +		chip->clk_enabled = true;
+> +	}
+> +
+> +	rate = DIV64_U64_ROUND_UP(NSEC_PER_SEC, period);
+> +	ret = clk_set_rate(chip->clk, rate);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (state->polarity == PWM_POLARITY_INVERSED)
+> +		duty_cycle = period - duty_cycle;
+> +
+> +	return clk_set_duty_cycle(chip->clk, duty_cycle, period);
+> +}
+> +
+> +static const struct pwm_ops pwm_clk_ops = {
+> +	.apply = pwm_clk_apply,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static int pwm_clk_probe(struct platform_device *pdev)
+> +{
+> +	struct pwm_clk_chip *chip;
+> +	int ret;
+> +
+> +	chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
+> +	if (!chip)
+> +		return -ENOMEM;
+> +
+> +	chip->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(chip->clk))
+> +		return dev_err_probe(&pdev->dev, PTR_ERR(chip->clk),
+> +				     "Failed to get clock\n");
+> +
+> +	chip->chip.dev = &pdev->dev;
+> +	chip->chip.ops = &pwm_clk_ops;
+> +	chip->chip.npwm = 1;
+> +
+> +	ret = clk_prepare(chip->clk);
+> +	if (ret < 0)
+> +		dev_err_probe(&pdev->dev, ret, "Failed to prepare clock\n");
+> +
+> +	ret = pwmchip_add(&chip->chip);
+> +	if (ret < 0)
+> +		dev_err_probe(&pdev->dev, ret, "Failed to add pwm chip\n");
+> +
 
-As ena_alloc_skb() is called only in napi, Use napi_build_skb()
-and napi_alloc_skb() when allocating skb.
+What is the point of probing the driver if pwmchip_add() fails? This
+should be rather fatal error.
 
-This patch was tested on aws a1.metal instance.
+The same with clock. If preparing clock fails, there is little point in
+enabling/disabling it later.
 
-[ jwiedmann.dev@gmail.com: Use napi_alloc_skb() instead of
-  netdev_alloc_skb_ip_align() to keep things consistent. ]
-
-Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 53080fd143dc..07444aead3fd 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1400,10 +1400,9 @@ static struct sk_buff *ena_alloc_skb(struct ena_ring *rx_ring, void *first_frag)
- 	struct sk_buff *skb;
- 
- 	if (!first_frag)
--		skb = netdev_alloc_skb_ip_align(rx_ring->netdev,
--						rx_ring->rx_copybreak);
-+		skb = napi_alloc_skb(rx_ring->napi, rx_ring->rx_copybreak);
- 	else
--		skb = build_skb(first_frag, ENA_PAGE_SIZE);
-+		skb = napi_build_skb(first_frag, ENA_PAGE_SIZE);
- 
- 	if (unlikely(!skb)) {
- 		ena_increase_stat(&rx_ring->rx_stats.skb_alloc_fail, 1,
--- 
-2.33.1
-
+Best regards,
+Krzysztof
