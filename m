@@ -2,118 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D1CCC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D1CC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:33:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240756AbiAZLdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:33:09 -0500
-Received: from mout.gmx.net ([212.227.17.20]:56729 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233650AbiAZLdH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:33:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643196752;
-        bh=ueVSIcxpI4wb87mye8wIz8iKVZJedVj2OTFb34Zb6YY=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=iDR5QdDImtHs4b+EWGN4Zlac4jhNsWxQW2CHzY244RoHnNlw1Kfnvtr355ihZwCkO
-         D1Pk2jxF20/VBlvONGeoKlzInC9SXwQHJxGM2yJurYSTFMPVuVN9jgxUOXB+7mwBz+
-         3DvzE9/k23CnCZtWBzSX2zV6BUeH4X1807J+4pcc=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.143.57]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MRmfi-1mp57i2cag-00TGEp; Wed, 26
- Jan 2022 12:32:32 +0100
-Message-ID: <6f508ff0-1807-7665-6c93-7f3eea4a1bdd@gmx.de>
-Date:   Wed, 26 Jan 2022 12:31:21 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
- <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
- <3877516e-3db3-f732-b44f-7fe12b175226@gmx.de>
- <b13c0634-e766-74db-ab1f-672f5d0c04d6@redhat.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <b13c0634-e766-74db-ab1f-672f5d0c04d6@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:4HZA8Qd20gmrmhW2cpUf8m+vF9K5egFJXwowyq7nggCgVsSvkVX
- tPf8ABG1TX7j0jk6Ed7SW/E9sDrSMdvJUwy62XuqffmOcS9Vlgi96RiwbEIGs7zq3v0KabM
- Khfh4zMbE+MPXnKyCRBqnEwaPoRxSJN3Fin1OQU4D5C2JmA6cgw/CMquGJwW5c5KxMseV6Y
- vnG0xxDTiukhiSyrKNzwg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Dpvrygk+4eI=:fJrjPI5s8+iZM9bBt9xy71
- RkTAg+MmJ/clyv2eDy/O5ilyfJD7lhdTeMmV/YqDaAvE2qCQCQ8J7hDqOuQfHt9cw9P13V177
- HXDQym0myRQptV3yXW06Ggyl2t6W58ecl9jyxPgL5Zy8xXfJU2dZp+XAAcbY7jyMDapSAnnKK
- 2Jz0JUdjHS1I1TwkpWxZVUbIT6AgNc6C1OGN7wejb4rot/CtAjZLBWVr+55gyNQfVk0fE5r7E
- auBYm3ronpYAs7LmyWl00bUVLFn3xnHrpeI1r55HVnYUUcfS08xv0kEoDWSevlXg1ZdTHbBYW
- AQlIkQLBV3vIdACrPt80JQI73+mxD9tkWt7+TlBqHdgW8LQohHGlwqte+/FNTUfY2vdZ/eqiv
- hvFV0FvSyBmc44ZzSKDHLCeUax3i/MLrvu6t74+xSl/gbowszAQGjsocY+SrOqZDdo5bTh5Un
- PGtIqDjvYBm4YJKqGRFotv5M/OtLwJ7jOVxhczyy/j2EEs/WoOu9on923QehNJY2waeZKkGVT
- EXuH+cSvT5jSNTLbNx7ILxvZ2W6rKJWT9KNeVGY5OmF4sgI0rbvEsfdOOmnnNew42zGCU8t+I
- Uql8KEQUOqJmRHX98KanolZzF7JcuGTLZOt0C41wPkMyk11GbobIMyg7b1R4TDDC69PIoyM0C
- P2u22f+nh0Bruq0ij5jwmcyvpQ0iOkTJJJv2q2yg40mkXXVM8M+T2a3JFkUD2vEdsIMxzAT4T
- IMzbu7dl7yNBbncfiYHc9XvAWqHC9U4fNtmVzECGap5rG1y2e7NV7X1JHrfsGU92+/YRCHvy3
- d9uE37ZPIegM8pQKYLvpT+TTGVhb9HiNEIgUi+GxW4X1nGS39+1vzjl0UBepYnrgsKEkgu6RJ
- DQ5GhNrIYKFxUynvCkZf/Co3ItER4DnoeE+wRw17PLKN2UGWunq0J1wB5Hd0P1tiOA862SMQx
- qbbPTxfAqEtkgFjoFr/OEVbbhVc1ahDNQ7RqPtIR917k2biWwl8T3pAWTONDhBJUW9yBVAdTf
- O1xZXT8RPaqy/MtUwux8QMyunc4OTUisOTsDDRFTmHlhVYJMTo3p1WpHXKdreNqJk1W/GXXNR
- NKdyWyFoZRbM8E=
+        id S240767AbiAZLdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:33:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233650AbiAZLdN (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 06:33:13 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615FDC06161C
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:33:12 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id h14so5282418plf.1
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:33:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id;
+        bh=a8wHaxFP6XLg/+G2Gdl2AxvIcrGqp9pWAjcn6Z4Bg5Q=;
+        b=PSlbe9++ZoQHmKjIdWrjG+TGtkYyetB4XHKyf09AJjOlKxZjkgHgCh4a+vWBsR0oS7
+         mxALTkCh1w9lBxjOWpnGuywGjti5sA3PO3lmLz6YLekl/HL39j0JGRg54VNDX7XBB871
+         zlmnhSA/jMwu5kgnZKy3T1ApGfz+/vI1QKetRHciKlkudV+ym07Y5GBA8liEWrXlYVJR
+         C5KGEN3qwKt/7SxTyLNiQUEZNvpPHkQigi5k3FTshX07frGPWOiniLBZOyqqhF7WVWWo
+         iiZ+mFuNgvkpbCLBhwUeJvbuhelvp3HI3OO7IkVc/nStHiC1nb/7pZkwnI23aab+vin+
+         gusw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=a8wHaxFP6XLg/+G2Gdl2AxvIcrGqp9pWAjcn6Z4Bg5Q=;
+        b=6xeFxJFMkqRUVfm7QjpRgJfyVKd+6hBENXnrtjVubI4M+U6SdVk6eXMSe/BwPuN8PD
+         6CoMk7wR3WmplPes9AbVmZfKkY8t8gWs3lope4r/TLOZh/Aq7bI9vtxokexqzNtRLs//
+         8if/7iDZnT/B3Y5CWb4C6zDxPb91HylYZBoGZKOykJmhbZrtDsSXHP9y8taRMD17btXU
+         qOTTGbL8cuWn9CFcp42WJlPEf/RRxyC1wysYiRPbd17fWfmbZ0+I0ZxbJ00ZC/QzWbyJ
+         Gjb8IsGZbVNNOEXDiiD9qw8EZbCkaVwE13+tBHJIXRTQ88L+Z84jwxIRrE/ZOZL0wYzc
+         ZvnA==
+X-Gm-Message-State: AOAM5326VPPuKsr97gv3P4ICLoiGQ55Wqvt/CcmNhvGXl+yjCP4Yqifk
+        omLYBBWFsQKljR74QUJUFIs=
+X-Google-Smtp-Source: ABdhPJyYzirjwI2H2BJxS8J/fQ26G11g80rcwzf3uUGfhnZSUjJpCP5YHoznUbQ/c6XDeMzYwfXeCw==
+X-Received: by 2002:a17:90b:3ec5:: with SMTP id rm5mr6448550pjb.14.1643196791927;
+        Wed, 26 Jan 2022 03:33:11 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id m1sm1913787pfk.202.2022.01.26.03.33.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 03:33:11 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Eric Millbrandt <emillbrandt@dekaresearch.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl: Add missing error handling in pcm030_fabric_probe
+Date:   Wed, 26 Jan 2022 11:33:04 +0000
+Message-Id: <20220126113307.1673-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/26/22 12:18, Javier Martinez Canillas wrote:
-> On 1/26/22 11:59, Helge Deller wrote:
->> On 1/26/22 11:02, Andy Shevchenko wrote:
->
-> [snip]
->
->>> P.S. For the record, I will personally NAK any attempts to remove that
->>> driver from the kernel. And this is another point why it's better not
->>> to be under the staging.
->>
->> I agree. Same as for me to NAK the disabling of fbcon's acceleration
->> features or even attempting to remove fbdev altogether (unless all
->> relevant drivers are ported to DRM).
->>
->
-> But that will never happen if we keep moving the goal post.
->
-> At some point new fbdev drivers should not be added anymore, otherwise
-> the number of existing drivers that need conversion will keep growing.
+Add the missing platform_device_put() and platform_device_del()
+before return from pcm030_fabric_probe in the error handling case.
 
-Good point, and yes you are right!
+Fixes: c912fa913446 ("ASoC: fsl: register the wm9712-codec")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ sound/soc/fsl/pcm030-audio-fabric.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-I think the rule should be something like:
+diff --git a/sound/soc/fsl/pcm030-audio-fabric.c b/sound/soc/fsl/pcm030-audio-fabric.c
+index af3c3b90c0ac..02c4ae20c673 100644
+--- a/sound/soc/fsl/pcm030-audio-fabric.c
++++ b/sound/soc/fsl/pcm030-audio-fabric.c
+@@ -93,15 +93,22 @@ static int pcm030_fabric_probe(struct platform_device *op)
+ 		dev_err(&op->dev, "platform_device_alloc() failed\n");
+ 
+ 	ret = platform_device_add(pdata->codec_device);
+-	if (ret)
++	if (ret) {
+ 		dev_err(&op->dev, "platform_device_add() failed: %d\n", ret);
++		goto exit_device_put;
++	}
+ 
+ 	ret = snd_soc_register_card(card);
+ 	if (ret)
+ 		dev_err(&op->dev, "snd_soc_register_card() failed: %d\n", ret);
+ 
+ 	platform_set_drvdata(op, pdata);
++	return ret;
+ 
++exit_release_dev:
++	platform_device_del(pdata->codec_device);
++exit_device_put:
++	platform_device_put(pdata->codec_device);
+ 	return ret;
+ }
+ 
+-- 
+2.17.1
 
-New graphics devices (e.g. max. 3 years old from now) usually are
-capable to be ported to DRM.
-For those graphics cards we should put a hard stop and not include them
-as new driver into the fbdev framework. Inclusion for those will only
-happen as DRM driver.
-
-In the same manner there are old graphic cards or very specific devices
-(e.g. more than 3 years old or only used in niche-use cases)
-which have limitations and thus can't easily be ported to DRM.
-For those it's still acceptable to include them as legacy fbdev driver,
-because the work needed in DRM to support such cards or to be able that
-they run fast enough with DRM just doesn't pay off the efforts which are
-needed to keep them as DRM driver.
-
-Would that be acceptable?
-
-Helge
