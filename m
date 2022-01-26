@@ -2,237 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 130DCC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:35:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64EA1C3526D
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 13:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240184AbiAZNfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:35:21 -0500
-Received: from box.trvn.ru ([194.87.146.52]:57505 "EHLO box.trvn.ru"
+        id S240241AbiAZNfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:35:52 -0500
+Received: from mga06.intel.com ([134.134.136.31]:27196 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235061AbiAZNfT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:35:19 -0500
-Received: from authenticated-user (box.trvn.ru [194.87.146.52])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by box.trvn.ru (Postfix) with ESMTPSA id 56EE14190B;
-        Wed, 26 Jan 2022 18:35:16 +0500 (+05)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
-        t=1643204116; bh=oO6zR0sf2MbGMIL8I0wYXd0p9vEDM6ULn/+Lb6/xa7s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DbwtdxwsNpXIIbaploR7o4abXaCgWJUEfVeIkKcO2xXHL8ihIax4f4ed/gZHZqPM9
-         +IShvbnO3tqs6mNCtDhK+jZjAjGBLKPdoa7wLBizGkjDT91AF9nQJobFHVctCge/+T
-         Dn2fh2BgwcBqo2ZESLUwgpZs0h4aPY+nFvLDpR8JPcqV87q2H8rGt1VHVQEnEBlfMS
-         qWkLP1JhpR9+5XVNj8tkrXqnsow7c5/2jQLHgQypiFr1471Jdf3RmaZBpeGJZQmgMH
-         5t/6OS/bp7jSGApG9IRp3cfD1NCNuJR3PHbF+x2LiuJUH8okjgrhC/r9lkQ1BI9aiv
-         /DB+Vc0pKzNHA==
+        id S235061AbiAZNfv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 08:35:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643204151; x=1674740151;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cXGNTr5J5iMmzg+/ShSMdmmAjgQmyI/sGWK0ORhpF3k=;
+  b=FXimzd0aKattG8fitN7WHaDaAYQzlKj1tBGpuxLh4IUqGP+ecAPPw0oL
+   /ToFS6cYGZ8x0iwQIbm5WJqd67DSvxD8svttwcOupD8vQY2PYE6HoLhcy
+   daZppcFFUpnHZscQTTmHPX7PcDg7ydV7Rv1jaapABRTIkqM1qiSlW6QUU
+   PoL2CvNOnji/G8FUbaA+QZ10z7XrVtv9YL6xqN7Ou5+jNFuQaD6OTiPXt
+   YH59ujHlARYkMFDWMgP3zAOReei6qFyxC99VY0o8TP/R7T4953Umjy8Vu
+   LKqURb95pTdxHoInOzDBd2MAmPkyi4GuHsGdpplyd7k6gb1ias0/7ve/D
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="307263605"
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="307263605"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:35:50 -0800
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="628303941"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 05:35:47 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nCiRd-00Ebvw-G8;
+        Wed, 26 Jan 2022 15:34:41 +0200
+Date:   Wed, 26 Jan 2022 15:34:41 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Wander Costa <wcosta@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Wander Lairson Costa <wander@redhat.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
+Message-ID: <YfFN8Q0o2RxXcE7y@smile.fi.intel.com>
+References: <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
+ <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
+ <CAAq0SU=9R3Y_SAdM+HaqavzWBRd1Li-b5bnZZLd5Opfgd0vnkQ@mail.gmail.com>
+ <fa42a60c-954a-acc0-3962-f00427153f78@nvidia.com>
+ <YfArHDfrVHw7ApDx@smile.fi.intel.com>
+ <YfArWaKJ13+OC/7w@smile.fi.intel.com>
+ <CAAq0SU=U3UY+DUdd1fjj25Yt_QZriShZTSFTsq5B4tPnOYhQvQ@mail.gmail.com>
+ <YfELyq5AmxiZxjme@kroah.com>
+ <YfE6AiIgXrd+5qvk@smile.fi.intel.com>
+ <CAAq0SU=ivwiGPZoD=BsD67A4A4pvuh0S02L2Udhg8vmjnmCAAw@mail.gmail.com>
 MIME-Version: 1.0
-Date:   Wed, 26 Jan 2022 18:35:15 +0500
-From:   Nikita Travkin <nikita@trvn.ru>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     thierry.reding@gmail.com, lee.jones@linaro.org,
-        u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
-        sboyd@kernel.org, linus.walleij@linaro.org, masneyb@onstation.org,
-        sean.anderson@seco.com, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht
-Subject: Re: [PATCH v4 2/2] pwm: Add clock based PWM output driver
-In-Reply-To: <2c65c342-5c04-bcf4-fd75-5c11d26f0b33@kernel.org>
-References: <20220126125849.75572-1-nikita@trvn.ru>
- <20220126125849.75572-3-nikita@trvn.ru>
- <2c65c342-5c04-bcf4-fd75-5c11d26f0b33@kernel.org>
-Message-ID: <72e076e7d0612667d503cb1196abb3c7@trvn.ru>
-X-Sender: nikita@trvn.ru
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAq0SU=ivwiGPZoD=BsD67A4A4pvuh0S02L2Udhg8vmjnmCAAw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Krzysztof Kozlowski писал(а) 26.01.2022 18:18:
-> On 26/01/2022 13:58, Nikita Travkin wrote:
->> Some systems have clocks exposed to external devices. If the clock
->> controller supports duty-cycle configuration, such clocks can be used as
->> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
->> similar way and an "opposite" driver already exists (clk-pwm). Add a
->> driver that would enable pwm devices to be used via clk subsystem.
->>
->> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
->> --
->>
->> Changes in v2:
->>  - Address Uwe's review comments:
->>    - Round set clk rate up
->>    - Add a description with limitations of the driver
->>    - Disable and unprepare clock before removing pwmchip
->> Changes in v3:
->>  - Use 64bit version of div round up
->>  - Address Uwe's review comments:
->>    - Reword the limitations to avoid incorrect claims
->>    - Move the clk_enabled flag assignment
->>    - Drop unnecessary statements
->> ---
->>  drivers/pwm/Kconfig   |  10 +++
->>  drivers/pwm/Makefile  |   1 +
->>  drivers/pwm/pwm-clk.c | 139 ++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 150 insertions(+)
->>  create mode 100644 drivers/pwm/pwm-clk.c
->>
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index 21e3b05a5153..daa2491a4054 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -140,6 +140,16 @@ config PWM_BRCMSTB
->>  	  To compile this driver as a module, choose M Here: the module
->>  	  will be called pwm-brcmstb.c.
->>
->> +config PWM_CLK
->> +	tristate "Clock based PWM support"
->> +	depends on HAVE_CLK || COMPILE_TEST
->> +	help
->> +	  Generic PWM framework driver for outputs that can be
->> +	  muxed to clocks.
->> +
->> +	  To compile this driver as a module, choose M here: the module
->> +	  will be called pwm-clk.
->> +
->>  config PWM_CLPS711X
->>  	tristate "CLPS711X PWM support"
->>  	depends on ARCH_CLPS711X || COMPILE_TEST
->> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
->> index 708840b7fba8..4a860103c470 100644
->> --- a/drivers/pwm/Makefile
->> +++ b/drivers/pwm/Makefile
->> @@ -10,6 +10,7 @@ obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
->>  obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
->>  obj-$(CONFIG_PWM_BERLIN)	+= pwm-berlin.o
->>  obj-$(CONFIG_PWM_BRCMSTB)	+= pwm-brcmstb.o
->> +obj-$(CONFIG_PWM_CLK)		+= pwm-clk.o
->>  obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
->>  obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
->>  obj-$(CONFIG_PWM_CROS_EC)	+= pwm-cros-ec.o
->> diff --git a/drivers/pwm/pwm-clk.c b/drivers/pwm/pwm-clk.c
->> new file mode 100644
->> index 000000000000..b3bfa12a0e73
->> --- /dev/null
->> +++ b/drivers/pwm/pwm-clk.c
->> @@ -0,0 +1,139 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * Clock based PWM controller
->> + *
->> + * Copyright (c) 2021 Nikita Travkin <nikita@trvn.ru>
->> + *
->> + * This is an "adapter" driver that allows PWM consumers to use
->> + * system clocks with duty cycle control as PWM outputs.
->> + *
->> + * Limitations:
->> + * - Glitches are possible when new pwm state is applied.
->> + * - Due to the fact that exact behavior depends on the underlying
->> + *   clock driver, various limitations are possible.
->> + * - Period depends on the clock and, in general, not guaranteed.
->> + * - Underlying clock may not be able to give 0% or 100% duty cycle
->> + *   (constant off or on), exact behavior will depend on the clock.
->> + * - When the PWM is disabled, the clock will be disabled as well,
->> + *   line state will depend on the clock.
->> + */
->> +
->> +#include <linux/kernel.h>
->> +#include <linux/math64.h>
->> +#include <linux/err.h>
->> +#include <linux/module.h>
->> +#include <linux/of.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/clk.h>
->> +#include <linux/pwm.h>
->> +
->> +struct pwm_clk_chip {
->> +	struct pwm_chip chip;
->> +	struct clk *clk;
->> +	bool clk_enabled;
->> +};
->> +
->> +#define to_pwm_clk_chip(_chip) container_of(_chip, struct pwm_clk_chip, chip)
->> +
->> +static int pwm_clk_apply(struct pwm_chip *pwm_chip, struct pwm_device *pwm,
->> +			 const struct pwm_state *state)
->> +{
->> +	struct pwm_clk_chip *chip = to_pwm_clk_chip(pwm_chip);
->> +	int ret;
->> +	u32 rate;
->> +	u64 period = state->period;
->> +	u64 duty_cycle = state->duty_cycle;
->> +
->> +	if (!state->enabled) {
->> +		if (pwm->state.enabled) {
->> +			clk_disable(chip->clk);
->> +			chip->clk_enabled = false;
->> +		}
->> +		return 0;
->> +	} else if (!pwm->state.enabled) {
->> +		ret = clk_enable(chip->clk);
->> +		if (ret)
->> +			return ret;
->> +		chip->clk_enabled = true;
->> +	}
->> +
->> +	rate = DIV64_U64_ROUND_UP(NSEC_PER_SEC, period);
->> +	ret = clk_set_rate(chip->clk, rate);
->> +	if (ret)
->> +		return ret;
->> +
->> +	if (state->polarity == PWM_POLARITY_INVERSED)
->> +		duty_cycle = period - duty_cycle;
->> +
->> +	return clk_set_duty_cycle(chip->clk, duty_cycle, period);
->> +}
->> +
->> +static const struct pwm_ops pwm_clk_ops = {
->> +	.apply = pwm_clk_apply,
->> +	.owner = THIS_MODULE,
->> +};
->> +
->> +static int pwm_clk_probe(struct platform_device *pdev)
->> +{
->> +	struct pwm_clk_chip *chip;
->> +	int ret;
->> +
->> +	chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
->> +	if (!chip)
->> +		return -ENOMEM;
->> +
->> +	chip->clk = devm_clk_get(&pdev->dev, NULL);
->> +	if (IS_ERR(chip->clk))
->> +		return dev_err_probe(&pdev->dev, PTR_ERR(chip->clk),
->> +				     "Failed to get clock\n");
->> +
->> +	chip->chip.dev = &pdev->dev;
->> +	chip->chip.ops = &pwm_clk_ops;
->> +	chip->chip.npwm = 1;
->> +
->> +	ret = clk_prepare(chip->clk);
->> +	if (ret < 0)
->> +		dev_err_probe(&pdev->dev, ret, "Failed to prepare clock\n");
->> +
->> +	ret = pwmchip_add(&chip->chip);
->> +	if (ret < 0)
->> +		dev_err_probe(&pdev->dev, ret, "Failed to add pwm chip\n");
->> +
+On Wed, Jan 26, 2022 at 10:23:57AM -0300, Wander Costa wrote:
+> On Wed, Jan 26, 2022 at 9:10 AM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> > On Wed, Jan 26, 2022 at 09:52:26AM +0100, Greg Kroah-Hartman wrote:
+
+...
+
+> > Wander, if you need a test for something new, I may help to perform on
+> > our (sub)set of x86 machines.
 > 
-> What is the point of probing the driver if pwmchip_add() fails? This
-> should be rather fatal error.
-> 
-> The same with clock. If preparing clock fails, there is little point in
-> enabling/disabling it later.
-> 
+> Thanks, Andy. I will let you know when I have new patches.
 
-Uh oh... Seems like I forgot a return in both cases... For some reason
-I had an incorrect assumption in my mind that dev_err_probe is a macro
-that does the return on it's own, yet I used it correctly just a couple
-of lines earlier...
+Just Cc me that time.
 
-Thanks for pointing this out! Will fix those in v5.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Nikita
 
-> Best regards,
-> Krzysztof
