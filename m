@@ -2,99 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E0CC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:44:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C52EC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 14:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242304AbiAZOoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 09:44:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:40190 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242297AbiAZOof (ORCPT
+        id S242315AbiAZOqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 09:46:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58982 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235643AbiAZOqJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 09:44:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643208274;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=h+Gqz+i3jr65DckDxVwcGyle0pa93d1ByC6vRQ3mUOk=;
-        b=G9P68YnRgUPutOkTeFPu1gKg1YGdMmEIVPNeM2GRVZEYuEBuLtRgQndzCmzQE3lbM/osVY
-        KuTimsCce6bkGTVoUqe5fTjaFu88/rWmLYR78Y+offHK1i3srejHYImAbAZSH0Pm5DQ0U2
-        UKTwM4zGIcuezBcnQ+cSNDLEzklH6dM=
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
- [209.85.210.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-655-TTsIWBVVNsquhpL7Enjktw-1; Wed, 26 Jan 2022 09:44:32 -0500
-X-MC-Unique: TTsIWBVVNsquhpL7Enjktw-1
-Received: by mail-ot1-f69.google.com with SMTP id 30-20020a9d0a21000000b00594d9ed4bf1so15446425otg.23
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 06:44:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=h+Gqz+i3jr65DckDxVwcGyle0pa93d1ByC6vRQ3mUOk=;
-        b=O6S8bGMN4oB3lQ36tHvuD0DuS58GZ5EU47znuzekIeCoJ/OBDri6NfGdHjATiOKIGK
-         8kKExNj4L6IsXu7nTHeLkw7kw9/REEYMrD52HHxq0g75Z9QOBjuOdd95TYXcXq6pLuKU
-         4jUSvxib0K5Fbfayd4igXytjvT47AreyFUeWxgoP6qpdoukBCsoTgHLPw2i7c2XnipfE
-         HfgEmcY2xlFxwhYDweXXpMvNyOCI6WZPDq7yisEJzI3+UubqQ8n12JnZOSrEf2hDpY8A
-         Pql92YOvvzGwSEA+jPpuYU5tStTcgrXKp1yNa4mf58ZgHRhgsinTtrgKMobsukbDWWtl
-         TVzQ==
-X-Gm-Message-State: AOAM5331ClajqkGoLzZuiGQ29/ZfvOfHzkskqDyGAzm56/OtFwLmL1sD
-        5bbXC9wN/Hy63bRFEuPQOrCxpNz/AulrvOep8MW74ecf05If/hgK0binY5coxXTLIzH969yPf58
-        SS2wZnBOQCfjCQpV4d1B8E/y5
-X-Received: by 2002:a4a:d02c:: with SMTP id w12mr352037oor.38.1643208271955;
-        Wed, 26 Jan 2022 06:44:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyHGKh36XsGYbRTM/FfJGvF4MhP6mweAYuEeF4qWKixv/xgkH90AL3sP2UBkWdd0n152muikQ==
-X-Received: by 2002:a4a:d02c:: with SMTP id w12mr352021oor.38.1643208271748;
-        Wed, 26 Jan 2022 06:44:31 -0800 (PST)
-Received: from ovpn-116-179.gru2.redhat.com ([2804:2984:10c:7100:db78:6ebc:9e65:6c6e])
-        by smtp.googlemail.com with ESMTPSA id m130sm8896672oif.21.2022.01.26.06.44.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 06:44:31 -0800 (PST)
-From:   Lucas Zampieri <lzampier@redhat.com>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     lains@riseup.net, nlopezcasad@logitech.com,
-        Lucas Zampieri <lzampier@redhat.com>
-Subject: [PATCH] HID: logitech-dj: add new lightspeed receiver id
-Date:   Wed, 26 Jan 2022 11:44:00 -0300
-Message-Id: <20220126144400.130797-1-lzampier@redhat.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 26 Jan 2022 09:46:09 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF070B81CB5;
+        Wed, 26 Jan 2022 14:46:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 950A1C340E3;
+        Wed, 26 Jan 2022 14:46:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643208367;
+        bh=cqbZeKQMWhz60xNOYMmiOJ6Ns4ueZnXODMnqhlHxm+Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oYvMX672yUdVX9ZYR5n6MAMAwumedvxK2sMWmhk7UuBXIkBapod4bL6tw2ks7WqMz
+         ADh6/5WPgcoSeymYq9rpRSfLxUSIyScdF7A7reTKvrDGtYiyEBwHE6gKLQzmeEYPd9
+         b1ZEaqzWgH4hGh6KjDdGa9rY2IfORt1MIflib5Dh0Qqu0oWGQbNC9UpOGDacM+GbSE
+         58ptOdMnpGpymUKMx0wr9zja0yz0XfYIikkXMurXODQ4M96UNia7MRZOA5brAnrMPk
+         sexsXzZg099IfP2/OocOSw2aDCmn83+xe9T6IxvD27fchrdoV+AP6yLeCR6nJvFbmn
+         Nf1XuMw4/E+gQ==
+Date:   Wed, 26 Jan 2022 15:46:03 +0100
+From:   Christian Brauner <brauner@kernel.org>
+To:     Rich Felker <dalias@libc.org>
+Cc:     Ariadne Conill <ariadne@dereferenced.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH] fs/exec: require argv[0] presence in do_execveat_common()
+Message-ID: <20220126144603.vlxmlngqlpsjtmzw@wittgenstein>
+References: <20220126043947.10058-1-ariadne@dereferenced.org>
+ <20220126132729.GA7942@brightrain.aerifal.cx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220126132729.GA7942@brightrain.aerifal.cx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As of logitech lightspeed receiver fw version 04.02.B0009,
-HIDPP_PARAM_DEVICE_INFO is being reported as 0x11.
+On Wed, Jan 26, 2022 at 08:27:30AM -0500, Rich Felker wrote:
+> On Wed, Jan 26, 2022 at 04:39:47AM +0000, Ariadne Conill wrote:
+> > The first argument to argv when used with execv family of calls is
+> > required to be the name of the program being executed, per POSIX.
+> 
+> That's not quite the story. The relevant text is a "should", meaning
+> that to be "strictly conforming" an application has to follow the
+> convention, but still can't assume its invoker did. (Note that most
+> programs do not aim to be "strictly conforming"; it's not just the
+> word strictly applied as an adjective to conforming, but a definition
+> of its own imposing very stringent portability conditions beyond what
+> the standard already imposes.) Moreover, POSIX (following ISO C, after
+> this was changed from early C drafts) rejected making it a
+> requirement. This is documented in the RATIONALE for execve:
+> 
+>     Early proposals required that the value of argc passed to main()
+>     be "one or greater". This was driven by the same requirement in
+>     drafts of the ISO C standard. In fact, historical implementations
+>     have passed a value of zero when no arguments are supplied to the
+>     caller of the exec functions. This requirement was removed from
+>     the ISO C standard and subsequently removed from this volume of
+>     POSIX.1-2017 as well. The wording, in particular the use of the
+>     word should, requires a Strictly Conforming POSIX Application to
+>     pass at least one argument to the exec function, thus guaranteeing
+>     that argc be one or greater when invoked by such an application.
+>     In fact, this is good practice, since many existing applications
+>     reference argv[0] without first checking the value of argc.
+> 
+> Source: https://pubs.opengroup.org/onlinepubs/9699919799/functions/execve.html
+> 
+> Note that despite citing itself as POSIX.1-2017 above, this is not a
+> change in the 2017 edition; it's just the way they self-cite. As far
+> as I can tell, the change goes back to prior to the first publication
+> of the standard.
+> 
+> > By validating this in do_execveat_common(), we can prevent execution
+> > of shellcode which invokes execv(2) family syscalls with argc < 1,
+> > a scenario which is disallowed by POSIX, thus providing a mitigation
+> > against CVE-2021-4034 and similar bugs in the future.
+> > 
+> > The use of -EFAULT for this case is similar to other systems, such
+> > as FreeBSD and OpenBSD.
+> 
+> I don't like this choice of error, since in principle EFAULT should
+> never happen when you haven't invoked memory-safety-violating UB.
+> Something like EINVAL would be more appropriate. But if the existing
+> practice for systems that do this is to use EFAULT, it's probably best
+> to do the same thing.
+> 
+> > Interestingly, Michael Kerrisk opened an issue about this in 2008,
+> > but there was no consensus to support fixing this issue then.
+> > Hopefully now that CVE-2021-4034 shows practical exploitative use
+> > of this bug in a shellcode, we can reconsider.
+> 
+> I'm not really opposed to attempting to change this with consensus
+> (like, actually proposing it on the Austin Group tracker), but a less
+> invasive change would be just enforcing it for the case where exec is
+> a privilege boundary (suid/sgid/caps). There's really no motivation
+> for changing longstanding standard behavior in a
+> non-privilege-boundary case.
 
-With patch "HID: logitech-dj: add support for the new lightspeed receiver
-iteration", the mouse starts to error out with:
-  logitech-djreceiver: unusable device of type UNKNOWN (0x011) connected on
-  slot 1
-and becomes unusable.
-
-This has been noticed on a Logitech G Pro X Superlight fw MPM 25.01.B0018.
-
-Signed-off-by: Lucas Zampieri <lzampier@redhat.com>
----
- drivers/hid/hid-logitech-dj.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/hid/hid-logitech-dj.c b/drivers/hid/hid-logitech-dj.c
-index a0017b010c34..9f68c0631439 100644
---- a/drivers/hid/hid-logitech-dj.c
-+++ b/drivers/hid/hid-logitech-dj.c
-@@ -1068,6 +1068,7 @@ static void logi_hidpp_recv_queue_notif(struct hid_device *hdev,
- 		workitem.reports_supported |= STD_KEYBOARD;
- 		break;
- 	case 0x0f:
-+	case 0x11:
- 		device_type = "eQUAD Lightspeed 1.2";
- 		logi_hidpp_dev_conn_notif_equad(hdev, hidpp_report, &workitem);
- 		workitem.reports_supported |= STD_KEYBOARD;
--- 
-2.34.1
-
+Agreed. If we do this at all then this has way less regression potential.
