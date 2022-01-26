@@ -2,94 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF57C63686
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:26:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F91C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 12:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241271AbiAZM0r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 07:26:47 -0500
-Received: from smtp117.ord1c.emailsrvr.com ([108.166.43.117]:49028 "EHLO
-        smtp117.ord1c.emailsrvr.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241256AbiAZM0q (ORCPT
+        id S241275AbiAZM0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 07:26:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57672 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241262AbiAZM0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 26 Jan 2022 07:26:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
-        s=20190130-41we5z8j; t=1643199583;
-        bh=ReKzEeMpEzLebnKabwkFlt+2OGOIe/9umBBTSRYIrCA=;
-        h=Date:Subject:To:From:From;
-        b=Xq2kMAvt7iEMJOeCphPlF49ooY3LBCSet4g97IAfgbsPtlL605ZBjCxKBXz/8R2a3
-         QQNf0RWKxuYgkXG9+nwEhLEM1/jb3VZlOMxm/cv4sl9hnW9vOh/1kYDqxLYaNuZt5d
-         2VALeFwc0HcCrx48aaedIK5dXiRXbXKmD6RAfLyM=
-X-Auth-ID: abbotti@mev.co.uk
-Received: by smtp15.relay.ord1c.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id F3DA32013E;
-        Wed, 26 Jan 2022 07:19:42 -0500 (EST)
-Message-ID: <43b079ef-1c4a-b4c4-62b3-10d6a62a3bac@mev.co.uk>
-Date:   Wed, 26 Jan 2022 12:19:42 +0000
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79567C061748
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 04:26:46 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id a13so25494257wrh.9
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 04:26:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=RTTc+tIxboDX1aAp6zIcb8nku1+Z0jGEe/zvj/3GVws=;
+        b=ifdoWnIM4+DPkoukaQV9D4X0bFzOCYQiemnycFMl7Fr6vLCDMvG8RcLtoG3Q4v6M8u
+         9gqXE/wlJh4yHZ46KHrf4pjUk6nA6v+ei1qBKCq7m+4LlIE5K84VHb5isEinaKeMPA6e
+         xuu8Ij9jLHWTDdIMqGnfAzfRCgSTumD8UYb3OTsfSb4Pgcv1LnGtQPvbJqqUXhcjW1I2
+         S9EcEPVn6/hx4UeaHzvZRuf/X6qGoyXHpDv1pDDm2ohOZwdUaDaH4tbeZl6wN5ttRa6x
+         fZFTNQ4S6XF+56g65PEHdTQNsTEP8lZJ6HOIDq4aRUkADyWdvE0F64YUW4aqXHLoljFa
+         hlGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RTTc+tIxboDX1aAp6zIcb8nku1+Z0jGEe/zvj/3GVws=;
+        b=flAkGCz5oErk+l0bRUIozOrLp5yw9T7JZS3aV7vi2/rjHB0kwQ/Z7/HlRiz0rk6NE9
+         oEjaw4Qbiiz6eYVV7tB0+MfIdLpOAcCy6YdWyUkJEOWEyNpOneXt7I7KMyp2QC6Lv+v1
+         NdB5u6CcDhffhxiNUJluoG06uf1nJmgwn7D1qPy8HHpoQvmbMvyk2s2TL0uQPtbxmuPx
+         6ITItEUwABflEScKuwRIwRbxq0HX9N3aRftMzerMTzkV1AwkhJbd/t46LnF5+cQfuN06
+         IXU7DyhnJX1dt00cfS67foS1KW+BCwkQxO9AobGpCMyT9iKdmdCdfZwILvi0MqSynDy4
+         dbfA==
+X-Gm-Message-State: AOAM532fQe0KiyH9VZEMXDOqWeTc8RR4ajcOwNwHFurEh3vcpKfT8QD+
+        qpfB5Ufidzsp2rpRCq8RBlT6/Q==
+X-Google-Smtp-Source: ABdhPJxbZEHuj6ajYtjPTlbiEw4+WdhYMQwvbBKCrW7Ge5qMW7KY/m/LBunO3t7fUhjHvvf9aIM/NQ==
+X-Received: by 2002:adf:9e49:: with SMTP id v9mr20989963wre.469.1643200004873;
+        Wed, 26 Jan 2022 04:26:44 -0800 (PST)
+Received: from ?IPv6:2a01:e34:ed2f:f020:f589:cf7d:b2ee:bb5e? ([2a01:e34:ed2f:f020:f589:cf7d:b2ee:bb5e])
+        by smtp.googlemail.com with ESMTPSA id g7sm4009602wmq.28.2022.01.26.04.26.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 04:26:44 -0800 (PST)
+Subject: Re: (subset) [PATCH 1/3] ARM: dts: exynos: drop old thermal
+ properties from Exynos4210
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
+        linux-pm@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+References: <20220122132554.65192-1-krzysztof.kozlowski@canonical.com>
+ <164313029072.79782.14492454091056440886.b4-ty@canonical.com>
+ <c4a6d5a4-647a-f80c-e487-a5434e744bae@linaro.org>
+ <CA+Eumj6rUZ=e6oOZyRMEEoXn2uh0FpuUQbJaT3rsX3rhXT67pQ@mail.gmail.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <8fba22fc-3fc1-a55e-9926-7f008ac24925@linaro.org>
+Date:   Wed, 26 Jan 2022 13:26:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH][next] comedi: das16: Use struct_size() helper in
- comedi_alloc_spriv()
-Content-Language: en-GB
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>
-Cc:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20220125232525.GA80228@embeddedor>
-From:   Ian Abbott <abbotti@mev.co.uk>
-Organization: MEV Ltd.
-In-Reply-To: <20220125232525.GA80228@embeddedor>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Classification-ID: 26608a2a-c2d7-4583-ba07-c77b0de1dce9-1-1
+In-Reply-To: <CA+Eumj6rUZ=e6oOZyRMEEoXn2uh0FpuUQbJaT3rsX3rhXT67pQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/01/2022 23:25, Gustavo A. R. Silva wrote:
-> Make use of the struct_size() helper instead of an open-coded version,
-> in order to avoid any potential type mistakes or integer overflows that,
-> in the worst scenario, could lead to heap overflows.
+On 26/01/2022 13:20, Krzysztof Kozlowski wrote:
+> On Wed, 26 Jan 2022 at 12:57, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
+>>
+>> On 25/01/2022 18:04, Krzysztof Kozlowski wrote:
+>>> On Sat, 22 Jan 2022 14:25:52 +0100, Krzysztof Kozlowski wrote:
+>>>> The samsung,tmu_gain and samsung,tmu_reference_voltage properties of
+>>>> Exynos Thermal Management Unit driver are not used since April 2018.
+>>>> They were removed with commit fccfe0993b5d ("thermal: exynos: remove
+>>>> parsing of samsung,tmu_gain property") and commit 61020d189dbc
+>>>> ("thermal: exynos: remove parsing of samsung, tmu_reference_voltage
+>>>> property"), so drop them also from Exynos4210 DTS.
+>>>>
+>>>> [...]
+>>>
+>>> Applied, thanks!
+>>>
+>>> [1/3] ARM: dts: exynos: drop old thermal properties from Exynos4210
+>>>       commit: e20bd06fc421fba4099be51d3f56b9b1741b499b
+>>>
+>>
+>> I guess up to me to pick 2 and 3
 > 
-> Also, address the following sparse warnings:
-> drivers/comedi/drivers/das16.c:964:45: warning: using sizeof on a flexible structure
-> drivers/comedi/drivers/das16.c:998:45: warning: using sizeof on a flexible structure
-> 
-> Link: https://github.com/KSPP/linux/issues/174
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> ---
->   drivers/comedi/drivers/das16.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/comedi/drivers/das16.c b/drivers/comedi/drivers/das16.c
-> index 937a69ce0977..728dc02156c8 100644
-> --- a/drivers/comedi/drivers/das16.c
-> +++ b/drivers/comedi/drivers/das16.c
-> @@ -961,7 +961,7 @@ static const struct comedi_lrange *das16_ai_range(struct comedi_device *dev,
->   
->   		/* allocate single-range range table */
->   		lrange = comedi_alloc_spriv(s,
-> -					    sizeof(*lrange) + sizeof(*krange));
-> +					    struct_size(lrange, range, 1));
->   		if (!lrange)
->   			return &range_unknown;
->   
-> @@ -995,7 +995,7 @@ static const struct comedi_lrange *das16_ao_range(struct comedi_device *dev,
->   
->   		/* allocate single-range range table */
->   		lrange = comedi_alloc_spriv(s,
-> -					    sizeof(*lrange) + sizeof(*krange));
-> +					    struct_size(lrange, range, 1));
->   		if (!lrange)
->   			return &range_unknown;
->   
+> Yes, please.
 
-Looks like a nice tidy-up, thanks!
+Ok, I'll wait for Rob's ack
 
-Reviewed-by: Ian Abbott <abbotti@mev.co.uk>
+Thanks
 
-(Note, I do not have anywhere to commit it, personally.)
+  -- Daniel
+
 
 -- 
--=( Ian Abbott <abbotti@mev.co.uk> || MEV Ltd. is a company  )=-
--=( registered in England & Wales.  Regd. number: 02862268.  )=-
--=( Regd. addr.: S11 & 12 Building 67, Europa Business Park, )=-
--=( Bird Hall Lane, STOCKPORT, SK3 0XA, UK. || www.mev.co.uk )=-
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
