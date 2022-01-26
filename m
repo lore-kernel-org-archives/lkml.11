@@ -2,131 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE0CC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7603BC5DF62
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:19:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240592AbiAZLS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:18:56 -0500
-Received: from mout.gmx.net ([212.227.17.20]:48089 "EHLO mout.gmx.net"
+        id S240593AbiAZLTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:19:09 -0500
+Received: from mx1.mailbun.net ([170.39.20.100]:35954 "EHLO mx1.mailbun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233442AbiAZLSz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:18:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643195900;
-        bh=+PuqQOa8ZIasq9nywZV54YoR4zKFhnHcgqEzAOKfTdA=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=K/RNfBZN9xjeHAexpSxt3QsddHquW+fJOSFxykEQ+0jJMiCNcDiYTFhmXQTLoc1M/
-         V3rwgNYvhVrxt/5aIsN25LE/hXO7HqOvN8ONSQLp0fvs6bJqEKUWf8k6oCen50jKtd
-         3vxkYF2d0tQD/UfgjlqHfR7ro2AdUmhzrvLgpYZI=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.143.57]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MZktj-1mjJ3E3hOJ-00WjWx; Wed, 26
- Jan 2022 12:18:19 +0100
-Message-ID: <f671a112-880d-1526-a395-360947b40c5a@gmx.de>
-Date:   Wed, 26 Jan 2022 12:17:08 +0100
+        id S240588AbiAZLTG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 06:19:06 -0500
+Received: from [192.168.1.5] (unknown [172.58.104.31])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: ariadne@dereferenced.org)
+        by mx1.mailbun.net (Postfix) with ESMTPSA id 89A5711A484;
+        Wed, 26 Jan 2022 11:19:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dereferenced.org;
+        s=mailbun; t=1643195946;
+        bh=raidN3KhEb8zPHzR6MMb0YsMuDUbxTjPizLkNy2Z5Qo=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References;
+        b=DiVo/OzLPrcIHb10qvSv+tIwXC0yMKq+h9med80u2dtHhiuvK3R1q/rsZ+Wu+kW6Y
+         NyQMV4u3NUtAh0MnUZj4Gz8WOViMcB69k7DPdezRMINiPY+GWzhZxwpyrXICZ2g2gw
+         JmpB8nsoTQDGq7Y6auDIpb2lwfx4lKxEhyJccQgV7HmNDHpFj24ygnO4VrywEO1LYv
+         OpU1TkTKcTaTKNZyb4rIRIrlPO+Peuzko+0MDx04Jph97S/ELIAlZPGX7kgKJ9yBsv
+         n/soYKkMblnwR/9QeNwTVZ+tJI69gE2EZo5BDlYRh9vsPISQXLw0Zy/S/XSEmXuYtG
+         5A4lSwkISSItw==
+Date:   Wed, 26 Jan 2022 05:18:58 -0600 (CST)
+From:   Ariadne Conill <ariadne@dereferenced.org>
+To:     Kees Cook <keescook@chromium.org>
+cc:     Ariadne Conill <ariadne@dereferenced.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH] fs/exec: require argv[0] presence in
+ do_execveat_common()
+In-Reply-To: <39480927-B17F-4573-B335-7FCFD81AB997@chromium.org>
+Message-ID: <44b4472d-1d50-c43f-dbb1-953532339fb4@dereferenced.org>
+References: <20220126043947.10058-1-ariadne@dereferenced.org> <202201252241.7309AE568F@keescook> <39480927-B17F-4573-B335-7FCFD81AB997@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v1 1/4] fbtft: Unorphan the driver
-Content-Language: en-US
-To:     Daniel Vetter <daniel@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <20220125202118.63362-2-andriy.shevchenko@linux.intel.com>
- <YfEG2qVO9K9G+g1d@kroah.com>
- <CAKMK7uGoRC9a4cMCADTipV67oivfWvTw=6RYm2kOthB_bhWnXQ@mail.gmail.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <CAKMK7uGoRC9a4cMCADTipV67oivfWvTw=6RYm2kOthB_bhWnXQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:TT1QJY2gC8uB7kkLOHzSTdzit3og0cbZ6iIm4K+D70BWn9LFy20
- l82OzF7oSlgOVk10ARiXac/4IMSPwdE94cHTsIYXjVflcT4ta0BeI7P90ST1AdNSDoeG8KD
- g5vbiwlbnl1KldKuVDL7LnVecVnEwdpoMTHL4ohOG/+YJHxM/whCTfoJc61b90H3pvhHOpj
- 6nGxFKXFupb5oRYAAP8oQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:mTSrC5H5Tvo=:bA6ryL8DJGrwAfD6QK0RLg
- PukffV8q/3LZpSbB+HmwmiWEHRsqaExtyg9RhnZwx7aq5fhxQ1y1KMEIapBfH2j/pdXpMSrNE
- i2CMHd/OQ4Aj6ilbtYnw5wsK3diaplPrs2Vg9ajkP/kXgP4C8jm1hwP+XDvfjaWiZyYsIogPk
- EN70Fa4lMxKOmioQHQkpy5R1dknyBOdKbajldqX043Zo0P5qooY12udATTo9fOsZNmnWUD3nr
- SHAQ2KCYyIi+LOWI5aiZcicDzj6OhEHuFOLCrVLup5aYq0dt7X8GezZAmf7X0/yVZzhlUzv84
- nioT3TNzcheckIsoKJLxmFduYpBPhSINodSZv6D8UBTGg3xGb5GTbzY6ZjGdInBFPObcaa4of
- arikV7daPmMyph8GKLZmK0PHxJrOnmUE5BVCLvPSWolv1n6ee2TZscHN1BhDq6u4uT7dlF0nB
- kPp+jlEWM85BRuvr2VwAtoIIeLnePv9iA5JrS5nyN267eszqDU6S4XJr1WUpy1f1Sn2xlA6SS
- OZpikJ+RaQSwXoLY4PFsAXPMiOekOHoCc9qWvx0p1e1dRYp4FvIFYXG0sUJQ0FURpUUkW3Z0M
- ApUhAJxP0BkeVBxxEoZde8KeYRp/cgYrMGdjxuBDI5pzmd5O0q9QaeBVf3r8wKQpY456xBCTF
- VHrd+XHLbUlTablmXGi691iTQb/KcuDCyUbpdR4JHBn17KvVdte5nSIMIZsPsbUpukXuyujT+
- Y2plKZog6KcZP3artQeQzSIRefI29Iu0TXTdQcea5397zAEPTvAbD9xL+zr/OiejpOJN1CS7j
- ddC3tSorFAFdzJpGJCZtFOvWnRD++UmbxMpzqB84ojW3XvZ54AO71u4IDMmwT6uTUAU4yhxDE
- A3AIwVvIZ77N5T2vax9zfhKwIAYMYfsMrQnD7J0tWB86G/Qtk5lesBPQCG0SWNgtiY6KoLw7r
- 29RP9atqlPlcMlWv9EoXUhvyDZNRRx2h2PJerMYW4XXWKz8SNmcXbT5cW4tfwP4XeKzyVELp1
- +jpg9VcZHGk20iTk2RAJjw3Kc+Q2+Tb/FUOgx5rg/PzI6yPMIMgbv7ya+DRIsda/uZXtlGdKA
- sTLxv3C0F6l3IHoD9uzlJscnzfEAYLa1FQ1
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/26/22 11:31, Daniel Vetter wrote:
-> On Wed, Jan 26, 2022 at 9:31 AM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
->>
->> On Tue, Jan 25, 2022 at 10:21:14PM +0200, Andy Shevchenko wrote:
->>> Let's maintain occasional fixes to the fbtft driver.
+Hi,
+
+On Tue, 25 Jan 2022, Kees Cook wrote:
+
+>
+>
+> On January 25, 2022 10:42:41 PM PST, Kees Cook <keescook@chromium.org> wrote:
+>> On Wed, Jan 26, 2022 at 04:39:47AM +0000, Ariadne Conill wrote:
+>>> The first argument to argv when used with execv family of calls is
+>>> required to be the name of the program being executed, per POSIX.
 >>>
->>> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>>> By validating this in do_execveat_common(), we can prevent execution
+>>> of shellcode which invokes execv(2) family syscalls with argc < 1,
+>>> a scenario which is disallowed by POSIX, thus providing a mitigation
+>>> against CVE-2021-4034 and similar bugs in the future.
+>>>
+>>> The use of -EFAULT for this case is similar to other systems, such
+>>> as FreeBSD and OpenBSD.
+>>>
+>>> Interestingly, Michael Kerrisk opened an issue about this in 2008,
+>
+> For v2 please include a URL for this. I assume you mean this one?
+> https://bugzilla.kernel.org/show_bug.cgi?id=8408
+
+Yes, that's the one.  I honestly need to rewrite that commit message 
+anyway.
+
+>>> but there was no consensus to support fixing this issue then.
+>>> Hopefully now that CVE-2021-4034 shows practical exploitative use
+>>> of this bug in a shellcode, we can reconsider.
+>>>
+>>> Signed-off-by: Ariadne Conill <ariadne@dereferenced.org>
+>>
+>> Yup. Agreed. For context:
+>> https://www.qualys.com/2022/01/25/cve-2021-4034/pwnkit.txt
+>>
 >>> ---
->>>  MAINTAINERS | 4 +++-
+>>>  fs/exec.c | 4 +++-
 >>>  1 file changed, 3 insertions(+), 1 deletion(-)
 >>>
->>> diff --git a/MAINTAINERS b/MAINTAINERS
->>> index ea3e6c914384..16e614606ac1 100644
->>> --- a/MAINTAINERS
->>> +++ b/MAINTAINERS
->>> @@ -7372,9 +7372,11 @@ F:     Documentation/fault-injection/
->>>  F:   lib/fault-inject.c
+>>> diff --git a/fs/exec.c b/fs/exec.c
+>>> index 79f2c9483302..de0b832473ed 100644
+>>> --- a/fs/exec.c
+>>> +++ b/fs/exec.c
+>>> @@ -1897,8 +1897,10 @@ static int do_execveat_common(int fd, struct filename *filename,
+>>>  	}
 >>>
->>>  FBTFT Framebuffer drivers
->>> +M:   Andy Shevchenko <andy@kernel.org>
->>>  L:   dri-devel@lists.freedesktop.org
->>>  L:   linux-fbdev@vger.kernel.org
->>> -S:   Orphan
->>> +S:   Maintained
->>> +T:   git git://git.kernel.org/pub/scm/linux/kernel/git/andy/linux-fbt=
-ft.git
+>>>  	retval = count(argv, MAX_ARG_STRINGS);
+>>> -	if (retval < 0)
+>>> +	if (retval < 1) {
+>>> +		retval = -EFAULT;
+>>>  		goto out_free;
+>>> +	}
+>
+> Actually, no, this needs to be more carefully special-cased to avoid masking error returns from count(). (e.g. -E2BIG would vanish with this patch.)
+>
+> Perhaps just add:
+>
+> if (retval == 0) {
+>        retval = -EFAULT;
+>        goto out_free;
+> }
+
+Alright.  I will do that in v2.
+
 >>
->> I'm ok with the files moving if the dri developers agree with it.  It's
->> up to them, not me.
+>> There shouldn't be anything legitimate actually doing this in userspace.
 >
-> On one hand I'm happy anytime someone volunteers to help out.
+> I spoke too soon.
 >
-> On the other hand ... why does it have to be resurrecting fbdev?
-> There's an entire community of people who really know graphics and
-> display and spent considerable amount of effort on creating useful and
-> documented helpers for pretty much anything you might ever want to do.
-> And somehow we have to go back to typing out things the hard way, with
-> full verbosity, for an uapi that distros are abandoning (e.g. even for
-> sdl the direction is to run it on top of drm with a compat layer,
-> afaiui fedora is completely ditching any userspace that still even
-> uses /dev/fb/0). And yes I know there's still some gaps in drm,
-> largely for display features which were really en vogue about 20 years
-> ago. And we're happy to add that support, if someone who still has
-> such hardware can put in the little bit of work needed ...
+> Unfortunately, this is not the case:
+> https://codesearch.debian.net/search?q=execve%5C+*%5C%28%5B%5E%2C%5D%2B%2C+*NULL&literal=0
 >
-> I don't get this.
+> Lots of stuff likes to do:
+> execve(path, NULL, NULL);
+>
+> Do these things depend on argc==0 would be my next question...
 
-You are describing a transitioning over to DRM - which is Ok.
-But on that way there is no need to ignore, deny or even kill usage scenar=
-ios
-which are different compared to your usage scenarios (e.g. embedded device=
-s,
-old platforms, slow devices, slow busses, no 3D hardware features,
-low-color devices, ...).
+I looked at these, and these seem to basically be lazily-written test 
+cases which should be fixed.  I didn't see any example of real-world 
+applications doing this.  As noted in some of the test cases, there are 
+comments like "Solaris doesn't support this," etc.
 
-Helge
+So I think having this as a config option at the very least makes a lot of 
+sense.  If users really need to run legacy code where execv() works with 
+argc < 1, then they could just run a kernel that allows that nonsense, 
+just like how Linux doesn't necessarily support the old a.out binary 
+format today, unless it is enabled.
+
+Ariadne
