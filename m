@@ -2,461 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED87FC5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BE8C63697
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234061AbiAZLqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:46:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48244 "EHLO
+        id S234265AbiAZLqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:46:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240938AbiAZLp6 (ORCPT
+        with ESMTP id S240984AbiAZLqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:45:58 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A316C06174E
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:45:58 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id h14so5313033plf.1
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:45:58 -0800 (PST)
+        Wed, 26 Jan 2022 06:46:03 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF04C061757
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:45:59 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id e28so17966828pfj.5
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:45:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2GAM/hX8HgcK0XMc1etnUAnui1b4UtU65gzKDf04W+Y=;
-        b=nepeMcuhlOB3I9Ap4vMU01c7Evw9bQuHYUyDEXY/4o/84M2mdIhe847JKmxKqwP8zI
-         x8Qm9muzArpkU6LCGMR3IiyCr5OjmHMjFULlSQQDsPwR9lCTq6VdcgUKJf/vgviZULJO
-         i3Y3NWYjIlYos/tWCtWUHsF0shN/YJIQ0XFPu/W2VkQ836qnvCcnljOE2JhMooFjZx4+
-         Od9VA/xgIwN2zuB+lYOrmpPme/HMF7jP1d4ig2DExAcijH/rzLEUjyQjLY4MyTJc3fx6
-         6gNbzoJTfNH2HoMQOFlzlr1C3Z2VvBS5fbHVYcemeiWv8+G11ahA1ccymfEG3V3LWBCg
-         QSDg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=b2YyWOge0M5kIT2ntqlrnr8NQs2OgZVVCHIbAnzaaKE=;
+        b=WWfym4P+R3+IwpIxkHRmeB3tynZEscCZnnZFQ1YzNukA01mkuDYl6d6i0ahPydblHO
+         AtQpFKqiEmopvLkUdF8SPT3UCWN2zo2PkJlketuHAyWOJs1Egydvx1C7wfNtGJK3pGsx
+         DIv2rwUpj/l6XDgrxw6d+aHzeeIJY8aBeKMyjw4HWN5NOIWWRTfyS4FCNE9ccyWlkGdb
+         Zf1j5vo2fJosqpjNgc7nwLvJaGWi9wGl1DB3ZFhfTbcFI9HvS1pX3SnT2qLvg3fnH0Ey
+         NWyuC6ckMkdcCBYNd2PTyVoqfPtqgAPpS6Lg/cUpo1nJY6xGWBu6z+Fnegr/1N7X2+1M
+         Hzhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2GAM/hX8HgcK0XMc1etnUAnui1b4UtU65gzKDf04W+Y=;
-        b=MCJkrsuqz+qruGIQnkpiZDAOzHJraanggAHuCr1/5nHiMQ8NOrJwRdyiRGZirtdYtu
-         nNGIRN8ndwfUXzATrX0EdXwwvVbMdlEmoI3L4l5LzS/hIs2cU0zHfb+YgWgzX1JJ3epH
-         xovvIqFtbiOe0Wi3PGStPmx4kFyEdWwnzhYBG69+PtCBBhOTpi493RtIpgwF5DhVzCQm
-         wIDOVJ18FtkGO/eKPG9rN5yAUsFcLdtvyJ1kZvkOXPz72HtsCEhcJEtUBjCZ86pUjqGN
-         5JXd5oNFl9F3IpsxUoFlt9ZTcC7O5uYmpYWcW422MzrNBso8/yPpnIIAkNp7hoIZGiHq
-         95sQ==
-X-Gm-Message-State: AOAM532aNIprO5ZGM5mUgvnLZyXjj838U5yKP67qSXxugxilu5DO2CRq
-        HrN0cN4QtfRGoT1RytkxsdcAmg==
-X-Google-Smtp-Source: ABdhPJwS77ru0iBcRtRpBrEV7NElV7dd9hCN80VohNjILXD11HDuads3lZ72iDrVfI0mThoLohj1HA==
-X-Received: by 2002:a17:90b:1c03:: with SMTP id oc3mr8186678pjb.229.1643197557666;
-        Wed, 26 Jan 2022 03:45:57 -0800 (PST)
-Received: from localhost.localdomain ([122.167.221.23])
-        by smtp.gmail.com with ESMTPSA id nn2sm2994976pjb.35.2022.01.26.03.45.50
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=b2YyWOge0M5kIT2ntqlrnr8NQs2OgZVVCHIbAnzaaKE=;
+        b=HmfHFirpYGMcgIoee+/caAqLVClmXYaTr7wGyJQTuKEzBHpqthrjDOB6JI/2Cf2qXP
+         1uHYHKSvtHtPjDfwtofIjw15MV6nRo2uJKvgbHNv9WJbv6CrohqMkxsP5iAHRVdzGATW
+         HgLQBiwgk6kk7hy9Krnn4ZopkGGxYOKNcBddR73SG2XEu5+ogGbNF4x4Ck6Rnn1+5/Bx
+         8Gh4PgnMhAtofEmPhya0kC+uCi0Nj4KuAT9qstZOeJxco5AehyLaOtbPpya31A9lDtaZ
+         BgTTzyouLqunyFnSByuQez6ee1kBxNur8rp3r+CuJ0hffV8jQ/iJIUkw+6++1zWHirRm
+         NZPg==
+X-Gm-Message-State: AOAM532LMtEDEeMLB4Gof0WbYFxlkQ3ycMoHmFc8KqiZjzo/DmNm1OJU
+        erI9x1nRbdVsJJB++pLQVH9ZDA==
+X-Google-Smtp-Source: ABdhPJyzaxql9iVXuLykTnyDGM1rb4BxxzxCMBfHaQkTumc+35DPn7h/HgwDnFeQSyGT+oLQfq6hHQ==
+X-Received: by 2002:a63:6f07:: with SMTP id k7mr18454510pgc.574.1643197558636;
+        Wed, 26 Jan 2022 03:45:58 -0800 (PST)
+Received: from sunil-ThinkPad-T490 ([49.206.3.187])
+        by smtp.gmail.com with ESMTPSA id na7sm3055210pjb.23.2022.01.26.03.45.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 03:45:57 -0800 (PST)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
+        Wed, 26 Jan 2022 03:45:58 -0800 (PST)
+Date:   Wed, 26 Jan 2022 17:15:49 +0530
+From:   Sunil V L <sunilvl@ventanamicro.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>
-Cc:     Sandeep Tripathy <milun.tripathy@gmail.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Liush <liush@allwinnertech.com>,
-        Anup Patel <anup@brainfault.org>, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvm-riscv@lists.infradead.org,
+        linux-efi <linux-efi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Heinrich Schuchardt <xypron.glpk@gmx.de>,
         Anup Patel <apatel@ventanamicro.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v10 7/8] dt-bindings: Add common bindings for ARM and RISC-V idle states
-Date:   Wed, 26 Jan 2022 17:14:51 +0530
-Message-Id: <20220126114452.692512-8-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220126114452.692512-1-apatel@ventanamicro.com>
-References: <20220126114452.692512-1-apatel@ventanamicro.com>
+        Atish Patra <atishp@rivosinc.com>,
+        Abner Chang <abner.chang@hpe.com>,
+        Jessica Clarke <jrtc27@jrtc27.com>
+Subject: Re: [RFC PATCH 1/1] riscv/efi_stub: Add support for
+ RISCV_EFI_BOOT_PROTOCOL
+Message-ID: <20220126114549.GA35654@sunil-ThinkPad-T490>
+References: <20220126110615.33371-1-sunilvl@ventanamicro.com>
+ <20220126110615.33371-2-sunilvl@ventanamicro.com>
+ <CAMj1kXGaBJX9qVXQXiFHPySfDz7SWYQ6+cbHvV5v3sw3tEv0Ow@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXGaBJX9qVXQXiFHPySfDz7SWYQ6+cbHvV5v3sw3tEv0Ow@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anup Patel <anup.patel@wdc.com>
+On Wed, Jan 26, 2022 at 12:13:42PM +0100, Ard Biesheuvel wrote:
+> Hello Sunil,
+> 
+> On Wed, 26 Jan 2022 at 12:06, Sunil V L <sunilvl@ventanamicro.com> wrote:
+> >
+> > This patch adds the support for getting the boot hart ID in
+> > Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL.
+> >
+> > Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+> > ---
+> >  drivers/firmware/efi/libstub/efistub.h    | 15 ++++++++++++
+> >  drivers/firmware/efi/libstub/riscv-stub.c | 28 ++++++++++++++++++++---
+> >  include/linux/efi.h                       |  1 +
+> >  3 files changed, 41 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
+> > index edb77b0621ea..0428f8816942 100644
+> > --- a/drivers/firmware/efi/libstub/efistub.h
+> > +++ b/drivers/firmware/efi/libstub/efistub.h
+> > @@ -720,6 +720,21 @@ union efi_tcg2_protocol {
+> >         } mixed_mode;
+> >  };
+> >
+> > +typedef union riscv_efi_boot_protocol riscv_efi_boot_protocol_t;
+> > +
+> > +union riscv_efi_boot_protocol {
+> > +       struct {
+> > +               u64 revision;
+> > +               efi_status_t (__efiapi *get_boot_hartid)(
+> > +                                                        riscv_efi_boot_protocol_t *,
+> > +                                                        size_t *);
+> > +       };
+> > +       struct {
+> > +               u32 revision;
+> > +               u32 get_boot_hartid;
+> > +       } mixed_mode;
+> > +};
+> > +
+> 
+> You don't the mixed mode member here - this is for X64 kernels on IA32
+> firmware only.
 
-The RISC-V CPU idle states will be described in under the
-/cpus/idle-states DT node in the same way as ARM CPU idle
-states.
+Ah OK. Thanks for the feedback, Ard. Will remove it in next version.
 
-This patch adds common bindings documentation for both ARM
-and RISC-V idle states.
-
-Signed-off-by: Anup Patel <anup.patel@wdc.com>
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../bindings/arm/msm/qcom,idle-state.txt      |   2 +-
- .../devicetree/bindings/arm/psci.yaml         |   2 +-
- .../bindings/{arm => cpu}/idle-states.yaml    | 228 ++++++++++++++++--
- .../devicetree/bindings/riscv/cpus.yaml       |   6 +
- 4 files changed, 219 insertions(+), 19 deletions(-)
- rename Documentation/devicetree/bindings/{arm => cpu}/idle-states.yaml (74%)
-
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,idle-state.txt b/Documentation/devicetree/bindings/arm/msm/qcom,idle-state.txt
-index 6ce0b212ec6d..606b4b1b709d 100644
---- a/Documentation/devicetree/bindings/arm/msm/qcom,idle-state.txt
-+++ b/Documentation/devicetree/bindings/arm/msm/qcom,idle-state.txt
-@@ -81,4 +81,4 @@ Example:
- 		};
- 	};
- 
--[1]. Documentation/devicetree/bindings/arm/idle-states.yaml
-+[1]. Documentation/devicetree/bindings/cpu/idle-states.yaml
-diff --git a/Documentation/devicetree/bindings/arm/psci.yaml b/Documentation/devicetree/bindings/arm/psci.yaml
-index 8b77cf83a095..dd83ef278af0 100644
---- a/Documentation/devicetree/bindings/arm/psci.yaml
-+++ b/Documentation/devicetree/bindings/arm/psci.yaml
-@@ -101,7 +101,7 @@ properties:
-       bindings in [1]) must specify this property.
- 
-       [1] Kernel documentation - ARM idle states bindings
--        Documentation/devicetree/bindings/arm/idle-states.yaml
-+        Documentation/devicetree/bindings/cpu/idle-states.yaml
- 
- patternProperties:
-   "^power-domain-":
-diff --git a/Documentation/devicetree/bindings/arm/idle-states.yaml b/Documentation/devicetree/bindings/cpu/idle-states.yaml
-similarity index 74%
-rename from Documentation/devicetree/bindings/arm/idle-states.yaml
-rename to Documentation/devicetree/bindings/cpu/idle-states.yaml
-index 52bce5dbb11f..95506ffb816c 100644
---- a/Documentation/devicetree/bindings/arm/idle-states.yaml
-+++ b/Documentation/devicetree/bindings/cpu/idle-states.yaml
-@@ -1,25 +1,30 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: http://devicetree.org/schemas/arm/idle-states.yaml#
-+$id: http://devicetree.org/schemas/cpu/idle-states.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: ARM idle states binding description
-+title: Idle states binding description
- 
- maintainers:
-   - Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-+  - Anup Patel <anup@brainfault.org>
- 
- description: |+
-   ==========================================
-   1 - Introduction
-   ==========================================
- 
--  ARM systems contain HW capable of managing power consumption dynamically,
--  where cores can be put in different low-power states (ranging from simple wfi
--  to power gating) according to OS PM policies. The CPU states representing the
--  range of dynamic idle states that a processor can enter at run-time, can be
--  specified through device tree bindings representing the parameters required to
--  enter/exit specific idle states on a given processor.
-+  ARM and RISC-V systems contain HW capable of managing power consumption
-+  dynamically, where cores can be put in different low-power states (ranging
-+  from simple wfi to power gating) according to OS PM policies. The CPU states
-+  representing the range of dynamic idle states that a processor can enter at
-+  run-time, can be specified through device tree bindings representing the
-+  parameters required to enter/exit specific idle states on a given processor.
-+
-+  ==========================================
-+  2 - ARM idle states
-+  ==========================================
- 
-   According to the Server Base System Architecture document (SBSA, [3]), the
-   power states an ARM CPU can be put into are identified by the following list:
-@@ -43,8 +48,23 @@ description: |+
-   The device tree binding definition for ARM idle states is the subject of this
-   document.
- 
-+  ==========================================
-+  3 - RISC-V idle states
-+  ==========================================
-+
-+  On RISC-V systems, the HARTs (or CPUs) [6] can be put in platform specific
-+  suspend (or idle) states (ranging from simple WFI, power gating, etc). The
-+  RISC-V SBI v0.3 (or higher) [7] hart state management extension provides a
-+  standard mechanism for OS to request HART state transitions.
-+
-+  The platform specific suspend (or idle) states of a hart can be either
-+  retentive or non-rententive in nature. A retentive suspend state will
-+  preserve HART registers and CSR values for all privilege modes whereas
-+  a non-retentive suspend state will not preserve HART registers and CSR
-+  values.
-+
-   ===========================================
--  2 - idle-states definitions
-+  4 - idle-states definitions
-   ===========================================
- 
-   Idle states are characterized for a specific system through a set of
-@@ -211,10 +231,10 @@ description: |+
-   properties specification that is the subject of the following sections.
- 
-   ===========================================
--  3 - idle-states node
-+  5 - idle-states node
-   ===========================================
- 
--  ARM processor idle states are defined within the idle-states node, which is
-+  The processor idle states are defined within the idle-states node, which is
-   a direct child of the cpus node [1] and provides a container where the
-   processor idle states, defined as device tree nodes, are listed.
- 
-@@ -223,7 +243,7 @@ description: |+
-   just supports idle_standby, an idle-states node is not required.
- 
-   ===========================================
--  4 - References
-+  6 - References
-   ===========================================
- 
-   [1] ARM Linux Kernel documentation - CPUs bindings
-@@ -238,9 +258,15 @@ description: |+
-   [4] ARM Architecture Reference Manuals
-       http://infocenter.arm.com/help/index.jsp
- 
--  [6] ARM Linux Kernel documentation - Booting AArch64 Linux
-+  [5] ARM Linux Kernel documentation - Booting AArch64 Linux
-       Documentation/arm64/booting.rst
- 
-+  [6] RISC-V Linux Kernel documentation - CPUs bindings
-+      Documentation/devicetree/bindings/riscv/cpus.yaml
-+
-+  [7] RISC-V Supervisor Binary Interface (SBI)
-+      http://github.com/riscv/riscv-sbi-doc/riscv-sbi.adoc
-+
- properties:
-   $nodename:
-     const: idle-states
-@@ -253,7 +279,7 @@ properties:
-       On ARM 32-bit systems this property is optional
- 
-       This assumes that the "enable-method" property is set to "psci" in the cpu
--      node[6] that is responsible for setting up CPU idle management in the OS
-+      node[5] that is responsible for setting up CPU idle management in the OS
-       implementation.
-     const: psci
- 
-@@ -265,8 +291,8 @@ patternProperties:
-       as follows.
- 
-       The idle state entered by executing the wfi instruction (idle_standby
--      SBSA,[3][4]) is considered standard on all ARM platforms and therefore
--      must not be listed.
-+      SBSA,[3][4]) is considered standard on all ARM and RISC-V platforms and
-+      therefore must not be listed.
- 
-       In addition to the properties listed above, a state node may require
-       additional properties specific to the entry-method defined in the
-@@ -275,7 +301,27 @@ patternProperties:
- 
-     properties:
-       compatible:
--        const: arm,idle-state
-+        enum:
-+          - arm,idle-state
-+          - riscv,idle-state
-+
-+      arm,psci-suspend-param:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description: |
-+          power_state parameter to pass to the ARM PSCI suspend call.
-+
-+          Device tree nodes that require usage of PSCI CPU_SUSPEND function
-+          (i.e. idle states node with entry-method property is set to "psci")
-+          must specify this property.
-+
-+      riscv,sbi-suspend-param:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description: |
-+          suspend_type parameter to pass to the RISC-V SBI HSM suspend call.
-+
-+          This property is required in idle state nodes of device tree meant
-+          for RISC-V systems. For more details on the suspend_type parameter
-+          refer the SBI specifiation v0.3 (or higher) [7].
- 
-       local-timer-stop:
-         description:
-@@ -317,6 +363,8 @@ patternProperties:
-         description:
-           A string used as a descriptive name for the idle state.
- 
-+    additionalProperties: false
-+
-     required:
-       - compatible
-       - entry-latency-us
-@@ -658,4 +706,150 @@ examples:
-         };
-     };
- 
-+  - |
-+    // Example 3 (RISC-V 64-bit, 4-cpu systems, two clusters):
-+
-+    cpus {
-+        #size-cells = <0>;
-+        #address-cells = <1>;
-+
-+        cpu@0 {
-+            device_type = "cpu";
-+            compatible = "riscv";
-+            reg = <0x0>;
-+            riscv,isa = "rv64imafdc";
-+            mmu-type = "riscv,sv48";
-+            cpu-idle-states = <&CPU_RET_0_0 &CPU_NONRET_0_0
-+                            &CLUSTER_RET_0 &CLUSTER_NONRET_0>;
-+
-+            cpu_intc0: interrupt-controller {
-+                #interrupt-cells = <1>;
-+                compatible = "riscv,cpu-intc";
-+                interrupt-controller;
-+            };
-+        };
-+
-+        cpu@1 {
-+            device_type = "cpu";
-+            compatible = "riscv";
-+            reg = <0x1>;
-+            riscv,isa = "rv64imafdc";
-+            mmu-type = "riscv,sv48";
-+            cpu-idle-states = <&CPU_RET_0_0 &CPU_NONRET_0_0
-+                            &CLUSTER_RET_0 &CLUSTER_NONRET_0>;
-+
-+            cpu_intc1: interrupt-controller {
-+                #interrupt-cells = <1>;
-+                compatible = "riscv,cpu-intc";
-+                interrupt-controller;
-+            };
-+        };
-+
-+        cpu@10 {
-+            device_type = "cpu";
-+            compatible = "riscv";
-+            reg = <0x10>;
-+            riscv,isa = "rv64imafdc";
-+            mmu-type = "riscv,sv48";
-+            cpu-idle-states = <&CPU_RET_1_0 &CPU_NONRET_1_0
-+                            &CLUSTER_RET_1 &CLUSTER_NONRET_1>;
-+
-+            cpu_intc10: interrupt-controller {
-+                #interrupt-cells = <1>;
-+                compatible = "riscv,cpu-intc";
-+                interrupt-controller;
-+            };
-+        };
-+
-+        cpu@11 {
-+            device_type = "cpu";
-+            compatible = "riscv";
-+            reg = <0x11>;
-+            riscv,isa = "rv64imafdc";
-+            mmu-type = "riscv,sv48";
-+            cpu-idle-states = <&CPU_RET_1_0 &CPU_NONRET_1_0
-+                            &CLUSTER_RET_1 &CLUSTER_NONRET_1>;
-+
-+            cpu_intc11: interrupt-controller {
-+                #interrupt-cells = <1>;
-+                compatible = "riscv,cpu-intc";
-+                interrupt-controller;
-+            };
-+        };
-+
-+        idle-states {
-+            CPU_RET_0_0: cpu-retentive-0-0 {
-+                compatible = "riscv,idle-state";
-+                riscv,sbi-suspend-param = <0x10000000>;
-+                entry-latency-us = <20>;
-+                exit-latency-us = <40>;
-+                min-residency-us = <80>;
-+            };
-+
-+            CPU_NONRET_0_0: cpu-nonretentive-0-0 {
-+                compatible = "riscv,idle-state";
-+                riscv,sbi-suspend-param = <0x90000000>;
-+                entry-latency-us = <250>;
-+                exit-latency-us = <500>;
-+                min-residency-us = <950>;
-+            };
-+
-+            CLUSTER_RET_0: cluster-retentive-0 {
-+                compatible = "riscv,idle-state";
-+                riscv,sbi-suspend-param = <0x11000000>;
-+                local-timer-stop;
-+                entry-latency-us = <50>;
-+                exit-latency-us = <100>;
-+                min-residency-us = <250>;
-+                wakeup-latency-us = <130>;
-+            };
-+
-+            CLUSTER_NONRET_0: cluster-nonretentive-0 {
-+                compatible = "riscv,idle-state";
-+                riscv,sbi-suspend-param = <0x91000000>;
-+                local-timer-stop;
-+                entry-latency-us = <600>;
-+                exit-latency-us = <1100>;
-+                min-residency-us = <2700>;
-+                wakeup-latency-us = <1500>;
-+            };
-+
-+            CPU_RET_1_0: cpu-retentive-1-0 {
-+                compatible = "riscv,idle-state";
-+                riscv,sbi-suspend-param = <0x10000010>;
-+                entry-latency-us = <20>;
-+                exit-latency-us = <40>;
-+                min-residency-us = <80>;
-+            };
-+
-+            CPU_NONRET_1_0: cpu-nonretentive-1-0 {
-+                compatible = "riscv,idle-state";
-+                riscv,sbi-suspend-param = <0x90000010>;
-+                entry-latency-us = <250>;
-+                exit-latency-us = <500>;
-+                min-residency-us = <950>;
-+            };
-+
-+            CLUSTER_RET_1: cluster-retentive-1 {
-+                compatible = "riscv,idle-state";
-+                riscv,sbi-suspend-param = <0x11000010>;
-+                local-timer-stop;
-+                entry-latency-us = <50>;
-+                exit-latency-us = <100>;
-+                min-residency-us = <250>;
-+                wakeup-latency-us = <130>;
-+            };
-+
-+            CLUSTER_NONRET_1: cluster-nonretentive-1 {
-+                compatible = "riscv,idle-state";
-+                riscv,sbi-suspend-param = <0x91000010>;
-+                local-timer-stop;
-+                entry-latency-us = <600>;
-+                exit-latency-us = <1100>;
-+                min-residency-us = <2700>;
-+                wakeup-latency-us = <1500>;
-+            };
-+        };
-+    };
-+
- ...
-diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
-index aa5fb64d57eb..f62f646bc695 100644
---- a/Documentation/devicetree/bindings/riscv/cpus.yaml
-+++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
-@@ -99,6 +99,12 @@ properties:
-       - compatible
-       - interrupt-controller
- 
-+  cpu-idle-states:
-+    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-+    description: |
-+      List of phandles to idle state nodes supported
-+      by this hart (see ./idle-states.yaml).
-+
- required:
-   - riscv,isa
-   - interrupt-controller
--- 
-2.25.1
-
+Thanks
+Sunil
+> 
+> >  typedef union efi_load_file_protocol efi_load_file_protocol_t;
+> >  typedef union efi_load_file_protocol efi_load_file2_protocol_t;
+> >
+> > diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
+> > index 380e4e251399..c7add4eb5453 100644
+> > --- a/drivers/firmware/efi/libstub/riscv-stub.c
+> > +++ b/drivers/firmware/efi/libstub/riscv-stub.c
+> > @@ -46,12 +46,34 @@ static u32 get_boot_hartid_from_fdt(void)
+> >         return fdt32_to_cpu(*prop);
+> >  }
+> >
+> > +static u32 get_boot_hartid_from_efi(void)
+> > +{
+> > +       efi_guid_t boot_protocol_guid = RISCV_EFI_BOOT_PROTOCOL_GUID;
+> > +       efi_status_t status;
+> > +       riscv_efi_boot_protocol_t *boot_protocol;
+> > +       size_t boot_hart_id;
+> > +
+> > +       status = efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
+> > +                            (void **)&boot_protocol);
+> > +       if (status == EFI_SUCCESS) {
+> > +               status = efi_call_proto(boot_protocol,
+> > +                                       get_boot_hartid, &boot_hart_id);
+> > +               if (status == EFI_SUCCESS) {
+> > +                       return (u32)boot_hart_id;
+> > +               }
+> > +       }
+> > +       return U32_MAX;
+> > +}
+> > +
+> >  efi_status_t check_platform_features(void)
+> >  {
+> > -       hartid = get_boot_hartid_from_fdt();
+> > +       hartid = get_boot_hartid_from_efi();
+> >         if (hartid == U32_MAX) {
+> > -               efi_err("/chosen/boot-hartid missing or invalid!\n");
+> > -               return EFI_UNSUPPORTED;
+> > +               hartid = get_boot_hartid_from_fdt();
+> > +               if (hartid == U32_MAX) {
+> > +                       efi_err("/chosen/boot-hartid missing or invalid!\n");
+> > +                       return EFI_UNSUPPORTED;
+> > +               }
+> >         }
+> >         return EFI_SUCCESS;
+> >  }
+> > diff --git a/include/linux/efi.h b/include/linux/efi.h
+> > index ccd4d3f91c98..9822c730207c 100644
+> > --- a/include/linux/efi.h
+> > +++ b/include/linux/efi.h
+> > @@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
+> >  #define EFI_CONSOLE_OUT_DEVICE_GUID            EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
+> >  #define APPLE_PROPERTIES_PROTOCOL_GUID         EFI_GUID(0x91bd12fe, 0xf6c3, 0x44fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
+> >  #define EFI_TCG2_PROTOCOL_GUID                 EFI_GUID(0x607f766c, 0x7455, 0x42be,  0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
+> > +#define RISCV_EFI_BOOT_PROTOCOL_GUID           EFI_GUID(0xccd15fec, 0x6f73, 0x4eec,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
+> >  #define EFI_LOAD_FILE_PROTOCOL_GUID            EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
+> >  #define EFI_LOAD_FILE2_PROTOCOL_GUID           EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
+> >  #define EFI_RT_PROPERTIES_TABLE_GUID           EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
+> > --
+> > 2.25.1
+> >
