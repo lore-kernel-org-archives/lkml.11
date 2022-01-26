@@ -2,96 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1B3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 981FAC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:18:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233088AbiAZWSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 17:18:05 -0500
-Received: from gandalf.ozlabs.org ([150.107.74.76]:33339 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233059AbiAZWSD (ORCPT
+        id S233160AbiAZWSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 17:18:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233122AbiAZWSL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 17:18:03 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JkdQK4c5nz4y4h;
-        Thu, 27 Jan 2022 09:18:01 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1643235482;
-        bh=pqKmV1+sA3ysIMqwWvsV/2bshz9rBVkAJxRMcw0Ep7A=;
-        h=Date:From:To:Cc:Subject:From;
-        b=rhyflr3TRldBrcKcVF/IPAlxOT9tW+SQKtr0NPr6TcpzAKVrN/JznW+pyP9m4Vk/B
-         nIQNL7NyQU6FnHKiftZwACZEabc5e1ecIkcayNSSfavVlIQF/A0JylKHCMbRMSisCb
-         IdHFT0jub43WAwmL0GN6kQBa0LEQTHaoM12M5JpzhmOGdmsgSulwiidHzbSR36MI6t
-         2tAVoxTzHtH/YZ5YgW2AASc+wM2MZDp0bKb06vviOMRvuhZCdU5XP7uAvxms87YPR/
-         754TH1ewQcT5xYXS4MbZ0fCQeHfU4hhRJwQPJ76qVxK6bg7zM+RDFXCnEaK5AzyO3Y
-         UlxKd2NuXImgA==
-Date:   Thu, 27 Jan 2022 09:18:00 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Greg KH <greg@kroah.com>
-Cc:     "Maciej W. Rozycki" <macro@embecosm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warnings after merge of the tty.current tree
-Message-ID: <20220127091800.1e8f333b@canb.auug.org.au>
+        Wed, 26 Jan 2022 17:18:11 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438E0C061747
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 14:18:11 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id n16-20020a17090a091000b001b46196d572so948301pjn.5
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 14:18:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dIYkVQemKDQ2y3bmpym5ZYoIUxFabj5sPwnUV0EmyK0=;
+        b=twxr89mbaTAnP8dq8YFVOzjDl7dJbJgmeoThgAobqg2LYDWbxuYX1Linn83YeirfD3
+         SgXCZUUjDWEjMBoQwH45P7YFcRIvE4Ym8KF39ctqj+El6c8fRQoN+tYmovajyFRt9o/h
+         75dOn2d82d4KD8DPDy9Y9UxfywfXGbawIjI8Hp1H/J0IjOz2fipmcgHOT0p2ehYUpqUS
+         gU0Bx5G9E19T9uIKnIlQW6rEamiB9WvR31BzpPDkJ5iNSLQPTYyOcYZ2EexA6sLGXfD6
+         YWxx5Vn1ibXLhWxuEPooaJTm/YjlG9y4AeRdnjClO6U0ZC4NQYJ8tOD89/6Ti9YOZevk
+         foLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dIYkVQemKDQ2y3bmpym5ZYoIUxFabj5sPwnUV0EmyK0=;
+        b=ZwRzhCA+REuo33TLApxM9UiJnkTQxY0Hypc+ctZP+gl2t/kL2MCDacdXrdrCgrRvCc
+         1OvL+yj9ila/SfouxPR64ChHFoKiPXNaN1S7kYnJxzaGDesRocEX8fykULUREjU7R615
+         HE+u4i0SxBCyAN+5dq8C6WSD7mrdrpSrTwbdjthio2zqV+toeIMALo6AYike5Xye7wdh
+         XbC+nxPwmz1f8ndUetTIzOCeSfAyVjDeTS69FV+qj06n+AujQGvBDuAlO52TLvpYIaOc
+         MbCKDOcr6oipvKVJtmdUmgYOZv4/sscJoJk9a4KkCwnT6OxTjZgd4KSFEHhwUt2Zkz2v
+         lYWg==
+X-Gm-Message-State: AOAM533qRSQGGeB0HeX8wSNV838DaUIZXBJCjIuo/QZ8JNHGnO93OeNM
+        qkxKfYcP9Dbx83TJQtA3+O/3Gg==
+X-Google-Smtp-Source: ABdhPJwj9zXQUjLBroliCIG3Eo6PSOIGzmIbNf/ymx9psMbfp47HmhIkDtHe9fZysk1LRnZyL3Z++w==
+X-Received: by 2002:a17:90b:4c8e:: with SMTP id my14mr10841049pjb.243.1643235490641;
+        Wed, 26 Jan 2022 14:18:10 -0800 (PST)
+Received: from localhost.localdomain ([2401:4900:1f3a:4e9b:8fa7:36dc:a805:c73f])
+        by smtp.gmail.com with ESMTPSA id t17sm4233742pgm.69.2022.01.26.14.18.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 14:18:10 -0800 (PST)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, agross@kernel.org, sboyd@kernel.org,
+        tdas@codeaurora.org, mturquette@baylibre.com,
+        linux-clk@vger.kernel.org, bjorn.andersson@linaro.org,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/8] Add ethernet support for Qualcomm SA8155p-ADP board
+Date:   Thu, 27 Jan 2022 03:47:17 +0530
+Message-Id: <20220126221725.710167-1-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/v=2uYWWNVzpOwakz1k7_3mM";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/v=2uYWWNVzpOwakz1k7_3mM
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The SA8155p-ADP board supports on-board ethernet (Gibabit Interface),
+with support for both RGMII and RMII buses.
 
-Hi all,
+This patchset adds the support for the same.
 
-After merging the tty.current tree, today's linux-next build (x86_64
-allmodconfig) produced these warnings:
+Note that this patchset is based on an earlier sent patchset
+for adding PDC controller support on SM8150 (see [1]).
 
-In file included from <command-line>:
-./usr/include/linux/cyclades.h:6:2: warning: #warning "Support for features=
- provided by this header has been removed" [-Wcpp]
-    6 | #warning "Support for features provided by this header has been rem=
-oved"
-      |  ^~~~~~~
-./usr/include/linux/cyclades.h:7:2: warning: #warning "Please consider upda=
-ting your code" [-Wcpp]
-    7 | #warning "Please consider updating your code"
-      |  ^~~~~~~
+[1]. https://lore.kernel.org/linux-arm-msm/20220119203133.467264-1-bhupesh.sharma@linaro.org/T
 
+Bhupesh Sharma (3):
+  clk: qcom: gcc: Add PCIe, EMAC and UFS GDSCs for SM8150
+  clk: qcom: gcc-sm8150: use runtime PM for the clock controller
+  clk: qcom: gcc-sm8150: Use PWRSTS_ON (only) as a workaround for emac
+    gdsc
 
-Introduced by commit
+Bjorn Andersson (1):
+  net: stmmac: dwmac-qcom-ethqos: Adjust rgmii loopback_en per platform
 
-  f23653fe6447 ("tty: Partially revert the removal of the Cyclades public A=
-PI")
+Vinod Koul (4):
+  dt-bindings: net: qcom,ethqos: Document SM8150 SoC compatible
+  net: stmmac: Add support for SM8150
+  arm64: dts: qcom: sm8150: add ethernet node
+  arm64: dts: qcom: sa8155p-adp: Enable ethernet node
 
-This is a bit annoying :-(
+ .../devicetree/bindings/net/qcom,ethqos.txt   |   4 +-
+ arch/arm64/boot/dts/qcom/sa8155p-adp.dts      | 144 ++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8150.dtsi          |  27 ++++
+ drivers/clk/qcom/gcc-sm8150.c                 | 105 +++++++++++--
+ .../stmicro/stmmac/dwmac-qcom-ethqos.c        |  37 ++++-
+ include/dt-bindings/clock/qcom,gcc-sm8150.h   |   9 +-
+ 6 files changed, 305 insertions(+), 21 deletions(-)
 
-Can we exclude include/uapi/linux/cyclades.h from the headers checking,
-please?
+-- 
+2.34.1
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/v=2uYWWNVzpOwakz1k7_3mM
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHxyJgACgkQAVBC80lX
-0Gz03Af7B8GI4oPRwLbhNgw+eRGOyKrn/WyMDq70A1kJTPi07ZZrUXXSi4K2kKci
-6LVCg6TUQU7D+d2T6FbSfqwgpyg2mWsrGpwWGxRyoIfLyWdSKzbn9Y+7YHY32t0H
-WLNkvD2P55NdqC0wu9f12Pl7plC9LkrX2ZZPXtW+9nCuxndAcZ093bfqYBeYw1T0
-Ij4bc8U7ME8g9ZCOA+RWAk0u8SsUeqm9IZTL/ZziSUXWVIZHtcRZkAPQ/PRqdZk0
-qB2ZvMQqMd10CPq/Bch30/Yiqv4sQnf4Zb92UnX6Ky4kpo2TMPerxgvFIwpsK25E
-V9gPEx6h/NRIuJGajdF/MruKOsfsMQ==
-=Iusj
------END PGP SIGNATURE-----
-
---Sig_/v=2uYWWNVzpOwakz1k7_3mM--
