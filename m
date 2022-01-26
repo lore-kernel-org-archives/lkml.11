@@ -2,254 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C376BC28CF5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 08:59:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD57C63682
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:01:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238675AbiAZI75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 03:59:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238665AbiAZI74 (ORCPT
+        id S238694AbiAZJB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:01:28 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:46263 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231326AbiAZJB1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 03:59:56 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791EBC061747
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 00:59:56 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id g14so69234248ybs.8
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 00:59:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=T0O2RYBvXI413kf/Ld0KJM8o1ANZb53hZiPPSa3Eb3Q=;
-        b=iNXv+RaDW65wfKxheW2D7b9IfGYHuJxTwB2B68bkmet85Xb1MEEZxyT/ptI0c7wxAL
-         26aZrMDR1GirnHV1w+fTM8PicEFanPRkb2Nw2a0PBYnRj3dtZf/iMHl4csCYjFT3qYHo
-         t3YV8JjPYVwxJkfiWY1CHs/+vBxZVUt/7mVVzlItrGRyhLpF/K75qlrpsTMudDEqMGlz
-         BeCQMtx5dStL0HWGYQXy1gnG2W433GD2PWDunz34j1Fo7Ti4p3MZY/2IEjwPQox5JLcP
-         GOd9YOa56T5SoOWPSZF+9HD7izdiQWf4ULQY5psyTCGIqWHfqRTDWfwLvZCkyQGOst4n
-         M7ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=T0O2RYBvXI413kf/Ld0KJM8o1ANZb53hZiPPSa3Eb3Q=;
-        b=FAXBqfVlr3d+PPcCyxvvIqErp+TU3jB36SRl9fYq5GxKc9AroP5E5o+zIE/jrepeXR
-         wG1/26febIdYdi6Mx1D4sSWpRdlZWwU7qMx2QYdwoyQmjGaP4lLFRLRUXBLtSB3SDrAK
-         G2qYDd6n+9Y9wHHSaWjJd596JnIxbOl9FN+MQbKzsXAg480u5fXUNHvaKCecQq2qFfp6
-         ZJAlfYTg/M8CL2OhcPEQk+tBlwXETAzj5Amh5b/WAB8pRBQt8wEnJuzAA7jLPOBclXuZ
-         RkaUy6qZvxjMoKORm+lUIyvnzLqvw8NGq5zZE8yiBuxnEnHYT676Lr8yQ8KmVoUt3HMA
-         0Xmg==
-X-Gm-Message-State: AOAM530CQHTUyBy19dK27qlD6Uj8qlSukt2zWSsST2+zzC4MVwQfLTGu
-        90tLI3qltOZ9jndmx9v8gZ6rzpuYxjBp4oBOp9u6vg==
-X-Google-Smtp-Source: ABdhPJx++/1jA2g2gynru6Ctuaw26a/eB5z81sieyhm5ETtWQOf3hqbae5rGoRyaEdc4eOFPDSXX4nZS4w4nkl+KCHg=
-X-Received: by 2002:a25:838b:: with SMTP id t11mr33546069ybk.146.1643187595464;
- Wed, 26 Jan 2022 00:59:55 -0800 (PST)
+        Wed, 26 Jan 2022 04:01:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643187679;
+    s=strato-dkim-0002; d=chronox.de;
+    h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=bEkghuCjX1cE+0Md8pTK57v3o8W2gb012RZrKU1aDPg=;
+    b=Al2PI6CbIhniAgVw8riXxxpW31+Zpj2mtAgbMKXt6XSrnhkqj9YPubRBr7iXQjRDxV
+    HwCdhir+Kv5ODvUwkBHMZw/EBduUzd1s0TuIxZH8CUtheMwBK5U/QlduBw6HjNGsyvct
+    Z9ZOtTkhS5skymFyI16P0vTiJ2zGlzZpzxIXy9nO15u913K0Bgmb83M1J4JEk4OJBiRV
+    p6Cx1NHV6/qelCKl726YyVezrWrO8qTFfUjf7lhFg56E7GVLrT13nAv1/0qL860o3jsf
+    0O3jjjv1XTAJ+HbzMQiDGIvz1loZ4GStVMasQD6B2L1BOs84nlhsNSYOorAvknTseoVF
+    EOIg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2ERcEykfu11Y98lp/T7+hdri+uKZK8TKWEqNyiHySGSa9k9xmwdNnzGHXPaJvScdWrN"
+X-RZG-CLASS-ID: mo00
+Received: from tauon.chronox.de
+    by smtp.strato.de (RZmta 47.38.0 DYNA|AUTH)
+    with ESMTPSA id v5f65ay0Q91IjYG
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 26 Jan 2022 10:01:18 +0100 (CET)
+From:   Stephan Mueller <smueller@chronox.de>
+To:     Nicolai Stange <nstange@suse.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hannes Reinecke <hare@suse.de>, Torsten Duwe <duwe@suse.de>,
+        Zaibo Xu <xuzaibo@huawei.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        qat-linux@intel.com, keyrings@vger.kernel.org, simo@redhat.com,
+        Eric Biggers <ebiggers@kernel.org>, Petr Vorel <pvorel@suse.cz>
+Subject: Re: [v2 PATCH] crypto: api - Disallow sha1 in FIPS-mode while allowing hmac(sha1)
+Date:   Wed, 26 Jan 2022 10:01:17 +0100
+Message-ID: <3615781.PPvlf9ziaL@tauon.chronox.de>
+In-Reply-To: <YeFWnscvXtv73KBl@gondor.apana.org.au>
+References: <20211209090358.28231-1-nstange@suse.de> <87k0f2hefl.fsf@suse.de> <YeFWnscvXtv73KBl@gondor.apana.org.au>
 MIME-Version: 1.0
-References: <20220125155423.959812122@linuxfoundation.org>
-In-Reply-To: <20220125155423.959812122@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 26 Jan 2022 14:29:43 +0530
-Message-ID: <CA+G9fYscJ1-KUg-XAaykXNY4-7X7MgUFKgdZWWFB5hD3+SHu+A@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/841] 5.15.17-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 at 22:02, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.17 release.
-> There are 841 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 27 Jan 2022 15:52:30 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.15.17-rc2.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Am Freitag, 14. Januar 2022, 11:55:26 CET schrieb Herbert Xu:
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Hi Herbert,
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> 
+> > This looks all good to me, but as !->fips_allowed tests aren't skipped
+> > over anymore now, it would perhaps make sense to make their failure
+> > non-fatal in FIPS mode. Because in FIPS mode a failure could mean a
+> > panic and some of the existing TVs might not pass because of e.g. some
+> > key length checks or so active only for fips_enabled...
+> 
+> You mean a buggy non-FIPS algorithm that fails when tested in
+> FIPS mode?  I guess we could skip the panic in that case if
+> everyone is happy with that.  Stephan?
 
-## Build
-* kernel: 5.15.17-rc2
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.15.y
-* git commit: 384933ffef76e18b9783e4777881d7aca33c32d1
-* git describe: v5.15.16-842-g384933ffef76
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
-.16-842-g384933ffef76
+As we consider FIPS 140-3, we can allow a "degrated mode of operation". A 
+degraded mode of operation disables only the algorithm that caused the 
+failure. With a failing self test and not having a panic(), the offending 
+algorithm implementation will not be available to the kernel crypto API and 
+thus to a user.
 
-## Test Regressions (compared to v5.15.16-847-g86228f6e03f0)
-No test regressions found.
+In this case, we can replace the panic with a graceful error.
 
-## Metric Regressions (compared to v5.15.16-847-g86228f6e03f0)
-No metric regressions found.
+If that change is applied, I would like to mention to anybody that wants to 
+backport the change: this change is not appropriate for FIPS 140-2.
 
-## Test Fixes (compared to v5.15.16-847-g86228f6e03f0)
-No test fixes found.
+Ciao
+Stephan
 
-## Metric Fixes (compared to v5.15.16-847-g86228f6e03f0)
-No metric fixes found.
 
-## Test result summary
-total: 105489, pass: 90245, fail: 743, skip: 13539, xfail: 962
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 263 total, 261 passed, 2 failed
-* arm64: 42 total, 42 passed, 0 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 40 total, 37 passed, 3 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 37 total, 31 passed, 6 failed
-* parisc: 14 total, 14 passed, 0 failed
-* powerpc: 56 total, 50 passed, 6 failed
-* riscv: 28 total, 24 passed, 4 failed
-* s390: 22 total, 20 passed, 2 failed
-* sh: 26 total, 24 passed, 2 failed
-* sparc: 14 total, 14 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 42 total, 42 passed, 0 failed
-
-## Test suites summary
-* build/gcc-11-https://github.com/raspberrypi/linux/raw/rpi-5.15.y/arch/arm=
-/configs
-* fwts
-* igt-gpu-tools
-* kselftest-
-* kselftest-android
-* kselftest-arm64
-* kselftest-arm64/arm64.btitest.bti_c_func
-* kselftest-arm64/arm64.btitest.bti_j_func
-* kselftest-arm64/arm64.btitest.bti_jc_func
-* kselftest-arm64/arm64.btitest.bti_none_func
-* kselftest-arm64/arm64.btitest.nohint_func
-* kselftest-arm64/arm64.btitest.paciasp_func
-* kselftest-arm64/arm64.nobtitest.bti_c_func
-* kselftest-arm64/arm64.nobtitest.bti_j_func
-* kselftest-arm64/arm64.nobtitest.bti_jc_func
-* kselftest-arm64/arm64.nobtitest.bti_none_func
-* kselftest-arm64/arm64.nobtitest.nohint_func
-* kselftest-arm64/arm64.nobtitest.paciasp_func
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-lkdtm
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* rcutorture
-* ssuite
-* v4l2-compliance
-
---
-Linaro LKFT
-https://lkft.linaro.org
