@@ -2,87 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CD6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB54C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 22:11:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233017AbiAZWLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 17:11:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53390 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbiAZWK6 (ORCPT
+        id S233043AbiAZWLG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 17:11:06 -0500
+Received: from mail-ot1-f42.google.com ([209.85.210.42]:37838 "EHLO
+        mail-ot1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232955AbiAZWK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 26 Jan 2022 17:10:58 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272C2C06173B;
+Received: by mail-ot1-f42.google.com with SMTP id g15-20020a9d6b0f000000b005a062b0dc12so702812otp.4;
         Wed, 26 Jan 2022 14:10:58 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id v67so2307474oie.9;
-        Wed, 26 Jan 2022 14:10:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=21ZfAX7z//yYX98NOI1emY/4VG55lyxDMWDLG9aXmHM=;
-        b=NURkmVW1jvd6P6HsGBe4RRlTS3L8VK4hukdmV9d7DGEWEZt0L84SHI8atfpPRjCNms
-         lkXlEGJ/S8fjcILXMEwhR8yDQuIuOwMF8OzWTOrmk8uNPILDKB+iCg3zML93LXrG+WQY
-         OtZjI3iBUSk2Iends2M3PBZ8dW8x6doZwdojDc7eTbgTfEUQcjbk9m3M45k1QgrAiNS8
-         pGTXyw2qfmvcIQHtompgxTTUsLwDwi5wPB2SLIgGHnXYbh530YA2JU9e9TZvnzHS2Gor
-         h0G4hfsUdZ39iEcYlMDso4/rS6hk1WQmSGaCOVh7J7yzfuOKxmkG9BJS5cxVqpPXyZi9
-         wOTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=21ZfAX7z//yYX98NOI1emY/4VG55lyxDMWDLG9aXmHM=;
-        b=j5BKp/jQFflddJrjDj2kMYOkurXS0TUgUnPVFjnB9aPDODG0GO3gByAnFK1bybXtOT
-         EOCtutkuSv/71L6Rs+z1/NrM9jYAR7ZsE0Kpw7joYltBqRWWPxWILIWHcU+x5dZqdAuX
-         lTSVmj4Mc+/BNVCjgeyprt1qFdj+CwWlJH4cdWvMOzwKEjkXmJJkPC9tl/kfFGPnsSGa
-         5CKbd7JdZ4ymH+tbzoa2CI2OkFGrj57TMz4kNVEjcX5yGVJSYIAAk65Wh3T1gYOZ8Dlx
-         JUEiY4dfHt6PttTvhNgB3F6CC7pLHJ95YQxXNWjjaTDPfe6Fwr+yUKB3AtpP66oI+6ha
-         4OCw==
-X-Gm-Message-State: AOAM533y8M4UkE0rrD81RIWgpEdBIhL96/Wwtbpdvk2BBbshQVTvZuSP
-        5Xxang9xQNBah/4cjqg+oBg=
-X-Google-Smtp-Source: ABdhPJxgaSc8/eVC4azfcz1wopvdNHvVvd0s28sQXB/F90K2yk6hRZ/zEF97bOXEODITtiTH5EmqEg==
-X-Received: by 2002:a05:6808:ec6:: with SMTP id q6mr438206oiv.244.1643235057548;
-        Wed, 26 Jan 2022 14:10:57 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id p5sm2940740oou.39.2022.01.26.14.10.56
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=WkgrBZdK1SLpHGAVXfNOltnYkqtjeMzdyZx8rVxeVCY=;
+        b=PrElu5GkwfvdjtqR/rQMr5XEdmQzaok/+dbaeWYH3+mS7GGC3SpyLTpbI60A4wopVf
+         wsHV5W+tZGJBdnbalLnAb+jvJiY712KaSUbQdsxB9hsdzOBrpA58dMO6CAgLu9PPPTaT
+         8tK4uUfeU58gNFRMxiiXM/Z4r3++XlopWv83fV+OCLyT52EUeL8QziScQXnhJQxGl9vc
+         oToUbey+lRHyaQPlSv0URhyHK+my5RPIRGqBZwXym1KSzS2+7qU4IQbI19ZccrTvKzyA
+         kbihWY4JMknpDLwcWEKupGIIYbSYAIA9wDdUVTCdWR0c6ed1xC3aXpUy/jbWcNyYbHJl
+         STqg==
+X-Gm-Message-State: AOAM5326obx1wdBzOYOzDZid+V/Hd0OnqOumr/tC8QC4hZ2yr0NEG2Ts
+        dLPAl6gT5apiN2v9HoXxFw==
+X-Google-Smtp-Source: ABdhPJyymDD88ZL2LqFkXNFomWKidJoNCsoHOuEjyfp1nr9Pt0JBV3H6ITJqJB5axvda2aZfnTRydg==
+X-Received: by 2002:a9d:7683:: with SMTP id j3mr558897otl.252.1643235058121;
+        Wed, 26 Jan 2022 14:10:58 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id 124sm9247170oif.7.2022.01.26.14.10.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 14:10:56 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 26 Jan 2022 14:10:55 -0800
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        stable@vger.kernel.org
-Subject: Re: [PATCH 4.9 000/155] 4.9.298-rc2 review
-Message-ID: <20220126221055.GB3650606@roeck-us.net>
-References: <20220125155253.051565866@linuxfoundation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125155253.051565866@linuxfoundation.org>
+        Wed, 26 Jan 2022 14:10:57 -0800 (PST)
+Received: (nullmailer pid 1535106 invoked by uid 1000);
+        Wed, 26 Jan 2022 22:10:52 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     linux-kernel@vger.kernel.org, daniel.lezcano@linaro.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org, tglx@linutronix.de
+In-Reply-To: <20220126160021.3537591-1-clabbe@baylibre.com>
+References: <20220126160021.3537591-1-clabbe@baylibre.com>
+Subject: Re: [PATCH v2] dt-bindings: timer: Convert faraday,fttmr010 to yaml
+Date:   Wed, 26 Jan 2022 16:10:52 -0600
+Message-Id: <1643235052.913333.1535105.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 05:31:50PM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.9.298 release.
-> There are 155 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Wed, 26 Jan 2022 16:00:21 +0000, Corentin Labbe wrote:
+> Converts timer/faraday,fttmr010.txt to yaml.
 > 
-> Responses should be made by Thu, 27 Jan 2022 15:52:30 +0000.
-> Anything received after that time might be too late.
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+> Changes since v1:
+> - added moxart example
+> - relaxed some contraints as driver only support one clock and one
+>   interrupt (as used by moxa,moxart-timer)
+> 
+>  .../bindings/timer/faraday,fttmr010.txt       | 38 --------
+>  .../bindings/timer/faraday,fttmr010.yaml      | 88 +++++++++++++++++++
+>  2 files changed, 88 insertions(+), 38 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/timer/faraday,fttmr010.txt
+>  create mode 100644 Documentation/devicetree/bindings/timer/faraday,fttmr010.yaml
 > 
 
-Build results:
-	total: 163 pass: 163 fail: 0
-Qemu test results:
-	total: 397 pass: 397 fail: 0
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-Guenter
+Full log is available here: https://patchwork.ozlabs.org/patch/1584531
+
+
+timer@1e782000: interrupts-extended: [[1, 0, 16, 4], [1, 0, 17, 4], [1, 0, 18, 4], [1, 0, 19, 4], [1, 0, 20, 4], [1, 0, 21, 4], [1, 0, 22, 4], [1, 0, 23, 4]] is too long
+	arch/arm/boot/dts/aspeed-ast2600-evb-a1.dt.yaml
+	arch/arm/boot/dts/aspeed-ast2600-evb.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-ibm-everest.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-ibm-rainier-1s4u.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-ibm-rainier-4u.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-inventec-transformers.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-opp-tacoma.dt.yaml
+
+timer@1e782000: '#pwm-cells', 'fttmr010,pwm-outputs' do not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm/boot/dts/aspeed-bmc-vegman-n110.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-vegman-rx20.dt.yaml
+	arch/arm/boot/dts/aspeed-bmc-vegman-sx20.dt.yaml
+
