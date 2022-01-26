@@ -2,101 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD466C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ADD8C63682
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:14:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243615AbiAZROZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 12:14:25 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:42758 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243590AbiAZROM (ORCPT
+        id S243623AbiAZROb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 12:14:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243620AbiAZRO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:14:12 -0500
-Received: from [192.168.254.32] (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id D0EBA20B6C61;
-        Wed, 26 Jan 2022 09:14:10 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D0EBA20B6C61
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1643217251;
-        bh=qjst+qeWYxaDU+MRKQkL6zF+4RSRzRgazary5tstvLY=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=XtrB4oV5zRlyA6UFpPm1uaOM2KvUJchClLB2PNDJMzq/z7dDHar0dbVIIQ78/SgcT
-         Pz00QqrEL8silAQ/SwbN/N/8G0jAu+aKD8F0w+ySTEEdxPV1jgiaGl2MqvyP2w5V14
-         xFCoG4XyjjRh129nmkTz041zpJ5zX/y8ZWRLu3cE=
-Message-ID: <1a0e19db-a7f8-4c8e-0163-398fcd364d54@linux.microsoft.com>
-Date:   Wed, 26 Jan 2022 11:14:10 -0600
+        Wed, 26 Jan 2022 12:14:28 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0259CC06161C;
+        Wed, 26 Jan 2022 09:14:28 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id f17so266768wrx.1;
+        Wed, 26 Jan 2022 09:14:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=gXtdrW27fCZ/wJUPBVbcRIlDfwjyibpVlA/v0Qe0N+A=;
+        b=ShEI2vtBBOEzdM8KBa2+C+sra9rF3eUL8rq9LzYJlSnCdzLTrR9bprTUNRFKfPviWE
+         9LxSGdHftoFFaEfs5hs4wlUS92fvaNMhsVvPgTvT2ilBpLXxDvPOF61ztFbDBhyABL1T
+         NeAJUgNQN40uFADgvWGHHvtXEXm6/Ml8nuddZ7Oji2LkhqqcjoyLsgnsrnl+kd6/i1iI
+         yQRqPJInXft4GD+ohxuxSx1AAny0JGtYF1WIsfY27wSah06MVOWb4YXlTQSzlElHgJAI
+         dMjR619JNdTUz0aIjR8ixqhJOIRS0C31q6OhH3D1GxGbZ8jz/18gsCQB3V33I37fzdsc
+         T8Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gXtdrW27fCZ/wJUPBVbcRIlDfwjyibpVlA/v0Qe0N+A=;
+        b=e2WKTQgXDEHI6E6SlX6GoQVq6M6AcRB3Ok0wB8gqdSGCT+OgVvz7/GUF9YabliLVFb
+         6xnAv8uLpcxn2s1QPriyNg77jzcy21TpXPm53dqRAOpnYN9lfg9qDygZjFHrADRJ+acZ
+         O5b8RdD+ldDgNy5tcfnobpFUtZ/pOl9eCnWrRIsx/u/AQMuW/CoPanFYwvbP2kiD6b6B
+         hOV0Lg6KL6XJSAXHN9zeYNwCImSuopKEC8UjLrLeZVcv5ASgXvanEiXXCOKPbIu95yU/
+         pb66rTEUqIpyWAfe+pgT2/38rYUDLa+XzTi6MiLWbYit5q0K+dcpqTXug6FE3UAm1UQO
+         sRug==
+X-Gm-Message-State: AOAM533naaXgCqSku43pMez2k9Grw14gu8W5drmOMyujSiXGAmqgdDb8
+        IuphwoRghFAOgqlMQgKlW0M=
+X-Google-Smtp-Source: ABdhPJwj+3itbOp8dJx8AHey5VYTt5YOotHUNr1kojxGb+QydODRJny0bAdqTKmSHnhQdy6BUYrH6g==
+X-Received: by 2002:a05:6000:81:: with SMTP id m1mr18100420wrx.385.1643217266591;
+        Wed, 26 Jan 2022 09:14:26 -0800 (PST)
+Received: from kista.localnet (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
+        by smtp.gmail.com with ESMTPSA id c8sm4800962wmq.34.2022.01.26.09.14.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 09:14:26 -0800 (PST)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jisheng Zhang <jszhang@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: stmmac: dwmac-sun8i: use return val of readl_poll_timeout()
+Date:   Wed, 26 Jan 2022 18:14:25 +0100
+Message-ID: <5533854.DvuYhMxLoT@kista>
+In-Reply-To: <20220126165215.1921-1-jszhang@kernel.org>
+References: <20220126165215.1921-1-jszhang@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v13 11/11] arm64: Select HAVE_RELIABLE_STACKTRACE
-Content-Language: en-US
-To:     "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        "sjitindarsingh@gmail.com" <sjitindarsingh@gmail.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220117145608.6781-1-madvenka@linux.microsoft.com>
- <20220117145608.6781-12-madvenka@linux.microsoft.com>
- <TY2PR01MB5257518B8EB381E16D52B244855F9@TY2PR01MB5257.jpnprd01.prod.outlook.com>
- <825b8b72-c746-ba24-7142-3fff481e82d6@linux.microsoft.com>
- <TY2PR01MB5257BE671A481D81F1A40E0185209@TY2PR01MB5257.jpnprd01.prod.outlook.com>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <TY2PR01MB5257BE671A481D81F1A40E0185209@TY2PR01MB5257.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi!
 
-
-On 1/26/22 04:20, nobuta.keiya@fujitsu.com wrote:
->> I have not seen any activity on that in a long time. IIRC, Julien quit RedHat.
->> I don't know if anyone else has taken over this work in RedHat.
->>
->> Sorry, I don't have any more information.
->>
->> Madhavan
+Dne sreda, 26. januar 2022 ob 17:52:15 CET je Jisheng Zhang napisal(a):
+> When readl_poll_timeout() timeout, we'd better directly use its return
+> value.
 > 
-> Thanks for your information.
+> Before this patch:
+> [    2.145528] dwmac-sun8i: probe of 4500000.ethernet failed with error -14
 > 
-> By the way, I'm considering test code for arch_stack_walk_reliable().
-> Specifically, I apply Suraj's patch to enable livepatch, and added a function
-> that sleeps between SYM_CODE_START and SYM_CODE_END, then livepatch
-> checks if the task has an unreliable stack.
-> For now my internal test code working correctly, but my Kconfig excludes
-> STACK_VALIDATION dependency.
+> After this patch:
+> [    2.138520] dwmac-sun8i: probe of 4500000.ethernet failed with error -110
 > 
-> It seems that objtool will not be enabled yet, so I would like to test it easier.
-> If you are already testing with this patch, could you tell me how to do it?
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+
+Best regards,
+Jernej
+
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/
+ethernet/stmicro/stmmac/dwmac-sun8i.c
+> index 617d0e4c6495..09644ab0d87a 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> @@ -756,7 +756,7 @@ static int sun8i_dwmac_reset(struct stmmac_priv *priv)
+>  
+>  	if (err) {
+>  		dev_err(priv->device, "EMAC reset timeout\n");
+> -		return -EFAULT;
+> +		return err;
+>  	}
+>  	return 0;
+>  }
+> -- 
+> 2.34.1
 > 
 > 
 
-For now, I have an instrumented kernel that directly invokes arch_stack_walk_reliable()
-from various places in the kernel (interrupt handlers, exception handlers, ftrace entry,
-kprobe handler, etc). I also have a test driver to induce conditions like null pointer
-dereference. I use this to test different cases where arch_stack_walk_reliable() should
-return an error.
 
-As for livepatch testing, I have enhanced objtool and the kernel so the frame pointer can
-be validated dynamically rather than statically. I have tested various different livepatch
-selftests successfully. I have also written my own livepatch tests to add to the selftests.
-I am currently working on preparing an RFC patch series for review. Basically, this series
-implements STACK_VALIDATION in a different way.
-
-I plan to publish my work soon (hopefully Feb 2022). I was going to do in December. However,
-my workload in Microsoft did not permit me to do that. I am also planning to set up a github
-repo so people can try out my changes, if they are interested.
-
-So, stay tuned.
-
-Madhavan
