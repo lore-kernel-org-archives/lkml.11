@@ -2,264 +2,394 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD58C5DF62
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E60C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:24:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240661AbiAZLYi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:24:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33437 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233677AbiAZLYg (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:24:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643196276;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HxTDe9k+l0cVdh9Y8SvKgJ9xCWAojpaeVXmZRT97wW8=;
-        b=DdEjY1b6TD165agxscvdvGrrHI+NS0+Y3pyOGNT9e4jzoNIvov0cDtwsY/CRhPrLcJQkO9
-        Xnsu0bv9y07J6Tq6A95xqO6VRxLhinRz++5+feMEteH1rGc7Mmr/OrNSHvsdXRZrIDxvoU
-        wGZGPK/LwSZ8nvYLBLl/f/9F06aF6dI=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-19-wTDFQup0MImm54eBD4hoLA-1; Wed, 26 Jan 2022 06:24:34 -0500
-X-MC-Unique: wTDFQup0MImm54eBD4hoLA-1
-Received: by mail-ej1-f69.google.com with SMTP id mp5-20020a1709071b0500b0069f2ba47b20so4718071ejc.19
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 03:24:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HxTDe9k+l0cVdh9Y8SvKgJ9xCWAojpaeVXmZRT97wW8=;
-        b=bVg2jQZU/AKW74U5FPIud+5k+ptxQwjKrsz9txAKA/+27RgFYrntxZVVxOPSKX5v2C
-         djyO8hpFNpRYTPKR7i9/5/eFfo6LNSBIbraWHY54+k6IoXXTAid6IFjEyOao0h83B/Ig
-         50kCbQvL3Oc6EpS7deRw1ZZDzoDRjdq5Ru6YE54vA1QCoxl1Hq3DtJbWFiG+nMsSMMz9
-         ZcmicWXOa4qphIe0agVefiujgxVRKSINSxAqlujuhahld4aDIL0YfyJSMmo9i1sLtr2k
-         FmF44zF8FoX48VyOjEr1G1GD2cxFHVB755lU5/3npnie7EnlDVAWLRTCPwyotD0WCST5
-         68Ig==
-X-Gm-Message-State: AOAM533Dn62/Pngnr+dmaa7+qsua1/2h88kFdmzqnVCoFWD7apD5gjUC
-        oDLyekQK2wTBBWTgw/YD0evb9x4dqz42fbdlhT2caCKI6ejuH0XxTE12ziDlAZHFKtcxiatmtie
-        NgYug+SoatBkPTjNt3XvHS+nC
-X-Received: by 2002:a05:6402:520d:: with SMTP id s13mr9081336edd.132.1643196273457;
-        Wed, 26 Jan 2022 03:24:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyKSzmBxOPBhACr9IHnQU3b1GX25Gi03x6GFuTUx+42hSb1bME22xSETT3CEAR2OKoa1XmzGQ==
-X-Received: by 2002:a05:6402:520d:: with SMTP id s13mr9081311edd.132.1643196273117;
-        Wed, 26 Jan 2022 03:24:33 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id bs4sm5151345edb.84.2022.01.26.03.24.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Jan 2022 03:24:32 -0800 (PST)
-Message-ID: <fd8c060d-06a4-89e1-67fa-3af8a571a449@redhat.com>
-Date:   Wed, 26 Jan 2022 12:24:31 +0100
+        id S240667AbiAZLYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:24:53 -0500
+Received: from mga04.intel.com ([192.55.52.120]:2019 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233677AbiAZLYv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 06:24:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643196291; x=1674732291;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/+DIb5r2S1RcK7oko4udyLHlvHihCk/cBpAaw/2n/Uw=;
+  b=Lg/Hq+cnISIWGGK4CrXO4VSz32F+yKpcji7d0UCI5cyJEPcUEusdfl4j
+   UXkrY2+O6WNApyVbs++KWhZUwAZk7NbRAIF+apuSz4gQqZ/uyxHvKj9QH
+   HaTVJ/aD+vOrqGOuKZ/vzvTAL4ekYzc0PKXoY1zeRKm71ot2ErHqSHbjw
+   KiJqpY6zZuVABKRROUbR2rvydjznfe1Rn08v7FwPgO56tkZzMsRsD9Xw5
+   tQFYQA1eoMVStBFCf6uyv9Frv8kjmIaGAbzhB0O/z2kuNHjWHcs9alxgc
+   wPWYLqdDo0cSX7GPAZJv5eL25CnKz8ygJJ0Ek9ardNbmA3T/d9lE30zF8
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="245363698"
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="245363698"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 03:24:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="477454232"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 26 Jan 2022 03:24:49 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCgPw-000L8N-IU; Wed, 26 Jan 2022 11:24:48 +0000
+Date:   Wed, 26 Jan 2022 19:23:56 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [morimoto:2022-01-26-v1 15/15] sound/soc/codecs/ak4613.c:429:11:
+ error: implicit declaration of function 'AK4613_INTERFACE_MODE'
+Message-ID: <202201261942.tXX7V2X8-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] KVM: x86: Forcibly leave nested virt when SMM state is
- toggled
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com
-References: <20220125220358.2091737-1-seanjc@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220125220358.2091737-1-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/25/22 23:03, Sean Christopherson wrote:
-> Forcibly leave nested virtualization operation if userspace toggles SMM
-> state via KVM_SET_VCPU_EVENTS or KVM_SYNC_X86_EVENTS.  If userspace
-> forces the vCPU out of SMM while it's post-VMXON and then injects an SMI,
-> vmx_enter_smm() will overwrite vmx->nested.smm.vmxon and end up with both
-> vmxon=false and smm.vmxon=false, but all other nVMX state allocated.
-> 
-> Don't attempt to gracefully handle the transition as (a) most transitions
-> are nonsencial, e.g. forcing SMM while L2 is running, (b) there isn't
-> sufficient information to handle all transitions, e.g. SVM wants access
-> to the SMRAM save state, and (c) KVM_SET_VCPU_EVENTS must precede
-> KVM_SET_NESTED_STATE during state restore as the latter disallows putting
-> the vCPU into L2 if SMM is active, and disallows tagging the vCPU as
-> being post-VMXON in SMM if SMM is not active.
-> 
-> Abuse of KVM_SET_VCPU_EVENTS manifests as a WARN and memory leak in nVMX
-> due to failure to free vmcs01's shadow VMCS, but the bug goes far beyond
-> just a memory leak, e.g. toggling SMM on while L2 is active puts the vCPU
-> in an architecturally impossible state.
-> 
->    WARNING: CPU: 0 PID: 3606 at free_loaded_vmcs arch/x86/kvm/vmx/vmx.c:2665 [inline]
->    WARNING: CPU: 0 PID: 3606 at free_loaded_vmcs+0x158/0x1a0 arch/x86/kvm/vmx/vmx.c:2656
->    Modules linked in:
->    CPU: 1 PID: 3606 Comm: syz-executor725 Not tainted 5.17.0-rc1-syzkaller #0
->    Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->    RIP: 0010:free_loaded_vmcs arch/x86/kvm/vmx/vmx.c:2665 [inline]
->    RIP: 0010:free_loaded_vmcs+0x158/0x1a0 arch/x86/kvm/vmx/vmx.c:2656
->    Code: <0f> 0b eb b3 e8 8f 4d 9f 00 e9 f7 fe ff ff 48 89 df e8 92 4d 9f 00
->    Call Trace:
->     <TASK>
->     kvm_arch_vcpu_destroy+0x72/0x2f0 arch/x86/kvm/x86.c:11123
->     kvm_vcpu_destroy arch/x86/kvm/../../../virt/kvm/kvm_main.c:441 [inline]
->     kvm_destroy_vcpus+0x11f/0x290 arch/x86/kvm/../../../virt/kvm/kvm_main.c:460
->     kvm_free_vcpus arch/x86/kvm/x86.c:11564 [inline]
->     kvm_arch_destroy_vm+0x2e8/0x470 arch/x86/kvm/x86.c:11676
->     kvm_destroy_vm arch/x86/kvm/../../../virt/kvm/kvm_main.c:1217 [inline]
->     kvm_put_kvm+0x4fa/0xb00 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1250
->     kvm_vm_release+0x3f/0x50 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1273
->     __fput+0x286/0x9f0 fs/file_table.c:311
->     task_work_run+0xdd/0x1a0 kernel/task_work.c:164
->     exit_task_work include/linux/task_work.h:32 [inline]
->     do_exit+0xb29/0x2a30 kernel/exit.c:806
->     do_group_exit+0xd2/0x2f0 kernel/exit.c:935
->     get_signal+0x4b0/0x28c0 kernel/signal.c:2862
->     arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
->     handle_signal_work kernel/entry/common.c:148 [inline]
->     exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
->     exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
->     __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
->     syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
->     do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
->     entry_SYSCALL_64_after_hwframe+0x44/0xae
->     </TASK>
-> 
-> Cc: stable@vger.kernel.org
-> Reported-by: syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
-> 
-> Peeking at QEMU source, AFAICT QEMU restores nested state before events,
-> but I don't see how that can possibly work.  I assume QEMU does something
-> where it restores the "run" state first and then does a full restore?
-> 
->   arch/x86/include/asm/kvm_host.h | 1 +
->   arch/x86/kvm/svm/nested.c       | 9 +++++----
->   arch/x86/kvm/svm/svm.c          | 2 +-
->   arch/x86/kvm/svm/svm.h          | 2 +-
->   arch/x86/kvm/vmx/nested.c       | 1 +
->   arch/x86/kvm/x86.c              | 4 +++-
->   6 files changed, 12 insertions(+), 7 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 682ad02a4e58..df22b04b11c3 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -1495,6 +1495,7 @@ struct kvm_x86_ops {
->   };
->   
->   struct kvm_x86_nested_ops {
-> +	void (*leave_nested)(struct kvm_vcpu *vcpu);
->   	int (*check_events)(struct kvm_vcpu *vcpu);
->   	bool (*hv_timer_pending)(struct kvm_vcpu *vcpu);
->   	void (*triple_fault)(struct kvm_vcpu *vcpu);
-> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-> index cf206855ebf0..1218b5a342fc 100644
-> --- a/arch/x86/kvm/svm/nested.c
-> +++ b/arch/x86/kvm/svm/nested.c
-> @@ -983,9 +983,9 @@ void svm_free_nested(struct vcpu_svm *svm)
->   /*
->    * Forcibly leave nested mode in order to be able to reset the VCPU later on.
->    */
-> -void svm_leave_nested(struct vcpu_svm *svm)
-> +void svm_leave_nested(struct kvm_vcpu *vcpu)
->   {
-> -	struct kvm_vcpu *vcpu = &svm->vcpu;
-> +	struct vcpu_svm *svm = to_svm(vcpu);
->   
->   	if (is_guest_mode(vcpu)) {
->   		svm->nested.nested_run_pending = 0;
-> @@ -1411,7 +1411,7 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
->   		return -EINVAL;
->   
->   	if (!(kvm_state->flags & KVM_STATE_NESTED_GUEST_MODE)) {
-> -		svm_leave_nested(svm);
-> +		svm_leave_nested(vcpu);
->   		svm_set_gif(svm, !!(kvm_state->flags & KVM_STATE_NESTED_GIF_SET));
->   		return 0;
->   	}
-> @@ -1478,7 +1478,7 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
->   	 */
->   
->   	if (is_guest_mode(vcpu))
-> -		svm_leave_nested(svm);
-> +		svm_leave_nested(vcpu);
->   	else
->   		svm->nested.vmcb02.ptr->save = svm->vmcb01.ptr->save;
->   
-> @@ -1532,6 +1532,7 @@ static bool svm_get_nested_state_pages(struct kvm_vcpu *vcpu)
->   }
->   
->   struct kvm_x86_nested_ops svm_nested_ops = {
-> +	.leave_nested = svm_leave_nested,
->   	.check_events = svm_check_nested_events,
->   	.triple_fault = nested_svm_triple_fault,
->   	.get_nested_state_pages = svm_get_nested_state_pages,
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index 6d31d357a83b..78123ed3906f 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -290,7 +290,7 @@ int svm_set_efer(struct kvm_vcpu *vcpu, u64 efer)
->   
->   	if ((old_efer & EFER_SVME) != (efer & EFER_SVME)) {
->   		if (!(efer & EFER_SVME)) {
-> -			svm_leave_nested(svm);
-> +			svm_leave_nested(vcpu);
->   			svm_set_gif(svm, true);
->   			/* #GP intercept is still needed for vmware backdoor */
->   			if (!enable_vmware_backdoor)
-> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-> index 47ef8f4a9358..c55d9936bb8b 100644
-> --- a/arch/x86/kvm/svm/svm.h
-> +++ b/arch/x86/kvm/svm/svm.h
-> @@ -525,7 +525,7 @@ static inline bool nested_exit_on_nmi(struct vcpu_svm *svm)
->   
->   int enter_svm_guest_mode(struct kvm_vcpu *vcpu,
->   			 u64 vmcb_gpa, struct vmcb *vmcb12, bool from_vmrun);
-> -void svm_leave_nested(struct vcpu_svm *svm);
-> +void svm_leave_nested(struct kvm_vcpu *vcpu);
->   void svm_free_nested(struct vcpu_svm *svm);
->   int svm_allocate_nested(struct vcpu_svm *svm);
->   int nested_svm_vmrun(struct kvm_vcpu *vcpu);
-> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> index f235f77cbc03..7eebfdf7204f 100644
-> --- a/arch/x86/kvm/vmx/nested.c
-> +++ b/arch/x86/kvm/vmx/nested.c
-> @@ -6771,6 +6771,7 @@ __init int nested_vmx_hardware_setup(int (*exit_handlers[])(struct kvm_vcpu *))
->   }
->   
->   struct kvm_x86_nested_ops vmx_nested_ops = {
-> +	.leave_nested = vmx_leave_nested,
->   	.check_events = vmx_check_nested_events,
->   	.hv_timer_pending = nested_vmx_preemption_timer_pending,
->   	.triple_fault = nested_vmx_triple_fault,
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 55518b7d3b96..22040c682d4a 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -4860,8 +4860,10 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_events(struct kvm_vcpu *vcpu,
->   		vcpu->arch.apic->sipi_vector = events->sipi_vector;
->   
->   	if (events->flags & KVM_VCPUEVENT_VALID_SMM) {
-> -		if (!!(vcpu->arch.hflags & HF_SMM_MASK) != events->smi.smm)
-> +		if (!!(vcpu->arch.hflags & HF_SMM_MASK) != events->smi.smm) {
-> +			kvm_x86_ops.nested_ops->leave_nested(vcpu);
->   			kvm_smm_changed(vcpu, events->smi.smm);
-> +		}
->   
->   		vcpu->arch.smi_pending = events->smi.pending;
->   
-> 
-> base-commit: e2e83a73d7ce66f62c7830a85619542ef59c90e4
+tree:   https://github.com/morimoto/linux 2022-01-26-v1
+head:   05a038a4ac9687be3887060557d4ea520651f286
+commit: 05a038a4ac9687be3887060557d4ea520651f286 [15/15] hog
+config: i386-randconfig-a015-20220124 (https://download.01.org/0day-ci/archive/20220126/202201261942.tXX7V2X8-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 2a1b7aa016c0f4b5598806205bdfbab1ea2d92c4)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/morimoto/linux/commit/05a038a4ac9687be3887060557d4ea520651f286
+        git remote add morimoto https://github.com/morimoto/linux
+        git fetch --no-tags morimoto 2022-01-26-v1
+        git checkout 05a038a4ac9687be3887060557d4ea520651f286
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash sound/soc/codecs/
 
-Queued, thanks.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Paolo
+All errors (new ones prefixed by >>):
 
+>> sound/soc/codecs/ak4613.c:429:11: error: implicit declaration of function 'AK4613_INTERFACE_MODE' [-Werror,-Wimplicit-function-declaration]
+                           mode = AK4613_INTERFACE_MODE(priv);
+                                  ^
+>> sound/soc/codecs/ak4613.c:579:50: error: too few arguments to function call, expected 4, have 3
+                           if (!ak4613_dai_fmt_matching(iface, fmt, width))
+                                ~~~~~~~~~~~~~~~~~~~~~~~                  ^
+   include/linux/compiler.h:56:47: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                                                 ^~~~
+   include/linux/compiler.h:58:52: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                                      ^~~~
+   sound/soc/codecs/ak4613.c:519:13: note: 'ak4613_dai_fmt_matching' declared here
+   static bool ak4613_dai_fmt_matching(const struct ak4613_interface *iface,
+               ^
+>> sound/soc/codecs/ak4613.c:579:50: error: too few arguments to function call, expected 4, have 3
+                           if (!ak4613_dai_fmt_matching(iface, fmt, width))
+                                ~~~~~~~~~~~~~~~~~~~~~~~                  ^
+   include/linux/compiler.h:56:47: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                                                 ^~~~
+   include/linux/compiler.h:58:61: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                                               ^~~~
+   sound/soc/codecs/ak4613.c:519:13: note: 'ak4613_dai_fmt_matching' declared here
+   static bool ak4613_dai_fmt_matching(const struct ak4613_interface *iface,
+               ^
+>> sound/soc/codecs/ak4613.c:579:50: error: too few arguments to function call, expected 4, have 3
+                           if (!ak4613_dai_fmt_matching(iface, fmt, width))
+                                ~~~~~~~~~~~~~~~~~~~~~~~                  ^
+   include/linux/compiler.h:56:47: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                                                 ^~~~
+   include/linux/compiler.h:58:86: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                                                                        ^~~~
+   include/linux/compiler.h:69:3: note: expanded from macro '__trace_if_value'
+           (cond) ?                                        \
+            ^~~~
+   sound/soc/codecs/ak4613.c:519:13: note: 'ak4613_dai_fmt_matching' declared here
+   static bool ak4613_dai_fmt_matching(const struct ak4613_interface *iface,
+               ^
+   4 errors generated.
+
+
+vim +/AK4613_INTERFACE_MODE +429 sound/soc/codecs/ak4613.c
+
+   335	
+   336	static int ak4613_hw_constraints(struct snd_soc_component *component,
+   337					 struct snd_pcm_substream *substream)
+   338	{
+   339		struct ak4613_priv *priv = snd_soc_component_get_drvdata(component);
+   340		struct snd_pcm_runtime *runtime = substream->runtime;
+   341		static const unsigned int ak4613_rates[] = {
+   342			 32000,
+   343			 44100,
+   344			 48000,
+   345			 64000,
+   346			 88200,
+   347			 96000,
+   348			176400,
+   349			192000,
+   350		};
+   351	#define AK4613_CHANNEL_2	 0
+   352	#define AK4613_CHANNEL_4	 1
+   353	#define AK4613_CHANNEL_8	 2
+   354	#define AK4613_CHANNEL_12	 3
+   355	#define AK4613_CHANNEL_NONE	-1
+   356		static const unsigned int ak4613_channels[] = {
+   357			[AK4613_CHANNEL_2]  =  2,
+   358			[AK4613_CHANNEL_4]  =  4,
+   359			[AK4613_CHANNEL_8]  =  8,
+   360			[AK4613_CHANNEL_12] = 12,
+   361		};
+   362	#define MODE_MAX 4
+   363	#define SDT_MAX  4
+   364	#define MASK_LIST(mode, c, p1, p2, p3)		\
+   365		[AK4613_CONFIG_MODE_##mode] =	{	\
+   366			AK4613_CHANNEL_##c,		\
+   367			AK4613_CHANNEL_##p1,		\
+   368			AK4613_CHANNEL_##p2,		\
+   369			AK4613_CHANNEL_##p3}
+   370		static const int mask_shift_list[MODE_MAX][SDT_MAX] = {
+   371			/*
+   372			 * mask shift for
+   373			 *	[0] : capture
+   374			 *	[1] : playback SDTIx1
+   375			 *	[2] : playback SDTIx2
+   376			 *	[3] : playback SDTIx3
+   377			 */
+   378			MASK_LIST(STEREO, 2,  2, NONE, NONE),
+   379			MASK_LIST(TDM512, 4, 12, NONE, NONE),
+   380			MASK_LIST(TDM256, 4,  8, 12,   NONE),
+   381			MASK_LIST(TDM128, 4,  4,  8,     12),
+   382		};
+   383		struct snd_pcm_hw_constraint_list *constraint;
+   384		unsigned int mask;
+   385		unsigned int mode;
+   386		unsigned int fs;
+   387		int is_play = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
+   388		int i, shift, sdti_num;
+   389	
+   390		constraint		= &priv->constraint_rates;
+   391		constraint->list	= ak4613_rates;
+   392		constraint->mask	= 0;
+   393		constraint->count	= 0;
+   394	
+   395		/*
+   396		 * Slave Mode
+   397		 *	Normal: [32kHz, 48kHz] : 256fs,384fs or 512fs
+   398		 *	Double: [64kHz, 96kHz] : 256fs
+   399		 *	Quad  : [128kHz,192kHz]: 128fs
+   400		 *
+   401		 * Master mode
+   402		 *	Normal: [32kHz, 48kHz] : 256fs or 512fs
+   403		 *	Double: [64kHz, 96kHz] : 256fs
+   404		 *	Quad  : [128kHz,192kHz]: 128fs
+   405		*/
+   406		for (i = 0; i < ARRAY_SIZE(ak4613_rates); i++) {
+   407			/* minimum fs on each range */
+   408			fs = (ak4613_rates[i] <= 96000) ? 256 : 128;
+   409	
+   410			if (priv->sysclk >= ak4613_rates[i] * fs)
+   411				constraint->count = i + 1;
+   412		}
+   413	
+   414		snd_pcm_hw_constraint_list(runtime, 0,
+   415					SNDRV_PCM_HW_PARAM_RATE, constraint);
+   416	
+   417		/* default : STEREO */
+   418		mode	 = AK4613_CONFIG_MODE_STEREO;
+   419		mask	 = 0;
+   420		sdti_num = AK4613_CONFIG_SDTI_get(priv);
+   421	
+   422		/* update if board supports TDM mode */
+   423		if (AK4613_CONFIG_GET(priv, MODE) != AK4613_CONFIG_MODE_STEREO) {
+   424			if (priv->cnt) {
+   425				/*
+   426				 * If it was already working,
+   427				 * the constraint is same as working setting.
+   428				 */
+ > 429				mode = AK4613_INTERFACE_MODE(priv);
+   430			} else {
+   431				/*
+   432				 * It is not yet working,
+   433				 * the constraint is based on board configs.
+   434				 */
+   435				mode = AK4613_CONFIG_GET(priv, MODE);
+   436				mask = (1 << AK4613_CHANNEL_2); /* STEREO is default */
+   437			}
+   438		}
+   439	
+   440		if (mode	>= MODE_MAX ||
+   441		    sdti_num	>= SDT_MAX)
+   442			return -EINVAL;
+   443	
+   444		shift = mask_shift_list[mode][is_play * sdti_num];
+   445		if (shift < 0) /* in case of AK4613_CHANNEL_NONE */
+   446			return -EINVAL;
+   447	
+   448		mask |= 1 << shift;
+   449	printk("----mask %x\n", mask);
+   450		constraint		= &priv->constraint_channels;
+   451		constraint->list	= ak4613_channels;
+   452		constraint->mask	= mask;
+   453		constraint->count	= sizeof(ak4613_channels);
+   454		snd_pcm_hw_constraint_list(runtime, 0,
+   455					   SNDRV_PCM_HW_PARAM_CHANNELS, constraint);
+   456	
+   457		return 0;
+   458	}
+   459	
+   460	static int ak4613_dai_startup(struct snd_pcm_substream *substream,
+   461				      struct snd_soc_dai *dai)
+   462	{
+   463		struct snd_soc_component *component = dai->component;
+   464		struct ak4613_priv *priv = snd_soc_component_get_drvdata(component);
+   465		int ret = 0;
+   466	
+   467		mutex_lock(&priv->lock);
+   468		ret = ak4613_hw_constraints(component, substream);
+   469		if (ret == 0)
+   470			priv->cnt++;
+   471		mutex_unlock(&priv->lock);
+   472	
+   473		return ret;
+   474	}
+   475	
+   476	static int ak4613_dai_set_sysclk(struct snd_soc_dai *codec_dai,
+   477					 int clk_id, unsigned int freq, int dir)
+   478	{
+   479		struct snd_soc_component *component = codec_dai->component;
+   480		struct ak4613_priv *priv = snd_soc_component_get_drvdata(component);
+   481	
+   482		priv->sysclk = freq;
+   483	
+   484		return 0;
+   485	}
+   486	
+   487	static int ak4613_dai_set_fmt(struct snd_soc_dai *dai, unsigned int format)
+   488	{
+   489		struct snd_soc_component *component = dai->component;
+   490		struct ak4613_priv *priv = snd_soc_component_get_drvdata(component);
+   491		unsigned int fmt;
+   492	
+   493		fmt = format & SND_SOC_DAIFMT_FORMAT_MASK;
+   494		switch (fmt) {
+   495		case SND_SOC_DAIFMT_LEFT_J:
+   496		case SND_SOC_DAIFMT_I2S:
+   497			priv->fmt = fmt;
+   498			break;
+   499		default:
+   500			return -EINVAL;
+   501		}
+   502	
+   503		fmt = format & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK;
+   504		switch (fmt) {
+   505		case SND_SOC_DAIFMT_CBC_CFC:
+   506			break;
+   507		default:
+   508			/*
+   509			 * SUPPORTME
+   510			 *
+   511			 * "clock provider" is not yet supperted
+   512			 */
+   513			return -EINVAL;
+   514		}
+   515	
+   516		return 0;
+   517	}
+   518	
+   519	static bool ak4613_dai_fmt_matching(const struct ak4613_interface *iface,
+   520					    unsigned int fmt, unsigned int width, unsigned int channel)
+   521	{
+   522		if ((iface->fmt		== fmt) &&
+   523		    (iface->width	== width))
+   524			return true;
+   525	
+   526		return false;
+   527	}
+   528	
+   529	static int ak4613_dai_hw_params(struct snd_pcm_substream *substream,
+   530					struct snd_pcm_hw_params *params,
+   531					struct snd_soc_dai *dai)
+   532	{
+   533		struct snd_soc_component *component = dai->component;
+   534		struct ak4613_priv *priv = snd_soc_component_get_drvdata(component);
+   535		struct device *dev = component->dev;
+   536		unsigned int width = params_width(params);
+   537		unsigned int channel = params_channels(params);
+   538		unsigned int fmt = priv->fmt;
+   539		unsigned int rate;
+   540		int i, ret;
+   541		u8 ctrl2;
+   542	
+   543		rate = params_rate(params);
+   544		switch (rate) {
+   545		case 32000:
+   546		case 44100:
+   547		case 48000:
+   548			ctrl2 = DFS_NORMAL_SPEED;
+   549			break;
+   550		case 64000:
+   551		case 88200:
+   552		case 96000:
+   553			ctrl2 = DFS_DOUBLE_SPEED;
+   554			break;
+   555		case 176400:
+   556		case 192000:
+   557			ctrl2 = DFS_QUAD_SPEED;
+   558			break;
+   559		default:
+   560			return -EINVAL;
+   561		}
+   562		priv->rate = rate;
+   563	
+   564		/*
+   565		 * FIXME
+   566		 *
+   567		 * It doesn't have all TDM suppert
+   568		 */
+   569		ret = -EINVAL;
+   570	
+   571		mutex_lock(&priv->lock);
+   572		if (priv->cnt > 1) {
+   573			ret = 0;
+   574		} else {
+   575			const struct ak4613_interface *iface;
+   576	
+   577			for (i = ARRAY_SIZE(ak4613_iface) - 1; i >= 0; i--) {
+   578				iface = ak4613_iface + i;
+ > 579				if (!ak4613_dai_fmt_matching(iface, fmt, width))
+   580					continue;
+   581				priv->ctrl1 = (iface->dif << 3);
+   582				ret = 0;
+   583				break;
+   584			}
+   585		}
+   586		mutex_unlock(&priv->lock);
+   587	
+   588		if (ret < 0)
+   589			goto hw_params_end;
+   590	
+   591		snd_soc_component_update_bits(component, CTRL1, FMT_MASK, priv->ctrl1);
+   592		snd_soc_component_update_bits(component, CTRL2, DFS_MASK, ctrl2);
+   593	
+   594		snd_soc_component_update_bits(component, ICTRL, ICTRL_MASK, priv->ic);
+   595		snd_soc_component_update_bits(component, OCTRL, OCTRL_MASK, priv->oc);
+   596	
+   597	hw_params_end:
+   598		if (ret < 0)
+   599			dev_warn(dev, "unsupported data width/format combination\n");
+   600	
+   601		return ret;
+   602	}
+   603	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
