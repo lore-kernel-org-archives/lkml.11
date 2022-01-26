@@ -2,140 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87CCDC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B793C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 11:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240417AbiAZLBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:01:46 -0500
-Received: from mout.gmx.net ([212.227.17.22]:51475 "EHLO mout.gmx.net"
+        id S240421AbiAZLDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:03:09 -0500
+Received: from mga09.intel.com ([134.134.136.24]:23299 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233076AbiAZLBn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:01:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643194865;
-        bh=uymom++AR8s55d1uh5nbU+HZwmHUw4VPjm694+wj/XM=;
-        h=X-UI-Sender-Class:Date:To:Cc:References:From:Subject:In-Reply-To;
-        b=BcqbZJRuXuAfSiIa8cgTBhpiingjbvzeVpxUg0E4UsxzUHT/7CnEszHtA9nEy0g4j
-         tgwYnGr35Ed5Mh674mbCqwLNk268bmuFvRRgrcUDwSOu/QzUZ1skXRkwBLqBNh/xCS
-         +JCw5rhHr3zORNvqhgJb9oTxJyzjm3bMYCcYeS4s=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.143.57]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MuUnK-1mMdco47eM-00rZo2; Wed, 26
- Jan 2022 12:01:05 +0100
-Message-ID: <3877516e-3db3-f732-b44f-7fe12b175226@gmx.de>
-Date:   Wed, 26 Jan 2022 11:59:52 +0100
+        id S233170AbiAZLDI (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 06:03:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643194988; x=1674730988;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8Q3gBcQGz/pjxvxeA6YutlHYOEjH1VZ/sW0EYV1FVls=;
+  b=XeGkmbtDKP3G1PdfHmBXm2537aF6sXuxHc2Yujz2OLT6ZahlcVyqmq5Q
+   wV1UVlxvK+PcFh3gi7R8wdXWlSa4CyYmCfI5kZk2arW3PSyZ7UxI4hb+X
+   rkqxb9ynK6xVN8AnllMJoBnkrX9Zw2D067EAcViCr7RxRQ5AmQVcX7U25
+   JuKxbO2ky8gRJ020Ye/RBFGZYl3Ts5ipVfzXR1MMr4duQwHp8vadHKunz
+   9bWbohBudL5tzOFNgexNygIz73yTXjAf/9/al6cuZ3vQdjN5X91EH3T4g
+   HXLCn0eBeUYhW1pxbcUNyu+Dcg1YCJsv52Agzn1wRxSGiYBwSCn1iP4A1
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="246305773"
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="246305773"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 03:03:07 -0800
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="563378278"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 03:03:03 -0800
+Received: by lahna (sSMTP sendmail emulation); Wed, 26 Jan 2022 13:03:00 +0200
+Date:   Wed, 26 Jan 2022 13:03:00 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     bhelgaas@google.com, koba.ko@canonical.com,
+        Russell Currey <ruscur@russell.cc>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Lalithambika Krishnakumar <lalithambika.krishnakumar@intel.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] PCI/AER: Disable AER when link is in L2/L3 ready, L2
+ and L3 state
+Message-ID: <YfEqZMUS9jyiErmF@lahna>
+References: <20220126071853.1940111-1-kai.heng.feng@canonical.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Carlis <zhangxuezhi1@yulong.com>, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Andy Shevchenko <andy@kernel.org>
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <991e988b-7225-881b-a59a-33c3eae044be@suse.de>
- <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
-From:   Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH v1 0/4] fbtft: Unorphan the driver for maintenance
-In-Reply-To: <CAHp75Vc2cjHkJwNSiJ-HSWBG=DYy68uvD7QQzNdRp3mQxoY1nw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:8NQorOHRDOeHezX4LE3v2ty5WxtXOwxHqCdYTIFvRNufvqoA9Sx
- AV4uZg3ef5HfUsHv+4KrqKzb5X56ReOwUHJub0J8c8/ECShoS0zZsYeOFASWAfD1yH5qxkp
- 3AoSGKzSbEL0LQiiOVfHGHmBsXHwd7QXuj0u6JGWoFju5mq0nSsA7vYJivv4jcwzFwEbpsX
- ylO27UqmSCmTzIJHVLIlQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vHW26HAwWkM=:3WTENPNKJ5r5rcEdtBn/o+
- l5dstyuPg3VtWXE2nFRr6MAbE4WtpY9VZOUyHD4FNIC19JcL+9fRHIR2OI1tFV/KJ6RM5tdtW
- rx7XzebFQn3D7mwVrQWNm0qH2KG8ozRLPpk8E/Y5rp2lAA3Xiv+5CqDlm32B+6/tbmV6qTe35
- mAb15+o4WJpHv5nKcKuEHc1pO2r2JF1R6DM2WCE6y3L7Ez6bTPOl0mUzzujKAOMuMdHpMAdtA
- AYwtXaYKarlSOGL5IZVy0z8O9WfL06DgkuPpfNGSXe/+ZMQIzOhGN07wZExlJT4xTXKr6SGEv
- 4aOV8I/MWetOOh3wUmCqjnGf6MRyypMulexVMm/Rko41L7bCKYVuCoMLKdmhXtH0uyTHb7e7j
- 8Dqbc9t6hBZiy0pyVygcIKH/BRF3wIMGiXvBcexok+lL4l/fHGBokOpe9lNgqPu7XD0d+NObe
- uuD2XbA89Hy2vkX9YB4JZEIP7nNhEUh0Icc041vrfJHcSOFV34xHtJ5yEkh8xlk/4qN/6I3/y
- +4d7Rk0M/Qr9LwyIgDvQmLy6WIsFkxn+YCZglAABGI4D/MzqaYnipKDHPdZLLRUYzt4v+2+wQ
- j7ax61UI+nRC1j+ci1UFiFlRVRtQChaLJO1Adl1WQ40tcq6I12AgBv1n783bjpPLElm0FeLkv
- vHkHTsa4wolYqO6r25Vf9UkC3Z5VjxEt/8qBrD2V3Qur1+BV8cKlHW52UDiQ6WJihtF76MY7E
- iVT/z7xsLpkeIG1ydKpQhWiUbmZltEu5Y63+5mPqYBmHk9pL5l+ziELbG9BLMTQivE8z2Q1kH
- wZeD5UFiqiTdKtJp1jQSPLLAp+ibEUQCJR1RpT7hdbFS+p9T8QKXnRWZbQTSJ9EbFfkwvmEZ2
- 6QXjcWgjoUQ8pC0113DZwNzMwF6xtgSrc9qvaCgQjSxqg7m2E/U8js9PCNG3ZnrZirvB2XxoI
- 5XgTcHdg4U0KKgniKUmzfFRQWH9MrKdYpCSu1fSjpBNkrraXf2fhc1R9Mt0fek8ile4K5QU9k
- KNkXkegY7NIPL40WofOxOkghiRKT2VxBSVRdwQBLs1ucSmtCtJC/ke1locRSQ47p/RA5XOKC0
- XEGoA5np3CU8/w=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220126071853.1940111-1-kai.heng.feng@canonical.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/26/22 11:02, Andy Shevchenko wrote:
-> On Wed, Jan 26, 2022 at 10:52 AM Thomas Zimmermann <tzimmermann@suse.de>=
- wrote:
->> Am 25.01.22 um 21:21 schrieb Andy Shevchenko:
->>> Since we got a maintainer for fbdev, I would like to
->>> unorphan fbtft (with the idea of sending PRs to Helge)
->>> and move it out of staging since there is no more clean
->>> up work expected and no more drivers either.
->>>
->>> Thoughts?
+Hi,
 
-Personally I'm in favour of this proposal and would be happy
-to take patches for it through the fbdev git tree.
-Reasoning below...
+On Wed, Jan 26, 2022 at 03:18:51PM +0800, Kai-Heng Feng wrote:
+> Commit 50310600ebda ("iommu/vt-d: Enable PCI ACS for platform opt in
+> hint") enables ACS, and some platforms lose its NVMe after resume from
+> S3:
+> [   50.947816] pcieport 0000:00:1b.0: DPC: containment event, status:0x1f01 source:0x0000
+> [   50.947817] pcieport 0000:00:1b.0: DPC: unmasked uncorrectable error detected
+> [   50.947829] pcieport 0000:00:1b.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Receiver ID)
+> [   50.947830] pcieport 0000:00:1b.0:   device [8086:06ac] error status/mask=00200000/00010000
+> [   50.947831] pcieport 0000:00:1b.0:    [21] ACSViol                (First)
+> [   50.947841] pcieport 0000:00:1b.0: AER: broadcast error_detected message
+> [   50.947843] nvme nvme0: frozen state error detected, reset controller
+> 
+> It happens right after ACS gets enabled during resume.
 
->> But why? We already have DRM drivers for some of these devices.
->
-> No, we do not (only a few are available).
+Is this really because of the above commit of due the fact that AER
+"service" never implemented the PM hooks in the first place ;-)
+> 
+> There's another case, when Thunderbolt reaches D3cold:
+> [   30.100211] pcieport 0000:00:1d.0: AER: Uncorrected (Non-Fatal) error received: 0000:00:1d.0
+> [   30.100251] pcieport 0000:00:1d.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
+> [   30.100256] pcieport 0000:00:1d.0:   device [8086:7ab0] error status/mask=00100000/00004000
+> [   30.100262] pcieport 0000:00:1d.0:    [20] UnsupReq               (First)
+> [   30.100267] pcieport 0000:00:1d.0: AER:   TLP Header: 34000000 08000052 00000000 00000000
+> [   30.100372] thunderbolt 0000:0a:00.0: AER: can't recover (no error_detected callback)
+> [   30.100401] xhci_hcd 0000:3e:00.0: AER: can't recover (no error_detected callback)
+> [   30.100427] pcieport 0000:00:1d.0: AER: device recovery failed
+> 
+> Since PCIe spec "5.2 Link State Power Management" states that TLP and DLLP
+> transmission is disabled for a Link in L2/L3 Ready (D3hot), L2 (D3cold with aux
+> power) and L3 (D3cold), so disable AER to avoid the noises from turning power
+> rails on/off.
 
-seems to be 2 out of 10 (according to the other mails)
->> Porting the others to DRM is such a better long-term plan.  OTOH,
->> as no one has shown up and converted them, maybe they should be
->> left dead or removed entirely.
->
-> As I mentioned above there are devices that nobody will take time to
-> port to a way too complex DRM subsystem. But the devices are cheap and
-> quite widespread in the embedded world. I'm in possession of 3 or 4
-> different models and only 1 is supported by tiny DRM.
->
-> On top of that the subtle fact people forgot about FBTFT is that it
-> does support parallel interface (yes, I know that it's not performant,
-> but one of the displays I have is with that type of interface).
+I think more accurate here is to say when the topology behind the root
+port enters low power states. Reason here is that you can't really tell
+from the OS standpoint whether the link went into L1 or L2/3 before the
+ACPI power resource is turned off.
 
-I don't know those devices, but it seems they are still being used.
+> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=209149
+> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215453
+> Fixes: 50310600ebda ("iommu/vt-d: Enable PCI ACS for platform opt in hint")
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-And the reasons why they have not been ported to DRM yet is
-likely because either lack of man-power, a slow-down with DRM (due to
-slow bus connections or increased memory usage with DRM), or
-simply that it's used in embedded-like scenarios with a limited
-set of userspace applications for which existing fbdev access is sufficien=
-t.
+Thanks for fixing this!
 
-Again, I don't know the reason for this specific devices, but I know
-of other devices for which those reasons above are valid.
-Just the example I posted yesterday where a simple "time dmesg" needed
-unaccelerated 19 seconds compared to 2 seconds with acceleration.
-So, as long as acceleration isn't possible with that driver in
-DRM, DRM isn't a preferred target where the driver should be ported.
-
-So, I'd be fine to take it into fbdev tree.
-
-Interestingly there is another fbdev driver in staging (sm750fb) with
-similiar issues. The TODO mentions a porting to DRM which happens at
-https://gitlab.com/sudipm/sm750/tree/sm750
-but the last commit there is 3 years ago. I don't know why it wasn't
-continued yet.
-
-> P.S. For the record, I will personally NAK any attempts to remove that
-> driver from the kernel. And this is another point why it's better not
-> to be under the staging.
-
-I agree. Same as for me to NAK the disabling of fbcon's acceleration
-features or even attempting to remove fbdev altogether (unless all
-relevant drivers are ported to DRM).
-
-Helge
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
