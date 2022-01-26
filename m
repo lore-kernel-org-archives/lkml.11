@@ -2,106 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AACDC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4152DC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 17:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243718AbiAZRWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 12:22:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
+        id S243696AbiAZRZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 12:25:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243647AbiAZRWe (ORCPT
+        with ESMTP id S237164AbiAZRZ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 12:22:34 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F68C061749
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:22:34 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id e3-20020a170902ed8300b0014b46561c92so66214plj.15
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:22:34 -0800 (PST)
+        Wed, 26 Jan 2022 12:25:56 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8A8C061747
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:25:55 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id l35-20020a05600c1d2300b0034d477271c1so273097wms.3
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 09:25:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=ff0gIIVT5mkOusZfHSkDsjrfQJ504HRuYB+DqdCYRzo=;
-        b=sTzD25hboOP7p75R02/TLTWw//Il8gFhJL7Vz+HbfZ87lxCmYMp5oWAU6axG+RVQ87
-         /CN2IwWa3VZk5ZmAvYeQjN+DmbdtnvL3gfxHeRuC+xKv4sZHQeyerJZLW2ixNDdsORPf
-         bMTiRLh2vPc0I3b64auOVBcwuVbX8BkpMMDfa3hA/IkVPPgt9RhHsXuRN7yx3ZyrHuxf
-         CM3pngA/s3TeL/XmM+EItNhSUW0hA0xfcuiglqxqyenTXNtuxCqo4Sy8ym9s2Gw76isb
-         6n8uR62WCmVky2WU/cShi8umiIBPimr9+6k1+Dz4qbidJV3jD+ug2VtH9SpRzrbd+vZe
-         Dktw==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=f9guB0sh0Lurj0RNnTyzS57ErgkX/og0Be/WymIsHIU=;
+        b=Vd6XBkJ2xBnOY4rllJwDqCtX4iFdHLeUoHVxdYK44CHjLa6/1qbYoPPlWQcYat9zVh
+         cHxJt+bUdPn6g2G1beKoRj/Mt7MAhCCRQurRmi5l4LUXeaCdyrrNqmLXNL4XoIXCzjo5
+         Y4lx3f68pUYiBnmVCOyg6qkRMDyO0549bVYFZv4AfH6244p8ouwS+2jXf8SzSKh9mnm+
+         Kd2aJy6zWHAmt+wOvfU8CGyQvOuD+0wlyAhsH+k0VZ+RlXIbcAssfSm7U50dsCFkbBds
+         y8XZnmlsCJcSSYPyRkTdHF+dZ3mlsZPEvF4jsOTx/UTz2azYg2bB93x8386UJEVs3YA/
+         bv6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=ff0gIIVT5mkOusZfHSkDsjrfQJ504HRuYB+DqdCYRzo=;
-        b=QHsu09HnK+5dlDoS2GdNHqmF0cvRMkUGk/nk8qKn/4YGwkBSAjEOOAi+ew5MVV+AI6
-         HgWUWERqjhLE51GCt4vzDStYcVsAEGZJo/MWkfdkdoA1tLP2ga38NxXRwdpv5Sh1P6kV
-         z0PSqIUrmLz/4sZTuRC4he7tVsm7XKSQmFgG8tKVoCZOiv9AIq3PbmDGgR1THxjyIMlf
-         bvMVU8IXkn04c/CiUYFtCKngNyC7MT9kE2Kdzs3pTzaiI2h8VyNQ0HRcIE6ur7Ucr9xf
-         MWbIwevttHyYIKvfX8kPbDbH+gih7E7tol9ahaDnfFrzp2TThBWQp7V+EeeikWQtPrv/
-         f2Bg==
-X-Gm-Message-State: AOAM530CSlih4mUgsCJiPWya6XhdajZFYFREsMkbsM+4D64qrJB4aXyB
-        +GnYX2ZWAp8ojXdTvqkWQGxoyM2SoZU=
-X-Google-Smtp-Source: ABdhPJykFRaRlXBaojklngrMWzzMi+AE/Ri/f9JoeyGhR1SzYF9FA8YbNxzu1MkcoaS3qIkqNFc8hZ2rAs0=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a63:7110:: with SMTP id m16mr19433809pgc.123.1643217753999;
- Wed, 26 Jan 2022 09:22:33 -0800 (PST)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 26 Jan 2022 17:22:26 +0000
-In-Reply-To: <20220126172226.2298529-1-seanjc@google.com>
-Message-Id: <20220126172226.2298529-4-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220126172226.2298529-1-seanjc@google.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH 3/3] KVM: x86: Sync the states size with the XCR0/IA32_XSS at,
- any time
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xiaoyao Li <xiaoyao.li@intel.com>,
-        Like Xu <likexu@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=f9guB0sh0Lurj0RNnTyzS57ErgkX/og0Be/WymIsHIU=;
+        b=LqlxcPbyDiOBBDLQ3LcNHo/FzQe+NkzMK7iOaKhrZddCniv+JnUBUaNnf1+38OYgG0
+         QCZ20FY8uzH+4rqtzIs76/oJCb1jFtsRljj2Hvja73TJvsO2FeFc0qGfyV9FLCnVGPc1
+         2be9plPOZcBgIgbXcMDOedaCJ6WSP/sWx+vpZlYdWvMexLWFI2P8aEmlcFcTPPf4UjqP
+         Wp6mn9fJPHnzjbhCdLjPRT6Jnfsibyt1ighgcXwDtEImAHfTuPpNN6XAfdVm24XgqExq
+         pv/q1QiMHNIZkKXg8KtHslr3oLCeH3s2wPOT8fkPK+OOoDg7yzjVE8ixgjQMBau3GNIk
+         UtIQ==
+X-Gm-Message-State: AOAM531EvjZqQOmU+AsDG4fzT9wg+G17P18y/Ibmx7/oRnpm0jbHBz5m
+        PmV1YzhJ6hRtB6xBiwnK5yX7AA==
+X-Google-Smtp-Source: ABdhPJzSJ02J7ErW+HrQMpYIV6UUT670RliLEK4anwQ99Ei3XZgr3e8nTi4aWuWI4MpjshjqGnwCjA==
+X-Received: by 2002:a05:600c:1e15:: with SMTP id ay21mr8352061wmb.111.1643217954348;
+        Wed, 26 Jan 2022 09:25:54 -0800 (PST)
+Received: from ?IPv6:2a01:e34:ed2f:f020:e5b7:c642:b8ef:60cb? ([2a01:e34:ed2f:f020:e5b7:c642:b8ef:60cb])
+        by smtp.googlemail.com with ESMTPSA id t17sm20458505wrs.10.2022.01.26.09.25.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 09:25:49 -0800 (PST)
+Subject: Re: [PATCH v12 4/5] clocksource/drivers: Add a goldfish-timer
+ clocksource
+To:     Laurent Vivier <laurent@vivier.eu>, linux-kernel@vger.kernel.org
+Cc:     linux-rtc@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, Arnd Bergmann <arnd@arndb.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        John Stultz <john.stultz@linaro.org>
+References: <20220121200738.2577697-1-laurent@vivier.eu>
+ <20220121200738.2577697-5-laurent@vivier.eu>
+ <2dc495b0-b9a1-e493-ddeb-d966afd624c0@linaro.org>
+ <1bc0bf2d-49c6-3f68-bc35-919b2a1e4cfc@vivier.eu>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <f9119e2f-51e7-e87c-10d9-bc76d6108676@linaro.org>
+Date:   Wed, 26 Jan 2022 18:25:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <1bc0bf2d-49c6-3f68-bc35-919b2a1e4cfc@vivier.eu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On 26/01/2022 18:14, Laurent Vivier wrote:
+> Le 26/01/2022 à 12:55, Daniel Lezcano a écrit :
+>>
+>> Hi Laurent,
+>>
+> 
+> Hi Daniel,
+> 
+>> On 21/01/2022 21:07, Laurent Vivier wrote:
+>>> Add a clocksource based on the goldfish-rtc device.
+>>
+>> As a first submission, please provide a more detailed description of the
+>> timer.
+> 
+> ok.
+> 
+> The timer uses in fact the goldifsh RTC clock so I supposed refering to
+> drivers/rtc/rtc-goldfish.c could give the missing pieces of information
 
-XCR0 is reset to 1 by RESET but not INIT and IA32_XSS is zeroed by
-both RESET and INIT. The kvm_set_msr_common()'s handling of MSR_IA32_XSS
-also needs to update kvm_update_cpuid_runtime(). In the above cases, the
-size in bytes of the XSAVE area containing all states enabled by XCR0 or
-(XCRO | IA32_XSS) needs to be updated.
+[ ... ]
 
-For simplicity and consistency, existing helpers are used to write values
-and call kvm_update_cpuid_runtime(), and it's not exactly a fast path.
+> I agree for irq, but res is passed to request_resource() and I think it
+> is added to a linked tree, so I'm not sure it can be local to the function.
+> 
+> Do you mean a "static" declaration in the function?
 
-Fixes: a554d207dc46 ("KVM: X86: Processor States following Reset or INIT")
-Cc: stable@vger.kernel.org
-Signed-off-by: Like Xu <likexu@tencent.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/x86.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I missed request_resource() was adding the resource in a list, thus the
+parameter must not be freed. So discard the comment for 'res'.
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 13793582f26d..2e8a8fb42269 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11257,8 +11257,8 @@ void kvm_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
- 
- 		vcpu->arch.msr_misc_features_enables = 0;
- 
--		vcpu->arch.xcr0 = XFEATURE_MASK_FP;
--		vcpu->arch.ia32_xss = 0;
-+		__kvm_set_xcr(vcpu, 0, XFEATURE_MASK_FP);
-+		__kvm_set_msr(vcpu, MSR_IA32_XSS, 0, true);
- 	}
- 
- 	/* All GPRs except RDX (handled below) are zeroed on RESET/INIT. */
+[ ... ]
+
+
+
 -- 
-2.35.0.rc0.227.g00780c9af4-goog
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
