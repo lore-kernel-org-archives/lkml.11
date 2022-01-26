@@ -2,71 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E02C2C63686
-	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3D72C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Wed, 26 Jan 2022 09:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239064AbiAZJXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:23:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42716 "EHLO
+        id S239078AbiAZJYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 04:24:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229755AbiAZJXw (ORCPT
+        with ESMTP id S229755AbiAZJYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:23:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FFAC06161C;
-        Wed, 26 Jan 2022 01:23:52 -0800 (PST)
+        Wed, 26 Jan 2022 04:24:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73556C06161C;
+        Wed, 26 Jan 2022 01:24:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5B31B81C25;
-        Wed, 26 Jan 2022 09:23:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBD23C340E8;
-        Wed, 26 Jan 2022 09:23:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12A9061634;
+        Wed, 26 Jan 2022 09:24:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CB0AC340E3;
+        Wed, 26 Jan 2022 09:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643189029;
-        bh=6MkghyPmUVPTPxiV+YdGoUohtGDmOMD9FKIffcmSi+Y=;
+        s=k20201202; t=1643189072;
+        bh=l20yKtsUSI4mgOKxddtDWngh/tY6qswigMDBeh4k7QA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W0HJZE84AtCqu3ULhDVAPYQenc2VHLv5xm7Lo0Je2FwUoIM/RmAKpZQViigMyBz5T
-         UPZfYCDbU1atRqNsXRT02+TClxrSQwsR20oQTvY0m718RMMiYLOXu59YKbjiFwOy7O
-         zJUL28f7oYVrePUPqa8jwfQNwErqYmfYrr7ZALYTUL7Y+pIz2MudBKwWTNcC3u6Qf0
-         DgTggdS2RIKqees6FLljxMmU5hxsTaoKCPrr6DAmJWPcjmY3h9uF4O4CpEP9UzHrAZ
-         jas8bn2xxh0UC9ozEERUZ2JB5Dd+tnspS5LkyBDzMecPduAlQ8UGMiEj6tjeJieIdR
-         zpoMp3CddpG2w==
-Date:   Wed, 26 Jan 2022 10:23:41 +0100
-From:   Christian Brauner <brauner@kernel.org>
-To:     Stefan Berger <stefanb@linux.vnet.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
-        serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        Stefan Berger <stefanb@linux.ibm.com>
-Subject: Re: [PATCH v9 09/23] ima: Move some IMA policy and filesystem
- related variables into ima_namespace
-Message-ID: <20220126092341.yxxqb2avwco3ezqd@wittgenstein>
-References: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
- <20220125224645.79319-10-stefanb@linux.vnet.ibm.com>
+        b=huGm3cxCLa63acaifTo51S3IsROUex9pnjol9oX92CRjE7kZvHxMGwFRftgDjcnYN
+         JsZfEZu0UQJMvIeN8oWo6yBZ2FUfU0eqDiyYFXK0Wb/rQJjB5y7iRcYdOV/wbMBboK
+         ZjIPczGSqhaShx6MC2Pvzn7E/jTA5j+zPgZ70Z16a2dINKYFVtB1lmLg10gRaSnCpZ
+         GyS6IGj462U8GnyLqiyu94fPQRKfDqp4ZoNtrwkaf0Ybl4AFeWD4U4A6wMgmQiexiQ
+         TjXmtDCtIeb1391Gs4ZV8s21abJEH613BhF6uTeyMkn6SqaeWTG7HQkDyD7qa6JNpg
+         BSiBJYvCYSFFw==
+Date:   Wed, 26 Jan 2022 17:24:26 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Andrej Picej <andrej.picej@norik.com>
+Cc:     robh+dt@kernel.org, s.hauer@pengutronix.de,
+        devicetree@vger.kernel.org, festevam@gmail.com,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        y.bas@phytec.com
+Subject: Re: [PATCH RESEND 1/2] ARM: dts: imx6: phyFLEX: add missing pmic mfd
+ subdevices
+Message-ID: <20220126092426.GJ4686@dragon>
+References: <20211216115529.2331475-1-andrej.picej@norik.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220125224645.79319-10-stefanb@linux.vnet.ibm.com>
+In-Reply-To: <20211216115529.2331475-1-andrej.picej@norik.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 05:46:31PM -0500, Stefan Berger wrote:
-> From: Stefan Berger <stefanb@linux.ibm.com>
+On Thu, Dec 16, 2021 at 12:55:28PM +0100, Andrej Picej wrote:
+> phyFLEX PMIC DA9063 has also RTC and watchdog support. Add both
+> mfd subdevices so they can be used.
 > 
-> Move the ima_write_mutex, ima_fs_flag, and valid_policy variables into
-> ima_namespace. This way each IMA namespace can set those variables
-> independently.
-> 
-> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> Signed-off-by: Andrej Picej <andrej.picej@norik.com>
 > ---
+>  arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi b/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi
+> index f3236204cb5a..2ec154756bbc 100644
+> --- a/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi
+> +++ b/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi
+> @@ -205,6 +205,14 @@ vdd_mx6_high_reg: ldo11 {
+>  				regulator-always-on;
+>  			};
+>  		};
+> +
+> +		pmic_rtc: rtc {
 
-Moving into imans looks good,
-Acked-by: Christian Brauner <brauner@kernel.org>
+Maybe a more specific label like the following?
+
+		da9063_rtc: rtc
+
+And it's more aligned with da9063_wdog below.
+
+> +			compatible = "dlg,da9063-rtc";
+> +		};
+> +
+> +		da9063_wdog: wdt {
+
+watchdog for the node name.
+
+Shawn
+
+> +			compatible = "dlg,da9063-watchdog";
+> +		};
+>  	};
+>  };
+>  
+> -- 
+> 2.25.1
+> 
