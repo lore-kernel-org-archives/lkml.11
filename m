@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A01C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E97C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241765AbiA0NWl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 08:22:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33668 "EHLO
+        id S241934AbiA0NXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 08:23:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241712AbiA0NWi (ORCPT
+        with ESMTP id S241773AbiA0NWm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:22:38 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5326C061714
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:22:37 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id n8so5320732lfq.4
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:22:37 -0800 (PST)
+        Thu, 27 Jan 2022 08:22:42 -0500
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D40C061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:22:41 -0800 (PST)
+Received: by mail-lj1-x22d.google.com with SMTP id c7so3762964ljr.13
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:22:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tPBQi8ycxhPpw53EXEIDBSTw4oWSjfC+savcVruO6uA=;
-        b=Tpaq7+XtiHccGdmKT2dHoLOUmnzNF+jfgtEk86QJIzlWNOHSysoJYKZ7Dqbi/kaJAO
-         WkU0TxVs/FwZTd84TaKffKnwoEufv6KXABBbCUNEyhdHIyXHVUk9I3VYaBTc25ZHt60c
-         pZM/wASw8EWb7NpExZuMVLf3zpNnGWNi1MeQM5Tj5lEGHUm8B+olnXufkAy0vH+hv5U7
-         fsA3H1GRaM6SH8ZkPrEiN0Jt+vgQNXVBMMAEcBr800FFQDTTvZtK6GHpYjOI6jn03xPi
-         CfreNskhgv2nhcPmFFLQztCnB7SZOXPG4AfJ4SDky6ZE4DsN3vuR8F4jYUpevN2CHOPV
-         Zb5Q==
+        bh=T8R8u/y1SMQUrHN6xG6XUjC1eIHn79OeaNWZhotIs0E=;
+        b=fSYUxbVKRSvwPkl4pNB1gwAS5LgowfbuqJ3JrlRsxkfpXDrTP0UBI//31a2rA0Q3tk
+         UXyuaVKDoLuTozxIPyM51x7fnvbrO/tExwh9G3B+R9B5iNMtfwUOMDx5sCrZxp/O80Ir
+         3PwCTus2Yl6xK03laCBfoo5JWrkSeWrcTuSwG1pNypIBTlWH45KBZedlzmlZBiwdyxAM
+         tP57QMSjCZ/iA5zgJlUROnleuOWhN+yIpUYfpQWhvi54TWZWiUcJVFe1GFtQ+t3Npcnv
+         UGVoeAZwuT8Ra/kQjRR2Yob2i0zBSaLiD7bh+yePLPALXOcpGaU6byCq+0l4gOSIQpEP
+         1eUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tPBQi8ycxhPpw53EXEIDBSTw4oWSjfC+savcVruO6uA=;
-        b=VwAlFel3rgkUn6qyL04VjXvrusREcNuoT5g+U+NhPZ4J5lAsFmOBkgCfBnMOmc1jee
-         tcCKi5UceHFAHntMMWr8vEw+U6mNGi0PTmciMwq3MQjCLr8AWFk+Dtx/FHZx7X/MsWcO
-         wpLc1FLPdeacC1BnM9CKXLRSnB2+JWGKlbFKkKnuj9cT6+bgBT6yg6y8wl14IGjci9Yv
-         ICN1X58ugis4X/DE/bc7h+CfjM8cUyyj65UD+1LaV19gDYC4lhF6UBL75V1lMrBQVymP
-         b343HA3uAYsVS7MoZ+cU42CfUz7Tz2Ij4Rx5MLp7JHwGv7S6pHFKFQXT3qvo9K0UgBAM
-         V5ug==
-X-Gm-Message-State: AOAM5338V2dB6qmqDbwurXfMO2msJ2ZjN5d6PjYCxAMD/kBLugI+M/k1
-        PIK/npZzrmjPQZkjbuAIhrs=
-X-Google-Smtp-Source: ABdhPJwSkig+CIrvQ7RJLWbX3c1g4+OgDnSWHAkTP04VyFSrh+c+5R/3TRnzbH8VSa30R2THSSL5ng==
-X-Received: by 2002:ac2:4e08:: with SMTP id e8mr2910679lfr.266.1643289756126;
-        Thu, 27 Jan 2022 05:22:36 -0800 (PST)
+        bh=T8R8u/y1SMQUrHN6xG6XUjC1eIHn79OeaNWZhotIs0E=;
+        b=5d7JpmWbJ5uiuZU32KtF4/84WYyQXRz7y/BLXOpMeAAZRFhPb1cYlyiKotTdxxWO+t
+         M8u+J8dBNAIziiUN+gbhflclhyU0t9ZEaFi5oIfgpBBt0ZY3bugZTufSCK5My1obYUk/
+         LA91gh6aOuFfP4z5wl49stxHeiew2+CaotpfDsuDdWFrExzPqkk0B+/Pf09nCclEvQqG
+         PTCc9/sUvcx/ikw7CjmB29NKb2ZxnYbJxoas8nyBSQjqvpoFyA9aNxjud9W1pZDkDAKp
+         Jn20EOXTF0mCEFPlp+Wrfyb7UTbxlhBmthxjB8EeMGZPyh0grN+vUMpKVpUPpt/cMlNv
+         cuxA==
+X-Gm-Message-State: AOAM531DP5DIV/Ii7chdsd3REOfYmZ73WGQFhCAaHHQ37xs7ijl2t9l/
+        bMw+oPI4F3BKK+FbdFvTJIQ=
+X-Google-Smtp-Source: ABdhPJxxR6hh92eR2oORQboC+bVMbj54WKUsdTR2rFidNqQWLEJ/4r5Om8UG7xkPh9pjotcZdAgd5g==
+X-Received: by 2002:a05:651c:19ac:: with SMTP id bx44mr2701574ljb.528.1643289759993;
+        Thu, 27 Jan 2022 05:22:39 -0800 (PST)
 Received: from elysium.toya.net.pl (staticline-31-183-166-172.toya.net.pl. [31.183.166.172])
-        by smtp.gmail.com with ESMTPSA id s16sm1306918lfp.197.2022.01.27.05.22.35
+        by smtp.gmail.com with ESMTPSA id s16sm1306918lfp.197.2022.01.27.05.22.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 05:22:35 -0800 (PST)
+        Thu, 27 Jan 2022 05:22:39 -0800 (PST)
 From:   Karolina Drobnik <karolinadrobnik@gmail.com>
 To:     linux-mm@kvack.org
 Cc:     akpm@linux-foundation.org, mike.rapoport@gmail.com,
         linux-kernel@vger.kernel.org,
         Karolina Drobnik <karolinadrobnik@gmail.com>
-Subject: [PATCH 02/16] tools/include: Add phys_addr_t to types.h
-Date:   Thu, 27 Jan 2022 14:21:20 +0100
-Message-Id: <0baedc091016e35d738a9439d9475371d00f8206.1643206612.git.karolinadrobnik@gmail.com>
+Subject: [PATCH 04/16] tools/include: Update atomic.h header
+Date:   Thu, 27 Jan 2022 14:21:22 +0100
+Message-Id: <bbd768fa794c68cda7888182f464411aebb65b7f.1643206612.git.karolinadrobnik@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1643206612.git.karolinadrobnik@gmail.com>
 References: <cover.1643206612.git.karolinadrobnik@gmail.com>
@@ -65,31 +65,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update types.h file to include phys_addr_t typedef so it can
-be used in testing.
+Add atomic_long_t typedef and atomic_long_set function so they
+ can be used in testing.
 
 Signed-off-by: Karolina Drobnik <karolinadrobnik@gmail.com>
 ---
- tools/include/linux/types.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ tools/include/linux/atomic.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/tools/include/linux/types.h b/tools/include/linux/types.h
-index 6e14a533ab4e..35cedaf191e8 100644
---- a/tools/include/linux/types.h
-+++ b/tools/include/linux/types.h
-@@ -64,6 +64,12 @@ typedef __u64 __bitwise __be64;
- typedef __u16 __bitwise __sum16;
- typedef __u32 __bitwise __wsum;
+diff --git a/tools/include/linux/atomic.h b/tools/include/linux/atomic.h
+index 00a6c4ca562b..5d2431889606 100644
+--- a/tools/include/linux/atomic.h
++++ b/tools/include/linux/atomic.h
+@@ -4,6 +4,10 @@
  
-+#ifdef CONFIG_PHYS_ADDR_T_64BIT
-+typedef u64 phys_addr_t;
-+#else
-+typedef u32 phys_addr_t;
-+#endif
+ #include <asm/atomic.h>
+ 
++typedef atomic_t atomic_long_t;
 +
- typedef struct {
- 	int counter;
- } atomic_t;
++void atomic_long_set(atomic_long_t *v, long i);
++
+ /* atomic_cmpxchg_relaxed */
+ #ifndef atomic_cmpxchg_relaxed
+ #define  atomic_cmpxchg_relaxed		atomic_cmpxchg
 -- 
 2.30.2
 
