@@ -2,87 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F02FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 05:39:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9558BC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 05:43:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236301AbiA0FjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 00:39:22 -0500
-Received: from webmail.amiindia.co.in ([14.98.235.2]:59183 "EHLO
-        IMSVA.IN.MEGATRENDS.COM" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229801AbiA0FjU (ORCPT
+        id S236316AbiA0FnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 00:43:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236304AbiA0FnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 00:39:20 -0500
-Received: from IMSVA.IN.MEGATRENDS.COM (IMSVA.IN.MEGATRENDS.COM [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1EA5782047;
-        Thu, 27 Jan 2022 11:20:27 +0530 (IST)
-Received: from IMSVA.IN.MEGATRENDS.COM (IMSVA.IN.MEGATRENDS.COM [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DF95282046;
-        Thu, 27 Jan 2022 11:20:26 +0530 (IST)
-Received: from webmail.amiindia.co.in (venus1.in.megatrends.com [10.0.0.5])
-        by IMSVA.IN.MEGATRENDS.COM (Postfix) with ESMTPS;
-        Thu, 27 Jan 2022 11:20:26 +0530 (IST)
-Received: from msgubuntu-OptiPlex-5060.in.megatrends.com (10.0.124.83) by
- VENUS1.in.megatrends.com (10.0.0.5) with Microsoft SMTP Server id 14.3.468.0;
- Thu, 27 Jan 2022 11:09:11 +0530
-From:   krishnar4 <krishnar@ami.com>
-To:     Krishna Raj <krishnar@ami.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Linus Walleij <linus.walleij@linaro.org>
-CC:     <linux-hwmon@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>,
-        Deepak Kodihalli <dkodihalli@nvidia.com>,
-        Shakeeb Pasha <spasha@nvidia.com>,
-        Vinodhini J <vinodhinij@ami.com>,
-        Pravinash Jeyapaul <pravinashj@ami.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH linux dev-5.15] hwmon: (pmbus) modify PSU fan_target convert value to false
-Date:   Thu, 27 Jan 2022 11:09:08 +0530
-Message-ID: <20220127053908.16587-1-krishnar@ami.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <git-send-email-krishnar@ami.com>
-References: <git-send-email-krishnar@ami.com>
+        Thu, 27 Jan 2022 00:43:00 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9956BC06173B
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 21:42:59 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id z20so2652725ljo.6
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 21:42:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+dTkxGYUlNJhi8u43pDWWFCeIctkqPXxzUpp/O4S0VA=;
+        b=nU20B3sS+LfpIOekeMws0AVgBv3fCRJS76MRe4s0LAuZQVhhAvtfAV5olP2ivrN59l
+         5zeRsgnktL6Gh4MkXAVpb6Bp23tNdq/1tLPjsvfLRwI3OMfBwNGsB0Jc3RvHLlPfBfnL
+         HKo9in79rxbzyxK8JtvmKzXpBgAV9ugJJTxOVzXwP7Q8+62WUgzkuWniGrg2gYPDMoBF
+         c7p1VpqVy6TN2X8A3kTEI9fSO9lZvhhZUlq7TOQeUiAolULuL+SdRceM15KyO5pjO0cH
+         7dDaCp1y9OQHXifcOULncCnTUu3T7HLzB3+F3W8CoQ+nfl+G+vpgHa76c8ugsypfL8JO
+         JlYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+dTkxGYUlNJhi8u43pDWWFCeIctkqPXxzUpp/O4S0VA=;
+        b=aQ3LbW2Ui0srUgHuGGZK+yP+Kc8hpjNM/C6SCbf5+Eqb6Pc2J92BTxcCQNaCU88LdJ
+         m+EWn174lMbY9yqwWW8zcCQPdpeyvNhx/kJT3Tph6d0cFVSV5WnCnqFIoqzCiCDhqHLJ
+         4yFYNmDku8LjQ+3KK36cAV0a827DkZkfHp9dNfuN3RQHTvkHZx47bzegeSDBCf7RY3to
+         VjN4Mms1EtU6z6lCsF+Y0qYpKswMZWQVuUBhZC4Z2mdgikWSeGp0S0D+++KB+0xC5Emf
+         NXrQVETdSiuYPBSG/s0ikuX6i/EaFnm7Vg+7suOl+3fgUEL+i+mQu/DLH8QEJWdL1kqV
+         9vOw==
+X-Gm-Message-State: AOAM533ouMOgh3+8jbXDjLTXtcIGUmTxccKXDj3o4RppzJNYWhwy0Xet
+        plcLrkmPWYELEwotDCDi6sPI0MqrxP9QBHh39g/iZw==
+X-Google-Smtp-Source: ABdhPJyjFKH1eFW8c9iG7GHHeCKkvytQDNzjWI5d62tvhNQl3Ul3xJNWa6SY4dzAjSPxwo3VLvCGUsvgjdEPz7BsWPQ=
+X-Received: by 2002:a2e:8754:: with SMTP id q20mr1764155ljj.71.1643262177779;
+ Wed, 26 Jan 2022 21:42:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-TM-AS-GCONF: 00
-X-TM-AS-Product-Ver: IMSVA-9.1.0.1817-8.6.0.1013-26114.002
-X-TM-AS-Result: No--1.662-5.0-31-10
-X-imss-scan-details: No--1.662-5.0-31-10
-X-TMASE-Version: IMSVA-9.1.0.1817-8.6.1013-26114.002
-X-TMASE-Result: 10--1.662300-10.000000
-X-TMASE-MatchedRID: 8muszqLoCjtHoOzJ1oF1dqiUivh0j2Pvljgw/8s6b3cHZBaLwEXlKGlF
-        7OhYLlctcwePA9FSeTz9k6grZ0shf9zmfZUrwTrUngIgpj8eDcBpkajQR5gb3savT21DsLD/UEh
-        Wy9W70AEnRE+fI6etkituBDgcniIfegbcIIrT/+G8mBZdhaNLqDiyY/5MU8oBTzs4VfHSjec5fl
-        oBUgk06Ga7J9YRB75owdF1Ue2Jr/JPZRTsEKEvt4pebMSk1UmKlmXPgyQocYp5E1G2nFNyeETBf
-        0diyKhk7DIVgUu7mCo=
-X-TMASE-SNAP-Result: 1.821001.0001-0-1-12:0,22:0,33:0,34:0-0
+References: <20220126203243.231822-1-dave.kleikamp@oracle.com>
+In-Reply-To: <20220126203243.231822-1-dave.kleikamp@oracle.com>
+From:   Sumit Garg <sumit.garg@linaro.org>
+Date:   Thu, 27 Jan 2022 11:12:46 +0530
+Message-ID: <CAFA6WYNiWo+wrKp_=jC+g5DcXrg-JzwSqND+8wL9FFeZwGH+Kg@mail.gmail.com>
+Subject: Re: [PATCH v2] KEYS: trusted: Avoid calling null function trusted_key_exit
+To:     Dave Kleikamp <dave.kleikamp@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, James Bottomley <jejb@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Description: PSU can't use sysfs fan_target to control PSU fan duty.
+On Thu, 27 Jan 2022 at 02:02, Dave Kleikamp <dave.kleikamp@oracle.com> wrote:
+>
+> If one loads and unloads the trusted module, trusted_key_exit can be
+> NULL. Call it through static_call_cond() to avoid a kernel trap.
+>
+> Fixes: 5d0682be3189 ("KEYS: trusted: Add generic trusted keys framework")
+> Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+> Cc: Sumit Garg <sumit.garg@linaro.org>
+> Cc: James Bottomley <jejb@linux.ibm.com>
+> Cc: Jarkko Sakkinen <jarkko@kernel.org>
+> Cc: Mimi Zohar <zohar@linux.ibm.com>
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: James Morris <jmorris@namei.org>
+> Cc: "Serge E. Hallyn" <serge@hallyn.com>
+> Cc: linux-integrity@vger.kernel.org
+> Cc: keyrings@vger.kernel.org
+> Cc: linux-security-module@vger.kernel.org
+> ---
+> v2 changes:
+> Header cleanup - removed empty line and cc:stable
+>  security/keys/trusted-keys/trusted_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
 
-Signed-off-by: krishnar4 <krishnar@ami.com>
----
- drivers/hwmon/pmbus/pmbus_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for the fix.
 
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index 776ee2237be2..a56c2e1c4079 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -1889,7 +1889,7 @@ static int pmbus_add_fan_ctrl(struct i2c_client *client,
- 
- 	sensor = pmbus_add_sensor(data, "fan", "target", index, page,
- 				  0xff, PMBUS_VIRT_FAN_TARGET_1 + id, PSC_FAN,
--				  false, false, true);
-+				  false, false, false);
- 
- 	if (!sensor)
- 		return -ENOMEM;
--- 
-2.17.1
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
 
+-Sumit
+
+> diff --git a/security/keys/trusted-keys/trusted_core.c b/security/keys/trusted-keys/trusted_core.c
+> index d5c891d8d353..8c14e04e2112 100644
+> --- a/security/keys/trusted-keys/trusted_core.c
+> +++ b/security/keys/trusted-keys/trusted_core.c
+> @@ -351,7 +351,7 @@ static int __init init_trusted(void)
+>
+>  static void __exit cleanup_trusted(void)
+>  {
+> -       static_call(trusted_key_exit)();
+> +       static_call_cond(trusted_key_exit)();
+>  }
+>
+>  late_initcall(init_trusted);
+> --
+> 2.35.0
+>
