@@ -2,88 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81847C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3FB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243689AbiA0QZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 11:25:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243678AbiA0QZS (ORCPT
+        id S243698AbiA0QZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 11:25:45 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:39102 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232147AbiA0QZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 11:25:18 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A514AC061714;
-        Thu, 27 Jan 2022 08:25:17 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id s13so7066582ejy.3;
-        Thu, 27 Jan 2022 08:25:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EsK26LwKVCtS4IHITRqNsNXPc6eDfVNCQyatciyTffY=;
-        b=QYrB9a1UDkoczCvaHoE9khlMQRijF1g4e++GPYiAF1RJgwrYoHDnckl9udTDCMsZjP
-         CSPl1MCQS/b+efmmQopo5VvXHKeF7Fk6kkkGUn4FCR4B4uJoWHpxay6C6fRnsyQNFBaJ
-         eTX9nL3S2YNcG5Zev3GBCQi1GicwGdwyJ0bU+2wiaBh8UtyCTxuf72Lcma4V6DzhTgKu
-         LpN3YGfKCYRa/6fc87o9gyWbRpZHymjJgNxRgiqIgsum7c1273fYj7+glXaIrJo3oen+
-         9QSr++FkQ6CvRU+vqcXVBjOfqY+xTgCgJjwCvtjNZOap/3aRrPrUKsvWMGa0cLUVNzbk
-         87lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EsK26LwKVCtS4IHITRqNsNXPc6eDfVNCQyatciyTffY=;
-        b=jyKd9+oVLOo3KFcoLmxsnJpP4hHMmOpQFuD2gWcXEfGLgd59SSiqJrHq7evGxWbI1Y
-         ek3uY4qiOB6lgSiZlxR0VZe151UTLNzkfLAxFC7OlNJDAJ0bDcEQXVPDA6bIbWo1TMPV
-         /oawLohyt0s1ENpFWBIR6SO50vNsmbc0EB19PfyiKbMEk1d5KR7zrvNYYn9OJsZDS7YY
-         qUf4DpT3S0EHEnQaPJlfSIUPqThvLZZUGVr6JdWGznHdAOdMdnk+4m6BlRYhLNV5A95O
-         FWVCRsdQP+a+igdvym6QKN2bl4RO1F4emFb+oE099GTdUA8sQnKDBZ0jR1R6pkkRZY9i
-         tXbA==
-X-Gm-Message-State: AOAM532go4QCnbivU8c8/M5KFX0lvkrS3657CPuaYUSXg309cbyLx4hq
-        JhwyZbCTCJZu9PUoggQSLFQ0jioWMcKxnS53VAo=
-X-Google-Smtp-Source: ABdhPJwpJTf+bvIuulAX+/Afv2dVUkiSl0zeLpHRq/pUsMA82rYvj0rJbgE3vqJHVJ5RU02z7iQdA2D/O7p+1kVpa7M=
-X-Received: by 2002:a17:906:c14d:: with SMTP id dp13mr3693115ejc.132.1643300716068;
- Thu, 27 Jan 2022 08:25:16 -0800 (PST)
+        Thu, 27 Jan 2022 11:25:44 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20RGPWNV122864;
+        Thu, 27 Jan 2022 10:25:32 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1643300732;
+        bh=BKF0oYN3z6h33xfjg1fmAjSM+i6C6XjS9xLZPqddQ24=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=jFkSlvQO8e8NHCaTf7W04TvFwPHhd0g5jtAX8Own8OopclXfqQFHBZiZrHmlj89dC
+         M0tbWA4DgWMYVVuA4BVnS1hShZjpPCOP/oA0RYCYX/DOG0RvgJEZl4q/cyZJ1btveM
+         Aj16FPZzx46ki052UlcYAIgyBp8ycM0549Px7NZg=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20RGPWhL067686
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 27 Jan 2022 10:25:32 -0600
+Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 27
+ Jan 2022 10:25:31 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 27 Jan 2022 10:25:31 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20RGPU3w108915;
+        Thu, 27 Jan 2022 10:25:31 -0600
+Date:   Thu, 27 Jan 2022 21:55:29 +0530
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <thierry.reding@gmail.com>, <sam@ravnborg.org>
+CC:     <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <nikhil.nd@ti.com>
+Subject: Re: [PATCH] drm/panel: simple: Initialize bpc in RK101II01D-CT panel
+ descriptor
+Message-ID: <20220127162526.ubg6nyah2zw7mxe3@uda0490373>
+References: <20211028115242.28539-1-r-ravikumar@ti.com>
+ <20211108163340.tafx6tug7wkdii7e@uda0490373>
+ <20211111120714.74luy3cksxyeuk7h@uda0490373>
 MIME-Version: 1.0
-References: <20220127143828.2033838-1-kai.heng.feng@canonical.com> <CAHp75Vetc62kz7VtEgWR2Jn_UsmYtzR1WM0n4pxycfKCN3h3+Q@mail.gmail.com>
-In-Reply-To: <CAHp75Vetc62kz7VtEgWR2Jn_UsmYtzR1WM0n4pxycfKCN3h3+Q@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 27 Jan 2022 18:23:38 +0200
-Message-ID: <CAHp75VdmxnsKX7Bc6e4NTdcVzO3CfJRRa_y3zB8KKqhBBq-5Eg@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: dps310: Add ACPI HID table
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Eddie James <eajames@linux.ibm.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20211111120714.74luy3cksxyeuk7h@uda0490373>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 6:22 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Thu, Jan 27, 2022 at 4:38 PM Kai-Heng Feng
-> <kai.heng.feng@canonical.com> wrote:
+On 17:37-20211111, Rahul T R wrote:
+> On 22:03-20211108, Rahul T R wrote:
+> > On 17:22-20211028, Rahul T R wrote:
+> > Hi Thierry / Sam,
+> > 
+> > Can you please review this patch
+> > 
+> > Regards
+> > Rahul T R
+> 
 
-...
+Ping
 
-> > +static const struct acpi_device_id dps310_acpi_match[] = {
-> > +       { "IFX3100" },
-
-> > +       { },
-
-And no comma needed here.
-
-> > +};
->
-> > +
->
-> This is redundant, I hope Jonathan may remove it when applying.
->
-> > +MODULE_DEVICE_TABLE(acpi, dps310_acpi_match);
-
--- 
-With Best Regards,
-Andy Shevchenko
+> ping
+> 
+> > > Initialize bpc while creating panel_desc structure for RK101II01D-CT
+> > > 
+> > > Below warning is triggered since bpc is not being initialized
+> > > 
+> > > WARNING: CPU: 2 PID: 47 at drivers/gpu/drm/panel/panel-simple.c:614
+> > > panel_simple_probe+0x1b0/0x3c8
+> > > 
+> > > Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+> > > ---
+> > >  drivers/gpu/drm/panel/panel-simple.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > > 
+> > > diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+> > > index dde033066f3d..32f775db5cb7 100644
+> > > --- a/drivers/gpu/drm/panel/panel-simple.c
+> > > +++ b/drivers/gpu/drm/panel/panel-simple.c
+> > > @@ -3027,6 +3027,7 @@ static const struct drm_display_mode rocktech_rk101ii01d_ct_mode = {
+> > >  
+> > >  static const struct panel_desc rocktech_rk101ii01d_ct = {
+> > >  	.modes = &rocktech_rk101ii01d_ct_mode,
+> > > +	.bpc = 8,
+> > >  	.num_modes = 1,
+> > >  	.size = {
+> > >  		.width = 217,
+> > > -- 
+> > > 2.17.1
+> > > 
