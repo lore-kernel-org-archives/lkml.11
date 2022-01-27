@@ -2,125 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A9A8C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241074AbiA0MUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:20:54 -0500
-Received: from foss.arm.com ([217.140.110.172]:58304 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241050AbiA0MUx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:20:53 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A1F57113E;
-        Thu, 27 Jan 2022 04:20:52 -0800 (PST)
-Received: from [10.163.42.218] (unknown [10.163.42.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F1B0F3F7D8;
-        Thu, 27 Jan 2022 04:20:48 -0800 (PST)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: Re: [RFC V1 06/11] arm64/perf: Drive BRBE from perf event states
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        linux-perf-users@vger.kernel.org
-References: <1642998653-21377-1-git-send-email-anshuman.khandual@arm.com>
- <1642998653-21377-7-git-send-email-anshuman.khandual@arm.com>
- <YfF/zBS3kL/+eC1k@robh.at.kernel.org>
-Message-ID: <9e56509a-2772-a333-ccc3-ad49a2028616@arm.com>
-Date:   Thu, 27 Jan 2022 17:50:54 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S241050AbiA0MWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:22:14 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:30315 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235916AbiA0MWN (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 07:22:13 -0500
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Jl07N53Hkzbjh3;
+        Thu, 27 Jan 2022 20:21:20 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 27 Jan 2022 20:22:11 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 27 Jan 2022 20:22:11 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     <linuxppc-dev@lists.ozlabs.org>, <mpe@ellerman.id.au>,
+        <benh@kernel.crashing.org>, <paulus@samba.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linux-mm@kvack.org>, <akpm@linux-foundation.org>,
+        <npiggin@gmail.com>, <christophe.leroy@csgroup.eu>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH v3] powerpc: Fix virt_addr_valid() check
+Date:   Thu, 27 Jan 2022 20:37:54 +0800
+Message-ID: <20220127123754.77825-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <YfF/zBS3kL/+eC1k@robh.at.kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+When run ethtool eth0 on PowerPC64, the BUG occurred,
 
-On 1/26/22 10:37 PM, Rob Herring wrote:
-> On Mon, Jan 24, 2022 at 10:00:48AM +0530, Anshuman Khandual wrote:
->> Branch stack sampling rides along the normal perf event and all the branch
->> records get captured during the PMU interrupt. This just changes perf event
->> handling on the arm64 platform to accommodate required BRBE operations that
->> will enable branch stack sampling support.
->>
->> Cc: Peter Zijlstra <peterz@infradead.org>
->> Cc: Ingo Molnar <mingo@redhat.com>
->> Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
->> Cc: Mark Rutland <mark.rutland@arm.com>
->> Cc: Will Deacon <will@kernel.org>
->> Cc: Catalin Marinas <catalin.marinas@arm.com>
->> Cc: linux-perf-users@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org
->> Cc: linux-arm-kernel@lists.infradead.org
->> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
->> ---
->>  arch/arm64/kernel/perf_event.c |  6 +++++
->>  drivers/perf/arm_pmu.c         | 40 ++++++++++++++++++++++++++++++++++
->>  2 files changed, 46 insertions(+)
->>
->> diff --git a/arch/arm64/kernel/perf_event.c b/arch/arm64/kernel/perf_event.c
->> index f6a47036b0b4..11c82c8f2eec 100644
->> --- a/arch/arm64/kernel/perf_event.c
->> +++ b/arch/arm64/kernel/perf_event.c
->> @@ -864,6 +864,12 @@ static irqreturn_t armv8pmu_handle_irq(struct arm_pmu *cpu_pmu)
->>  		if (!armpmu_event_set_period(event))
->>  			continue;
->>  
->> +		if (has_branch_stack(event)) {
->> +			cpu_pmu->brbe_read(cpuc, event);
-> 
-> Is has_branch_stack() guaranteed to be false on arm32? If not, this will 
-> be a NULL function ptr.
+  usercopy: Kernel memory exposure attempt detected from SLUB object not in SLUB page?! (offset 0, size 1048)!
+  kernel BUG at mm/usercopy.c:99
+  ...
+  usercopy_abort+0x64/0xa0 (unreliable)
+  __check_heap_object+0x168/0x190
+  __check_object_size+0x1a0/0x200
+  dev_ethtool+0x2494/0x2b20
+  dev_ioctl+0x5d0/0x770
+  sock_do_ioctl+0xf0/0x1d0
+  sock_ioctl+0x3ec/0x5a0
+  __se_sys_ioctl+0xf0/0x160
+  system_call_exception+0xfc/0x1f0
+  system_call_common+0xf8/0x200
 
-armpmu_event_init() blocks a perf event from being created with branch
-stack sampling request without CONFIG_ARM_BRBE_PMU option being enabled
-first, which has dependency on CONFIG_ARM64. So has_branch_stack() is
-guaranteed to be false on arm32.
+The code shows below,
 
-static int armpmu_event_init(struct perf_event *event)
-{
-	....
-        if (has_branch_stack(event)) {
-                /*
-                 * BRBE support is absent. Select CONFIG_ARM_BRBE_PMU
-                 * in the config, before branch stack sampling events
-                 * can be requested.
-                 */
-                if (!IS_ENABLED(CONFIG_ARM_BRBE_PMU)) {
-                        pr_warn_once("BRBE is disabled, select CONFIG_ARM_BRBE_PMU\n");
-                        return -EOPNOTSUPP;
-                }
+  data = vzalloc(array_size(gstrings.len, ETH_GSTRING_LEN));
+  copy_to_user(useraddr, data, gstrings.len * ETH_GSTRING_LEN))
 
+The data is alloced by vmalloc(), virt_addr_valid(ptr) will return true
+on PowerPC64, which leads to the panic.
 
-config ARM_BRBE_PMU
-        tristate "Enable support for Branch Record Buffer Extension (BRBE)"
-        depends on ARM64 && ARM_PMU
-        default y
-        help
-          Enable perf support for Branch Record Buffer Extension (BRBE) which
-          records all branches taken in an execution path. This supports some
-          branch types and privilege based filtering. It captured additional
-          relevant information such as cycle count, misprediction and branch
-          type, branch privilege level etc.
+As commit 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va
+and __pa addresses") does, let's check the virt addr above PAGE_OFFSET in
+the virt_addr_valid() for PowerPC64, which will make sure that the passed
+address is a valid linear map address.
 
-> 
-> To add to my other comments, this patch is where I would add 
-> brbe_read(), etc. to arm_pmu.
+Meanwhile, PAGE_OFFSET is the virtual address of the start of lowmem,
+the check is suitable for PowerPC32 too.
 
-Because all new arm_pmu helpers get added and get used in the perf driver
-in the same patch, although the actual helper implementation would still
-come by bit later via the driver. This also uses updates to pmu_hw_events
-struct as well, then that patch needs to be folded here as well.
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+v3:
+- update changelog and remove a redundant cast 
+ arch/powerpc/include/asm/page.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-There is no problem as such, kind of bit subjective. I just feel inclined
-to keep the independent infrastructure changes separate making it easy to
-review while also creating a flow.
+diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
+index 254687258f42..a8a29a23ce2d 100644
+--- a/arch/powerpc/include/asm/page.h
++++ b/arch/powerpc/include/asm/page.h
+@@ -132,7 +132,10 @@ static inline bool pfn_valid(unsigned long pfn)
+ #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
+ #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
+ 
+-#define virt_addr_valid(kaddr)	pfn_valid(virt_to_pfn(kaddr))
++#define virt_addr_valid(vaddr)	({						\
++	unsigned long _addr = (unsigned long)vaddr;				\
++	_addr >= PAGE_OFFSET && pfn_valid(virt_to_pfn(_addr));	\
++})
+ 
+ /*
+  * On Book-E parts we need __va to parse the device tree and we can't
+-- 
+2.26.2
+
