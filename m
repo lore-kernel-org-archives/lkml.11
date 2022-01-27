@@ -2,101 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07990C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:40:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F94C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241204AbiA0MkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:40:10 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52376 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241186AbiA0MkI (ORCPT
+        id S241223AbiA0MlG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:41:06 -0500
+Received: from mail.cn.fujitsu.com ([183.91.158.132]:49987 "EHLO
+        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S241186AbiA0MlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:40:08 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47B0AB82228
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:40:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0858EC340E4;
-        Thu, 27 Jan 2022 12:40:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643287206;
-        bh=JnlBSQS1AFrenlZcFKIvZzSqaAGifybnUZXObr1eoag=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=i/v/gSJJHYSymievjsJE2D9V15USSFVUI1g2oB3UR1s4BPya1TcsGj7M4TdbrG3xv
-         ztjXQHi3pp8UBwrUZ8obIw0pM8fLI6sx99gHlhSF8jq8AwOKZ53La9gk20/WPxKiiG
-         IcbjS+SYB/2tekd19VNeX55R2V4hsxNw2ANt8VuorrTtfXJ1DJHRh3L0wffyPuenxY
-         TdbY651ULXJ+kvXGbwb/vuEFuiNsuq6ZbPg4d5zSfykjBTP1LPifQqMygm8es8nGm1
-         AHqDuJqYU1npqy3VT3HZXloMaKr3WgFqb1JYUc08m7GAW5TVhH5SqmW+HBmApGHVr0
-         twLvNlaYwDx3g==
-Date:   Thu, 27 Jan 2022 14:39:59 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        hch@infradead.org, akpm@linux-foundation.org
-Subject: Re: [RFC V1 02/31] mm/mmap: Clarify protection_map[] indices
-Message-ID: <YfKSn6u3YsErB/Ky@kernel.org>
-References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
- <1643029028-12710-3-git-send-email-anshuman.khandual@arm.com>
+        Thu, 27 Jan 2022 07:41:04 -0500
+IronPort-Data: =?us-ascii?q?A9a23=3A7op5waJWE0AXQMIYFE+RupQlxSXFcZb7ZxGrkP8?=
+ =?us-ascii?q?bfHDo0jhz12QFnWoXWGHSa/aKYDSmeNp0YN6w8kpVuMLVn4NqS1BcGVNFFSwT8?=
+ =?us-ascii?q?ZWfbTi6wuYcBwvLd4ubChsPA/w2MrEsF+hpCC+MzvuRGuK59yMkjPvXHuOU5NP?=
+ =?us-ascii?q?sYUideyc1EU/Ntjozw4bVsqYw6TSIK1vlVeHa+qUzC3f5s9JACV/43orYwP9ZU?=
+ =?us-ascii?q?FsejxtD1rA2TagjUFYzDBD5BrpHTU26ByOQroW5goeHq+j/ILGRpgs1/j8mDJW?=
+ =?us-ascii?q?rj7T6blYXBLXVOGBiiFIPA+773EcE/Xd0j87XN9JFAatToy+UltZq2ZNDs4esY?=
+ =?us-ascii?q?Qk0PKzQg/lbWB5de817FfQcoO6eeiLi4KR/yGWDKRMA2c5GAEgoPIEw9PxwBGZ?=
+ =?us-ascii?q?U//0EbjsKa3irh+m26LO9RPNliskqII/sJox3kn1py3fbS+knRZTCSqDRzd5ew?=
+ =?us-ascii?q?Do0wMtJGJ72a8gGbjxgRBfNeRtCPhEQEp1WtOOpgGTvNjhdgFGLrKE0pW/Jw2R?=
+ =?us-ascii?q?Z1qbhMd/QUtiLXtlO2EKZoH/WuWj0HHkyNtWZxHyO8m+EgfXGlif2HokVEdWQ8?=
+ =?us-ascii?q?v9snU3WyHcfBQMbUXOlrvSjzE2zQdRSLwoT4CVGhawz8lG7C9rwRRu1pFaasRM?=
+ =?us-ascii?q?GHdldCes37EeK0KW8ywKYAHUUCy5Pc/Q4u8IsAz8nzFmEm5XuHzMHjVE/YRpx7?=
+ =?us-ascii?q?Z/N9XXrZ3dTdjREOEc5ocI+y4GLiOkOYtjnF76PyJKIs+A=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A2AjC+a2EZlq+c3kS2RMuSAqjBI4kLtp133Aq?=
+ =?us-ascii?q?2lEZdPU1SL39qynKppkmPHDP5gr5J0tLpTntAsi9qBDnhPtICOsqTNSftWDd0Q?=
+ =?us-ascii?q?PGEGgI1/qB/9SPIU3D398Y/aJhXow7M9foEGV95PyQ3CCIV/om3/mLmZrFudvj?=
+X-IronPort-AV: E=Sophos;i="5.88,320,1635177600"; 
+   d="scan'208";a="120913259"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 27 Jan 2022 20:41:01 +0800
+Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
+        by cn.fujitsu.com (Postfix) with ESMTP id ED70A4D169C7;
+        Thu, 27 Jan 2022 20:40:59 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Thu, 27 Jan 2022 20:41:01 +0800
+Received: from irides.mr.mr (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Thu, 27 Jan 2022 20:40:57 +0800
+From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
+        <nvdimm@lists.linux.dev>, <linux-mm@kvack.org>,
+        <linux-fsdevel@vger.kernel.org>
+CC:     <djwong@kernel.org>, <dan.j.williams@intel.com>,
+        <david@fromorbit.com>, <hch@infradead.org>, <jane.chu@oracle.com>
+Subject: [PATCH v10 0/9] fsdax: introduce fs query to support reflink
+Date:   Thu, 27 Jan 2022 20:40:49 +0800
+Message-ID: <20220127124058.1172422-1-ruansy.fnst@fujitsu.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1643029028-12710-3-git-send-email-anshuman.khandual@arm.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: ED70A4D169C7.A1DE6
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 06:26:39PM +0530, Anshuman Khandual wrote:
-> protection_map[] maps vm_flags access combinations into page protection
-> value as defined by the platform via __PXXX and __SXXX macros. The array
-> indices in protection_map[], represents vm_flags access combinations but
-> it's not very intuitive to derive. This makes it clear and explicit.
+This patchset is aimed to support shared pages tracking for fsdax.
 
-The protection_map is going to be removed in one of the next patches, why
-bother with this patch at all?
- 
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: linux-mm@kvack.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> ---
->  mm/mmap.c | 18 ++++++++++++++++--
->  1 file changed, 16 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index 1e8fdb0b51ed..254d716220df 100644
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -102,8 +102,22 @@ static void unmap_region(struct mm_struct *mm,
->   *								x: (yes) yes
->   */
->  pgprot_t protection_map[16] __ro_after_init = {
-> -	__P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
-> -	__S000, __S001, __S010, __S011, __S100, __S101, __S110, __S111
-> +	[VM_NONE]				= __P000,
-> +	[VM_READ]				= __P001,
-> +	[VM_WRITE]				= __P010,
-> +	[VM_READ|VM_WRITE]			= __P011,
-> +	[VM_EXEC]				= __P100,
-> +	[VM_EXEC|VM_READ]			= __P101,
-> +	[VM_EXEC|VM_WRITE]			= __P110,
-> +	[VM_EXEC|VM_READ|VM_WRITE]		= __P111,
-> +	[VM_SHARED]				= __S000,
-> +	[VM_SHARED|VM_READ]			= __S001,
-> +	[VM_SHARED|VM_WRITE]			= __S010,
-> +	[VM_SHARED|VM_READ|VM_WRITE]		= __S011,
-> +	[VM_SHARED|VM_EXEC]			= __S100,
-> +	[VM_SHARED|VM_READ|VM_EXEC]		= __S101,
-> +	[VM_SHARED|VM_WRITE|VM_EXEC]		= __S110,
-> +	[VM_SHARED|VM_READ|VM_WRITE|VM_EXEC]	= __S111
->  };
->  
->  #ifndef CONFIG_ARCH_HAS_FILTER_PGPROT
-> -- 
-> 2.25.1
-> 
-> 
+Changes since V9:
+  - Remove dax write/read lock patch
+  - Remove dax_lock_entry() in dax_lock_mapping_entry() and rename it to
+      dax_load_page()
+  - Wrap dax code in memory-failure.c with #if IS_ENABLED(CONFIG_FS_DAX)
+  - Wrap xfs_dax_failure_fn() with #if IS_ENABLED(CONFIG_MEMORY_FAILURE)
+  - Move PAGE_MAPPING_DAX_COW into page-flags.h
+
+This patchset moves owner tracking from dax_assocaite_entry() to pmem
+device driver, by introducing an interface ->memory_failure() for struct
+pagemap.  This interface is called by memory_failure() in mm, and
+implemented by pmem device.
+
+Then call holder operations to find the filesystem which the corrupted
+data located in, and call filesystem handler to track files or metadata
+associated with this page.
+
+Finally we are able to try to fix the corrupted data in filesystem and
+do other necessary processing, such as killing processes who are using
+the files affected.
+
+The call trace is like this:
+memory_failure()
+|* fsdax case
+|------------
+|pgmap->ops->memory_failure()      => pmem_pgmap_memory_failure()
+| dax_holder_notify_failure()      =>
+|  dax_device->holder_ops->notify_failure() =>
+|                                     - xfs_dax_notify_failure()
+|  |* xfs_dax_notify_failure()
+|  |--------------------------
+|  |   xfs_rmap_query_range()
+|  |    xfs_dax_failure_fn()
+|  |    * corrupted on metadata
+|  |       try to recover data, call xfs_force_shutdown()
+|  |    * corrupted on file data
+|  |       try to recover data, call mf_dax_kill_procs()
+|* normal case
+|-------------
+|mf_generic_kill_procs()
+
+==
+Shiyang Ruan (9):
+  dax: Introduce holder for dax_device
+  mm: factor helpers for memory_failure_dev_pagemap
+  pagemap,pmem: Introduce ->memory_failure()
+  fsdax: fix function description
+  fsdax: Introduce dax_load_page()
+  mm: move pgoff_address() to vma_pgoff_address()
+  mm: Introduce mf_dax_kill_procs() for fsdax case
+  xfs: Implement ->notify_failure() for XFS
+  fsdax: set a CoW flag when associate reflink mappings
+
+ drivers/dax/super.c         |  62 ++++++++++
+ drivers/nvdimm/pmem.c       |  16 +++
+ fs/dax.c                    | 123 +++++++++++++++----
+ fs/xfs/Makefile             |   1 +
+ fs/xfs/xfs_buf.c            |  12 ++
+ fs/xfs/xfs_fsops.c          |   3 +
+ fs/xfs/xfs_mount.h          |   1 +
+ fs/xfs/xfs_notify_failure.c | 222 ++++++++++++++++++++++++++++++++++
+ fs/xfs/xfs_notify_failure.h |  10 ++
+ include/linux/dax.h         |  37 ++++++
+ include/linux/memremap.h    |  12 ++
+ include/linux/mm.h          |  17 +++
+ include/linux/page-flags.h  |   6 +
+ mm/memory-failure.c         | 234 +++++++++++++++++++++++++-----------
+ 14 files changed, 666 insertions(+), 90 deletions(-)
+ create mode 100644 fs/xfs/xfs_notify_failure.c
+ create mode 100644 fs/xfs/xfs_notify_failure.h
 
 -- 
-Sincerely yours,
-Mike.
+2.34.1
+
+
+
