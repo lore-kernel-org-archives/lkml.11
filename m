@@ -2,114 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BC1FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:55:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4BE5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238520AbiA0Jzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 04:55:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:60502 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232315AbiA0JzZ (ORCPT
+        id S238351AbiA0Jz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 04:55:58 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:34638 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232024AbiA0Jz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 04:55:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643277325;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ayJC/AZO9vzgGtnHmUqrAsjgR30wt4COjGg6oQDHxO0=;
-        b=aPKLsa7zUMXolsLKrmUt3tzDuQkXlZvF1cFA4TD1w7mCFu/ddzGMoZpSJ42+IzBy2AYO6u
-        uWwFs6Ej4E0ZNv30fLfFIsm2+yonvRaj0eRvATxED+Dxa9s/maPbHvYaT2TL8VjY6O2zYh
-        60vHUq/It8vY1Bhnt6HUqpArpa27REg=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-275-ezjar76PMAiIy1sw3wnrjw-1; Thu, 27 Jan 2022 04:55:22 -0500
-X-MC-Unique: ezjar76PMAiIy1sw3wnrjw-1
-Received: by mail-wm1-f69.google.com with SMTP id bg32-20020a05600c3ca000b00349f2aca1beso1237337wmb.9
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 01:55:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=ayJC/AZO9vzgGtnHmUqrAsjgR30wt4COjGg6oQDHxO0=;
-        b=fKoJ5zSWTigN9AQAALgVGnqJV4C07sVT+n9f8wOPseWze7NhRGY+8nK0AkSQv8VXlW
-         U60T49UhFXh2fUJfRW1JcMbcPJRqumZ6wcpxAzym3Sh0BY6Jw1tdpzDlUAGtZmhv4KJg
-         E7Hv75BnZL4dwV5i0sIAP8SPhrgv8iI9GYa89QLAsTNRcXXWo/eKwqXYVr25lxSU7k7u
-         mctANaZWr7J+0lXHhkp39qufaDIdUeVtnt1eM+7UJSkw6gIAwjLDcNkMxqkWGKk6McdP
-         5eJZCuRWZkBsCZc8K1VyisEuFkliaGbX9s5A19a4pKtZOTxIeBLHTAfk72gNHEqVI2RA
-         pp3w==
-X-Gm-Message-State: AOAM5317rvmyTExypnj/P45ppcK20mrnWmTDMKTYWR7osIvAIM5IG5Qk
-        JceXapfqKXP9eH1AuinFSyGn1A8RsEWtVvebvled0DYP3f+xPzpzv9Ejobk4RaxniagyzYGJECd
-        tmZguGOf7kLFEq7lo50coJ7Vm
-X-Received: by 2002:adf:fd4e:: with SMTP id h14mr2208994wrs.675.1643277321621;
-        Thu, 27 Jan 2022 01:55:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxZjm99+TehRbfRz6MCxIEwSAqNIX73JIx0nKVcQ4IDxr+ai0NNDfqWzRX2Azp20cMyui99Gw==
-X-Received: by 2002:adf:fd4e:: with SMTP id h14mr2208981wrs.675.1643277321380;
-        Thu, 27 Jan 2022 01:55:21 -0800 (PST)
-Received: from ?IPV6:2003:cb:c70d:8300:4812:9d4f:6cd8:7f47? (p200300cbc70d830048129d4f6cd87f47.dip0.t-ipconnect.de. [2003:cb:c70d:8300:4812:9d4f:6cd8:7f47])
-        by smtp.gmail.com with ESMTPSA id e13sm1980242wrq.35.2022.01.27.01.55.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 01:55:20 -0800 (PST)
-Message-ID: <f65493d9-e46f-af9f-1895-1f5b546bb5ed@redhat.com>
-Date:   Thu, 27 Jan 2022 10:55:20 +0100
+        Thu, 27 Jan 2022 04:55:57 -0500
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20R9fFmi005515;
+        Thu, 27 Jan 2022 09:55:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=v7vgdFMmlLjZ//7aqE8miSDxEZzVBEmKPW6Ytz7CoCA=;
+ b=CkpaBU0nF1n6CcaTGsYEGLnPWEq2SaMOJKspqQWXrwpU9+j9pV1t4frd1lkaKKqUrPRf
+ DDcHBN7E8KFKo+MEf6GjvKvLNFDOtdSm1ZcgvVddnjdU55hu+A+2tejiXXLVkO4rsjnM
+ 3LejFkC4i+1byf2/4XrnfNmHJPZGUJKzKTypAfrqkse1cLHEqG94Lj2J36xi6/2X45TC
+ 4TrPbI8gWBHcX3FM1ZtyZiEVUVgIPxs7kPkpIJET598tqRguBYhcgODrJtlDttzx9ivl
+ QwzAM1Aeod6DftB8QU0smCfFfRrdIGqTl5WfhKB23SOCnkCuWG5KEoJEU6h1siKVIAx6 6Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dupt030cr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 09:55:56 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20R9j2Wq017096;
+        Thu, 27 Jan 2022 09:55:55 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dupt030ca-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 09:55:55 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20R9q24c019496;
+        Thu, 27 Jan 2022 09:55:53 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3dr9j9nwnq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 09:55:53 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20R9tlCX42008882
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 27 Jan 2022 09:55:47 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4CDE1AE04D;
+        Thu, 27 Jan 2022 09:55:47 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2497EAE055;
+        Thu, 27 Jan 2022 09:55:46 +0000 (GMT)
+Received: from [9.171.44.35] (unknown [9.171.44.35])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 27 Jan 2022 09:55:46 +0000 (GMT)
+Message-ID: <88d68802-56d5-849c-ae91-57c795d37250@linux.ibm.com>
+Date:   Thu, 27 Jan 2022 10:57:36 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] mm/mmzone.h: remove unused macros
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v2 07/30] s390/pci: externalize the SIC operation controls
+ and routine
 Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220127093210.62293-1-linmiaohe@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220127093210.62293-1-linmiaohe@huawei.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
+        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
+ <20220114203145.242984-8-mjrosato@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <20220114203145.242984-8-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ZFedqtx1C1NkDizt388mrvEXgpMwDMsN
+X-Proofpoint-ORIG-GUID: dqmFXFBGJwR-yL6zj2kWYrsVIvygMCIO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-27_02,2022-01-26_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ suspectscore=0 priorityscore=1501 clxscore=1015 phishscore=0
+ lowpriorityscore=0 mlxlogscore=999 impostorscore=0 adultscore=0
+ spamscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201270057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27.01.22 10:32, Miaohe Lin wrote:
-> Remove pgdat_page_nr, nid_page_nr and NODE_MEM_MAP. They are unused now.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  include/linux/mmzone.h | 7 -------
->  1 file changed, 7 deletions(-)
-> 
-> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-> index aed44e9b5d89..6c004256d943 100644
-> --- a/include/linux/mmzone.h
-> +++ b/include/linux/mmzone.h
-> @@ -920,12 +920,6 @@ typedef struct pglist_data {
->  
->  #define node_present_pages(nid)	(NODE_DATA(nid)->node_present_pages)
->  #define node_spanned_pages(nid)	(NODE_DATA(nid)->node_spanned_pages)
-> -#ifdef CONFIG_FLATMEM
-> -#define pgdat_page_nr(pgdat, pagenr)	((pgdat)->node_mem_map + (pagenr))
-> -#else
-> -#define pgdat_page_nr(pgdat, pagenr)	pfn_to_page((pgdat)->node_start_pfn + (pagenr))
-> -#endif
-> -#define nid_page_nr(nid, pagenr) 	pgdat_page_nr(NODE_DATA(nid),(pagenr))
->  
->  #define node_start_pfn(nid)	(NODE_DATA(nid)->node_start_pfn)
->  #define node_end_pfn(nid) pgdat_end_pfn(NODE_DATA(nid))
-> @@ -1101,7 +1095,6 @@ static inline struct pglist_data *NODE_DATA(int nid)
->  {
->  	return &contig_page_data;
->  }
-> -#define NODE_MEM_MAP(nid)	mem_map
->  
->  #else /* CONFIG_NUMA */
->  
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+
+On 1/14/22 21:31, Matthew Rosato wrote:
+> A subsequent patch will be issuing SIC from KVM -- export the necessary
+> routine and make the operation control definitions available from a header.
+> Because the routine will now be exported, let's rename __zpci_set_irq_ctrl
+> to zpci_set_irq_ctrl and get rid of the zero'd iib wrapper function of
+> the same name.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+
+Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+
+
+> ---
+>   arch/s390/include/asm/pci_insn.h | 17 +++++++++--------
+>   arch/s390/pci/pci_insn.c         |  3 ++-
+>   arch/s390/pci/pci_irq.c          | 26 ++++++++++++--------------
+>   3 files changed, 23 insertions(+), 23 deletions(-)
+> 
+> diff --git a/arch/s390/include/asm/pci_insn.h b/arch/s390/include/asm/pci_insn.h
+> index 61cf9531f68f..5331082fa516 100644
+> --- a/arch/s390/include/asm/pci_insn.h
+> +++ b/arch/s390/include/asm/pci_insn.h
+> @@ -98,6 +98,14 @@ struct zpci_fib {
+>   	u32 gd;
+>   } __packed __aligned(8);
+>   
+> +/* Set Interruption Controls Operation Controls  */
+> +#define	SIC_IRQ_MODE_ALL		0
+> +#define	SIC_IRQ_MODE_SINGLE		1
+> +#define	SIC_IRQ_MODE_DIRECT		4
+> +#define	SIC_IRQ_MODE_D_ALL		16
+> +#define	SIC_IRQ_MODE_D_SINGLE		17
+> +#define	SIC_IRQ_MODE_SET_CPU		18
+> +
+>   /* directed interruption information block */
+>   struct zpci_diib {
+>   	u32 : 1;
+> @@ -134,13 +142,6 @@ int __zpci_store(u64 data, u64 req, u64 offset);
+>   int zpci_store(const volatile void __iomem *addr, u64 data, unsigned long len);
+>   int __zpci_store_block(const u64 *data, u64 req, u64 offset);
+>   void zpci_barrier(void);
+> -int __zpci_set_irq_ctrl(u16 ctl, u8 isc, union zpci_sic_iib *iib);
+> -
+> -static inline int zpci_set_irq_ctrl(u16 ctl, u8 isc)
+> -{
+> -	union zpci_sic_iib iib = {{0}};
+> -
+> -	return __zpci_set_irq_ctrl(ctl, isc, &iib);
+> -}
+> +int zpci_set_irq_ctrl(u16 ctl, u8 isc, union zpci_sic_iib *iib);
+>   
+>   #endif
+> diff --git a/arch/s390/pci/pci_insn.c b/arch/s390/pci/pci_insn.c
+> index 4dd58b196cea..2a47b3936e44 100644
+> --- a/arch/s390/pci/pci_insn.c
+> +++ b/arch/s390/pci/pci_insn.c
+> @@ -97,7 +97,7 @@ int zpci_refresh_trans(u64 fn, u64 addr, u64 range)
+>   }
+>   
+>   /* Set Interruption Controls */
+> -int __zpci_set_irq_ctrl(u16 ctl, u8 isc, union zpci_sic_iib *iib)
+> +int zpci_set_irq_ctrl(u16 ctl, u8 isc, union zpci_sic_iib *iib)
+>   {
+>   	if (!test_facility(72))
+>   		return -EIO;
+> @@ -108,6 +108,7 @@ int __zpci_set_irq_ctrl(u16 ctl, u8 isc, union zpci_sic_iib *iib)
+>   
+>   	return 0;
+>   }
+> +EXPORT_SYMBOL_GPL(zpci_set_irq_ctrl);
+>   
+>   /* PCI Load */
+>   static inline int ____pcilg(u64 *data, u64 req, u64 offset, u8 *status)
+> diff --git a/arch/s390/pci/pci_irq.c b/arch/s390/pci/pci_irq.c
+> index 0d0a02a9fbbf..2f675355fd0c 100644
+> --- a/arch/s390/pci/pci_irq.c
+> +++ b/arch/s390/pci/pci_irq.c
+> @@ -15,13 +15,6 @@
+>   
+>   static enum {FLOATING, DIRECTED} irq_delivery;
+>   
+> -#define	SIC_IRQ_MODE_ALL		0
+> -#define	SIC_IRQ_MODE_SINGLE		1
+> -#define	SIC_IRQ_MODE_DIRECT		4
+> -#define	SIC_IRQ_MODE_D_ALL		16
+> -#define	SIC_IRQ_MODE_D_SINGLE		17
+> -#define	SIC_IRQ_MODE_SET_CPU		18
+> -
+>   /*
+>    * summary bit vector
+>    * FLOATING - summary bit per function
+> @@ -154,6 +147,7 @@ static struct irq_chip zpci_irq_chip = {
+>   static void zpci_handle_cpu_local_irq(bool rescan)
+>   {
+>   	struct airq_iv *dibv = zpci_ibv[smp_processor_id()];
+> +	union zpci_sic_iib iib = {{0}};
+
+
+
+>   	unsigned long bit;
+>   	int irqs_on = 0;
+>   
+> @@ -165,7 +159,7 @@ static void zpci_handle_cpu_local_irq(bool rescan)
+>   				/* End of second scan with interrupts on. */
+>   				break;
+>   			/* First scan complete, reenable interrupts. */
+> -			if (zpci_set_irq_ctrl(SIC_IRQ_MODE_D_SINGLE, PCI_ISC))
+> +			if (zpci_set_irq_ctrl(SIC_IRQ_MODE_D_SINGLE, PCI_ISC, &iib))
+>   				break;
+>   			bit = 0;
+>   			continue;
+> @@ -193,6 +187,7 @@ static void zpci_handle_remote_irq(void *data)
+>   static void zpci_handle_fallback_irq(void)
+>   {
+>   	struct cpu_irq_data *cpu_data;
+> +	union zpci_sic_iib iib = {{0}};
+>   	unsigned long cpu;
+>   	int irqs_on = 0;
+>   
+> @@ -203,7 +198,7 @@ static void zpci_handle_fallback_irq(void)
+>   				/* End of second scan with interrupts on. */
+>   				break;
+>   			/* First scan complete, reenable interrupts. */
+> -			if (zpci_set_irq_ctrl(SIC_IRQ_MODE_SINGLE, PCI_ISC))
+> +			if (zpci_set_irq_ctrl(SIC_IRQ_MODE_SINGLE, PCI_ISC, &iib))
+>   				break;
+>   			cpu = 0;
+>   			continue;
+> @@ -234,6 +229,7 @@ static void zpci_directed_irq_handler(struct airq_struct *airq,
+>   static void zpci_floating_irq_handler(struct airq_struct *airq,
+>   				      struct tpi_info *tpi_info)
+>   {
+> +	union zpci_sic_iib iib = {{0}};
+>   	unsigned long si, ai;
+>   	struct airq_iv *aibv;
+>   	int irqs_on = 0;
+> @@ -247,7 +243,7 @@ static void zpci_floating_irq_handler(struct airq_struct *airq,
+>   				/* End of second scan with interrupts on. */
+>   				break;
+>   			/* First scan complete, reenable interrupts. */
+> -			if (zpci_set_irq_ctrl(SIC_IRQ_MODE_SINGLE, PCI_ISC))
+> +			if (zpci_set_irq_ctrl(SIC_IRQ_MODE_SINGLE, PCI_ISC, &iib))
+>   				break;
+>   			si = 0;
+>   			continue;
+> @@ -407,11 +403,12 @@ static struct airq_struct zpci_airq = {
+>   static void __init cpu_enable_directed_irq(void *unused)
+>   {
+>   	union zpci_sic_iib iib = {{0}};
+> +	union zpci_sic_iib ziib = {{0}};
+>   
+>   	iib.cdiib.dibv_addr = (u64) zpci_ibv[smp_processor_id()]->vector;
+>   
+> -	__zpci_set_irq_ctrl(SIC_IRQ_MODE_SET_CPU, 0, &iib);
+> -	zpci_set_irq_ctrl(SIC_IRQ_MODE_D_SINGLE, PCI_ISC);
+> +	zpci_set_irq_ctrl(SIC_IRQ_MODE_SET_CPU, 0, &iib);
+> +	zpci_set_irq_ctrl(SIC_IRQ_MODE_D_SINGLE, PCI_ISC, &ziib);
+>   }
+>   
+>   static int __init zpci_directed_irq_init(void)
+> @@ -426,7 +423,7 @@ static int __init zpci_directed_irq_init(void)
+>   	iib.diib.isc = PCI_ISC;
+>   	iib.diib.nr_cpus = num_possible_cpus();
+>   	iib.diib.disb_addr = virt_to_phys(zpci_sbv->vector);
+> -	__zpci_set_irq_ctrl(SIC_IRQ_MODE_DIRECT, 0, &iib);
+> +	zpci_set_irq_ctrl(SIC_IRQ_MODE_DIRECT, 0, &iib);
+>   
+>   	zpci_ibv = kcalloc(num_possible_cpus(), sizeof(*zpci_ibv),
+>   			   GFP_KERNEL);
+> @@ -471,6 +468,7 @@ static int __init zpci_floating_irq_init(void)
+>   
+>   int __init zpci_irq_init(void)
+>   {
+> +	union zpci_sic_iib iib = {{0}};
+>   	int rc;
+>   
+>   	irq_delivery = sclp.has_dirq ? DIRECTED : FLOATING;
+> @@ -502,7 +500,7 @@ int __init zpci_irq_init(void)
+>   	 * Enable floating IRQs (with suppression after one IRQ). When using
+>   	 * directed IRQs this enables the fallback path.
+>   	 */
+> -	zpci_set_irq_ctrl(SIC_IRQ_MODE_SINGLE, PCI_ISC);
+> +	zpci_set_irq_ctrl(SIC_IRQ_MODE_SINGLE, PCI_ISC, &iib);
+>   
+>   	return 0;
+>   out_airq:
+> 
 
 -- 
-Thanks,
-
-David / dhildenb
-
+Pierre Morel
+IBM Lab Boeblingen
