@@ -2,72 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E7FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C72C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238273AbiA0JJK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 04:09:10 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:34474 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238246AbiA0JJI (ORCPT
+        id S238264AbiA0JLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 04:11:46 -0500
+Received: from mail1.bemta34.messagelabs.com ([195.245.231.2]:11426 "EHLO
+        mail1.bemta34.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231837AbiA0JLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 04:09:08 -0500
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643274547;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zUdeV9VjSeLqvfWhftH1z7hD4K58sO8RSwPTTMJM3Go=;
-        b=Dyq2k1eq2r2miWQ+6o64QEPL3eIhCxMRbJeJeM9mKnQgdwSrNkz7Zkq049MzNSApaGy/kR
-        Ih5ovkuqy6ohDfaZQ8d26QPWbH1LkdakRw8+Y1kQmhcihb85eEyPntqzpe6zDIbzz3r4oK
-        bKyh8De2XU6D7EOdbAYPt/Cex5b8sz4gySs1kfRYu/ztD9HCxLjzhQb3mjZnk6f+AGsApH
-        TJhGI8CNaUUvCcu9CpEsLfwS2mhnC66GJD5th1KzN6jbGiOsioshsQX9c/SmEM3tkyX3Sm
-        CjDc8fOsP6R4HH64o+c2snZEjszI4yB8eJMVEtWpNyX2AFRUhc+3WYrsusRmTw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643274547;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zUdeV9VjSeLqvfWhftH1z7hD4K58sO8RSwPTTMJM3Go=;
-        b=Uc3Xn44AI9Oo7QLfIRGKvNOYywHexzL8g5BlbiiVILKLR3lFv00BegohSvfKW5rFmz8vzz
-        LlvOlmHfHaWSggBg==
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Stephen Brennan <stephen.s.brennan@oracle.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] printk: disable optimistic spin during panic
-In-Reply-To: <YfJFjHdg/khNXiRd@google.com>
-References: <20220121190222.572694-1-stephen.s.brennan@oracle.com>
- <20220121190222.572694-3-stephen.s.brennan@oracle.com>
- <YfER7tlXZZpX94c9@google.com> <87r18un83x.fsf@jogness.linutronix.de>
- <YfEdNKWI7GqKr9P/@google.com> <87tudqwegy.fsf@stepbren-lnx.us.oracle.com>
- <YfJFjHdg/khNXiRd@google.com>
-Date:   Thu, 27 Jan 2022 10:15:05 +0106
-Message-ID: <87ilu5pmtq.fsf@jogness.linutronix.de>
+        Thu, 27 Jan 2022 04:11:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fujitsu.com;
+        s=170520fj; t=1643274702; i=@fujitsu.com;
+        bh=TTJx396secFY4TWVsYG79piD7SwRnYamK3ghI0u+wu8=;
+        h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+         MIME-Version:Content-Type;
+        b=J62BY87SA+i4WxUnhEk4b8lgokPBfHhS5tDEm0svJES832gE1yMHoNM8B8y8oU37j
+         7IxVsJ98E3rYRaTD/u4P4OI4Cd3M90uRSo5x0yljSvgnKrWU8+SOyQZSyUFI6uE6aZ
+         1uxfwbdTPQLVOMR3qJZpFKXQvt+pWWDgBzbqX8W5H/wUOZTOR8Fr21imwe5w/BmGzN
+         CejNZcKAqhA5eOVpY+DCa6eAz3LFnbPTxbN6bALbujOdXY9XGJfo/FqcwJdb17ssBO
+         6sUR5mnH0eCHYmGD4Q860RDas2QihhnTvipMU6tHdodQsqZJKalUOpLMZqag4bAZDN
+         hbUrj1CjA8rjQ==
+Received: from [100.115.34.7] (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256 bits))
+        by server-2.bemta.az-a.eu-west-2.aws.ess.symcld.net id 91/4A-12680-EC162F16; Thu, 27 Jan 2022 09:11:42 +0000
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMIsWRWlGSWpSXmKPExsViZ8MRons28VO
+  iwf7v2haXd81hs5h+5z2bxa1P/BY/bt1gsdg7fRmrA6vHnWt72Dz2z13D7nFmwRF2j8+b5AJY
+  olgz85LyKxJYM3p3rWUsmC9U8WTDVaYGxmn8XYxcHEICLxklmmbvYIZw9jBK7Fr1k72LkZODT
+  UBT4lnnAmYQW0TASWLj1W5GEJtZoE5i077PbF2MHBzCAn4SDWtUQEwWAVWJfRsSQSp4BTwkvv
+  x9zAZiSwgoSEx5+B5sCqeAp8S9vafZIVa1MEr0tncwQzQISpyc+YQFYryExMEXL5ghmhUlLnV
+  8Y4SwKyRmzWpjmsDIPwtJyywkLQsYmVYxWicVZaZnlOQmZuboGhoY6BoamuoaW+oaGRjoJVbp
+  JuqlluqWpxaX6BrpJZYX66UWF+sVV+Ym56To5aWWbGIEhnVKsfqJHYxPV/7UO8QoycGkJMq7x
+  PxTohBfUn5KZUZicUZ8UWlOavEhRhkODiUJ3vxYoJxgUWp6akVaZg4wxmDSEhw8SiK8fglAad
+  7igsTc4sx0iNQpRkUpcV43kIQASCKjNA+uDRbXlxhlpYR5GRkYGIR4ClKLcjNLUOVfMYpzMCo
+  J86aBTOHJzCuBm/4KaDET0OLf59+BLC5JREhJNTApWa9onJqzkXll16K3Ux34jtYt5n3SUHm4
+  j3WjqneDcFjpwqIg9xdeJwW+1boniojNK2Yw3ZazvDUwzzJ7x4dNJSIar4r+8adXbFub8XyF2
+  c5CmTWW9wRNS2dleq/9etdu4r/MW6pudzY0uqi7LvOZe3Zv7iFRrqWTkzOurm3fzW6r6MB1P/
+  Dsue2nujua9rEL/ea/UNZ1NElGs2e1bFXg/j1zyz47Ouu+PfVIy2NTl079NOHjZ/sOp2/9v9+
+  R87v97Hm7d9abem+TiBf4NulTpluHJ1eD66QtXxU8WVaJrBQqvHbAaAdH8awDi9eHJMhcDf8c
+  r8U2b4V33m8HzStt87XWhJv0ancF5obdN1FiKc5INNRiLipOBACQ3EBnZgMAAA==
+X-Env-Sender: xuyang2018.jy@fujitsu.com
+X-Msg-Ref: server-24.tower-571.messagelabs.com!1643274701!215!1
+X-Originating-IP: [62.60.8.84]
+X-SYMC-ESS-Client-Auth: outbound-route-from=pass
+X-StarScan-Received: 
+X-StarScan-Version: 9.81.7; banners=-,-,-
+X-VirusChecked: Checked
+Received: (qmail 28723 invoked from network); 27 Jan 2022 09:11:41 -0000
+Received: from unknown (HELO mailhost3.uk.fujitsu.com) (62.60.8.84)
+  by server-24.tower-571.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 27 Jan 2022 09:11:41 -0000
+Received: from R01UKEXCASM126.r01.fujitsu.local ([10.183.43.178])
+        by mailhost3.uk.fujitsu.com (8.14.5/8.14.5) with ESMTP id 20R9BXxU019758
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=FAIL);
+        Thu, 27 Jan 2022 09:11:41 GMT
+Received: from localhost.localdomain (10.167.220.84) by
+ R01UKEXCASM126.r01.fujitsu.local (10.183.43.178) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.26; Thu, 27 Jan 2022 09:11:36 +0000
+From:   Yang Xu <xuyang2018.jy@fujitsu.com>
+To:     <linux-kselftest@vger.kernel.org>, <skhan@linuxfoundation.org>
+CC:     <linux-kernel@vger.kernel.org>, <naresh.kamboju@linaro.org>,
+        <pvorel@suse.cz>, Yang Xu <xuyang2018.jy@fujitsu.com>
+Subject: [PATCH v2 2/3] selftests/zram01.sh: Fix compression ratio calculation
+Date:   Thu, 27 Jan 2022 17:11:36 +0800
+Message-ID: <1643274697-3393-2-git-send-email-xuyang2018.jy@fujitsu.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1643274697-3393-1-git-send-email-xuyang2018.jy@fujitsu.com>
+References: <590c1f1c-2da1-583a-d055-83c15969cf80@linuxfoundation.org>
+ <1643274697-3393-1-git-send-email-xuyang2018.jy@fujitsu.com>
 MIME-Version: 1.0
 Content-Type: text/plain
+X-Originating-IP: [10.167.220.84]
+X-ClientProxiedBy: G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) To
+ R01UKEXCASM126.r01.fujitsu.local (10.183.43.178)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-27, Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
-> Right. So I also thought about placing panic_in_progress() somewhere in
-> console_trylock() and make it fail for anything that is not a panic
-> CPU.
+zram01 uses `free -m` to measure zram memory usage. The results are no
+sense because they are polluted by all running processes on the system.
 
-I think this is a good idea and console_trylock() is the correct place
-for that.
+We Should only calculate the free memory delta for the current process.
+So use the third field of /sys/block/zram<id>/mm_stat to measure memory
+usage instead. The file is available since kernel 4.1.
 
-> Back in the days we also had this idea of "detaching" non-panic CPUs from
-> printk() by overwriting their printk function pointers.
+orig_data_size(first): uncompressed size of data stored in this disk.
+compr_data_size(second): compressed size of data stored in this disk
+mem_used_total(third): the amount of memory allocated for this disk
 
-We need to keep in mind that printk() is no longer the problem. The
-records are stored locklessly. The problem is the
-console_trylock()/console_unlock() within vprintk_emit(). IMHO adding a
-panic check in console_trylock() should solve that race sufficiently.
+Also remove useless zram cleanup call in zram_fill_fs and so we don't
+need to cleanup zram twice if fails.
 
-John
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+---
+fix this ie the fowlloing ltp patch does
+https://github.com/linux-test-project/ltp/commit/7310e235
+ tools/testing/selftests/zram/zram01.sh | 30 +++++++-------------------
+ 1 file changed, 8 insertions(+), 22 deletions(-)
+
+diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
+index 114863d9fb87..e9e9eb777e2c 100755
+--- a/tools/testing/selftests/zram/zram01.sh
++++ b/tools/testing/selftests/zram/zram01.sh
+@@ -33,8 +33,6 @@ zram_algs="lzo"
+ 
+ zram_fill_fs()
+ {
+-	local mem_free0=$(free -m | awk 'NR==2 {print $4}')
+-
+ 	for i in $(seq 0 $(($dev_num - 1))); do
+ 		echo "fill zram$i..."
+ 		local b=0
+@@ -45,29 +43,17 @@ zram_fill_fs()
+ 			b=$(($b + 1))
+ 		done
+ 		echo "zram$i can be filled with '$b' KB"
+-	done
+ 
+-	local mem_free1=$(free -m | awk 'NR==2 {print $4}')
+-	local used_mem=$(($mem_free0 - $mem_free1))
++		local mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
++		local v=$((100 * 1024 * $b / $mem_used_total))
++		if [ "$v" -lt 100 ]; then
++			 echo "FAIL compression ratio: 0.$v:1"
++			 ERR_CODE=-1
++			 return
++		fi
+ 
+-	local total_size=0
+-	for sm in $zram_sizes; do
+-		local s=$(echo $sm | sed 's/M//')
+-		total_size=$(($total_size + $s))
++		echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
+ 	done
+-
+-	echo "zram used ${used_mem}M, zram disk sizes ${total_size}M"
+-
+-	local v=$((100 * $total_size / $used_mem))
+-
+-	if [ "$v" -lt 100 ]; then
+-		echo "FAIL compression ratio: 0.$v:1"
+-		ERR_CODE=-1
+-		zram_cleanup
+-		return
+-	fi
+-
+-	echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
+ }
+ 
+ check_prereqs
+-- 
+2.23.0
+
