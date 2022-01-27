@@ -2,139 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D39A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ECA2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241375AbiA0MmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:42:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241403AbiA0MmS (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:42:18 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB4AC061748;
-        Thu, 27 Jan 2022 04:42:18 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id d15-20020a17090a110f00b001b4e7d27474so2826678pja.2;
-        Thu, 27 Jan 2022 04:42:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=65lHAvgIrvaTDpQ8E/8HtbPHAXdF5rPPGyXj5G9Napk=;
-        b=m5J49hSw3xUMpmLDf2fGSGxn0Q5aRF+lgicWZiT0ciapljFaf3uFyfr3KGlNMEzvMU
-         6HoVCtvRqf/ZO9VNeQM33Giktu8Ps6mZ+LRhzrs1yraKtt+HdckINvUVNFf/LCcGF8V6
-         YsvjpvUO/M/yek54njRaDuCT3kIPmEvS1uHqe5RNdkA3sW8au6yjnodbmd1gP1gAe6wS
-         yMvdsjfdnHfg8tXckyudtjcLNKUjHJXWHo5mKRAJLD6HSCJ87Si3yGRmMIdve5e+wDOc
-         oNd185layb+NCUlQhllLguOuaoLe51JQRXFcujR4pBxsf8Fbh09BESiSppD24VrsyPu8
-         FIKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=65lHAvgIrvaTDpQ8E/8HtbPHAXdF5rPPGyXj5G9Napk=;
-        b=E+eweg//mN8euUx4n7EXrPCbum2WgLIDp8LtywiT6TumlMXF4/9QWoUPg+bvwQodcr
-         OzT8AgcFaW1LvBkeprDaUNgA5gi9ZFnqoXcpt7zXRqaviX5QBbJD5N6Igl2cnfl1pD9F
-         epLUfWe7l1+tN1OcKRuvQ2mD2FhPMl9nz1vfUlvaz/Ak8pOALkqsgba66b1tDBP/XTTq
-         HU+fFj80ejhvBVF6QDeMkksyNraEMlA4XopVG1sldGwhy1ZR+fFjTPxnF3wRTyGP0yBp
-         9wOher9lMcBtXjcCowMa5nzL4qSh/swyOVeShdRbgG4cmypRZAQ3o1kXaFoM8WHN4Pcv
-         ZqsA==
-X-Gm-Message-State: AOAM531w3TcP53rqce+J3A0EBNvIYo84QfYEXKaTuYKvadd7P7jF6aJ1
-        lSlSaewlD7zUqCAF9S0M2Y4=
-X-Google-Smtp-Source: ABdhPJwTsY+xzKtPDG+leiEAflZIAbiOUmbhEMGb937hqpADqlAhicEQTyVFFRJGC6s3+v4DBGpGYA==
-X-Received: by 2002:a17:902:9306:: with SMTP id bc6mr3266618plb.93.1643287337888;
-        Thu, 27 Jan 2022 04:42:17 -0800 (PST)
-Received: from localhost.localdomain ([2400:2410:93a3:bc00:d205:ec9:b1c6:b9ee])
-        by smtp.gmail.com with ESMTPSA id m38sm19071298pgl.64.2022.01.27.04.42.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 04:42:17 -0800 (PST)
-From:   Akira Kawata <akirakawata1@gmail.com>
-To:     akpm@linux-foundation.org, adobriyan@gmail.com,
-        viro@zeniv.linux.org.uk, keescook@chromium.org,
-        linux-fsdevel@vger.kernel.org, lukas.bulwahn@gmail.com
-Cc:     akirakawata1@gmail.com, Eric Biederman <ebiederm@xmission.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v5 2/2] fs/binfmt_elf: Refactor load_elf_binary function
-Date:   Thu, 27 Jan 2022 21:40:17 +0900
-Message-Id: <20220127124014.338760-3-akirakawata1@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220127124014.338760-1-akirakawata1@gmail.com>
-References: <20220127124014.338760-1-akirakawata1@gmail.com>
+        id S236778AbiA0Mmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:42:40 -0500
+Received: from foss.arm.com ([217.140.110.172]:59462 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241308AbiA0Mmi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 07:42:38 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D54661063;
+        Thu, 27 Jan 2022 04:42:37 -0800 (PST)
+Received: from [10.57.68.47] (unknown [10.57.68.47])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DA5D93F7D8;
+        Thu, 27 Jan 2022 04:42:36 -0800 (PST)
+Message-ID: <3f6df255-0a04-e630-e8cb-8407a704acb3@arm.com>
+Date:   Thu, 27 Jan 2022 12:42:31 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH net-next] nfp: nsp: Simplify array allocation
+Content-Language: en-GB
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, oss-drivers@corigine.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <af578bd3eb471b9613bcba7f714cca7e297a4620.1643214385.git.robin.murphy@arm.com>
+ <20220127090636.GA21279@corigine.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220127090636.GA21279@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I delete load_addr because it is not used anymore. And I rename
-load_addr_set to first_pt_load because it is used only to capture the
-first iteration of the loop.
+On 2022-01-27 09:06, Simon Horman wrote:
+> On Wed, Jan 26, 2022 at 04:30:33PM +0000, Robin Murphy wrote:
+>> Prefer kcalloc() to kzalloc(array_size()) for allocating an array.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> 
+> Hi Robin,
+> 
+> thanks for the cleanup.
+> 
+> One minor nit: I think "nfp: " would be a slightly more normal prefix
+> than "nfp: nsp: ".
 
-Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
-Acked-by: Kees Cook <keescook@chromium.org>
----
- fs/binfmt_elf.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+Ah, OK - from the git history it seemed about 50/50 one way or the 
+other, so I guessed at the one that looked more specific to this 
+particular file. I ran into this little anti-pattern in code I was 
+working on, and this was the only other instance that a quick grep 
+turned up so I figured I may as well fix it too.
 
-diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-index d120ab03795f..3218ebfde409 100644
---- a/fs/binfmt_elf.c
-+++ b/fs/binfmt_elf.c
-@@ -822,8 +822,8 @@ static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
- static int load_elf_binary(struct linux_binprm *bprm)
- {
- 	struct file *interpreter = NULL; /* to shut gcc up */
--	unsigned long load_addr, load_bias = 0, phdr_addr = 0;
--	int load_addr_set = 0;
-+	unsigned long load_bias = 0, phdr_addr = 0;
-+	int first_pt_load = 1;
- 	unsigned long error;
- 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
- 	struct elf_phdr *elf_property_phdata = NULL;
-@@ -1073,12 +1073,12 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 
- 		vaddr = elf_ppnt->p_vaddr;
- 		/*
--		 * The first time through the loop, load_addr_set is false:
-+		 * The first time through the loop, first_pt_load is true:
- 		 * layout will be calculated. Once set, use MAP_FIXED since
- 		 * we know we've already safely mapped the entire region with
- 		 * MAP_FIXED_NOREPLACE in the once-per-binary logic following.
- 		 */
--		if (load_addr_set) {
-+		if (!first_pt_load) {
- 			elf_flags |= MAP_FIXED;
- 		} else if (elf_ex->e_type == ET_EXEC) {
- 			/*
-@@ -1138,10 +1138,10 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 
- 		/*
- 		 * Calculate the entire size of the ELF mapping (total_size).
--		 * (Note that load_addr_set is set to true later once the
-+		 * (Note that first_pt_load is set to false later once the
- 		 * initial mapping is performed.)
- 		 */
--		if (!load_addr_set) {
-+		if (first_pt_load) {
- 			total_size = total_mapping_size(elf_phdata,
- 							elf_ex->e_phnum);
- 			if (!total_size) {
-@@ -1158,13 +1158,11 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 			goto out_free_dentry;
- 		}
- 
--		if (!load_addr_set) {
--			load_addr_set = 1;
--			load_addr = (elf_ppnt->p_vaddr - elf_ppnt->p_offset);
-+		if (first_pt_load) {
-+			first_pt_load = 0;
- 			if (elf_ex->e_type == ET_DYN) {
- 				load_bias += error -
- 				             ELF_PAGESTART(load_bias + vaddr);
--				load_addr += load_bias;
- 				reloc_func_desc = load_bias;
- 			}
- 		}
--- 
-2.25.1
+> That notwithstanding,
+> 
+> Acked-by: Simon Horman <simon.horman@corigine.com>
 
+Thanks!
+Robin.
+
+>> ---
+>>   drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.c
+>> index 10e7d8b21c46..730fea214b8a 100644
+>> --- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.c
+>> +++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.c
+>> @@ -513,7 +513,7 @@ nfp_nsp_command_buf_dma_sg(struct nfp_nsp *nsp,
+>>   	dma_size = BIT_ULL(dma_order);
+>>   	nseg = DIV_ROUND_UP(max_size, chunk_size);
+>>   
+>> -	chunks = kzalloc(array_size(sizeof(*chunks), nseg), GFP_KERNEL);
+>> +	chunks = kcalloc(nseg, sizeof(*chunks), GFP_KERNEL);
+>>   	if (!chunks)
+>>   		return -ENOMEM;
+>>   
+>> -- 
+>> 2.28.0.dirty
+>>
