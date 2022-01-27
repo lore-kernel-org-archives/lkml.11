@@ -2,92 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26300C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79118C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244606AbiA0RWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:22:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33762 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244587AbiA0RVo (ORCPT
+        id S244542AbiA0RWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:22:22 -0500
+Received: from mx0a-002e3701.pphosted.com ([148.163.147.86]:15312 "EHLO
+        mx0a-002e3701.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244634AbiA0RWH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:21:44 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B71C06174A;
-        Thu, 27 Jan 2022 09:21:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=++lt+r3Y4bab0BW17JDv/wIUj9g0zt5v7cL/jioKeD0=; b=czZbjO7aOmG9ULVsiPLq0AKYyk
-        8qBtfGEiLrKZBGqIHHOzsEZA2c5rbVMKc5G6FbwhDyE3oV4TBssSL9yj5tfHR1ObUh+x1o9qglJ1V
-        mYCQ0I0lkGHUl7RaK9paMq7G66fkz7KefVBUqlvb2qpCKTUjRsRGpoHk1LF2RYE4UsX1g3j+Hgfpf
-        ytc9McdcWB8PJpHiZOCUGw1lGLIkgQuxBi4GMoW3NCXa3PmW9aXD7CjbS1M1OuH7FQvpno3S4L8U2
-        DFszPJcNd4jvHawf813oPG/SoUqbSxiZvXuzF5+IgrcHre7f/D6/fFV7wF0NbM2lPnuZNZF4PA5uT
-        zuGNJhgQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nD8Sd-005Snl-3S; Thu, 27 Jan 2022 17:21:27 +0000
-Message-ID: <1e2e99f6-e9bf-7d93-9629-3d70275c77f4@infradead.org>
-Date:   Thu, 27 Jan 2022 09:21:21 -0800
+        Thu, 27 Jan 2022 12:22:07 -0500
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20RFPKWo009268;
+        Thu, 27 Jan 2022 17:20:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pps0720; bh=QpjO5xsD8YzBkAUFyLkFIF/TwoWy4yKVLopWUDETO1c=;
+ b=TfSONXEW9t4QqV2yAGRvk+7WVtGHYpojRLOmC3zzrxVcl9eU6Jnj5ogsw8bPXyjDKx7G
+ smfKrSw9yCUIxqAPr+ELIYEpSLwimVT92TEOHKuKpMTgTQLYlTE+nlMryxrBJuh3tNsr
+ YW0wrKI1sJkYjcP1QqL057GxawcNCtgHD9ABhDPTROlycSKcMxoMmGqWB4xjXffnZWNG
+ bWErM5S7RDeGTstpyl4znPKSSQbs8SQwXLQg9tglWFxSi5OC4hr83Aj6DDenBHhnizhs
+ IjiAzmiR8BCBTPists1F1QNNCs26hqADLiKTER2GJMaJGDNoMRF/7Y+NHqvIx6xw79AZ XQ== 
+Received: from g2t2354.austin.hpe.com (g2t2354.austin.hpe.com [15.233.44.27])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3duprgw0fm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 17:20:43 +0000
+Received: from g2t2360.austin.hpecorp.net (g2t2360.austin.hpecorp.net [16.196.225.135])
+        by g2t2354.austin.hpe.com (Postfix) with ESMTP id 6D397C5;
+        Thu, 27 Jan 2022 17:20:40 +0000 (UTC)
+Received: from swahl-home.5wahls.com (unknown [16.99.224.14])
+        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id 96FDF37;
+        Thu, 27 Jan 2022 17:20:33 +0000 (UTC)
+Date:   Thu, 27 Jan 2022 11:20:33 -0600
+From:   Steve Wahl <steve.wahl@hpe.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Karol Herbst <karolherbst@gmail.com>,
+        Pekka Paalanen <ppaalanen@gmail.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Steve Wahl <steve.wahl@hpe.com>,
+        Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>, x86@kernel.org,
+        nouveau@lists.freedesktop.org, platform-driver-x86@vger.kernel.org
+Subject: Re: [PATCH 15/54] arch/x86: replace cpumask_weight with
+ cpumask_empty where appropriate
+Message-ID: <YfLUYSh8Qyv6wEHd@swahl-home.5wahls.com>
+References: <20220123183925.1052919-1-yury.norov@gmail.com>
+ <20220123183925.1052919-16-yury.norov@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/1] docs: process: submitting-patches: Clarify the
- Reported-by usage
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Florian Eckert <fe@dev.tdt.de>
-References: <20220127163258.48482-1-andriy.shevchenko@linux.intel.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220127163258.48482-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220123183925.1052919-16-yury.norov@gmail.com>
+X-Proofpoint-ORIG-GUID: d1Kt8X-N0PUO31rBEkE346Fy5PGO5vIJ
+X-Proofpoint-GUID: d1Kt8X-N0PUO31rBEkE346Fy5PGO5vIJ
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-27_03,2022-01-27_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ priorityscore=1501 impostorscore=0 clxscore=1011 bulkscore=0 spamscore=0
+ malwarescore=0 lowpriorityscore=0 mlxscore=0 mlxlogscore=626 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201270102
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
 
-
-On 1/27/22 08:32, Andy Shevchenko wrote:
-> It's unclear from "Submitting Patches" documentation that Reported-by
-> is not supposed to be used against new features. (It's more clear
-> in the section 5.4 "Patch formatting and changelogs" of the "A guide
-> to the Kernel Development Process", where it suggests that change
-> should fix something existing in the kernel. Clarify the Reported-by
-> usage in the "Submitting Patches".
+On Sun, Jan 23, 2022 at 10:38:46AM -0800, Yury Norov wrote:
+> In some cases, arch/x86 code calls cpumask_weight() to check if any bit of
+> a given cpumask is set. We can do it more efficiently with cpumask_empty()
+> because cpumask_empty() stops traversing the cpumask as soon as it finds
+> first set bit, while cpumask_weight() counts all bits unconditionally.
 > 
-> Reported-by: Florian Eckert <fe@dev.tdt.de>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
 > ---
-> v2: rephrased as suggested by Jonathan
->  Documentation/process/submitting-patches.rst | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  arch/x86/kernel/cpu/resctrl/rdtgroup.c | 14 +++++++-------
+>  arch/x86/mm/mmio-mod.c                 |  2 +-
+>  arch/x86/platform/uv/uv_nmi.c          |  2 +-
+>  3 files changed, 9 insertions(+), 9 deletions(-)
 > 
-> diff --git a/Documentation/process/submitting-patches.rst b/Documentation/process/submitting-patches.rst
-> index 31ea120ce531..fb496b2ebfd3 100644
-> --- a/Documentation/process/submitting-patches.rst
-> +++ b/Documentation/process/submitting-patches.rst
-> @@ -495,7 +495,8 @@ Using Reported-by:, Tested-by:, Reviewed-by:, Suggested-by: and Fixes:
->  The Reported-by tag gives credit to people who find bugs and report them and it
->  hopefully inspires them to help us again in the future.  Please note that if
->  the bug was reported in private, then ask for permission first before using the
-> -Reported-by tag.
-> +Reported-by tag. The tag is intended for bugs; please do not use it to credit
-> +feature requests.
+> diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+> index b57b3db9a6a7..e23ff03290b8 100644
+> --- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+> +++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+> @@ -341,14 +341,14 @@ static int cpus_mon_write(struct rdtgroup *rdtgrp, cpumask_var_t newmask,
 >  
-
-LGTM.
-Although it could refer to Suggested-by.  :)
-
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-
-thanks.
-
->  A Tested-by: tag indicates that the patch has been successfully tested (in
->  some environment) by the person named.  This tag informs maintainers that
+>  	/* Check whether cpus belong to parent ctrl group */
+>  	cpumask_andnot(tmpmask, newmask, &prgrp->cpu_mask);
+> -	if (cpumask_weight(tmpmask)) {
+> +	if (!cpumask_empty(tmpmask)) {
+>  		rdt_last_cmd_puts("Can only add CPUs to mongroup that belong to parent\n");
+>  		return -EINVAL;
+>  	}
+>  
+>  	/* Check whether cpus are dropped from this group */
+>  	cpumask_andnot(tmpmask, &rdtgrp->cpu_mask, newmask);
+> -	if (cpumask_weight(tmpmask)) {
+> +	if (!cpumask_empty(tmpmask)) {
+>  		/* Give any dropped cpus to parent rdtgroup */
+>  		cpumask_or(&prgrp->cpu_mask, &prgrp->cpu_mask, tmpmask);
+>  		update_closid_rmid(tmpmask, prgrp);
+> @@ -359,7 +359,7 @@ static int cpus_mon_write(struct rdtgroup *rdtgrp, cpumask_var_t newmask,
+>  	 * and update per-cpu rmid
+>  	 */
+>  	cpumask_andnot(tmpmask, newmask, &rdtgrp->cpu_mask);
+> -	if (cpumask_weight(tmpmask)) {
+> +	if (!cpumask_empty(tmpmask)) {
+>  		head = &prgrp->mon.crdtgrp_list;
+>  		list_for_each_entry(crgrp, head, mon.crdtgrp_list) {
+>  			if (crgrp == rdtgrp)
+> @@ -394,7 +394,7 @@ static int cpus_ctrl_write(struct rdtgroup *rdtgrp, cpumask_var_t newmask,
+>  
+>  	/* Check whether cpus are dropped from this group */
+>  	cpumask_andnot(tmpmask, &rdtgrp->cpu_mask, newmask);
+> -	if (cpumask_weight(tmpmask)) {
+> +	if (!cpumask_empty(tmpmask)) {
+>  		/* Can't drop from default group */
+>  		if (rdtgrp == &rdtgroup_default) {
+>  			rdt_last_cmd_puts("Can't drop CPUs from default group\n");
+> @@ -413,12 +413,12 @@ static int cpus_ctrl_write(struct rdtgroup *rdtgrp, cpumask_var_t newmask,
+>  	 * and update per-cpu closid/rmid.
+>  	 */
+>  	cpumask_andnot(tmpmask, newmask, &rdtgrp->cpu_mask);
+> -	if (cpumask_weight(tmpmask)) {
+> +	if (!cpumask_empty(tmpmask)) {
+>  		list_for_each_entry(r, &rdt_all_groups, rdtgroup_list) {
+>  			if (r == rdtgrp)
+>  				continue;
+>  			cpumask_and(tmpmask1, &r->cpu_mask, tmpmask);
+> -			if (cpumask_weight(tmpmask1))
+> +			if (!cpumask_empty(tmpmask1))
+>  				cpumask_rdtgrp_clear(r, tmpmask1);
+>  		}
+>  		update_closid_rmid(tmpmask, rdtgrp);
+> @@ -488,7 +488,7 @@ static ssize_t rdtgroup_cpus_write(struct kernfs_open_file *of,
+>  
+>  	/* check that user didn't specify any offline cpus */
+>  	cpumask_andnot(tmpmask, newmask, cpu_online_mask);
+> -	if (cpumask_weight(tmpmask)) {
+> +	if (!cpumask_empty(tmpmask)) {
+>  		ret = -EINVAL;
+>  		rdt_last_cmd_puts("Can only assign online CPUs\n");
+>  		goto unlock;
+> diff --git a/arch/x86/mm/mmio-mod.c b/arch/x86/mm/mmio-mod.c
+> index 933a2ebad471..c3317f0650d8 100644
+> --- a/arch/x86/mm/mmio-mod.c
+> +++ b/arch/x86/mm/mmio-mod.c
+> @@ -400,7 +400,7 @@ static void leave_uniprocessor(void)
+>  	int cpu;
+>  	int err;
+>  
+> -	if (!cpumask_available(downed_cpus) || cpumask_weight(downed_cpus) == 0)
+> +	if (!cpumask_available(downed_cpus) || cpumask_empty(downed_cpus))
+>  		return;
+>  	pr_notice("Re-enabling CPUs...\n");
+>  	for_each_cpu(cpu, downed_cpus) {
+> diff --git a/arch/x86/platform/uv/uv_nmi.c b/arch/x86/platform/uv/uv_nmi.c
+> index 1e9ff28bc2e0..ea277fc08357 100644
+> --- a/arch/x86/platform/uv/uv_nmi.c
+> +++ b/arch/x86/platform/uv/uv_nmi.c
+> @@ -985,7 +985,7 @@ static int uv_handle_nmi(unsigned int reason, struct pt_regs *regs)
+>  
+>  	/* Clear global flags */
+>  	if (master) {
+> -		if (cpumask_weight(uv_nmi_cpu_mask))
+> +		if (!cpumask_empty(uv_nmi_cpu_mask))
+>  			uv_nmi_cleanup_mask();
+>  		atomic_set(&uv_nmi_cpus_in_nmi, -1);
+>  		atomic_set(&uv_nmi_cpu, -1);
+> -- 
+> 2.30.2
+> 
 
 -- 
-~Randy
+Steve Wahl, Hewlett Packard Enterprise
