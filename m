@@ -2,99 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB55C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 15:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D2DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 15:35:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237889AbiA0Pes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 10:34:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
+        id S237726AbiA0Pf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 10:35:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229985AbiA0Per (ORCPT
+        with ESMTP id S233587AbiA0Pfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 10:34:47 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70AE0C061714
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 07:34:47 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id p15so6630658ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 07:34:47 -0800 (PST)
+        Thu, 27 Jan 2022 10:35:55 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08F7C061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 07:35:54 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id i1so2776013pla.9
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 07:35:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxtx.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=yUa2ioDFsHPQ1yheKLej8gbMqid52oPBmcpyM99h+kE=;
-        b=JYdaec/RrKAq8Dl6KWVNIulj8Q4JQMF9EknaUDhIC84aAWTchRbghkRbB4hK08yOKj
-         DAFvnSJonHcMLXsXj+YhNunFNJfdl3psjfsPyJrfiYTRaezqpwmr3OVltJqdUQBqKaEa
-         LWET4/cb6MuBRehDweZr/ysUkdYHOLI3icpyg=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Nh4tt56vGa5btexxdkmwALjwqwsFXKfPSa5S35IL0i0=;
+        b=gwnaJG/ZFkBC2Q+3iZ67GlinnDaL85T+zktnDiRxHz5u2F3erwlaj2KrNQ19kciPIp
+         HAkX3KPi1pztni3tkc7nmtDPmAJHUj/tx4qdg2lvHyRM1vWhtU7jwOOkebC7cfZZpfS2
+         LptKrRrHOnuQ1PK64kAUnHzg23QrgWr4fOfeGH6dUjmOUYlUKHRgF2dRIRF7NA8uQqNH
+         3YaDpEw83XvO4VxRyUR+4pMFbmSoeulgSBJ+VwL7hmZtNhAoDdqP0bnnOS6jvrFhh/H4
+         Z6kFiWcQE4iThJYjOcvMszzGrpRCF0/q8FAk4pylMUJmpGkrVVttbPcInRqtqNRYSRo1
+         bB6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yUa2ioDFsHPQ1yheKLej8gbMqid52oPBmcpyM99h+kE=;
-        b=U+sWrkovQU8wZRyVMXRdUmKfibsnpHyHGrbHmMpW+k2A6hYUpPrBZEERp3BBYqneJD
-         ZPsTwTlqCMcqBdNQ8Fo1FySyQeSqCEJoMUd/fA/18YdkkmTzy/9KxYqcQ9AD0fJHSywK
-         zQHLpCg3lcdsEWxhWNp08Wr2mn7vuzt+5oZthuM42uCR1HfB9aIbYrdoNVuWoSRqDSvm
-         pDSSLohZsO6j+blrxd6FkmMquEYUSQwlLMthpaMRfxYO+Rgh45D2VdwInix3x9ogt9ht
-         ABVQv1u73RlvEP7eApVEtoTeEqr4himVAYQJdRONh8+RChymrRb0lAYl5QLs27mVz2We
-         jy9w==
-X-Gm-Message-State: AOAM533LK4ZWJoR6ZZAF47eHNzgxTSpdA3FLBssWjZErKdVA5wEjJ6cX
-        X3L6K0HwZctQoviA9ARAams+jHLxLyr+bndfifumE2R68UpTmg==
-X-Google-Smtp-Source: ABdhPJzmPOXUvKbd0BslE1ZJlPsZwhv9JvVcBdRRX9qGxo/4HaaMZLcFJ15IJLX33smoBdPjLQIaURyGKTKLzmsrxYo=
-X-Received: by 2002:a17:906:fd55:: with SMTP id wi21mr3334820ejb.712.1643297685454;
- Thu, 27 Jan 2022 07:34:45 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Nh4tt56vGa5btexxdkmwALjwqwsFXKfPSa5S35IL0i0=;
+        b=DmNhYzecKYN9aa1ibgqWjiu32UV/2bheKM69ZxDgkotJhkAYAeM3AyVye1ADPUNfZ6
+         vYQ1zAIaTNpoy5uoa1FaIWW74WDP1BU+KvI0i3cYsiswnvdkOOxmpsBtCuMhZDFT5lLb
+         CxsL6mSFVXL3rGkUX7PlqVjcd8VMTuYbgldKDi3VkrRgS21DTukc31RjJ+nrwPGcm7X/
+         HqI967uZz7Nqc7wQaIBYsriDhCaHk9as76CPvAjiw6a16pr+rGU0Ls6P6KfP3kalqyOa
+         n1rYSGGh0Kok1vAYVNKbRQmBO1tT5qrybHuQ+H/McfBpaN7rQGYij15JadyWb+2s7xTc
+         ol6w==
+X-Gm-Message-State: AOAM532Csxx0BWkVgOyAztJlUi7X5WFBWxj2yEFbLjDU6oC9m2DaEiAr
+        rVj33fsvX3FZV43yl5w86f0YZw==
+X-Google-Smtp-Source: ABdhPJyJMQkkkrrz5bDuSd0OmZFssqKo0y3S7HL+Ux4EkAOKl13i3q9haJMrZjlsWf++usJnPNaAtw==
+X-Received: by 2002:a17:902:758c:: with SMTP id j12mr3759308pll.34.1643297754116;
+        Thu, 27 Jan 2022 07:35:54 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id t2sm3331964pfg.207.2022.01.27.07.35.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 07:35:53 -0800 (PST)
+Date:   Thu, 27 Jan 2022 15:35:50 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        yang.zhong@intel.com
+Subject: Re: [PATCH 2/3] KVM: x86: add system attribute to retrieve full set
+ of supported xsave states
+Message-ID: <YfK71pSnmtpnSJQ8@google.com>
+References: <20220126152210.3044876-1-pbonzini@redhat.com>
+ <20220126152210.3044876-3-pbonzini@redhat.com>
 MIME-Version: 1.0
-References: <20494.1643237814@turing-police>
-In-Reply-To: <20494.1643237814@turing-police>
-From:   Justin Forbes <jmforbes@linuxtx.org>
-Date:   Thu, 27 Jan 2022 09:34:34 -0600
-Message-ID: <CAFxkdAoe8XO4ivDpvfP8PTPpuew7k5Ngar3Ua9KhwTq32zdEQg@mail.gmail.com>
-Subject: Re: linux-next 20220125 - build failure in objtool with gcc 12
-To:     =?UTF-8?Q?Valdis_Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220126152210.3044876-3-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 4:57 PM Valdis Kl=C4=93tnieks
-<valdis.kletnieks@vt.edu> wrote:
->
-> Fedora Rawhide shipped gcc12, which apparently includes a new warning tha=
-t
-> causes a build failure.  Apparently, it's unable to figure out that 'ptr'=
- remains
-> valid on failed realloc(), and we only call realloc() again on failures..=
-.
+On Wed, Jan 26, 2022, Paolo Bonzini wrote:
+> +static int kvm_x86_dev_get_attr(struct kvm_device_attr *attr)
+> +{
+> +	if (attr->group)
+> +		return -ENXIO;
+> +
+> +	switch (attr->attr) {
+> +	case KVM_X86_XCOMP_GUEST_SUPP:
+> +		if (put_user(supported_xcr0, (u64 __user *)attr->addr))
 
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D104069 explains (toward
-the end) why gcc is leaving it to be fixed in the kernel.
+Deja vu[*].
+
+  arch/x86/kvm/x86.c: In function ‘kvm_x86_dev_get_attr’:
+  arch/x86/kvm/x86.c:4345:46: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+   4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+        |                                              ^
+  arch/x86/include/asm/uaccess.h:221:31: note: in definition of macro ‘do_put_user_call’
+    221 |         register __typeof__(*(ptr)) __val_pu asm("%"_ASM_AX);           \
+        |                               ^~~
+  arch/x86/kvm/x86.c:4345:21: note: in expansion of macro ‘put_user’
+   4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+        |                     ^~~~~~~~
+  arch/x86/kvm/x86.c:4345:46: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+   4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+        |                                              ^
+  arch/x86/include/asm/uaccess.h:223:21: note: in definition of macro ‘do_put_user_call’
+    223 |         __ptr_pu = (ptr);                                               \
+        |                     ^~~
+  arch/x86/kvm/x86.c:4345:21: note: in expansion of macro ‘put_user’
+   4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+        |                     ^~~~~~~~
+  arch/x86/kvm/x86.c:4345:46: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+   4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+        |                                              ^
+  arch/x86/include/asm/uaccess.h:230:45: note: in definition of macro ‘do_put_user_call’
+    230 |                        [size] "i" (sizeof(*(ptr)))                      \
+        |                                             ^~~
+  arch/x86/kvm/x86.c:4345:21: note: in expansion of macro ‘put_user’
+   4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+
+Given that we're collectively 2 for 2 in mishandling {g,s}et_attr(), what about
+a prep pacth like so?  Compile tested only...
+
+From: Sean Christopherson <seanjc@google.com>
+Date: Thu, 27 Jan 2022 07:31:53 -0800
+Subject: [PATCH] KVM: x86: Add a helper to retrieve userspace address from
+ kvm_device_attr
+
+Add a helper to handle converting the u64 userspace address embedded in
+struct kvm_device_attr into a userspace pointer, it's all too easy to
+forget the intermediate "unsigned long" cast as well as the truncation
+check.
+
+No functional change intended.
+
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/kvm/x86.c | 28 +++++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 8033eca6f3a1..67836f7c71f5 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4335,14 +4335,28 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 	return r;
+ }
+
++static inline void __user *kvm_get_attr_addr(struct kvm_device_attr *attr)
++{
++	void __user *uaddr = (void __user*)(unsigned long)attr->addr;
++
++	if ((u64)(unsigned long)uaddr != attr->addr)
++		return ERR_PTR(-EFAULT);
++	return uaddr;
++}
++
+ static int kvm_x86_dev_get_attr(struct kvm_device_attr *attr)
+ {
++	u64 __user *uaddr = kvm_get_attr_addr(attr);
++
+ 	if (attr->group)
+ 		return -ENXIO;
+
++	if (IS_ERR(uaddr))
++		return PTR_ERR(uaddr);
++
+ 	switch (attr->attr) {
+ 	case KVM_X86_XCOMP_GUEST_SUPP:
+-		if (put_user(supported_xcr0, (u64 __user *)attr->addr))
++		if (put_user(supported_xcr0, uaddr))
+ 			return -EFAULT;
+ 		return 0;
+ 	default:
+@@ -5070,11 +5084,11 @@ static int kvm_arch_tsc_has_attr(struct kvm_vcpu *vcpu,
+ static int kvm_arch_tsc_get_attr(struct kvm_vcpu *vcpu,
+ 				 struct kvm_device_attr *attr)
+ {
+-	u64 __user *uaddr = (u64 __user *)(unsigned long)attr->addr;
++	u64 __user *uaddr = kvm_get_attr_addr(attr);
+ 	int r;
+
+-	if ((u64)(unsigned long)uaddr != attr->addr)
+-		return -EFAULT;
++	if (IS_ERR(uaddr))
++		return PTR_ERR(uaddr);
+
+ 	switch (attr->attr) {
+ 	case KVM_VCPU_TSC_OFFSET:
+@@ -5093,12 +5107,12 @@ static int kvm_arch_tsc_get_attr(struct kvm_vcpu *vcpu,
+ static int kvm_arch_tsc_set_attr(struct kvm_vcpu *vcpu,
+ 				 struct kvm_device_attr *attr)
+ {
+-	u64 __user *uaddr = (u64 __user *)(unsigned long)attr->addr;
++	u64 __user *uaddr = kvm_get_attr_addr(attr);
+ 	struct kvm *kvm = vcpu->kvm;
+ 	int r;
+
+-	if ((u64)(unsigned long)uaddr != attr->addr)
+-		return -EFAULT;
++	if (IS_ERR(uaddr))
++		return PTR_ERR(uaddr);
+
+ 	switch (attr->attr) {
+ 	case KVM_VCPU_TSC_OFFSET: {
+--
 
 
->   CC      /usr/src/linux-next/tools/objtool/exec-cmd.o
->   CC      /usr/src/linux-next/tools/objtool/help.o
-> In file included from help.c:12:
-> In function 'xrealloc',
->     inlined from 'add_cmdname' at help.c:24:2:
-> subcmd-util.h:56:23: error: pointer may be used after 'realloc' [-Werror=
-=3Duse-after-free]
->    56 |                 ret =3D realloc(ptr, size);
->       |                       ^~~~~~~~~~~~~~~~~~
-> subcmd-util.h:52:21: note: call to 'realloc' here
->    52 |         void *ret =3D realloc(ptr, size);
->       |                     ^~~~~~~~~~~~~~~~~~
-> subcmd-util.h:58:31: error: pointer may be used after 'realloc' [-Werror=
-=3Duse-after-free]
->    58 |                         ret =3D realloc(ptr, 1);
->       |                               ^~~~~~~~~~~~~~~
-> subcmd-util.h:52:21: note: call to 'realloc' here
->    52 |         void *ret =3D realloc(ptr, size);
->       |                     ^~~~~~~~~~~~~~~~~~
-> cc1: all warnings being treated as errors
-> make[4]: *** [/usr/src/linux-next/tools/build/Makefile.build:97: /usr/src=
-/linux-next/tools/objtool/help.o] Error 1
-> make[3]: *** [Makefile:59: /usr/src/linux-next/tools/objtool/libsubcmd-in=
-.o] Error 2
-> make[2]: *** [Makefile:63: /usr/src/linux-next/tools/objtool/libsubcmd.a]=
- Error 2
-> make[1]: *** [Makefile:69: objtool] Error 2
-> make: *** [Makefile:1405: tools/objtool] Error 2
+
+[*] https://lore.kernel.org/all/20211007231647.3553604-1-seanjc@google.com
+
+
+> +			return -EFAULT;
+> +		return 0;
+> +	default:
+> +		return -ENXIO;
+> +		break;
+> +	}
+> +}
+> +
