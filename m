@@ -2,24 +2,20 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACD4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239023AbiA0KLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 05:11:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238983AbiA0KL0 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 05:11:26 -0500
-Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D5BC061747;
-        Thu, 27 Jan 2022 02:11:25 -0800 (PST)
+        id S239136AbiA0KLk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 05:11:40 -0500
+Received: from 8bytes.org ([81.169.241.247]:47998 "EHLO theia.8bytes.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238960AbiA0KLZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 05:11:25 -0500
 Received: from cap.home.8bytes.org (p549ad610.dip0.t-ipconnect.de [84.154.214.16])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by theia.8bytes.org (Postfix) with ESMTPSA id ACFAC9DD;
-        Thu, 27 Jan 2022 11:11:22 +0100 (CET)
+        by theia.8bytes.org (Postfix) with ESMTPSA id 07031D35;
+        Thu, 27 Jan 2022 11:11:24 +0100 (CET)
 From:   Joerg Roedel <joro@8bytes.org>
 To:     x86@kernel.org
 Cc:     Joerg Roedel <joro@8bytes.org>, Joerg Roedel <jroedel@suse.de>,
@@ -43,9 +39,9 @@ Cc:     Joerg Roedel <joro@8bytes.org>, Joerg Roedel <jroedel@suse.de>,
         Arvind Sankar <nivedita@alum.mit.edu>,
         linux-coco@lists.linux.dev, linux-kernel@vger.kernel.org,
         kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
-Subject: [PATCH v3 07/10] x86/sev: Use AP Jump Table blob to stop CPU
-Date:   Thu, 27 Jan 2022 11:10:41 +0100
-Message-Id: <20220127101044.13803-8-joro@8bytes.org>
+Subject: [PATCH v3 09/10] x86/sev: Handle CLFLUSH MMIO events
+Date:   Thu, 27 Jan 2022 11:10:43 +0100
+Message-Id: <20220127101044.13803-10-joro@8bytes.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220127101044.13803-1-joro@8bytes.org>
 References: <20220127101044.13803-1-joro@8bytes.org>
@@ -57,98 +53,61 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-To support kexec under SEV-ES the APs can't be parked with HLT. Upon
-wakeup the AP needs to find its way to execute at the reset vector set
-by the new kernel and in real-mode.
-
-This is what the AP jump table blob provides, so stop the APs the
-SEV-ES way by calling the AP-reset-hold VMGEXIT from the AP jump
-table.
+Handle CLFLUSH instruction to MMIO memory in the #VC handler. The
+instruction is ignored by the handler, as the Hypervisor is
+responsible for cache management of emulated MMIO memory.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- arch/x86/include/asm/sev.h |  2 ++
- arch/x86/kernel/process.c  |  8 ++++++++
- arch/x86/kernel/sev.c      | 14 +++++++++++++-
- 3 files changed, 23 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/insn-eval.h | 1 +
+ arch/x86/kernel/sev-shared.c     | 3 +++
+ arch/x86/lib/insn-eval-shared.c  | 7 +++++++
+ 3 files changed, 11 insertions(+)
 
-diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-index 09eb2cc6f54f..e342dce3e7a1 100644
---- a/arch/x86/include/asm/sev.h
-+++ b/arch/x86/include/asm/sev.h
-@@ -90,12 +90,14 @@ extern enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
- 					  struct es_em_ctxt *ctxt,
- 					  u64 exit_code, u64 exit_info_1,
- 					  u64 exit_info_2);
-+void sev_es_stop_this_cpu(void);
- #else
- static inline void sev_es_ist_enter(struct pt_regs *regs) { }
- static inline void sev_es_ist_exit(void) { }
- static inline int sev_es_setup_ap_jump_table(struct real_mode_header *rmh) { return 0; }
- static inline void sev_es_nmi_complete(void) { }
- static inline int sev_es_efi_map_ghcbs(pgd_t *pgd) { return 0; }
-+static inline void sev_es_stop_this_cpu(void) { }
- #endif
+diff --git a/arch/x86/include/asm/insn-eval.h b/arch/x86/include/asm/insn-eval.h
+index f07faa61c7f3..c3eb753a912b 100644
+--- a/arch/x86/include/asm/insn-eval.h
++++ b/arch/x86/include/asm/insn-eval.h
+@@ -40,6 +40,7 @@ enum mmio_type {
+ 	MMIO_READ_ZERO_EXTEND,
+ 	MMIO_READ_SIGN_EXTEND,
+ 	MMIO_MOVS,
++	MMIO_IGNORE,
+ };
  
- #endif
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index 81d8ef036637..09982f0fbb87 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -46,6 +46,7 @@
- #include <asm/proto.h>
- #include <asm/frame.h>
- #include <asm/unwind.h>
-+#include <asm/sev.h>
+ enum mmio_type insn_decode_mmio(struct insn *insn, int *bytes);
+diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
+index b12fb063a30e..1aa33509c7b5 100644
+--- a/arch/x86/kernel/sev-shared.c
++++ b/arch/x86/kernel/sev-shared.c
+@@ -698,6 +698,9 @@ static enum es_result vc_handle_mmio(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
+ 	if (mmio == MMIO_DECODE_FAILED)
+ 		return ES_DECODE_FAILED;
  
- #include "process.h"
- 
-@@ -769,6 +770,13 @@ void stop_this_cpu(void *dummy)
- 	if (boot_cpu_has(X86_FEATURE_SME))
- 		native_wbinvd();
- 	for (;;) {
-+		/*
-+		 * SEV-ES guests need a special stop routine to support
-+		 * kexec. Try this first, if it fails the function will
-+		 * return and native_halt() is used.
-+		 */
-+		sev_es_stop_this_cpu();
++	if (mmio == MMIO_IGNORE)
++		return ES_OK;
 +
- 		/*
- 		 * Use native_halt() so that memory contents don't change
- 		 * (stack usage and variables) after possibly issuing the
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index fcff39475fbe..71301016c3ea 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -673,7 +673,6 @@ static bool __init sev_es_setup_ghcb(void)
- 	return true;
- }
- 
--#ifdef CONFIG_HOTPLUG_CPU
- void __noreturn sev_jumptable_ap_park(void)
- {
- 	local_irq_disable();
-@@ -706,6 +705,19 @@ void __noreturn sev_jumptable_ap_park(void)
- }
- STACK_FRAME_NON_STANDARD(sev_jumptable_ap_park);
- 
-+void sev_es_stop_this_cpu(void)
-+{
-+	if (!static_branch_unlikely(&sev_es_enable_key))
-+		return;
-+
-+	/* Only park in the AP jump table when the code has been installed */
-+	if (!sev_ap_jumptable_blob_installed)
-+		return;
-+
-+	sev_jumptable_ap_park();
-+}
-+
-+#ifdef CONFIG_HOTPLUG_CPU
- static void sev_es_ap_hlt_loop(void)
- {
- 	struct ghcb_state state;
+ 	if (mmio != MMIO_WRITE_IMM && mmio != MMIO_MOVS) {
+ 		reg_data = insn_get_modrm_reg_ptr(insn, ctxt->regs);
+ 		if (!reg_data)
+diff --git a/arch/x86/lib/insn-eval-shared.c b/arch/x86/lib/insn-eval-shared.c
+index ec310b5e6cd5..ddec72fccdd2 100644
+--- a/arch/x86/lib/insn-eval-shared.c
++++ b/arch/x86/lib/insn-eval-shared.c
+@@ -898,6 +898,13 @@ enum mmio_type insn_decode_mmio(struct insn *insn, int *bytes)
+ 				*bytes = 2;
+ 			type = MMIO_READ_SIGN_EXTEND;
+ 			break;
++		case 0xae: /* CLFLUSH */
++			/*
++			 * Ignore CLFLUSHes - those go to emulated MMIO anyway and the
++			 * hypervisor is responsible for cache management.
++			 */
++			type = MMIO_IGNORE;
++			break;
+ 		}
+ 		break;
+ 	}
 -- 
 2.34.1
 
