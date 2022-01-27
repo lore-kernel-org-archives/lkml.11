@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A07CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:55:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E61C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244835AbiA0Rzc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:55:32 -0500
-Received: from mga02.intel.com ([134.134.136.20]:19415 "EHLO mga02.intel.com"
+        id S244862AbiA0Rze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:55:34 -0500
+Received: from mga02.intel.com ([134.134.136.20]:19418 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244701AbiA0RzP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:55:15 -0500
+        id S243792AbiA0RzL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 12:55:11 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643306115; x=1674842115;
+  t=1643306111; x=1674842111;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TYAz7JDYxVELS0TsoMqBdWSpXvvAabn6bWktK0rh01c=;
-  b=FKxa6SoCjSO+jmNuU+ze+0v6Va3LpkuwNT3Rrc3ljRM9Pv16rnnCkB19
-   rm8trT3Twhx3U8aJh5N+DUohAr0MOyF+1mePgmfBur5Gfc1ll31/HpYnK
-   yu7nF9XOPqBouttgNQRnQ+c+hqWhRnbA5dLOn8/xmzFrETxp+cRP00yYI
-   pi1vL/i3DngSJhk9K9l9rJS1yTP5mBgN+xgmgDDaUSxxtqwaRCbT1JfY5
-   XPehs9Y1okXj7yfLl59eRkaldM/At1aC0jK+WruR4qRwfLm81w2y85V+y
-   NkED3x5PGeYtomg4+jUDPiix6q7LXhDyQh7oqX2mnIYvnJji+WFMH7pE4
+  bh=NeRBtAKXgYs7FnziQDnUBv0DLxfYL661IYkJjUwFj+I=;
+  b=AbTjo2Ly6lHau8/eh0oNR5QozABytakfG0fPp6k0v/JnsYwKswVpo51N
+   0Y2eyguGMJAu8YTyUUE7DliHK35RU5CPbVol7GG6c6ozs6isanu4sYx9o
+   f+vWnCMThPRy/aptMAjBclO12gdGl3TeVrBFIfc7f8g9eCWTU+dU+kv6X
+   jrUvgvId8PcyMA7EVRwJrB2WV+tVKhWXf0w3Wt3F3TM22c+HTR5JOnFEb
+   H83yHLUpO38Bx1fDEGTbvdoPWEYl3a4MbZcRRT9RNrcIwm5MqcZSmNbE4
+   fUnslnHFWDIG3FSi1skGoN63RrXyAyy2f7RohC3mOOkv9SmKvQ0dnby/t
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234302426"
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234302424"
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="234302426"
+   d="scan'208";a="234302424"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:09 -0800
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="674796099"
+   d="scan'208";a="674796092"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
   by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:09 -0800
 From:   ira.weiny@intel.com
@@ -40,9 +40,9 @@ To:     Dave Hansen <dave.hansen@linux.intel.com>,
 Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V8 16/44] mm/pkeys: Introduce pks_mk_readwrite()
-Date:   Thu, 27 Jan 2022 09:54:37 -0800
-Message-Id: <20220127175505.851391-17-ira.weiny@intel.com>
+Subject: [PATCH V8 14/44] x86/pkeys: Introduce pks_write_pkrs()
+Date:   Thu, 27 Jan 2022 09:54:35 -0800
+Message-Id: <20220127175505.851391-15-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220127175505.851391-1-ira.weiny@intel.com>
 References: <20220127175505.851391-1-ira.weiny@intel.com>
@@ -54,151 +54,119 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-When a user needs valid access to a PKS protected page they will need to
-change the protections for their pkey to Read/Write within a thread of
-execution.
+Writing to MSR's is inefficient.  Even though the underlying
+WRMSR(MSR_IA32_PKRS) is not serializing (see below), writing to the MSR
+unnecessarily should be avoided.  This is especially true when the value
+of the PKS protections is unlikely to change from the default often.
 
-Define pks_mk_readwrite() to update the specified Pkey.  Define
-pks_update_protection() as a helper to do the heavy lifting and to allow
-for subsequent pks_mk_*() calls.  Define PKEY_READ_WRITE rather than use
-a magic value of '0' in pks_update_protection().  Finally, ensure
-preemption is disabled while calling pks_write_pkrs() in this code.
+Introduce pks_write_pkrs() which avoids writing the MSR if the pkrs
+value has not changed for the CPU.  Do this by utilizing a per-cpu
+cache.  Protect the use of the cached value from preemption by
+restricting the use of pks_write_pkrs() to non-preemptable context.
+Further restrict it's use to callers which have checked X86_FEATURE_PKS.
 
-Add documentation.
+The initial value of the MSR is preserved on INIT.  While unlikely, the
+PKS_INIT_VALUE may be 0 someday which would prevent pks_write_pkrs()
+from updating the MSR.  Keep the MSR write in pks_setup() to ensure the
+MSR is initialized at least one time.  Then call pks_write_pkrs() to set
+up the per-cache value to ensure it is in sync with the MSR.
 
+It should be noted that the underlying WRMSR(MSR_IA32_PKRS) is not
+serializing but still maintains ordering properties similar to WRPKRU.
+The current SDM section on PKRS needs updating but should be the same as
+that of WRPKRU.  So to quote from the WRPKRU text:
+
+	WRPKRU will never execute transiently. Memory accesses affected
+	by PKRU register will not execute (even transiently) until all
+	prior executions of WRPKRU have completed execution and updated
+	the PKRU register.
+
+Suggested-by: Dave Hansen <dave.hansen@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V8
-	Define PKEY_READ_WRITE
-	Make the call inline
-	Clean up the names
-	Use pks_write_pkrs() with preemption disabled
-	Split this out from 'Add PKS kernel API'
-	Include documentation in this patch
----
- Documentation/core-api/protection-keys.rst |  9 ++++++-
- arch/x86/mm/pkeys.c                        | 28 ++++++++++++++++++++++
- include/linux/pkeys.h                      | 25 +++++++++++++++++++
- include/uapi/asm-generic/mman-common.h     |  1 +
- 4 files changed, 62 insertions(+), 1 deletion(-)
+	From Thomas
+		Remove get/put_cpu_ptr() and make this a 'lower level
+		call.  This makes it preemption unsafe but it is called
+		mostly where preemption is already disabled.  Add this
+		as a predicate of the call and those calls which need to
+		can disable preemption.
+		Add lockdep assert for preemption
+	Ensure MSR gets written even if the PKS_INIT_VALUE is 0.
+	Completely re-write the commit message.
+	s/write_pkrs/pks_write_pkrs/
+	Split this off into a singular patch
 
-diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
-index 234122e56a92..e4a27b93f3d4 100644
---- a/Documentation/core-api/protection-keys.rst
-+++ b/Documentation/core-api/protection-keys.rst
-@@ -141,11 +141,18 @@ Adding Pages to a PKey protected domain
-         :doc: PKS_KEY_ASSIGNMENT
- 
- 
-+Changing permissions of individual keys
-+---------------------------------------
-+
-+.. kernel-doc:: include/linux/pks-keys.h
-+        :identifiers: pks_mk_readwrite
-+
- MSR details
- -----------
- 
- It should be noted that the underlying WRMSR(MSR_IA32_PKRS) is not serializing
--but still maintains ordering properties similar to WRPKRU.
-+but still maintains ordering properties similar to WRPKRU.  Thus it is safe to
-+immediately use a mapping when the pks_mk*() functions return.
- 
- Older versions of the SDM on PKRS may be wrong with regard to this
- serialization.  The text should be the same as that of WRPKRU.  From the WRPKRU
+Changes for V7
+	Create a dynamic pkrs_initial_value in early init code.
+	Clean up comments
+	Add comment to macro guard
+---
+ arch/x86/mm/pkeys.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
 diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index 6d94dfc9a219..7c6498fb8f8d 100644
+index a5b5b86e97ce..3dce99ef4127 100644
 --- a/arch/x86/mm/pkeys.c
 +++ b/arch/x86/mm/pkeys.c
-@@ -10,6 +10,7 @@
+@@ -209,15 +209,56 @@ u32 pkey_update_pkval(u32 pkval, int pkey, u32 accessbits)
  
- #include <asm/cpufeature.h>             /* boot_cpu_has, ...            */
- #include <asm/mmu_context.h>            /* vma_pkey()                   */
-+#include <asm/pks.h>
+ #ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
  
- int __execute_only_pkey(struct mm_struct *mm)
++static DEFINE_PER_CPU(u32, pkrs_cache);
++
++/*
++ * pks_write_pkrs() - Write the pkrs of the current CPU
++ * @new_pkrs: New value to write to the current CPU register
++ *
++ * Optimizes the MSR writes by maintaining a per cpu cache.
++ *
++ * Context: must be called with preemption disabled
++ * Context: must only be called if PKS is enabled
++ *
++ * It should also be noted that the underlying WRMSR(MSR_IA32_PKRS) is not
++ * serializing but still maintains ordering properties similar to WRPKRU.
++ * The current SDM section on PKRS needs updating but should be the same as
++ * that of WRPKRU.  Quote from the WRPKRU text:
++ *
++ *     WRPKRU will never execute transiently. Memory accesses
++ *     affected by PKRU register will not execute (even transiently)
++ *     until all prior executions of WRPKRU have completed execution
++ *     and updated the PKRU register.
++ */
++static inline void pks_write_pkrs(u32 new_pkrs)
++{
++	u32 pkrs = __this_cpu_read(pkrs_cache);
++
++	lockdep_assert_preemption_disabled();
++
++	if (pkrs != new_pkrs) {
++		__this_cpu_write(pkrs_cache, new_pkrs);
++		wrmsrl(MSR_IA32_PKRS, new_pkrs);
++	}
++}
++
+ /*
+  * PKS is independent of PKU and either or both may be supported on a CPU.
++ *
++ * Context: must be called with preemption disabled
+  */
+ void pks_setup(void)
  {
-@@ -275,4 +276,31 @@ void pks_setup(void)
+ 	if (!cpu_feature_enabled(X86_FEATURE_PKS))
+ 		return;
+ 
++	/*
++	 * If the PKS_INIT_VALUE is 0 then pks_write_pkrs() could fail to
++	 * initialize the MSR.  Do a single write here to ensure the MSR is
++	 * written at least one time.
++	 */
+ 	wrmsrl(MSR_IA32_PKRS, PKS_INIT_VALUE);
++	pks_write_pkrs(PKS_INIT_VALUE);
  	cr4_set_bits(X86_CR4_PKS);
  }
  
-+/*
-+ * Do not call this directly, see pks_mk*().
-+ *
-+ * @pkey: Key for the domain to change
-+ * @protection: protection bits to be used
-+ *
-+ * Protection utilizes the same protection bits specified for User pkeys
-+ *     PKEY_DISABLE_ACCESS
-+ *     PKEY_DISABLE_WRITE
-+ *
-+ */
-+void pks_update_protection(int pkey, u32 protection)
-+{
-+	u32 pkrs;
-+
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
-+
-+	pkrs = current->thread.pks_saved_pkrs;
-+	current->thread.pks_saved_pkrs = pkey_update_pkval(pkrs, pkey,
-+							   protection);
-+	preempt_disable();
-+	pks_write_pkrs(current->thread.pks_saved_pkrs);
-+	preempt_enable();
-+}
-+EXPORT_SYMBOL_GPL(pks_update_protection);
-+
- #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-diff --git a/include/linux/pkeys.h b/include/linux/pkeys.h
-index e9ea8f152915..73b554b99123 100644
---- a/include/linux/pkeys.h
-+++ b/include/linux/pkeys.h
-@@ -48,6 +48,31 @@ static inline bool arch_pkeys_enabled(void)
- 
- #endif /* ! CONFIG_ARCH_HAS_PKEYS */
- 
-+#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
-+
- #include <linux/pks-keys.h>
-+#include <linux/types.h>
-+
-+#include <uapi/asm-generic/mman-common.h>
-+
-+void pks_update_protection(int pkey, u32 protection);
-+
-+/**
-+ * pks_mk_readwrite() - Make the domain Read/Write
-+ * @pkey: the pkey for which the access should change.
-+ *
-+ * Allow all access, read and write, to the domain specified by pkey.  This is
-+ * not a global update and only affects the current running thread.
-+ */
-+static inline void pks_mk_readwrite(int pkey)
-+{
-+	pks_update_protection(pkey, PKEY_READ_WRITE);
-+}
-+
-+#else /* !CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-+
-+static inline void pks_mk_readwrite(int pkey) {}
-+
-+#endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
- 
- #endif /* _LINUX_PKEYS_H */
-diff --git a/include/uapi/asm-generic/mman-common.h b/include/uapi/asm-generic/mman-common.h
-index 1567a3294c3d..3da6ac9e5ded 100644
---- a/include/uapi/asm-generic/mman-common.h
-+++ b/include/uapi/asm-generic/mman-common.h
-@@ -78,6 +78,7 @@
- /* compatibility flags */
- #define MAP_FILE	0
- 
-+#define PKEY_READ_WRITE		0x0
- #define PKEY_DISABLE_ACCESS	0x1
- #define PKEY_DISABLE_WRITE	0x2
- #define PKEY_ACCESS_MASK	(PKEY_DISABLE_ACCESS |\
 -- 
 2.31.1
 
