@@ -2,106 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A928C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:38:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38ABFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242027AbiA0Ni1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 08:38:27 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:56354 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242143AbiA0Ngv (ORCPT
+        id S241816AbiA0NjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 08:39:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242230AbiA0Nh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:36:51 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 8443B218CE;
-        Thu, 27 Jan 2022 13:36:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643290610; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=O9QO+GuOwuNfCQAL5X6kgAbs9JlqPuUL4SKyZ4gCtFk=;
-        b=QYaek997c5pGHBy5TBaos7w+eHs4u2gf+NndfKaQg7gz0kxFgI7c20g95O2H6lMYGycnav
-        wqcGuiYiIE/ZwgBeUkLfNLPGXk1Pr0LkQ+JtatlDrIRKCy2C8BPX3n8IMchjdR0KtkSeEq
-        dQqF8sbwlmPZVKVwFculCR5fkIiGKEA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643290610;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=O9QO+GuOwuNfCQAL5X6kgAbs9JlqPuUL4SKyZ4gCtFk=;
-        b=3V+c1YSBRZbizUpOK3QrjutsbkQU/u64evuTAIMS6QJD4OjohwAG0NVNIRtZxdPt8Niax+
-        zM2EEuaCTBVXTzDQ==
-Received: from adalid.arch.suse.de (adalid.arch.suse.de [10.161.8.13])
-        by relay2.suse.de (Postfix) with ESMTP id 7DFC6A3B87;
-        Thu, 27 Jan 2022 13:36:50 +0000 (UTC)
-Received: by adalid.arch.suse.de (Postfix, from userid 17828)
-        id 71F435192D56; Thu, 27 Jan 2022 14:36:50 +0100 (CET)
-From:   Daniel Wagner <dwagner@suse.de>
-To:     linux-nvme@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, Daniel Wagner <dwagner@suse.de>
-Subject: [RFC] nvme: Do not reject dynamic controller cntlid
-Date:   Thu, 27 Jan 2022 14:36:48 +0100
-Message-Id: <20220127133648.8201-1-dwagner@suse.de>
-X-Mailer: git-send-email 2.29.2
+        Thu, 27 Jan 2022 08:37:58 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96ED7C0613EE;
+        Thu, 27 Jan 2022 05:34:44 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id bg19-20020a05600c3c9300b0034565e837b6so3316120wmb.1;
+        Thu, 27 Jan 2022 05:34:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=PtD0FgMryNIEfo1jRPVV0cUNzb19Sn8D3fM6blA12z8=;
+        b=mJEfK4o/cPw8XO1sAK5M7gsOLWGX80WauflsKooGb7ZFVVa+s4u32wNhJ0tg/klSo4
+         sqJu1MumMXoK58OinVz9HOj5EKN66PedW5tRPhyn3WrhM0pqnjndsRUMVPXjrP5e557S
+         xVcvoaedKwnKP5WnRXtjU736LRLI3UunPwNQMWWqvTlJPC7ogCr4tGM6zIkpS8CKpwc4
+         TtALbxfc2E2gE6y1ckb/C1QjWq1aoq06jUzOJFcb7L4S64vR6wRZRNvxTAP+TT79um4z
+         fsE/6bqfMz3U06V1OWVPgEU+NWIX8+d97nkTtWVZhWpcJNPUKwLtHfMwkLdcAyfhMoK8
+         YYDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=PtD0FgMryNIEfo1jRPVV0cUNzb19Sn8D3fM6blA12z8=;
+        b=IOi4dXdhKguuDFhNfm7ePwvsr88VT6nUFR7zeeHXcGUYzsiARaqDfi34eHDmJpWMf+
+         Rd7qfR9UJXclEZv+TkYD8iWqLrjrDYkUmdmaY7jQsvT7Ks7vgcoHrfZ4YQJsq2ofSO5B
+         zy8NhFq8dtwgX0dG/xJVpyxj6aL1mKSkt8kHXC5oo//Qbn0Ldg3eouLZfOPox7H8Nhwm
+         Lvt6qKTWHeVmt52u5BJHBR71mdnjY7/q15cgLSHGAr5twz5w4GEIGwE6aoSJ5S0h+N7r
+         GsA5ys2fL6/t1S9t/AsFRDDxG3nY1CtOyNQFbHbhURcVvyuiz457WKHyS75qBvVnLEA0
+         paCA==
+X-Gm-Message-State: AOAM5335JAxXgoZTukNkUbRjc7uI5Ls7EHVP2G8Oinb33ZOY/tAX/L8j
+        y5G1nnhTxmsshaiOgLmD1hiYn2/vrxE=
+X-Google-Smtp-Source: ABdhPJwpccnsbgjKRndlWasEVTPIjTprM6ThyfKPt7POLIcMIUxxWzIt7TDhKx/s2vN+i8nPotXfHQ==
+X-Received: by 2002:a05:600c:1e8b:: with SMTP id be11mr11928824wmb.96.1643290483143;
+        Thu, 27 Jan 2022 05:34:43 -0800 (PST)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id e13sm2572953wrq.35.2022.01.27.05.34.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 05:34:42 -0800 (PST)
+Date:   Thu, 27 Jan 2022 14:34:41 +0100
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Subject: Re: [PATCH] crypto: authenc - Fix sleep in atomic context in
+ decrypt_tail
+Message-ID: <YfKfcRCOgCzYNLRG@Red>
+References: <Yd1SIHUNdLIvKhzz@Red>
+ <YeD4rt1OVnEMBr+A@gondor.apana.org.au>
+ <YeD6vt47+pAl0SxG@gondor.apana.org.au>
+ <YeEiWmkyNwfgQgmn@Red>
+ <YeZx1aVL0HnT9tCB@Red>
+ <Yee2oKxPSLaYY31N@gondor.apana.org.au>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yee2oKxPSLaYY31N@gondor.apana.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The NVME spec states in 3.1.1 Controller Model there are two types
-controllers: dynamic and static.
+Le Wed, Jan 19, 2022 at 05:58:40PM +1100, Herbert Xu a écrit :
+> On Tue, Jan 18, 2022 at 08:52:53AM +0100, Corentin Labbe wrote:
+> >
+> > With my patch, I got:
+> > [   38.515668] BUG: sleeping function called from invalid context at crypto/skcipher.c:482
+> > [   38.523708] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 84, name: 1c15000.crypto-
+> > [   38.532176] preempt_count: 200, expected: 0
+> > [   38.536381] CPU: 6 PID: 84 Comm: 1c15000.crypto- Not tainted 5.16.0-next-20220115-00124-g13473e8fac33-dirty #116
+> > [   38.546551] Hardware name: Allwinner A83t board
+> > [   38.551100]  unwind_backtrace from show_stack+0x10/0x14
+> > [   38.556358]  show_stack from dump_stack_lvl+0x40/0x4c
+> > [   38.561428]  dump_stack_lvl from __might_resched+0x118/0x154
+> > [   38.567107]  __might_resched from skcipher_walk_virt+0xe8/0xec
+> > [   38.572955]  skcipher_walk_virt from crypto_cbc_decrypt+0x2c/0x170
+> > [   38.579147]  crypto_cbc_decrypt from crypto_skcipher_decrypt+0x38/0x5c
+> > [   38.585680]  crypto_skcipher_decrypt from authenc_verify_ahash_done+0x18/0x34
+> > [   38.592825]  authenc_verify_ahash_done from crypto_finalize_request+0x6c/0xe4
+> > [   38.599974]  crypto_finalize_request from sun8i_ss_hash_run+0x73c/0xb98
+> > [   38.606602]  sun8i_ss_hash_run from crypto_pump_work+0x1a8/0x330
+> > [   38.612616]  crypto_pump_work from kthread_worker_fn+0xa8/0x1c4
+> > [   38.618550]  kthread_worker_fn from kthread+0xf0/0x110
+> > [   38.623701]  kthread from ret_from_fork+0x14/0x2c
+> > [   38.628414] Exception stack(0xc2247fb0 to 0xc2247ff8)
+> > [   38.633468] 7fa0:                                     00000000 00000000 00000000 00000000
+> > [   38.641640] 7fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> > [   38.649809] 7fe0:i 00000000 00000000 00000000 00000000 00000013 00000000
+> > 
+> > This is when testing hmac(sha1) on my crypto driver sun8i-ss and crypto testing authenc(hmac-sha1-sun8i-ss,cbc(aes-generic)).
+> > 
+> > Do you have any idea to better fix my issue ?
+> 
+> This backtrace is caused by a bug in authenc:
+> 
+> ---8<---
+> The function crypto_authenc_decrypt_tail discards its flags
+> argument and always relies on the flags from the original request
+> when starting its sub-request.
+> 
+> This is clearly wrong as it may cause the SLEEPABLE flag to be
+> set when it shouldn't.
+> 
+> Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
+> Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> 
+> diff --git a/crypto/authenc.c b/crypto/authenc.c
+> index 670bf1a01d00..17f674a7cdff 100644
+> --- a/crypto/authenc.c
+> +++ b/crypto/authenc.c
+> @@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
+>  		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
+>  
+>  	skcipher_request_set_tfm(skreq, ctx->enc);
+> -	skcipher_request_set_callback(skreq, aead_request_flags(req),
+> +	skcipher_request_set_callback(skreq, flags,
+>  				      req->base.complete, req->base.data);
+>  	skcipher_request_set_crypt(skreq, src, dst,
+>  				   req->cryptlen - authsize, req->iv);
+> -- 
 
-The nvme_validate_cntlid() check ensures that the newly discovered
-controller does not have the same cntlid as a known controller. For
-the dynamic controller model this check doesn't make sense as all
-cntlid will be 0xffff. In this case ignore this check.
+This fixes my issue.
 
-Signed-off-by: Daniel Wagner <dwagner@suse.de>
----
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
 
-I got a bug report with this:
-
- nvme nvme10: pci function 0000:00:19.0
- nvme 0000:00:19.0: enabling device (0000 -> 0002)
- nvme nvme10: Duplicate cntlid 65535 with nvme7, rejecting
- nvme nvme10: Removing after probe failure status: -22
-
-From reading the spec I got the impression that it should be enough to
-ignore the cntlid check if the cntlid is 0xffff. Though I might be
-completely wrong here.
-
- drivers/nvme/host/core.c | 2 +-
- drivers/nvme/host/nvme.h | 5 +++++
- 2 files changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index dd18861f77c0..918abb54771c 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -2701,7 +2701,7 @@ static bool nvme_validate_cntlid(struct nvme_subsystem *subsys,
- 		if (nvme_state_terminal(tmp))
- 			continue;
- 
--		if (tmp->cntlid == ctrl->cntlid) {
-+		if (!nvme_ctrl_dynamic(tmp) && tmp->cntlid == ctrl->cntlid) {
- 			dev_err(ctrl->device,
- 				"Duplicate cntlid %u with %s, subsys %s, rejecting\n",
- 				ctrl->cntlid, dev_name(tmp->device),
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index a162f6c6da6e..ed75245263f5 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -539,6 +539,11 @@ static inline struct request *nvme_cid_to_rq(struct blk_mq_tags *tags,
- 	return blk_mq_tag_to_rq(tags, nvme_tag_from_cid(command_id));
- }
- 
-+static inline bool nvme_ctrl_dynamic(struct nvme_ctrl *ctrl)
-+{
-+	return ctrl->cntlid == 0xffff;
-+}
-+
- #ifdef CONFIG_FAULT_INJECTION_DEBUG_FS
- void nvme_fault_inject_init(struct nvme_fault_inject *fault_inj,
- 			    const char *dev_name);
--- 
-2.29.2
-
+Thanks
