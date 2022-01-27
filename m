@@ -2,116 +2,353 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49BC3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 15:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00505C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 15:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243019AbiA0PmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        id S243050AbiA0PmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 10:42:19 -0500
+Received: from mga12.intel.com ([192.55.52.136]:51586 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243024AbiA0PmP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 27 Jan 2022 10:42:15 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:49472 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243021AbiA0PmM (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 10:42:12 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 1FE6E1F3A9;
-        Thu, 27 Jan 2022 15:42:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643298131; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=S4VBZv9WfEQwrs5eW3PIABt4HyrI6UHfx6uJ3T46py8=;
-        b=LHOStsZ35VFZzqVJBspbYyxhZdepXDHt/Q8HhToxAjGXajoUxg7LLgf2GPpdkJCD8xZIvl
-        qLi3tl13b7i0v9S32hedNGCdrb5U93yo/EWFSdVzHaZLOu2J0r6mXeoUObIJjn0IyOGMFr
-        hPb6xwyuTpUsiDNwIP83uE238/r8zpY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643298131;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=S4VBZv9WfEQwrs5eW3PIABt4HyrI6UHfx6uJ3T46py8=;
-        b=hAVziDqt1Cz+MVqL3DTubIWI3SDKK/WqiXVwB/G06XkDDZn/yeM8uICBXCXzLVe9QmAYTd
-        MWVo70sj96evlgCQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EA16E13BE5;
-        Thu, 27 Jan 2022 15:42:10 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id yyVrOFK98mEkaQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 27 Jan 2022 15:42:10 +0000
-Message-ID: <9451a3f7-ef63-6d01-1357-4953f3d1e566@suse.cz>
-Date:   Thu, 27 Jan 2022 16:42:10 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] mm: remove offset check on page->compound_head and
- folio->lru
-Content-Language: en-US
-To:     Wei Yang <richard.weiyang@gmail.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        peterz@infradead.org, will@kernel.org, linyunsheng@huawei.com,
-        aarcange@redhat.com, feng.tang@intel.com, ebiederm@xmission.com,
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643298135; x=1674834135;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lu9Y5b9E9JmkyqoUOd3mLF2fE/CEvcxb0oZzk3iJDDQ=;
+  b=W96yCMJZTXqYE4huZFQ8nAVE7CVCSDuxPnba8lU1HRfCYj3gX9MMeg9j
+   Sxxrmlr5q1I5RZuH2rBKrPoMUqiYO0iwQsvIazpsxDmCukZldJjMvciho
+   WL6QKahMaF66aGz24TQ4H7q/4k9sdiLAREd7Q2d3vGeuLgwflqTGhWLVX
+   Y7wmBNb9r42aIk6d6xaZCKlq2I5PpKIYR7P6lll6v1fEl/LqiGECQpMI/
+   sPoY4CtISva7MOV0SjQm4ppYz5klKcklZXrDgI5dDk1P1OHXJGf0gjtcB
+   zWdtfjoy0Qk61OMZJ5uvJJHsrlHDkuJZN8rN8yRTeAOBJpU5R3BJUMxeo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="226863352"
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="226863352"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 07:41:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="767548211"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga006.fm.intel.com with ESMTP; 27 Jan 2022 07:41:48 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20RFfjOq028674;
+        Thu, 27 Jan 2022 15:41:47 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <Yde6hZ41agqa2zs3@casper.infradead.org>
- <20220107134059.flxr2hcd6ilb6vt7@master>
- <Ydi6iMbSZ/FewYPT@casper.infradead.org>
- <20220107160825.13c71fdd871d7d5611d116b9@linux-foundation.org>
- <YdjfsbAR0UlwyC6b@casper.infradead.org>
- <20220108081340.3oi2z2rm3cbqozzt@master>
- <20220123013852.mm7eyn3z26v3hkc2@master>
- <93c48e68-2266-72ee-0763-65805b94c968@suse.cz>
- <20220124225531.26yyse52yo5x3fr5@master>
- <581f4247-83b1-df39-6724-af0565d0c7ea@suse.cz>
- <20220127011054.zlqtydxbhi4ioj5d@master>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220127011054.zlqtydxbhi4ioj5d@master>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v2 net-next 3/4] ice: switch: use a struct to pass packet template params
+Date:   Thu, 27 Jan 2022 16:40:08 +0100
+Message-Id: <20220127154009.623304-4-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220127154009.623304-1-alexandr.lobakin@intel.com>
+References: <20220127154009.623304-1-alexandr.lobakin@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/27/22 02:10, Wei Yang wrote:
-> On Tue, Jan 25, 2022 at 11:11:40AM +0100, Vlastimil Babka wrote:
->>On 1/24/22 23:55, Wei Yang wrote:
->>> On Mon, Jan 24, 2022 at 11:30:10AM +0100, Vlastimil Babka wrote:
->>>>On 1/23/22 02:38, Wei Yang wrote:
->>>>
->>>>I can offer my insight (which might be of course wrong). Ideally one day
->>>>page.lru will be gone and only folio will be used for LRU pages. Then there
->>>>won't be a  FOLIO_MATCH(lru, lru); and FOLIO_MATCH(compound_head, lru);
->>>>won't appear to be redundant anymore. lru is list_head so two pointers and
->>> 
->>> Thanks for your comment.
->>> 
->>> I can't imagine the final result. If we would remove page.lru, we could remove
->>> FOLIO_MATCH(lru, lru) and add FOLIO_MATCH(compound_head, lru) at that moment?
->>
->>Yes, or we could forget to do it. Adding it right now is another option that
->>Matthew has chosen and I don't see a strong reason to change it. Can you
->>measure a kernel build speedup thanks to removing the now redundant check?
->>
-> 
-> If we forget to do it, the compile would fail, right?
+ice_find_dummy_packet() contains a lot of boilerplate code and a
+nice room for copy-paste mistakes.
+Instead of passing 3 separate pointers back and forth to get packet
+template (dummy) params, directly return a structure containing
+them. Then, use a macro to compose compound literals and avoid code
+duplication on return path.
+Now, dummy packet type/name is needed only once to return a full
+correct triple pkt-pkt_len-offsets, and those are all one-liners.
 
-No, FOLIO_MATCH is like a build-time assert. It can only fail if the assert
-is there, and the condition evaluates to false.
-If it's not there and the condition is false, it will instead mysteriously
-crash on runtime, which is worse.
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_switch.c | 173 +++++++-------------
+ 1 file changed, 62 insertions(+), 111 deletions(-)
 
-> Put it here for a future reason is not persuasive.
-> 
->>>>thus valid pointers are aligned in such a way they can't accidentaly set the
->>>>bit 0.
->>>>
->>> 
-> 
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+index b6b6e8f5d358..68202671a114 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -35,6 +35,20 @@ struct ice_dummy_pkt_offsets {
+ 	u16 offset; /* ICE_PROTOCOL_LAST indicates end of list */
+ };
+ 
++struct ice_dummy_pkt_profile {
++	const struct ice_dummy_pkt_offsets *offsets;
++	const u8 *pkt;
++	u16 pkt_len;
++};
++
++#define ICE_PKT_PROFILE(type) ({					\
++	(struct ice_dummy_pkt_profile){					\
++		.pkt		= dummy_##type##_packet,		\
++		.pkt_len	= sizeof(dummy_##type##_packet),	\
++		.offsets	= dummy_##type##_packet_offsets,	\
++	};								\
++})
++
+ static const struct ice_dummy_pkt_offsets dummy_gre_tcp_packet_offsets[] = {
+ 	{ ICE_MAC_OFOS,		0 },
+ 	{ ICE_ETYPE_OL,		12 },
+@@ -5035,15 +5049,12 @@ ice_add_adv_recipe(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
+  *	   structure per protocol header
+  * @lkups_cnt: number of protocols
+  * @tun_type: tunnel type
+- * @pkt: dummy packet to fill according to filter match criteria
+- * @pkt_len: packet length of dummy packet
+- * @offsets: pointer to receive the pointer to the offsets for the packet
++ *
++ * Returns the &ice_dummy_pkt_profile corresponding to these lookup params.
+  */
+-static void
++static struct ice_dummy_pkt_profile
+ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+-		      enum ice_sw_tunnel_type tun_type,
+-		      const u8 **pkt, u16 *pkt_len,
+-		      const struct ice_dummy_pkt_offsets **offsets)
++		      enum ice_sw_tunnel_type tun_type)
+ {
+ 	bool tcp = false, udp = false, ipv6 = false, vlan = false;
+ 	bool ipv6_il = false;
+@@ -5073,100 +5084,49 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 	}
+ 
+ 	if (tun_type == ICE_SW_TUN_NVGRE) {
+-		if (tcp && ipv6_il) {
+-			*pkt = dummy_gre_ipv6_tcp_packet;
+-			*pkt_len = sizeof(dummy_gre_ipv6_tcp_packet);
+-			*offsets = dummy_gre_ipv6_tcp_packet_offsets;
+-			return;
+-		}
+-		if (tcp) {
+-			*pkt = dummy_gre_tcp_packet;
+-			*pkt_len = sizeof(dummy_gre_tcp_packet);
+-			*offsets = dummy_gre_tcp_packet_offsets;
+-			return;
+-		}
+-		if (ipv6_il) {
+-			*pkt = dummy_gre_ipv6_udp_packet;
+-			*pkt_len = sizeof(dummy_gre_ipv6_udp_packet);
+-			*offsets = dummy_gre_ipv6_udp_packet_offsets;
+-			return;
+-		}
+-		*pkt = dummy_gre_udp_packet;
+-		*pkt_len = sizeof(dummy_gre_udp_packet);
+-		*offsets = dummy_gre_udp_packet_offsets;
+-		return;
++		if (tcp && ipv6_il)
++			return ICE_PKT_PROFILE(gre_ipv6_tcp);
++		else if (tcp)
++			return ICE_PKT_PROFILE(gre_tcp);
++		else if (ipv6_il)
++			return ICE_PKT_PROFILE(gre_ipv6_udp);
++		else
++			return ICE_PKT_PROFILE(gre_udp);
+ 	}
+ 
+ 	if (tun_type == ICE_SW_TUN_VXLAN ||
+ 	    tun_type == ICE_SW_TUN_GENEVE) {
+-		if (tcp && ipv6_il) {
+-			*pkt = dummy_udp_tun_ipv6_tcp_packet;
+-			*pkt_len = sizeof(dummy_udp_tun_ipv6_tcp_packet);
+-			*offsets = dummy_udp_tun_ipv6_tcp_packet_offsets;
+-			return;
+-		}
+-		if (tcp) {
+-			*pkt = dummy_udp_tun_tcp_packet;
+-			*pkt_len = sizeof(dummy_udp_tun_tcp_packet);
+-			*offsets = dummy_udp_tun_tcp_packet_offsets;
+-			return;
+-		}
+-		if (ipv6_il) {
+-			*pkt = dummy_udp_tun_ipv6_udp_packet;
+-			*pkt_len = sizeof(dummy_udp_tun_ipv6_udp_packet);
+-			*offsets = dummy_udp_tun_ipv6_udp_packet_offsets;
+-			return;
+-		}
+-		*pkt = dummy_udp_tun_udp_packet;
+-		*pkt_len = sizeof(dummy_udp_tun_udp_packet);
+-		*offsets = dummy_udp_tun_udp_packet_offsets;
+-		return;
++		if (tcp && ipv6_il)
++			return ICE_PKT_PROFILE(udp_tun_ipv6_tcp);
++		else if (tcp)
++			return ICE_PKT_PROFILE(udp_tun_tcp);
++		else if (ipv6_il)
++			return ICE_PKT_PROFILE(udp_tun_ipv6_udp);
++		else
++			return ICE_PKT_PROFILE(udp_tun_udp);
+ 	}
+ 
+ 	if (udp && !ipv6) {
+-		if (vlan) {
+-			*pkt = dummy_vlan_udp_packet;
+-			*pkt_len = sizeof(dummy_vlan_udp_packet);
+-			*offsets = dummy_vlan_udp_packet_offsets;
+-			return;
+-		}
+-		*pkt = dummy_udp_packet;
+-		*pkt_len = sizeof(dummy_udp_packet);
+-		*offsets = dummy_udp_packet_offsets;
+-		return;
++		if (vlan)
++			return ICE_PKT_PROFILE(vlan_udp);
++		else
++			return ICE_PKT_PROFILE(udp);
+ 	} else if (udp && ipv6) {
+-		if (vlan) {
+-			*pkt = dummy_vlan_udp_ipv6_packet;
+-			*pkt_len = sizeof(dummy_vlan_udp_ipv6_packet);
+-			*offsets = dummy_vlan_udp_ipv6_packet_offsets;
+-			return;
+-		}
+-		*pkt = dummy_udp_ipv6_packet;
+-		*pkt_len = sizeof(dummy_udp_ipv6_packet);
+-		*offsets = dummy_udp_ipv6_packet_offsets;
+-		return;
++		if (vlan)
++			return ICE_PKT_PROFILE(vlan_udp_ipv6);
++		else
++			return ICE_PKT_PROFILE(udp_ipv6);
+ 	} else if ((tcp && ipv6) || ipv6) {
+-		if (vlan) {
+-			*pkt = dummy_vlan_tcp_ipv6_packet;
+-			*pkt_len = sizeof(dummy_vlan_tcp_ipv6_packet);
+-			*offsets = dummy_vlan_tcp_ipv6_packet_offsets;
+-			return;
+-		}
+-		*pkt = dummy_tcp_ipv6_packet;
+-		*pkt_len = sizeof(dummy_tcp_ipv6_packet);
+-		*offsets = dummy_tcp_ipv6_packet_offsets;
+-		return;
++		if (vlan)
++			return ICE_PKT_PROFILE(vlan_tcp_ipv6);
++		else
++			return ICE_PKT_PROFILE(tcp_ipv6);
+ 	}
+ 
+-	if (vlan) {
+-		*pkt = dummy_vlan_tcp_packet;
+-		*pkt_len = sizeof(dummy_vlan_tcp_packet);
+-		*offsets = dummy_vlan_tcp_packet_offsets;
+-	} else {
+-		*pkt = dummy_tcp_packet;
+-		*pkt_len = sizeof(dummy_tcp_packet);
+-		*offsets = dummy_tcp_packet_offsets;
+-	}
++	if (vlan)
++		return ICE_PKT_PROFILE(vlan_tcp);
++
++	return ICE_PKT_PROFILE(tcp);
+ }
+ 
+ /**
+@@ -5176,15 +5136,12 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+  *	   structure per protocol header
+  * @lkups_cnt: number of protocols
+  * @s_rule: stores rule information from the match criteria
+- * @dummy_pkt: dummy packet to fill according to filter match criteria
+- * @pkt_len: packet length of dummy packet
+- * @offsets: offset info for the dummy packet
++ * @profile: dummy packet profile (the template, its size and header offsets)
+  */
+ static int
+ ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 			  struct ice_aqc_sw_rules_elem *s_rule,
+-			  const u8 *dummy_pkt, u16 pkt_len,
+-			  const struct ice_dummy_pkt_offsets *offsets)
++			  const struct ice_dummy_pkt_profile *profile)
+ {
+ 	u8 *pkt;
+ 	u16 i;
+@@ -5194,9 +5151,10 @@ ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 	 */
+ 	pkt = s_rule->pdata.lkup_tx_rx.hdr;
+ 
+-	memcpy(pkt, dummy_pkt, pkt_len);
++	memcpy(pkt, profile->pkt, profile->pkt_len);
+ 
+ 	for (i = 0; i < lkups_cnt; i++) {
++		const struct ice_dummy_pkt_offsets *offsets = profile->offsets;
+ 		enum ice_protocol_type type;
+ 		u16 offset = 0, len = 0, j;
+ 		bool found = false;
+@@ -5277,7 +5235,7 @@ ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 		}
+ 	}
+ 
+-	s_rule->pdata.lkup_tx_rx.hdr_len = cpu_to_le16(pkt_len);
++	s_rule->pdata.lkup_tx_rx.hdr_len = cpu_to_le16(profile->pkt_len);
+ 
+ 	return 0;
+ }
+@@ -5500,12 +5458,11 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
+ 		 struct ice_rule_query_data *added_entry)
+ {
+ 	struct ice_adv_fltr_mgmt_list_entry *m_entry, *adv_fltr = NULL;
+-	u16 rid = 0, i, pkt_len, rule_buf_sz, vsi_handle;
+-	const struct ice_dummy_pkt_offsets *pkt_offsets;
+ 	struct ice_aqc_sw_rules_elem *s_rule = NULL;
++	u16 rid = 0, i, rule_buf_sz, vsi_handle;
++	struct ice_dummy_pkt_profile profile;
+ 	struct list_head *rule_head;
+ 	struct ice_switch_info *sw;
+-	const u8 *pkt = NULL;
+ 	u16 word_cnt;
+ 	u32 act = 0;
+ 	int status;
+@@ -5533,13 +5490,8 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
+ 	if (!word_cnt || word_cnt > ICE_MAX_CHAIN_WORDS)
+ 		return -EINVAL;
+ 
+-	/* make sure that we can locate a dummy packet */
+-	ice_find_dummy_packet(lkups, lkups_cnt, rinfo->tun_type, &pkt, &pkt_len,
+-			      &pkt_offsets);
+-	if (!pkt) {
+-		status = -EINVAL;
+-		goto err_ice_add_adv_rule;
+-	}
++	/* locate a dummy packet */
++	profile = ice_find_dummy_packet(lkups, lkups_cnt, rinfo->tun_type);
+ 
+ 	if (!(rinfo->sw_act.fltr_act == ICE_FWD_TO_VSI ||
+ 	      rinfo->sw_act.fltr_act == ICE_FWD_TO_Q ||
+@@ -5580,7 +5532,7 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
+ 		}
+ 		return status;
+ 	}
+-	rule_buf_sz = ICE_SW_RULE_RX_TX_NO_HDR_SIZE + pkt_len;
++	rule_buf_sz = ICE_SW_RULE_RX_TX_NO_HDR_SIZE + profile.pkt_len;
+ 	s_rule = kzalloc(rule_buf_sz, GFP_KERNEL);
+ 	if (!s_rule)
+ 		return -ENOMEM;
+@@ -5640,8 +5592,7 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
+ 	s_rule->pdata.lkup_tx_rx.recipe_id = cpu_to_le16(rid);
+ 	s_rule->pdata.lkup_tx_rx.act = cpu_to_le32(act);
+ 
+-	status = ice_fill_adv_dummy_packet(lkups, lkups_cnt, s_rule, pkt,
+-					   pkt_len, pkt_offsets);
++	status = ice_fill_adv_dummy_packet(lkups, lkups_cnt, s_rule, &profile);
+ 	if (status)
+ 		goto err_ice_add_adv_rule;
+ 
+@@ -5649,7 +5600,7 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
+ 	    rinfo->tun_type != ICE_SW_TUN_AND_NON_TUN) {
+ 		status = ice_fill_adv_packet_tun(hw, rinfo->tun_type,
+ 						 s_rule->pdata.lkup_tx_rx.hdr,
+-						 pkt_offsets);
++						 profile.offsets);
+ 		if (status)
+ 			goto err_ice_add_adv_rule;
+ 	}
+-- 
+2.34.1
 
