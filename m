@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F61FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D69C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245229AbiA0R4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:56:33 -0500
-Received: from mga02.intel.com ([134.134.136.20]:19413 "EHLO mga02.intel.com"
+        id S245242AbiA0R4f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:56:35 -0500
+Received: from mga12.intel.com ([192.55.52.136]:65462 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244818AbiA0Rzc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S244797AbiA0Rzc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 27 Jan 2022 12:55:32 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643306132; x=1674842132;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=C3DkGtAeq/fvKF1BtRuemGQclgEwuaGMDhc79ROPFiw=;
-  b=YnQy4VezkywlEXKiqqt/KARNW4vm4HM5YywPKjLLOaR7K6kxI90bck2M
-   2Zz+fjhg+zSUjJjfnwBbNl0SfKGDqU0h90pxaY0340MheRNGjnZJWABbO
-   9rHDEIFDaS9+CoWjw54lgiOn+FFjQMdGPe4ldKclRS753r7ehCtyVswLu
-   +zHoPIOe3vmfDdIsE3kZtKdobhry1fsXsTxlbdIss/7M2g5EqvvvxBdsE
-   hyaPe3AGg7YKzGhOfENH9JfIw0U2G7YPqCs34JZ333VzMrVo6kRGWvg5D
-   f2/o4lRu4LcqLumKV73wwLUkGIDADMWSIAL0CTa238HhGV4KM1dSGFJaS
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234302444"
+  bh=hMk3LMURScwSXrvqat2n+0LCReDi2A4lEtzX2po89nQ=;
+  b=ILI/p5427iT3toT7E/iTCKDvA3tZVWowkKROGmlfIGpBJPKoN8rJCC+t
+   mVp6i1b/7Ci1OJdDGdAAFbc/zjvX8BQB4v44EL+4GF2QlHMGiYCRSBmOk
+   MgVL1zWfgsG5APGDvW3Cg/L7lFKwtv8b1/DiarrmE4AoqvkZ3HIeI3bZB
+   Zt0/03mhlCnQL0QDrpE7KZ3j3CZwGKSK1wS6qcMf0f2H5Hw5Cfrkpkiyr
+   g743vCTISrYeq+3zPuR3PCSHy2COzRORhXPXpgpPK/aRHf/nBO3RF0twM
+   IL8J7KGXNw4W5yHKcv6XlCg6Q2WvYeJMRtj4wgngYw6aBzstGOI4+PNpa
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="226899135"
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="234302444"
+   d="scan'208";a="226899135"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:12 -0800
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:13 -0800
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="674796152"
+   d="scan'208";a="674796181"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:11 -0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:13 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -40,9 +40,9 @@ To:     Dave Hansen <dave.hansen@linux.intel.com>,
 Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V8 28/44] mm/pkeys: Introduce pks_update_exception()
-Date:   Thu, 27 Jan 2022 09:54:49 -0800
-Message-Id: <20220127175505.851391-29-ira.weiny@intel.com>
+Subject: [PATCH V8 36/44] memremap_pages: Reserve a PKS PKey for eventual use by PMEM
+Date:   Thu, 27 Jan 2022 09:54:57 -0800
+Message-Id: <20220127175505.851391-37-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220127175505.851391-1-ira.weiny@intel.com>
 References: <20220127175505.851391-1-ira.weiny@intel.com>
@@ -54,151 +54,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Some PKS use cases will want to catch permissions violations and
-optionally allow them.
+The persistent memory (PMEM) driver uses the memremap_pages facility to
+provide 'struct page' metadata (vmemmap) for PMEM.  Given that PMEM
+capacity maybe orders of magnitude higher capacity than System RAM it
+presents a large vulnerability surface to stray writes.  Unlike stray
+writes to System RAM, which may result in a crash or other undesirable
+behavior, stray writes to PMEM additionally are more likely to result in
+permanent data loss. Reboot is not a remediation for PMEM corruption
+like it is for System RAM.
 
-pks_update_protection() updates the protection of the current running
-context.  It will _not_ work to change the protections of a thread which
-has been interrupted.  Therefore updating a thread from within an
-exception is not possible with pks_update_protection().
+Given that PMEM access from the kernel is limited to a constrained set
+of locations (PMEM driver, Filesystem-DAX, and direct-I/O to a DAX
+page), it is amenable to supervisor pkey protection.  PMEM uses the
+memmap facility to map it's pages into the direct map.
 
-Introduce pks_update_exception() to update the faulted threads protections
-in addition to the current context.  A PKS fault callback can then be
-used to adjust the permissions of the faulted thread as necessary.
-
-Add documentation
+Reserve a PKey for use by the memmap facility.
 
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-
 ---
-Changes for V8
-	Remove the concept of abandoning a pkey in favor of using the
-		custom fault handler via this new pks_update_exception()
-		call
-	Without an abandon call there is no need for an abandon mask on
-		sched in, new thread creation, or within exceptions...
-	This now lets all invalid access' fault
-	Ensure that all entry points into the pks has feature checks...
-	Place abandon fault check before the test callback to ensure
-		testing does not detect the double fault of the abandon
-		code and flag it incorrectly as a fault.
-	Change return type of pks_handle_abandoned_pkeys() to bool
----
- Documentation/core-api/protection-keys.rst |  3 ++
- arch/x86/mm/pkeys.c                        | 49 +++++++++++++++++++---
- include/linux/pkeys.h                      |  5 +++
- 3 files changed, 51 insertions(+), 6 deletions(-)
+ include/linux/pks-keys.h | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
-index 115afc67153f..b89308bf117e 100644
---- a/Documentation/core-api/protection-keys.rst
-+++ b/Documentation/core-api/protection-keys.rst
-@@ -147,6 +147,9 @@ Changing permissions of individual keys
- .. kernel-doc:: include/linux/pks-keys.h
-         :identifiers: pks_mk_readwrite pks_mk_noaccess
- 
-+.. kernel-doc:: arch/x86/mm/pkeys.c
-+        :identifiers: pks_update_exception
-+
- MSR details
- -----------
- 
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index 1da78580d6de..6723ae42732a 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -319,6 +319,15 @@ void pks_setup(void)
- 	cr4_set_bits(X86_CR4_PKS);
- }
- 
-+static void __pks_update_protection(int pkey, u32 protection)
-+{
-+	u32 pkrs = current->thread.pks_saved_pkrs;
-+
-+	current->thread.pks_saved_pkrs = pkey_update_pkval(pkrs, pkey,
-+							   protection);
-+	pks_write_pkrs(current->thread.pks_saved_pkrs);
-+}
-+
- /*
-  * Do not call this directly, see pks_mk*().
+diff --git a/include/linux/pks-keys.h b/include/linux/pks-keys.h
+index a3fcd8df8688..46bb9a18da5a 100644
+--- a/include/linux/pks-keys.h
++++ b/include/linux/pks-keys.h
+@@ -42,14 +42,16 @@
   *
-@@ -332,18 +341,46 @@ void pks_setup(void)
   */
- void pks_update_protection(int pkey, u32 protection)
- {
--	u32 pkrs;
--
- 	if (!cpu_feature_enabled(X86_FEATURE_PKS))
- 		return;
+ enum pks_pkey_consumers {
+-	PKS_KEY_DEFAULT		= 0, /* Must be 0 for default PTE values */
+-	PKS_KEY_TEST		= 1,
+-	PKS_KEY_NR_CONSUMERS	= 2,
++	PKS_KEY_DEFAULT			= 0, /* Must be 0 for default PTE values */
++	PKS_KEY_TEST			= 1,
++	PKS_KEY_PGMAP_PROTECTION	= 2,
++	PKS_KEY_NR_CONSUMERS		= 3,
+ };
  
--	pkrs = current->thread.pks_saved_pkrs;
--	current->thread.pks_saved_pkrs = pkey_update_pkval(pkrs, pkey,
--							   protection);
- 	preempt_disable();
--	pks_write_pkrs(current->thread.pks_saved_pkrs);
-+	__pks_update_protection(pkey, protection);
- 	preempt_enable();
- }
- EXPORT_SYMBOL_GPL(pks_update_protection);
- 
-+/**
-+ * pks_update_exception() - Update the protections of a faulted thread
-+ *
-+ * @regs: Faulting thread registers
-+ * @pkey: pkey to update
-+ * @protection: protection bits to use.
-+ *
-+ * CONTEXT: Exception
-+ *
-+ * pks_update_protection() updates the protection of the current running
-+ * context.  It will not work to change the protections of a thread which has
-+ * been interrupted.  If a PKS fault callback fires it may want to update the
-+ * faulted threads protections in addition to it's own.
-+ *
-+ * Use pks_update_exception() to update the faulted threads protections
-+ * in addition to the current context.
-+ */
-+void pks_update_exception(struct pt_regs *regs, int pkey, u32 protection)
-+{
-+	struct pt_regs_extended *ept_regs;
-+	u32 old;
-+
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
-+
-+	__pks_update_protection(pkey, protection);
-+
-+	ept_regs = to_extended_pt_regs(regs);
-+	old = ept_regs->aux.pks_thread_pkrs;
-+	ept_regs->aux.pks_thread_pkrs = pkey_update_pkval(old, pkey, protection);
-+}
-+EXPORT_SYMBOL_GPL(pks_update_exception);
-+
- #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-diff --git a/include/linux/pkeys.h b/include/linux/pkeys.h
-index 5f4965f5449b..c318d97f5da8 100644
---- a/include/linux/pkeys.h
-+++ b/include/linux/pkeys.h
-@@ -56,6 +56,7 @@ static inline bool arch_pkeys_enabled(void)
- #include <uapi/asm-generic/mman-common.h>
- 
- void pks_update_protection(int pkey, u32 protection);
-+void pks_update_exception(struct pt_regs *regs, int pkey, u32 protection);
- 
- /**
-  * pks_mk_noaccess() - Disable all access to the domain
-@@ -85,6 +86,10 @@ static inline void pks_mk_readwrite(int pkey)
- 
- static inline void pks_mk_noaccess(int pkey) {}
- static inline void pks_mk_readwrite(int pkey) {}
-+static inline void pks_update_exception(struct pt_regs *regs,
-+					int pkey,
-+					u32 protection)
-+{ }
- 
- #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
- 
+ #define PKS_INIT_VALUE (PKR_RW_KEY(PKS_KEY_DEFAULT)		| \
+ 			PKR_AD_KEY(PKS_KEY_TEST)	| \
+-			PKR_AD_KEY(2)	| PKR_AD_KEY(3)		| \
++			PKR_AD_KEY(PKS_KEY_PGMAP_PROTECTION)	| \
++			PKR_AD_KEY(3)	| \
+ 			PKR_AD_KEY(4)	| PKR_AD_KEY(5)		| \
+ 			PKR_AD_KEY(6)	| PKR_AD_KEY(7)		| \
+ 			PKR_AD_KEY(8)	| PKR_AD_KEY(9)		| \
 -- 
 2.31.1
 
