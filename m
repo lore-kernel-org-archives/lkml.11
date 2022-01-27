@@ -2,134 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1AA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 06:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABAF3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 06:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236729AbiA0G3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 01:29:36 -0500
-Received: from cpanel.siel.si ([46.19.9.99]:43816 "EHLO cpanel.siel.si"
+        id S236735AbiA0Gag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 01:30:36 -0500
+Received: from mga11.intel.com ([192.55.52.93]:35640 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236716AbiA0G3d (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 01:29:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=norik.com;
-        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:
-        Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=XSmT03lL5vw4WJ5VY/GJkb9j/PsbZ8y8uAL8Hac31s8=; b=LvQIvmY3hm58cspzGyaKlOlaZp
-        o6rddruBNKEnYQC5zrxe4r1mqj1tmgpDJPz9NGI82/+IZBDM2A8FPhCoaEa2B6OB8n9zL6S38sYrH
-        gDqWEkcG7PZnzfoKTAd8sLQjZDGO1DlWZeLk3rG2EY1bikQhOGiGVqMWOBoyYiTLpqtraUBYH8zOU
-        MZG3AfHwr1zpTjAywgfoILQm88IjDABquQ4Yc+pJl1Vc10UH+ZmeTFqyEhAQy4T1uXHdDwgX6T3c/
-        6oaasdNP12Mu3ypcF2/rSPWooXD3RQ3uAZMC5AMocLsqXV0D0Qe+MsfFTyDd4ReXboqpvSebsVAIW
-        aFRyc6nw==;
-Received: from 89-212-21-243.static.t-2.net ([89.212.21.243]:51234 helo=[192.168.69.215])
-        by cpanel.siel.si with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <andrej.picej@norik.com>)
-        id 1nCyHa-001dey-0C; Thu, 27 Jan 2022 07:29:29 +0100
-Subject: Re: [PATCH RESEND 2/2] ARM: dts: imx6qdl: Handle unneeded
- MFD-subdevices correctly
-To:     Shawn Guo <shawnguo@kernel.org>
-Cc:     robh+dt@kernel.org, s.hauer@pengutronix.de,
-        devicetree@vger.kernel.org, festevam@gmail.com,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        y.bas@phytec.com
-References: <20211216115529.2331475-1-andrej.picej@norik.com>
- <20211216115529.2331475-2-andrej.picej@norik.com>
- <20220126092741.GK4686@dragon>
-From:   Andrej Picej <andrej.picej@norik.com>
-Message-ID: <b7ce8b9e-e11e-fe7e-bf20-41cee9ee933b@norik.com>
-Date:   Thu, 27 Jan 2022 07:29:31 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S233098AbiA0Gae (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 01:30:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643265034; x=1674801034;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5xkXNqIJZXAQJoOj8MLSU7e7o3znFMZWmFhFcf1BPvU=;
+  b=k+9Y247g7eJ2smQRmXUKBik+5VXK+bRPGbYepRLUFOCyHCn81og3a+8U
+   fZ7KAbKTCcCnBV2DgKs1w8JCUH36nlomOf0Ht9rFSWRevPAWQkG2KHv54
+   rLJXSR3ZKd4hbzB4r5CGPiaeve7Gc5bcbPaR5bH7CChPjjrMoxOIgNihT
+   BHgbdeL//uFV0jvg6fF8rR1jsvyaFY1v8nTNzA7kDyajmm9tgdzr3Ak+2
+   1JtYRGm7oYtVs5qg2YPz7/g2iNPuZqisekrcNeNKPHeCiqbmiLAoxnI75
+   hYe42QSkyMaKgnhdLP1jjP9T8kOvSfBiq+Afd9IcRRO3IIhXxL3Xs7mNj
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="244363240"
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="244363240"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 22:30:33 -0800
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="521096220"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 22:30:24 -0800
+Received: by lahna (sSMTP sendmail emulation); Thu, 27 Jan 2022 08:30:21 +0200
+Date:   Thu, 27 Jan 2022 08:30:21 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     bhelgaas@google.com, koba.ko@canonical.com,
+        Russell Currey <ruscur@russell.cc>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Lalithambika Krishnakumar <lalithambika.krishnakumar@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <jroedel@suse.de>, linuxppc-dev@lists.ozlabs.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] PCI/AER: Disable AER service when link is in
+ L2/L3 ready, L2 and L3 state
+Message-ID: <YfI7/X15bl+Ac19A@lahna>
+References: <20220127025418.1989642-1-kai.heng.feng@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <20220126092741.GK4686@dragon>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - cpanel.siel.si
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - norik.com
-X-Get-Message-Sender-Via: cpanel.siel.si: authenticated_id: andrej.picej@norik.com
-X-Authenticated-Sender: cpanel.siel.si: andrej.picej@norik.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127025418.1989642-1-kai.heng.feng@canonical.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 26. 01. 22 10:27, Shawn Guo wrote:
-> On Thu, Dec 16, 2021 at 12:55:29PM +0100, Andrej Picej wrote:
->> From: Yunus Bas <y.bas@phytec.de>
->>
->> The proper way to handle partly used MFD devices are to describe all MFD
->> subdevices in the devicetree and disable the not used ones. This
->> suppresses any warnings that may arise as a result.
->>
->> Signed-off-by: Yunus Bas <y.bas@phytec.de>
->> Signed-off-by: Andrej Picej <andrej.picej@norik.com>
+On Thu, Jan 27, 2022 at 10:54:17AM +0800, Kai-Heng Feng wrote:
+> Commit 50310600ebda ("iommu/vt-d: Enable PCI ACS for platform opt in
+> hint") enables ACS, and some platforms lose its NVMe after resume from
+> S3:
+> [   50.947816] pcieport 0000:00:1b.0: DPC: containment event, status:0x1f01 source:0x0000
+> [   50.947817] pcieport 0000:00:1b.0: DPC: unmasked uncorrectable error detected
+> [   50.947829] pcieport 0000:00:1b.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Receiver ID)
+> [   50.947830] pcieport 0000:00:1b.0:   device [8086:06ac] error status/mask=00200000/00010000
+> [   50.947831] pcieport 0000:00:1b.0:    [21] ACSViol                (First)
+> [   50.947841] pcieport 0000:00:1b.0: AER: broadcast error_detected message
+> [   50.947843] nvme nvme0: frozen state error detected, reset controller
 > 
-> Use subject prefix like
+> It happens right after ACS gets enabled during resume.
 > 
->    ARM: dts: imx6qdl-phytec: ...
+> There's another case, when Thunderbolt reaches D3cold:
+> [   30.100211] pcieport 0000:00:1d.0: AER: Uncorrected (Non-Fatal) error received: 0000:00:1d.0
+> [   30.100251] pcieport 0000:00:1d.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
+> [   30.100256] pcieport 0000:00:1d.0:   device [8086:7ab0] error status/mask=00100000/00004000
+> [   30.100262] pcieport 0000:00:1d.0:    [20] UnsupReq               (First)
+> [   30.100267] pcieport 0000:00:1d.0: AER:   TLP Header: 34000000 08000052 00000000 00000000
+> [   30.100372] thunderbolt 0000:0a:00.0: AER: can't recover (no error_detected callback)
+> [   30.100401] xhci_hcd 0000:3e:00.0: AER: can't recover (no error_detected callback)
+> [   30.100427] pcieport 0000:00:1d.0: AER: device recovery failed
 > 
-> Shawn
-
-Will send a v2 with this change.
-
-Thanks.
-
-Andrej
-
+> So disable AER service to avoid the noises from turning power rails
+> on/off when the device is in low power states (D3hot and D3cold), as
+> PCIe spec "5.2 Link State Power Management" states that TLP and DLLP
+> transmission is disabled for a Link in L2/L3 Ready (D3hot), L2 (D3cold
+> with aux power) and L3 (D3cold).
 > 
->> ---
->>   arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi      |  5 +++++
->>   arch/arm/boot/dts/imx6qdl-phytec-phycore-som.dtsi | 10 ++++++++++
->>   2 files changed, 15 insertions(+)
->>
->> diff --git a/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi b/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi
->> index 2ec154756bbc..3590f439adf5 100644
->> --- a/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi
->> +++ b/arch/arm/boot/dts/imx6qdl-phytec-pfla02.dtsi
->> @@ -213,6 +213,11 @@ pmic_rtc: rtc {
->>   		da9063_wdog: wdt {
->>   			compatible = "dlg,da9063-watchdog";
->>   		};
->> +
->> +		onkey {
->> +			compatible = "dlg,da9063-onkey";
->> +			status = "disabled";
->> +		};
->>   	};
->>   };
->>   
->> diff --git a/arch/arm/boot/dts/imx6qdl-phytec-phycore-som.dtsi b/arch/arm/boot/dts/imx6qdl-phytec-phycore-som.dtsi
->> index 94b254bfd054..28a805384668 100644
->> --- a/arch/arm/boot/dts/imx6qdl-phytec-phycore-som.dtsi
->> +++ b/arch/arm/boot/dts/imx6qdl-phytec-phycore-som.dtsi
->> @@ -116,6 +116,16 @@ watchdog {
->>   			dlg,use-sw-pm;
->>   		};
->>   
->> +		thermal {
->> +			compatible = "dlg,da9062-thermal";
->> +			status = "disabled";
->> +		};
->> +
->> +		gpio {
->> +			compatible = "dlg,da9062-gpio";
->> +			status = "disabled";
->> +		};
->> +
->>   		regulators {
->>   			vdd_arm: buck1 {
->>   				regulator-name = "vdd_arm";
->> -- 
->> 2.25.1
->>
+> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=209149
+> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215453
+> Fixes: 50310600ebda ("iommu/vt-d: Enable PCI ACS for platform opt in hint")
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
