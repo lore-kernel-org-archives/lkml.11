@@ -2,82 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B33CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A32FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238807AbiA0KAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 05:00:44 -0500
-Received: from mail-ua1-f52.google.com ([209.85.222.52]:40654 "EHLO
-        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbiA0KAm (ORCPT
+        id S238868AbiA0KBW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 05:01:22 -0500
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:54716
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229956AbiA0KBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 05:00:42 -0500
-Received: by mail-ua1-f52.google.com with SMTP id w21so3702558uan.7;
-        Thu, 27 Jan 2022 02:00:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MYcVuPoB0oi6VcbUyfjJ45yJ95BHctSH0SlEgz3cJO4=;
-        b=C9XHE7eeOBn/5NoRyJirxxDrbXGHUjKJ8M5Y0faTL81ZgRa79rvpYSmFDnmUIsQWaP
-         2W7Tu6VqmkCmut7o9IG5pCsnCzrgYAsV7LxyNaF5D6yiQPXB7ZisFSqblEL3xknubtKt
-         5NYyLSOWA0BRu0o5oJOrqRPAgwKn0XxKBTRZN7dVJzaJEj7ijwx0UKOUoUDxSiQe/oRg
-         6bbOHFRfmMmSikeHeffNBLmMjUHxOW7yAJvOm7NiRbcnbx+C3jGIPOHvlueOkChuYNfX
-         X9dLQ0ETQGrowmBirBTVQYC/GGOdKW1pGnFeYg7pGxgSTY6/mBmheJ6UYhGLK1rdRu8Y
-         wcUA==
-X-Gm-Message-State: AOAM531/oupUw5+aoqEN9RN9Xofkh948cWBOls84B6/g27Zwnk3LWzMg
-        X4eAKManaFS/mXTvZDtE09/bF7QvXAOHrl8O
-X-Google-Smtp-Source: ABdhPJxH9P+HIWa+EYqILXxpgvpbzz1WMdaTvMY9lWm+30IGfvdbSfTl0pXByDYtL32By7zHuAwiFA==
-X-Received: by 2002:a67:fd63:: with SMTP id h3mr1109545vsa.77.1643277641523;
-        Thu, 27 Jan 2022 02:00:41 -0800 (PST)
-Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
-        by smtp.gmail.com with ESMTPSA id w124sm474100vke.20.2022.01.27.02.00.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 02:00:41 -0800 (PST)
-Received: by mail-ua1-f50.google.com with SMTP id l1so3699240uap.8;
-        Thu, 27 Jan 2022 02:00:41 -0800 (PST)
-X-Received: by 2002:a67:5f83:: with SMTP id t125mr1106654vsb.68.1643277640872;
- Thu, 27 Jan 2022 02:00:40 -0800 (PST)
+        Thu, 27 Jan 2022 05:01:20 -0500
+Received: from localhost.localdomain (unknown [222.129.35.96])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 2E62B3F1DF;
+        Thu, 27 Jan 2022 10:01:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643277678;
+        bh=8qVk/8nENltG8922gM4GA2ePp8dmOnZ8REpGta3pnW4=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=L5Cnh0OTboKGL+6Vxh4m5nGetvgvZIbJcTcobTZ7uCIYYh/olN26oewMJX/JJM9Tc
+         zPMbmaUSEv0ygDUA01peWmDueGVKOD5BPpBFE6Y8eQQRzzwY1TQcSgRcH5eQMCfQB0
+         CCkxRCfqKUj5vs62Welpuz0URvSslXlAw6q5PYOjoPtqrhYAQbrXkgA7oQPLSV6yiA
+         YuFVjAAemSP72Z0GHp7xnVSZLDwx5kh+oNVRhS39EFptaeFhWktxYpDnQpVmkaG1F2
+         mX51oUWTJkcvKykCrGV9E5JFg0Yov1ktr0eHESd4OyvV0ZytdH35dMgKH22mzO/LTx
+         iawH2w1GMSu+w==
+From:   Aaron Ma <aaron.ma@canonical.com>
+To:     Mario.Limonciello@amd.com, aaron.ma@canonical.com, kuba@kernel.org,
+        henning.schild@siemens.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
+Subject: [PATCH] net: usb: r8152: Add MAC passthrough support for RTL8153BL
+Date:   Thu, 27 Jan 2022 18:01:09 +0800
+Message-Id: <20220127100109.12979-1-aaron.ma@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220120051559.746322-1-nikita.yoush@cogentembedded.com>
-In-Reply-To: <20220120051559.746322-1-nikita.yoush@cogentembedded.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 27 Jan 2022 11:00:29 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVw5BZUys-yOotRApgpXjGviWoBFtFrbQost2TcX4j8YQ@mail.gmail.com>
-Message-ID: <CAMuHMdVw5BZUys-yOotRApgpXjGviWoBFtFrbQost2TcX4j8YQ@mail.gmail.com>
-Subject: Re: [PATCH v3] arm64: dts: renesas: add MOST device
-To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 6:16 AM Nikita Yushchenko
-<nikita.yoush@cogentembedded.com> wrote:
-> This patch adds mlp device to dtsi files for R-Car Gen3 SoCs that have
-> it.
->
-> Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+RTL8153-BL is used in Lenovo Thunderbolt4 dock.
+Add the support of MAC passthrough.
+This is ported from Realtek Outbox driver r8152.53.56-2.15.0.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v5.18.
+There are 2 kinds of rules for MAC passthrough of Lenovo products,
+1st USB vendor ID belongs to Lenovo, 2nd the chip of RTL8153-BL
+is dedicated for Lenovo. Check the ocp data first then set ACPI object
+names.
 
-Note that as this device has no DT binding documentation, and the driver
-is under staging, this can not be considered stable.
+Suggested-by: Hayes Wang <hayeswang@realtek.com>
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+---
+ drivers/net/usb/r8152.c | 44 ++++++++++++++++++++++-------------------
+ 1 file changed, 24 insertions(+), 20 deletions(-)
 
-Gr{oetje,eeting}s,
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index ee41088c5251..df997b330ee4 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -718,6 +718,7 @@ enum spd_duplex {
+ #define AD_MASK			0xfee0
+ #define BND_MASK		0x0004
+ #define BD_MASK			0x0001
++#define BL_MASK                 BIT(3)
+ #define EFUSE			0xcfdb
+ #define PASS_THRU_MASK		0x1
+ 
+@@ -1606,31 +1607,34 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+ 	acpi_object_type mac_obj_type;
+ 	int mac_strlen;
+ 
++	/* test for -AD variant of RTL8153 */
++	ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_MISC_0);
++	if ((ocp_data & AD_MASK) == 0x1000) {
++		/* test for MAC address pass-through bit */
++		ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, EFUSE);
++		if ((ocp_data & PASS_THRU_MASK) != 1) {
++			netif_dbg(tp, probe, tp->netdev,
++					"No efuse for RTL8153-AD MAC pass through\n");
++			return -ENODEV;
++		}
++	} else {
++		ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, USB_MISC_1);
++		if (tp->version == RTL_VER_09 && (ocp_data & BL_MASK)) {
++			/* test for RTL8153BL for Lenovo */
++			tp->lenovo_macpassthru = 1;
++		} else if ((ocp_data & BND_MASK) == 0 && (ocp_data & BD_MASK) == 0) {
++			/* test for RTL8153-BND and RTL8153-BD */
++			netif_dbg(tp, probe, tp->netdev,
++					"Invalid variant for MAC pass through\n");
++			return -ENODEV;
++		}
++	}
++
+ 	if (tp->lenovo_macpassthru) {
+ 		mac_obj_name = "\\MACA";
+ 		mac_obj_type = ACPI_TYPE_STRING;
+ 		mac_strlen = 0x16;
+ 	} else {
+-		/* test for -AD variant of RTL8153 */
+-		ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_MISC_0);
+-		if ((ocp_data & AD_MASK) == 0x1000) {
+-			/* test for MAC address pass-through bit */
+-			ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, EFUSE);
+-			if ((ocp_data & PASS_THRU_MASK) != 1) {
+-				netif_dbg(tp, probe, tp->netdev,
+-						"No efuse for RTL8153-AD MAC pass through\n");
+-				return -ENODEV;
+-			}
+-		} else {
+-			/* test for RTL8153-BND and RTL8153-BD */
+-			ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, USB_MISC_1);
+-			if ((ocp_data & BND_MASK) == 0 && (ocp_data & BD_MASK) == 0) {
+-				netif_dbg(tp, probe, tp->netdev,
+-						"Invalid variant for MAC pass through\n");
+-				return -ENODEV;
+-			}
+-		}
+-
+ 		mac_obj_name = "\\_SB.AMAC";
+ 		mac_obj_type = ACPI_TYPE_BUFFER;
+ 		mac_strlen = 0x17;
+-- 
+2.32.0
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
