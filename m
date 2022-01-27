@@ -2,126 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 170B9C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 02:15:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC897C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 02:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234843AbiA0CPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 21:15:20 -0500
-Received: from esa4.hgst.iphmx.com ([216.71.154.42]:20863 "EHLO
-        esa4.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232881AbiA0CPR (ORCPT
+        id S234918AbiA0CR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 21:17:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234896AbiA0CRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 21:15:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1643249717; x=1674785717;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=koizvhqZQhyhzGOf2KY9qXoCJNHtohDiLlRaxO3HbiI=;
-  b=gjPLuk+YPHEs29kOQLJydt1PuoNyMoP92vYDknJgTN5UP1i2QslHcF6o
-   fAg95qYrUHITkJROGiOncIe4JPwpBVihWC2cDjrkn7TzSfIrf7O9EuwHT
-   PgVa8R76ugwssBwsYdkYUS/O+pIpPTrFVhChEieBqWze00ZCuKfZIag+1
-   Z9hCIQk/f58RTpKMncCWULItiR/rB5J+qHTh7vMUDsRdLpHEPnBgPCd1J
-   MhgEEQ/F5D8MaWSoYvXHFH/ChBMXwXWKYfBwGpSgMwljOSrIwBUSLmzAj
-   K/A1e3eadjtGotRGZrQwQJ5GjAguWtrXx7ntIOKIcv4fUu8mx5Hsvhvig
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.88,319,1635177600"; 
-   d="scan'208";a="190429261"
-Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 27 Jan 2022 10:15:15 +0800
-IronPort-SDR: x0lrlTbol6wn0ZI2lSNOp7jaZu3sHpZ5IkM/8kRW3D+QOlgLNOXqTTBwUQwWfyCwL3HVv+xfl1
- ZheN8pYP91TaALlQ8Jwl8Ije+vXGRJpDap/qZOS2wlNIoMlrA3K2Bhis5ori0/iTE+haRZU75I
- wBJ/IpGQnIo5F3LBBKHdwEdw+aSIh5cHBA9np9M77dr1p8aNS+1kMgmyoEA+R1mE1E0sjyp92K
- crKgpkqkGjpKmnxyFYLrwv1CKoosD3hEZFwXfQAttceam1n/rQG+9/3kNirQ28fR8PtBcfgVxD
- 7CwtVlKaV01UTKa69/qwuGmb
-Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 17:48:34 -0800
-IronPort-SDR: LHssMG3tyYHJclHpErBW1hKGH5xz/zgbVqLaSgE0Z7yEgiRhJ0VEqSVWcnf4SF1uVwPdqE4kjZ
- sGWRgxwiZtqbGtO6+qQQxRUvm35/7siYB08Mlg3lzzAnoRWbB8LQsNaxnHoZY0zdrnYNrCJTAJ
- WiyHyyAoYko4aGZK5hfGiEuFdQnwi/Za4YKlxEDNu1deJ9xHcaR560LH0WHsCBHfI3Hi+duKT4
- TprSxHjdW11Wej4l15YUpnlh9hBX0HiG7oBUWTUQFEkcmJDn1lf+w8MtEPcsOBG+zmELlpFyQl
- NxY=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 18:15:15 -0800
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Jkkh25FrKz1SVp1
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 18:15:14 -0800 (PST)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1643249714; x=1645841715; bh=koizvhqZQhyhzGOf2KY9qXoCJNHtohDiLlR
-        axO3HbiI=; b=tUtb7l5sxiIxEUHZMIQP8rrNk2igozlmTew3oldE4le3QT07xz1
-        oEECnxmKA2AS3+abbDHJasCILWb4V7r4ATs8YQ5gRoAiwGAzj+9ppF4D9cCrO3fQ
-        XSQF7xmRVwSORKlNs9977DYiEdkrgqewxDNchqFiK2AOCURhHfWVlxquonbd4wE6
-        Wr4U3QxqkX0WWSigMbJ6zjgRJ11yS6tqzuVG2Gc2X+po8DUmZBAPHt9Ntu16y6yj
-        mNFKXyX6S5T2knT9T3yTjmVG+ikN1wttb2NB4Iy5fDRiM4eq30MqjQhL9X1j5fPH
-        I3TBTTlINt+xYWNoLse4LUXt2mj3ZFhLr3w==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id gKtSm8-1_pKF for <linux-kernel@vger.kernel.org>;
-        Wed, 26 Jan 2022 18:15:14 -0800 (PST)
-Received: from [10.225.163.56] (unknown [10.225.163.56])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4Jkkh10LLVz1RvlN;
-        Wed, 26 Jan 2022 18:15:12 -0800 (PST)
-Message-ID: <f7262bda-8669-3910-9e8c-e72a68eb3325@opensource.wdc.com>
-Date:   Thu, 27 Jan 2022 11:15:11 +0900
+        Wed, 26 Jan 2022 21:17:25 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1A2C06173B
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 18:17:25 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id e28so1345542pfj.5
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 18:17:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pfo2AAnbZYL8NSXYsUqsl7N0rnK7jglSBk146tmS5MY=;
+        b=WmYajQOphzJ6Iycj+xwWSnIKlTDzkcyUZpLlQTvegz7SSFg8m65ZuPmS6JvQKbc5u6
+         aIqvAPVoGf6CHYthEf8sPeC15Z+Q9iTUTE84aU2g2Eknu4u+6u7AviXWSKK9NjAE/OsU
+         vDpAoPaxpLNkQxTcHZ2ctcCBS5x4zPXZlzgLJpfkToqx6LuXP/NGhnGDc6b1KREw8MM1
+         KvypfCreMbcC3pm9lgYEmlmv7o3h/Qkn6xgwNzUawaclESwGW0yzJKXP+3GOR7QWFLcs
+         jnjh2nHDhu7milCtb5mIb1QuI3tWi35fOjqgdt469toirZ9yidr4zN+fbLZE/6bB9t20
+         m51A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pfo2AAnbZYL8NSXYsUqsl7N0rnK7jglSBk146tmS5MY=;
+        b=Adikx+jOXQFMRPUZySBH5mz3fC2ugSlZtskK9dioSCu3XCVJUVpawA4RvPKyQfhmf+
+         HqMwbpxBHFLnvaHyjTPebFemPFbX6sOOJI4chhz+zTQ+fgZvmCC9VZ+g2jYCsb4ZvqLw
+         xriCey5XjzaFxGMkbugLnE707pmxr+cURVUkYmI00/3/CRQbaf8FqLoqvub3dsmhaD/J
+         A2nFrlCyAw3kH2/zitwfqq7h7QFZFpPvnDpFW5E/TEVUt1/TzP6xeOnnPcImlOQ+kdjy
+         xuszPPDRAkcMvyYjT8eJIosLrdW+w1bwvbLRwkY8fKs4ULyCNNwM/8qSpzanqtv3iQMY
+         NdKA==
+X-Gm-Message-State: AOAM5307+28WjOwuH/BmFXcgvlZOcNRRbPv+HeWkMrhMFSBPxKtdBLGn
+        WN2sXEl9LU+DdzNL6JK7La+l0Q==
+X-Google-Smtp-Source: ABdhPJwzDebr3y5VtRAz5bN4BTdqwTwYv8SZ14QttiFd0hws7Dw/VZWC29xPfw/oFRlX2ZzpePl12w==
+X-Received: by 2002:a63:88c7:: with SMTP id l190mr1242795pgd.230.1643249844295;
+        Wed, 26 Jan 2022 18:17:24 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id w19sm3643088pfu.47.2022.01.26.18.17.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 18:17:23 -0800 (PST)
+Date:   Thu, 27 Jan 2022 02:17:20 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
+        pjt@google.com, posk@google.com, avagin@google.com,
+        jannh@google.com, tdelisle@uwaterloo.ca, mark.rutland@arm.com,
+        posk@posk.io
+Subject: Re: [RFC][PATCH v2 4/5] x86/uaccess: Implement
+ unsafe_try_cmpxchg_user()
+Message-ID: <YfIAsHQv5Q84fOqO@google.com>
+References: <20220120155517.066795336@infradead.org>
+ <20220120160822.852009966@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] ata: pata_platform: Fix a NULL pointer dereference in
- __pata_platform_probe()
-Content-Language: en-US
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Zhou Qingyang <zhou1615@umn.edu>
-Cc:     kjlu@umn.edu, Alexander Shiyan <shc_work@mail.ru>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220124164525.53068-1-zhou1615@umn.edu>
- <578d6a7e-1488-43b9-9bfe-9c99c88da4fd@omp.ru>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <578d6a7e-1488-43b9-9bfe-9c99c88da4fd@omp.ru>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220120160822.852009966@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/25/22 18:46, Sergey Shtylyov wrote:
-> On 1/24/22 7:45 PM, Zhou Qingyang wrote:
+On Thu, Jan 20, 2022, Peter Zijlstra wrote:
+> Do try_cmpxchg() loops on userspace addresses.
 > 
->> In __pata_platform_probe(), devm_kzalloc() is assigned to ap->ops and
->> there is a dereference of it right after that, which could introduce a
->> NULL pointer dereference bug.
->>
->> Fix this by adding a NULL check of ap->ops.
->>
->> This bug was found by a static analyzer.
->>
->> Builds with 'make allyesconfig' show no new warnings,
->> and our static analyzer no longer warns about this code.
->>
->> Fixes: f3d5e4f18dba ("ata: pata_of_platform: Allow to use 16-bit wide data transfer")
->> Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+> Cc: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  arch/x86/include/asm/uaccess.h |   67 +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 67 insertions(+)
 > 
-> Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+> --- a/arch/x86/include/asm/uaccess.h
+> +++ b/arch/x86/include/asm/uaccess.h
+> @@ -342,6 +342,24 @@ do {									\
+>  		     : [umem] "m" (__m(addr))				\
+>  		     : : label)
+>  
+> +#define __try_cmpxchg_user_asm(itype, ltype, _ptr, _pold, _new, label)	({ \
+> +	bool success;							\
+> +	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
+> +	__typeof__(*(_ptr)) __old = *_old;				\
+> +	__typeof__(*(_ptr)) __new = (_new);				\
+> +	asm_volatile_goto("\n"						\
+> +		     "1: " LOCK_PREFIX "cmpxchg"itype" %[new], %[ptr]\n"\
+> +		     _ASM_EXTABLE_UA(1b, %l[label])			\
+> +		     : CC_OUT(z) (success),				\
+> +		       [ptr] "+m" (*_ptr),				\
+> +		       [old] "+a" (__old)				\
+> +		     : [new] ltype (__new)				\
+> +		     : "memory", "cc"					\
 
-Please see my note about the typo in the fix. I kept you RB tag. Let me
-know if that is OK.
+IIUC, the "cc" clobber is unnecessary as CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y implies
+__GCC_ASM_FLAG_OUTPUTS__=y, i.e. CC_OUT() will resolve to "=@cc".
 
-> 
-> [...]
-> 
-> MBR, Sergey
+> +		     : label);						\
+> +	if (unlikely(!success))						\
+> +		*_old = __old;						\
+> +	likely(success);					})
+> +
+>  #else // !CONFIG_CC_HAS_ASM_GOTO_OUTPUT
 
+...
 
--- 
-Damien Le Moal
-Western Digital Research
+> +extern void __try_cmpxchg_user_wrong_size(void);
+> +
+> +#define unsafe_try_cmpxchg_user(_ptr, _oldp, _nval, _label) ({		\
+> +	__typeof__(*(_ptr)) __ret;					\
+
+This should probably be a bool, the return from the lower level helpers is a bool
+that's true if the exchange succeed.  Declaring the type of the target implies
+that they return the raw result, which is confusing.
+
+> +	switch (sizeof(__ret)) {					\
+> +	case 1:	__ret = __try_cmpxchg_user_asm("b", "q",		\
+> +					       (_ptr), (_oldp),		\
+> +					       (_nval), _label);	\
+> +		break;							\
+> +	case 2:	__ret = __try_cmpxchg_user_asm("w", "r",		\
+> +					       (_ptr), (_oldp),		\
+> +					       (_nval), _label);	\
+> +		break;							\
+> +	case 4:	__ret = __try_cmpxchg_user_asm("l", "r",		\
+> +					       (_ptr), (_oldp),		\
+> +					       (_nval), _label);	\
+> +		break;							\
+> +	case 8:	__ret = __try_cmpxchg_user_asm("q", "r",		\
+> +					       (_ptr), (_oldp),		\
+> +					       (_nval), _label);	\
+
+Doh, I should have specified that KVM needs 8-byte CMPXCHG on 32-bit kernels due
+to using it to atomically update guest PAE PTEs and LTR descriptors (yay).
+
+Also, KVM's use case isn't a tight loop, how gross would it be to add a slightly
+less unsafe version that does __uaccess_begin_nospec()?  KVM pre-checks the address
+way ahead of time, so the access_ok() check can be omitted.  Alternatively, KVM
+could add its own macro, but that seems a little silly.  E.g. somethign like this,
+though I don't think this is correct (something is getting inverted somewhere and
+the assembly output is a nightmare):
+
+/* "Returns" 0 on success, 1 on failure, -EFAULT if the access faults. */
+#define ___try_cmpxchg_user(_ptr, _oldp, _nval, _label)	({		\
+	int ____ret = -EFAULT;						\
+	__uaccess_begin_nospec();					\
+	____ret = !unsafe_try_cmpxchg_user(_ptr, _oldp, _nval, _label);	\
+_label:									\
+	__uaccess_end();						\
+	____ret;							\
+						})
+
+Lastly, assuming I get my crap working, mind if I post a variant (Cc'd to stable@) in
+the context of KVM series?  Turns out KVM has an ugly bug where it completely
+botches the pfn calculation of memory it remaps and accesses[*], the easiest fix
+is to switch to __try_cmpxchg_user() and purge the nastiness.
+
+[*] https://lore.kernel.org/all/20220124172633.103323-1-tadeusz.struk@linaro.org
