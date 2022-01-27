@@ -2,185 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE965C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E30C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343537AbiA0SMh (ORCPT
+        id S1343568AbiA0SMl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:12:37 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:45676 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245617AbiA0SLt (ORCPT
+        Thu, 27 Jan 2022 13:12:41 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49340 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245621AbiA0SLu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:11:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643307109; x=1674843109;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=FdW+3XOlJ+0fgLrgyEWrXgNEBmSSsSV3d6HeRGSVQo4=;
-  b=SZgzDToBF/lK8bdjGD8kUNtrBQ+NVu8FXdAZaGOfNobVj6oGNsg8qG6H
-   +lBAlqfJomlzr/DOBCJk70ZWJVukr/YcyJh3yWqTMjm4GCqc358dELE7R
-   EA7jSOBGlMMDda9A5lLShF+TDMIvxDxOXxeK8fgxC6dtMRthL9EvVcm+7
-   c=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 27 Jan 2022 10:11:49 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 10:11:48 -0800
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 27 Jan 2022 10:11:48 -0800
-Received: from codeaurora.org (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Thu, 27 Jan
- 2022 10:11:45 -0800
-From:   Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
-To:     Lukasz Luba <lukasz.luba@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Amit Kucheria" <amitk@kernel.org>, Zhang Rui <rui.zhang@intel.com>
-CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Manaf Meethalavalappu Pallikunhi" <quic_manafm@quicinc.com>
-Subject: [PATCH v5] drivers: thermal: clear all mitigation when thermal zone is disabled
-Date:   Thu, 27 Jan 2022 23:41:33 +0530
-Message-ID: <1643307093-22501-1-git-send-email-quic_manafm@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 27 Jan 2022 13:11:50 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD20961D4D;
+        Thu, 27 Jan 2022 18:11:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 897FDC340E4;
+        Thu, 27 Jan 2022 18:11:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643307109;
+        bh=dltAdKUE+eILIurl2batzAVH6JDWgv6gBvHF05SbzLI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=z2vKXVbXK98F4rJPSKJ+qzdKK/pONLd8aBL26YPFVA3vW1pHqO3YwuiSz0SwsEuup
+         7FcliILOiS9r/fJyywBRF0LAOUA/t4RNNZg2m6DwbCAQk0LbNwRN3UGs1JXnjILiR+
+         vyxEviwHguqbHYAdS9muk6+zDnu9lgxm1cfM7VqM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com
+Subject: [PATCH 5.16 0/9] 5.16.4-rc1 review
+Date:   Thu, 27 Jan 2022 19:09:35 +0100
+Message-Id: <20220127180258.892788582@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.4-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.16.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.16.4-rc1
+X-KernelTest-Deadline: 2022-01-29T18:02+00:00
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Whenever a thermal zone is in trip violated state, there is a chance
-that the same thermal zone mode can be disabled either via
-thermal core API or via thermal zone sysfs. Once it is disabled,
-the framework bails out any re-evaluation of thermal zone. It leads
-to a case where if it is already in mitigation state, it will stay
-the same state forever.
+This is the start of the stable review cycle for the 5.16.4 release.
+There are 9 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-To avoid above mentioned issue, add support to bind/unbind
-governor from thermal zone during thermal zone mode change request
-and clear all existing throttling in governor unbind_from_tz()
-callback.
+Responses should be made by Sat, 29 Jan 2022 18:02:51 +0000.
+Anything received after that time might be too late.
 
-Suggested-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Signed-off-by: Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
----
- drivers/thermal/gov_power_allocator.c |  3 +++
- drivers/thermal/gov_step_wise.c       | 26 ++++++++++++++++++++++++++
- drivers/thermal/thermal_core.c        | 31 +++++++++++++++++++++++++++----
- 3 files changed, 56 insertions(+), 4 deletions(-)
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.4-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+and the diffstat can be found below.
 
-diff --git a/drivers/thermal/gov_power_allocator.c b/drivers/thermal/gov_power_allocator.c
-index 13e3757..9ff0c5f 100644
---- a/drivers/thermal/gov_power_allocator.c
-+++ b/drivers/thermal/gov_power_allocator.c
-@@ -696,6 +696,9 @@ static void power_allocator_unbind(struct thermal_zone_device *tz)
- 
- 	dev_dbg(&tz->device, "Unbinding from thermal zone %d\n", tz->id);
- 
-+	tz->passive = 0;
-+	allow_maximum_power(tz, true);
-+
- 	if (params->allocated_tzp) {
- 		kfree(tz->tzp);
- 		tz->tzp = NULL;
-diff --git a/drivers/thermal/gov_step_wise.c b/drivers/thermal/gov_step_wise.c
-index 12acb12..2d2186b 100644
---- a/drivers/thermal/gov_step_wise.c
-+++ b/drivers/thermal/gov_step_wise.c
-@@ -168,6 +168,31 @@ static void thermal_zone_trip_update(struct thermal_zone_device *tz, int trip)
- }
- 
- /**
-+ * step_wise_unbind() - unbind the step_wise governor to a thermal zone
-+ * @tz:	thermal zone to unbind it to
-+ *
-+ * Clear all previous throttling and reset passive counter.
-+ *
-+ */
-+static void step_wise_unbind(struct thermal_zone_device *tz)
-+{
-+	struct thermal_instance *instance;
-+
-+	dev_dbg(&tz->device, "Unbinding from thermal zone %d\n", tz->id);
-+
-+	mutex_lock(&tz->lock);
-+	tz->passive = 0;
-+	list_for_each_entry(instance, &tz->thermal_instances, tz_node) {
-+		instance->initialized = false;
-+		instance->target = THERMAL_NO_TARGET;
-+		mutex_lock(&instance->cdev->lock);
-+		__thermal_cdev_update(instance->cdev);
-+		mutex_unlock(&instance->cdev->lock);
-+	}
-+	mutex_unlock(&tz->lock);
-+}
-+
-+/**
-  * step_wise_throttle - throttles devices associated with the given zone
-  * @tz: thermal_zone_device
-  * @trip: trip point index
-@@ -196,6 +221,7 @@ static int step_wise_throttle(struct thermal_zone_device *tz, int trip)
- 
- static struct thermal_governor thermal_gov_step_wise = {
- 	.name		= "step_wise",
-+	.unbind_from_tz	= step_wise_unbind,
- 	.throttle	= step_wise_throttle,
- };
- THERMAL_GOVERNOR_DECLARE(thermal_gov_step_wise);
-diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-index 82654dc..34726d3 100644
---- a/drivers/thermal/thermal_core.c
-+++ b/drivers/thermal/thermal_core.c
-@@ -274,6 +274,26 @@ static int __init thermal_register_governors(void)
- 	return ret;
- }
- 
-+static void thermal_governor_attach(struct thermal_zone_device *tz)
-+{
-+	mutex_lock(&thermal_governor_lock);
-+	if (tz->governor && tz->governor->bind_to_tz) {
-+		if (tz->governor->bind_to_tz(tz))
-+			dev_err(&tz->device,
-+				"governor %s failed to bind to thermal zone %s\n",
-+				tz->governor->name, tz->type);
-+	}
-+	mutex_unlock(&thermal_governor_lock);
-+}
-+
-+static void thermal_governor_detach(struct thermal_zone_device *tz)
-+{
-+	mutex_lock(&thermal_governor_lock);
-+	if (tz->governor && tz->governor->unbind_from_tz)
-+		tz->governor->unbind_from_tz(tz);
-+	mutex_unlock(&thermal_governor_lock);
-+}
-+
- /*
-  * Zone update section: main control loop applied to each zone while monitoring
-  *
-@@ -449,12 +469,15 @@ static int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
- 
- 	mutex_unlock(&tz->lock);
- 
--	thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
--
--	if (mode == THERMAL_DEVICE_ENABLED)
-+	if (mode == THERMAL_DEVICE_ENABLED) {
-+		thermal_governor_attach(tz);
-+		thermal_zone_device_init(tz);
-+		thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
- 		thermal_notify_tz_enable(tz->id);
--	else
-+	} else {
-+		thermal_governor_detach(tz);
- 		thermal_notify_tz_disable(tz->id);
-+	}
- 
- 	return ret;
- }
+thanks,
+
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.16.4-rc1
+
+Russell King <russell.king@oracle.com>
+    arm64/bpf: Remove 128MB limit for BPF JIT programs
+
+Jan Kara <jack@suse.cz>
+    select: Fix indefinitely sleeping task in poll_schedule_timeout()
+
+Paul E. McKenney <paulmck@kernel.org>
+    rcu: Tighten rcu_advance_cbs_nowake() checks
+
+Shakeel Butt <shakeelb@google.com>
+    memcg: better bounds on the memcg stats updates
+
+Manish Chopra <manishc@marvell.com>
+    bnx2x: Invalidate fastpath HSI version for VFs
+
+Manish Chopra <manishc@marvell.com>
+    bnx2x: Utilize firmware 7.13.21.0
+
+Pavel Begunkov <asml.silence@gmail.com>
+    io_uring: fix not released cached task refs
+
+Mario Limonciello <mario.limonciello@amd.com>
+    drm/amd/display: reset dcn31 SMU mailbox on failures
+
+Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+    drm/i915: Flush TLBs before releasing backing store
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                           |   4 +-
+ arch/arm64/include/asm/extable.h                   |   9 --
+ arch/arm64/include/asm/memory.h                    |   5 +-
+ arch/arm64/kernel/traps.c                          |   2 +-
+ arch/arm64/mm/ptdump.c                             |   2 -
+ arch/arm64/net/bpf_jit_comp.c                      |   7 +-
+ .../drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c   |   6 ++
+ drivers/gpu/drm/i915/gem/i915_gem_object_types.h   |   1 +
+ drivers/gpu/drm/i915/gem/i915_gem_pages.c          |  10 ++
+ drivers/gpu/drm/i915/gt/intel_gt.c                 | 102 +++++++++++++++++++++
+ drivers/gpu/drm/i915/gt/intel_gt.h                 |   2 +
+ drivers/gpu/drm/i915/gt/intel_gt_types.h           |   2 +
+ drivers/gpu/drm/i915/i915_reg.h                    |  11 +++
+ drivers/gpu/drm/i915/i915_vma.c                    |   3 +
+ drivers/gpu/drm/i915/intel_uncore.c                |  26 +++++-
+ drivers/gpu/drm/i915/intel_uncore.h                |   2 +
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x.h        |  11 ++-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c    |   6 +-
+ .../net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h    |   2 +
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h    |   3 +-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   |  75 ++++++++++-----
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c  |  13 ++-
+ fs/io_uring.c                                      |  34 ++++---
+ fs/select.c                                        |  63 +++++++------
+ kernel/rcu/tree.c                                  |   7 +-
+ mm/memcontrol.c                                    |  20 ++--
+ 26 files changed, 318 insertions(+), 110 deletions(-)
+
+
