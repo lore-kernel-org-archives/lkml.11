@@ -2,68 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3AD2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 04:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD191C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 04:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233613AbiA0EHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 23:07:12 -0500
-Received: from foss.arm.com ([217.140.110.172]:33326 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229512AbiA0EHK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 23:07:10 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7C3C41FB;
-        Wed, 26 Jan 2022 20:07:09 -0800 (PST)
-Received: from [10.163.42.218] (unknown [10.163.42.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 658B53F7D8;
-        Wed, 26 Jan 2022 20:07:07 -0800 (PST)
-Subject: Re: [RFC V1 02/31] mm/mmap: Clarify protection_map[] indices
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org
-References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
- <1643029028-12710-3-git-send-email-anshuman.khandual@arm.com>
- <YfD1WFmlFYLkaJ/A@infradead.org>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <1e06189a-7d69-7d6c-b9b4-3740604c371b@arm.com>
-Date:   Thu, 27 Jan 2022 09:37:13 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S235986AbiA0ENj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 23:13:39 -0500
+Received: from einhorn.in-berlin.de ([192.109.42.8]:40831 "EHLO
+        einhorn-mail-out.in-berlin.de" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S235900AbiA0ENi (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 23:13:38 -0500
+X-Greylist: delayed 777 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jan 2022 23:13:37 EST
+X-Envelope-From: thomas@x-berg.in-berlin.de
+Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
+        by einhorn.in-berlin.de  with ESMTPS id 20R3xugg026181
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 04:59:56 +0100
+Received: from thomas by x-berg.in-berlin.de with local (Exim 4.92)
+        (envelope-from <thomas@x-berg.in-berlin.de>)
+        id 1nCvwy-0003eu-9x; Thu, 27 Jan 2022 04:59:56 +0100
+Date:   Thu, 27 Jan 2022 04:59:56 +0100
+From:   Thomas Osterried <thomas@osterried.de>
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     jpr@f6fbb.org, davem@davemloft.net, kuba@kernel.org,
+        wang6495@umn.edu, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] yam: fix a memory leak in yam_siocdevprivate()
+Message-ID: <20220127035956.GE18529@x-berg.in-berlin.de>
+References: <20220124032954.18283-1-hbh25y@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <YfD1WFmlFYLkaJ/A@infradead.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124032954.18283-1-hbh25y@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Thomas Osterried <thomas@x-berg.in-berlin.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+Just a comment: Looks ok for me.
 
-On 1/26/22 12:46 PM, Christoph Hellwig wrote:
->> +	[VM_NONE]				= __P000,
->> +	[VM_READ]				= __P001,
->> +	[VM_WRITE]				= __P010,
->> +	[VM_READ|VM_WRITE]			= __P011,
->> +	[VM_EXEC]				= __P100,
->> +	[VM_EXEC|VM_READ]			= __P101,
->> +	[VM_EXEC|VM_WRITE]			= __P110,
->> +	[VM_EXEC|VM_READ|VM_WRITE]		= __P111,
->> +	[VM_SHARED]				= __S000,
->> +	[VM_SHARED|VM_READ]			= __S001,
->> +	[VM_SHARED|VM_WRITE]			= __S010,
->> +	[VM_SHARED|VM_READ|VM_WRITE]		= __S011,
->> +	[VM_SHARED|VM_EXEC]			= __S100,
->> +	[VM_SHARED|VM_READ|VM_EXEC]		= __S101,
->> +	[VM_SHARED|VM_WRITE|VM_EXEC]		= __S110,
->> +	[VM_SHARED|VM_READ|VM_WRITE|VM_EXEC]	= __S111
+On Mon, Jan 24, 2022 at 11:29:54AM +0800, Hangyu Hua wrote:
+> ym needs to be free when ym->cmd != SIOCYAMSMCS.
 > 
-> Please add whitespaces around the | operators.
-
-Sure, will add.
-
+> Fixes: 0781168e23a2 ("yam: fix a missing-check bug")
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> ---
+>  drivers/net/hamradio/yam.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 > 
-> Otherwise looks good:
-> 
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
+> index 6376b8485976..980f2be32f05 100644
+> --- a/drivers/net/hamradio/yam.c
+> +++ b/drivers/net/hamradio/yam.c
+> @@ -950,9 +950,7 @@ static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __
+>  		ym = memdup_user(data, sizeof(struct yamdrv_ioctl_mcs));
+>  		if (IS_ERR(ym))
+>  			return PTR_ERR(ym);
+> -		if (ym->cmd != SIOCYAMSMCS)
+> -			return -EINVAL;
+> -		if (ym->bitrate > YAM_MAXBITRATE) {
+> +		if (ym->cmd != SIOCYAMSMCS || ym->bitrate > YAM_MAXBITRATE) {
+>  			kfree(ym);
+>  			return -EINVAL;
+>  		}
+> -- 
+> 2.25.1
 > 
