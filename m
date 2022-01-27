@@ -2,82 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64904C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BBCEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244919AbiA0R6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:58:16 -0500
-Received: from mga18.intel.com ([134.134.136.126]:31766 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245069AbiA0R4E (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:56:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643306164; x=1674842164;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VjGGxTzCVF41Hl7cJRMdJ6bVgo2yimWqvnjX5qwuRt4=;
-  b=f6Chi3tm+lDBnNQkjg1ph41TXPn75LZ81rZzttup0IPAl84qxn5Hrck3
-   WtO4SnWZDXne5HoQOKFqE1eSne14LAt968+Fc0ji15eWJf1LRjkkGg6m9
-   tFON+PCId4O9ScmSiIhIszWPn58RmVt0iPoR9QboCjFh2aHnh3I1nOPa2
-   OyM8U5KvdVzBggW1hXcFUnSHjPgwjguS+WikenX/v8qRaR1aqi8d2B3tZ
-   y+K2BcU2GXP0toS7mDxfYEx6hBvzEHQDsZEqygJU3O62dknk4e6/oLCjn
-   cRqwQHI+poy2TBwpQZfbXIlhSHyhj/pMvGtelRmgk9xHed4pov+m4I4qA
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="230500304"
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="230500304"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:56:03 -0800
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="696743411"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:56:02 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nD8z3-00F4xt-5O;
-        Thu, 27 Jan 2022 19:54:57 +0200
-Date:   Thu, 27 Jan 2022 19:54:56 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Florian Eckert <fe@dev.tdt.de>
-Subject: Re: [PATCH v2 1/1] docs: process: submitting-patches: Clarify the
- Reported-by usage
-Message-ID: <YfLccEk2PKpWH4eX@smile.fi.intel.com>
-References: <20220127163258.48482-1-andriy.shevchenko@linux.intel.com>
- <1e2e99f6-e9bf-7d93-9629-3d70275c77f4@infradead.org>
+        id S232579AbiA0R7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:59:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244692AbiA0R6k (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 12:58:40 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087D6C061751
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:58:40 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id j23so4732778edp.5
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:58:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=D/WdrZt8APh+ImWs99heS/EAAslbj9KjZjoo2pBS7+c=;
+        b=nFqidDLirWb5QmaEXBGreq9mA37G4EJ+Q2mpt9YciaCWN6z4xxhNtfYmkrxNHnaKLw
+         OfEPBT0Xe0aXMGF9gnFX5fjFu/J4kr/Lf/pS+GlUlyM3xqTmw7ZYGmZT317MbXPPRQY+
+         qPKCe9aXzTB3+Vqr98iv5i84h3v7XET37JW7wJtXNBgn47IcCqZpy9I6mrkDnLcWEuS2
+         YT243GZrkCIBNdDUPyBjinEjmofSalSBeg6IIOZT43hnaxwNWKfUXfTgopMgEpG/DUiQ
+         LnKVOY8QCobVPQN3ZJB5ATSLAYaMWJje/ltYhTTDai/TNx6UimZ1mw7fYow0lC8poKzv
+         OTTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=D/WdrZt8APh+ImWs99heS/EAAslbj9KjZjoo2pBS7+c=;
+        b=2/kF5hfX23qlMDwDHjA2xPi15hCOIYUYat5XHHPtGCE4hMas1ibCWUttB38c0YLLKp
+         jUQXWonVYKUZYe7AET3tP1La3GlEyc6XkSy6vqLWzkFqEth7mdq8wemsG79rT+m73ov+
+         xDDyuA1CCMLSFEqeuPwhnKU6YypnyP9r29/nek8one9pbDXqgR/L8bWr5LlbjVqYR2md
+         PQpih0Da2uAsJEL9aPe+qGZOVzWXr8mpNGO93eHwDTE8oKmHH54XiE4CMPHCUn5CD7bS
+         iEjLCvXNAxci2PkKBXd4NAeBMem3eIDwFSYa/RtuDi+YquQCT9r2/CZP0TDBvy6LBflD
+         24rw==
+X-Gm-Message-State: AOAM532u0PqxDb9PsYVYyWVAtPu7zu6ujEpPlDiB7zq21yj8WEnWMzZ+
+        3QcYNqiZOrPVm5m8hSbCn2R2sOZsPj/iHMlEPM9il0AfHuE=
+X-Google-Smtp-Source: ABdhPJxQ1qzfs/DIElroXwnoIK8WHBiVv9xpOvqnXnZkbObAnsCfkpP9Ea4KnHjLw+73Nz8PNhZRrABfYFFZ4R9A2Q4=
+X-Received: by 2002:aa7:c312:: with SMTP id l18mr4729705edq.334.1643306318361;
+ Thu, 27 Jan 2022 09:58:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1e2e99f6-e9bf-7d93-9629-3d70275c77f4@infradead.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220118190922.1557074-1-dlatypov@google.com> <CABVgOSnY8Ctc9vuVX+Fjmmd3L5kpXnzMXJQ0LPXAgmjCKsrYYw@mail.gmail.com>
+ <CAGS_qxqx+wcruc7DAD9TQjk27OF+VDo1n9S6atRx+dDG5cr=6g@mail.gmail.com>
+ <CAGS_qxpRqOAoBbkkFttZgB_Zm+KM=pwprgZ0wzDROh21mO0r8Q@mail.gmail.com> <CABVgOSnmfhPcMCy5yQEymyBnTWSqEFbmTnSbHYL7D1D=eJOk5A@mail.gmail.com>
+In-Reply-To: <CABVgOSnmfhPcMCy5yQEymyBnTWSqEFbmTnSbHYL7D1D=eJOk5A@mail.gmail.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Thu, 27 Jan 2022 09:58:27 -0800
+Message-ID: <CAGS_qxrCRxEGUj_O+oZFkrDgE6PgvHNhfxMzF94Rez__CXbR4Q@mail.gmail.com>
+Subject: Re: [PATCH 1/5] kunit: tool: drop mostly unused KunitResult.result field
+To:     David Gow <davidgow@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 09:21:21AM -0800, Randy Dunlap wrote:
-> On 1/27/22 08:32, Andy Shevchenko wrote:
+On Wed, Jan 26, 2022 at 6:20 PM David Gow <davidgow@google.com> wrote:
+>
+> On Thu, Jan 27, 2022 at 3:55 AM 'Daniel Latypov' via KUnit Development
+> <kunit-dev@googlegroups.com> wrote:
+> >
+> > On Thu, Jan 20, 2022 at 9:19 AM Daniel Latypov <dlatypov@google.com> wrote:
+> > > > That being said, I can live with the current solution, but'd ideally
+> > > > like a comment or something to make the return value Tuple a bit more
+> > > > obvious.
+> > >
+> > > A comment to explain that Tuple == multiple return values from a func?
+> > > Or something else?
+> >
+> > Friendly ping.
+> > Do we want a comment like this?
+> >
+> > # Note: Python uses tuples internally for multiple return values
+> > def foo() -> Tuple[int, int]
+> >    return 0, 1
+> >
+>
+> Whoops -- forgot to send my response to this.
+>
+> I was less worried about explaining the concept of multiple return
+> values, and more about naming what the return values were: that the
+> first one is the result information, and the second is the parsed
+> test.
+>
+> That being said, it's reasonably obvious from the types in this case,
+> so I'm okay leaving this as-is, though in general I'm wary of tuples
+> when the order doesn't matter, and a struct-style thing (with named
+> members) fits that better.
 
-...
+Ack.
+Yeah, in this case I don't think creating a new type to name each
+value is worth it.
+From what I've seen of python codebases, this info is usually captured
+in docstrings, but yeah, this particular case seems straightforward
+enough that it doesn't need it.
 
-> > -Reported-by tag.
-> > +Reported-by tag. The tag is intended for bugs; please do not use it to credit
-> > +feature requests.
-> 
-> LGTM.
-> Although it could refer to Suggested-by.  :)
-
-The main issue here is that automated CIs may suggest people to include the tag.
-And people (especially who are new in the community) tend to obey without a
-doubt.
-
-> Acked-by: Randy Dunlap <rdunlap@infradead.org>
-
-Thanks!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+>
+> I'm no Python expert though, so don't let my whinging get too much in the way.
+>
+> -- David
