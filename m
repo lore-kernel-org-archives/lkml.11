@@ -2,252 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2151FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A2CC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241255AbiA0MlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:41:10 -0500
-Received: from mail.cn.fujitsu.com ([183.91.158.132]:35616 "EHLO
-        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S241214AbiA0MlG (ORCPT
+        id S241258AbiA0MlN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:41:13 -0500
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:29866 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241211AbiA0MlI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:41:06 -0500
-IronPort-Data: =?us-ascii?q?A9a23=3A3kvy+K5pYNK7XuQIbfW+gQxRtEfGchMFZxGqfqr?=
- =?us-ascii?q?LsXjdYENShD0AmjFODGGBbPiCZjb8Loh1OYy19UsA6JGAz9RjTAE5pCpnJ55og?=
- =?us-ascii?q?ZCbXIzGdC8cHM8zwvXrFRsht4NHAjX5BJhcokT0+1H9YtANkVEmjfvSHuOmV7a?=
- =?us-ascii?q?dUsxMbVQMpBkJ2EsLd9ER0tYAbeiRW2thiPuqyyHtEAbNNw1cbgr435m+RCZH5?=
- =?us-ascii?q?5wejt+3UmsWPpintHeG/5Uc4Ql2yauZdxMUSaEMdgK2qnqq8V23wo/Z109F5tK?=
- =?us-ascii?q?NmbC9fFAIQ6LJIE6FjX8+t6qK20AE/3JtlP1gcqd0hUR/0l1lm/hr1dxLro32R?=
- =?us-ascii?q?wEyIoXCheYcTwJFVSp5OMWq/ZeeeyDu6JfJkRWun3zEhq8G4FsNFYER5Od7KW9?=
- =?us-ascii?q?U8vkfMjoMclaIgOfe6LKwSsFtgMo5JcXmNY9ZvWtvpRnVBPBgQ9bcQqHO5NZdx?=
- =?us-ascii?q?x8xgNxDGbDVYM9xQTZtcxPGbDVMN00RBZZ4m/2n7lH7cjtFuBeQoII0/WHYz0p?=
- =?us-ascii?q?2yreFGNzLdt2PQO1Rn12EvSTC/mLkElcWOcL34TqO8lqonfOJkS6TcIAbErD+/?=
- =?us-ascii?q?f53qFqJz2cXBVsdUl7Tif24jFOuHtxEJ0EK9y4Gs6c/7gqoQ8P7Uhn+p2SL1jY?=
- =?us-ascii?q?YWtxNA6g55RuLx678/QmUHC4HQyRHZdhgs9U5LRQu11mUj5b5CydHrrKYUzSe+?=
- =?us-ascii?q?62SoDf0PjIaRVLuzwdsoRAtuoGl+d9syEmUCIsLLUJ8tfWtcRmY/txAhHNWa20?=
- =?us-ascii?q?vsPM2?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3ALsWrpKpBNi6OyCv3wrlXmZ4aV5oXeYIsimQD?=
- =?us-ascii?q?101hICG9E/bo8/xG+c536faaslgssQ4b8+xoVJPgfZq+z+8R3WByB8bAYOCOgg?=
- =?us-ascii?q?LBQ72KhrGSoQEIdRefysdtkY9kc4VbTOb7FEVGi6/BizWQIpINx8am/cmT6dvj?=
- =?us-ascii?q?8w=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.88,320,1635177600"; 
-   d="scan'208";a="120913260"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 27 Jan 2022 20:41:01 +0800
-Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
-        by cn.fujitsu.com (Postfix) with ESMTP id 45DE34D169C9;
-        Thu, 27 Jan 2022 20:41:01 +0800 (CST)
-Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
- G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Thu, 27 Jan 2022 20:41:01 +0800
-Received: from irides.mr.mr (10.167.225.141) by
- G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Thu, 27 Jan 2022 20:40:58 +0800
-From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
-        <nvdimm@lists.linux.dev>, <linux-mm@kvack.org>,
-        <linux-fsdevel@vger.kernel.org>
-CC:     <djwong@kernel.org>, <dan.j.williams@intel.com>,
-        <david@fromorbit.com>, <hch@infradead.org>, <jane.chu@oracle.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v10 2/9] mm: factor helpers for memory_failure_dev_pagemap
-Date:   Thu, 27 Jan 2022 20:40:51 +0800
-Message-ID: <20220127124058.1172422-3-ruansy.fnst@fujitsu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220127124058.1172422-1-ruansy.fnst@fujitsu.com>
-References: <20220127124058.1172422-1-ruansy.fnst@fujitsu.com>
+        Thu, 27 Jan 2022 07:41:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643287268; x=1674823268;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=ZqKlu4CuQ8DC1yfQEo5A/CfHIV3YO7XgLioVJtilO2A=;
+  b=kiAQZ4e+0YXA20Tcs5zdPjp+6KlxfltTZlQwTs9RQ2p7gFhKsGrgPI/t
+   3dFxY4AiWQhuxwJRuetPTdwDzQDvmpCJzg64GRTTF30bQUCCBqwv04RyY
+   SSQQuuI/ApoMWqiIsjoouvVEfD5D56Hz6pmWv9nitZSBSyyR8qiRmpyTL
+   U=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 27 Jan 2022 04:41:08 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 04:41:08 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 27 Jan 2022 04:41:07 -0800
+Received: from mpubbise-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 27 Jan 2022 04:41:03 -0800
+From:   Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <swboyd@chromium.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_sibis@quicinc.com>,
+        <kuabhs@chromium.org>, <quic_pillair@quicinc.com>,
+        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Subject: [PATCH v9] arm64: dts: qcom: sc7280: Add WPSS remoteproc node
+Date:   Thu, 27 Jan 2022 18:10:48 +0530
+Message-ID: <1643287248-1092-1-git-send-email-quic_mpubbise@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-yoursite-MailScanner-ID: 45DE34D169C9.A2AFD
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-memory_failure_dev_pagemap code is a bit complex before introduce RMAP
-feature for fsdax.  So it is needed to factor some helper functions to
-simplify these code.
+From: Rakesh Pillai <quic_pillair@quicinc.com>
 
-Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Add the WPSS remoteproc node in dts for
+PIL loading.
+
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Rakesh Pillai <quic_pillair@quicinc.com>
+Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
 ---
- mm/memory-failure.c | 141 ++++++++++++++++++++++++--------------------
- 1 file changed, 77 insertions(+), 64 deletions(-)
+Changes from v8:
+- Enable remoteproc_wpss from sc7280-idp.dtsi as the change is common for IDP and IDP2
 
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 14ae5c18e776..98b6144e4b9b 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1500,6 +1500,80 @@ static int try_to_split_thp_page(struct page *page, const char *msg)
- 	return 0;
- }
+Changes from v7:
+- Remove wpss_mem from reserved memory. Its part of board dtsi.
+
+Changes from v6:
+- Swap the oder of two properties in wpss_mem reserved memory
+
+Changes from v5:
+- Update the clock names
+
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  4 +++
+ arch/arm64/boot/dts/qcom/sc7280.dtsi     | 51 ++++++++++++++++++++++++++++++++
+ 2 files changed, 55 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index a146d0d..7287e51 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -634,3 +634,7 @@
+ 		bias-pull-up;
+ 	};
+ };
++
++&remoteproc_wpss {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index 937c2e0..e7c0745 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -2603,6 +2603,57 @@
+ 			status = "disabled";
+ 		};
  
-+static void unmap_and_kill(struct list_head *to_kill, unsigned long pfn,
-+		struct address_space *mapping, pgoff_t index, int flags)
-+{
-+	struct to_kill *tk;
-+	unsigned long size = 0;
++		remoteproc_wpss: remoteproc@8a00000 {
++			compatible = "qcom,sc7280-wpss-pil";
++			reg = <0 0x08a00000 0 0x10000>;
 +
-+	list_for_each_entry(tk, to_kill, nd)
-+		if (tk->size_shift)
-+			size = max(size, 1UL << tk->size_shift);
++			interrupts-extended = <&intc GIC_SPI 587 IRQ_TYPE_EDGE_RISING>,
++					      <&wpss_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
++					      <&wpss_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
++					      <&wpss_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
++					      <&wpss_smp2p_in 3 IRQ_TYPE_EDGE_RISING>,
++					      <&wpss_smp2p_in 7 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "wdog", "fatal", "ready", "handover",
++					  "stop-ack", "shutdown-ack";
 +
-+	if (size) {
-+		/*
-+		 * Unmap the largest mapping to avoid breaking up device-dax
-+		 * mappings which are constant size. The actual size of the
-+		 * mapping being torn down is communicated in siginfo, see
-+		 * kill_proc()
-+		 */
-+		loff_t start = (index << PAGE_SHIFT) & ~(size - 1);
++			clocks = <&gcc GCC_WPSS_AHB_BDG_MST_CLK>,
++				 <&gcc GCC_WPSS_AHB_CLK>,
++				 <&gcc GCC_WPSS_RSCP_CLK>,
++				 <&rpmhcc RPMH_CXO_CLK>;
++			clock-names = "ahb_bdg", "ahb",
++				      "rscp", "xo";
 +
-+		unmap_mapping_range(mapping, start, size, 0);
-+	}
++			power-domains = <&rpmhpd SC7280_CX>,
++					<&rpmhpd SC7280_MX>;
++			power-domain-names = "cx", "mx";
 +
-+	kill_procs(to_kill, flags & MF_MUST_KILL, false, pfn, flags);
-+}
++			memory-region = <&wpss_mem>;
 +
-+static int mf_generic_kill_procs(unsigned long long pfn, int flags,
-+		struct dev_pagemap *pgmap)
-+{
-+	struct page *page = pfn_to_page(pfn);
-+	LIST_HEAD(to_kill);
-+	dax_entry_t cookie;
++			qcom,qmp = <&aoss_qmp>;
 +
-+	/*
-+	 * Prevent the inode from being freed while we are interrogating
-+	 * the address_space, typically this would be handled by
-+	 * lock_page(), but dax pages do not use the page lock. This
-+	 * also prevents changes to the mapping of this pfn until
-+	 * poison signaling is complete.
-+	 */
-+	cookie = dax_lock_page(page);
-+	if (!cookie)
-+		return -EBUSY;
++			qcom,smem-states = <&wpss_smp2p_out 0>;
++			qcom,smem-state-names = "stop";
 +
-+	if (hwpoison_filter(page))
-+		return 0;
++			resets = <&aoss_reset AOSS_CC_WCSS_RESTART>,
++				 <&pdc_reset PDC_WPSS_SYNC_RESET>;
++			reset-names = "restart", "pdc_sync";
 +
-+	if (pgmap->type == MEMORY_DEVICE_PRIVATE) {
-+		/*
-+		 * TODO: Handle HMM pages which may need coordination
-+		 * with device-side memory.
-+		 */
-+		return -EBUSY;
-+	}
++			qcom,halt-regs = <&tcsr_mutex 0x37000>;
 +
-+	/*
-+	 * Use this flag as an indication that the dax page has been
-+	 * remapped UC to prevent speculative consumption of poison.
-+	 */
-+	SetPageHWPoison(page);
++			status = "disabled";
 +
-+	/*
-+	 * Unlike System-RAM there is no possibility to swap in a
-+	 * different physical page at a given virtual address, so all
-+	 * userspace consumption of ZONE_DEVICE memory necessitates
-+	 * SIGBUS (i.e. MF_MUST_KILL)
-+	 */
-+	flags |= MF_ACTION_REQUIRED | MF_MUST_KILL;
-+	collect_procs(page, &to_kill, true);
++			glink-edge {
++				interrupts-extended = <&ipcc IPCC_CLIENT_WPSS
++							     IPCC_MPROC_SIGNAL_GLINK_QMP
++							     IRQ_TYPE_EDGE_RISING>;
++				mboxes = <&ipcc IPCC_CLIENT_WPSS
++						IPCC_MPROC_SIGNAL_GLINK_QMP>;
 +
-+	unmap_and_kill(&to_kill, pfn, page->mapping, page->index, flags);
-+	dax_unlock_page(page, cookie);
-+	return 0;
-+}
++				label = "wpss";
++				qcom,remote-pid = <13>;
++			};
++		};
 +
- static int memory_failure_hugetlb(unsigned long pfn, int flags)
- {
- 	struct page *p = pfn_to_page(pfn);
-@@ -1576,12 +1650,8 @@ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
- 		struct dev_pagemap *pgmap)
- {
- 	struct page *page = pfn_to_page(pfn);
--	unsigned long size = 0;
--	struct to_kill *tk;
- 	LIST_HEAD(tokill);
--	int rc = -EBUSY;
--	loff_t start;
--	dax_entry_t cookie;
-+	int rc = -ENXIO;
- 
- 	if (flags & MF_COUNT_INCREASED)
- 		/*
-@@ -1590,67 +1660,10 @@ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
- 		put_page(page);
- 
- 	/* device metadata space is not recoverable */
--	if (!pgmap_pfn_valid(pgmap, pfn)) {
--		rc = -ENXIO;
--		goto out;
--	}
--
--	/*
--	 * Prevent the inode from being freed while we are interrogating
--	 * the address_space, typically this would be handled by
--	 * lock_page(), but dax pages do not use the page lock. This
--	 * also prevents changes to the mapping of this pfn until
--	 * poison signaling is complete.
--	 */
--	cookie = dax_lock_page(page);
--	if (!cookie)
-+	if (!pgmap_pfn_valid(pgmap, pfn))
- 		goto out;
- 
--	if (hwpoison_filter(page)) {
--		rc = 0;
--		goto unlock;
--	}
--
--	if (pgmap->type == MEMORY_DEVICE_PRIVATE) {
--		/*
--		 * TODO: Handle HMM pages which may need coordination
--		 * with device-side memory.
--		 */
--		goto unlock;
--	}
--
--	/*
--	 * Use this flag as an indication that the dax page has been
--	 * remapped UC to prevent speculative consumption of poison.
--	 */
--	SetPageHWPoison(page);
--
--	/*
--	 * Unlike System-RAM there is no possibility to swap in a
--	 * different physical page at a given virtual address, so all
--	 * userspace consumption of ZONE_DEVICE memory necessitates
--	 * SIGBUS (i.e. MF_MUST_KILL)
--	 */
--	flags |= MF_ACTION_REQUIRED | MF_MUST_KILL;
--	collect_procs(page, &tokill, flags & MF_ACTION_REQUIRED);
--
--	list_for_each_entry(tk, &tokill, nd)
--		if (tk->size_shift)
--			size = max(size, 1UL << tk->size_shift);
--	if (size) {
--		/*
--		 * Unmap the largest mapping to avoid breaking up
--		 * device-dax mappings which are constant size. The
--		 * actual size of the mapping being torn down is
--		 * communicated in siginfo, see kill_proc()
--		 */
--		start = (page->index << PAGE_SHIFT) & ~(size - 1);
--		unmap_mapping_range(page->mapping, start, size, 0);
--	}
--	kill_procs(&tokill, flags & MF_MUST_KILL, false, pfn, flags);
--	rc = 0;
--unlock:
--	dax_unlock_page(page, cookie);
-+	rc = mf_generic_kill_procs(pfn, flags, pgmap);
- out:
- 	/* drop pgmap ref acquired in caller */
- 	put_dev_pagemap(pgmap);
+ 		dc_noc: interconnect@90e0000 {
+ 			reg = <0 0x090e0000 0 0x5080>;
+ 			compatible = "qcom,sc7280-dc-noc";
 -- 
-2.34.1
-
-
+2.7.4
 
