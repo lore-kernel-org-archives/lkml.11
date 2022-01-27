@@ -2,157 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A2CC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A26DC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241258AbiA0MlN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:41:13 -0500
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:29866 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241211AbiA0MlI (ORCPT
+        id S236230AbiA0MlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:41:22 -0500
+Received: from mail.cn.fujitsu.com ([183.91.158.132]:35632 "EHLO
+        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S241277AbiA0MlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:41:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643287268; x=1674823268;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=ZqKlu4CuQ8DC1yfQEo5A/CfHIV3YO7XgLioVJtilO2A=;
-  b=kiAQZ4e+0YXA20Tcs5zdPjp+6KlxfltTZlQwTs9RQ2p7gFhKsGrgPI/t
-   3dFxY4AiWQhuxwJRuetPTdwDzQDvmpCJzg64GRTTF30bQUCCBqwv04RyY
-   SSQQuuI/ApoMWqiIsjoouvVEfD5D56Hz6pmWv9nitZSBSyyR8qiRmpyTL
-   U=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 27 Jan 2022 04:41:08 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 04:41:08 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 27 Jan 2022 04:41:07 -0800
-Received: from mpubbise-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 27 Jan 2022 04:41:03 -0800
-From:   Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <swboyd@chromium.org>
-CC:     <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_sibis@quicinc.com>,
-        <kuabhs@chromium.org>, <quic_pillair@quicinc.com>,
-        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
-Subject: [PATCH v9] arm64: dts: qcom: sc7280: Add WPSS remoteproc node
-Date:   Thu, 27 Jan 2022 18:10:48 +0530
-Message-ID: <1643287248-1092-1-git-send-email-quic_mpubbise@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 27 Jan 2022 07:41:14 -0500
+IronPort-Data: =?us-ascii?q?A9a23=3AGv5/a6AcMxHjdRVW/1biw5YqxClBgxIJ4g17XOL?=
+ =?us-ascii?q?fVAaw3T0q0j0FyWIaUWiBaa6CZGKhfot0btm28UkCscSAx9UxeLYW3SszFioV8?=
+ =?us-ascii?q?6IpJjg4wn/YZnrUdouaJK5ex512huLocYZkHhcwmj/3auK79SAmivnRLlbBILW?=
+ =?us-ascii?q?s1h5ZFFYMpBgJ2UoLd94R2uaEsPDha++/kYqaT/73ZDdJ7wVJ3lc8sMpvnv/AU?=
+ =?us-ascii?q?MPa41v0tnRmDRxCUcS3e3M9VPrzLonpR5f0rxU9IwK0ewrD5OnREmLx9BFrBM6?=
+ =?us-ascii?q?nk6rgbwsBRbu60Qqm0yIQAvb9xEMZ4HFaPqUTbZLwbW9NljyPhME3xtNWqbS+V?=
+ =?us-ascii?q?AUoIrbR3u8aVnG0FgknZ/UXoeSdfyjXXcu7iheun2HX6/lnEkA6FYMC/eNwG2t?=
+ =?us-ascii?q?P6boTLzVlRhCIh8q3xryhQ+Vhj8hlK9PkVKsTs3cmz3fGDPIiQJnGWI3L48NV2?=
+ =?us-ascii?q?HE7gcUmNfrceM0fZhJsYQ7GbhkJPU0YYLo6neG1ljz6dhVbtluepuww+We75Ap?=
+ =?us-ascii?q?v3LnoNfLRe8eWXoNRn0CFtiTK8nqRKhERNPSb0ibD/n/Eru3Gmy69U4IPPLqi/?=
+ =?us-ascii?q?/VujRuYwWl7IBkXU0ar5PeihkOgVtZ3NUMZ4GwtoLI0+UjtScPyNzW8oXiZrls?=
+ =?us-ascii?q?fVsBWHukS9g6A0OzX7hyfC2xCSSROAPQitckrVXk62EShgdzkH3psvaeTRHbb8?=
+ =?us-ascii?q?a2bxQ5ekwB9wXQqPHdCFFVapYK45txbs/4Gdf47eIbdszE/MWyYL+i2kRUD?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AzY0VGaBKLGQwa/blHemQ55DYdb4zR+YMi2TD?=
+ =?us-ascii?q?tnoBLSC9F/b0qynAppomPGDP4gr5NEtApTniAtjkfZq/z+8X3WB5B97LMzUO01?=
+ =?us-ascii?q?HYTr2Kg7GD/xTQXwX69sN4kZxrarVCDrTLZmRSvILX5xaZHr8brOW6zA=3D=3D?=
+X-IronPort-AV: E=Sophos;i="5.88,320,1635177600"; 
+   d="scan'208";a="120913268"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 27 Jan 2022 20:41:07 +0800
+Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
+        by cn.fujitsu.com (Postfix) with ESMTP id 43ABB4D169C8;
+        Thu, 27 Jan 2022 20:41:03 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Thu, 27 Jan 2022 20:41:04 +0800
+Received: from irides.mr.mr (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Thu, 27 Jan 2022 20:41:00 +0800
+From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
+        <nvdimm@lists.linux.dev>, <linux-mm@kvack.org>,
+        <linux-fsdevel@vger.kernel.org>
+CC:     <djwong@kernel.org>, <dan.j.williams@intel.com>,
+        <david@fromorbit.com>, <hch@infradead.org>, <jane.chu@oracle.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH v10 5/9] fsdax: Introduce dax_load_page()
+Date:   Thu, 27 Jan 2022 20:40:54 +0800
+Message-ID: <20220127124058.1172422-6-ruansy.fnst@fujitsu.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220127124058.1172422-1-ruansy.fnst@fujitsu.com>
+References: <20220127124058.1172422-1-ruansy.fnst@fujitsu.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: 43ABB4D169C8.A25E3
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rakesh Pillai <quic_pillair@quicinc.com>
+The current dax_lock_page() locks dax entry by obtaining mapping and
+index in page.  To support 1-to-N RMAP in NVDIMM, we need a new function
+to lock a specific dax entry corresponding to this file's mapping,index.
+And output the page corresponding to the specific dax entry for caller
+use.
 
-Add the WPSS remoteproc node in dts for
-PIL loading.
-
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Rakesh Pillai <quic_pillair@quicinc.com>
-Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
-Changes from v8:
-- Enable remoteproc_wpss from sc7280-idp.dtsi as the change is common for IDP and IDP2
+ fs/dax.c            | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/dax.h |  8 ++++++++
+ 2 files changed, 52 insertions(+)
 
-Changes from v7:
-- Remove wpss_mem from reserved memory. Its part of board dtsi.
-
-Changes from v6:
-- Swap the oder of two properties in wpss_mem reserved memory
-
-Changes from v5:
-- Update the clock names
-
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  4 +++
- arch/arm64/boot/dts/qcom/sc7280.dtsi     | 51 ++++++++++++++++++++++++++++++++
- 2 files changed, 55 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index a146d0d..7287e51 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -634,3 +634,7 @@
- 		bias-pull-up;
- 	};
- };
-+
-+&remoteproc_wpss {
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 937c2e0..e7c0745 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2603,6 +2603,57 @@
- 			status = "disabled";
- 		};
+diff --git a/fs/dax.c b/fs/dax.c
+index c8d57080c1aa..964512107c23 100644
+--- a/fs/dax.c
++++ b/fs/dax.c
+@@ -455,6 +455,50 @@ void dax_unlock_page(struct page *page, dax_entry_t cookie)
+ 	dax_unlock_entry(&xas, (void *)cookie);
+ }
  
-+		remoteproc_wpss: remoteproc@8a00000 {
-+			compatible = "qcom,sc7280-wpss-pil";
-+			reg = <0 0x08a00000 0 0x10000>;
++/*
++ * dax_load_page - Load the page corresponding to a (mapping,offset)
++ * @mapping: the file's mapping whose entry we want to load
++ * @index:   the offset within this file
++ * @page:    output the dax page corresponding to this dax entry
++ *
++ * Return: error if it isn't a dax mapping, otherwise 0.
++ */
++int dax_load_page(struct address_space *mapping, pgoff_t index,
++		struct page **page)
++{
++	XA_STATE(xas, &mapping->i_pages, 0);
++	void *entry;
 +
-+			interrupts-extended = <&intc GIC_SPI 587 IRQ_TYPE_EDGE_RISING>,
-+					      <&wpss_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
-+					      <&wpss_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
-+					      <&wpss_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
-+					      <&wpss_smp2p_in 3 IRQ_TYPE_EDGE_RISING>,
-+					      <&wpss_smp2p_in 7 IRQ_TYPE_EDGE_RISING>;
-+			interrupt-names = "wdog", "fatal", "ready", "handover",
-+					  "stop-ack", "shutdown-ack";
++	if (!dax_mapping(mapping))
++		return -EBUSY;
 +
-+			clocks = <&gcc GCC_WPSS_AHB_BDG_MST_CLK>,
-+				 <&gcc GCC_WPSS_AHB_CLK>,
-+				 <&gcc GCC_WPSS_RSCP_CLK>,
-+				 <&rpmhcc RPMH_CXO_CLK>;
-+			clock-names = "ahb_bdg", "ahb",
-+				      "rscp", "xo";
++	rcu_read_lock();
++	for (;;) {
++		entry = NULL;
++		xas_lock_irq(&xas);
++		xas_set(&xas, index);
++		entry = xas_load(&xas);
++		if (dax_is_locked(entry)) {
++			rcu_read_unlock();
++			wait_entry_unlocked(&xas, entry);
++			rcu_read_lock();
++			continue;
++		}
++		if (entry &&
++		    !dax_is_zero_entry(entry) && !dax_is_empty_entry(entry)) {
++			/*
++			 * Output the page if the dax entry exists and isn't
++			 * a zero or empty entry.
++			 */
++			*page = pfn_to_page(dax_to_pfn(entry));
++		}
++		xas_unlock_irq(&xas);
++		break;
++	}
++	rcu_read_unlock();
++	return 0;
++}
 +
-+			power-domains = <&rpmhpd SC7280_CX>,
-+					<&rpmhpd SC7280_MX>;
-+			power-domain-names = "cx", "mx";
+ /*
+  * Find page cache entry at given index. If it is a DAX entry, return it
+  * with the entry locked. If the page cache doesn't contain an entry at
+diff --git a/include/linux/dax.h b/include/linux/dax.h
+index 96cfc63b12fd..530ff9733dd9 100644
+--- a/include/linux/dax.h
++++ b/include/linux/dax.h
+@@ -155,6 +155,8 @@ struct page *dax_layout_busy_page(struct address_space *mapping);
+ struct page *dax_layout_busy_page_range(struct address_space *mapping, loff_t start, loff_t end);
+ dax_entry_t dax_lock_page(struct page *page);
+ void dax_unlock_page(struct page *page, dax_entry_t cookie);
++int dax_load_page(struct address_space *mapping,
++		unsigned long index, struct page **page);
+ #else
+ static inline struct page *dax_layout_busy_page(struct address_space *mapping)
+ {
+@@ -182,6 +184,12 @@ static inline dax_entry_t dax_lock_page(struct page *page)
+ static inline void dax_unlock_page(struct page *page, dax_entry_t cookie)
+ {
+ }
 +
-+			memory-region = <&wpss_mem>;
-+
-+			qcom,qmp = <&aoss_qmp>;
-+
-+			qcom,smem-states = <&wpss_smp2p_out 0>;
-+			qcom,smem-state-names = "stop";
-+
-+			resets = <&aoss_reset AOSS_CC_WCSS_RESTART>,
-+				 <&pdc_reset PDC_WPSS_SYNC_RESET>;
-+			reset-names = "restart", "pdc_sync";
-+
-+			qcom,halt-regs = <&tcsr_mutex 0x37000>;
-+
-+			status = "disabled";
-+
-+			glink-edge {
-+				interrupts-extended = <&ipcc IPCC_CLIENT_WPSS
-+							     IPCC_MPROC_SIGNAL_GLINK_QMP
-+							     IRQ_TYPE_EDGE_RISING>;
-+				mboxes = <&ipcc IPCC_CLIENT_WPSS
-+						IPCC_MPROC_SIGNAL_GLINK_QMP>;
-+
-+				label = "wpss";
-+				qcom,remote-pid = <13>;
-+			};
-+		};
-+
- 		dc_noc: interconnect@90e0000 {
- 			reg = <0 0x090e0000 0 0x5080>;
- 			compatible = "qcom,sc7280-dc-noc";
++static inline int dax_load_page(struct address_space *mapping,
++		unsigned long index, struct page **page)
++{
++	return 0;
++}
+ #endif
+ 
+ int dax_zero_range(struct inode *inode, loff_t pos, loff_t len, bool *did_zero,
 -- 
-2.7.4
+2.34.1
+
+
 
