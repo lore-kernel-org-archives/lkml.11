@@ -2,140 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E30C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82055C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:13:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343568AbiA0SMl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:12:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49340 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245621AbiA0SLu (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:11:50 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD20961D4D;
-        Thu, 27 Jan 2022 18:11:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 897FDC340E4;
-        Thu, 27 Jan 2022 18:11:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643307109;
-        bh=dltAdKUE+eILIurl2batzAVH6JDWgv6gBvHF05SbzLI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=z2vKXVbXK98F4rJPSKJ+qzdKK/pONLd8aBL26YPFVA3vW1pHqO3YwuiSz0SwsEuup
-         7FcliILOiS9r/fJyywBRF0LAOUA/t4RNNZg2m6DwbCAQk0LbNwRN3UGs1JXnjILiR+
-         vyxEviwHguqbHYAdS9muk6+zDnu9lgxm1cfM7VqM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com
-Subject: [PATCH 5.16 0/9] 5.16.4-rc1 review
-Date:   Thu, 27 Jan 2022 19:09:35 +0100
-Message-Id: <20220127180258.892788582@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.0
+        id S239902AbiA0SNI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 13:13:08 -0500
+Received: from mga02.intel.com ([134.134.136.20]:21234 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S245730AbiA0SMY (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 13:12:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643307144; x=1674843144;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=E06cVMhqPAPIMCSf0L0zsFNmzkakCpFSnGx6c4dp0A4=;
+  b=eyPw1wSEGo6U4dRajWZAZU5zytPjpWaY7cNfOB9DyJ9v38GPH8UNMn6X
+   9Enr/dG/2a9iRDz/6/7mQgjvFf549Tm5a3fKoBxaNuVxIUffF1AeZm4Pn
+   fkzFxOlohYz4/IsGP5mv4+9pgixEdyWVN0wGcO4lZnoUCKe5LSnYLvh9U
+   s6I9kAkXvoD8Ht1FaWL5Nqws7y0QI4u1JiuxdOJRZh32/9W1E93NN6Tc6
+   sL3y/ukqSEd3Szl8WndThEcTYT6cp0cE+zefL6TTO3oS8ONNI7O1oNpce
+   czoV78unyKWm0wd5/B70kdYViFf2YGYGphq5eOH9gEWX3bltn0rhmxI9Z
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234307403"
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="234307403"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 10:12:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="618424130"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 27 Jan 2022 10:12:21 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id B95BD167; Thu, 27 Jan 2022 20:12:34 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>
+Subject: [PATCH v4 1/2] vsprintf: Fix potential unaligned access
+Date:   Thu, 27 Jan 2022 20:12:32 +0200
+Message-Id: <20220127181233.72910-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.4-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.16.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.16.4-rc1
-X-KernelTest-Deadline: 2022-01-29T18:02+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.16.4 release.
-There are 9 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+The %p4cc specifier in some cases might get an unaligned pointer.
+Due to this we need to make copy to local variable once to avoid
+potential crashes on some architectures due to improper access.
 
-Responses should be made by Sat, 29 Jan 2022 18:02:51 +0000.
-Anything received after that time might be too late.
+Fixes: af612e43de6d ("lib/vsprintf: Add support for printing V4L2 and DRM fourccs")
+Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+---
+v4: no changes
+ lib/vsprintf.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.4-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.16.4-rc1
-
-Russell King <russell.king@oracle.com>
-    arm64/bpf: Remove 128MB limit for BPF JIT programs
-
-Jan Kara <jack@suse.cz>
-    select: Fix indefinitely sleeping task in poll_schedule_timeout()
-
-Paul E. McKenney <paulmck@kernel.org>
-    rcu: Tighten rcu_advance_cbs_nowake() checks
-
-Shakeel Butt <shakeelb@google.com>
-    memcg: better bounds on the memcg stats updates
-
-Manish Chopra <manishc@marvell.com>
-    bnx2x: Invalidate fastpath HSI version for VFs
-
-Manish Chopra <manishc@marvell.com>
-    bnx2x: Utilize firmware 7.13.21.0
-
-Pavel Begunkov <asml.silence@gmail.com>
-    io_uring: fix not released cached task refs
-
-Mario Limonciello <mario.limonciello@amd.com>
-    drm/amd/display: reset dcn31 SMU mailbox on failures
-
-Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-    drm/i915: Flush TLBs before releasing backing store
-
-
--------------
-
-Diffstat:
-
- Makefile                                           |   4 +-
- arch/arm64/include/asm/extable.h                   |   9 --
- arch/arm64/include/asm/memory.h                    |   5 +-
- arch/arm64/kernel/traps.c                          |   2 +-
- arch/arm64/mm/ptdump.c                             |   2 -
- arch/arm64/net/bpf_jit_comp.c                      |   7 +-
- .../drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c   |   6 ++
- drivers/gpu/drm/i915/gem/i915_gem_object_types.h   |   1 +
- drivers/gpu/drm/i915/gem/i915_gem_pages.c          |  10 ++
- drivers/gpu/drm/i915/gt/intel_gt.c                 | 102 +++++++++++++++++++++
- drivers/gpu/drm/i915/gt/intel_gt.h                 |   2 +
- drivers/gpu/drm/i915/gt/intel_gt_types.h           |   2 +
- drivers/gpu/drm/i915/i915_reg.h                    |  11 +++
- drivers/gpu/drm/i915/i915_vma.c                    |   3 +
- drivers/gpu/drm/i915/intel_uncore.c                |  26 +++++-
- drivers/gpu/drm/i915/intel_uncore.h                |   2 +
- drivers/net/ethernet/broadcom/bnx2x/bnx2x.h        |  11 ++-
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c    |   6 +-
- .../net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h    |   2 +
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h    |   3 +-
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   |  75 ++++++++++-----
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c  |  13 ++-
- fs/io_uring.c                                      |  34 ++++---
- fs/select.c                                        |  63 +++++++------
- kernel/rcu/tree.c                                  |   7 +-
- mm/memcontrol.c                                    |  20 ++--
- 26 files changed, 318 insertions(+), 110 deletions(-)
-
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 61528094ec87..4e8f3e9acb99 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -49,6 +49,7 @@
+ 
+ #include <asm/page.h>		/* for PAGE_SIZE */
+ #include <asm/byteorder.h>	/* cpu_to_le16 */
++#include <asm/unaligned.h>
+ 
+ #include <linux/string_helpers.h>
+ #include "kstrtox.h"
+@@ -1762,7 +1763,7 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
+ 	char output[sizeof("0123 little-endian (0x01234567)")];
+ 	char *p = output;
+ 	unsigned int i;
+-	u32 val;
++	u32 orig, val;
+ 
+ 	if (fmt[1] != 'c' || fmt[2] != 'c')
+ 		return error_string(buf, end, "(%p4?)", spec);
+@@ -1770,21 +1771,22 @@ char *fourcc_string(char *buf, char *end, const u32 *fourcc,
+ 	if (check_pointer(&buf, end, fourcc, spec))
+ 		return buf;
+ 
+-	val = *fourcc & ~BIT(31);
++	orig = get_unaligned(fourcc);
++	val = orig & ~BIT(31);
+ 
+-	for (i = 0; i < sizeof(*fourcc); i++) {
++	for (i = 0; i < sizeof(u32); i++) {
+ 		unsigned char c = val >> (i * 8);
+ 
+ 		/* Print non-control ASCII characters as-is, dot otherwise */
+ 		*p++ = isascii(c) && isprint(c) ? c : '.';
+ 	}
+ 
+-	strcpy(p, *fourcc & BIT(31) ? " big-endian" : " little-endian");
++	strcpy(p, orig & BIT(31) ? " big-endian" : " little-endian");
+ 	p += strlen(p);
+ 
+ 	*p++ = ' ';
+ 	*p++ = '(';
+-	p = special_hex_number(p, output + sizeof(output) - 2, *fourcc, sizeof(u32));
++	p = special_hex_number(p, output + sizeof(output) - 2, orig, sizeof(u32));
+ 	*p++ = ')';
+ 	*p = '\0';
+ 
+-- 
+2.34.1
 
