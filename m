@@ -2,131 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA23C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 769ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240876AbiA0LsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:48:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46491 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240861AbiA0LsK (ORCPT
+        id S232513AbiA0LuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:50:17 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:35906 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229896AbiA0LuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:48:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643284089;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Thu, 27 Jan 2022 06:50:15 -0500
+Date:   Thu, 27 Jan 2022 11:50:13 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643284214;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=auNbphr0O+ZKEvruwSuBE0OHO47V2eSZrfO/lffC05E=;
-        b=jHD6QNPzgHtjTWhZ9HN+fxFuSQPVWtbqacVTu+9rETt6BqvxmjwrwIqfNZ+qjrlAOesjbK
-        xH/E6iC2DJqWbQNddvpw1I60qY7Euc1BE6dz1FMfDedaTKZwn+7NX2AuCidwBXbC1AQR4Q
-        b9TEgI5LzMMyiForwjwVVgHlFavt2sU=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-524-Svm4xmmrNVqPeIE9tT7EJg-1; Thu, 27 Jan 2022 06:48:08 -0500
-X-MC-Unique: Svm4xmmrNVqPeIE9tT7EJg-1
-Received: by mail-ej1-f69.google.com with SMTP id d18-20020a1709063ed200b006a5eeb2ee4dso1221831ejj.3
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:48:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=auNbphr0O+ZKEvruwSuBE0OHO47V2eSZrfO/lffC05E=;
-        b=Y/o8XfHDSu5s/eoh4j1voi8eGXM7eVB0OWnRfvHu5ymv6IDH0fdB4CQeJLfveXiRkC
-         UDDdyp8y8zia9ePGrYMY2HMGBrTMLkoIqDvate+n96DoSj9SwKz7oa/1P4rozxaEAEEI
-         bnODCrJUrJnRJWI9+syQQQewTfFZJLC6BtlAu1ux50KqqvmrI4AYoVzMbZEl1fCzLV4M
-         Gi8drQfOf3AevvB12TeOJQw86e1AoyWuaMBRQCz5d0wc6238lVvToQRp/Bu/azPaoJ2H
-         d1OKMyIvtycTXliCDIqh5Boz1V67bNxldBx6L29zU5n5sQysAkx859cg5xHEYEhEon4O
-         MV0Q==
-X-Gm-Message-State: AOAM533nDTnN5YucisogPgSnwYRnZUojoAIRjtj3o62pvaR1YUs6jwY1
-        CaRSnXgBL8NJrSImlJHqOxMOG9YMbKhJu1WPdMexFqCSdsTWSiE0mh2av/jmBJKJAn1wHfQpDIM
-        v85C27iARLKMBAZX1/SL1pSC+
-X-Received: by 2002:a17:907:3e9e:: with SMTP id hs30mr2562596ejc.763.1643284087302;
-        Thu, 27 Jan 2022 03:48:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxcEud1ZLU/PI2jZMnSrnzhoVD8CFiasTZqWCZy6IcKL/FlIahL6m2vDnUDCAwN3QlUsJj6SQ==
-X-Received: by 2002:a17:907:3e9e:: with SMTP id hs30mr2562575ejc.763.1643284087023;
-        Thu, 27 Jan 2022 03:48:07 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id a14sm11157077edx.96.2022.01.27.03.48.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 03:48:06 -0800 (PST)
-Message-ID: <c7531d52-62ba-cc4c-a8ea-2fd126e3b0b3@redhat.com>
-Date:   Thu, 27 Jan 2022 12:48:05 +0100
+        bh=xxoBIIi2THpBDEX4AWHF0UKBEf7SvP/svreQCeoRNHo=;
+        b=pi6jf8nBA+/a8TY8KzXh5oYD+VNscMzihrZHEfJGYT0X1itYicpVkNzUaVxJVeOyjr9TEP
+        vVDQ9Fgk2W9ehlijMst4lQkYcx07Fh+JRhmqLj+D4KH6BOINC6zRm1u01NGtCkf3EKne/e
+        DZSqLg+4/ikIhL34E5giVSFyCeLzWc6mbXtFdCk7AG41lG9R8S/AjY8UOPH9N6CQJM1u5v
+        ln/XNZUUGEqODfhS37+FGgk/h2T+w2nJP68CXbml5VauBJp1N0mI6B7JfwP5ApNs4Qg3xT
+        5Q2quXaikU+g0e+gB8Nwd1jDUHE6dfquB2FXTf6NCYJdHm4Y9aR/6Pg+Vz+AAg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643284214;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xxoBIIi2THpBDEX4AWHF0UKBEf7SvP/svreQCeoRNHo=;
+        b=9V/yQikwBCuUPPaPXo63xA3SiEY/+IPe+C1n89+oR03W1xYSdkzqtKBAyg1C9gnOsMjKqf
+        VuBx8CN7nYkC7QAQ==
+From:   "tip-bot2 for James Clark" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/urgent] perf: Always wake the parent event
+Cc:     Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
+        James Clark <james.clark@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20211206113840.130802-2-james.clark@arm.com>
+References: <20211206113840.130802-2-james.clark@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH 3/7] i2c: cht-wc: Use generic_handle_irq_safe().
-Content-Language: en-US
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>
-References: <20220127113303.3012207-1-bigeasy@linutronix.de>
- <20220127113303.3012207-4-bigeasy@linutronix.de>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220127113303.3012207-4-bigeasy@linutronix.de>
-Content-Type: text/plain; charset=UTF-8
+Message-ID: <164328421307.16921.440649491005973301.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The following commit has been merged into the perf/urgent branch of tip:
 
-On 1/27/22 12:32, Sebastian Andrzej Siewior wrote:
-> Instead of manually disabling interrupts before invoking use
-> generic_handle_irq() which can be invoked with enabled and disabled
-> interrupts.
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Commit-ID:     961c39121759ad09a89598ec4ccdd34ae0468a19
+Gitweb:        https://git.kernel.org/tip/961c39121759ad09a89598ec4ccdd34ae0468a19
+Author:        James Clark <james.clark@arm.com>
+AuthorDate:    Mon, 06 Dec 2021 11:38:40 
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Wed, 26 Jan 2022 15:06:06 +01:00
 
-Thanks, patch looks good to me:
+perf: Always wake the parent event
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+When using per-process mode and event inheritance is set to true,
+forked processes will create a new perf events via inherit_event() ->
+perf_event_alloc(). But these events will not have ring buffers
+assigned to them. Any call to wakeup will be dropped if it's called on
+an event with no ring buffer assigned because that's the object that
+holds the wakeup list.
 
-Regards,
+If the child event is disabled due to a call to
+perf_aux_output_begin() or perf_aux_output_end(), the wakeup is
+dropped leaving userspace hanging forever on the poll.
 
-Hans
+Normally the event is explicitly re-enabled by userspace after it
+wakes up to read the aux data, but in this case it does not get woken
+up so the event remains disabled.
 
+This can be reproduced when using Arm SPE and 'stress' which forks once
+before running the workload. By looking at the list of aux buffers read,
+it's apparent that they stop after the fork:
 
-> ---
->  drivers/i2c/busses/i2c-cht-wc.c | 11 ++---------
->  1 file changed, 2 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/i2c/busses/i2c-cht-wc.c b/drivers/i2c/busses/i2c-cht-wc.c
-> index 1cf68f85b2e11..8ccf0c928bb44 100644
-> --- a/drivers/i2c/busses/i2c-cht-wc.c
-> +++ b/drivers/i2c/busses/i2c-cht-wc.c
-> @@ -99,15 +99,8 @@ static irqreturn_t cht_wc_i2c_adap_thread_handler(int id, void *data)
->  	 * interrupt handler as well, so running the client irq handler from
->  	 * this thread will cause things to lock up.
->  	 */
-> -	if (reg & CHT_WC_EXTCHGRIRQ_CLIENT_IRQ) {
-> -		/*
-> -		 * generic_handle_irq expects local IRQs to be disabled
-> -		 * as normally it is called from interrupt context.
-> -		 */
-> -		local_irq_disable();
-> -		generic_handle_irq(adap->client_irq);
-> -		local_irq_enable();
-> -	}
-> +	if (reg & CHT_WC_EXTCHGRIRQ_CLIENT_IRQ)
-> +		generic_handle_irq_safe(adap->client_irq);
->  
->  	return IRQ_HANDLED;
->  }
-> 
+  perf record -e arm_spe// -vvv -- stress -c 1
 
+With this patch applied they continue to be printed. This behaviour
+doesn't happen when using systemwide or per-cpu mode.
+
+Reported-by: Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>
+Signed-off-by: James Clark <james.clark@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20211206113840.130802-2-james.clark@arm.com
+---
+ kernel/events/core.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 479c9e6..b1c1928 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -5985,6 +5985,8 @@ static void ring_buffer_attach(struct perf_event *event,
+ 	struct perf_buffer *old_rb = NULL;
+ 	unsigned long flags;
+ 
++	WARN_ON_ONCE(event->parent);
++
+ 	if (event->rb) {
+ 		/*
+ 		 * Should be impossible, we set this when removing
+@@ -6042,6 +6044,9 @@ static void ring_buffer_wakeup(struct perf_event *event)
+ {
+ 	struct perf_buffer *rb;
+ 
++	if (event->parent)
++		event = event->parent;
++
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+ 	if (rb) {
+@@ -6055,6 +6060,9 @@ struct perf_buffer *ring_buffer_get(struct perf_event *event)
+ {
+ 	struct perf_buffer *rb;
+ 
++	if (event->parent)
++		event = event->parent;
++
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+ 	if (rb) {
+@@ -6763,7 +6771,7 @@ static unsigned long perf_prepare_sample_aux(struct perf_event *event,
+ 	if (WARN_ON_ONCE(READ_ONCE(sampler->oncpu) != smp_processor_id()))
+ 		goto out;
+ 
+-	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
++	rb = ring_buffer_get(sampler);
+ 	if (!rb)
+ 		goto out;
+ 
+@@ -6829,7 +6837,7 @@ static void perf_aux_sample_output(struct perf_event *event,
+ 	if (WARN_ON_ONCE(!sampler || !data->aux_size))
+ 		return;
+ 
+-	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
++	rb = ring_buffer_get(sampler);
+ 	if (!rb)
+ 		return;
+ 
