@@ -2,123 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E89C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:59:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241411AbiA0M7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:59:25 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50838 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241325AbiA0M7Y (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:59:24 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B9F461B18
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:59:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5167BC340E8;
-        Thu, 27 Jan 2022 12:59:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643288363;
-        bh=0Sr9yEBbyUIa84z9osp9RUNqV4/8hEQ36jN422D9FyQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HaZxcMlxAwG6MbSRF74ldQs97krXMn+dNkSP91l92KotkmIX84fLP7T9166SzEexW
-         H41o9eJgktAzFdB2200ZR8qX0loHjFdYIBQViweYgvtKpA90eoNBzY5qOReYjd+C6H
-         GMshApd3F0aOlQTNqHntXfnZg9o4PU+5HBnnTzZ39ZoVjp1p7kRk2bFK9XWbebpU6l
-         Ya9zj8AQRxWx08TuGAM7FPBalX0sVb+V+0I5CgFbOHZ9RH4ysbv3vL52ICSQt6Z1a3
-         jj+tbieE7842qQPNQPgwFNKIobBO6fkU4Z/Bt7FsQiTdxP+qCDEstw9gPKzdDDHWQp
-         OLoglSxDFHMoQ==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Zhiguo Niu <zhiguo.niu@unisoc.com>,
-        Jing Xia <jing.xia@unisoc.com>
-Subject: [PATCH] f2fs: fix to avoid potential deadlock
-Date:   Thu, 27 Jan 2022 13:44:49 +0800
-Message-Id: <20220127054449.24711-1-chao@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        id S241429AbiA0M7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:59:48 -0500
+Received: from foss.arm.com ([217.140.110.172]:60228 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236419AbiA0M7q (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 07:59:46 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 799F21063;
+        Thu, 27 Jan 2022 04:59:45 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.14.34])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 366E23F766;
+        Thu, 27 Jan 2022 04:59:44 -0800 (PST)
+Date:   Thu, 27 Jan 2022 12:59:31 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Yinan Liu <yinan@linux.alibaba.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        Sachin Sant <sachinp@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [powerpc] ftrace warning kernel/trace/ftrace.c:2068 with
+ code-patching selftests
+Message-ID: <YfKXM0wBfTh0V8+L@FVFF77S0Q05N>
+References: <944D10DA-8200-4BA9-8D0A-3BED9AA99F82@linux.ibm.com>
+ <e9422643-a210-b77f-a037-da63a9d2e925@linux.alibaba.com>
+ <20220124114548.30241947@gandalf.local.home>
+ <0fa0daec-881a-314b-e28b-3828e80bbd90@linux.alibaba.com>
+ <YfFclROd+0/61q2d@FVFF77S0Q05N>
+ <YfKGKWW5UfZ15kCW@FVFF77S0Q05N>
+ <CAMj1kXHgpr0KYx5PYO_SpqaN8Ar2kfmc9Pb-d26uaYDpjwTz9w@mail.gmail.com>
+ <YfKOENgR6sLnHQmA@FVFF77S0Q05N>
+ <CAMj1kXGsmK9pBmgwmMEr302eCHtL=cqs4jqM_jOiK-bLO2gQog@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXGsmK9pBmgwmMEr302eCHtL=cqs4jqM_jOiK-bLO2gQog@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoted from Jing Xia's report, there is a potential deadlock may happen
-between kworker and checkpoint as below:
+On Thu, Jan 27, 2022 at 01:22:17PM +0100, Ard Biesheuvel wrote:
+> On Thu, 27 Jan 2022 at 13:20, Mark Rutland <mark.rutland@arm.com> wrote:
+> > On Thu, Jan 27, 2022 at 01:03:34PM +0100, Ard Biesheuvel wrote:
+> >
+> > > These architectures use place-relative extables for the same reason:
+> > > place relative references are resolved at build time rather than at
+> > > runtime during relocation, making a build time sort feasible.
+> > >
+> > > arch/alpha/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > arch/arm64/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > arch/ia64/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > arch/parisc/include/asm/uaccess.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > arch/powerpc/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > arch/riscv/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > arch/s390/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > arch/x86/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > >
+> > > Note that the swap routine becomes something like the below, given
+> > > that the relative references need to be fixed up after the entry
+> > > changes place in the sorted list.
+> > >
+> > > static void swap_ex(void *a, void *b, int size)
+> > > {
+> > >         struct exception_table_entry *x = a, *y = b, tmp;
+> > >         int delta = b - a;
+> > >
+> > >         tmp = *x;
+> > >         x->insn = y->insn + delta;
+> > >         y->insn = tmp.insn - delta;
+> > >         ...
+> > > }
+> > >
+> > > As a bonus, the resulting footprint of the table in the image is
+> > > reduced by 8x, given that every 8 byte pointer has an accompanying 24
+> > > byte RELA record, so we go from 32 bytes to 4 bytes for every call to
+> > > __gnu_mcount_mc.
+> >
+> > Absolutely -- it'd be great if we could do that for the callsite locations; the
+> > difficulty is that the entries are generated by the compiler itself, so we'd
+> > either need some build/link time processing to convert each absolute 64-bit
+> > value to a relative 32-bit offset, or new compiler options to generate those as
+> > relative offsets from the outset.
+> 
+> Don't we use scripts/recordmcount.pl for that?
 
-[T:writeback]				[T:checkpoint]
-- wb_writeback
- - blk_start_plug
-bio contains NodeA was plugged in writeback threads
-					- do_writepages  -- sync write inodeB, inc wb_sync_req[DATA]
-					 - f2fs_write_data_pages
-					  - f2fs_write_single_data_page -- write last dirty page
-					   - f2fs_do_write_data_page
-					    - set_page_writeback  -- clear page dirty flag and
-					    PAGECACHE_TAG_DIRTY tag in radix tree
-					    - f2fs_outplace_write_data
-					     - f2fs_update_data_blkaddr
-					      - f2fs_wait_on_page_writeback -- wait NodeA to writeback here
-					   - inode_dec_dirty_pages
- - writeback_sb_inodes
-  - writeback_single_inode
-   - do_writepages
-    - f2fs_write_data_pages -- skip writepages due to wb_sync_req[DATA]
-     - wbc->pages_skipped += get_dirty_pages() -- PAGECACHE_TAG_DIRTY is not set but get_dirty_pages() returns one
-  - requeue_inode -- requeue inode to wb->b_dirty queue due to non-zero.pages_skipped
- - blk_finish_plug
+Not quite -- we could adjust it to do so, but today it doesn't consider
+existing mcount_loc entries, and just generates new ones where the compiler has
+generated calls to mcount, which it finds by scanning the instructions in the
+binary. Today it is not used:
 
-Let's try to avoid deadlock condition by forcing unplugging previous bio via
-blk_finish_plug(current->plug) once we'v skipped writeback in writepages()
-due to valid sbi->wb_sync_req[DATA/NODE].
+* On arm64 when we default to using `-fpatchable-function-entry=N`.  That makes
+  the compiler insert 2 NOPs in the function prologue, and log the location of
+  that NOP sled to a section called.  `__patchable_function_entries`. 
 
-Fixes: 687de7f1010c ("f2fs: avoid IO split due to mixed WB_SYNC_ALL and WB_SYNC_NONE")
-Signed-off-by: Zhiguo Niu <zhiguo.niu@unisoc.com>
-Signed-off-by: Jing Xia <jing.xia@unisoc.com>
-Signed-off-by: Chao Yu <chao@kernel.org>
----
- fs/f2fs/data.c | 6 +++++-
- fs/f2fs/node.c | 6 +++++-
- 2 files changed, 10 insertions(+), 2 deletions(-)
+  We need the compiler to do that since we can't reliably identify 2 NOPs in a
+  function prologue as being intended to be a patch site, as e.g. there could
+  be notrace functions where the compiler had to insert NOPs for alignment of a
+  subsequent brnach or similar.
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index 76d6fe7b0c8f..932a4c81acaf 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -3174,8 +3174,12 @@ static int __f2fs_write_data_pages(struct address_space *mapping,
- 	/* to avoid spliting IOs due to mixed WB_SYNC_ALL and WB_SYNC_NONE */
- 	if (wbc->sync_mode == WB_SYNC_ALL)
- 		atomic_inc(&sbi->wb_sync_req[DATA]);
--	else if (atomic_read(&sbi->wb_sync_req[DATA]))
-+	else if (atomic_read(&sbi->wb_sync_req[DATA])) {
-+		/* to avoid potential deadlock */
-+		if (current->plug)
-+			blk_finish_plug(current->plug);
- 		goto skip_write;
-+	}
- 
- 	if (__should_serialize_io(inode, wbc)) {
- 		mutex_lock(&sbi->writepages);
-diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
-index 556fcd8457f3..69c6bcaf5aae 100644
---- a/fs/f2fs/node.c
-+++ b/fs/f2fs/node.c
-@@ -2106,8 +2106,12 @@ static int f2fs_write_node_pages(struct address_space *mapping,
- 
- 	if (wbc->sync_mode == WB_SYNC_ALL)
- 		atomic_inc(&sbi->wb_sync_req[NODE]);
--	else if (atomic_read(&sbi->wb_sync_req[NODE]))
-+	else if (atomic_read(&sbi->wb_sync_req[NODE])) {
-+		/* to avoid potential deadlock */
-+		if (current->plug)
-+			blk_finish_plug(current->plug);
- 		goto skip_write;
-+	}
- 
- 	trace_f2fs_writepages(mapping->host, wbc, NODE);
- 
--- 
-2.32.0
+* On architectures with `-nop-mcount`. On these, it's necessary to use
+  `-mrecord-mcount` to have the compiler log the patch-site, for the same
+  reason as with `-fpatchable-function-entry`.
 
+* On architectures with `-mrecord-mcount` generally, since this avoids the
+  overhead of scanning each object.
+
+* On x86 when objtool is used.
+
+Thanks,
+Mark.
