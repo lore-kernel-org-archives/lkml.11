@@ -2,143 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C8FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240201AbiA0LWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:22:09 -0500
-Received: from mga14.intel.com ([192.55.52.115]:52788 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240156AbiA0LWD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:22:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643282523; x=1674818523;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=kZ/6QRCbXKz2uPbny7BLUdY7VrneEb9rP+jgHoalIWo=;
-  b=HHIgjJABp2XE9s30CMZFjyGpo4gdsmzF7JWfXqL3HshxJJzE5Em0vQn+
-   mE1k1Pp6tef4zbFvCXbCxpf1tWxB48KGtL51qAqn/5cscp3l5AF0Pf65o
-   EL/HTOcibKlTGmKMWsYCk+gaCizJzOBhl7cHWtwEFKnXeRBFBFDl9rfCx
-   RQY0sT6zkyiJE4RNVaoAJeBMz98uk8vLv0Zdyn8OegfSxgy/j54TxBdI9
-   AyaOvVA39N35sERdmrOMWDprxW9mb29UERavSjMdX8Aj6Ldhf1fooOmBx
-   9+kAiPnGxCnQ7OSWiw8qG9pjYUzwihUWG6IIsayzi/N4P73m3XLkRltxn
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="247042449"
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="247042449"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 03:21:52 -0800
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="480253281"
-Received: from sannilnx.jer.intel.com ([10.12.231.79])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 03:21:49 -0800
-From:   Alexander Usyskin <alexander.usyskin@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Ashutosh Dixit <ashutosh.dixit@intel.com>
-Subject: [PATCH v4 5/5] mei: gsc: retrieve the firmware version
-Date:   Thu, 27 Jan 2022 13:21:03 +0200
-Message-Id: <20220127112103.2336871-6-alexander.usyskin@intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220127112103.2336871-1-alexander.usyskin@intel.com>
-References: <20220127112103.2336871-1-alexander.usyskin@intel.com>
+        id S235668AbiA0LXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:23:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33734 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230438AbiA0LXN (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 06:23:13 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8E0C061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:23:12 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nD2rq-000536-AJ; Thu, 27 Jan 2022 12:23:06 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nD2rp-0008BL-JU; Thu, 27 Jan 2022 12:23:05 +0100
+Date:   Thu, 27 Jan 2022 12:23:05 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v1 4/4] usbnet: add support for label from
+ device tree
+Message-ID: <20220127112305.GC9150@pengutronix.de>
+References: <20220127104905.899341-1-o.rempel@pengutronix.de>
+ <20220127104905.899341-5-o.rempel@pengutronix.de>
+ <YfJ6lhZMAEmetdad@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YfJ6lhZMAEmetdad@kroah.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 12:08:34 up 47 days, 19:54, 83 users,  load average: 0.10, 0.22,
+ 0.25
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a hook to retrieve the firmware version of the
-GSC devices to bus-fixup.
-GSC has a different MKHI clients GUIDs but the same message structure
-to retrieve the firmware version as MEI so mei_fwver() can be reused.
+On Thu, Jan 27, 2022 at 11:57:26AM +0100, Greg KH wrote:
+> On Thu, Jan 27, 2022 at 11:49:05AM +0100, Oleksij Rempel wrote:
+> > Similar to the option to set a netdev name in device tree for switch
+> > ports by using the property "label" in the DSA framework, this patch
+> > adds this functionality to the usbnet infrastructure.
+> > 
+> > This will help to name the interfaces properly throughout supported
+> > devices. This provides stable interface names which are useful
+> > especially in embedded use cases.
+> 
+> Stable interface names are for userspace to set, not the kernel.
+> 
+> Why would USB care about this?  If you need something like this, get it
+> from the USB device itself, not DT, which should have nothing to do with
+> USB as USB is a dynamic, self-describing, bus.  Unlike DT.
+> 
+> So I do not think this is a good idea.
 
-CC: Ashutosh Dixit <ashutosh.dixit@intel.com>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
----
- drivers/misc/mei/bus-fixup.c | 25 +++++++++++++++++++++++++
- drivers/misc/mei/hw-me.c     |  2 ++
- 2 files changed, 27 insertions(+)
+This is needed for embedded devices with integrated USB Ethernet
+controller. Currently I have following use cases to solve:
+- Board with one or multiple USB Ethernet controllers with external PHY.
+  The PHY need devicetree to describe IRQ, clock sources, label on board, etc.
+- Board with USB Ethernet controller with DSA switch. The USB ethernet
+  controller is attached to the CPU port of DSA switch. In this case,
+  DSA switch is the sub-node of the USB device. The CPU port should have
+  stable name for all device related to this product.
 
-diff --git a/drivers/misc/mei/bus-fixup.c b/drivers/misc/mei/bus-fixup.c
-index 67844089db21..59506ba6fc48 100644
---- a/drivers/misc/mei/bus-fixup.c
-+++ b/drivers/misc/mei/bus-fixup.c
-@@ -30,6 +30,12 @@ static const uuid_le mei_nfc_info_guid = MEI_UUID_NFC_INFO;
- #define MEI_UUID_MKHIF_FIX UUID_LE(0x55213584, 0x9a29, 0x4916, \
- 			0xba, 0xdf, 0xf, 0xb7, 0xed, 0x68, 0x2a, 0xeb)
- 
-+#define MEI_UUID_IGSC_MKHI UUID_LE(0xE2C2AFA2, 0x3817, 0x4D19, \
-+			0x9D, 0x95, 0x06, 0xB1, 0x6B, 0x58, 0x8A, 0x5D)
-+
-+#define MEI_UUID_IGSC_MKHI_FIX UUID_LE(0x46E0C1FB, 0xA546, 0x414F, \
-+			0x91, 0x70, 0xB7, 0xF4, 0x6D, 0x57, 0xB4, 0xAD)
-+
- #define MEI_UUID_HDCP UUID_LE(0xB638AB7E, 0x94E2, 0x4EA2, \
- 			      0xA5, 0x52, 0xD1, 0xC5, 0x4B, 0x62, 0x7F, 0x04)
- 
-@@ -241,6 +247,23 @@ static void mei_mkhi_fix(struct mei_cl_device *cldev)
- 	mei_cldev_disable(cldev);
- }
- 
-+static void mei_gsc_mkhi_ver(struct mei_cl_device *cldev)
-+{
-+	int ret;
-+
-+	/* No need to enable the client if nothing is needed from it */
-+	if (!cldev->bus->fw_f_fw_ver_supported)
-+		return;
-+
-+	ret = mei_cldev_enable(cldev);
-+	if (ret)
-+		return;
-+
-+	ret = mei_fwver(cldev);
-+	if (ret < 0)
-+		dev_err(&cldev->dev, "FW version command failed %d\n", ret);
-+	mei_cldev_disable(cldev);
-+}
- /**
-  * mei_wd - wd client on the bus, change protocol version
-  *   as the API has changed.
-@@ -492,6 +515,8 @@ static struct mei_fixup {
- 	MEI_FIXUP(MEI_UUID_NFC_HCI, mei_nfc),
- 	MEI_FIXUP(MEI_UUID_WD, mei_wd),
- 	MEI_FIXUP(MEI_UUID_MKHIF_FIX, mei_mkhi_fix),
-+	MEI_FIXUP(MEI_UUID_IGSC_MKHI, mei_gsc_mkhi_ver),
-+	MEI_FIXUP(MEI_UUID_IGSC_MKHI_FIX, mei_gsc_mkhi_ver),
- 	MEI_FIXUP(MEI_UUID_HDCP, whitelist),
- 	MEI_FIXUP(MEI_UUID_ANY, vt_support),
- 	MEI_FIXUP(MEI_UUID_PAVP, whitelist),
-diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
-index 9748d14849a1..7e77328142ff 100644
---- a/drivers/misc/mei/hw-me.c
-+++ b/drivers/misc/mei/hw-me.c
-@@ -1577,12 +1577,14 @@ static const struct mei_cfg mei_me_pch15_sps_cfg = {
- static const struct mei_cfg mei_me_gsc_cfg = {
- 	MEI_CFG_TYPE_GSC,
- 	MEI_CFG_PCH8_HFS,
-+	MEI_CFG_FW_VER_SUPP,
- };
- 
- /* Graphics System Controller Firmware Interface */
- static const struct mei_cfg mei_me_gscfi_cfg = {
- 	MEI_CFG_TYPE_GSCFI,
- 	MEI_CFG_PCH8_HFS,
-+	MEI_CFG_FW_VER_SUPP,
- };
- 
- /*
+Using user space tools to name interfaces would double the maintenance
+of similar information: DT - describing the HW + udev scripts describing
+same HW again.
+
+Regards,
+Oleksij
 -- 
-2.32.0
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
