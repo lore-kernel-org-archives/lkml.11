@@ -2,256 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95634C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 20:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE117C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 20:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344004AbiA0UDP (ORCPT
+        id S1344001AbiA0UDS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 15:03:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43382 "EHLO
+        Thu, 27 Jan 2022 15:03:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343909AbiA0UCm (ORCPT
+        with ESMTP id S1343795AbiA0UDC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 15:02:42 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E6CC0613EB
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:02:41 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id i186so1323397pfe.0
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:02:40 -0800 (PST)
+        Thu, 27 Jan 2022 15:03:02 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C60C061747
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:03:02 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id p37so3796697pfh.4
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:03:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=NWPDgDUwRl+84SzwunIQASVSIexCRProBcGwEVA3ZyQ=;
-        b=oCNz3/TyoOC1Z4L+TGEGzc242VDcV1zOa2+4KpqoSchL9yglQa3dROPnlnWmSgibm6
-         6FdcJLI6inymZ9YaC5K+b7GNCEgYSqJfiA0drHN9+5GRKTc6wlUr9xF8D4rI3iPKD07E
-         +51WbfkKJVTDAand07akDTPtzYj2zVO+3ThYk=
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
+         :from:to;
+        bh=pS6oAPlQasQLltOWbX6ybr6410G9JsawVRKiZZSuto0=;
+        b=OkmBR46itpSo80eYP7SfR78XlDnMDrL9T8FDPQBDH5rBgiD3BZFfwLp2IIx2tdkHR+
+         ttRdpr4UVF+iNyhTIs3m0ikyxmU9eeIljF9uOY9Wc2sJLPWeE3QoI2R21yFiy2C4hYY7
+         qP+0Cueu8u3d84NnxZgzByglJXfgi37r0teIb2DzgVYRuND/lMRdW3Myoloks8Lc6IR2
+         a4SRgnrJi5GxFgixdCQnkHAwOVTjduufc9hxgByV58qNLUFcYCziJdvmlF2DMzSzc5Ax
+         mE1T78oc8dnShG9T0WwD8JfGPgAQnfc03kPCxAzDENXCdRj7VHYVAj942yBXtMeCxx1w
+         7inQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=NWPDgDUwRl+84SzwunIQASVSIexCRProBcGwEVA3ZyQ=;
-        b=nNcaF2LeM9vJspsvdZTQUhzXXLa5N/V2Ps6wRFdZeh0Fcm7L/ZY5eKn3c5UMr26/u3
-         Kbc4sT5DBJLjNmw9ClQ4Bh2KyRYLXxS/8YDg8WwCyslyBGtt+BbMMFxxy5ImhNMepxBm
-         msIaBu81aalnZvh/r0bPGmEGvbTimUTTxOOWchICzNFsn0hb3dNw9iuevZSoUhMs9BJC
-         DoYZ+43onGB3QcBVmoVDXZmr5Ni0qlq8rmbiVpybzPDgSvBHxBHtzKCdanklX9vRELw3
-         jg6NpYRFt/+v3ZV9sRnHYMMCNlhJe6A9LOgGWrQZnY+1lf6XZ7Dkx4CkUwP1clCvsQ3N
-         l1wQ==
-X-Gm-Message-State: AOAM533VKK19rUxM8+7VpUJguIMUkojfWANI2cte7Qxj2YBZAVWAUPgA
-        KEgvnlJleh/8/yUtGI+IalS8Yg==
-X-Google-Smtp-Source: ABdhPJyZ+yxlFIH/w2575esD0A9Z3uwPXwkVYGsPiBy9KXIh12HY0oxwuUFjhhYoIin6PRGU1PyxnQ==
-X-Received: by 2002:a62:e704:: with SMTP id s4mr4171414pfh.25.1643313760477;
-        Thu, 27 Jan 2022 12:02:40 -0800 (PST)
-Received: from smtp.gmail.com ([2620:15c:202:201:9246:1838:3243:3071])
-        by smtp.gmail.com with ESMTPSA id k21sm6561190pff.33.2022.01.27.12.02.39
+        h=x-gm-message-state:subject:date:message-id:mime-version
+         :content-transfer-encoding:cc:from:to;
+        bh=pS6oAPlQasQLltOWbX6ybr6410G9JsawVRKiZZSuto0=;
+        b=yEZtfskgrdvohPgcpnhXfBFQgZ4UjtClA20QBo4bk9h7HsrVE1TwtC4gFIQWh1U+f1
+         5tMBISS26qUx1gWK/ivSzWFrX2I9KDTqTCsPCXagL4Q8pglJLMisW0hUduM6Uxw75B5Z
+         PbFYFef+IDU9A+kPJNwBu5ZyqANEdaxiCVHWkR4InkflyTY3vUVhk1PebmbPhdFtGnQI
+         f5d3dfW2Ac0YxVnlIKrHJ72tSI4AIpmojmMJRWkjXQW9mSyeBEXH7MVGIasSPUGJLLMh
+         Fgs4Dph6ZhYNCRX7hawyg0tsK+bvVsGqi0HnhPGCidmEobbjKGYeQWuefApTjVIgZCc0
+         ZOMg==
+X-Gm-Message-State: AOAM532i8ri4LUzufl5KMJD4anpSn49CoYCbWtunyVUO++bz5QK6P5D1
+        1cydXvr2ZmURejqBDWHNmMCwUA==
+X-Google-Smtp-Source: ABdhPJyiiccrnWius1BWTgJTa5HN7sJBk331iM3iM9Jv7+uIfjVeO2PjkPDHGJ4ZwPFA89JxLPZ6Rg==
+X-Received: by 2002:a62:8fcb:: with SMTP id n194mr4258239pfd.29.1643313782059;
+        Thu, 27 Jan 2022 12:03:02 -0800 (PST)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id s2sm20501253pgf.56.2022.01.27.12.03.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 12:02:40 -0800 (PST)
-From:   Stephen Boyd <swboyd@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Douglas Anderson <dianders@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Saravana Kannan <saravanak@google.com>
-Subject: [PATCH v6 34/35] component: Get rid of drm_of_component_probe()
-Date:   Thu, 27 Jan 2022 12:01:40 -0800
-Message-Id: <20220127200141.1295328-35-swboyd@chromium.org>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-In-Reply-To: <20220127200141.1295328-1-swboyd@chromium.org>
-References: <20220127200141.1295328-1-swboyd@chromium.org>
+        Thu, 27 Jan 2022 12:03:01 -0800 (PST)
+Subject: [PATCH] RISC-V: Prevent sbi_ecall() from being inlined
+Date:   Thu, 27 Jan 2022 11:55:55 -0800
+Message-Id: <20220127195554.15705-1-palmer@rivosinc.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
+        anup@brainfault.org, Atish Patra <atishp@rivosinc.com>,
+        jszhang@kernel.org, vincent.chen@sifive.com, sunnanyong@huawei.com,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Atish Patra <atishp@rivosinc.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>, stable@vger.kernel.org
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:         linux-riscv@lists.infradead.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There aren't any users anymore so drop it.
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Rob Clark <robdclark@gmail.com>
-Cc: Russell King <rmk+kernel@arm.linux.org.uk>
-Cc: Saravana Kannan <saravanak@google.com>
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+The SBI spec defines SBI calls as following the standard calling
+convention, but we don't actually inform GCC of that when making an
+ecall.  Unfortunately this does actually manifest for the more complex
+SBI call wrappers, for example sbi_s, for example sbi_send_ipi_v02()
+uses t1.
+
+This patch just marks sbi_ecall() as noinline, which implicitly enforces
+the standard calling convention.
+
+Fixes : b9dcd9e41587 ("RISC-V: Add basic support for SBI v0.2")
+Cc: stable@vger.kernel.org
+Reported-by: Atish Patra <atishp@rivosinc.com>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 ---
- drivers/gpu/drm/drm_of.c | 85 +++++++++-------------------------------
- include/drm/drm_of.h     | 12 ------
- 2 files changed, 19 insertions(+), 78 deletions(-)
+This is more of a stop-gap fix than anything else, but it's small enough
+that it should be straight-forward to back port to stable.  This bug has
+existed forever, in theory, but none of this was specified in SBI-0.1
+so the backport to the introduction of 0.2 should be sufficient.
+No extant versions OpenSBI or BBL will manifest issues here, as they
+save all registers, but the spec is quite explicit so we're better off
+getting back in line sooner rather than later.
 
-diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
-index 0fe822319aae..84e285432d13 100644
---- a/drivers/gpu/drm/drm_of.c
-+++ b/drivers/gpu/drm/drm_of.c
-@@ -99,18 +99,30 @@ void drm_of_component_match_add(struct device *master,
- }
- EXPORT_SYMBOL_GPL(drm_of_component_match_add);
+There'll be some marginal performance impact here.  I'll send a
+follow-on to clean up the SBI call wrappers in a way that allows
+inlining without violating the spec, but that'll be a bigger change and
+thus isn't really suitable for stable.
+---
+ arch/riscv/kernel/sbi.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/riscv/kernel/sbi.c b/arch/riscv/kernel/sbi.c
+index f72527fcb347..7be586f5dc69 100644
+--- a/arch/riscv/kernel/sbi.c
++++ b/arch/riscv/kernel/sbi.c
+@@ -21,6 +21,11 @@ static int (*__sbi_rfence)(int fid, const struct cpumask *cpu_mask,
+ 			   unsigned long start, unsigned long size,
+ 			   unsigned long arg4, unsigned long arg5) __ro_after_init;
  
--static int _drm_of_component_probe(struct device *dev,
-+/**
-+ * drm_of_aggregate_probe - Generic probe function for a component based aggregate host
-+ * @dev: device containing the OF node
-+ * @compare_of: compare function used for matching components
-+ * @adrv: aggregate driver to be used
-+ *
-+ * Parse the platform device OF node and bind all the components associated
-+ * with the aggregate device. Interface ports are added before the encoders in
-+ * order to satisfy their .bind_component requirements
-+ * See Documentation/devicetree/bindings/graph.txt for the bindings.
-+ *
-+ * Returns zero if successful, or one of the standard error codes if it fails.
++/*
++ * This ecall stub can't be inlined because we're relying on the presence of a
++ * function call to enforce the calling convention.
 + */
-+int drm_of_aggregate_probe(struct device *dev,
- 			   int (*compare_of)(struct device *, void *),
--			   struct component_match **matchptr)
-+			   struct aggregate_driver *adrv)
- {
- 	struct device_node *ep, *port, *remote;
-+	struct component_match *match = NULL;
- 	int i;
- 
- 	if (!dev->of_node)
- 		return -EINVAL;
- 
--	*matchptr = NULL;
--
- 	/*
- 	 * Bind the crtc's ports first, so that drm_of_find_possible_crtcs()
- 	 * called from encoder's .bind callbacks works as expected
-@@ -121,7 +133,7 @@ static int _drm_of_component_probe(struct device *dev,
- 			break;
- 
- 		if (of_device_is_available(port->parent))
--			drm_of_component_match_add(dev, matchptr, compare_of,
-+			drm_of_component_match_add(dev, &match, compare_of,
- 						   port);
- 
- 		of_node_put(port);
-@@ -132,7 +144,7 @@ static int _drm_of_component_probe(struct device *dev,
- 		return -ENODEV;
- 	}
- 
--	if (!*matchptr) {
-+	if (!match) {
- 		dev_err(dev, "no available port\n");
- 		return -ENODEV;
- 	}
-@@ -162,72 +174,13 @@ static int _drm_of_component_probe(struct device *dev,
- 				continue;
- 			}
- 
--			drm_of_component_match_add(dev, matchptr, compare_of,
-+			drm_of_component_match_add(dev, &match, compare_of,
- 						   remote);
- 			of_node_put(remote);
- 		}
- 		of_node_put(port);
- 	}
- 
--	return 0;
--}
--
--/**
-- * drm_of_component_probe - Generic probe function for a component based master
-- * @dev: master device containing the OF node
-- * @compare_of: compare function used for matching components
-- * @m_ops: component master ops to be used
-- *
-- * Parse the platform device OF node and bind all the components associated
-- * with the master. Interface ports are added before the encoders in order to
-- * satisfy their .bind requirements
-- * See Documentation/devicetree/bindings/graph.txt for the bindings.
-- *
-- * Deprecated: Use drm_of_aggregate_probe() instead.
-- *
-- * Returns zero if successful, or one of the standard error codes if it fails.
-- */
--int drm_of_component_probe(struct device *dev,
--			   int (*compare_of)(struct device *, void *),
--			   const struct component_master_ops *m_ops)
--{
--
--	struct component_match *match;
--	int ret;
--
--	ret = _drm_of_component_probe(dev, compare_of, &match);
--	if (ret)
--		return ret;
--
--	return component_master_add_with_match(dev, m_ops, match);
--}
--EXPORT_SYMBOL(drm_of_component_probe);
--
--
--/**
-- * drm_of_aggregate_probe - Generic probe function for a component based aggregate host
-- * @dev: device containing the OF node
-- * @compare_of: compare function used for matching components
-- * @adrv: aggregate driver to be used
-- *
-- * Parse the platform device OF node and bind all the components associated
-- * with the aggregate device. Interface ports are added before the encoders in
-- * order to satisfy their .bind_component requirements
-- * See Documentation/devicetree/bindings/graph.txt for the bindings.
-- *
-- * Returns zero if successful, or one of the standard error codes if it fails.
-- */
--int drm_of_aggregate_probe(struct device *dev,
--			   int (*compare_of)(struct device *, void *),
--			   struct aggregate_driver *adrv)
--{
--	struct component_match *match;
--	int ret;
--
--	ret = _drm_of_component_probe(dev, compare_of, &match);
--	if (ret)
--		return ret;
--
- 	return component_aggregate_register(dev, adrv, match);
- }
- EXPORT_SYMBOL(drm_of_aggregate_probe);
-diff --git a/include/drm/drm_of.h b/include/drm/drm_of.h
-index 7c7b0d8377a7..4709ff2f04eb 100644
---- a/include/drm/drm_of.h
-+++ b/include/drm/drm_of.h
-@@ -8,7 +8,6 @@
- #endif
- 
- struct aggregate_driver;
--struct component_master_ops;
- struct component_match;
- struct device;
- struct drm_device;
-@@ -38,9 +37,6 @@ void drm_of_component_match_add(struct device *master,
- 				struct component_match **matchptr,
- 				int (*compare)(struct device *, void *),
- 				struct device_node *node);
--int drm_of_component_probe(struct device *dev,
--			   int (*compare_of)(struct device *, void *),
--			   const struct component_master_ops *m_ops);
- int drm_of_aggregate_probe(struct device *dev,
- 			   int (*compare_of)(struct device *, void *),
- 			   struct aggregate_driver *adrv);
-@@ -75,14 +71,6 @@ drm_of_component_match_add(struct device *master,
- {
- }
- 
--static inline int
--drm_of_component_probe(struct device *dev,
--		       int (*compare_of)(struct device *, void *),
--		       const struct component_master_ops *m_ops)
--{
--	return -EINVAL;
--}
--
- static inline int
- drm_of_aggregate_probe(struct device *dev,
- 		       int (*compare_of)(struct device *, void *),
++noinline
+ struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
+ 			unsigned long arg1, unsigned long arg2,
+ 			unsigned long arg3, unsigned long arg4,
 -- 
-https://chromeos.dev
+2.34.1
 
