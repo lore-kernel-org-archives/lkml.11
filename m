@@ -2,137 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F78C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64904C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239139AbiA0R6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:58:12 -0500
-Received: from mga02.intel.com ([134.134.136.20]:19418 "EHLO mga02.intel.com"
+        id S244919AbiA0R6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:58:16 -0500
+Received: from mga18.intel.com ([134.134.136.126]:31766 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244940AbiA0R4A (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:56:00 -0500
+        id S245069AbiA0R4E (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 12:56:04 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643306160; x=1674842160;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=h0ELtLaLvU8d5+IR+z+6tOFYz1WyWnwDtWsLq4wETwc=;
-  b=UCaenWA+v6F3cRkgIaOLC83zozXc9GYTcNqeiy3IqeKTX2PfqbWmqtXY
-   VghJyNmu4xpcN5wmB+6N0N18/kePRIwXFumDIF+zVFs7ILT7hUb2TlwHL
-   Sc/K5iLmFwMOz85kL0gqaWi3vuUPKT0MwxjwW7JVovPdsU4y8mHrb33PP
-   MzMqPtFnyESDlmvdu7choSs7lsfOqiTI0aWuFZFtxEF8601fAqPJcz17c
-   0BF/xnElGfDp0VLSrOGsQPf/vjJrmobe++auVYxnfpCQ+vL7wFYx5tu/C
-   alDMuNunr79HXNkn2BxTL9V36LpRi6MODtoJ6HOkG52ys4xTlDVtgVqfb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234302451"
+  t=1643306164; x=1674842164;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VjGGxTzCVF41Hl7cJRMdJ6bVgo2yimWqvnjX5qwuRt4=;
+  b=f6Chi3tm+lDBnNQkjg1ph41TXPn75LZ81rZzttup0IPAl84qxn5Hrck3
+   WtO4SnWZDXne5HoQOKFqE1eSne14LAt968+Fc0ji15eWJf1LRjkkGg6m9
+   tFON+PCId4O9ScmSiIhIszWPn58RmVt0iPoR9QboCjFh2aHnh3I1nOPa2
+   OyM8U5KvdVzBggW1hXcFUnSHjPgwjguS+WikenX/v8qRaR1aqi8d2B3tZ
+   y+K2BcU2GXP0toS7mDxfYEx6hBvzEHQDsZEqygJU3O62dknk4e6/oLCjn
+   cRqwQHI+poy2TBwpQZfbXIlhSHyhj/pMvGtelRmgk9xHed4pov+m4I4qA
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="230500304"
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="234302451"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:12 -0800
+   d="scan'208";a="230500304"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:56:03 -0800
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="674796169"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:12 -0800
-From:   ira.weiny@intel.com
-To:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V8 33/44] memremap_pages: Introduce pgmap_protection_available()
-Date:   Thu, 27 Jan 2022 09:54:54 -0800
-Message-Id: <20220127175505.851391-34-ira.weiny@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220127175505.851391-1-ira.weiny@intel.com>
-References: <20220127175505.851391-1-ira.weiny@intel.com>
+   d="scan'208";a="696743411"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:56:02 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nD8z3-00F4xt-5O;
+        Thu, 27 Jan 2022 19:54:57 +0200
+Date:   Thu, 27 Jan 2022 19:54:56 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Florian Eckert <fe@dev.tdt.de>
+Subject: Re: [PATCH v2 1/1] docs: process: submitting-patches: Clarify the
+ Reported-by usage
+Message-ID: <YfLccEk2PKpWH4eX@smile.fi.intel.com>
+References: <20220127163258.48482-1-andriy.shevchenko@linux.intel.com>
+ <1e2e99f6-e9bf-7d93-9629-3d70275c77f4@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1e2e99f6-e9bf-7d93-9629-3d70275c77f4@infradead.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ira Weiny <ira.weiny@intel.com>
+On Thu, Jan 27, 2022 at 09:21:21AM -0800, Randy Dunlap wrote:
+> On 1/27/22 08:32, Andy Shevchenko wrote:
 
-Users will need to specify that they want their dev_pagemap pages
-protected by specifying a flag in (struct dev_pagemap)->flags.  However,
-it is more efficient to know if that protection is available prior to
-requesting it and failing the mapping.
+...
 
-Define pgmap_protection_available() for users to check if protection is
-available to be used.  The name of pgmap_protection_available() was
-specifically chosen to isolate the implementation of the protection from
-higher level users.  However, the current implementation simply calls
-pks_available() to determine if it can support protection.
+> > -Reported-by tag.
+> > +Reported-by tag. The tag is intended for bugs; please do not use it to credit
+> > +feature requests.
+> 
+> LGTM.
+> Although it could refer to Suggested-by.  :)
 
-It was considered to have users specify the flag and check if the
-dev_pagemap object returned was protected or not.  But this was
-considered less efficient than a direct check beforehand.
+The main issue here is that automated CIs may suggest people to include the tag.
+And people (especially who are new in the community) tend to obey without a
+doubt.
 
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
----
-Changes for V8
-	Split this out to it's own patch.
-	s/pgmap_protection_enabled/pgmap_protection_available
----
- include/linux/mm.h | 13 +++++++++++++
- mm/memremap.c      | 11 +++++++++++
- 2 files changed, 24 insertions(+)
+Thanks!
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index e1a84b1e6787..2ae99bee6e82 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1143,6 +1143,19 @@ static inline bool is_pci_p2pdma_page(const struct page *page)
- 		page->pgmap->type == MEMORY_DEVICE_PCI_P2PDMA;
- }
- 
-+#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
-+
-+bool pgmap_protection_available(void);
-+
-+#else
-+
-+static inline bool pgmap_protection_available(void)
-+{
-+	return false;
-+}
-+
-+#endif /* CONFIG_DEVMAP_ACCESS_PROTECTION */
-+
- /* 127: arbitrary random number, small enough to assemble well */
- #define folio_ref_zero_or_close_to_overflow(folio) \
- 	((unsigned int) folio_ref_count(folio) + 127u <= 127u)
-diff --git a/mm/memremap.c b/mm/memremap.c
-index 6aa5f0c2d11f..c13b3b8a0048 100644
---- a/mm/memremap.c
-+++ b/mm/memremap.c
-@@ -6,6 +6,7 @@
- #include <linux/memory_hotplug.h>
- #include <linux/mm.h>
- #include <linux/pfn_t.h>
-+#include <linux/pkeys.h>
- #include <linux/swap.h>
- #include <linux/mmzone.h>
- #include <linux/swapops.h>
-@@ -63,6 +64,16 @@ static void devmap_managed_enable_put(struct dev_pagemap *pgmap)
- }
- #endif /* CONFIG_DEV_PAGEMAP_OPS */
- 
-+#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
-+
-+bool pgmap_protection_available(void)
-+{
-+	return pks_available();
-+}
-+EXPORT_SYMBOL_GPL(pgmap_protection_available);
-+
-+#endif /* CONFIG_DEVMAP_ACCESS_PROTECTION */
-+
- static void pgmap_array_delete(struct range *range)
- {
- 	xa_store_range(&pgmap_array, PHYS_PFN(range->start), PHYS_PFN(range->end),
 -- 
-2.31.1
+With Best Regards,
+Andy Shevchenko
+
 
