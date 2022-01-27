@@ -2,53 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C94BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:10:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 072C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:10:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244902AbiA0SKd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:10:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45402 "EHLO
+        id S245194AbiA0SKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 13:10:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245102AbiA0SKG (ORCPT
+        with ESMTP id S245105AbiA0SKG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 27 Jan 2022 13:10:06 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66C5C06175F;
-        Thu, 27 Jan 2022 10:09:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0031CC061760;
+        Thu, 27 Jan 2022 10:09:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7848C61998;
-        Thu, 27 Jan 2022 18:09:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EF2EC340E4;
-        Thu, 27 Jan 2022 18:09:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9138B61998;
+        Thu, 27 Jan 2022 18:09:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9384BC340E4;
+        Thu, 27 Jan 2022 18:09:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643306976;
-        bh=a2HwaX7gwQcBa/uKoUIkgkD1oBfKnidjfViQpYAN6u0=;
+        s=korg; t=1643306980;
+        bh=IpEbzjHNZ3M3wBS0pnjWiz3QqDtWe7Ld1IE2tNFTah4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xX0AAibZXT2bymSXmCYGhTHipadhf7k1PXS94Y0ehIhNZclio9vF4q11korbl5T3U
-         dDCJkor3ZLwbbUrYA5gUr1nl8a8Q5zZ9IVynIv/r8XGlPEctzZTJ3nPaG0xPL1vwaB
-         GD2CdGYC70KxqSKebApZ0ybdQYBKiMbrpOg1zQDw=
+        b=od8y59CoEhxhD+UffxsHg4VBT/q8wSjA18Y4twGudjJTYJXG0DKZ3HhHDs6UvolY+
+         UesGMgmdnlJOHRQWZ77oUFpJBbo9z8/sAHj/lXFDYeR1zXwJchS2JczEJrnPNNpgp5
+         MNcHVc2ppoE48sK5ysUwb+yHIUz4GuyUZw88vU3A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        Sushma Venkatesh Reddy <sushma.venkatesh.reddy@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Dave Airlie <airlied@redhat.com>,
-        Jon Bloomfield <jon.bloomfield@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 01/11] drm/i915: Flush TLBs before releasing backing store
-Date:   Thu, 27 Jan 2022 19:09:02 +0100
-Message-Id: <20220127180258.408413788@linuxfoundation.org>
+        stable@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+Subject: [PATCH 5.4 10/11] mmc: sdhci-esdhc-imx: disable CMDQ support
+Date:   Thu, 27 Jan 2022 19:09:11 +0100
+Message-Id: <20220127180258.704235716@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20220127180258.362000607@linuxfoundation.org>
 References: <20220127180258.362000607@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -56,261 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+From: Tim Harvey <tharvey@gateworks.com>
 
-commit 7938d61591d33394a21bdd7797a245b65428f44c upstream.
+commit adab993c25191b839b415781bdc7173a77315240 upstream.
 
-We need to flush TLBs before releasing backing store otherwise userspace
-is able to encounter stale entries if a) it is not declaring access to
-certain buffers and b) it races with the backing store release from a
-such undeclared execution already executing on the GPU in parallel.
+On IMX SoC's which support CMDQ the following can occur during high a
+high cpu load:
 
-The approach taken is to mark any buffer objects which were ever bound
-to the GPU and to trigger a serialized TLB flush when their backing
-store is released.
+mmc2: cqhci: ============ CQHCI REGISTER DUMP ===========
+mmc2: cqhci: Caps:      0x0000310a | Version:  0x00000510
+mmc2: cqhci: Config:    0x00001001 | Control:  0x00000000
+mmc2: cqhci: Int stat:  0x00000000 | Int enab: 0x00000006
+mmc2: cqhci: Int sig:   0x00000006 | Int Coal: 0x00000000
+mmc2: cqhci: TDL base:  0x8003f000 | TDL up32: 0x00000000
+mmc2: cqhci: Doorbell:  0xbf01dfff | TCN:      0x00000000
+mmc2: cqhci: Dev queue: 0x00000000 | Dev Pend: 0x08000000
+mmc2: cqhci: Task clr:  0x00000000 | SSC1:     0x00011000
+mmc2: cqhci: SSC2:      0x00000001 | DCMD rsp: 0x00000800
+mmc2: cqhci: RED mask:  0xfdf9a080 | TERRI:    0x00000000
+mmc2: cqhci: Resp idx:  0x0000000d | Resp arg: 0x00000000
+mmc2: sdhci: ============ SDHCI REGISTER DUMP ===========
+mmc2: sdhci: Sys addr:  0x7c722000 | Version:  0x00000002
+mmc2: sdhci: Blk size:  0x00000200 | Blk cnt:  0x00000020
+mmc2: sdhci: Argument:  0x00018000 | Trn mode: 0x00000023
+mmc2: sdhci: Present:   0x01f88008 | Host ctl: 0x00000030
+mmc2: sdhci: Power:     0x00000002 | Blk gap:  0x00000080
+mmc2: sdhci: Wake-up:   0x00000008 | Clock:    0x0000000f
+mmc2: sdhci: Timeout:   0x0000008f | Int stat: 0x00000000
+mmc2: sdhci: Int enab:  0x107f4000 | Sig enab: 0x107f4000
+mmc2: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000502
+mmc2: sdhci: Caps:      0x07eb0000 | Caps_1:   0x8000b407
+mmc2: sdhci: Cmd:       0x00000d1a | Max curr: 0x00ffffff
+mmc2: sdhci: Resp[0]:   0x00000000 | Resp[1]:  0xffc003ff
+mmc2: sdhci: Resp[2]:   0x328f5903 | Resp[3]:  0x00d07f01
+mmc2: sdhci: Host ctl2: 0x00000088
+mmc2: sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0xfe179020
+mmc2: sdhci-esdhc-imx: ========= ESDHC IMX DEBUG STATUS DUMP ====
+mmc2: sdhci-esdhc-imx: cmd debug status:  0x2120
+mmc2: sdhci-esdhc-imx: data debug status:  0x2200
+mmc2: sdhci-esdhc-imx: trans debug status:  0x2300
+mmc2: sdhci-esdhc-imx: dma debug status:  0x2400
+mmc2: sdhci-esdhc-imx: adma debug status:  0x2510
+mmc2: sdhci-esdhc-imx: fifo debug status:  0x2680
+mmc2: sdhci-esdhc-imx: async fifo debug status:  0x2750
+mmc2: sdhci: ============================================
 
-Alternatively the flushing could be done on VMA unbind, at which point
-we would be able to ascertain whether there is potential a parallel GPU
-execution (which could race), but essentially it boils down to paying
-the cost of TLB flushes potentially needlessly at VMA unbind time (when
-the backing store is not known to be going away so not needed for
-safety), versus potentially needlessly at backing store relase time
-(since we at that point cannot tell whether there is anything executing
-on the GPU which uses that object).
+For now, disable CMDQ support on the imx8qm/imx8qxp/imx8mm until the
+issue is found and resolved.
 
-Thereforce simplicity of implementation has been chosen for now with
-scope to benchmark and refine later as required.
-
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Reported-by: Sushma Venkatesh Reddy <sushma.venkatesh.reddy@intel.com>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Acked-by: Dave Airlie <airlied@redhat.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Jon Bloomfield <jon.bloomfield@intel.com>
-Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
+Fixes: bb6e358169bf6 ("mmc: sdhci-esdhc-imx: add CMDQ support")
+Fixes: cde5e8e9ff146 ("mmc: sdhci-esdhc-imx: Add an new esdhc_soc_data for i.MX8MM")
 Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+Reviewed-by: Haibo Chen <haibo.chen@nxp.com>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Link: https://lore.kernel.org/r/20211103165415.2016-1-tharvey@gateworks.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/gpu/drm/i915/gem/i915_gem_object_types.h |    3 
- drivers/gpu/drm/i915/gem/i915_gem_pages.c        |   10 ++
- drivers/gpu/drm/i915/gt/intel_gt.c               |   99 +++++++++++++++++++++++
- drivers/gpu/drm/i915/gt/intel_gt.h               |    2 
- drivers/gpu/drm/i915/gt/intel_gt_types.h         |    2 
- drivers/gpu/drm/i915/i915_reg.h                  |   11 ++
- drivers/gpu/drm/i915/i915_vma.c                  |    4 
- 7 files changed, 131 insertions(+)
 
---- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-@@ -118,6 +118,9 @@ struct drm_i915_gem_object {
+---
+ drivers/mmc/host/sdhci-esdhc-imx.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+--- a/drivers/mmc/host/sdhci-esdhc-imx.c
++++ b/drivers/mmc/host/sdhci-esdhc-imx.c
+@@ -218,8 +218,7 @@ static struct esdhc_soc_data usdhc_imx7u
+ static struct esdhc_soc_data usdhc_imx8qxp_data = {
+ 	.flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_STD_TUNING
+ 			| ESDHC_FLAG_HAVE_CAP1 | ESDHC_FLAG_HS200
+-			| ESDHC_FLAG_HS400 | ESDHC_FLAG_HS400_ES
+-			| ESDHC_FLAG_CQHCI,
++			| ESDHC_FLAG_HS400 | ESDHC_FLAG_HS400_ES,
+ };
  
- 	I915_SELFTEST_DECLARE(struct list_head st_link);
- 
-+	unsigned long flags;
-+#define I915_BO_WAS_BOUND_BIT    0
-+
- 	/*
- 	 * Is the object to be mapped as read-only to the GPU
- 	 * Only honoured if hardware has relevant pte bit
---- a/drivers/gpu/drm/i915/gem/i915_gem_pages.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
-@@ -8,6 +8,8 @@
- #include "i915_gem_object.h"
- #include "i915_scatterlist.h"
- 
-+#include "gt/intel_gt.h"
-+
- void __i915_gem_object_set_pages(struct drm_i915_gem_object *obj,
- 				 struct sg_table *pages,
- 				 unsigned int sg_page_sizes)
-@@ -176,6 +178,14 @@ __i915_gem_object_unset_pages(struct drm
- 	__i915_gem_object_reset_page_iter(obj);
- 	obj->mm.page_sizes.phys = obj->mm.page_sizes.sg = 0;
- 
-+	if (test_and_clear_bit(I915_BO_WAS_BOUND_BIT, &obj->flags)) {
-+		struct drm_i915_private *i915 = to_i915(obj->base.dev);
-+		intel_wakeref_t wakeref;
-+
-+		with_intel_runtime_pm_if_in_use(&i915->runtime_pm, wakeref)
-+			intel_gt_invalidate_tlbs(&i915->gt);
-+	}
-+
- 	return pages;
- }
- 
---- a/drivers/gpu/drm/i915/gt/intel_gt.c
-+++ b/drivers/gpu/drm/i915/gt/intel_gt.c
-@@ -15,6 +15,8 @@ void intel_gt_init_early(struct intel_gt
- 
- 	spin_lock_init(&gt->irq_lock);
- 
-+	mutex_init(&gt->tlb_invalidate_lock);
-+
- 	INIT_LIST_HEAD(&gt->closed_vma);
- 	spin_lock_init(&gt->closed_lock);
- 
-@@ -266,3 +268,100 @@ void intel_gt_driver_late_release(struct
- 	intel_uc_driver_late_release(&gt->uc);
- 	intel_gt_fini_reset(gt);
- }
-+
-+struct reg_and_bit {
-+	i915_reg_t reg;
-+	u32 bit;
-+};
-+
-+static struct reg_and_bit
-+get_reg_and_bit(const struct intel_engine_cs *engine, const bool gen8,
-+		const i915_reg_t *regs, const unsigned int num)
-+{
-+	const unsigned int class = engine->class;
-+	struct reg_and_bit rb = { };
-+
-+	if (WARN_ON_ONCE(class >= num || !regs[class].reg))
-+		return rb;
-+
-+	rb.reg = regs[class];
-+	if (gen8 && class == VIDEO_DECODE_CLASS)
-+		rb.reg.reg += 4 * engine->instance; /* GEN8_M2TCR */
-+	else
-+		rb.bit = engine->instance;
-+
-+	rb.bit = BIT(rb.bit);
-+
-+	return rb;
-+}
-+
-+void intel_gt_invalidate_tlbs(struct intel_gt *gt)
-+{
-+	static const i915_reg_t gen8_regs[] = {
-+		[RENDER_CLASS]			= GEN8_RTCR,
-+		[VIDEO_DECODE_CLASS]		= GEN8_M1TCR, /* , GEN8_M2TCR */
-+		[VIDEO_ENHANCEMENT_CLASS]	= GEN8_VTCR,
-+		[COPY_ENGINE_CLASS]		= GEN8_BTCR,
-+	};
-+	static const i915_reg_t gen12_regs[] = {
-+		[RENDER_CLASS]			= GEN12_GFX_TLB_INV_CR,
-+		[VIDEO_DECODE_CLASS]		= GEN12_VD_TLB_INV_CR,
-+		[VIDEO_ENHANCEMENT_CLASS]	= GEN12_VE_TLB_INV_CR,
-+		[COPY_ENGINE_CLASS]		= GEN12_BLT_TLB_INV_CR,
-+	};
-+	struct drm_i915_private *i915 = gt->i915;
-+	struct intel_uncore *uncore = gt->uncore;
-+	struct intel_engine_cs *engine;
-+	enum intel_engine_id id;
-+	const i915_reg_t *regs;
-+	unsigned int num = 0;
-+
-+	if (I915_SELFTEST_ONLY(gt->awake == -ENODEV))
-+		return;
-+
-+	if (INTEL_GEN(i915) == 12) {
-+		regs = gen12_regs;
-+		num = ARRAY_SIZE(gen12_regs);
-+	} else if (INTEL_GEN(i915) >= 8 && INTEL_GEN(i915) <= 11) {
-+		regs = gen8_regs;
-+		num = ARRAY_SIZE(gen8_regs);
-+	} else if (INTEL_GEN(i915) < 8) {
-+		return;
-+	}
-+
-+	if (WARN_ONCE(!num, "Platform does not implement TLB invalidation!"))
-+		return;
-+
-+	GEM_TRACE("\n");
-+
-+	assert_rpm_wakelock_held(&i915->runtime_pm);
-+
-+	mutex_lock(&gt->tlb_invalidate_lock);
-+	intel_uncore_forcewake_get(uncore, FORCEWAKE_ALL);
-+
-+	for_each_engine(engine, gt, id) {
-+		/*
-+		 * HW architecture suggest typical invalidation time at 40us,
-+		 * with pessimistic cases up to 100us and a recommendation to
-+		 * cap at 1ms. We go a bit higher just in case.
-+		 */
-+		const unsigned int timeout_us = 100;
-+		const unsigned int timeout_ms = 4;
-+		struct reg_and_bit rb;
-+
-+		rb = get_reg_and_bit(engine, regs == gen8_regs, regs, num);
-+		if (!i915_mmio_reg_offset(rb.reg))
-+			continue;
-+
-+		intel_uncore_write_fw(uncore, rb.reg, rb.bit);
-+		if (__intel_wait_for_register_fw(uncore,
-+						 rb.reg, rb.bit, 0,
-+						 timeout_us, timeout_ms,
-+						 NULL))
-+			DRM_ERROR_RATELIMITED("%s TLB invalidation did not complete in %ums!\n",
-+					      engine->name, timeout_ms);
-+	}
-+
-+	intel_uncore_forcewake_put(uncore, FORCEWAKE_ALL);
-+	mutex_unlock(&gt->tlb_invalidate_lock);
-+}
---- a/drivers/gpu/drm/i915/gt/intel_gt.h
-+++ b/drivers/gpu/drm/i915/gt/intel_gt.h
-@@ -57,4 +57,6 @@ static inline bool intel_gt_is_wedged(st
- 
- void intel_gt_queue_hangcheck(struct intel_gt *gt);
- 
-+void intel_gt_invalidate_tlbs(struct intel_gt *gt);
-+
- #endif /* __INTEL_GT_H__ */
---- a/drivers/gpu/drm/i915/gt/intel_gt_types.h
-+++ b/drivers/gpu/drm/i915/gt/intel_gt_types.h
-@@ -40,6 +40,8 @@ struct intel_gt {
- 
- 	struct intel_uc uc;
- 
-+	struct mutex tlb_invalidate_lock;
-+
- 	struct intel_gt_timelines {
- 		spinlock_t lock; /* protects active_list */
- 		struct list_head active_list;
---- a/drivers/gpu/drm/i915/i915_reg.h
-+++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -2519,6 +2519,12 @@ static inline bool i915_mmio_reg_valid(i
- #define   GAMT_CHKN_DISABLE_DYNAMIC_CREDIT_SHARING	(1 << 28)
- #define   GAMT_CHKN_DISABLE_I2M_CYCLE_ON_WR_PORT	(1 << 24)
- 
-+#define GEN8_RTCR	_MMIO(0x4260)
-+#define GEN8_M1TCR	_MMIO(0x4264)
-+#define GEN8_M2TCR	_MMIO(0x4268)
-+#define GEN8_BTCR	_MMIO(0x426c)
-+#define GEN8_VTCR	_MMIO(0x4270)
-+
- #if 0
- #define PRB0_TAIL	_MMIO(0x2030)
- #define PRB0_HEAD	_MMIO(0x2034)
-@@ -2602,6 +2608,11 @@ static inline bool i915_mmio_reg_valid(i
- #define   FAULT_VA_HIGH_BITS		(0xf << 0)
- #define   FAULT_GTT_SEL			(1 << 4)
- 
-+#define GEN12_GFX_TLB_INV_CR	_MMIO(0xced8)
-+#define GEN12_VD_TLB_INV_CR	_MMIO(0xcedc)
-+#define GEN12_VE_TLB_INV_CR	_MMIO(0xcee0)
-+#define GEN12_BLT_TLB_INV_CR	_MMIO(0xcee4)
-+
- #define FPGA_DBG		_MMIO(0x42300)
- #define   FPGA_DBG_RM_NOCLAIM	(1 << 31)
- 
---- a/drivers/gpu/drm/i915/i915_vma.c
-+++ b/drivers/gpu/drm/i915/i915_vma.c
-@@ -341,6 +341,10 @@ int i915_vma_bind(struct i915_vma *vma,
- 		return ret;
- 
- 	vma->flags |= bind_flags;
-+
-+	if (vma->obj)
-+		set_bit(I915_BO_WAS_BOUND_BIT, &vma->obj->flags);
-+
- 	return 0;
- }
- 
+ struct pltfm_imx_data {
 
 
