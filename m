@@ -2,86 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E268C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB03C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238321AbiA0JMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        id S238336AbiA0JMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 04:12:52 -0500
+Received: from mga07.intel.com ([134.134.136.100]:53346 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238308AbiA0JMt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 27 Jan 2022 04:12:49 -0500
-Received: from smtpbguseast1.qq.com ([54.204.34.129]:47276 "EHLO
-        smtpbguseast1.qq.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238299AbiA0JMj (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 04:12:39 -0500
-X-QQ-mid: bizesmtp54t1643274737tnh7xl4d
-Received: from localhost.localdomain (unknown [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 27 Jan 2022 17:12:11 +0800 (CST)
-X-QQ-SSF: 0140000000200090E000C00A0000000
-X-QQ-FEAT: F3yR32iATbjWw3acDtsfp2HLqnilxm49/4xuiIAVnD3g9W5QKpqaUyV3Lkk6W
-        GRHy/Z/TKb4rTYjEmDW/4bTNTdYtPjiVTdxpR3fJkmD5jxHf55vczWMU1TKeLG+bS2qg34p
-        oXrvYyWnob/at2T9ngNQV+dHympfswqSoQLwtmOwDlZ4N58gZh+A+1FBUpfJSk2aQX9AFAq
-        6BcI1OWr/5nv8fuVRU4bSdtYiTlwYBIbH7YnbjB/Sh7m4ZXbdKG9HZhd4kcFD7Miact+6gP
-        beikY47ZSxYMJ9tMuVcAIrZxqhYSln7ymbG4ntqkxzPwI/+Z1At6Kd/GL23LxJIzVkcRZnk
-        oLYqJ4J/hEIwOLDpaM/Q91vzWiAvM5Z9Us9A37dR66jYSdju+I=
-X-QQ-GoodBg: 2
-From:   tangmeng <tangmeng@uniontech.com>
-To:     axboe@kernel.dk, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     tangmeng <tangmeng@uniontech.com>
-Subject: [PATCH v2] scsi: sr: Improve the judgment statement
-Date:   Thu, 27 Jan 2022 17:11:36 +0800
-Message-Id: <20220127091136.9658-1-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643274769; x=1674810769;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=ypHEOArCLQ9Lqljw8MluEpZa7igABREh5sdnYemF0aQ=;
+  b=YFBANs9xzBKoi2uaV2Nhe7Fbof2YyB39rAHVsFjOYsH2eiIqVP3vkBE7
+   MS73Jnomn01Q/rkp9d6C6MqpDXM5SEwe+IQ0vfGWqKJWs5G9iQ61M7z+c
+   2HgC5EjCWF0zr+LqO1vaa/ueTM/B38JVL+6U6L/8KjEbPkpq96tMywv8L
+   r999i791uCvC0TmIXmILi4OKVXdbf6PkGHx/nGa/Kf/gntP4W+urhJrUp
+   ermsfo0+HiBS0hql4I9tPtHvtr8c4AxCg1F9WvKhOnQecj0SjRuuqTyuS
+   toMYavYleFQBR2XcX+BmJgWIyozWRF3Z5Az2mM5A0y07xPcg9te7V8KgI
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="310109592"
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="310109592"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 01:12:48 -0800
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="581408612"
+Received: from anithaha-mobl.amr.corp.intel.com (HELO ldmartin-desk2) ([10.212.224.126])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 01:12:48 -0800
+Date:   Thu, 27 Jan 2022 01:12:47 -0800
+From:   Lucas De Marchi <lucas.demarchi@intel.com>
+To:     Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc:     linaro-mm-sig@lists.linaro.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Subject: Re: [Intel-gfx] [PATCH 02/19] dma-buf-map: Add helper to initialize
+ second map
+Message-ID: <20220127091247.3uqi5zhesqtecbsw@ldmartin-desk2>
+X-Patchwork-Hint: comment
+References: <20220126203702.1784589-1-lucas.demarchi@intel.com>
+ <20220126203702.1784589-3-lucas.demarchi@intel.com>
+ <f0dbdcc0-13b5-c484-0bf3-a1f8c3e48954@amd.com>
+ <20220127075728.ygwgorhnrwaocdqv@ldmartin-desk2>
+ <3066c6a7-fc73-d34d-d209-a3ff6818dfb6@amd.com>
+ <20220127081810.6zt6cyib4s7kpa6f@ldmartin-desk2>
+ <3c6a9126-bf88-0f29-425f-36748271c179@amd.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign7
-X-QQ-Bgrelay: 1
+In-Reply-To: <3c6a9126-bf88-0f29-425f-36748271c179@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The previous code has a less-than-perfect usage of judgment syntax.
+On Thu, Jan 27, 2022 at 09:55:05AM +0100, Christian König wrote:
+>Am 27.01.22 um 09:18 schrieb Lucas De Marchi:
+>>On Thu, Jan 27, 2022 at 09:02:54AM +0100, Christian König wrote:
+>>>Am 27.01.22 um 08:57 schrieb Lucas De Marchi:
+>>>>On Thu, Jan 27, 2022 at 08:27:11AM +0100, Christian König wrote:
+>>>>>Am 26.01.22 um 21:36 schrieb Lucas De Marchi:
+>>>>>>[SNIP]
+>>>>humn... not sure if I was  clear. There is no importer and 
+>>>>exporter here.
+>>>
+>>>Yeah, and exactly that's what I'm pointing out as problem here.
+>>>
+>>>You are using the inter driver framework for something internal to 
+>>>the driver. That is an absolutely clear NAK!
+>>>
+>>>We could discuss that, but you guys are just sending around 
+>>>patches to do this without any consensus that this is a good idea.
+>>
+>>s/you guys/you/ if you have to blame anyone - I'm the only s-o-b in
+>>these patches. I'm sending these to _build consensus_ on what may be 
+>>a good
+>>use for it showing a real problem it's helping to fix.
+>
+>Well a cover letter would have been helpful, my impression was that 
+>you have a larger set and just want to upstream some minor DMA-buf 
+>changes necessary for it.
 
-When the med->media_event_code value is equal to 2 or 3, the same
-value is returned, so it would be better to combine the implementation
-statements when the med->media_event_code value is equal to 2 or 3.
+I missed adding this sentence to the cover letter, as my impression was that
+dma-buf-map was already used outside inter-driver framework. But there
+is actually a cover letter:
 
-Moreover, when a variable is equal to multiple values, it is better
-to use a switch judgment statement.
+https://lore.kernel.org/all/20220126203702.1784589-1-lucas.demarchi@intel.com/
 
-Signed-off-by: tangmeng <tangmeng@uniontech.com>
----
- drivers/scsi/sr.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+And looking at it now, it seems I missed adding Thomas Zimmermann to Cc.
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index f925b1f1f9ad..610baa630067 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -222,12 +222,16 @@ static unsigned int sr_get_events(struct scsi_device *sdev)
- 	if (eh->nea || eh->notification_class != 0x4)
- 		return 0;
- 
--	if (med->media_event_code == 1)
-+	switch (med->media_event_code) {
-+	case 1:
- 		return DISK_EVENT_EJECT_REQUEST;
--	else if (med->media_event_code == 2)
--		return DISK_EVENT_MEDIA_CHANGE;
--	else if (med->media_event_code == 3)
-+	case 2:
-+	case 3:
- 		return DISK_EVENT_MEDIA_CHANGE;
-+	default:
-+		break;
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.20.1
+>
+>Now I know why people are bugging me all the time to add cover letters 
+>to add more context to my sets.
+>
+>>
+>>From its documentation:
+>>
+>> * The type :c:type:`struct dma_buf_map <dma_buf_map>` and its 
+>>helpers are
+>> * actually independent from the dma-buf infrastructure. When 
+>>sharing buffers
+>> * among devices, drivers have to know the location of the memory to 
+>>access
+>> * the buffers in a safe way. :c:type:`struct dma_buf_map <dma_buf_map>`
+>> * solves this problem for dma-buf and its users. If other drivers or
+>> * sub-systems require similar functionality, the type could be 
+>>generalized
+>> * and moved to a more prominent header file.
+>>
+>>if there is no consensus and a better alternative, I'm perfectly fine in
+>>throwing it out and using the better approach.
+>
+>When Thomas Zimmermann upstreamed the dma_buf_map work we had a 
+>discussion if that shouldn't be independent of the DMA-buf framework.
+>
+>The consensus was that as soon as we have more widely use for it this 
+>should be made independent. So basically that is what's happening now.
+>
+>I suggest the following approach:
+>1. Find a funky name for this, something like iomem_, kiomap_ or similar.
 
+iosys_map?
 
+>2. Separate this from all you driver dependent work and move the 
+>dma_buf_map structure out of DMA-buf into this new whatever_ prefix.
 
+should this be a follow up to the driver work or a prerequisite?
+
+thanks
+Lucas De Marchi
+
+>3. Ping Thomas, LKML, me and probably a couple of other core people if 
+>this is the right idea or not.
+>4. Work on dropping the map parameter from dma_buf_vunmap(). This is 
+>basically why we can't modify the pointers returned from 
+>dma_buf_vmap() and has already cause a few problems with 
+>dma_buf_map_incr().
+>
+>Regards,
+>Christian.
+>
+>>
+>>Lucas De Marchi
+>
