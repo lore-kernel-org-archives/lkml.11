@@ -2,99 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 422CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 06:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73396C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 06:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236773AbiA0GdI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 01:33:08 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:57620 "EHLO a.mx.secunet.com"
+        id S236775AbiA0Gdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 01:33:49 -0500
+Received: from mga07.intel.com ([134.134.136.100]:58739 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229685AbiA0GdE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 01:33:04 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id B8AA920582;
-        Thu, 27 Jan 2022 07:33:02 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RD8ONOuL5xsy; Thu, 27 Jan 2022 07:33:02 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 462F120519;
-        Thu, 27 Jan 2022 07:33:02 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 34F4480004A;
-        Thu, 27 Jan 2022 07:33:02 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 27 Jan 2022 07:33:01 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Thu, 27 Jan
- 2022 07:33:01 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 5796131805DC; Thu, 27 Jan 2022 07:33:01 +0100 (CET)
-Date:   Thu, 27 Jan 2022 07:33:01 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Pavel Machek <pavel@denx.de>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
-        Antony Antony <antony.antony@secunet.com>,
-        Eyal Birger <eyal.birger@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.10 173/563] xfrm: interface with if_id 0 should return
- error
-Message-ID: <20220127063301.GQ1223722@gauss3.secunet.de>
-References: <20220124184024.407936072@linuxfoundation.org>
- <20220124184030.397155595@linuxfoundation.org>
- <20220126215937.GA31158@duo.ucw.cz>
+        id S229650AbiA0Gdr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 01:33:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643265227; x=1674801227;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oAtC2UENBb/Yx/gPjIbAsh8DxMuVnWALhMreXORpLwE=;
+  b=knOstGt2xMcWq2/x8KS+lysgkI+tzHVex2DPwuJg2uZcLQLwwaH/0vxY
+   fl3p0sWqR6mqMOx6UMiwTaOLuPbxh/Qs6y+Cgendxwnw3SQPg8kyXaCjG
+   zWBfzY1KkeOnthv1ZHQBRwFE6zAkVfwgoyS+Ui8M5Qw3tssYDkxCAgdzf
+   bJOr0kr9KN1eLR5phrfACLOkUJ3SxCL1ZYLz1Dtf4TzJhhMsqIfzK2lVx
+   ZqiO3qgAgIJ3SXTobP+3s0KX5C3y3mRbiKwY8c4TcGUBRKKfvCrE/F7IY
+   55OAirMne9aAcjfF5CnPMruQHGIUm3wrIbvjoripA5eOkLRMRicj0Sonp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="310077855"
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="310077855"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 22:33:42 -0800
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="521097307"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 22:33:38 -0800
+Received: by lahna (sSMTP sendmail emulation); Thu, 27 Jan 2022 08:31:20 +0200
+Date:   Thu, 27 Jan 2022 08:31:20 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     bhelgaas@google.com, koba.ko@canonical.com,
+        Russell Currey <ruscur@russell.cc>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] PCI/DPC: Disable DPC service when link is in
+ L2/L3 ready, L2 and L3 state
+Message-ID: <YfI8OGuAWKtPsv+J@lahna>
+References: <20220127025418.1989642-1-kai.heng.feng@canonical.com>
+ <20220127025418.1989642-2-kai.heng.feng@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220126215937.GA31158@duo.ucw.cz>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <20220127025418.1989642-2-kai.heng.feng@canonical.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 10:59:37PM +0100, Pavel Machek wrote:
-> Hi!
+On Thu, Jan 27, 2022 at 10:54:18AM +0800, Kai-Heng Feng wrote:
+> Since TLP and DLLP transmission is disabled for a Link in L2/L3 Ready,
+> L2 and L3 (i.e. device in D3hot and D3cold), and DPC depends on AER, so
+> also disable DPC here.
 > 
-> > [ Upstream commit 8dce43919566f06e865f7e8949f5c10d8c2493f5 ]
-> > 
-> > xfrm interface if_id = 0 would cause xfrm policy lookup errors since
-> > Commit 9f8550e4bd9d.
-> > 
-> > Now explicitly fail to create an xfrm interface when if_id = 0
-> 
-> This will break changelink completely, AFAICT.
-> 
-> > @@ -672,7 +677,12 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
-> >  {
-> >  	struct xfrm_if *xi = netdev_priv(dev);
-> >  	struct net *net = xi->net;
-> > -	struct xfrm_if_parms p;
-> > +	struct xfrm_if_parms p = {};
-> > +
-> > +	if (!p.if_id) {
-> > +		NL_SET_ERR_MSG(extack, "if_id must be non zero");
-> > +		return -EINVAL;
-> > +	}
-> >  
-> >  	xfrmi_netlink_parms(data, &p);
-> >  	xi = xfrmi_locate(net, &p);
-> 
-> if_id will be always 0, because it was not yet initialized.
-> 
-> Best regards,
-> 									Pavel
-> 
-> Signed-off-by: Pavel Machek <pavel@denx.de>
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-Can you please resend this with proper commit message and 'Fixes:' tag?
-
-Thanks!
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
