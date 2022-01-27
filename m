@@ -2,131 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 381C5C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 03:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D805C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 03:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235954AbiA0Dkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 22:40:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236042AbiA0Dk0 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 22:40:26 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCB7C061755
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 19:40:21 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id e79so1999567iof.13
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 19:40:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A7/Kp3F6JWjpBg8AuPne8Hm8StpS8mXuWpdkN/2AU28=;
-        b=fIB7aJiW04CE0H1xvznsR47TuEwPDzJp8RmW7I8/i8S3uJLJAhMiNwdn83BxGgnrhD
-         cEEMtcdaxxYvkeBylZj4ihG5yHA+CP0L4WNBPaa0xtIuxGHomcmUH5MCSP/spp3lsdu1
-         aL8020kO/ekms8qNuzpMx96rFyQDzf9lR1vAs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A7/Kp3F6JWjpBg8AuPne8Hm8StpS8mXuWpdkN/2AU28=;
-        b=VKiqlKNKe301v7XxEwKjkhmDlm4jukxgffFGiCgKXuW4WtQUqDO9NtADHiOG9R4D9l
-         dUmdLdosiXNg5BsluicmXAf/LW6uGLUCVirUWhjeF5OeDnf2ng349j71IWRXkH5BdG3g
-         +RqGN7YQ/jIkzMrdoc1U4bCmVcOwCCpqqtzxZislc6GEeTB5wO9KuWqJqD7JyFndHSaF
-         1ddd2ZWhIktC7nT11Gvia7j6lkWRIl0i2fEm6IivYz480ywcNhVWAebDJMiXQ//10jt5
-         CNLmbRdEXBjnMIMkjxSpLpMIyPX8om9tK7B4NbgyX9tNphIDTk+C382mdFKKvN2WQVAy
-         CD9g==
-X-Gm-Message-State: AOAM532MF8BCFSp7VeGkKgNSV8UOAnYctWY3F1dtpRZ0WEJWuH7anqCB
-        kx8sKIw0y5FpBGDenzRf+3i8VVAEYtVxv7xLtN/noQ==
-X-Google-Smtp-Source: ABdhPJxf7p8s8pOwk6s2VFdm1yidnImAK0pRyPmSP1y9SUn43IX4YQpe/YpYv1woP96uuTgIFCZig/trFIy74MFsBHs=
-X-Received: by 2002:a05:6638:1908:: with SMTP id p8mr182550jal.282.1643254821165;
- Wed, 26 Jan 2022 19:40:21 -0800 (PST)
+        id S235839AbiA0Dor (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 22:44:47 -0500
+Received: from mga07.intel.com ([134.134.136.100]:64526 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230056AbiA0Dop (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 22:44:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643255085; x=1674791085;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=o+faBcN4/RZLTSCL4A4NTwESNAoJdibFSZU0WnNtj4A=;
+  b=MOH4QMOGZ8sZo6FpTK4fS3V3UmTx5bJxK0DycJlsVZ2INvfLqvySCPzT
+   ypEyHvptMnOGq2HDlyXgqe1QMC4L9yxDXCG2RXaUw0QopT5HxPX/E0J+g
+   /9b6SCoOIRLW86zaSFWUnac/atQ8VPqpmzqvzMpcuWpRaJSBbiYtTIPex
+   ClKSThER52tBpWbc0Lz7FMSwLjmli4q/Bw9G7aoBAQYFZfKqM3yDrUms3
+   8fM7CdDn0ViZ5at7YZVhkdHnvpxCG4cO3+LSj2WqsnkTwNkDc4WYl5ExG
+   QcVrABmvZRfW8glYBep5jYo3bPIHKu27oKlQPBmU/XIAUQYOXdfoJbghG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="310051650"
+X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
+   d="scan'208";a="310051650"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 19:44:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
+   d="scan'208";a="618194726"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 26 Jan 2022 19:44:39 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCviA-000M3N-Og; Thu, 27 Jan 2022 03:44:38 +0000
+Date:   Thu, 27 Jan 2022 11:44:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Matthew Maurer <mmaurer@google.com>
+Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android12-trusty-5.10
+ 5854/5866] trusty-ipc.c:undefined reference to `trusty_dma_buf_get_ffa_tag'
+Message-ID: <202201271139.j8fKxiFq-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220119151751.986185-1-hsinyi@chromium.org> <20220119151751.986185-4-hsinyi@chromium.org>
- <CAG3jFyv--OkEOxHr=61oAw8Q0bMdkftZu47M-N0YTiOB0YyiQA@mail.gmail.com> <CAJMQK-goEdzWT=q-Tabb8hPUDTNwwq6E0HqR3Wxw_JpREK3T0w@mail.gmail.com>
-In-Reply-To: <CAJMQK-goEdzWT=q-Tabb8hPUDTNwwq6E0HqR3Wxw_JpREK3T0w@mail.gmail.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Thu, 27 Jan 2022 11:39:55 +0800
-Message-ID: <CAJMQK-jL40QNXjGUF5Z7sjnCNXTFM5cyVrqEPm+h5uvS2hzm6g@mail.gmail.com>
-Subject: Re: [PATCH v5 4/4] dt-bindings: drm/bridge: anx7625: Add aux-bus node
-To:     Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>
-Cc:     Xin Ji <xji@analogixsemi.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 2:25 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
->
-> On Wed, Jan 19, 2022 at 11:36 PM Robert Foss <robert.foss@linaro.org> wrote:
-> >
-> > Hey Hsin-Yi,
-> >
-> > While I can review this patch, I don't have the authority to merge it
-> > since it is outside the scope of my maintainership. Rob Herring,
-> > Daniel Vetter or David Airlie would have to Ack this patch.
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-trusty-5.10
+head:   52cdd137fae0b001197a51646289e3cbdda921d5
+commit: 988b52b392a13c1b710e9ffdc5de9f933de77551 [5854/5866] ANDROID: trusty: Support setting FF-A Tag
+config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220127/202201271139.j8fKxiFq-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/988b52b392a13c1b710e9ffdc5de9f933de77551
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-trusty-5.10
+        git checkout 988b52b392a13c1b710e9ffdc5de9f933de77551
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
 
-hi Rob, Daniel, and David,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Can you help ack this patch?
+All errors (new ones prefixed by >>):
 
-Thanks
-> >
-> > On Wed, 19 Jan 2022 at 16:18, Hsin-Yi Wang <hsinyi@chromium.org> wrote:
-> > >
-> > > List panel under aux-bus node if it's connected to anx7625's aux bus.
-> > >
-> > > Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> > > Reviewed-by: Xin Ji <xji@analogixsemi.com>
-> > > ---
-> > >  .../display/bridge/analogix,anx7625.yaml        | 17 +++++++++++++++++
-> > >  1 file changed, 17 insertions(+)
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-> > > index 1d3e88daca041a..0d38d6fe39830f 100644
-> > > --- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-> > > +++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-> > > @@ -83,6 +83,9 @@ properties:
-> > >      type: boolean
-> > >      description: let the driver enable audio HDMI codec function or not.
-> > >
-> > > +  aux-bus:
-> > > +    $ref: /schemas/display/dp-aux-bus.yaml#
-> > > +
-> > >    ports:
-> > >      $ref: /schemas/graph.yaml#/properties/ports
-> > >
-> > > @@ -167,5 +170,19 @@ examples:
-> > >                      };
-> > >                  };
-> > >              };
-> > > +
-> > > +            aux-bus {
-> > > +                panel {
-> > > +                    compatible = "innolux,n125hce-gn1";
-> > > +                    power-supply = <&pp3300_disp_x>;
-> > > +                    backlight = <&backlight_lcd0>;
-> > > +
-> > > +                    port {
-> > > +                        panel_in: endpoint {
-> > > +                            remote-endpoint = <&anx7625_out>;
-> > > +                        };
-> > > +                    };
-> > > +                };
-> > > +            };
-> > >          };
-> > >      };
-> > > --
-> > > 2.34.1.703.g22d0c6ccf7-goog
-> > >
+   arm-linux-gnueabi-ld: drivers/trusty/trusty-ipc.o: in function `dn_share_fd':
+>> trusty-ipc.c:(.text+0x2b04): undefined reference to `trusty_dma_buf_get_ffa_tag'
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
