@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E48C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244809AbiA0RzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:55:22 -0500
-Received: from mga12.intel.com ([192.55.52.136]:65458 "EHLO mga12.intel.com"
+        id S244825AbiA0RzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:55:23 -0500
+Received: from mga02.intel.com ([134.134.136.20]:19413 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244647AbiA0RzO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S244671AbiA0RzO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 27 Jan 2022 12:55:14 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643306114; x=1674842114;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=aeJ1/P1xqXGcj5TN1+2Hu9SHaU92723DTWbcaS3bA44=;
-  b=MGYhsQSRCmobDyWpag5+3qHyfXR/ViAeZsHHklrNshvBwwXgaBCaHUJI
-   XJvmAfvHKqOHrSbWQ+b300k+leO0zg6lti1vT/OUfYuG1c0cDptzKYtdH
-   rbNPgcyrLlan8EtMo2otAqGZJtEBgXLeVMTOBkfBuLUo5AyTRrvhwCdHj
-   rlJPGuscbjPqNjVYpAfn96ogcjML6eRQ9KIzKKYcKP5XQ+1k1zU7w8HG9
-   aNIcXTh6105+WWeEylzi30UMpeb/SGh1thJ423OWZ5XP64nIFTQwJ51Js
-   /4ooxAzU1KP+uXv16yWLgduAWWcVJs0BKpx2oMndYkp0iZi4r7JvMNQF/
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="226899116"
+  bh=7XL+oRdHoLQGSDa1tB4Piu4QrCM6QEHvL+tEBVcvpp4=;
+  b=TOXo11Wz+4qgmoT6wWvN2nwg4JOQPbbYmTBqNOCwQlFgMaRDDY4q3BNo
+   Dbi0DJLQHKGuvRMVNQotbnK/CWwcvatXat+qF0pR774HEHoIoQa+jsBxu
+   dP9rOZb3OVXrOXoyUDzDEyUDcJKtaaWi5CGFu6fJmAHDCeRmgnaDfcChc
+   iRdeTIkK7o22OnmHia2yLazNT3CbuolvkMJ0lae4FsDltH5ahYeUlWzGj
+   t3/5XoDeq4JbQ7HBY7fuPMVz2UPDAdBgwBMBxIylJJlAnAeL9vif3kFB+
+   hkPjTVaPni7SO7IArPMnM6bPMUJx3s2jKe7vv4ss6/UdeL79ljo8e6Lya
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234302425"
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="226899116"
+   d="scan'208";a="234302425"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:07 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:09 -0800
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="674796047"
+   d="scan'208";a="674796095"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:07 -0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:09 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -40,9 +40,9 @@ To:     Dave Hansen <dave.hansen@linux.intel.com>,
 Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V8 02/44] Documentation/protection-keys: Clean up documentation for User Space pkeys
-Date:   Thu, 27 Jan 2022 09:54:23 -0800
-Message-Id: <20220127175505.851391-3-ira.weiny@intel.com>
+Subject: [PATCH V8 15/44] x86/pkeys: Preserve the PKS MSR on context switch
+Date:   Thu, 27 Jan 2022 09:54:36 -0800
+Message-Id: <20220127175505.851391-16-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220127175505.851391-1-ira.weiny@intel.com>
 References: <20220127175505.851391-1-ira.weiny@intel.com>
@@ -54,74 +54,162 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-The documentation for user space pkeys was a bit dated including things
-such as Amazon and distribution testing information which is irrelevant
-now.
+The PKS MSR (PKRS) is defined as a per-logical-processor register.  This
+isolates memory access by logical CPU.  Unfortunately, the MSR is not
+managed by XSAVE.  Therefore, tasks must save/restore the MSR value on
+context switch.
 
-Update the documentation.  This also streamlines adding the Supervisor
-Pkey documentation later on.
+Define pks_saved_pkrs in struct thread_struct.  Initialize all tasks,
+including the init_task, with the PKS_INIT_VALUE when created.  Restore
+the CPU's MSR to the saved task value on schedule in.
 
+pks_write_current() is added to ensures non-supervisor pkey
+configurations compile correctly without pks_saved_pkrs in thread_struct
+as well as ensuring CPUs without PKS support are ignored.
+
+NOTE The value of pks_saved_pkrs does not change with this patch.  That
+is left for future patches.
+
+Co-developed-by: Fenghua Yu <fenghua.yu@intel.com>
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
----
- Documentation/core-api/protection-keys.rst | 43 ++++++++++------------
- 1 file changed, 20 insertions(+), 23 deletions(-)
 
-diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
-index ec575e72d0b2..12331db474aa 100644
---- a/Documentation/core-api/protection-keys.rst
-+++ b/Documentation/core-api/protection-keys.rst
-@@ -4,31 +4,28 @@
- Memory Protection Keys
- ======================
+---
+Changes for V8
+	From Thomas
+		Ensure pkrs_write_current() does not suffer the overhead
+		of preempt disable.
+		Fix setting of initial value
+		Remove flawed and broken create_initial_pkrs_value() in
+			favor of a much simpler and robust macro default
+		Update function names to be consistent.
+
+	s/pkrs_write_current/pks_write_current
+		This is a more consistent name
+	s/saved_pkrs/pks_saved_pkrs
+	s/pkrs_init_value/PKS_INIT_VALUE
+	Remove pks_init_task()
+		This function was added mainly to avoid the header file
+		issue.  Adding pks-keys.h solved that and saves the
+		complexity.
+
+Changes for V7
+	Move definitions from asm/processor.h to asm/pks.h
+	s/INIT_PKRS_VALUE/pkrs_init_value
+	Change pks_init_task()/pks_sched_in() to functions
+	s/pks_sched_in/pks_write_current to be used more generically
+	later in the series
+---
+ arch/x86/include/asm/pks.h       |  2 ++
+ arch/x86/include/asm/processor.h | 17 ++++++++++++++++-
+ arch/x86/kernel/process_64.c     |  3 +++
+ arch/x86/mm/pkeys.c              | 13 +++++++++++++
+ 4 files changed, 34 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/pks.h b/arch/x86/include/asm/pks.h
+index 8180fc59790b..d211bf36492c 100644
+--- a/arch/x86/include/asm/pks.h
++++ b/arch/x86/include/asm/pks.h
+@@ -5,10 +5,12 @@
+ #ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
  
--Memory Protection Keys for Userspace (PKU aka PKEYs) is a feature
--which is found on Intel's Skylake (and later) "Scalable Processor"
--Server CPUs. It will be available in future non-server Intel parts
--and future AMD processors.
--
--For anyone wishing to test or use this feature, it is available in
--Amazon's EC2 C5 instances and is known to work there using an Ubuntu
--17.04 image.
--
--Memory Protection Keys provides a mechanism for enforcing page-based
--protections, but without requiring modification of the page tables
--when an application changes protection domains.  It works by
--dedicating 4 previously ignored bits in each page table entry to a
--"protection key", giving 16 possible keys.
--
--There is also a new user-accessible register (PKRU) with two separate
--bits (Access Disable and Write Disable) for each key.  Being a CPU
--register, PKRU is inherently thread-local, potentially giving each
-+Memory Protection Keys provide a mechanism for enforcing page-based
-+protections, but without requiring modification of the page tables when an
-+application changes protection domains.
-+
-+PKeys Userspace (PKU) is a feature which is found on Intel's Skylake "Scalable
-+Processor" Server CPUs and later.  And it will be available in future
-+non-server Intel parts and future AMD processors.
-+
-+pkeys work by dedicating 4 previously Reserved bits in each page table entry to
-+a "protection key", giving 16 possible keys.
-+
-+Protections for each key are defined with a per-CPU user-accessible register
-+(PKRU).  Each of these is a 32-bit register storing two bits (Access Disable
-+and Write Disable) for each of 16 keys.
-+
-+Being a CPU register, PKRU is inherently thread-local, potentially giving each
- thread a different set of protections from every other thread.
+ void pks_setup(void);
++void pks_write_current(void);
  
--There are two new instructions (RDPKRU/WRPKRU) for reading and writing
--to the new register.  The feature is only available in 64-bit mode,
--even though there is theoretically space in the PAE PTEs.  These
--permissions are enforced on data access only and have no effect on
--instruction fetches.
-+There are two instructions (RDPKRU/WRPKRU) for reading and writing to the
-+register.  The feature is only available in 64-bit mode, even though there is
-+theoretically space in the PAE PTEs.  These permissions are enforced on data
-+access only and have no effect on instruction fetches.
+ #else /* !CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
  
- Syscalls
- ========
+ static inline void pks_setup(void) { }
++static inline void pks_write_current(void) { }
+ 
+ #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
+ 
+diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
+index 2c5f12ae7d04..3530a0e50b4f 100644
+--- a/arch/x86/include/asm/processor.h
++++ b/arch/x86/include/asm/processor.h
+@@ -2,6 +2,8 @@
+ #ifndef _ASM_X86_PROCESSOR_H
+ #define _ASM_X86_PROCESSOR_H
+ 
++#include <linux/pks-keys.h>
++
+ #include <asm/processor-flags.h>
+ 
+ /* Forward declaration, a strange C thing */
+@@ -502,6 +504,12 @@ struct thread_struct {
+ 	unsigned long		cr2;
+ 	unsigned long		trap_nr;
+ 	unsigned long		error_code;
++
++#ifdef	CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
++	/* Saved Protection key register for supervisor mappings */
++	u32			pks_saved_pkrs;
++#endif
++
+ #ifdef CONFIG_VM86
+ 	/* Virtual 86 mode info */
+ 	struct vm86		*vm86;
+@@ -769,7 +777,14 @@ static inline void spin_lock_prefetch(const void *x)
+ #define KSTK_ESP(task)		(task_pt_regs(task)->sp)
+ 
+ #else
+-#define INIT_THREAD { }
++
++#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
++#define INIT_THREAD  {					\
++	.pks_saved_pkrs = PKS_INIT_VALUE,		\
++}
++#else
++#define INIT_THREAD  { }
++#endif
+ 
+ extern unsigned long KSTK_ESP(struct task_struct *task);
+ 
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index 3402edec236c..81fc0b638308 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -59,6 +59,7 @@
+ /* Not included via unistd.h */
+ #include <asm/unistd_32_ia32.h>
+ #endif
++#include <asm/pks.h>
+ 
+ #include "process.h"
+ 
+@@ -657,6 +658,8 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+ 	/* Load the Intel cache allocation PQR MSR. */
+ 	resctrl_sched_in();
+ 
++	pks_write_current();
++
+ 	return prev_p;
+ }
+ 
+diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
+index 3dce99ef4127..6d94dfc9a219 100644
+--- a/arch/x86/mm/pkeys.c
++++ b/arch/x86/mm/pkeys.c
+@@ -242,6 +242,19 @@ static inline void pks_write_pkrs(u32 new_pkrs)
+ 	}
+ }
+ 
++/**
++ * pks_write_current() - Write the current thread's saved PKRS value
++ *
++ * Context: must be called with preemption disabled
++ */
++void pks_write_current(void)
++{
++	if (!cpu_feature_enabled(X86_FEATURE_PKS))
++		return;
++
++	pks_write_pkrs(current->thread.pks_saved_pkrs);
++}
++
+ /*
+  * PKS is independent of PKU and either or both may be supported on a CPU.
+  *
 -- 
 2.31.1
 
