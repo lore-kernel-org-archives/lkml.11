@@ -2,39 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D0E7C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3932BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245580AbiA0SLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:11:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59442 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245113AbiA0SK5 (ORCPT
+        id S245599AbiA0SLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 13:11:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245436AbiA0SLC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:10:57 -0500
+        Thu, 27 Jan 2022 13:11:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A092C06175B;
+        Thu, 27 Jan 2022 10:11:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39A8DB820C9;
-        Thu, 27 Jan 2022 18:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 481B7C340E4;
-        Thu, 27 Jan 2022 18:10:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC96B61D28;
+        Thu, 27 Jan 2022 18:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5874C340E4;
+        Thu, 27 Jan 2022 18:11:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643307054;
-        bh=j3arMY1qJJ8GVLwQU2G8HH/yot4BsIRcGLhPY2c7zwk=;
+        s=korg; t=1643307061;
+        bh=/SpOvRAzSZuL3nSSYY7xGjur0CIUWNo9JKuuksvoas8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2QaGLAAcTcrv1PgXoJ3d+gM69UTcTbkfdBWTOafEm4s6mvwS0LaZscCBG9GHIlA0F
-         pP6OzTEsLTG/LqeVsiP+/RVCr/BwMdtLyMIic9po3qFCBEi7R1PZ4ydiOCfSl1xPd7
-         WQuqNsRfAQigWEBArg4amc7/39+pubnUmW7tjq7o=
+        b=qbor3RTd13v99HceB931aEo759TAy+9xIQJgciUQbzV+FmnedxgqAZYuBQHzyFIUt
+         aZ7M98I7ceJbDW6sGFx2qoAlPBi39WQniFO4i1S+SbISu2TsNkL9n5Adm6Ag5AUHOC
+         ESEpbmXTe7kbeV7ZotcW3bjyXITt/7sQyLE7W8Ak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 03/12] io_uring: fix not released cached task refs
-Date:   Thu, 27 Jan 2022 19:09:27 +0100
-Message-Id: <20220127180259.192225979@linuxfoundation.org>
+        Manish Chopra <manishc@marvell.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
+        Alok Prasad <palok@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 05/12] bnx2x: Invalidate fastpath HSI version for VFs
+Date:   Thu, 27 Jan 2022 19:09:29 +0100
+Message-Id: <20220127180259.253278529@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20220127180259.078563735@linuxfoundation.org>
 References: <20220127180259.078563735@linuxfoundation.org>
@@ -46,93 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Manish Chopra <manishc@marvell.com>
 
-commit 3cc7fdb9f90a25ae92250bf9e6cf3b9556b230e9 upstream.
+commit 802d4d207e75d7208ff75adb712b556c1e91cf1c upstream
 
-tctx_task_work() may get run after io_uring cancellation and so there
-will be no one to put cached in tctx task refs that may have been added
-back by tw handlers using inline completion infra, Call
-io_uring_drop_tctx_refs() at the end of the main tw handler to release
-them.
+Commit 0a6890b9b4df ("bnx2x: Utilize FW 7.13.15.0.")
+added validation for fastpath HSI versions for different
+client init which was not meant for SR-IOV VF clients, which
+resulted in firmware asserts when running VF clients with
+different fastpath HSI version.
 
-Cc: stable@vger.kernel.org # 5.15+
-Reported-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Fixes: e98e49b2bbf7 ("io_uring: extend task put optimisations")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/69f226b35fbdb996ab799a8bbc1c06bf634ccec1.1641688805.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+This patch along with the new firmware support in patch #1
+fixes this behavior in order to not validate fastpath HSI
+version for the VFs.
+
+Fixes: 0a6890b9b4df ("bnx2x: Utilize FW 7.13.15.0.")
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+Signed-off-by: Alok Prasad <palok@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |   34 +++++++++++++++++++++-------------
- 1 file changed, 21 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c |   13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -1760,6 +1760,18 @@ static inline void io_get_task_refs(int
- 		io_task_refs_refill(tctx);
- }
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
+@@ -758,9 +758,18 @@ static void bnx2x_vf_igu_reset(struct bn
  
-+static __cold void io_uring_drop_tctx_refs(struct task_struct *task)
-+{
-+	struct io_uring_task *tctx = task->io_uring;
-+	unsigned int refs = tctx->cached_refs;
-+
-+	if (refs) {
-+		tctx->cached_refs = 0;
-+		percpu_counter_sub(&tctx->inflight, refs);
-+		put_task_struct_many(task, refs);
-+	}
-+}
-+
- static bool io_cqring_event_overflow(struct io_ring_ctx *ctx, u64 user_data,
- 				     long res, unsigned int cflags)
+ void bnx2x_vf_enable_access(struct bnx2x *bp, u8 abs_vfid)
  {
-@@ -2200,6 +2212,10 @@ static void tctx_task_work(struct callba
- 	}
- 
- 	ctx_flush_and_put(ctx, &locked);
++	u16 abs_fid;
 +
-+	/* relaxed read is enough as only the task itself sets ->in_idle */
-+	if (unlikely(atomic_read(&tctx->in_idle)))
-+		io_uring_drop_tctx_refs(current);
- }
++	abs_fid = FW_VF_HANDLE(abs_vfid);
++
+ 	/* set the VF-PF association in the FW */
+-	storm_memset_vf_to_pf(bp, FW_VF_HANDLE(abs_vfid), BP_FUNC(bp));
+-	storm_memset_func_en(bp, FW_VF_HANDLE(abs_vfid), 1);
++	storm_memset_vf_to_pf(bp, abs_fid, BP_FUNC(bp));
++	storm_memset_func_en(bp, abs_fid, 1);
++
++	/* Invalidate fp_hsi version for vfs */
++	if (bp->fw_cap & FW_CAP_INVALIDATE_VF_FP_HSI)
++		REG_WR8(bp, BAR_XSTRORM_INTMEM +
++			    XSTORM_ETH_FUNCTION_INFO_FP_HSI_VALID_E2_OFFSET(abs_fid), 0);
  
- static void io_req_task_work_add(struct io_kiocb *req)
-@@ -9766,18 +9782,6 @@ static s64 tctx_inflight(struct io_uring
- 	return percpu_counter_sum(&tctx->inflight);
- }
- 
--static void io_uring_drop_tctx_refs(struct task_struct *task)
--{
--	struct io_uring_task *tctx = task->io_uring;
--	unsigned int refs = tctx->cached_refs;
--
--	if (refs) {
--		tctx->cached_refs = 0;
--		percpu_counter_sub(&tctx->inflight, refs);
--		put_task_struct_many(task, refs);
--	}
--}
--
- /*
-  * Find any io_uring ctx that this task has registered or done IO on, and cancel
-  * requests. @sqd should be not-null IFF it's an SQPOLL thread cancellation.
-@@ -9834,10 +9838,14 @@ static void io_uring_cancel_generic(bool
- 			schedule();
- 		finish_wait(&tctx->wait, &wait);
- 	} while (1);
--	atomic_dec(&tctx->in_idle);
- 
- 	io_uring_clean_tctx(tctx);
- 	if (cancel_all) {
-+		/*
-+		 * We shouldn't run task_works after cancel, so just leave
-+		 * ->in_idle set for normal exit.
-+		 */
-+		atomic_dec(&tctx->in_idle);
- 		/* for exec all current's requests should be gone, kill tctx */
- 		__io_uring_free(current);
- 	}
+ 	/* clear vf errors*/
+ 	bnx2x_vf_semi_clear_err(bp, abs_vfid);
 
 
