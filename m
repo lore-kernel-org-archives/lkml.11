@@ -2,210 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B18AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 20:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4EBEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 21:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344133AbiA0U5D (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 15:57:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240138AbiA0U5B (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 15:57:01 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7121BC06173B
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:57:01 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id u130so3946258pfc.2
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:57:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tfXY+yoEkXRjHsPlcj+EE4YfwHLvMltbNM3WmPepjHA=;
-        b=ViP7LO+i4/X8Hza5L1TLV+4t5dn6LsbwwzM+xuF427VZ6hm3nM7jfWCKefjh/+qRTM
-         th0se3ZeJw+d25HTdz0fNd3X4YSWfmfU8XGrU/ru6srSikqzmOuSsbJGU1ZFwyThntYQ
-         TsEJLBtNw151HP+s+5wwC8cvBJw+DXaYIMKYW1BSLHa0zkxLBacK0LkumsvGcjj7l/TU
-         AUpREyLthSnm4F9S0ig/wBzlDRutKae1aZcHVWdW+XL0SJrbQ52Y7TZ5ChmVr6F4yZH3
-         0l4JNZmDqOwjvCppwxH/5b7lOv64dT81vAORBp1kjkP8td+S8uQh28xNhlBZa6n/ru1O
-         m92w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tfXY+yoEkXRjHsPlcj+EE4YfwHLvMltbNM3WmPepjHA=;
-        b=XTFgg9nvz67uygzC7rjoPX9gcCdgGe3mjkik8Ts9vVDumgYcUSSE2Q8cJ4nPKZA58M
-         sJyP2Oe584b5qqGOxVd7h27j/5YaN+N1alHqdd0t4Vss0+acO89JEqAkJwLW1bMxflTJ
-         otmVObsfluoT4VTClyAUnVmZ7YH2TlFKk3nMOJjJIhVetptIvIiMy30phoHHQRrYeR9d
-         LZUZvxyBRsT/vOAERu93fy+y/mryf8QXxIm6sVB035d+deLloDrXwgMqzbH9k5jYvd77
-         tKvKpSufifKl1m65jyRVltzCb3OqdLBGxat++zSq1uhtkSzKZnyPJO6xb8r46beA/KYv
-         cd/g==
-X-Gm-Message-State: AOAM532XxOl4kDAKHidVgB9P8Z+g1zZRftd8QGjYwFnbuSs0bQy6p7En
-        V3CsC/kvkdl/+1CW9aunRz8Ohg==
-X-Google-Smtp-Source: ABdhPJzjNYJyU2lRmm2ARtHfs1fz4x84l4Mv3pZVcHntWHtR8Cec3OXniogqV4YqFbiWauRmgfssHQ==
-X-Received: by 2002:a62:3042:: with SMTP id w63mr4562471pfw.71.1643317020815;
-        Thu, 27 Jan 2022 12:57:00 -0800 (PST)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id nv13sm216748pjb.18.2022.01.27.12.57.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 12:57:00 -0800 (PST)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     peterz@infradead.org
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
-Subject: [PATCH v4] sched/fair: Fix fault in reweight_entity
-Date:   Thu, 27 Jan 2022 12:56:23 -0800
-Message-Id: <20220127205623.1258029-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220125193403.778497-1-tadeusz.struk@linaro.org>
-References: <20220125193403.778497-1-tadeusz.struk@linaro.org>
+        id S234416AbiA0VBW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 16:01:22 -0500
+Received: from mga18.intel.com ([134.134.136.126]:47747 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229692AbiA0VBV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 16:01:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643317281; x=1674853281;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8HYA3pRzGvCeXfHQMOUwAEwKPlfREa0XmkBpFiIDmsg=;
+  b=Zv2ToDu0GZ/xtp96dheiE8WNABQ87fCA3YP9BtYNgKfIvZeBQ4aJcn53
+   SxPSXNNzGCtr4wCfSbFc1/E6GG7sDtCNG7NSyGurojvPTI7DbKxsMqx1a
+   iW1cLQ4xpgjrypb4aApsEpiqWIE1e9SQSOVWGYYeSh9sFidt3dEKmiBJZ
+   FJUfaxYuePvgRCT/VkpaN3CX/5SnU9GlcEYK13qaT5XhVLLA0TVB6POyy
+   OThUtJshok82Svkqefs9EqqWaVfutcaQwoPCji6QJjQhFbj0ZOZ0Wjoxi
+   MmZuIVG8b4JxXyAVZ3IZnnqhVDRBCv84AbXcn8Vl6xg35gTtlVtb2KVLM
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="230537940"
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="230537940"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 13:01:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="563934143"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 27 Jan 2022 13:01:17 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nDBtM-000N2Z-RE; Thu, 27 Jan 2022 21:01:16 +0000
+Date:   Fri, 28 Jan 2022 05:00:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
+Subject: Re: [PATCH 2/3] pinctrl: uniphier: Divide pinmux group to support
+ 1ch and 2ch I2S
+Message-ID: <202201280448.njc6LUNd-lkp@intel.com>
+References: <1643283344-24911-3-git-send-email-hayashi.kunihiko@socionext.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1643283344-24911-3-git-send-email-hayashi.kunihiko@socionext.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot found a GPF in reweight_entity. This has been bisected to commit
-4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
+Hi Kunihiko,
 
-There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
-within a thread group that causes a null-ptr-deref in reweight_entity()
-in CFS. The scenario is that the main process spawns number of new
-threads, which then call setpriority(PRIO_PGRP, 0, -20), wait, and exit.
-For each of the new threads the copy_process() gets invoked, which adds
-the new task_struct and calls sched_post_fork() for it.
+I love your patch! Yet something to improve:
 
-In the above scenario there is a possibility that setpriority(PRIO_PGRP)
-and set_one_prio() will be called for a thread in the group that is just
-being created by copy_process(), and for which the sched_post_fork() has
-not been executed yet. This will trigger a null pointer dereference in
-reweight_entity(), as it will try to access the run queue pointer, which
-hasn't been set. This results it a crash as shown below:
+[auto build test ERROR on linusw-pinctrl/devel]
+[also build test ERROR on v5.17-rc1 next-20220127]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-KASAN: null-ptr-deref in range [0x00000000000000a0-0x00000000000000a7]
-CPU: 0 PID: 2392 Comm: reduced_repro Not tainted 5.16.0-11201-gb42c5a161ea3
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
-RIP: 0010:reweight_entity+0x15d/0x440
-RSP: 0018:ffffc900035dfcf8 EFLAGS: 00010006
-Call Trace:
-<TASK>
-reweight_task+0xde/0x1c0
-set_load_weight+0x21c/0x2b0
-set_user_nice.part.0+0x2d1/0x519
-set_user_nice.cold+0x8/0xd
-set_one_prio+0x24f/0x263
-__do_sys_setpriority+0x2d3/0x640
-__x64_sys_setpriority+0x84/0x8b
-do_syscall_64+0x35/0xb0
-entry_SYSCALL_64_after_hwframe+0x44/0xae
-</TASK>
----[ end trace 9dc80a9d378ed00a ]---
+url:    https://github.com/0day-ci/linux/commits/Kunihiko-Hayashi/pinctrl-uniphier-Add-some-more-pinmux-settings/20220127-193715
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git devel
+config: openrisc-buildonly-randconfig-r003-20220124 (https://download.01.org/0day-ci/archive/20220128/202201280448.njc6LUNd-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/e0e366a006b79517336423f8a2c72661178d5e41
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Kunihiko-Hayashi/pinctrl-uniphier-Add-some-more-pinmux-settings/20220127-193715
+        git checkout e0e366a006b79517336423f8a2c72661178d5e41
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=openrisc SHELL=/bin/bash
 
-Before the mentioned change the cfs_rq pointer for the task  has been
-set in sched_fork(), which is called much earlier in copy_process(),
-before the new task is added to the thread_group.
-Now it is done in the sched_post_fork(), which is called after that.
-To fix the issue the remove the update_load param from the
-update_load param() function and call reweight_task() only if the task
-flag doesn't have the TASK_NEW flag set.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ben Segall <bsegall@google.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc: Zhang Qiao <zhangqiao22@huawei.com>
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+All errors (new ones prefixed by >>):
 
-Link: https://syzkaller.appspot.com/bug?id=9d9c27adc674e3a7932b22b61c79a02da82cbdc1
-Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
-Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+   In file included from drivers/pinctrl/uniphier/pinctrl-uniphier-pxs2.c:12:
+>> drivers/pinctrl/uniphier/pinctrl-uniphier-pxs2.c:958:34: error: 'aout4_groups' undeclared here (not in a function); did you mean 'aout3_groups'?
+     958 |         UNIPHIER_PINMUX_FUNCTION(aout4),
+         |                                  ^~~~~
+   drivers/pinctrl/uniphier/pinctrl-uniphier.h:179:27: note: in definition of macro 'UNIPHIER_PINMUX_FUNCTION'
+     179 |                 .groups = func##_groups,                                \
+         |                           ^~~~
+   In file included from include/linux/container_of.h:5,
+                    from include/linux/kernel.h:21,
+                    from drivers/pinctrl/uniphier/pinctrl-uniphier-pxs2.c:6:
+>> include/linux/build_bug.h:16:51: error: bit-field '<anonymous>' width not an integer constant
+      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+         |                                                   ^
+   include/linux/compiler.h:258:33: note: in expansion of macro 'BUILD_BUG_ON_ZERO'
+     258 | #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
+         |                                 ^~~~~~~~~~~~~~~~~
+   include/linux/kernel.h:55:59: note: in expansion of macro '__must_be_array'
+      55 | #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + __must_be_array(arr))
+         |                                                           ^~~~~~~~~~~~~~~
+   drivers/pinctrl/uniphier/pinctrl-uniphier.h:180:31: note: in expansion of macro 'ARRAY_SIZE'
+     180 |                 .num_groups = ARRAY_SIZE(func##_groups),                \
+         |                               ^~~~~~~~~~
+   drivers/pinctrl/uniphier/pinctrl-uniphier-pxs2.c:958:9: note: in expansion of macro 'UNIPHIER_PINMUX_FUNCTION'
+     958 |         UNIPHIER_PINMUX_FUNCTION(aout4),
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +958 drivers/pinctrl/uniphier/pinctrl-uniphier-pxs2.c
+
+   949	
+   950	static const struct uniphier_pinmux_function uniphier_pxs2_functions[] = {
+   951		UNIPHIER_PINMUX_FUNCTION(ain1),
+   952		UNIPHIER_PINMUX_FUNCTION(ain2),
+   953		UNIPHIER_PINMUX_FUNCTION(ain3),
+   954		UNIPHIER_PINMUX_FUNCTION(ainiec1),
+   955		UNIPHIER_PINMUX_FUNCTION(aout1),
+   956		UNIPHIER_PINMUX_FUNCTION(aout2),
+   957		UNIPHIER_PINMUX_FUNCTION(aout3),
+ > 958		UNIPHIER_PINMUX_FUNCTION(aout4),
+   959		UNIPHIER_PINMUX_FUNCTION(aoutiec1),
+   960		UNIPHIER_PINMUX_FUNCTION(aoutiec2),
+   961		UNIPHIER_PINMUX_FUNCTION(emmc),
+   962		UNIPHIER_PINMUX_FUNCTION(ether_mii),
+   963		UNIPHIER_PINMUX_FUNCTION(ether_rgmii),
+   964		UNIPHIER_PINMUX_FUNCTION(ether_rmii),
+   965		UNIPHIER_PINMUX_FUNCTION(i2c0),
+   966		UNIPHIER_PINMUX_FUNCTION(i2c1),
+   967		UNIPHIER_PINMUX_FUNCTION(i2c2),
+   968		UNIPHIER_PINMUX_FUNCTION(i2c3),
+   969		UNIPHIER_PINMUX_FUNCTION(i2c5),
+   970		UNIPHIER_PINMUX_FUNCTION(i2c6),
+   971		UNIPHIER_PINMUX_FUNCTION(nand),
+   972		UNIPHIER_PINMUX_FUNCTION(sd),
+   973		UNIPHIER_PINMUX_FUNCTION(spi0),
+   974		UNIPHIER_PINMUX_FUNCTION(spi1),
+   975		UNIPHIER_PINMUX_FUNCTION(system_bus),
+   976		UNIPHIER_PINMUX_FUNCTION(uart0),
+   977		UNIPHIER_PINMUX_FUNCTION(uart1),
+   978		UNIPHIER_PINMUX_FUNCTION(uart2),
+   979		UNIPHIER_PINMUX_FUNCTION(uart3),
+   980		UNIPHIER_PINMUX_FUNCTION(usb0),
+   981		UNIPHIER_PINMUX_FUNCTION(usb1),
+   982		UNIPHIER_PINMUX_FUNCTION(usb2),
+   983		UNIPHIER_PINMUX_FUNCTION(usb3),
+   984	};
+   985	
+
 ---
-Changes in v4:
-- Removed the update_load param from set_load_weight() and call
-  reweight_task() based on the TASK_NEW flag
-
-Changes in v3:
-- Removed the new check and changed the update_load condition from
-  always true to true if p->state != TASK_NEW
-
-Changes in v2:
-- Added a check in set_user_nice(), and return from there if the task
-  is not fully setup instead of returning from reweight_entity()
----
- kernel/sched/core.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 848eaa0efe0e..a0ef4670e695 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -1214,10 +1214,12 @@ int tg_nop(struct task_group *tg, void *data)
- }
- #endif
- 
--static void set_load_weight(struct task_struct *p, bool update_load)
-+static void set_load_weight(struct task_struct *p)
- {
- 	int prio = p->static_prio - MAX_RT_PRIO;
- 	struct load_weight *load = &p->se.load;
-+	bool update_load = !(READ_ONCE(p->__state) & TASK_NEW);
-+
- 
- 	/*
- 	 * SCHED_IDLE tasks get minimal weight:
-@@ -4406,7 +4408,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
- 			p->static_prio = NICE_TO_PRIO(0);
- 
- 		p->prio = p->normal_prio = p->static_prio;
--		set_load_weight(p, false);
-+		set_load_weight(p);
- 
- 		/*
- 		 * We don't need the reset flag anymore after the fork. It has
-@@ -6921,7 +6923,7 @@ void set_user_nice(struct task_struct *p, long nice)
- 		put_prev_task(rq, p);
- 
- 	p->static_prio = NICE_TO_PRIO(nice);
--	set_load_weight(p, true);
-+	set_load_weight(p);
- 	old_prio = p->prio;
- 	p->prio = effective_prio(p);
- 
-@@ -7212,7 +7214,7 @@ static void __setscheduler_params(struct task_struct *p,
- 	 */
- 	p->rt_priority = attr->sched_priority;
- 	p->normal_prio = normal_prio(p);
--	set_load_weight(p, true);
-+	set_load_weight(p);
- }
- 
- /*
-@@ -9445,7 +9447,7 @@ void __init sched_init(void)
- #endif
- 	}
- 
--	set_load_weight(&init_task, false);
-+	set_load_weight(&init_task);
- 
- 	/*
- 	 * The boot idle thread does lazy MMU switching as well:
--- 
-2.34.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
