@@ -2,67 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D50C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A09C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 19:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240200AbiA0S7N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:59:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
+        id S245299AbiA0TAd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 14:00:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232813AbiA0S7M (ORCPT
+        with ESMTP id S237859AbiA0TAa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:59:12 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644B6C061714;
-        Thu, 27 Jan 2022 10:59:12 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id h23so3001214pgk.11;
-        Thu, 27 Jan 2022 10:59:12 -0800 (PST)
+        Thu, 27 Jan 2022 14:00:30 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7980FC061714;
+        Thu, 27 Jan 2022 11:00:29 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id l24-20020a17090aec1800b001b55738f633so5670951pjy.1;
+        Thu, 27 Jan 2022 11:00:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Kf+kdg2c1HJXuwMScXRqFZTXE8Hr5rEGSTqbhdf4ZY0=;
-        b=SHlJFbWQLWkZNDz26HSpcPryc7ewCVr0VBXuXoOwGPVHQBahF4J2x943moqrQdDYoj
-         8kuW8y0ZqhhE1yk9JXOwTYnVh4KKlv8YLahzGsI3YWjcalMGQocu13vFnJ78p6LR6zLU
-         k63lc/02L/H2JfFHVTbU6rv5N5dV20+nLVdpu3PN448rTlS3jI6v9yrg0V4f3AQ2yepS
-         kBkWQPvlmSSaxQQEZBFuD5J9EdTHBtBtB1lHBD3UecOTfMoZm0DzhVk4AC8flHg/Tt84
-         yg0RWNVvATOGq+qZPNypnZF1Dt+VU9SyCHCXt2FKPjjwJz3K0rbT2p9mcKaZWuFb3rLt
-         yeZg==
+        bh=uRLexRpb9NelNiVGqfMgolCZ78f60NSyet3pFs6d3Pg=;
+        b=FkAzntIgwhm8m4oWmGZjsaLNwFb7UtxG+srvFSw7AEBfqxpVZJV+vYZuK+dfG9vCnf
+         zo5HEXZ91jQxTqVHROXJMHpr3Frdp+kNJt2d7Ti8hhhygANsEBC04A2rlekgtp6vITyh
+         IaHPqG8rJGdRib201Ns4S3D4mM6TAhT67XD2GF7L7AUxxRk/sV4K2UmmuWq3xdRWzr5H
+         w3pxdDl+0tmbg7Pa9Ppqet+o8nVAgzQXmuIYPWtKRSaDJF43lcdd1e5nmtaEDkp72Eoy
+         jg5jeIqOARVOeVtILPI4CFYHayWGRaVooF2BnO9SsZs5emlWy8zP2Tia80qmkSrPQ1q2
+         spoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Kf+kdg2c1HJXuwMScXRqFZTXE8Hr5rEGSTqbhdf4ZY0=;
-        b=k/gk36kU13sOWshxkx+heNzAdoMZdgeOWedY8/j3tCYGGsaBI/RPdLBl9c4JKsjS2N
-         neUFZTYFf3JizMb++WAkZogENlWJz0JjiaRc5BP+u0Xv6CcRxtwE0QtU1yG+91jcjtTO
-         qoAMXmA0aJHnDwcO8utD9AdCxUO3ICwsOloMqTNVUpe2CgFXm4Oq5SZLhzxWW0ODjmzH
-         TQsfUGz22BqYLxFLyBj3zgZPAVGBblIuSxWslgPV4Ag6snyDD0oibNe92VkyoqeajnAV
-         e4IMVW3rzJB5LOVya0bZa2Fwuk8bKyzWSwd5TH4szgBMVLtPQpW/PU9ZvAykJnHueS1v
-         6DeQ==
-X-Gm-Message-State: AOAM532kxYM82s2GxXCIvzS6BGFFQmbyP/gESKHAhonEUOCFGWAmieJn
-        9Oxq2P4oCQ/uaCJRmC76Zpg=
-X-Google-Smtp-Source: ABdhPJxSlRx/Wuc6u+QSesomAeaF4V/F3yOvUxnMrcT/tjSt8q7RDRGIk3hBT9sLw9eMlHdFPAe0Aw==
-X-Received: by 2002:a05:6a00:1992:: with SMTP id d18mr4030814pfl.85.1643309951730;
-        Thu, 27 Jan 2022 10:59:11 -0800 (PST)
+        bh=uRLexRpb9NelNiVGqfMgolCZ78f60NSyet3pFs6d3Pg=;
+        b=UPNYTGe1DRDL9P80OsM5T7/+o6+ts3UwUTgFQAC8WFpykEoqbP6BvkKx5RLMtAdRmt
+         QLSwW1BNERvVCduGyl11t/A1yI7XUpYnL4dziZKZyK178cCD+vsuQbbw4ycoziYa14qI
+         2G7BJrvHQ54irUrTh1lXX4tKsoK+THxWeEEg6EJCjrCc4felu1FpH3xHvg/z0TAhEi5r
+         JDKsEBn3uHAi//2BQNkt67c5Fgje7RE9u4qk0Upf265OZm94E8idkAJMiDP0Em/gdK9C
+         k/PSPO5tkfma4r88vXTMHd6uqzE8qoq53J8xSdjG8KzLRvzu0IQ4whZOlBDPxEq1ivD1
+         C40A==
+X-Gm-Message-State: AOAM5318ZdddDl+IWHGxgaunu1bRcvhG2SoYSpvgIyXJe+UHZsFNQtQe
+        0WfFROjtek+ba8U32gck1zQ=
+X-Google-Smtp-Source: ABdhPJytgVqvLKRtS7rHVTqKKlzR8yr3ODjHvqRl94ovs8n7iRPAsLNH9nO6I+AcMxAEBEAllHTd6w==
+X-Received: by 2002:a17:902:f54b:: with SMTP id h11mr4631851plf.91.1643310028976;
+        Thu, 27 Jan 2022 11:00:28 -0800 (PST)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id p22sm6507491pfo.163.2022.01.27.10.59.10
+        by smtp.gmail.com with ESMTPSA id g5sm76578pjj.36.2022.01.27.11.00.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 10:59:11 -0800 (PST)
-Message-ID: <01d73e56-346b-a175-6113-db98be6b0a53@gmail.com>
-Date:   Thu, 27 Jan 2022 10:59:10 -0800
+        Thu, 27 Jan 2022 11:00:28 -0800 (PST)
+Message-ID: <788eebf8-cec8-e3a1-cbe5-fa494a32dfa8@gmail.com>
+Date:   Thu, 27 Jan 2022 11:00:26 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] spi: bcm-qspi: check for valid cs before applying chip
- select
+Subject: Re: [PATCH 5.4 00/11] 5.4.175-rc1 review
 Content-Language: en-US
-To:     Kamal Dasu <kdasu.kdev@gmail.com>, broonie@kernel.org,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     bcm-kernel-feedback-list@broadcom.com
-References: <20220127185359.27322-1-kdasu.kdev@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com
+References: <20220127180258.362000607@linuxfoundation.org>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220127185359.27322-1-kdasu.kdev@gmail.com>
+In-Reply-To: <20220127180258.362000607@linuxfoundation.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -71,18 +73,27 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 1/27/2022 10:53 AM, Kamal Dasu wrote:
-> Apply only valid chip select value. This change fixes case where chip
-> select is set to initial value of '-1' during probe and  PM supend and
-> subsequent resume can try to use the value with undefined behaviour.
-> Also in case where gpio based chip select, the check in
-> bcm_qspi_chip_select() shall prevent undefined behaviour on resume.
+On 1/27/2022 10:09 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.175 release.
+> There are 11 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Fixes: fa236a7ef240 ("spi: bcm-qspi: Add Broadcom MSPI driver")
-> Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
+> Responses should be made by Sat, 29 Jan 2022 18:02:51 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.175-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-Thanks!
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
