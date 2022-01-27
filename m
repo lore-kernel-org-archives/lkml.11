@@ -2,121 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B26F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 15:22:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 486F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 15:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236047AbiA0PWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 10:22:12 -0500
-Received: from mga14.intel.com ([192.55.52.115]:7771 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231421AbiA0PWL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 10:22:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643296931; x=1674832931;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VuKbH3kWAdwpcevHZKsh6LuPUBEA54hne+chkbg+oBI=;
-  b=gkRCQWDh6Q0hrbffuWKJFeKIzPay4oSddtFJzDjRjo4u5yFPjy/9dZh9
-   BQOWEURpy72u0DLKkdKiIWRBy9R7R1Lx+j6dhMzVheqxiVJWDFPgLftEK
-   Se6OHVw6Ns1OTcsAx6Icr/ukXC3yH00zxb7mALp1J3lpnWL0k0ILcxGwY
-   CTvkyvxrzfMO6Aq8qE56dKPfBXmdxQNfD+sdhSIEX1RkSMet9Cwutqepz
-   3A/C4cRdq/wE7XoHQIDF8rdLtnQ4jOQUd+sv1f1b+Q0TaLM1/0FOMqZrI
-   FtvoFELD49zcWEHlkOqT2Xl8QtYS7WEUxJ8Nd0R2MbFO6cOkg49NTagQV
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="247103157"
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="247103157"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 07:22:11 -0800
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="696686312"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 07:21:55 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nD6Zt-00F1OR-Lf;
-        Thu, 27 Jan 2022 17:20:49 +0200
-Date:   Thu, 27 Jan 2022 17:20:49 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Fengping Yu <fengping.yu@mediatek.com>,
-        Yingjoe Chen <yingjoe.chen@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v20 2/3] Input: mt6779-keypad - Add MediaTek keypad driver
-Message-ID: <YfK4UcuCfF7JfI7H@smile.fi.intel.com>
-References: <20220127111526.3716689-1-mkorpershoek@baylibre.com>
- <20220127111526.3716689-3-mkorpershoek@baylibre.com>
+        id S236303AbiA0PXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 10:23:36 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41210 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231421AbiA0PXf (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 10:23:35 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D19061356;
+        Thu, 27 Jan 2022 15:23:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A227CC340E4;
+        Thu, 27 Jan 2022 15:23:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643297014;
+        bh=y6d+jRTmcap665QuVDISL57EylZTRwEwZaCF30UdSSg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=Ucqh7UOBNrx25G3/jcxOJOWbfy4xE7btiU2t25yjvEGn6gyMZasO4eLP4OEyvBqvr
+         AZ8+L+XpkLaCDaz9/n9uEcu5BhTQyn68bfBP5/ZwB0FkLyFcPw/WUdueF2PWXffeUb
+         6jJv1ayCvkxsH33r0zJcf5fv5vtWiNx2BU1cePZ8Snu13h+fbf7/x//MXs6CPtfgg2
+         g6bXYnpOKtnDIRfzewKCglNZayydQmA4n4hHxZJITe27GvA9USSsVdRgsHlmnG6G26
+         uT+gKC+vcB0JkTtfhU6h8JrQPdySdmf4RV2QE6XC3vbE1cesvooZAxeul1h3irctND
+         +7PiQISrpQ8ZQ==
+Date:   Thu, 27 Jan 2022 09:23:33 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Nishanth Menon <nm@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v2] dt-bindings: PCI: ti,j721e: Add device id for J721S2
+Message-ID: <20220127152333.GA101708@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220127111526.3716689-3-mkorpershoek@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <ab490690-eac2-c714-1359-b4058e2f98ff@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 12:15:25PM +0100, Mattijs Korpershoek wrote:
-> From: "fengping.yu" <fengping.yu@mediatek.com>
+[+cc Lorenzo, initial post
+https://lore.kernel.org/r/20211130035608.13492-1-a-govindraju@ti.com]
+
+On Tue, Jan 25, 2022 at 12:06:16PM +0530, Aswath Govindraju wrote:
+> On 30/11/21 9:26 am, Aswath Govindraju wrote:
+> > Document the device id of J721S2 SoC.
+> > 
+> > Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+> > ---
+> > 
 > 
-> This patch adds matrix keypad support for Mediatek SoCs.
+> May I know if this patch can be picked up?
 
-Some comments which may be addressed now or in the follow-up patch(es).
-Up to you.
+"git log Documentation/devicetree/bindings/pci/ti,j721e-pci-host.yaml"
+says most changes to this file have been applied by Lorenzo, so I cc'd
+him.
 
-...
-
-> +static const struct regmap_config mt6779_keypad_regmap_cfg = {
-> +	.reg_bits = 32,
-> +	.val_bits = 32,
-
-> +	.reg_stride = sizeof(u32),
-
-I'm wondering if we need this when we have reg_bits = 32 already.
-
-> +	.max_register = 36,
-> +};
-
-...
-
-> +	regmap_write(keypad->regmap, MTK_KPD_DEBOUNCE,
-> +		     (debounce * 32) & MTK_KPD_DEBOUNCE_MASK);
-
-I'm wondering if << 5 is more specific to show that the value
-is based on 2^5 units.
-
-...
-
-> +	error = devm_add_action_or_reset(&pdev->dev, mt6779_keypad_clk_disable, keypad->clk);
-
-You have this long line...
-
-> +	error = devm_request_threaded_irq(&pdev->dev, irq,
-> +					  NULL, mt6779_keypad_irq_handler,
-> +					  IRQF_ONESHOT,
-> +					  MTK_KPD_NAME, keypad);
-
-...at the same time you may reduce LOCs here...
-
-> +	if (error) {
-> +		dev_err(&pdev->dev, "Failed to request IRQ#%d:%d\n",
-> +			irq, error);
-
-...and here.
-
-> +		return error;
-> +	}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> > changes since v1:
+> > - changed (oneOf, items) into enum
+> > 
+> >  .../devicetree/bindings/pci/ti,j721e-pci-host.yaml   | 12 +++++-------
+> >  1 file changed, 5 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pci/ti,j721e-pci-host.yaml b/Documentation/devicetree/bindings/pci/ti,j721e-pci-host.yaml
+> > index cc900202df29..41df8f1c2d4c 100644
+> > --- a/Documentation/devicetree/bindings/pci/ti,j721e-pci-host.yaml
+> > +++ b/Documentation/devicetree/bindings/pci/ti,j721e-pci-host.yaml
+> > @@ -64,13 +64,11 @@ properties:
+> >      const: 0x104c
+> >  
+> >    device-id:
+> > -    oneOf:
+> > -      - items:
+> > -          - const: 0xb00d
+> > -      - items:
+> > -          - const: 0xb00f
+> > -      - items:
+> > -          - const: 0xb010
+> > +    enum:
+> > +      - 0xb00d
+> > +      - 0xb00f
+> > +      - 0xb010
+> > +      - 0xb013
+> >    msi-map: true
+> >  
+> > 
+> 
