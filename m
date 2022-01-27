@@ -2,99 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ADC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 23:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45838C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 23:35:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241314AbiA0Xfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 18:35:47 -0500
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:50089 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240787AbiA0Xfn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 18:35:43 -0500
-Received: from localhost.localdomain (ip5f5aeaa8.dynamic.kabel-deutschland.de [95.90.234.168])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 9853061E6478B;
-        Fri, 28 Jan 2022 00:35:41 +0100 (CET)
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ata: ahci: Skip 200 ms debounce delay for Marvell 88SE9235
-Date:   Fri, 28 Jan 2022 00:35:26 +0100
-Message-Id: <20220127233527.445659-1-pmenzel@molgen.mpg.de>
-X-Mailer: git-send-email 2.34.1
+        id S243768AbiA0Xf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 18:35:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241405AbiA0Xfy (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 18:35:54 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A50FC061747
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:35:54 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id w5so3961979ilo.2
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:35:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=RYM+OoI+sRVj0DaSYGxbB41tOrylxhqAidM+/G1N3g0=;
+        b=aUmOfv6amDCIBKl7cyPdoqr3OVRCXg/GstZMqtSv+fITjqVWvfqyOq/r0cMRiImy7f
+         jbXsYP0X2iG49ox22cjU1ue9zF3rsmeyuVuo8MfW9gXAxR/U7nhC6eGB0v5bHYIi9yuY
+         gVjAWZgleK+Hx7zcLbv28glClAnV0OyI80Af8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RYM+OoI+sRVj0DaSYGxbB41tOrylxhqAidM+/G1N3g0=;
+        b=HDtqSaDj+6Jq8xPE0ZXwR8buaW6okLwhKqEHUb1Fs7+f78Ra3WK+iyq1KnXGXUDpJA
+         RNqaCQYQzf+L8FadWOoJ2cU9FdoRuXIDM4C9seAkkcdab2DGJsKuoBNxtURNX2HljoZB
+         LXOOMNWDiENRzEvl174B479bH9QmHCtRLl4S9fmly8rdcUDpT160e10JqgBy3koVNpAe
+         bmgUWzguT+xm15fP/ee+DX+IjEkqo0hjSRKHHXbMBa4kOLUCIiz2bltVi8l+V5sHwu/t
+         tWXMIHQ64QEqqL7cT3BW43K6pv73rnB1xjQDxsSV7Cw7QvhT1T4bE+xyr/+j5e73gFvG
+         o6TA==
+X-Gm-Message-State: AOAM531mLSHCR9vQgudkUNm4g5JLt9mcKHXWkpiYlYIGqKmR+7VewuE7
+        XGa3O6bMMtBVFzWKys/miiL56Q==
+X-Google-Smtp-Source: ABdhPJzY7qLxZttJ7C11awsFFi9BVO1qm82AAFY577TQWVn1v7pp1cm4kKMZYdLRWRT0HBybjT3K6A==
+X-Received: by 2002:a05:6e02:1a8d:: with SMTP id k13mr4160072ilv.257.1643326553510;
+        Thu, 27 Jan 2022 15:35:53 -0800 (PST)
+Received: from ?IPv6:2601:282:8200:4c:fcdb:3423:ed25:a583? ([2601:282:8200:4c:fcdb:3423:ed25:a583])
+        by smtp.gmail.com with ESMTPSA id y11sm12708870ilp.18.2022.01.27.15.35.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 15:35:53 -0800 (PST)
+Subject: Re: [PATCH v4] selftests/kselftest/runner.sh: Pass optional command
+ parameters in environment
+To:     Cristian Marussi <cristian.marussi@arm.com>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     shuah@kernel.org, Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220126103230.35285-1-cristian.marussi@arm.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <6905ff91-c363-91b3-7240-8bb728f45c39@linuxfoundation.org>
+Date:   Thu, 27 Jan 2022 16:35:51 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220126103230.35285-1-cristian.marussi@arm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 200 ms delay before debouncing the PHY in `sata_link_resume()` is
-not needed for the Marvell 88SE9235.
+On 1/26/22 3:32 AM, Cristian Marussi wrote:
+> Some testcases allow for optional commandline parameters but as of now
+> there is now way to provide such arguments to the runner script.
+> 
+> Add support to retrieve such optional command parameters fron environment
+> variables named so as to include the all-uppercase test executable name,
+> sanitized substituting any non-acceptable varname characters with "_",
+> following the pattern:
+> 
+> 	KSELFTEST_<UPPERCASE_SANITIZED_TEST_NAME>_ARGS="options"
+> 
+> Optional command parameters support is not available if 'tr' is not
+> installed on the test system.
+> 
+> Cc: Kees Cook <keescook@chromium.org>
+> Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+> ---
+> v3 --> v4
+> - rebased on v5.17-rc1
+> v2 --> v3
+> - improved varname sanitation
+> v1 --> v2
+> - using env vars instead of settings file
+> - added missing varname sanitation
+> 
+> Usage examples:
+> 
+> 	KSELFTEST_RTCTEST_ARGS="/dev/rtc1" /opt/ksft_fixes/run_kselftest.sh -c rtc
+> 
+> 	KSELFTEST_CPU_ON_OFF_TEST_SH_ARGS="-a -p 10" /opt/ksft_fixes/run_kselftest.sh -c cpu-hotplug
+> ---
+>   tools/testing/selftests/kselftest/runner.sh | 30 ++++++++++++++++++++-
+>   1 file changed, 29 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/kselftest/runner.sh b/tools/testing/selftests/kselftest/runner.sh
+> index a9ba782d8ca0..294619ade49f 100644
+> --- a/tools/testing/selftests/kselftest/runner.sh
+> +++ b/tools/testing/selftests/kselftest/runner.sh
+> @@ -18,6 +18,8 @@ if [ -z "$BASE_DIR" ]; then
+>   	exit 1
+>   fi
+>   
+> +TR_CMD=$(command -v tr)
+> +
+>   # If Perl is unavailable, we must fall back to line-at-a-time prefixing
+>   # with sed instead of unbuffered output.
+>   tap_prefix()
+> @@ -49,6 +51,31 @@ run_one()
+>   
+>   	# Reset any "settings"-file variables.
+>   	export kselftest_timeout="$kselftest_default_timeout"
+> +
+> +	# Safe default if tr not available
+> +	kselftest_cmd_args_ref="KSELFTEST_ARGS"
+> +
+> +	# Optional arguments for this command, possibly defined as an
+> +	# environment variable built using the test executable in all
+> +	# uppercase and sanitized substituting non acceptable shell
+> +	# variable name characters with "_" as in:
+> +	#
+> +	# 	KSELFTEST_<UPPERCASE_SANITIZED_TESTNAME>_ARGS="<options>"
+> +	#
+> +	# e.g.
+> +	#
+> +	# 	rtctest --> KSELFTEST_RTCTEST_ARGS="/dev/rtc1"
+> +	#
+> +	# 	cpu-on-off-test.sh --> KSELFTEST_CPU_ON_OFF_TEST_SH_ARGS="-a -p 10"
+> +	#
+> +	if [ -n "$TR_CMD" ]; then
+> +		BASENAME_SANITIZED=$(echo "$BASENAME_TEST" | \
+> +					$TR_CMD -d "[:blank:][:cntrl:]" | \
+> +					$TR_CMD -c "[:alnum:]_" "_" | \
+> +					$TR_CMD [:lower:] [:upper:])
+> +		kselftest_cmd_args_ref="KSELFTEST_${BASENAME_SANITIZED}_ARGS"
+> +	fi
+> +
+>   	# Load per-test-directory kselftest "settings" file.
+>   	settings="$BASE_DIR/$DIR/settings"
+>   	if [ -r "$settings" ] ; then
+> @@ -69,7 +96,8 @@ run_one()
+>   		echo "# Warning: file $TEST is missing!"
+>   		echo "not ok $test_num $TEST_HDR_MSG"
+>   	else
+> -		cmd="./$BASENAME_TEST"
+> +		eval kselftest_cmd_args="\$${kselftest_cmd_args_ref:-}"
+> +		cmd="./$BASENAME_TEST $kselftest_cmd_args"
+>   		if [ ! -x "$TEST" ]; then
+>   			echo "# Warning: file $TEST is not executable"
+>   
+> 
 
-    $ lspci -nn -s 0021:0e:00.0
-    0021:0e:00.0 SATA controller [0106]: Marvell Technology Group Ltd. 88SE9235 PCIe 2.0 x2 4-port SATA 6 Gb/s Controller [1b4b:9235] (rev 11)
+Looks good to me. Applying to linux-kselftest next for 5.18
 
-So, remove it. Tested on IBM S822LC with current Linux 5.17-rc1:
-
-Without this patch (with 200 ms delay):
-
-    [    3.358158] ata1: SATA max UDMA/133 abar m2048@0x3fe881000000 port 0x3fe881000100 irq 39
-    [    3.358175] ata2: SATA max UDMA/133 abar m2048@0x3fe881000000 port 0x3fe881000180 irq 39
-    [    3.358191] ata3: SATA max UDMA/133 abar m2048@0x3fe881000000 port 0x3fe881000200 irq 39
-    [    3.358207] ata4: SATA max UDMA/133 abar m2048@0x3fe881000000 port 0x3fe881000280 irq 39
-    […]
-    [    3.677542] ata3: SATA link down (SStatus 0 SControl 300)
-    [    3.677719] ata4: SATA link down (SStatus 0 SControl 300)
-    [    3.839242] ata2: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
-    [    3.839828] ata2.00: ATA-10: ST1000NX0313         00LY266 00LY265IBM, BE33, max UDMA/133
-    [    3.840029] ata2.00: 1953525168 sectors, multi 0: LBA48 NCQ (depth 32), AA
-    [    3.841796] ata2.00: configured for UDMA/133
-    [    3.843231] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
-    [    3.844083] ata1.00: ATA-10: ST1000NX0313         00LY266 00LY265IBM, BE33, max UDMA/133
-    [    3.844313] ata1.00: 1953525168 sectors, multi 0: LBA48 NCQ (depth 32), AA
-    [    3.846043] ata1.00: configured for UDMA/133
-
-With patch (no delay):
-
-    [    3.624259] ata1: SATA max UDMA/133 abar m2048@0x3fe881000000 port 0x3f e881000100 irq 39
-    [    3.624436] ata2: SATA max UDMA/133 abar m2048@0x3fe881000000 port 0x3f e881000180 irq 39
-    [    3.624452] ata3: SATA max UDMA/133 abar m2048@0x3fe881000000 port 0x3f e881000200 irq 39
-    [    3.624468] ata4: SATA max UDMA/133 abar m2048@0x3fe881000000 port 0x3f e881000280 irq 39
-    […]
-    [    3.731966] ata3: SATA link down (SStatus 0 SControl 300)
-    [    3.732069] ata4: SATA link down (SStatus 0 SControl 300)
-    [    3.897448] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
-    [    3.897678] ata2: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
-    [    3.898140] ata1.00: ATA-10: ST1000NX0313         00LY266 00LY265IBM, BE33, max UDMA/133
-    [    3.898175] ata2.00: ATA-10: ST1000NX0313         00LY266 00LY265IBM, BE33, max UDMA/133
-    [    3.898287] ata1.00: 1953525168 sectors, multi 0: LBA48 NCQ (depth 32), AA
-    [    3.898349] ata2.00: 1953525168 sectors, multi 0: LBA48 NCQ (depth 32), AA
-    [    3.900070] ata1.00: configured for UDMA/133
-    [    3.900166] ata2.00: configured for UDMA/133
-
-Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
----
- drivers/ata/ahci.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-index ab5811ef5a53..edca4e8fd44e 100644
---- a/drivers/ata/ahci.c
-+++ b/drivers/ata/ahci.c
-@@ -582,6 +582,8 @@ static const struct pci_device_id ahci_pci_tbl[] = {
- 	  .driver_data = board_ahci_yes_fbs },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_MARVELL_EXT, 0x9230),
- 	  .driver_data = board_ahci_yes_fbs },
-+	{ PCI_DEVICE(PCI_VENDOR_ID_MARVELL_EXT, 0x9235),
-+	  .driver_data = board_ahci_no_debounce_delay },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_TTI, 0x0642), /* highpoint rocketraid 642L */
- 	  .driver_data = board_ahci_yes_fbs },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_TTI, 0x0645), /* highpoint rocketraid 644L */
--- 
-2.34.1
-
+thanks,
+-- Shuah
