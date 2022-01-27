@@ -2,118 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B35C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93719C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244672AbiA0Rcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:32:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243660AbiA0Rcj (ORCPT
+        id S244654AbiA0Rdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:33:41 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:56924 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238078AbiA0Rdj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:32:39 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58C7C061714;
-        Thu, 27 Jan 2022 09:32:38 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id ka4so7324335ejc.11;
-        Thu, 27 Jan 2022 09:32:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=2lCGLXs6YGQp3h15Eb0z7/QVdPNp8XuhGNbjNFCQzRA=;
-        b=FlQ1YC1txpdVN6jJbO/LQ//5Yf7GCMlDVlyOB2eJMDDTB1xyE8Vod5TaHr2SB9pAZQ
-         FeTyzJPEXEAtPVsE3hrAX+aFZFLndEUyxVHy/unSaGN6QXX/TDAXAGWoaQGdk9LU57r1
-         GjlS0R5tQtCqMhZ9bhHkGlbiI7f/AcL6uU0emMoXofbyAR2/Y8jHss5FWvN8oL/lIome
-         XmSRWJDmqm2qbR22vIXwtfHG9o1iuo3ox0g+ONEMlsAQSmM4mNFa2AiGxXnpUeh31XHs
-         hG9o/OuT70v4xSCa9Klx9VjcgP5chKi3FdRjedh/I/ZcPWB17562/OGi3vC/SJcFMkJC
-         nBrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2lCGLXs6YGQp3h15Eb0z7/QVdPNp8XuhGNbjNFCQzRA=;
-        b=5nWmyFRYuEa9ldFPHKT1GffSbQUs/ai+c1NOgtg+9ayseOQuOPCIG/7aIN3Apk0GGE
-         Xgg5ieT+5MdXkYs/dopuGwxxCsqiEpKV34zMZUXoe0Vt/Bn1dNsrB6nNyywKzOlLm9AL
-         GNNdySgMlVKI/rMo03vsliXWJlOEt+HbZaSJgkkJnIoNRTI7gqAAnzhH8DxfpYF9UcUY
-         b2Id6nrvljfhlgzW0T2/a4duptWfiLI4D0FtMmQoPDSgVM3LfwTc02EZwHBx55JWTvIO
-         MPcWiAQepSb4w85g7CEK2veSl7y64XktExoGorE+j3F/mubJTwsci3ySkSxnrILf8vpn
-         LOSg==
-X-Gm-Message-State: AOAM5328/hyDFELNrlc3hqcagzRbtnXXFfA2BAf7AkwbAyJWTmbrDHmJ
-        HDZNWssQqnOPJV1gPYE7FtsJSE55QNCGZw==
-X-Google-Smtp-Source: ABdhPJwUN/Bq7wyaQglPGxU5Ss4bf2Iqr3zY+U9Rq85JCgnpexPqBxOMZIgtVqPrhdDTmDnc25rBrg==
-X-Received: by 2002:a17:907:1614:: with SMTP id hb20mr3662222ejc.255.1643304757253;
-        Thu, 27 Jan 2022 09:32:37 -0800 (PST)
-Received: from orome ([193.209.96.43])
-        by smtp.gmail.com with ESMTPSA id kw5sm1472188ejc.140.2022.01.27.09.32.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 09:32:35 -0800 (PST)
-Date:   Thu, 27 Jan 2022 18:32:33 +0100
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Sameer Pujar <spujar@nvidia.com>, jonathanh@nvidia.com,
-        mperttunen@nvidia.com, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] reset: tegra-bpmp: Restore Handle errors in BPMP response
-Message-ID: <YfLXMVXTgN9lZAA6@orome>
-References: <1641995806-15245-1-git-send-email-spujar@nvidia.com>
+        Thu, 27 Jan 2022 12:33:39 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id A5329218B0;
+        Thu, 27 Jan 2022 17:33:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1643304818; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DNVZZ8sxz6PZX0hCDHOK6Gcobf083HehUDqLl9+Rksg=;
+        b=XMU7P0JfIlcDalrwZsFfKxP7IPZWBqGSXpmRQBjcGhsrDAhUlWrcbn4CyXbX1dd43nRtCq
+        qvMV2wL05FsJZYG6Xg8GYedzYYGM4zAc5/1hSeoBRVHwl8gxXwhH+BKuYRQ//jfkyhWGyH
+        oOX5ROj6WW5GbIqG101hohnMJCDsjsg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1643304818;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DNVZZ8sxz6PZX0hCDHOK6Gcobf083HehUDqLl9+Rksg=;
+        b=0kKwYK0WXw+jSIadR30eLnysmgogtc8fYCsjS+PvzEsQYZGthkLvY/rwSTBjBs+KY4e2Xw
+        EP3kC2EA5WPby7Bw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5D2D213C25;
+        Thu, 27 Jan 2022 17:33:38 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id nH79FXLX8mHfIgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 27 Jan 2022 17:33:38 +0000
+Message-ID: <1bf686e4-6c22-47d9-d6e3-fd33faf59037@suse.cz>
+Date:   Thu, 27 Jan 2022 18:33:38 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="lFSd7VNl4nEuksga"
-Content-Disposition: inline
-In-Reply-To: <1641995806-15245-1-git-send-email-spujar@nvidia.com>
-User-Agent: Mutt/2.1.5 (31b18ae9) (2021-12-30)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 55/66] mm/mempolicy: Use maple tree iterators instead
+ of vma linked list
+Content-Language: en-US
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Song Liu <songliubraving@fb.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        David Rientjes <rientjes@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Rik van Riel <riel@surriel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michel Lespinasse <walken.cr@gmail.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        Minchan Kim <minchan@google.com>,
+        Joel Fernandes <joelaf@google.com>,
+        Rom Lemarchand <romlem@google.com>
+References: <20211201142918.921493-1-Liam.Howlett@oracle.com>
+ <20211201142918.921493-56-Liam.Howlett@oracle.com>
+ <10798a7d-e157-03c2-abf4-f005a3507cae@suse.cz>
+ <20220126024819.i35wd6uxh463wkps@revolver>
+ <3dc23bc9-2b0f-00af-f85b-22c270356e96@suse.cz>
+ <20220127172516.dj7mditbishetlxv@revolver>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220127172516.dj7mditbishetlxv@revolver>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 1/27/22 18:25, Liam Howlett wrote:
+> * Vlastimil Babka <vbabka@suse.cz> [220126 04:23]:
+>> On 1/26/22 03:48, Liam Howlett wrote:
+>> > * Vlastimil Babka <vbabka@suse.cz> [220120 06:58]:
+>> >> On 12/1/21 15:30, Liam Howlett wrote:
+>> >> > From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+>> >> > 
+>> >> > Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+>> >> > Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+>> >> > ---
+>> >> >  mm/mempolicy.c | 53 ++++++++++++++++++++++++++------------------------
+>> >> >  1 file changed, 28 insertions(+), 25 deletions(-)
+>> >> > 
+>> >> > diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+>> >> > index 10e9c87260ed..0e2d918f4f30 100644
+>> >> > --- a/mm/mempolicy.c
+>> >> > +++ b/mm/mempolicy.c
+>> >> > @@ -377,9 +377,10 @@ void mpol_rebind_task(struct task_struct *tsk, const nodemask_t *new)
+>> >> >  void mpol_rebind_mm(struct mm_struct *mm, nodemask_t *new)
+>> >> >  {
+>> >> >  	struct vm_area_struct *vma;
+>> >> > +	MA_STATE(mas, &mm->mm_mt, 0, 0);
+>> >> 
+>> >> VMA_ITERATOR?
+>> > 
+>> > Yes, I will make this change.  Thanks.
+>> > 
+>> >> 
+>> >> >  
+>> >> >  	mmap_write_lock(mm);
+>> >> > -	for (vma = mm->mmap; vma; vma = vma->vm_next)
+>> >> > +	mas_for_each(&mas, vma, ULONG_MAX)
+>> >> >  		mpol_rebind_policy(vma->vm_policy, new);
+>> >> >  	mmap_write_unlock(mm);
+>> >> >  }
+>> >> > @@ -652,7 +653,7 @@ static unsigned long change_prot_numa(struct vm_area_struct *vma,
+>> >> >  static int queue_pages_test_walk(unsigned long start, unsigned long end,
+>> >> >  				struct mm_walk *walk)
+>> >> >  {
+>> >> > -	struct vm_area_struct *vma = walk->vma;
+>> >> > +	struct vm_area_struct *next, *vma = walk->vma;
+>> >> >  	struct queue_pages *qp = walk->private;
+>> >> >  	unsigned long endvma = vma->vm_end;
+>> >> >  	unsigned long flags = qp->flags;
+>> >> > @@ -667,9 +668,10 @@ static int queue_pages_test_walk(unsigned long start, unsigned long end,
+>> >> >  			/* hole at head side of range */
+>> >> >  			return -EFAULT;
+>> >> >  	}
+>> >> > +	next = find_vma(vma->vm_mm, vma->vm_end);
+>> >> >  	if (!(flags & MPOL_MF_DISCONTIG_OK) &&
+>> >> >  		((vma->vm_end < qp->end) &&
+>> >> > -		(!vma->vm_next || vma->vm_end < vma->vm_next->vm_start)))
+>> >> > +		(!next || vma->vm_end < next->vm_start)))
+>> >> >  		/* hole at middle or tail of range */
+>> >> >  		return -EFAULT;
+>> >> >  
+>> >> > @@ -783,28 +785,24 @@ static int vma_replace_policy(struct vm_area_struct *vma,
+>> >> >  static int mbind_range(struct mm_struct *mm, unsigned long start,
+>> >> >  		       unsigned long end, struct mempolicy *new_pol)
+>> >> >  {
+>> >> > -	struct vm_area_struct *next;
+>> >> > +	MA_STATE(mas, &mm->mm_mt, start - 1, start - 1);
+>> >> >  	struct vm_area_struct *prev;
+>> >> >  	struct vm_area_struct *vma;
+>> >> >  	int err = 0;
+>> >> >  	pgoff_t pgoff;
+>> >> > -	unsigned long vmstart;
+>> >> > -	unsigned long vmend;
+>> >> > -
+>> >> > -	vma = find_vma(mm, start);
+>> >> > -	VM_BUG_ON(!vma);
+>> >> >  
+>> >> > -	prev = vma->vm_prev;
+>> >> > -	if (start > vma->vm_start)
+>> >> > -		prev = vma;
+>> >> > +	prev = mas_find_rev(&mas, 0);
+>> >> > +	if (prev && (start < prev->vm_end))
+>> >> > +		vma = prev;
+>> >> > +	else
+>> >> > +		vma = mas_next(&mas, end - 1);
+>> >> >  
+>> >> > -	for (; vma && vma->vm_start < end; prev = vma, vma = next) {
+>> >> > -		next = vma->vm_next;
+>> >> > -		vmstart = max(start, vma->vm_start);
+>> >> > -		vmend   = min(end, vma->vm_end);
+>> >> > +	do {
+>> >> > +		unsigned long vmstart = max(start, vma->vm_start);
+>> >> > +		unsigned long vmend = min(end, vma->vm_end);
+>> >> 
+>> >> What if vma is null? Shouldn't this rather be a "for (; vma; vma =
+>> >> mas_next(...)"
+>> > 
+>> > We have already found the vma above.
+>> 
+>> AFAICS if the range intersects no vmas, we might have found a 'prev', but
+>> 'vma' might be NULL after the "vma = mas_next(&mas, end - 1);"?
+> 
+> Yes, I agree.  I was going to restore VM_BUG_ON(!vma) after mas_next(),
+> but that's not the same as the existing code.  The VM_BUG_ON(!vma)
+> only catches if we search for 'start' above any VMA.  It seems
+> mbind_range() would have returned without error if there were no VMAs
+> within the range but would error if the 'start' was sufficiently large.
 
---lFSd7VNl4nEuksga
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ah I missed there was a VM_BUG_ON(!vma) previously and that the callers seem
+to only call mbind_range() if there's an actual vma in the range, so I guess
+my suggestion was misguided.
 
-On Wed, Jan 12, 2022 at 07:26:46PM +0530, Sameer Pujar wrote:
-> This reverts following commit 69125b4b9440 ("reset: tegra-bpmp: Revert
-> Handle errors in BPMP response").
->=20
-> The Tegra194 HDA reset failure is fixed by commit d278dc9151a0 ("ALSA:
-> hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
-> original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
-> response") can be removed now.
->=20
-> Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-> ---
->  drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+> I think it is better to write it as you suggested to restore the
+> functionality of not failing on an empty list.  I don't see a decent
+> way of checking if we searched for an address above any VMA to restore
+> the VM_BUG_ON() which existed - although I see little value in it to
+> begin with.  I will mention this in the commit message.
 
-Hi Philipp,
-
-the commit that fixed the HDA reset failure was merged into v5.17-rc1,
-so this can safely be applied as a fix for v5.17. At the same time the
-existing bug is fairly harmless, so deferring this to v5.18 would also
-be fine.
-
-Acked-by: Thierry Reding <treding@nvidia.com>
-
---lFSd7VNl4nEuksga
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmHy1y8ACgkQ3SOs138+
-s6HU+g/8DQ4NAOdFDNmf1ft03thYqebvUH/l5hm+2YyzCHU2p0NCxlf4cfe6/jyV
-7ssvooV4zsyt8Pq3vj1tcelNRTHrHVYrURWaRveqyw/Hz2VbCqO+daStarv5Wafg
-E05P0XEgPs1L1YyvT6BQRcSt+z1XTwMZYAoPRO1iL4bMD27rRwpEfmnSIyga1T46
-y4kuNiGFZN7XkBjlZcoSiefW51/anKAWI/elh99eNDQquW7J4h37CSDI2wbGQYbf
-S2lUhN0nSwmbOYiW9Q7A4vcKwfVgeWeVKpWRgzH9rKBMu9G/Zymla06yasZ/MYDk
-CFKTlqNGnXYfsPeJjfu/2K+3eHhw7sGvVXOkZuQNrrd4s5vEWh4jxIcD2JrpceCQ
-EuhZIRz4mgjPUuGALyLHtgDpNaCtuGLFCtbLTCcGnjgjLH1p9z20/NoO6iXtBmRj
-kHn2sUM08BnneBqtj63vYUXtPKhaQApwkHEjNUgfh/mMzBfODnXS0lmEYYpND8sT
-EG2gSdbqo4CcT9aro+/nn/uAvP/w/ZYVkLR7G/Z/UpzM46D9bNMVcsBdYR5/QA+G
-0mS1FhX/BHgogbtlCkGXJtQN60DlKXZy2sh06WPBSTGD9Vd2HvGiNhMn/0bwltHN
-/8rL9DPFfvRElTTY8DShRNSvXf0JT8Mbu/1RH3JYGvylwsx0aj4=
-=FmYd
------END PGP SIGNATURE-----
-
---lFSd7VNl4nEuksga--
