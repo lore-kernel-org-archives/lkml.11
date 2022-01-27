@@ -2,110 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE229C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 05:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 751E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 05:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236347AbiA0Fy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 00:54:56 -0500
-Received: from mga04.intel.com ([192.55.52.120]:10536 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229551AbiA0Fyz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 00:54:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643262895; x=1674798895;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wZNiQ5pkRxeJ8Ao6cIn34CxSJY+ary9AZNzrIwzYuZw=;
-  b=DAm4AWoVR//pENCcSmxfnRtRFFYka0wru3n9iha4lTHYWBMNStNAIpYy
-   jvwARkDpvcYeWPFrSDv3/jOvdSVlUE7RlhLENZ/XSVferQ6/PmlTSsufx
-   xDE7yi6WnR5/P/E1qZwGGuzfOA9tCnT6vPtp2bOx0wuu+q+VmnIlYCdQx
-   tRJlPILjHFC6MlmYMaBpDUxy6IIG89TVfqlIRpRF8DOTvRjlWzZL1Tisi
-   XcPCz0srr91B/8XiiXjEPTV7rSIlIiHgHb/tBJUEkQySHxqJx34ljwAA5
-   D81D53nZP1I7SS1QF6a8gr7LSMkm6NNlBQOyyJPtQbCUkJtSJdfEHFFdp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="245596571"
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="245596571"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 21:54:54 -0800
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="628566642"
-Received: from yangzhon-virtual.bj.intel.com (HELO yangzhon-Virtual) ([10.238.145.56])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-SHA256; 26 Jan 2022 21:54:52 -0800
-Date:   Thu, 27 Jan 2022 13:39:29 +0800
-From:   Yang Zhong <yang.zhong@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        seanjc@google.com, yang.zhong@intel.com
-Subject: Re: [PATCH 0/3] KVM: x86: export supported_xcr0 via UAPI
-Message-ID: <20220127053929.GA8503@yangzhon-Virtual>
-References: <20220126152210.3044876-1-pbonzini@redhat.com>
+        id S236359AbiA0F4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 00:56:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229551AbiA0F4k (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 00:56:40 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89004C061714
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 21:56:39 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id x7so3194802lfu.8
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 21:56:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aWo9W/WInyDbr5JfxL7Bup7u3tR1b8/tTnuJ7YJQp/E=;
+        b=dIe8WmtT4h+k9PRa+NCQrvieWHmicawGJlyvjCykypB6nHPnj+hsVXuBun+m/bwgLL
+         EjAaka1ar/xN6STAB29BqbI8OxeDpNTmDL7r7RtZHDK+mWdvNvBSDcCSDJuZRFsP7PHQ
+         b+JhkwrFXrox71O05p8qR1kFRuCM4//9zXwjwLer2wH/5FdL0tAUsduHmeN+g1zu8PTE
+         EPE3CFM+HcbyiXST0gTfiCam0k6qakteakYYCPEVf5e3JKlW7sCfEjSSnY11t+Lk8T/N
+         P77KqoEEK+u60u+XVNPJrAhY1HRn+HgVh3Iu2e8PMxH6OESsutWpwJxzNvnS+0Cq0Kqj
+         ORwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aWo9W/WInyDbr5JfxL7Bup7u3tR1b8/tTnuJ7YJQp/E=;
+        b=VZK4pW5xZ6y8ULWAqPhsisDUOatgOrAByCRnw2T+2saq1j5KapFd1e13NHaYYUTf8L
+         wa04D3Zsby7BU1t/DpsFK8iiWdYIwfIDJ7hXGWLNTzDdxgP2Ndv6c5ot+TXT5wSSkZiD
+         QeycozfHdEGGzqpvSy1IkBnkrHZH10dJXxRvuKK1xuPLSGB/2XK+ZCsJTdQtZR7USaoA
+         D4hkgXAZRQoycr9RzmKO4p8RUQEFp99v5RpgesB9mKkxrGxglnTjibcxHm7iBR11rhc9
+         U5uxl5R5QDMu0tmTCJk+N+KPlQpLmv9PYazaUxtEUrRVu3sppEFgJTe38mANlHNAOoAQ
+         FrJQ==
+X-Gm-Message-State: AOAM5301SHmQgOuYoAPPe9NP9QbdrvHCJaFgWbq7r1cO1/njEYg4sJyu
+        P0xpb4tWMxRy7hjw6PhUvl3r8aBlWvSPRxv090xv3g==
+X-Google-Smtp-Source: ABdhPJwNDBjGsqpl/tRbz98l7hIwUvWv5WcXCbtnXgVMLOcWqaXnMoRIaexKUzuBr/qFpcxri36UbKZ7ubLsgRJNtQQ=
+X-Received: by 2002:a05:6512:3ac:: with SMTP id v12mr1849337lfp.40.1643262997883;
+ Wed, 26 Jan 2022 21:56:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126152210.3044876-1-pbonzini@redhat.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+References: <20220125162938.838382-1-jens.wiklander@linaro.org> <20220125162938.838382-4-jens.wiklander@linaro.org>
+In-Reply-To: <20220125162938.838382-4-jens.wiklander@linaro.org>
+From:   Sumit Garg <sumit.garg@linaro.org>
+Date:   Thu, 27 Jan 2022 11:26:26 +0530
+Message-ID: <CAFA6WYOT7capu1RrK57HAu_qKvG65X_C1-esw3DyD4_9LeKZSg@mail.gmail.com>
+Subject: Re: [PATCH v3 03/12] tee: add tee_shm_alloc_user_buf()
+To:     Jens Wiklander <jens.wiklander@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
+        Rijo Thomas <Rijo-john.Thomas@amd.com>,
+        David Howells <dhowells@redhat.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 10:22:07AM -0500, Paolo Bonzini wrote:
-> While working on the QEMU support for AMX, I noticed that there is no
-> equivalent of ARCH_GET_XCOMP_SUPP in the KVM API.  This is important
-> because KVM_GET_SUPPORTED_CPUID is meant to be passed (by simple-minded
-> VMMs) to KVM_SET_CPUID2, and therefore it cannot include any dynamic
-> xsave states that have not been enabled.  Probing the availability of
-> dynamic xsave states therefore, requires a new ioctl or arch_prctl.
-> 
-> In order to avoid moving supported_xcr0 to the kernel from the KVM
-> module just for this use, and to ensure that the value can only be
-> probed if/after the KVM module has been loaded, this series goes
-> for the former option.
-> 
-> KVM_CHECK_EXTENSION cannot be used because it only has 32 bits of
-> output; in order to limit the growth of capabilities and ioctls, the
-> series adds a /dev/kvm variant of KVM_{GET,HAS}_DEVICE_ATTR that
-> can be used in the future and by other architectures.  It then
-> implements it in x86 with just one group (0) and attribute
-> (KVM_X86_XCOMP_GUEST_SUPP).
-> 
-> The corresponding changes to the tests, in patches 1 and 3, are
-> designed so that the code will be covered (to the possible extent)
-> even when running the tests on systems that do not support AMX.
-> However, the patches have not been tested with AMX.
+On Tue, 25 Jan 2022 at 21:59, Jens Wiklander <jens.wiklander@linaro.org> wrote:
+>
+> Adds a new function tee_shm_alloc_user_buf() or user mode allocations,
+
+typo: s/or/for/
+
+> replacing passing the flags TEE_SHM_MAPPED | TEE_SHM_DMA_BUF to
+> tee_shm_alloc().
+>
+> Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+> ---
+>  drivers/tee/tee_core.c     |  2 +-
+>  drivers/tee/tee_private.h  |  2 ++
+>  drivers/tee/tee_shm.c      | 17 +++++++++++++++++
+>  drivers/tee/tee_shm_pool.c |  2 +-
+>  include/linux/tee_drv.h    |  2 +-
+>  5 files changed, 22 insertions(+), 3 deletions(-)
 >
 
-  Paolo, thanks for this patchset. I applied this patchset into latest
-  Linux release, and verified it from kvm selftest tool and Qemu side
-  (In order to verify this easily, I reused the older request permission
-   function like kvm selftest did), all work well. thanks!
+Apart from minor comments below:
 
-  Yang
- 
-> Thanks,
-> 
-> Paolo
-> 
-> 
-> Paolo Bonzini (3):
->   selftests: kvm: move vm_xsave_req_perm call to amx_test
->   KVM: x86: add system attribute to retrieve full set of supported xsave
->     states
->   selftests: kvm: check dynamic bits against KVM_X86_XCOMP_GUEST_SUPP
-> 
->  Documentation/virt/kvm/api.rst                |  4 +-
->  arch/x86/include/uapi/asm/kvm.h               |  3 ++
->  arch/x86/kvm/x86.c                            | 45 +++++++++++++++++++
->  include/uapi/linux/kvm.h                      |  1 +
->  tools/arch/x86/include/uapi/asm/kvm.h         |  3 ++
->  tools/include/uapi/linux/kvm.h                |  1 +
->  .../selftests/kvm/include/kvm_util_base.h     |  1 -
->  .../selftests/kvm/include/x86_64/processor.h  |  1 +
->  tools/testing/selftests/kvm/lib/kvm_util.c    |  7 ---
->  .../selftests/kvm/lib/x86_64/processor.c      | 27 ++++++++---
->  tools/testing/selftests/kvm/x86_64/amx_test.c |  2 +
->  11 files changed, 80 insertions(+), 15 deletions(-)
-> 
-> -- 
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+
+> diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
+> index 3fc426dad2df..a15812baaeb1 100644
+> --- a/drivers/tee/tee_core.c
+> +++ b/drivers/tee/tee_core.c
+> @@ -297,7 +297,7 @@ static int tee_ioctl_shm_alloc(struct tee_context *ctx,
+>         if (data.flags)
+>                 return -EINVAL;
+>
+> -       shm = tee_shm_alloc(ctx, data.size, TEE_SHM_MAPPED | TEE_SHM_DMA_BUF);
+> +       shm = tee_shm_alloc_user_buf(ctx, data.size);
+>         if (IS_ERR(shm))
+>                 return PTR_ERR(shm);
+>
+> diff --git a/drivers/tee/tee_private.h b/drivers/tee/tee_private.h
+> index e55204df31ce..e09c8aa5d967 100644
+> --- a/drivers/tee/tee_private.h
+> +++ b/drivers/tee/tee_private.h
+> @@ -68,4 +68,6 @@ void tee_device_put(struct tee_device *teedev);
+>  void teedev_ctx_get(struct tee_context *ctx);
+>  void teedev_ctx_put(struct tee_context *ctx);
+>
+> +struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size);
+> +
+>  #endif /*TEE_PRIVATE_H*/
+> diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
+> index 499fccba3d74..7e7e762fc1de 100644
+> --- a/drivers/tee/tee_shm.c
+> +++ b/drivers/tee/tee_shm.c
+> @@ -127,6 +127,23 @@ struct tee_shm *tee_shm_alloc(struct tee_context *ctx, size_t size, u32 flags)
+>  }
+>  EXPORT_SYMBOL_GPL(tee_shm_alloc);
+>
+> +/**
+> + * tee_shm_alloc_user_buf() - Allocate shared memory for user space
+> + * @ctx:       Context that allocates the shared memory
+> + * @size:      Requested size of shared memory
+> + *
+> + * Memory allocated as user space shared memory is automatically freed when
+> + * the TEE file pointer is closed. The primary usage of this function is
+> + * when the TEE driver doesn't support registering ordinary user space
+> + * memory.
+> + *
+> + * @returns a pointer to 'struct tee_shm'
+> + */
+> +struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size)
+> +{
+> +       return tee_shm_alloc(ctx, size, TEE_SHM_MAPPED | TEE_SHM_DMA_BUF);
+> +}
+> +
+>  /**
+>   * tee_shm_alloc_kernel_buf() - Allocate shared memory for kernel buffer
+>   * @ctx:       Context that allocates the shared memory
+> diff --git a/drivers/tee/tee_shm_pool.c b/drivers/tee/tee_shm_pool.c
+> index a9f9d50fd181..0e460347138a 100644
+> --- a/drivers/tee/tee_shm_pool.c
+> +++ b/drivers/tee/tee_shm_pool.c
+> @@ -1,6 +1,6 @@
+>  // SPDX-License-Identifier: GPL-2.0-only
+>  /*
+> - * Copyright (c) 2015, Linaro Limited
+> + * Copyright (c) 2015, 2017, 2022 Linaro Limited
+
+Redundant change?
+
+>   */
+>  #include <linux/device.h>
+>  #include <linux/dma-buf.h>
+> diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
+> index 6b0f0d01ebdf..975500b2553e 100644
+> --- a/include/linux/tee_drv.h
+> +++ b/include/linux/tee_drv.h
+> @@ -1,6 +1,6 @@
+>  /* SPDX-License-Identifier: GPL-2.0-only */
+>  /*
+> - * Copyright (c) 2015-2016, Linaro Limited
+> + * Copyright (c) 2015-2022 Linaro Limited
+
+Ditto?
+
+-Sumit
+
+>   */
+>
+>  #ifndef __TEE_DRV_H
+> --
 > 2.31.1
+>
