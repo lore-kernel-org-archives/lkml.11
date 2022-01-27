@@ -2,135 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 115F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C64C6C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245478AbiA0SLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:11:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45522 "EHLO
+        id S245185AbiA0SLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 13:11:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245163AbiA0SKb (ORCPT
+        with ESMTP id S245165AbiA0SKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:10:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D9CC061756;
-        Thu, 27 Jan 2022 10:10:13 -0800 (PST)
+        Thu, 27 Jan 2022 13:10:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C223FC0613EB;
+        Thu, 27 Jan 2022 10:10:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C187B818E1;
-        Thu, 27 Jan 2022 18:10:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69231C340EA;
-        Thu, 27 Jan 2022 18:10:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6267061BBE;
+        Thu, 27 Jan 2022 18:10:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37B6DC340E4;
+        Thu, 27 Jan 2022 18:10:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643307011;
-        bh=jUmuJjJ5DnnOhIK4cDjR34Ur/dsWeKwGp1IVbdM9IAQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FSf0C2Q3ITaCv878XNOOG3C3iI94LIIuXcv06mHB+O4nyETRrCR41GTrhxVu2Bog/
-         3PNXeOA6qtjRydJa6Tkr7oP07zTCKnA2NJ9XyUXsPXniunUpeiGnh0HHXqHGKVyWSX
-         4HCiorW1vODLVNQawaxu1IFqK5hzJzeWQPFEIrtg=
+        s=korg; t=1643307028;
+        bh=opqOAvOwYYBDuTBW3kimmwB19Q6IwQ1e3r2Ikzu3mcc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IIWDvMHteOnqvyG9e7GRP/+akG35mHTkGKioNQZO40Uzal0kqWUmbIuGalj6uCHAw
+         hKMmkKBNK1co85P0NupoP+PqzltJ7zWvLUTgh7odmiqKv8JkYdgKI0hmA1zBzXNMoI
+         HIuBbHaTribUOUPhe2NNIk+hCgm9r3ptyaTwwkFM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com
-Subject: [PATCH 5.4 00/11] 5.4.175-rc1 review
-Date:   Thu, 27 Jan 2022 19:09:01 +0100
-Message-Id: <20220127180258.362000607@linuxfoundation.org>
+        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.10 5/6] KVM: x86/mmu: Fix write-protection of PTs mapped by the TDP MMU
+Date:   Thu, 27 Jan 2022 19:09:21 +0100
+Message-Id: <20220127180258.306175303@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.0
-MIME-Version: 1.0
+In-Reply-To: <20220127180258.131170405@linuxfoundation.org>
+References: <20220127180258.131170405@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.175-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.4.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.4.175-rc1
-X-KernelTest-Deadline: 2022-01-29T18:02+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.4.175 release.
-There are 11 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: David Matlack <dmatlack@google.com>
 
-Responses should be made by Sat, 29 Jan 2022 18:02:51 +0000.
-Anything received after that time might be too late.
+commit 7c8a4742c4abe205ec9daf416c9d42fd6b406e8e upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.175-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-and the diffstat can be found below.
+When the TDP MMU is write-protection GFNs for page table protection (as
+opposed to for dirty logging, or due to the HVA not being writable), it
+checks if the SPTE is already write-protected and if so skips modifying
+the SPTE and the TLB flush.
 
-thanks,
+This behavior is incorrect because it fails to check if the SPTE
+is write-protected for page table protection, i.e. fails to check
+that MMU-writable is '0'.  If the SPTE was write-protected for dirty
+logging but not page table protection, the SPTE could locklessly be made
+writable, and vCPUs could still be running with writable mappings cached
+in their TLB.
 
-greg k-h
+Fix this by only skipping setting the SPTE if the SPTE is already
+write-protected *and* MMU-writable is already clear.  Technically,
+checking only MMU-writable would suffice; a SPTE cannot be writable
+without MMU-writable being set.  But check both to be paranoid and
+because it arguably yields more readable code.
 
--------------
-Pseudo-Shortlog of commits:
+Fixes: 46044f72c382 ("kvm: x86/mmu: Support write protection for nesting in tdp MMU")
+Cc: stable@vger.kernel.org
+Signed-off-by: David Matlack <dmatlack@google.com>
+Message-Id: <20220113233020.3986005-2-dmatlack@google.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kvm/mmu/tdp_mmu.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.4.175-rc1
-
-Jan Kara <jack@suse.cz>
-    select: Fix indefinitely sleeping task in poll_schedule_timeout()
-
-Tim Harvey <tharvey@gateworks.com>
-    mmc: sdhci-esdhc-imx: disable CMDQ support
-
-Phil Elwell <phil@raspberrypi.com>
-    ARM: dts: gpio-ranges property is now required
-
-Phil Elwell <phil@raspberrypi.com>
-    pinctrl: bcm2835: Change init order for gpio hogs
-
-Florian Fainelli <f.fainelli@gmail.com>
-    pinctrl: bcm2835: Add support for wake-up interrupts
-
-Florian Fainelli <f.fainelli@gmail.com>
-    pinctrl: bcm2835: Match BCM7211 compatible string
-
-Stefan Wahren <stefan.wahren@i2se.com>
-    pinctrl: bcm2835: Add support for all GPIOs on BCM2711
-
-Stefan Wahren <stefan.wahren@i2se.com>
-    pinctrl: bcm2835: Refactor platform data
-
-Stefan Wahren <stefan.wahren@i2se.com>
-    pinctrl: bcm2835: Drop unused define
-
-Paul E. McKenney <paulmck@kernel.org>
-    rcu: Tighten rcu_advance_cbs_nowake() checks
-
-Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-    drm/i915: Flush TLBs before releasing backing store
-
-
--------------
-
-Diffstat:
-
- Makefile                                         |   4 +-
- arch/arm/boot/dts/bcm283x.dtsi                   |   1 +
- drivers/gpu/drm/i915/gem/i915_gem_object_types.h |   3 +
- drivers/gpu/drm/i915/gem/i915_gem_pages.c        |  10 ++
- drivers/gpu/drm/i915/gt/intel_gt.c               |  99 +++++++++++
- drivers/gpu/drm/i915/gt/intel_gt.h               |   2 +
- drivers/gpu/drm/i915/gt/intel_gt_types.h         |   2 +
- drivers/gpu/drm/i915/i915_reg.h                  |  11 ++
- drivers/gpu/drm/i915/i915_vma.c                  |   4 +
- drivers/mmc/host/sdhci-esdhc-imx.c               |   3 +-
- drivers/pinctrl/bcm/pinctrl-bcm2835.c            | 209 +++++++++++++++++++----
- fs/select.c                                      |  63 +++----
- kernel/rcu/tree.c                                |   7 +-
- 13 files changed, 346 insertions(+), 72 deletions(-)
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -1130,12 +1130,12 @@ static bool write_protect_gfn(struct kvm
+ 	bool spte_set = false;
+ 
+ 	tdp_root_for_each_leaf_pte(iter, root, gfn, gfn + 1) {
+-		if (!is_writable_pte(iter.old_spte))
+-			break;
+-
+ 		new_spte = iter.old_spte &
+ 			~(PT_WRITABLE_MASK | SPTE_MMU_WRITEABLE);
+ 
++		if (new_spte == iter.old_spte)
++			break;
++
+ 		tdp_mmu_set_spte(kvm, &iter, new_spte);
+ 		spte_set = true;
+ 	}
 
 
