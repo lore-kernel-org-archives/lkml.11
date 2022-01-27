@@ -2,149 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB70FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:39:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242137AbiA0NjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 08:39:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43286 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242015AbiA0NiF (ORCPT
+        id S242014AbiA0NjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 08:39:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36296 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242033AbiA0Ni0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:38:05 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 465DE61C06
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 13:38:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84951C340E4;
-        Thu, 27 Jan 2022 13:38:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643290684;
-        bh=Z4jXUhGXYRsf6W87aXU9TwJRX0rB6w8vez308ZXgmGk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cThq6PKD8052QciPNtsjzAI5JXCdzZ3Av3FiLuJIYnkhMe5xaJX9U9J0KMOHl8pNG
-         TpMvGdEQNUl6ohX+qs1i/5nT1oRcohtBIajMqmsCmxe1LwcVY56ZEx3o2yEAQt6eKV
-         YmUMg0mEkyekS5BDhrSu1vhNiTG1lZNnm1vVNcbfolMGPkf7B2sYZTE1iZa3a/G9Xp
-         Nqw0SGXrNxuPTYcbFYGu3urfpPsORyCMYDVJ15nEPAJEwH9V0PWXAJBeEuIsH+gGY4
-         Na6pMH6tGoB4871lw7K4zBdhkxAT1kghmmjlyl0MfKt7kmOTOACElrzjo+MG9ITIK1
-         pP/S9gGyqswXA==
-Date:   Thu, 27 Jan 2022 15:37:56 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Michal Hocko <mhocko@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>, Tejun Heo <tj@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Nico Pache <npache@redhat.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Rafael Aquini <raquini@redhat.com>,
-        Michal Hocko <mhocko@suse.com>
-Subject: Re: [PATCH 3/6] mm, memory_hotplug: drop arch_free_nodedata
-Message-ID: <YfKgNEgv8mIUxqRD@kernel.org>
-References: <20220127085305.20890-1-mhocko@kernel.org>
- <20220127085305.20890-4-mhocko@kernel.org>
+        Thu, 27 Jan 2022 08:38:26 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49007C061793
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:36:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=t8uKPMm+WT9eNttOsz40v+9fY5TpP+ldKER0j08mQ5k=; b=P7dJz4qf2KlOhCsIxTJaRDVb3q
+        AJN3yaOtHXfwE0zKeOD27j5ikUu4zdbrWit27WGyOhYk82giJzMUUFIimKEuLam+jo7nIx5qAGmsf
+        9cml1xNfXJ1jw/3w11APXrHyKigNVqD8+o34S9Y0EJNeEsPlxqAp7fW/LZRi8zAm8orDEHouzIL1A
+        UXAA7XjgmPld61YnqJ0gJBPPFthLixBB/JxsUr7ingkmMoKCNJqrIG12rbfNhZBCFd4W70lEfPzRJ
+        k9SnHKZRs1086kJoxr3eO+s3H4f2OiHQZK0ZuI+SAeyIskETAnGobAm6+F6iobRaF63U06PyMWfht
+        WOweGG+w==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nD4xD-005H7t-Ez; Thu, 27 Jan 2022 13:36:47 +0000
+Date:   Thu, 27 Jan 2022 13:36:47 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Karolina Drobnik <karolinadrobnik@gmail.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        mike.rapoport@gmail.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/16] tools: Move gfp.h and slab.h from radix-tree to lib
+Message-ID: <YfKf74qdUXrPPZHZ@casper.infradead.org>
+References: <cover.1643206612.git.karolinadrobnik@gmail.com>
+ <777d0cfcf531357cfe39d53987aa964a3a42ce8b.1643206612.git.karolinadrobnik@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220127085305.20890-4-mhocko@kernel.org>
+In-Reply-To: <777d0cfcf531357cfe39d53987aa964a3a42ce8b.1643206612.git.karolinadrobnik@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 09:53:02AM +0100, Michal Hocko wrote:
-> From: Michal Hocko <mhocko@suse.com>
-> 
-> Prior to "mm: handle uninitialized numa nodes gracefully" memory hotplug
-> used to allocate pgdat when memory has been added to a node
-> (hotadd_init_pgdat) arch_free_nodedata has been only used in the
-> failure path because once the pgdat is exported (to be visible
-> by NODA_DATA(nid)) it cannot really be freed because there is no
-> synchronization available for that.
-> 
-> pgdat is allocated for each possible nodes now so the memory hotplug
-> doesn't need to do the ever use arch_free_nodedata so drop it.
-> 
-> This patch doesn't introduce any functional change.
-> 
-> Acked-by: Rafael Aquini <raquini@redhat.com>
-> Signed-off-by: Michal Hocko <mhocko@suse.com>
-
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
-
-> ---
->  arch/ia64/mm/discontig.c       |  5 -----
->  include/linux/memory_hotplug.h |  3 ---
->  mm/memory_hotplug.c            | 10 ----------
->  3 files changed, 18 deletions(-)
-> 
-> diff --git a/arch/ia64/mm/discontig.c b/arch/ia64/mm/discontig.c
-> index dd0cf4834eaa..73d0db36edb6 100644
-> --- a/arch/ia64/mm/discontig.c
-> +++ b/arch/ia64/mm/discontig.c
-> @@ -615,11 +615,6 @@ pg_data_t * __init arch_alloc_nodedata(int nid)
->  	return memblock_alloc(size, SMP_CACHE_BYTES);
+On Thu, Jan 27, 2022 at 02:21:19PM +0100, Karolina Drobnik wrote:
+> diff --git a/tools/testing/radix-tree/linux.c b/tools/testing/radix-tree/linux.c
+> index 2d9c59df60de..81539f543954 100644
+> --- a/tools/testing/radix-tree/linux.c
+> +++ b/tools/testing/radix-tree/linux.c
+> @@ -14,7 +14,6 @@
+>  
+>  int nr_allocated;
+>  int preempt_count;
+> -int kmalloc_verbose;
+>  int test_verbose;
+>  
+>  struct kmem_cache {
+> @@ -78,32 +77,6 @@ void kmem_cache_free(struct kmem_cache *cachep, void *objp)
+>  	pthread_mutex_unlock(&cachep->lock);
 >  }
 >  
-> -void arch_free_nodedata(pg_data_t *pgdat)
+> -void *kmalloc(size_t size, gfp_t gfp)
 > -{
-> -	kfree(pgdat);
+> -	void *ret;
+> -
+> -	if (!(gfp & __GFP_DIRECT_RECLAIM))
+> -		return NULL;
+> -
+> -	ret = malloc(size);
+> -	uatomic_inc(&nr_allocated);
+> -	if (kmalloc_verbose)
+> -		printf("Allocating %p from malloc\n", ret);
+> -	if (gfp & __GFP_ZERO)
+> -		memset(ret, 0, size);
+> -	return ret;
 > -}
 > -
->  void arch_refresh_nodedata(int update_node, pg_data_t *update_pgdat)
->  {
->  	pgdat_list[update_node] = update_pgdat;
-> diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
-> index cdd66bfdf855..60f09d3ebb3d 100644
-> --- a/include/linux/memory_hotplug.h
-> +++ b/include/linux/memory_hotplug.h
-> @@ -24,17 +24,14 @@ struct vmem_altmap;
->   * node_data[nid] = kzalloc() works well. But it depends on the architecture.
->   *
->   * In general, generic_alloc_nodedata() is used.
-> - * Now, arch_free_nodedata() is just defined for error path of node_hot_add.
->   *
->   */
->  extern pg_data_t *arch_alloc_nodedata(int nid);
-> -extern void arch_free_nodedata(pg_data_t *pgdat);
->  extern void arch_refresh_nodedata(int nid, pg_data_t *pgdat);
->  
->  #else /* CONFIG_HAVE_ARCH_NODEDATA_EXTENSION */
->  
->  #define arch_alloc_nodedata(nid)	generic_alloc_nodedata(nid)
-> -#define arch_free_nodedata(pgdat)	generic_free_nodedata(pgdat)
->  
->  #ifdef CONFIG_NUMA
->  /*
-> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-> index fc991831d296..875cdc7ffa58 100644
-> --- a/mm/memory_hotplug.c
-> +++ b/mm/memory_hotplug.c
-> @@ -1217,16 +1217,6 @@ static pg_data_t __ref *hotadd_init_pgdat(int nid)
->  	return pgdat;
->  }
->  
-> -static void rollback_node_hotadd(int nid)
+> -void kfree(void *p)
 > -{
-> -	pg_data_t *pgdat = NODE_DATA(nid);
-> -
-> -	arch_refresh_nodedata(nid, NULL);
-> -	free_percpu(pgdat->per_cpu_nodestats);
-> -	arch_free_nodedata(pgdat);
+> -	if (!p)
+> -		return;
+> -	uatomic_dec(&nr_allocated);
+> -	if (kmalloc_verbose)
+> -		printf("Freeing %p to malloc\n", p);
+> -	free(p);
 > -}
 > -
-> -
->  /*
->   * __try_online_node - online a node if offlined
->   * @nid: the node ID
-> -- 
-> 2.30.2
-> 
+>  struct kmem_cache *
+>  kmem_cache_create(const char *name, unsigned int size, unsigned int align,
+>  		unsigned int flags, void (*ctor)(void *))
 
--- 
-Sincerely yours,
-Mike.
+I don't think it makes much sense to move kmalloc() and not to move
+the kmem_cache* functions.  They're all provided by slab in the kernel
+proper, so while you don't use them, I think keeping all the memory
+allocation functions together is preferable.
