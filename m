@@ -2,91 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFBBC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 07:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 782D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 07:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237221AbiA0HQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 02:16:47 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53462 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237229AbiA0HQn (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 02:16:43 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2C446199A;
-        Thu, 27 Jan 2022 07:16:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA7F1C340E4;
-        Thu, 27 Jan 2022 07:16:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643267802;
-        bh=aQTabdo3x60SROvtozm0EwIIrGbHYLocFPhck/zO6Jc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WslhGgR2y00UODDn5KbT/IGStk9Xi80kxmJs6CULbXBHErlwVoZ7CxofUHxur9+a3
-         DHiPmbq4wV0grNLjMnn9mIp7lLUTOHp+0r9W91wAXZiYMCCREJ8SwPHxKSRd4ZrCrQ
-         bcGYE3MZnnGdbkk5TVE9Q6qs6Kr/Ekj9HZlRRRXQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        linux-mmc@vger.kernel.org, stable <stable@vger.kernel.org>,
-        whitehat002 <hackyzh002@gmail.com>
-Subject: [PATCH v2] moxart: fix potential use-after-free on remove path
-Date:   Thu, 27 Jan 2022 08:16:38 +0100
-Message-Id: <20220127071638.4057899-1-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.0
+        id S237228AbiA0HQv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 02:16:51 -0500
+Received: from smtpbgjp3.qq.com ([54.92.39.34]:36214 "EHLO smtpbgjp3.qq.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237227AbiA0HQu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 02:16:50 -0500
+X-QQ-mid: bizesmtp14t1643267787tzf13wi9
+Received: from localhost.localdomain (unknown [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 27 Jan 2022 15:16:21 +0800 (CST)
+X-QQ-SSF: 0140000000000090E000000A0000000
+X-QQ-FEAT: G+mSt178IQrJBHnxSZvES1j4qrJ+NGxhGYzW1xWPkjrC+2mDO3yDXx/OatzsP
+        rpFzB65yG8K96v0yHlz7OjzrsifQuZypfOFE97MwElGHAOZfXtaTHS8Xk9qSdTwdMHglGcc
+        KwGEsDeoLtsqRuXZmiZTAhYXd6OmLxYWE3nXl3F3GUkheEWU+3pT8lTLOb6ZbEGcjip0s9W
+        wptkp1q5CCd+dQFm3sqPY1mEXI5Ub+PYrKgz7o6yLT8dYGsw9+FPgaUosi2PwpxHUMO8AsS
+        pHImjPHS9H89Odjs5YU72qQIfj9AJF3TPMsqZK/D3POE43nPF3Vjz2Y5lI/Kjdr8aQjpk3V
+        AqMiae0vKwzi1j1E6OHUmCO4NLI9g==
+X-QQ-GoodBg: 1
+From:   tangmeng <tangmeng@uniontech.com>
+To:     Peter.Chen@nxp.com, gregkh@linuxfoundation.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     tangmeng <tangmeng@uniontech.com>
+Subject: [PATCH] usb: udc: Fix typo in comment
+Date:   Thu, 27 Jan 2022 15:16:19 +0800
+Message-Id: <20220127071619.31812-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1450; h=from:subject; bh=aQTabdo3x60SROvtozm0EwIIrGbHYLocFPhck/zO6Jc=; b=owGbwMvMwCRo6H6F97bub03G02pJDImf3C5bhW/+b7q/OKvoGUODesuaq7cvrl4U9jPYmsNCJMmX U+1sRywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAEwkXYRhvt9Vjf2/Le8uWS7Xtufs8t mijtYPHjHMr+t7NvNmU4BmRegqrqCUheXJBS1NAA==
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign2
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It was reported that the mmc host structure could be accessed after it
-was freed in moxart_remove(), so fix this by saving the base register of
-the device and using it instead of the pointer dereference.
+Replace disbale with disable
 
-Cc: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Cc: Xin Xiong <xiongx18@fudan.edu.cn>
-Cc: Xin Tan <tanxin.ctf@gmail.com>
-Cc: Tony Lindgren <tony@atomide.com>
-Cc: Yang Li <yang.lee@linux.alibaba.com>
-Cc: linux-mmc@vger.kernel.org
-Cc: stable <stable@vger.kernel.org>
-Reported-by: whitehat002 <hackyzh002@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: tangmeng <tangmeng@uniontech.com>
 ---
-v2: changed to only move mmc_free_host() call as per Ulf's request
-
- drivers/mmc/host/moxart-mmc.c | 2 +-
+ drivers/usb/chipidea/udc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/moxart-mmc.c b/drivers/mmc/host/moxart-mmc.c
-index 16d1c7a43d33..b6eb75f4bbfc 100644
---- a/drivers/mmc/host/moxart-mmc.c
-+++ b/drivers/mmc/host/moxart-mmc.c
-@@ -705,12 +705,12 @@ static int moxart_remove(struct platform_device *pdev)
- 	if (!IS_ERR_OR_NULL(host->dma_chan_rx))
- 		dma_release_channel(host->dma_chan_rx);
- 	mmc_remove_host(mmc);
--	mmc_free_host(mmc);
- 
- 	writel(0, host->base + REG_INTERRUPT_MASK);
- 	writel(0, host->base + REG_POWER_CONTROL);
- 	writel(readl(host->base + REG_CLOCK_CONTROL) | CLK_OFF,
- 	       host->base + REG_CLOCK_CONTROL);
-+	mmc_free_host(mmc);
- 
- 	return 0;
- }
+diff --git a/drivers/usb/chipidea/udc.c b/drivers/usb/chipidea/udc.c
+index f9ca5010f65b..dc6c96e04bcf 100644
+--- a/drivers/usb/chipidea/udc.c
++++ b/drivers/usb/chipidea/udc.c
+@@ -2152,7 +2152,7 @@ static void udc_id_switch_for_host(struct ci_hdrc *ci)
+ {
+ 	/*
+ 	 * host doesn't care B_SESSION_VALID event
+-	 * so clear and disbale BSV irq
++	 * so clear and disable BSV irq
+ 	 */
+ 	if (ci->is_otg)
+ 		hw_write_otgsc(ci, OTGSC_BSVIE | OTGSC_BSVIS, OTGSC_BSVIS);
 -- 
-2.35.0
+2.20.1
+
+
 
