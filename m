@@ -2,240 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21940C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B517C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244060AbiA0Qlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 11:41:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
+        id S243951AbiA0Qmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 11:42:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243924AbiA0Qlo (ORCPT
+        with ESMTP id S231918AbiA0Qmx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 11:41:44 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C1FC06173B
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 08:41:44 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Thu, 27 Jan 2022 11:42:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9785CC061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 08:42:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id CEE05223F7;
-        Thu, 27 Jan 2022 17:41:42 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1643301702;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=t+OnNgeK+rVH8xs/1ISiBYCo+CfY2rbiof36ukWZZ40=;
-        b=uxBfDXV26Ep7vtF+pq7UItlkQEwAHK9zFK6BMAzWu16ONFvKMKw79t+uLSjtLPdWW4pQts
-        +NZNWFoLPUndmMhxfHh40At6hKDBB9koFjdVfc2DaZ+lRg67KDDAwh151tTWSb+1/nyFz2
-        NuEX9T6YWCyPbj/5NlK4uCmFjR3MmoU=
-From:   Michael Walle <michael@walle.cc>
-To:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Li Yang <leoyang.li@nxp.com>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Sudeep Holla <Sudeep.Holla@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>, Michael Walle <michael@walle.cc>
-Subject: [PATCH v1 6/7] soc: fsl: guts: drop platform driver
-Date:   Thu, 27 Jan 2022 17:41:24 +0100
-Message-Id: <20220127164125.3651285-7-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220127164125.3651285-1-michael@walle.cc>
-References: <20220127164125.3651285-1-michael@walle.cc>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 303F461920
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 16:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5836AC340E4;
+        Thu, 27 Jan 2022 16:42:51 +0000 (UTC)
+Date:   Thu, 27 Jan 2022 11:42:49 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Yinan Liu <yinan@linux.alibaba.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sachin Sant <sachinp@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] ftrace: Have architectures opt-in for mcount build time
+ sorting
+Message-ID: <20220127114249.03b1b52b@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This driver cannot be unloaded and it will be needed very early in the
-boot process because other driver (weakly) depend on it (eg. for chip
-errata handling). Drop all the platform driver and devres stuff and
-simply make it a core_initcall.
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+First S390 complained that the sorting of the mcount sections at build
+time caused the kernel to crash on their architecture. Now PowerPC is
+complaining about it too. And also ARM64 appears to be having issues.
+
+It may be necessary to also update the relocation table for the values
+in the mcount table. Not only do we have to sort the table, but also
+update the relocations that may be applied to the items in the table.
+
+If the system is not relocatable, then it is fine to sort, but if it is,
+some architectures may have issues (although x86 does not as it shifts all
+addresses the same).
+
+Add a HAVE_BUILDTIME_MCOUNT_SORT that an architecture can set to say it is
+safe to do the sorting at build time.
+
+Also update the config to compile in build time sorting in the sorttable
+code in scripts/ to depend on CONFIG_BUILDTIME_MCOUNT_SORT.
+
+Link: https://lore.kernel.org/all/944D10DA-8200-4BA9-8D0A-3BED9AA99F82@linux.ibm.com/
+
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Yinan Liu <yinan@linux.alibaba.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: linuxppc-dev@lists.ozlabs.org
+Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+Fixes: 72b3942a173c ("scripts: ftrace - move the sort-processing in ftrace_init")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- drivers/soc/fsl/guts.c | 127 +++++++++++++++++++++--------------------
- 1 file changed, 65 insertions(+), 62 deletions(-)
+ arch/arm/Kconfig     | 1 +
+ arch/x86/Kconfig     | 1 +
+ kernel/trace/Kconfig | 8 +++++++-
+ scripts/Makefile     | 2 +-
+ 4 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
-index 04c3eb6a6e17..be961a9193f4 100644
---- a/drivers/soc/fsl/guts.c
-+++ b/drivers/soc/fsl/guts.c
-@@ -110,19 +110,55 @@ static const struct fsl_soc_die_attr *fsl_soc_die_match(
- 	return NULL;
- }
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index c2724d986fa0..5256ebe57451 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -82,6 +82,7 @@ config ARM
+ 	select HAVE_EBPF_JIT if !CPU_ENDIAN_BE32
+ 	select HAVE_CONTEXT_TRACKING
+ 	select HAVE_C_RECORDMCOUNT
++	select HAVE_BUILDTIME_MCOUNT_SORT
+ 	select HAVE_DEBUG_KMEMLEAK if !XIP_KERNEL
+ 	select HAVE_DMA_CONTIGUOUS if MMU
+ 	select HAVE_DYNAMIC_FTRACE if !XIP_KERNEL && !CPU_ENDIAN_BE32 && MMU
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 7399327d1eff..46080dea5dba 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -186,6 +186,7 @@ config X86
+ 	select HAVE_CONTEXT_TRACKING_OFFSTACK	if HAVE_CONTEXT_TRACKING
+ 	select HAVE_C_RECORDMCOUNT
+ 	select HAVE_OBJTOOL_MCOUNT		if STACK_VALIDATION
++	select HAVE_BUILDTIME_MCOUNT_SORT
+ 	select HAVE_DEBUG_KMEMLEAK
+ 	select HAVE_DMA_CONTIGUOUS
+ 	select HAVE_DYNAMIC_FTRACE
+diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
+index 752ed89a293b..7e5b92090faa 100644
+--- a/kernel/trace/Kconfig
++++ b/kernel/trace/Kconfig
+@@ -70,10 +70,16 @@ config HAVE_C_RECORDMCOUNT
+ 	help
+ 	  C version of recordmcount available?
  
--static int fsl_guts_probe(struct platform_device *pdev)
-+/*
-+ * Table for matching compatible strings, for device tree
-+ * guts node, for Freescale QorIQ SOCs.
-+ */
-+static const struct of_device_id fsl_guts_of_match[] = {
-+	{ .compatible = "fsl,qoriq-device-config-1.0", },
-+	{ .compatible = "fsl,qoriq-device-config-2.0", },
-+	{ .compatible = "fsl,p1010-guts", },
-+	{ .compatible = "fsl,p1020-guts", },
-+	{ .compatible = "fsl,p1021-guts", },
-+	{ .compatible = "fsl,p1022-guts", },
-+	{ .compatible = "fsl,p1023-guts", },
-+	{ .compatible = "fsl,p2020-guts", },
-+	{ .compatible = "fsl,bsc9131-guts", },
-+	{ .compatible = "fsl,bsc9132-guts", },
-+	{ .compatible = "fsl,mpc8536-guts", },
-+	{ .compatible = "fsl,mpc8544-guts", },
-+	{ .compatible = "fsl,mpc8548-guts", },
-+	{ .compatible = "fsl,mpc8568-guts", },
-+	{ .compatible = "fsl,mpc8569-guts", },
-+	{ .compatible = "fsl,mpc8572-guts", },
-+	{ .compatible = "fsl,ls1021a-dcfg", },
-+	{ .compatible = "fsl,ls1043a-dcfg", },
-+	{ .compatible = "fsl,ls2080a-dcfg", },
-+	{ .compatible = "fsl,ls1088a-dcfg", },
-+	{ .compatible = "fsl,ls1012a-dcfg", },
-+	{ .compatible = "fsl,ls1046a-dcfg", },
-+	{ .compatible = "fsl,lx2160a-dcfg", },
-+	{ .compatible = "fsl,ls1028a-dcfg", },
-+	{}
-+};
++config HAVE_BUILDTIME_MCOUNT_SORT
++       bool
++       help
++         An architecture selects this if it sorts the mcount_loc section
++	 at build time.
 +
-+static int __init fsl_guts_init(void)
- {
--	struct device_node *np = pdev->dev.of_node;
- 	struct soc_device_attribute *soc_dev_attr;
- 	static struct soc_device *soc_dev;
--	struct device *dev = &pdev->dev;
- 	const struct fsl_soc_die_attr *soc_die;
- 	struct ccsr_guts __iomem *regs;
- 	const char *machine = NULL;
-+	struct device_node *np;
- 	bool little_endian;
- 	u32 svr;
-+	int ret;
+ config BUILDTIME_MCOUNT_SORT
+        bool
+        default y
+-       depends on BUILDTIME_TABLE_SORT && !S390
++       depends on HAVE_BUILDTIME_MCOUNT_SORT
+        help
+          Sort the mcount_loc section at build time.
  
--	soc_dev_attr = devm_kzalloc(dev, sizeof(*soc_dev_attr), GFP_KERNEL);
-+	np = of_find_matching_node_and_match(NULL, fsl_guts_of_match, NULL);
-+	if (!np)
-+		return 0;
-+
-+	soc_dev_attr = kzalloc(sizeof(*soc_dev_attr), GFP_KERNEL);
- 	if (!soc_dev_attr)
- 		return -ENOMEM;
+diff --git a/scripts/Makefile b/scripts/Makefile
+index b082d2f93357..cedc1f0e21d8 100644
+--- a/scripts/Makefile
++++ b/scripts/Makefile
+@@ -32,7 +32,7 @@ HOSTCFLAGS_sorttable.o += -I$(srctree)/tools/arch/x86/include
+ HOSTCFLAGS_sorttable.o += -DUNWINDER_ORC_ENABLED
+ endif
  
-@@ -138,87 +174,54 @@ static int fsl_guts_probe(struct platform_device *pdev)
- 		svr = ioread32be(&regs->svr);
- 	iounmap(regs);
+-ifdef CONFIG_DYNAMIC_FTRACE
++ifdef CONFIG_BUILDTIME_MCOUNT_SORT
+ HOSTCFLAGS_sorttable.o += -DMCOUNT_SORT_ENABLED
+ endif
  
--	/* Register soc device */
- 	if (of_property_read_string(of_root, "model", &machine))
- 		of_property_read_string_index(of_root, "compatible", 0, &machine);
- 	if (machine) {
--		soc_dev_attr->machine = devm_kstrdup(dev, machine, GFP_KERNEL);
-+		soc_dev_attr->machine = kstrdup(machine, GFP_KERNEL);
- 		if (!soc_dev_attr->machine)
- 			return -ENOMEM;
- 	}
- 
- 	soc_die = fsl_soc_die_match(svr, fsl_soc_die);
- 	if (soc_die) {
--		soc_dev_attr->family = devm_kasprintf(dev, GFP_KERNEL,
--						      "QorIQ %s", soc_die->die);
-+		soc_dev_attr->family = kasprintf(GFP_KERNEL, "QorIQ %s",
-+						 soc_die->die);
- 	} else {
--		soc_dev_attr->family = devm_kasprintf(dev, GFP_KERNEL, "QorIQ");
-+		soc_dev_attr->family = kasprintf(GFP_KERNEL, "QorIQ");
- 	}
- 	if (!soc_dev_attr->family)
--		return -ENOMEM;
--	soc_dev_attr->soc_id = devm_kasprintf(dev, GFP_KERNEL,
--					     "svr:0x%08x", svr);
-+		goto err_nomem;
-+
-+	soc_dev_attr->soc_id = kasprintf(GFP_KERNEL, "svr:0x%08x", svr);
- 	if (!soc_dev_attr->soc_id)
--		return -ENOMEM;
--	soc_dev_attr->revision = devm_kasprintf(dev, GFP_KERNEL, "%d.%d",
--					       (svr >>  4) & 0xf, svr & 0xf);
-+		goto err_nomem;
-+
-+	soc_dev_attr->revision = kasprintf(GFP_KERNEL, "%d.%d",
-+					   (svr >>  4) & 0xf, svr & 0xf);
- 	if (!soc_dev_attr->revision)
--		return -ENOMEM;
-+		goto err_nomem;
- 
- 	soc_dev = soc_device_register(soc_dev_attr);
--	if (IS_ERR(soc_dev))
--		return PTR_ERR(soc_dev);
-+	if (IS_ERR(soc_dev)) {
-+		ret = PTR_ERR(soc_dev);
-+		goto err;
-+	}
- 
- 	pr_info("Machine: %s\n", soc_dev_attr->machine);
- 	pr_info("SoC family: %s\n", soc_dev_attr->family);
- 	pr_info("SoC ID: %s, Revision: %s\n",
- 		soc_dev_attr->soc_id, soc_dev_attr->revision);
--	return 0;
--}
- 
--/*
-- * Table for matching compatible strings, for device tree
-- * guts node, for Freescale QorIQ SOCs.
-- */
--static const struct of_device_id fsl_guts_of_match[] = {
--	{ .compatible = "fsl,qoriq-device-config-1.0", },
--	{ .compatible = "fsl,qoriq-device-config-2.0", },
--	{ .compatible = "fsl,p1010-guts", },
--	{ .compatible = "fsl,p1020-guts", },
--	{ .compatible = "fsl,p1021-guts", },
--	{ .compatible = "fsl,p1022-guts", },
--	{ .compatible = "fsl,p1023-guts", },
--	{ .compatible = "fsl,p2020-guts", },
--	{ .compatible = "fsl,bsc9131-guts", },
--	{ .compatible = "fsl,bsc9132-guts", },
--	{ .compatible = "fsl,mpc8536-guts", },
--	{ .compatible = "fsl,mpc8544-guts", },
--	{ .compatible = "fsl,mpc8548-guts", },
--	{ .compatible = "fsl,mpc8568-guts", },
--	{ .compatible = "fsl,mpc8569-guts", },
--	{ .compatible = "fsl,mpc8572-guts", },
--	{ .compatible = "fsl,ls1021a-dcfg", },
--	{ .compatible = "fsl,ls1043a-dcfg", },
--	{ .compatible = "fsl,ls2080a-dcfg", },
--	{ .compatible = "fsl,ls1088a-dcfg", },
--	{ .compatible = "fsl,ls1012a-dcfg", },
--	{ .compatible = "fsl,ls1046a-dcfg", },
--	{ .compatible = "fsl,lx2160a-dcfg", },
--	{ .compatible = "fsl,ls1028a-dcfg", },
--	{}
--};
--MODULE_DEVICE_TABLE(of, fsl_guts_of_match);
-+	return 0;
- 
--static struct platform_driver fsl_guts_driver = {
--	.driver = {
--		.name = "fsl-guts",
--		.of_match_table = fsl_guts_of_match,
--	},
--	.probe = fsl_guts_probe,
--};
-+err_nomem:
-+	ret = -ENOMEM;
-+err:
-+	kfree(soc_dev_attr->machine);
-+	kfree(soc_dev_attr->family);
-+	kfree(soc_dev_attr->soc_id);
-+	kfree(soc_dev_attr->revision);
- 
--static int __init fsl_guts_init(void)
--{
--	return platform_driver_register(&fsl_guts_driver);
-+	return ret;
- }
- core_initcall(fsl_guts_init);
 -- 
-2.30.2
+2.33.0
 
