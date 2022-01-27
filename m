@@ -2,115 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B72F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 885C1C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243353AbiA0QCi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 11:02:38 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4529 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243346AbiA0QCc (ORCPT
+        id S243377AbiA0QCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 11:02:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:38531 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243363AbiA0QCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 11:02:32 -0500
-Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jl5231lyPz6H8Xr;
-        Fri, 28 Jan 2022 00:02:03 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Thu, 27 Jan 2022 17:02:28 +0100
-Received: from [10.47.26.192] (10.47.26.192) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 27 Jan
- 2022 16:02:27 +0000
-Subject: Re: [PATCH 06/16] scsi: libsas: Add sas_task.tmf
-To:     "chenxiang (M)" <chenxiang66@hisilicon.com>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "artur.paszkiewicz@intel.com" <artur.paszkiewicz@intel.com>,
-        "jinpu.wang@cloud.ionos.com" <jinpu.wang@cloud.ionos.com>,
-        "Ajish.Koshy@microchip.com" <Ajish.Koshy@microchip.com>
-CC:     yanaijie <yanaijie@huawei.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        Linuxarm <linuxarm@huawei.com>,
-        "liuqi (BA)" <liuqi115@huawei.com>,
-        "Viswas.G@microchip.com" <Viswas.G@microchip.com>,
-        "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>
-References: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
- <1643110372-85470-7-git-send-email-john.garry@huawei.com>
- <e349aedb-71ad-8bf2-d3c3-920a83a56eae@hisilicon.com>
-From:   John Garry <john.garry@huawei.com>
-Message-ID: <6b31c696-9808-764b-489b-4d2de91051b9@huawei.com>
-Date:   Thu, 27 Jan 2022 16:01:52 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        Thu, 27 Jan 2022 11:02:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643299356;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=7FQTIiP8uSrPA9XLCevbyqcBlL979Xzr6Ul1VbrIeY0=;
+        b=L6kpnRkh4ktHRvbqOuYy4DoO9vPDuHPrPqDlyUCUywmALAeD2UtK+9w0LRfFgNKHaQMoYl
+        QHV9038oUpsm1GulfFsiIUGWk2a/tY4WUHF0y9G+65ii6Z49O446rfAC55Onq1IE2a6haf
+        HiAfOqal96xRJroe9UBdmte2RGlp44Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-635-mChErr9KNs2aQ2tmLAhjmw-1; Thu, 27 Jan 2022 11:02:30 -0500
+X-MC-Unique: mChErr9KNs2aQ2tmLAhjmw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C97951091DA4;
+        Thu, 27 Jan 2022 16:02:28 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 99021838C4;
+        Thu, 27 Jan 2022 16:01:42 +0000 (UTC)
+Subject: [PATCH 0/4] cifs: Use fscache I/O again after the rewrite disabled it
+From:   David Howells <dhowells@redhat.com>
+To:     Steve French <smfrench@gmail.com>
+Cc:     Shyam Prasad N <nspmangalore@gmail.com>,
+        linux-cifs@vger.kernel.org, linux-cachefs@redhat.com,
+        Jeff Layton <jlayton@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>, dhowells@redhat.com,
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-cifs@vger.kernel.org, linux-cachefs@redhat.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 27 Jan 2022 16:01:41 +0000
+Message-ID: <164329930161.843658.7387773437540491743.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-In-Reply-To: <e349aedb-71ad-8bf2-d3c3-920a83a56eae@hisilicon.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.26.192]
-X-ClientProxiedBy: lhreml713-chm.china.huawei.com (10.201.108.64) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/01/2022 12:55, chenxiang (M) wrote:
->> -	slot->tmf = tmf;
->> -	slot->is_internal = tmf;
-> In kernel 5.17-rc1(with above two lines on), it seems there is a issue
-> for ata disk reset command as tmf = null while it is internal command.
 
-ok, thanks for the notice. Would this fix it:
+Hi Steve,
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c 
-b/drivers/scsi/hisi_sas/hisi_sas_main.c
-index a05ec7aece5a..0e12c9329ee5 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_main.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
-@@ -427,8 +427,6 @@ void hisi_sas_task_deliver(struct hisi_hba *hisi_hba,
-  	cmd_hdr_base = hisi_hba->cmd_hdr[dlvry_queue];
-  	slot->cmd_hdr = &cmd_hdr_base[dlvry_queue_slot];
+Here are some patches to make cifs actually do I/O to the cache after it
+got disabled in the fscache rewrite[1] plus a warning fix that you might
+want to detach and take separately:
 
--	slot->tmf = tmf;
--	slot->is_internal = tmf;
-  	task->lldd_task = slot;
+ (1) Fix a kernel doc warning.
 
-  	memset(slot->cmd_hdr, 0, sizeof(struct hisi_sas_cmd_hdr));
-@@ -1380,12 +1378,13 @@ static int hisi_sas_softreset_ata_disk(struct 
-domain_device *device)
-  	struct hisi_hba *hisi_hba = dev_to_hisi_hba(device);
-  	struct device *dev = hisi_hba->dev;
-  	int s = sizeof(struct host_to_dev_fis);
-+	struct hisi_sas_tmf_task tmf = {};
+ (2) Change cifs from using ->readpages() to using ->readahead().
 
-  	ata_for_each_link(link, ap, EDGE) {
-  		int pmp = sata_srst_pmp(link);
+ (3) Provide a netfs cache op to query for the presence of data in the
+     cache.[*]
 
-  		hisi_sas_fill_ata_reset_cmd(link->device, 1, pmp, fis);
--		rc = hisi_sas_exec_internal_tmf_task(device, fis, s, NULL);
-+		rc = hisi_sas_exec_internal_tmf_task(device, fis, s, &tmf);
-  		if (rc != TMF_RESP_FUNC_COMPLETE)
-  			break;
-  	}
-@@ -1396,7 +1395,7 @@ static int hisi_sas_softreset_ata_disk(struct 
-domain_device *device)
+ (4) Make ->readahead() call
 
-  			hisi_sas_fill_ata_reset_cmd(link->device, 0, pmp, fis);
-  			rc = hisi_sas_exec_internal_tmf_task(device, fis,
--							     s, NULL);
-+							     s, &tmf);
-  			if (rc != TMF_RESP_FUNC_COMPLETE)
-  				dev_err(dev, "ata disk %016llx de-reset failed\n",
-  					SAS_ADDR(device->sas_addr));
+The patches can be found here also:
 
-> 
->>    	task->lldd_task = slot;
->>    
+	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=fscache-rewrite
 
+David
+
+[*] Ideally, we would use the netfslib read helpers, but it's probably better
+    to roll iterators down into cifs's I/O layer before doing that[2].
+
+Link: https://lore.kernel.org/r/164021479106.640689.17404516570194656552.stgit@warthog.procyon.org.uk/ [1]
+Link: https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=cifs-experimental [2]
+
+---
+David Howells (4):
+      Fix a warning about a malformed kernel doc comment in cifs by removing the
+      cifs: Transition from ->readpages() to ->readahead()
+      netfs, cachefiles: Add a method to query presence of data in the cache
+      cifs: Implement cache I/O by accessing the cache directly
+
+
+ Documentation/filesystems/netfs_library.rst |  16 ++
+ fs/cachefiles/io.c                          |  59 ++++++
+ fs/cifs/connect.c                           |   2 +-
+ fs/cifs/file.c                              | 221 ++++++++------------
+ fs/cifs/fscache.c                           | 126 +++++++++--
+ fs/cifs/fscache.h                           |  79 ++++---
+ include/linux/netfs.h                       |   7 +
+ 7 files changed, 322 insertions(+), 188 deletions(-)
 
 
