@@ -2,155 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E239CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A09D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235266AbiA0KXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 05:23:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47322 "EHLO
+        id S239307AbiA0KX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 05:23:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239489AbiA0KW2 (ORCPT
+        with ESMTP id S235148AbiA0KXz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 05:22:28 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FC2C061769
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 02:22:15 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 901F51EC053C;
-        Thu, 27 Jan 2022 11:22:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1643278929;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oX1Ujj3Hq6Ixhsq/96M+Xpp/rbNY1TXsGRzT8a9NeUY=;
-        b=JdpXMGqVtmel7Gn7TfU9zyN0KQuq2M3e3EBUcJnG9tPoxmA8HTzKgG8Fd9HpRfNmcGNary
-        TcsoPTg1n/I7+D3OOODyw+44oYG3M7YJRsOSrjD4GyID/g2tK6acT81yxyRWNpj3fVSm//
-        GTApE7Cq5qDq+HHPHB9xPY8KcjY9+lI=
-Date:   Thu, 27 Jan 2022 11:22:03 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Tony Luck <tony.luck@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Smita Koralahalli Channabasappa 
-        <smita.koralahallichannabasappa@amd.com>,
-        Wei Huang <wei.huang2@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>, patches@lists.linux.dev
-Subject: Re: [PATCH v2 2/6] x86/cpu: Merge Intel and AMD ppin_init() functions
-Message-ID: <YfJyS6/zXGIoasGO@zn.tnic>
-References: <20220107225442.1690165-1-tony.luck@intel.com>
- <20220121174743.1875294-1-tony.luck@intel.com>
- <20220121174743.1875294-3-tony.luck@intel.com>
+        Thu, 27 Jan 2022 05:23:55 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E8EC061714;
+        Thu, 27 Jan 2022 02:23:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=tO3f02ts2YlcPemnxbo1VzRovN
+        Y6kHaZ144AuZsAbBDg6oDYFJ7McgsfZTddPzKH8w8ot90QzTOaK8zPl2XtpORk0ui3x93g8dpLxzk
+        a/+RYlNm224xbedEFybWrEdgfbfC7PTltSxGxknO2GctiboNPDPGHG0ULN63yZpsJUnEIP/D/Kc9L
+        oH2tvodOdlaIPIKWwZ6wtRFI6nWKLAjkl0/OkENMb0YXhmg1h50axsDFZ9B0EG/XJ4zfB32MKGuUJ
+        Ya7Zedg9puoDiXHQcVsfuueR0GVd8knjfzz2zvNOxBpYyLH4XOSUJs4Ozs26XBi81dmarkBZSQFAv
+        G1Oj9DvQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nD1wQ-00F8m1-Cc; Thu, 27 Jan 2022 10:23:46 +0000
+Date:   Thu, 27 Jan 2022 02:23:46 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     John Garry <john.garry@huawei.com>
+Cc:     jejb@linux.ibm.com, martin.petersen@oracle.com,
+        artur.paszkiewicz@intel.com, jinpu.wang@cloud.ionos.com,
+        chenxiang66@hisilicon.com, Ajish.Koshy@microchip.com,
+        yanaijie@huawei.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linuxarm@huawei.com, liuqi115@huawei.com, Viswas.G@microchip.com,
+        damien.lemoal@opensource.wdc.com
+Subject: Re: [PATCH 07/16] scsi: libsas: Add sas_execute_tmf()
+Message-ID: <YfJysr3zhhGEDMqR@infradead.org>
+References: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
+ <1643110372-85470-8-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220121174743.1875294-3-tony.luck@intel.com>
+In-Reply-To: <1643110372-85470-8-git-send-email-john.garry@huawei.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 09:47:39AM -0800, Tony Luck wrote:
-> diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-> index 7b8382c11788..b7700a47eadd 100644
-> --- a/arch/x86/kernel/cpu/common.c
-> +++ b/arch/x86/kernel/cpu/common.c
-> @@ -88,6 +88,80 @@ EXPORT_SYMBOL_GPL(get_llc_id);
->  /* L2 cache ID of each logical CPU */
->  DEFINE_PER_CPU_READ_MOSTLY(u16, cpu_l2c_id) = BAD_APICID;
->  
-> +static struct ppin_info {
-> +	int	feature;
-> +	int	msr_ppin_ctl;
-> +} ppin_info[] = {
-> +	[X86_VENDOR_INTEL] = {
-> +		.feature = X86_FEATURE_INTEL_PPIN,
-> +		.msr_ppin_ctl = MSR_PPIN_CTL,
-> +		.msr_ppin = MSR_PPIN
-> +	},
-> +	[X86_VENDOR_AMD] = {
-> +		.feature = X86_FEATURE_AMD_PPIN,
-> +		.msr_ppin_ctl = MSR_AMD_PPIN_CTL,
-> +		.msr_ppin = MSR_AMD_PPIN
-		^^^^^^^^^
+Looks good,
 
-You forgot to rebuild after removing that guy here in the struct
-definition. I'll fix it up now so that I can continue going through them
-but pls fix in the next submission so that all patches build separately.
-
-Thx.
-
-arch/x86/kernel/cpu/common.c:98:4: error: ‘struct ppin_info’ has no member named ‘msr_ppin’; did you mean ‘msr_ppin_ctl’?
-   98 |   .msr_ppin = MSR_PPIN
-      |    ^~~~~~~~
-      |    msr_ppin_ctl
-In file included from ./arch/x86/include/asm/msr.h:5,
-                 from ./arch/x86/include/asm/processor.h:22,
-                 from ./arch/x86/include/asm/cpufeature.h:5,
-                 from ./arch/x86/include/asm/thread_info.h:53,
-                 from ./include/linux/thread_info.h:60,
-                 from ./arch/x86/include/asm/preempt.h:7,
-                 from ./include/linux/preempt.h:78,
-                 from ./include/linux/spinlock.h:55,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:6,
-                 from ./include/linux/mm.h:10,
-                 from ./include/linux/memblock.h:12,
-                 from arch/x86/kernel/cpu/common.c:5:
-./arch/x86/include/asm/msr-index.h:59:20: warning: excess elements in struct initializer
-   59 | #define MSR_PPIN   0x0000004f
-      |                    ^~~~~~~~~~
-arch/x86/kernel/cpu/common.c:98:15: note: in expansion of macro ‘MSR_PPIN’
-   98 |   .msr_ppin = MSR_PPIN
-      |               ^~~~~~~~
-./arch/x86/include/asm/msr-index.h:59:20: note: (near initialization for ‘ppin_info[0]’)
-   59 | #define MSR_PPIN   0x0000004f
-      |                    ^~~~~~~~~~
-arch/x86/kernel/cpu/common.c:98:15: note: in expansion of macro ‘MSR_PPIN’
-   98 |   .msr_ppin = MSR_PPIN
-      |               ^~~~~~~~
-arch/x86/kernel/cpu/common.c:103:4: error: ‘struct ppin_info’ has no member named ‘msr_ppin’; did you mean ‘msr_ppin_ctl’?
-  103 |   .msr_ppin = MSR_AMD_PPIN
-      |    ^~~~~~~~
-      |    msr_ppin_ctl
-In file included from ./arch/x86/include/asm/msr.h:5,
-                 from ./arch/x86/include/asm/processor.h:22,
-                 from ./arch/x86/include/asm/cpufeature.h:5,
-                 from ./arch/x86/include/asm/thread_info.h:53,
-                 from ./include/linux/thread_info.h:60,
-                 from ./arch/x86/include/asm/preempt.h:7,
-                 from ./include/linux/preempt.h:78,
-                 from ./include/linux/spinlock.h:55,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:6,
-                 from ./include/linux/mm.h:10,
-                 from ./include/linux/memblock.h:12,
-                 from arch/x86/kernel/cpu/common.c:5:
-./arch/x86/include/asm/msr-index.h:455:24: warning: excess elements in struct initializer
-  455 | #define MSR_AMD_PPIN   0xc00102f1
-      |                        ^~~~~~~~~~
-arch/x86/kernel/cpu/common.c:103:15: note: in expansion of macro ‘MSR_AMD_PPIN’
-  103 |   .msr_ppin = MSR_AMD_PPIN
-      |               ^~~~~~~~~~~~
-./arch/x86/include/asm/msr-index.h:455:24: note: (near initialization for ‘ppin_info[2]’)
-  455 | #define MSR_AMD_PPIN   0xc00102f1
-      |                        ^~~~~~~~~~
-arch/x86/kernel/cpu/common.c:103:15: note: in expansion of macro ‘MSR_AMD_PPIN’
-  103 |   .msr_ppin = MSR_AMD_PPIN
-      |               ^~~~~~~~~~~~
-make[3]: *** [scripts/Makefile.build:288: arch/x86/kernel/cpu/common.o] Error 1
-make[3]: *** Waiting for unfinished jobs....
-make[2]: *** [scripts/Makefile.build:550: arch/x86/kernel/cpu] Error 2
-make[1]: *** [scripts/Makefile.build:550: arch/x86/kernel] Error 2
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1831: arch/x86] Error 2
-make: *** Waiting for unfinished jobs....
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Reviewed-by: Christoph Hellwig <hch@lst.de>
