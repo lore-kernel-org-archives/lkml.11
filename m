@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 345D9C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 01:59:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A9CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 01:59:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234806AbiA0B7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 20:59:24 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:41500 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S234687AbiA0B7K (ORCPT
+        id S234881AbiA0B71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 20:59:27 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:47510 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234831AbiA0B7M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 20:59:10 -0500
-X-UUID: 186c714561cb433a939c0ea94fac20f3-20220127
-X-UUID: 186c714561cb433a939c0ea94fac20f3-20220127
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        Wed, 26 Jan 2022 20:59:12 -0500
+X-UUID: ce175f520511464798346547ed2f56e7-20220127
+X-UUID: ce175f520511464798346547ed2f56e7-20220127
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1198502311; Thu, 27 Jan 2022 09:59:05 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 652676736; Thu, 27 Jan 2022 09:59:08 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 27 Jan 2022 09:59:04 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 27 Jan 2022 09:59:06 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 27 Jan 2022 09:59:03 +0800
+ Transport; Thu, 27 Jan 2022 09:59:05 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     David Miller <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -43,9 +43,9 @@ CC:     Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
         Yinghua Pan <ot_yinghua.pan@mediatek.com>,
         <srv_heupstream@mediatek.com>,
         Macpaul Lin <macpaul.lin@mediatek.com>
-Subject: [PATCH net-next v2 4/9] dt-bindings: net: mtk-star-emac: add support for MT8365
-Date:   Thu, 27 Jan 2022 09:58:52 +0800
-Message-ID: <20220127015857.9868-5-biao.huang@mediatek.com>
+Subject: [PATCH net-next v2 6/9] net: ethernet: mtk-star-emac: add timing adjustment support
+Date:   Thu, 27 Jan 2022 09:58:54 +0800
+Message-ID: <20220127015857.9868-7-biao.huang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220127015857.9868-1-biao.huang@mediatek.com>
 References: <20220127015857.9868-1-biao.huang@mediatek.com>
@@ -57,26 +57,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add binding document for Ethernet on MT8365.
+Add simple clock inversion for timing adjustment in driver.
+Add property "mediatek,txc-inverse" or "mediatek,rxc-inverse" to
+device node when necessary.
 
 Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Yinghua Pan <ot_yinghua.pan@mediatek.com>
 ---
- Documentation/devicetree/bindings/net/mediatek,star-emac.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mediatek/mtk_star_emac.c | 34 +++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-index e6a5ff208253..87a8b25b03a6 100644
---- a/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-+++ b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-@@ -23,6 +23,7 @@ properties:
-       - mediatek,mt8516-eth
-       - mediatek,mt8518-eth
-       - mediatek,mt8175-eth
-+      - mediatek,mt8365-eth
+diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+index d69f75661e75..d5e974e0db6d 100644
+--- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
++++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+@@ -131,6 +131,11 @@ static const char *const mtk_star_clk_names[] = { "core", "reg", "trans" };
+ #define MTK_STAR_REG_INT_MASK			0x0054
+ #define MTK_STAR_BIT_INT_MASK_FNRC		BIT(6)
  
-   reg:
-     maxItems: 1
++/* Delay-Macro Register */
++#define MTK_STAR_REG_TEST0			0x0058
++#define MTK_STAR_BIT_INV_RX_CLK			BIT(30)
++#define MTK_STAR_BIT_INV_TX_CLK			BIT(31)
++
+ /* Misc. Config Register */
+ #define MTK_STAR_REG_TEST1			0x005c
+ #define MTK_STAR_BIT_TEST1_RST_HASH_MBIST	BIT(31)
+@@ -268,6 +273,8 @@ struct mtk_star_priv {
+ 	int duplex;
+ 	int pause;
+ 	bool rmii_rxc;
++	bool rx_inv;
++	bool tx_inv;
+ 
+ 	const struct mtk_star_compat *compat_data;
+ 
+@@ -1450,6 +1457,25 @@ static void mtk_star_clk_disable_unprepare(void *data)
+ 	clk_bulk_disable_unprepare(MTK_STAR_NCLKS, priv->clks);
+ }
+ 
++static int mtk_star_set_timing(struct mtk_star_priv *priv)
++{
++	struct device *dev = mtk_star_get_dev(priv);
++	unsigned int delay_val = 0;
++
++	switch (priv->phy_intf) {
++	case PHY_INTERFACE_MODE_RMII:
++		delay_val |= FIELD_PREP(MTK_STAR_BIT_INV_RX_CLK, priv->rx_inv);
++		delay_val |= FIELD_PREP(MTK_STAR_BIT_INV_TX_CLK, priv->tx_inv);
++		break;
++	default:
++		dev_err(dev, "This interface not supported\n");
++		return -EINVAL;
++	}
++
++	regmap_write(priv->regs, MTK_STAR_REG_TEST0, delay_val);
++
++	return 0;
++}
+ static int mtk_star_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *of_node;
+@@ -1532,6 +1558,8 @@ static int mtk_star_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	priv->rmii_rxc = of_property_read_bool(of_node, "mediatek,rmii-rxc");
++	priv->rx_inv = of_property_read_bool(of_node, "mediatek,rxc-inverse");
++	priv->tx_inv = of_property_read_bool(of_node, "mediatek,txc-inverse");
+ 
+ 	if (priv->compat_data->set_interface_mode) {
+ 		ret = priv->compat_data->set_interface_mode(ndev);
+@@ -1541,6 +1569,12 @@ static int mtk_star_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	ret = mtk_star_set_timing(priv);
++	if (ret) {
++		dev_err(dev, "Failed to set timing, err = %d\n", ret);
++		return -EINVAL;
++	}
++
+ 	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
+ 	if (ret) {
+ 		dev_err(dev, "unsupported DMA mask\n");
 -- 
 2.25.1
 
