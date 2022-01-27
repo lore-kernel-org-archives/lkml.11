@@ -2,71 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD191C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 04:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B512C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 04:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235986AbiA0ENj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 23:13:39 -0500
-Received: from einhorn.in-berlin.de ([192.109.42.8]:40831 "EHLO
-        einhorn-mail-out.in-berlin.de" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S235900AbiA0ENi (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 23:13:38 -0500
-X-Greylist: delayed 777 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jan 2022 23:13:37 EST
-X-Envelope-From: thomas@x-berg.in-berlin.de
-Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
-        by einhorn.in-berlin.de  with ESMTPS id 20R3xugg026181
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 04:59:56 +0100
-Received: from thomas by x-berg.in-berlin.de with local (Exim 4.92)
-        (envelope-from <thomas@x-berg.in-berlin.de>)
-        id 1nCvwy-0003eu-9x; Thu, 27 Jan 2022 04:59:56 +0100
-Date:   Thu, 27 Jan 2022 04:59:56 +0100
-From:   Thomas Osterried <thomas@osterried.de>
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     jpr@f6fbb.org, davem@davemloft.net, kuba@kernel.org,
-        wang6495@umn.edu, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] yam: fix a memory leak in yam_siocdevprivate()
-Message-ID: <20220127035956.GE18529@x-berg.in-berlin.de>
-References: <20220124032954.18283-1-hbh25y@gmail.com>
+        id S235999AbiA0EQV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 23:16:21 -0500
+Received: from foss.arm.com ([217.140.110.172]:33780 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235900AbiA0EQT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 23:16:19 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C4BD31FB;
+        Wed, 26 Jan 2022 20:16:18 -0800 (PST)
+Received: from [10.163.42.218] (unknown [10.163.42.218])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 14F723F7D8;
+        Wed, 26 Jan 2022 20:16:16 -0800 (PST)
+Subject: Re: [RFC V1 01/31] mm/debug_vm_pgtable: Directly use
+ vm_get_page_prot()
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org
+References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
+ <1643029028-12710-2-git-send-email-anshuman.khandual@arm.com>
+ <YfD1Lijf+UKGBBzb@infradead.org>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <1f75e638-7b72-1c1b-c493-eb4b62dcf280@arm.com>
+Date:   Thu, 27 Jan 2022 09:46:23 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124032954.18283-1-hbh25y@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Thomas Osterried <thomas@x-berg.in-berlin.de>
+In-Reply-To: <YfD1Lijf+UKGBBzb@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-Just a comment: Looks ok for me.
 
-On Mon, Jan 24, 2022 at 11:29:54AM +0800, Hangyu Hua wrote:
-> ym needs to be free when ym->cmd != SIOCYAMSMCS.
+On 1/26/22 12:45 PM, Christoph Hellwig wrote:
+>> +	 *
+>> +	 * Protection based vm_flags combinatins are always linear
+>> +	 * and increasing i.e VM_NONE ..[VM_SHARED|READ|WRITE|EXEC].
+>>  	 */
+>> -	for (idx = 0; idx < ARRAY_SIZE(protection_map); idx++) {
+>> +	for (i = VM_NONE; i <= (VM_SHARED | VM_READ | VM_WRITE | VM_EXEC); ix++) {
+>>  		pte_basic_tests(&args, idx);
+>>  		pmd_basic_tests(&args, idx);
+>>  		pud_basic_tests(&args, idx);
 > 
-> Fixes: 0781168e23a2 ("yam: fix a missing-check bug")
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> ---
->  drivers/net/hamradio/yam.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
-> index 6376b8485976..980f2be32f05 100644
-> --- a/drivers/net/hamradio/yam.c
-> +++ b/drivers/net/hamradio/yam.c
-> @@ -950,9 +950,7 @@ static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __
->  		ym = memdup_user(data, sizeof(struct yamdrv_ioctl_mcs));
->  		if (IS_ERR(ym))
->  			return PTR_ERR(ym);
-> -		if (ym->cmd != SIOCYAMSMCS)
-> -			return -EINVAL;
-> -		if (ym->bitrate > YAM_MAXBITRATE) {
-> +		if (ym->cmd != SIOCYAMSMCS || ym->bitrate > YAM_MAXBITRATE) {
->  			kfree(ym);
->  			return -EINVAL;
->  		}
-> -- 
-> 2.25.1
-> 
+> This looks rather convoluted.  I'd prefer to add a helper for the body
+> of this loop, and then explicitly call it for all the valid
+> combinations.  Right now all are valid, so this dosn't change a thing
+> except for generating larger code due to the explicit loop unrolling,
+> but I think it is much easier to follow and maintain.
+
+IIUC, then will just keep this unchanged.
