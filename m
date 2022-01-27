@@ -2,135 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79335C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 23:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED8D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 23:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240039AbiA0XCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 18:02:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
+        id S243109AbiA0XDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 18:03:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237773AbiA0XCD (ORCPT
+        with ESMTP id S240114AbiA0XC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 18:02:03 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55851C06173B
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:02:03 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id z7so3889654ilb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:02:03 -0800 (PST)
+        Thu, 27 Jan 2022 18:02:57 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4C6C061747
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:02:57 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id u130so4358789pfc.2
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:02:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/udoNmOdToKZ46JixRPRrkFS07mcQhi4GHZVYYVEkbc=;
-        b=JbObllQ61T/iGnBUjULS9/tBm7bjFLR+cUslbw4rxf/RHEdNUXRLGNH1OQE1R1MAzC
-         q7UY5vIIWqOJtz0a0PAM3vf4YwRtuLNO46PyqyWtRRoy64vBGofSZnluxWLr+h+usGJh
-         KSuk+fFej0loknxj937nOtODaRaL5x5T4VVIU=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=o/T3d3BHyHgSEeRHYbPalrQa/ABBLLusG6xLRPMZcck=;
+        b=UgmfO85UkIvmyM+8UoKDDoHWDCmFMd4BEM5eU2Fh5alMiqP08m7IJYMcQHZJhqjr2D
+         hr7ZMrljs4GkMHwRzC6+Pyp9i99uC245oEV53tzwecOyWhE+4e1JK0gbTll3yDemwUx4
+         nk4rd7VBbADgZygkRxCIg5P57Xb75VETcaHJPX1n4VmfIYFAFiCtDD2n7/4LVAnNLUm+
+         Hk6U/ZXC1UrMWtJF+mJlgAjYrr8nN9PiJkYQc+2z5CfZK4VtzXaCgMoyHugHcN/y4xpc
+         6O8gtOsq0wRsuRzzTPsGZ00JVxW3CaIgDaqTNgC6W6WgcQbrth9mgHKzd9SkDTFXaqWW
+         IYZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/udoNmOdToKZ46JixRPRrkFS07mcQhi4GHZVYYVEkbc=;
-        b=0fue62JDoDUyUxVidkLgPBdlVm75Tzwl7TGdY4lb1U9dIFE8epdWpqQsmZIPPFGgWj
-         Bm6SfmTRYL4De8JwCe8DS0r040Ge/CqKqBcx/zA0blcH+k7sPE4PM5Sxl9OJbh/nWbVV
-         MyEIcv63d5vKLNVHfpxLbGn4RffcHlB3kCzvUfbEC2irRDsUhTAIWKQ95mBD81Q2kZh1
-         IcanEvkLg/dG4/uq7sio8jDfD/WPSE6TD8Dkx7BvckYEt3xEOKcLOnoDS17kWsMmCuUM
-         TsuK3YwAXKcqgbYv+62YQhtAK8QYfc6UK54rJJLgM98Qv+RyowS5Bn9NLnYTx42SEoaM
-         CS2w==
-X-Gm-Message-State: AOAM531u8zcdWTcJDSGX++EVnBBiA/0eJZdOAXCieAccva/zVLNs2bUM
-        hnNHQg2NoqaUen3LW9KoeJvskQ==
-X-Google-Smtp-Source: ABdhPJw7snTnsDnp2NSxNMlJZgf+Ks8g/n0IOMPOVZLcnCw/cpfCGHXpCKnBGD88sSz5Dq3YV4zEVA==
-X-Received: by 2002:a05:6e02:188c:: with SMTP id o12mr4196131ilu.95.1643324522750;
-        Thu, 27 Jan 2022 15:02:02 -0800 (PST)
-Received: from ?IPv6:2601:282:8200:4c:fcdb:3423:ed25:a583? ([2601:282:8200:4c:fcdb:3423:ed25:a583])
-        by smtp.gmail.com with ESMTPSA id m4sm12666632iln.48.2022.01.27.15.02.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 15:02:02 -0800 (PST)
-Subject: Re: [PATCH 2/5] kselftest: Fix vdso_test_time to pass on skips
-To:     Cristian Marussi <cristian.marussi@arm.com>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     shuah@kernel.org, Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220126102723.23300-1-cristian.marussi@arm.com>
- <20220126102723.23300-3-cristian.marussi@arm.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <3603bae9-d292-8c67-331f-18fe54586355@linuxfoundation.org>
-Date:   Thu, 27 Jan 2022 16:02:00 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=o/T3d3BHyHgSEeRHYbPalrQa/ABBLLusG6xLRPMZcck=;
+        b=AL9KhgjJHfaf41p6jJ0wWijCR9rhRsCXU0tZ4/bzsJdBgPSm0HWm+7PmREWV8QkGJ9
+         Fd12TFwfAklfTbiBXQ+E01bD9RToqBWrtgcjIszodDvce8/zoVCGoe4u6BgtRcPBflMA
+         WzOgi+7mt8QjUqtr8DWcyV6xFeME81dosuJ/JVeRIkoy6ShGUbOf6kziTtis5s8Jva9w
+         AfmFZ9z5ZsL4OZhYBeDTp3QkfXVmk+obx/eZ3cnf596a0oKyJkTww80zistZpHE80Qje
+         FY4w+HlABkrYrb9ayN6Dc0QN5iFJzgDcEeLs1Wh+Kc42FTTktTfC7aKHzdPG4t+GUzvu
+         5CrA==
+X-Gm-Message-State: AOAM530/XslepkaavdSS44L4sSiuD1OSNNMcEMcu+DHqX/pn8unnLMAw
+        5h+Z+R0hhrp/Z2fLGWqTACHlBHl46HCxDXzZpbew9g==
+X-Google-Smtp-Source: ABdhPJwP6mBgzYcmwq8apICTnPgaiSCnMvHi48jbQpS1tgltTYSr9JFSK9z+MsyfUOfecwjpyWzWOxd5MPJUaOrSBK4=
+X-Received: by 2002:a05:6a00:d5c:: with SMTP id n28mr5360304pfv.9.1643324576267;
+ Thu, 27 Jan 2022 15:02:56 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220126102723.23300-3-cristian.marussi@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220120000409.2706549-1-rajatja@google.com> <CAE_wzQ_XxONXx5bgDNLAWM_UbV0r8hP9fW6s5sgRYRVSHQWjLw@mail.gmail.com>
+In-Reply-To: <CAE_wzQ_XxONXx5bgDNLAWM_UbV0r8hP9fW6s5sgRYRVSHQWjLw@mail.gmail.com>
+From:   Rajat Jain <rajatja@google.com>
+Date:   Thu, 27 Jan 2022 15:02:20 -0800
+Message-ID: <CACK8Z6GCPU8ZYQgwCJ5jWJ5NLQM3y+g6Ry=59-oVV3CHGe_8Aw@mail.gmail.com>
+Subject: Re: [PATCH] PCI: ACPI: Allow internal devices to be marked as untrusted
+To:     Dmitry Torokhov <dtor@google.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rajatxjain@gmail.com,
+        jsbarnes@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/26/22 3:27 AM, Cristian Marussi wrote:
-> When a vDSO symbol is not found, all the testcases in vdso_test_abi usually
-> report a SKIP, which, in turn, is reported back to Kselftest as a PASS.
-> 
-> Testcase vdso_test_time, instead, reporting a SKIP, causes the whole set of
-> tests within vdso_test_abi to be considered FAIL when symbol is not found.
-> 
-> Fix it reporting a PASS when vdso_test_time cannot find the vdso symbol.
-> 
-> Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
-> Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-> ---
-> Seen as a failure on both a JUNO and a Dragonboard on both recent and old
-> kernels/testruns:
-> 
-> root@deb-buster-arm64:~# /opt/ksft/vDSO/vdso_test_abi
-> [vDSO kselftest] VDSO_VERSION: LINUX_2.6.39
-> The time is 1637922136.675304
-> The time is 1637922136.675361000
-> The resolution is 0 1
-> clock_id: CLOCK_REALTIME [PASS]
-> The time is 1927.760604900
-> The resolution is 0 1
-> clock_id: CLOCK_BOOTTIME [PASS]
-> The time is 1637922136.675649700
-> The resolution is 0 1
-> clock_id: CLOCK_TAI [PASS]
-> The time is 1637922136.672000000
-> The resolution is 0 4000000
-> clock_id: CLOCK_REALTIME_COARSE [PASS]
-> The time is 1927.761005600
-> The resolution is 0 1
-> clock_id: CLOCK_MONOTONIC [PASS]
-> The time is 1927.761132780
-> The resolution is 0 1
-> clock_id: CLOCK_MONOTONIC_RAW [PASS]
-> The time is 1927.757093740
-> The resolution is 0 4000000
-> clock_id: CLOCK_MONOTONIC_COARSE [PASS]
-> Could not find __kernel_time              <<< This caused a FAIL as a whole
-> root@deb-buster-arm64:~# echo $?
-> 1
-> 
-> e.g.: https://lkft.validation.linaro.org/scheduler/job/2192570#L27778
-> ---
->   tools/testing/selftests/vDSO/vdso_test_abi.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/vDSO/vdso_test_abi.c b/tools/testing/selftests/vDSO/vdso_test_abi.c
-> index 3d603f1394af..7dcc66d1cecf 100644
-> --- a/tools/testing/selftests/vDSO/vdso_test_abi.c
-> +++ b/tools/testing/selftests/vDSO/vdso_test_abi.c
-> @@ -90,8 +90,9 @@ static int vdso_test_time(void)
->   		(vdso_time_t)vdso_sym(version, name[2]);
->   
->   	if (!vdso_time) {
-> +		/* Skip if symbol not found: consider skipped tests as passed */
->   		printf("Could not find %s\n", name[2]);
-> -		return KSFT_SKIP;
-> +		return KSFT_PASS;
+Hi Dmitry,
 
-Skip is a the right option here. Pass indicates that the functionality
-has been tested and it passed. There is a clear message that says that
-the symbol isn't found
+On Wed, Jan 19, 2022 at 6:25 PM Dmitry Torokhov <dtor@google.com> wrote:
+>
+> Hi Rajat,
+>
+> On Wed, Jan 19, 2022 at 4:04 PM Rajat Jain <rajatja@google.com> wrote:
+> >
+> > Today the pci_dev->untrusted is set for any devices sitting downstream
+> > an external facing port (determined via "ExternalFacingPort" property).
+> > This however, disallows any internal devices to be marked as untrusted.
+> >
+> > There are use-cases though, where a platform would like to treat an
+> > internal device as untrusted (perhaps because it runs untrusted
+> > firmware, or offers an attack surface by handling untrusted network
+> > data etc).
+> >
+> > This patch introduces a new "UntrustedDevice" property that can be used
+> > by the firmware to mark any device as untrusted.
+> >
+> > Signed-off-by: Rajat Jain <rajatja@google.com>
+> > ---
+> >  drivers/pci/pci-acpi.c | 13 +++++++++++++
+> >  1 file changed, 13 insertions(+)
+> >
+> > diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+> > index a42dbf448860..3d9e5fa49451 100644
+> > --- a/drivers/pci/pci-acpi.c
+> > +++ b/drivers/pci/pci-acpi.c
+> > @@ -1350,12 +1350,25 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
+> >                 dev->external_facing = 1;
+> >  }
+> >
+> > +static void pci_acpi_set_untrusted(struct pci_dev *dev)
+> > +{
+> > +       u8 val;
+> > +
+> > +       if (device_property_read_u8(&dev->dev, "UntrustedDevice", &val))
+> > +               return;
+> > +
+> > +       /* These PCI devices are not trustworthy */
+> > +       if (val)
+> > +               dev->untrusted = 1;
+>
+> Should this all be replaced with:
+>
+> dev->untrusted = device_property_read_bool(&dev->dev, "UntrustedDevice");
 
-thanks,
--- Shuah
+The device_property_read_bool() seems to be merely checking for
+property presence (and ignoring its value).
+
+I checked with our BIOS / ACPI team. Per them, the ACPI properties
+always have a value associated with them.
+
+So if I switch to device_property_read_bool(),  "UntrustedDevice"
+property with a value of "0" in ACPI shall be marked as an untrusted
+device by the kernel. I understand that this may be a confusing corner
+case of bad ACPI, but I was thinking it may be better to use the ACPI
+value also in the kernel to decide. Thus I think the use of
+device_property_read_u8() (the current code) may be better. WDYT?
+
+Thanks & Best Regards,
+
+Rajat
+
+>
+> ?
+>
+> Also, is this ACPI-specific? Why won't we need this for DT systems (or
+> do we already have this)?.
+>
+> Thanks,
+> Dmitry
