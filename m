@@ -2,101 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30904C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 19:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF30C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 19:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245665AbiA0Tmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 14:42:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
+        id S245687AbiA0TnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 14:43:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245738AbiA0Tms (ORCPT
+        with ESMTP id S245651AbiA0TnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 14:42:48 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F293AC06173B
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 11:42:47 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id k25so8260547ejp.5
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 11:42:47 -0800 (PST)
+        Thu, 27 Jan 2022 14:43:01 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B3BC061714;
+        Thu, 27 Jan 2022 11:43:01 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id l5so5110444edv.3;
+        Thu, 27 Jan 2022 11:43:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=SlWIcHy/3XR7mwnK/GHpmwHwVvr/nhApahfqBZocrNU=;
-        b=YqCrznekqjJGqxJTiBCV9J98MH4sLOY2AlzJgugPm5/1S+vb4pcJxV9Zwm2mcVL5sq
-         yOPmh7MmaQfsM0y7I43NHEJJesuDa7jaPzANYVQYPXe/kubBYmv+/msm7zagHrutr6QN
-         L7Wk9Blrv1JS4QjFiEsYcfIxdd0N+UgCW6sZnnqKNn/vsbb5p9+SNSzu+Udg2f4pR2e3
-         4S5keBjy2zohERuHuVzADnODSIZMZiT7cky9vprdIm74ZstoTdru90283pSzQttQs+Ei
-         b8XtsBlGpgPnU5l+YQK4dP3TUw8HDrLnTPZfGGDMvRpNvYln48idGU1LpLbjXwhw5/5R
-         u9dA==
+        bh=jp8xtQ7vm1lf3v4x4zlRNvwWieVtrtzxWdkBdSMdKBI=;
+        b=RxZDvbu1Kusj7WLtXTZhCblHNO01QnNYl4Im+SUvXMrgEaEYyz6Nw85K2+EVtCzVF9
+         O2E7npoGniIeW4LxnTlHGfJdxRRHRp+QkF8j+7eCkNNAMrb4hViFKypKDuM1erRfvGLi
+         BCnSr5autHPdiepr8yLXu2w9MD+M2L2FS1nwoCdUoRtJ0CgYaxsr6YYD1VWIdSDnNBeU
+         5krpS5EKJ/8+5fA3J073NF2u30cxDuAHszheIO8CdGUusgXIJqiDoV7fJG41KKJLGqt3
+         OssmxhyWkGzxoWFgFvJ87Mn8Hxdfdd5te4/GYRXO7ZTGbBQBdCpGSxI42Ma43PcRmG5l
+         9swQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SlWIcHy/3XR7mwnK/GHpmwHwVvr/nhApahfqBZocrNU=;
-        b=LydJViDv13c/0huGqm4CQqxogzEbQyyDyxgBjYZw9jy/6XtWiybMBQFByFfjufYLKq
-         DaxFZu4GzLXYspF0NRPZahsbhsMcbgXGEViL7c47kOwr3UiXfQhQ/tM7IV/t7teXMDzy
-         RyZoCqsmXs6ZA42U18gze9N2r0SB5gRJiNCzhBKnHPC1qJjpstsHI3Gke6z9/JQbsQho
-         s5H8i70W1xsP5Hc5yiM6sXEmrw3A4vVNQps/7NzwETgDCj9WvLxLhMisBzP+/DOglnjj
-         KYZYf6PsygdeR+RkNDq5Vyw/rLWtv763/UaYt/0clwpZh0f4VeAR+eIheWDmw35HomsB
-         OhBg==
-X-Gm-Message-State: AOAM533BoPfD/6qXMJgl8qB5rTDppAnGzcheLIQVq/EXkGjo6OBJATy7
-        cKLRec5+nDqtolNSK5bRM+fMotX2f4Tn//q9cALZvw==
-X-Google-Smtp-Source: ABdhPJyRYphRCJufijT8nLWfSafgBSzq7ruAzTjmpKHgO1/ZkxNEN0MqTxVHWccur1KVci8YLBBrAKSYGIwvmUfOKJE=
-X-Received: by 2002:a17:907:2d92:: with SMTP id gt18mr3911682ejc.579.1643312566461;
- Thu, 27 Jan 2022 11:42:46 -0800 (PST)
+        bh=jp8xtQ7vm1lf3v4x4zlRNvwWieVtrtzxWdkBdSMdKBI=;
+        b=l3mOqQb4uO4GpEMbbpLmKQZJrtSap2ma6faBx799FqCZ2FlLNGTuUt2EitqW3TAiBx
+         1M+wBCv17WrKH6XqJeW7JROtKx3XaBsjfN8GeYfiPZ6HBnu4mU7tToA9fOZQAKLNwJc2
+         GTZ+EjGDBsgm8zo16wNTlSrI+CpktZNJ9V1CmqMekGRBKAS8GIV3Z8H/PHERpm3m32pR
+         EuKvcp4Ro9/XopZljRnL5JuK/hWJ5vR5a1VpiSCX99VINmZeEznexfpPYp3cdX2C0OBD
+         wdPfLv09qYdtLyDhF+c9bpua+ChPCv6QNYrF9aQM924sXQ7vnXI6WDGiFc31Yff1EfUx
+         aiHA==
+X-Gm-Message-State: AOAM533sbn6B92/MI5Z+vyOEKvE68+xKXWnyR04ZC6IG/PLwqU3Z15ni
+        LcImnqSx90tJX8hXrwOmv5qlb8Qm+fvDNQoNwB0=
+X-Google-Smtp-Source: ABdhPJxRDp56G1DTNc/iJVvUZZ1aic+K9B+k2A/2xw940jMK1KAsxC1cJr6gG791OdmD84afDgTNcTg+7RNRu0+3wLI=
+X-Received: by 2002:a05:6402:12cf:: with SMTP id k15mr4971960edx.299.1643312579791;
+ Thu, 27 Jan 2022 11:42:59 -0800 (PST)
 MIME-Version: 1.0
-References: <20220126183429.1840447-1-pasha.tatashin@soleen.com>
- <20220126183429.1840447-2-pasha.tatashin@soleen.com> <72cae3c0-e06e-4fe5-24d5-a2c94d99780f@suse.cz>
-In-Reply-To: <72cae3c0-e06e-4fe5-24d5-a2c94d99780f@suse.cz>
-From:   Pasha Tatashin <pasha.tatashin@soleen.com>
-Date:   Thu, 27 Jan 2022 14:42:09 -0500
-Message-ID: <CA+CK2bCP0iFAdr-4VxiS2ubQT0O0c_j-qS4Q0khhRBCLJqQBrg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/9] mm: add overflow and underflow checks for page->_refcount
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        linux-m68k@lists.linux-m68k.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
+References: <20220120202805.3369-1-shy828301@gmail.com> <af603cbe-4a38-9947-5e6d-9a9328b473fb@redhat.com>
+ <CAG48ez1xuZdELb=5ed1i0ruoFu5kAaWsf0LgRXEGhrDAcHz8fw@mail.gmail.com>
+ <f7f82234-7599-9e39-1108-f8fbe2c1efc9@redhat.com> <CAG48ez17d3p53tSfuDTNCaANyes8RNNU-2i+eFMqkMwuAbRT4Q@mail.gmail.com>
+ <5b4e2c29-8f1a-5a68-d243-a30467cc02d4@redhat.com> <CAHbLzkqLTkVJk+z8wpa03ponf7k30=Sx6qULwsGsvr5cq5d1aw@mail.gmail.com>
+ <5a565d5a-0540-4041-ce63-a8fd5d1bb340@redhat.com> <CAHbLzkqXy-W9sD5HFOK_rm_TR8uSP29b+RjKjA5zOZ+0dkqMbQ@mail.gmail.com>
+ <2a1c5bd2-cb8c-b93b-68af-de620438d19a@redhat.com>
+In-Reply-To: <2a1c5bd2-cb8c-b93b-68af-de620438d19a@redhat.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Thu, 27 Jan 2022 11:42:47 -0800
+Message-ID: <CAHbLzkongysm41LbMc1FMT8Xeg33==1rn3nUu6MTAAwKSbfv_Q@mail.gmail.com>
+Subject: Re: [v2 PATCH] fs/proc: task_mmu.c: don't read mapcount for migration entry
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Jann Horn <jannh@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
         Matthew Wilcox <willy@infradead.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        william.kucharski@oracle.com,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        schmitzmic@gmail.com, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <guro@fb.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Paul Turner <pjt@google.com>, Hugh Dickins <hughd@google.com>
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > diff --git a/include/linux/page_ref.h b/include/linux/page_ref.h
-> > index 2e677e6ad09f..fe4864f7f69c 100644
-> > --- a/include/linux/page_ref.h
-> > +++ b/include/linux/page_ref.h
-> > @@ -117,7 +117,10 @@ static inline void init_page_count(struct page *page)
-> >
-> >  static inline void page_ref_add(struct page *page, int nr)
-> >  {
-> > -     atomic_add(nr, &page->_refcount);
-> > +     int old_val = atomic_fetch_add(nr, &page->_refcount);
-> > +     int new_val = old_val + nr;
-> > +
-> > +     VM_BUG_ON_PAGE((unsigned int)new_val < (unsigned int)old_val, page);
+On Wed, Jan 26, 2022 at 10:54 AM David Hildenbrand <david@redhat.com> wrote:
 >
-> This seems somewhat weird, as it will trigger not just on overflow, but also
-> if nr is negative. Which I think is valid usage, even though the function
-> has 'add' in name, because 'nr' is signed?
+> >>> Just page lock or elevated page refcount could serialize against THP
+> >>> split AFAIK.
+> >>>
+> >>>>
+> >>>> But yeah, using the mapcount of a page that is not even mapped
+> >>>> (migration entry) is clearly wrong.
+> >>>>
+> >>>> To summarize: reading the mapcount on an unlocked page will easily
+> >>>> return a wrong result and the result should not be relied upon. reading
+> >>>> the mapcount of a migration entry is dangerous and certainly wrong.
+> >>>
+> >>> Depends on your usecase. Some just want to get a snapshot, just like
+> >>> smaps, they don't care.
+> >>
+> >> Right, but as discussed, even the snapshot might be slightly wrong. That
+> >> might be just fine for smaps (and I would have enjoyed a comment in the
+> >> code stating that :) ).
+> >
+> > I think that is documented already, see Documentation/filesystems/proc.rst:
+> >
+> > Note: reading /proc/PID/maps or /proc/PID/smaps is inherently racy (consistent
+> > output can be achieved only in the single read call).
+>
+> Right, but I think there is a difference between
+>
+> * Atomic values that change immediately afterwards ("this value used to
+>   be true at one point in time")
+> * Values that are unstable because we cannot read them atomically ("this
+>   value never used to be true")
+>
+> I'd assume with the documented race we actually talk about the first
+> point, but I might be just wrong.
 
-I have not found any places in the mainline kernel where nr is
-negative in page_ref_add(). I think, by adding this assert we ensure
-that when 'add' shows up in backtraces it can be assured that the ref
-count has increased, and if page_ref_sub() showed up it means it
-decreased. It is strange to have both functions, and yet allow them to
-do the opposite. We can also change the type to unsigned.
+I think so too.
 
-Pasha
+>
+> >
+> > Of course, if the extra note is preferred in the code, I could try to
+> > add some in a separate patch.
+>
+> When staring at the (original) code I would have hoped to find something
+> like:
+>
+> /*
+>  * We use page_mapcount() to get a snapshot of the mapcount. Without
+>  * holding the page lock this snapshot can be slightly wrong as we
+>  * cannot always read the mapcount atomically. As long we hold the PT
+>  * lock, the page cannot get unmapped and it's at safe to call
+>  * page_mapcount().
+>  */
+>
+> With the addition of
+>
+> "... For unmapped pages (e.g., migration entries) we cannot guarantee
+> that, so treat the mapcount as being 1."
+>
+> But this is just my personal preference ... :) I do think the patch does
+> the right thing in regard to migration entries.
+
+I will prepare a patch.
+
+>
+> --
+> Thanks,
+>
+> David / dhildenb
+>
