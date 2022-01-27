@@ -2,92 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5381BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66069C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245062AbiA0SKU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:10:20 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:56052 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245044AbiA0SKA (ORCPT
+        id S245254AbiA0SKV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 13:10:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58992 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233648AbiA0SKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:10:00 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: tonyk)
-        with ESMTPSA id 828411F45959
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1643306993;
-        bh=YVoSqeGpj1x8qNffk1ngm8QY3CihsqcwqVnxalY6JQA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=D4BRmTKTR2LGJULzoGImx9UM8MAmQAIFxdKqz6IlmxXBouQq2exhNsZxnCO/goIEY
-         VI//0QQps3np+GTOpmDfw3Db0pkiCvfi3vejGyDthT5kbCQIF7KjTgl6PJg5cZXIfg
-         YQeo9LHstGvJ5+q9xL+Ke/tg+IREToOVT7CZgZcZs5FPz735EyBa7FzOvB2IYWnfqR
-         b56ZmAfMEDJAklWtBjU5peZYwlhZXmS6vGKWmsmtNQ9cH2mz5mZT602qcCV59VsEcJ
-         42lS4d7f6gylLPTiOA3kSPIiJh4HixJoFlqzcMWEjDiVDLXwPLEPFozl4XWMgAK9UD
-         97sUShmLVHRgQ==
-Message-ID: <65054310-e925-4072-7df2-e1550d8a9a4f@collabora.com>
-Date:   Thu, 27 Jan 2022 15:09:44 -0300
+        Thu, 27 Jan 2022 13:10:01 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D03AB820C9;
+        Thu, 27 Jan 2022 18:10:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87826C340EA;
+        Thu, 27 Jan 2022 18:09:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643306998;
+        bh=j9IbMF9BlPJ89kZFxrcZWmprUehq4dbxvd0eCOYC2bY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w1AX0jNTac2iypKNWwHjo1OPwwRLO5/OFk2aFEoOEb7KbHIHt1M6uNqNDbGPJOz+R
+         hWrDIeVsHMZJjd+Pu9nkzaNJ8zgI4P55IQmQ48Idi2JIqVHyvj4h1hcwTlGgm2GjAn
+         Sll7GO7mRLtbgX7JqX1P24SGoRxZvmbtaQzdvLUU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.4 06/11] pinctrl: bcm2835: Match BCM7211 compatible string
+Date:   Thu, 27 Jan 2022 19:09:07 +0100
+Message-Id: <20220127180258.573583252@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.0
+In-Reply-To: <20220127180258.362000607@linuxfoundation.org>
+References: <20220127180258.362000607@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] selftests: futex: Use variable MAKE instead of make
-Content-Language: en-US
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-kselftest@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Bamvor Jian Zhang <bamvor.zhangjian@linaro.org>
-References: <20220127174447.754605-1-usama.anjum@collabora.com>
-From:   =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>
-In-Reply-To: <20220127174447.754605-1-usama.anjum@collabora.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Usama,
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-Às 14:44 de 27/01/22, Muhammad Usama Anjum escreveu:
-> Recursive make commands should always use the variable MAKE, not the
-> explicit command name ‘make’. This has benefits and removes the
-> following warning when multiple jobs are used for the build:
-> 
-> make[2]: warning: jobserver unavailable: using -j1.  Add '+' to parent make rule.
-> 
-> Fixes: a8ba798bc8ec ("selftests: enable O and KBUILD_OUTPUT")
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+commit 562c856f96d22ef1204b0a314bc52e85617199b4 upstream
 
-Thanks for the patch!
+The BCM7211 SoC uses the same pinconf_ops as the ones defined for the
+BCM2711 SoC, match the compatible string and use the correct set of
+options.
 
-Reviewed-by: André Almeida <andrealmeid@collabora.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20200531001101.24945-4-f.fainelli@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/pinctrl/bcm/pinctrl-bcm2835.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-> ---
->  tools/testing/selftests/futex/Makefile | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/futex/Makefile b/tools/testing/selftests/futex/Makefile
-> index 12631f0076a10..11e157d7533b8 100644
-> --- a/tools/testing/selftests/futex/Makefile
-> +++ b/tools/testing/selftests/futex/Makefile
-> @@ -11,7 +11,7 @@ all:
->  	@for DIR in $(SUBDIRS); do		\
->  		BUILD_TARGET=$(OUTPUT)/$$DIR;	\
->  		mkdir $$BUILD_TARGET  -p;	\
-> -		make OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
-> +		$(MAKE) OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
->  		if [ -e $$DIR/$(TEST_PROGS) ]; then \
->  			rsync -a $$DIR/$(TEST_PROGS) $$BUILD_TARGET/; \
->  		fi \
-> @@ -32,6 +32,6 @@ override define CLEAN
->  	@for DIR in $(SUBDIRS); do		\
->  		BUILD_TARGET=$(OUTPUT)/$$DIR;	\
->  		mkdir $$BUILD_TARGET  -p;	\
-> -		make OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
-> +		$(MAKE) OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
->  	done
->  endef
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -1134,6 +1134,10 @@ static const struct of_device_id bcm2835
+ 		.compatible = "brcm,bcm2711-gpio",
+ 		.data = &bcm2711_plat_data,
+ 	},
++	{
++		.compatible = "brcm,bcm7211-gpio",
++		.data = &bcm2711_plat_data,
++	},
+ 	{}
+ };
+ 
+
+
