@@ -2,299 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B52C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E049C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242086AbiA0NjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 08:39:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242056AbiA0Ni0 (ORCPT
+        id S234523AbiA0Njv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 08:39:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:34653 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229989AbiA0Nju (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:38:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D654C061760
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:37:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BBDEAB8218D
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 13:37:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E609FC340E4;
-        Thu, 27 Jan 2022 13:37:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643290652;
-        bh=1/SmwgiDefImub5WbLopvwdqk3aBVzRX6c4Cijr/1g4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cDdFsA8TULGMtvyR9dy+UMlS8vm0KlUWvHi7xxXoz9KGMpusUN73YYDQXOKQxHqhY
-         VcK/YK1ZPvXRV6yduYKBSxkxKnKefyOcvfRVeow9//gJOcZvCXjxTpKzdbfbt9zmCd
-         ChUc1zVD41w1JGEumOdesZDiY4pLWjhQo7QddZn5sd7Uqu/yzIoWWcg9dSk1kQMSE+
-         wWKNeM/l+2jA7XURg2JeDLlslns76878+Thw9ts5SVium4nNgVzP0x7cnD6kdU5FEg
-         Vx+2APTVcns7rdzQ1uXbaKC8Ojd7O7gncXXm0KijAqEhu1RXuks48HNdOuRN1d3Oz9
-         S7BpECSNudpVA==
-Date:   Thu, 27 Jan 2022 15:37:23 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Michal Hocko <mhocko@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>, Tejun Heo <tj@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Nico Pache <npache@redhat.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Rafael Aquini <raquini@redhat.com>,
-        Michal Hocko <mhocko@suse.com>
-Subject: Re: [PATCH 2/6] mm: handle uninitialized numa nodes gracefully
-Message-ID: <YfKgE5hTgbaBeaMa@kernel.org>
-References: <20220127085305.20890-1-mhocko@kernel.org>
- <20220127085305.20890-3-mhocko@kernel.org>
+        Thu, 27 Jan 2022 08:39:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643290790;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xPvrRnVVEino9qy8OfKm/WHwJCSfoI7pu3w1+u7M8xI=;
+        b=i7uCME2Jq58M6yeBlc7zj4aJImOEqRUCiD1CTXi5CaNDx86DMyfF+q7ysr4G7N7LXVPWni
+        kNdDBnlIte4RHAvmi2rhAzAmBZxx6Bo5/AgTStkrgSoDkcKGjK85PbXcyXTVX7F4pAxNxA
+        ODl3iOD9XB154yJKQR8nJtJXFbe6rJo=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-311-w49M-hmcMJmz3ix4pbWd5w-1; Thu, 27 Jan 2022 08:39:48 -0500
+X-MC-Unique: w49M-hmcMJmz3ix4pbWd5w-1
+Received: by mail-ed1-f70.google.com with SMTP id h21-20020aa7c955000000b0040390b2bfc5so1428985edt.15
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:39:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xPvrRnVVEino9qy8OfKm/WHwJCSfoI7pu3w1+u7M8xI=;
+        b=6z3T4pXp3Q9WwI4TADpowOYuCfcaRVV9PkuW6pkOklk2mg8mS7nrZc5yf1jy+ALUqm
+         gIH+RyrDYVGRAFi4Hn9oAH06jWawpGxrpCnAmMkhqqwK1lSdsSNpXwmBhlcWyNXYM+AD
+         FMKFOy9Sw6GkEdCgsrUfLo6Q/Y3xMLd2JRcF8VKNKPXb8RK08LMOuzbLrWjvV9xj5Pl9
+         VlyH7UqrXWhQGXt13e75Fq7GjkedUWs4aZ2BGz182xZR22foUkLzXoR78iuimCA3F7DP
+         +kbHs7vrDitIHT4t4inrWJ92S41sv+f9sbGt3iYydSPEIvdAvP+5vo7/4tc3LA2pmlom
+         rciw==
+X-Gm-Message-State: AOAM530Ez5WTLkXyfff7rWvLqRGWJw24s+an2AjGjQqhVZB9j78qovU2
+        Loi9RB7z0HFHY4XcL4vNDz89JU+5e3zl9q8g7LViP3/GDO9KtR1MIRj4ynTtox8HdTTtBBoaFlp
+        VH69QGpm8uWEZcLTIOKAl8QHr
+X-Received: by 2002:a17:906:58ca:: with SMTP id e10mr2861525ejs.747.1643290787512;
+        Thu, 27 Jan 2022 05:39:47 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy3x6gLk3Za/oUrZGpbiSHjgaSEs1kP1E6wSziP4Rh9dA3elmbTGpqVRgSYk1ivKvWhj5KU2g==
+X-Received: by 2002:a17:906:58ca:: with SMTP id e10mr2861517ejs.747.1643290787302;
+        Thu, 27 Jan 2022 05:39:47 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id v3sm10721233edy.21.2022.01.27.05.39.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 05:39:46 -0800 (PST)
+Message-ID: <47823b47-3743-e6b7-0665-d5743713d198@redhat.com>
+Date:   Thu, 27 Jan 2022 14:39:45 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127085305.20890-3-mhocko@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: acpi_get_devices() crash when acpi_disabled==true (was [PATCH v2]
+ drm/privacy-screen: honor acpi=off in detect_thinkpad_privacy_screen)
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Tong Zhang <ztong0001@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        linux-acpi <linux-acpi@vger.kernel.org>
+References: <20220123091004.763775-1-ztong0001@gmail.com>
+ <6a0233cd-d931-8a36-3b9e-08b774cec7b0@redhat.com>
+ <CAJZ5v0h51v9fFrJRuaFpSn7J2UEHndEj0f3zpmw=RvgsvAhtvw@mail.gmail.com>
+ <049ccc3a-8628-3e90-a4f4-137a286b6dce@redhat.com>
+ <CAJZ5v0hJWW_vZ3wwajE7xT38aWjY7cZyvqMJpXHzUL98-SiCVQ@mail.gmail.com>
+ <994f94b2-61d3-1754-d733-732a0fb47d50@redhat.com>
+ <CAJZ5v0hXKJhCSKki8JHs+Q=3BWYygDNz9LLAaiVKpDvLPr6-ZA@mail.gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <CAJZ5v0hXKJhCSKki8JHs+Q=3BWYygDNz9LLAaiVKpDvLPr6-ZA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 09:53:01AM +0100, Michal Hocko wrote:
-> From: Michal Hocko <mhocko@suse.com>
+Hi,
+
+On 1/27/22 14:33, Rafael J. Wysocki wrote:
+> On Thu, Jan 27, 2022 at 2:05 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>>
+>> Hi,
+>>
+>> On 1/26/22 18:11, Rafael J. Wysocki wrote:
+>>> On Wed, Jan 26, 2022 at 5:41 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>>>>
+>>>> Hi,
+>>>>
+>>>> On 1/26/22 16:54, Rafael J. Wysocki wrote:
+>>>>> On Wed, Jan 26, 2022 at 2:47 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>>>>>>
+>>>>>> Hi All,
+>>>>>>
+>>>>>> On 1/23/22 10:10, Tong Zhang wrote:
+>>>>>>> when acpi=off is provided in bootarg, kernel crash with
+>>>>>>>
+>>>>>>> [    1.252739] BUG: kernel NULL pointer dereference, address: 0000000000000018
+>>>>>>> [    1.258308] Call Trace:
+>>>>>>> [    1.258490]  ? acpi_walk_namespace+0x147/0x147
+>>>>>>> [    1.258770]  acpi_get_devices+0xe4/0x137
+>>>>>>> [    1.258921]  ? drm_core_init+0xc0/0xc0 [drm]
+>>>>>>> [    1.259108]  detect_thinkpad_privacy_screen+0x5e/0xa8 [drm]
+>>>>>>> [    1.259337]  drm_privacy_screen_lookup_init+0xe/0xe85 [drm]
+>>>>>>>
+>>>>>>> The reason is that acpi_walk_namespace expects acpi related stuff
+>>>>>>> initialized but in fact it wouldn't when acpi is set to off. In this case
+>>>>>>> we should honor acpi=off in detect_thinkpad_privacy_screen().
+>>>>>>>
+>>>>>>> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+>>>>>>
+>>>>>> Thank you for catching this and thank you for your patch. I was about to merge
+>>>>>> this, but then I realized that this might not be the best way to fix this.
+>>>>>>
+>>>>>> A quick grep shows 10 acpi_get_devices() calls outside of drivers/acpi,
+>>>>>> and at a first glance about half of those are missing an acpi_disabled
+>>>>>> check. IMHO it would be better to simply add an acpi_disabled check to
+>>>>>> acpi_get_devices() itself.
+>>>>>>
+>>>>>> Rafael, do you agree ?
+>>>>>
+>>>>> Yes, I do.
+>>>>
+>>>> Did you see my follow-up that that is not going to work because
+>>>> acpi_get_devices() is an acpica function ?
+>>>
+>>> No, I didn't, but it is possible to add a wrapper doing the check
+>>> around it and convert all of the users.
+>>
+>> Yes I did think about that. Note that I've gone ahead and pushed
+>> the fix which started this to drm-misc-fixes, to resolve the crash
+>> for now.
 > 
-> We have had several reports [1][2][3] that page allocator blows up when
-> an allocation from a possible node is requested. The underlying reason
-> is that NODE_DATA for the specific node is not allocated.
+> OK
 > 
-> NUMA specific initialization is arch specific and it can vary a lot.
-> E.g. x86 tries to initialize all nodes that have some cpu affinity (see
-> init_cpu_to_node) but this can be insufficient because the node might be
-> cpuless for example.
+>> If we add such a wrapper we can remove a bunch of acpi_disabled checks
+>> from various callers.
+>>
+>>> Alternatively, the ACPICA function can check acpi_gbl_root_node
+>>> against NULL, like in the attached (untested) patch.
+>>
+>> That is probably an even better idea, as that avoids the need
+>> for a wrapper altogether. So I believe that that is the best
+>> solution.
 > 
-> One way to address this problem would be to check for !node_online nodes
-> when trying to get a zonelist and silently fall back to another node.
-> That is unfortunately adding a branch into allocator hot path and it
-> doesn't handle any other potential NODE_DATA users.
-> 
-> This patch takes a different approach (following a lead of [3]) and it
-> pre allocates pgdat for all possible nodes in an arch indipendent code
-> - free_area_init. All uninitialized nodes are treated as memoryless
-> nodes. node_state of the node is not changed because that would lead to
-> other side effects - e.g. sysfs representation of such a node and from
-> past discussions [4] it is known that some tools might have problems
-> digesting that.
-> 
-> Newly allocated pgdat only gets a minimal initialization and the rest of
-> the work is expected to be done by the memory hotplug - hotadd_new_pgdat
-> (renamed to hotadd_init_pgdat).
-> 
-> generic_alloc_nodedata is changed to use the memblock allocator because
-> neither page nor slab allocators are available at the stage when all
-> pgdats are allocated. Hotplug doesn't allocate pgdat anymore so we can
-> use the early boot allocator. The only arch specific implementation is
-> ia64 and that is changed to use the early allocator as well.
-> 
-> Reported-by: Alexey Makhalov <amakhalov@vmware.com>
-> Tested-by: Alexey Makhalov <amakhalov@vmware.com>
-> Reported-by: Nico Pache <npache@redhat.com>
-> Acked-by: Rafael Aquini <raquini@redhat.com>
-> Tested-by: Rafael Aquini <raquini@redhat.com>
-> Signed-off-by: Michal Hocko <mhocko@suse.com>
+> Allright, let me cut an analogous patch for the upstream ACPICA, then.
 
-Some minor nits below, other than that
+Great, thank you.
 
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+I have added a note about checking for when this has found its way
+into Linus' tree to my own TODO list, with the goal of doing
+a cleanup series removing the then no longer needed acpi_disabled
+checks in a bunch of places.
 
-> 
-> [1] http://lkml.kernel.org/r/20211101201312.11589-1-amakhalov@vmware.com
-> [2] http://lkml.kernel.org/r/20211207224013.880775-1-npache@redhat.com
-> [3] http://lkml.kernel.org/r/20190114082416.30939-1-mhocko@kernel.org
-> [4] http://lkml.kernel.org/r/20200428093836.27190-1-srikar@linux.vnet.ibm.com
-> ---
->  arch/ia64/mm/discontig.c       |  4 ++--
->  include/linux/memory_hotplug.h |  2 +-
->  mm/memory_hotplug.c            | 21 +++++++++------------
->  mm/page_alloc.c                | 34 +++++++++++++++++++++++++++++++---
->  4 files changed, 43 insertions(+), 18 deletions(-)
-> 
-> diff --git a/arch/ia64/mm/discontig.c b/arch/ia64/mm/discontig.c
-> index 8dc8a554f774..dd0cf4834eaa 100644
-> --- a/arch/ia64/mm/discontig.c
-> +++ b/arch/ia64/mm/discontig.c
-> @@ -608,11 +608,11 @@ void __init paging_init(void)
->  	zero_page_memmap_ptr = virt_to_page(ia64_imva(empty_zero_page));
->  }
->  
-> -pg_data_t *arch_alloc_nodedata(int nid)
-> +pg_data_t * __init arch_alloc_nodedata(int nid)
->  {
->  	unsigned long size = compute_pernodesize(nid);
->  
-> -	return kzalloc(size, GFP_KERNEL);
-> +	return memblock_alloc(size, SMP_CACHE_BYTES);
->  }
->  
->  void arch_free_nodedata(pg_data_t *pgdat)
-> diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
-> index 4355983b364d..cdd66bfdf855 100644
-> --- a/include/linux/memory_hotplug.h
-> +++ b/include/linux/memory_hotplug.h
-> @@ -44,7 +44,7 @@ extern void arch_refresh_nodedata(int nid, pg_data_t *pgdat);
->   */
->  #define generic_alloc_nodedata(nid)				\
->  ({								\
-> -	kzalloc(sizeof(pg_data_t), GFP_KERNEL);			\
-> +	memblock_alloc(sizeof(*pgdat), SMP_CACHE_BYTES);	\
->  })
->  /*
->   * This definition is just for error path in node hotadd.
-> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-> index 2a9627dc784c..fc991831d296 100644
-> --- a/mm/memory_hotplug.c
-> +++ b/mm/memory_hotplug.c
-> @@ -1162,19 +1162,21 @@ static void reset_node_present_pages(pg_data_t *pgdat)
->  }
->  
->  /* we are OK calling __meminit stuff here - we have CONFIG_MEMORY_HOTPLUG */
-> -static pg_data_t __ref *hotadd_new_pgdat(int nid)
-> +static pg_data_t __ref *hotadd_init_pgdat(int nid)
->  {
->  	struct pglist_data *pgdat;
->  
->  	pgdat = NODE_DATA(nid);
-> -	if (!pgdat) {
-> -		pgdat = arch_alloc_nodedata(nid);
-> -		if (!pgdat)
-> -			return NULL;
->  
-> +	/*
-> +	 * NODE_DATA is preallocated (free_area_init) but its internal
-> +	 * state is not allocated completely. Add missing pieces.
-> +	 * Completely offline nodes stay around and they just need
-> +	 * reintialization.
-> +	 */
-> +	if (pgdat->per_cpu_nodestats == &boot_nodestats) {
->  		pgdat->per_cpu_nodestats =
->  			alloc_percpu(struct per_cpu_nodestat);
-> -		arch_refresh_nodedata(nid, pgdat);
->  	} else {
->  		int cpu;
->  		/*
-> @@ -1193,8 +1195,6 @@ static pg_data_t __ref *hotadd_new_pgdat(int nid)
->  		}
->  	}
->  
-> -	/* we can use NODE_DATA(nid) from here */
-> -	pgdat->node_id = nid;
->  	pgdat->node_start_pfn = 0;
->  
->  	/* init node's zones as empty zones, we don't have any present pages.*/
-> @@ -1246,7 +1246,7 @@ static int __try_online_node(int nid, bool set_node_online)
->  	if (node_online(nid))
->  		return 0;
->  
-> -	pgdat = hotadd_new_pgdat(nid);
-> +	pgdat = hotadd_init_pgdat(nid);
->  	if (!pgdat) {
->  		pr_err("Cannot online node %d due to NULL pgdat\n", nid);
->  		ret = -ENOMEM;
-> @@ -1445,9 +1445,6 @@ int __ref add_memory_resource(int nid, struct resource *res, mhp_t mhp_flags)
->  
->  	return ret;
->  error:
-> -	/* rollback pgdat allocation and others */
-> -	if (new_node)
-> -		rollback_node_hotadd(nid);
->  	if (IS_ENABLED(CONFIG_ARCH_KEEP_MEMBLOCK))
->  		memblock_remove(start, size);
->  error_mem_hotplug_end:
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 3589febc6d31..1a05669044d3 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -6402,7 +6402,11 @@ static void __build_all_zonelists(void *data)
->  	if (self && !node_online(self->node_id)) {
->  		build_zonelists(self);
->  	} else {
-> -		for_each_online_node(nid) {
-> +		/*
-> +		 * All possible nodes have pgdat preallocated
-> +		 * free_area_init
+Regards,
 
-Nit: "by free_area_init"
+Hans
 
-> +		 */
-> +		for_each_node(nid) {
->  			pg_data_t *pgdat = NODE_DATA(nid);
->  
->  			build_zonelists(pgdat);
-> @@ -8096,8 +8100,32 @@ void __init free_area_init(unsigned long *max_zone_pfn)
->  	/* Initialise every node */
->  	mminit_verify_pageflags_layout();
->  	setup_nr_node_ids();
-> -	for_each_online_node(nid) {
-> -		pg_data_t *pgdat = NODE_DATA(nid);
-> +	for_each_node(nid) {
-> +		pg_data_t *pgdat;
-> +
-> +		if (!node_online(nid)) {
-> +			pr_warn("Node %d uninitialized by the platform. Please report with boot dmesg.\n", nid);
-
-Do we assume that platform code must allocate node data for all nodes in
-the system? Because if we don't this warning is misleading.
-
-> +
-> +			/* Allocator not initialized yet */
-> +			pgdat = arch_alloc_nodedata(nid);
-> +			if (!pgdat) {
-> +				pr_err("Cannot allocate %zuB for node %d.\n",
-> +						sizeof(*pgdat), nid);
-> +				continue;
-> +			}
-> +			arch_refresh_nodedata(nid, pgdat);
-> +			free_area_init_memoryless_node(nid);
-> +			/*
-> +			 * not marking this node online because we do not want to
-> +			 * confuse userspace by sysfs files/directories for node
-> +			 * without any memory attached to it (see topology_init)
-> +			 * The pgdat will get fully initialized when a memory is
-> +			 * hotpluged into it by hotadd_init_pgdat
-> +			 */
-> +			continue;
-
-This can be made slightly more concise if we fall through after
-arch_refresh_nodedata(), e.g. something like
-
-			...
-
-			arch_refresh_nodedata(nid, pgdat);
-		}
-
-		pgdat = NODE_DATA(nid);
-		free_area_init_node(nid);
-
-		/*
-		 * Do not mark memoryless node online because we do not want to
-		 * confuse userspace by sysfs files/directories for node
-		 * without any memory attached to it (see topology_init)
-		 * The pgdat will get fully initialized when a memory is
-		 * hotpluged into it by hotadd_init_pgdat
-		 */
-		if (!pgdat->node_present_pages)
-			continue;
-
-but I don't feel strongly about it.
-
-> +		}
-> +
-> +		pgdat = NODE_DATA(nid);
->  		free_area_init_node(nid);
->  
->  		/* Any memory on that node */
-> -- 
-> 2.30.2
-> 
-
--- 
-Sincerely yours,
-Mike.
