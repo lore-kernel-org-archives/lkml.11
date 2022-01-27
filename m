@@ -2,75 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 747C9C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 19:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA43C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 19:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239722AbiA0TfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 14:35:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34070 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiA0TfP (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 14:35:15 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 323BE61DE7;
-        Thu, 27 Jan 2022 19:35:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6163DC340E4;
-        Thu, 27 Jan 2022 19:35:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643312114;
-        bh=xjDuYL44PRCV60j88JUn8U44NjVGqHmowB7jXW8PlMI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kDW9jvfe+ZIWLeUMcHMbmxdnXkNwekVDfxS9Gr0DxQ6wXjSlKJW7sjpxdHC6OJt3q
-         neuKfJiXNSECbbY/rnCUQtwXWcewcrWs73g3d26OiVEiVeUl50e2vrT7I728SfQHJm
-         0smyF1GeLHct7C/yBKONgSL2Kn+hHLWiQRhLz7YJVkxZGv0fCFlwv85L/3qCfPk1nl
-         cyrSLUs9MaGNwmMfCJxVcXFHYnTFHa88pc0982KDz4YUt6ZYBdAiAMyvWmgMd6ACcK
-         JzAwkOuhaJy9DA4mu5Jj1huUxgeZckEMTC4m5n7LvEdFlslZ3Viblsu1WIH7tcy1gu
-         VjmFrf7Yoka6w==
-Date:   Thu, 27 Jan 2022 11:35:12 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
-        stefanb@linux.ibm.com, linux-fscrypt@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC][PATCH v3a 00/11] ima: support fs-verity digests and
- signatures (alternative)
-Message-ID: <YfLz8NftvbZtKvLT@sol.localdomain>
-References: <20220127184614.2837938-1-roberto.sassu@huawei.com>
+        id S239943AbiA0TjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 14:39:13 -0500
+Received: from mga05.intel.com ([192.55.52.43]:34274 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229639AbiA0TjM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 14:39:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643312352; x=1674848352;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=K8TsweYnEBuPUmpbQF/V+mUt3gLgV/uS+4rbemKBr0g=;
+  b=Bg4F9KLm0QOhga2dDiVh1sDGjXID7amOOv9jyHmU28VnxHSLBNsXZdCq
+   eecE7rnSU/+Z19zQ9ugTwdX5BqJp0lWdXOcPfCXJfRsI+PivSnKKhPElA
+   Ip1MqmryS2yLJBDqiBGoU62lAWa24jwalD3/empiAyJ9ix3WOtRAKEPhR
+   /7phUrR1GQtEB18iP0xrLhHiakeZ+R2tI3sx0zpmPI0hVlBHKpZdhZOpn
+   jVASBTqDmbeZVNbBbUeBNbKYoRKciTzt8MqG66sHxmIR5J8eF20hx7XGv
+   WsGqLzdxzQpvmxHexsZRXQip+0hESxJE9ekPEkbUwWgoOaN8O+EXWUVKy
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="333301866"
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="333301866"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 11:39:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="480431704"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 27 Jan 2022 11:39:10 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nDAbu-000Mxz-1H; Thu, 27 Jan 2022 19:39:10 +0000
+Date:   Fri, 28 Jan 2022 03:39:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [davidhildenbrand:single_zone 4/4] drivers/base/memory.c:648:14:
+ warning: no previous prototype for 'early_node_zone_for_memory_block'
+Message-ID: <202201280300.xX8fHtiK-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220127184614.2837938-1-roberto.sassu@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 07:46:09PM +0100, Roberto Sassu wrote:
-> I wanted to propose a different approach for handling fsverity digests and
-> signatures, compared to:
-> 
-> https://lore.kernel.org/linux-integrity/20220126000658.138345-1-zohar@linux.ibm.com/
-> 
-> In the original proposal, a new signature version has been introduced (v3)
-> to allow the possibility of signing the digest of a more flexible data
-> structure, ima_file_id, which could also include the fsverity file digest.
-> 
-> While the new signature type would be sufficient to handle fsverity file
-> digests, the problem is that its format would not be compatible with the
-> signature format supported by the built-in verification module in fsverity.
-> The rpm package manager already has an extension to include fsverity
-> signatures, with the existing format, in the RPM header.
-> 
-> Given that the fsverity signature is in the PKCS#7 format, IMA has already
-> the capability of handling it with the existing code, more specifically the
-> modsig code. It would be sufficient to provide to modsig the correct data
-> to avoid introducing a new signature format.
+tree:   git://github.com/davidhildenbrand/linux single_zone
+head:   176a3d535903312944f7489127f520c5494bc810
+commit: 176a3d535903312944f7489127f520c5494bc810 [4/4] tmp
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220128/202201280300.xX8fHtiK-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/davidhildenbrand/linux/commit/176a3d535903312944f7489127f520c5494bc810
+        git remote add davidhildenbrand git://github.com/davidhildenbrand/linux
+        git fetch --no-tags davidhildenbrand single_zone
+        git checkout 176a3d535903312944f7489127f520c5494bc810
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/
 
-I think it would be best to get people moved off of the fs-verity built-in
-signatures, rather than further extend the use of it.  PKCS#7 is a pretty
-terrible signature format.  The IMA one is better, though it's unfortunate that
-IMA still relies on X.509 for keys.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-- Eric
+All warnings (new ones prefixed by >>):
+
+>> drivers/base/memory.c:648:14: warning: no previous prototype for 'early_node_zone_for_memory_block' [-Wmissing-prototypes]
+     648 | struct zone *early_node_zone_for_memory_block(int nid, struct memory_block *mem)
+         |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/early_node_zone_for_memory_block +648 drivers/base/memory.c
+
+   647	
+ > 648	struct zone *early_node_zone_for_memory_block(int nid, struct memory_block *mem)
+   649	{
+   650		const unsigned long start_pfn = section_nr_to_pfn(mem->start_section_nr);
+   651		const unsigned long nr_pages = PAGES_PER_SECTION * sections_per_block;
+   652	
+   653		struct zone *zone, *matching_zone = NULL;
+   654		pg_data_t *pgdat = NODE_DATA(nid);
+   655		int i;
+   656	
+   657		/*
+   658		 * This logic only works for early memory, when the applicable zones
+   659		 * already span the memory block. We don't expect overlapping zones on
+   660		 * a single node for early memory. So if we're told that some pfns
+   661		 * of a node fall into this memory block, we can assume that all node
+   662		 * zones that intersect with the memory block are actually applicable.
+   663		 * No need to look at the memmap.
+   664		 *
+   665		 * Memory hot(un)plug updates the zone manually after memory
+   666		 * onlinig/offlining succeed.
+   667		 */
+   668		for (i = 0; i < MAX_NR_ZONES; i++) {
+   669			zone = pgdat->node_zones + i;
+   670			if (!populated_zone(zone))
+   671				continue;
+   672			if (!zone_intersects(zone, start_pfn, nr_pages))
+   673				continue;
+   674			if (!matching_zone) {
+   675				matching_zone = zone;
+   676				continue;
+   677			}
+   678			/* Spans multiple zones ... */
+   679			matching_zone = NULL;
+   680			break;
+   681		}
+   682		return matching_zone;
+   683	}
+   684	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
