@@ -2,127 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B638EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F78C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239236AbiA0R6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:58:06 -0500
-Received: from namei.org ([65.99.196.166]:52994 "EHLO mail.namei.org"
+        id S239139AbiA0R6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:58:12 -0500
+Received: from mga02.intel.com ([134.134.136.20]:19418 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244907AbiA0Rz7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:55:59 -0500
-X-Greylist: delayed 551 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Jan 2022 12:55:58 EST
-Received: from localhost (localhost [127.0.0.1])
-        by mail.namei.org (Postfix) with ESMTPS id 600C71BC;
-        Thu, 27 Jan 2022 17:33:29 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.namei.org 600C71BC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=namei.org; s=2;
-        t=1643304809; bh=AGzt62snnTX+RhaQRcauWWHyp7x7hKo4JgECX14Qns0=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=OG0fZTdVPXr4s6bgq6Xx/7z/4tXB6PztAloBvarfSfkiTtlldoPyQcpvAuukv6ljv
-         FO16pBmarlXoFiA6tCsZCl0rJ/Py/sbxZxH7mcl08HhxtyGTH9xiUzEqtPc2+/mjps
-         rErYzBTGmXdVGf67tiaUOLeSoNUzY5/aCy0aS2So=
-Date:   Fri, 28 Jan 2022 04:33:29 +1100 (AEDT)
-From:   James Morris <jmorris@namei.org>
-To:     Casey Schaufler <casey@schaufler-ca.com>
-cc:     Paul Moore <paul@paul-moore.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Christian Brauner <christian@brauner.io>,
-        Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzbot <syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        selinux@vger.kernel.org
-Subject: Re: [PATCH v2] LSM: general protection fault in legacy_parse_param
-In-Reply-To: <a19e0338-5240-4a6d-aecf-145539aecbce@schaufler-ca.com>
-Message-ID: <3daaf037-2e67-e939-805f-57a61d67f7b8@namei.org>
-References: <018a9bb4-accb-c19a-5b0a-fde22f4bc822.ref@schaufler-ca.com> <018a9bb4-accb-c19a-5b0a-fde22f4bc822@schaufler-ca.com> <20211012103243.xumzerhvhklqrovj@wittgenstein> <d15f9647-f67e-2d61-d7bd-c364f4288287@schaufler-ca.com>
- <CAHC9VhT=dZbWzhst0hMLo0n7=UzWC5OYTMY=0x=LZ97HwG0UsA@mail.gmail.com> <a19e0338-5240-4a6d-aecf-145539aecbce@schaufler-ca.com>
+        id S244940AbiA0R4A (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 12:56:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643306160; x=1674842160;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=h0ELtLaLvU8d5+IR+z+6tOFYz1WyWnwDtWsLq4wETwc=;
+  b=UCaenWA+v6F3cRkgIaOLC83zozXc9GYTcNqeiy3IqeKTX2PfqbWmqtXY
+   VghJyNmu4xpcN5wmB+6N0N18/kePRIwXFumDIF+zVFs7ILT7hUb2TlwHL
+   Sc/K5iLmFwMOz85kL0gqaWi3vuUPKT0MwxjwW7JVovPdsU4y8mHrb33PP
+   MzMqPtFnyESDlmvdu7choSs7lsfOqiTI0aWuFZFtxEF8601fAqPJcz17c
+   0BF/xnElGfDp0VLSrOGsQPf/vjJrmobe++auVYxnfpCQ+vL7wFYx5tu/C
+   alDMuNunr79HXNkn2BxTL9V36LpRi6MODtoJ6HOkG52ys4xTlDVtgVqfb
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234302451"
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="234302451"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:12 -0800
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="674796169"
+Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:12 -0800
+From:   ira.weiny@intel.com
+To:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V8 33/44] memremap_pages: Introduce pgmap_protection_available()
+Date:   Thu, 27 Jan 2022 09:54:54 -0800
+Message-Id: <20220127175505.851391-34-ira.weiny@intel.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220127175505.851391-1-ira.weiny@intel.com>
+References: <20220127175505.851391-1-ira.weiny@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022, Casey Schaufler wrote:
+From: Ira Weiny <ira.weiny@intel.com>
 
-> The usual LSM hook "bail on fail" scheme doesn't work for cases where
-> a security module may return an error code indicating that it does not
-> recognize an input.  In this particular case Smack sees a mount option
-> that it recognizes, and returns 0. A call to a BPF hook follows, which
-> returns -ENOPARAM, which confuses the caller because Smack has processed
-> its data.
-> 
-> The SELinux hook incorrectly returns 1 on success. There was a time
-> when this was correct, however the current expectation is that it
-> return 0 on success. This is repaired.
-> 
-> Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
-> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Users will need to specify that they want their dev_pagemap pages
+protected by specifying a flag in (struct dev_pagemap)->flags.  However,
+it is more efficient to know if that protection is available prior to
+requesting it and failing the mapping.
 
+Define pgmap_protection_available() for users to check if protection is
+available to be used.  The name of pgmap_protection_available() was
+specifically chosen to isolate the implementation of the protection from
+higher level users.  However, the current implementation simply calls
+pks_available() to determine if it can support protection.
 
-Acked-by: James Morris <jamorris@linux.microsoft.com>
+It was considered to have users specify the flag and check if the
+dev_pagemap object returned was protected or not.  But this was
+considered less efficient than a direct check beforehand.
 
-> ---
->  security/security.c      | 17 +++++++++++++++--
->  security/selinux/hooks.c |  5 ++---
->  2 files changed, 17 insertions(+), 5 deletions(-)
-> 
-> diff --git a/security/security.c b/security/security.c
-> index 3d4eb474f35b..e649c8691be2 100644
-> --- a/security/security.c
-> +++ b/security/security.c
-> @@ -884,9 +884,22 @@ int security_fs_context_dup(struct fs_context *fc, struct
-> fs_context *src_fc)
->  	return call_int_hook(fs_context_dup, 0, fc, src_fc);
->  }
->  
-> -int security_fs_context_parse_param(struct fs_context *fc, struct
-> fs_parameter *param)
-> +int security_fs_context_parse_param(struct fs_context *fc,
-> +				    struct fs_parameter *param)
->  {
-> -	return call_int_hook(fs_context_parse_param, -ENOPARAM, fc, param);
-> +	struct security_hook_list *hp;
-> +	int trc;
-> +	int rc = -ENOPARAM;
-> +
-> +	hlist_for_each_entry(hp, &security_hook_heads.fs_context_parse_param,
-> +			     list) {
-> +		trc = hp->hook.fs_context_parse_param(fc, param);
-> +		if (trc == 0)
-> +			rc = 0;
-> +		else if (trc != -ENOPARAM)
-> +			return trc;
-> +	}
-> +	return rc;
->  }
->  
->  int security_sb_alloc(struct super_block *sb)
-> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> index 5b6895e4fc29..371f67a37f9a 100644
-> --- a/security/selinux/hooks.c
-> +++ b/security/selinux/hooks.c
-> @@ -2860,10 +2860,9 @@ static int selinux_fs_context_parse_param(struct
-> fs_context *fc,
->  		return opt;
->  
->  	rc = selinux_add_opt(opt, param->string, &fc->security);
-> -	if (!rc) {
-> +	if (!rc)
->  		param->string = NULL;
-> -		rc = 1;
-> -	}
-> +
->  	return rc;
->  }
->  
-> 
-> 
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
+---
+Changes for V8
+	Split this out to it's own patch.
+	s/pgmap_protection_enabled/pgmap_protection_available
+---
+ include/linux/mm.h | 13 +++++++++++++
+ mm/memremap.c      | 11 +++++++++++
+ 2 files changed, 24 insertions(+)
+
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index e1a84b1e6787..2ae99bee6e82 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1143,6 +1143,19 @@ static inline bool is_pci_p2pdma_page(const struct page *page)
+ 		page->pgmap->type == MEMORY_DEVICE_PCI_P2PDMA;
+ }
+ 
++#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
++
++bool pgmap_protection_available(void);
++
++#else
++
++static inline bool pgmap_protection_available(void)
++{
++	return false;
++}
++
++#endif /* CONFIG_DEVMAP_ACCESS_PROTECTION */
++
+ /* 127: arbitrary random number, small enough to assemble well */
+ #define folio_ref_zero_or_close_to_overflow(folio) \
+ 	((unsigned int) folio_ref_count(folio) + 127u <= 127u)
+diff --git a/mm/memremap.c b/mm/memremap.c
+index 6aa5f0c2d11f..c13b3b8a0048 100644
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -6,6 +6,7 @@
+ #include <linux/memory_hotplug.h>
+ #include <linux/mm.h>
+ #include <linux/pfn_t.h>
++#include <linux/pkeys.h>
+ #include <linux/swap.h>
+ #include <linux/mmzone.h>
+ #include <linux/swapops.h>
+@@ -63,6 +64,16 @@ static void devmap_managed_enable_put(struct dev_pagemap *pgmap)
+ }
+ #endif /* CONFIG_DEV_PAGEMAP_OPS */
+ 
++#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
++
++bool pgmap_protection_available(void)
++{
++	return pks_available();
++}
++EXPORT_SYMBOL_GPL(pgmap_protection_available);
++
++#endif /* CONFIG_DEVMAP_ACCESS_PROTECTION */
++
+ static void pgmap_array_delete(struct range *range)
+ {
+ 	xa_store_range(&pgmap_array, PHYS_PFN(range->start), PHYS_PFN(range->end),
 -- 
-James Morris
-<jmorris@namei.org>
+2.31.1
 
