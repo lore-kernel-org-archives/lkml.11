@@ -2,132 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E84C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EAECC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239505AbiA0SIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:08:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239322AbiA0SIj (ORCPT
+        id S239542AbiA0SIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 13:08:51 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46206 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242328AbiA0SIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:08:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFAA1C06173B;
-        Thu, 27 Jan 2022 10:08:39 -0800 (PST)
+        Thu, 27 Jan 2022 13:08:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37E4661CF0;
-        Thu, 27 Jan 2022 18:08:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 193C9C340E4;
-        Thu, 27 Jan 2022 18:08:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6269E61CEC;
+        Thu, 27 Jan 2022 18:08:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C409C340E4;
+        Thu, 27 Jan 2022 18:08:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643306918;
-        bh=s4mRV+14vZQZyKAfcdb2AqF32nDmOlMD1BWk47fg88A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PcRUNB8vytwQExhNVGKxBxy/Nc0BwjkjKqtH3zus9NFd0NE76oPbOeNZ4Fzw5RVNK
-         c9Z5yPNv56P/qAA7lt24S+7cycwpeR2PONNIE7wsc0nrc4/O756945F8oIWJV4AMhK
-         +40bfMUKz8OlmhS8p3u+JJShF8SlolNGaytnLmAk=
+        s=korg; t=1643306926;
+        bh=0EseEOX3Uko+6aL0ttgEPHf4gFAxN4h7H6Cxt7Yy6S8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QZoLaOro9qXgYn2voE0PClS1oIFzw4HkEdAHt0ggYeeikvA/lojElXygAu16xhZoE
+         rORWeTL/ahZkfgrVBJZ1cvAfsQNT4iR/YgNKrmsqqjKhxxxT+kcOhhxmYKWBpMDl9S
+         AEerevh96YR4d26E+NDnxCCKrmaM9ydt7OCRwdUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com
-Subject: [PATCH 4.9 0/9] 4.9.299-rc1 review
-Date:   Thu, 27 Jan 2022 19:08:18 +0100
-Message-Id: <20220127180257.225641300@linuxfoundation.org>
+        Luo Likang <luolikang@nsfocus.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.9 2/9] media: firewire: firedtv-avc: fix a buffer overflow in avc_ca_pmt()
+Date:   Thu, 27 Jan 2022 19:08:20 +0100
+Message-Id: <20220127180257.302466439@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.0
-MIME-Version: 1.0
+In-Reply-To: <20220127180257.225641300@linuxfoundation.org>
+References: <20220127180257.225641300@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.299-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.9.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.9.299-rc1
-X-KernelTest-Deadline: 2022-01-29T18:02+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.9.299 release.
-There are 9 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-Responses should be made by Sat, 29 Jan 2022 18:02:51 +0000.
-Anything received after that time might be too late.
+commit 35d2969ea3c7d32aee78066b1f3cf61a0d935a4e upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.299-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-and the diffstat can be found below.
+The bounds checking in avc_ca_pmt() is not strict enough.  It should
+be checking "read_pos + 4" because it's reading 5 bytes.  If the
+"es_info_length" is non-zero then it reads a 6th byte so there needs to
+be an additional check for that.
 
-thanks,
+I also added checks for the "write_pos".  I don't think these are
+required because "read_pos" and "write_pos" are tied together so
+checking one ought to be enough.  But they make the code easier to
+understand for me.  The check on write_pos is:
 
-greg k-h
+	if (write_pos + 4 >= sizeof(c->operand) - 4) {
 
--------------
-Pseudo-Shortlog of commits:
+The first "+ 4" is because we're writing 5 bytes and the last " - 4"
+is to leave space for the CRC.
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.9.299-rc1
+The other problem is that "length" can be invalid.  It comes from
+"data_length" in fdtv_ca_pmt().
 
-Lee Jones <lee.jones@linaro.org>
-    ion: Do not 'put' ION handle until after its final use
+Cc: stable@vger.kernel.org
+Reported-by: Luo Likang <luolikang@nsfocus.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+[bwh: Backported to 4.9: adjust context]
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/media/firewire/firedtv-avc.c |   14 +++++++++++---
+ drivers/media/firewire/firedtv-ci.c  |    2 ++
+ 2 files changed, 13 insertions(+), 3 deletions(-)
 
-Daniel Rosenberg <drosen@google.com>
-    ion: Protect kref from userspace manipulation
-
-Daniel Rosenberg <drosen@google.com>
-    ion: Fix use after free during ION_IOC_ALLOC
-
-Stefan Agner <stefan@agner.ch>
-    ARM: 8800/1: use choice for kernel unwinders
-
-Lai Jiangshan <laijs@linux.alibaba.com>
-    KVM: X86: MMU: Use the correct inherited permissions to get shadow page
-
-Paolo Bonzini <pbonzini@redhat.com>
-    KVM: nVMX: fix EPT permissions as reported in exit qualification
-
-Trond Myklebust <trond.myklebust@hammerspace.com>
-    NFSv4: Initialise connection to the server in nfs4_alloc_client()
-
-Dan Carpenter <dan.carpenter@oracle.com>
-    media: firewire: firedtv-avc: fix a buffer overflow in avc_ca_pmt()
-
-Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-    drm/i915: Flush TLBs before releasing backing store
-
-
--------------
-
-Diffstat:
-
- Documentation/virtual/kvm/mmu.txt       |  4 +-
- Makefile                                |  4 +-
- arch/arm/Kconfig.debug                  | 44 +++++++++------
- arch/x86/kvm/paging_tmpl.h              | 44 +++++++++------
- drivers/gpu/drm/i915/i915_drv.h         |  5 +-
- drivers/gpu/drm/i915/i915_gem.c         | 72 +++++++++++++++++++++++++
- drivers/gpu/drm/i915/i915_gem_gtt.c     |  4 ++
- drivers/gpu/drm/i915/i915_reg.h         |  6 +++
- drivers/media/firewire/firedtv-avc.c    | 14 +++--
- drivers/media/firewire/firedtv-ci.c     |  2 +
- drivers/staging/android/ion/ion-ioctl.c | 96 +++++++++++++++++++++++++++++----
- drivers/staging/android/ion/ion.c       | 19 +++++--
- drivers/staging/android/ion/ion.h       |  4 ++
- drivers/staging/android/ion/ion_priv.h  |  4 ++
- fs/nfs/nfs4client.c                     | 82 ++++++++++++++--------------
- lib/Kconfig.debug                       |  6 +--
- 16 files changed, 311 insertions(+), 99 deletions(-)
+--- a/drivers/media/firewire/firedtv-avc.c
++++ b/drivers/media/firewire/firedtv-avc.c
+@@ -1169,7 +1169,11 @@ int avc_ca_pmt(struct firedtv *fdtv, cha
+ 		read_pos += program_info_length;
+ 		write_pos += program_info_length;
+ 	}
+-	while (read_pos < length) {
++	while (read_pos + 4 < length) {
++		if (write_pos + 4 >= sizeof(c->operand) - 4) {
++			ret = -EINVAL;
++			goto out;
++		}
+ 		c->operand[write_pos++] = msg[read_pos++];
+ 		c->operand[write_pos++] = msg[read_pos++];
+ 		c->operand[write_pos++] = msg[read_pos++];
+@@ -1181,13 +1185,17 @@ int avc_ca_pmt(struct firedtv *fdtv, cha
+ 		c->operand[write_pos++] = es_info_length >> 8;
+ 		c->operand[write_pos++] = es_info_length & 0xff;
+ 		if (es_info_length > 0) {
++			if (read_pos >= length) {
++				ret = -EINVAL;
++				goto out;
++			}
+ 			pmt_cmd_id = msg[read_pos++];
+ 			if (pmt_cmd_id != 1 && pmt_cmd_id != 4)
+ 				dev_err(fdtv->device, "invalid pmt_cmd_id %d "
+ 					"at stream level\n", pmt_cmd_id);
+ 
+-			if (es_info_length > sizeof(c->operand) - 4 -
+-					     write_pos) {
++			if (es_info_length > sizeof(c->operand) - 4 - write_pos ||
++			    es_info_length > length - read_pos) {
+ 				ret = -EINVAL;
+ 				goto out;
+ 			}
+--- a/drivers/media/firewire/firedtv-ci.c
++++ b/drivers/media/firewire/firedtv-ci.c
+@@ -138,6 +138,8 @@ static int fdtv_ca_pmt(struct firedtv *f
+ 	} else {
+ 		data_length = msg->msg[3];
+ 	}
++	if (data_length > sizeof(msg->msg) - data_pos)
++		return -EINVAL;
+ 
+ 	return avc_ca_pmt(fdtv, &msg->msg[data_pos], data_length);
+ }
 
 
