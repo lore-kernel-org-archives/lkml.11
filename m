@@ -2,200 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC3AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 23:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB802C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 23:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245033AbiA0Xke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 18:40:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
+        id S244668AbiA0XpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 18:45:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243698AbiA0Xkc (ORCPT
+        with ESMTP id S239508AbiA0XpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 18:40:32 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3654C06173B
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:40:31 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id e13-20020a25e70d000000b00615e9bc9a3cso8905254ybh.22
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:40:31 -0800 (PST)
+        Thu, 27 Jan 2022 18:45:03 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE206C061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:45:02 -0800 (PST)
+Received: by mail-pg1-x549.google.com with SMTP id c19-20020a637253000000b0035e0ba5a1bfso2289294pgn.13
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:45:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=yFBxaeHlXjXrEAjtBVnJS5X3X8ptkwpLlqobGOAO4po=;
-        b=Ce6iLPIQWKLfzLwp+KOETyQ6kf0+1rabs3crEUlz8YrBYJC/YY2lyr5R/cbEjJht29
-         AtH1VGsPaqYSii/MhAPPvTnQsOGOdyNeimknNvkd8Bb03LIOEPQwXSs5Q5xivgaFxdQD
-         1EmFutqCJ49XToIeVA3S8uR6eLQs7c5fuPq/EDK8CZ4eV1A843gRrJh2KGYw7kG65iPw
-         BMf6U0fx7b9Zacti2OeGo/zYppnH1a67wPZEZJ5uffjqY4Z5ifPcr3hWwpzarr5xb4LY
-         ibDQ8jL1TVoqsV9G8m/6g4oCUKXbp6GR3zxAJZfbxUBV1r7cNRmtCCJ9+pRE25683RrY
-         SM1A==
+        h=date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=FeJS7xf34VelIfEIwGcvGlgB4HQ0+TQ7oDm/G0cg3j4=;
+        b=ZOq4YdeHeJp+nBUwSZaiTie8j8HjrgMt7YjTbttkTx0EsBcRH05/3vSHOogqojwfNX
+         e7VyR9V8RH8HWavxyji2WfKjSXD1kHT43TTJQwKP+IPLMI5oOo89q9oN7Giy7LKU/Bwu
+         i49kkLtk+PkH7ImND9+X+pgdUVzXC7astzefA75x12SDBjVmZOUUHa+klAViaDcIdybS
+         BEMYFiC3UrEk5wgsWsycp95l+lxu1HvqqM8Vl4veG/XhxQjcmbR5s/GISp1EtGPg2nw6
+         +V+/PwNOwuMI8LvcLGyrAhcBfUQuI4lnWJjUTh61SSh2Zfn3UmFU31PnCbzHJpX+y709
+         JAaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=yFBxaeHlXjXrEAjtBVnJS5X3X8ptkwpLlqobGOAO4po=;
-        b=s61qX/qf36/UoyOxIElkJ5MAfQzN3ND58VAwgl8qaFjU1EHdWeMsgj0xu4sGz5kjZr
-         dSgDSvainh7wOREjjCiFU5aO3/L+aowpz2F9FXsjsb+8hZ+vStosld7RTavFrEJchoPV
-         AIXVLxS/oU4/xnkYgIggFIjlHOZPkrvhcPxfX7NWinwJc8+dJIl2zbKNH3gNawjlynAD
-         nimIgnz68YC2Jy+H/GdQG6tjl7OaZTZFK+Hy9jndTBks4oKFzUrno3J5eOFpOjpSjL9H
-         9yWEhLjYPOEcB+GassLnc4PfUEi9AWWwiQG1vfyC56xFrB+6UzMgwwxlqTzIDWxItBxE
-         FL6A==
-X-Gm-Message-State: AOAM533Rlv/+S1HlYmliDKe81t9xg7JqDw7k0eTb4r3+FpXiO8mfm7XI
-        RNTGbjuaEoluGdGoxF5tAB318Wq4i931Kg==
-X-Google-Smtp-Source: ABdhPJzsntUA4qe3swAu1loe9zf1paZtVP4HeNWmwBLFhpee3x2Coyx0BMWFxGlKRQz/gHpfMjnIul7+NJmSQg==
-X-Received: from ipylypiv.svl.corp.google.com ([2620:15c:2c5:11:8e8f:af2f:deb6:adb3])
- (user=ipylypiv job=sendgmr) by 2002:a81:4853:: with SMTP id
- v80mr3ywa.66.1643326830448; Thu, 27 Jan 2022 15:40:30 -0800 (PST)
-Date:   Thu, 27 Jan 2022 15:39:53 -0800
-Message-Id: <20220127233953.2185045-1-ipylypiv@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=FeJS7xf34VelIfEIwGcvGlgB4HQ0+TQ7oDm/G0cg3j4=;
+        b=sujZrkZYc38sMUx0jKLOQxpcHUD6lEw5QLHPw4m1cTomgLdmTLQKdCd/I8ybzFZXjW
+         9zj3cJd5VpNZMIcyXBiq+kOjOzGyvM0VVaHYdpkm13tTp02TaaSGaxDWZoDFNP3uVIwO
+         kPALEC/kJwoe2lroLMrD6No4KxBFkMWz9r7QNIwxGr0xPHFiE962oLuU2RNm1VHQBtgZ
+         97UMNlEJs884hbfm2RNTmztG2YkL24wXm0ZVRV5gUHBKCLorBW20y7DVNkz/ikxgVzCb
+         NhEnMMpTQliC8aHylCEDLT0lUpdJgI2t5W3a/tGgMSKE4kkF2Qs6Ft7NkaGBxUm8t3OE
+         1xHg==
+X-Gm-Message-State: AOAM530L+HDldrxMHdsf1Se7prCUSkb99wZi4Z4IF9IHXpYlHpbiCn/+
+        8scApl5gFoKzyS/aFygPtVSRVTzcvXxadg==
+X-Google-Smtp-Source: ABdhPJy0oHhxo6bK2nL/LJjHeg16TCCPU/5B3wvzJM4gADSdLyk3TCijwnkGzHKKyfPoZ5QOX8Iu4Bbs+jXZ7Q==
+X-Received: from wonchungspecialist.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1440])
+ (user=wonchung job=sendgmr) by 2002:a17:90b:3841:: with SMTP id
+ nl1mr6704792pjb.24.1643327101982; Thu, 27 Jan 2022 15:45:01 -0800 (PST)
+Date:   Thu, 27 Jan 2022 23:44:50 +0000
+Message-Id: <20220127234450.2218419-1-wonchung@google.com>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH] Revert "module, async: async_synchronize_full() on module
- init iff async is used"
-From:   Igor Pylypiv <ipylypiv@google.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>, Tejun Heo <tj@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Changyuan Lyu <changyuanl@google.com>,
-        Igor Pylypiv <ipylypiv@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH v2] ACPI: device_sysfs: Add sysfs support for _PLD
+From:   Won Chung <wonchung@google.com>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Won Chung <wonchung@google.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 774a1221e862b343388347bac9b318767336b20b.
+When ACPI table includes _PLD fields for a device, create a new file
+(pld) in sysfs to share _PLD fields.
 
-We need to finish all async code before the module init sequence is done.
-In the reverted commit the PF_USED_ASYNC flag was added to mark a thread
-that called async_schedule(). Then the PF_USED_ASYNC flag was used to
-determine whether or not async_synchronize_full() needs to be invoked.
-This works when modprobe thread is calling async_schedule(), but it
-does not work if module dispatches init code to a worker thread which
-then calls async_schedule().
-
-For example, PCI driver probing is invoked from a worker thread based on
-a node where device is attached:
-
-	if (cpu < nr_cpu_ids)
-		error = work_on_cpu(cpu, local_pci_probe, &ddi);
-	else
-		error = local_pci_probe(&ddi);
-
-We end up in a situation where a worker thread gets the PF_USED_ASYNC flag
-set instead of the modprobe thread. As a result, async_synchronize_full()
-is not invoked and modprobe completes without waiting for the async code
-to finish.
-
-The issue was discovered while loading the pm80xx driver:
-(scsi_mod.scan=async)
-
-modprobe pm80xx                      worker
-...
-  do_init_module()
-  ...
-    pci_call_probe()
-      work_on_cpu(local_pci_probe)
-                                     local_pci_probe()
-                                       pm8001_pci_probe()
-                                         scsi_scan_host()
-                                           async_schedule()
-                                           worker->flags |= PF_USED_ASYNC;
-                                     ...
-      < return from worker >
-  ...
-  if (current->flags & PF_USED_ASYNC) <--- false
-  	async_synchronize_full();
-
-Commit 21c3c5d28007 ("block: don't request module during elevator init")
-fixed the deadlock issue which the reverted commit 774a1221e862 ("module,
-async: async_synchronize_full() on module init iff async is used") tried
-to fix.
-
-Since commit 0fdff3ec6d87 ("async, kmod: warn on synchronous
-request_module() from async workers") synchronous module loading
-from async is not allowed.
-
-Given that the original deadlock issue is fixed and it is no longer allowed
-to call synchronous request_module() from async we can remove PF_USED_ASYNC
-flag to make module init consistently invoke async_synchronize_full()
-unless async module probe is requested.
-
-Signed-off-by: Igor Pylypiv <ipylypiv@google.com>
-Reviewed-by: Changyuan Lyu <changyuanl@google.com>
+Signed-off-by: Won Chung <wonchung@google.com>
 ---
- include/linux/sched.h |  1 -
- kernel/async.c        |  3 ---
- kernel/module.c       | 25 +++++--------------------
- 3 files changed, 5 insertions(+), 24 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-acpi | 53 ++++++++++++++++++++++++
+ drivers/acpi/device_sysfs.c              | 42 +++++++++++++++++++
+ 2 files changed, 95 insertions(+)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index f5b2be39a78c..75ba8aa60248 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1680,7 +1680,6 @@ extern struct pid *cad_pid;
- #define PF_MEMALLOC		0x00000800	/* Allocating memory */
- #define PF_NPROC_EXCEEDED	0x00001000	/* set_user() noticed that RLIMIT_NPROC was exceeded */
- #define PF_USED_MATH		0x00002000	/* If unset the fpu must be initialized before use */
--#define PF_USED_ASYNC		0x00004000	/* Used async_schedule*(), used by module init */
- #define PF_NOFREEZE		0x00008000	/* This thread should not be frozen */
- #define PF_FROZEN		0x00010000	/* Frozen for system suspend */
- #define PF_KSWAPD		0x00020000	/* I am kswapd */
-diff --git a/kernel/async.c b/kernel/async.c
-index b8d7a663497f..b2c4ba5686ee 100644
---- a/kernel/async.c
-+++ b/kernel/async.c
-@@ -205,9 +205,6 @@ async_cookie_t async_schedule_node_domain(async_func_t func, void *data,
- 	atomic_inc(&entry_count);
- 	spin_unlock_irqrestore(&async_lock, flags);
- 
--	/* mark that this task has queued an async job, used by module init */
--	current->flags |= PF_USED_ASYNC;
--
- 	/* schedule for execution */
- 	queue_work_node(node, system_unbound_wq, &entry->work);
- 
-diff --git a/kernel/module.c b/kernel/module.c
-index 24dab046e16c..46a5c2ed1928 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -3725,12 +3725,6 @@ static noinline int do_init_module(struct module *mod)
+diff --git a/Documentation/ABI/testing/sysfs-bus-acpi b/Documentation/ABI/t=
+esting/sysfs-bus-acpi
+index 58abacf59b2a..7f4544c9d563 100644
+--- a/Documentation/ABI/testing/sysfs-bus-acpi
++++ b/Documentation/ABI/testing/sysfs-bus-acpi
+@@ -96,3 +96,56 @@ Description:
+ 		hardware, if the _HRV control method is present.  It is mostly
+ 		useful for non-PCI devices because lspci can list the hardware
+ 		version for PCI devices.
++
++What:		/sys/bus/acpi/devices/.../pld
++Date:		Jan, 2022
++Contact:	Rafael J. Wysocki <rjw@rjwysocki.net>
++Description:
++		This attribute contains the output of the device object's
++		_PLD control method, if present. This information provides
++		details on physical location of a port.
++
++		Description on each _PLD field from ACPI specification:
++
++		=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D	=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++		GROUP_TOKEN	Unique numerical value identifying a group.
++		GROUP_POSITION	Identifies this device connection point=E2=80=99s
++				position in the group.
++		USER_VISIBLE	Set if the device connection point can be
++				seen by the user without disassembly.
++		DOCK		Set if the device connection point resides
++				in a docking station or port replicator.
++		BAY		Set if describing a device in a bay or if
++				device connection point is a bay.
++		LID		Set if this device connection point resides
++				on the lid of laptop system.
++		PANEL		Describes which panel surface of the system=E2=80=99s
++				housing the device connection point resides on:
++				0 - Top
++				1 - Bottom
++				2 - Left
++				3 - Right
++				4 - Front
++				5 - Back
++				6 - Unknown (Vertical Position and Horizontal
++				Position will be ignored)
++		HORIZONTAL_	0 - Left
++		POSITION	1 - Center
++				2 - Right
++		VERTICAL_	0 - Upper
++		POSITION	1 - Center
++				2 - Lower
++		SHAPE		Describes the shape of the device connection
++				point.
++				0 - Round
++				1 - Oval
++				2 - Square
++				3 - Vertical Rectangle
++				4 - Horizontal Rectangle
++				5 - Vertical Trapezoid
++				6 - Horizontal Trapezoid
++				7 - Unknown - Shape rendered as a Rectangle
++				with dotted lines
++				8 - Chamfered
++				15:9 - Reserved
++		=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D	=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+diff --git a/drivers/acpi/device_sysfs.c b/drivers/acpi/device_sysfs.c
+index d5d6403ba07b..8d4df5fb1c45 100644
+--- a/drivers/acpi/device_sysfs.c
++++ b/drivers/acpi/device_sysfs.c
+@@ -509,6 +509,40 @@ static ssize_t status_show(struct device *dev, struct =
+device_attribute *attr,
+ }
+ static DEVICE_ATTR_RO(status);
+=20
++static ssize_t pld_show(struct device *dev, struct device_attribute *attr,
++			char *buf)
++{
++	struct acpi_device *acpi_dev =3D to_acpi_device(dev);
++	acpi_status status;
++	struct acpi_pld_info *pld;
++
++	status =3D acpi_get_physical_device_location(acpi_dev->handle, &pld);
++	if (ACPI_FAILURE(status))
++		return -ENODEV;
++
++	return sprintf(buf, "GROUP_TOKEN=3D%u\n"
++		"GROUP_POSITION=3D%u\n"
++		"USER_VISIBLE=3D%u\n"
++		"DOCK=3D%u\n"
++		"BAY=3D%u\n"
++		"LID=3D%u\n"
++		"PANEL=3D%u\n"
++		"HORIZONTAL_POSITION=3D%u\n"
++		"VERTICAL_POSITION=3D%u\n"
++		"SHAPE=3D%u\n",
++		pld->group_token,
++		pld->group_position,
++		pld->user_visible,
++		pld->dock,
++		pld->bay,
++		pld->lid,
++		pld->panel,
++		pld->horizontal_position,
++		pld->vertical_position,
++		pld->shape);
++}
++static DEVICE_ATTR_RO(pld);
++
+ /**
+  * acpi_device_setup_files - Create sysfs attributes of an ACPI device.
+  * @dev: ACPI device object.
+@@ -595,6 +629,12 @@ int acpi_device_setup_files(struct acpi_device *dev)
+ 						    &dev_attr_real_power_state);
  	}
- 	freeinit->module_init = mod->init_layout.base;
- 
--	/*
--	 * We want to find out whether @mod uses async during init.  Clear
--	 * PF_USED_ASYNC.  async_schedule*() will set it.
--	 */
--	current->flags &= ~PF_USED_ASYNC;
--
- 	do_mod_ctors(mod);
- 	/* Start the module */
- 	if (mod->init != NULL)
-@@ -3756,22 +3750,13 @@ static noinline int do_init_module(struct module *mod)
- 
- 	/*
- 	 * We need to finish all async code before the module init sequence
--	 * is done.  This has potential to deadlock.  For example, a newly
--	 * detected block device can trigger request_module() of the
--	 * default iosched from async probing task.  Once userland helper
--	 * reaches here, async_synchronize_full() will wait on the async
--	 * task waiting on request_module() and deadlock.
--	 *
--	 * This deadlock is avoided by perfomring async_synchronize_full()
--	 * iff module init queued any async jobs.  This isn't a full
--	 * solution as it will deadlock the same if module loading from
--	 * async jobs nests more than once; however, due to the various
--	 * constraints, this hack seems to be the best option for now.
--	 * Please refer to the following thread for details.
-+	 * is done. This has potential to deadlock if synchronous module
-+	 * loading is requested from async (which is not allowed!).
- 	 *
--	 * http://thread.gmane.org/gmane.linux.kernel/1420814
-+	 * See commit 0fdff3ec6d87 ("async, kmod: warn on synchronous
-+	 * request_module() from async workers") for more details.
- 	 */
--	if (!mod->async_probe_requested && (current->flags & PF_USED_ASYNC))
-+	if (!mod->async_probe_requested)
- 		async_synchronize_full();
- 
- 	ftrace_free_mem(mod, mod->init_layout.base, mod->init_layout.base +
--- 
+=20
++	if (acpi_has_method(dev->handle, "_PLD")) {
++		result =3D device_create_file(&dev->dev, &dev_attr_pld);
++		if (result)
++			goto end;
++	}
++
+ 	acpi_expose_nondev_subnodes(&dev->dev.kobj, &dev->data);
+=20
+ end:
+@@ -645,4 +685,6 @@ void acpi_device_remove_files(struct acpi_device *dev)
+ 		device_remove_file(&dev->dev, &dev_attr_status);
+ 	if (dev->handle)
+ 		device_remove_file(&dev->dev, &dev_attr_path);
++	if (acpi_has_method(dev->handle, "_PLD"))
++		device_remove_file(&dev->dev, &dev_attr_pld);
+ }
+--=20
 2.35.0.rc0.227.g00780c9af4-goog
 
