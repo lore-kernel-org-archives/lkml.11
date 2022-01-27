@@ -2,95 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 689F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 02:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69BAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 02:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235165AbiA0CbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 21:31:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56532 "EHLO
+        id S235187AbiA0Cd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 21:33:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235159AbiA0CbU (ORCPT
+        with ESMTP id S232931AbiA0CdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 21:31:20 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56785C061747
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 18:31:20 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id d18so1281739plg.2
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 18:31:20 -0800 (PST)
+        Wed, 26 Jan 2022 21:33:24 -0500
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F0B5C06161C;
+        Wed, 26 Jan 2022 18:33:24 -0800 (PST)
+Received: by mail-qk1-x732.google.com with SMTP id 71so1420410qkf.4;
+        Wed, 26 Jan 2022 18:33:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=/+eRF4BZ3tTy/ASyWDjy8fK3DAjpfZ5B0yUKffA62sc=;
-        b=RtBFwQLvghr0bKZt8o0ujYoZIxrqrrdMuDfo+8ozx8bZzBA0MJYkMcImqh+werc/2B
-         ILxbYf6ot/VZjtxWnp36bXvSZd7zD5HyTTIKFJ+w46s7fx1zXQyOjw4Un53UE0QxAKi7
-         OZRAnuRSD5/+d/hKYiHmgvWtbVxIpk6gvPbToTY+z851QK9pHzz0k/I2pC21h+Xzpmtj
-         8GQm+LGWSxWztGwDONZABzEuPXAiA6+7WdcttenQjI6/1TvD9L7bPSexhUrY8FY9nzPy
-         sXLJKiR0zcG/UBPNVSill1UaCojE8mqumnGGczeBCMXH7vcQeLUakqwAsMTuoODnmcDI
-         T6QQ==
+        bh=8GyXdLlhnsgNAVFJ9za+5cXDmt66YlUHV1TYza3TEgY=;
+        b=OiuOyVWWHTywzF33MqVpuIVLx3MWnw2IEbxayj/a4C8eU5bB71UOltlNY7/B0MZcw4
+         FhIHZXi0ddnycalGF0F//cwAGqCl9/u6tAGyfE5pV43+SfuVhdPq61c7qiaqjN6HO0SH
+         HmHYAfKj+iw7iJdXlPsrddMGyzZ5CbqpBXNbWSabd7OpOD1JdG0um9hQA0qHtPZheptq
+         ElkB2gTdnXZOw0UZ3AvcmH3cXWPxWjdwD4a8wA2nCI1US04lzvkEBbEnYQUj080WDdSv
+         fG90gu5lPy0TDLo4GimpPXzjHTh4FOaa7xpdtPKIdeSWJrh+pav0Gcz9MnVWbW86NK5w
+         bCng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=/+eRF4BZ3tTy/ASyWDjy8fK3DAjpfZ5B0yUKffA62sc=;
-        b=sKBMjO1cQ4q1Pi5SQi71UmmMt2eBuwJ781truJc5xGwOEON1DqezdP5mV0qC2UIh+M
-         cWeNwVf27J59HconH5OFHv+OhiZRTrmxUq323IUFZS4hZJLXYczVGANUxYZ67mg7T5yt
-         jWRYpOHWB2H+5Sz+r78nMjxUBVc8tscuCvbe/yE2jcd2r+2Wko+PYegL4jZG/1iMoT5q
-         P6wjCcAGXvjqb10Qj9BJhoyZHvPFzD+uN1aZ+b2KeJLlEWhs1EQuDbug5SRONzwBrNMk
-         vhbsakGAGOu+kQmJK65KYNFataqGMIBwXA6Ey5ITfmWlj+JlnJKDSvVmGgLUa0fWtcxZ
-         ernQ==
-X-Gm-Message-State: AOAM530lt5FPxUbbXsl0V7xG9FeBwUaIGWpErr1WvkrTnxhj4/mmoHGo
-        53NXxrCw5Gvig7WP+J8Y+UHHTA==
-X-Google-Smtp-Source: ABdhPJzGyJlDx3Aj8sNJy4V12gMazAiPRsegp4PUfw8oEBeqklGKdQepPr+NCUGhTLgShKgRjnaXgA==
-X-Received: by 2002:a17:902:d4cb:: with SMTP id o11mr1332120plg.43.1643250679584;
-        Wed, 26 Jan 2022 18:31:19 -0800 (PST)
-Received: from google.com ([2401:fa00:1:10:c283:8675:30a2:a4ed])
-        by smtp.gmail.com with ESMTPSA id s2sm8260862pgq.38.2022.01.26.18.31.18
+        bh=8GyXdLlhnsgNAVFJ9za+5cXDmt66YlUHV1TYza3TEgY=;
+        b=yP3FRKeT5a2HcWZ5l4wGgv5mk+CMLI6lBUp2/4/tPaeoo25h9IgCKotVFl6NqlCFiY
+         +1ZvRlpoaqGibUSKxuPfJzr7SiBY1XD+cV1dX0XXFc6CZWuENNNBjzCad2y/AZ2vHD4d
+         qqk/VN2OjOLupNTxseuybQP/P45D1EQvJVOtoFEMaoSgkKHy9Vpex9ksfk2a6+o7xv4P
+         gawEbuPbqaMhf64sgLDZpuZBvSlAtLGw3jmRwJLEaUasLnSqqncI1FMxKgEqSC3ZsOof
+         zuC0X4Eh80MHU+x4rqbntqh0igAp46bligNbkiUBvMggaEFqJSENuDJEweLxROVN9wX8
+         pUDA==
+X-Gm-Message-State: AOAM531Wrgixe0aAeUj7Pg++RUnssFH+tTZHKhxhD20wHYJ1/Mh7amBi
+        8uYDoAhcWPHuEVQfsn4c9/SPGSkM9xs=
+X-Google-Smtp-Source: ABdhPJwHLCBho7YHFxTCSZTDMKMGTVRgogiyPY7ZU9TCq5x0GSVY896MyQ2D5p+qAztp0Hn8O0t6CA==
+X-Received: by 2002:a05:620a:4594:: with SMTP id bp20mr1212315qkb.381.1643250803205;
+        Wed, 26 Jan 2022 18:33:23 -0800 (PST)
+Received: from Dell-Inspiron-15 (c-73-149-219-1.hsd1.ma.comcast.net. [73.149.219.1])
+        by smtp.gmail.com with ESMTPSA id r7sm562904qti.69.2022.01.26.18.33.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 18:31:19 -0800 (PST)
-Date:   Thu, 27 Jan 2022 10:31:16 +0800
-From:   Tzung-Bi Shih <tzungbi@google.com>
-To:     "Dustin L. Howett" <dustin@howett.net>
-Cc:     linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Michael Niksa <michael.niksa@live.com>
-Subject: Re: [PATCH v2 0/2] platform/chrome: add support for the Framework
- Laptop
-Message-ID: <YfID9LgDOW0GkJ26@google.com>
-References: <20220126180020.15873-1-dustin@howett.net>
+        Wed, 26 Jan 2022 18:33:22 -0800 (PST)
+Date:   Wed, 26 Jan 2022 21:33:19 -0500
+From:   Ben Wolsieffer <benwolsieffer@gmail.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linus.walleij@linaro.org, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 3/3] ARM: dts: qcom: basic HP TouchPad support
+Message-ID: <YfIEb+BSNI3maH79@Dell-Inspiron-15>
+References: <cover.1643075547.git.benwolsieffer@gmail.com>
+ <9f19df2a0017b71547445ac34df221e827c45bd0.1643075547.git.benwolsieffer@gmail.com>
+ <YfDKTGQDh3tDMECz@builder.lan>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220126180020.15873-1-dustin@howett.net>
+In-Reply-To: <YfDKTGQDh3tDMECz@builder.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 12:00:18PM -0600, Dustin L. Howett wrote:
-> This patch series adds support for the Framework Laptop to the cros_ec
-> LPC driver.
+On Tue, Jan 25, 2022 at 10:13:00PM -0600, Bjorn Andersson wrote:
+> On Mon 24 Jan 20:07 CST 2022, Ben Wolsieffer wrote:
 > 
-> The Framework Laptop is a non-Chromebook laptop that uses the ChromeOS
-> Embedded Controller. Since the machine was designed to present a more
-> normal device profile, it does not report all 512 I/O ports that are
-> typically used by cros_ec_lpcs. Because of this, changes to the driver's
-> port reservation scheme were required.
+> > Modify the Dragonboard device tree to support the most basic hardware on
+> > the HP TouchPad. The headphone UART port and eMMC are supported.
+> > 
 > 
-> Since this EC driver probes the MEC range first, and uses only the MEC
-> range if that probe succeeds[^1], we can get by without requesting the
-> entire port range required by non-MEC embedded controllers until
-> absolutely necessary.
+> We typically don't have one commit for the cloning and then one to
+> update the content, in particular since your diffstat became rather
+> weird.
 > 
-> [^1]: this includes "memory mapped" read - where the traditional LPC EC
-> requires I/O ports 0x900-0x9FF, the MEC EC multiplexes reads/writes
-> over the same eight ports, 0x800-0x807.
-> 
-> Changelog in v2:
->   Cleaned up the commit subjects per request.
-> 
-> Dustin L. Howett (2):
->   platform/chrome: cros_ec_lpcs: detect the Framework Laptop
->   platform/chrome: cros_ec_lpcs: reserve the MEC LPC I/O ports first
+> That said, got some comments below, things that I wouldn't have spotted
+> if you sent this as just a new file.
 
-For the series,
-Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+Ok, I'll squash those for v2.
+
+> > -			dragon_sdcc1_pins: sdcc1 {
+> > +			/* eMMC pins, all 8 data lines connected */
+> > +			emmc_pins: sdcc1 {
+> >  				mux {
+> >  					pins = "gpio159", "gpio160", "gpio161",
+> >  					     "gpio162", "gpio163", "gpio164",
+> >  					     "gpio165", "gpio166", "gpio167",
+> >  					     "gpio168";
+> > -					     function = "sdc1";
+> > +					function = "sdc1";
+> >  				};
+> >  				clk {
+> >  					pins = "gpio167"; /* SDC1 CLK */
+> [..]
+> > @@ -171,205 +77,33 @@ pinconf {
+> >  				};
+> >  			};
+> >  
+> > -			dragon_gsbi12_i2c_pins: gsbi12_i2c {
+> > -				mux {
+> > -					pins = "gpio115", "gpio116";
+> > -					function = "gsbi12";
+> > -				};
+> > -				pinconf {
+> > -					pins = "gpio115", "gpio116";
+> > -					drive-strength = <16>;
+> > -					/* These have external pull-up 4.7kOhm to 1.8V */
+> > -					bias-disable;
+> > -				};
+> > -			};
+> > -
+> > -			/* Primary serial port uart 0 pins */
+> > -			dragon_gsbi12_serial_pins: gsbi12_serial {
+> > +			/* Headphone UART pins */
+> > +			headphone_uart_pins: gsbi12_serial {
+> >  				mux {
+> >  					pins = "gpio117", "gpio118";
+> >  					function = "gsbi12";
+> >  				};
+> > -				tx {
+> > -					pins = "gpio117";
+> > -					drive-strength = <8>;
+> > -					bias-disable;
+> > -				};
+> >  				rx {
+> > -					pins = "gpio118";
+> > +					pins = "gpio117";
+> >  					drive-strength = <2>;
+> >  					bias-pull-up;
+> >  				};
+> > -			};
+> 
+> I find it hard to conclude what the resulting snippet is from this
+> chunk, did rx swap place from gpio118 to gpio117?
+
+Yes, I made that swap based on comments in the downstream kernel, but,
+now that I think about it, there's a good chance those comments are
+wrong. The downstream kernel configures both pins as 8 mA drive with no
+bias, so no one would ever notice that they were swapped. I think I'll
+swap them back in v2. In practice I think the pin configuration makes
+little difference, but should I keep the config from the Dragonboard or
+match the downstream kernel?
+
+> [..]
+> > @@ -814,14 +378,16 @@ l20 {
+> >  					bias-pull-down;
+> >  				};
+> >  				l21 {
+> > -					// 1.1 V according to schematic
+> >  					regulator-min-microvolt = <1200000>;
+> >  					regulator-max-microvolt = <1200000>;
+> >  					bias-pull-down;
+> > -					regulator-always-on;
+> > +					/*
+> > +					 * RPM driver can't handle always-on regulators that are
+> > +					 * supplied by regulators initialized after them.
+> > +					 */
+> 
+> That looks like an oversight that should be corrected, perhaps it needs
+> similar attention that was given to the smd-rpm driver recently?
+> 
+> But this makes me wonder, how can this work on the other board? Linus?
+
+It probably doesn't work as intended, but doesn't cause a major
+problem either. I only noticed the failure while looking through dmesg.
+As soon as the RPM driver probe gets to an always on regulator with a not
+yet initialized supply, devm_regulator_register() returns -EAGAIN, it
+breaks out of the loop, and the rest of the regulators don't get
+initialized. The initialization is retried several times during boot
+(because of -EAGAIN), but always fails at the same spot. This doesn't
+actually seem to cause any visible problem, other than errors in dmesg.
+
+I tried making the driver continue to initialize the rest of the
+regulators even if one fails with -EAGAIN, but still return -EAGAIN from
+probe(). My thought was that this would cause probe to be retried later,
+and initialization would succeed now that the supply regulators were
+available, but instead it seems to hang before any console output.
+
+I don't know if the regulator supplies are correct either, because the
+downstream kernel doesn't specify them. I also know next to nothing about
+the RPM, so I would definitely appreciate a review from someone familiar
+with it.
+
+> > +					// regulator-always-on;
+> >  				};
+> >  				l22 {
+> > -					// 1.2 V according to schematic
+> >  					regulator-min-microvolt = <1150000>;
+> >  					regulator-max-microvolt = <1150000>;
+> >  					bias-pull-down;
+> > @@ -845,7 +411,7 @@ l25 {
+> >  				};
+> >  
+> >  				s0 {
+> > -					// regulator-min-microvolt = <500000>;
+> > +					// regulator-min-microvolt = <800000>;
+> >  					// regulator-max-microvolt = <1325000>;
+> 
+> This looks like the full range the regulator could do, do you see a
+> reason for documenting that here? Unless there's a good reason I think
+> you should leave the commented min/max out.
+
+That was just copied from the Dragonboard DTS, with updated values from
+the downstream kernel. I assume some kind of voltage/frequency scaling
+driver is needed to actually support a range of voltages here, so I
+guess the comments could serve as a reference if that was ever
+implemented.
+
