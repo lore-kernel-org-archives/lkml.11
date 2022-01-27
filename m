@@ -2,107 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27883C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 21:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB47DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 21:11:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241508AbiA0VDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 16:03:03 -0500
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:18292 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344206AbiA0VDA (ORCPT
+        id S1344257AbiA0VLz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 16:11:55 -0500
+Received: from netrider.rowland.org ([192.131.102.5]:36195 "HELO
+        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S1344178AbiA0VLu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 16:03:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643317380; x=1674853380;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=OXRAZ4ZbAiGfh4OhUn2p/TK/Z5xaiNitvZb8Ee+RiIw=;
-  b=tOqFrcLs87Gi7yG4SKpEeKjvu79v2fgAfc78i+1LfmHLECKocY9Si7Tf
-   gq2Uo5V302RNiqLsZbahcQkCCAr00HvjAE06blYkEnl5w/0Hg4rbljgZi
-   2eTVEisRQfN6uuDbHHOI4xDl6Fh7IVTibY29fDJ23ePWvd0jutpjaCHjv
-   Q=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 27 Jan 2022 13:03:00 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 13:02:59 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 27 Jan 2022 13:02:59 -0800
-Received: from hu-amelende-lv.qualcomm.com (10.49.16.6) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 27 Jan 2022 13:02:58 -0800
-From:   Anjelique Melendez <quic_amelende@quicinc.com>
-To:     <dmitry.torokhov@gmail.com>
-CC:     <linux-input@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <collinsd@codeaurora.org>,
-        <bjorn.andersson@linaro.org>, <swboyd@chromium.org>,
-        <skakit@codeaurora.org>,
-        Anjelique Melendez <quic_amelende@quicinc.com>
-Subject: [PATCH v2 4/4] input: misc: pm8941-pwrkey: simulate missed key press events
-Date:   Thu, 27 Jan 2022 13:00:29 -0800
-Message-ID: <20220127210024.25597-5-quic_amelende@quicinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220127210024.25597-1-quic_amelende@quicinc.com>
-References: <20220127210024.25597-1-quic_amelende@quicinc.com>
+        Thu, 27 Jan 2022 16:11:50 -0500
+Received: (qmail 185924 invoked by uid 1000); 27 Jan 2022 16:11:48 -0500
+Date:   Thu, 27 Jan 2022 16:11:48 -0500
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Paul =?iso-8859-1?Q?Heidekr=FCger?= <paul.heidekrueger@in.tum.de>
+Cc:     Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        Marco Elver <elver@google.com>,
+        Charalampos Mainas <charalampos.mainas@gmail.com>,
+        Pramod Bhatotia <pramod.bhatotia@in.tum.de>
+Subject: [PATCH] tools/memory-model: Explain syntactic and semantic
+ dependencies
+Message-ID: <YfMKlLInsK0Qr77f@rowland.harvard.edu>
+References: <20220125172819.3087760-1-paul.heidekrueger@in.tum.de>
+ <YfBk265vVo4FL4MJ@rowland.harvard.edu>
+ <YfJ7Rr9Kdk4u78lt@Pauls-MacBook-Pro.local>
+ <YfLQmgsXp6pg0XIy@rowland.harvard.edu>
+ <YfMFQ5IZiGBRw7SH@Pauls-MacBook-Pro.local>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+In-Reply-To: <YfMFQ5IZiGBRw7SH@Pauls-MacBook-Pro.local>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Collins <collinsd@codeaurora.org>
+Paul Heidekrüger pointed out that the Linux Kernel Memory Model
+documentation doesn't mention the distinction between syntactic and
+semantic dependencies.  This is an important difference, because the
+compiler can easily break dependencies that are only syntactic, not
+semantic.
 
-The status of the keys connected to the KPDPWR_N and RESIN_N pins
-is identified by reading corresponding bits in the interrupt real
-time status register.  If the status has changed by the time that
-the interrupt is handled then a press event will be missed.
+This patch adds a few paragraphs to the LKMM documentation explaining
+these issues and illustrating how they can matter.
 
-Maintain a last known status variable to find unbalanced release
-events and simulate press events for each accordingly.
+Suggested-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
 
-Signed-off-by: David Collins <collinsd@codeaurora.org>
-Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
 ---
- drivers/input/misc/pm8941-pwrkey.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/input/misc/pm8941-pwrkey.c b/drivers/input/misc/pm8941-pwrkey.c
-index bcdbe260b684..99ef2ff92eb1 100644
---- a/drivers/input/misc/pm8941-pwrkey.c
-+++ b/drivers/input/misc/pm8941-pwrkey.c
-@@ -76,6 +76,7 @@ struct pm8941_pwrkey {
- 	u32 code;
- 	u32 sw_debounce_time_us;
- 	ktime_t sw_debounce_end_time;
-+	bool last_status;
- 	const struct pm8941_data *data;
- };
+
+[as1970]
+
+
+ tools/memory-model/Documentation/explanation.txt |   47 +++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+
+Index: usb-devel/tools/memory-model/Documentation/explanation.txt
+===================================================================
+--- usb-devel.orig/tools/memory-model/Documentation/explanation.txt
++++ usb-devel/tools/memory-model/Documentation/explanation.txt
+@@ -485,6 +485,53 @@ have R ->po X.  It wouldn't make sense f
+ somehow on a value that doesn't get loaded from shared memory until
+ later in the code!
  
-@@ -162,6 +163,16 @@ static irqreturn_t pm8941_pwrkey_irq(int irq, void *_data)
- 		pwrkey->sw_debounce_end_time = ktime_add_us(ktime_get(),
- 						pwrkey->sw_debounce_time_us);
- 
-+	/*
-+	 * Simulate a press event in case a release event occurred without a
-+	 * corresponding press event.
-+	 */
-+	if (!pwrkey->last_status && !sts) {
-+		input_report_key(pwrkey->input, pwrkey->code, 1);
-+		input_sync(pwrkey->input);
-+	}
-+	pwrkey->last_status = sts;
++Here's a trick question: When is a dependency not a dependency?  Answer:
++When it is purely syntactic rather than semantic.  We say a dependency
++between two accesses is purely syntactic if the second access doesn't
++actually depend on the result of the first.  Here is a trivial example:
 +
- 	input_report_key(pwrkey->input, pwrkey->code, sts);
- 	input_sync(pwrkey->input);
++	r1 = READ_ONCE(x);
++	WRITE_ONCE(y, r1 * 0);
++
++There appears to be a data dependency from the load of x to the store of
++y, since the value to be stored is computed from the value that was
++loaded.  But in fact, the value stored does not really depend on
++anything since it will always be 0.  Thus the data dependency is only
++syntactic (it appears to exist in the code) but not semantic (the second
++access will always be the same, regardless of the value of the first
++access).  Given code like this, a compiler could simply eliminate the
++load from x, which would certainly destroy any dependency.
++
++(It's natural to object that no one in their right mind would write code
++like the above.  However, macro expansions can easily give rise to this
++sort of thing, in ways that generally are not apparent to the
++programmer.)
++
++Another mechanism that can give rise to purely syntactic dependencies is
++related to the notion of "undefined behavior".  Certain program behaviors
++are called "undefined" in the C language specification, which means that
++when they occur there are no guarantees at all about the outcome.
++Consider the following example:
++
++	int a[1];
++	int i;
++
++	r1 = READ_ONCE(i);
++	r2 = READ_ONCE(a[r1]);
++
++Access beyond the end or before the beginning of an array is one kind of
++undefined behavior.  Therefore the compiler doesn't have to worry about
++what will happen if r1 is nonzero, and it can assume that r1 will always
++be zero without actually loading anything from i.  (If the assumption
++turns out to be wrong, the resulting behavior will be undefined anyway
++so the compiler doesn't care!)  Thus the load from i can be eliminated,
++breaking the address dependency.
++
++The LKMM is unaware that purely syntactic dependencies are different
++from semantic dependencies and therefore mistakenly predicts that the
++accesses in the two examples above will be ordered.  This is another
++example of how the compiler can undermine the memory model.  Be warned.
++
  
--- 
-2.34.1
-
+ THE READS-FROM RELATION: rf, rfi, and rfe
+ -----------------------------------------
