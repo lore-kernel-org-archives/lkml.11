@@ -2,90 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12216C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:05:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56096C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238907AbiA0KF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 05:05:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43008 "EHLO
+        id S238914AbiA0KGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 05:06:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238892AbiA0KFZ (ORCPT
+        with ESMTP id S236254AbiA0KG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 05:05:25 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E42EC06173B
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 02:05:25 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id o64so2439273pjo.2
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 02:05:25 -0800 (PST)
+        Thu, 27 Jan 2022 05:06:29 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33B9C061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 02:06:28 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id s9so3735843wrb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 02:06:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LBOQjqTrRKyhdvBvzMylROfqbjWsRkHJwbCc+XSqEB4=;
-        b=hU+y8UUCtnvmLs91gy6C7O0CCHoYJ2TYmaHx7LExtXnAX3g2ZUWGqWjQGO9/EoDTHL
-         LKJm5G2IXBdaabWdTa5DJp52fycGA3iBYSheTFsR6/eT0zTGBJ9vL1CUM+YzZJ4QOml5
-         mjaQGcvCY2aRk+2I7XMu+2PSCwnYj1z7fGDwI=
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iCPc9S/xqKutjtG576RySPC5c4MhlsxdAcWvoCriPRI=;
+        b=UXS0cNb0r6A21/Yr+t8ULc7eUWYnKfSr2Xz7F/W4kBv4PxDY2V8IiKS9AVKzoL/A4c
+         2QXelZZmI0IvcYButMcGhtQiIwQeVSto8F0tLQS/0i6E39oVBJb4ONuB1wxShRLVAjEd
+         qBQfBDs5FDzwXhh+3CWdQE+EinE2wHefcKrMA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LBOQjqTrRKyhdvBvzMylROfqbjWsRkHJwbCc+XSqEB4=;
-        b=r3xyW/g8zSAUl8XEh02mp848M5ZFoC9P7A4SPe5yVneo0vFdIZTH0om1qq9W0y1TCq
-         ZHaRzzBvGd/qv51Qa67w08VjUbaTRgM6mn7g8C3lSi1iolEFjBqu7UMIpUTFiRIs3Pze
-         eKIn7AXTp53Es1J6nx6eyYPQbrJ8x9rDCts0t9k2bS3VKsZ/uS7GvRa70UrurIGQHBiW
-         ziyTbQgKugm4iPwiknpKKknUuOlsDyFiCuX92tovWlmrJiYMsCUbr2GKVtZ2LxeKfoNQ
-         yS2PSGu1g6Kedi0n1fsTWRV0+scIxiQiv9nOai2/vqmPe1VkBm68T26Q9sa2gx7kP+cy
-         ud1Q==
-X-Gm-Message-State: AOAM530qaoE3khN1VxXsfFuNUuk/NS1ZYF2d3OgB8qVWuJ5HiSC3aRfR
-        L7mbQ8NqESwYPLmRiZbenSePzg==
-X-Google-Smtp-Source: ABdhPJwHB0qa1O7m8UjQXGx1IEj/br7glW0Yig/xNOufSEf8geSAYNnvEm+sDvMzb7zRtZzMRbp7zw==
-X-Received: by 2002:a17:90b:1b46:: with SMTP id nv6mr3459486pjb.178.1643277924815;
-        Thu, 27 Jan 2022 02:05:24 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p42sm4980243pfw.71.2022.01.27.02.05.24
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=iCPc9S/xqKutjtG576RySPC5c4MhlsxdAcWvoCriPRI=;
+        b=MhokCDM8X7Tv/MbC5kcRhU0hAfyE6TDvqo4zmNL3m4F/ib+MMHB+u6Tggaz7ylt+lu
+         XD7QUc2fINffut/QG08RXIJniE1/cwCcwqHITRlEqCbqdu3dBgJorLMbiQuzb0um2ayl
+         xQLT33StM9atq6p6kHpjdGYpHEctAPQ4s3bJKBRqqsjBK6Ce+vy5WK7ebd/zdB4LFwjB
+         WDO1RozpxqHGl0tDydxG9+VZwewSGH+jLxzyTf6+upDNKgQbDX4thb1xHaLzYm74899x
+         yhxe8pEp3CVNzLqbLV50G8vWDKPyrqlfMi8pgtPHWYYh5XJMyUOnUYz/BTwidwNEalAU
+         jyfQ==
+X-Gm-Message-State: AOAM5317Rnf02h/SwREPlyRSBp/9nSnkHAL+9pvFRnh6hC2xJksD5cvh
+        e7o22pMz2HicJdT96kGMPqEHVQ==
+X-Google-Smtp-Source: ABdhPJxbmhEnlOI80raqLeqmBjMueB3L0ut5WVsnvXgW4cJU2nUFg7KyFIWNlDJldrhPELeM37AAEQ==
+X-Received: by 2002:adf:fe01:: with SMTP id n1mr2448712wrr.141.1643277987361;
+        Thu, 27 Jan 2022 02:06:27 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id d6sm1681780wrs.85.2022.01.27.02.06.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 02:05:24 -0800 (PST)
-Date:   Thu, 27 Jan 2022 02:05:23 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] staging: greybus: i2c: Use struct_size() helper in
- gb_i2c_operation_create()
-Message-ID: <202201270204.D460EC35@keescook>
-References: <20220121222250.GA73021@embeddedor>
- <202201241213.82E7D9F598@keescook>
- <20220126105404.GY1951@kadam>
+        Thu, 27 Jan 2022 02:06:26 -0800 (PST)
+Date:   Thu, 27 Jan 2022 11:06:24 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     tangmeng <tangmeng@uniontech.com>, alexander.deucher@amd.com,
+        christian.koenig@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        jsarha@ti.com, tomi.valkeinen@ti.com, linux@dominikbrodowski.net,
+        Peter.Chen@nxp.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] drivers: Fix typo in comment
+Message-ID: <YfJuoHfKnwm6LmuY@phenom.ffwll.local>
+Mail-Followup-To: Greg KH <gregkh@linuxfoundation.org>,
+        tangmeng <tangmeng@uniontech.com>, alexander.deucher@amd.com,
+        christian.koenig@amd.com, airlied@linux.ie, jsarha@ti.com,
+        tomi.valkeinen@ti.com, linux@dominikbrodowski.net,
+        Peter.Chen@nxp.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+References: <20220127065156.22372-1-tangmeng@uniontech.com>
+ <YfJCBZuc9mOZkIVJ@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220126105404.GY1951@kadam>
+In-Reply-To: <YfJCBZuc9mOZkIVJ@kroah.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 01:54:04PM +0300, Dan Carpenter wrote:
-> On Mon, Jan 24, 2022 at 12:19:03PM -0800, Kees Cook wrote:
-> > This could still overflow if struct_size() returns SIZE_MAX. Perhaps:
+On Thu, Jan 27, 2022 at 07:56:05AM +0100, Greg KH wrote:
+> On Thu, Jan 27, 2022 at 02:51:56PM +0800, tangmeng wrote:
+> > Replace disbale with disable and replace unavaibale with unavailable.
 > > 
-> > 	if (check_add_overflow(struct_size(request, ops, msg_count),
-> > 			       data_out_size, &request_size))
-> > 		request_size = SIZE_MAX;
-> > 
-> > I should brush off the saturating arithmetic helpers series:
-> > https://lore.kernel.org/all/20210920180853.1825195-1-keescook@chromium.org/
+> > Signed-off-by: tangmeng <tangmeng@uniontech.com>
+> > ---
+> >  drivers/gpu/drm/amd/amdgpu/mxgpu_vi.c | 2 +-
+> >  drivers/gpu/drm/tilcdc/tilcdc_crtc.c  | 2 +-
+> >  drivers/pcmcia/rsrc_nonstatic.c       | 2 +-
+> >  drivers/usb/chipidea/udc.c            | 2 +-
+> >  4 files changed, 4 insertions(+), 4 deletions(-)
 > 
-> Yes, please!  Those seem like a million times easier to use.
+> This needs to be broken up per-subsystem, thanks.
 
-Here they are! :) Please review:
-
-https://lore.kernel.org/lkml/20220124232342.3113350-1-keescook@chromium.org/
-
-Thanks!
-
+For drm please also split it per-driver, so one patch per file you change
+here.
+-Daniel
 -- 
-Kees Cook
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
