@@ -2,95 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B37BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 19:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 19:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245638AbiA0Tje (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 14:39:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240050AbiA0Tja (ORCPT
+        id S245643AbiA0Tjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 14:39:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35642 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240050AbiA0Tjl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 14:39:30 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FF1C061714
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 11:39:30 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id ah7so8243082ejc.4
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 11:39:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BFb8NFrlSpLTas5OqZUZmins6ncV7W5Rmo5+3meVR3g=;
-        b=Y1M+Bf1wwslphNC9H9x0VpVivB/SCcil9aYfoAVt13yg5Ovnt7H3lIEMuriqtFhlpv
-         ekrnPLi/jLCjKpYhcBiKQBI9U8Q2idhM5Y2jnY5rVDWUw1D6PturF4Qp5HxF07TKCc1Z
-         hVPZC4maBNEUCfeGSOEebJPeP6XLJ/2fdS8qKWy0JeBADfPYrbrLx2OhCFPxksMVJcQc
-         pfFFyD8UgurIoPS2TtPatrHLxpKUCG+aG2YLdtHhjbazAXLDlRPMwy5COPM6VtOcVKhi
-         0rl/2OvACuxdK0d4eD5XYawWhm3ABq00YjIyLHYSPCUVqI1G0PbJJKlCvEeYhPk9CmHS
-         MKfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BFb8NFrlSpLTas5OqZUZmins6ncV7W5Rmo5+3meVR3g=;
-        b=uWeOikz6qygq0OnYKiSXNAVqbwbarNj00YOuvJ5Ik2v/MujixmIAEWbrp79lNijXu/
-         4OEQoAS1vEEFPDnMaYnMW0MVpN7qrhV5eag6MQW10Xbhe+YusVjHpC1w6H6kuiiGixSA
-         j+FRhrxqBJcMTKs83gSW8PaOpFzn3oQeGag/FPYNj1UttDL+0jOexvegl5CAgO0OCd+k
-         2g1RcbgvH1dlQQSrAXY/+CUT4Ow5AREN+J/VUT3ueawIKpfwdNBG6H0o2Dojt7muoiTH
-         nkVcY1QyCuq2rjhgoJo1gUZ+UiBbKXrPdgtwYVvPUzoBPDAFYn2BPVbXfaUK4nQRSk06
-         jBgw==
-X-Gm-Message-State: AOAM530unqjZIPIMuj6ZfokeMWp1IFKsA70Srt5oH3fbuba59KnfDhCB
-        K2e1Klj1RsdEqTW1/fbT2Vuh5mIJ/NTPNUidxuVEiA==
-X-Google-Smtp-Source: ABdhPJwuhg8zPBVbIllXAibAi/ysZVpdojXGj11dmGEm1WuhDT5JouZwm0vT8xovbBnIKrNXGk5qaynKQV2BHOOjEus=
-X-Received: by 2002:a17:906:dc92:: with SMTP id cs18mr4099175ejc.590.1643312369033;
- Thu, 27 Jan 2022 11:39:29 -0800 (PST)
+        Thu, 27 Jan 2022 14:39:41 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B1B561DEA;
+        Thu, 27 Jan 2022 19:39:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B52EC340E4;
+        Thu, 27 Jan 2022 19:39:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643312380;
+        bh=owz65Zoh9kePy3ZlX07GkhDAStAtpMEoESAaQC2QOkI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mbfVmo2uqo+8GEh0l5KWQwAIV2xmvPtlCTVlp8ccJt8YTEZQcI/WoEKvZVePzpgbq
+         x92AWWjGEfEZ6wTefiKgujv8nQ9eM6pFEhOJWJ2Os58tO7UYH6EEBzYQmHGWHeggTt
+         PLCEVTsp3l+AqG++CrcNAr+N6ml8NMZq+O0W0Z6uZn3xGFvvDTKiOIf6k9Bns64jmu
+         W9w0/AB4fThsGCU6iQGjTxBjwBedFu9YT4ab0Hjcdgot+wRAFeTiqONtHDnHXZ3t2z
+         RtmZS0TvtETw9nBCYTPlZcHHleGGs31cyplLrh7ZJOROF1YLR1nu1UdejuMHYPxGOB
+         UaeP+PRVLpJsQ==
+Date:   Thu, 27 Jan 2022 11:39:38 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Roberto Sassu <roberto.sassu@huawei.com>
+Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
+        stefanb@linux.ibm.com, linux-fscrypt@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC][PATCH v3a 00/11] ima: support fs-verity digests and
+ signatures (alternative)
+Message-ID: <YfL0+q/ekv4H8lZg@sol.localdomain>
+References: <20220127184614.2837938-1-roberto.sassu@huawei.com>
+ <YfLz8NftvbZtKvLT@sol.localdomain>
 MIME-Version: 1.0
-References: <20220126183429.1840447-1-pasha.tatashin@soleen.com>
- <20220126183429.1840447-2-pasha.tatashin@soleen.com> <YfGZ/0hhkqVeX04p@casper.infradead.org>
- <CA+CK2bDHkOQbTrK=GbsGbojAj_6gaAX_8w3cBCd_LWqXt--yZA@mail.gmail.com> <b7f580cb-84f7-5c78-5f68-7ab8f67b0811@suse.cz>
-In-Reply-To: <b7f580cb-84f7-5c78-5f68-7ab8f67b0811@suse.cz>
-From:   Pasha Tatashin <pasha.tatashin@soleen.com>
-Date:   Thu, 27 Jan 2022 14:38:52 -0500
-Message-ID: <CA+CK2bBAXZSX6E0boEoZ=Cake94v9q4LuWzQ-mj0QbWTsQcjOw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/9] mm: add overflow and underflow checks for page->_refcount
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, linux-m68k@lists.linux-m68k.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        william.kucharski@oracle.com,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        schmitzmic@gmail.com, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <guro@fb.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Paul Turner <pjt@google.com>, Hugh Dickins <hughd@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfLz8NftvbZtKvLT@sol.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > This is not only about chasing a bug. This also about preventing
-> > memory corruption and information leaking that are caused by ref_count
-> > bugs from happening.
->
-> So you mean it like a security hardening feature, not just debugging? To me
-> it's dubious to put security hardening under CONFIG_DEBUG_VM. I think it's
-> just Fedora that uses DEBUG_VM in general production kernels?
+On Thu, Jan 27, 2022 at 11:35:12AM -0800, Eric Biggers wrote:
+> On Thu, Jan 27, 2022 at 07:46:09PM +0100, Roberto Sassu wrote:
+> > I wanted to propose a different approach for handling fsverity digests and
+> > signatures, compared to:
+> > 
+> > https://lore.kernel.org/linux-integrity/20220126000658.138345-1-zohar@linux.ibm.com/
+> > 
+> > In the original proposal, a new signature version has been introduced (v3)
+> > to allow the possibility of signing the digest of a more flexible data
+> > structure, ima_file_id, which could also include the fsverity file digest.
+> > 
+> > While the new signature type would be sufficient to handle fsverity file
+> > digests, the problem is that its format would not be compatible with the
+> > signature format supported by the built-in verification module in fsverity.
+> > The rpm package manager already has an extension to include fsverity
+> > signatures, with the existing format, in the RPM header.
+> > 
+> > Given that the fsverity signature is in the PKCS#7 format, IMA has already
+> > the capability of handling it with the existing code, more specifically the
+> > modsig code. It would be sufficient to provide to modsig the correct data
+> > to avoid introducing a new signature format.
+> 
+> I think it would be best to get people moved off of the fs-verity built-in
+> signatures, rather than further extend the use of it.  PKCS#7 is a pretty
+> terrible signature format.  The IMA one is better, though it's unfortunate that
+> IMA still relies on X.509 for keys.
 
-In our (Google) internal kernel, I added another macro:
-PAGE_REF_BUG(cond, page) to replace VM_BUG_ON_PAGE() in page_ref.h.
-The new macro keeps the asserts always enabled.  I was thinking of
-adding something like this to the upstream kernel as well, however, I
-am worried about performance implications of having extra conditions
-in these routines, so I think we would need yet another config which
-decouples DEBUG_VM and some security crucial VM asserts. However, to
-reduce controversial discussions, I decided not to do this as part of
-this series, and perhaps do it as a follow-up work.
+Note, the only reason that support for fs-verity built-in signatures was added
+to RPM is that people didn't want to use IMA:
+https://lore.kernel.org/linux-fscrypt/b49b4367-51e7-f62a-6209-b46a6880824b@gmail.com
 
-Pasha
+If people are going to use IMA anyway, then there would be no point.
+
+- Eric
