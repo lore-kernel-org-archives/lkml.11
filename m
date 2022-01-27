@@ -2,90 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B755C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 02:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9377FC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 02:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231290AbiA0C4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 21:56:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbiA0C4t (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 21:56:49 -0500
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8B2C06161C;
-        Wed, 26 Jan 2022 18:56:48 -0800 (PST)
-Received: by mail-qk1-x735.google.com with SMTP id q189so1424279qkf.10;
-        Wed, 26 Jan 2022 18:56:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HDVB+p1llS7YapMSQcwBuqDLwDY/+CjI8SnDF5Gvq1Y=;
-        b=kwX60o1uzhZfNNuF4h/tZgue3mLrJXmp07S4VIQkFpHq/+yNCUaHc2JSWAUyqT7Fee
-         +gwZLa8efmyDH5DsCl7AqeD5tC+Ki4Cj/S4fvZkJ07M/WiZsuiZ3Wc3D7IVQaa0BWzOy
-         KhVEJxUnlNWT4naXCiEC6bhg5qwNpbnL+JECCw7DlojTteQXEVYGZLcnhm8C2O/vucSN
-         cuj1fIJXLpWvH1JYsyry+6hoE1mhHSs9zUjkIdv8Y4i4iJrl6zKO4RY7sBOJurKb0xxo
-         BGiA/MPTR8KHYwtgxWUu/VKVZ2FqIbaIn7WzA4xqf8igMzd4i2bNM8L6SgS2WrAy0TRz
-         i8sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HDVB+p1llS7YapMSQcwBuqDLwDY/+CjI8SnDF5Gvq1Y=;
-        b=isOma4UUpzr5ofhs++nTI08DXVhjM0Zl/K+jWAok3T3UbpVl30zjk/0f34tJH8SXsd
-         JIFNmFGx2ze5fAaIJuT39f5HBxh4l8sntRpRseJAVq5rg2hxBUa47Ycoxfmy0Du431CD
-         ZADw+U1j60l2gCPgKEBu6kkBw+pGBIE+BeTSOzyLDsRBRcozbxmtUp4YjBFGTXZD0a+0
-         AEOpz37PE3Mg06o0EjHdBrpc82MoYwhh56UlAO8xyqwQ2B5xLfD0HylKca0PnHKVxwu2
-         KCcgaP0h4m1YvBsHg5L/Lm4v3WnbBSzImj5RF6mo7v9A5TfUETvSs+9vp56UmjIcdODQ
-         eRjA==
-X-Gm-Message-State: AOAM5327k2DXQRqflVC4h62kX2VcL7mC+8esp7H3S0UhTk0Gf8EqSCKs
-        50U0KCLcwxDJ/MfXZpy1HCk=
-X-Google-Smtp-Source: ABdhPJzmV5swp4bLcp5g+IAwyVHtkCr+jtFvbU9xrPNAyndOdNYjYYNp8Zl5XxIRY+27KhnzNzpunQ==
-X-Received: by 2002:a37:44d:: with SMTP id 74mr1307282qke.328.1643252208123;
-        Wed, 26 Jan 2022 18:56:48 -0800 (PST)
-Received: from Dell-Inspiron-15.dartmouth.edu (c-73-149-219-1.hsd1.ma.comcast.net. [73.149.219.1])
-        by smtp.gmail.com with ESMTPSA id s2sm622907qks.60.2022.01.26.18.56.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 18:56:47 -0800 (PST)
-From:   Ben Wolsieffer <benwolsieffer@gmail.com>
-Cc:     trivial@kernel.org, Ben Wolsieffer <benwolsieffer@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] ARM: dts: qcom-apq8060-dragonboard: fix typo in eMMC
-Date:   Wed, 26 Jan 2022 21:53:58 -0500
-Message-Id: <20220127025358.2202977-1-benwolsieffer@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        id S230318AbiA0C67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 21:58:59 -0500
+Received: from out1.migadu.com ([91.121.223.63]:29752 "EHLO out1.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229668AbiA0C65 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 21:58:57 -0500
+Date:   Thu, 27 Jan 2022 11:58:45 +0900
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1643252334;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FYICBKJujxWP66P35sZcJvIBTEiFJq2KDSX6diI/+IM=;
+        b=Az1ZEbyCScboKvqlrja6XAt8KbS4xYUnzgksop8d1SJJjy8xueCPX/CkVH/Yr5b6xtHJ3N
+        2YNb6FUAZwZWDWaLldBwuoSMmCRv4P8AeOKIM6A9m1oyaCCGEINfRT4gTWtI1r8NmgMLj3
+        /nvobiR9Rqz8iZyDslounBWAXn6FltQ=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Michal Hocko <mhocko@suse.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Mina Almasry <almasrymina@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [RFC PATCH 1/3] mm: enable MADV_DONTNEED for hugetlb mappings
+Message-ID: <20220127025845.GA3401059@u2004>
+References: <20220113180308.15610-1-mike.kravetz@oracle.com>
+ <20220113180308.15610-2-mike.kravetz@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220113180308.15610-2-mike.kravetz@oracle.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-eMMC was misspelled as eMMMC.
+On Thu, Jan 13, 2022 at 10:03:06AM -0800, Mike Kravetz wrote:
+> MADV_DONTNEED is currently disabled for hugetlb mappings.  This
+> certainly makes sense in shared file mappings as the pagecache maintains
+> a reference to the page and it will never be freed.  However, it could
+> be useful to unmap and free pages in private mappings.
+> 
+> The only thing preventing MADV_DONTNEED (and MADV_FREE) from working on
+> hugetlb mappings is a check in can_madv_lru_vma().  To allow support for
+> hugetlb mappings create and use a new routine madvise_dontneed_valid_vma()
+> that will allow hugetlb mappings.
+> 
+> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
 
-Signed-off-by: Ben Wolsieffer <benwolsieffer@gmail.com>
----
- arch/arm/boot/dts/qcom-apq8060-dragonboard.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I briefly tested the patch and it seems that when calling madvise(MADV_DONTNEED)
+with the range unaligned to hugepage size (like 4kB) triggered the following crash.
+Could you double check around the address range issue?
 
-diff --git a/arch/arm/boot/dts/qcom-apq8060-dragonboard.dts b/arch/arm/boot/dts/qcom-apq8060-dragonboard.dts
-index d664ccd454c5..a03dab5661f5 100644
---- a/arch/arm/boot/dts/qcom-apq8060-dragonboard.dts
-+++ b/arch/arm/boot/dts/qcom-apq8060-dragonboard.dts
-@@ -83,7 +83,7 @@ cm3605 {
- 
- 	soc {
- 		pinctrl@800000 {
--			/* eMMMC pins, all 8 data lines connected */
-+			/* eMMC pins, all 8 data lines connected */
- 			dragon_sdcc1_pins: sdcc1 {
- 				mux {
- 					pins = "gpio159", "gpio160", "gpio161",
--- 
-2.34.1
+[  220.915316] ------------[ cut here ]------------
+[  220.916792] kernel BUG at mm/hugetlb.c:4946!
+[  220.918519] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+[  220.920344] CPU: 2 PID: 1665 Comm: a.out Tainted: G            E     5.17.0-rc1-220126-1543+ #31
+[  220.930536] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
+[  220.934484] RIP: 0010:__unmap_hugepage_range+0x4d6/0x580
+[  220.936443] Code: ff ff 49 c7 44 24 10 ff ff ff ff 41 80 64 24 20 83 e9 34 fd ff ff 0f 0b 49 8b 47 30 48 f7 d0 4c 85 c8 0f 84 93 fb ff ff 0f 0b <0f> 0b 48 8d 7c 24 48 83 4c 24 68 01 e8 69 b9 00 00 4c 8b 4c 24 08
+[  220.943818] RSP: 0018:ffffabe9019dfc98 EFLAGS: 00010206
+[  220.945454] RAX: 000000000000a000 RBX: ffff8a0e02253ed8 RCX: 0000000000000009
+[  220.947661] RDX: 00007f1c08000000 RSI: ffff8a0e02253ed8 RDI: ffffabe9019dfdb8
+[  220.949677] RBP: 0000000000200000 R08: 0000000000000000 R09: 00007f1c08000000
+[  220.951902] R10: 0000000000000000 R11: 0000000000000000 R12: ffffabe9019dfdb8
+[  220.954040] R13: ffffabe9019dfdb8 R14: 00007f1c08000000 R15: ffffffff9420f960
+[  220.955990] FS:  00007f1c08480540(0000) GS:ffff8a0efbc00000(0000) knlGS:0000000000000000
+[  220.958034] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  220.959517] CR2: 00007f1c0849aff8 CR3: 0000000146a52000 CR4: 00000000001506e0
+[  220.961321] Call Trace:
+[  220.961945]  <TASK>
+[  220.962535]  ? __slab_free+0xba/0x370
+[  220.963468]  ? update_load_avg+0x7e/0x5f0
+[  220.964427]  ? __cgroup_account_cputime+0x4c/0x70
+[  220.965596]  ? page_counter_uncharge+0x1d/0x30
+[  220.966733]  __unmap_hugepage_range_final+0xe/0x20
+[  220.967861]  unmap_single_vma+0xc7/0xf0
+[  220.968795]  zap_page_range+0xcc/0x130
+[  220.969619]  ? find_vma+0x73/0x80
+[  220.970378]  do_madvise.part.0+0xb65/0xea0
+[  220.971279]  ? do_sigaction+0x111/0x240
+[  220.972081]  __x64_sys_madvise+0x56/0x70
+[  220.972969]  do_syscall_64+0x3b/0x90
+[  220.973779]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  220.974883] RIP: 0033:0x7f1c083b24eb
+[  220.975632] Code: c3 48 8b 15 9f 59 0c 00 f7 d8 64 89 02 b8 ff ff ff ff eb c2 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 1c 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 6d 59 0c 00 f7 d8 64 89 01 48
+[  220.979331] RSP: 002b:00007ffe7f9bc038 EFLAGS: 00000202 ORIG_RAX: 000000000000001c
+[  220.980791] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f1c083b24eb
+[  220.982162] RDX: 0000000000000004 RSI: 000000000000a000 RDI: 00007f1c08000000
+[  220.983550] RBP: 00007ffe7f9bc070 R08: 0000000000000000 R09: 0000000000000000
+[  220.984997] R10: 000000000040049c R11: 0000000000000202 R12: 00000000004010d0
+[  220.986399] R13: 00007ffe7f9bc150 R14: 0000000000000000 R15: 0000000000000000
+[  220.987765]  </TASK>
 
+
+Thanks,
+Naoya Horiguchi
