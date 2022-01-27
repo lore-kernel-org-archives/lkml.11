@@ -2,105 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D541EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3081FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242600AbiA0Ooh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 09:44:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
+        id S242599AbiA0Ook (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 09:44:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242575AbiA0Ood (ORCPT
+        with ESMTP id S242589AbiA0Oog (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 09:44:33 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5752DC061714
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 06:44:33 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id ah7so6379595ejc.4
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 06:44:33 -0800 (PST)
+        Thu, 27 Jan 2022 09:44:36 -0500
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E9EC061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 06:44:36 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id s185so6260725oie.3
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 06:44:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/5yz10nLPgMlrkWVAwaUxDSGwjhQp8dD2oPAz5UmbOk=;
-        b=IVS9CIB8/AivDcBztvuLvEwbz3QXtRhgtoDxXiXszgbHxkHrkg504y8Qxnch10IXj0
-         Op7gy4ZNShKuq90npTDHa82csurg5mNzU8+DzZdfZgGryFslgttHFaJrv2dZZajBRDeZ
-         ioI0TvPi6HK9Gy5zoXbxa9C4xM6mxFS7OUjo9z/cP+QTMiYVrUtV2hB+My9mrnGtrpKF
-         YJWOPIg3XhTx9BxNjTnQ974KvB+TCscni385gPCl8NrZQVcaDWoYkpoxfhapO/k36r1a
-         vHEsYJbh47W2kmvJhFQBVD5+I14Cch1VYuMUrTk7zpIub+ZjYuwTM4VdrBu/yIwge9ez
-         ZJZA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=darEVYQSE8nP3jpJzwSkUiUgFJtcguGHbAaA8wiRNaA=;
+        b=Ypwxd6R69jdEi7v85ZpAoA++E5ZdaNFLhQI7oFvsnng/vm4suU1TWo0YEj5rgZ0eAX
+         x4X/DCGq/OZw2IjERsddLvz2PN8Qw2zARqXg+pRcZ49XBjAm0Tx9bFH5XsiSRGPgAalt
+         w/8nvHMrblwuL3Jb+qwBrxsF6vLJz6O3LlTzcauEgTqRsXJCzfRJjZxtaa6wuPzohZ09
+         IDXxDNhN83LNO/eVTUpMzZqkhDFtd+mEgk6gSPyQqduI4+m7RIvUVlhrPiIjrr0fl2Kd
+         FSHQaVB/NWcA70SEss5ZoS+0dBIcjv5cfze/AvGUiIhf2DRFlDpnip3DT5ojr4GMKgHs
+         34mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/5yz10nLPgMlrkWVAwaUxDSGwjhQp8dD2oPAz5UmbOk=;
-        b=I7bvgpgweTqb6a1SCZudD9E5j9n1y0G2yC9mYjd033I/0wx1HVNtIEO4J1dPtz1dlu
-         llNj6cJFc/WSGEwwE9xVcEnVx6nz8ws46rSC7/B/6fVqQWY59YcGUYGe12F0u7Iskvjt
-         mTebRgfQCIHVtlnaUvHTCT/iuOWqp6mhZwhIJjvTjUWpvFR8hYJYTKkQgJJ6WCxpJRUw
-         ZuU5yFPCxLB1YXiqOSQr+sxWc+jlVzMabpK8hIeS3VKgvchYF1monb5erMsjfZ2h7nqg
-         tbVfYBi/4Q2Elus2rCHAwVaAunJPGGb+Hl5LT2bQT/DvZ2tXbx56hg16mG9qwT3uclye
-         VqhQ==
-X-Gm-Message-State: AOAM532QTfpxtwFR1g0mQ96RCT+28oVbqbaO48qWx4Wxi/2E/tmk9dvo
-        MKotFRs+txQIklaOc+76sXCuhR8TLJsaBC18Tnw=
-X-Google-Smtp-Source: ABdhPJyhkYLBdPSPrB0ft0QUPYqGO8skmRkHbl2vHmKR6f6dE2b2ZXMaMN5A6o/voT0xHWRIunPcxg==
-X-Received: by 2002:a17:907:e9e:: with SMTP id ho30mr3084101ejc.648.1643294671950;
-        Thu, 27 Jan 2022 06:44:31 -0800 (PST)
-Received: from localhost.localdomain (dhcp-077-250-038-153.chello.nl. [77.250.38.153])
-        by smtp.googlemail.com with ESMTPSA id lo15sm8746533ejb.28.2022.01.27.06.44.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 06:44:31 -0800 (PST)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Thomas Gleixner <tglx@linutronix.de>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 2/2] vt_ioctl: add array_index_nospec to VT_ACTIVATE
-Date:   Thu, 27 Jan 2022 15:44:05 +0100
-Message-Id: <20220127144406.3589293-2-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220127144406.3589293-1-jakobkoschel@gmail.com>
-References: <20220127144406.3589293-1-jakobkoschel@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=darEVYQSE8nP3jpJzwSkUiUgFJtcguGHbAaA8wiRNaA=;
+        b=GnngO5VOurN34ErbEuA06LXjGTJ2NQkZjVw3j8+j5ppk6VCZwWB4VSdek3ezeHkByb
+         7CIxwuMrKxUYDYmV6BJ+QjXQSZGPY3JWmkT/bwC9Aua/xLDOkRw4kFjddK8Ocs1QhSFX
+         75c0D1oujFor5J1xwBWJ6meImozrk2PeCYy1Cks134wEnDMOxs5Qeb+DphZiH/mkx9yL
+         g5BFJ7bTRx05qjhC00pemsV0pqXdtZdNdEkbJXKgUfQOEGEo0+iYyGNsL0tp2VVzafIS
+         NrUlVrQQwmeVJg5eivCCnGZX4DCYamBABecpnnW5LUsxcNBg6L+f8v8Kbs11AUvRmZPV
+         YpPA==
+X-Gm-Message-State: AOAM531NzEwDFFnIRuCwTfZN0NnTrwCTR2sPD+XPPVDzGPOqujLrDplC
+        19ZrAAiHcc9II+iXTn1WNpCiJQCON4eWeuaRhoTG+w==
+X-Google-Smtp-Source: ABdhPJx4uxUdzNLOjtmP4roFlEQVaxC6kgtGFXTbTsPTVjAMwP3ZTHmEUmX1RdOLYiTInZ5cC0JLwb9wMsusDW+wdS0=
+X-Received: by 2002:a05:6808:b10:: with SMTP id s16mr2364269oij.307.1643294675382;
+ Thu, 27 Jan 2022 06:44:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220126171232.2599547-1-jannh@google.com> <CACT4Y+b8ty07hAANzktksbbe5HdDM=jm6TSYLKawctpBmPfatw@mail.gmail.com>
+ <CAG48ez3mfAwgkJp+GKLnbtgQoQVT78U+voRN09H5S=7Ewf+DgQ@mail.gmail.com>
+In-Reply-To: <CAG48ez3mfAwgkJp+GKLnbtgQoQVT78U+voRN09H5S=7Ewf+DgQ@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 27 Jan 2022 15:44:24 +0100
+Message-ID: <CACT4Y+bOsS+veBKSMQX+Etz=93PZv-nhKYm4-Gmigmv551LCtg@mail.gmail.com>
+Subject: Re: [PATCH] x86/csum: Add KASAN/KCSAN instrumentation
+To:     Jann Horn <jannh@google.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        kasan-dev@googlegroups.com, Eric Dumazet <edumazet@google.com>,
+        Christoph Hellwig <hch@lst.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-in vt_setactivate an almost identical code path has been patched
-with array_index_nospec. In the VT_ACTIVATE path the user input
-is from a system call argument instead of a usercopy.
-For consistency both code paths should have the same mitigations
-applied.
+On Wed, 26 Jan 2022 at 18:48, Jann Horn <jannh@google.com> wrote:
+> > > In the optimized X86 version of the copy-with-checksum helpers, use
+> > > instrument_*() before accessing buffers from assembly code so that KASAN
+> > > and KCSAN don't have blind spots there.
+> [...]
+> > Can these potentially be called with KERNEL_DS as in some compat
+> > syscalls? If so it's better to use instrument_copy_to/from_user.
+> > Or probably it's better to use them anyway b/c we also want to know
+> > about user accesses for uaccess logging and maybe other things.
+>
+> Christoph Hellwig has basically eradicated KERNEL_DS. :)
+>
+> In particular, on X86, set_fs(KERNEL_DS) doesn't really do anything
+> anymore since commit 47058bb54b579 ("x86: remove address space
+> overrides using set_fs()").
 
-Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
-Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
-Amsterdam.
+That's good!
 
-Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
-Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
----
- drivers/tty/vt/vt_ioctl.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
-index e0714a9c9fd7..58013698635f 100644
---- a/drivers/tty/vt/vt_ioctl.c
-+++ b/drivers/tty/vt/vt_ioctl.c
-@@ -845,6 +845,7 @@ int vt_ioctl(struct tty_struct *tty,
- 			return -ENXIO;
-
- 		arg--;
-+		arg = array_index_nospec(arg, MAX_NR_CONSOLES);
- 		console_lock();
- 		ret = vc_allocate(arg);
- 		console_unlock();
---
-2.25.1
-
+But still need this for uaccess logging.
