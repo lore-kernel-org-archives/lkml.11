@@ -2,81 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28981C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 05:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE827C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 05:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232948AbiA0FEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 00:04:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33162 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232660AbiA0FEI (ORCPT
+        id S234837AbiA0FFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 00:05:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231318AbiA0FFA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 00:04:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643259847;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=plPajYXA8B5ZLakDfOB/mq6gwvfYbK84k4ZYLKgoU6w=;
-        b=K/uusz10UWBF0kNGSINnxEN0rCT9PEtgs0Tclz6pdbMLSqFnmN/dtncCELtyt2KO0VO0jp
-        Y4w5DWy3PwS0uxyDYySqf8FwRTs4tQOAoujs2KgIMolnLTikqHKRCKaVoSRc/Nhc/aSOmp
-        3DFiAp4+oaKwgSfPzBhdL7j2CV1GXIY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-307-NGGhIgoONtKk4r22eqt6yQ-1; Thu, 27 Jan 2022 00:03:57 -0500
-X-MC-Unique: NGGhIgoONtKk4r22eqt6yQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 27 Jan 2022 00:05:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64480C06161C;
+        Wed, 26 Jan 2022 21:05:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4E02283DD23;
-        Thu, 27 Jan 2022 05:03:55 +0000 (UTC)
-Received: from T590 (ovpn-8-29.pek2.redhat.com [10.72.8.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6162F5ED2D;
-        Thu, 27 Jan 2022 05:03:40 +0000 (UTC)
-Date:   Thu, 27 Jan 2022 13:03:35 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     "yukuai (C)" <yukuai3@huawei.com>
-Cc:     Tejun Heo <tj@kernel.org>, mkoutny@suse.com, paulmck@kernel.org,
-        axboe@kernel.dk, cgroups@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH v6 2/2] block: cancel all throttled bios in del_gendisk()
-Message-ID: <YfInp7SsZNNgRfB7@T590>
-References: <20220110134758.2233758-1-yukuai3@huawei.com>
- <20220110134758.2233758-3-yukuai3@huawei.com>
- <Yd5FkuhYX9YcgQkZ@T590>
- <b416e6a6-f2c9-caf3-dacd-f937746207da@huawei.com>
- <YfF+yukISfkuc9IK@slm.duckdns.org>
- <630c162b-8bdd-d87e-0d80-c7a78ea267a5@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <630c162b-8bdd-d87e-0d80-c7a78ea267a5@huawei.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65979B82150;
+        Thu, 27 Jan 2022 05:04:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA3A7C340E4;
+        Thu, 27 Jan 2022 05:04:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1643259897;
+        bh=Pl6AkKtJBXXpfMO6o3YuHSuGHLh+V7i9o7LE/oJPEgk=;
+        h=Date:From:To:Subject:From;
+        b=fQby7dYIGvkagXrBiKCuWYHpVmO//l39NS6wJLzpR04LLNJpn0V0VP7QSCOMWSMLE
+         X4AZ8SvqT3Lj+xxuOeF0JKrPeb4WLT2Wd4wfPcnfNBALmvDQ7HifOwJdV2xaumY/UZ
+         xgDunKUr2kuGGHkRKEUzD0AOv2AJG+96NI5RZTzE=
+Date:   Wed, 26 Jan 2022 21:04:56 -0800
+From:   akpm@linux-foundation.org
+To:     broonie@kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-next@vger.kernel.org, mhocko@suse.cz,
+        mm-commits@vger.kernel.org, sfr@canb.auug.org.au
+Subject:  mmotm 2022-01-26-21-04 uploaded
+Message-ID: <20220127050456.M1eh-ltbc%akpm@linux-foundation.org>
+User-Agent: s-nail v14.8.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 10:45:33AM +0800, yukuai (C) wrote:
-> 在 2022/01/27 1:03, Tejun Heo 写道:
-> > On Mon, Jan 24, 2022 at 11:50:11AM +0800, yukuai (C) wrote:
-> > > Both ways can fix the problem, which way do you prefer?
-> > 
-> > Ming's suggested change seems simpler, no?
-> 
-> Hi,
-> 
-> Yes, if Ming don't mind, I can send a new version after Ming's
-> pathset "block: don't drain file system I/O on del_gendisk".
+The mm-of-the-moment snapshot 2022-01-26-21-04 has been uploaded to
 
-The patch of canceling throttled bios shouldn't be conflicted
-with the above big patchset, and you can send it out now against
-for-5.18/block.
+   https://www.ozlabs.org/~akpm/mmotm/
+
+mmotm-readme.txt says
+
+README for mm-of-the-moment:
+
+https://www.ozlabs.org/~akpm/mmotm/
+
+This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+more than once a week.
+
+You will need quilt to apply these patches to the latest Linus release (5.x
+or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+https://ozlabs.org/~akpm/mmotm/series
+
+The file broken-out.tar.gz contains two datestamp files: .DATE and
+.DATE-yyyy-mm-dd-hh-mm-ss.  Both contain the string yyyy-mm-dd-hh-mm-ss,
+followed by the base kernel version against which this patch series is to
+be applied.
+
+This tree is partially included in linux-next.  To see which patches are
+included in linux-next, consult the `series' file.  Only the patches
+within the #NEXT_PATCHES_START/#NEXT_PATCHES_END markers are included in
+linux-next.
 
 
-Thanks,
-Ming
+A full copy of the full kernel tree with the linux-next and mmotm patches
+already applied is available through git within an hour of the mmotm
+release.  Individual mmotm releases are tagged.  The master branch always
+points to the latest release, so it's constantly rebasing.
 
+	https://github.com/hnaz/linux-mm
+
+The directory https://www.ozlabs.org/~akpm/mmots/ (mm-of-the-second)
+contains daily snapshots of the -mm tree.  It is updated more frequently
+than mmotm, and is untested.
+
+A git copy of this tree is also available at
+
+	https://github.com/hnaz/linux-mm
+
+
+
+This mmotm tree contains the following patches against 5.17-rc1:
+(patches marked "*" will be included in linux-next)
+
+  origin.patch
+* include-linux-sysctlh-fix-register_sysctl_mount_point-return-type.patch
+* binfmt_misc-fix-crash-when-load-unload-module.patch
+* ia64-make-ia64_mca_recovery-bool-instead-of-tristate.patch
+* memory-failure-fetch-compound_head-after-pgmap_pfn_valid.patch
+* mm-page-mapping-folio-mapping-should-have-the-same-offset.patch
+* tools-testing-scatterlist-add-missing-defines.patch
+* kasan-test-fix-compatibility-with-fortify_source.patch
+* mm-use-compare-exchange-operation-to-set-kasan-page-tag.patch
+* psi-fix-no-previous-prototype-warnings-when-config_cgroups=n.patch
+* psi-fix-defined-but-not-used-warnings-when-config_proc_fs=n.patch
+* mm-fix-panic-in-__alloc_pages.patch
+* jbd2-export-jbd2_journal__journal_head.patch
+* ocfs2-fix-a-deadlock-when-commit-trans.patch
+* mm-fix-invalid-page-pointer-returned-with-foll_pin-gups.patch
+* fs-proc-task_mmuc-dont-read-mapcount-for-migration-entry.patch
+* revert-mm-page_isolation-unset-migratetype-directly-for-non-buddy-page.patch
+* mm-debug_vm_pgtable-remove-pte-entry-from-the-page-table.patch
+* mm-page_table_check-use-unsigned-long-for-page-counters-and-cleanup.patch
+* mm-khugepaged-unify-collapse-pmd-clear-flush-and-free.patch
+* mm-page_table_check-check-entries-at-pmd-levels.patch
+* coredump-also-dump-first-pages-of-non-executable-elf-libraries.patch
+* mm-pgtable-define-pte_index-so-that-preprocessor-could-recognize-it.patch
+* proc-kpageflags-prevent-an-integer-overflow-in-stable_page_flags.patch
+* proc-kpageflags-do-not-use-uninitialized-struct-pages.patch
+* procfs-prevent-unpriveleged-processes-accessing-fdinfo-dir.patch
+* ntfs-add-sanity-check-on-allocation-size.patch
+* ocfs2-cleanup-some-return-variables.patch
+* ocfs2-reflink-deadlock-when-clone-file-to-the-same-directory-simultaneously.patch
+* ocfs2-clear-links-count-in-ocfs2_mknod-if-an-error-occurs.patch
+* ocfs2-fix-ocfs2-corrupt-when-iputting-an-inode.patch
+* mount-warn-only-once-about-timestamp-range-expiration.patch
+  mm.patch
+* kasan-page_alloc-deduplicate-should_skip_kasan_poison.patch
+* kasan-page_alloc-move-tag_clear_highpage-out-of-kernel_init_free_pages.patch
+* kasan-page_alloc-merge-kasan_free_pages-into-free_pages_prepare.patch
+* kasan-page_alloc-simplify-kasan_poison_pages-call-site.patch
+* kasan-page_alloc-init-memory-of-skipped-pages-on-free.patch
+* kasan-drop-skip_kasan_poison-variable-in-free_pages_prepare.patch
+* mm-clarify-__gfp_zerotags-comment.patch
+* kasan-only-apply-__gfp_zerotags-when-memory-is-zeroed.patch
+* kasan-page_alloc-refactor-init-checks-in-post_alloc_hook.patch
+* kasan-page_alloc-merge-kasan_alloc_pages-into-post_alloc_hook.patch
+* kasan-page_alloc-combine-tag_clear_highpage-calls-in-post_alloc_hook.patch
+* kasan-page_alloc-move-setpageskipkasanpoison-in-post_alloc_hook.patch
+* kasan-page_alloc-move-kernel_init_free_pages-in-post_alloc_hook.patch
+* kasan-page_alloc-rework-kasan_unpoison_pages-call-site.patch
+* kasan-clean-up-metadata-byte-definitions.patch
+* kasan-define-kasan_vmalloc_invalid-for-sw_tags.patch
+* kasan-x86-arm64-s390-rename-functions-for-modules-shadow.patch
+* kasan-vmalloc-drop-outdated-vm_kasan-comment.patch
+* kasan-reorder-vmalloc-hooks.patch
+* kasan-add-wrappers-for-vmalloc-hooks.patch
+* kasan-vmalloc-reset-tags-in-vmalloc-functions.patch
+* kasan-fork-reset-pointer-tags-of-vmapped-stacks.patch
+* kasan-arm64-reset-pointer-tags-of-vmapped-stacks.patch
+* kasan-vmalloc-add-vmalloc-tagging-for-sw_tags.patch
+* kasan-vmalloc-arm64-mark-vmalloc-mappings-as-pgprot_tagged.patch
+* kasan-vmalloc-unpoison-vm_alloc-pages-after-mapping.patch
+* kasan-mm-only-define-___gfp_skip_kasan_poison-with-hw_tags.patch
+* kasan-page_alloc-allow-skipping-unpoisoning-for-hw_tags.patch
+* kasan-page_alloc-allow-skipping-memory-init-for-hw_tags.patch
+* kasan-vmalloc-add-vmalloc-tagging-for-hw_tags.patch
+* kasan-vmalloc-only-tag-normal-vmalloc-allocations.patch
+* kasan-arm64-dont-tag-executable-vmalloc-allocations.patch
+* kasan-mark-kasan_arg_stacktrace-as-__initdata.patch
+* kasan-clean-up-feature-flags-for-hw_tags-mode.patch
+* kasan-add-kasanvmalloc-command-line-flag.patch
+* kasan-allow-enabling-kasan_vmalloc-and-sw-hw_tags.patch
+* arm64-select-kasan_vmalloc-for-sw-hw_tags-modes.patch
+* kasan-documentation-updates.patch
+* kasan-improve-vmalloc-tests.patch
+* mm-memremap-avoid-calling-kasan_remove_zero_shadow-for-device-private-memory.patch
+* tools-vm-page_owner_sortc-sort-by-stacktrace-before-culling.patch
+* tools-vm-page_owner_sortc-sort-by-stacktrace-before-culling-fix.patch
+* tools-vm-page_owner_sortc-support-sorting-by-stack-trace.patch
+* tools-vm-page_owner_sortc-add-switch-between-culling-by-stacktrace-and-txt.patch
+* tools-vm-page_owner_sortc-support-sorting-pid-and-time.patch
+* tools-vm-page_owner_sortc-two-trivial-fixes.patch
+* tools-vm-page_owner_sortc-delete-invalid-duplicate-code.patch
+* documentation-vm-page_ownerrst-update-the-documentation.patch
+* documentation-vm-page_ownerrst-update-the-documentation-fix.patch
+* docs-vm-fix-unexpected-indentation-warns-in-page_owner.patch
+* mm-generalize-arch_has_filter_pgprot.patch
+* mm-vmalloc-remove-unneeded-function-forward-declaration.patch
+* vmap-dont-allow-invalid-pages.patch
+* mm-utilc-make-kvfree-safe-for-calling-while-holding-spinlocks.patch
+* mm-page_alloc-avoid-merging-non-fallbackable-pageblocks-with-others.patch
+* mm-page_alloc-add-same-penalty-is-enough-to-get-round-robin-order.patch
+* mm-page_alloc-add-penalty-to-local_node.patch
+* mm-mmzonec-use-try_cmpxchg-in-page_cpupid_xchg_last.patch
+* mm-discard-__gfp_atomic.patch
+* mm-hwpoison-remove-obsolete-comment.patch
+* mm-hwpoison-fix-error-page-recovered-but-reported-not-recovered.patch
+* mm-hugetlb-free-the-2nd-vmemmap-page-associated-with-each-hugetlb-page.patch
+* mm-hugetlb-replace-hugetlb_free_vmemmap_enabled-with-a-static_key.patch
+* mm-sparsemem-use-page-table-lock-to-protect-kernel-pmd-operations.patch
+* selftests-vm-add-a-hugetlb-test-case.patch
+* mm-sparsemem-move-vmemmap-related-to-hugetlb-to-config_hugetlb_page_free_vmemmap.patch
+* mm-mempolicy-convert-from-atomic_t-to-refcount_t-on-mempolicy-refcnt.patch
+* mm-mempolicy-convert-from-atomic_t-to-refcount_t-on-mempolicy-refcnt-fix.patch
+* mm-cma-provide-option-to-opt-out-from-exposing-pages-on-activation-failure.patch
+* powerpc-fadump-opt-out-from-freeing-pages-on-cma-activation-failure.patch
+* mm-vmstat-add-event-for-ksm-swapping-in-copy.patch
+* mm-balloon_compaction-make-balloon-page-compaction-callbacks-static.patch
+* mm-fix-race-between-madv_free-reclaim-and-blkdev-direct-io-read.patch
+* mm-rmap-convert-from-atomic_t-to-refcount_t-on-anon_vma-refcount.patch
+* mm-zswapc-allow-handling-just-same-value-filled-pages.patch
+* highmem-document-kunmap_local.patch
+* highmem-document-kunmap_local-v2.patch
+* mm-highmem-remove-unnecessary-done-label.patch
+* mm-hmmc-remove-unneeded-local-variable-ret.patch
+* mm-damon-dbgfs-init_regions-use-target-index-instead-of-target-id.patch
+* docs-admin-guide-mm-damon-usage-update-for-changed-initail_regions-file-input.patch
+* mm-damon-core-move-damon_set_targets-into-dbgfs.patch
+* mm-damon-remove-the-target-id-concept.patch
+* mm-damon-remove-redundant-page-validation.patch
+* info-task-hung-in-generic_file_write_iter.patch
+* info-task-hung-in-generic_file_write-fix.patch
+* kernel-hung_taskc-monitor-killed-tasks.patch
+* proc-alloc-path_max-bytes-for-proc-pid-fd-symlinks.patch
+* proc-alloc-path_max-bytes-for-proc-pid-fd-symlinks-fix.patch
+* proc-vmcore-fix-possible-deadlock-on-concurrent-mmap-and-read.patch
+* proc-sysctl-make-protected_-world-readable.patch
+* kconfigdebug-make-debug_info-selectable-from-a-choice.patch
+* lz4-fix-lz4_decompress_safe_partial-read-out-of-bound.patch
+* fs-binfmt_elf-fix-at_phdr-for-unusual-elf-files.patch
+* fs-binfmt_elf-refactor-load_elf_binary-function.patch
+* elf-fix-overflow-in-total-mapping-size-calculation.patch
+* init-mainc-silence-some-wunused-parameter-warnings.patch
+* fs-pipe-use-kvcalloc-to-allocate-a-pipe_buffer-array.patch
+* fs-pipe-local-vars-has-to-match-types-of-proper-pipe_inode_info-fields.patch
+* minix-fix-bug-when-opening-a-file-with-o_direct.patch
+* fs-exec-require-argv-presence-in-do_execveat_common.patch
+* kexec-make-crashk_res-crashk_low_res-and-crash_notes-symbols-always-visible.patch
+* riscv-mm-init-use-is_enabledconfig_kexec_core-instead-of-ifdef.patch
+* x86-setup-use-is_enabledconfig_kexec_core-instead-of-ifdef.patch
+* arm64-mm-use-is_enabledconfig_kexec_core-instead-of-ifdef.patch
+* arm-use-is_enabledconfig_kexec_core-instead-of-ifdef.patch
+* docs-sysctl-kernel-add-missing-bit-to-panic_print.patch
+* panic-add-option-to-dump-all-cpus-backtraces-in-panic_print.patch
+* panic-allow-printing-extra-panic-information-on-kdump.patch
+* kcov-split-ioctl-handling-into-locked-and-unlocked-parts.patch
+* kcov-properly-handle-subsequent-mmap-calls.patch
+* selftests-set-the-build-variable-to-absolute-path.patch
+* selftests-add-and-export-a-kernel-uapi-headers-path.patch
+* selftests-correct-the-headers-install-path.patch
+* selftests-futex-add-the-uapi-headers-include-variable.patch
+* selftests-kvm-add-the-uapi-headers-include-variable.patch
+* selftests-landlock-add-the-uapi-headers-include-variable.patch
+* selftests-net-add-the-uapi-headers-include-variable.patch
+* selftests-mptcp-add-the-uapi-headers-include-variable.patch
+* selftests-vm-add-the-uapi-headers-include-variable.patch
+* selftests-vm-remove-dependecy-from-internal-kernel-macros.patch
+* ipc-mqueue-use-get_tree_nodev-in-mqueue_get_tree.patch
+* ipc-sem-do-not-sleep-with-a-spin-lock-held.patch
+  linux-next.patch
+* sysctl-documentation-fix-table-format-warning.patch
+  make-sure-nobodys-leaking-resources.patch
+  releasing-resources-with-children.patch
+  mutex-subsystem-synchro-test-module.patch
+  mutex-subsystem-synchro-test-module-fix.patch
+  kernel-forkc-export-kernel_thread-to-modules.patch
+  workaround-for-a-pci-restoring-bug.patch
