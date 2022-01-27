@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07AB0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 764A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244437AbiA0Rz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:55:59 -0500
-Received: from mga12.intel.com ([192.55.52.136]:65473 "EHLO mga12.intel.com"
+        id S244938AbiA0R4A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:56:00 -0500
+Received: from mga02.intel.com ([134.134.136.20]:19418 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244760AbiA0RzR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:55:17 -0500
+        id S244829AbiA0RzY (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 12:55:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643306117; x=1674842117;
+  t=1643306124; x=1674842124;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5N4sLTNdeUIAZnJLedt6mzC6DSo6VpBb9ZGGJjLgZSQ=;
-  b=OVD/XmczWmbtmQFdtvmVK3ZfQ7WHS2LXFYewgwSnTgjuzQ+mY8NJteAI
-   a36NEXztet5QS5Imp5Kvp9+eBUMOVXVCGKNKSmnT4KATW80n7aVtV8gZc
-   nMrVSitj2dM6DOkU3tWKlR5UAseXvl/OBU26oH6uxwLXDPCiwRTX8Aahi
-   WiVcDCKi4Y2945jTVHwShcU9dZJedX4r9qqjR1WnQvLq8aXNQd134LsoR
-   03e+dc9cu4pHBNbe9GIGfEiHsKjX5Cj8HIv3/WnI/3REFJwef5kCqhwrj
-   3umbJ685QLh/brpckS6DrcjBbt1G/ggzk81EaD/cnhu33mTPar9Kfovsq
+  bh=XJw9MAUdxudZN0wWW0EtiDX6K6ENUNzmSElBKkroX8w=;
+  b=edFXZ851E/Z2PnHTgY26jZjl2Yn27toUhBSBkoT0zEgOIqOts1+CAE7R
+   guMbzLUBFqUccbjuHf/hqlGYX4T4+rLB3xrrmIXLEdojNEPmcgUnaNsp4
+   A2Jw1rD7U75+PXdkVY4jOSVm+QF49F/GoE8GXSHFJF4ipf1I5eLYuCVxe
+   LR2B34PaVrmK7tCal0bfMPiE7uY9QEpH/C9bceTSyNSjK8AcrsJZZI3Jc
+   tqQu0Bpv9Gb22B7qb4neI+idS0OVP0Gi9AWFK0Jx/55rM+Uum9ctgUI7/
+   wn3l+EYOEaIKvXNE0nzgMjVmiOPDI8MHGL6cDVb8bgu9G2OtWlAi5xsYs
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="226899123"
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234302435"
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="226899123"
+   d="scan'208";a="234302435"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:08 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:10 -0800
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="674796070"
+   d="scan'208";a="674796124"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:08 -0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:10 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -40,9 +40,9 @@ To:     Dave Hansen <dave.hansen@linux.intel.com>,
 Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V8 08/44] x86/fault: Adjust WARN_ON for PKey fault
-Date:   Thu, 27 Jan 2022 09:54:29 -0800
-Message-Id: <20220127175505.851391-9-ira.weiny@intel.com>
+Subject: [PATCH V8 22/44] entry: Pass pt_regs to irqentry_exit_cond_resched()
+Date:   Thu, 27 Jan 2022 09:54:43 -0800
+Message-Id: <20220127175505.851391-23-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220127175505.851391-1-ira.weiny@intel.com>
 References: <20220127175505.851391-1-ira.weiny@intel.com>
@@ -54,45 +54,98 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Previously if a Protection key fault occurred it indicated something
-very wrong because user page mappings are not supposed to be in the
-kernel address space.
+Auxiliary pt_regs space needs to be manipulated by the generic
+entry/exit code.
 
-Now PKey faults may happen on kernel mappings if the feature is enabled.
+Unfortunately, the call to irqentry_exit_cond_resched() from
+xen_pv_evtchn_do_upcall() bypasses the 'normal' irqentry_exit() call.
 
-If PKS is enabled, avoid the warning in the fault path.
+Normally the irqentry_exit() would take care of handling any auxiliary
+pt_regs but because of this bypass irqentry_exit_cond_resched() is
+required to handle it.
 
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: Dan Williams <dan.j.williams@intel.com>
+Add pt_regs to irqentry_exit_cond_resched() so that any auxiliary
+pt_regs data can be handled.
+
+Create an internal exit_cond_resched() call for irqentry_exit() to avoid
+passing pt_regs because irqentry_exit() will directly handle any
+auxiliary pt_regs data.
+
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
----
- arch/x86/mm/fault.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index d0074c6ed31a..6ed91b632eac 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -1148,11 +1148,15 @@ do_kern_addr_fault(struct pt_regs *regs, unsigned long hw_error_code,
- 		   unsigned long address)
- {
- 	/*
--	 * Protection keys exceptions only happen on user pages.  We
--	 * have no user pages in the kernel portion of the address
--	 * space, so do not expect them here.
-+	 * X86_PF_PK (Protection key exceptions) may occur on kernel addresses
-+	 * when PKS (PKeys Supervisor) is enabled.
-+	 *
-+	 * However, if PKS is not enabled WARN if this exception is seen
-+	 * because there are no user pages in the kernel portion of the address
-+	 * space.
- 	 */
--	WARN_ON_ONCE(hw_error_code & X86_PF_PK);
-+	WARN_ON_ONCE(!cpu_feature_enabled(X86_FEATURE_PKS) &&
-+		     (hw_error_code & X86_PF_PK));
+---
+Changes for V8
+	New Patch
+---
+ arch/x86/entry/common.c      | 2 +-
+ include/linux/entry-common.h | 3 ++-
+ kernel/entry/common.c        | 9 +++++++--
+ 3 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
+index 6c2826417b33..f1ba770d035d 100644
+--- a/arch/x86/entry/common.c
++++ b/arch/x86/entry/common.c
+@@ -309,7 +309,7 @@ __visible noinstr void xen_pv_evtchn_do_upcall(struct pt_regs *regs)
  
- #ifdef CONFIG_X86_32
- 	/*
+ 	inhcall = get_and_clear_inhcall();
+ 	if (inhcall && !WARN_ON_ONCE(state.exit_rcu)) {
+-		irqentry_exit_cond_resched();
++		irqentry_exit_cond_resched(regs);
+ 		instrumentation_end();
+ 		restore_inhcall(inhcall);
+ 	} else {
+diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+index ddaffc983e62..14fd329847e7 100644
+--- a/include/linux/entry-common.h
++++ b/include/linux/entry-common.h
+@@ -451,10 +451,11 @@ irqentry_state_t noinstr irqentry_enter(struct pt_regs *regs);
+ 
+ /**
+  * irqentry_exit_cond_resched - Conditionally reschedule on return from interrupt
++ * @regs:	Pointer to pt_regs of interrupted context
+  *
+  * Conditional reschedule with additional sanity checks.
+  */
+-void irqentry_exit_cond_resched(void);
++void irqentry_exit_cond_resched(struct pt_regs *regs);
+ 
+ void __irqentry_exit_cond_resched(void);
+ #ifdef CONFIG_PREEMPT_DYNAMIC
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index 490442a48332..f4210a7fc84d 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -395,7 +395,7 @@ void __irqentry_exit_cond_resched(void)
+ DEFINE_STATIC_CALL(__irqentry_exit_cond_resched, __irqentry_exit_cond_resched);
+ #endif
+ 
+-void irqentry_exit_cond_resched(void)
++static void exit_cond_resched(void)
+ {
+ 	if (IS_ENABLED(CONFIG_PREEMPTION)) {
+ #ifdef CONFIG_PREEMPT_DYNAMIC
+@@ -406,6 +406,11 @@ void irqentry_exit_cond_resched(void)
+ 	}
+ }
+ 
++void irqentry_exit_cond_resched(struct pt_regs *regs)
++{
++	exit_cond_resched();
++}
++
+ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+ {
+ 	lockdep_assert_irqs_disabled();
+@@ -431,7 +436,7 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+ 		}
+ 
+ 		instrumentation_begin();
+-		irqentry_exit_cond_resched();
++		exit_cond_resched();
+ 		/* Covers both tracing and lockdep */
+ 		trace_hardirqs_on();
+ 		instrumentation_end();
 -- 
 2.31.1
 
