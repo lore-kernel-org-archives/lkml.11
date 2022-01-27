@@ -2,240 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC6CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A928C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242181AbiA0Ni0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 08:38:26 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42644 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242172AbiA0Ngt (ORCPT
+        id S242027AbiA0Ni1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 08:38:27 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:56354 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242143AbiA0Ngv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:36:49 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2E7961C2A
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 13:36:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BF29C340E4;
-        Thu, 27 Jan 2022 13:36:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643290608;
-        bh=F9Lanb3MeXhx6oTm0RnhfrOZTdSI4PVnjIBtYmMfTyk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rYhwfCBh8kuMsZ/Hq3OY89hCboiUPMld7e3/cMHTJSpgI+zu3QSxPtvjD4+qxok7t
-         ia7Lv2Zu81A01mzFbfauTXyNYhnJEZaa6fWWlnsqnX6F6N8EoJDPE8PQ3//pHRngz7
-         fsFyIgsNi8zd+j05EMVB2t0y50F+Ya0suL9r6ERiYptt+tVsYgihgA70O7CNfw7Xmp
-         s5QkyUQGFNw3BVK3hiozx5ObbawbuSQEcV9We0bpQlzRbmvLChhA2MLTx/x8GZbezT
-         LnyINsFPNNzwxUEq2lW6tVM40jWnK2V4Pf1h7p9KU+5JAcHOHWg2OG3dvD51WmBoID
-         sqnuxUDBq/jJA==
-Date:   Thu, 27 Jan 2022 15:36:39 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Michal Hocko <mhocko@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>, Tejun Heo <tj@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Nico Pache <npache@redhat.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Rafael Aquini <raquini@redhat.com>,
-        Michal Hocko <mhocko@suse.com>
-Subject: Re: [PATCH 1/6] mm, memory_hotplug: make arch_alloc_nodedata
- independent on CONFIG_MEMORY_HOTPLUG
-Message-ID: <YfKf57Mz6cwaVMTb@kernel.org>
-References: <20220127085305.20890-1-mhocko@kernel.org>
- <20220127085305.20890-2-mhocko@kernel.org>
+        Thu, 27 Jan 2022 08:36:51 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 8443B218CE;
+        Thu, 27 Jan 2022 13:36:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643290610; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=O9QO+GuOwuNfCQAL5X6kgAbs9JlqPuUL4SKyZ4gCtFk=;
+        b=QYaek997c5pGHBy5TBaos7w+eHs4u2gf+NndfKaQg7gz0kxFgI7c20g95O2H6lMYGycnav
+        wqcGuiYiIE/ZwgBeUkLfNLPGXk1Pr0LkQ+JtatlDrIRKCy2C8BPX3n8IMchjdR0KtkSeEq
+        dQqF8sbwlmPZVKVwFculCR5fkIiGKEA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643290610;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=O9QO+GuOwuNfCQAL5X6kgAbs9JlqPuUL4SKyZ4gCtFk=;
+        b=3V+c1YSBRZbizUpOK3QrjutsbkQU/u64evuTAIMS6QJD4OjohwAG0NVNIRtZxdPt8Niax+
+        zM2EEuaCTBVXTzDQ==
+Received: from adalid.arch.suse.de (adalid.arch.suse.de [10.161.8.13])
+        by relay2.suse.de (Postfix) with ESMTP id 7DFC6A3B87;
+        Thu, 27 Jan 2022 13:36:50 +0000 (UTC)
+Received: by adalid.arch.suse.de (Postfix, from userid 17828)
+        id 71F435192D56; Thu, 27 Jan 2022 14:36:50 +0100 (CET)
+From:   Daniel Wagner <dwagner@suse.de>
+To:     linux-nvme@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, Daniel Wagner <dwagner@suse.de>
+Subject: [RFC] nvme: Do not reject dynamic controller cntlid
+Date:   Thu, 27 Jan 2022 14:36:48 +0100
+Message-Id: <20220127133648.8201-1-dwagner@suse.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127085305.20890-2-mhocko@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 09:53:00AM +0100, Michal Hocko wrote:
-> From: Michal Hocko <mhocko@suse.com>
-> 
-> This is a preparatory patch and it doesn't introduce any functional
-> change. It merely pulls out arch_alloc_nodedata (and co) outside of
-> CONFIG_MEMORY_HOTPLUG because the following patch will need to call this
-> from the generic MM code.
-> 
-> Acked-by: Rafael Aquini <raquini@redhat.com>
-> Signed-off-by: Michal Hocko <mhocko@suse.com>
+The NVME spec states in 3.1.1 Controller Model there are two types
+controllers: dynamic and static.
 
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+The nvme_validate_cntlid() check ensures that the newly discovered
+controller does not have the same cntlid as a known controller. For
+the dynamic controller model this check doesn't make sense as all
+cntlid will be 0xffff. In this case ignore this check.
 
-> ---
->  arch/ia64/mm/discontig.c       |   2 -
->  include/linux/memory_hotplug.h | 119 ++++++++++++++++-----------------
->  2 files changed, 59 insertions(+), 62 deletions(-)
-> 
-> diff --git a/arch/ia64/mm/discontig.c b/arch/ia64/mm/discontig.c
-> index 791d4176e4a6..8dc8a554f774 100644
-> --- a/arch/ia64/mm/discontig.c
-> +++ b/arch/ia64/mm/discontig.c
-> @@ -608,7 +608,6 @@ void __init paging_init(void)
->  	zero_page_memmap_ptr = virt_to_page(ia64_imva(empty_zero_page));
->  }
->  
-> -#ifdef CONFIG_MEMORY_HOTPLUG
->  pg_data_t *arch_alloc_nodedata(int nid)
->  {
->  	unsigned long size = compute_pernodesize(nid);
-> @@ -626,7 +625,6 @@ void arch_refresh_nodedata(int update_node, pg_data_t *update_pgdat)
->  	pgdat_list[update_node] = update_pgdat;
->  	scatter_node_data();
->  }
-> -#endif
->  
->  #ifdef CONFIG_SPARSEMEM_VMEMMAP
->  int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
-> diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
-> index be48e003a518..4355983b364d 100644
-> --- a/include/linux/memory_hotplug.h
-> +++ b/include/linux/memory_hotplug.h
-> @@ -16,6 +16,65 @@ struct memory_group;
->  struct resource;
->  struct vmem_altmap;
->  
-> +#ifdef CONFIG_HAVE_ARCH_NODEDATA_EXTENSION
-> +/*
-> + * For supporting node-hotadd, we have to allocate a new pgdat.
-> + *
-> + * If an arch has generic style NODE_DATA(),
-> + * node_data[nid] = kzalloc() works well. But it depends on the architecture.
-> + *
-> + * In general, generic_alloc_nodedata() is used.
-> + * Now, arch_free_nodedata() is just defined for error path of node_hot_add.
-> + *
-> + */
-> +extern pg_data_t *arch_alloc_nodedata(int nid);
-> +extern void arch_free_nodedata(pg_data_t *pgdat);
-> +extern void arch_refresh_nodedata(int nid, pg_data_t *pgdat);
-> +
-> +#else /* CONFIG_HAVE_ARCH_NODEDATA_EXTENSION */
-> +
-> +#define arch_alloc_nodedata(nid)	generic_alloc_nodedata(nid)
-> +#define arch_free_nodedata(pgdat)	generic_free_nodedata(pgdat)
-> +
-> +#ifdef CONFIG_NUMA
-> +/*
-> + * XXX: node aware allocation can't work well to get new node's memory at this time.
-> + *	Because, pgdat for the new node is not allocated/initialized yet itself.
-> + *	To use new node's memory, more consideration will be necessary.
-> + */
-> +#define generic_alloc_nodedata(nid)				\
-> +({								\
-> +	kzalloc(sizeof(pg_data_t), GFP_KERNEL);			\
-> +})
-> +/*
-> + * This definition is just for error path in node hotadd.
-> + * For node hotremove, we have to replace this.
-> + */
-> +#define generic_free_nodedata(pgdat)	kfree(pgdat)
-> +
-> +extern pg_data_t *node_data[];
-> +static inline void arch_refresh_nodedata(int nid, pg_data_t *pgdat)
-> +{
-> +	node_data[nid] = pgdat;
-> +}
-> +
-> +#else /* !CONFIG_NUMA */
-> +
-> +/* never called */
-> +static inline pg_data_t *generic_alloc_nodedata(int nid)
-> +{
-> +	BUG();
-> +	return NULL;
-> +}
-> +static inline void generic_free_nodedata(pg_data_t *pgdat)
-> +{
-> +}
-> +static inline void arch_refresh_nodedata(int nid, pg_data_t *pgdat)
-> +{
-> +}
-> +#endif /* CONFIG_NUMA */
-> +#endif /* CONFIG_HAVE_ARCH_NODEDATA_EXTENSION */
-> +
->  #ifdef CONFIG_MEMORY_HOTPLUG
->  struct page *pfn_to_online_page(unsigned long pfn);
->  
-> @@ -154,66 +213,6 @@ int add_pages(int nid, unsigned long start_pfn, unsigned long nr_pages,
->  	      struct mhp_params *params);
->  #endif /* ARCH_HAS_ADD_PAGES */
->  
-> -#ifdef CONFIG_HAVE_ARCH_NODEDATA_EXTENSION
-> -/*
-> - * For supporting node-hotadd, we have to allocate a new pgdat.
-> - *
-> - * If an arch has generic style NODE_DATA(),
-> - * node_data[nid] = kzalloc() works well. But it depends on the architecture.
-> - *
-> - * In general, generic_alloc_nodedata() is used.
-> - * Now, arch_free_nodedata() is just defined for error path of node_hot_add.
-> - *
-> - */
-> -extern pg_data_t *arch_alloc_nodedata(int nid);
-> -extern void arch_free_nodedata(pg_data_t *pgdat);
-> -extern void arch_refresh_nodedata(int nid, pg_data_t *pgdat);
-> -
-> -#else /* CONFIG_HAVE_ARCH_NODEDATA_EXTENSION */
-> -
-> -#define arch_alloc_nodedata(nid)	generic_alloc_nodedata(nid)
-> -#define arch_free_nodedata(pgdat)	generic_free_nodedata(pgdat)
-> -
-> -#ifdef CONFIG_NUMA
-> -/*
-> - * If ARCH_HAS_NODEDATA_EXTENSION=n, this func is used to allocate pgdat.
-> - * XXX: kmalloc_node() can't work well to get new node's memory at this time.
-> - *	Because, pgdat for the new node is not allocated/initialized yet itself.
-> - *	To use new node's memory, more consideration will be necessary.
-> - */
-> -#define generic_alloc_nodedata(nid)				\
-> -({								\
-> -	kzalloc(sizeof(pg_data_t), GFP_KERNEL);			\
-> -})
-> -/*
-> - * This definition is just for error path in node hotadd.
-> - * For node hotremove, we have to replace this.
-> - */
-> -#define generic_free_nodedata(pgdat)	kfree(pgdat)
-> -
-> -extern pg_data_t *node_data[];
-> -static inline void arch_refresh_nodedata(int nid, pg_data_t *pgdat)
-> -{
-> -	node_data[nid] = pgdat;
-> -}
-> -
-> -#else /* !CONFIG_NUMA */
-> -
-> -/* never called */
-> -static inline pg_data_t *generic_alloc_nodedata(int nid)
-> -{
-> -	BUG();
-> -	return NULL;
-> -}
-> -static inline void generic_free_nodedata(pg_data_t *pgdat)
-> -{
-> -}
-> -static inline void arch_refresh_nodedata(int nid, pg_data_t *pgdat)
-> -{
-> -}
-> -#endif /* CONFIG_NUMA */
-> -#endif /* CONFIG_HAVE_ARCH_NODEDATA_EXTENSION */
-> -
->  void get_online_mems(void);
->  void put_online_mems(void);
->  
-> -- 
-> 2.30.2
-> 
+Signed-off-by: Daniel Wagner <dwagner@suse.de>
+---
 
+I got a bug report with this:
+
+ nvme nvme10: pci function 0000:00:19.0
+ nvme 0000:00:19.0: enabling device (0000 -> 0002)
+ nvme nvme10: Duplicate cntlid 65535 with nvme7, rejecting
+ nvme nvme10: Removing after probe failure status: -22
+
+From reading the spec I got the impression that it should be enough to
+ignore the cntlid check if the cntlid is 0xffff. Though I might be
+completely wrong here.
+
+ drivers/nvme/host/core.c | 2 +-
+ drivers/nvme/host/nvme.h | 5 +++++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index dd18861f77c0..918abb54771c 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -2701,7 +2701,7 @@ static bool nvme_validate_cntlid(struct nvme_subsystem *subsys,
+ 		if (nvme_state_terminal(tmp))
+ 			continue;
+ 
+-		if (tmp->cntlid == ctrl->cntlid) {
++		if (!nvme_ctrl_dynamic(tmp) && tmp->cntlid == ctrl->cntlid) {
+ 			dev_err(ctrl->device,
+ 				"Duplicate cntlid %u with %s, subsys %s, rejecting\n",
+ 				ctrl->cntlid, dev_name(tmp->device),
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index a162f6c6da6e..ed75245263f5 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -539,6 +539,11 @@ static inline struct request *nvme_cid_to_rq(struct blk_mq_tags *tags,
+ 	return blk_mq_tag_to_rq(tags, nvme_tag_from_cid(command_id));
+ }
+ 
++static inline bool nvme_ctrl_dynamic(struct nvme_ctrl *ctrl)
++{
++	return ctrl->cntlid == 0xffff;
++}
++
+ #ifdef CONFIG_FAULT_INJECTION_DEBUG_FS
+ void nvme_fault_inject_init(struct nvme_fault_inject *fault_inj,
+ 			    const char *dev_name);
 -- 
-Sincerely yours,
-Mike.
+2.29.2
+
