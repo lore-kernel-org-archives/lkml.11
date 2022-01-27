@@ -2,134 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 23:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 23:09:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344595AbiA0XJA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 18:09:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58040 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344504AbiA0XIr (ORCPT
+        id S241113AbiA0XJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 18:09:02 -0500
+Received: from esa1.hgst.iphmx.com ([68.232.141.245]:8172 "EHLO
+        esa1.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344529AbiA0XIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 18:08:47 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DE5C06176C
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:08:46 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id q75so3658268pgq.5
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:08:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fXezxkg2kGuWbB36YJn2JEHiHCC80Um0xlTyospu4bE=;
-        b=W52+ysBtqCsUepS7IJiVv6MqZt+QdNIY980EbuHquIW6109/e0+n0y9mwaOPmdVytS
-         uRAk7qC1DiU/CwNi49mc4RvLPdUna1Oqj5Qgt0jPuWkra+DTqe1xx5fnNx2rjw/SO5hh
-         qVqkuZdKSeug7aH608jY9tfD7Q/F1d9LkblPo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fXezxkg2kGuWbB36YJn2JEHiHCC80Um0xlTyospu4bE=;
-        b=b9eIoOdGPN6yQMhGwKWWqgc2H/SPq1D0IQvIsppQHlOX8ASsOGv8az58a5M46q9Jrp
-         C3FtfIOhkfLrucb6AIQWXHMznfQNQVTYR8HTuriO6Cxqi6PFsyPXis791XXnFMFjmbO/
-         QHeXBiPScGqE/wkrHK1HFMu/jNqpb+bL4U5tQ4yD1cJZ/gmVb03/q/NKpD39Bgsw9GWK
-         xmyFSeuFXWHr0Z06m1WElHmouZxitzZHvq++/YOTe2unNr3uhxFR7gC1Dh/JGg0GDyHG
-         o8gkAxkucSS4k5RqJnlr8iqgBpAOY8m99yJfw5BckH8hoYH8qNFD9VQVEu6jKfDXfJW/
-         Ljgg==
-X-Gm-Message-State: AOAM5325066xGQCfvvCvdMPY4cWr3Hrw8sxStxGBGkCdLrsdVrU8BaP1
-        mnuT55oFq1JGn5ZDIGombQHYyA==
-X-Google-Smtp-Source: ABdhPJzIjPFzmvY95upLY8umBbY8uqvVIvgVAGp2b3szXo3MoWikHuPQAGZ4kG2PB8Y9F89T9NfEvQ==
-X-Received: by 2002:a62:1cc9:: with SMTP id c192mr4895534pfc.70.1643324925797;
-        Thu, 27 Jan 2022 15:08:45 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:723d:38a9:9e7f:3435])
-        by smtp.gmail.com with UTF8SMTPSA id n22sm6497884pfu.77.2022.01.27.15.08.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 15:08:45 -0800 (PST)
-From:   Brian Norris <briannorris@chromium.org>
-To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        Lin Huang <hl@rock-chips.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Derek Basehore <dbasehore@chromium.org>,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        Heiko Stuebner <heiko@sntech.de>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        =?UTF-8?q?Ga=C3=ABl=20PORTAY?= <gael.portay@collabora.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Brian Norris <briannorris@chromium.org>
-Subject: [PATCH v2 11/15] arm64: dts: rk3399: Add dfi and dmc nodes
-Date:   Thu, 27 Jan 2022 15:07:22 -0800
-Message-Id: <20220127150615.v2.11.Ie97993621975c5463d7928a8646f3737c9f2921d@changeid>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-In-Reply-To: <20220127230727.3369358-1-briannorris@chromium.org>
-References: <20220127230727.3369358-1-briannorris@chromium.org>
+        Thu, 27 Jan 2022 18:08:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1643324930; x=1674860930;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=sIQFZUU2YtYKz8AVEUJwYWDyx6QIOXw3eZJaDURUMqM=;
+  b=DkQCAOWAJ8kldu60SFCv2TU6kMaRFq7FXriihbBj84HR40tR3aSqf8kT
+   gdBR9KrdxWohThWWQJRf034C/Rf6O8/64Kukz2g8eCNFyTIJH9xehlYRh
+   nkao4SlrtK2/p0uCRB7mDzX3fwX5E/jd/yrGtziF298PrtKynRxmti9qX
+   LSN2LQpD3POcBy5Sgo/IM8ai5xnnvq/B6PuXbHcWmql/VnZl0e5vJoSdR
+   ZZWpGwhcVb5ISG0qMfKJyp0VQMgPAsDCY2lKpdq22yosChHBsQFW3eoDx
+   QxUaxezR9VwON+XfS4Ju5Fz57RbOty9YsTYesjSNsML2zxK8Bsgvm1uI2
+   A==;
+X-IronPort-AV: E=Sophos;i="5.88,321,1635177600"; 
+   d="scan'208";a="303450888"
+Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 28 Jan 2022 07:08:50 +0800
+IronPort-SDR: 2nMVoxNnpgaHIPSlE6Gu0OAr9uQOTRPALBnkulgWiIhYj7UDOtEBRNYhNhzEEnDF6u7AmZZEWR
+ r2zW7m3lu184uFVhKXd5kylV9+USpwIK0beRN4EQOuepvdy7Pu/1QyvFtAI/NKL4oPUuDuaqt5
+ HS9/e8myU78wFtx21mRkh5lPJv/nOQVCZf8/CryCiTYndl/NOuZvL82BsyIM0XovamGgmWmot4
+ x24l3H538xTd1rxeksn1iykB8aDysqacB0UsPL60VQEj46Cmop3sXWSbZdVyO13VmQSL42kalQ
+ rVUO2+WlR7dacmXfPhAyO2Vj
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 14:40:53 -0800
+IronPort-SDR: evt+/2cYseM6I/iL9HLhXyZ04CtZeea0BDEkIyOhKZG3Ht4rFzUoSrvx6zHw65SjaioLyWj7vz
+ 6q44R2zSVwA/DXE5DmhsxqRPx0Pzx80BX3sXDNMhQq7sa59yMvE3WZrFK8hEbJNS4pPJZWkXLe
+ Qs5eSw51BApTh0xuoIEQcxwwjrQNvD41XYLZkZoX/tIRLTM2mffUbw7ANAn1idUKUSBwyp8pm+
+ JQ8WoJLpxNnWOx3Y3GDRfOhU4G4TaEWEcKyQQLoGMFT9V/LhKuXhpON3CiwvdRfu5kJQzocE9v
+ loI=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 15:08:50 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4JlGVT2yrWz1SHwl
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 15:08:49 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1643324928; x=1645916929; bh=sIQFZUU2YtYKz8AVEUJwYWDyx6QIOXw3eZJ
+        aDURUMqM=; b=r/zy/W7ckZnVRMM3jvoBp/4D6npgXj3O/z+pF5uUJ7sAfz0vQcs
+        V4HcSmvhSb6Oq7pGCysGglhogFn7qup6m9CJDfec6hC7zN3hHZ+HtMU29LbI9A5+
+        q0gBAOFqXJg+KjdYXlUQZ8SFJsT/I1yR4yfkMnFPHvnYAjpl4WDG+icYBSShJxc8
+        0i34GgHY/ieyCdDL1kJlCs0a1unP3tfXDy5g9QTmkU+B6jNJhSbdsO/+2pnTXjNw
+        MPDBFgF2+Tj4XTMtrq5GugxKj1Y2a+th1mwRCckd3MxJDLWx/7+rPG56J3+oTW4k
+        SsJ3pG+uWjlbvOgCbq3Evw1oY2v9w/Oj86Q==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id PPojdCcnpTcK for <linux-kernel@vger.kernel.org>;
+        Thu, 27 Jan 2022 15:08:48 -0800 (PST)
+Received: from [10.225.163.58] (unknown [10.225.163.58])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JlGVR3tzfz1RvlN;
+        Thu, 27 Jan 2022 15:08:47 -0800 (PST)
+Message-ID: <ab547eb4-d97d-45e0-207a-8b660c6e96bd@opensource.wdc.com>
+Date:   Fri, 28 Jan 2022 08:08:46 +0900
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 3/3] scsi: pm8001: Fix use-after-free for aborted SSP/STP
+ sas_task
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>, jinpu.wang@cloud.ionos.com,
+        jejb@linux.ibm.com, martin.petersen@oracle.com,
+        Ajish.Koshy@microchip.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Viswas.G@microchip.com, chenxiang66@hisilicon.com
+References: <1643289172-165636-1-git-send-email-john.garry@huawei.com>
+ <1643289172-165636-4-git-send-email-john.garry@huawei.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <1643289172-165636-4-git-send-email-john.garry@huawei.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Huang <hl@rock-chips.com>
+On 1/27/22 22:12, John Garry wrote:
+> Currently a use-after-free may occur if a sas_task is aborted by the upper
+> layer before we handle the IO completion in mpi_ssp_completion() or
+> mpi_sata_completion().
+> 
+> In this case, the following are the two steps in handling those IO
+> completions:
+> - call complete() to inform the upper layer handler of completion of
+>   the IO
+> - release driver resources associated with the sas_task in
+>   pm8001_ccb_task_free() call
+> 
+> When complete() is called, the upper layer may free the sas_task. As such,
+> we should not touch the associated sas_task afterwards, but we do so in
+> the pm8001_ccb_task_free() call.
+> 
+> Fix by swapping the complete() and pm8001_ccb_task_free() calls ordering.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>  drivers/scsi/pm8001/pm80xx_hwi.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+> index ce38a2298e75..1134e86ac928 100644
+> --- a/drivers/scsi/pm8001/pm80xx_hwi.c
+> +++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+> @@ -2185,9 +2185,9 @@ mpi_ssp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
+>  		pm8001_dbg(pm8001_ha, FAIL,
+>  			   "task 0x%p done with io_status 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
+>  			   t, status, ts->resp, ts->stat);
+> +		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+>  		if (t->slow_task)
+>  			complete(&t->slow_task->completion);
+> -		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+>  	} else {
+>  		spin_unlock_irqrestore(&t->task_state_lock, flags);
+>  		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+> @@ -2794,9 +2794,9 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha,
+>  		pm8001_dbg(pm8001_ha, FAIL,
+>  			   "task 0x%p done with io_status 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
+>  			   t, status, ts->resp, ts->stat);
+> +		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+>  		if (t->slow_task)
+>  			complete(&t->slow_task->completion);
+> -		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+>  	} else {
+>  		spin_unlock_irqrestore(&t->task_state_lock, flags);
+>  		spin_unlock_irqrestore(&circularQ->oq_lock,
 
-These are required to support DDR DVFS on RK3399 platforms.
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-Signed-off-by: Lin Huang <hl@rock-chips.com>
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Signed-off-by: Gaël PORTAY <gael.portay@collabora.com>
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Change since Daniel's posting: reordered by unit address, per existing
-style
-
----
-
-Changes in v2:
- - rename dmc to memory-controller
-
-Changes in v1:
-This is based on a v5 posting from various authors:
-https://lore.kernel.org/lkml/20210308233858.24741-3-daniel.lezcano@linaro.org/
-Much of that series was already merged, so I start over with the
-numbering.
-
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index d3cdf6f42a30..4096ef6f7b72 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1295,6 +1295,25 @@ pwm3: pwm@ff420030 {
- 		status = "disabled";
- 	};
- 
-+	dfi: dfi@ff630000 {
-+		reg = <0x00 0xff630000 0x00 0x4000>;
-+		compatible = "rockchip,rk3399-dfi";
-+		rockchip,pmu = <&pmugrf>;
-+		interrupts = <GIC_SPI 131 IRQ_TYPE_LEVEL_HIGH 0>;
-+		clocks = <&cru PCLK_DDR_MON>;
-+		clock-names = "pclk_ddr_mon";
-+		status = "disabled";
-+	};
-+
-+	dmc: memory-controller {
-+		compatible = "rockchip,rk3399-dmc";
-+		rockchip,pmu = <&pmugrf>;
-+		devfreq-events = <&dfi>;
-+		clocks = <&cru SCLK_DDRC>;
-+		clock-names = "dmc_clk";
-+		status = "disabled";
-+	};
-+
- 	vpu: video-codec@ff650000 {
- 		compatible = "rockchip,rk3399-vpu";
- 		reg = <0x0 0xff650000 0x0 0x800>;
 -- 
-2.35.0.rc0.227.g00780c9af4-goog
-
+Damien Le Moal
+Western Digital Research
