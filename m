@@ -2,80 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A662C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63ED7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244463AbiA0RT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:19:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
+        id S233152AbiA0RUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:20:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238752AbiA0RT7 (ORCPT
+        with ESMTP id S229644AbiA0RUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:19:59 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E655DC061714
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:19:58 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id i1so3078426ils.5
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:19:58 -0800 (PST)
+        Thu, 27 Jan 2022 12:20:52 -0500
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D913C061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:20:52 -0800 (PST)
+Received: by mail-il1-x12c.google.com with SMTP id o10so3136393ilh.0
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:20:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:in-reply-to:references:subject:message-id:date
-         :mime-version:content-transfer-encoding;
-        bh=xAKdJ/tujRi8fhxhetqf00KEAUhO2dTbL4KlheL+4Hc=;
-        b=6EU5YRSoG7moyzjPCSAVdpw8ZS0uYBTReUZyiL94xwbOWz2W89CUw+f4I+0jEcNV2Y
-         7IEJY2O7dRroF2BQMB42mgxMQuRvGGxVyiUcKIHUL4lVULAaCZ24sYF4NoAtDPjT7+eK
-         QQsw5zEaFOwKIcBenjfegfWUueZyOsgV2wXnSI6XvEvdRW8pYmCb4vyS012p9/4S5yVl
-         o8HLOpfs4etfvxKJUk1AAUerJCosyFFjFKemfWKtoNyzgN5V/ycABQvJOJtF5E3+CJks
-         33VjtFv/k7emfU6JMbxU0LsewhfLF4dHepry86oyKVSBmE9Pxu0DNFlhnzGB761qOrxL
-         MZfw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iaHewaMXEmzHJ38WOmH2YhxpB8gHzlEG+ateVK/sjGY=;
+        b=c770KxyDssfxz3edUgRShQUMxMkrUGm68vfXZFUdg/T4enqHy0AM2dVsxWdY3KVYJ0
+         pqxDwO1fXkyRFaBIZmDbXiXcVVxGdI8npF58BnDI7LUfutnlH7Mm+KCUGGIxH2cMc931
+         uspt7+Dw5y1/AzWbiRwr0oiidvt4y0UUnD+btZNo9TgUJAwPo6daj0h+gyB4XTvpYlDJ
+         /sv3iQlEsjsC/iCzMPKQm+ZfRthekLmkOYO34JJc97xtwgnWHvZ75BBM75sgBM461cO7
+         KU7H7Rl/4PeuO7pn45de1PN+KL2/MRORdd2bdSeHzJto2Hw0eoSvK5JGnfQkJJ8oG88R
+         P3Pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
-         :message-id:date:mime-version:content-transfer-encoding;
-        bh=xAKdJ/tujRi8fhxhetqf00KEAUhO2dTbL4KlheL+4Hc=;
-        b=E+TWnzRts71cy4Bygka925bCaxQHZdYhbTahkJAeU0adDaRH17n87wx4fxt3T8B3rF
-         jmWuS7m+/QthGgcYCv9is7/g1Ctwg4rL4liLnfW213qO+GKB2r+ruK4jtnLeqERdpgaR
-         HKxLCsIolBZapMw2WRfbCg1zJHnyhDAWK2rkR2tOrmhOwd2FB9y0Wg1Vj8Szeup1p2eB
-         A93wSKjXYsSXBvZvy96izw8PHtLBgkBvfdEqW2D8AxTlygU9J3t6qYP1UK9Q5pN4Aco6
-         GnX19gTwIt3wt0XLGEr4Dy3tRY9DK3+7vnSe2zMzQe2KPFlVXXC8IUy2y/buUZUPV9+J
-         uhoQ==
-X-Gm-Message-State: AOAM533xGeVydSbGFlIv8wdi53kwg3sj6Q/V6aqqSbwsM2tZtc7rmHJI
-        Un7zVzxvVvAVoxK3OAVUwJ8olg==
-X-Google-Smtp-Source: ABdhPJy2TDJL5jdE8PakyZZhULt1VkqtDhWLGh1HIX/PUveSXQs2+dFd0bE58gFjuH9VAx/voobWIg==
-X-Received: by 2002:a05:6e02:1a2f:: with SMTP id g15mr3167197ile.271.1643303998291;
-        Thu, 27 Jan 2022 09:19:58 -0800 (PST)
-Received: from x1.localdomain ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id n3sm108985ioz.9.2022.01.27.09.19.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 09:19:57 -0800 (PST)
-From:   Jens Axboe <axboe@kernel.dk>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iaHewaMXEmzHJ38WOmH2YhxpB8gHzlEG+ateVK/sjGY=;
+        b=hedAf22nWhZDVKzNi9U40Y0XOcnJRoTeQwOlA9QZMCFTvOl82yHe4/j5FAcQ+Ht68U
+         qOaYB7W/sU4Jr62dxk41Zwr9uIPsrtuIn1Z8qvlHPa3YPg1mYCvtVBQO+ixiWseH4RrZ
+         6dDpMcbn01ZV9PzHxOXUELh/wbQD5FvYoNnysSPpN2imeJdXO26S2d3f+gaArRYcmUFD
+         AdLVdxnZ53Rf4l7JuZWfa5zfIDl5a/77cHOv18C1OHEVGEIBKV59/dzlXFaVXXP4g7Jg
+         tLLIzuUIu2+OAbwHUxcZgKIpvfNhJ7cW4SpjrvD9yyJm/n0sBz5StOIlwiL2QlytCQ5W
+         InpA==
+X-Gm-Message-State: AOAM532xqlReqSjHB8PxRM3xfzYy0wo5Ze25HfGoHiLSbWFhaB7ufwO+
+        5MGB9cxE4pq/LM9n6g4TZMzPD4cjBqzB8g==
+X-Google-Smtp-Source: ABdhPJz2DVVUGFXnX7N8YFu+DkilEwlVbM4nJn7TFP8KoLVRbdj2ubTE6mXZIyHfGa9jpDoxzlSZ+w==
+X-Received: by 2002:a05:6e02:1a87:: with SMTP id k7mr3256323ilv.217.1643304051612;
+        Thu, 27 Jan 2022 09:20:51 -0800 (PST)
+Received: from [192.168.1.30] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id s13sm11917896iln.15.2022.01.27.09.20.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 09:20:51 -0800 (PST)
+Subject: Re: [PATCH] MAINTAINERS: add bio.h to the block section
 To:     Christoph Hellwig <hch@lst.de>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220127064125.1314347-1-hch@lst.de>
-References: <20220127064125.1314347-1-hch@lst.de>
-Subject: Re: [PATCH] block: fix the kerneldoc for bio_end_io_acct
-Message-Id: <164330399766.211332.13316098014683559677.b4-ty@kernel.dk>
-Date:   Thu, 27 Jan 2022 10:19:57 -0700
+Cc:     linux-kernel@vger.kernel.org
+References: <20220127064221.1314477-1-hch@lst.de>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <990369e1-0868-5cd1-2f97-286c50be2cba@kernel.dk>
+Date:   Thu, 27 Jan 2022 10:20:50 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220127064221.1314477-1-hch@lst.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 07:41:25 +0100, Christoph Hellwig wrote:
-> Document the actually existing parameter name.
-> 
-> 
+On 1/26/22 11:42 PM, Christoph Hellwig wrote:
+> bio.h is pater of the block layer, so list it in the MAINTAINERS file
+           ^^^^^
 
-Applied, thanks!
+part?
 
-[1/1] block: fix the kerneldoc for bio_end_io_acct
-      commit: 5ea0af2025e27d9f30f14d2c777eb80b6d5c7296
 
-Best regards,
 -- 
 Jens Axboe
-
 
