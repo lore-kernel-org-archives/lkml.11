@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D346BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245300AbiA0R4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:56:45 -0500
-Received: from mga02.intel.com ([134.134.136.20]:19450 "EHLO mga02.intel.com"
+        id S245335AbiA0R4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:56:50 -0500
+Received: from mga12.intel.com ([192.55.52.136]:65504 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244785AbiA0Rza (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:55:30 -0500
+        id S244769AbiA0Rzd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 12:55:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643306130; x=1674842130;
+  t=1643306133; x=1674842133;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=lz+GzmfxQCFYBGj/322C04YF6L+IH6KOL/+UXO7S+bE=;
-  b=FhZa5BiU6T1v7DP2WWrMOgJYo48lVeUECIX6dYJ2Bs6qigt6lGiwcKT2
-   TQiIKIByxAXBcsfsrwOkLy7ZQtnxmMMct1qtael+pSpVHk9Sw9+BguMIB
-   KX2wn3q2W0U2mhSGe6R1vqYnSMg1gwZiJVwwrD6MSxA8KasnhS/64Xevq
-   YKkGXQptuUPP67Fj+iywB4tJfP2xnvvKhMoeSNuoKjjyKXPgesTgZSuUA
-   bRKRV0z7mVWESjYx3YLcaMqhbjTiWIzSdpewhgqqinNULAHTdUIsQ5R8z
-   4Il42MnCPGzznC/gsCniSuib/GFWgh6X4/k5KfLQG/wua8jDow2JpVPCj
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234302438"
+  bh=OakK5azFAZtRgEn1SDscsdM2loliiFcrxNWheUTy0fE=;
+  b=f7sM8AlOPADn4RQw2g7vqXZowDO2IoWn3erMqYmwEtNTOlXEBS4xYm2X
+   m8vHjGfY0A8eefwVAzKhpHqh7nApzXmL0W7D5Hpr+xWBakrwqt69VMhzI
+   7FxGvIqDtsOMTqmpxE2j1MQiardWlmGsXQv1o9+3H5oC7GTRYoZgafb8r
+   /txNCd5MDmn/NQGtaKGSXRDTaBGGs8AnRPiDXAUXSWX2GqPoEMVY6tcWq
+   pW8dm/6TlkP9qMcBwr0vou9TbSy+Wdn8hUoeo0vdu6s2T6n3lanFdujoC
+   9qwlU8pC4iXAtx/dHspz66hQjrkQiqwaWYV28oBcLhqBNtCcmtPMTWc24
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="226899138"
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="234302438"
+   d="scan'208";a="226899138"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:11 -0800
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:13 -0800
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="674796139"
+   d="scan'208";a="674796189"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:11 -0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:13 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -40,9 +40,9 @@ To:     Dave Hansen <dave.hansen@linux.intel.com>,
 Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V8 25/44] x86/pkeys: Preserve PKRS MSR across exceptions
-Date:   Thu, 27 Jan 2022 09:54:46 -0800
-Message-Id: <20220127175505.851391-26-ira.weiny@intel.com>
+Subject: [PATCH V8 38/44] memremap_pages: Define pgmap_mk_{readwrite|noaccess}() calls
+Date:   Thu, 27 Jan 2022 09:54:59 -0800
+Message-Id: <20220127175505.851391-39-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220127175505.851391-1-ira.weiny@intel.com>
 References: <20220127175505.851391-1-ira.weiny@intel.com>
@@ -54,252 +54,162 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-PKRS is a per-logical-processor MSR which overlays additional protection
-for pages which have been mapped with a protection key.  It is desired
-to protect PKS pages while executing exception code.  While in the
-exception code can alter the PKS permissions if necessary for any access
-it may require.
+Users will need a way to flag valid access to pages which have been
+protected with PGMAP protections.  Provide this by defining pgmap_mk_*()
+accessor functions.
 
-To do this the current thread value must be saved, the CPU MSR value set
-to the default value, and the saved value restored upon completion of
-the exception.  This can be done with the new auxiliary pt_regs space.
+pgmap_mk_{readwrite|noaccess}() take a struct page for convenience.
+They determine if the page is protected by dev_pagemap protections.  If
+so, they perform the requested operation.
 
-Turn on the new auxiliary pt_regs space by triggering
-ARCH_HAS_PTREGS_AUXILIARY.  This is done by making
-ARCH_HAS_PTREGS_AUXILIARY default yes and then dependent on
-ARCH_ENABLE_SUPERVISOR_PKEYS.  Additional users of the auxiliary space
-can OR in their Kconfig options as needed.
+In addition, the lower level __pgmap_* functions are exported.  They
+take the dev_pagemap object directly for internal users who have
+knowledge of the of the dev_pagemap.
 
-Then define pks_{save|restore}_pt_regs() to use the auxiliary space to
-store the thread PKRS value across exceptions.  Call pks_*_pt_regs()
-from arch_{save|restore}_aux_pt_regs()
+All changes in the protections must be through the above calls.  They
+abstract the protection implementation (currently the PKS api) from the
+upper layer users.
 
-Update the PKS test code to properly clear the saved thread PKRS value
-before returning to ensure current tests work with this change.
+Furthermore, the calls are nestable by the use of a per task reference
+count.  This ensures that the first call to re-enable protection does
+not 'break' the last access of the device memory.
 
-Peter, Thomas, Andy, Dave, and Dan all suggested parts of the patch or
-aided in the development of the patch.
+Access to device memory during exceptions (#PF) is expected only from
+user faults.  Therefore there is no need to maintain the reference count
+when entering or exiting exceptions.  However, reference counting will
+occur during the exception.  Recall that protection is automatically
+enabled during exceptions by the PKS core.[1]
 
-[1] https://lore.kernel.org/lkml/CALCETrVe1i5JdyzD_BcctxQJn+ZE3T38EFPgjxN1F577M36g+w@mail.gmail.com/
-[2] https://lore.kernel.org/lkml/874kpxx4jf.fsf@nanos.tec.linutronix.de/#t
-[3] https://lore.kernel.org/lkml/CALCETrUHwZPic89oExMMe-WyDY8-O3W68NcZvse3=PGW+iW5=w@mail.gmail.com/
+NOTE: It is not anticipated that any code paths will directly nest these
+calls.  For this reason multiple reviewers, including Dan and Thomas,
+asked why this reference counting was needed at this level rather than
+in a higher level call such as kmap_{atomic,local_page}().  The reason
+is that pgmap_mk_readwrite() could nest with regards to other callers of
+pgmap_mk_*() such as kmap_{atomic,local_page}().  Therefore push this
+reference counting to the lower level and just ensure that these calls
+are nestable.
 
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Dan Williams <dan.j.williams@intel.com>
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Suggested-by: Dan Williams <dan.j.williams@intel.com>
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-Suggested-by: Andy Lutomirski <luto@kernel.org>
+[1] https://lore.kernel.org/lkml/20210401225833.566238-9-ira.weiny@intel.com/
+
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
-Changes for V8:
-	Tie this into the new generic auxiliary pt_regs support.
-	Build this on the new irqentry_*() refactoring patches
-	Split this patch off from the PKS portion of the auxiliary
-		pt_regs functionality.
-	From Thomas
-		Fix noinstr mess
-		s/write_pkrs/pks_write_pkrs
-		s/pkrs_init_value/PKRS_INIT_VALUE
-	Simplify the number and location of the save/restore calls.
-		Cover entry from user space as well.
-
-Changes for V7:
-	Rebased to 5.14 entry code
-	declare write_pkrs() in pks.h
-	s/INIT_PKRS_VALUE/pkrs_init_value
-	Remove unnecessary INIT_PKRS_VALUE def
-	s/pkrs_save_set_irq/pkrs_save_irq/
-		The inital value for exceptions is best managed
-		completely within the pkey code.
+Changes for V8
+	Split these functions into their own patch.
+		This helps to clarify the commit message and usage.
 ---
- arch/x86/Kconfig                    |  3 ++-
- arch/x86/include/asm/entry-common.h |  3 +++
- arch/x86/include/asm/pks.h          |  8 ++++++--
- arch/x86/include/asm/ptrace.h       |  3 +++
- arch/x86/mm/fault.c                 |  2 +-
- arch/x86/mm/pkeys.c                 | 32 +++++++++++++++++++++++++++++
- lib/pks/pks_test.c                  | 11 ++++++++--
- 7 files changed, 56 insertions(+), 6 deletions(-)
+ include/linux/mm.h    | 34 ++++++++++++++++++++++++++++++++++
+ include/linux/sched.h |  7 +++++++
+ init/init_task.c      |  3 +++
+ mm/memremap.c         | 14 ++++++++++++++
+ 4 files changed, 58 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 82342f27b218..62685906f7c3 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1878,8 +1878,9 @@ config X86_INTEL_MEMORY_PROTECTION_KEYS
- 	  If unsure, say y.
- 
- config ARCH_HAS_PTREGS_AUXILIARY
-+	def_bool y
- 	depends on X86_64
--	bool
-+	depends on ARCH_ENABLE_SUPERVISOR_PKEYS
- 
- choice
- 	prompt "TSX enable mode"
-diff --git a/arch/x86/include/asm/entry-common.h b/arch/x86/include/asm/entry-common.h
-index 5fa5dd2d539c..803727b95b3a 100644
---- a/arch/x86/include/asm/entry-common.h
-+++ b/arch/x86/include/asm/entry-common.h
-@@ -8,6 +8,7 @@
- #include <asm/nospec-branch.h>
- #include <asm/io_bitmap.h>
- #include <asm/fpu/api.h>
-+#include <asm/pks.h>
- 
- /* Check that the stack and regs on entry from user mode are sane. */
- static __always_inline void arch_check_user_regs(struct pt_regs *regs)
-@@ -99,10 +100,12 @@ static __always_inline void arch_exit_to_user_mode(void)
- 
- static inline void arch_save_aux_pt_regs(struct pt_regs *regs)
- {
-+	pks_save_pt_regs(regs);
- }
- 
- static inline void arch_restore_aux_pt_regs(struct pt_regs *regs)
- {
-+	pks_restore_pt_regs(regs);
- }
- 
- #endif
-diff --git a/arch/x86/include/asm/pks.h b/arch/x86/include/asm/pks.h
-index ee9fff5b4b13..82baa594cb3b 100644
---- a/arch/x86/include/asm/pks.h
-+++ b/arch/x86/include/asm/pks.h
-@@ -6,22 +6,26 @@
- 
- void pks_setup(void);
- void pks_write_current(void);
-+void pks_save_pt_regs(struct pt_regs *regs);
-+void pks_restore_pt_regs(struct pt_regs *regs);
- 
- #else /* !CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
- 
- static inline void pks_setup(void) { }
- static inline void pks_write_current(void) { }
-+static inline void pks_save_pt_regs(struct pt_regs *regs) { }
-+static inline void pks_restore_pt_regs(struct pt_regs *regs) { }
- 
- #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
- 
- 
- #ifdef CONFIG_PKS_TEST
- 
--bool pks_test_callback(void);
-+bool pks_test_callback(struct pt_regs *regs);
- 
- #else /* !CONFIG_PKS_TEST */
- 
--static inline bool pks_test_callback(void)
-+static inline bool pks_test_callback(struct pt_regs *regs)
- {
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 6e4a2758e3d3..60044de77c54 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1162,10 +1162,44 @@ static inline bool devmap_protected(struct page *page)
  	return false;
  }
-diff --git a/arch/x86/include/asm/ptrace.h b/arch/x86/include/asm/ptrace.h
-index 79541682e7f7..f2527d6451b3 100644
---- a/arch/x86/include/asm/ptrace.h
-+++ b/arch/x86/include/asm/ptrace.h
-@@ -98,6 +98,9 @@ struct pt_regs {
-  * ARCH_HAS_PTREGS_AUXILIARY.  Failure to do so will result in a build failure.
-  */
- struct pt_regs_auxiliary {
-+#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
-+	u32 pks_thread_pkrs;
+ 
++void __pgmap_mk_readwrite(struct dev_pagemap *pgmap);
++void __pgmap_mk_noaccess(struct dev_pagemap *pgmap);
++
++static inline bool pgmap_check_pgmap_prot(struct page *page)
++{
++	if (!devmap_protected(page))
++		return false;
++
++	/*
++	 * There is no known use case to change permissions in an irq for pgmap
++	 * pages
++	 */
++	lockdep_assert_in_irq();
++	return true;
++}
++
++static inline void pgmap_mk_readwrite(struct page *page)
++{
++	if (!pgmap_check_pgmap_prot(page))
++		return;
++	__pgmap_mk_readwrite(page->pgmap);
++}
++static inline void pgmap_mk_noaccess(struct page *page)
++{
++	if (!pgmap_check_pgmap_prot(page))
++		return;
++	__pgmap_mk_noaccess(page->pgmap);
++}
++
+ bool pgmap_protection_available(void);
+ 
+ #else
+ 
++static inline void __pgmap_mk_readwrite(struct dev_pagemap *pgmap) { }
++static inline void __pgmap_mk_noaccess(struct dev_pagemap *pgmap) { }
++static inline void pgmap_mk_readwrite(struct page *page) { }
++static inline void pgmap_mk_noaccess(struct page *page) { }
++
+ static inline bool pgmap_protection_available(void)
+ {
+ 	return false;
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index f5b2be39a78c..5020ed7e67b7 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1492,6 +1492,13 @@ struct task_struct {
+ 	struct callback_head		l1d_flush_kill;
+ #endif
+ 
++#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
++	/*
++	 * NOTE: pgmap_prot_count is modified within a single thread of
++	 * execution.  So it does not need to be atomic_t.
++	 */
++	u32                             pgmap_prot_count;
++#endif
+ 	/*
+ 	 * New fields for task_struct should be added above here, so that
+ 	 * they are included in the randomized portion of task_struct.
+diff --git a/init/init_task.c b/init/init_task.c
+index 73cc8f03511a..948b32cf8139 100644
+--- a/init/init_task.c
++++ b/init/init_task.c
+@@ -209,6 +209,9 @@ struct task_struct init_task
+ #ifdef CONFIG_SECCOMP_FILTER
+ 	.seccomp	= { .filter_count = ATOMIC_INIT(0) },
+ #endif
++#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
++	.pgmap_prot_count = 0,
 +#endif
  };
+ EXPORT_SYMBOL(init_task);
  
- struct pt_regs_extended {
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index bef879943260..030eb3e08550 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -1164,7 +1164,7 @@ do_kern_addr_fault(struct pt_regs *regs, unsigned long hw_error_code,
- 		 * is running.  If so, pks_test_callback() will clear the protection
- 		 * mechanism and return true to indicate the fault was handled.
- 		 */
--		if (pks_test_callback())
-+		if (pks_test_callback(regs))
- 			return;
- 	}
- 
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index 7c6498fb8f8d..33b7f84ed33b 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -256,6 +256,38 @@ void pks_write_current(void)
- 	pks_write_pkrs(current->thread.pks_saved_pkrs);
+diff --git a/mm/memremap.c b/mm/memremap.c
+index d3e6f328a711..b75c4f778c59 100644
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -96,6 +96,20 @@ static void devmap_protection_disable(void)
+ 	static_branch_dec(&dev_pgmap_protection_static_key);
  }
  
-+/*
-+ * PKRS is a per-logical-processor MSR which overlays additional protection for
-+ * pages which have been mapped with a protection key.
-+ *
-+ * To protect against exceptions having potentially privileged access to memory
-+ * of an interrupted thread, save the current thread value and set the PKRS
-+ * value to be used during the exception.
-+ */
-+void pks_save_pt_regs(struct pt_regs *regs)
++void __pgmap_mk_readwrite(struct dev_pagemap *pgmap)
 +{
-+	struct pt_regs_auxiliary *aux_pt_regs;
-+
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
-+
-+	aux_pt_regs = &to_extended_pt_regs(regs)->aux;
-+	aux_pt_regs->pks_thread_pkrs = current->thread.pks_saved_pkrs;
-+	pks_write_pkrs(PKS_INIT_VALUE);
++	if (!current->pgmap_prot_count++)
++		pks_mk_readwrite(PKS_KEY_PGMAP_PROTECTION);
 +}
++EXPORT_SYMBOL_GPL(__pgmap_mk_readwrite);
 +
-+void pks_restore_pt_regs(struct pt_regs *regs)
++void __pgmap_mk_noaccess(struct dev_pagemap *pgmap)
 +{
-+	struct pt_regs_auxiliary *aux_pt_regs;
-+
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
-+
-+	aux_pt_regs = &to_extended_pt_regs(regs)->aux;
-+	current->thread.pks_saved_pkrs = aux_pt_regs->pks_thread_pkrs;
-+	pks_write_pkrs(current->thread.pks_saved_pkrs);
++	if (!--current->pgmap_prot_count)
++		pks_mk_noaccess(PKS_KEY_PGMAP_PROTECTION);
 +}
++EXPORT_SYMBOL_GPL(__pgmap_mk_noaccess);
 +
- /*
-  * PKS is independent of PKU and either or both may be supported on a CPU.
-  *
-diff --git a/lib/pks/pks_test.c b/lib/pks/pks_test.c
-index 933f1bed4820..77f872829300 100644
---- a/lib/pks/pks_test.c
-+++ b/lib/pks/pks_test.c
-@@ -43,6 +43,7 @@
- #include <uapi/asm-generic/mman-common.h>
- 
- #include <asm/pks.h>
-+#include <asm/ptrace.h>       /* for struct pt_regs */
- 
- #include <asm/pks.h>
- 
-@@ -74,12 +75,18 @@ struct pks_test_ctx {
-  * NOTE: The callback is responsible for clearing any condition which would
-  * cause the fault to re-trigger.
-  */
--bool pks_test_callback(void)
-+bool pks_test_callback(struct pt_regs *regs)
+ bool pgmap_protection_available(void)
  {
-+	struct pt_regs_extended *ept_regs = to_extended_pt_regs(regs);
-+	struct pt_regs_auxiliary *aux_pt_regs = &ept_regs->aux;
- 	bool armed = (test_armed_key != 0);
-+	u32 pkrs = aux_pt_regs->pks_thread_pkrs;
- 
- 	if (armed) {
--		pks_mk_readwrite(test_armed_key);
-+		/* Enable read and write to stop faults */
-+		aux_pt_regs->pks_thread_pkrs = pkey_update_pkval(pkrs,
-+								 test_armed_key,
-+								 0);
- 		fault_cnt++;
- 	}
- 
+ 	return pks_available();
 -- 
 2.31.1
 
