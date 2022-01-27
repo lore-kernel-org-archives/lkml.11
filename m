@@ -2,78 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A18DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:11:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A30AC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241080AbiA0MLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:11:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43750 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234481AbiA0MLW (ORCPT
+        id S240381AbiA0MSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:18:46 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:54942 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231872AbiA0MSo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:11:22 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F1F2B82227;
-        Thu, 27 Jan 2022 12:11:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40EA1C340E4;
-        Thu, 27 Jan 2022 12:11:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643285480;
-        bh=l6TRy4jFk0Trxh8+yK9kI1v0jsEYunfLcp1/XiEleh8=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=kda1foNqREMz9pKhLX9F6Jrq8C1fgqA/P2pVwJzWbJ3rXX1MHuzhq7EJ9q99Hbw+C
-         u0UEB9YScQdiQCy7e3OEya4I2PtqJjc/SlGo2b2waVmgiWikvqtNhzHhcs80GmiwLi
-         ebxiH0PbRkD7Hbudc3X3p9J8y9nsWElkTjn9o6DTAD0XoJQI6fluSqukZV3BWjWrU8
-         d+XK8lyWxKDxtMXRTbjZS/aKVQvTGPDIVMT8qHW581O/fImoxhv18Q4kBvPQfAFhkS
-         xC6ByS0UQmJf4MdxkNM1HZXnRQgjhYr+GVa6wASYHeU9XlizjPUUZzumAZpLjSXt8z
-         ohCI2MilfYfLw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     Pkshih <pkshih@realtek.com>,
-        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "tony0620emma\@gmail.com" <tony0620emma@gmail.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: Re: [PATCH 3/4] rtw88: Move enum rtw_tx_queue_type mapping code to tx.{c,h}
-References: <20220114234825.110502-1-martin.blumenstingl@googlemail.com>
-        <20220114234825.110502-4-martin.blumenstingl@googlemail.com>
-        <b2bf2bc5f04b488487797aa21c50a130@realtek.com>
-        <87czkogsc4.fsf@kernel.org>
-        <CAFBinCCeCoRmqApeeAD534dKrhgbnh4wSBF88oLLXqL-TYv5+w@mail.gmail.com>
-Date:   Thu, 27 Jan 2022 14:11:14 +0200
-In-Reply-To: <CAFBinCCeCoRmqApeeAD534dKrhgbnh4wSBF88oLLXqL-TYv5+w@mail.gmail.com>
-        (Martin Blumenstingl's message of "Sun, 23 Jan 2022 19:34:18 +0100")
-Message-ID: <87mtjhjs4d.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Thu, 27 Jan 2022 07:18:44 -0500
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20RCBi20016900;
+        Thu, 27 Jan 2022 12:18:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=Do8FEFGbYoo3lnA3Z1lDEMymvPkDEEQGl16XdeBo8L4=;
+ b=Qh1M6oWLna47fyrcMWdG+05p3g7yPIvL9zB/KkxDTVNLVGP2oT5dyFJh+ZxlGMlMleIM
+ N+BLLzeut2xm8N39KkoUnoWxdwIgdeh6yMGBY6bsClJ5HQFx36ObnEGrLcRD7wEWRPr/
+ bSNbGkBzq659zL6pL7PxepNXs4FVPrEG0GC/J/DonEDuNcraGzVi/MxhSLuLJPbh7zeF
+ Uw8keu0OHH6eQAq6nX80bmzflyuJEHpzc17EfUtzclZ61gAy2L4splMywm2yIOqeAOe/
+ 3ZR3NRK2xHt+iQ/ErLl3om1kDnE2cxvCw+R1ZBwVvwTPBjD3Ee27aTVl7lodejFuKlup Qg== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3duu6a040y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 12:18:38 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20RCDvDL022465;
+        Thu, 27 Jan 2022 12:18:36 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3dr9j9nmeq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 12:18:36 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20RCIYs147186414
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 27 Jan 2022 12:18:34 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 34AF142049;
+        Thu, 27 Jan 2022 12:18:34 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 14BC742047;
+        Thu, 27 Jan 2022 12:18:33 +0000 (GMT)
+Received: from sig-9-65-89-165.ibm.com (unknown [9.65.89.165])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 27 Jan 2022 12:18:32 +0000 (GMT)
+Message-ID: <4626844528c5accb70a57870168091e002affb36.camel@linux.ibm.com>
+Subject: Re: [RESEND][PATCH] Documentation: added order requirement for
+ ima_hash=
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     "Guozihua (Scott)" <guozihua@huawei.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        wangweiyang <wangweiyang2@huawei.com>,
+        Xiujianfeng <xiujianfeng@huawei.com>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>
+Date:   Thu, 27 Jan 2022 07:18:32 -0500
+In-Reply-To: <df7fffa1-2068-cb0c-e43e-141ccd125b39@huawei.com>
+References: <20220125090237.120357-1-guozihua@huawei.com>
+         <36b6058f2cdf6bead917c06ecc6e8769bb88130c.camel@linux.ibm.com>
+         <3933adf5-4e9d-6b22-2e46-55643c504f52@huawei.com>
+         <71508a72b042da330d07a624cf499561c46195f0.camel@linux.ibm.com>
+         <97142483-d7e7-e310-0cb0-30a81414cb57@huawei.com>
+         <c1bfe53abaf24feacb676ce940edcb8899924ffc.camel@linux.ibm.com>
+         <173fffb6cde54ae4ac7676d18a84c79f@huawei.com>
+         <6f0890f135b61c41d81b03bf084ebab1b3e551e1.camel@linux.ibm.com>
+         <220a8c9f3ab34f2183c0a88941c145d0@huawei.com>
+         <df7fffa1-2068-cb0c-e43e-141ccd125b39@huawei.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 5hfRO9Tb1kJG8NDYaY-EWPFVyOztTvQH
+X-Proofpoint-ORIG-GUID: 5hfRO9Tb1kJG8NDYaY-EWPFVyOztTvQH
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-27_03,2022-01-27_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
+ lowpriorityscore=0 priorityscore=1501 phishscore=0 adultscore=0
+ impostorscore=0 clxscore=1015 suspectscore=0 spamscore=0 mlxlogscore=999
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201270072
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> writes:
+On Thu, 2022-01-27 at 14:35 +0800, Guozihua (Scott) wrote:
+> 
+> On 2022/1/26 22:43, Roberto Sassu wrote:
+> >> From: Mimi Zohar [mailto:zohar@linux.ibm.com]
+> >> Sent: Wednesday, January 26, 2022 3:35 PM
+> >> On Wed, 2022-01-26 at 13:24 +0000, Roberto Sassu wrote:
+> >>>> From: Mimi Zohar [mailto:zohar@linux.ibm.com]
+> >>>> Sent: Wednesday, January 26, 2022 1:48 PM
+> >>>> On Wed, 2022-01-26 at 15:41 +0800, Guozihua (Scott) wrote:
+> >>>>>
+> >>>>>
+> >>>>> The main issue lies in ima_template_desc_current called by hash_setup,
+> >>>>> which does not just read ima_template global variable, but also tries to
+> >>>>> set it if that hasn't been done already. Causing ima_template_setup to quit.
+> >>>>
+> >>>> Right, which calls ima_init_template_list().  So part of the solution
+> >>>> could be to conditionally call ima_init_template_list()
+> >>>> in ima_template_setup().
+> >>>>
+> >>>> -       if (ima_template)
+> >>>> -               return 1;
+> >>>> -
+> >>>> -       ima_init_template_list();
+> >>>> +       if (!ima_template
+> >>>> +               ima_init_template_list();
+> >>>>
+> >>>> Roberto, what do you think?
+> >>>
+> >>> Hi Mimi
+> >>>
+> >>> I think we wanted to prevent to set a digest algorithm
+> >>> incompatible with the chosen template.
+> >>>
+> >>> If we have in the kernel command line:
+> >>>
+> >>> ima_template=ima ima_hash=sha256
+> >>>
+> >>> ima_hash_algo would be set to HASH_ALGO_SHA1 despite
+> >>> the user choice and the template would be set to 'ima'.
+> >>>
+> >>> In the opposite case:
+> >>>
+> >>> ima_hash=sha256 ima_template=ima
+> >>>
+> >>> if the default template is 'ima', then ima_hash_algo would be
+> >>> set to HASH_ALGO_SHA1. Otherwise, it would be
+> >>> HASH_ALGO_SHA256. If we allow the template to be set after
+> >>> the digest algorithm is evaluated, the template selection will
+> >>> be rejected if the algorithm is incompatible with the template.
+> >>
+> >> The only time that would occur is in the unlikely case that the
+> >> template is being set to "ima".   That sounds reasonable.  In fact we
+> >> should consider preventing the template format being set to "ima".
+> > 
+> > Ok.
 
-> Hi Kalle,
->
-> On Wed, Jan 19, 2022 at 7:20 AM Kalle Valo <kvalo@kernel.org> wrote:
-> [...]
->> I was about to answer that with a helper function it's easier to catch
->> out of bands access, but then noticed the helper doesn't have a check
->> for that. Should it have one?
->
-> you mean something like:
->     if (ac >= IEEE80211_NUM_ACS)
->         return RTW_TX_QUEUE_BE;
->
-> Possibly also with a WARN_ON/WARN_ON_ONCE
+< snip >
 
-Yeah, something like that would be good.
+> 
+> I understand that the solution proposed here is to decommission template 
+> "ima" and potentially removing related algo checks altogether?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Eventually we might decide to do that, but right now we just want to
+address not being able to set "ima_template" after setting "ima_hash".
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+thanks,
+
+Mimi
+
+
