@@ -2,127 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 260C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 15:45:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC5E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 15:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243095AbiA0Pp0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 10:45:26 -0500
-Received: from mga04.intel.com ([192.55.52.120]:23889 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234341AbiA0PpZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 10:45:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643298325; x=1674834325;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GYhRrfYgPBxS60sQUitUQNmC2729pcuD8+OVfqG3hiY=;
-  b=ha4Ape6wE3y0ZxFrGXFYpwyE3vWMLc6dS0a1Mnwa2/cPzfZMXactB1B+
-   Obpj2l9DkarpwqQrYpqsiPK0y1dNKhIHGBbwbhYfxkzIai4mFjrM2YAUQ
-   +LqTkHfgNFVqdxnqWN8d4Gxm7JTUFej6xtzZSgzsc5btkx15B3fAyv9Le
-   poabjtgRD9j5QQ8lil5oNRd28B/Y7GAu/sx3hf0i72+uGxjK+pnt1FycF
-   0m1fACcN1BFdWiqXr60J8xJn+mXCavXRzVe3p137bcS8QJRp2uzPK86Yu
-   CwqKjt4cbzvXMuqTzrd8sPBfePaUJnNGLqwf7KQp+S3hTCVtmbcyjKyv/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="245731467"
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="245731467"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 07:45:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="533149626"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga007.fm.intel.com with ESMTP; 27 Jan 2022 07:45:22 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20RFjLTo029246;
-        Thu, 27 Jan 2022 15:45:21 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "michal.swiatkowski@linux.intel.com" 
-        <michal.swiatkowski@linux.intel.com>,
-        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/4] ice: switch: use a struct to pass packet template params
-Date:   Thu, 27 Jan 2022 16:43:35 +0100
-Message-Id: <20220127154335.623551-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <6375d82b976f18eb085859082c548b35b168cf14.camel@intel.com>
-References: <20220124173116.739083-1-alexandr.lobakin@intel.com> <20220124173116.739083-4-alexandr.lobakin@intel.com> <6375d82b976f18eb085859082c548b35b168cf14.camel@intel.com>
+        id S243117AbiA0PqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 10:46:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243097AbiA0PqO (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 10:46:14 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1FAC061714;
+        Thu, 27 Jan 2022 07:46:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=te34am54aUpFtK+DUx9YCfw5VurpEVmeZCzYybJUFVs=; b=DalpuByIZ+ookpm/OOIdVEWrm8
+        WrsrgpLkhUtDWtK3cuAveqIl8AfwAkAqCwSDisxbMD167/Jz32GCvSZSU9py6pLraPF++nCvRA1IX
+        1a0pk5i3hpseMlpLiU5qwQK0iai13QM+6jni9uvJO1hY2dRon10HG9pATqfhri7zdNirDNLkJ3254
+        jONq5ebPfDhaeBJ/5+Hasnevwiw3NEOY+xfHClosK9XnJc23O19Q9xVeDGMYcYsjUgdnCxVpuU3Oi
+        4zigj/i+jaB5hMagavS1VBqHuugcSrpA0t7yKRZTBj8wW5QNbsWl9i1e3V0mwDqLEDhLQqG7VQEj7
+        lMspEUOg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nD6yM-004CiD-C2; Thu, 27 Jan 2022 15:46:06 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 0202F986245; Thu, 27 Jan 2022 16:46:04 +0100 (CET)
+Date:   Thu, 27 Jan 2022 16:46:04 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [RFC PATCH 00/15] rseq uapi and selftest updates
+Message-ID: <20220127154604.GQ20638@worktop.programming.kicks-ass.net>
+References: <20220124171253.22072-1-mathieu.desnoyers@efficios.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124171253.22072-1-mathieu.desnoyers@efficios.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
-Date: Wed, 26 Jan 2022 22:39:38 +0100
+On Mon, Jan 24, 2022 at 12:12:38PM -0500, Mathieu Desnoyers wrote:
+> Mathieu Desnoyers (15):
+>   selftests/rseq: introduce own copy of rseq uapi header
+>   rseq: Remove broken uapi field layout on 32-bit little endian
+>   selftests/rseq: Remove useless assignment to cpu variable
+>   selftests/rseq: Remove volatile from __rseq_abi
+>   selftests/rseq: Introduce rseq_get_abi() helper
+>   selftests/rseq: Introduce thread pointer getters
+>   selftests/rseq: Uplift rseq selftests for compatibility with
+>     glibc-2.35
+>   selftests/rseq: Fix ppc32: wrong rseq_cs 32-bit field pointer on big
+>     endian
+>   selftests/rseq: Fix ppc32 missing instruction selection "u" and "x"
+>     for load/store
+>   selftests/rseq: Fix ppc32 offsets by using long rather than off_t
+>   selftests/rseq: Fix warnings about #if checks of undefined tokens
+>   selftests/rseq: Remove arm/mips asm goto compiler work-around
+>   selftests/rseq: Fix: work-around asm goto compiler bugs
+>   selftests/rseq: x86-64: use %fs segment selector for accessing rseq
+>     thread area
+>   selftests/rseq: x86-32: use %gs segment selector for accessing rseq
+>     thread area
 
-> On Mon, 2022-01-24 at 18:31 +0100, Alexander Lobakin wrote:
-> > ice_find_dummy_packet() contains a lot of boilerplate code and a
-> > nice room for copy-paste mistakes.
-> > Instead of passing 3 separate pointers back and forth to get packet
-> > template (dummy) params, directly return a structure containing
-> > them. Then, use a macro to compose compound literals and avoid code
-> > duplication on return path.
-> > Now, dummy packet type/name is needed only once to return a full
-> > correct triple pkt-pkt_len-offsets, and those are all one-liners.
-> >
-> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> 
-> This isn't applying to next-queue.
-
-Ah, right, there's a small non-semantic conflict. I've just sent v2.
-
-> 
-> <snip>
-> > @@ -4960,11 +4974,9 @@ ice_add_adv_recipe(struct ice_hw *hw, struct
-> > ice_adv_lkup_elem *lkups,
-> >   * @pkt_len: packet length of dummy packet
-> >   * @offsets: pointer to receive the pointer to the offsets for the
-> > packet
-> >   */
-> > -static void
-> > +static struct ice_dummy_pkt_profile
-> >  ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16
-> > lkups_cnt,
-> > -                     enum ice_sw_tunnel_type tun_type,
-> > -                     const u8 **pkt, u16 *pkt_len,
-> > -                     const struct ice_dummy_pkt_offsets **offsets)
-> > +                     enum ice_sw_tunnel_type tun_type)
-> 
-> kdoc needs to be updated here.
-
-Right, I somehow missed that (usually I build kernels with W=1),
-sorry >_< Fixed in v2.
-
-> 
-> <snip>
-> 
-> >  /**
-> > @@ -5104,8 +5065,7 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem
-> > *lkups, u16 lkups_cnt,
-> >  static int
-> >  ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16
-> > lkups_cnt,
-> >                           struct ice_aqc_sw_rules_elem *s_rule,
-> > -                         const u8 *dummy_pkt, u16 pkt_len,
-> > -                         const struct ice_dummy_pkt_offsets
-> > *offsets)
-> > +                         const struct ice_dummy_pkt_profile
-> > *profile)
-> 
-> Here as well.
-> 
-> Thanks,
-> Tony
-
-Thanks,
-Al
+Thanks, I'll go stick then in sched/core.
