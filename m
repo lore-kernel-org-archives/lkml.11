@@ -2,104 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E325DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A94CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244070AbiA0QpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 11:45:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234423AbiA0QpF (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 11:45:05 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81612C061714
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 08:45:05 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so8070198pju.2
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 08:45:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :in-reply-to;
-        bh=WiG8e4rFhf3TAlPr7MXRtjgD0oBCA9X+CmBmQI1Z8BM=;
-        b=tcEHUtmXrDWlHm/yOPUWB6afp5YSifkZAJgM5UKd5Rdb7+ZSPfQjkD1UjsQAYkmnIE
-         R98PAnasU0HP7DZkcc7LcoNOyAYVrHdARTqqMvy9zdnYnId42F1NgZCWdPCJJaZhpy4V
-         Zp+TcIsKQVgT6qH4C0Ki8VfXgkx8+rUbfbqJG7VflEIRZ0svGs1lAnYDUlh6Xnipbmwm
-         /0OMmUVlXnZksA0KRtPIMgSLu/A/1QHWGzXxc7Krk4aIxQrfkx/5WjP9DlWuo6swJbId
-         PuJ0Pm4whgoT4LNR9DqZqzvD0DHmPIoEOJ4fSPx78kXhgIqMia3yLR/xtjRBhAXrowIE
-         xmfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:in-reply-to;
-        bh=WiG8e4rFhf3TAlPr7MXRtjgD0oBCA9X+CmBmQI1Z8BM=;
-        b=nF1Bj39ptyRWKECPn5OoU8lLfodTmYOPTctLTagWObDscKg7BidfBXtHZbO9GkNJAk
-         h8/v/+6EZyWhk+eSSAe6DvTdlhtVxONLLQnAwxcUiBZ6NUrBu2HvLak/NtyWSJL0zKLv
-         YTRtnZLbWpgqvUvD4wV9JT1uYtl70Kcsu21QpTrmYtEB4WVJTnt9ZiiELN21JGIHcTNg
-         Y9ql7KWFhIGTzAcTwPBERvcp7SG6hpD//TC5wr990mico3+Xg9Mazg6UYIorwAguYbBs
-         7COZwzskyILOs81IQOtOcq5kz5XBhp1S7UZ9tp6N0NyI+6trs61rxScWXGI6yLFrmn4A
-         ywtQ==
-X-Gm-Message-State: AOAM532IzdacJa8qimceNFMPKY5ekWCJ0gXN62ka2Uku0V3jy3B21ENm
-        SBekrNGjDsHAyPQ+WbPqq471Hw==
-X-Google-Smtp-Source: ABdhPJwnt99Hy7hFh3oGiEC1FitCeWH1wk49aL6d8IF8AcSgbFZnUmnNqnIhVhbrTa/m8kAPTHcT7A==
-X-Received: by 2002:a17:90a:9908:: with SMTP id b8mr14638416pjp.125.1643301904503;
-        Thu, 27 Jan 2022 08:45:04 -0800 (PST)
-Received: from google.com ([2620:15c:202:201:7713:237d:48f3:f690])
-        by smtp.gmail.com with ESMTPSA id mn2sm3178870pjb.38.2022.01.27.08.45.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 08:45:03 -0800 (PST)
-Date:   Thu, 27 Jan 2022 08:44:57 -0800
-From:   Benson Leung <bleung@google.com>
-To:     Benson Leung <bleung@chromium.org>, chrome-platform@lists.linux.dev
-Cc:     bleung@google.com, pmalani@chromium.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: platform-chrome: Add new
- chrome-platform@lists.linux.dev list
-Message-ID: <164330181439.2996990.7235316022532021501.b4-ty@chromium.org>
+        id S244087AbiA0QpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 11:45:09 -0500
+Received: from mga11.intel.com ([192.55.52.93]:21456 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244072AbiA0QpI (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 11:45:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643301908; x=1674837908;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0XYCULJz8eCwunpqt4WW86gJKS6aVCwiIa+rTXc0vrY=;
+  b=YUpUQhuP2P2ONDNu4UHFwQJz3C8gKeIwbv2Vx8nQgLz/ReIXjxEID2Ky
+   0Jph+dEdAQQqGcvt0XFhWQTyWBHWg157Ti94RXIry4Z/nT61+boVAypni
+   xGsMDgaVjCz8NDhlbPnfs2y8wx8lq3S6RQEDLZhFvp4F+RlApPiRMpPod
+   petoW8eQmz5jGdW3KTw9nYhYGDm36P2kr6y1rFhqJ+dtccCT+lmaaiZze
+   etRAVh8xAjcKU2Pe3tIemI1n1SV+LgGhMM+0aQOjRuIlFLfDnjGqnlN7q
+   Lc6u9VRbUHWD+gzttJNs2IqYsujht23Skitdpch+9ccRd7KRtqe9XtWtk
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="244510328"
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="244510328"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 08:45:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="477935447"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 27 Jan 2022 08:45:04 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nD7tP-000MoH-LD; Thu, 27 Jan 2022 16:45:03 +0000
+Date:   Fri, 28 Jan 2022 00:44:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, djwong@kernel.org,
+        dan.j.williams@intel.com, david@fromorbit.com, hch@infradead.org,
+        jane.chu@oracle.com
+Subject: Re: [PATCH v10 1/9] dax: Introduce holder for dax_device
+Message-ID: <202201280035.A565CZYV-lkp@intel.com>
+References: <20220127124058.1172422-2-ruansy.fnst@fujitsu.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="E1Fh8DIqhPrTlsFd"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220126222233.2852280-1-bleung@chromium.org>
+In-Reply-To: <20220127124058.1172422-2-ruansy.fnst@fujitsu.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Shiyang,
 
---E1Fh8DIqhPrTlsFd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you for the patch! Perhaps something to improve:
 
-On Wed, 26 Jan 2022 14:22:33 -0800, Benson Leung wrote:
->=20
+[auto build test WARNING on linux/master]
+[also build test WARNING on linus/master v5.17-rc1 next-20220127]
+[cannot apply to xfs-linux/for-next hnaz-mm/master]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Shiyang-Ruan/fsdax-introduce-fs-query-to-support-reflink/20220127-204239
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 2c271fe77d52a0555161926c232cd5bc07178b39
+config: powerpc-allnoconfig (https://download.01.org/0day-ci/archive/20220128/202201280035.A565CZYV-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/57669ed05e93b37d995c5247eebe218ab2058c9a
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Shiyang-Ruan/fsdax-introduce-fs-query-to-support-reflink/20220127-204239
+        git checkout 57669ed05e93b37d995c5247eebe218ab2058c9a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from mm/filemap.c:15:
+>> include/linux/dax.h:73:30: warning: 'struct dax_holder_operations' declared inside parameter list will not be visible outside of this definition or declaration
+      73 |                 const struct dax_holder_operations *ops)
+         |                              ^~~~~~~~~~~~~~~~~~~~~
 
 
-Applied to for-next.
+vim +73 include/linux/dax.h
 
-[1/1] MAINTAINERS: platform-chrome: Add new chrome-platform@lists.linux.dev=
- list
-      commit: 664de6a26b7f17eebca896c3e18201b15d5c7b19
+    48	
+    49	void dax_register_holder(struct dax_device *dax_dev, void *holder,
+    50			const struct dax_holder_operations *ops);
+    51	void dax_unregister_holder(struct dax_device *dax_dev);
+    52	void *dax_get_holder(struct dax_device *dax_dev);
+    53	void put_dax(struct dax_device *dax_dev);
+    54	void kill_dax(struct dax_device *dax_dev);
+    55	void dax_write_cache(struct dax_device *dax_dev, bool wc);
+    56	bool dax_write_cache_enabled(struct dax_device *dax_dev);
+    57	bool dax_synchronous(struct dax_device *dax_dev);
+    58	void set_dax_synchronous(struct dax_device *dax_dev);
+    59	/*
+    60	 * Check if given mapping is supported by the file / underlying device.
+    61	 */
+    62	static inline bool daxdev_mapping_supported(struct vm_area_struct *vma,
+    63						     struct dax_device *dax_dev)
+    64	{
+    65		if (!(vma->vm_flags & VM_SYNC))
+    66			return true;
+    67		if (!IS_DAX(file_inode(vma->vm_file)))
+    68			return false;
+    69		return dax_synchronous(dax_dev);
+    70	}
+    71	#else
+    72	static inline void dax_register_holder(struct dax_device *dax_dev, void *holder,
+  > 73			const struct dax_holder_operations *ops)
+    74	{
+    75	}
+    76	static inline void dax_unregister_holder(struct dax_device *dax_dev)
+    77	{
+    78	}
+    79	static inline void *dax_get_holder(struct dax_device *dax_dev)
+    80	{
+    81		return NULL;
+    82	}
+    83	static inline struct dax_device *alloc_dax(void *private,
+    84			const struct dax_operations *ops)
+    85	{
+    86		/*
+    87		 * Callers should check IS_ENABLED(CONFIG_DAX) to know if this
+    88		 * NULL is an error or expected.
+    89		 */
+    90		return NULL;
+    91	}
+    92	static inline void put_dax(struct dax_device *dax_dev)
+    93	{
+    94	}
+    95	static inline void kill_dax(struct dax_device *dax_dev)
+    96	{
+    97	}
+    98	static inline void dax_write_cache(struct dax_device *dax_dev, bool wc)
+    99	{
+   100	}
+   101	static inline bool dax_write_cache_enabled(struct dax_device *dax_dev)
+   102	{
+   103		return false;
+   104	}
+   105	static inline bool dax_synchronous(struct dax_device *dax_dev)
+   106	{
+   107		return true;
+   108	}
+   109	static inline void set_dax_synchronous(struct dax_device *dax_dev)
+   110	{
+   111	}
+   112	static inline bool daxdev_mapping_supported(struct vm_area_struct *vma,
+   113					struct dax_device *dax_dev)
+   114	{
+   115		return !(vma->vm_flags & VM_SYNC);
+   116	}
+   117	#endif
+   118	
 
-
---=20
-Benson Leung
-Staff Software Engineer
-Chrome OS Kernel
-Google Inc.
-bleung@google.com
-Chromium OS Project
-bleung@chromium.org
-
---E1Fh8DIqhPrTlsFd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQQCtZK6p/AktxXfkOlzbaomhzOwwgUCYfLMCQAKCRBzbaomhzOw
-wmhTAQCIRyO9gXLKbcChHnl054jF5HaMDq61VMVJilowCGIEPAEA6HbrVq6aKYel
-2kCSQn/+iWgT5f2Gy1ZjYlNE2xk1DwU=
-=pIDh
------END PGP SIGNATURE-----
-
---E1Fh8DIqhPrTlsFd--
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
