@@ -2,198 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E67EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 07:48:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF8AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 07:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237505AbiA0HsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 02:48:04 -0500
-Received: from mout.gmx.net ([212.227.15.19]:49881 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237509AbiA0HsB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 02:48:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643269658;
-        bh=B6O+fbNXpuVx/JeWAT/s1SRi+S3qIN/7KTiOemSzClQ=;
-        h=X-UI-Sender-Class:Date:From:To:CC:Subject:In-Reply-To:References;
-        b=LSyk+VLUeHop98U+fGWPlkh8FHD6XxyQEnlMf+afuZVoG90g+pD+sudMryMFrndTH
-         dlEcHIDS8EIGY0kKBbRkwu4aFKgLGbNFtWS9QDKkrzgbuU2Z6WP05ji7bkUWxIsjh3
-         8OXbZhT6yudW7ixlUojotWCt6iVec/E4fdKSExk8=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [127.0.0.1] ([88.152.144.107]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M1psI-1nFBMQ1R6m-002EiE; Thu, 27
- Jan 2022 08:47:38 +0100
-Date:   Thu, 27 Jan 2022 08:47:35 +0100
-From:   Heinrich Schuchardt <xypron.glpk@gmx.de>
-To:     Sunil V L <sunilvl@ventanamicro.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-CC:     linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org,
-        Anup Patel <apatel@ventanamicro.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        Abner Chang <abner.chang@hpe.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>
-Subject: =?US-ASCII?Q?Re=3A_=5BRFC_PATCH_1/1=5D_riscv/efi=5Fstub=3A_A?= =?US-ASCII?Q?dd_support_for_RISCV=5FEFI=5FBOOT=5FPROTOCOL?=
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20220126110615.33371-2-sunilvl@ventanamicro.com>
-References: <20220126110615.33371-1-sunilvl@ventanamicro.com> <20220126110615.33371-2-sunilvl@ventanamicro.com>
-Message-ID: <667AE324-A8D2-41ED-B9DF-62750F3C2574@gmx.de>
+        id S237532AbiA0Hvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 02:51:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28688 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229949AbiA0Hvq (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 02:51:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643269905;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vKF0TdKO5aLrjOXdwkWmOrj4HOBqyJ5h5J0cv79n6sQ=;
+        b=TskWW7+P46ysF1NiJFRhsAu9lVvAkRZ4XgNB/N4+n3SlemgP5hFNMeNmTbgYho1ZvPCBOR
+        NUUpbbG14nFZAsk/TCoAtrOc9PXtS6K83DZt7TfUV6WoGJqSz1Pya0zFyFOWauZJi2rp0E
+        lWDdC11d4dEvFys2GHw3DjN4x5M3tCo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-498-ciO0PeyfMQSyefdsrr_BZQ-1; Thu, 27 Jan 2022 02:51:41 -0500
+X-MC-Unique: ciO0PeyfMQSyefdsrr_BZQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 75B1B8144E2;
+        Thu, 27 Jan 2022 07:51:39 +0000 (UTC)
+Received: from localhost (ovpn-13-51.pek2.redhat.com [10.72.13.51])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6FC1B1059103;
+        Thu, 27 Jan 2022 07:51:35 +0000 (UTC)
+Date:   Thu, 27 Jan 2022 15:51:32 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Eric DeVolder <eric.devolder@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+Subject: Re: [PATCH v3 6/6] crash hp: Add x86 crash hotplug support
+Message-ID: <20220127075132.GB13508@MiWiFi-R3L-srv>
+References: <20220110195727.1682-1-eric.devolder@oracle.com>
+ <20220110195727.1682-7-eric.devolder@oracle.com>
+ <20220119102323.GB6349@MiWiFi-R3L-srv>
+ <280485c9-4612-892c-0e3e-9e8b09e60cf9@oracle.com>
+ <20220126091243.GB6588@MiWiFi-R3L-srv>
+ <cf834659-3d8c-7ab5-ccd4-c877b0b9a2f0@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:z73T+TjRtpbU/BjDJ+ZgfGzrDysqWANGnHJJ2QfyQymXFONDONt
- QsHYcTbfbjQMhbfcwAJ0zmgVGHUNEri9dgpf9fsB0UiFlR+OJX+M5h3c1+Svs71yiFKaUKb
- 9tusTCA/b5/v1ksQ4nPmHycsW/wJeAS5rD1K+ypQ9IwubrW5E1KTex4k29a7lIXj8tlQHKb
- ujRJ0GsYWMYuJrqRNjBrQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:1KJIZ6Tb9vw=:sFqZ1jynooNFIrmQsVVFwg
- 3jq1YfXVGDvELQil/m+D2Vxj5brTOTMofT/JuZBV1zURAFEz22IHS5SBmviTvZocKI1LcquP4
- mHJwLhkMR35+54ILXIBcSW4Z4A9SlaSsQ1TncuZ0MY6KfVVxxtkW2bzEM8jpxb7IVu4XHrWA2
- nfuxPHk3+83R7mlp2H2SQdHNHg9DX1Y4xg1P0wr/dXVsJvsfsIEgm/MihXx1R7YqPV+dFCrtS
- 4N4l993AGjZN35wA11A+sS7hGVgmNuDI5IxDJjK6A9GeEoVxh03zCPliEEx6Ezun9Cj2kEpiL
- 3++WL6VaMpUvhBO/saw3IRHQXQUHwSPvRnQ2VCMNcbYIQg9NDTtOzHi8HHE7uYfM4456jApP9
- xVhF5VzEafwLkQdC3X2WEuhJcELjayLTU0siv2t6rZ/bvmuQkQ++Y1A6lPHdSDFg7ukk2hXp3
- ztptc7j72gP38i74YEtDvBKUdkPMIFOkeUugDqNDn6sIdv987sDjxNkeYYCSSnJkUetRCektw
- dYqm7g+6dDPalucjYzeVre8k3NzeHk7ufHDLP7GfoVXzZGjTuegQBV2nu4HJtJ9OzjwF7DtOe
- dJ1SVeTMMs8gsLJjlm14j+W8QzH4Y/1JYXBU1hbujo1z0BXFmYmiM94D1yYxJnP/7RaLGzRys
- xdRCGcX3hgn6xyzdGOeF7dAORbBs6u8ABUWwpc2aRiZx4GkraHivFDYGCczqQFHGQ6iAwG6Jo
- 7sYE0r7INcoi4IV3MwxprULnxjfRJpj23CncJeb+aa2d+vfNq0fSMrFbgA/cc8yU0kZlKveh5
- MLhHQHjintSks//uW61lGab9DF61SaR+fKpRkwtobH8W5D+DCyNtkhlNB09O5Mkt7FOZ/XN+m
- sprW5O8to1UE7+T0Ty6MW9qPr6Ku8Fiben9/cgzdUm82/r+g9m65WYwOSdxAUn63rzTsCyVQb
- L2lueE7oef3kO3rH72df0uiFA++szQh0o7ZK7uJtWVbCCnsdmXM/v6hs/1Se+ypczGSz1W50N
- eaHZ/OPsA3OrNaDa4M+d7J94AToafMtdDFWlEceAxzkDD1QLUX+5WIkFVb62twAwDyAWRil1q
- Co/eyePrKvv27Q=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cf834659-3d8c-7ab5-ccd4-c877b0b9a2f0@oracle.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 26=2E Januar 2022 12:06:15 MEZ schrieb Sunil V L <sunilvl@ventanamicro=
-=2Ecom>:
->This patch adds the support for getting the boot hart ID in
->Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL=2E
+On 01/26/22 at 11:32am, Eric DeVolder wrote:
+..snip.... 
+> > > > > +void arch_crash_hotplug_handler(struct kimage *image,
+> > > > > +	unsigned int hp_action, unsigned long a, unsigned long b)
+> > > > > +{
+> > > > > +	/*
+> > > > > +	 * To accurately reflect hot un/plug changes, the elfcorehdr (which
+> > > > > +	 * is passed to the crash kernel via the elfcorehdr= parameter)
+> > > > > +	 * must be updated with the new list of CPUs and memories. The new
+> > > > > +	 * elfcorehdr is prepared in a kernel buffer, and if no errors,
+> > > > > +	 * then it is written on top of the existing/old elfcorehdr.
+> > > > > +	 *
+> > > > > +	 * Due to the change to the elfcorehdr, purgatory must explicitly
+> > > > > +	 * exclude the elfcorehdr from the list of segments it checks.
+> > > > > +	 */
+> > > > 
+> > > > Please move this code comment to above function as kernel-doc if you
+> > > > this it benefits the entire function. Otherwise should move them above
+> > > > the code block they are explaining. For this place, I think moving them
+> > > > to above arch_crash_hotplug_handler() is better.
+> > > 
+> > > ok, I will do that!
+> > > 
+> > > > 
+> > > > > +	struct kexec_segment *ksegment;
+> > > > > +	unsigned char *ptr = NULL;
+> > > > > +	unsigned long elfsz = 0;
+> > > > > +	void *elfbuf = NULL;
+> > > > > +	unsigned long mem, memsz;
+> > > > > +	unsigned int n;
+> > > > > +
+> > > > > +	/*
+> > > > > +	 * When the struct kimage is alloced, it is wiped to zero, so
+> > > > > +	 * the elf_index_valid defaults to false. It is set on the
+> > > > > +	 * kexec_file_load path, or here for kexec_load.
+> > > > > +	 */
+> > > > 
+> > > > I think this kexec loading part should be taken out and post after this
+> > > > whole patchset being accepted. At least, it's worth to put them in a
+> > > > separate patch.
+> > > 
+> > > This little bit of code that identifies the incoming elfcorehdr is all that
+> > > is needed to support kexec_load (and the userspace changes of course). I'm
+> > > happy to split as a separate patch, but I would think that be maintaining it
+> > > with this series, then when it is accepted, both the kexec_load and
+> > > kexec_file_load paths would be supported? Your call.
+> > 
+> > Hmm, at first, let's split it out from this patch since it's an
+> > independent action to kdump. I would suggest we don't carry it in this
+> > series. After this series is done, you can post another patchset
+> > including this part as kernel patch, and also the code change in
+> > kexec_tools as user space patch.
+> > 
+> > ......
+> > 
+> 
+> OK, I'll remove the bit of code that supports kexec_load, so it can be introduced
+> later coincident with the changes to kexec-tools.
+> 
+> In a previous message you mentioned making changes to the order of the patches,
+> was this it, or is there more to come?
 
-It would be helpful to add a link to the spec in the commit message and ma=
-ybe a comment that this protocol is needed for the ACPI use case=2E
-
->
->Signed-off-by: Sunil V L <sunilvl@ventanamicro=2Ecom>
->---
-> drivers/firmware/efi/libstub/efistub=2Eh    | 15 ++++++++++++
-> drivers/firmware/efi/libstub/riscv-stub=2Ec | 28 ++++++++++++++++++++---
-> include/linux/efi=2Eh                       |  1 +
-> 3 files changed, 41 insertions(+), 3 deletions(-)
->
->diff --git a/drivers/firmware/efi/libstub/efistub=2Eh b/drivers/firmware/=
-efi/libstub/efistub=2Eh
->index edb77b0621ea=2E=2E0428f8816942 100644
->--- a/drivers/firmware/efi/libstub/efistub=2Eh
->+++ b/drivers/firmware/efi/libstub/efistub=2Eh
->@@ -720,6 +720,21 @@ union efi_tcg2_protocol {
-> 	} mixed_mode;
-> };
->=20
->+typedef union riscv_efi_boot_protocol riscv_efi_boot_protocol_t;
->+
->+union riscv_efi_boot_protocol {
->+	struct {
->+		u64 revision;
->+		efi_status_t (__efiapi *get_boot_hartid)(
->+							 riscv_efi_boot_protocol_t *,
->+							 size_t *);
-
-I prefer to have parameter names for readability
-
-According to the platform specification mhartid is MXLEN wide=2E UINTN (si=
-ze_t) is SXLEN wide=2E=20
-
-Does this have any implications on how we define the protocol?
-
->+	};
->+	struct {
->+		u32 revision;
->+		u32 get_boot_hartid;>+	} mixed_mode;
->+};
->+
-> typedef union efi_load_file_protocol efi_load_file_protocol_t;
-> typedef union efi_load_file_protocol efi_load_file2_protocol_t;
->=20
->diff --git a/drivers/firmware/efi/libstub/riscv-stub=2Ec b/drivers/firmwa=
-re/efi/libstub/riscv-stub=2Ec
->index 380e4e251399=2E=2Ec7add4eb5453 100644
->--- a/drivers/firmware/efi/libstub/riscv-stub=2Ec
->+++ b/drivers/firmware/efi/libstub/riscv-stub=2Ec
->@@ -46,12 +46,34 @@ static u32 get_boot_hartid_from_fdt(void)
-> 	return fdt32_to_cpu(*prop);
-> }
->=20
->+static u32 get_boot_hartid_from_efi(void)
->+{
-
-The returned value must be UINTN /size_t like the protocol=2E This width m=
-ust be carried to the legacy entry point of Linux=2E
-
->+	efi_guid_t boot_protocol_guid =3D RISCV_EFI_BOOT_PROTOCOL_GUID;
->+	efi_status_t status;
->+	riscv_efi_boot_protocol_t *boot_protocol;
->+	size_t boot_hart_id;
->+
->+	status =3D efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
->+			     (void **)&boot_protocol);
->+	if (status =3D=3D EFI_SUCCESS) {
->+		status =3D efi_call_proto(boot_protocol,
->+					get_boot_hartid, &boot_hart_id);
->+		if (status =3D=3D EFI_SUCCESS) {
->+			return (u32)boot_hart_id;
->+		}
->+	}
->+	return U32_MAX;
-
-U32_MAX is a legal value for the hart id=2E
-
->+}
->+
-> efi_status_t check_platform_features(void)
-> {
->-	hartid =3D get_boot_hartid_from_fdt();
->+	hartid =3D get_boot_hartid_from_efi();
-> 	if (hartid =3D=3D U32_MAX) {
->-		efi_err("/chosen/boot-hartid missing or invalid!\n");
->-		return EFI_UNSUPPORTED;
->+		hartid =3D get_boot_hartid_from_fdt();
->+		if (hartid =3D=3D U32_MAX) {
-
-U32_MAX is a legal value for the hart id=2E Please, separate status and va=
-lue=2E
-
-Best regards
-
-Heinrich
-
->+			efi_err("/chosen/boot-hartid missing or invalid!\n");
->+			return EFI_UNSUPPORTED;
->+		}
-> 	}
-> 	return EFI_SUCCESS;
-> }
->diff --git a/include/linux/efi=2Eh b/include/linux/efi=2Eh
->index ccd4d3f91c98=2E=2E9822c730207c 100644
->--- a/include/linux/efi=2Eh
->+++ b/include/linux/efi=2Eh
->@@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
-> #define EFI_CONSOLE_OUT_DEVICE_GUID		EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4=
-,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
-> #define APPLE_PROPERTIES_PROTOCOL_GUID		EFI_GUID(0x91bd12fe, 0xf6c3, 0x4=
-4fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
-> #define EFI_TCG2_PROTOCOL_GUID			EFI_GUID(0x607f766c, 0x7455, 0x42be,  0=
-x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
->+#define RISCV_EFI_BOOT_PROTOCOL_GUID		EFI_GUID(0xccd15fec, 0x6f73, 0x4ee=
-c,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
-> #define EFI_LOAD_FILE_PROTOCOL_GUID		EFI_GUID(0x56ec3091, 0x954c, 0x11d2=
-,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
-> #define EFI_LOAD_FILE2_PROTOCOL_GUID		EFI_GUID(0x4006c0c1, 0xfcb3, 0x403=
-e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
-> #define EFI_RT_PROPERTIES_TABLE_GUID		EFI_GUID(0xeb66918a, 0x7eef, 0x402=
-a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
+Yeah, replied to cover letter, please check it there.
 
