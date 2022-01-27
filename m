@@ -2,137 +2,293 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B59C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:41:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD59C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241370AbiA0Mlp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:41:45 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:36157 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241390AbiA0Mlc (ORCPT
+        id S241381AbiA0Mlt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:41:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:21177 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241348AbiA0MlW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:41:32 -0500
-X-Greylist: delayed 46666 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Jan 2022 07:41:31 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643287108;
-    s=strato-dkim-0002; d=ko-hh.de;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=7BlcxzeGTWSlVTFJe3K1bsB976Mw21PqDM27Gqh4Ids=;
-    b=rtH2DQpPDAxYD/gJIT4FItuakKfZbrM13aCJ031D9lR6ISs0i8YK1kT05O4d86lnhQ
-    QLsaX0D/chznpigeVN01vHuPW5Xv9wS3nVfNKEV94+mIGsEg/LpraXRQpVaOjn00Zp3l
-    BWS+Mp8pP9I1Ko/OPGcnh7wqd91Gs2BGTp0qBSRpnqZqtMeQy1NdjTc5qKGVsHK8Idwi
-    h7hek8jSa5vkiObxASlBfbbKFzzZC9fegXDMQpuGLXQj399YCQe6GxrMdR/uqP85+0B7
-    5p00BM7Dzhl9G/89yydZHYp70S1NnuFjel8DAX0G5nqByNXJ8cKfCx8tEJEBTYfohkTw
-    Pd1g==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":OGQBeUWjaN+znm36YqWmJEx4lU5vgP4am+jDJsl40KLIzDO7mhveTrcVbinBxa9usBQY4Ns="
-X-RZG-CLASS-ID: mo00
-Received: from odroid-VirtualBox
-    by smtp.strato.de (RZmta 47.38.0 DYNA|AUTH)
-    with ESMTPSA id L5f488y0RCcRo4D
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Thu, 27 Jan 2022 13:38:27 +0100 (CET)
-Date:   Thu, 27 Jan 2022 13:38:14 +0100
-From:   Lutz Koschorreck <theleks@ko-hh.de>
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: meson-sm1-odroid: use correct enable-gpio
- pin for tf-io regulator
-Message-ID: <20220127123814.GA152653@odroid-VirtualBox>
-References: <20220126234325.GA7363@odroid-VirtualBox>
- <651adde5-4887-4701-5183-6a35a443574c@baylibre.com>
+        Thu, 27 Jan 2022 07:41:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643287281;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hvAo5QlK3H5GxGbJpEb64PFxW7ROg93xTSyxmQhLPBA=;
+        b=P3WepLnptQuVHVG/ez6QJfx1YU3ugqCwB1rlfle1eZbRFjoFdpb+LQD13crlDtI6DFSGzm
+        LptWdelT55JiFVHVBaOCoNiA4Oh7eYkEfp6J3KfX+sajFDwlibcfE8t5RlIKcTfnI3MfzL
+        94RalJhSBxlkodguU7aH5FPYFHNPwIE=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-19-foh9CAMUOZqV46aEQRDTwQ-1; Thu, 27 Jan 2022 07:41:20 -0500
+X-MC-Unique: foh9CAMUOZqV46aEQRDTwQ-1
+Received: by mail-wm1-f72.google.com with SMTP id q71-20020a1ca74a000000b003507f38e330so4064191wme.9
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 04:41:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=hvAo5QlK3H5GxGbJpEb64PFxW7ROg93xTSyxmQhLPBA=;
+        b=MPmfSKgmjvce+E17w6mWp/QifHPuWo21T2z0og9mSsbUUKL4k0tlyo/xjYSMJ2I/w0
+         rrGfJkNvWW5WKo/4sTBCJMhI+/ezpNsbuBlkpgwP4wLqJ3gLN/wtkOoNWHoIm8+x//Bb
+         RdYXo32QMbFhZBYbY6UzRB1Kuuyu9sy2vDql1IIzy0mFF1A8+peX0ulm9+ZRN+Pyd0/V
+         GzKc/tne7it2ZLi5OybblRUe4W1QCzlnMhh55Xv0IDD07tFHrQB+FsQ2TZ7FTIiQMC3k
+         MKEhoWtP+kwH3muBv0nLw+1V9Kqpl02PzOMpTH8z8BwQNtvvOTrkj2+zZIdXATF9JXe0
+         qMhw==
+X-Gm-Message-State: AOAM530xAyKcDGyPSDDlgLBO09TCYirHW5r25MTyqH69/obDKH1mpdg5
+        Vt6M7NNJV7L0MFBmBZOgS8AbC2BsRQE/GpiBibOx1LDkeENE7+fUwN0qmQLskeLM3JGbx6Vi8u3
+        4FVmSNglgZb4a748oIE1p60s9
+X-Received: by 2002:adf:ff83:: with SMTP id j3mr3059683wrr.10.1643287278292;
+        Thu, 27 Jan 2022 04:41:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwGAGPPvFXB/zCtCTwuXrgg1TJMTcVdhn53hlZf71PCFo8QDuDBsUivH5zYeKUopxF3p7Drvw==
+X-Received: by 2002:adf:ff83:: with SMTP id j3mr3059650wrr.10.1643287277704;
+        Thu, 27 Jan 2022 04:41:17 -0800 (PST)
+Received: from ?IPV6:2003:cb:c70d:8300:4812:9d4f:6cd8:7f47? (p200300cbc70d830048129d4f6cd87f47.dip0.t-ipconnect.de. [2003:cb:c70d:8300:4812:9d4f:6cd8:7f47])
+        by smtp.gmail.com with ESMTPSA id l5sm1955455wmq.7.2022.01.27.04.41.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 04:41:17 -0800 (PST)
+Message-ID: <bd0a9f4e-d204-6a06-ba3f-11acb6ac16c0@redhat.com>
+Date:   Thu, 27 Jan 2022 13:41:16 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <651adde5-4887-4701-5183-6a35a443574c@baylibre.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Michal Hocko <mhocko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Alexey Makhalov <amakhalov@vmware.com>,
+        Dennis Zhou <dennis@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>, Tejun Heo <tj@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Nico Pache <npache@redhat.com>,
+        Wei Yang <richard.weiyang@gmail.com>,
+        Rafael Aquini <raquini@redhat.com>,
+        Michal Hocko <mhocko@suse.com>
+References: <20220127085305.20890-1-mhocko@kernel.org>
+ <20220127085305.20890-3-mhocko@kernel.org>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH 2/6] mm: handle uninitialized numa nodes gracefully
+In-Reply-To: <20220127085305.20890-3-mhocko@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 11:15:12AM +0100, Neil Armstrong wrote:
-> Hi,
+On 27.01.22 09:53, Michal Hocko wrote:
+> From: Michal Hocko <mhocko@suse.com>
 > 
-> On 27/01/2022 00:43, Lutz Koschorreck wrote:
-> > The interrupt pin of the external ethernet phy is used, instead of the
-> > enable-gpio pin of the tf-io regulator. The GPIOE_2 pin is located in
-> > the gpio_ao bank.
-> > Using open drain prevents reboot issues.
-> > 
-> > This causes phy interrupt problems at system startup.
-> > [   76.645190] irq 36: nobody cared (try booting with the "irqpoll" option)
-> > [   76.649617] CPU: 0 PID: 1416 Comm: irq/36-0.0:00 Not tainted 5.16.0 #2
-> > [   76.649629] Hardware name: Hardkernel ODROID-HC4 (DT)
-> > [   76.649635] Call trace:
-> > [   76.649638]  dump_backtrace+0x0/0x1c8
-> > [   76.649658]  show_stack+0x14/0x60
-> > [   76.649667]  dump_stack_lvl+0x64/0x7c
-> > [   76.649676]  dump_stack+0x14/0x2c
-> > [   76.649683]  __report_bad_irq+0x38/0xe8
-> > [   76.649695]  note_interrupt+0x220/0x3a0
-> > [   76.649704]  handle_irq_event_percpu+0x58/0x88
-> > [   76.649713]  handle_irq_event+0x44/0xd8
-> > [   76.649721]  handle_fasteoi_irq+0xa8/0x130
-> > [   76.649730]  generic_handle_domain_irq+0x38/0x58
-> > [   76.649738]  gic_handle_irq+0x9c/0xb8
-> > [   76.649747]  call_on_irq_stack+0x28/0x38
-> > [   76.649755]  do_interrupt_handler+0x7c/0x80
-> > [   76.649763]  el1_interrupt+0x34/0x80
-> > [   76.649772]  el1h_64_irq_handler+0x14/0x20
-> > [   76.649781]  el1h_64_irq+0x74/0x78
-> > [   76.649788]  irq_finalize_oneshot.part.56+0x68/0xf8
-> > [   76.649796]  irq_thread_fn+0x5c/0x98
-> > [   76.649804]  irq_thread+0x13c/0x260
-> > [   76.649812]  kthread+0x144/0x178
-> > [   76.649822]  ret_from_fork+0x10/0x20
-> > [   76.649830] handlers:
-> > [   76.653170] [<0000000025a6cd31>] irq_default_primary_handler threaded [<0000000093580eb7>] phy_interrupt
-> > [   76.661256] Disabling IRQ #36
-> > 
-> > Fixes: 1f80a5cf74a6 ("arm64: dts: meson-sm1-odroid: add missing enable gpio and supply for tf_io regulator")
-> > 
-> > Signed-off-by: Lutz Koschorreck <theleks@ko-hh.de>
-> > ---
-> >  arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
-> > index 0bd1e98a0eef..ddb1b345397f 100644
-> > --- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
-> > +++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
-> > @@ -48,7 +48,7 @@ tf_io: gpio-regulator-tf_io {
-> >  		regulator-max-microvolt = <3300000>;
-> >  		vin-supply = <&vcc_5v>;
-> >  
-> > -		enable-gpio = <&gpio GPIOE_2 GPIO_ACTIVE_HIGH>;
-> > +		enable-gpio = <&gpio_ao GPIOE_2 GPIO_OPEN_DRAIN>;
+> We have had several reports [1][2][3] that page allocator blows up when
+> an allocation from a possible node is requested. The underlying reason
+> is that NODE_DATA for the specific node is not allocated.
 > 
-> Wow, indeed it's not the right GPIO chip... my bad.
+> NUMA specific initialization is arch specific and it can vary a lot.
+> E.g. x86 tries to initialize all nodes that have some cpu affinity (see
+> init_cpu_to_node) but this can be insufficient because the node might be
+> cpuless for example.
 > 
-> >  		enable-active-high;
-> >  		regulator-always-on;
-> >  
+> One way to address this problem would be to check for !node_online nodes
+> when trying to get a zonelist and silently fall back to another node.
+> That is unfortunately adding a branch into allocator hot path and it
+> doesn't handle any other potential NODE_DATA users.
 > 
-> Concerning the GPIO_OPEN_DRAIN, it's right since the line has a pull-up, does it really fix reboot issues ?
-There is a 10k pull up on the pin of C4 and HC4. Therefore it is fine to
-set to GPIO_OPEN_DRAIN. If this pin is left ACTIVE_HIGH and I call
-reboot, the bootloader is does not came up, it is an boot loop. Tobetter
-fixed that with a reset device driver, but I think using GPIO_OPEN_DRAIN
-is the right solution.
+> This patch takes a different approach (following a lead of [3]) and it
+> pre allocates pgdat for all possible nodes in an arch indipendent code
+> - free_area_init. All uninitialized nodes are treated as memoryless
+> nodes. node_state of the node is not changed because that would lead to
+> other side effects - e.g. sysfs representation of such a node and from
+> past discussions [4] it is known that some tools might have problems
+> digesting that.
 > 
-> Anyway, can you split the changes ? First for gpio_ao, second for GPIO_OPEN_DRAIN ?
-Yes of cause. I will generate a new patch set.
+> Newly allocated pgdat only gets a minimal initialization and the rest of
+> the work is expected to be done by the memory hotplug - hotadd_new_pgdat
+> (renamed to hotadd_init_pgdat).
 > 
-> Neil
+> generic_alloc_nodedata is changed to use the memblock allocator because
+> neither page nor slab allocators are available at the stage when all
+> pgdats are allocated. Hotplug doesn't allocate pgdat anymore so we can
+> use the early boot allocator. The only arch specific implementation is
+> ia64 and that is changed to use the early allocator as well.
 > 
+> Reported-by: Alexey Makhalov <amakhalov@vmware.com>
+> Tested-by: Alexey Makhalov <amakhalov@vmware.com>
+> Reported-by: Nico Pache <npache@redhat.com>
+> Acked-by: Rafael Aquini <raquini@redhat.com>
+> Tested-by: Rafael Aquini <raquini@redhat.com>
+> Signed-off-by: Michal Hocko <mhocko@suse.com>
 > 
-> _______________________________________________
-> linux-amlogic mailing list
-> linux-amlogic@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-amlogic
+> [1] http://lkml.kernel.org/r/20211101201312.11589-1-amakhalov@vmware.com
+> [2] http://lkml.kernel.org/r/20211207224013.880775-1-npache@redhat.com
+> [3] http://lkml.kernel.org/r/20190114082416.30939-1-mhocko@kernel.org
+> [4] http://lkml.kernel.org/r/20200428093836.27190-1-srikar@linux.vnet.ibm.com
+> ---
+>  arch/ia64/mm/discontig.c       |  4 ++--
+>  include/linux/memory_hotplug.h |  2 +-
+>  mm/memory_hotplug.c            | 21 +++++++++------------
+>  mm/page_alloc.c                | 34 +++++++++++++++++++++++++++++++---
+>  4 files changed, 43 insertions(+), 18 deletions(-)
+> 
+> diff --git a/arch/ia64/mm/discontig.c b/arch/ia64/mm/discontig.c
+> index 8dc8a554f774..dd0cf4834eaa 100644
+> --- a/arch/ia64/mm/discontig.c
+> +++ b/arch/ia64/mm/discontig.c
+> @@ -608,11 +608,11 @@ void __init paging_init(void)
+>  	zero_page_memmap_ptr = virt_to_page(ia64_imva(empty_zero_page));
+>  }
+>  
+> -pg_data_t *arch_alloc_nodedata(int nid)
+> +pg_data_t * __init arch_alloc_nodedata(int nid)
+>  {
+>  	unsigned long size = compute_pernodesize(nid);
+>  
+> -	return kzalloc(size, GFP_KERNEL);
+> +	return memblock_alloc(size, SMP_CACHE_BYTES);
+
+I feel like we should have
+
+long arch_pgdat_size(void) instead and have a generic allocation function.
+
+But we can clean that up in the future.
+
+>  }
+>  
+>  void arch_free_nodedata(pg_data_t *pgdat)
+> diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
+> index 4355983b364d..cdd66bfdf855 100644
+> --- a/include/linux/memory_hotplug.h
+> +++ b/include/linux/memory_hotplug.h
+> @@ -44,7 +44,7 @@ extern void arch_refresh_nodedata(int nid, pg_data_t *pgdat);
+>   */
+>  #define generic_alloc_nodedata(nid)				\
+>  ({								\
+> -	kzalloc(sizeof(pg_data_t), GFP_KERNEL);			\
+> +	memblock_alloc(sizeof(*pgdat), SMP_CACHE_BYTES);	\
+>  })
+>  /*
+>   * This definition is just for error path in node hotadd.
+> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> index 2a9627dc784c..fc991831d296 100644
+> --- a/mm/memory_hotplug.c
+> +++ b/mm/memory_hotplug.c
+> @@ -1162,19 +1162,21 @@ static void reset_node_present_pages(pg_data_t *pgdat)
+>  }
+>  
+>  /* we are OK calling __meminit stuff here - we have CONFIG_MEMORY_HOTPLUG */
+> -static pg_data_t __ref *hotadd_new_pgdat(int nid)
+> +static pg_data_t __ref *hotadd_init_pgdat(int nid)
+>  {
+>  	struct pglist_data *pgdat;
+>  
+>  	pgdat = NODE_DATA(nid);
+> -	if (!pgdat) {
+> -		pgdat = arch_alloc_nodedata(nid);
+> -		if (!pgdat)
+> -			return NULL;
+>  
+> +	/*
+> +	 * NODE_DATA is preallocated (free_area_init) but its internal
+> +	 * state is not allocated completely. Add missing pieces.
+> +	 * Completely offline nodes stay around and they just need
+> +	 * reintialization.
+> +	 */
+> +	if (pgdat->per_cpu_nodestats == &boot_nodestats) {
+>  		pgdat->per_cpu_nodestats =
+>  			alloc_percpu(struct per_cpu_nodestat);
+> -		arch_refresh_nodedata(nid, pgdat);
+>  	} else {
+>  		int cpu;
+>  		/*
+> @@ -1193,8 +1195,6 @@ static pg_data_t __ref *hotadd_new_pgdat(int nid)
+>  		}
+>  	}
+>  
+> -	/* we can use NODE_DATA(nid) from here */
+> -	pgdat->node_id = nid;
+>  	pgdat->node_start_pfn = 0;
+>  
+>  	/* init node's zones as empty zones, we don't have any present pages.*/
+> @@ -1246,7 +1246,7 @@ static int __try_online_node(int nid, bool set_node_online)
+>  	if (node_online(nid))
+>  		return 0;
+>  
+> -	pgdat = hotadd_new_pgdat(nid);
+> +	pgdat = hotadd_init_pgdat(nid);
+>  	if (!pgdat) {
+>  		pr_err("Cannot online node %d due to NULL pgdat\n", nid);
+>  		ret = -ENOMEM;
+> @@ -1445,9 +1445,6 @@ int __ref add_memory_resource(int nid, struct resource *res, mhp_t mhp_flags)
+>  
+>  	return ret;
+>  error:
+> -	/* rollback pgdat allocation and others */
+> -	if (new_node)
+> -		rollback_node_hotadd(nid);
+
+As static rollback_node_hotadd() is unused in this patch, doesn't this
+trigger a warning? IOW, maybe merge at least the rollback_node_hotadd()
+removal into this patch. The arch_free_nodedata() removal can stay separate.
+
+>  	if (IS_ENABLED(CONFIG_ARCH_KEEP_MEMBLOCK))
+>  		memblock_remove(start, size);
+>  error_mem_hotplug_end:
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 3589febc6d31..1a05669044d3 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -6402,7 +6402,11 @@ static void __build_all_zonelists(void *data)
+>  	if (self && !node_online(self->node_id)) {
+>  		build_zonelists(self);
+>  	} else {
+> -		for_each_online_node(nid) {
+> +		/*
+> +		 * All possible nodes have pgdat preallocated
+
+... in free_area_init() ?
+
+> +		 * free_area_init
+> +		 */
+> +		for_each_node(nid) {
+>  			pg_data_t *pgdat = NODE_DATA(nid);
+>  
+>  			build_zonelists(pgdat);
+> @@ -8096,8 +8100,32 @@ void __init free_area_init(unsigned long *max_zone_pfn)
+>  	/* Initialise every node */
+>  	mminit_verify_pageflags_layout();
+>  	setup_nr_node_ids();
+> -	for_each_online_node(nid) {
+> -		pg_data_t *pgdat = NODE_DATA(nid);
+> +	for_each_node(nid) {
+> +		pg_data_t *pgdat;
+> +
+> +		if (!node_online(nid)) {
+> +			pr_warn("Node %d uninitialized by the platform. Please report with boot dmesg.\n", nid);
+> +
+> +			/* Allocator not initialized yet */
+> +			pgdat = arch_alloc_nodedata(nid);
+> +			if (!pgdat) {
+> +				pr_err("Cannot allocate %zuB for node %d.\n",
+> +						sizeof(*pgdat), nid);
+> +				continue;
+> +			}
+> +			arch_refresh_nodedata(nid, pgdat);
+
+We could get rid of arch_refresh_nodedata() now and simply merge that
+into arch_alloc_nodedata(). But depends on how we want to proceed with
+arch_alloc_nodedata() eventually.
+
+
+Acked-by: David Hildenbrand <david@redhat.com>
+
+-- 
+Thanks,
+
+David / dhildenb
+
