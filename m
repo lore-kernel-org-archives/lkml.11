@@ -2,121 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DF0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 01:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9680CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 01:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234377AbiA0BUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 20:20:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234344AbiA0BUh (ORCPT
+        id S234411AbiA0BUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 20:20:54 -0500
+Received: from esa8.fujitsucc.c3s2.iphmx.com ([68.232.159.88]:23992 "EHLO
+        esa8.fujitsucc.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234379AbiA0BUx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 20:20:37 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB30BC06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 17:20:36 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id l5so1529292edv.3
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 17:20:36 -0800 (PST)
+        Wed, 26 Jan 2022 20:20:53 -0500
+X-Greylist: delayed 428 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jan 2022 20:20:52 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj1;
+  t=1643246453; x=1674782453;
+  h=from:to:subject:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version;
+  bh=Fv9LqLwCp43iUePdiQyh5Hw8d1MrP7/Xngcq2NEq/Uk=;
+  b=NRULSL08N9UgX74uBI3Qedk5sF9ypFrCoZxpibyR4O8WLc4AYnk2S+Rn
+   y79SbG6+2mF/SxtLtBxaIkeq5wMwtYnhYH5FdIdGWVTm6fMUN20hRD96R
+   l05T+MNJhu+7T6rrXm8Z2Sr6RRJi53tAvQNtN+Eac7JHK4WoI3Gu+An1U
+   eBO9RTnB6EHx194wLSg9Zgeq++oqz3W/Ksks9/eV2D6CUKrnllYFn5/Zb
+   mgBf7mm/WjJwROGbe+Cp4d1g4Omf9YW8YMcz51XCPfSW0iLLUmukxg8Wf
+   TnSJXI0kBpRLubTNeNMZ5GONVHtvSZK5WbS+XBXiLaT/dci8R862ABA/v
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="48431845"
+X-IronPort-AV: E=Sophos;i="5.88,319,1635174000"; 
+   d="scan'208";a="48431845"
+Received: from mail-tycjpn01lp2175.outbound.protection.outlook.com (HELO JPN01-TYC-obe.outbound.protection.outlook.com) ([104.47.23.175])
+  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 10:13:41 +0900
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KVrM9rdT6PQoaru9yqvxsHbEJ/SIOPRkWM2hAMQP67jZC6EeYqy03ZJs7mocQpPsD8tHMHGZ1U0E1Oz/KkIBFpXOiMpA7GVYYiy+73jv5x+fmoEr1zBdfqHU3S0vIer1Lv9XPmfpkdG8IMsvcUU2W0c3bw72wSyRqBAqzRclv8q+yhP2dSyULQHpuopHksrfqV4/0zhim899FGwCvzORrec1g7FIH0dZrkUYCGEghjCNrr6LRKz9lmNPYEcb3Os98GP+rbirwIvpNnL6SX2QdMmExQJxrxB+4+gHaCFPNLBDVpueJbCjznf4L5kUvaPbui2Mqf6cXZBLmKZw496L9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Fv9LqLwCp43iUePdiQyh5Hw8d1MrP7/Xngcq2NEq/Uk=;
+ b=Ga8HprMDKwIJPe1GGCf6856ix13KpPhYL3naq8EN8AO4oBHsn+TjVsW48lBg8hs0Ob55/X+g8Ojnfp6dhvo8wGM4SNqvnWT4dPeHgrZy3QF8enPIm4EJMMQIk0j22fq/bNoLala9ZNcTIcyilR6ywvErEtscOU+Jd945/An1tqkplLSzp4ZG/qXg8MKudLVXHhy8P/yzGP6WMMjzw0/lY8ySwK+CGn8wxoGB4A8dpsPcXcsWgjxAmRhBeoM5z26x/4/e2SgYEVyYa1/AM7pzoz5J0rYWqLMgg8kSwhcObSPG9uwrJdKYd8Wwj4JO4eYxrmzuYWpHNF8x+YkqMSeVeg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=elzTyLMca2pvBYgTWQkNCYxxJD3xd3Z07gwcpc0mZtg=;
-        b=KhzTbfhlLCq7WoRZGIlVP2DWwdbNn8huwiVIEymR5ot3XAei7DWDavfibE2uqvBynt
-         VwAblbIyC1TAAY7NNPiWWIswT6tpHI/p20XwfTFb2NSk2X9tCFKTbmCA/9jiRAJsDSpx
-         5noVlLG5D3zSE6TuKW2YgDDm2p+WK2gn3rYd4wyl6X1byv8HT8noGwmQXStOFfusghyC
-         Mi5I9Hsgasbhq4ryOk5ZP1+blHerBXCGMirm5iFwV/a928QkHwhXs+JZ1nBwH7bZMKy8
-         aGLMwVG30fPujmctdeq1UblZKed22fC42zl5bdDVA9cT0bXqS0sEYLgFOIJ67LzBBEcS
-         rXRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=elzTyLMca2pvBYgTWQkNCYxxJD3xd3Z07gwcpc0mZtg=;
-        b=GX4QDiHld5f3leJMSzRCESrhPttOWTHN4CD96sGdm7THo5FRGVp7LadsWYtR7qQmT5
-         DL9AFkeLHlJehElIuaGrX9wo24wAKxLwpWtX6/pR7SfWb/2r85P8hQghTkLXCstRSWYf
-         XuZODYzh2274zETrzDn5iaTu8Ywijd5NTNDJFQ1oxMl6QwhLBWTIUeKUTynqvEH8CUxG
-         b6Qc2s0DCjB75hJVpuK0g6UGacUVJTrqNO7jZz6Z2+4nvjVdv1SB3vyMiQDnqbCJaSfw
-         AICfQ3WExs14OSlXE9nBZ5vcuStB7F0Iv3Hxo6HDpVJAwuqDRKY7KDRktGNMG0Mtj2VC
-         FjFA==
-X-Gm-Message-State: AOAM530PAK2Q84sUbpkHkt0AR5pFFIyn96wuc6EDG/heyR6tLfRYCCd3
-        8iwh0VQa958eagZ1a8Mty44=
-X-Google-Smtp-Source: ABdhPJxei5y/VVo7zaV2Lm4x0kqN1JeLqWTk6B3KNkWX512WC3+wql8dOVc78jaL5emQGyaPdU5ZBQ==
-X-Received: by 2002:a05:6402:11c7:: with SMTP id j7mr1485069edw.139.1643246435430;
-        Wed, 26 Jan 2022 17:20:35 -0800 (PST)
-Received: from localhost ([185.92.221.13])
-        by smtp.gmail.com with ESMTPSA id by22sm8057957ejb.84.2022.01.26.17.20.34
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 26 Jan 2022 17:20:35 -0800 (PST)
-From:   Wei Yang <richard.weiyang@gmail.com>
-To:     akpm@linux-foundation.org, mgorman@techsingularity.net,
-        mhocko@suse.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Wei Yang <richard.weiyang@gmail.com>
-Subject: [PATCH] mm/memory_hotplug: build zonelist for managed_zone
-Date:   Thu, 27 Jan 2022 01:20:23 +0000
-Message-Id: <20220127012023.18095-1-richard.weiyang@gmail.com>
-X-Mailer: git-send-email 2.11.0
+ d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fv9LqLwCp43iUePdiQyh5Hw8d1MrP7/Xngcq2NEq/Uk=;
+ b=YIXRb7EumBXMCgd4vxNj7/cbKTs5I+f5IO31/MGzhvhfOo/uKYX77CjannkS6gEo21CGqZ+P8yDvbpfnVimm7IPm8fkcFPJ8RxxQy6PXJ5maaXRUcsNc06RT+SfA3ltgl+6KIQdX5fL8HioCeB+QEjiDrVBInpE1bMpi/7aABaA=
+Received: from TY2PR01MB5257.jpnprd01.prod.outlook.com (2603:1096:404:11a::10)
+ by TY2PR01MB5017.jpnprd01.prod.outlook.com (2603:1096:404:10b::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Thu, 27 Jan
+ 2022 01:13:37 +0000
+Received: from TY2PR01MB5257.jpnprd01.prod.outlook.com
+ ([fe80::30bc:c0c1:4bbd:a207]) by TY2PR01MB5257.jpnprd01.prod.outlook.com
+ ([fe80::30bc:c0c1:4bbd:a207%4]) with mapi id 15.20.4930.017; Thu, 27 Jan 2022
+ 01:13:37 +0000
+From:   "nobuta.keiya@fujitsu.com" <nobuta.keiya@fujitsu.com>
+To:     "'Madhavan T. Venkataraman'" <madvenka@linux.microsoft.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "sjitindarsingh@gmail.com" <sjitindarsingh@gmail.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v13 11/11] arm64: Select HAVE_RELIABLE_STACKTRACE
+Thread-Topic: [PATCH v13 11/11] arm64: Select HAVE_RELIABLE_STACKTRACE
+Thread-Index: AQHYC7J0j/1dz1/1vkuQ8Ct1CeQ76axzKz3QgACgioCAAPRucIAA2KoAgAB0tRA=
+Date:   Thu, 27 Jan 2022 01:13:37 +0000
+Message-ID: <TY2PR01MB5257F92BDD5E55914A63DD2C85219@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220117145608.6781-1-madvenka@linux.microsoft.com>
+ <20220117145608.6781-12-madvenka@linux.microsoft.com>
+ <TY2PR01MB5257518B8EB381E16D52B244855F9@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+ <825b8b72-c746-ba24-7142-3fff481e82d6@linux.microsoft.com>
+ <TY2PR01MB5257BE671A481D81F1A40E0185209@TY2PR01MB5257.jpnprd01.prod.outlook.com>
+ <1a0e19db-a7f8-4c8e-0163-398fcd364d54@linux.microsoft.com>
+In-Reply-To: <1a0e19db-a7f8-4c8e-0163-398fcd364d54@linux.microsoft.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_Enabled=true;
+ MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_SetDate=2022-01-27T00:11:55Z;
+ MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_Method=Standard;
+ MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_Name=FUJITSU-RESTRICTED?;
+ MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_SiteId=a19f121d-81e1-4858-a9d8-736e267fd4c7;
+ MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_ActionId=f946a7f6-f72b-4807-b698-d9ae25af0fa0;
+ MSIP_Label_a7295cc1-d279-42ac-ab4d-3b0f4fece050_ContentBits=0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=fujitsu.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 520bb1dd-f8a4-4bc2-e492-08d9e1323f2d
+x-ms-traffictypediagnostic: TY2PR01MB5017:EE_
+x-microsoft-antispam-prvs: <TY2PR01MB5017743B6BF0DA38CCA38D2685219@TY2PR01MB5017.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KmCR+bWo90kVbCDooSB/jKnyE6zD3LwOaslxVUeAEnveRxoSv/foXxhG+2p8FlZjBRoXiUrbzX/J4Ja7TlMOEEKZCGXNg0bqixZd/u9cA8iDG20i8ow4sE+3Kph0M+P5GQzGcf7chdslmTIfWbRuvXUdz2a1/17tyJLx829GTC/DKw8YDkMbYdSqXopteELAkzt+TCp/hVmPHp8u+gMr/1QYcMEo8RhaG/hu6mWYNeuQQK0I/c7fC8VInDdibCGU6M6LMDdmhZ1z4QEUUFk/zjGrRydE9AGbBlwhe5MN/BpmBYNkhkKVHpL1qR72DLx8S2Jof6agU78u3D//mDTqLi0cfHmyAZWG9SpEaams2FilVQcrID15KR8uXSnTahJhQAFQ6+6A+a4kQ+5ApVS9WvHIaNxHzYYi3qEATabCBSo60fMbRttuKl5bmnw9ckcBI1e5KwB7jjYzab3ej++fsueETpKy9Ne76uMB42lwLuwgV+yMcPx5G7nWFiGta/RdEacfAOSC2itP808v9pWeLjn4egdw5FqFmezBgrMEAS6Lgj4Zi0G9n+KRS6+ElugKbJpBHZiSwE6KuNwb5nVXQl+WAXWAkQkAx8JxcSybl07yHBI4r12A+rBSBZKi114IYph7HvqhF2JAYiM1/nQ1b+sF0dykMAzh5iCt35/9YejMY2/g4OzuMFp6Fdjr2Wd6ga+vqUm5zS+uVPaVcVSHQoMhBPqO6N9DMrhFS7cA2qM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB5257.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(45080400002)(38070700005)(9686003)(82960400001)(76116006)(85182001)(316002)(52536014)(508600001)(7696005)(86362001)(921005)(55016003)(83380400001)(110136005)(33656002)(6506007)(186003)(8676002)(71200400001)(38100700002)(8936002)(7416002)(64756008)(66446008)(66476007)(66556008)(66946007)(122000001)(26005)(5660300002)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-2022-jp?B?SGo3MlJSN0lWcm9YOEE2RldPUTc3RTVxa1g5TTNvdjEyY1J1Y2dCSVl1?=
+ =?iso-2022-jp?B?MXV1V1BuNWpSRWVPRUtacjR1Wk9ybnRBbjBRRTByNEo4MlJ0UWExWTBn?=
+ =?iso-2022-jp?B?TGoxNVk1VDRkNVdNa005WjI0d2ErZFZIV3prNGUzd1lJUTRBQjlTaU1M?=
+ =?iso-2022-jp?B?NlNBSU5CUzc1M21FS1pDbnRPSUxza3E1SW10emNLQjJxVE5PemZXWVVn?=
+ =?iso-2022-jp?B?eHMvUllvWS9aRkJabWRqbHBySmJVb1NEdk5ONzg3K0xEUE5ReDAwS2Jp?=
+ =?iso-2022-jp?B?WmRwOVQ0R1doRWhsMEYraWl4M082VHdOeVpyRVh0N1lkT3ptMlhUbW9B?=
+ =?iso-2022-jp?B?RStBTDZCazJhK0llMVAzaDVZNmZwZUNMbng4MklucWVPUGZYUHhOSFps?=
+ =?iso-2022-jp?B?Q0VuYlBhRVY0c1E2bFZLaW1adDBVd2NLbVprcDl5azN6by9ac1V2L28z?=
+ =?iso-2022-jp?B?MG4zcFM5amtRSy9hS29wNjJXT01MRVV6UlVDZzkvOE1sbU52VW5mdkhl?=
+ =?iso-2022-jp?B?TTNBYmd5S0Q5NXN2aXBMdURqVjFKNmIvN2V6Y0ppNzNjWmZDUjBsNUdz?=
+ =?iso-2022-jp?B?NE9nZUhuR3ZxOXFrNmhzMUdPZjJ5cGw0bVU2MnBkWkpMYjdZdGZxdnpp?=
+ =?iso-2022-jp?B?MWthZnBvcnUyUnB4aERaZHg0YUxYSUVuK3RuR3o4dE1rWlV6alR6amZU?=
+ =?iso-2022-jp?B?STAvVThFTHR2aXBJbkRJU3dxcm9yeHRWRk5Vbkw4OVNCd011SEJnZTk4?=
+ =?iso-2022-jp?B?UFFMa3F2eUV4WWE4aUxCT2JqcE1UY0ZORlQydUVsazZlREpRYVptQXln?=
+ =?iso-2022-jp?B?QVJuUStUOVd2dzdwRmE4M1k5QjNYNzBVanlGeTdBUnplaGRCMXViZzhr?=
+ =?iso-2022-jp?B?U1NKSkY3YW1qWTlGZmZ1UjVpcS96WWwzeVd6eGVjbVU2bk5uV1FDdUtq?=
+ =?iso-2022-jp?B?c2J0NDhxSmI3OGRlVEVIMSt1Y2JjVnJPMjEwQVo0dGN6a2I1Q24yM1VE?=
+ =?iso-2022-jp?B?dHAxa0cwdUVSZE5ITElHOHIyUnlqMEs2NXkxMktndzArL3ZmQUxhUmpj?=
+ =?iso-2022-jp?B?dTE0R3hNYWNXZS8wNlhoUk5CRm1sYlBxbUtuK3B2Q1BMU2c4NGtONlJH?=
+ =?iso-2022-jp?B?Y3BIR09UMW5oS0Q5NHlOOGV6VVZ5KzN1c2J0RHo4cWg2bUdCZExzdk11?=
+ =?iso-2022-jp?B?cDA2Y3A0ZHZyNXhqVUIrNzFqU1o4dnU0UnZzT3h3cVpjWTZIVUJyWDVw?=
+ =?iso-2022-jp?B?WmFQQWlESlhxTGQxSE1zMDRLamRKdWduREtrK2RWY1N3MU9WQkhvUmxp?=
+ =?iso-2022-jp?B?aVhaYWM2YlFMdTFROVBiaGtwZzlMcXkyOTdRRXhVdDBaNnBLVC9SUVRy?=
+ =?iso-2022-jp?B?K2RjRGxDU2RXd005ZXlmL01aVFkwWU9tUUQrNENiVzZnd1U5RHNIYjBL?=
+ =?iso-2022-jp?B?T3lMd0lsNjNiTTd0Yjhkd3BheFFOdXhyTzJ1ZUJYdkp5OGFPUSt2anFS?=
+ =?iso-2022-jp?B?Y0RUV0dQSW56V21BdWR1dXNuR3RGTnVxZmJuTzFRTjVtYVg4aGxoSEJL?=
+ =?iso-2022-jp?B?QkxXbGxINmQrMHV6TUIwKzFNMUtnN2xmY1hFZDhiYjBhVTl4TkxJZUF6?=
+ =?iso-2022-jp?B?Wk1YcEh1TS9zNjZ3b3h5enJ3M1h5cVZkV2N3SUFxaDA1aVBiSy9Vc0ZU?=
+ =?iso-2022-jp?B?M25BMGhmS0J0NTJjUEt1UitTYURXeUtTZk9iR0gzNkZqWDdESVFqcCt3?=
+ =?iso-2022-jp?B?UE0vV043N2YzOHl0TjlWUmFncUFpaFRqT1YxUCs1OWF3K3dIY1VrM0l3?=
+ =?iso-2022-jp?B?b1dGUjd2ZzBPdUxINVVDajhTcFcvUTkvQkVZVlF1U3dEUEdBQm1yb2Mv?=
+ =?iso-2022-jp?B?ZUpObUE0dWhJSGVILzU4SFloQ0hZM05RbTZnZGZDV3YzVXFKQ0oyRDU5?=
+ =?iso-2022-jp?B?bHduSVRqWDYxcHBMNC9YTzhkcDJWRWlSakh4ZlhWdHFUY2luNUhCeGlm?=
+ =?iso-2022-jp?B?RXZlQ2pxeERxM1BOUHhUQlFPYUFkRzBKekZVYkFXQlFUamFuZzhjYUpI?=
+ =?iso-2022-jp?B?MjBRKzRaSDBaZUYxUG9PQlY1U0x3S29uQnZ4QmdBcEI5OStwanFRRnVj?=
+ =?iso-2022-jp?B?djRPVkJnYzNRNjRrL3B0Y2h0aEdaeVpncms3Sk5BL25Zc1d4UGNPbW9u?=
+ =?iso-2022-jp?B?Rk9QdElQYWNYMlRiVUtiWnkrZks1U1VRWldWc3l6VXpzSmVHL1lBY2pu?=
+ =?iso-2022-jp?B?MTZaelNkV2N2MThxL0JOa1Uxd0h2ZjN4Mm82S09FRGpxY1NuZTRiUHdD?=
+ =?iso-2022-jp?B?SForYWhDRFA1Tnk4eXRaOVFFbWRLK1Y2cVpKRDJ6dGRZQlRMampVazRn?=
+ =?iso-2022-jp?B?M3QwZjhKUitNaTlyNVFhODdoNlRpaFc0Q1hYK2hDR3ZGWHFZV3RkQkd1?=
+ =?iso-2022-jp?B?cFN2cm1nPT0=?=
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: fujitsu.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB5257.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 520bb1dd-f8a4-4bc2-e492-08d9e1323f2d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2022 01:13:37.3285
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nkLHOcevlxT5MQCH+L9i3eYh3/XsTsQTEqE6s6peJHlp6J6qcdfywny0RCiIC7PJVQ9KbsLLSPNcSVXD4OZxVaHau0l41Bz7X/abeDpXcJ4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB5017
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During memory hotplug, when online/offline a zone, we need to rebuild
-the zonelist for all node. There are two checks to decide whether a zone
-would be added to zonelist:
+> >> I have not seen any activity on that in a long time. IIRC, Julien quit=
+ RedHat.
+> >> I don't know if anyone else has taken over this work in RedHat.
+> >>
+> >> Sorry, I don't have any more information.
+> >>
+> >> Madhavan
+> >
+> > Thanks for your information.
+> >
+> > By the way, I'm considering test code for arch_stack_walk_reliable().
+> > Specifically, I apply Suraj's patch to enable livepatch, and added a fu=
+nction
+> > that sleeps between SYM_CODE_START and SYM_CODE_END, then livepatch
+> > checks if the task has an unreliable stack.
+> > For now my internal test code working correctly, but my Kconfig exclude=
+s
+> > STACK_VALIDATION dependency.
+> >
+> > It seems that objtool will not be enabled yet, so I would like to test =
+it easier.
+> > If you are already testing with this patch, could you tell me how to do=
+ it?
+> >
+> >
+>=20
+> For now, I have an instrumented kernel that directly invokes arch_stack_w=
+alk_reliable()
+> from various places in the kernel (interrupt handlers, exception handlers=
+, ftrace entry,
+> kprobe handler, etc). I also have a test driver to induce conditions like=
+ null pointer
+> dereference. I use this to test different cases where arch_stack_walk_rel=
+iable() should
+> return an error.
 
-  * one in online_pages/offline_pages to decide necessity
-  * one in build_zonerefs_node to do real add
+That's good to know, thanks.
 
-Currently we use different criteria at these two places, which is
-different from the original behavior.
+>=20
+> As for livepatch testing, I have enhanced objtool and the kernel so the f=
+rame pointer can
+> be validated dynamically rather than statically. I have tested various di=
+fferent livepatch
+> selftests successfully. I have also written my own livepatch tests to add=
+ to the selftests.
+> I am currently working on preparing an RFC patch series for review. Basic=
+ally, this series
+> implements STACK_VALIDATION in a different way.
+>=20
+> I plan to publish my work soon (hopefully Feb 2022). I was going to do in=
+ December. However,
+> my workload in Microsoft did not permit me to do that. I am also planning=
+ to set up a github
+> repo so people can try out my changes, if they are interested.
+>=20
+> So, stay tuned.
+>=20
+> Madhavan
 
-Originally during memory hotplug, zonelist is re-built when zone hasn't
-been populated. This in introduced in 'commit 6811378e7d8b ("[PATCH]
-wait_table and zonelist initializing for memory hotadd: update zonelists")'.
-And at that moment, build_zonelists_node() also use populated_zone() to
-decide whether the zone should be added to zonelist.
+I'm very interested, so I would to be happy if you could tell me when the g=
+ithub repo is set up.
 
-While in 'commit 6aa303defb74 ("mm, vmscan: only allocate and reclaim
-from zones with pages managed by the buddy allocator")',
-build_zonelists_node() changed to use managed_zone() to add zonelist.
-But we still use populated_zone() to decide the necessity.
 
-This patch restore the original behavior by using the same criteria to
-add a zone in zonelist during memory hotplug.
+Thanks again,
 
-Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
-Fixes: 6aa303defb74 ("mm, vmscan: only allocate and reclaim from zones with pages managed by the buddy allocator")
-CC: Mel Gorman <mgorman@techsingularity.net>
----
- mm/memory_hotplug.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index 2a9627dc784c..8f1906b33937 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -1102,11 +1102,11 @@ int __ref online_pages(unsigned long pfn, unsigned long nr_pages,
- 	spin_unlock_irqrestore(&zone->lock, flags);
- 
- 	/*
--	 * If this zone is not populated, then it is not in zonelist.
-+	 * If this zone is not managed, then it is not in zonelist.
- 	 * This means the page allocator ignores this zone.
- 	 * So, zonelist must be updated after online.
- 	 */
--	if (!populated_zone(zone)) {
-+	if (!managed_zone(zone)) {
- 		need_zonelists_rebuild = 1;
- 		setup_zone_pageset(zone);
- 	}
-@@ -1985,7 +1985,7 @@ int __ref offline_pages(unsigned long start_pfn, unsigned long nr_pages,
- 	/* reinitialise watermarks and update pcp limits */
- 	init_per_zone_wmark_min();
- 
--	if (!populated_zone(zone)) {
-+	if (!managed_zone(zone)) {
- 		zone_pcp_reset(zone);
- 		build_all_zonelists(NULL);
- 	}
--- 
-2.33.1
-
+Keiya
