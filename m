@@ -2,110 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BBCEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 703FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232579AbiA0R7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:59:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244692AbiA0R6k (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:58:40 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087D6C061751
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:58:40 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id j23so4732778edp.5
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:58:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D/WdrZt8APh+ImWs99heS/EAAslbj9KjZjoo2pBS7+c=;
-        b=nFqidDLirWb5QmaEXBGreq9mA37G4EJ+Q2mpt9YciaCWN6z4xxhNtfYmkrxNHnaKLw
-         OfEPBT0Xe0aXMGF9gnFX5fjFu/J4kr/Lf/pS+GlUlyM3xqTmw7ZYGmZT317MbXPPRQY+
-         qPKCe9aXzTB3+Vqr98iv5i84h3v7XET37JW7wJtXNBgn47IcCqZpy9I6mrkDnLcWEuS2
-         YT243GZrkCIBNdDUPyBjinEjmofSalSBeg6IIOZT43hnaxwNWKfUXfTgopMgEpG/DUiQ
-         LnKVOY8QCobVPQN3ZJB5ATSLAYaMWJje/ltYhTTDai/TNx6UimZ1mw7fYow0lC8poKzv
-         OTTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D/WdrZt8APh+ImWs99heS/EAAslbj9KjZjoo2pBS7+c=;
-        b=2/kF5hfX23qlMDwDHjA2xPi15hCOIYUYat5XHHPtGCE4hMas1ibCWUttB38c0YLLKp
-         jUQXWonVYKUZYe7AET3tP1La3GlEyc6XkSy6vqLWzkFqEth7mdq8wemsG79rT+m73ov+
-         xDDyuA1CCMLSFEqeuPwhnKU6YypnyP9r29/nek8one9pbDXqgR/L8bWr5LlbjVqYR2md
-         PQpih0Da2uAsJEL9aPe+qGZOVzWXr8mpNGO93eHwDTE8oKmHH54XiE4CMPHCUn5CD7bS
-         iEjLCvXNAxci2PkKBXd4NAeBMem3eIDwFSYa/RtuDi+YquQCT9r2/CZP0TDBvy6LBflD
-         24rw==
-X-Gm-Message-State: AOAM532u0PqxDb9PsYVYyWVAtPu7zu6ujEpPlDiB7zq21yj8WEnWMzZ+
-        3QcYNqiZOrPVm5m8hSbCn2R2sOZsPj/iHMlEPM9il0AfHuE=
-X-Google-Smtp-Source: ABdhPJxQ1qzfs/DIElroXwnoIK8WHBiVv9xpOvqnXnZkbObAnsCfkpP9Ea4KnHjLw+73Nz8PNhZRrABfYFFZ4R9A2Q4=
-X-Received: by 2002:aa7:c312:: with SMTP id l18mr4729705edq.334.1643306318361;
- Thu, 27 Jan 2022 09:58:38 -0800 (PST)
+        id S245446AbiA0R5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:57:42 -0500
+Received: from mga12.intel.com ([192.55.52.136]:65504 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244998AbiA0Rzs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 12:55:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643306148; x=1674842148;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=TPB2LrmlUVsHBLkS8/W1ZpxXOGwMXL8e5PUJSM7dUI8=;
+  b=mQFPB2LlCR7Kocqq2sbAjxLPjhj3YvSTrpLYYd3eMhPUykgby1VJncT9
+   8q8jro8VaTekqbUKPiDwyFzvd4BauvxxmaNyWJ0pvmz4R0YKUzsND2Xii
+   lF33ssx1+umUNlwGdMoDp4f1V5frKHgCQA+3bUsE/sjrc4kRPSH9wZEOg
+   RSZA8JHjdyB74SHOuP7iYARlhBMmOhnUhejhvPqwN4k0FrptBA5ijMxdF
+   gavLPMDbe5KdRkxMhUB2N/FqQufS3oa5ktJUcANe5l/GJp0B0t/eoLrGd
+   UfQCCoWc5nAqcJP92SWfixX9E/8REkbJw/kyvjq/92xF8eG0GibN0Elck
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="226899150"
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="226899150"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:14 -0800
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="674796214"
+Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:14 -0800
+From:   ira.weiny@intel.com
+To:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V8 43/44] nvdimm/pmem: Enable stray access protection
+Date:   Thu, 27 Jan 2022 09:55:04 -0800
+Message-Id: <20220127175505.851391-44-ira.weiny@intel.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220127175505.851391-1-ira.weiny@intel.com>
+References: <20220127175505.851391-1-ira.weiny@intel.com>
 MIME-Version: 1.0
-References: <20220118190922.1557074-1-dlatypov@google.com> <CABVgOSnY8Ctc9vuVX+Fjmmd3L5kpXnzMXJQ0LPXAgmjCKsrYYw@mail.gmail.com>
- <CAGS_qxqx+wcruc7DAD9TQjk27OF+VDo1n9S6atRx+dDG5cr=6g@mail.gmail.com>
- <CAGS_qxpRqOAoBbkkFttZgB_Zm+KM=pwprgZ0wzDROh21mO0r8Q@mail.gmail.com> <CABVgOSnmfhPcMCy5yQEymyBnTWSqEFbmTnSbHYL7D1D=eJOk5A@mail.gmail.com>
-In-Reply-To: <CABVgOSnmfhPcMCy5yQEymyBnTWSqEFbmTnSbHYL7D1D=eJOk5A@mail.gmail.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Thu, 27 Jan 2022 09:58:27 -0800
-Message-ID: <CAGS_qxrCRxEGUj_O+oZFkrDgE6PgvHNhfxMzF94Rez__CXbR4Q@mail.gmail.com>
-Subject: Re: [PATCH 1/5] kunit: tool: drop mostly unused KunitResult.result field
-To:     David Gow <davidgow@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 6:20 PM David Gow <davidgow@google.com> wrote:
->
-> On Thu, Jan 27, 2022 at 3:55 AM 'Daniel Latypov' via KUnit Development
-> <kunit-dev@googlegroups.com> wrote:
-> >
-> > On Thu, Jan 20, 2022 at 9:19 AM Daniel Latypov <dlatypov@google.com> wrote:
-> > > > That being said, I can live with the current solution, but'd ideally
-> > > > like a comment or something to make the return value Tuple a bit more
-> > > > obvious.
-> > >
-> > > A comment to explain that Tuple == multiple return values from a func?
-> > > Or something else?
-> >
-> > Friendly ping.
-> > Do we want a comment like this?
-> >
-> > # Note: Python uses tuples internally for multiple return values
-> > def foo() -> Tuple[int, int]
-> >    return 0, 1
-> >
->
-> Whoops -- forgot to send my response to this.
->
-> I was less worried about explaining the concept of multiple return
-> values, and more about naming what the return values were: that the
-> first one is the result information, and the second is the parsed
-> test.
->
-> That being said, it's reasonably obvious from the types in this case,
-> so I'm okay leaving this as-is, though in general I'm wary of tuples
-> when the order doesn't matter, and a struct-style thing (with named
-> members) fits that better.
+From: Ira Weiny <ira.weiny@intel.com>
 
-Ack.
-Yeah, in this case I don't think creating a new type to name each
-value is worth it.
-From what I've seen of python codebases, this info is usually captured
-in docstrings, but yeah, this particular case seems straightforward
-enough that it doesn't need it.
+Now that all valid kernel access' to PMEM have been annotated with
+{__}pgmap_mk_{readwrite,noaccess}() PGMAP_PROTECTION is safe to enable
+in the pmem layer.
 
->
-> I'm no Python expert though, so don't let my whinging get too much in the way.
->
-> -- David
+Implement the pmem_map_protected() and pmem_mk_{readwrite,noaccess}() to
+communicate this memory has extra protection to the upper layers if
+PGMAP_PROTECTION is specified.
+
+Internally, the pmem driver uses a cached virtual address,
+pmem->virt_addr (pmem_addr).  Use __pgmap_mk_{readwrite,noaccess}()
+directly when PGMAP_PROTECTION is active on the device.
+
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+
+---
+Changes for V8
+	Rebase to 5.17-rc1
+	Remove global param
+	Add internal structure which uses the pmem device and pgmap
+		device directly in the *_mk_*() calls.
+	Add pmem dax ops callbacks
+	Use pgmap_protection_available()
+	s/PGMAP_PKEY_PROTECT/PGMAP_PROTECTION
+---
+ drivers/nvdimm/pmem.c | 52 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 51 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
+index 58d95242a836..2afff8157233 100644
+--- a/drivers/nvdimm/pmem.c
++++ b/drivers/nvdimm/pmem.c
+@@ -138,6 +138,18 @@ static blk_status_t read_pmem(struct page *page, unsigned int off,
+ 	return BLK_STS_OK;
+ }
+ 
++static void __pmem_mk_readwrite(struct pmem_device *pmem)
++{
++	if (pmem->pgmap.flags & PGMAP_PROTECTION)
++		__pgmap_mk_readwrite(&pmem->pgmap);
++}
++
++static void __pmem_mk_noaccess(struct pmem_device *pmem)
++{
++	if (pmem->pgmap.flags & PGMAP_PROTECTION)
++		__pgmap_mk_noaccess(&pmem->pgmap);
++}
++
+ static blk_status_t pmem_do_read(struct pmem_device *pmem,
+ 			struct page *page, unsigned int page_off,
+ 			sector_t sector, unsigned int len)
+@@ -149,7 +161,10 @@ static blk_status_t pmem_do_read(struct pmem_device *pmem,
+ 	if (unlikely(is_bad_pmem(&pmem->bb, sector, len)))
+ 		return BLK_STS_IOERR;
+ 
++	__pmem_mk_readwrite(pmem);
+ 	rc = read_pmem(page, page_off, pmem_addr, len);
++	__pmem_mk_noaccess(pmem);
++
+ 	flush_dcache_page(page);
+ 	return rc;
+ }
+@@ -181,11 +196,14 @@ static blk_status_t pmem_do_write(struct pmem_device *pmem,
+ 	 * after clear poison.
+ 	 */
+ 	flush_dcache_page(page);
++
++	__pmem_mk_readwrite(pmem);
+ 	write_pmem(pmem_addr, page, page_off, len);
+ 	if (unlikely(bad_pmem)) {
+ 		rc = pmem_clear_poison(pmem, pmem_off, len);
+ 		write_pmem(pmem_addr, page, page_off, len);
+ 	}
++	__pmem_mk_noaccess(pmem);
+ 
+ 	return rc;
+ }
+@@ -301,11 +319,36 @@ static long pmem_dax_direct_access(struct dax_device *dax_dev,
+ 	return __pmem_direct_access(pmem, pgoff, nr_pages, kaddr, pfn);
+ }
+ 
++static bool pmem_map_protected(struct dax_device *dax_dev)
++{
++	struct pmem_device *pmem = dax_get_private(dax_dev);
++
++	return (pmem->pgmap.flags & PGMAP_PROTECTION);
++}
++
++static void pmem_mk_readwrite(struct dax_device *dax_dev)
++{
++	__pmem_mk_readwrite(dax_get_private(dax_dev));
++}
++
++static void pmem_mk_noaccess(struct dax_device *dax_dev)
++{
++	__pmem_mk_noaccess(dax_get_private(dax_dev));
++}
++
+ static const struct dax_operations pmem_dax_ops = {
+ 	.direct_access = pmem_dax_direct_access,
+ 	.zero_page_range = pmem_dax_zero_page_range,
+ };
+ 
++static const struct dax_operations pmem_protected_dax_ops = {
++	.direct_access = pmem_dax_direct_access,
++	.zero_page_range = pmem_dax_zero_page_range,
++	.map_protected = pmem_map_protected,
++	.mk_readwrite = pmem_mk_readwrite,
++	.mk_noaccess = pmem_mk_noaccess,
++};
++
+ static ssize_t write_cache_show(struct device *dev,
+ 		struct device_attribute *attr, char *buf)
+ {
+@@ -427,6 +470,8 @@ static int pmem_attach_disk(struct device *dev,
+ 	pmem->pfn_flags = PFN_DEV;
+ 	if (is_nd_pfn(dev)) {
+ 		pmem->pgmap.type = MEMORY_DEVICE_FS_DAX;
++		if (pgmap_protection_available())
++			pmem->pgmap.flags |= PGMAP_PROTECTION;
+ 		addr = devm_memremap_pages(dev, &pmem->pgmap);
+ 		pfn_sb = nd_pfn->pfn_sb;
+ 		pmem->data_offset = le64_to_cpu(pfn_sb->dataoff);
+@@ -440,6 +485,8 @@ static int pmem_attach_disk(struct device *dev,
+ 		pmem->pgmap.range.end = res->end;
+ 		pmem->pgmap.nr_range = 1;
+ 		pmem->pgmap.type = MEMORY_DEVICE_FS_DAX;
++		if (pgmap_protection_available())
++			pmem->pgmap.flags |= PGMAP_PROTECTION;
+ 		addr = devm_memremap_pages(dev, &pmem->pgmap);
+ 		pmem->pfn_flags |= PFN_MAP;
+ 		bb_range = pmem->pgmap.range;
+@@ -474,7 +521,10 @@ static int pmem_attach_disk(struct device *dev,
+ 	nvdimm_badblocks_populate(nd_region, &pmem->bb, &bb_range);
+ 	disk->bb = &pmem->bb;
+ 
+-	dax_dev = alloc_dax(pmem, &pmem_dax_ops);
++	if (pmem->pgmap.flags & PGMAP_PROTECTION)
++		dax_dev = alloc_dax(pmem, &pmem_protected_dax_ops);
++	else
++		dax_dev = alloc_dax(pmem, &pmem_dax_ops);
+ 	if (IS_ERR(dax_dev)) {
+ 		rc = PTR_ERR(dax_dev);
+ 		goto out;
+-- 
+2.31.1
+
