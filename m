@@ -2,68 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:53:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A3CC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240650AbiA0Lxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:53:31 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:32067 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235985AbiA0Lxa (ORCPT
+        id S240875AbiA0L4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:56:02 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4524 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230139AbiA0L4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:53:30 -0500
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JkzQj19W6z1FD0P;
-        Thu, 27 Jan 2022 19:49:33 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+        Thu, 27 Jan 2022 06:56:01 -0500
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JkzYf13V1z6H8Ws;
+        Thu, 27 Jan 2022 19:55:34 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 27 Jan 2022 19:53:28 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
+ 15.1.2308.21; Thu, 27 Jan 2022 12:55:58 +0100
+Received: from [10.47.26.192] (10.47.26.192) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 27 Jan
- 2022 19:53:28 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>
-CC:     <p.zabel@pengutronix.de>, <broonie@kernel.org>,
-        <lhjeff911@gmail.com>
-Subject: [PATCH -next] spi: Fix missing unlock on error in sp7021_spi_master_transfer_one()
-Date:   Thu, 27 Jan 2022 19:58:15 +0800
-Message-ID: <20220127115815.3148950-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+ 2022 11:55:57 +0000
+Subject: Re: [PATCH 01/16] scsi: libsas: Use enum for response frame DATAPRES
+ field
+To:     "chenxiang (M)" <chenxiang66@hisilicon.com>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <artur.paszkiewicz@intel.com>,
+        <jinpu.wang@cloud.ionos.com>, <Ajish.Koshy@microchip.com>
+CC:     <yanaijie@huawei.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <linuxarm@huawei.com>, <liuqi115@huawei.com>,
+        <Viswas.G@microchip.com>, <damien.lemoal@opensource.wdc.com>
+References: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
+ <1643110372-85470-2-git-send-email-john.garry@huawei.com>
+ <4a2986a4-8293-2a25-8ee1-109ff8aa0bc3@hisilicon.com>
+From:   John Garry <john.garry@huawei.com>
+Message-ID: <63938cd5-a739-9ebb-cd3c-1b7f8ff81af3@huawei.com>
+Date:   Thu, 27 Jan 2022 11:55:23 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500017.china.huawei.com (7.185.36.243)
+In-Reply-To: <4a2986a4-8293-2a25-8ee1-109ff8aa0bc3@hisilicon.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.47.26.192]
+X-ClientProxiedBy: lhreml713-chm.china.huawei.com (10.201.108.64) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing unlock before return from sp7021_spi_master_transfer_one()
-in the error handling case.
+On 27/01/2022 11:31, chenxiang (M) wrote:
+>> +
+> 
+> I find that iu->datapres is also used in other drivers with 0/1/2, and 
+> maybe it is worth to replace all of them with those enum.
+> 
+>    2    290 
+> /home/chenxiang/kernel_next/kernel-dev/drivers/scsi/aic94xx/aic94xx_tmf.c <<<unknown>>> 
+> 
+>               if (ru->datapres == 1)
+> 5   1055 
+> /home/chenxiang/kernel_next/kernel-dev/drivers/scsi/isci/request.c 
+> <<<unknown>>>
+>               if (datapres == 1 || datapres == 2) {
+>     6   1740 
+> /home/chenxiang/kernel_next/kernel-dev/drivers/scsi/isci/request.c 
+> <<<unknown>>>
+>               if (resp_iu->datapres == 0x01 ||
+>     7   1741 
+> /home/chenxiang/kernel_next/kernel-dev/drivers/scsi/isci/request.c 
+> <<<unknown>>>
+>                   resp_iu->datapres == 0x02) {
+>   17   1641 
+> /home/chenxiang/kernel_next/kernel-dev/drivers/scsi/mvsas/mv_sas.c 
+> <<<unknown>>>
+>               iu->datapres = 2;
+> 
+>>   /* fill task_status_struct based o
 
-Fixes: f62ca4e2a863 ("spi: Add spi driver for Sunplus SP7021")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/spi/spi-sunplus-sp7021.c | 1 +
- 1 file changed, 1 insertion(+)
+OK, I can move that enum to libsas.h and use in those drivers.
 
-diff --git a/drivers/spi/spi-sunplus-sp7021.c b/drivers/spi/spi-sunplus-sp7021.c
-index 627b9c3024e9..cbbb1664017e 100644
---- a/drivers/spi/spi-sunplus-sp7021.c
-+++ b/drivers/spi/spi-sunplus-sp7021.c
-@@ -351,6 +351,7 @@ static int sp7021_spi_master_transfer_one(struct spi_controller *ctlr, struct sp
- 
- 		if (!wait_for_completion_interruptible_timeout(&pspim->isr_done, timeout)) {
- 			dev_err(&spi->dev, "wait_for_completion err\n");
-+			mutex_unlock(&pspim->buf_lock);
- 			return -ETIMEDOUT;
- 		}
- 
--- 
-2.25.1
+But I will also check that they are not duplicating code already in libsas.h
 
+Thanks,
+John
