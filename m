@@ -2,97 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 949A5C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D847BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241136AbiA0MXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:23:06 -0500
-Received: from mo-csw1515.securemx.jp ([210.130.202.154]:33302 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231201AbiA0MXE (ORCPT
+        id S241154AbiA0MXJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:23:09 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:51384 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241120AbiA0MXF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:23:04 -0500
-Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 20RCMcX0031508; Thu, 27 Jan 2022 21:22:38 +0900
-X-Iguazu-Qid: 34tKV35MdxK8a3pfYA
-X-Iguazu-QSIG: v=2; s=0; t=1643286157; q=34tKV35MdxK8a3pfYA; m=+h4MiUkJTIU1g/JRnWIqS9O3kEafgLfrraUtYVNfhc8=
-Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
-        by relay.securemx.jp (mx-mr1513) id 20RCMaJT006582
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 27 Jan 2022 21:22:36 +0900
-X-SA-MID: 31148933
-From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        nobuhiro1.iwamatsu@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp
-Subject: [PATCH 1/1] net: stmmac: dwmac-visconti: No change to ETHER_CLOCK_SEL for unexpected speed request.
-Date:   Thu, 27 Jan 2022 21:17:14 +0900
-X-TSB-HOP: ON
-X-TSB-HOP2: ON
-Message-Id: <20220127121714.22915-2-yuji2.ishikawa@toshiba.co.jp>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220127121714.22915-1-yuji2.ishikawa@toshiba.co.jp>
-References: <20220127121714.22915-1-yuji2.ishikawa@toshiba.co.jp>
+        Thu, 27 Jan 2022 07:23:05 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20RCMo3D041382;
+        Thu, 27 Jan 2022 06:22:50 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1643286170;
+        bh=M+t4TNyz45XBmCPzZgTRKAq1n7WDttb+rCbMTRGsH/I=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=XkAxfKj3fnwD4EDaZNL+Y4uKWtT/HgS2eVzm0zuoagMIDkEfBCKAuWJcYu72BuQZC
+         5nCP4svvbM93kbU1H+LPKtmjMGEtqzlbWSvVqzIyDu2u2nSCktY4kN8jKLGfBB4OxK
+         /pSfuhGnDBz1oSxbY4GWL2MeOz8BFP47vTd92Ta4=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20RCMoaG037595
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 27 Jan 2022 06:22:50 -0600
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 27
+ Jan 2022 06:22:50 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 27 Jan 2022 06:22:50 -0600
+Received: from [172.24.145.136] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20RCMlME047186;
+        Thu, 27 Jan 2022 06:22:48 -0600
+Subject: Re: [PATCH] phy: cadence: Sierra: Add support for skipping
+ configuration
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+CC:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Swapnil Jakhade <sjakhade@cadence.com>,
+        <linux-phy@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+References: <20220127085700.10333-1-a-govindraju@ti.com>
+ <20220127101938.GD1978@kadam>
+From:   Aswath Govindraju <a-govindraju@ti.com>
+Message-ID: <41985856-48f4-7333-b1d8-35d0f4c55509@ti.com>
+Date:   Thu, 27 Jan 2022 17:52:47 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <20220127101938.GD1978@kadam>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Variable clk_sel_val is not initialized in the default case of the first switch statement.
-In that case, the function should return immediately without any changes to the hardware.
+Hi Dan,
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: b38dd98ff8d0 ("net: stmmac: Add Toshiba Visconti SoCs glue driver")
-Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+On 27/01/22 3:49 pm, Dan Carpenter wrote:
+> On Thu, Jan 27, 2022 at 02:26:58PM +0530, Aswath Govindraju wrote:
+>> Skip the phy configuration if the required configurations were done in an
+>> earlier boot stage.
+>>
+> 
+> Why are you doing this?  Could you please put in the commit message if
+> the user will see an improvement from this change.
+> 
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-index dde5b772a..c3f10a92b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-@@ -49,13 +49,15 @@ struct visconti_eth {
- 	void __iomem *reg;
- 	u32 phy_intf_sel;
- 	struct clk *phy_ref_clk;
-+	struct device *dev;
- 	spinlock_t lock; /* lock to protect register update */
- };
- 
- static void visconti_eth_fix_mac_speed(void *priv, unsigned int speed)
- {
- 	struct visconti_eth *dwmac = priv;
--	unsigned int val, clk_sel_val;
-+	struct net_device *netdev = dev_get_drvdata(dwmac->dev);
-+	unsigned int val, clk_sel_val = 0;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&dwmac->lock, flags);
-@@ -85,7 +87,9 @@ static void visconti_eth_fix_mac_speed(void *priv, unsigned int speed)
- 		break;
- 	default:
- 		/* No bit control */
--		break;
-+		netdev_err(netdev, "Unsupported speed request (%d)", speed);
-+		spin_unlock_irqrestore(&dwmac->lock, flags);
-+		return;
- 	}
- 
- 	writel(val, dwmac->reg + MAC_CTRL_REG);
-@@ -229,6 +233,7 @@ static int visconti_eth_dwmac_probe(struct platform_device *pdev)
- 
- 	spin_lock_init(&dwmac->lock);
- 	dwmac->reg = stmmac_res.addr;
-+	dwmac->dev = &pdev->dev;
- 	plat_dat->bsp_priv = dwmac;
- 	plat_dat->fix_mac_speed = visconti_eth_fix_mac_speed;
- 
--- 
-2.17.1
+In some cases, the SerDes configuration can be done in the bootloaders
+itself and in these the reconfiguration can be skipped in kernel. For
+example 2 different cores can be using the SerDes, in this case the
+bootloaders configure the SerDes, so that the cores can later on use the
+lanes directly without configuring the lanes again.
 
+I will include this in the commit message of the respin.
+
+>> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+>> ---
+> 
+> [ snip ]
+> 
+>> @@ -1382,16 +1401,24 @@ static int cdns_sierra_phy_probe(struct platform_device *pdev)
+>>  	if (ret)
+>>  		return ret;
+>>  
+>> -	ret = cdns_sierra_phy_get_resets(sp, dev);
+>> -	if (ret)
+>> -		goto unregister_clk;
+>> -
+>>  	ret = cdns_sierra_phy_enable_clocks(sp);
+>>  	if (ret)
+>>  		goto unregister_clk;
+>>  
+>> -	/* Enable APB */
+>> -	reset_control_deassert(sp->apb_rst);
+>> +	regmap_field_read(sp->pma_cmn_ready, &sp->already_configured);
+>> +
+>> +	if (!(sp->already_configured)) {
+> 
+> Delete extra parens.
+> 
+>> +		ret = cdns_sierra_phy_clk(sp);
+>> +		if (ret)
+>> +			goto unregister_clk;
+> 
+> The goto should release the most recent successful allocation which is
+> cdns_sierra_phy_enable_clocks().  So this should be goto clk_disable.
+> Except that will also call reset_control_assert() which is wrong...  The
+> rules are generally that error handling should be in the reverse order
+> from how we allocated it.  If allocation is optional the cleanup should
+> be optional.  The allocation and unwind code should mirror each other.
+> 
+>> +
+>> +		ret = cdns_sierra_phy_get_resets(sp, dev);
+>> +		if (ret)
+>> +			goto unregister_clk;
+> 
+> goto clk_disable;
+> 
+>> +
+>> +		/* Enable APB */
+>> +		reset_control_deassert(sp->apb_rst);
+> 
+> Since this is now optional it should be optional in the cleanup.
+> 
+>> +	}
+>>  
+> 
+> Since the order of allocations has changed, the other gotos need to be
+> updated to free the most recent allocation as well.  Then the error
+> handling looks like this:
+> 
+> 	return 0;
+> 
+> put_control:
+> 	while (--node >= 0)
+> 		reset_control_put(sp->phys[node].lnk_rst);
+> ctrl_assert:
+> 	if (!sp->already_configured)
+> 		reset_control_assert(sp->apb_rst);
+> clk_disable:
+> 	cdns_sierra_phy_disable_clocks(sp);
+> unregister_clk:
+> 	cdns_sierra_clk_unregister(sp);
+> 	return ret;
+> 
+> 
+>>  	/* Check that PHY is present */
+>>  	regmap_field_read(sp->macro_id_type, &id_value);
+>> @@ -1433,8 +1460,10 @@ static int cdns_sierra_phy_probe(struct platform_device *pdev)
+>>  
+>>  		sp->num_lanes += sp->phys[node].num_lanes;
+>>  
+>> -		gphy = devm_phy_create(dev, child, &ops);
+>> -
+>> +		if (!(sp->already_configured))
+> 
+> Delete parens.
+> 
+>> +			gphy = devm_phy_create(dev, child, &ops);
+>> +		else
+>> +			gphy = devm_phy_create(dev, child, &noop_ops);
+>>  		if (IS_ERR(gphy)) {
+>>  			ret = PTR_ERR(gphy);
+>>  			of_node_put(child);
+>> @@ -1455,7 +1484,7 @@ static int cdns_sierra_phy_probe(struct platform_device *pdev)
+>>  	}
+>>  
+>>  	/* If more than one subnode, configure the PHY as multilink */
+>> -	if (!sp->autoconf && sp->nsubnodes > 1) {
+>> +	if (!(sp->already_configured && sp->autoconf) && sp->nsubnodes > 1) {
+> 
+> It's normally easier to understand conditions when you push the ! as
+> far in as possible:
+> 
+> 	if ((!sp->already_configured || !sp->autoconf) &&
+> 	    sp->nsubnodes > 1) {
+> 
+> Is this condition right?  Shouldn't it be:
+> 
+> 	if (!sp->already_configured && !sp->autoconf && sp->nsubnodes > 1) {
+> 
+> The ->already_configured is set/stored in firmware so I don't know when
+> that happens.  Please, add that information to the commit message when
+> you resend.
+> 
+
+Sorry, my logic was wrong. I will correct this in the respin.
+
+
+Thank you for the review comments
+
+Regards,
+Aswath
+
+> regards,
+> dan carpenter
+> 
 
