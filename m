@@ -2,41 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 629BFC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB8B8C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240605AbiA0LdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:33:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240482AbiA0LdT (ORCPT
+        id S240467AbiA0LdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:33:17 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:35616 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240422AbiA0LdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:33:19 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6A2C061749;
-        Thu, 27 Jan 2022 03:33:19 -0800 (PST)
+        Thu, 27 Jan 2022 06:33:13 -0500
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643283197;
+        s=2020; t=1643283192;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZnqBSA0fX+jQu5NWHLqll8brJ7sQU9NzIdODqyqj1bE=;
-        b=Q+dMM7Q2U8ZnFsJmtKBKMyTFK/NwRUspp1jHd025ymaNdAH5HG9m0qiDDdFo+8SsD1OOSq
-        XhdLxpNsvdbW3GHcLOPc9t7tE2/yeZ1SAyZyAkZL+bCN7Eq4cuaHr7Ns4HSm8F2SYw6BMV
-        YyOss4QzJNl8H6ssjX9r65ps2LL8mLpE9DFH17Tk8InkYZ05Tp/Vsres/zQ6VXQN75xqSo
-        +uBsTPjrrVLXC9cAVrMcId5bJ9xPB6pcor8DdgeKkLo8tnIds7qf5yp6MhfUA+VGr9td0R
-        OuHLpeSt61TkUDdzwZiKsAf+o7YQ2uaCnLw78ftXIZrhfEpcRRi8vkfeGsz+jQ==
+         content-transfer-encoding:content-transfer-encoding;
+        bh=mYuhfjkgxLhE5J8QB5lsf+7ptUPDT96pRbbQPehAdC8=;
+        b=XZCFerNUAmzCKjtqqGZwMhE9HSLl1QSDm2Q8IIOFsTVkH0Ajuh7tbVE3b450WaT3A5txzB
+        h+M8uUgiQFmnLlpOlJR8+PZ6naF2+gpYPSawH9bTTZb6jMnXy8q7msFSx34FUYYiPT+Z8o
+        kg0PCUg5FDRvNQn/tNgZYUtv5fmgkeUg+W2ouBsbS3Uyz+6iilSrRrSf3ZaPp5brxJ0tWg
+        8rU+bFShHVDZmV4DlAxV/xw/Ub2+a9arOZc4gCByObSBEJS2rUqzLr5/AGk0jA7oonhXdJ
+        SiGhhT4K75i/WNxqqMQc2k/ucIbPqYMekysfWa6QeXXYxFppvAvz9TtPOj48Ng==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643283197;
+        s=2020e; t=1643283192;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZnqBSA0fX+jQu5NWHLqll8brJ7sQU9NzIdODqyqj1bE=;
-        b=HfV/uD24kkWJpBncedkJYbJ9LHCd+gIicOaa3Ov9P9oJotKouxwL0LxvVjE4w8l7PdLzLT
-        s7HbM7nauDjMhFDw==
+         content-transfer-encoding:content-transfer-encoding;
+        bh=mYuhfjkgxLhE5J8QB5lsf+7ptUPDT96pRbbQPehAdC8=;
+        b=GhwP9tvTaIPi+tfKsIwn4x++BLWbtaW9ubbbR0b2mwK09vTxnXqK716l0qaHvLBem+lW0L
+        odIz4rEwqEU8I/Bw==
 To:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
         linux-usb@vger.kernel.org, netdev@vger.kernel.org
@@ -50,45 +45,26 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Rui Miguel Silva <rmfrfs@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 7/7] staging: greybus: gpio: Use generic_handle_irq_safe().
-Date:   Thu, 27 Jan 2022 12:33:03 +0100
-Message-Id: <20220127113303.3012207-8-bigeasy@linutronix.de>
-In-Reply-To: <20220127113303.3012207-1-bigeasy@linutronix.de>
-References: <20220127113303.3012207-1-bigeasy@linutronix.de>
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: [PATCH 0/7] Provide and use generic_handle_irq_safe() where appropriate.
+Date:   Thu, 27 Jan 2022 12:32:56 +0100
+Message-Id: <20220127113303.3012207-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of manually disabling interrupts before invoking use
-generic_handle_irq() which can be invoked with enabled and disabled
-interrupts.
+generic_handle_irq() must be used from primary IRQ-handler (chain
+handler/ interrupt controller entry). It is low level code and the
+function expects that interrupts are disabled at entry point.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/staging/greybus/gpio.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+This isn't the case for invocations from tasklets, workqueues or the
+primary interrupt handler on PREEMPT_RT. Once this gets noticed a
+"local_irq_disable|safe()" is added. To avoid further confusion this
+series adds generic_handle_irq_safe() which can be used from any context
+and adds a few user.
 
-diff --git a/drivers/staging/greybus/gpio.c b/drivers/staging/greybus/gpio.c
-index 7e6347fe93f99..8a7cf1d0e9688 100644
---- a/drivers/staging/greybus/gpio.c
-+++ b/drivers/staging/greybus/gpio.c
-@@ -391,10 +391,7 @@ static int gb_gpio_request_handler(struct gb_operation=
- *op)
- 		return -EINVAL;
- 	}
-=20
--	local_irq_disable();
--	ret =3D generic_handle_irq(irq);
--	local_irq_enable();
--
-+	ret =3D generic_handle_irq_safe(irq);
- 	if (ret)
- 		dev_err(dev, "failed to invoke irq handler\n");
-=20
---=20
-2.34.1
+Sebastian
+
 
