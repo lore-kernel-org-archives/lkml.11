@@ -2,66 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7050AC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BE4C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242115AbiA0ODM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 09:03:12 -0500
-Received: from mail-oi1-f169.google.com ([209.85.167.169]:42686 "EHLO
-        mail-oi1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234049AbiA0ODI (ORCPT
+        id S242147AbiA0ODN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 09:03:13 -0500
+Received: from mail-ot1-f46.google.com ([209.85.210.46]:43989 "EHLO
+        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242061AbiA0ODK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 09:03:08 -0500
-Received: by mail-oi1-f169.google.com with SMTP id v67so5985088oie.9;
-        Thu, 27 Jan 2022 06:03:08 -0800 (PST)
+        Thu, 27 Jan 2022 09:03:10 -0500
+Received: by mail-ot1-f46.google.com with SMTP id j38-20020a9d1926000000b0059fa6de6c71so2611800ota.10;
+        Thu, 27 Jan 2022 06:03:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=5tJ7fem3em4tFzd0KzWRxEgHSNls1XyM25Knzpl5oYI=;
-        b=fGIjpu4Bf89RCdp1N/ZGBXqMuZEjZzzUl/XJ5n76w3G+ZRCxcDqdud1snQu8htR2BE
-         z8utCkG2Q8QaAYlZBNc7cBLohXx6LnZvDxKVNMyglqcp4NHrr9MDllqLVESTe6yW7kmj
-         puuLuXMAg9inIZ7r7GWA0Z5E90J//D/sC/pbC2OwEpl3ThcPekKGsVPY7KQg0Lx0D79N
-         XPDB12/Qq3HOHXnIsy/KRrtOQx7o3IsjiG52sUS/+c3M/+K3iLE63fxYc7XYrnTh137V
-         v7YSECn1Qiy06fbKtW2PzEz8iM2IeMnsuRKF7BdNE1AAsUq3x3YatqpKh+p4q2ZjHdM/
-         Whbg==
-X-Gm-Message-State: AOAM53109szCJkWlmNNn3KAM+cVQY+pTrQAxebVn9BG1wyXhlBOfs68+
-        MAI9iY8Dw7um+eRFAJWEIQ==
-X-Google-Smtp-Source: ABdhPJzAYKYVqVv4q47AEw3MKa8RQm9DLHzNhgd8sifQ+jDvwjNarIbwspmijsWI1Nzg/NOVZ687XQ==
-X-Received: by 2002:a05:6808:f0a:: with SMTP id m10mr2297639oiw.65.1643292187754;
-        Thu, 27 Jan 2022 06:03:07 -0800 (PST)
+        bh=nGqKAVozOn7icaKYITMo1ImX9DZEs2FfFmM8RWbY00w=;
+        b=DmFPOiadNZ1ER9qAucpN+S7LczrQRUUPZ6V5Mco21VUPcOmkgUstcNu65aH8eWWaeO
+         PSC35uc7sBqIOk9yGpXWOK3Yq31YRoIKNv0pkHPFhJyksghS/vXK+QckMg2juwDa6wvc
+         5Fd+Mkf3SI5G6BloWtxWsO5cGFr1eIfE6s5eEgFeLJzQ5okD8wtjqM+EwbIgEp1U/h/E
+         +YGEVS4cokJCYse5iQlm1Z1ppSnwNDWStlgrV1+etvfOC3s7iGMyOzyNJ0vqpjl9WDo/
+         NlsRA4tQrk6pipa0RGtLJtXJHbeGh9vQ36ksNIcN1g/3UqJb03qFqq6q64EFZ0+2ZO62
+         KC/Q==
+X-Gm-Message-State: AOAM533MU7hQZsLgYNn9jeIEmhvRfqC0L1so8DWCOTUXjjc8DlPRDRhH
+        yG8jVFTWCyavVKW49JJX31sq3prewg==
+X-Google-Smtp-Source: ABdhPJxzUuTwBszF3Lg08WmG5YnfL6szBIhS8BUAQhafTGghz3Ge7GhLBQkPe6spEuXN3Zzy+6LlbA==
+X-Received: by 2002:a9d:24a1:: with SMTP id z30mr2186536ota.242.1643292190055;
+        Thu, 27 Jan 2022 06:03:10 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id 6sm10591555oig.29.2022.01.27.06.03.05
+        by smtp.gmail.com with ESMTPSA id g34sm4240519ooi.48.2022.01.27.06.03.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 06:03:06 -0800 (PST)
-Received: (nullmailer pid 3149358 invoked by uid 1000);
+        Thu, 27 Jan 2022 06:03:08 -0800 (PST)
+Received: (nullmailer pid 3149361 invoked by uid 1000);
         Thu, 27 Jan 2022 14:03:05 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, robh+dt@kernel.org,
-        linus.walleij@linaro.org, devicetree@vger.kernel.org,
-        ulli.kroll@googlemail.com, netdev@vger.kernel.org
-In-Reply-To: <20220126211128.3663486-1-clabbe@baylibre.com>
-References: <20220126211128.3663486-1-clabbe@baylibre.com>
-Subject: Re: [PATCH] dt-bindings: net: convert net/cortina,gemini-ethernet to yaml
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
+Cc:     linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220127085930.15637-1-chunfeng.yun@mediatek.com>
+References: <20220127085930.15637-1-chunfeng.yun@mediatek.com>
+Subject: Re: [PATCH v3] dt-bindings: nvmem: convert mtk-efuse.txt to YAML schema
 Date:   Thu, 27 Jan 2022 08:03:05 -0600
-Message-Id: <1643292185.221187.3149357.nullmailer@robh.at.kernel.org>
+Message-Id: <1643292185.232142.3149360.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 26 Jan 2022 21:11:28 +0000, Corentin Labbe wrote:
-> Converts net/cortina,gemini-ethernet.txt to yaml
-> This permits to detect some missing properties like interrupts
+On Thu, 27 Jan 2022 16:59:30 +0800, Chunfeng Yun wrote:
+> Convert mtk-efuse.txt to YAML schema mediatek,efuse.yaml
 > 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > ---
->  .../bindings/net/cortina,gemini-ethernet.txt  |  92 ------------
->  .../bindings/net/cortina,gemini-ethernet.yaml | 138 ++++++++++++++++++
->  2 files changed, 138 insertions(+), 92 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
->  create mode 100644 Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
+> v3: add reviewed-by Rob
+> 
+> v2:
+>   1. remove description of subnodes which is covered by nvmem.yaml suggested by Rob
+>   2. change the example which is commoner than mt8173's
+> ---
+>  .../bindings/nvmem/mediatek,efuse.yaml        | 86 +++++++++++++++++++
+>  .../devicetree/bindings/nvmem/mtk-efuse.txt   | 43 ----------
+>  2 files changed, 86 insertions(+), 43 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -70,22 +78,13 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml: patternProperties:^ethernet-port@[0-9]+$:properties:reg: 'oneOf' conditional failed, one must be fixed:
-	[{'description': 'DMA/TOE memory'}, {'description': 'GMAC memory area of the port'}] is too long
-	[{'description': 'DMA/TOE memory'}, {'description': 'GMAC memory area of the port'}] is too short
-	False schema does not allow 2
-	1 was expected
-	hint: "minItems" is only needed if less than the "items" list length
-	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml: ignoring, error in schema: patternProperties: ^ethernet-port@[0-9]+$: properties: reg
-Documentation/devicetree/bindings/net/cortina,gemini-ethernet.example.dt.yaml:0:0: /example-0/ethernet@60000000: failed to match any schema with compatible: ['cortina,gemini-ethernet']
-Documentation/devicetree/bindings/net/cortina,gemini-ethernet.example.dt.yaml:0:0: /example-0/ethernet@60000000/ethernet-port@0: failed to match any schema with compatible: ['cortina,gemini-ethernet-port']
-Documentation/devicetree/bindings/net/cortina,gemini-ethernet.example.dt.yaml:0:0: /example-0/ethernet@60000000/ethernet-port@1: failed to match any schema with compatible: ['cortina,gemini-ethernet-port']
+Documentation/devicetree/bindings/nvmem/mediatek,efuse.example.dts:25.43-28.15: Warning (unique_unit_address_if_enabled): /example-0/efuse@11c10000/usb3-tx-imp@184: duplicate unit-address (also used in node /example-0/efuse@11c10000/usb3-rx-imp@184)
+Documentation/devicetree/bindings/nvmem/mediatek,efuse.example.dts:37.45-40.15: Warning (unique_unit_address_if_enabled): /example-0/efuse@11c10000/usb3-tx-imp@186: duplicate unit-address (also used in node /example-0/efuse@11c10000/usb3-rx-imp@186)
+Documentation/devicetree/bindings/nvmem/mediatek,efuse.example.dts:49.42-52.15: Warning (unique_unit_address_if_enabled): /example-0/efuse@11c10000/usb2-intr-p0@188: duplicate unit-address (also used in node /example-0/efuse@11c10000/usb2-intr-p1@188)
 
 doc reference errors (make refcheckdocs):
-MAINTAINERS: Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
 
-See https://patchwork.ozlabs.org/patch/1584680
+See https://patchwork.ozlabs.org/patch/1584864
 
 This check can fail if there are any dependencies. The base for a patch
 series is generally the most recent rc1.
