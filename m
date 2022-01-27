@@ -2,222 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98503C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 08:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8712C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 08:57:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238081AbiA0I5c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 03:57:32 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:58166 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238063AbiA0I5b (ORCPT
+        id S238079AbiA0I5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 03:57:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238063AbiA0I5e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 03:57:31 -0500
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20R8v6tA067443;
-        Thu, 27 Jan 2022 02:57:06 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1643273826;
-        bh=7UGkZLlsCbU6/7eRk2sQKQKDQzdA+OHIOBNXAlW3FuQ=;
-        h=From:To:CC:Subject:Date;
-        b=E+HN7iuvG7KJHSntdZBahrsZQ4h/eUofRe5g3dwqCFl+B8s+WJjdkAaPXeBJdLUFy
-         S2cgQoz1bA3q5K5wuqrdxpIWapAnrEcRTg5Je9pMlBEeknL7oo9V02DM5czsf2OgfQ
-         Q+SZajr/kC/C/8RxZVh20FEOWrlgm2YqGMw8ygCI=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20R8v6Nv047367
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 27 Jan 2022 02:57:06 -0600
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 27
- Jan 2022 02:57:05 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 27 Jan 2022 02:57:05 -0600
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20R8v2OO014712;
-        Thu, 27 Jan 2022 02:57:03 -0600
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     Aswath Govindraju <a-govindraju@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Swapnil Jakhade <sjakhade@cadence.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        <linux-phy@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] phy: cadence: Sierra: Add support for skipping configuration
-Date:   Thu, 27 Jan 2022 14:26:58 +0530
-Message-ID: <20220127085700.10333-1-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 27 Jan 2022 03:57:34 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E5C7C061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 00:57:33 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id a13so3364973wrh.9
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 00:57:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eOvZPOI7RXFam/ItocxZZVe1bSa9SKQ8eYJgocnt9iw=;
+        b=CjCNS1FGFXhJiRwBqKvDeBDBoQKi7s4iefVlGkgV/JlyDZhcXKwPRHlX1sZFEtGimM
+         sVJOCWip25O6xTsTZd+dcO5gMdbN9GoiNDYcG0PstSeWM+i9FFCsDEZxifJGWcAl4QgB
+         cYPGzqYuizHQaPseEqCSwyDZS0wBj1foMit6V8WN0nShT5gpJKBPxLn3vo0BFdWJbyUJ
+         h1PtYlVnVeBoqglrG8pyVweAGbbGwV6cxB9+h5UKhV87e8MxGS/gzI8FwAVDo7Fctp4X
+         XKkt8/DXjpo4OqvrmvJDN1JWRiU3QUP3p/qwZ355ZgiYKrda/xDQgvr/yOXQSC4a+4SA
+         m3oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eOvZPOI7RXFam/ItocxZZVe1bSa9SKQ8eYJgocnt9iw=;
+        b=HBv6/lIRzgkh/dsuu5Jsin2ZnqOUcfCugBBivQTj6ACU8LFgVUFWI6ar68mm0bgfqv
+         Ds8SiXUbjSvJraXMw8WgiOh6eSxH0Evk8wg9ryqqXLcMnBDcw9sKAEEA8RFkmuHSEB36
+         sRH/jMgm5GrGMLKFn1jBDpGxRwTmKFWfH/vC1scICqOb7WlMcaMrcp8qFVkn7ToIqcCn
+         pWCdTnACq0c3jGuOvGdk3XfgTrlp++7sK1I9PPiwbx99kt0zri4eRsN2nSfVt6Dktcm9
+         bd8EkCI3OslzA4BwBWhFlfqMW8DF1STIo5utelsVEguWsjeLlA5m/qpuSFkW6Rg9bXzD
+         I9yA==
+X-Gm-Message-State: AOAM531iN4SOs8oxsO2FyM+11Ub4+3thv5G8NKFcqNKodOtmtv1N3H1t
+        6wjVkISaDm3K484NcewAWtDyNF9tG4VReA==
+X-Google-Smtp-Source: ABdhPJwZvxc5A1fW5LuddhyJb0yw8xCGeU8LyE6qh01sDxOX/VKiruuawOrJ0+uN1TuPEj4AdS9LDA==
+X-Received: by 2002:adf:e6c9:: with SMTP id y9mr2200999wrm.389.1643273851356;
+        Thu, 27 Jan 2022 00:57:31 -0800 (PST)
+Received: from equinox (2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0::2])
+        by smtp.gmail.com with ESMTPSA id a6sm1554842wrx.101.2022.01.27.00.57.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 00:57:30 -0800 (PST)
+Date:   Thu, 27 Jan 2022 08:57:29 +0000
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     Michael Straube <straube.linux@gmail.com>
+Cc:     gregkh@linuxfoundation.org, dan.carpenter@oracle.com,
+        Larry.Finger@lwfinger.net, martin@kaiser.cx,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        paskripkin@gmail.com
+Subject: Re: [PATCH 10/10] staging: r8188eu: remove GlobalDebugLevel flag
+Message-ID: <YfJeebt2/4E6KWhr@equinox>
+References: <20220124225032.860-1-phil@philpotter.co.uk>
+ <20220124225950.784-1-phil@philpotter.co.uk>
+ <20220124225950.784-3-phil@philpotter.co.uk>
+ <e63e7a5c-68a8-8160-bc84-b5ecbca6e5cc@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e63e7a5c-68a8-8160-bc84-b5ecbca6e5cc@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Skip the phy configuration if the required configurations were done in an
-earlier boot stage.
+On Wed, Jan 26, 2022 at 11:33:46AM +0100, Michael Straube wrote:
+> On 1/24/22 23:59, Phillip Potter wrote:
+> > Remove hal/odm_debug.c, to get rid of the GlobalDebugLevel flag,
+> > and remove the two other lines that reference GlobalDebugLevel, as
+> > the last remaining user (DBG_88E) is now gone. Also modify Makefile
+> > to no longer build hal/odm_debug.c.
+> > 
+> > Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+> > ---
+> >   drivers/staging/r8188eu/Makefile            | 1 -
+> >   drivers/staging/r8188eu/hal/odm_debug.c     | 6 ------
+> >   drivers/staging/r8188eu/include/rtw_debug.h | 2 --
+> >   drivers/staging/r8188eu/os_dep/os_intfs.c   | 1 -
+> >   4 files changed, 10 deletions(-)
+> >   delete mode 100644 drivers/staging/r8188eu/hal/odm_debug.c
+> > 
+> > diff --git a/drivers/staging/r8188eu/Makefile b/drivers/staging/r8188eu/Makefile
+> > index a7a486cc16dd..ecd6fe5bd94c 100644
+> > --- a/drivers/staging/r8188eu/Makefile
+> > +++ b/drivers/staging/r8188eu/Makefile
+> > @@ -10,7 +10,6 @@ r8188eu-y = \
+> >   		hal/hal_intf.o \
+> >   		hal/hal_com.o \
+> >   		hal/odm.o \
+> > -		hal/odm_debug.o \
+> >   		hal/odm_HWConfig.o \
+> >   		hal/odm_RegConfig8188E.o \
+> >   		hal/odm_RTL8188E.o \
+> > diff --git a/drivers/staging/r8188eu/hal/odm_debug.c b/drivers/staging/r8188eu/hal/odm_debug.c
+> > deleted file mode 100644
+> > index 7a134229fe39..000000000000
+> > --- a/drivers/staging/r8188eu/hal/odm_debug.c
+> > +++ /dev/null
+> > @@ -1,6 +0,0 @@
+> > -// SPDX-License-Identifier: GPL-2.0
+> > -/* Copyright(c) 2007 - 2011 Realtek Corporation. */
+> > -
+> > -#include "../include/rtw_debug.h"
+> > -
+> > -u32 GlobalDebugLevel;
+> > diff --git a/drivers/staging/r8188eu/include/rtw_debug.h b/drivers/staging/r8188eu/include/rtw_debug.h
+> > index 959fb6bd25ca..01a7d987d6cc 100644
+> > --- a/drivers/staging/r8188eu/include/rtw_debug.h
+> > +++ b/drivers/staging/r8188eu/include/rtw_debug.h
+> > @@ -52,6 +52,4 @@
+> >   #define DRIVER_PREFIX	"R8188EU: "
+> > -extern u32 GlobalDebugLevel;
+> > -
+> >   #endif	/* __RTW_DEBUG_H__ */
+> > diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
+> > index 17249b4fb7ad..8589de487289 100644
+> > --- a/drivers/staging/r8188eu/os_dep/os_intfs.c
+> > +++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
+> > @@ -155,7 +155,6 @@ static uint loadparam(struct adapter *padapter)
+> >   {
+> >   	struct registry_priv  *registry_par = &padapter->registrypriv;
+> > -	GlobalDebugLevel = rtw_debug;
+> >   	registry_par->chip_version = (u8)rtw_chip_version;
+> >   	registry_par->rfintfs = (u8)rtw_rfintfs;
+> >   	registry_par->lbkmode = (u8)rtw_lbkmode;
+> 
+> Hi Phillip,
+> 
+> so rtw_debug is unused now. Should we remove the 'debug' module
+> parameter and rtw_debug as well?
+> 
+> Regards,
+> Michael
 
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
----
- drivers/phy/cadence/phy-cadence-sierra.c | 73 +++++++++++++++++-------
- 1 file changed, 51 insertions(+), 22 deletions(-)
+Good point, might as well. Will add this into v2. Thanks for the
+suggestion.
 
-diff --git a/drivers/phy/cadence/phy-cadence-sierra.c b/drivers/phy/cadence/phy-cadence-sierra.c
-index e265647e29a2..d4197524ee8d 100644
---- a/drivers/phy/cadence/phy-cadence-sierra.c
-+++ b/drivers/phy/cadence/phy-cadence-sierra.c
-@@ -370,6 +370,7 @@ struct cdns_sierra_phy {
- 	int nsubnodes;
- 	u32 num_lanes;
- 	bool autoconf;
-+	int already_configured;
- 	struct clk_onecell_data clk_data;
- 	struct clk *output_clks[CDNS_SIERRA_OUTPUT_CLOCKS];
- };
-@@ -517,7 +518,7 @@ static int cdns_sierra_phy_init(struct phy *gphy)
- 	int i, j;
- 
- 	/* Initialise the PHY registers, unless auto configured */
--	if (phy->autoconf || phy->nsubnodes > 1)
-+	if (phy->autoconf || phy->already_configured || phy->nsubnodes > 1)
- 		return 0;
- 
- 	clk_set_rate(phy->input_clks[CMN_REFCLK_DIG_DIV], 25000000);
-@@ -646,6 +647,18 @@ static const struct phy_ops ops = {
- 	.owner		= THIS_MODULE,
- };
- 
-+static int cdns_sierra_noop_phy_on(struct phy *gphy)
-+{
-+	usleep_range(5000, 10000);
-+
-+	return 0;
-+}
-+
-+static const struct phy_ops noop_ops = {
-+	.power_on	= cdns_sierra_noop_phy_on,
-+	.owner		= THIS_MODULE,
-+};
-+
- static u8 cdns_sierra_pll_mux_get_parent(struct clk_hw *hw)
- {
- 	struct cdns_sierra_pll_mux *mux = to_cdns_sierra_pll_mux(hw);
-@@ -1118,13 +1131,6 @@ static int cdns_sierra_phy_get_clocks(struct cdns_sierra_phy *sp,
- 	struct clk *clk;
- 	int ret;
- 
--	clk = devm_clk_get_optional(dev, "phy_clk");
--	if (IS_ERR(clk)) {
--		dev_err(dev, "failed to get clock phy_clk\n");
--		return PTR_ERR(clk);
--	}
--	sp->input_clks[PHY_CLK] = clk;
--
- 	clk = devm_clk_get_optional(dev, "cmn_refclk_dig_div");
- 	if (IS_ERR(clk)) {
- 		dev_err(dev, "cmn_refclk_dig_div clock not found\n");
-@@ -1160,17 +1166,33 @@ static int cdns_sierra_phy_get_clocks(struct cdns_sierra_phy *sp,
- 	return 0;
- }
- 
--static int cdns_sierra_phy_enable_clocks(struct cdns_sierra_phy *sp)
-+static int cdns_sierra_phy_clk(struct cdns_sierra_phy *sp)
- {
-+	struct device *dev = sp->dev;
-+	struct clk *clk;
- 	int ret;
- 
-+	clk = devm_clk_get_optional(dev, "phy_clk");
-+	if (IS_ERR(clk)) {
-+		dev_err(dev, "failed to get clock phy_clk\n");
-+		return PTR_ERR(clk);
-+	}
-+	sp->input_clks[PHY_CLK] = clk;
-+
- 	ret = clk_prepare_enable(sp->input_clks[PHY_CLK]);
- 	if (ret)
- 		return ret;
- 
-+	return 0;
-+}
-+
-+static int cdns_sierra_phy_enable_clocks(struct cdns_sierra_phy *sp)
-+{
-+	int ret;
-+
- 	ret = clk_prepare_enable(sp->output_clks[CDNS_SIERRA_PLL_CMNLC]);
- 	if (ret)
--		goto err_pll_cmnlc;
-+		return ret;
- 
- 	ret = clk_prepare_enable(sp->output_clks[CDNS_SIERRA_PLL_CMNLC1]);
- 	if (ret)
-@@ -1181,9 +1203,6 @@ static int cdns_sierra_phy_enable_clocks(struct cdns_sierra_phy *sp)
- err_pll_cmnlc1:
- 	clk_disable_unprepare(sp->output_clks[CDNS_SIERRA_PLL_CMNLC]);
- 
--err_pll_cmnlc:
--	clk_disable_unprepare(sp->input_clks[PHY_CLK]);
--
- 	return ret;
- }
- 
-@@ -1382,16 +1401,24 @@ static int cdns_sierra_phy_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	ret = cdns_sierra_phy_get_resets(sp, dev);
--	if (ret)
--		goto unregister_clk;
--
- 	ret = cdns_sierra_phy_enable_clocks(sp);
- 	if (ret)
- 		goto unregister_clk;
- 
--	/* Enable APB */
--	reset_control_deassert(sp->apb_rst);
-+	regmap_field_read(sp->pma_cmn_ready, &sp->already_configured);
-+
-+	if (!(sp->already_configured)) {
-+		ret = cdns_sierra_phy_clk(sp);
-+		if (ret)
-+			goto unregister_clk;
-+
-+		ret = cdns_sierra_phy_get_resets(sp, dev);
-+		if (ret)
-+			goto unregister_clk;
-+
-+		/* Enable APB */
-+		reset_control_deassert(sp->apb_rst);
-+	}
- 
- 	/* Check that PHY is present */
- 	regmap_field_read(sp->macro_id_type, &id_value);
-@@ -1433,8 +1460,10 @@ static int cdns_sierra_phy_probe(struct platform_device *pdev)
- 
- 		sp->num_lanes += sp->phys[node].num_lanes;
- 
--		gphy = devm_phy_create(dev, child, &ops);
--
-+		if (!(sp->already_configured))
-+			gphy = devm_phy_create(dev, child, &ops);
-+		else
-+			gphy = devm_phy_create(dev, child, &noop_ops);
- 		if (IS_ERR(gphy)) {
- 			ret = PTR_ERR(gphy);
- 			of_node_put(child);
-@@ -1455,7 +1484,7 @@ static int cdns_sierra_phy_probe(struct platform_device *pdev)
- 	}
- 
- 	/* If more than one subnode, configure the PHY as multilink */
--	if (!sp->autoconf && sp->nsubnodes > 1) {
-+	if (!(sp->already_configured && sp->autoconf) && sp->nsubnodes > 1) {
- 		ret = cdns_sierra_phy_configure_multilink(sp);
- 		if (ret)
- 			goto put_control;
--- 
-2.17.1
-
+Regards,
+Phil
