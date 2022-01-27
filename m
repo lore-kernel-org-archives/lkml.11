@@ -2,98 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5830EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:43:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F6BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240698AbiA0LnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:43:23 -0500
-Received: from foss.arm.com ([217.140.110.172]:56436 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240724AbiA0LnR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:43:17 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 00A7F1FB;
-        Thu, 27 Jan 2022 03:43:17 -0800 (PST)
-Received: from [10.57.39.22] (unknown [10.57.39.22])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E2A303F7D8;
-        Thu, 27 Jan 2022 03:43:14 -0800 (PST)
-Message-ID: <1fa70669-146c-7ec6-cee9-4f59751eb334@arm.com>
-Date:   Thu, 27 Jan 2022 11:42:27 +0000
+        id S240740AbiA0Lo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:44:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232131AbiA0LoZ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 06:44:25 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA248C061714;
+        Thu, 27 Jan 2022 03:44:24 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id w11so4266574wra.4;
+        Thu, 27 Jan 2022 03:44:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=LdvVnzVP+ambH9LK42MFqP+4gobIMIEV2AtnE2m4+4w=;
+        b=AO2Ubp21T4K3UXrE4ox8RrOuzjwwgrlPkeKckx6Grh9RDZ/sTc4sbmYVdr0jjAzpTw
+         QVQQPpq97aK2jW5XFd7bQnzTVqoBJJj6378shYn3d2cksVOP7/4zyAiwlP+kuExwEhDw
+         XZJrGcwnFl9NeV9+LhDnIPEtlKSJuAh2tjefqYKPD21aILv8pPHehPvOIQyGlgjdFsPj
+         oMzJiea1Io27zOiupzkuaNpJcLwNMgIk7MJ6504aaHlBk3VjA7u9dBrKb0HD/gWe/+pQ
+         RvbtkX3j16vPwnewh6iIwT26ia4TZVLMcK3m4cq6+CdyMByCBzP2UMRi0DkN5ke2sf1n
+         11WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LdvVnzVP+ambH9LK42MFqP+4gobIMIEV2AtnE2m4+4w=;
+        b=k6gc6e3VY79WHjK+Qv87cR9HK8/28tg9F8Y56ph87pk//OmlTdH+kCk6xX4pcs5nNm
+         5fUJ2Mhpe9TC/Q/iB4/Y2s5wZBZqG7Ky/JzTrCV9PgDDJNy0M0oE2po8c4Qglh+ACgGB
+         wjMNZPHCeuJPtYsOneuC06EtIkWUi3jsO+V3W/mrZbPsdDSxvGDujCxZlqlm7gUkcd4E
+         GZXMRWA2685u6fAWc/x5SpAisR+h9lBCRsH06l0zAdJHugCOMRjwMl2+Vja4/DIBlrpj
+         H7TQTSd25gXH8VXXL3T1Gw9ounFWEgWNuj8veg5h2Byau3WuWFFvLDetrIoVEoZzjwxT
+         JfBA==
+X-Gm-Message-State: AOAM533NlqfET6XZ5IeUy7TFl13VWmtqKDeRFmQWMq+raHE1C2H1C8jy
+        3t+pjrGaRRnLka7i4ttCIAM=
+X-Google-Smtp-Source: ABdhPJx/KQtwKWNuH/SNqZ6CP2qgfsi4lZk1rb4KUhwVnUiM+JCFI4ynUa/ZWR4g7iYh+f08Ls5ePQ==
+X-Received: by 2002:adf:a410:: with SMTP id d16mr2795659wra.517.1643283863392;
+        Thu, 27 Jan 2022 03:44:23 -0800 (PST)
+Received: from [192.168.178.21] (p57b0bff8.dip0.t-ipconnect.de. [87.176.191.248])
+        by smtp.gmail.com with ESMTPSA id a6sm1918382wrx.101.2022.01.27.03.44.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 03:44:22 -0800 (PST)
+Message-ID: <50cf1f2f-3fb2-8abb-7497-dafcd97935f3@gmail.com>
+Date:   Thu, 27 Jan 2022 12:44:21 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v2 0/5] topdown with metrics
+Subject: Re: [Linaro-mm-sig] Re: [Intel-gfx] [PATCH 02/19] dma-buf-map: Add
+ helper to initialize second map
 Content-Language: en-US
-To:     John Garry <john.garry@huawei.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, acme@kernel.org,
-        irogers@google.com, ak@linux.intel.com
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>
-References: <4fefb1bc-49b2-bc5b-23cd-cd8fabe8c588@huawei.com>
- <20220111150749.13365-1-andrew.kilroy@arm.com>
- <7cd7bd11-4900-81c4-de84-6e5fc63ec87c@huawei.com>
-From:   Andrew Kilroy <andrew.kilroy@arm.com>
-In-Reply-To: <7cd7bd11-4900-81c4-de84-6e5fc63ec87c@huawei.com>
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linaro-mm-sig@lists.linaro.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org
+References: <20220126203702.1784589-1-lucas.demarchi@intel.com>
+ <20220126203702.1784589-3-lucas.demarchi@intel.com>
+ <f0dbdcc0-13b5-c484-0bf3-a1f8c3e48954@amd.com>
+ <20220127075728.ygwgorhnrwaocdqv@ldmartin-desk2>
+ <3066c6a7-fc73-d34d-d209-a3ff6818dfb6@amd.com>
+ <YfJedaoeJjE3grum@phenom.ffwll.local>
+ <20220127093332.wnkd2qy4tvwg5i5l@ldmartin-desk2>
+ <YfJtLkdkh4yde20f@phenom.ffwll.local>
+ <27aed6b1-b465-6a52-2b0a-d748c9798414@amd.com>
+ <YfJ/DvhxaGGppGV6@phenom.ffwll.local>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+In-Reply-To: <YfJ/DvhxaGGppGV6@phenom.ffwll.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 20/01/2022 09:26, John Garry wrote:
-> On 11/01/2022 15:07, Andrew Kilroy wrote:
->> This patch series adds the ability for the --topdown option to use
->> metrics (defined in json files in the pmu-events directory) to describe
->> how to calculate and determine the output columns for topdown level 1.
+Am 27.01.22 um 12:16 schrieb Daniel Vetter:
+> On Thu, Jan 27, 2022 at 11:21:20AM +0100, Christian König wrote:
+>> Am 27.01.22 um 11:00 schrieb Daniel Vetter:
+>>> On Thu, Jan 27, 2022 at 01:33:32AM -0800, Lucas De Marchi wrote:
+>>>> On Thu, Jan 27, 2022 at 09:57:25AM +0100, Daniel Vetter wrote:
+>>>>> On Thu, Jan 27, 2022 at 09:02:54AM +0100, Christian König wrote:
+>>>>>> Am 27.01.22 um 08:57 schrieb Lucas De Marchi:
+>>>>>>> On Thu, Jan 27, 2022 at 08:27:11AM +0100, Christian König wrote:
+>>>>>>>> Am 26.01.22 um 21:36 schrieb Lucas De Marchi:
+>>>>>>>>> When dma_buf_map struct is passed around, it's useful to be able to
+>>>>>>>>> initialize a second map that takes care of reading/writing to an offset
+>>>>>>>>> of the original map.
+>>>>>>>>>
+>>>>>>>>> Add a helper that copies the struct and add the offset to the proper
+>>>>>>>>> address.
+>>>>>>>> Well what you propose here can lead to all kind of problems and is
+>>>>>>>> rather bad design as far as I can see.
+>>>>>>>>
+>>>>>>>> The struct dma_buf_map is only to be filled in by the exporter and
+>>>>>>>> should not be modified in this way by the importer.
+>>>>>>> humn... not sure if I was  clear. There is no importer and exporter here.
+>>>>>> Yeah, and exactly that's what I'm pointing out as problem here.
+>>>>>>
+>>>>>> You are using the inter driver framework for something internal to the
+>>>>>> driver. That is an absolutely clear NAK!
+>>>>>>
+>>>>>> We could discuss that, but you guys are just sending around patches to do
+>>>>>> this without any consensus that this is a good idea.
+>>>>> Uh I suggested this, also we're already using dma_buf_map all over the
+>>>>> place as a convenient abstraction. So imo that's all fine, it should allow
+>>>>> drivers to simplify some code where on igpu it's in normal kernel memory
+>>>>> and on dgpu it's behind some pci bar.
+>>>>>
+>>>>> Maybe we should have a better name for that struct (and maybe also a
+>>>>> better place), but way back when we discussed that bikeshed I didn't come
+>>>>> up with anything better really.
+>>>> I suggest iosys_map since it abstracts access to IO and system memory.
+>>>>
+>>>>>>> There is a role delegation on filling out and reading a buffer when
+>>>>>>> that buffer represents a struct layout.
+>>>>>>>
+>>>>>>> struct bla {
+>>>>>>>       int a;
+>>>>>>>       int b;
+>>>>>>>       int c;
+>>>>>>>       struct foo foo;
+>>>>>>>       struct bar bar;
+>>>>>>>       int d;
+>>>>>>> }
+>>>>>>>
+>>>>>>>
+>>>>>>> This implementation allows you to have:
+>>>>>>>
+>>>>>>>       fill_foo(struct dma_buf_map *bla_map) { ... }
+>>>>>>>       fill_bar(struct dma_buf_map *bla_map) { ... }
+>>>>>>>
+>>>>>>> and the first thing these do is to make sure the map it's pointing to
+>>>>>>> is relative to the struct it's supposed to write/read. Otherwise you're
+>>>>>>> suggesting everything to be relative to struct bla, or to do the same
+>>>>>>> I'm doing it, but IMO more prone to error:
+>>>>>>>
+>>>>>>>       struct dma_buf_map map = *bla_map;
+>>>>>>>       dma_buf_map_incr(map, offsetof(...));
+>>>>> Wrt the issue at hand I think the above is perfectly fine code. The idea
+>>>>> with dma_buf_map is really that it's just a special pointer, so writing
+>>>>> the code exactly as pointer code feels best. Unfortunately you cannot make
+>>>>> them typesafe (because of C), so the code sometimes looks a bit ugly.
+>>>>> Otherwise we could do stuff like container_of and all that with
+>>>>> typechecking in the macros.
+>>>> I had exactly this code above, but after writting quite a few patches
+>>>> using it, particularly with functions that have to write to 2 maps (see
+>>>> patch 6 for example), it felt much better to have something to
+>>>> initialize correctly from the start
+>>>>
+>>>> 	struct dma_buf_map other_map = *bla_map;
+>>>> 	/* poor Lucas forgetting dma_buf_map_incr(map, offsetof(...)); */
+>>>>
+>>>> is error prone and hard to debug since you will be reading/writting
+>>>> from/to another location rather than exploding
+>>>>
+>>>> While with the construct below
+>>>>
+>>>> 	other_map;
+>>>> 	...
+>>>> 	other_map = INITIALIZER()
+>>>>
+>>>> I can rely on the compiler complaining about uninitialized var. And
+>>>> in most of the cases I can just have this single line in the beggining of the
+>>>> function when the offset is constant:
+>>>>
+>>>> 	struct dma_buf_map other_map = INITIALIZER(bla_map, offsetof(..));
+>>> Hm yeah that's a good point that this allows us to rely on the compiler to
+>>> check for uninitialized variables.
+>>>
+>>> Maybe include the above (with editing, but keeping the examples) in the
+>>> kerneldoc to explain why/how to use this? With that the concept at least
+>>> has my
+>>>
+>>> Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+>>>
+>>> I'll leave it up to you & Christian to find a prettier color choice for
+>>> the naming bikeshed.
+>> There is one major issue remaining with this and that is dma_buf_vunmap():
 >>
->> For this to work, a number of metrics have to be defined for the
->> relevant processor with the MetricGroup name "TopDownL1".  perf will
->> arrange for the events defined in each metric to be collected, and each
->> metric will be displayed in the output, as if
+>> void dma_buf_vunmap(struct dma_buf *dmabuf, struct dma_buf_map *map);
 >>
->>    perf stat -M 'TopDownL1' --metric-only -- exampleapp
+>> Here we expect the original pointer as returned by dma_buf_map(), otherwise
+>> we vunmap() the wrong area!
 >>
->> had been used.
+>> For all TTM based driver this doesn't matter since we keep the vmap base
+>> separately in the BO anyway (IIRC), but we had at least one case where this
+>> made boom last year.
+> Yeah but isn't that the same if it's just a void *?
+>
+> If you pass the wrong pointer to an unmap function and not exactly what
+> you go from the map function, then things go boom. This is like
+> complaining that the following code wont work
+>
+> 	u32 *stuff
+>
+> 	stuff = kmap_local(some_page);
+> 	*stuff++ = 0;
+> 	*stuff = 1;
+> 	kunmap_locak(stuff);
+>
+> It's just ... don't do that :-) Also since we pass dma_buf_map by value
+> and not by pointer anywhere, the risk of this happening is pretty low
+> since you tend to work on a copy. Same with void * pointers really.
+>
+> Now if people start to pass around struct dma_buf_map * as pointers for
+> anything else than out parameters, then we're screwed. But that's like
+> passing around void ** for lolz, which is just wrong (except when it's an
+> out parameter or actually an array of pointers ofc).
+>
+> Or I really don't get your concern and you mean something else?
+
+No that's pretty much it. It's just that we hide the pointer inside a 
+structure and it is absolutely not obvious to a driver dev that you 
+can't do:
+
+dma_buf_vmap(.., &map);
+dma_buf_map_inr(&map, x);
+dma_buf_vunmap(.., &map);
+
+As bare minimum I strongly suggest that we add some WARN_ONs to the 
+framework to check that the pointer given to dma_buf_vunmap() is at 
+least page aligned.
+
+Christian.
+
+> -Daniel
+>
+>
+>> Christian.
 >>
->> Topdown was already implemented where certain kernel events are defined.
->> If these kernel events are defined, the new json metrics behaviour is
->> not used.  The json metrics approach is only used if the kernel events
->> are absent.
->>
->> The last patch in the series disables the json metrics behaviour on x86.
->> This is because of concerns that due to SMT it's not straightforward to
->> express the various formulas as json for certain x86 cpus.  See
-> 
-> I suppose this solution is ok.
-> 
+>>> -Daniel
+>>>
+>>>> Lucas De Marchi
+>>>>
+>>>>> -Daniel
+>>>>>
+>>>>>>> IMO this construct is worse because at a point in time in the function
+>>>>>>> the map was pointing to the wrong thing the function was supposed to
+>>>>>>> read/write.
+>>>>>>>
+>>>>>>> It's also useful when the function has double duty, updating a global
+>>>>>>> part of the struct and a table inside it (see example in patch 6)
+>>>>>>>
+>>>>>>> thanks
+>>>>>>> Lucas De Marchi
+>>>>> -- 
+>>>>> Daniel Vetter
+>>>>> Software Engineer, Intel Corporation
+>>>>> https://nam11.safelinks.protection.outlook.com/?url=http%3A%2F%2Fblog.ffwll.ch%2F&amp;data=04%7C01%7Cchristian.koenig%40amd.com%7C0654a16ea3444271d7c308d9e17bd35d%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637788744226808874%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=Q6soluBglaZLhLszdapaWuUVsqMq5qvJOKiJjO%2B9BTg%3D&amp;reserved=0
 
-Thanks, would you mind giving it a Reviewed-By?
-
-> A concern is that today we only have 1x arm64 platform which actually 
-> supports this in mainline.
-> 
-> Do you have any more which you plan to support?
-> 
-
-The Neoverse cores, mainly.
-
-> I think that it's the frontend bound and fetch_bubble event which 
-> doesn't have a standard arm solution.
-> 
-> Note that I do have a series for perf tool which can read arm cpu pmu 
-> sysfs events folder to find events which are implemented (I don't think 
-> all required events are mandated) and match that against the common arch 
-> events JSON, so that we don't need a JSON definition file for each core 
-> implementation from all implementators - this would improve scalability. 
-> However a concern is that some events - like inst_spec - have imp def 
-> meaning, so may not be good to always use by default for all cores metrics.
-> 
-> Thanks,
-> John
-
-Thanks,
-Andrew
