@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A38C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 03:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A10C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 04:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235893AbiA0Dyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 22:54:43 -0500
-Received: from mga02.intel.com ([134.134.136.20]:16355 "EHLO mga02.intel.com"
+        id S235943AbiA0EEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 23:04:43 -0500
+Received: from mga18.intel.com ([134.134.136.126]:18844 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229481AbiA0Dym (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 22:54:42 -0500
+        id S235900AbiA0EEl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 26 Jan 2022 23:04:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643255682; x=1674791682;
+  t=1643256281; x=1674792281;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=KPw8yO4Xf+nA0vZ+fMeG2WSHNunzuatFdNoyVmmnL4U=;
-  b=IzGXfXy4kb9xX/dQKUXfV2o7bz/UAefMZ0EdU8bi2uZurpmfUGuvP3f9
-   va7DHZ0JzFvkc0dSZy89nZdrWvjrOqEXRzjuUrXS5mBQtEC6EWtKETqaY
-   26ZCxJjtXJmTNxD3f+wTjrcNFzK+hWQGhyS+zOmsbKx7k0XdvBVeUFtyt
-   oi54Gv0IaqWCeD3HzhSzwelYtuSz+fCvx3Yz48Wd4qkJGiPHJefvdTAwC
-   GiQYhFgx3n/UOvwzeYGCc417a3ZefOqOYic/dUJN11Q+oWJg3kTTVqMiL
-   o8j31cwhGQgeji1QxLTdz/CZ9ZD9CYMwKxWMxnhF0hqVCCHc84DjHQ6WG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234115005"
+  bh=M2yEvkVH4mua/nTchbfxC/2s0HwjJow6QTRLFw4uGNY=;
+  b=N25UvpuYNx5cOQ8ExQ/kAXVMOl+o1Df33W+cxN5y8CNXwxP9quyJGa++
+   pvPtF665bgWZ69SaY3YRf5dxdtzZV4wJZFAQvvIjgaV260DqUS+y/NrmV
+   dGYr6nE8WRQF41I71zNNs1zW3Rau2Z3W6FnNAiQdcxWVrhwQF0hY/Znmd
+   p7nZDCySDP1FHnq7x7rGjICq23TmTv1OQNW5alhWLWI+td+OvsMf6DSMI
+   JuaVk7DDoVDKBUv8+G/OyDIyO7HqrO3SVKy/AtiFGqKBjT8uUOML5Ssy3
+   Slz2L3zpB0cFYPIAyk6j+ozaNdn+XG3yQqw5/yTwqfcgQXuDnc407rRn0
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="230315326"
 X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="234115005"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 19:54:41 -0800
+   d="scan'208";a="230315326"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 20:04:41 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="495590087"
+   d="scan'208";a="628543046"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 26 Jan 2022 19:54:39 -0800
+  by orsmga004.jf.intel.com with ESMTP; 26 Jan 2022 20:04:40 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nCvrr-000M4F-7x; Thu, 27 Jan 2022 03:54:39 +0000
-Date:   Thu, 27 Jan 2022 11:54:20 +0800
+        id 1nCw1X-000M4x-Fk; Thu, 27 Jan 2022 04:04:39 +0000
+Date:   Thu, 27 Jan 2022 12:04:37 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Kelly Rossmoyer <krossmo@google.com>
-Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Alistair Delva <adelva@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android11-kiwi-5.4
- 2422/9999] kernel/power/wakeup_reason.c:199:6: sparse: sparse: symbol
- '__log_abort_or_abnormal_wake' was not declared. Should it be static?
-Message-ID: <202201271124.vYu1IFCz-lkp@intel.com>
+To:     Jason Ekstrand <jason@jlekstrand.net>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Subject: [mlankhorst:xe 124/165] drivers/gpu/drm/xe/xe_vm.c:160:3: error:
+ implicit declaration of function 'writeq'; did you mean 'writel'?
+Message-ID: <202201271251.UUO143AR-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -53,52 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android11-kiwi-5.4
-head:   7d1d5848183bd1d9086d0572f9af431d3ded407f
-commit: 189ced91cd7b0e440b0be876406fd36313a11c3f [2422/9999] ANDROID: power: wakeup_reason: wake reason enhancements
-config: i386-randconfig-s001-20220124 (https://download.01.org/0day-ci/archive/20220127/202201271124.vYu1IFCz-lkp@intel.com/config)
+tree:   git://people.freedesktop.org/~mlankhorst/linux xe
+head:   4bc3039b4403c76a13d58f7ac1f7c07dca6f88d8
+commit: 5b618f2bacec0b689def464e9771e604cada24d7 [124/165] xe/vm: Use writeq when is_iomem
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220127/202201271251.UUO143AR-lkp@intel.com/config)
 compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/189ced91cd7b0e440b0be876406fd36313a11c3f
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android11-kiwi-5.4
-        git checkout 189ced91cd7b0e440b0be876406fd36313a11c3f
+reproduce (this is a W=1 build):
+        git remote add mlankhorst git://people.freedesktop.org/~mlankhorst/linux
+        git fetch --no-tags mlankhorst xe
+        git checkout 5b618f2bacec0b689def464e9771e604cada24d7
         # save the config file to linux build tree
         mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash kernel/power/
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
 
-sparse warnings: (new ones prefixed by >>)
->> kernel/power/wakeup_reason.c:199:6: sparse: sparse: symbol '__log_abort_or_abnormal_wake' was not declared. Should it be static?
-   kernel/power/wakeup_reason.c:378:12: sparse: sparse: symbol 'wakeup_reason_init' was not declared. Should it be static?
+   drivers/gpu/drm/xe/xe_vm.c: In function '__xe_pt_write':
+>> drivers/gpu/drm/xe/xe_vm.c:160:3: error: implicit declaration of function 'writeq'; did you mean 'writel'? [-Werror=implicit-function-declaration]
+     160 |   writeq(data, (uint64_t __iomem *)map_u64);
+         |   ^~~~~~
+         |   writel
+   drivers/gpu/drm/xe/xe_vm.c: At top level:
+   drivers/gpu/drm/xe/xe_vm.c:165:15: error: no previous prototype for 'xe_pt_create' [-Werror=missing-prototypes]
+     165 | struct xe_pt *xe_pt_create(struct xe_vm *vm, unsigned int level)
+         |               ^~~~~~~~~~~~
+   cc1: all warnings being treated as errors
 
-vim +/__log_abort_or_abnormal_wake +199 kernel/power/wakeup_reason.c
 
-   198	
- > 199	void __log_abort_or_abnormal_wake(bool abort, const char *fmt, va_list args)
-   200	{
-   201		unsigned long flags;
-   202	
-   203		spin_lock_irqsave(&wakeup_reason_lock, flags);
-   204	
-   205		/* Suspend abort or abnormal wake reason has already been logged. */
-   206		if (suspend_abort || abnormal_wake) {
-   207			spin_unlock_irqrestore(&wakeup_reason_lock, flags);
-   208			return;
-   209		}
-   210	
-   211		suspend_abort = abort;
-   212		abnormal_wake = !abort;
-   213		vsnprintf(non_irq_wake_reason, MAX_SUSPEND_ABORT_LEN, fmt, args);
-   214	
-   215		spin_unlock_irqrestore(&wakeup_reason_lock, flags);
-   216	}
-   217	
+vim +160 drivers/gpu/drm/xe/xe_vm.c
+
+   151	
+   152	static void __xe_pt_write(struct ttm_bo_kmap_obj *map,
+   153				  unsigned int idx, uint64_t data)
+   154	{
+   155		bool is_iomem;
+   156		uint64_t *map_u64;
+   157	
+   158		map_u64 = ttm_kmap_obj_virtual(map, &is_iomem);
+   159		if (is_iomem)
+ > 160			writeq(data, (uint64_t __iomem *)map_u64);
+   161		else
+   162			map_u64[idx] = data;
+   163	}
+   164	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
