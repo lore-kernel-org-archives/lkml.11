@@ -2,94 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F924C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED16C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242218AbiA0ODQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 09:03:16 -0500
-Received: from mail-oo1-f52.google.com ([209.85.161.52]:38626 "EHLO
-        mail-oo1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242066AbiA0ODM (ORCPT
+        id S237422AbiA0OFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 09:05:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43796 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230174AbiA0OFO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 09:03:12 -0500
-Received: by mail-oo1-f52.google.com with SMTP id w15-20020a4a9d0f000000b002c5cfa80e84so702127ooj.5;
-        Thu, 27 Jan 2022 06:03:12 -0800 (PST)
+        Thu, 27 Jan 2022 09:05:14 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8171CC061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 06:05:14 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id d138-20020a1c1d90000000b0034e043aaac7so3400914wmd.5
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 06:05:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UISkPhT4BIca5WtrYEoFfdvyYgnDGNawnKFtZI4dWXI=;
+        b=MQ4hjmTLKV3S+exHiNuEnPrwYDeQ3PRnIHGNbWhvRaBbD4/ewTiy2Vsoh14g1hwXIL
+         G88aSutxFfatY/ruzii1OmT4QEpF6Gjm58fLP/EcCeLaiqSeIzFmy4mpCOmKY50o5rHm
+         DLsgEeec8EE37gvjvSHu5KlYaW9zrEkkTPklJjJF0Zeyn0JU1J0DXQoFsTKYz2NOsGVK
+         2Z861mbR1WX5eLd46hc++N7R1NPtPOLPpURLruWYBtyMEERzVXOuIRxFCUwrirWucW4q
+         j53leMkSnF1l+pyq/28dLTlJ+/YvFeyReMVKhC8WATLfaUMtdFCkFblL1goEjR/Pd1fV
+         Wm5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=bobbe8x/hcY1c/ieWxV92ycgrrHLjEYjiuQwW0caLlE=;
-        b=LAr8zwZFmOIvhbs4jj85rLR/BVbkg0uhVcDJRQ0PhcUIxGqZ9KyfLhUeJ/3CtvgjZB
-         jm2Sxa8buY7arH+3VGrxuZFT8vTa6Vj9ll47cNusyQgzm0pIto1i8EVH86LFiu3rlKqF
-         5Hpubn54aJE2GG3Ou6akc+kqv0EMXil/sDniSbEtgPiGe0T3udh0BN/bm1Vb2nOADqq9
-         grKOin9LLeRJF6ki25g7h+VQAjT9nbFvKoNLbFqwLEdgioslhOmWXfrIG2Jxt1gNgjHF
-         YCUtbERORgoIJjrHlr+qoANwIIpiHR1WYUGSsPjWCVRjLs1INhU+TLpZ99sxOz6vnpzu
-         yY7Q==
-X-Gm-Message-State: AOAM533rkebOgt6WxeAUPhNRx2mUMoCRhQvnUkyDffeIsJxOpp6S9Lac
-        bqwz0iq+rwRqqbPupAm8bQ+AnuyXiw==
-X-Google-Smtp-Source: ABdhPJzmSkJYmmXYCpGDjtsaTgBbmLckXim21PKeey0oV4qc8OdnduV3mUAerOcoGm5iB1JeTE7wfw==
-X-Received: by 2002:a4a:e582:: with SMTP id o2mr1915457oov.65.1643292191895;
-        Thu, 27 Jan 2022 06:03:11 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id s3sm6366414otg.67.2022.01.27.06.03.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UISkPhT4BIca5WtrYEoFfdvyYgnDGNawnKFtZI4dWXI=;
+        b=C477dKmCojKsHxBUZQRRwaBLGE6vfQselU4VXyi6QZPeOBWilED8pstJ1EPOQTM05h
+         ipnaUkbcYFqorlEjFl5fJd3FJYKk2G4Hf4Zyua2nAK7KMiCqNq8Ocxw0kYGIQq+pA0s0
+         nqw+nDVzVYGbm9C9Xz2bdZzUSgPaqmjEwljUYita9GOZWLvD8FERzCFJDuTilMqzDCiI
+         StJMKk5Wcp7VqYaGoG1wwanySgnpB3EKTNEG7hyEtCVbu1UP1HMtQ5PWfTwk+X/AnRQy
+         JEsn7L4nH7NTC5AmkqAR0KNg7noL0MvX5luc2zg3aY+90zLfCIe2F0esN2BvL9tAMqWW
+         QHCA==
+X-Gm-Message-State: AOAM532lRQc5u8JaAUwfdNdCaUws3MvwThRCLexndAolNO2xLLrPJWix
+        5NDXrVBQb80U5OEk/uTqSTw9TQ==
+X-Google-Smtp-Source: ABdhPJzooFiVCR3Ny5P0GNnKhxVwEEWl+CPWpFH0tsQEsjmwsHUGx5lcyR4WRQdykwYiTlcDw1EOWw==
+X-Received: by 2002:a05:600c:1c8d:: with SMTP id k13mr3377064wms.171.1643292313171;
+        Thu, 27 Jan 2022 06:05:13 -0800 (PST)
+Received: from usaari01.cust.communityfibre.co.uk ([2a02:6b6d:f804:0:b164:2cad:2ae3:b81a])
+        by smtp.gmail.com with ESMTPSA id bg26sm6101321wmb.48.2022.01.27.06.05.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 06:03:11 -0800 (PST)
-Received: (nullmailer pid 3149363 invoked by uid 1000);
-        Thu, 27 Jan 2022 14:03:05 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        kernel@pengutronix.de, devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-In-Reply-To: <20220127104905.899341-3-o.rempel@pengutronix.de>
-References: <20220127104905.899341-1-o.rempel@pengutronix.de> <20220127104905.899341-3-o.rempel@pengutronix.de>
-Subject: Re: [PATCH net-next v1 2/4] dt-bindings: net: add schema for Microchip/SMSC LAN95xx USB Ethernet controllers
-Date:   Thu, 27 Jan 2022 08:03:05 -0600
-Message-Id: <1643292185.240581.3149362.nullmailer@robh.at.kernel.org>
+        Thu, 27 Jan 2022 06:05:12 -0800 (PST)
+From:   Usama Arif <usama.arif@bytedance.com>
+To:     io-uring@vger.kernel.org, axboe@kernel.dk, asml.silence@gmail.com,
+        linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com, Usama Arif <usama.arif@bytedance.com>
+Subject: [PATCH] io_uring: remove unused argument from io_rsrc_node_alloc
+Date:   Thu, 27 Jan 2022 14:04:44 +0000
+Message-Id: <20220127140444.4016585-1-usama.arif@bytedance.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 11:49:03 +0100, Oleksij Rempel wrote:
-> Create initial schema for Microchip/SMSC LAN95xx USB Ethernet controllers and
-> import all currently supported USB IDs form drivers/net/usb/smsc95xx.c
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  .../bindings/net/microchip,lan95xx.yaml       | 82 +++++++++++++++++++
->  1 file changed, 82 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/microchip,lan95xx.yaml
-> 
+io_ring_ctx is not used in the function.
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+Signed-off-by: Usama Arif <usama.arif@bytedance.com>
+---
+ fs/io_uring.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
-
-Full log is available here: https://patchwork.ozlabs.org/patch/1584951
-
-
-smsc@2: $nodename:0: 'smsc@2' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/tegra30-ouya.dt.yaml
-
-usbether@1: $nodename:0: 'usbether@1' does not match '^ethernet(@.*)?$'
-	arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dt.yaml
-	arch/arm/boot/dts/bcm2835-rpi-b.dt.yaml
-	arch/arm/boot/dts/bcm2835-rpi-b-plus.dt.yaml
-	arch/arm/boot/dts/bcm2835-rpi-b-rev2.dt.yaml
-	arch/arm/boot/dts/bcm2836-rpi-2-b.dt.yaml
-	arch/arm/boot/dts/bcm2837-rpi-3-b.dt.yaml
-	arch/arm/boot/dts/omap3-beagle-xm-ab.dt.yaml
-	arch/arm/boot/dts/omap3-beagle-xm.dt.yaml
-	arch/arm/boot/dts/omap4-panda-a4.dt.yaml
-	arch/arm/boot/dts/omap4-panda.dt.yaml
-	arch/arm/boot/dts/omap4-panda-es.dt.yaml
-
-usbether@3: $nodename:0: 'usbether@3' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/omap5-uevm.dt.yaml
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index e54c41274..a256600fa 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -7841,7 +7841,7 @@ static __cold void io_rsrc_node_ref_zero(struct percpu_ref *ref)
+ 		mod_delayed_work(system_wq, &ctx->rsrc_put_work, HZ);
+ }
+ 
+-static struct io_rsrc_node *io_rsrc_node_alloc(struct io_ring_ctx *ctx)
++static struct io_rsrc_node *io_rsrc_node_alloc(void)
+ {
+ 	struct io_rsrc_node *ref_node;
+ 
+@@ -7892,7 +7892,7 @@ static int io_rsrc_node_switch_start(struct io_ring_ctx *ctx)
+ {
+ 	if (ctx->rsrc_backup_node)
+ 		return 0;
+-	ctx->rsrc_backup_node = io_rsrc_node_alloc(ctx);
++	ctx->rsrc_backup_node = io_rsrc_node_alloc();
+ 	return ctx->rsrc_backup_node ? 0 : -ENOMEM;
+ }
+ 
+-- 
+2.25.1
 
