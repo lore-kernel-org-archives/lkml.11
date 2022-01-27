@@ -2,92 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D8AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC76C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240841AbiA0Lry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:47:54 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:58282 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240824AbiA0Lrv (ORCPT
+        id S240832AbiA0LsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:48:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34300 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240196AbiA0LsG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:47:51 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20R6AqWo014646;
-        Thu, 27 Jan 2022 06:47:44 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3dtv6scvgc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 06:47:43 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 20RBlgDP054191
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 27 Jan 2022 06:47:42 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Thu, 27 Jan
- 2022 06:47:20 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 27 Jan 2022 06:47:20 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.119])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 20RBlUdn014283;
-        Thu, 27 Jan 2022 06:47:38 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v4 4/4] MAINTAINERS: add maintainer for ADMV1014 driver
-Date:   Thu, 27 Jan 2022 12:55:58 +0200
-Message-ID: <20220127105558.59567-4-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220127105558.59567-1-antoniu.miclaus@analog.com>
-References: <20220127105558.59567-1-antoniu.miclaus@analog.com>
+        Thu, 27 Jan 2022 06:48:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643284085;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HGE7gxF/PrZOO5rcFzZ+w+MYUdoGMxbWWIjy9mknwZE=;
+        b=i7jHfFD6GHIUq+GaqQH75gIOYuVAhNEoGoxpf4XsVhrkQuNpyQe9a3P55Q9djwgZjCYJIU
+        bv2VhUniS2H/Yx2v3W+EeGjrZbs5/r6pguZyWk+7spWldVDBhjmubI0RvNCdz7bM6gb1IP
+        WfhPjqd6oesvHid94oGYAVlfVboYxzs=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-270-aP4E7iLJPpaCQ1lyessATA-1; Thu, 27 Jan 2022 06:48:03 -0500
+X-MC-Unique: aP4E7iLJPpaCQ1lyessATA-1
+Received: by mail-ed1-f70.google.com with SMTP id a18-20020aa7d752000000b00403d18712beso1284726eds.17
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:48:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HGE7gxF/PrZOO5rcFzZ+w+MYUdoGMxbWWIjy9mknwZE=;
+        b=4pIBIjTembUz0N1bV4zldQbbJTJMFEZLJeFtt2Pn0qJlXyY5hJWb+DNQvjoBWXuuIA
+         Zm9QF86OxIJDUuVfOf1UJLl9iiXyaVPOvj0myNyP+lbxFPjfnQkaDd3stzgB6y5dwXrb
+         qYIYJw2hy2bXjWkpX/slnRltEYCvH6bpY7NWe04Is5gx96EVyarYb6lsJ66azuMdponl
+         nRS2fTx9de+NK6+cdweQI6NIAJppNLZ4qwcJZzjGzlDjun49ivyHKo11mF4N8dRa3bm+
+         Rh9ATM3Qe0UkQZp6EAaam80R2VKd0+5cdpdJPlPDyrh/o1/IARYSZmfsq6K3KjDU9Vhb
+         rVQg==
+X-Gm-Message-State: AOAM533A2zUvK25zhE9/wE7Ti1nrESRA0bxhxHbRr9uRyvHqhJpTR2Lh
+        qzmSwYcFGVWKjqYXLVQwuZ7YRuFZc4pzWnHU51XQOxO4VZOlZn4bXRJZcfIcyLTJPHqhnC76l8P
+        3H4wt7I/iesl/OZmQgmQnDZ2t
+X-Received: by 2002:a17:907:7241:: with SMTP id ds1mr2705643ejc.199.1643284082707;
+        Thu, 27 Jan 2022 03:48:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxALJ4orODysCyzf5OM83HGtMr7Bi36PqNUiGN5jpHNx9oPF+XO/JirOr44geRnmCZ4NtbP3g==
+X-Received: by 2002:a17:907:7241:: with SMTP id ds1mr2705630ejc.199.1643284082537;
+        Thu, 27 Jan 2022 03:48:02 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id cf13sm8735609ejb.141.2022.01.27.03.48.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 03:48:02 -0800 (PST)
+Message-ID: <bd44bba7-de30-bb65-a328-1bc3c44b53eb@redhat.com>
+Date:   Thu, 27 Jan 2022 12:48:01 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: bHyL3pFxpDbcow8J-x-QErBupMX6u0GQ
-X-Proofpoint-ORIG-GUID: bHyL3pFxpDbcow8J-x-QErBupMX6u0GQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-27_03,2022-01-27_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- suspectscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0 mlxscore=0
- bulkscore=0 adultscore=0 clxscore=1015 malwarescore=0 priorityscore=1501
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201270070
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH 1/7] genirq: Provide generic_handle_irq_safe().
+Content-Language: en-US
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
+        Woojung Huh <woojung.huh@microchip.com>
+References: <20220127113303.3012207-1-bigeasy@linutronix.de>
+ <20220127113303.3012207-2-bigeasy@linutronix.de>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220127113303.3012207-2-bigeasy@linutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add myself as maintainer for the ADMV1014 driver.
+Hi,
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+On 1/27/22 12:32, Sebastian Andrzej Siewior wrote:
+> Provide generic_handle_irq_safe() which can be used can used from any
+> context.
+> 
+> Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 170bbbeefc3f..b05148cfd4aa 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1119,6 +1119,14 @@ W:	http://ez.analog.com/community/linux-device-drivers
- F:	Documentation/devicetree/bindings/hwmon/adi,adm1177.yaml
- F:	drivers/hwmon/adm1177.c
- 
-+ANALOG DEVICES INC ADMV1014 DRIVER
-+M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
-+F:	drivers/iio/frequency/admv1014.c
-+
- ANALOG DEVICES INC ADP5061 DRIVER
- M:	Michael Hennerich <Michael.Hennerich@analog.com>
- L:	linux-pm@vger.kernel.org
--- 
-2.35.0
+Thanks, patch looks good to me:
+
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+Regards,
+
+Hans
+
+
+> ---
+>  include/linux/irqdesc.h |  1 +
+>  kernel/irq/irqdesc.c    | 21 +++++++++++++++++++++
+>  2 files changed, 22 insertions(+)
+> 
+> diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
+> index 93d270ca0c567..a77584593f7d1 100644
+> --- a/include/linux/irqdesc.h
+> +++ b/include/linux/irqdesc.h
+> @@ -160,6 +160,7 @@ static inline void generic_handle_irq_desc(struct irq_desc *desc)
+>  
+>  int handle_irq_desc(struct irq_desc *desc);
+>  int generic_handle_irq(unsigned int irq);
+> +int generic_handle_irq_safe(unsigned int irq);
+>  
+>  #ifdef CONFIG_IRQ_DOMAIN
+>  /*
+> diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+> index 2267e6527db3c..97223df2f460e 100644
+> --- a/kernel/irq/irqdesc.c
+> +++ b/kernel/irq/irqdesc.c
+> @@ -662,6 +662,27 @@ int generic_handle_irq(unsigned int irq)
+>  }
+>  EXPORT_SYMBOL_GPL(generic_handle_irq);
+>  
+> +/**
+> + * generic_handle_irq_safe - Invoke the handler for a particular irq
+> + * @irq:	The irq number to handle
+> + *
+> + * Returns:	0 on success, or -EINVAL if conversion has failed
+> + *
+> + * This function must be called either from an IRQ context with irq regs
+> + * initialized or with care from any context.
+> + */
+> +int generic_handle_irq_safe(unsigned int irq)
+> +{
+> +	unsigned long flags;
+> +	int ret;
+> +
+> +	local_irq_save(flags);
+> +	ret = handle_irq_desc(irq_to_desc(irq));
+> +	local_irq_restore(flags);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(generic_handle_irq_safe);
+> +
+>  #ifdef CONFIG_IRQ_DOMAIN
+>  /**
+>   * generic_handle_domain_irq - Invoke the handler for a HW irq belonging
+> 
 
