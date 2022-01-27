@@ -2,111 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D9DC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A69C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242710AbiA0OxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 09:53:00 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:51292 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S242701AbiA0Ow6 (ORCPT
+        id S242712AbiA0Oxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 09:53:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55240 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232133AbiA0Oxp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 09:52:58 -0500
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20REg3Hm017937;
-        Thu, 27 Jan 2022 14:52:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=Yr8IgIpkJRS+CCsx/gVAlf3PpaBHoF4MFuTIopSDAM8=;
- b=YnO6jIXU3hCJss8d5kLMhzGHfmbMKUAu0cRjaIQyvzIyZPhyoaPw1AkAf71ULSN42bTB
- QDHD0nNPruZX9TYQl1DnV6Q5tVg8YVQzlRUQd7HZcQz8/fc5VsHzKiBem7GHeu0D/Dn+
- UP3pVAHCovlvhnpvq+JWIBlTJCNGEnDDTjUw3hZCK8KcP81pqW9tdxMe2WgiPvnlRomo
- lJUGYZyJfg2IkHG9fhsolAuifIbSpwx2iuQSJXpnfaCUz6U0AGxw21F28gLGjeyF1iVh
- 3W2abYYBlbkfpNw3ZAaQI5GC7V98RQcHCvVFdW8H8zAzgklfgHHNj1ly2eMi0FPvn4+J 8A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3duvhe9p3a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 14:52:54 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20REgV7S019908;
-        Thu, 27 Jan 2022 14:52:54 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3duvhe9p2r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 14:52:54 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20REpuKd014775;
-        Thu, 27 Jan 2022 14:52:52 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03fra.de.ibm.com with ESMTP id 3dr9j9q0t8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 14:52:52 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20REhBuh39387466
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 27 Jan 2022 14:43:11 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 51AD54C046;
-        Thu, 27 Jan 2022 14:52:49 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9CBFA4C050;
-        Thu, 27 Jan 2022 14:52:47 +0000 (GMT)
-Received: from sig-9-65-89-165.ibm.com (unknown [9.65.89.165])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 27 Jan 2022 14:52:47 +0000 (GMT)
-Message-ID: <76e7b1aa85c1ce2d147713306e5996eb55ba3987.camel@linux.ibm.com>
-Subject: Re: [PATCH v8 1/3] certs: export load_certificate_list() to be used
- outside certs/
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Nayna Jain <nayna@linux.ibm.com>, linux-integrity@vger.kernel.org,
-        keyrings@vger.kernel.org
-Cc:     dhowells@redhat.com, jarkko@kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
-        seth@forshee.me
-Date:   Thu, 27 Jan 2022 09:52:47 -0500
-In-Reply-To: <20220111183647.977037-2-nayna@linux.ibm.com>
-References: <20220111183647.977037-1-nayna@linux.ibm.com>
-         <20220111183647.977037-2-nayna@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: EoXkdXQsPi_WAuXyhGKQxDE-Zo_uOkQs
-X-Proofpoint-GUID: Ruf-JrV98J0oljczjZY1o49RpwwOQgV9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-27_03,2022-01-27_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 spamscore=0 impostorscore=0 mlxscore=0 mlxlogscore=999
- lowpriorityscore=0 phishscore=0 bulkscore=0 adultscore=0 suspectscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201270088
+        Thu, 27 Jan 2022 09:53:45 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB13C061714;
+        Thu, 27 Jan 2022 06:53:45 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so3209889pjb.1;
+        Thu, 27 Jan 2022 06:53:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+UlMpr+x/00nAZmm+usrq4TzMquXi1OLfmluG293i0c=;
+        b=q5j6Tn6rmBCkDC8N+sqAa8+jOiF5qIusZbX/nfXnYut83R2UZQQgLKHIHzfuYYaBH8
+         pa4n8robOaT87VJr1nt8265/IvV1M1bm+TU1qNt3ku4b3ivRqyXIh/TgRAynAytpTSUA
+         fN6EJsoIuvAUs+T7I4SfT/JH6wt8++vembIX7nVslnpoGb/CaDdPIKoymZ5ccoSPWZ1g
+         kZEwSPeRmw2ow1iX3z+3zSO6BwlGT5/xG4YK66H4mopcJA31oIlnAcJqLnjOVNx58dba
+         ee1oYHVnBgw++IPc5irH1hMyVPt3SWzfIAZUWsn9PFHBJ9AkmznSTXOkhRUmrLWr7iQw
+         X2xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+UlMpr+x/00nAZmm+usrq4TzMquXi1OLfmluG293i0c=;
+        b=aKn1Ult/5tUapEu8bUHseFWOCXO8ySIKAw52aRKBEk7xGEHm0kFxd/HhIiRDJGu7uu
+         bn7rJ5BGDWBdOGubHBlo4D4T77v20eAF2rmjzNhZ7RlGeA5FrTOlSkf84tWd5DZB0XNT
+         Cl66Yy3/Pwa7iS4jiehZG7W9rEc7e/MXM8wHGh64O/T9Uuc3BJQd9KpMjvf1qKD92SHG
+         OrfqoJ22BRR8cee3H51Ul8CIMctnRX2YYsUF38ZqDtH8eTI+Mc5r6ZFxP1KyniQ2uqjm
+         m/LcYSSAaBRj8cTCUvUDaRqtGC99VaqAborsydwSXUCdUqaFNNkwTY3ZE+N2cAIHlPVe
+         QLWw==
+X-Gm-Message-State: AOAM5330IQ8vLAint4vHDJ792UPfCjyle7q0zHXat81MZ6JUTbeaYkgs
+        kN8ISAqMXsAJ1I7rfBbixDE=
+X-Google-Smtp-Source: ABdhPJzrC3NO4OBGtr5IwrF6ZXhjL7MqS+ZnIiSHtgMfbwYivamVnYOWYKOOwsJmX1LZoEsvQ8UgEw==
+X-Received: by 2002:a17:90b:3447:: with SMTP id lj7mr4544092pjb.39.1643295224502;
+        Thu, 27 Jan 2022 06:53:44 -0800 (PST)
+Received: from paju ([116.124.119.85])
+        by smtp.gmail.com with ESMTPSA id y42sm5225308pfw.157.2022.01.27.06.53.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 06:53:44 -0800 (PST)
+Date:   Thu, 27 Jan 2022 23:53:38 +0900
+From:   Dongjin Kim <tobetter@gmail.com>
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: dts: meson-sm1: fix wrong GPIO domain for GPIOE_2
+Message-ID: <20220127145338.GB2417963@paju>
+References: <YfKPSvnFKOaLr74+@anyang>
+ <dcb67b4e-6a46-86a6-b21f-99263cc9ff05@baylibre.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dcb67b4e-6a46-86a6-b21f-99263cc9ff05@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jarkko,
-
-On Tue, 2022-01-11 at 13:36 -0500, Nayna Jain wrote:
-> load_certificate_list() parses certificates embedded in the kernel
-> image to load them onto the keyring.
+On Thu, Jan 27, 2022 at 02:00:11PM +0100, Neil Armstrong wrote:
+> Hi,
 > 
-> Commit "2565ca7f5ec1 (certs: Move load_system_certificate_list to a common
-> function)" made load_certificate_list() a common function in the certs/
-> directory. Export load_certificate_list() outside certs/ to be used by
-> load_platform_certificate_list() for loading compiled in platform keys
-> onto the .platform keyring at boot time. 
+> On 27/01/2022 13:25, Dongjin Kim wrote:
+> > GPIOE_2 is in AO domain and "<&gpio GPIOE_2 ...>" changes the state of
+> > GPIOZ_14 connected to INTR of 'RTL8211F' on ODROID-HC and TF_PWR_EN of
+> > 'FC8731' on BPI-M5
+> > 
+> > Fixes: 1f80a5cf74a6 ("arm64: dts: meson-sm1-odroid: add missing enable gpio and supply for tf_io regulator")
+> > Fixes: 976e920183e4 ("arm64: dts: meson-sm1: add Banana PI BPI-M5 board dts")
+> > 
+> > Signed-off-by: Dongjin Kim <tobetter@gmail.com>
+> > ---
+> >  arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts | 2 +-
+> >  arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi     | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+> > index 212c6aa5a3b8..5751c48620ed 100644
+> > --- a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+> > +++ b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+> > @@ -123,7 +123,7 @@ vddio_c: regulator-vddio_c {
+> >  		regulator-min-microvolt = <1800000>;
+> >  		regulator-max-microvolt = <3300000>;
+> >  
+> > -		enable-gpio = <&gpio GPIOE_2 GPIO_ACTIVE_HIGH>;
+> > +		enable-gpio = <&gpio_ao GPIOE_2 GPIO_ACTIVE_HIGH>;
+> >  		enable-active-high;
+> >  		regulator-always-on;
+> >  
+> > diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+> > index bf29afac645f..d4349b355e4a 100644
+> > --- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+> > +++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+> > @@ -52,7 +52,7 @@ tf_io: gpio-regulator-tf_io {
+> >  		regulator-max-microvolt = <3300000>;
+> >  		vin-supply = <&vcc_5v>;
+> >  
+> > -		enable-gpio = <&gpio GPIOE_2 GPIO_ACTIVE_HIGH>;
+> > +		enable-gpio = <&gpio_ao GPIOE_2 GPIO_ACTIVE_HIGH>;
+> >  		enable-active-high;
+> >  		regulator-always-on;
+> >  
+> > 
+> Thanks for the fixes,
+> can you send 2 patches fixing each files instead ?
 > 
-> Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
-> Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
+> Thanks,
+> Neil
 
-I think Nayna addressed your concerns.  Did you want to upstream this
-patch set or would you prefer I did?
+Sure.
+By the way, I would drop a fix for 'meson-sm1-odroid.dtsi' since I found a
+patch just now.
+https://patchwork.kernel.org/project/linux-amlogic/patch/20220127130537.GA187347@odroid-VirtualBox/
 
-thanks,
-
-Mimi
-
+Thanks,
+Dongjin.
