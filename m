@@ -2,264 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D70A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241018AbiA0L4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:56:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240416AbiA0L4k (ORCPT
+        id S241133AbiA0L5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:57:00 -0500
+Received: from esa4.hgst.iphmx.com ([216.71.154.42]:63514 "EHLO
+        esa4.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240912AbiA0L4q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:56:40 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7774DC06173B
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:56:40 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E86141EC059E;
-        Thu, 27 Jan 2022 12:56:38 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1643284599;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nmP+QGjor7GR/9r6ai02b7ZRi5Z42G2ZxxkhGELN/CU=;
-        b=YCojKoLGSBxRUWxnWcMSETT5rv0DugvNh6D0sPhX8pr3Y01hkGz1ZsbzLY4qVqCRC+IiyR
-        h2Ly/1t2GVsrlXTGdSe7aLN6kfRrLANlzmtUcqW+xmjJ39UGxdFXMVF8kQYvQrSs+Jwszg
-        gpyO++VEZDMYGeKPlv8Ik06PY2FxuoE=
-From:   Borislav Petkov <bp@alien8.de>
-To:     X86 ML <x86@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-Subject: [PATCH v2 5/6] x86/cpu: Remove "noexec"
-Date:   Thu, 27 Jan 2022 12:56:25 +0100
-Message-Id: <20220127115626.14179-6-bp@alien8.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220127115626.14179-1-bp@alien8.de>
-References: <20220127115626.14179-1-bp@alien8.de>
+        Thu, 27 Jan 2022 06:56:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1643284606; x=1674820606;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=0K9fD7qQnc4VGb8wlCEDk+u6ux8RT3G+/u+kJA7nYIc=;
+  b=Fmyclkxa8xbI7bEwV6/zXqES990h1mIvuUANFnmE6PoS1kZJEbECFD0N
+   q0y6VfCdZdKwEtrlqNMRJ0FeoWIDUn11KgoUCvBSdgnbMj0oriktB+z35
+   HSJAWSy1HWAzo0/9T8BveZ2owH22n80CjU7HpWffOyejrXbcqcXzSn9G+
+   xjXsoGiVDI1zQM6nv6M2ONSimsHC7+CmbxYlTQrMKvz410O1BUHsyYMVF
+   BrsKPuv5Bj3jTfrek3NYGumQ8b7bpHczXGyUTmnhsZqTr0Jyq9HrYIPC3
+   iEjjmuYy1i5QVcoGno7untqkGcFrjKHYy9t7Ej9hvrjiTivJXDZ9coVAm
+   A==;
+X-IronPort-AV: E=Sophos;i="5.88,320,1635177600"; 
+   d="scan'208";a="190470630"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 27 Jan 2022 19:56:45 +0800
+IronPort-SDR: 7avWreOG3y7/pk4Q29mBTvqpsRmiA77JZVTzv01f2YIsGuN0zj6ZoL4v/OyLUnT+SvplHGAuUP
+ WmnVsDMyzWuWb77GKJI5RO2ose4IakH5xchdTrYszQibLMzQ3kc/KxSnWqe2nmE9qpJLOAvIK7
+ ksxT135l51T/60fQrBs9jSu27EIw6UYkvD9q7ePHPi17AvEYmLXJh9pYcbvCUTqhLPNQeU3OAi
+ Se2qvdZCgaa+JL2a6pxAkg0PQQijcqsH0KtUZPLKSNWswYpK+adD9frgIli/F0ag+uvcInfB8k
+ jswvTqoaOUGdYEy17f28y/dG
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 03:30:03 -0800
+IronPort-SDR: D2Ki+bYn2JaGaXQkSwVsOqArw4tyGN0jDs/BEALeRLMazYDI8zXT4L9mnt54W7fhDdxj9rs2pN
+ s9FpOgPTfatfRCgNjNk0GjHQ2f2lBbYkjPddvIa03gFDLWaHE/A7iOFovRKeJTF5PcMJ9QmDEW
+ +dk0iKU8qpDVL6lq+rXPKZrzPyDc1oOvTxrCYnho5ZY2CaTPgVwR8LJL7mV2gwg9r2Oq1UYknI
+ nBr5S+VZhNUTRpdkCDLmnS+lFUFmRq04Sv7psk0xnfiIavvFMoMOc91OvEPk19XyV+xRnSyjzC
+ 4iE=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 03:56:47 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Jkzb13NXLz1SVp4
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:56:45 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1643284604; x=1645876605; bh=0K9fD7qQnc4VGb8wlCEDk+u6ux8RT3G+/u+
+        kJA7nYIc=; b=MRYgURMtdAT0Iz8nKjiy7QOAwMLs4HrHbiQGE0XE0sM73CBhmgE
+        e6fft7fy0LSjIzbdpApMsrodhzPJ03U2eEGEbju/cji66AN++/Z7KmXUjiONEO4B
+        4yur1omjSNK9E/d0WeCvOCD/AcI6fv4eBsrxZ5zKWlLnHrp38YbsyUkB9HIO7IiT
+        tw1mpkzHP5voNQYOV2cn2i4nbwRHsaevxF8qRKuIWNNh6LDgIO91KugF9y8NFvQ+
+        mHDA7zNzVqpFTIN1IxjirNcISr20S6lxGBs2/gdwa1VKwTOs7BO1zedMXAcy3huf
+        xcpI3OWJ8GphEa74Ydb1pUOYoLCWcv2SNVw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id ep90G1DIK9Gi for <linux-kernel@vger.kernel.org>;
+        Thu, 27 Jan 2022 03:56:44 -0800 (PST)
+Received: from [10.225.163.56] (unknown [10.225.163.56])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JkzZy2Swgz1RvlN;
+        Thu, 27 Jan 2022 03:56:42 -0800 (PST)
+Message-ID: <b49f8c20-355b-42f4-1910-4cb7b8e1b7fb@opensource.wdc.com>
+Date:   Thu, 27 Jan 2022 20:56:10 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 00/16] scsi: libsas and users: Factor out LLDD TMF code
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, artur.paszkiewicz@intel.com,
+        jinpu.wang@cloud.ionos.com, chenxiang66@hisilicon.com,
+        Ajish.Koshy@microchip.com
+Cc:     yanaijie@huawei.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linuxarm@huawei.com, liuqi115@huawei.com, Viswas.G@microchip.com
+References: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
+ <1893d9ef-042b-af3b-74ea-dd4d0210c493@opensource.wdc.com>
+ <14df160f-c0f2-cc9f-56d4-8eda67969e0b@huawei.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <14df160f-c0f2-cc9f-56d4-8eda67969e0b@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+On 1/27/22 19:17, John Garry wrote:
+> On 27/01/2022 06:37, Damien Le Moal wrote:
+> 
+> Hi Damien,
+> 
+>> I did some light testing of this series (boot + some fio runs) and
+>> everything looks good using my "ATTO Technology, Inc. ExpressSAS 12Gb/s
+>> SAS/SATA HBA (rev 06)" HBA (x86_64 host).
+> 
+> Yeah, unfortunately these steps prob won't exercise much of the code 
+> changes here since I figure error handling would not kick in.
 
-It doesn't make any sense to disable non-executable mappings -
-security-wise or else.
+I have SMR drives on that adapter, and generating errors with these is
+*really* easy :)
+ZBC test suite forces errors to check ASC/ASCQ so it will be a good test.
 
-So rip out that switch and move the remaining code into setup.c and
-delete setup_nx.c
+> 
+> However using this same adapter type on my arm64 system has error 
+> handling kick in almost straight away - and the handling looks sane. A 
+> silver lining, I suppose ..
+> 
+>>
+>> Of note is that "make W=1 M=drivers/scsi" complains with:
+>>
+>> drivers/scsi/pm8001/pm80xx_hwi.c:3938: warning: Function parameter or
+>> member 'circularQ' not described in 'process_one_iomb'
+> 
+> That's per-existing. I'll send a patch for that now along with another 
+> fix I found for that driver. ....
+> 
+>>
+>> And sparse/make C=1 complains about:
+>>
+>> drivers/scsi/libsas/sas_port.c:77:13: warning: context imbalance in
+>> 'sas_form_port' - different lock contexts for basic block
+> 
+> I think it's talking about the port->phy_list_lock usage - it prob 
+> doesn't like segments where we fall out a loop with the lock held (which 
+> was grabbed in the loop). Anyway it looks ok. Maybe we can improve this.
+> 
+>>
+>> But I have not checked if it is something that your series touch.
+>>
+>> And there is a ton of complaints about __le32 use in the pm80xx code...
+>> I can try to have a look at these if you want, on top of your series.
+> 
+> I really need to get make C=1 working for me - it segfaults in any env I 
+> have :(
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
----
- .../admin-guide/kernel-parameters.txt         |  5 --
- Documentation/x86/x86_64/boot-options.rst     |  9 ---
- arch/x86/include/asm/proto.h                  |  1 -
- arch/x86/kernel/setup.c                       | 28 ++++++++-
- arch/x86/mm/Makefile                          |  3 +-
- arch/x86/mm/init_64.c                         |  1 -
- arch/x86/mm/setup_nx.c                        | 62 -------------------
- 7 files changed, 26 insertions(+), 83 deletions(-)
- delete mode 100644 arch/x86/mm/setup_nx.c
+Weird... All I did was install sparse (dnf install) and it works for me.
+Running Fedora.
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index e3894159c22b..dd398f83b335 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3389,11 +3389,6 @@
- 
- 	noexec		[IA-64]
- 
--	noexec		[X86]
--			On X86-32 available only on PAE configured kernels.
--			noexec=on: enable non-executable mappings (default)
--			noexec=off: disable non-executable mappings
--
- 	nosmap		[PPC]
- 			Disable SMAP (Supervisor Mode Access Prevention)
- 			even if it is supported by processor.
-diff --git a/Documentation/x86/x86_64/boot-options.rst b/Documentation/x86/x86_64/boot-options.rst
-index ccb7e86bf8d9..e72c60210285 100644
---- a/Documentation/x86/x86_64/boot-options.rst
-+++ b/Documentation/x86/x86_64/boot-options.rst
-@@ -164,15 +164,6 @@ Rebooting
-      newer BIOS, or newer board) using this option will ignore the built-in
-      quirk table, and use the generic default reboot actions.
- 
--Non Executable Mappings
--=======================
--
--  noexec=on|off
--    on
--      Enable(default)
--    off
--      Disable
--
- NUMA
- ====
- 
-diff --git a/arch/x86/include/asm/proto.h b/arch/x86/include/asm/proto.h
-index feed36d44d04..0f899c8d7a4e 100644
---- a/arch/x86/include/asm/proto.h
-+++ b/arch/x86/include/asm/proto.h
-@@ -35,7 +35,6 @@ void xen_entry_INT80_compat(void);
- #endif
- 
- void x86_configure_nx(void);
--void x86_report_nx(void);
- 
- extern int reboot_force;
- 
-diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index f7a132eb794d..07a395803957 100644
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@ -740,6 +740,30 @@ dump_kernel_offset(struct notifier_block *self, unsigned long v, void *p)
- 	return 0;
- }
- 
-+void x86_configure_nx(void)
-+{
-+	if (boot_cpu_has(X86_FEATURE_NX))
-+		__supported_pte_mask |= _PAGE_NX;
-+	else
-+		__supported_pte_mask &= ~_PAGE_NX;
-+}
-+
-+static void __init x86_report_nx(void)
-+{
-+	if (!boot_cpu_has(X86_FEATURE_NX)) {
-+		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
-+		       "missing in CPU!\n");
-+	} else {
-+#if defined(CONFIG_X86_64) || defined(CONFIG_X86_PAE)
-+		printk(KERN_INFO "NX (Execute Disable) protection: active\n");
-+#else
-+		/* 32bit non-PAE kernel, NX cannot be used */
-+		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
-+		       "cannot be enabled: non-PAE kernel!\n");
-+#endif
-+	}
-+}
-+
- /*
-  * Determine if we were loaded by an EFI loader.  If so, then we have also been
-  * passed the efi memmap, systab, etc., so we should use these data structures
-@@ -880,9 +904,7 @@ void __init setup_arch(char **cmdline_p)
- 	/*
- 	 * x86_configure_nx() is called before parse_early_param() to detect
- 	 * whether hardware doesn't support NX (so that the early EHCI debug
--	 * console setup can safely call set_fixmap()). It may then be called
--	 * again from within noexec_setup() during parsing early parameters
--	 * to honor the respective command line option.
-+	 * console setup can safely call set_fixmap()).
- 	 */
- 	x86_configure_nx();
- 
-diff --git a/arch/x86/mm/Makefile b/arch/x86/mm/Makefile
-index fe3d3061fc11..d957dc15b371 100644
---- a/arch/x86/mm/Makefile
-+++ b/arch/x86/mm/Makefile
-@@ -20,13 +20,12 @@ CFLAGS_REMOVE_mem_encrypt_identity.o	= -pg
- endif
- 
- obj-y				:=  init.o init_$(BITS).o fault.o ioremap.o extable.o mmap.o \
--				    pgtable.o physaddr.o setup_nx.o tlb.o cpu_entry_area.o maccess.o
-+				    pgtable.o physaddr.o tlb.o cpu_entry_area.o maccess.o
- 
- obj-y				+= pat/
- 
- # Make sure __phys_addr has no stackprotector
- CFLAGS_physaddr.o		:= -fno-stack-protector
--CFLAGS_setup_nx.o		:= -fno-stack-protector
- CFLAGS_mem_encrypt_identity.o	:= -fno-stack-protector
- 
- CFLAGS_fault.o := -I $(srctree)/$(src)/../include/asm/trace
-diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
-index 96d34ebb20a9..d2e484efdfa1 100644
---- a/arch/x86/mm/init_64.c
-+++ b/arch/x86/mm/init_64.c
-@@ -110,7 +110,6 @@ int force_personality32;
- /*
-  * noexec32=on|off
-  * Control non executable heap for 32bit processes.
-- * To control the stack too use noexec=off
-  *
-  * on	PROT_READ does not imply PROT_EXEC for 32-bit processes (default)
-  * off	PROT_READ implies PROT_EXEC
-diff --git a/arch/x86/mm/setup_nx.c b/arch/x86/mm/setup_nx.c
-deleted file mode 100644
-index ed5667f5169f..000000000000
---- a/arch/x86/mm/setup_nx.c
-+++ /dev/null
-@@ -1,62 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--#include <linux/spinlock.h>
--#include <linux/errno.h>
--#include <linux/init.h>
--#include <linux/pgtable.h>
--
--#include <asm/proto.h>
--#include <asm/cpufeature.h>
--
--static int disable_nx;
--
--/*
-- * noexec = on|off
-- *
-- * Control non-executable mappings for processes.
-- *
-- * on      Enable
-- * off     Disable
-- */
--static int __init noexec_setup(char *str)
--{
--	if (!str)
--		return -EINVAL;
--	if (!strncmp(str, "on", 2)) {
--		disable_nx = 0;
--	} else if (!strncmp(str, "off", 3)) {
--		disable_nx = 1;
--	}
--	x86_configure_nx();
--	return 0;
--}
--early_param("noexec", noexec_setup);
--
--void x86_configure_nx(void)
--{
--	if (boot_cpu_has(X86_FEATURE_NX) && !disable_nx)
--		__supported_pte_mask |= _PAGE_NX;
--	else
--		__supported_pte_mask &= ~_PAGE_NX;
--}
--
--void __init x86_report_nx(void)
--{
--	if (!boot_cpu_has(X86_FEATURE_NX)) {
--		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
--		       "missing in CPU!\n");
--	} else {
--#if defined(CONFIG_X86_64) || defined(CONFIG_X86_PAE)
--		if (disable_nx) {
--			printk(KERN_INFO "NX (Execute Disable) protection: "
--			       "disabled by kernel command line option\n");
--		} else {
--			printk(KERN_INFO "NX (Execute Disable) protection: "
--			       "active\n");
--		}
--#else
--		/* 32bit non-PAE kernel, NX cannot be used */
--		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
--		       "cannot be enabled: non-PAE kernel!\n");
--#endif
--	}
--}
+I will send patches for these.
+
+> 
+> Thanks,
+> John
+
+
 -- 
-2.29.2
-
+Damien Le Moal
+Western Digital Research
