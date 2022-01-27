@@ -2,82 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E7B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16750C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239432AbiA0K0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 05:26:01 -0500
-Received: from mga03.intel.com ([134.134.136.65]:38933 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239411AbiA0KZz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 05:25:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643279155; x=1674815155;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=GGZkyX9fQUg3V3xZXKJeXhQG6xQszvu7c09h+vLRJio=;
-  b=JBtqH/i5puhqvolfwCV9GiYyYPEQTNAyoLhZLyWvCGZtSXthg2sdvB3h
-   v+Z769My9FY2PNZCUdnxJwHY5Q/Sjk4ytqXanUXAaydSst2XAU+FpVhFV
-   t/uWKKx6weXUtnyLPr4zqXPsyePFXBF0eo1ysXolkGKiMQPiKnw80Wdhw
-   faecw03xvZAgMS5WeuyE1NeT+quvP/gcP/D/WCy/MlWaSW9+yFU2n9bz0
-   ofTb6fwb44mNKHqxNsruzIoXm0sm+jmpTVsGzR9dF9af18n0y+vGUcuwD
-   i3g9JPMudNM53Y/46NvMQivZDxp1Nhd5FABpRpbJAKW+SxnBTCtRujFuJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="246756160"
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="246756160"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 02:25:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="535592177"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 27 Jan 2022 02:25:53 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nD1yS-000MTj-Cv; Thu, 27 Jan 2022 10:25:52 +0000
-Date:   Thu, 27 Jan 2022 18:25:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ben Widawsky <ben.widawsky@intel.com>
-Cc:     kbuild-all@lists.01.org,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [cxl:preview 50/60] ERROR: modpost: "__umoddi3"
- [drivers/cxl/cxl_region.ko] undefined!
-Message-ID: <202201271819.Os0X3tNX-lkp@intel.com>
+        id S239433AbiA0K0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 05:26:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48310 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235428AbiA0K0Q (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 05:26:16 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96733C061714;
+        Thu, 27 Jan 2022 02:26:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=lk+FP3bKUn6Qm8DREklWNnoJV0
+        0YSZzoKxpielfq6gzQhiZGRzU1AOjbHRNvG/9BdqrDkWxfUnp3xxh3nywr97wd80E2skg/K+FNK6K
+        ZzcbG8Ymb8iRmjIMS+XWk3dvc96phlwXA202zY/QcF+qjbOCQBtv/j0It3y7MPpbNclnApbZHnnAf
+        yLw+oigLqg42B/RbAIwjQq7jYY3EmcpD2PGqrNEccCvYKI3ZgJoy6Vw2+7CY03YYBzj6V7yjiXFMz
+        AXnPe7wIOKPA5jHGYlw/d4PywsxiWotX8tdYxBz9rx5T/5kXG4wmvecTQLpTWPnvk7WoYCJELnDXq
+        fJu1FLFQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nD1ye-00F99Y-OX; Thu, 27 Jan 2022 10:26:04 +0000
+Date:   Thu, 27 Jan 2022 02:26:04 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     John Garry <john.garry@huawei.com>
+Cc:     jejb@linux.ibm.com, martin.petersen@oracle.com,
+        artur.paszkiewicz@intel.com, jinpu.wang@cloud.ionos.com,
+        chenxiang66@hisilicon.com, Ajish.Koshy@microchip.com,
+        yanaijie@huawei.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linuxarm@huawei.com, liuqi115@huawei.com, Viswas.G@microchip.com,
+        damien.lemoal@opensource.wdc.com
+Subject: Re: [PATCH 13/16] scsi: libsas: Add sas_lu_reset()
+Message-ID: <YfJzPNNlQKaQeraB@infradead.org>
+References: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
+ <1643110372-85470-14-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1643110372-85470-14-git-send-email-john.garry@huawei.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git preview
-head:   41c2d219a2c8e14de644f4e953e0c57402c3e884
-commit: 84dbaed92240cd65eb70045a3c61b6b4050822c2 [50/60] cxl/region: Introduce a cxl_region driver
-config: i386-randconfig-a003-20220124 (https://download.01.org/0day-ci/archive/20220127/202201271819.Os0X3tNX-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git/commit/?id=84dbaed92240cd65eb70045a3c61b6b4050822c2
-        git remote add cxl https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git
-        git fetch --no-tags cxl preview
-        git checkout 84dbaed92240cd65eb70045a3c61b6b4050822c2
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+Looks good,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "__umoddi3" [drivers/cxl/cxl_region.ko] undefined!
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Reviewed-by: Christoph Hellwig <hch@lst.de>
