@@ -2,64 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC256C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 07:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 923FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 07:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237415AbiA0HgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 02:36:17 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35058 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230174AbiA0HgQ (ORCPT
+        id S237421AbiA0Hjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 02:39:41 -0500
+Received: from mail-wm1-f50.google.com ([209.85.128.50]:35389 "EHLO
+        mail-wm1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230174AbiA0Hjk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 02:36:16 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1366F619E5;
-        Thu, 27 Jan 2022 07:36:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19911C340E4;
-        Thu, 27 Jan 2022 07:36:14 +0000 (UTC)
-Date:   Thu, 27 Jan 2022 08:36:12 +0100
-From:   Greg KH <greg@kroah.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     "Maciej W. Rozycki" <macro@embecosm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warnings after merge of the tty.current tree
-Message-ID: <YfJLbC6JIhfT5VyR@kroah.com>
-References: <20220127091800.1e8f333b@canb.auug.org.au>
+        Thu, 27 Jan 2022 02:39:40 -0500
+Received: by mail-wm1-f50.google.com with SMTP id q9-20020a7bce89000000b00349e697f2fbso5287874wmj.0;
+        Wed, 26 Jan 2022 23:39:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RKtXYPsL4FZx1b/8XEZmhVsP2QrG7CtPdAKDsf7DNCY=;
+        b=j3iqjmGGQbdhl4+Pej5EhtyMSFoj+751UKW80HKAERhgLaCVhAqVdspL9e6KwxXniR
+         kdn49lbVhzIMurgOcKsLWpZIujow06b6HiJUj7WsW3ahmjmH2r3IuGnBPrWlUKMLlogj
+         LRlgcPi6VJISlNvyH+uuLSsUFxXJBczY3YYLZiurkemdBPea18WujjOR3zN1v5bUEiRU
+         cA7s5pfEZD/vj585wThub9tlxm6s6BIuca56Ek+h28aQkgA1v1qMyn31kILT95HzVCMF
+         TcJ6qkE0hgfRbKhLvyW2UPj1qblDzWo9Z6wYNqxgDyg9K1eVMJAbPP3SPcbcOylu9l2X
+         2klQ==
+X-Gm-Message-State: AOAM5322LWiEoQHegiqKEzDok//ZXwp50ouYkunTJFnY6QzBQgNwmhq8
+        dRN4uQnXrub2UwFRpGGxpBG1B1JoweA=
+X-Google-Smtp-Source: ABdhPJyYtaNmBS17DR5zKwadnAh9GK2L3GMOJ0jvXvo+B0ukC9ovbS6TS767qu7y8iqTB8vC2kZYkA==
+X-Received: by 2002:a7b:c08b:: with SMTP id r11mr10600482wmh.111.1643269179433;
+        Wed, 26 Jan 2022 23:39:39 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id n11sm13771930wms.3.2022.01.26.23.39.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 23:39:38 -0800 (PST)
+Message-ID: <cbf04c3c-b2d6-f818-cf23-a5a8e2fb727e@kernel.org>
+Date:   Thu, 27 Jan 2022 08:39:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127091800.1e8f333b@canb.auug.org.au>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] tty: Replace acpi_bus_get_device()
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rob Herring <robh@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        linux-serial@vger.kernel.org
+References: <7355105.EvYhyI6sBW@kreacher>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <7355105.EvYhyI6sBW@kreacher>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 09:18:00AM +1100, Stephen Rothwell wrote:
-> Hi all,
+On 26. 01. 22, 20:55, Rafael J. Wysocki wrote:
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 > 
-> After merging the tty.current tree, today's linux-next build (x86_64
-> allmodconfig) produced these warnings:
+> Replace acpi_bus_get_device() that is going to be dropped with
+> acpi_fetch_acpi_dev().
 > 
-> In file included from <command-line>:
-> ./usr/include/linux/cyclades.h:6:2: warning: #warning "Support for features provided by this header has been removed" [-Wcpp]
->     6 | #warning "Support for features provided by this header has been removed"
->       |  ^~~~~~~
-> ./usr/include/linux/cyclades.h:7:2: warning: #warning "Please consider updating your code" [-Wcpp]
->     7 | #warning "Please consider updating your code"
->       |  ^~~~~~~
+> No intentional functional impact.
 > 
-> 
-> Introduced by commit
-> 
->   f23653fe6447 ("tty: Partially revert the removal of the Cyclades public API")
-> 
-> This is a bit annoying :-(
-> 
-> Can we exclude include/uapi/linux/cyclades.h from the headers checking,
-> please?
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Fix sent:
-	https://lore.kernel.org/r/20220127073304.42399-1-gregkh@linuxfoundation.org
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
+thanks,
+-- 
+js
+suse labs
