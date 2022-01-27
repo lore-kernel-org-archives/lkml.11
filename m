@@ -2,151 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F722C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:20:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3F8C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241683AbiA0NUW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 08:20:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbiA0NUU (ORCPT
+        id S241699AbiA0NVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 08:21:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37620 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230132AbiA0NVo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:20:20 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46371C061714;
-        Thu, 27 Jan 2022 05:20:20 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id r14so2416062qtt.5;
-        Thu, 27 Jan 2022 05:20:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oGHnyxqhToYcWzP+FxpnOsUxGeusoaZ89ztzpJzW4gk=;
-        b=JNaXTi6oJAV+zPErJ+0NvjVsdgZ+6XDP6rCTO9rjEnCMsV/g4v89jPD/QVO/TvGoyu
-         XF5WCTa91U61BX18AEwDx3/mUZ56p/KQ9LGq+CoSVQ7hYcBZrAT/TL65B6c8BEIKYFYF
-         5lBI2rMjzyLyV41Q23YH2KUoW3Ty8Pj/iY0AKIucWz2OkU7aD6bv5aKNIM19XhmIBeOW
-         dgghIByuBPaPgZ+In+r3SsBA+ZCt63lhr272S0Aq7/c+6MFWuEiuCLOevAcCnkgslLni
-         W2qYA/poqS8x9JSx8uZXG1tSESNKGaPzxY8bARnWr6W2bfc0twtrBDIY9hpbHQEweZkv
-         xKWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oGHnyxqhToYcWzP+FxpnOsUxGeusoaZ89ztzpJzW4gk=;
-        b=X1e9HCRUj323g2a1eqdtdcUMdjHH9ruxiBwl2s+FDs3V4YEOnp0ymVWquZfKaUPX2L
-         D82PLAH3N10vhA+PSZZJV3gZLr4jQwsXz2hhB66nF8sHcZzS1pFgShIBObPmuxNJaQi6
-         8Qw6q2VXrqd6T06cjxPlwLazKX3PaJB/svOIyRWM81T5kbHsiA9zDBee48cgVBLvyVQG
-         4lMEzmyzQ5RsyiYijm282ZzaBjjsNzd3utwwkyRWDTv8olfjRD4IhrXQgiZwiOhy//o4
-         g2jREfhXyG05+NLUaPrZw9DZNCDwMqvPQef6p800mz2eECVIn+qxnoUPSSqcTf7F0Hyz
-         gDvg==
-X-Gm-Message-State: AOAM533ONF0+XCPxZivZLWA46npDxvxFhu/05uBuzLO7rNWZplMIkA9t
-        OH1d2IHxhMNpbZFhHvmhVXMPd4K+68TXSK4K
-X-Google-Smtp-Source: ABdhPJzQu5lxBFfzJlNuVQXt27nxAMR4IznudwK58tbYpXxGLORmpIoRwdukYQfC+7z601lyvgMYPQ==
-X-Received: by 2002:a05:622a:342:: with SMTP id r2mr2563637qtw.473.1643289619411;
-        Thu, 27 Jan 2022 05:20:19 -0800 (PST)
-Received: from WRT-WX9.. ([207.246.89.135])
-        by smtp.gmail.com with ESMTPSA id r7sm1271599qtw.25.2022.01.27.05.20.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 05:20:18 -0800 (PST)
-From:   Changbin Du <changbin.du@gmail.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Changbin Du <changbin.du@gmail.com>
-Subject: [PATCH v2] perf/ftrace: system_wide collection is not effective by default
-Date:   Thu, 27 Jan 2022 21:20:10 +0800
-Message-Id: <20220127132010.4836-1-changbin.du@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 27 Jan 2022 08:21:44 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80B14B82213;
+        Thu, 27 Jan 2022 13:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B509C340E4;
+        Thu, 27 Jan 2022 13:21:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643289701;
+        bh=Cdi4tpSl0bmCYXxwOW63erAWHsnHXus7AGOBzsdCke0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rEoV2+xzNgMSKA3n0Gy08J1o9p8yCiwgPIVPWvJoodBPvatKR3FR1xqTk33ClOuXX
+         x8mPReSZGXWOtjtzh6bDNdm/tlzfLPcphuo+PLbPvndWcilW52XdhlMqFVmIQKsIWS
+         Ncj0z+RJeVVjZHSHRZVpgSgU7H1l2Im3gBl+yR6k=
+Date:   Thu, 27 Jan 2022 14:21:37 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next v1 4/4] usbnet: add support for label from
+ device tree
+Message-ID: <YfKcYXjfhVKUKfzY@kroah.com>
+References: <20220127104905.899341-1-o.rempel@pengutronix.de>
+ <20220127104905.899341-5-o.rempel@pengutronix.de>
+ <YfJ6lhZMAEmetdad@kroah.com>
+ <20220127112305.GC9150@pengutronix.de>
+ <YfKCTG7N86yy74q+@kroah.com>
+ <20220127120039.GE9150@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127120039.GE9150@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ftrace.target.system_wide must be set before invoking
-evlist__create_maps(), otherwise it has no effect.
+On Thu, Jan 27, 2022 at 01:00:39PM +0100, Oleksij Rempel wrote:
+> On Thu, Jan 27, 2022 at 12:30:20PM +0100, Greg KH wrote:
+> > On Thu, Jan 27, 2022 at 12:23:05PM +0100, Oleksij Rempel wrote:
+> > > On Thu, Jan 27, 2022 at 11:57:26AM +0100, Greg KH wrote:
+> > > > On Thu, Jan 27, 2022 at 11:49:05AM +0100, Oleksij Rempel wrote:
+> > > > > Similar to the option to set a netdev name in device tree for switch
+> > > > > ports by using the property "label" in the DSA framework, this patch
+> > > > > adds this functionality to the usbnet infrastructure.
+> > > > > 
+> > > > > This will help to name the interfaces properly throughout supported
+> > > > > devices. This provides stable interface names which are useful
+> > > > > especially in embedded use cases.
+> > > > 
+> > > > Stable interface names are for userspace to set, not the kernel.
+> > > > 
+> > > > Why would USB care about this?  If you need something like this, get it
+> > > > from the USB device itself, not DT, which should have nothing to do with
+> > > > USB as USB is a dynamic, self-describing, bus.  Unlike DT.
+> > > > 
+> > > > So I do not think this is a good idea.
+> > > 
+> > > This is needed for embedded devices with integrated USB Ethernet
+> > > controller. Currently I have following use cases to solve:
+> > > - Board with one or multiple USB Ethernet controllers with external PHY.
+> > >   The PHY need devicetree to describe IRQ, clock sources, label on board, etc.
+> > 
+> > The phy is for the USB controller, not the Ethernet controller, right?
+> > If for the ethernet controller, ugh, that's a crazy design and I would
+> > argue a broken one.  But whatever, DT should not be used to describe a
+> > USB device itself.
+> > 
+> > > - Board with USB Ethernet controller with DSA switch. The USB ethernet
+> > >   controller is attached to the CPU port of DSA switch. In this case,
+> > >   DSA switch is the sub-node of the USB device.
+> > 
+> > What do you mean exactly by "sub node"?  USB does not have such a term.
+> 
+> Here are some examples:
+> 
+>   - |
+>     usb@11270000 {
+>         reg = <0x11270000 0x1000>;
 
-Fixes: 53be50282269 ("perf ftrace: Add 'latency' subcommand")
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
+How can a USB device have a register?
 
----
-v2: fix error handling.
----
- tools/perf/builtin-ftrace.c | 45 ++++++++++++++++++++-----------------
- 1 file changed, 24 insertions(+), 21 deletions(-)
+And what does 11270000 mean?
 
-diff --git a/tools/perf/builtin-ftrace.c b/tools/perf/builtin-ftrace.c
-index dec24dc0e767..a8785dec5ca6 100644
---- a/tools/perf/builtin-ftrace.c
-+++ b/tools/perf/builtin-ftrace.c
-@@ -1115,6 +1115,7 @@ enum perf_ftrace_subcommand {
- int cmd_ftrace(int argc, const char **argv)
- {
- 	int ret;
-+	int (*cmd_func)(struct perf_ftrace *) = NULL;
- 	struct perf_ftrace ftrace = {
- 		.tracer = DEFAULT_TRACER,
- 		.target = { .uid = UINT_MAX, },
-@@ -1221,6 +1222,28 @@ int cmd_ftrace(int argc, const char **argv)
- 		goto out_delete_filters;
- 	}
- 
-+	switch (subcmd) {
-+	case PERF_FTRACE_TRACE:
-+		if (!argc && target__none(&ftrace.target))
-+			ftrace.target.system_wide = true;
-+		cmd_func = __cmd_ftrace;
-+		break;
-+	case PERF_FTRACE_LATENCY:
-+		if (list_empty(&ftrace.filters)) {
-+			pr_err("Should provide a function to measure\n");
-+			parse_options_usage(ftrace_usage, options, "T", 1);
-+			ret = -EINVAL;
-+			goto out_delete_filters;
-+		}
-+		cmd_func = __cmd_latency;
-+		break;
-+	case PERF_FTRACE_NONE:
-+	default:
-+		pr_err("Invalid subcommand\n");
-+		ret = -EINVAL;
-+		goto out_delete_filters;
-+	}
-+
- 	ret = target__validate(&ftrace.target);
- 	if (ret) {
- 		char errbuf[512];
-@@ -1248,27 +1271,7 @@ int cmd_ftrace(int argc, const char **argv)
- 			goto out_delete_evlist;
- 	}
- 
--	switch (subcmd) {
--	case PERF_FTRACE_TRACE:
--		if (!argc && target__none(&ftrace.target))
--			ftrace.target.system_wide = true;
--		ret = __cmd_ftrace(&ftrace);
--		break;
--	case PERF_FTRACE_LATENCY:
--		if (list_empty(&ftrace.filters)) {
--			pr_err("Should provide a function to measure\n");
--			parse_options_usage(ftrace_usage, options, "T", 1);
--			ret = -EINVAL;
--			goto out_delete_evlist;
--		}
--		ret = __cmd_latency(&ftrace);
--		break;
--	case PERF_FTRACE_NONE:
--	default:
--		pr_err("Invalid subcommand\n");
--		ret = -EINVAL;
--		break;
--	}
-+	ret = cmd_func(&ftrace);
- 
- out_delete_evlist:
- 	evlist__delete(ftrace.evlist);
--- 
-2.32.0
 
+>         #address-cells = <1>;
+>         #size-cells = <0>;
+> 
+>         ethernet@1 {
+>             compatible = "usb424,ec00";
+>             reg = <1>;
+>             label = "LAN0";
+
+Where did that come from?  That should be added in userspace, not from
+the kernel.
+
+> 	    // there is no internal eeprom, so MAC address is taken from
+> 	    // NVMEM of the SoC.
+>             local-mac-address = [00 00 00 00 00 00];
+> 
+>             mdio {
+> 		ethernet-phy@4 {
+> 			reg = <4>;
+> 			// Interrupt is attached to the SoC or the GPIO
+> 			// controller of the same USB devices.
+> 			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
+> 			// same about reset. It is attached to the SoC
+> 			// or GPIO controller of the USB device.
+> 			reset-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
+> 			reset-assert-us = <10000>;
+> 			reset-deassert-us = <1000>;
+> 			// some external clock provider
+> 			clocks = <&clk>
+> 			qca,smarteee-tw-us-1g = <24>;
+> 			qca,clk-out-frequency = <125000000>;
+
+So this device does not follow the spec for this driver in that you have
+to get the values for the phy from DT and not the device itself?  Why
+not fix the firmware in the device to report this?
+
+Anyway, this feels really wrong, USB should not be involved in DT by
+virtue of how the bus was designed.
+
+And again, pick your names in userspace, embedded is not "special" here.
+You can do persistant network device names in a very trivial shell
+script if needed, we used to do it that way 18 years ago :)
+
+thanks,
+
+greg k-h
