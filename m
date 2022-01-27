@@ -2,207 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8CF2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242405AbiA0Ocs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 09:32:48 -0500
-Received: from mx0b-0014ca01.pphosted.com ([208.86.201.193]:61056 "EHLO
-        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S242326AbiA0Ocr (ORCPT
+        id S242414AbiA0OdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 09:33:17 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:35646 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242326AbiA0OdO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 09:32:47 -0500
-Received: from pps.filterd (m0042333.ppops.net [127.0.0.1])
-        by mx0b-0014ca01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20R91nbX025490;
-        Thu, 27 Jan 2022 06:32:40 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=proofpoint;
- bh=zumZIIPmkgnTEf6Qq0yZRdafCbBuwoTe3V0m2+yiwJs=;
- b=fUYUBRQT+r/Q1ND/TAjmsw6G5uoPsOUtmdBpWbqMsDlrnEYPkDFQuiIaus+64LhQIGTs
- 7wboKeYNezceV0iE3VH4aVK3HXTxW6OBm1lIM8cnVsnclVhfPXkxbXtQKnYxQ7puN/P6
- tsyuIhMlpaZCHm6Tb2cgV8DVSasWIcyJy7l/OntiJFlJxAd7gNLmNlxXRVUuNp3b7t/1
- P31SsGlCeqFRCF1YghZlERHTLLo0mC2ksF9mbvkppWBN4xIIl8iropsSLrcTY35CEvOb
- 9+R+r+G+RN+fWyvBh9O9TZw9C9xUo2kSuj0BgG75N+/A3lbiTrvk+aviF67Z5cdXYl/k OQ== 
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2106.outbound.protection.outlook.com [104.47.70.106])
-        by mx0b-0014ca01.pphosted.com (PPS) with ESMTPS id 3dujtnsqa6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 06:32:40 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kCIuy44ynLZplMP79r0EPl2x6y6ZSWfSnwURRl6OYPDgcbxA1LdWj7X966qMY0U/djeGdebSXtXTjUUTp5pcKJYHDrt2c5kuselMtyPX+YBZBWwtnmeNDb/wY244wfO+II/xa4B5XoftrDsRaQkpRghWwQhy5FBRbs0E943YF8rWvkqfiZVPOrM/DUMhO/jBSfijXavRxek1SkhmQMVaSJ1CWW5GSd+POUTKffZV26t8OY6oTJ0lPzVIJSSQWjNqLKzoR2P2F5FVmp7Lw4Ia0aiWm1LW3hIItr6xJbTxaqjozXaG8saGD/oApyky24ybFMrYuNvfi6xkUZJo38Us/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zumZIIPmkgnTEf6Qq0yZRdafCbBuwoTe3V0m2+yiwJs=;
- b=Cg38mqf8GWZtrdHckZ26sBuZ8reui1ezqGISQiCnZBgTW3PxFXIq9KJ9EWB5/S0UuAJ+7swlWvpIK6poDD6kmmZkATs66Te2Rh7UcXVtHwXi5e4CJy6VDVSGkrXdYWAMyuaL6KBwi2JSTyyspK8dkW1mGiuG7qdp+oAAYduNtBkG/OU4XXDIORDLdYef+a+nEj9FCt1JKmBT7jJvFTnT5el9Lp2S8HCqkY59jM65MkH6plGkwwG2jeX+OZUEA18zreC6NWh0+0mB++yb8suJLT/1FvlTp8WkGumHxOe85GhOFqDCrrUCZO1GhyZ1V0ptdME0DYutpn1oWWo7OJKyBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=temperror (sender ip
- is 64.207.220.244) smtp.rcpttodomain=ti.com smtp.mailfrom=cadence.com;
- dmarc=temperror action=none header.from=cadence.com; dkim=none (message not
- signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zumZIIPmkgnTEf6Qq0yZRdafCbBuwoTe3V0m2+yiwJs=;
- b=nk20FFwxetJiNoHNFbWuB0tu1zLrom8ldmWe8cXNe4dSE3LIPc1g2JHf+rJuWRwPckBRKg3+g8/whifLfqs1JvR98BUrhn/G0s11iTDie4wcRjLNKWqe8BrL692PhtlQZaMOfzk3D6ooXAJl3z4e0qgcMzoBlvpK2w9Opr6PWIQ=
-Received: from CO2PR04CA0161.namprd04.prod.outlook.com (2603:10b6:104:4::15)
- by PH7PR07MB9396.namprd07.prod.outlook.com (2603:10b6:510:15d::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.13; Thu, 27 Jan
- 2022 14:32:38 +0000
-Received: from MW2NAM12FT067.eop-nam12.prod.protection.outlook.com
- (2603:10b6:104:4:cafe::a5) by CO2PR04CA0161.outlook.office365.com
- (2603:10b6:104:4::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15 via Frontend
- Transport; Thu, 27 Jan 2022 14:32:38 +0000
-X-MS-Exchange-Authentication-Results: spf=temperror (sender IP is
- 64.207.220.244) smtp.mailfrom=cadence.com; dkim=none (message not signed)
- header.d=none;dmarc=temperror action=none header.from=cadence.com;
-Received-SPF: TempError (protection.outlook.com: error in processing during
- lookup of cadence.com: DNS Timeout)
-Received: from wcmailrelayl01.cadence.com (64.207.220.244) by
- MW2NAM12FT067.mail.protection.outlook.com (10.13.181.33) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4951.5 via Frontend Transport; Thu, 27 Jan 2022 14:32:36 +0000
-Received: from maileu5.global.cadence.com (eudvw-maileu5.cadence.com [10.160.110.202])
-        by wcmailrelayl01.cadence.com (8.14.7/8.14.4) with ESMTP id 20REWY3E179398
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Thu, 27 Jan 2022 06:32:35 -0800
-Received: from maileu4.global.cadence.com (10.160.110.201) by
- maileu5.global.cadence.com (10.160.110.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 27 Jan 2022 15:32:33 +0100
-Received: from vleu-orange.cadence.com (10.160.88.83) by
- maileu4.global.cadence.com (10.160.110.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2
- via Frontend Transport; Thu, 27 Jan 2022 15:32:33 +0100
-Received: from vleu-orange.cadence.com (localhost.localdomain [127.0.0.1])
-        by vleu-orange.cadence.com (8.14.4/8.14.4) with ESMTP id 20REVDka024067;
-        Thu, 27 Jan 2022 15:31:45 +0100
-Received: (from sjakhade@localhost)
-        by vleu-orange.cadence.com (8.14.4/8.14.4/Submit) id 20REVDYG024066;
-        Thu, 27 Jan 2022 15:31:13 +0100
-From:   Swapnil Jakhade <sjakhade@cadence.com>
-To:     <vkoul@kernel.org>, <kishon@ti.com>,
-        <linux-phy@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC:     <mparab@cadence.com>, <sjakhade@cadence.com>,
-        <a-govindraju@ti.com>, <r-ravikumar@ti.com>
-Subject: [PATCH 1/4] phy: cadence-torrent: Add function to get PLL to be configured for DP
-Date:   Thu, 27 Jan 2022 15:29:55 +0100
-Message-ID: <20220127142958.23465-2-sjakhade@cadence.com>
-X-Mailer: git-send-email 2.15.0
-In-Reply-To: <20220127142958.23465-1-sjakhade@cadence.com>
-References: <20220127142958.23465-1-sjakhade@cadence.com>
+        Thu, 27 Jan 2022 09:33:14 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3B634218E0;
+        Thu, 27 Jan 2022 14:33:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643293993; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gfVtGjzgCMvnnZDpcehQwVBibFUoPCCrxlGLDylV22w=;
+        b=dC04/vapA8F85tjb/mNCwjyzo3DyippRN4nkXG6xjV5P6EGAsO40VUhCedqDqd1d8xvSKx
+        rYC36SFRAAwSr3Kd+e7J/e0WsQPZyUYW3iO9El2ZVNtesE+c+tibK9+fqiXFksEqFUsRwD
+        CMVRqmKnfoRcnpknafL27OOEFc/bmYc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643293993;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gfVtGjzgCMvnnZDpcehQwVBibFUoPCCrxlGLDylV22w=;
+        b=ebxuPTuYo9Bt98YIKmZBtt7q7LUYCkPESe35YpFr38dKRv4Q1jgMqV+avZf6hpqPBxYO3o
+        facYijkXbJpPCsDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 110F413BFC;
+        Thu, 27 Jan 2022 14:33:13 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ZzLAAimt8mFyRAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Thu, 27 Jan 2022 14:33:13 +0000
+Message-ID: <b7a3fe1d-3b85-cb7e-19cf-1611ff4f3c9e@suse.de>
+Date:   Thu, 27 Jan 2022 15:33:12 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-CrossPremisesHeadersFilteredBySendConnector: maileu5.global.cadence.com
-X-OrganizationHeadersPreserved: maileu5.global.cadence.com
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3f204e23-306d-46a3-4891-08d9e1a1dd1f
-X-MS-TrafficTypeDiagnostic: PH7PR07MB9396:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR07MB939689B5BA6968BE998D6864C5219@PH7PR07MB9396.namprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nP8fNWsgEoJrPtPFVfqDQWVBc92ai94qDLqirlJZUSFWufrvJkd3jgQ9N92n68BKy5/A6wYL9xcP6YhmuseKpr5C3Pr4W9XJXiK8XYvuipDtLlASz+ClPm/I9rBBafW9g7YwActBk2PONaXfytYEEn8of41WR8NfYhygj3j+LxYFoqs8I+gPO+XJ0AAxNKC3/wWvAM5IJtUx06ZrRKep/2GxtgH1et2iK1RCxwsbxJRwvlNXJX6AwL5edeHuSsp0Of0gINJq8xYBB2VQK0qVutd+FFU+yu366HVWH9U0gcV97w57vvKoofOrvc5dYLnEQOJ7kqnAw+M7+i+IoUMYeYjFUxE6LCDv8A1CjaezBcP23UVet/XHJ46KiHazPLToSnXi+gdwmohtSnWN+yBQ55zZY1Ld7IiDLA6aGJpp+Bje5458Z53lRCgzQa/zZACNX+pr787JwRaClEYhbEk+ENFUnp25+Wpz5K0Q9+7LUPFOJ15iENuiJjtroG8Nq7Nv3/XOLLYFWzaiEKZRbV0QNLjZbLYRg0ROKJFr9P6wjxxFNyA5GQQHqmqqN41XxDFpP+2N9DqYisN81jKpzHnxJm/1DxxnBIc3eyuR5Ew+ziNANjmSkJqYs1hgrcvrcRhykMDhvQU5T71lX3nzNsMI2HaJdJ6PMgLf17K15zBxl5/KOM39k4GVLKWshJj2lBH5HTAWdoTVleWA1If0lJ6tPy2lo8fk7edMelD4MqGbv4Ho676iKbj6CUSwZuK09fJkIkX+hQ70STl3QAjHuluk/KxRvvtlFY/Zw/ff+oyYIssiWfWnc/pVs/8Xu/YG2T9jn49VYO0i1lXLMbxbL8yM8A==
-X-Forefront-Antispam-Report: CIP:64.207.220.244;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:wcmailrelayl01.cadence.com;PTR:ErrorRetry;CAT:NONE;SFS:(4636009)(36092001)(36840700001)(46966006)(40470700004)(316002)(42186006)(63370400001)(110136005)(508600001)(54906003)(40460700003)(86362001)(2906002)(70206006)(47076005)(8676002)(336012)(2616005)(36860700001)(26005)(186003)(36756003)(8936002)(82310400004)(63350400001)(83380400001)(426003)(4326008)(356005)(81166007)(70586007)(6666004)(5660300002)(1076003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: cadence.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2022 14:32:36.4028
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f204e23-306d-46a3-4891-08d9e1a1dd1f
-X-MS-Exchange-CrossTenant-Id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=d36035c5-6ce6-4662-a3dc-e762e61ae4c9;Ip=[64.207.220.244];Helo=[wcmailrelayl01.cadence.com]
-X-MS-Exchange-CrossTenant-AuthSource: MW2NAM12FT067.eop-nam12.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR07MB9396
-X-Proofpoint-GUID: 13UgV7ibA2gPw1Ud3XenQ9-MMxm42WtL
-X-Proofpoint-ORIG-GUID: 13UgV7ibA2gPw1Ud3XenQ9-MMxm42WtL
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-27_03,2022-01-27_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0 mlxscore=0
- suspectscore=0 lowpriorityscore=0 priorityscore=1501 phishscore=0
- impostorscore=0 mlxlogscore=975 bulkscore=0 adultscore=0 clxscore=1015
- spamscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201270088
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 02/19] dma-buf-map: Add helper to initialize second map
+Content-Language: en-US
+To:     Lucas De Marchi <lucas.demarchi@intel.com>,
+        intel-gfx@lists.freedesktop.org
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org
+References: <20220126203702.1784589-1-lucas.demarchi@intel.com>
+ <20220126203702.1784589-3-lucas.demarchi@intel.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220126203702.1784589-3-lucas.demarchi@intel.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------EPku7XflatQ6Ovr3WRaAV1zC"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Torrent PHY PLL0 or PLL1 is used for DP depending on the single link or
-multilink protocol configuration for which PHY is configured. In multilink
-configurations with other protocols, either PLL0 or PLL1 will be used
-for DP. For single link DP, both PLLs need to be configured at POR.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------EPku7XflatQ6Ovr3WRaAV1zC
+Content-Type: multipart/mixed; boundary="------------vGcauGD8tAgNdR80NZ29NGhd";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Lucas De Marchi <lucas.demarchi@intel.com>,
+ intel-gfx@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+ linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org
+Message-ID: <b7a3fe1d-3b85-cb7e-19cf-1611ff4f3c9e@suse.de>
+Subject: Re: [PATCH 02/19] dma-buf-map: Add helper to initialize second map
+References: <20220126203702.1784589-1-lucas.demarchi@intel.com>
+ <20220126203702.1784589-3-lucas.demarchi@intel.com>
+In-Reply-To: <20220126203702.1784589-3-lucas.demarchi@intel.com>
 
-Signed-off-by: Swapnil Jakhade <sjakhade@cadence.com>
----
- drivers/phy/cadence/phy-cadence-torrent.c | 30 +++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+--------------vGcauGD8tAgNdR80NZ29NGhd
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-diff --git a/drivers/phy/cadence/phy-cadence-torrent.c b/drivers/phy/cadence/phy-cadence-torrent.c
-index 7c4b8050485f..0e2839a6c65d 100644
---- a/drivers/phy/cadence/phy-cadence-torrent.c
-+++ b/drivers/phy/cadence/phy-cadence-torrent.c
-@@ -38,6 +38,9 @@
- #define POLL_TIMEOUT_US		5000
- #define PLL_LOCK_TIMEOUT	100000
- 
-+#define DP_PLL0			BIT(0)
-+#define DP_PLL1			BIT(1)
-+
- #define TORRENT_COMMON_CDB_OFFSET	0x0
- 
- #define TORRENT_TX_LANE_CDB_OFFSET(ln, block_offset, reg_offset)	\
-@@ -323,6 +326,7 @@ struct cdns_torrent_phy {
- 	void __iomem *base;	/* DPTX registers base */
- 	void __iomem *sd_base; /* SD0801 registers base */
- 	u32 max_bit_rate; /* Maximum link bit rate to use (in Mbps) */
-+	u32 dp_pll;
- 	struct reset_control *phy_rst;
- 	struct reset_control *apb_rst;
- 	struct device *dev;
-@@ -978,6 +982,30 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_100mhz(struct cdns_torrent_phy *cdns_phy,
- 	}
- }
- 
-+/* Set PLL used for DP configuration */
-+static int cdns_torrent_dp_get_pll(struct cdns_torrent_phy *cdns_phy,
-+				   enum cdns_torrent_phy_type phy_t2)
-+{
-+	switch (phy_t2) {
-+	case TYPE_PCIE:
-+	case TYPE_USB:
-+		cdns_phy->dp_pll = DP_PLL1;
-+		break;
-+	case TYPE_SGMII:
-+	case TYPE_QSGMII:
-+		cdns_phy->dp_pll = DP_PLL0;
-+		break;
-+	case TYPE_NONE:
-+		cdns_phy->dp_pll = DP_PLL0 | DP_PLL1;
-+		break;
-+	default:
-+		dev_err(cdns_phy->dev, "Unsupported PHY configuration\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- /*
-  * Enable or disable PLL for selected lanes.
-  */
-@@ -1640,6 +1668,8 @@ static int cdns_torrent_dp_init(struct phy *phy)
- 		return -EINVAL;
- 	}
- 
-+	cdns_torrent_dp_get_pll(cdns_phy, TYPE_NONE);
-+
- 	cdns_torrent_dp_common_init(cdns_phy, inst);
- 
- 	return cdns_torrent_dp_start(cdns_phy, inst, phy);
--- 
-2.34.1
+DQoNCkFtIDI2LjAxLjIyIHVtIDIxOjM2IHNjaHJpZWIgTHVjYXMgRGUgTWFyY2hpOg0KPiBX
+aGVuIGRtYV9idWZfbWFwIHN0cnVjdCBpcyBwYXNzZWQgYXJvdW5kLCBpdCdzIHVzZWZ1bCB0
+byBiZSBhYmxlIHRvDQo+IGluaXRpYWxpemUgYSBzZWNvbmQgbWFwIHRoYXQgdGFrZXMgY2Fy
+ZSBvZiByZWFkaW5nL3dyaXRpbmcgdG8gYW4gb2Zmc2V0DQo+IG9mIHRoZSBvcmlnaW5hbCBt
+YXAuDQo+IA0KPiBBZGQgYSBoZWxwZXIgdGhhdCBjb3BpZXMgdGhlIHN0cnVjdCBhbmQgYWRk
+IHRoZSBvZmZzZXQgdG8gdGhlIHByb3Blcg0KPiBhZGRyZXNzLg0KPiANCj4gQ2M6IFN1bWl0
+IFNlbXdhbCA8c3VtaXQuc2Vtd2FsQGxpbmFyby5vcmc+DQo+IENjOiBDaHJpc3RpYW4gS8O2
+bmlnIDxjaHJpc3RpYW4ua29lbmlnQGFtZC5jb20+DQo+IENjOiBsaW51eC1tZWRpYUB2Z2Vy
+Lmtlcm5lbC5vcmcNCj4gQ2M6IGRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcNCj4g
+Q2M6IGxpbmFyby1tbS1zaWdAbGlzdHMubGluYXJvLm9yZw0KPiBDYzogbGludXgta2VybmVs
+QHZnZXIua2VybmVsLm9yZw0KPiBTaWduZWQtb2ZmLWJ5OiBMdWNhcyBEZSBNYXJjaGkgPGx1
+Y2FzLmRlbWFyY2hpQGludGVsLmNvbT4NCj4gLS0tDQo+ICAgaW5jbHVkZS9saW51eC9kbWEt
+YnVmLW1hcC5oIHwgMjkgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4gICAxIGZp
+bGUgY2hhbmdlZCwgMjkgaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2luY2x1
+ZGUvbGludXgvZG1hLWJ1Zi1tYXAuaCBiL2luY2x1ZGUvbGludXgvZG1hLWJ1Zi1tYXAuaA0K
+PiBpbmRleCA2NWU5MjdkOWNlMzMuLjM1MTRhODU5ZjYyOCAxMDA2NDQNCj4gLS0tIGEvaW5j
+bHVkZS9saW51eC9kbWEtYnVmLW1hcC5oDQo+ICsrKyBiL2luY2x1ZGUvbGludXgvZG1hLWJ1
+Zi1tYXAuaA0KPiBAQCAtMTMxLDYgKzEzMSwzNSBAQCBzdHJ1Y3QgZG1hX2J1Zl9tYXAgew0K
+PiAgIAkJLmlzX2lvbWVtID0gZmFsc2UsIFwNCj4gICAJfQ0KPiAgIA0KPiArLyoqDQo+ICsg
+KiBETUFfQlVGX01BUF9JTklUX09GRlNFVCAtIEluaXRpYWxpemVzIHN0cnVjdCBkbWFfYnVm
+X21hcCBmcm9tIGFub3RoZXIgZG1hX2J1Zl9tYXANCj4gKyAqIEBtYXBfOglUaGUgZG1hLWJ1
+ZiBtYXBwaW5nIHN0cnVjdHVyZSB0byBjb3B5IGZyb20NCj4gKyAqIEBvZmZzZXQ6CU9mZnNl
+dCB0byBhZGQgdG8gdGhlIG90aGVyIG1hcHBpbmcNCj4gKyAqDQo+ICsgKiBJbml0aWFsaXpl
+cyBhIG5ldyBkbWFfYnVmX3N0cnVjdCBiYXNlZCBvbiBhbm90aGVyLiBUaGlzIGlzIHRoZSBl
+cXVpdmFsZW50IG9mIGRvaW5nOg0KPiArICoNCj4gKyAqIC4uIGNvZGUtYmxvY2s6IGMNCj4g
+KyAqDQo+ICsgKglkbWFfYnVmX21hcCBtYXAgPSBvdGhlcl9tYXA7DQo+ICsgKglkbWFfYnVm
+X21hcF9pbmNyKCZtYXAsICZvZmZzZXQpOw0KPiArICoNCj4gKyAqIEV4YW1wbGUgdXNhZ2U6
+DQo+ICsgKg0KPiArICogLi4gY29kZS1ibG9jazogYw0KPiArICoNCj4gKyAqCXZvaWQgZm9v
+KHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRtYV9idWZfbWFwICpiYXNlX21hcCkNCj4g
+KyAqCXsNCj4gKyAqCQkuLi4NCj4gKyAqCQlzdHJ1Y3QgZG1hX2J1Zl9tYXAgPSBETUFfQlVG
+X01BUF9JTklUX09GRlNFVChiYXNlX21hcCwgRklFTERfT0ZGU0VUKTsNCj4gKyAqCQkuLi4N
+Cj4gKyAqCX0NCj4gKyAqLw0KPiArI2RlZmluZSBETUFfQlVGX01BUF9JTklUX09GRlNFVCht
+YXBfLCBvZmZzZXRfKQkoc3RydWN0IGRtYV9idWZfbWFwKQlcDQo+ICsJewkJCQkJCQkJXA0K
+PiArCQkudmFkZHIgPSAobWFwXyktPnZhZGRyICsgKG9mZnNldF8pLAkJCVwNCj4gKwkJLmlz
+X2lvbWVtID0gKG1hcF8pLT5pc19pb21lbSwJCQkJXA0KPiArCX0NCj4gKw0KDQpJdCdzIGls
+bGVnYWwgdG8gYWNjZXNzIC52YWRkciAgd2l0aCByYXcgcG9pbnRlci4gQWx3YXlzIHVzZSBh
+IA0KZG1hX2J1Zl9tZW1jcHlfKCkgaW50ZXJmYWNlLiBTbyB3aHkgd291bGQgeW91IG5lZWQg
+dGhpcyBtYWNybyB3aGVuIHlvdSANCmhhdmUgZG1hX2J1Zl9tZW1jcHlfKigpIHdpdGggYW4g
+b2Zmc2V0IHBhcmFtZXRlcj8NCg0KSSd2ZSBhbHNvIGJlZW4gdmVyeSBjYXJlZnVsIHRvIGRp
+c3Rpbmd1aXNoIGJldHdlZW4gLnZhZGRyIGFuZCANCi52YWRkcl9pb21lbSwgZXZlbiBpbiBw
+bGFjZXMgd2hlcmUgSSB3b3VsZG4ndCBoYXZlIHRvLiBUaGlzIG1hY3JvIGJyZWFrcyANCnRo
+ZSBhc3N1bXB0aW9uLg0KDQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQo+ICAgLyoqDQo+ICAg
+ICogZG1hX2J1Zl9tYXBfc2V0X3ZhZGRyIC0gU2V0cyBhIGRtYS1idWYgbWFwcGluZyBzdHJ1
+Y3R1cmUgdG8gYW4gYWRkcmVzcyBpbiBzeXN0ZW0gbWVtb3J5DQo+ICAgICogQG1hcDoJVGhl
+IGRtYS1idWYgbWFwcGluZyBzdHJ1Y3R1cmUNCg0KLS0gDQpUaG9tYXMgWmltbWVybWFubg0K
+R3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMgR2Vy
+bWFueSBHbWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkNCihI
+UkIgMzY4MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNmw7xocmVyOiBJdm8gVG90ZXYN
+Cg==
 
+--------------vGcauGD8tAgNdR80NZ29NGhd--
+
+--------------EPku7XflatQ6Ovr3WRaAV1zC
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmHyrSgFAwAAAAAACgkQlh/E3EQov+Cc
+6g//TK4JmsLDsBBuI7FCdzbCPrs+sPOpBPxZP5UxyowIUXqfpfsjmjQTaDgOD8KSCQLmb+UH4+yh
+rhOob5lWlLbaOu341xPk6TleHIbu8lVCC+7HATCxJ4Llp1ViT3Z4H1qgAc59GSPbVEpxJWG0t52b
+/lL0651M4oR5TKZXEzoX6t9Of+VXga/wo0wdE0kzdWv0SBpiAnNI6YqlNAVFsW7A8jyKwIKPbD0D
+uxTp0D5pVsYf+80oNM4IHstjIPQqIaNUXlqIzvIx4eoppkDCgEFxuectj7NK9mConk5RQguQWiHZ
+rzr9/P/pRz9vgacplYjjnkuO4DOZGFNady9JvH+pgIQ2XFsmkNgcNf2UrVN2+bJm2MdLQ0UReKiA
+ypqqkYcyuLTtOGgggs90hEalFsIw4CqNxu4HE3sF7gq0OcRxk0AmpZC9FcJh+Fj0JIcjv4vZmfQY
+CWOIHB47aRaHZyr2XDL0+ibjbNTf6kcqhItWNWmq34TKL1SW36WN865+2ETmwARRffF+wVLYVAIw
+QgLs/cVIW2DtCM1Cxr9yttdJ9LU7Lz4YiW1rA7/7GzSzuuSxa4SVz9yWVAjjJy3ljG3uKZBPGrYI
+ylNA03ps9v32zBqsjT6m9BFGLFBAxmhlr/0YOJfBTt0Mh2VVcn2NI+NJuGw19GtYXs0Ky6g4x50M
+Pkc=
+=ejto
+-----END PGP SIGNATURE-----
+
+--------------EPku7XflatQ6Ovr3WRaAV1zC--
