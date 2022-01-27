@@ -2,84 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D740EC4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C31C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244025AbiA0Qni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 11:43:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244079AbiA0Qmm (ORCPT
+        id S244057AbiA0Qoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 11:44:37 -0500
+Received: from gandalf.ozlabs.org ([150.107.74.76]:37359 "EHLO
+        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244054AbiA0Qof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 11:42:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736ECC06174A;
-        Thu, 27 Jan 2022 08:42:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 27 Jan 2022 11:44:35 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EF31B80BD1;
-        Thu, 27 Jan 2022 16:42:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F092DC340E8;
-        Thu, 27 Jan 2022 16:42:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643301742;
-        bh=TXAiXJs3qtaBb0dJ/MpNjqafjjmSK1BDR2g/RFuEQIw=;
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jl5z466Pgz4xcT;
+        Fri, 28 Jan 2022 03:44:32 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1643301873;
+        bh=MX51oCd5bYSXDZe8p/UcQRq6AXgsb/XDeiec+w4Y0wY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XFhQD3n4txrlQjiqmBQhuEcOlBor8yCCMKV7JbjF9RBP9BsBzY/yrBjWLuVXgwF5I
-         PC9aZrrt2JgeCoJk15rAqamfKrGgxzraeDApR4+qEl+gHFdGDhXUr6mWUjooeT9ZSy
-         5NhMFaOLqXncr4QQchYjjQ6WHFUWXYcBSTGTiIhOD3bHIh1w9tP/KMG6d+FbvCKnpS
-         kPZ53DpAfdB3rYXobfVBsEoi93mJ6bsMeVoeqM7uFvUvqm9tIf65jTk4NfYHY0eGkV
-         MoXzGicWMPpUY+7LV/uN/D97p+7YgHZtfAWrfXyIYXReBQMXX3Z9oSuU/hxpanlLsC
-         A07KMwmdOydOg==
-Date:   Thu, 27 Jan 2022 08:42:20 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>, menglong8.dong@gmail.com
-Cc:     dsahern@kernel.org, rostedt@goodmis.org, mingo@redhat.com,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, edumazet@google.com,
-        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        imagedong@tencent.com, alobakin@pm.me, pabeni@redhat.com,
-        cong.wang@bytedance.com, talalahmad@google.com, haokexin@gmail.com,
-        keescook@chromium.org, memxor@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        mengensun@tencent.com
-Subject: Re: [PATCH v2 net-next 1/8] net: socket: intrudoce
- SKB_DROP_REASON_SOCKET_FILTER
-Message-ID: <20220127084220.05c86ef5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <2512e358-f4d8-f85e-2a82-fbd5a97d1c2f@gmail.com>
-References: <20220127091308.91401-1-imagedong@tencent.com>
-        <20220127091308.91401-2-imagedong@tencent.com>
-        <2512e358-f4d8-f85e-2a82-fbd5a97d1c2f@gmail.com>
+        b=Uao15/lhQjJwl2dipxNY9hvuxyNRyiggc/Y9TMjW0SAZVdse/rAQYvNMFyQOCQ5Nn
+         dLd1qBLsk2zmx8LMMQ81QbOj1gD9WS1w4eH1xJTOy0zApo3XztRKXo+5D2FhnSbp95
+         zx1Ught578YSy4xnNaX7k8CFUjoGPM8SNWpc6sTeAkEMhXZpK0tSvUGufq89wpjw0+
+         69vqjQvE3mnSZNLsuQ+I11Lp0Lkuvt/btise/qWipXdaAJcoekaUSQX2x1KODIC0R2
+         PZ3LmsWLfWUDie/TBpPz9535V60v9SfRmXaQs5WeM+3+KyJr/K9KWuPgO+t6pG7Gu1
+         IqizhWW5aP4sQ==
+Date:   Fri, 28 Jan 2022 03:44:30 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warnings in Linus' tree
+Message-ID: <20220128034430.77fef717@canb.auug.org.au>
+In-Reply-To: <20220127060141.GA10653@lst.de>
+References: <20220127153055.6dd9f73d@canb.auug.org.au>
+        <20220127060141.GA10653@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/03=0ATfZR7Di9qbVyibM7nu";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 08:37:06 -0700 David Ahern wrote:
-> On 1/27/22 2:13 AM, menglong8.dong@gmail.com wrote:
-> > From: Menglong Dong <imagedong@tencent.com>
-> > 
-> > Introduce SKB_DROP_REASON_SOCKET_FILTER, which is used as the reason
-> > of skb drop out of socket filter. Meanwhile, replace
-> > SKB_DROP_REASON_TCP_FILTER with it.
+--Sig_/03=0ATfZR7Di9qbVyibM7nu
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index bf11e1fbd69b..8a636e678902 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -318,7 +318,7 @@ enum skb_drop_reason {
-> >  	SKB_DROP_REASON_NO_SOCKET,
-> >  	SKB_DROP_REASON_PKT_TOO_SMALL,
-> >  	SKB_DROP_REASON_TCP_CSUM,
-> > -	SKB_DROP_REASON_TCP_FILTER,
-> > +	SKB_DROP_REASON_SOCKET_FILTER,
-> >  	SKB_DROP_REASON_UDP_CSUM,
-> >  	SKB_DROP_REASON_MAX,
-> 
-> This should go to net, not net-next.
+Hi Christoph,
 
-Let me make an exception and apply this patch out of the series 
-to avoid a conflict / week long wait for another merge.
+On Thu, 27 Jan 2022 07:01:41 +0100 Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Thu, Jan 27, 2022 at 03:30:55PM +1100, Stephen Rothwell wrote:
+> >=20
+> > Building Linus' tree, today's linux-next build (htmldocs) produced
+> > these warnings:
+> >=20
+> > include/linux/blkdev.h:1533: warning: Function parameter or member 'sta=
+rt_time' not described in 'bio_end_io_acct'
+> > include/linux/blkdev.h:1533: warning: Excess function parameter 'start'=
+ description in 'bio_end_io_acct'
+> >=20
+> > Introduced by commit
+> >=20
+> >   956d510ee78c ("block: add disk/bio-based accounting helpers") =20
+>=20
+> The warning looks correct, but that commit is rather old, so something
+> else must have caused it to be emitted now?
+
+Yeah, but I couldn't see anything obvious.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/03=0ATfZR7Di9qbVyibM7nu
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHyy+4ACgkQAVBC80lX
+0GxH8ggAn7Nw74omN15x0YNxT3itr8Sm2r6A2ogQkLGg+3R7+lXaPBj5tSSJbPhY
+3OIRG+BpK/l9OcP8NOP9wLNidd6mg6qbpjD4F4Y28K94p38sXAYnCMBcMmyBVMEk
+JuLOChGb2BCaESVJkK9MTvII6kigVgSstUkzKWhb98hcJrETZ//fA44EPiM0D9Q5
+QC3ic6OkVMYPeDA22oE+lC5Uj92J6uQlMCiPcyp68xSnU+VAtPtFLlX0sDGOCu/x
+xNC+WQJNo9oe81Z5wt86QZ658G9e9+C8c/bRlk9LiD9Z+MFZSNdXQHydoFG96b5w
+U5taHJ2gYE60tTH6e2vplWZ1n85Y1w==
+=WLhG
+-----END PGP SIGNATURE-----
+
+--Sig_/03=0ATfZR7Di9qbVyibM7nu--
