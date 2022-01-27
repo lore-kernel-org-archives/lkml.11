@@ -2,98 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A47B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 15:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24221C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 15:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241890AbiA0PjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 10:39:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231590AbiA0PjL (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 10:39:11 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDF7C061714;
-        Thu, 27 Jan 2022 07:39:11 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id z199so4001046iof.10;
-        Thu, 27 Jan 2022 07:39:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=78e4n2ciJcS8eU8bfuJlxO2Papr5MMX9iCof5E4XjLk=;
-        b=CLtTaY7+Xxz9g0vrwdVDfgTVs9AQVK9BwNMpi5WHG+C5zMemZLgbiw9k02CTXo0skQ
-         tWjMZZ2/yPJcDx7ylT9SpYWXCBEIVUjqGjhF4J034Vuhmw+cM8TIz8LxToRq5TUqnPkK
-         etcv/4yZ2uyS1gXxjGIT/sY8zee4FGsYwIK/Ey4QN4yoARde/6c9ZM11C1LXxScupLTg
-         XG9888f46LSmvd2NZlv2vzN1JDiwWqykjNHJSfhhroQj2CbMHBadJRKuYPmoD24XmLLw
-         WZ2GuBwhgkQLOMZvrG6l0BMFEECISTe8Pye8K7TaZfjPVHiTf7VuIgQR2Q4o7q61PFJP
-         K8vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=78e4n2ciJcS8eU8bfuJlxO2Papr5MMX9iCof5E4XjLk=;
-        b=XxmSiheFWm2CGubTl/BBSSzw75jZbD2Fayl7yY9nfEhsBtNMBmHN/TsEQx0J33Bqv1
-         5w/wyHAa5PFC9qiHKcDIver+TO/8sWYoQV9E20wnh8Fp3JGJHYmYGdTd3Dhdn2WwQv7D
-         vrTRIqW2Uuln8geoltZHIscI1ogdDXiLTNiz5jXnyguB+O4PKNT5sQERyNQnnUhMyGF9
-         5VuxFwlAxDvtoO7vVXcGw9cAuterN4l9BdvgMeHYor/p9bLhxDB2SAURXAj7WSsMkOoi
-         huERb4uTWWUoCjPZeMScuAX81T92nRPIRsBzsiRSnk313P2M/2LCm103i4mnrCl+uoPh
-         ix3g==
-X-Gm-Message-State: AOAM532iJoGVLsD/Qe4xVRjl9sBMC5ss+GtSZtrvBvuBNSDkFJmDd/q9
-        PQPmLbOGAcxbO6PlrE9J9gs=
-X-Google-Smtp-Source: ABdhPJwAmatGJNuoWFlMMpgE9UV1ElC/u55vsOPVt+D8Ce2lXtnjtEnBciNZiS7L9Zy9iD7byHequQ==
-X-Received: by 2002:a02:6d11:: with SMTP id m17mr2035306jac.317.1643297950999;
-        Thu, 27 Jan 2022 07:39:10 -0800 (PST)
-Received: from ?IPV6:2601:282:800:dc80:182c:2e54:e650:90f5? ([2601:282:800:dc80:182c:2e54:e650:90f5])
-        by smtp.googlemail.com with ESMTPSA id g11sm11319478iom.45.2022.01.27.07.39.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 07:39:10 -0800 (PST)
-Message-ID: <8621e28f-4849-dad7-e52d-8cdd7f290488@gmail.com>
-Date:   Thu, 27 Jan 2022 08:39:07 -0700
+        id S242885AbiA0PlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 10:41:10 -0500
+Received: from foss.arm.com ([217.140.110.172]:39834 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234206AbiA0PlJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 10:41:09 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 02D091063;
+        Thu, 27 Jan 2022 07:41:09 -0800 (PST)
+Received: from e113632-lin.cambridge.arm.com (e113632-lin.cambridge.arm.com [10.1.196.57])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 55D0F3F766;
+        Thu, 27 Jan 2022 07:41:07 -0800 (PST)
+From:   Valentin Schneider <valentin.schneider@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
+Cc:     John Keeping <john@metanate.com>, Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>
+Subject: [PATCH v2] sched/rt: Plug rt_mutex_setprio() vs push_rt_task() race
+Date:   Thu, 27 Jan 2022 15:40:59 +0000
+Message-Id: <20220127154059.974729-1-valentin.schneider@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH v2 net-next 2/8] net: skb_drop_reason: add document for
- drop reasons
-Content-Language: en-US
-To:     menglong8.dong@gmail.com, dsahern@kernel.org, kuba@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, edumazet@google.com, pablo@netfilter.org,
-        kadlec@netfilter.org, fw@strlen.de, imagedong@tencent.com,
-        alobakin@pm.me, pabeni@redhat.com, cong.wang@bytedance.com,
-        talalahmad@google.com, haokexin@gmail.com, keescook@chromium.org,
-        memxor@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, mengensun@tencent.com
-References: <20220127091308.91401-1-imagedong@tencent.com>
- <20220127091308.91401-3-imagedong@tencent.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220127091308.91401-3-imagedong@tencent.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/27/22 2:13 AM, menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <imagedong@tencent.com>
-> 
-> Add document for following existing drop reasons:
-> 
-> SKB_DROP_REASON_NOT_SPECIFIED
-> SKB_DROP_REASON_NO_SOCKET
-> SKB_DROP_REASON_PKT_TOO_SMALL
-> SKB_DROP_REASON_TCP_CSUM
-> SKB_DROP_REASON_SOCKET_FILTER
-> SKB_DROP_REASON_UDP_CSUM
-> 
-> Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> ---
->  include/linux/skbuff.h | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
+John reported that push_rt_task() can end up invoking
+find_lowest_rq(rq->curr) when curr is not an RT task (in this case a CFS
+one), which causes mayhem down convert_prio().
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+This can happen when current gets demoted to e.g. CFS when releasing an
+rt_mutex, and the local CPU gets hit with an rto_push_work irqwork before
+getting the chance to reschedule. Exactly who triggers this work isn't
+entirely clear to me - switched_from_rt() only invokes rt_queue_pull_task()
+if there are no RT tasks on the local RQ, which means the local CPU can't
+be in the rto_mask.
 
+My current suspected sequence is something along the lines of the below,
+with the demoted task being current.
+
+  mark_wakeup_next_waiter()
+    rt_mutex_adjust_prio()
+      rt_mutex_setprio() // deboost originally-CFS task
+	check_class_changed()
+	  switched_from_rt() // Only rt_queue_pull_task() if !rq->rt.rt_nr_running
+	  switched_to_fair() // Sets need_resched
+      __balance_callbacks() // if pull_rt_task(), tell_cpu_to_push() can't select local CPU per the above
+      raw_spin_rq_unlock(rq)
+
+       // need_resched is set, so task_woken_rt() can't
+       // invoke push_rt_tasks(). Best I can come up with is
+       // local CPU has rt_nr_migratory >= 2 after the demotion, so stays
+       // in the rto_mask, and then:
+
+       <some other CPU running rto_push_irq_work_func() queues rto_push_work on this CPU>
+	 push_rt_task()
+	   // breakage follows here as rq->curr is CFS
+
+Move an existing check to check rq->curr vs the next pushable task's
+priority before getting anywhere near find_lowest_rq(). While at it, add an
+explicit sched_class of rq->curr check prior to invoking
+find_lowest_rq(rq->curr). Align the DL logic to also reschedule regardless
+of next_task's migratability.
+
+Link: http://lore.kernel.org/r/Yb3vXx3DcqVOi+EA@donbot
+Fixes: a7c81556ec4d ("sched: Fix migrate_disable() vs rt/dl balancing")
+Reported-by: John Keeping <john@metanate.com>
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Tested-by: John Keeping <john@metanate.com>
+---
+v1 -> v2: Reworded comments, added DL part (Dietmar)
+---
+ kernel/sched/deadline.c | 12 ++++++------
+ kernel/sched/rt.c       | 32 ++++++++++++++++++++++----------
+ 2 files changed, 28 insertions(+), 16 deletions(-)
+
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index d2c072b0ef01..62f0cf842277 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -2240,12 +2240,6 @@ static int push_dl_task(struct rq *rq)
+ 		return 0;
+ 
+ retry:
+-	if (is_migration_disabled(next_task))
+-		return 0;
+-
+-	if (WARN_ON(next_task == rq->curr))
+-		return 0;
+-
+ 	/*
+ 	 * If next_task preempts rq->curr, and rq->curr
+ 	 * can move away, it makes sense to just reschedule
+@@ -2258,6 +2252,12 @@ static int push_dl_task(struct rq *rq)
+ 		return 0;
+ 	}
+ 
++	if (is_migration_disabled(next_task))
++		return 0;
++
++	if (WARN_ON(next_task == rq->curr))
++		return 0;
++
+ 	/* We might release rq lock */
+ 	get_task_struct(next_task);
+ 
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 7b4f4fbbb404..14f273c29518 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -2026,6 +2026,16 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 		return 0;
+ 
+ retry:
++	/*
++	 * It's possible that the next_task slipped in of
++	 * higher priority than current. If that's the case
++	 * just reschedule current.
++	 */
++	if (unlikely(next_task->prio < rq->curr->prio)) {
++		resched_curr(rq);
++		return 0;
++	}
++
+ 	if (is_migration_disabled(next_task)) {
+ 		struct task_struct *push_task = NULL;
+ 		int cpu;
+@@ -2033,6 +2043,18 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 		if (!pull || rq->push_busy)
+ 			return 0;
+ 
++		/*
++		 * Invoking find_lowest_rq() on anything but an RT task doesn't
++		 * make sense. Per the above priority check, curr has to
++		 * be of higher priority than next_task, so no need to
++		 * reschedule when bailing out.
++		 *
++		 * Note that the stoppers are masqueraded as SCHED_FIFO
++		 * (cf. sched_set_stop_task()), so we can't rely on rt_task().
++		 */
++		if (rq->curr->sched_class != &rt_sched_class)
++			return 0;
++
+ 		cpu = find_lowest_rq(rq->curr);
+ 		if (cpu == -1 || cpu == rq->cpu)
+ 			return 0;
+@@ -2057,16 +2079,6 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 	if (WARN_ON(next_task == rq->curr))
+ 		return 0;
+ 
+-	/*
+-	 * It's possible that the next_task slipped in of
+-	 * higher priority than current. If that's the case
+-	 * just reschedule current.
+-	 */
+-	if (unlikely(next_task->prio < rq->curr->prio)) {
+-		resched_curr(rq);
+-		return 0;
+-	}
+-
+ 	/* We might release rq lock */
+ 	get_task_struct(next_task);
+ 
+-- 
+2.25.1
 
