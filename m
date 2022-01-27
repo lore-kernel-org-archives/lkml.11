@@ -2,149 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9861AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C165C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242016AbiA0NfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 08:35:08 -0500
-Received: from foss.arm.com ([217.140.110.172]:33558 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242027AbiA0NdR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:33:17 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ACC5B1063;
-        Thu, 27 Jan 2022 05:33:16 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [10.57.14.34])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1C39D3F766;
-        Thu, 27 Jan 2022 05:33:14 -0800 (PST)
-Date:   Thu, 27 Jan 2022 13:33:02 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Yinan Liu <yinan@linux.alibaba.com>,
-        linuxppc-dev@lists.ozlabs.org, Sachin Sant <sachinp@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, ardb@kernel.org,
-        keescook@chromium.org, hca@linux.ibm.com
-Subject: Re: [powerpc] ftrace warning kernel/trace/ftrace.c:2068 with
- code-patching selftests
-Message-ID: <YfKfDnbNGina2lKz@FVFF77S0Q05N>
-References: <e9422643-a210-b77f-a037-da63a9d2e925@linux.alibaba.com>
- <20220124114548.30241947@gandalf.local.home>
- <0fa0daec-881a-314b-e28b-3828e80bbd90@linux.alibaba.com>
- <YfFclROd+0/61q2d@FVFF77S0Q05N>
- <YfKGKWW5UfZ15kCW@FVFF77S0Q05N>
- <yt9dy231gzae.fsf@linux.ibm.com>
- <YfKPmFJ2MGsem4VB@FVFF77S0Q05N>
- <20220127074601.41a3773d@rorschach.local.home>
- <YfKZXvB9vCN1bA1c@FVFF77S0Q05N>
- <yt9dsft9gvyo.fsf@linux.ibm.com>
+        id S242121AbiA0NgM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 08:36:12 -0500
+Received: from mail-yb1-f169.google.com ([209.85.219.169]:34756 "EHLO
+        mail-yb1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242227AbiA0NeD (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 08:34:03 -0500
+Received: by mail-yb1-f169.google.com with SMTP id v186so8804013ybg.1;
+        Thu, 27 Jan 2022 05:34:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JwIU7q542/Majhq966D+41zjzGbPYbtJbtOu0ZRQ3As=;
+        b=DLPdBI7j7GtcJ6fgOGH8ILGgC/xlOaTlADW7+9eeH5x9mdQYWH7Zno7gd8nap4YFe0
+         QnMsabrKXBy6Q5pDdLgLIgBEQI930tex75iCNxyz+QmbmoKC3m6rF1LLdXarfXQg1LzW
+         oiVM+xbxMeCtJ5eA6gbdRUNEcMnxAUgbAzFSNzFomH+dDQzIVwwi1U8Hb1WSrIGT85Sx
+         NetYAkLUIxXK9uO4vmJ5rVXYnggh3KEWRuQc++Krk1ymFfeNxvutPEttk5WYi288WS5Q
+         WsUwmh1CynLl3kClhYMqYNJHTDmq8iYF/IpCzplnrm3p8yuodo2l2TFZdQal14kyH1Gs
+         A1JQ==
+X-Gm-Message-State: AOAM5333R6rzPj/LFtYDc20S0IYct2hfPKC5yN3ADLxKSAyYt+xcGVHs
+        h9RTpAThBp5GoUbwiQiq/9QlGSVRcYE5ThQs/0A=
+X-Google-Smtp-Source: ABdhPJx5o6SjJD6Sr3giZs1kpJ/iEQnMh6yOLpDp+jztp116PA4onXa6gPegmQzAF6j36v7rIaCFiiI6WAkjpYmMEs4=
+X-Received: by 2002:a25:4ac4:: with SMTP id x187mr5580851yba.466.1643290443015;
+ Thu, 27 Jan 2022 05:34:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <yt9dsft9gvyo.fsf@linux.ibm.com>
+References: <20220123091004.763775-1-ztong0001@gmail.com> <6a0233cd-d931-8a36-3b9e-08b774cec7b0@redhat.com>
+ <CAJZ5v0h51v9fFrJRuaFpSn7J2UEHndEj0f3zpmw=RvgsvAhtvw@mail.gmail.com>
+ <049ccc3a-8628-3e90-a4f4-137a286b6dce@redhat.com> <CAJZ5v0hJWW_vZ3wwajE7xT38aWjY7cZyvqMJpXHzUL98-SiCVQ@mail.gmail.com>
+ <994f94b2-61d3-1754-d733-732a0fb47d50@redhat.com>
+In-Reply-To: <994f94b2-61d3-1754-d733-732a0fb47d50@redhat.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 27 Jan 2022 14:33:52 +0100
+Message-ID: <CAJZ5v0hXKJhCSKki8JHs+Q=3BWYygDNz9LLAaiVKpDvLPr6-ZA@mail.gmail.com>
+Subject: Re: acpi_get_devices() crash when acpi_disabled==true (was [PATCH v2]
+ drm/privacy-screen: honor acpi=off in detect_thinkpad_privacy_screen)
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Tong Zhang <ztong0001@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        linux-acpi <linux-acpi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 02:16:31PM +0100, Sven Schnelle wrote:
-> Mark Rutland <mark.rutland@arm.com> writes:
-> 
-> > On Thu, Jan 27, 2022 at 07:46:01AM -0500, Steven Rostedt wrote:
-> >> On Thu, 27 Jan 2022 12:27:04 +0000
-> >> Mark Rutland <mark.rutland@arm.com> wrote:
-> >> 
-> >> > Ah, so those non-ELF relocations for the mcount_loc table just mean "apply the
-> >> > KASLR offset here", which is equivalent for all entries.
-> >> > 
-> >> > That makes sense, thanks!
-> >> 
-> >> And this is why we were having such a hard time understanding each other ;-)
+On Thu, Jan 27, 2022 at 2:05 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> Hi,
+>
+> On 1/26/22 18:11, Rafael J. Wysocki wrote:
+> > On Wed, Jan 26, 2022 at 5:41 PM Hans de Goede <hdegoede@redhat.com> wrote:
+> >>
+> >> Hi,
+> >>
+> >> On 1/26/22 16:54, Rafael J. Wysocki wrote:
+> >>> On Wed, Jan 26, 2022 at 2:47 PM Hans de Goede <hdegoede@redhat.com> wrote:
+> >>>>
+> >>>> Hi All,
+> >>>>
+> >>>> On 1/23/22 10:10, Tong Zhang wrote:
+> >>>>> when acpi=off is provided in bootarg, kernel crash with
+> >>>>>
+> >>>>> [    1.252739] BUG: kernel NULL pointer dereference, address: 0000000000000018
+> >>>>> [    1.258308] Call Trace:
+> >>>>> [    1.258490]  ? acpi_walk_namespace+0x147/0x147
+> >>>>> [    1.258770]  acpi_get_devices+0xe4/0x137
+> >>>>> [    1.258921]  ? drm_core_init+0xc0/0xc0 [drm]
+> >>>>> [    1.259108]  detect_thinkpad_privacy_screen+0x5e/0xa8 [drm]
+> >>>>> [    1.259337]  drm_privacy_screen_lookup_init+0xe/0xe85 [drm]
+> >>>>>
+> >>>>> The reason is that acpi_walk_namespace expects acpi related stuff
+> >>>>> initialized but in fact it wouldn't when acpi is set to off. In this case
+> >>>>> we should honor acpi=off in detect_thinkpad_privacy_screen().
+> >>>>>
+> >>>>> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+> >>>>
+> >>>> Thank you for catching this and thank you for your patch. I was about to merge
+> >>>> this, but then I realized that this might not be the best way to fix this.
+> >>>>
+> >>>> A quick grep shows 10 acpi_get_devices() calls outside of drivers/acpi,
+> >>>> and at a first glance about half of those are missing an acpi_disabled
+> >>>> check. IMHO it would be better to simply add an acpi_disabled check to
+> >>>> acpi_get_devices() itself.
+> >>>>
+> >>>> Rafael, do you agree ?
+> >>>
+> >>> Yes, I do.
+> >>
+> >> Did you see my follow-up that that is not going to work because
+> >> acpi_get_devices() is an acpica function ?
 > >
-> > ;)
-> >
-> > With that in mind, I think that we understand that the build-time sort works
-> > for:
-> >
-> > * arch/x86, becuase the non-ELF relocations for mcount_loc happen to be
-> >   equivalent.
-> >  
-> > * arch/arm, because there's no dynamic relocaiton and the mcount_loc entries
-> >   have been finalized prior to sorting.
-> >
-> > ... but doesn't work for anyone else (including arm64) because the ELF
-> > relocations are not equivalent, and need special care that is not yet
-> > implemented.
-> 
-> For s390 my idea is to just skip the addresses between __start_mcount_loc
-> and __stop_mcount_loc, because for these addresses we know that they are
-> 64 bits wide, so we just need to add the KASLR offset.
-> 
-> I'm thinking about something like this:
-> 
-> diff --git a/arch/s390/boot/compressed/decompressor.h b/arch/s390/boot/compressed/decompressor.h
-> index f75cc31a77dd..015d7e2e94ef 100644
-> --- a/arch/s390/boot/compressed/decompressor.h
-> +++ b/arch/s390/boot/compressed/decompressor.h
-> @@ -25,6 +25,8 @@ struct vmlinux_info {
->  	unsigned long rela_dyn_start;
->  	unsigned long rela_dyn_end;
->  	unsigned long amode31_size;
-> +	unsigned long start_mcount_loc;
-> +	unsigned long stop_mcount_loc;
->  };
->  
->  /* Symbols defined by linker scripts */
-> diff --git a/arch/s390/boot/startup.c b/arch/s390/boot/startup.c
-> index 1aa11a8f57dd..7bb0d88db5c6 100644
-> --- a/arch/s390/boot/startup.c
-> +++ b/arch/s390/boot/startup.c
-> @@ -88,6 +88,11 @@ static void handle_relocs(unsigned long offset)
->  	dynsym = (Elf64_Sym *) vmlinux.dynsym_start;
->  	for (rela = rela_start; rela < rela_end; rela++) {
->  		loc = rela->r_offset + offset;
-> +		if ((loc >= vmlinux.start_mcount_loc) &&
-> +		    (loc < vmlinux.stop_mcount_loc)) {
-> +			(*(unsigned long *)loc) += offset;
-> +			continue;
-> +		}
->  		val = rela->r_addend;
->  		r_sym = ELF64_R_SYM(rela->r_info);
->  		if (r_sym) {
-> @@ -232,6 +237,8 @@ static void offset_vmlinux_info(unsigned long offset)
->  	vmlinux.rela_dyn_start += offset;
->  	vmlinux.rela_dyn_end += offset;
->  	vmlinux.dynsym_start += offset;
-> +	vmlinux.start_mcount_loc += offset;
-> +	vmlinux.stop_mcount_loc += offset;
->  }
->  
->  static unsigned long reserve_amode31(unsigned long safe_addr)
-> diff --git a/arch/s390/kernel/vmlinux.lds.S b/arch/s390/kernel/vmlinux.lds.S
-> index 42c43521878f..51c773405608 100644
-> --- a/arch/s390/kernel/vmlinux.lds.S
-> +++ b/arch/s390/kernel/vmlinux.lds.S
-> @@ -213,6 +213,8 @@ SECTIONS
->  		QUAD(__rela_dyn_start)				/* rela_dyn_start */
->  		QUAD(__rela_dyn_end)				/* rela_dyn_end */
->  		QUAD(_eamode31 - _samode31)			/* amode31_size */
-> +		QUAD(__start_mcount_loc)
-> +		QUAD(__stop_mcount_loc)
->  	} :NONE
->  
->  	/* Debugging sections.	*/
-> 
-> Not sure whether that would also work on power, and also not sure
-> whether i missed something thinking about that. Maybe it doesn't even
-> work. ;-)
+> > No, I didn't, but it is possible to add a wrapper doing the check
+> > around it and convert all of the users.
+>
+> Yes I did think about that. Note that I've gone ahead and pushed
+> the fix which started this to drm-misc-fixes, to resolve the crash
+> for now.
 
-I don't know enough about s390 or powerpc relocs to say whether that works, but
-I can say that approach isn't going to work for arm64 without other signficant
-changes.
+OK
 
-I want to get the regression fixed ASAP, so can we take a simple patch for -rc2
-which disables the build-time sort where it's currently broken (by limiting the
-opt-in to arm and x86), then follow-up per-architecture to re-enable it if
-desired/safe?
+> If we add such a wrapper we can remove a bunch of acpi_disabled checks
+> from various callers.
+>
+> > Alternatively, the ACPICA function can check acpi_gbl_root_node
+> > against NULL, like in the attached (untested) patch.
+>
+> That is probably an even better idea, as that avoids the need
+> for a wrapper altogether. So I believe that that is the best
+> solution.
 
-Thanks,
-Mark.
+Allright, let me cut an analogous patch for the upstream ACPICA, then.
