@@ -2,127 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF8AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 07:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF053C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 07:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237532AbiA0Hvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 02:51:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28688 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229949AbiA0Hvq (ORCPT
+        id S237544AbiA0Hwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 02:52:43 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:36066
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229949AbiA0Hwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 02:51:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643269905;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vKF0TdKO5aLrjOXdwkWmOrj4HOBqyJ5h5J0cv79n6sQ=;
-        b=TskWW7+P46ysF1NiJFRhsAu9lVvAkRZ4XgNB/N4+n3SlemgP5hFNMeNmTbgYho1ZvPCBOR
-        NUUpbbG14nFZAsk/TCoAtrOc9PXtS6K83DZt7TfUV6WoGJqSz1Pya0zFyFOWauZJi2rp0E
-        lWDdC11d4dEvFys2GHw3DjN4x5M3tCo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-498-ciO0PeyfMQSyefdsrr_BZQ-1; Thu, 27 Jan 2022 02:51:41 -0500
-X-MC-Unique: ciO0PeyfMQSyefdsrr_BZQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 27 Jan 2022 02:52:39 -0500
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 75B1B8144E2;
-        Thu, 27 Jan 2022 07:51:39 +0000 (UTC)
-Received: from localhost (ovpn-13-51.pek2.redhat.com [10.72.13.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6FC1B1059103;
-        Thu, 27 Jan 2022 07:51:35 +0000 (UTC)
-Date:   Thu, 27 Jan 2022 15:51:32 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v3 6/6] crash hp: Add x86 crash hotplug support
-Message-ID: <20220127075132.GB13508@MiWiFi-R3L-srv>
-References: <20220110195727.1682-1-eric.devolder@oracle.com>
- <20220110195727.1682-7-eric.devolder@oracle.com>
- <20220119102323.GB6349@MiWiFi-R3L-srv>
- <280485c9-4612-892c-0e3e-9e8b09e60cf9@oracle.com>
- <20220126091243.GB6588@MiWiFi-R3L-srv>
- <cf834659-3d8c-7ab5-ccd4-c877b0b9a2f0@oracle.com>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 476D53F1D0
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 07:52:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643269958;
+        bh=qdfi4d+HIRszzf26gXi/pQU/uCw5YnQfSUk9vCmYV/U=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=qovQ6rB8MkLVUT6Nyhw/eGBQdpE1fWj9NRKiVdlcY8XJFlGMfA9aNn1fnCWPlevEf
+         Rg7t4/nPyrwFtALI2JmD52w0D7ELditIOGouxJ88q79oWJBemESbTPz8B1cDnzLerF
+         OSCLAjLD9FTXwjEBfdBmwq4OhCYG5eyGldtuoC+RG0jKBD0EYQuPGMN8VmAXD8LAn7
+         kjXd4fWjEgCaEBOiwuwKs3P247cnaK/sBDFalkVM7wT8NtP3sM5OaFVi2bXeinL1RU
+         H+T+ArkZkzp3oH/zuPDM+EKGX8MFpuike7b4bDmcp/rNPDzORTRZUptcnK3drbrfUp
+         kw37de0ahiFbQ==
+Received: by mail-ed1-f70.google.com with SMTP id en7-20020a056402528700b00404aba0a6ffso986612edb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 23:52:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qdfi4d+HIRszzf26gXi/pQU/uCw5YnQfSUk9vCmYV/U=;
+        b=74Yi7f7unBWKZXgK+C+HhV5kbdXd3dfzM8cytBhdobXzkdxEwL8N1DNaa4lt3XO4xm
+         pi+1kCcR+8HKgVDQWdzeqX9NQDiEeb2F4U0i+UcJFa+va4RXabUS3MDoDCd0eL72OnVm
+         XBLt9zYFqz41/WOBxaafdXTYbDPTakmImerzLz2rCqbBttqA+FyT62of48AqgKX1JB0d
+         Y2+2tBQDBXvOMresKqPK2r/f9Zhf62XNqGA9ROxKLuYmVS2amBGgmEMXvSVk06S4VgS3
+         h6C7GuMQSJJZl2K4wrF+e3+rDYPXSb5KPSlemX0veDOUtx9r0/7HtFlcrb8oKYa44Uq2
+         eBhg==
+X-Gm-Message-State: AOAM531SB9Z3UUAbeqj57hW6H2z8lDszouGK6UNsetFrr2Rq6m58/FrT
+        A2I8Rucnr6ygJOH/ZcUO3pBYdOnA73GprCXPQoO+/mOLozb7CseK6+gpFCJAEKG0OAkpb5aHO5g
+        mSalE254rTpTVQmUonv4Ac/xO5+ajY/JswnoWsm/VUA==
+X-Received: by 2002:a05:6402:438d:: with SMTP id o13mr2539235edc.258.1643269956983;
+        Wed, 26 Jan 2022 23:52:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzXgM/NUB2nDHBifcFiSo9kBuXpOj4f7jGx7eR7EFTCWiVTMxtZDYwMkSwUrGK449uKeKU31A==
+X-Received: by 2002:a05:6402:438d:: with SMTP id o13mr2539208edc.258.1643269956206;
+        Wed, 26 Jan 2022 23:52:36 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id bv2sm8305550ejb.154.2022.01.26.23.52.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 23:52:35 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        nick.hawkins@hpe.com, verdun@hpe.com
+Subject: [PATCH] dt-bindings: vendor-prefixes: clarify HP prefix
+Date:   Thu, 27 Jan 2022 08:52:29 +0100
+Message-Id: <20220127075229.10299-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cf834659-3d8c-7ab5-ccd4-c877b0b9a2f0@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/26/22 at 11:32am, Eric DeVolder wrote:
-..snip.... 
-> > > > > +void arch_crash_hotplug_handler(struct kimage *image,
-> > > > > +	unsigned int hp_action, unsigned long a, unsigned long b)
-> > > > > +{
-> > > > > +	/*
-> > > > > +	 * To accurately reflect hot un/plug changes, the elfcorehdr (which
-> > > > > +	 * is passed to the crash kernel via the elfcorehdr= parameter)
-> > > > > +	 * must be updated with the new list of CPUs and memories. The new
-> > > > > +	 * elfcorehdr is prepared in a kernel buffer, and if no errors,
-> > > > > +	 * then it is written on top of the existing/old elfcorehdr.
-> > > > > +	 *
-> > > > > +	 * Due to the change to the elfcorehdr, purgatory must explicitly
-> > > > > +	 * exclude the elfcorehdr from the list of segments it checks.
-> > > > > +	 */
-> > > > 
-> > > > Please move this code comment to above function as kernel-doc if you
-> > > > this it benefits the entire function. Otherwise should move them above
-> > > > the code block they are explaining. For this place, I think moving them
-> > > > to above arch_crash_hotplug_handler() is better.
-> > > 
-> > > ok, I will do that!
-> > > 
-> > > > 
-> > > > > +	struct kexec_segment *ksegment;
-> > > > > +	unsigned char *ptr = NULL;
-> > > > > +	unsigned long elfsz = 0;
-> > > > > +	void *elfbuf = NULL;
-> > > > > +	unsigned long mem, memsz;
-> > > > > +	unsigned int n;
-> > > > > +
-> > > > > +	/*
-> > > > > +	 * When the struct kimage is alloced, it is wiped to zero, so
-> > > > > +	 * the elf_index_valid defaults to false. It is set on the
-> > > > > +	 * kexec_file_load path, or here for kexec_load.
-> > > > > +	 */
-> > > > 
-> > > > I think this kexec loading part should be taken out and post after this
-> > > > whole patchset being accepted. At least, it's worth to put them in a
-> > > > separate patch.
-> > > 
-> > > This little bit of code that identifies the incoming elfcorehdr is all that
-> > > is needed to support kexec_load (and the userspace changes of course). I'm
-> > > happy to split as a separate patch, but I would think that be maintaining it
-> > > with this series, then when it is accepted, both the kexec_load and
-> > > kexec_file_load paths would be supported? Your call.
-> > 
-> > Hmm, at first, let's split it out from this patch since it's an
-> > independent action to kdump. I would suggest we don't carry it in this
-> > series. After this series is done, you can post another patchset
-> > including this part as kernel patch, and also the code change in
-> > kexec_tools as user space patch.
-> > 
-> > ......
-> > 
-> 
-> OK, I'll remove the bit of code that supports kexec_load, so it can be introduced
-> later coincident with the changes to kexec-tools.
-> 
-> In a previous message you mentioned making changes to the order of the patches,
-> was this it, or is there more to come?
+There are two independent companies: "HP Inc." and "Hewlett Packard
+Enterprise". Clarify that "hp" prefix is about the first one.
 
-Yeah, replied to cover letter, please check it there.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+
+---
+
+Cc: nick.hawkins@hpe.com
+Cc: verdun@hpe.com
+
+Optionally please squash it with a new patch adding "hpe" prefix.
+See: https://lore.kernel.org/all/20220125194609.32314-1-nick.hawkins@hpe.com/
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 0d8da47cda1a..05a059c8a011 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -518,7 +518,7 @@ patternProperties:
+   "^hoperun,.*":
+     description: Jiangsu HopeRun Software Co., Ltd.
+   "^hp,.*":
+-    description: Hewlett Packard
++    description: Hewlett Packard Inc.
+   "^hsg,.*":
+     description: HannStar Display Co.
+   "^holtek,.*":
+-- 
+2.32.0
 
