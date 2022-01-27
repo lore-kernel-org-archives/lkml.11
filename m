@@ -2,99 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86E8CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:21:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C39C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:21:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240146AbiA0LV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:21:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbiA0LV0 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:21:26 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98989C061714;
-        Thu, 27 Jan 2022 03:21:26 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 5C85F1F450BC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1643282485;
-        bh=3BQWjA3nBp0sP7zgUSrad36ylixDnLmcqKRaTEEAMiM=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=TqymkiTkmc8ouV09E5rSvKQgI1FdJ0efS27pK79aps2Jzy7Z8w/Cy0sDkt8Yn9gFO
-         KGMCLUBeNBWSc5d+ZeCKWEwex3xbBOCP4CNz28lYh1Fi7qKWXjkkQusXvM2/mUT8LE
-         Wa2H+R+DwBAgfDM6IOoGwx9cOkPsIgj7mGW3g/pFQskGpDN3uaaEJyglRNEh9Rb2mK
-         XBmZeF9jONOMblSQQygM6bv8s/ecqlK1rrkjNVkqNffmePAeiOMJUkylg17LZCVPuK
-         e6tEGjEP6a9LpBl4OFu6G3DSTcKyWWfs4QJsLckJsJhdTG07bQOJoz8zABH0/KTkil
-         g9B6Tw63fHj6A==
-Subject: Re: [PATCH v4 32/35] iommu/mediatek: Get the proper bankid for multi
- banks
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org,
-        Hsin-Yi Wang <hsinyi@chromium.org>, youlin.pei@mediatek.com,
-        anan.sun@mediatek.com, xueqi.zhang@mediatek.com,
-        yen-chang.chen@mediatek.com, mingyuan.ma@mediatek.com,
-        yf.wang@mediatek.com, libo.kang@mediatek.com,
-        chengci.xu@mediatek.com
-References: <20220125085634.17972-1-yong.wu@mediatek.com>
- <20220125085634.17972-33-yong.wu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Message-ID: <0dce6a25-6e45-efcc-3235-b8b7be81ea4f@collabora.com>
-Date:   Thu, 27 Jan 2022 12:21:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S240173AbiA0LVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:21:31 -0500
+Received: from mga03.intel.com ([134.134.136.65]:42396 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240156AbiA0LVa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 06:21:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643282490; x=1674818490;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0Yscuwf+N4UdqqdRZpiV4BMeQ/s8f7xgSfppHywRAQc=;
+  b=OmbPY9MfYSegJiffqqddDu9GRWW4A1ByXTzl5B9+UPAieNkG69y42T5Z
+   kHu75NMba+ou5QOhlnKnk5MYOthEF6TV8V6msF42TYlm6ynbETSa6UIeS
+   BaC8juFYsPOBtteCRq3J9P+8Atg7kdaMLGOfgMHpzhHLXji8TGNYH6gPH
+   WEx6RxqIaGhXlzGnfciD89Z8fCoRp42B1NycSgX03yh6+TU16UvEgHbHl
+   g9/H2PukgdLLWcgatBJS7O0o0GORx2iZsdfjV4yJ8wibOsPKq9mYSTcPG
+   wugruhUWmPMIeNe83ou3d5TLW1PTehfPK5grn4prXZhKAkmTjzTeaVXhg
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="246766913"
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="246766913"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 03:21:30 -0800
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="480253197"
+Received: from sannilnx.jer.intel.com ([10.12.231.79])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 03:21:27 -0800
+From:   Alexander Usyskin <alexander.usyskin@intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Tomas Winkler <tomas.winkler@intel.com>,
+        Alexander Usyskin <alexander.usyskin@intel.com>,
+        Vitaly Lubart <vitaly.lubart@intel.com>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/5] Add driver for GSC controller
+Date:   Thu, 27 Jan 2022 13:20:58 +0200
+Message-Id: <20220127112103.2336871-1-alexander.usyskin@intel.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <20220125085634.17972-33-yong.wu@mediatek.com>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 25/01/22 09:56, Yong Wu ha scritto:
-> We preassign some ports in a special bank via the new defined
-> banks_portmsk. Put it in the plat_data means it is not expected to be
-> adjusted dynamically.
-> 
-> If the iommu id in the iommu consumer's dtsi node is inside this
-> banks_portmsk, then we switch it to this special iommu bank, and
-> initialise the IOMMU bank HW.
-> 
-> Each a bank has the independent pgtable(4GB iova range). Each a bank
-> is a independent iommu domain/group. Currently we don't separate different
-> iova ranges inside a bank.
-> 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->   drivers/iommu/mtk_iommu.c | 39 ++++++++++++++++++++++++++++++++++++---
->   1 file changed, 36 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 22586d1aed72..c6de9304bbc6 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -191,6 +191,7 @@ struct mtk_iommu_plat_data {
->   
->   	u8                  banks_num;
->   	bool                banks_enable[MTK_IOMMU_BANK_MAX];
-> +	unsigned int        banks_portmsk[MTK_IOMMU_BANK_MAX];
+GSC is a graphics system controller, it provides
+a chassis controller for graphics discrete cards.
 
-I would prefer to see u32 here instead... but maybe that's just a
-personal preference, it doesn't really matter.
+There are two MEI interfaces in GSC: HECI1 and HECI2.
 
-In any case:
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+This series includes instantiation of the auxiliary devices for HECI2
+and mei-gsc auxiliary device driver that binds to the auxiliary device.
 
+In v2 the platform device was replaced by the auxiliary device.
+v3 is the rebase over drm-tip to make public CI running.
+In v4 the not needed debug prints and empty line were removed,
+      'select' were replaced by 'depends on' in MEI Kconfig,
+      the new include file now listed in the MAINTATINERS file. 
+
+Greg KH, please review and ACK the MEI patches after main merge window closure.
+We are pushing all through gfx tree as the auxiliary device belongs there.
+
+Alexander Usyskin (2):
+  mei: gsc: setup char driver alive in spite of firmware handshake
+    failure
+  mei: gsc: retrieve the firmware version
+
+Tomas Winkler (3):
+  drm/i915/gsc: add gsc as a mei auxiliary device
+  mei: add support for graphics system controller (gsc) devices
+  mei: gsc: add runtime pm handlers
+
+ MAINTAINERS                              |   1 +
+ drivers/gpu/drm/i915/Kconfig             |   1 +
+ drivers/gpu/drm/i915/Makefile            |   3 +
+ drivers/gpu/drm/i915/gt/intel_gsc.c      | 199 ++++++++++++++++++
+ drivers/gpu/drm/i915/gt/intel_gsc.h      |  37 ++++
+ drivers/gpu/drm/i915/gt/intel_gt.c       |   3 +
+ drivers/gpu/drm/i915/gt/intel_gt.h       |   5 +
+ drivers/gpu/drm/i915/gt/intel_gt_irq.c   |  13 ++
+ drivers/gpu/drm/i915/gt/intel_gt_types.h |   2 +
+ drivers/gpu/drm/i915/i915_drv.h          |   8 +
+ drivers/gpu/drm/i915/i915_pci.c          |   3 +-
+ drivers/gpu/drm/i915/i915_reg.h          |   3 +
+ drivers/gpu/drm/i915/intel_device_info.h |   2 +
+ drivers/misc/mei/Kconfig                 |  14 ++
+ drivers/misc/mei/Makefile                |   3 +
+ drivers/misc/mei/bus-fixup.c             |  25 +++
+ drivers/misc/mei/gsc-me.c                | 252 +++++++++++++++++++++++
+ drivers/misc/mei/hw-me.c                 |  29 ++-
+ drivers/misc/mei/hw-me.h                 |   2 +
+ include/linux/mei_aux.h                  |  19 ++
+ 20 files changed, 621 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/gpu/drm/i915/gt/intel_gsc.c
+ create mode 100644 drivers/gpu/drm/i915/gt/intel_gsc.h
+ create mode 100644 drivers/misc/mei/gsc-me.c
+ create mode 100644 include/linux/mei_aux.h
+
+-- 
+2.32.0
 
