@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E35C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:56:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A7EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:56:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245205AbiA0R4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:56:30 -0500
-Received: from mga02.intel.com ([134.134.136.20]:19418 "EHLO mga02.intel.com"
+        id S245212AbiA0R4b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:56:31 -0500
+Received: from mga12.intel.com ([192.55.52.136]:65458 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244891AbiA0Rzb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S244799AbiA0Rzb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 27 Jan 2022 12:55:31 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643306131; x=1674842131;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=klKmNgWFiTbZ7mbu6bCq0GUu9+o0tnvTpl/zZa5vWuY=;
-  b=RJITqKgX2xV4bdabKSV/zxj4Bf61FWP5l/6vwC8clBaZICckXRPsoqpK
-   nwEHytSk1HRVAboCjX+QXKqW1mvguM0fCMA1s80L+Hz0Q1wH/LTNgCJ37
-   nMT9ESTgItFq9WfDO9FyLqEZlhHGYf81xA+1pzm8tQhCI0tuzWgaVIbc1
-   dVGNwnlVg1DvRBP3wZpZd4uROaKFDrC7aHRuwZu4uWxeab0xw+fh5ZWgd
-   SDgJNsDH6mWvS3B3j8jyQD8mN2x/Yuk4RSW/PlFatNH2djfWmirhA+PGo
-   JJ9PIvrtSTt4bKYk5lrMYvtJvnYgS/TeYG86f1sfeqkqPvN6eE3xjRnR9
+  bh=+kpcQgxJ7fszxV7l5EYVD/+VKUecWGueqOZwFpwV6EQ=;
+  b=ENM+2H1v+0DQtzBLi6mY3dwgFraZIgyi2HLHlaZ6JVbffvBH+Eg1Qv0D
+   oUbdb86CFew6Pe63rYrxBAmjljsD8vdq4ZR2AEPCeAQLayikWcA0SUhNv
+   xKjfuYcusVKkZ1MZ0hs/8J0idDXq9A+6xb/3p0DXSQNDSzmnPMtUZ9/nS
+   VDitRuJIPWWtER+AfB1lYKm0b/8HPpBhmLk6iVuQruUM4ZyGr7MkJm6eY
+   BsaRwgiKn02I0bWYk2IA6KYnQ09FhXQIU6Kgs+/aXJOXt9QVTPTspscVM
+   3Q5RfTWrVmqSOa5LB6V7fnrAnU1HOwbhwJBKkq73qLyBc/KkyvIRsTT1b
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234302441"
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="226899137"
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="234302441"
+   d="scan'208";a="226899137"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:12 -0800
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:13 -0800
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="674796144"
+   d="scan'208";a="674796185"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:11 -0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:13 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -40,9 +40,9 @@ To:     Dave Hansen <dave.hansen@linux.intel.com>,
 Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V8 26/44] x86/fault: Print PKS MSR on fault
-Date:   Thu, 27 Jan 2022 09:54:47 -0800
-Message-Id: <20220127175505.851391-27-ira.weiny@intel.com>
+Subject: [PATCH V8 37/44] memremap_pages: Set PKS PKey in PTEs if PGMAP_PROTECTIONS is requested
+Date:   Thu, 27 Jan 2022 09:54:58 -0800
+Message-Id: <20220127175505.851391-38-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220127175505.851391-1-ira.weiny@intel.com>
 References: <20220127175505.851391-1-ira.weiny@intel.com>
@@ -54,79 +54,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-If a PKS fault occurs it will be easier to debug it if the PKS MSR value
-at the time of the fault is known.
+When the user requests protections the dev_pagemap mappings need to have
+a PKEY set.
 
-Add pks_dump_fault_info() to dump the PKRS MSR on fault if enabled.
+Define devmap_protection_adjust_pgprot() to add the PKey to the page
+protections.  Call it when PGMAP_PROTECTIONS is requested when remapping
+pages.
 
-Suggested-by: Andy Lutomirski <luto@kernel.org>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-
 ---
-Changes for V8
-	Split this into it's own patch.
----
- arch/x86/include/asm/pks.h |  2 ++
- arch/x86/mm/fault.c        |  3 +++
- arch/x86/mm/pkeys.c        | 11 +++++++++++
- 3 files changed, 16 insertions(+)
+ mm/memremap.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/arch/x86/include/asm/pks.h b/arch/x86/include/asm/pks.h
-index 82baa594cb3b..fc3c66f1bb04 100644
---- a/arch/x86/include/asm/pks.h
-+++ b/arch/x86/include/asm/pks.h
-@@ -8,6 +8,7 @@ void pks_setup(void);
- void pks_write_current(void);
- void pks_save_pt_regs(struct pt_regs *regs);
- void pks_restore_pt_regs(struct pt_regs *regs);
-+void pks_dump_fault_info(struct pt_regs *regs);
- 
- #else /* !CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
- 
-@@ -15,6 +16,7 @@ static inline void pks_setup(void) { }
- static inline void pks_write_current(void) { }
- static inline void pks_save_pt_regs(struct pt_regs *regs) { }
- static inline void pks_restore_pt_regs(struct pt_regs *regs) { }
-+static inline void pks_dump_fault_info(struct pt_regs *regs) { }
- 
- #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
- 
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index 030eb3e08550..697c06f08103 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -549,6 +549,9 @@ show_fault_oops(struct pt_regs *regs, unsigned long error_code, unsigned long ad
- 		 (error_code & X86_PF_PK)    ? "protection keys violation" :
- 					       "permissions violation");
- 
-+	if (error_code & X86_PF_PK)
-+		pks_dump_fault_info(regs);
-+
- 	if (!(error_code & X86_PF_USER) && user_mode(regs)) {
- 		struct desc_ptr idt, gdt;
- 		u16 ldtr, tr;
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index 33b7f84ed33b..bdd700d5ad03 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -288,6 +288,17 @@ void pks_restore_pt_regs(struct pt_regs *regs)
- 	pks_write_pkrs(current->thread.pks_saved_pkrs);
+diff --git a/mm/memremap.c b/mm/memremap.c
+index a74d985a1908..d3e6f328a711 100644
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -83,6 +83,14 @@ static void devmap_protection_enable(void)
+ 	static_branch_inc(&dev_pgmap_protection_static_key);
  }
  
-+void pks_dump_fault_info(struct pt_regs *regs)
++static pgprot_t devmap_protection_adjust_pgprot(pgprot_t prot)
 +{
-+	struct pt_regs_auxiliary *aux_pt_regs;
++	pgprotval_t val;
 +
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
-+
-+	aux_pt_regs = &to_extended_pt_regs(regs)->aux;
-+	pr_alert("PKRS: 0x%x\n", aux_pt_regs->pks_thread_pkrs);
++	val = pgprot_val(prot);
++	return __pgprot(val | _PAGE_PKEY(PKS_KEY_PGMAP_PROTECTION));
 +}
 +
- /*
-  * PKS is independent of PKU and either or both may be supported on a CPU.
-  *
+ static void devmap_protection_disable(void)
+ {
+ 	static_branch_dec(&dev_pgmap_protection_static_key);
+@@ -99,6 +107,10 @@ EXPORT_SYMBOL_GPL(pgmap_protection_available);
+ static void devmap_protection_enable(void) { }
+ static void devmap_protection_disable(void) { }
+ 
++static pgprot_t devmap_protection_adjust_pgprot(pgprot_t prot)
++{
++	return prot;
++}
+ #endif /* CONFIG_DEVMAP_ACCESS_PROTECTION */
+ 
+ static void pgmap_array_delete(struct range *range)
+@@ -353,6 +365,7 @@ void *memremap_pages(struct dev_pagemap *pgmap, int nid)
+ 		if (!pgmap_protection_available())
+ 			return ERR_PTR(-EINVAL);
+ 		devmap_protection_enable();
++		params.pgprot = devmap_protection_adjust_pgprot(params.pgprot);
+ 	}
+ 
+ 	switch (pgmap->type) {
 -- 
 2.31.1
 
