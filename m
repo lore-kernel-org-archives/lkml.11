@@ -2,157 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C43C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59BBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 16:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243645AbiA0QXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 11:23:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
+        id S243653AbiA0QXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 11:23:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243642AbiA0QXX (ORCPT
+        with ESMTP id S234791AbiA0QXx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 11:23:23 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1A1C061748
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 08:23:23 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id r186so410836wma.0
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 08:23:23 -0800 (PST)
+        Thu, 27 Jan 2022 11:23:53 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BB1C06173B
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 08:23:52 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id o16-20020a17090aac1000b001b62f629953so551826pjq.3
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 08:23:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=dszbD2iJpZiPeHo8KU4CPZgugNBsta//XmHDun3F64c=;
-        b=fZcrsbxTVL6oEX16YFICUECpoqbUxOVzhN91OZM/+KQu155OI7WSTG0MiQZJgjExmx
-         jp0sIHft9IaJptYG6xxadWut2UoUpBdZjQx5gv7u1MkTlRl1hZUMLS10XNBqLS12Kqc0
-         fUGz36q/7SAVtW2er4/vNtRl/IAv5P9dXGTRghcXk838xHFTh0rpWC3QJ1hL6MFMFpmZ
-         IOudqk9T82+pKnR3a4nT1d5H50M3AZIqsuTo+VhmilYtZbr/+DsaUTUQrPVXWALYkJoQ
-         ua9KX5MavqeNx/aTRA4/yfAgHvPRa2gKr2mV89ocCP23NjXS4WJhAaF53CwKPll5S9QB
-         nuww==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6y8wjaR4vxJ8579JrqWtOWVGBP8Ocpho3Gs/0sO8C2Q=;
+        b=Cxk8MCnimiHPkkbbllSaMa1YFEHnvs6PW8LZ0mwwmuBX9LY7ybpXVaqZi19rCLfhFO
+         XVncqmS4p5+FKb0SIPHU9SV9G8p6EIJ5WsNdlfjcHCtvCzN22UpxGQpSmind30O2LnHf
+         P7h+RGAe+V1Mmc4ZhtY0FEsuvRcaJO+plCXow=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=dszbD2iJpZiPeHo8KU4CPZgugNBsta//XmHDun3F64c=;
-        b=5NRliXQFx0ohY1fEE8zI5im2ocEk1hiKaGITQQ8JiCFArk2koUJJIZXSMYJFJqFHGE
-         4bMhFxL+Bipu2uhDvn2+nK4H2T6X56TrlEJnvckgFQJV3M5inUpuxJiLmqJpu23m8h9S
-         e9MUZCTYxHJkjMEMvFhuldn/lnrSg6PAl3vVxN8ZNsVoyqkfU3toOGFMS9JvbQMD33Hs
-         MOMrIRKrsDxJLfE+rKyV+NThmObsH2FzdiNULDlXK9h1eiSb4gqFbPLkGtmMC6MrzKyE
-         RI7JRr+ab4sf5Yl4cA+ZPIRWSNNLL+bQ8EmikNO67lYRHgfFtF62gLqeMngNCl37UilG
-         Yr6A==
-X-Gm-Message-State: AOAM533bhAkg9a6nljy9xzi5i9xKIoYcpJ9CDi5zCdv1ZxAo9X1586nA
-        y8NwY/QweXwEjTSLRAdHIDn9zw==
-X-Google-Smtp-Source: ABdhPJx68OlAQYPxDB8R5MGosp8NvBZZ+3uApWKaznWHP31o8jTnJGFiSqqrgwHrSvAVTiOnIthV0w==
-X-Received: by 2002:a1c:e914:: with SMTP id q20mr12306751wmc.89.1643300601853;
-        Thu, 27 Jan 2022 08:23:21 -0800 (PST)
-Received: from localhost (82-65-169-74.subs.proxad.net. [82.65.169.74])
-        by smtp.gmail.com with ESMTPSA id v124sm6289832wme.30.2022.01.27.08.23.21
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6y8wjaR4vxJ8579JrqWtOWVGBP8Ocpho3Gs/0sO8C2Q=;
+        b=zAN4xzwhBggNTQRZNQ8wF0PFB3Um0dtrP75ZnCJ02/UVUiBdWIBcF9xJ8jP9uy5afh
+         iWRSz4qYVfCBd80WQUA0542L+v8UzvE15jYU9EQq2teZRrT50U384vU9qCG0XfvXhQtP
+         1yJkHxvas1zqjdq9IValOpwX8QgqbBy/zya1dDIdr959078/gxHKC6M3eJdYJsrciTGq
+         aC6Xq4u1KpTRSvYAkmM38T9z35zHyNNFiXjajI1sIyObnIDDJepPo9VEl/jop95x2eRP
+         D6BGwWeKy6olAMrqbMPYKEtVe76T2HlJdiwx23JeOZWF1IPr4GSnwKalKV8CzWlRqk0g
+         A0GA==
+X-Gm-Message-State: AOAM530fLdnkz1eby+4ZeH0WrbEncefdnmOFptYh6n3TBPyCur4Vmq/q
+        EBGhwUKcay5cLGM/wRStinD5XQ==
+X-Google-Smtp-Source: ABdhPJyMCj2t5XQMopodXETjSm7BwS4JfRV64awaq5lK9uUxhfSbHwY0vLd5SNeYG2gUhMNHkuVcCA==
+X-Received: by 2002:a17:902:c7cb:: with SMTP id r11mr3982582pla.135.1643300632462;
+        Thu, 27 Jan 2022 08:23:52 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id s14sm5611259pfk.65.2022.01.27.08.23.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 08:23:21 -0800 (PST)
-References: <20220126231427.1638089-1-robh@kernel.org>
- <1jtudp1rc1.fsf@starbuckisacylon.baylibre.com>
- <CAL_JsqL77E+5ftqgHPdWQzfp98Oh3d=QZRQ8Z6v91OfSeprxig@mail.gmail.com>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Rohit kumar <rohitkr@codeaurora.org>,
-        Cheng-Yi Chiang <cychiang@chromium.org>,
-        Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Jonathan Bakker <xc-racer2@live.ca>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Subject: Re: [PATCH] ASoC: dt-bindings: Centralize the 'sound-dai' definition
-Date:   Thu, 27 Jan 2022 17:20:49 +0100
-In-reply-to: <CAL_JsqL77E+5ftqgHPdWQzfp98Oh3d=QZRQ8Z6v91OfSeprxig@mail.gmail.com>
-Message-ID: <1jlez1172f.fsf@starbuckisacylon.baylibre.com>
+        Thu, 27 Jan 2022 08:23:52 -0800 (PST)
+Date:   Thu, 27 Jan 2022 08:23:51 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Akira Kawata <akirakawata1@gmail.com>
+Cc:     akpm@linux-foundation.org, adobriyan@gmail.com,
+        viro@zeniv.linux.org.uk, linux-fsdevel@vger.kernel.org,
+        lukas.bulwahn@gmail.com, kernel test robot <lkp@intel.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] fs/binfmt_elf: Fix AT_PHDR for unusual ELF files
+Message-ID: <202201270816.5030A2A4B5@keescook>
+References: <20211212232414.1402199-1-akirakawata1@gmail.com>
+ <20211212232414.1402199-2-akirakawata1@gmail.com>
+ <202201261955.F86F391@keescook>
+ <20220127125643.cifk2ihnbnxo5wcl@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127125643.cifk2ihnbnxo5wcl@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jan 27, 2022 at 09:56:43PM +0900, Akira Kawata wrote:
+> On Wed, Jan 26, 2022 at 09:01:30PM -0800, Kees Cook wrote:
+> > [...]
+> > 1) The ELF spec says e_phoff is 0 if there's no program header table.
+> > 
+> > The old code would just pass the load_addr as a result. This patch will
+> > now retain the same result (phdr_addr defaults to 0). I wonder if there
+> > is a bug in this behavior, though? (To be addressed in a different patch
+> > if needed...)
+> >
+> 
+> It is better to return NULL from load_elf_phdrs when e_phoff == 0, I
+> think.
 
-On Thu 27 Jan 2022 at 08:35, Rob Herring <robh@kernel.org> wrote:
+Yeah, right now it just returns a pointer to file offset 0.
 
-> On Thu, Jan 27, 2022 at 3:05 AM Jerome Brunet <jbrunet@baylibre.com> wrote:
->>
->>
->> On Wed 26 Jan 2022 at 17:14, Rob Herring <robh@kernel.org> wrote:
->>
->> > 'sound-dai' is a common property, but has duplicate type definitions.
->> > Create a new common definition to define the type and then update all
->> > the other occurrences to just define how many entries there are just
->> > like other phandle+arg properties.
->> >
->> > The constraints on the number of entries is based on the examples and
->> > could be wrong.
->> >
->> > Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->> > Signed-off-by: Rob Herring <robh@kernel.org>
->> > ---
->> > Please ack, this depends on commit abf0fee97313 ("dt-bindings: Improve
->> > phandle-array schemas") in my tree.
->> > ---
->> >  .../bindings/sound/amlogic,gx-sound-card.yaml |  4 ++--
->> >  .../bindings/sound/google,sc7180-trogdor.yaml |  6 ++++--
->> >  .../bindings/sound/imx-audio-card.yaml        |  7 +++++--
->> >  .../bindings/sound/qcom,sm8250.yaml           | 10 +++++++---
->> >  .../bindings/sound/samsung,aries-wm8994.yaml  |  5 +----
->> >  .../bindings/sound/samsung,midas-audio.yaml   |  2 --
->> >  .../bindings/sound/samsung,odroid.yaml        |  9 +++------
->> >  .../devicetree/bindings/sound/sound-dai.yaml  | 20 +++++++++++++++++++
->> >  8 files changed, 42 insertions(+), 21 deletions(-)
->> >  create mode 100644 Documentation/devicetree/bindings/sound/sound-dai.yaml
->> >
->> > diff --git a/Documentation/devicetree/bindings/sound/amlogic,gx-sound-card.yaml b/Documentation/devicetree/bindings/sound/amlogic,gx-sound-card.yaml
->> > index 2e35aeaa8781..8b5be4b92f35 100644
->> > --- a/Documentation/devicetree/bindings/sound/amlogic,gx-sound-card.yaml
->> > +++ b/Documentation/devicetree/bindings/sound/amlogic,gx-sound-card.yaml
->> > @@ -57,7 +57,7 @@ patternProperties:
->> >            rate
->> >
->> >        sound-dai:
->> > -        $ref: /schemas/types.yaml#/definitions/phandle-array
->> > +        maxItems: 1
->> >          description: phandle of the CPU DAI
->> >
->> >      patternProperties:
->> > @@ -71,7 +71,7 @@ patternProperties:
->> >
->> >          properties:
->> >            sound-dai:
->> > -            $ref: /schemas/types.yaml#/definitions/phandle-array
->> > +            maxItems: 1
->>
->> No min or max here. Links may have more than one codec.
->>
->> Ex:
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-libretech-cc.dts#n158
->
-> What do you mean? Every 'sound-dai' there only has 1 phande+args. Each
-> codec is a child node.
+I also wonder if we should sanity-check e_phoff vs PT_PHDR? Right now
+Linux ignores PT_PHDR. Should we reject loading when e_phoff != PT_PHDR
+file offset? (And I wonder if there are "broken" binaries right now that
+have bad PT_PHDR segments that have gone unnoticed...)
 
-Yes it is a child - sorry I misunderstood.
-I thought the MaxItems: 1 would limit the number of codecs
+And now I'm thinking about the excellent ELF loading analysis at:
+https://nathanotterness.com/2021/10/tiny_elf_modernized.html
 
-For the amlogic part:
-Acked-by: Jerome Brunet <jbrunet@baylibre.com>
+;)
 
->
-> Rob
-
+-- 
+Kees Cook
