@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAFFCC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:10:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27FB0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245054AbiA0SKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:10:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47406 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244907AbiA0SKJ (ORCPT
+        id S238968AbiA0SKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 13:10:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245168AbiA0SKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:10:09 -0500
+        Thu, 27 Jan 2022 13:10:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C39BC06174A;
+        Thu, 27 Jan 2022 10:09:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7B7661CFD;
-        Thu, 27 Jan 2022 18:10:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83F8BC340E8;
-        Thu, 27 Jan 2022 18:10:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C0DCB820C8;
+        Thu, 27 Jan 2022 18:09:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF36EC340E4;
+        Thu, 27 Jan 2022 18:09:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643307008;
-        bh=EFpcAwDpY+fz2EowNsF/nN0eEBu6yVeazj+LOb5Thsw=;
+        s=korg; t=1643306986;
+        bh=b4uTomHDQKQx/j+NssKkGR3OG4OXuN/5p8mTSEQXHZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vgr4O2upQp31dSJL0JUoIDY5GHljGkINR3tZxX8f1cWEtWExVasP9VIy5ULG2Bgj3
-         zcy/juzXbCUiaTy+5NWHcgG220gzpMAUqHGSWzOhapbtPDwgxpOhmvaFsboMywDfyN
-         eXb98HGG4Rx8LtwbLW9Rk24T9z9LcHy5xa9Z2oD0=
+        b=lCD1CNryJ8XpH2JjB0pECK8xE6tX3cr2ZshSLgIL8OiHTOuyhqKp0GHsxGyYIBFNZ
+         P1jzRD5qep7z4oNmKOaB9hI8zF780aemy+m7egYLShPEre8QCnd793COJlXXo6Truv
+         13akkyodDxgNTDjdg3KU9oaK/dAeecwz/+XDhMMg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jan Kiszka <jan.kiszka@web.de>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Olof Johansson <olof@lixom.net>
-Subject: [PATCH 5.4 09/11] ARM: dts: gpio-ranges property is now required
-Date:   Thu, 27 Jan 2022 19:09:10 +0100
-Message-Id: <20220127180258.672040734@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Morin <guillaume@morinfr.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH 5.4 02/11] rcu: Tighten rcu_advance_cbs_nowake() checks
+Date:   Thu, 27 Jan 2022 19:09:03 +0100
+Message-Id: <20220127180258.442604866@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20220127180258.362000607@linuxfoundation.org>
 References: <20220127180258.362000607@linuxfoundation.org>
@@ -49,46 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-commit c8013355ead68dce152cf426686f8a5f80d88b40 upstream
+commit 614ddad17f22a22e035e2ea37a04815f50362017 upstream.
 
-Since [1], added in 5.7, the absence of a gpio-ranges property has
-prevented GPIOs from being restored to inputs when released.
-Add those properties for BCM283x and BCM2711 devices.
+Currently, rcu_advance_cbs_nowake() checks that a grace period is in
+progress, however, that grace period could end just after the check.
+This commit rechecks that a grace period is still in progress while
+holding the rcu_node structure's lock.  The grace period cannot end while
+the current CPU's rcu_node structure's ->lock is held, thus avoiding
+false positives from the WARN_ON_ONCE().
 
-[1] commit 2ab73c6d8323 ("gpio: Support GPIO controllers without
-    pin-ranges")
+As Daniel Vacek noted, it is not necessary for the rcu_node structure
+to have a CPU that has not yet passed through its quiescent state.
 
-Link: https://lore.kernel.org/r/20220104170247.956760-1-linus.walleij@linaro.org
-Fixes: 2ab73c6d8323 ("gpio: Support GPIO controllers without pin-ranges")
-Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
-Reported-by: Stefan Wahren <stefan.wahren@i2se.com>
-Reported-by: Florian Fainelli <f.fainelli@gmail.com>
-Reported-by: Jan Kiszka <jan.kiszka@web.de>
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20211206092237.4105895-3-phil@raspberrypi.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Olof Johansson <olof@lixom.net>
-[florian: Remove bcm2711.dtsi hunk which does not exist in 5.4]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Tested-by: Guillaume Morin <guillaume@morinfr.org>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/bcm283x.dtsi |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/rcu/tree.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/arch/arm/boot/dts/bcm283x.dtsi
-+++ b/arch/arm/boot/dts/bcm283x.dtsi
-@@ -183,6 +183,7 @@
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -1358,10 +1358,11 @@ static void __maybe_unused rcu_advance_c
+ 						  struct rcu_data *rdp)
+ {
+ 	rcu_lockdep_assert_cblist_protected(rdp);
+-	if (!rcu_seq_state(rcu_seq_current(&rnp->gp_seq)) ||
+-	    !raw_spin_trylock_rcu_node(rnp))
++	if (!rcu_seq_state(rcu_seq_current(&rnp->gp_seq)) || !raw_spin_trylock_rcu_node(rnp))
+ 		return;
+-	WARN_ON_ONCE(rcu_advance_cbs(rnp, rdp));
++	// The grace period cannot end while we hold the rcu_node lock.
++	if (rcu_seq_state(rcu_seq_current(&rnp->gp_seq)))
++		WARN_ON_ONCE(rcu_advance_cbs(rnp, rdp));
+ 	raw_spin_unlock_rcu_node(rnp);
+ }
  
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
-+			gpio-ranges = <&gpio 0 0 54>;
- 
- 			/* Defines pin muxing groups according to
- 			 * BCM2835-ARM-Peripherals.pdf page 102.
 
 
