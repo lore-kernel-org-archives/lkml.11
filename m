@@ -2,95 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B76ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 01:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44617C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 02:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235037AbiA0B7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 26 Jan 2022 20:59:34 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:47472 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S234764AbiA0B7K (ORCPT
+        id S232586AbiA0CAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 26 Jan 2022 21:00:24 -0500
+Received: from out162-62-58-211.mail.qq.com ([162.62.58.211]:58355 "EHLO
+        out162-62-58-211.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231271AbiA0CAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 26 Jan 2022 20:59:10 -0500
-X-UUID: eb86f13d169746a69ed4f6e86e4a64ce-20220127
-X-UUID: eb86f13d169746a69ed4f6e86e4a64ce-20220127
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 299950623; Thu, 27 Jan 2022 09:59:09 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 27 Jan 2022 09:59:07 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 27 Jan 2022 09:59:06 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Fabien Parent <fparent@baylibre.com>
-CC:     Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        "John Crispin" <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Biao Huang <biao.huang@mediatek.com>,
-        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
-        <srv_heupstream@mediatek.com>,
-        Macpaul Lin <macpaul.lin@mediatek.com>
-Subject: [PATCH net-next v2 7/9] dt-bindings: net: mtk-star-emac: add description for new  properties
-Date:   Thu, 27 Jan 2022 09:58:55 +0800
-Message-ID: <20220127015857.9868-8-biao.huang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220127015857.9868-1-biao.huang@mediatek.com>
-References: <20220127015857.9868-1-biao.huang@mediatek.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+        Wed, 26 Jan 2022 21:00:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1643248818;
+        bh=f2+hKX7ZjpgXeWickBv9h0zklArTVddDzY2IvRqIHbA=;
+        h=From:To:Cc:Subject:Date;
+        b=Akagy6mUdzfkTFi8qv8N7DHRc3wcvMD488OJV/AmJsVO2TrLmffJrczJRL5yk0t9c
+         ee0nixz6bvOfVDA7QWivTuaDRf4QQFjLxLvVXCaHDNNHq6dipLJNu4bVTBGu7OgE+5
+         r3p4R62w1QgJfdwpY47fSIZicmtZbp8syCLeZ3SA=
+X-QQ-FEAT: oHWrrGTW1dDsFGnIWaujQqI6HtP+N16t
+X-QQ-SSF: 00000000000000F000000000000000Z
+X-QQ-XMAILINFO: OBvbJS/7aDyUH4zGt5t0a2JXRNroDbyKmBypMIgcvPnIsSvLP62QehXLRIY/E5
+         JwD+KidU6kmNqCcTW0ijaiD56SiCrZQFbcUFGyQNlNcn10iX7n30N4aPcCGMLSOxQ/IpnkeznE1va
+         XmFWDkmHAWt+3KUUYZPe94J4bfmXxCeudXBNGUp5AYUyORz30GfaGcUmZP++evvtY4ytfQJCRCrj/
+         DL3zvhTY1piqOhnzeCzBaQWrmrtHxsKC2gKzKPuqaMLdhjw7nU5gp8A3130InztI4BwjtjQeFi/IM
+         iWXRSUppJ7cPM8LbwqPb9pA/PPITeKGBU5Ohpjl7IITLnG0KBbBP22f9BFbJ89TXGB5239HupU/h3
+         xGOrRVuRBtX8KOcd6o5iOXi0QWmvdVA3ReO0YcYgpmMvIqkddVuUbAhoDhY7ZjuuUjY5YkEorHj7M
+         wS+LI9sKZnITvlkxuuYh80LKXMDTADvo34R3Wk2VJNK7R2zr8d5LAIWNBVW0rpvU6rRJmbA5g0/ZS
+         g4PEa4tkVIvQHVmVFoSEmbsogAUgu2xHLiMosnbxQE2AUys1jWKxmgII3IWQXSPgkP3qNvdnUa25i
+         /r9aRE9U3WZj+gR1wYbZCo+xsLJMHmluLBdWZz6ZYLP8/MzqYnCDEhNYSeCWSeLCQHF8PCIwzI9V7
+         4i6P0AMAcyylEBEYMIgG9dxTzWSz/OhD5PKr5a4zDviNmJf+2vLp8affzeT0gTF8REQNrQg+szmO+
+         espU81WQzOw94bUmnhkTlIIvg31wppp6MxxGxh+XOVUtYdVWhMm5hdZaqJ+rI5b03gSc0KfuSuYHD
+         +tA7xaWy7eA/uCDP0SAnRwGEgCHQLtalYJVZreTKw2JafsF7gSGaUs8=
+X-HAS-ATTACH: no
+X-QQ-BUSINESS-ORIGIN: 2
+X-Originating-IP: 39.149.171.117
+X-QQ-STYLE: 
+X-QQ-mid: webmail813t1643248745t8210637
+From:   "=?ISO-8859-1?B?WGlhb2tlIFdhbmc=?=" <xkernel.wang@foxmail.com>
+To:     "=?ISO-8859-1?B?TWltaSBab2hhcg==?=" <zohar@linux.ibm.com>
+Cc:     "=?ISO-8859-1?B?cGF1bA==?=" <paul@paul-moore.com>,
+        "=?ISO-8859-1?B?am1vcnJpcw==?=" <jmorris@namei.org>,
+        "=?ISO-8859-1?B?c2VyZ2U=?=" <serge@hallyn.com>,
+        "=?ISO-8859-1?B?bGludXgtaW50ZWdyaXR5?=" 
+        <linux-integrity@vger.kernel.org>,
+        "=?ISO-8859-1?B?bGludXgtc2VjdXJpdHktbW9kdWxl?=" 
+        <linux-security-module@vger.kernel.org>,
+        "=?ISO-8859-1?B?bGludXgta2VybmVs?=" <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4] integrity: check the return value of audit_log_start()
+Mime-Version: 1.0
+Content-Type: text/plain;
+        charset="ISO-8859-1"
+Content-Transfer-Encoding: base64
+Date:   Thu, 27 Jan 2022 09:59:05 +0800
+X-Priority: 3
+Message-ID: <tencent_0685FF3C104366D05C368E2E0A88F043A507@qq.com>
+X-QQ-MIME: TCMime 1.0 by Tencent
+X-Mailer: QQMail 2.x
+X-QQ-Mailer: QQMail 2.x
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add description for new properties which will be parsed in driver.
-
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
----
- .../bindings/net/mediatek,star-emac.yaml         | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-index 87a8b25b03a6..41b1b1dd562c 100644
---- a/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-+++ b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-@@ -48,6 +48,22 @@ properties:
-       Phandle to the device containing the PERICFG register range. This is used
-       to control the MII mode.
- 
-+  mediatek,rmii-rxc:
-+    type: boolean
-+    description:
-+      If present, indicates that the RMII reference clock, which is from external
-+      PHYs, is connected to RXC pin. Otherwise, is connected to TXC pin.
-+
-+  mediatek,rxc-inverse:
-+    type: boolean
-+    description:
-+      If present, indicates that clock on RXC pad will be inversed.
-+
-+  mediatek,txc-inverse:
-+    type: boolean
-+    description:
-+      If present, indicates that clock on TXC pad will be inversed.
-+
-   mdio:
-     type: object
-     description:
--- 
-2.25.1
+RnJvbTogWGlhb2tlIFdhbmcgPHhrZXJuZWwud2FuZ0Bmb3htYWlsLmNvbT4KCmF1ZGl0X2xv
+Z19zdGFydCgpIHJldHVybnMgYXVkaXRfYnVmZmVyIHBvaW50ZXIgb24gc3VjY2VzcyBvciBO
+VUxMIG9uCmVycm9yLCBzbyBpdCBpcyBiZXR0ZXIgdG8gY2hlY2sgdGhlIHJldHVybiB2YWx1
+ZSBvZiBpdC4KClNpZ25lZC1vZmYtYnk6IFhpYW9rZSBXYW5nIDx4a2VybmVsLndhbmdAZm94
+bWFpbC5jb20+ClJldmlld2VkLWJ5OiBQYXVsIE1vb3JlIDxwYXVsQHBhdWwtbW9vcmUuY29t
+PgotLS0KQ2hhbmdlbG9nczoKVjMgLT4gVjQ6IHVwZGF0ZSB0aGUgbWFpbCBsaXN0LgpWMiAt
+PiBWMzogYWRkIHRoZSBSZXZpZXdlZC1ieSB0YWcuClYxIC0+IFYyOiBzaW1wbGlmeSB0aGUg
+cGF0Y2guCnNlY3VyaXR5L2ludGVncml0eS9pbnRlZ3JpdHlfYXVkaXQuYyB8IDIgKysKMSBm
+aWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL3NlY3VyaXR5L2lu
+dGVncml0eS9pbnRlZ3JpdHlfYXVkaXQuYyBiL3NlY3VyaXR5L2ludGVncml0eS9pbnRlZ3Jp
+dHlfYXVkaXQuYwppbmRleCAyOTIyMDA1Li4wZWM1ZTRjIDEwMDY0NAotLS0gYS9zZWN1cml0
+eS9pbnRlZ3JpdHkvaW50ZWdyaXR5X2F1ZGl0LmMKKysrIGIvc2VjdXJpdHkvaW50ZWdyaXR5
+L2ludGVncml0eV9hdWRpdC5jCkBAIC00NSw2ICs0NSw4IEBAIHZvaWQgaW50ZWdyaXR5X2F1
+ZGl0X21lc3NhZ2UoaW50IGF1ZGl0X21zZ25vLCBzdHJ1Y3QgaW5vZGUgKmlub2RlLAogCQly
+ZXR1cm47CiAKIAlhYiA9IGF1ZGl0X2xvZ19zdGFydChhdWRpdF9jb250ZXh0KCksIEdGUF9L
+RVJORUwsIGF1ZGl0X21zZ25vKTsKKwlpZiAoIWFiKQorCQlyZXR1cm47CiAJYXVkaXRfbG9n
+X2Zvcm1hdChhYiwgInBpZD0lZCB1aWQ9JXUgYXVpZD0ldSBzZXM9JXUiLAogCQkJIHRhc2tf
+cGlkX25yKGN1cnJlbnQpLAogCQkJIGZyb21fa3VpZCgmaW5pdF91c2VyX25zLCBjdXJyZW50
+X3VpZCgpKSwKLS0=
 
