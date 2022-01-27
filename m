@@ -2,106 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D52C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE08C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:44:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238734AbiA0JmJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 04:42:09 -0500
-Received: from mga05.intel.com ([192.55.52.43]:47056 "EHLO mga05.intel.com"
+        id S238778AbiA0Job (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 04:44:31 -0500
+Received: from mga17.intel.com ([192.55.52.151]:16502 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238735AbiA0JmH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 04:42:07 -0500
+        id S238758AbiA0Jo2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 04:44:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643276527; x=1674812527;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=djY3xch7vPOo6t9rLWfXPw5PY5fSqNMg5UzbPQHL0bc=;
-  b=Fr5gtKAf4egwCp/ODryu8C4mpCG5mmbFIlN+R7vX09BQd9Qo8KtJ/RNi
-   p0CcQZ0fvsWFYsSDkjuHW4B00l8n9F8h0rD4tFMMGUmRKTNnJibkHI8u5
-   /5++fNmgi5+eE/PjZcag2P/J59BiZJ8erRA63kIBquOP7wigtFAaNNiK0
-   V0/e52a7Jvg2Q64bxaZZcjVu5s2x1aUXF/P/UefFplZ17EC4YvrQHLP7H
-   HJW+2OsSt8WHKZWtqPiawoWosEO+BzWrXfy8nSvI+fjDWT4jg33BOXo8T
-   SBdidxnv7DKDEx3Z4wcVejJaOVxaECmPqqy/1oNsyURsWydgc0r19x2FQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="333156716"
+  t=1643276668; x=1674812668;
+  h=from:to:subject:in-reply-to:references:date:message-id:
+   mime-version:content-transfer-encoding;
+  bh=dk0qamhX2TbtdZHxZwkI3zlHxXhVxx0UNGFBByp7cwQ=;
+  b=jFfHa66eUP05WZJUGGMSnrDlJqW0ew9ltXO+8UC57mEEQjD4rCpjfNXC
+   mqBRml2VfMy7I7aMG9FFOm8zgmzlxfZ2k0Ge2uxKr2zlbFlB+lztxgbW8
+   g2fz4cQjNysHqMYiDSkLbnSCoFxDyZQT4AB2u+wDCYSGzycAt+d+MnCX+
+   HzoQ3+7nRVUTkqctLds+C9DcIhLEvkS98Iouu2RVfcsvrkZb01Yb075jS
+   4xDHxLCDLL1LY9QAUbAsnAvuE/QZl6Qa7KI5rzMSpwtnk+ciV48tHtJpa
+   RqfGuIpjxVvhhNkvIXuqKN2yP3HrxOKQMKrg2Rlj98NgoXhj/z2ssMomY
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="227474899"
 X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="333156716"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 01:42:04 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="227474899"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 01:44:27 -0800
 X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="563725468"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga001.jf.intel.com with ESMTP; 27 Jan 2022 01:42:01 -0800
-To:     Hongyu Xie <xiehongyu1@kylinos.cn>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     Hongyu Xie <xy521521@gmail.com>, mathias.nyman@intel.com,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        125707942@qq.com, stable@vger.kernel.org
-References: <20220126094126.923798-1-xy521521@gmail.com>
- <YfEZFtf9K8pFC8Mw@kroah.com>
- <c7f6a8bb-76b6-cd2d-7551-b599a8276f5c@kylinos.cn>
- <YfEnbRW3oU0ouGqH@kroah.com>
- <e86972d3-e4a0-ad81-45ea-21137e3bfcb6@kylinos.cn>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH -next] xhci: fix two places when dealing with return value
- of function xhci_check_args
-Message-ID: <7af5b318-b1ac-0c74-1782-04ba50a3b5fa@linux.intel.com>
-Date:   Thu, 27 Jan 2022 11:43:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+   d="scan'208";a="618268633"
+Received: from johnlyon-mobl.ger.corp.intel.com (HELO localhost) ([10.252.16.209])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 01:44:23 -0800
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Randy Dunlap <rdunlap@infradead.org>, akpm@linux-foundation.org,
+        broonie@kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-next@vger.kernel.org, mhocko@suse.cz,
+        mm-commits@vger.kernel.org, sfr@canb.auug.org.au,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org
+Subject: Re: mmotm 2022-01-26-21-04 uploaded (gpu/drm/i915/i915_gem_evict.h)
+In-Reply-To: <6b4f3d82-01e8-5bf3-927f-33ac62178fd5@infradead.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220127050456.M1eh-ltbc%akpm@linux-foundation.org>
+ <6b4f3d82-01e8-5bf3-927f-33ac62178fd5@infradead.org>
+Date:   Thu, 27 Jan 2022 11:44:18 +0200
+Message-ID: <8735l9y0lp.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <e86972d3-e4a0-ad81-45ea-21137e3bfcb6@kylinos.cn>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26.1.2022 14.49, Hongyu Xie wrote:
+On Wed, 26 Jan 2022, Randy Dunlap <rdunlap@infradead.org> wrote:
+> On 1/26/22 21:04, akpm@linux-foundation.org wrote:
+>> The mm-of-the-moment snapshot 2022-01-26-21-04 has been uploaded to
+>>=20
+>>    https://www.ozlabs.org/~akpm/mmotm/
+>>=20
+>> mmotm-readme.txt says
+>>=20
+>> README for mm-of-the-moment:
+>>=20
+>> https://www.ozlabs.org/~akpm/mmotm/
+>>=20
+>> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+>> more than once a week.
+>>=20
+>> You will need quilt to apply these patches to the latest Linus release (=
+5.x
+>> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated =
+in
+>> https://ozlabs.org/~akpm/mmotm/series
+>>=20
+>> The file broken-out.tar.gz contains two datestamp files: .DATE and
+>> .DATE-yyyy-mm-dd-hh-mm-ss.  Both contain the string yyyy-mm-dd-hh-mm-ss,
+>> followed by the base kernel version against which this patch series is to
+>> be applied.
+>
+> on x86_64:
+> (from linux-next.patch)
+>
+>
+>   HDRTEST drivers/gpu/drm/i915/i915_gem_evict.h
+> In file included from <command-line>:0:0:
+> ./../drivers/gpu/drm/i915/i915_gem_evict.h:15:15: error: =E2=80=98struct =
+i915_gem_ww_ctx=E2=80=99 declared inside parameter list will not be visible=
+ outside of this definition or declaration [-Werror]
+>         struct i915_gem_ww_ctx *ww,
+>                ^~~~~~~~~~~~~~~
+> ./../drivers/gpu/drm/i915/i915_gem_evict.h:21:14: error: =E2=80=98struct =
+i915_gem_ww_ctx=E2=80=99 declared inside parameter list will not be visible=
+ outside of this definition or declaration [-Werror]
+>        struct i915_gem_ww_ctx *ww,
+>               ^~~~~~~~~~~~~~~
+> ./../drivers/gpu/drm/i915/i915_gem_evict.h:25:16: error: =E2=80=98struct =
+i915_gem_ww_ctx=E2=80=99 declared inside parameter list will not be visible=
+ outside of this definition or declaration [-Werror]
+>          struct i915_gem_ww_ctx *ww);
+>                 ^~~~~~~~~~~~~~~
+> cc1: all warnings being treated as errors
 
->> Anyway, why is this unique to this one driver?  Why does it not show up
->> for any other driver?
-> The whole thing is not about a particular driver. The thing is xhci_urb_enqueue shouldn't change the return value of xhci_check_args from -ENODEV to -EINVAL. Many other drivers only check if the return value of xchi_check_args is <= 0.
+Thanks for the report.
 
-Agree, lets return -ENODEV when appropriate.
+This is only visible with CONFIG_DRM_I915_WERROR=3Dy which depends on
+COMPILE_TEST=3Dn. We use the "HDRTEST" and -Werror for development and CI
+to keep the driver clean, but it's not really intended for general
+consumption. Usually when something like this even hits the tree it's
+because of a merge mishap somewhere down the line.
 
->>
->>> The whole point is, if xhci_check_args returns value A, xhci_urb_enqueque
->>> shouldn't return any
->>> other value, because that will change some driver's behavior(like r8152.c).
->> But you are changing how the code currently works.  Are you sure you
->> want to have this "succeed" if this is on a root hub?
-> Yes, I'm changing how the code currently works but not on a root hub.
->>
->>> 2."So if 0 is returned, you will now return that here, is that ok?
->>> That is a change in functionality.
->>> But this can only ever be the case for a root hub, is that ok?"
->>>
->>> It's the same logic, but now xhci_urb_enqueue can return -ENODEV if xHC is
->>> halted.
->>> If it happens on a root hub,  xhci_urb_enqueue won't be called.
->>>
->>> 3."Again, this means all is good?  Why is this being called for a root hub?"
->>>
->>> It is the same logic with the old one, but now xhci_check_streams_endpoint
->>> can return -ENODEV if xHC is halted.
->> This still feels wrong to me, but I'll let the maintainer decide, as I
->> don't understand why a root hub is special here.
-> 
-> Thanks please. usb_submit_urb will call usb_hcd_submit_urb. And usb_hcd_submit_urb will call rh_urb_enqueue if it's on a root hub instead of calling hcd->driver->urb_enqueue(which is xhci_urb_enqueue in this case).
+BR,
+Jani.
 
-xhci_urb_enqueue() shouldn't be called for roothub urbs, but if it is then we
-should continue to return -EINVAL 
 
-xhci_check_args() should be rewritten later, but first we want a targeted fix
-that can go to stable.
-
-Your original patch would be ok after following modification:
-if (ret <= 0)
-	return ret ? ret : -EINVAL;
-
-Thanks
--Mathias
+--=20
+Jani Nikula, Intel Open Source Graphics Center
