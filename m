@@ -2,139 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 264FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB0BBC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:41:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239306AbiA0Kh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 05:37:59 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:33930 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235281AbiA0Kh5 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 05:37:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643279877; x=1674815877;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jQQW6o4yavoDToUKue4f/G6mHjTCqpN91pJTYtcfuhw=;
-  b=h0kI/w6U839UWRpOC2TzDuyPzn+PZaCKTp60LSaOaFJjJ1qIGqPS7T/h
-   +YF5GgKZYthJS2hEeN8TP06wkfCjEBIzen2PhPMItMBgtHn2hLB4VIGcZ
-   rP3RpTYvCTiqTZrc0q5TixaaB75JwZOqHx4s2irE0lBsWyvUiF6sJ1lnZ
-   +GICeBI+L0nXzqRiv1dexUaBzWKqQUiAhtwpjVLFV5ClzPnMNjPUUMjsF
-   /x68zLthg+d3oOCnf0SD+8px37dYhulzk4ughc8YHq5xV5BG8CyNR+wTF
-   ZfIlapZUqQ6l1lPAW/+NkNOjble06R27zMbxlrj6+Cvs8TJpmKAHf4jiS
-   A==;
-IronPort-SDR: vfO46qe7nWI4oxy+PtqppYt4Njs8migAVIj+1pcs3WPbmpsOkyJRegg7tOMcrh0arJctFKSi3x
- 3KgMDhXbmMzbElmp1vxTRE9QK20TEKIZsv+wO314oGlsZQvWoWIQXNtAVub/6eHkENZW0ckcVz
- 7xhFhmsIQ+72t7tc76/6WdsJCcAAqxUmA1R3kUqsPZEd2yvLQo0q/9VwNOM5yBqctEfT50R+86
- bC279OuYGF3DxZfN8TpBBjlYgSl29HjrqeH1vWWgKBrSaQEfFLPDk5pmqcjSgdT0pBZwbvULtZ
- Tjaxt+FIk5FIvBmnjBowBFF6
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="83851515"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jan 2022 03:37:57 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 27 Jan 2022 03:37:56 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 27 Jan 2022 03:37:56 -0700
-Date:   Thu, 27 Jan 2022 11:40:23 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <linus.walleij@linaro.org>
-Subject: Re: [PATCH] pinctrl: microchip-sgpio: Fix support for regmap
-Message-ID: <20220127104023.5dwcrod7toi4hpb7@soft-dev3-1.localhost>
-References: <20220125161245.418882-1-horatiu.vultur@microchip.com>
- <20220125164659.GA31440@COLIN-DESKTOP1.localdomain>
+        id S239231AbiA0KlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 05:41:18 -0500
+Received: from foss.arm.com ([217.140.110.172]:53326 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232804AbiA0KlQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 05:41:16 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 028411FB;
+        Thu, 27 Jan 2022 02:41:16 -0800 (PST)
+Received: from [10.163.42.218] (unknown [10.163.42.218])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 86DF93F7D8;
+        Thu, 27 Jan 2022 02:41:10 -0800 (PST)
+Subject: Re: [RFC V1 10/11] perf: Expand perf_branch_entry.type
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        linux-perf-users@vger.kernel.org,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>
+References: <1642998653-21377-1-git-send-email-anshuman.khandual@arm.com>
+ <1642998653-21377-11-git-send-email-anshuman.khandual@arm.com>
+ <YfF7P9flt8D2+Kfr@robh.at.kernel.org>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <004deaf2-b77b-6b88-7bbb-7508c8feb68f@arm.com>
+Date:   Thu, 27 Jan 2022 16:11:15 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220125164659.GA31440@COLIN-DESKTOP1.localdomain>
+In-Reply-To: <YfF7P9flt8D2+Kfr@robh.at.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 01/25/2022 08:46, Colin Foster wrote:
+
+
+On 1/26/22 10:17 PM, Rob Herring wrote:
+> On Mon, Jan 24, 2022 at 10:00:52AM +0530, Anshuman Khandual wrote:
+>> Current perf_branch_entry.type is a 4 bits field just enough to accommodate
+>> 16 generic branch types. This is insufficient to accommodate platforms like
+>> arm64 which has much more branch types. Lets just expands this field into a
+>> 6 bits one, which can now hold 64 generic branch types. This also adds more
+>> generic branch types and updates the BRBE driver as required.
+>>
+>> Cc: Peter Zijlstra <peterz@infradead.org>
+>> Cc: Ingo Molnar <mingo@redhat.com>
+>> Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+>> Cc: Mark Rutland <mark.rutland@arm.com>
+>> Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+>> Cc: Jiri Olsa <jolsa@redhat.com>
+>> Cc: Namhyung Kim <namhyung@kernel.org>
+>> Cc: Will Deacon <will@kernel.org>
+>> Cc: linux-arm-kernel@lists.infradead.org
+>> Cc: linux-perf-users@vger.kernel.org
+>> Cc: linux-kernel@vger.kernel.org
+>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>> ---
+>>  drivers/perf/arm_pmu_brbe.c           |  7 ++++++-
 > 
-> Hi Horatiu,
+> This patch should come before the BRBE support so that it can be applied
+> sooner rather than later. If another field is added to the end before 
+> expanding this field, then you will be stuck with assembling bits from 2 
+> fields.
 
-Hi Colin,
-
-> 
-> On Tue, Jan 25, 2022 at 05:12:45PM +0100, Horatiu Vultur wrote:
-> > Initially the driver accessed the registers using u32 __iomem but then
-> > in the blamed commit it changed it to use regmap. The problem is that now
-> > the offset of the registers is not calculated anymore at word offset but
-> > at byte offset. Therefore make sure to multiply the offset with word size.
-> >
-> 
-> Sorry about this one. I see it must have slipped through the cracks
-> because I had made the same change in my tree. The only difference is I
-> had copied reg_stride into sgpio_priv instead of making regmap_config
-> file-scope. For what its worth, with apologies:
-
-No worries, sorry that I missed your patch initially. And thanks for
-reviewing this patch.
+Should I just split this patch from the series and post it separately
+right away, to be included in perf while BRBE support gets reviewed ?
 
 > 
-> Reviewed-by: Colin Foster <colin.foster@in-advantage.com>
-
-
-
-> 
-> > Fixes: 2afbbab45c261a ("pinctrl: microchip-sgpio: update to support regmap")
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  drivers/pinctrl/pinctrl-microchip-sgpio.c | 13 +++++++------
-> >  1 file changed, 7 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-> > index 8e081c90bdb2..2999c98bbdee 100644
-> > --- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
-> > +++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-> > @@ -98,6 +98,12 @@ static const struct sgpio_properties properties_sparx5 = {
-> >       .regoff = { 0x00, 0x06, 0x26, 0x04, 0x05, 0x2a, 0x32, 0x3a, 0x3e, 0x42 },
-> >  };
-> >
-> > +static const struct regmap_config regmap_config = {
-> > +             .reg_bits = 32,
-> > +             .val_bits = 32,
-> > +             .reg_stride = 4,
-> > +};
-> > +
-> >  static const char * const functions[] = { "gpio" };
-> >
-> >  struct sgpio_bank {
-> > @@ -137,7 +143,7 @@ static inline int sgpio_addr_to_pin(struct sgpio_priv *priv, int port, int bit)
-> >
-> >  static inline u32 sgpio_get_addr(struct sgpio_priv *priv, u32 rno, u32 off)
-> >  {
-> > -     return priv->properties->regoff[rno] + off;
-> > +     return (priv->properties->regoff[rno] + off) * regmap_config.reg_stride;
-> >  }
-> >
-> >  static u32 sgpio_readl(struct sgpio_priv *priv, u32 rno, u32 off)
-> > @@ -821,11 +827,6 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
-> >       struct clk *clk;
-> >       u32 __iomem *regs;
-> >       u32 val;
-> > -     struct regmap_config regmap_config = {
-> > -             .reg_bits = 32,
-> > -             .val_bits = 32,
-> > -             .reg_stride = 4,
-> > -     };
-> >
-> >       priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> >       if (!priv)
-> > --
-> > 2.33.0
-> >
-
--- 
-/Horatiu
+>>  include/uapi/linux/perf_event.h       | 10 ++++++++--
+>>  tools/include/uapi/linux/perf_event.h | 10 ++++++++--
+>>  tools/perf/util/branch.c              |  8 +++++++-
+>>  4 files changed, 29 insertions(+), 6 deletions(-)
