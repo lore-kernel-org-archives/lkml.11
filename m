@@ -2,88 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2F9C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 139FCC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241814AbiA0NXB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 08:23:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33754 "EHLO
+        id S241815AbiA0NXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 08:23:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241803AbiA0NWw (ORCPT
+        with ESMTP id S241798AbiA0NXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:22:52 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A607C061714
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:22:52 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id x23so5421718lfc.0
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:22:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xpVlgTajQnqvJqRBDECMdTOPT5OH4VewpY+I2k89SJw=;
-        b=Fc7RyjvN2P/MMNY+073yQvT0fuI5+/QBlZLBP4WGdpj05lpGHeUbxdUbtfWtGgtSG8
-         9ldcb8VjtZXqCtNgd7bg6/pLb357CdIJTg5lIpDepmG3aE4jGVmeR4ellyebalknS252
-         uMETIjWVpmjcKxplVluodcNqbn0RjLFCmkDj/Wou99EjgiBBlk/Bed+9NnzfFj29JjiH
-         ijUwOgRg8l0NNhIZcfYml4qunWGLqwCW05JGwI3vjuQzLjENs0tksQaI7dNhhlEleiWc
-         U4yR8iMSI5wpkPSjK8/O6BdIZaZ6nN50szfAqQccYqfeKjCXq/B1ceBo5h9VcJxeMASo
-         gEQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xpVlgTajQnqvJqRBDECMdTOPT5OH4VewpY+I2k89SJw=;
-        b=drXhYHbqp73I5KOey/lmDFwTm2RfoTa2aLcJMexvnlGW/7C5xNTSmE5woXgivNRJF7
-         a5hr1unN0ufW9DOfdUvVd8yLfc4s8y9pguUqN0VNxTmlDzSZuu5hvLRUiOVCJGKTExD/
-         NC5ntvCtTlYUtiCZFZM4Sy0NSpOhJ/sBa/4EA6jgDna0KxzMZZ1Dt2IqB/g4zNnORXIW
-         VufDCsIUqYoHkMeHrky3jPiPUE0XC+0ROY9gptF6t/0LAD4YqAOl3mo7esf5B6hAtNp4
-         o3cH9x+6QY/w/4Iq5HuLXkF+xN2NOsISu5Cm/QQwHijHD6Sg2DLuE+tHzPLyrbCzAXCY
-         jwPg==
-X-Gm-Message-State: AOAM530P6AnSomFpGwPVYiHZUlOmXWo5YM+buVZ4zzlVfF3KaZWTeiP3
-        jCJWqh1E86r0Xjb1KtwkxnA=
-X-Google-Smtp-Source: ABdhPJzeX3TZdWKhhlRjwG4LqWA2iq8Of5FsUyIyEWBOvklizbRwHs2mLSF1sgLqvjbEIbno0nwMWA==
-X-Received: by 2002:ac2:4196:: with SMTP id z22mr3065815lfh.36.1643289770688;
-        Thu, 27 Jan 2022 05:22:50 -0800 (PST)
-Received: from elysium.toya.net.pl (staticline-31-183-166-172.toya.net.pl. [31.183.166.172])
-        by smtp.gmail.com with ESMTPSA id s16sm1306918lfp.197.2022.01.27.05.22.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 05:22:50 -0800 (PST)
-From:   Karolina Drobnik <karolinadrobnik@gmail.com>
-To:     linux-mm@kvack.org
-Cc:     akpm@linux-foundation.org, mike.rapoport@gmail.com,
-        linux-kernel@vger.kernel.org,
-        Karolina Drobnik <karolinadrobnik@gmail.com>
-Subject: [PATCH 09/16] tools/include: Add debugfs.h stub
-Date:   Thu, 27 Jan 2022 14:21:27 +0100
-Message-Id: <c1c09d86c80a72423d51c01fb26028902796d709.1643206612.git.karolinadrobnik@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1643206612.git.karolinadrobnik@gmail.com>
-References: <cover.1643206612.git.karolinadrobnik@gmail.com>
+        Thu, 27 Jan 2022 08:23:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2A1C06174E;
+        Thu, 27 Jan 2022 05:22:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 776CBB82213;
+        Thu, 27 Jan 2022 13:22:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9863FC340E4;
+        Thu, 27 Jan 2022 13:22:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643289772;
+        bh=gw18Fbvfp/ZEQuA9OJdXjIR6yRIzDEoPY96pix/ilGQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=D/idt8ra099XTl6YPGYstQELWlBsoUXLp9amRf+aqvj1IcC9/fD8ktbfl/zC+nPGk
+         oDoSzzufNCZLCwTITvC548tMScQNDXlGs81N7y19jcub9YNquaKkWXtJxmAC+G4zhS
+         EfIsahAmL1vV5aIUM/f66fTODwMzOGBQay+z183M=
+Date:   Thu, 27 Jan 2022 14:22:49 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] usbnet: add devlink support
+Message-ID: <YfKcqcq4Ii1qu2+8@kroah.com>
+References: <20220127110742.922752-1-o.rempel@pengutronix.de>
+ <YfJ+ceEzvzMM1JsW@kroah.com>
+ <20220127123152.GF9150@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127123152.GF9150@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a dummy debugfs.h header.
+On Thu, Jan 27, 2022 at 01:31:52PM +0100, Oleksij Rempel wrote:
+> On Thu, Jan 27, 2022 at 12:13:53PM +0100, Greg KH wrote:
+> > On Thu, Jan 27, 2022 at 12:07:42PM +0100, Oleksij Rempel wrote:
+> > > The weakest link of usbnet devices is the USB cable.
+> > 
+> > The weakest link of any USB device is the cable, why is this somehow
+> > special to usbnet devices?
+> > 
+> > > Currently there is
+> > > no way to automatically detect cable related issues except of analyzing
+> > > kernel log, which would differ depending on the USB host controller.
+> > > 
+> > > The Ethernet packet counter could potentially show evidence of some USB
+> > > related issues, but can be Ethernet related problem as well.
+> > > 
+> > > To provide generic way to detect USB issues or HW issues on different
+> > > levels we need to make use of devlink.
+> > 
+> > Please make this generic to all USB devices, usbnet is not special here
+> > at all.
+> 
+> Ok. I'll need some help. What is the best place to attach devlink
+> registration in the USB subsystem and the places to attach health
+> reporters?
 
-Signed-off-by: Karolina Drobnik <karolinadrobnik@gmail.com>
----
- tools/include/linux/debugfs.h | 5 +++++
- 1 file changed, 5 insertions(+)
- create mode 100644 tools/include/linux/debugfs.h
+You tell us, you are the one that thinks this needs to be reported to
+userspace.  What is only being reported in kernel logs that userspace
+somehow needs to see?  And what will userspace do with that information?
 
-diff --git a/tools/include/linux/debugfs.h b/tools/include/linux/debugfs.h
-new file mode 100644
-index 000000000000..4ba06140b1be
---- /dev/null
-+++ b/tools/include/linux/debugfs.h
-@@ -0,0 +1,5 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _TOOLS_DEBUGFS_H
-+#define _TOOLS_DEBUGFS_H
-+
-+#endif
--- 
-2.30.2
+thanks,
 
+greg k-h
