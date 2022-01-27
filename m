@@ -2,101 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 012B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7212BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241957AbiA0NXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 08:23:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241746AbiA0NWk (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:22:40 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BEAC061748
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:22:39 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id a28so5283217lfl.7
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 05:22:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0AfNznDv6b7CrorpQrureC1eis+2zp1+WJpTDBcjrg8=;
-        b=Tpzav9Qcow8f/pxSrd/1LhlA99lKNKxHITJN5mLMqV4a6/cCMgMQgzoRqzmYo0UA8s
-         TEU5fIwe6djDHfsxziS2Z+MkiXuajna1PLxMA8cOYqFYsyuHpYNU7RX1BJgBEMSb89FA
-         C+S5TTgbtxf/YyiJxJ+eRyBhC4A80K88oQ+reovHR1Ne8AKZDtcMw46xu1BnHkIAHlpM
-         xS/Vj7bn/28RZlUyjTrpsztedS9tYivODL517FtuQLPCksXMOSb4R9axghrgtyyBz/xj
-         5vbbsY/o2cn/HLIBDFm8Kl+WdiJ8zp/kok17dRR3Zz/a1LJENuJkICdeqL1tX1RSZKu+
-         IEZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0AfNznDv6b7CrorpQrureC1eis+2zp1+WJpTDBcjrg8=;
-        b=LHZx2MgsWxx1CgvPi0UAplOZCvezHMbS7whe1RQ8d+L002tRj3kR1dyKg3s07G3SvB
-         1AAWosthYht9rZlFDkjkJDWWqamsOzwjmhyLpEQaahMLGXJH94h8sZRmP33kYLp+kQ+N
-         TvPQwPSMhYQ3I657f/bwe9JGcbZNIpOVfG3cne58lkkXrBiDaAnJputijnqe56bupOpG
-         eiTTrVXcssW5wVhwHx1Ngef4+3rQXHKoYK59lj3uhxH/xPBjdCfzRAZicASOfMT35ndU
-         vtfoWFw54t9q4utDYBtxjnhO2uxNaACAdEidrhIaORTaPwbGi4RVxALDXb1ejrVdzxel
-         WVNQ==
-X-Gm-Message-State: AOAM531tQbbbpyGKVdjTIniGNvm0kPFp9OxMP5OTde8F0i6IZOkQ9WaE
-        UNvcJVNiYyGoKWDqw7jzKUM=
-X-Google-Smtp-Source: ABdhPJyoeNuos9aqWTGAoXTpIpIZkPB0VXonEll0U9lZ8AVvbT5A+Shj4Tw++CheTL1P3HCnwpvKCA==
-X-Received: by 2002:a05:6512:128c:: with SMTP id u12mr2810354lfs.441.1643289758153;
-        Thu, 27 Jan 2022 05:22:38 -0800 (PST)
-Received: from elysium.toya.net.pl (staticline-31-183-166-172.toya.net.pl. [31.183.166.172])
-        by smtp.gmail.com with ESMTPSA id s16sm1306918lfp.197.2022.01.27.05.22.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 05:22:37 -0800 (PST)
-From:   Karolina Drobnik <karolinadrobnik@gmail.com>
-To:     linux-mm@kvack.org
-Cc:     akpm@linux-foundation.org, mike.rapoport@gmail.com,
-        linux-kernel@vger.kernel.org,
-        Karolina Drobnik <karolinadrobnik@gmail.com>
-Subject: [PATCH 03/16] tools/include: Add _RET_IP_ and math definitions to kernel.h
-Date:   Thu, 27 Jan 2022 14:21:21 +0100
-Message-Id: <5baa036aadb6436c7c36589ce591baaf827aec0b.1643206612.git.karolinadrobnik@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1643206612.git.karolinadrobnik@gmail.com>
-References: <cover.1643206612.git.karolinadrobnik@gmail.com>
+        id S236869AbiA0NYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 08:24:15 -0500
+Received: from foss.arm.com ([217.140.110.172]:33148 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229565AbiA0NYO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 08:24:14 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 225B51063;
+        Thu, 27 Jan 2022 05:24:14 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.14.34])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D36163F766;
+        Thu, 27 Jan 2022 05:24:12 -0800 (PST)
+Date:   Thu, 27 Jan 2022 13:24:00 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Yinan Liu <yinan@linux.alibaba.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        Sachin Sant <sachinp@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [powerpc] ftrace warning kernel/trace/ftrace.c:2068 with
+ code-patching selftests
+Message-ID: <YfKc8MDwenS1iXqQ@FVFF77S0Q05N>
+References: <e9422643-a210-b77f-a037-da63a9d2e925@linux.alibaba.com>
+ <20220124114548.30241947@gandalf.local.home>
+ <0fa0daec-881a-314b-e28b-3828e80bbd90@linux.alibaba.com>
+ <YfFclROd+0/61q2d@FVFF77S0Q05N>
+ <YfKGKWW5UfZ15kCW@FVFF77S0Q05N>
+ <CAMj1kXHgpr0KYx5PYO_SpqaN8Ar2kfmc9Pb-d26uaYDpjwTz9w@mail.gmail.com>
+ <YfKOENgR6sLnHQmA@FVFF77S0Q05N>
+ <CAMj1kXGsmK9pBmgwmMEr302eCHtL=cqs4jqM_jOiK-bLO2gQog@mail.gmail.com>
+ <YfKXM0wBfTh0V8+L@FVFF77S0Q05N>
+ <CAMj1kXF3Fg2O=5prQnUWeNFeCqojP1z2zDXMwxFdcNtWLfL7Vg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXF3Fg2O=5prQnUWeNFeCqojP1z2zDXMwxFdcNtWLfL7Vg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add max_t, min_t and clamp functions, together with _RET_IP_
-definition, so they can be used in testing.
+On Thu, Jan 27, 2022 at 02:07:03PM +0100, Ard Biesheuvel wrote:
+> On Thu, 27 Jan 2022 at 13:59, Mark Rutland <mark.rutland@arm.com> wrote:
+> >
+> > On Thu, Jan 27, 2022 at 01:22:17PM +0100, Ard Biesheuvel wrote:
+> > > On Thu, 27 Jan 2022 at 13:20, Mark Rutland <mark.rutland@arm.com> wrote:
+> > > > On Thu, Jan 27, 2022 at 01:03:34PM +0100, Ard Biesheuvel wrote:
+> > > >
+> > > > > These architectures use place-relative extables for the same reason:
+> > > > > place relative references are resolved at build time rather than at
+> > > > > runtime during relocation, making a build time sort feasible.
+> > > > >
+> > > > > arch/alpha/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > > > arch/arm64/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > > > arch/ia64/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > > > arch/parisc/include/asm/uaccess.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > > > arch/powerpc/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > > > arch/riscv/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > > > arch/s390/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > > > arch/x86/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> > > > >
+> > > > > Note that the swap routine becomes something like the below, given
+> > > > > that the relative references need to be fixed up after the entry
+> > > > > changes place in the sorted list.
+> > > > >
+> > > > > static void swap_ex(void *a, void *b, int size)
+> > > > > {
+> > > > >         struct exception_table_entry *x = a, *y = b, tmp;
+> > > > >         int delta = b - a;
+> > > > >
+> > > > >         tmp = *x;
+> > > > >         x->insn = y->insn + delta;
+> > > > >         y->insn = tmp.insn - delta;
+> > > > >         ...
+> > > > > }
+> > > > >
+> > > > > As a bonus, the resulting footprint of the table in the image is
+> > > > > reduced by 8x, given that every 8 byte pointer has an accompanying 24
+> > > > > byte RELA record, so we go from 32 bytes to 4 bytes for every call to
+> > > > > __gnu_mcount_mc.
+> > > >
+> > > > Absolutely -- it'd be great if we could do that for the callsite locations; the
+> > > > difficulty is that the entries are generated by the compiler itself, so we'd
+> > > > either need some build/link time processing to convert each absolute 64-bit
+> > > > value to a relative 32-bit offset, or new compiler options to generate those as
+> > > > relative offsets from the outset.
+> > >
+> > > Don't we use scripts/recordmcount.pl for that?
+> >
+> > Not quite -- we could adjust it to do so, but today it doesn't consider
+> > existing mcount_loc entries, and just generates new ones where the compiler has
+> > generated calls to mcount, which it finds by scanning the instructions in the
+> > binary. Today it is not used:
+> >
+> > * On arm64 when we default to using `-fpatchable-function-entry=N`.  That makes
+> >   the compiler insert 2 NOPs in the function prologue, and log the location of
+> >   that NOP sled to a section called.  `__patchable_function_entries`.
+> >
+> >   We need the compiler to do that since we can't reliably identify 2 NOPs in a
+> >   function prologue as being intended to be a patch site, as e.g. there could
+> >   be notrace functions where the compiler had to insert NOPs for alignment of a
+> >   subsequent brnach or similar.
+> >
+> > * On architectures with `-nop-mcount`. On these, it's necessary to use
+> >   `-mrecord-mcount` to have the compiler log the patch-site, for the same
+> >   reason as with `-fpatchable-function-entry`.
+> >
+> > * On architectures with `-mrecord-mcount` generally, since this avoids the
+> >   overhead of scanning each object.
+> >
+> > * On x86 when objtool is used.
+> >
+> 
+> Right.
+> 
+> I suppose that on arm64, we can work around this by passing
+> --apply-dynamic-relocs to the linker, so that all R_AARCH64_RELATIVE
+> targets are prepopulated with the link time value of the respective
+> addresses. It does cause some bloat, which is why we disable that
+> today, but we could make that dependent on ftrace being enabled.
 
-Signed-off-by: Karolina Drobnik <karolinadrobnik@gmail.com>
----
- tools/include/linux/kernel.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+We'd also need to teach the build-time sort to update the relocations, unless
+you mean to also change the boot-time reloc code to RMW with the offset?
 
-diff --git a/tools/include/linux/kernel.h b/tools/include/linux/kernel.h
-index 9701e8307db0..4b0673bf52c2 100644
---- a/tools/include/linux/kernel.h
-+++ b/tools/include/linux/kernel.h
-@@ -15,6 +15,8 @@
- #define UINT_MAX	(~0U)
- #endif
- 
-+#define _RET_IP_		((unsigned long)__builtin_return_address(0))
-+
- #define PERF_ALIGN(x, a)	__PERF_ALIGN_MASK(x, (typeof(x))(a)-1)
- #define __PERF_ALIGN_MASK(x, mask)	(((x)+(mask))&~(mask))
- 
-@@ -51,6 +53,10 @@
- 	_min1 < _min2 ? _min1 : _min2; })
- #endif
- 
-+#define max_t(type, x, y)	max((type)x, (type)y)
-+#define min_t(type, x, y)	min((type)x, (type)y)
-+#define clamp(val, lo, hi)	min((typeof(val))max(val, lo), hi)
-+
- #ifndef BUG_ON
- #ifdef NDEBUG
- #define BUG_ON(cond) do { if (cond) {} } while (0)
--- 
-2.30.2
+I think for right now the best thing is to disable the build-time sort for
+arm64, but maybe something like that is the right thing to do longer term.
 
+> I do wonder how much over head we accumulate, though, by having all
+> these relocations, but I suppose that is the situation today in any
+> case.
+
+Yeah; I suspect if we want to do something about that we want to do it more
+generally, and would probably need to do something like the x86 approach and
+rewrite the relocs at build-time to something more compressed. If we applied
+the dynamic relocs with the link-time address we'd only need 4 bytes to
+identify each pointer to apply an offset to.
+
+I'm not exactly sure how we could do that, nor what the trade-off look like in
+practice.
+
+THanks,
+Mark.
