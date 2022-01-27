@@ -2,151 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6961AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 20:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF0FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 20:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344024AbiA0UEB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 15:04:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43450 "EHLO
+        id S240542AbiA0UE7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 15:04:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343899AbiA0UCm (ORCPT
+        with ESMTP id S235878AbiA0UE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 15:02:42 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D47C0613DE
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:02:39 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id 192so3798405pfz.3
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:02:39 -0800 (PST)
+        Thu, 27 Jan 2022 15:04:56 -0500
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B100BC06173B
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:04:56 -0800 (PST)
+Received: by mail-qt1-x82d.google.com with SMTP id z1so2324142qto.3
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 12:04:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pg7u1QgES9vvilydf87u7mbX9H+V1JXmTaOjVr3A4N4=;
-        b=SNb6+UtCldRo3C3aKKuH53pJUKPR1QoOvhja2fFrdIZAqK2pC8avjHvs2QWwdAqY2L
-         iDTt5Ev8TK1FUPlXG0GLJg90OtWzYd58L9jGhUvwTScxXTgeVD59clQ/6ruqJGZsIDtb
-         VzKFMzhSCdtxWvtOoLilyZS6Je3BqrKogxJuI=
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=411z1vQK/uyJWyTA0mh5NoWT3UN44dWhOArvuxGcycY=;
+        b=oqRkdvd05f1e+XOO+JL4So5nZNRq09NGBnqQML56y2IHYB2M7bFhId/11Tca1Aj5S4
+         ED4cp4aEOW88tsIH707iF2iLcRhJeLhqc7G8uPFq36JBhPk2QtQE7vet9vRYJP9Nw38j
+         zHY0sGW1Wuk9tkBp1drE/8KJRmGr2HtC5EH/XYpvvFJD265ufrr4ID11f0Kf5l7jbiU8
+         YKFAjQ8McWwDhnsO1sMqI/2TbNwJrryEDi4imukFHLSLdr7G6cz76YxV5XdZyBW0RDkW
+         wiQRqKcD0QWK71lJkas0XCt2Pk3oc1TKjQ5OY/+nL3QJtb+CxYKJygokfdonUOL/rliM
+         N32Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pg7u1QgES9vvilydf87u7mbX9H+V1JXmTaOjVr3A4N4=;
-        b=ijLvCe+eVe+2KU/NIA3i4mBC9WOhwJfrvAu3m0rBHXwhBXWQjMx1YOfilYK2X1Y2/f
-         DVKwp9CNRugi/rpF2RThjCFJ3F0h9VsewNphLnmYkwME5LpdMXJ5ETSoPEMGJ4km+RCM
-         zgcLQ0movumb/mYBHpwjwrMMxPFo7qj7DkfovG9eSolgzKeEUHmMdO3BxUF8ypIQCbVg
-         /cCw2VhaVKNeMu0KsT044bvyyXh+5XFmSywZwJOB302mXkUrIvyV30xW3BncsZrBkHec
-         W5sy78e/aF5IXgbc40DUZHFY9TqOfINb2bIcnN0bLzAAPX06ijx2/ncdCXPVNvwfCJAZ
-         2peA==
-X-Gm-Message-State: AOAM531em430r0lqZYZN68x9UHU84D7DVzho3uLcU3b2P8tzkHTJxVmy
-        ozphcjR0cUC02SwsLko6zXIFOhGLjaSF3Q==
-X-Google-Smtp-Source: ABdhPJyWS6wiSowTLsVHpFT26f9C2DJENr9ONfoQ93NBCznOznrI8TRNbMCesKj30yy09FTDuZLACA==
-X-Received: by 2002:a63:dd0f:: with SMTP id t15mr3912064pgg.12.1643313759139;
-        Thu, 27 Jan 2022 12:02:39 -0800 (PST)
-Received: from smtp.gmail.com ([2620:15c:202:201:9246:1838:3243:3071])
-        by smtp.gmail.com with ESMTPSA id k21sm6561190pff.33.2022.01.27.12.02.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 12:02:38 -0800 (PST)
-From:   Stephen Boyd <swboyd@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Douglas Anderson <dianders@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Stefan Binding <sbinding@opensource.cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Takashi Iwai <tiwai@suse.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Saravana Kannan <saravanak@google.com>
-Subject: [PATCH v6 33/35] ALSA: hda/realtek: Migrate to aggregate driver
-Date:   Thu, 27 Jan 2022 12:01:39 -0800
-Message-Id: <20220127200141.1295328-34-swboyd@chromium.org>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-In-Reply-To: <20220127200141.1295328-1-swboyd@chromium.org>
-References: <20220127200141.1295328-1-swboyd@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=411z1vQK/uyJWyTA0mh5NoWT3UN44dWhOArvuxGcycY=;
+        b=3gJMLkOExDWqGLtbiwcl8zOq7/F3gGvOC+D6+Et5k9JAZFyFDMPpJywcf9VBFtmdPP
+         etsIiYOLPUJfskOi/XTd1lmS/PjkvrN9l9SxP9BY+f2Y78AmxzPYOE2vhihPX5i3BWYY
+         5KrzdXjYnhb39w+K6q4rjbAiJbmm+ndIuE6y14e90LCEKQxJohPcAm8PuDGFkQld4MNK
+         nppe8duGpSd1WtBGdBqrX0IMmRoOPZnxgNWdT88jS03M5ZiasArNluOOroYFcBYLViWC
+         bCaulbpLoxT2a/innP/Lzh1bCuVYgkFkutWnG2VEdUYkge0s9nAsM12A6n6EiQ1H1LUd
+         d9wg==
+X-Gm-Message-State: AOAM5332gf/ZdLuHfkY+dT56u6DlbBktdiNPPpoyP/yCd9AdR6KCQOyi
+        AD+rQ9Q5S+hIdO3b98hY8+MGTIRABcrLIjpHAQLk7g==
+X-Google-Smtp-Source: ABdhPJxePmdXDwHCxiW5q8xf/FWoojenXjiwrAx6L9NdYYB7Ajr4VQCV3G0OxdGpcxK9NDBSGfbx39EpN+TiZyB9H08=
+X-Received: by 2002:ac8:7fca:: with SMTP id b10mr4156416qtk.62.1643313895857;
+ Thu, 27 Jan 2022 12:04:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220127170405.155710-1-daniel.thompson@linaro.org>
+In-Reply-To: <20220127170405.155710-1-daniel.thompson@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Thu, 27 Jan 2022 23:04:44 +0300
+Message-ID: <CAA8EJppWF27As46rRvYgHuqX=dwna2CQGZ79WXdrfqFbAK53uw@mail.gmail.com>
+Subject: Re: [PATCH] drm/msm: Remove spurious IRQF_ONESHOT flags from dsi & hdmi
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+Cc:     Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use an aggregate driver instead of component ops so that we can get
-proper driver probe ordering of the aggregate device with respect to all
-the component devices that make up the aggregate device.
+On Thu, 27 Jan 2022 at 20:04, Daniel Thompson
+<daniel.thompson@linaro.org> wrote:
+>
+> Quoting the header comments, IRQF_ONESHOT is "Used by threaded interrupts
+> which need to keep the irq line disabled until the threaded handler has
+> been run.". When applied to an interrupt that doesn't request a threaded
+> irq then IRQF_ONESHOT has a lesser known (undocumented?) side effect,
+> which it to disable the forced threading of irqs (and for "normal" kernels
+> it is a nop). In this case I can find no evidence that suppressing forced
+> threading is intentional. Had it been intentional then a driver must adopt
+> the raw_spinlock API in order to avoid deadlocks on PREEMPT_RT kernels
+> (and avoid calling any kernel API that uses regular spinlocks).
+>
+> Fix this by removing the spurious additional flag.
+>
+> This change is required for my Snapdragon 7cx Gen2 tablet to boot-to-GUI
+> with PREEMPT_RT enabled.
+>
+> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
 
-Cc: Stefan Binding <sbinding@opensource.cirrus.com>
-Cc: Lucas Tanure <tanureal@opensource.cirrus.com>
-Cc: Takashi Iwai <tiwai@suse.de>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Rob Clark <robdclark@gmail.com>
-Cc: Russell King <rmk+kernel@arm.linux.org.uk>
-Cc: Saravana Kannan <saravanak@google.com>
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
----
- sound/pci/hda/patch_realtek.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+Could you please split it into two parts: separate DSI and HDMI patches
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 668274e52674..80a2164c99b6 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -6547,25 +6547,31 @@ static int find_comp_by_dev_name(struct alc_spec *spec, const char *name)
- 	return -ENODEV;
- }
- 
--static int comp_bind(struct device *dev)
-+static int realtek_aggregate_probe(struct aggregate_device *adev)
- {
-+	struct device *dev = aggregate_device_parent(adev);
- 	struct hda_codec *cdc = dev_to_hda_codec(dev);
- 	struct alc_spec *spec = cdc->spec;
- 
- 	return component_bind_all(dev, spec->comps);
- }
- 
--static void comp_unbind(struct device *dev)
-+static void realtek_aggregate_remove(struct aggregate_device *adev)
- {
-+	struct device *dev = aggregate_device_parent(adev);
- 	struct hda_codec *cdc = dev_to_hda_codec(dev);
- 	struct alc_spec *spec = cdc->spec;
- 
- 	component_unbind_all(dev, spec->comps);
- }
- 
--static const struct component_master_ops comp_master_ops = {
--	.bind = comp_bind,
--	.unbind = comp_unbind,
-+static struct aggregate_driver realtek_aggregate_driver = {
-+	.probe = realtek_aggregate_probe,
-+	.remove = realtek_aggregate_remove,
-+	.driver = {
-+		.name = "realtek_aggregate",
-+		.owner = THIS_MODULE,
-+	},
- };
- 
- static void comp_generic_playback_hook(struct hda_pcm_stream *hinfo, struct hda_codec *cdc,
-@@ -6597,7 +6603,7 @@ static void cs35l41_generic_fixup(struct hda_codec *cdc, int action, const char
- 				return;
- 			component_match_add(dev, &spec->match, comp_match_dev_name, name);
- 		}
--		ret = component_master_add_with_match(dev, &comp_master_ops, spec->match);
-+		ret = component_aggregate_register(dev, &realtek_aggregate_driver, spec->match);
- 		if (ret)
- 			codec_err(cdc, "Fail to register component aggregator %d\n", ret);
- 		else
-@@ -6648,7 +6654,7 @@ static void alc287_fixup_legion_16achg6_speakers(struct hda_codec *cdc, const st
- 				    "i2c-CLSA0100:00-cs35l41-hda.0");
- 		component_match_add(dev, &spec->match, comp_match_dev_name,
- 				    "i2c-CLSA0100:00-cs35l41-hda.1");
--		ret = component_master_add_with_match(dev, &comp_master_ops, spec->match);
-+		ret = component_aggregate_register(dev, &realtek_aggregate_driver, spec->match);
- 		if (ret)
- 			codec_err(cdc, "Fail to register component aggregator %d\n", ret);
- 		else
+> ---
+>
+> Notes:
+>     Just in case anybody asks, yes! I did use coccinelle to do a quick scan
+>     for similar issues. I didn't find any other instances in drivers/drm/ .
+>
+>  drivers/gpu/drm/msm/dsi/dsi_host.c | 2 +-
+>  drivers/gpu/drm/msm/hdmi/hdmi.c    | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+> index 6b3ced4aaaf5d..3a3f53f0c8ae1 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_host.c
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+> @@ -1877,7 +1877,7 @@ int msm_dsi_host_init(struct msm_dsi *msm_dsi)
+>
+>         /* do not autoenable, will be enabled later */
+>         ret = devm_request_irq(&pdev->dev, msm_host->irq, dsi_host_irq,
+> -                       IRQF_TRIGGER_HIGH | IRQF_ONESHOT | IRQF_NO_AUTOEN,
+> +                       IRQF_TRIGGER_HIGH | IRQF_NO_AUTOEN,
+>                         "dsi_isr", msm_host);
+>         if (ret < 0) {
+>                 dev_err(&pdev->dev, "failed to request IRQ%u: %d\n",
+> diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
+> index 3acdeae25caf0..a1bfbc4c74bf7 100644
+> --- a/drivers/gpu/drm/msm/hdmi/hdmi.c
+> +++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
+> @@ -301,7 +301,7 @@ int msm_hdmi_modeset_init(struct hdmi *hdmi,
+>         }
+>
+>         ret = devm_request_irq(&pdev->dev, hdmi->irq,
+> -                       msm_hdmi_irq, IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
+> +                       msm_hdmi_irq, IRQF_TRIGGER_HIGH,
+>                         "hdmi_isr", hdmi);
+>         if (ret < 0) {
+>                 DRM_DEV_ERROR(dev->dev, "failed to request IRQ%u: %d\n",
+>
+> base-commit: e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+> --
+> 2.34.1
+>
+
+
 -- 
-https://chromeos.dev
-
+With best wishes
+Dmitry
