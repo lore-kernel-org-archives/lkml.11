@@ -2,145 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 542F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E268C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238309AbiA0JMO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 04:12:14 -0500
-Received: from mga18.intel.com ([134.134.136.126]:50473 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232420AbiA0JMM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 04:12:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643274732; x=1674810732;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=YQKKweKIW5Doo9DUiY0jWMnPIBUKbMijewzE2RXmCxc=;
-  b=LhdJIrfihnzhPIC/oRnPQeYAg6VDORq/DYIu65ZR2+spkeC4jUHsXTNN
-   CgBMVyCKjKo2yV2MDSDLUn9tXvnVKjNrmHhaH6CsOe95/ZmRdBEbfMOap
-   xzHd99EKV++Cvcfqo786qc17MZSLpFY8Ms8P3XN7kCkG1ttRf1juIZZ/f
-   iwXKN+e/yKf5dVQdUxf67iPiT9dMZOLRla3RuMx6OviK3LCHpZRZjO7/E
-   eQLVPAVwL7FGPmnOul5LMTGyjeDe5Qw8uqMs9YJyj5IZO3kl+t4KLuFy1
-   9BK766RoVjQC1E6DHJ8XF+Fo+eungC6UwxWjUNLKF6DWbKIUnGCDVJ/ci
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="230370746"
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="230370746"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 01:12:12 -0800
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="581408275"
-Received: from johnlyon-mobl.ger.corp.intel.com (HELO localhost) ([10.252.16.209])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 01:12:07 -0800
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     "Usyskin, Alexander" <alexander.usyskin@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "Winkler, Tomas" <tomas.winkler@intel.com>,
-        "Lubart, Vitaly" <vitaly.lubart@intel.com>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 2/5] mei: add support for graphics system controller
- (gsc) devices
-In-Reply-To: <MW3PR11MB4651EAD45375963B6A43CF8AED219@MW3PR11MB4651.namprd11.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220119155807.222657-1-alexander.usyskin@intel.com>
- <20220119155807.222657-3-alexander.usyskin@intel.com>
- <YfGNbK6n3Ag/ORFJ@kroah.com>
- <MW3PR11MB4651EAD45375963B6A43CF8AED219@MW3PR11MB4651.namprd11.prod.outlook.com>
-Date:   Thu, 27 Jan 2022 11:12:03 +0200
-Message-ID: <878rv1y23g.fsf@intel.com>
+        id S238321AbiA0JMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 04:12:49 -0500
+Received: from smtpbguseast1.qq.com ([54.204.34.129]:47276 "EHLO
+        smtpbguseast1.qq.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238299AbiA0JMj (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 04:12:39 -0500
+X-QQ-mid: bizesmtp54t1643274737tnh7xl4d
+Received: from localhost.localdomain (unknown [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 27 Jan 2022 17:12:11 +0800 (CST)
+X-QQ-SSF: 0140000000200090E000C00A0000000
+X-QQ-FEAT: F3yR32iATbjWw3acDtsfp2HLqnilxm49/4xuiIAVnD3g9W5QKpqaUyV3Lkk6W
+        GRHy/Z/TKb4rTYjEmDW/4bTNTdYtPjiVTdxpR3fJkmD5jxHf55vczWMU1TKeLG+bS2qg34p
+        oXrvYyWnob/at2T9ngNQV+dHympfswqSoQLwtmOwDlZ4N58gZh+A+1FBUpfJSk2aQX9AFAq
+        6BcI1OWr/5nv8fuVRU4bSdtYiTlwYBIbH7YnbjB/Sh7m4ZXbdKG9HZhd4kcFD7Miact+6gP
+        beikY47ZSxYMJ9tMuVcAIrZxqhYSln7ymbG4ntqkxzPwI/+Z1At6Kd/GL23LxJIzVkcRZnk
+        oLYqJ4J/hEIwOLDpaM/Q91vzWiAvM5Z9Us9A37dR66jYSdju+I=
+X-QQ-GoodBg: 2
+From:   tangmeng <tangmeng@uniontech.com>
+To:     axboe@kernel.dk, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     tangmeng <tangmeng@uniontech.com>
+Subject: [PATCH v2] scsi: sr: Improve the judgment statement
+Date:   Thu, 27 Jan 2022 17:11:36 +0800
+Message-Id: <20220127091136.9658-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign7
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022, "Usyskin, Alexander" <alexander.usyskin@intel.com> wrote:
->> -----Original Message-----
->> From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> Sent: Wednesday, January 26, 2022 20:06
->> To: Usyskin, Alexander <alexander.usyskin@intel.com>
->> Cc: Jani Nikula <jani.nikula@linux.intel.com>; Joonas Lahtinen
->> <joonas.lahtinen@linux.intel.com>; Vivi, Rodrigo <rodrigo.vivi@intel.com>;
->> David Airlie <airlied@linux.ie>; Daniel Vetter <daniel@ffwll.ch>; Winkler,
->> Tomas <tomas.winkler@intel.com>; Lubart, Vitaly <vitaly.lubart@intel.com>;
->> intel-gfx@lists.freedesktop.org; linux-kernel@vger.kernel.org
->> Subject: Re: [PATCH v2 2/5] mei: add support for graphics system controller
->> (gsc) devices
->> 
->> On Wed, Jan 19, 2022 at 05:58:04PM +0200, Alexander Usyskin wrote:
->> > From: Tomas Winkler <tomas.winkler@intel.com>
->> >
->> > GSC is a graphics system controller, based on CSE, it provides
->> > a chassis controller for graphics discrete cards, as well as it
->> > supports media protection on selected devices.
->> >
->> > mei_gsc binds to a auxiliary devices exposed by Intel discrete
->> > driver i915.
->> >
->> > Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
->> > Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
->> > ---
->> >  drivers/misc/mei/Kconfig  |  14 +++
->> >  drivers/misc/mei/Makefile |   3 +
->> >  drivers/misc/mei/gsc-me.c | 192
->> ++++++++++++++++++++++++++++++++++++++
->> >  drivers/misc/mei/hw-me.c  |  27 +++++-
->> >  drivers/misc/mei/hw-me.h  |   2 +
->> >  5 files changed, 236 insertions(+), 2 deletions(-)
->> >  create mode 100644 drivers/misc/mei/gsc-me.c
->> >
->> > diff --git a/drivers/misc/mei/Kconfig b/drivers/misc/mei/Kconfig
->> > index 0e0bcd0da852..ec119bb98251 100644
->> > --- a/drivers/misc/mei/Kconfig
->> > +++ b/drivers/misc/mei/Kconfig
->> > @@ -46,6 +46,20 @@ config INTEL_MEI_TXE
->> >  	  Supported SoCs:
->> >  	  Intel Bay Trail
->> >
->> > +config INTEL_MEI_GSC
->> > +	tristate "Intel MEI GSC embedded device"
->> > +	select INTEL_MEI
->> > +	select INTEL_MEI_ME
->> 
->> Please don't select, why not just depend on?
->
-> These are hard dependencies. If user wants to have INTEL_GSC,
-> user should enable INTEL_MEI and INTEL_MEI_ME anyway.
+The previous code has a less-than-perfect usage of judgment syntax.
 
-Isn't that exactly what depends on conveys?
+When the med->media_event_code value is equal to 2 or 3, the same
+value is returned, so it would be better to combine the implementation
+statements when the med->media_event_code value is equal to 2 or 3.
 
-> INTEL_MEI_ME selects INTEL_MEI in this file and it was taken as example.
->
-> What is wrong with select? Why to avoid it use?
+Moreover, when a variable is equal to multiple values, it is better
+to use a switch judgment statement.
 
-Documentation/kbuild/kconfig-language.rst:
+Signed-off-by: tangmeng <tangmeng@uniontech.com>
+---
+ drivers/scsi/sr.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-  Note:
-	select should be used with care. select will force
-	a symbol to a value without visiting the dependencies.
-	By abusing select you are able to select a symbol FOO even
-	if FOO depends on BAR that is not set.
-	In general use select only for non-visible symbols
-	(no prompts anywhere) and for symbols with no dependencies.
-	That will limit the usefulness but on the other hand avoid
-	the illegal configurations all over.
-
-If we followed that rule, we'd have a lot less kconfig dependency
-issues.
-
-If I had the time, I'd add a lint/verbose mode to scripts/kconfig tool
-to warn about selecting symbols that are visible or have dependencies.
-
-
-BR,
-Jani.
-
-
+diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
+index f925b1f1f9ad..610baa630067 100644
+--- a/drivers/scsi/sr.c
++++ b/drivers/scsi/sr.c
+@@ -222,12 +222,16 @@ static unsigned int sr_get_events(struct scsi_device *sdev)
+ 	if (eh->nea || eh->notification_class != 0x4)
+ 		return 0;
+ 
+-	if (med->media_event_code == 1)
++	switch (med->media_event_code) {
++	case 1:
+ 		return DISK_EVENT_EJECT_REQUEST;
+-	else if (med->media_event_code == 2)
+-		return DISK_EVENT_MEDIA_CHANGE;
+-	else if (med->media_event_code == 3)
++	case 2:
++	case 3:
+ 		return DISK_EVENT_MEDIA_CHANGE;
++	default:
++		break;
++	}
++
+ 	return 0;
+ }
+ 
 -- 
-Jani Nikula, Intel Open Source Graphics Center
+2.20.1
+
+
+
