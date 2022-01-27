@@ -2,192 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D00C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 05:01:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28981C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 05:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231449AbiA0FBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 00:01:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiA0FBc (ORCPT
+        id S232948AbiA0FEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 00:04:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33162 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232660AbiA0FEI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 00:01:32 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03631C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 21:01:32 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id h14so1536279plf.1
-        for <linux-kernel@vger.kernel.org>; Wed, 26 Jan 2022 21:01:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4WM44B/NC7a0HeWoHpvCPlwdzgz9p2YQGoPd7Uf57rc=;
-        b=FuKhOS2Z6v6+EP8HMgoyRv4d9WUob6v9JooGXGSJaFzOnRuN4K5pyxfK4FTHmKMz0r
-         ZsxbucRIOwvGOxPRho2vaQoXMhschprW7e7XsS2AAXRi0qUEQHqGM3GH+2w1V23zNgHW
-         fCL/+OH6qnYvyhp73psmLwS0THivJUVFB6r7E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4WM44B/NC7a0HeWoHpvCPlwdzgz9p2YQGoPd7Uf57rc=;
-        b=KFphDFObWnlYLPcMRytWoW1gxBL6uLsSrGk0d+saMtKfmw2ox9N/K7/q6FDNmWYdoK
-         xVLaizDgcOeELRWDFt7EGAnUBdrUZGPZ+npSpUdcF7dcSIeYFUz5ZdYv16Pl+KRYNeGc
-         gOrJgfN9Qj5bGJROSkll+pBaiitAopWAWX0a5aR2G4JAYl8/w5A/T5hwyistcm8a+QrH
-         cCr67p70p3ylpQUUPAp1hJPCKCU/ASgRpeedhwuD2SVJxeby2ap8zop+oZkUU6mlO94w
-         jV+h3um9RxKKA8+Z4WLXxHkp0O6yLXIj8OZWR9DGCzz/jROR7W4cn2cgyg3+7WPKco2i
-         wFqw==
-X-Gm-Message-State: AOAM531nM3pT89/j6E+mz+2dX69aNNmsiGLaChCDbEcB82rxZImre8JA
-        JnWJpENi5MgC4qu9+bP73d1UwA==
-X-Google-Smtp-Source: ABdhPJx9PtGSMahxBvYgIfDnPuhaXjNIxjih2vnsajIaVJz1hYOu4DDqJrglaHjOVQC1fRVIMDqoOg==
-X-Received: by 2002:a17:90b:1b46:: with SMTP id nv6mr2449798pjb.178.1643259691459;
-        Wed, 26 Jan 2022 21:01:31 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id gx10sm878175pjb.7.2022.01.26.21.01.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 21:01:31 -0800 (PST)
-Date:   Wed, 26 Jan 2022 21:01:30 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Akira Kawata <akirakawata1@gmail.com>
-Cc:     akpm@linux-foundation.org, adobriyan@gmail.com,
-        viro@zeniv.linux.org.uk, linux-fsdevel@vger.kernel.org,
-        lukas.bulwahn@gmail.com, kernel test robot <lkp@intel.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] fs/binfmt_elf: Fix AT_PHDR for unusual ELF files
-Message-ID: <202201261955.F86F391@keescook>
-References: <20211212232414.1402199-1-akirakawata1@gmail.com>
- <20211212232414.1402199-2-akirakawata1@gmail.com>
+        Thu, 27 Jan 2022 00:04:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643259847;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=plPajYXA8B5ZLakDfOB/mq6gwvfYbK84k4ZYLKgoU6w=;
+        b=K/uusz10UWBF0kNGSINnxEN0rCT9PEtgs0Tclz6pdbMLSqFnmN/dtncCELtyt2KO0VO0jp
+        Y4w5DWy3PwS0uxyDYySqf8FwRTs4tQOAoujs2KgIMolnLTikqHKRCKaVoSRc/Nhc/aSOmp
+        3DFiAp4+oaKwgSfPzBhdL7j2CV1GXIY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-307-NGGhIgoONtKk4r22eqt6yQ-1; Thu, 27 Jan 2022 00:03:57 -0500
+X-MC-Unique: NGGhIgoONtKk4r22eqt6yQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4E02283DD23;
+        Thu, 27 Jan 2022 05:03:55 +0000 (UTC)
+Received: from T590 (ovpn-8-29.pek2.redhat.com [10.72.8.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6162F5ED2D;
+        Thu, 27 Jan 2022 05:03:40 +0000 (UTC)
+Date:   Thu, 27 Jan 2022 13:03:35 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     "yukuai (C)" <yukuai3@huawei.com>
+Cc:     Tejun Heo <tj@kernel.org>, mkoutny@suse.com, paulmck@kernel.org,
+        axboe@kernel.dk, cgroups@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH v6 2/2] block: cancel all throttled bios in del_gendisk()
+Message-ID: <YfInp7SsZNNgRfB7@T590>
+References: <20220110134758.2233758-1-yukuai3@huawei.com>
+ <20220110134758.2233758-3-yukuai3@huawei.com>
+ <Yd5FkuhYX9YcgQkZ@T590>
+ <b416e6a6-f2c9-caf3-dacd-f937746207da@huawei.com>
+ <YfF+yukISfkuc9IK@slm.duckdns.org>
+ <630c162b-8bdd-d87e-0d80-c7a78ea267a5@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20211212232414.1402199-2-akirakawata1@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <630c162b-8bdd-d87e-0d80-c7a78ea267a5@huawei.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 08:24:11AM +0900, Akira Kawata wrote:
-> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=197921
+On Thu, Jan 27, 2022 at 10:45:33AM +0800, yukuai (C) wrote:
+> 在 2022/01/27 1:03, Tejun Heo 写道:
+> > On Mon, Jan 24, 2022 at 11:50:11AM +0800, yukuai (C) wrote:
+> > > Both ways can fix the problem, which way do you prefer?
+> > 
+> > Ming's suggested change seems simpler, no?
 > 
-> As pointed out in the discussion of buglink, we cannot calculate AT_PHDR
-> as the sum of load_addr and exec->e_phoff.
+> Hi,
 > 
-> : The AT_PHDR of ELF auxiliary vectors should point to the memory address
-> : of program header. But binfmt_elf.c calculates this address as follows:
-> :
-> : NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
-> :
-> : which is wrong since e_phoff is the file offset of program header and
-> : load_addr is the memory base address from PT_LOAD entry.
-> :
-> : The ld.so uses AT_PHDR as the memory address of program header. In normal
-> : case, since the e_phoff is usually 64 and in the first PT_LOAD region, it
-> : is the correct program header address.
-> :
-> : But if the address of program header isn't equal to the first PT_LOAD
-> : address + e_phoff (e.g.  Put the program header in other non-consecutive
-> : PT_LOAD region), ld.so will try to read program header from wrong address
-> : then crash or use incorrect program header.
-> 
-> This is because exec->e_phoff
-> is the offset of PHDRs in the file and the address of PHDRs in the
-> memory may differ from it. This patch fixes the bug by calculating the
-> address of program headers from PT_LOADs directly.
-> 
-> Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> ---
->  fs/binfmt_elf.c | 20 ++++++++++++++------
->  1 file changed, 14 insertions(+), 6 deletions(-)
-> 
-> diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-> index beeb1247b5c4..828e88841cb4 100644
-> --- a/fs/binfmt_elf.c
-> +++ b/fs/binfmt_elf.c
-> @@ -170,8 +170,8 @@ static int padzero(unsigned long elf_bss)
->  
->  static int
->  create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
-> -		unsigned long load_addr, unsigned long interp_load_addr,
-> -		unsigned long e_entry)
-> +		unsigned long interp_load_addr,
-> +		unsigned long e_entry, unsigned long phdr_addr)
->  {
->  	struct mm_struct *mm = current->mm;
->  	unsigned long p = bprm->p;
-> @@ -257,7 +257,7 @@ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
->  	NEW_AUX_ENT(AT_HWCAP, ELF_HWCAP);
->  	NEW_AUX_ENT(AT_PAGESZ, ELF_EXEC_PAGESIZE);
->  	NEW_AUX_ENT(AT_CLKTCK, CLOCKS_PER_SEC);
-> -	NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
-> +	NEW_AUX_ENT(AT_PHDR, phdr_addr);
->  	NEW_AUX_ENT(AT_PHENT, sizeof(struct elf_phdr));
->  	NEW_AUX_ENT(AT_PHNUM, exec->e_phnum);
->  	NEW_AUX_ENT(AT_BASE, interp_load_addr);
-> @@ -822,7 +822,7 @@ static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
->  static int load_elf_binary(struct linux_binprm *bprm)
->  {
->  	struct file *interpreter = NULL; /* to shut gcc up */
-> - 	unsigned long load_addr = 0, load_bias = 0;
-> +	unsigned long load_addr, load_bias = 0, phdr_addr = 0;
->  	int load_addr_set = 0;
->  	unsigned long error;
->  	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
-> @@ -1168,6 +1168,13 @@ static int load_elf_binary(struct linux_binprm *bprm)
->  				reloc_func_desc = load_bias;
->  			}
->  		}
-> +
-> +		if (elf_ppnt->p_offset <= elf_ex->e_phoff &&
-> +		    elf_ex->e_phoff < elf_ppnt->p_offset + elf_ppnt->p_filesz) {
-> +			phdr_addr = elf_ex->e_phoff - elf_ppnt->p_offset +
-> +				    elf_ppnt->p_vaddr;
-> +		}
+> Yes, if Ming don't mind, I can send a new version after Ming's
+> pathset "block: don't drain file system I/O on del_gendisk".
 
-This chunk could really use a comment above it. Maybe something like:
+The patch of canceling throttled bios shouldn't be conflicted
+with the above big patchset, and you can send it out now against
+for-5.18/block.
 
-/*
- * Figure out which segment in the file contains the Program
- * Header table, and map to the associated memory address.
- */
 
-Some additional thoughts:
+Thanks,
+Ming
 
-1) The ELF spec says e_phoff is 0 if there's no program header table.
-
-The old code would just pass the load_addr as a result. This patch will
-now retain the same result (phdr_addr defaults to 0). I wonder if there
-is a bug in this behavior, though? (To be addressed in a different patch
-if needed...)
-
-2) This finds any matching segment, not just PT_PHDR, which is good,
-since PT_PHDR isn't strictly required.
-
-> +
->  		k = elf_ppnt->p_vaddr;
->  		if ((elf_ppnt->p_flags & PF_X) && k < start_code)
->  			start_code = k;
-> @@ -1203,6 +1210,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
->  	}
->  
->  	e_entry = elf_ex->e_entry + load_bias;
-> +	phdr_addr += load_bias;
->  	elf_bss += load_bias;
->  	elf_brk += load_bias;
->  	start_code += load_bias;
-> @@ -1266,8 +1274,8 @@ static int load_elf_binary(struct linux_binprm *bprm)
->  		goto out;
->  #endif /* ARCH_HAS_SETUP_ADDITIONAL_PAGES */
->  
-> -	retval = create_elf_tables(bprm, elf_ex,
-> -			  load_addr, interp_load_addr, e_entry);
-> +	retval = create_elf_tables(bprm, elf_ex, interp_load_addr,
-> +				   e_entry, phdr_addr);
->  	if (retval < 0)
->  		goto out;
-
-Looks good!
-
-Acked-by: Kees Cook <keescook@chromium.org>
-
--- 
-Kees Cook
