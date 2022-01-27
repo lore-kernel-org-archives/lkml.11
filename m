@@ -2,178 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A30C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:58:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 285D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbiA0L6C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:58:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35516 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229521AbiA0L5u (ORCPT
+        id S232519AbiA0MAv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:00:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229521AbiA0MAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:57:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643284670;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GqTgSqJnVrLVP8MoWTF2B7JIB+LN5M/sJxbL4amwDn4=;
-        b=LCPDeDAtiA/PEPftCpxgS0HwgqLal9hO5L90gVyeECCZpZvxMw/sdmpDbQSVCUmI9b1hss
-        R4SlyZY2yI9zbGdS1qmE7Q7dVDN/ZdrqzDqfMAQ0ratncTwe5RuTdNWQkXz6DcnRaBFJfG
-        rBCnBDVxBHzDxIt+iZGlzk2OFogkCkU=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-530-HBEBRmsDMDSwkTFqwdPCWA-1; Thu, 27 Jan 2022 06:57:49 -0500
-X-MC-Unique: HBEBRmsDMDSwkTFqwdPCWA-1
-Received: by mail-wm1-f72.google.com with SMTP id m3-20020a7bcb83000000b0034f75d92f27so1395972wmi.2
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:57:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=GqTgSqJnVrLVP8MoWTF2B7JIB+LN5M/sJxbL4amwDn4=;
-        b=iGGEb/vh2wIvN478tvra3WVZFu2JzoQdrTxYwlSWqTtbh0+Pa0nMN0EA/0CGoM9U7G
-         Vabl0oLU+4OOmoze5v9LLC65dTsTXiUkiNnATPWftcOCmBb2mFI2TeckqKX8F8fnBI8z
-         JJt35G1S1s6hHTik4o9G0axKeDA1bjSNpUjV1bx7cC0815JMDK+h9z0fcJUWuPDHSMU9
-         MD0dABAyvflgAKIlZ1dCbNcEd37VaDoPmra+KlNBb0fcHMxsPFNo6HnEVPKZeMLq87OS
-         lBXQ15octsKmgm49NtfBxCCTFcV7RnFvnXo44bLxMOAd4dkBbFM33HDuifpmjLmPpMrp
-         HDfg==
-X-Gm-Message-State: AOAM533iUvR6ejGyeVVV6Ejm/vGryYRESVxCDKAqUov52RV2sb62G71Y
-        ElOZ77KuBhlXGfljT4SEg1XDUyFewXehGQtDF36WWp7wgRIViKpnMOJ1dBHzx8OI6xtORkLfCn/
-        pN7mexIWaPMg+/64BPdmSpH7k
-X-Received: by 2002:a05:600c:2d52:: with SMTP id a18mr4339141wmg.69.1643284667926;
-        Thu, 27 Jan 2022 03:57:47 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz7aKtyvGliXs6H0xr9fl7ALMHwt2lQzThUbe/NooyXhepg8VASewJoe2mr08jK+JCTPTHSAw==
-X-Received: by 2002:a05:600c:2d52:: with SMTP id a18mr4339124wmg.69.1643284667709;
-        Thu, 27 Jan 2022 03:57:47 -0800 (PST)
-Received: from ?IPV6:2003:cb:c70d:8300:4812:9d4f:6cd8:7f47? (p200300cbc70d830048129d4f6cd87f47.dip0.t-ipconnect.de. [2003:cb:c70d:8300:4812:9d4f:6cd8:7f47])
-        by smtp.gmail.com with ESMTPSA id o12sm2394747wry.115.2022.01.27.03.57.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 03:57:47 -0800 (PST)
-Message-ID: <b476e461-aba9-e92b-d392-270029ab6b18@redhat.com>
-Date:   Thu, 27 Jan 2022 12:57:46 +0100
+        Thu, 27 Jan 2022 07:00:49 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A63C061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 04:00:49 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nD3SE-000228-HS; Thu, 27 Jan 2022 13:00:42 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nD3SB-0001Rk-Jt; Thu, 27 Jan 2022 13:00:39 +0100
+Date:   Thu, 27 Jan 2022 13:00:39 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next v1 4/4] usbnet: add support for label from
+ device tree
+Message-ID: <20220127120039.GE9150@pengutronix.de>
+References: <20220127104905.899341-1-o.rempel@pengutronix.de>
+ <20220127104905.899341-5-o.rempel@pengutronix.de>
+ <YfJ6lhZMAEmetdad@kroah.com>
+ <20220127112305.GC9150@pengutronix.de>
+ <YfKCTG7N86yy74q+@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-US
-To:     Mike Kravetz <mike.kravetz@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Cc:     Michal Hocko <mhocko@suse.com>,
-        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220113180308.15610-1-mike.kravetz@oracle.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [RFC PATCH 0/3] Add hugetlb MADV_DONTNEED support
-In-Reply-To: <20220113180308.15610-1-mike.kravetz@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YfKCTG7N86yy74q+@kroah.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 12:48:04 up 47 days, 20:33, 86 users,  load average: 0.02, 0.06,
+ 0.13
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13.01.22 19:03, Mike Kravetz wrote:
-> Userfaultfd selftests for hugetlb does not perform UFFD_EVENT_REMAP
-> testing.  However, mremap support was recently added in commit
-> 550a7d60bd5e ("mm, hugepages: add mremap() support for hugepage backed
-> vma").  While attempting to enable mremap support in the test, it was
-> discovered that the mremap test indirectly depends on MADV_DONTNEED.
+On Thu, Jan 27, 2022 at 12:30:20PM +0100, Greg KH wrote:
+> On Thu, Jan 27, 2022 at 12:23:05PM +0100, Oleksij Rempel wrote:
+> > On Thu, Jan 27, 2022 at 11:57:26AM +0100, Greg KH wrote:
+> > > On Thu, Jan 27, 2022 at 11:49:05AM +0100, Oleksij Rempel wrote:
+> > > > Similar to the option to set a netdev name in device tree for switch
+> > > > ports by using the property "label" in the DSA framework, this patch
+> > > > adds this functionality to the usbnet infrastructure.
+> > > > 
+> > > > This will help to name the interfaces properly throughout supported
+> > > > devices. This provides stable interface names which are useful
+> > > > especially in embedded use cases.
+> > > 
+> > > Stable interface names are for userspace to set, not the kernel.
+> > > 
+> > > Why would USB care about this?  If you need something like this, get it
+> > > from the USB device itself, not DT, which should have nothing to do with
+> > > USB as USB is a dynamic, self-describing, bus.  Unlike DT.
+> > > 
+> > > So I do not think this is a good idea.
+> > 
+> > This is needed for embedded devices with integrated USB Ethernet
+> > controller. Currently I have following use cases to solve:
+> > - Board with one or multiple USB Ethernet controllers with external PHY.
+> >   The PHY need devicetree to describe IRQ, clock sources, label on board, etc.
 > 
-> hugetlb does not support MADV_DONTNEED.  However, the only thing
-> preventing support is a check in can_madv_lru_vma().  Simply removing
-> the check will enable support.
+> The phy is for the USB controller, not the Ethernet controller, right?
+> If for the ethernet controller, ugh, that's a crazy design and I would
+> argue a broken one.  But whatever, DT should not be used to describe a
+> USB device itself.
 > 
-> This is sent as a RFC because there is no existing use case calling
-> for hugetlb MADV_DONTNEED support except possibly the userfaultfd test.
-> However, adding support makes sense as it is fairly trivial and brings
-> hugetlb functionality more in line with 'normal' memory.
+> > - Board with USB Ethernet controller with DSA switch. The USB ethernet
+> >   controller is attached to the CPU port of DSA switch. In this case,
+> >   DSA switch is the sub-node of the USB device.
 > 
+> What do you mean exactly by "sub node"?  USB does not have such a term.
 
-Just a note:
+Here are some examples:
 
-QEMU doesn't use huge anonymous memory directly (MAP_ANON | MAP_HUGE...)
-but instead always goes either via hugetlbfs or via memfd. 
+  - |
+    usb@11270000 {
+        reg = <0x11270000 0x1000>;
+        #address-cells = <1>;
+        #size-cells = <0>;
 
-For MAP_PRIVATE hugetlb mappings, fallocate(FALLOC_FL_PUNCH_HOLE) seems
-to get the job done (IOW: also discards private anon pages). See the
-comments in the QEMU code below. I remember that that is somewhat
-inconsistent. For ordinary MAP_PRIVATE mapped files I remember that we
-always need fallocate(FALLOC_FL_PUNCH_HOLE) + madvise(QEMU_MADV_DONTNEED)
-to make sure
+        ethernet@1 {
+            compatible = "usb424,ec00";
+            reg = <1>;
+            label = "LAN0";
+	    // there is no internal eeprom, so MAC address is taken from
+	    // NVMEM of the SoC.
+            local-mac-address = [00 00 00 00 00 00];
 
-a) All file pages are removed
-b) All private anon pages are removed
+            mdio {
+		ethernet-phy@4 {
+			reg = <4>;
+			// Interrupt is attached to the SoC or the GPIO
+			// controller of the same USB devices.
+			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
+			// same about reset. It is attached to the SoC
+			// or GPIO controller of the USB device.
+			reset-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
+			reset-assert-us = <10000>;
+			reset-deassert-us = <1000>;
+			// some external clock provider
+			clocks = <&clk>
+			qca,smarteee-tw-us-1g = <24>;
+			qca,clk-out-frequency = <125000000>;
+		};
+            };
+        };
+    };
+  - |
+    usb@11270000 {
+        reg = <0x11270000 0x1000>;
+        #address-cells = <1>;
+        #size-cells = <0>;
 
-IIRC hugetlbfs really is different in that regard, but maybe other fs
-behave similarly.
+        usb1@1 {
+            compatible = "usb424,9514";
+            reg = <1>;
+            #address-cells = <1>;
+            #size-cells = <0>;
 
-That's why QEMU was able to live for now without MADV_DONTNEED support
-for hugetlbfs and most probably won't ever need it.
+            eth0: ethernet@1 {
+               compatible = "usb424,ec00";
+               reg = <1>;
+               label = "cpu0";
+
+               fixed-link {
+                   speed = <1000>;
+                   full-duplex;
+               };
+
+               // managment interface of the switch is attached to the
+	       // MDIO bus of this USB device.
+               mdio {
+                switch@0 {
+                    compatible = "microchip,ksz9477";
+                    reg = <0>;
+		    // reset is controlled by the SoC or by the GPIO
+		    // controller of this USB device.
+                    reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
+
+                    ethernet-ports {
+                        #address-cells = <1>;
+                        #size-cells = <0>;
+                        port@0 {
+                            reg = <0>;
+                            label = "lan1";
+                        };
+                        port@1 {
+                            reg = <1>;
+                            label = "lan2";
+                        };
+                        port@2 {
+                            reg = <2>;
+                            label = "lan3";
+                        };
+                        port@3 {
+                            reg = <3>;
+                            label = "lan4";
+                        };
+                        port@4 {
+                            reg = <4>;
+                            label = "lan5";
+                        };
+                        port@5 {
+                            reg = <5>;
+                            label = "cpu";
+                            ethernet = <&eth0>;
+                            fixed-link {
+                                speed = <1000>;
+                                full-duplex;
+                            };
+                        };
+                    };
+                };
+               };
+            };
+        };
+    };
 
 
-...
-       /* The logic here is messy;
-         *    madvise DONTNEED fails for hugepages
-         *    fallocate works on hugepages and shmem
-         *    shared anonymous memory requires madvise REMOVE
-         */
-        need_madvise = (rb->page_size == qemu_host_page_size);
-        need_fallocate = rb->fd != -1;
-        if (need_fallocate) {
-            /* For a file, this causes the area of the file to be zero'd
-             * if read, and for hugetlbfs also causes it to be unmapped
-             * so a userfault will trigger.
-             */
-#ifdef CONFIG_FALLOCATE_PUNCH_HOLE
-            ret = fallocate(rb->fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
-                            start, length);
-            if (ret) {
-                ret = -errno;
-                error_report("ram_block_discard_range: Failed to fallocate "
-                             "%s:%" PRIx64 " +%zx (%d)",
-                             rb->idstr, start, length, ret);
-                goto err;
-            }
-#else
-            ret = -ENOSYS;
-            error_report("ram_block_discard_range: fallocate not available/file"
-                         "%s:%" PRIx64 " +%zx (%d)",
-                         rb->idstr, start, length, ret);
-            goto err;
-#endif
-        }
-        if (need_madvise) {
-            /* For normal RAM this causes it to be unmapped,
-             * for shared memory it causes the local mapping to disappear
-             * and to fall back on the file contents (which we just
-             * fallocate'd away).
-             */
-#if defined(CONFIG_MADVISE)
-            if (qemu_ram_is_shared(rb) && rb->fd < 0) {
-                ret = madvise(host_startaddr, length, QEMU_MADV_REMOVE);
-            } else {
-                ret = madvise(host_startaddr, length, QEMU_MADV_DONTNEED);
-            }
-            if (ret) {
-                ret = -errno;
-                error_report("ram_block_discard_range: Failed to discard range "
-                             "%s:%" PRIx64 " +%zx (%d)",
-                             rb->idstr, start, length, ret);
-                goto err;
-            }
-#else
-...
+> >  The CPU port should have
+> >   stable name for all device related to this product.
+> 
+> name for who to use?  Userspace?  Or within the kernel?
+> 
+> Naming is done by userspace, as USB is NOT determinisitic in numbering /
+> naming the devices attached to it, by design.  If you need to have a
+> stable name, do so in userspace please, we have loads of tools that
+> already do this there today.  Let's not reinvent the wheel.
+> 
+> > Using user space tools to name interfaces would double the maintenance
+> > of similar information: DT - describing the HW + udev scripts describing
+> > same HW again.
+> 
+> Not for the network name of the device, that belongs in userspace.
+> 
+> Do not be listing USB device ids in a DT file, that way lies madness.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
 -- 
-Thanks,
-
-David / dhildenb
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
