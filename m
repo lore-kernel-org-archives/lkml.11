@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E45C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECBEFC433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 21:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344471AbiA0Vok (ORCPT
+        id S1344493AbiA0Vol (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 16:44:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47392 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344454AbiA0Vof (ORCPT
+        Thu, 27 Jan 2022 16:44:41 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41322 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344472AbiA0Voj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 16:44:35 -0500
+        Thu, 27 Jan 2022 16:44:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01B3261B1F
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 21:44:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10803C340E4;
-        Thu, 27 Jan 2022 21:44:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C3ECB823BB
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 21:44:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADE7BC340E8;
+        Thu, 27 Jan 2022 21:44:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643319874;
-        bh=TY2/eIey3Ob7eTs/QussZy9ldJo+Y1IYYRhYib8jcMw=;
+        s=k20201202; t=1643319877;
+        bh=fSfNtuEYBnQ5rN5RWlV3wSy9TdJ6HHjYxnrKyJcSkRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=QY2Xc54siv4n688VwfapexPI28URXmmZqPHEHaqmKDDBjoFOkrJf6EFTCbBSTrCK4
-         ZLL4XEPAG+enXJJtPiGD4SnlVSoWh3cG2y/0q5Ci3d/n020iVN8/YGvbmr28riXzSf
-         t0V5cFXKSGCNu2aoTVh63u1fBEun3iTJrU+H8ARLDUIDLERBPN+H9TWSGEFgv4rdwN
-         lN/sakSXakVhhwGVwURUAEjwnLDIxGvwxrKpl9n5Nif+NqjlDPsSb1HM5/7Wyi9QbP
-         iFLYcdtmregOcVH+7C/L3AKRinfx4qO2cAsrUCUKpRq8HJGqc7pDWSnyJJBqlqngsK
-         ixFbHEeAF7iJg==
+        b=pM3VFquEj6AE3vDc/OZR4i9bCkjiCWq9nTk6zv8CGiy1NsDK5XPTy7vzq5ioqT2eY
+         7uPeFaWzJ0h4qBUw4X5Gx06VzhfO5zFds9/1nG2e9mBUe9Q7QrwF9inlLza02CpByp
+         BAnPkjLKpQ782YbU6OkMzpD+YBb0N+5yoYV6BtxQtqHzfIit7LmmygrnrdQEVBel52
+         J/wNYfY0npd4eocatJtPmwGqtJ4r12woXatq4Fg1neiqWS9E0NfhnIEWIyftPDt/ps
+         kBqPLNXngrKx/5MT7ampyppCYIWgIozRyEsjcuQ2DK46kW3ey18gJiaHy+Tuy7EvPH
+         nmXaCNWhwxmHQ==
 From:   Tom Zanussi <zanussi@kernel.org>
 To:     rostedt@goodmis.org
 Cc:     mhiramat@kernel.org, linux-kernel@vger.kernel.org,
         Tom Zanussi <zanussi@kernel.org>
-Subject: [PATCH 4/7] tracing: Don't inc err_log entry count if entry allocation fails
-Date:   Thu, 27 Jan 2022 15:44:18 -0600
-Message-Id: <cad1ab28f75968db0f466925e7cba5970cec6c29.1643319703.git.zanussi@kernel.org>
+Subject: [PATCH 6/7] tracing: Remove size restriction on hist trigger cmd error logging
+Date:   Thu, 27 Jan 2022 15:44:20 -0600
+Message-Id: <b519e15e681319e99055a92c8d090072ebb2b179.1643319703.git.zanussi@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1643319703.git.zanussi@kernel.org>
 References: <cover.1643319703.git.zanussi@kernel.org>
@@ -47,31 +47,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tr->n_err_log_entries should only be increased if entry allocation
-succeeds.
+Currently, hist trigger command error strings are restricted to a
+length of MAX_FILTER_STR_VAL (256), which is too short for some
+commands already seen in the wild (with cmd strings longer than that
+showing up truncated in err_log).
 
-Doing it when it fails won't cause any problems other than wasting an
-entry, but should be fixed anyway.
+Remove the restriction so that no hist trigger command error string is
+ever truncated.
 
 Signed-off-by: Tom Zanussi <zanussi@kernel.org>
 ---
- kernel/trace/trace.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/trace/trace_events_hist.c | 30 +++++++++++++++++++++++-------
+ 1 file changed, 23 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index a73d78dcda2c..addd8297874e 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -7740,7 +7740,8 @@ static struct tracing_log_err *get_tracing_log_err(struct trace_array *tr)
- 		err = kzalloc(sizeof(*err), GFP_KERNEL);
- 		if (!err)
- 			err = ERR_PTR(-ENOMEM);
--		tr->n_err_log_entries++;
-+		else
-+			tr->n_err_log_entries++;
+diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+index ada87bfb5bb8..be4a001a607f 100644
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -727,11 +727,16 @@ static struct track_data *track_data_alloc(unsigned int key_len,
+ 	return data;
+ }
  
- 		return err;
+-static char last_cmd[MAX_FILTER_STR_VAL];
++#define HIST_PREFIX "hist:"
++
++static char *last_cmd;
+ static char last_cmd_loc[MAX_FILTER_STR_VAL];
+ 
+ static int errpos(char *str)
+ {
++	if (!str || !last_cmd)
++		return 0;
++
+ 	return err_pos(last_cmd, str);
+ }
+ 
+@@ -739,12 +744,19 @@ static void last_cmd_set(struct trace_event_file *file, char *str)
+ {
+ 	const char *system = NULL, *name = NULL;
+ 	struct trace_event_call *call;
++	int len = 0;
+ 
+ 	if (!str)
+ 		return;
+ 
+-	strcpy(last_cmd, "hist:");
+-	strncat(last_cmd, str, MAX_FILTER_STR_VAL - 1 - sizeof("hist:"));
++	len += sizeof(HIST_PREFIX) + strlen(str) + 1;
++	kfree(last_cmd);
++	last_cmd = kzalloc(len, GFP_KERNEL);
++	if (!last_cmd)
++		return;
++
++	strcpy(last_cmd, HIST_PREFIX);
++	strncat(last_cmd, str, len - 1 - sizeof(HIST_PREFIX));
+ 
+ 	if (file) {
+ 		call = file->event_call;
+@@ -757,18 +769,22 @@ static void last_cmd_set(struct trace_event_file *file, char *str)
  	}
+ 
+ 	if (system)
+-		snprintf(last_cmd_loc, MAX_FILTER_STR_VAL, "hist:%s:%s", system, name);
++		snprintf(last_cmd_loc, MAX_FILTER_STR_VAL, HIST_PREFIX "%s:%s", system, name);
+ }
+ 
+-static void hist_err(struct trace_array *tr, u8 err_type, u8 err_pos)
++static void hist_err(struct trace_array *tr, u8 err_type, u16 err_pos)
+ {
++	if (!last_cmd)
++		return;
++
+ 	tracing_log_err(tr, last_cmd_loc, last_cmd, err_text,
+ 			err_type, err_pos);
+ }
+ 
+ static void hist_err_clear(void)
+ {
+-	last_cmd[0] = '\0';
++	if (last_cmd)
++		last_cmd[0] = '\0';
+ 	last_cmd_loc[0] = '\0';
+ }
+ 
+@@ -5610,7 +5626,7 @@ static int event_hist_trigger_print(struct seq_file *m,
+ 	bool have_var = false;
+ 	unsigned int i;
+ 
+-	seq_puts(m, "hist:");
++	seq_puts(m, HIST_PREFIX);
+ 
+ 	if (data->name)
+ 		seq_printf(m, "%s:", data->name);
 -- 
 2.17.1
 
