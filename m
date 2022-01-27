@@ -2,137 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD58AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 06:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D7C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 06:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236792AbiA0Gfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 01:35:53 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:17817 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiA0Gfv (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 01:35:51 -0500
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JkrR82PsVz9sXf;
-        Thu, 27 Jan 2022 14:34:28 +0800 (CST)
-Received: from [10.67.110.173] (10.67.110.173) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 27 Jan 2022 14:35:48 +0800
-Message-ID: <df7fffa1-2068-cb0c-e43e-141ccd125b39@huawei.com>
-Date:   Thu, 27 Jan 2022 14:35:48 +0800
+        id S236818AbiA0GgB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 01:36:01 -0500
+Received: from mga17.intel.com ([192.55.52.151]:55342 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236813AbiA0Gf4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 01:35:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643265356; x=1674801356;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qfCEG17eUg1nUtn5Bjyg0zcAkUJsBlQnqzVAjVIbB6I=;
+  b=XXP7IbrkI9V1VOrSDVgU7kEFa4uvcu3eTeQz/NLhMlt1mggrUpwvXOze
+   1IEn49C+gJe2OUaxP9CDH6O8MPG5U1ootk6poAlgTt+9kkTjpjdBo9YXm
+   sUPTWk/DkyvMHp9xcuALH2K6Sv1KLf/uzcogBXhGlJG8x0f18DRAoH/v7
+   ZtMA6VY24IqA2SbpueKLpp3Gxy5Uh1jra5HzpIf0Xa6WcLlFQf0GUJLlH
+   M5TCGNH3+9E/sJvilcrL+zSZNd7cKW+kZ3Md/ileNXXsmhV+WEPBJOjD5
+   wOhWC4slpGRYew4cvkm4q5DIYciwX6udKnUdG3ITRZJh85BnVGpUyaB5r
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="227437977"
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="227437977"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 22:35:55 -0800
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="477753942"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 22:35:51 -0800
+Received: by lahna (sSMTP sendmail emulation); Thu, 27 Jan 2022 08:35:27 +0200
+Date:   Thu, 27 Jan 2022 08:35:27 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     bhelgaas@google.com, koba.ko@canonical.com,
+        Russell Currey <ruscur@russell.cc>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Lalithambika Krishnakumar <lalithambika.krishnakumar@intel.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] PCI/AER: Disable AER when link is in L2/L3 ready, L2
+ and L3 state
+Message-ID: <YfI9L01LI/0rZIuP@lahna>
+References: <20220126071853.1940111-1-kai.heng.feng@canonical.com>
+ <YfEqZMUS9jyiErmF@lahna>
+ <CAAd53p7H3RApEHOzJYorD9VBnaPqYRkzE2g+8hAUXRToc=jbGg@mail.gmail.com>
+ <YfI7u5XSlNlx2w4I@lahna>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RESEND][PATCH] Documentation: added order requirement for
- ima_hash=
-Content-Language: en-US
-To:     Roberto Sassu <roberto.sassu@huawei.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Jonathan Corbet <corbet@lwn.net>
-CC:     "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        wangweiyang <wangweiyang2@huawei.com>,
-        Xiujianfeng <xiujianfeng@huawei.com>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>
-References: <20220125090237.120357-1-guozihua@huawei.com>
- <36b6058f2cdf6bead917c06ecc6e8769bb88130c.camel@linux.ibm.com>
- <3933adf5-4e9d-6b22-2e46-55643c504f52@huawei.com>
- <71508a72b042da330d07a624cf499561c46195f0.camel@linux.ibm.com>
- <97142483-d7e7-e310-0cb0-30a81414cb57@huawei.com>
- <c1bfe53abaf24feacb676ce940edcb8899924ffc.camel@linux.ibm.com>
- <173fffb6cde54ae4ac7676d18a84c79f@huawei.com>
- <6f0890f135b61c41d81b03bf084ebab1b3e551e1.camel@linux.ibm.com>
- <220a8c9f3ab34f2183c0a88941c145d0@huawei.com>
-From:   "Guozihua (Scott)" <guozihua@huawei.com>
-In-Reply-To: <220a8c9f3ab34f2183c0a88941c145d0@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.110.173]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500024.china.huawei.com (7.185.36.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfI7u5XSlNlx2w4I@lahna>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jan 27, 2022 at 08:29:22AM +0200, Mika Westerberg wrote:
+> > For example, should we convert commit a697f072f5da8 ("PCI: Disable PTM
+> > during suspend to save power") to PM hooks in PTM service?
+> 
+> Yes, I think that's the right thing to do. I wonder how it was not using
+> the PM hooks in the first place.
 
-
-On 2022/1/26 22:43, Roberto Sassu wrote:
->> From: Mimi Zohar [mailto:zohar@linux.ibm.com]
->> Sent: Wednesday, January 26, 2022 3:35 PM
->> On Wed, 2022-01-26 at 13:24 +0000, Roberto Sassu wrote:
->>>> From: Mimi Zohar [mailto:zohar@linux.ibm.com]
->>>> Sent: Wednesday, January 26, 2022 1:48 PM
->>>> On Wed, 2022-01-26 at 15:41 +0800, Guozihua (Scott) wrote:
->>>>>
->>>>>
->>>>> The main issue lies in ima_template_desc_current called by hash_setup,
->>>>> which does not just read ima_template global variable, but also tries to
->>>>> set it if that hasn't been done already. Causing ima_template_setup to quit.
->>>>
->>>> Right, which calls ima_init_template_list().  So part of the solution
->>>> could be to conditionally call ima_init_template_list()
->>>> in ima_template_setup().
->>>>
->>>> -       if (ima_template)
->>>> -               return 1;
->>>> -
->>>> -       ima_init_template_list();
->>>> +       if (!ima_template
->>>> +               ima_init_template_list();
->>>>
->>>> Roberto, what do you think?
->>>
->>> Hi Mimi
->>>
->>> I think we wanted to prevent to set a digest algorithm
->>> incompatible with the chosen template.
->>>
->>> If we have in the kernel command line:
->>>
->>> ima_template=ima ima_hash=sha256
->>>
->>> ima_hash_algo would be set to HASH_ALGO_SHA1 despite
->>> the user choice and the template would be set to 'ima'.
->>>
->>> In the opposite case:
->>>
->>> ima_hash=sha256 ima_template=ima
->>>
->>> if the default template is 'ima', then ima_hash_algo would be
->>> set to HASH_ALGO_SHA1. Otherwise, it would be
->>> HASH_ALGO_SHA256. If we allow the template to be set after
->>> the digest algorithm is evaluated, the template selection will
->>> be rejected if the algorithm is incompatible with the template.
->>
->> The only time that would occur is in the unlikely case that the
->> template is being set to "ima".   That sounds reasonable.  In fact we
->> should consider preventing the template format being set to "ima".
-> 
-> Ok.
-> 
->>> I'm trying to remember why we still have the digest recalculation
->>> in ima_eventdigest_init(). Maybe the only possibility is if we
->>> set the template from the policy?
->>
->> The recalculation was relatively recently added in commit 6cc7c266e5b4
->> ("ima: Call ima_calc_boot_aggregate() in ima_eventdigest_init()").
-> 
-> There is also recalculation for the file digest:
-> 
->          hash.hdr.algo = ima_template_hash_algo_allowed(ima_hash_algo) ?
->              ima_hash_algo : HASH_ALGO_SHA1;
->          result = ima_calc_file_hash(event_data->file, &hash.hdr);
-> 
-> I understood that Jonathan already applied the patch. If it is possible
-> to make a new patch according to your suggestion, I would ask Zihua
-> to do that.
-Hi Mimi and Roberto,
-
-I understand that the solution proposed here is to decommission template 
-"ima" and potentially removing related algo checks altogether?
-
--- 
-Best
-GUO Zihua
+Actually no. The reason it is not using PM hooks is that PTM is not a
+port "service" so it needs to be dealt in the core.
