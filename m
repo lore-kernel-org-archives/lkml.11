@@ -2,115 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 521DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:43:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5830EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240716AbiA0LnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:43:21 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:43670 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S240698AbiA0LnO (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:43:14 -0500
-X-UUID: 5392cfc1e80d4afcb2d179da13656c7e-20220127
-X-UUID: 5392cfc1e80d4afcb2d179da13656c7e-20220127
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1820353872; Thu, 27 Jan 2022 19:43:12 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by mtkmbs10n2.mediatek.inc
- (172.21.101.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; Thu, 27 Jan 2022
- 19:43:10 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Thu, 27 Jan 2022 19:43:10 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <linux-kernel@vger.kernel.org>,
-        <jitao.shi@mediatek.com>, xinlei lee <xinlei.lee@mediatek.com>
-Subject: [v1,3/3] drm/mediatek: Move the getting bridge node function to mtk_dsi_bind
-Date:   Thu, 27 Jan 2022 19:42:53 +0800
-Message-ID: <1643283773-7081-4-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1643283773-7081-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1643283773-7081-1-git-send-email-xinlei.lee@mediatek.com>
+        id S240698AbiA0LnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:43:23 -0500
+Received: from foss.arm.com ([217.140.110.172]:56436 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240724AbiA0LnR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 06:43:17 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 00A7F1FB;
+        Thu, 27 Jan 2022 03:43:17 -0800 (PST)
+Received: from [10.57.39.22] (unknown [10.57.39.22])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E2A303F7D8;
+        Thu, 27 Jan 2022 03:43:14 -0800 (PST)
+Message-ID: <1fa70669-146c-7ec6-cee9-4f59751eb334@arm.com>
+Date:   Thu, 27 Jan 2022 11:42:27 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH v2 0/5] topdown with metrics
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, acme@kernel.org,
+        irogers@google.com, ak@linux.intel.com
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>
+References: <4fefb1bc-49b2-bc5b-23cd-cd8fabe8c588@huawei.com>
+ <20220111150749.13365-1-andrew.kilroy@arm.com>
+ <7cd7bd11-4900-81c4-de84-6e5fc63ec87c@huawei.com>
+From:   Andrew Kilroy <andrew.kilroy@arm.com>
+In-Reply-To: <7cd7bd11-4900-81c4-de84-6e5fc63ec87c@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: xinlei lee <xinlei.lee@mediatek.com>
 
-The order of probe function for bridge drivers and dsi drivers is uncertain.
-To avoid the dsi probe cannot be executed, we place getting bridge node function in
-mtk_dsi_bind.
 
-Signed-off-by:Xinlei Lee <xinlei.lee@mediatek.com>
----
- drivers/gpu/drm/mediatek/mtk_dsi.c | 29 +++++++++++++++--------------
- 1 file changed, 15 insertions(+), 14 deletions(-)
+On 20/01/2022 09:26, John Garry wrote:
+> On 11/01/2022 15:07, Andrew Kilroy wrote:
+>> This patch series adds the ability for the --topdown option to use
+>> metrics (defined in json files in the pmu-events directory) to describe
+>> how to calculate and determine the output columns for topdown level 1.
+>>
+>> For this to work, a number of metrics have to be defined for the
+>> relevant processor with the MetricGroup name "TopDownL1".  perf will
+>> arrange for the events defined in each metric to be collected, and each
+>> metric will be displayed in the output, as if
+>>
+>>    perf stat -M 'TopDownL1' --metric-only -- exampleapp
+>>
+>> had been used.
+>>
+>> Topdown was already implemented where certain kernel events are defined.
+>> If these kernel events are defined, the new json metrics behaviour is
+>> not used.  The json metrics approach is only used if the kernel events
+>> are absent.
+>>
+>> The last patch in the series disables the json metrics behaviour on x86.
+>> This is because of concerns that due to SMT it's not straightforward to
+>> express the various formulas as json for certain x86 cpus.  See
+> 
+> I suppose this solution is ok.
+> 
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 62af60d..a390f26 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -991,6 +991,21 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
- 	int ret;
- 	struct drm_device *drm = data;
- 	struct mtk_dsi *dsi = dev_get_drvdata(dev);
-+	struct drm_panel *panel;
-+
-+	ret = drm_of_find_panel_or_bridge(dev->of_node, 0, 0,
-+					  &panel, &dsi->next_bridge);
-+	if (ret)
-+		return ret;
-+
-+	if (panel) {
-+		dsi->next_bridge = devm_drm_panel_bridge_add(dev, panel);
-+		if (IS_ERR(dsi->next_bridge)) {
-+			ret = PTR_ERR(dsi->next_bridge);
-+			dev_err(dev, "failed to add bridge: %d\n", ret);
-+			return ret;
-+		}
-+	}
- 
- 	ret = mtk_dsi_encoder_init(drm, dsi);
- 	if (ret)
-@@ -1016,7 +1031,6 @@ static int mtk_dsi_probe(struct platform_device *pdev)
- {
- 	struct mtk_dsi *dsi;
- 	struct device *dev = &pdev->dev;
--	struct drm_panel *panel;
- 	struct resource *regs;
- 	int irq_num;
- 	int ret;
-@@ -1033,19 +1047,6 @@ static int mtk_dsi_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	ret = drm_of_find_panel_or_bridge(dev->of_node, 0, 0,
--					  &panel, &dsi->next_bridge);
--	if (ret)
--		goto err_unregister_host;
--
--	if (panel) {
--		dsi->next_bridge = devm_drm_panel_bridge_add(dev, panel);
--		if (IS_ERR(dsi->next_bridge)) {
--			ret = PTR_ERR(dsi->next_bridge);
--			goto err_unregister_host;
--		}
--	}
--
- 	dsi->driver_data = of_device_get_match_data(dev);
- 
- 	dsi->engine_clk = devm_clk_get(dev, "engine");
--- 
-2.6.4
+Thanks, would you mind giving it a Reviewed-By?
 
+> A concern is that today we only have 1x arm64 platform which actually 
+> supports this in mainline.
+> 
+> Do you have any more which you plan to support?
+> 
+
+The Neoverse cores, mainly.
+
+> I think that it's the frontend bound and fetch_bubble event which 
+> doesn't have a standard arm solution.
+> 
+> Note that I do have a series for perf tool which can read arm cpu pmu 
+> sysfs events folder to find events which are implemented (I don't think 
+> all required events are mandated) and match that against the common arch 
+> events JSON, so that we don't need a JSON definition file for each core 
+> implementation from all implementators - this would improve scalability. 
+> However a concern is that some events - like inst_spec - have imp def 
+> meaning, so may not be good to always use by default for all cores metrics.
+> 
+> Thanks,
+> John
+
+Thanks,
+Andrew
