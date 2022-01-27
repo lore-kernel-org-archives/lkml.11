@@ -2,33 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:08:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 177BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239282AbiA0SIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:08:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44946 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239156AbiA0SI3 (ORCPT
+        id S239488AbiA0SIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 13:08:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46094 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239322AbiA0SIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:08:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B6AC061714;
-        Thu, 27 Jan 2022 10:08:29 -0800 (PST)
+        Thu, 27 Jan 2022 13:08:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E191B818E1;
-        Thu, 27 Jan 2022 18:08:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61BE9C340E4;
-        Thu, 27 Jan 2022 18:08:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A22661CEC;
+        Thu, 27 Jan 2022 18:08:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15053C340E4;
+        Thu, 27 Jan 2022 18:08:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643306906;
-        bh=I+qDbx+ZdhX+V2eAiz0xOS7auZnOKPIc3FLckVjaU1I=;
+        s=korg; t=1643306915;
+        bh=M1i5XkgRI+ZxWZ4dBGJxnUM8yP3/Z0e9D4FGmHRJDlY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SF29z1P62OZtYZ28ynlWs8wRig9zDRQnjXrjj7Skl78CTgNBxgWQNPCQ/26+DnyQ3
-         5TSUjiqVV605Rkkw/o7SqRUwjSu7I90P0KkdlPLTFUTvL4o+xVyK1VXptCiZcd7Y5h
-         1nlDNrBDZLl9xnv8YxZgxw/eoJTUmbMW+MKJ3KcY=
+        b=dLHbo5M9v26X+k6fVm9l/rED18vRtA63EstlwPQCRW9F6TVxcQv4Wbqtl1nGk0ocL
+         JvOTwBv7kwWlZ6wtxIsu9aYtt7gQKhOt026S+7SdH+t4OMFjshyqMu2rtA7TLeVpqZ
+         QR7nnZDdQp8MFVccZyct632l/B+IEQ9pZkUEsjHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -40,12 +37,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
         Jani Nikula <jani.nikula@intel.com>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.4 1/1] drm/i915: Flush TLBs before releasing backing store
-Date:   Thu, 27 Jan 2022 19:08:14 +0100
-Message-Id: <20220127180256.388962601@linuxfoundation.org>
+Subject: [PATCH 4.9 1/9] drm/i915: Flush TLBs before releasing backing store
+Date:   Thu, 27 Jan 2022 19:08:19 +0100
+Message-Id: <20220127180257.271800251@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220127180256.347004543@linuxfoundation.org>
-References: <20220127180256.347004543@linuxfoundation.org>
+In-Reply-To: <20220127180257.225641300@linuxfoundation.org>
+References: <20220127180257.225641300@linuxfoundation.org>
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
@@ -94,14 +91,14 @@ Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
  drivers/gpu/drm/i915/i915_drv.h     |    5 ++
- drivers/gpu/drm/i915/i915_gem.c     |   89 ++++++++++++++++++++++++++++++++++++
- drivers/gpu/drm/i915/i915_gem_gtt.c |    3 +
- drivers/gpu/drm/i915/i915_reg.h     |    6 ++
- 4 files changed, 103 insertions(+)
+ drivers/gpu/drm/i915/i915_gem.c     |   72 ++++++++++++++++++++++++++++++++++++
+ drivers/gpu/drm/i915/i915_gem_gtt.c |    4 ++
+ drivers/gpu/drm/i915/i915_reg.h     |    6 +++
+ 4 files changed, 86 insertions(+), 1 deletion(-)
 
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -1719,6 +1719,8 @@ struct drm_i915_private {
+@@ -1763,6 +1763,8 @@ struct drm_i915_private {
  
  	struct intel_uncore uncore;
  
@@ -109,51 +106,33 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +
  	struct i915_virtual_gpu vgpu;
  
- 	struct intel_guc guc;
-@@ -2066,6 +2068,9 @@ struct drm_i915_gem_object {
+ 	struct intel_gvt gvt;
+@@ -2211,7 +2213,8 @@ struct drm_i915_gem_object {
+ 	 * rendering and so a non-zero seqno), and is not set if it i s on
+ 	 * inactive (ready to be unbound) list.
  	 */
- 	unsigned int active:I915_NUM_RINGS;
- 
-+	unsigned long flags;
+-#define I915_BO_ACTIVE_SHIFT 0
 +#define I915_BO_WAS_BOUND_BIT    0
-+
- 	/**
- 	 * This is set if the object has been written to since last bound
- 	 * to the GTT
++#define I915_BO_ACTIVE_SHIFT 1
+ #define I915_BO_ACTIVE_MASK ((1 << I915_NUM_ENGINES) - 1)
+ #define __I915_BO_ACTIVE(bo) \
+ 	((READ_ONCE((bo)->flags) >> I915_BO_ACTIVE_SHIFT) & I915_BO_ACTIVE_MASK)
 --- a/drivers/gpu/drm/i915/i915_gem.c
 +++ b/drivers/gpu/drm/i915/i915_gem.c
-@@ -2212,6 +2212,85 @@ i915_gem_object_put_pages_gtt(struct drm
+@@ -2185,6 +2185,67 @@ i915_gem_object_put_pages_gtt(struct drm
  	kfree(obj->pages);
  }
  
-+#define _wait_for_us(COND, US, W) ({ \
-+	unsigned long timeout__ = jiffies + usecs_to_jiffies(US) + 1;   \
-+	int ret__;                                                      \
-+	for (;;) {                                                      \
-+		bool expired__ = time_after(jiffies, timeout__);        \
-+		if (COND) {                                             \
-+			ret__ = 0;                                      \
-+			break;                                          \
-+		}                                                       \
-+		if (expired__) {                                        \
-+			ret__ = -ETIMEDOUT;                             \
-+			break;                                          \
-+		}                                                       \
-+		usleep_range((W), (W)*2);                               \
-+	}                                                               \
-+	ret__;                                                          \
-+})
-+
 +static int
 +__intel_wait_for_register_fw(struct drm_i915_private *dev_priv,
-+			     u32 reg,
++			     i915_reg_t reg,
 +			     const u32 mask,
 +			     const u32 value,
 +			     const unsigned int timeout_us,
 +			     const unsigned int timeout_ms)
 +{
 +#define done ((I915_READ_FW(reg) & mask) == value)
-+	int ret = _wait_for_us(done, timeout_us, 2);
++	int ret = wait_for_us(done, timeout_us);
 +	if (ret)
 +		ret = wait_for(done, timeout_ms);
 +	return ret;
@@ -162,23 +141,24 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +
 +static void invalidate_tlbs(struct drm_i915_private *dev_priv)
 +{
-+	static const u32 gen8_regs[] = {
++	static const i915_reg_t gen8_regs[] = {
 +		[RCS]  = GEN8_RTCR,
 +		[VCS]  = GEN8_M1TCR,
 +		[VCS2] = GEN8_M2TCR,
 +		[VECS] = GEN8_VTCR,
 +		[BCS]  = GEN8_BTCR,
 +	};
-+	enum intel_ring_id id;
++	struct intel_engine_cs *engine;
 +
-+	if (INTEL_INFO(dev_priv)->gen < 8)
++	if (INTEL_GEN(dev_priv) < 8)
 +		return;
++
++	assert_rpm_wakelock_held(dev_priv);
 +
 +	mutex_lock(&dev_priv->tlb_invalidate_lock);
 +	intel_uncore_forcewake_get(dev_priv, FORCEWAKE_ALL);
 +
-+	for (id = 0; id < I915_NUM_RINGS; id++) {
-+		struct intel_engine_cs *engine = &dev_priv->ring[id];
++	for_each_engine(engine, dev_priv) {
 +		/*
 +		 * HW architecture suggest typical invalidation time at 40us,
 +		 * with pessimistic cases up to 100us and a recommendation to
@@ -186,11 +166,10 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +		 */
 +		const unsigned int timeout_us = 100;
 +		const unsigned int timeout_ms = 4;
++		const enum intel_engine_id id = engine->id;
 +
-+		if (!intel_ring_initialized(engine))
-+			continue;
-+
-+		if (WARN_ON_ONCE(id >= ARRAY_SIZE(gen8_regs) || !gen8_regs[id]))
++		if (WARN_ON_ONCE(id >= ARRAY_SIZE(gen8_regs) ||
++				 !i915_mmio_reg_offset(gen8_regs[id])))
 +			continue;
 +
 +		I915_WRITE_FW(gen8_regs[id], 1);
@@ -208,36 +187,38 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  int
  i915_gem_object_put_pages(struct drm_i915_gem_object *obj)
  {
-@@ -2230,6 +2309,14 @@ i915_gem_object_put_pages(struct drm_i91
- 	 * lists early. */
- 	list_del(&obj->global_list);
+@@ -2215,6 +2276,15 @@ i915_gem_object_put_pages(struct drm_i91
+ 		obj->mapping = NULL;
+ 	}
  
 +	if (test_and_clear_bit(I915_BO_WAS_BOUND_BIT, &obj->flags)) {
 +		struct drm_i915_private *i915 = to_i915(obj->base.dev);
 +
-+		intel_runtime_pm_get(i915);
-+		invalidate_tlbs(i915);
-+		intel_runtime_pm_put(i915);
++		if (intel_runtime_pm_get_if_in_use(i915)) {
++			invalidate_tlbs(i915);
++			intel_runtime_pm_put(i915);
++		}
 +	}
 +
  	ops->put_pages(obj);
  	obj->pages = NULL;
  
-@@ -5050,6 +5137,8 @@ i915_gem_load(struct drm_device *dev)
- 	i915_gem_shrinker_init(dev_priv);
+@@ -4627,6 +4697,8 @@ i915_gem_load_init(struct drm_device *de
  
- 	mutex_init(&dev_priv->fb_tracking.lock);
-+
+ 	atomic_set(&dev_priv->mm.bsd_engine_dispatch_index, 0);
+ 
 +	mutex_init(&dev_priv->tlb_invalidate_lock);
++
+ 	spin_lock_init(&dev_priv->fb_tracking.lock);
  }
  
- void i915_gem_release(struct drm_device *dev, struct drm_file *file)
 --- a/drivers/gpu/drm/i915/i915_gem_gtt.c
 +++ b/drivers/gpu/drm/i915/i915_gem_gtt.c
-@@ -3538,6 +3538,9 @@ int i915_vma_bind(struct i915_vma *vma,
+@@ -3685,6 +3685,10 @@ int i915_vma_bind(struct i915_vma *vma,
+ 		return ret;
  
- 	vma->bound |= bind_flags;
- 
+ 	vma->flags |= bind_flags;
++
 +	if (vma->obj)
 +		set_bit(I915_BO_WAS_BOUND_BIT, &vma->obj->flags);
 +
@@ -246,18 +227,18 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  
 --- a/drivers/gpu/drm/i915/i915_reg.h
 +++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -1592,6 +1592,12 @@ enum skl_disp_power_wells {
+@@ -1698,6 +1698,12 @@ enum skl_disp_power_wells {
+ #define GAMT_CHKN_BIT_REG	_MMIO(0x4ab8)
+ #define   GAMT_CHKN_DISABLE_DYNAMIC_CREDIT_SHARING	(1<<28)
  
- #define GEN7_TLB_RD_ADDR	0x4700
- 
-+#define GEN8_RTCR	0x4260
-+#define GEN8_M1TCR	0x4264
-+#define GEN8_M2TCR	0x4268
-+#define GEN8_BTCR	0x426c
-+#define GEN8_VTCR	0x4270
++#define GEN8_RTCR	_MMIO(0x4260)
++#define GEN8_M1TCR	_MMIO(0x4264)
++#define GEN8_M2TCR	_MMIO(0x4268)
++#define GEN8_BTCR	_MMIO(0x426c)
++#define GEN8_VTCR	_MMIO(0x4270)
 +
  #if 0
- #define PRB0_TAIL	0x02030
- #define PRB0_HEAD	0x02034
+ #define PRB0_TAIL	_MMIO(0x2030)
+ #define PRB0_HEAD	_MMIO(0x2034)
 
 
