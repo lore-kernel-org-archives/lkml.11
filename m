@@ -2,158 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241133AbiA0L5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:57:00 -0500
-Received: from esa4.hgst.iphmx.com ([216.71.154.42]:63514 "EHLO
-        esa4.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240912AbiA0L4q (ORCPT
+        id S241139AbiA0L5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:57:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241039AbiA0L4x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:56:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1643284606; x=1674820606;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=0K9fD7qQnc4VGb8wlCEDk+u6ux8RT3G+/u+kJA7nYIc=;
-  b=Fmyclkxa8xbI7bEwV6/zXqES990h1mIvuUANFnmE6PoS1kZJEbECFD0N
-   q0y6VfCdZdKwEtrlqNMRJ0FeoWIDUn11KgoUCvBSdgnbMj0oriktB+z35
-   HSJAWSy1HWAzo0/9T8BveZ2owH22n80CjU7HpWffOyejrXbcqcXzSn9G+
-   xjXsoGiVDI1zQM6nv6M2ONSimsHC7+CmbxYlTQrMKvz410O1BUHsyYMVF
-   BrsKPuv5Bj3jTfrek3NYGumQ8b7bpHczXGyUTmnhsZqTr0Jyq9HrYIPC3
-   iEjjmuYy1i5QVcoGno7untqkGcFrjKHYy9t7Ej9hvrjiTivJXDZ9coVAm
-   A==;
-X-IronPort-AV: E=Sophos;i="5.88,320,1635177600"; 
-   d="scan'208";a="190470630"
-Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 27 Jan 2022 19:56:45 +0800
-IronPort-SDR: 7avWreOG3y7/pk4Q29mBTvqpsRmiA77JZVTzv01f2YIsGuN0zj6ZoL4v/OyLUnT+SvplHGAuUP
- WmnVsDMyzWuWb77GKJI5RO2ose4IakH5xchdTrYszQibLMzQ3kc/KxSnWqe2nmE9qpJLOAvIK7
- ksxT135l51T/60fQrBs9jSu27EIw6UYkvD9q7ePHPi17AvEYmLXJh9pYcbvCUTqhLPNQeU3OAi
- Se2qvdZCgaa+JL2a6pxAkg0PQQijcqsH0KtUZPLKSNWswYpK+adD9frgIli/F0ag+uvcInfB8k
- jswvTqoaOUGdYEy17f28y/dG
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 03:30:03 -0800
-IronPort-SDR: D2Ki+bYn2JaGaXQkSwVsOqArw4tyGN0jDs/BEALeRLMazYDI8zXT4L9mnt54W7fhDdxj9rs2pN
- s9FpOgPTfatfRCgNjNk0GjHQ2f2lBbYkjPddvIa03gFDLWaHE/A7iOFovRKeJTF5PcMJ9QmDEW
- +dk0iKU8qpDVL6lq+rXPKZrzPyDc1oOvTxrCYnho5ZY2CaTPgVwR8LJL7mV2gwg9r2Oq1UYknI
- nBr5S+VZhNUTRpdkCDLmnS+lFUFmRq04Sv7psk0xnfiIavvFMoMOc91OvEPk19XyV+xRnSyjzC
- 4iE=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 03:56:47 -0800
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Jkzb13NXLz1SVp4
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:56:45 -0800 (PST)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1643284604; x=1645876605; bh=0K9fD7qQnc4VGb8wlCEDk+u6ux8RT3G+/u+
-        kJA7nYIc=; b=MRYgURMtdAT0Iz8nKjiy7QOAwMLs4HrHbiQGE0XE0sM73CBhmgE
-        e6fft7fy0LSjIzbdpApMsrodhzPJ03U2eEGEbju/cji66AN++/Z7KmXUjiONEO4B
-        4yur1omjSNK9E/d0WeCvOCD/AcI6fv4eBsrxZ5zKWlLnHrp38YbsyUkB9HIO7IiT
-        tw1mpkzHP5voNQYOV2cn2i4nbwRHsaevxF8qRKuIWNNh6LDgIO91KugF9y8NFvQ+
-        mHDA7zNzVqpFTIN1IxjirNcISr20S6lxGBs2/gdwa1VKwTOs7BO1zedMXAcy3huf
-        xcpI3OWJ8GphEa74Ydb1pUOYoLCWcv2SNVw==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id ep90G1DIK9Gi for <linux-kernel@vger.kernel.org>;
-        Thu, 27 Jan 2022 03:56:44 -0800 (PST)
-Received: from [10.225.163.56] (unknown [10.225.163.56])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JkzZy2Swgz1RvlN;
-        Thu, 27 Jan 2022 03:56:42 -0800 (PST)
-Message-ID: <b49f8c20-355b-42f4-1910-4cb7b8e1b7fb@opensource.wdc.com>
-Date:   Thu, 27 Jan 2022 20:56:10 +0900
+        Thu, 27 Jan 2022 06:56:53 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91951C061756
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:56:52 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id n8so1722276wmk.3
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:56:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=fB9lBcu0GxVOEODBz8V+7rs0Bs5THwt6cZmanUr1lLo=;
+        b=NqMZEfn4GQJKjDjuddvBN2ejrANHFF06UyerRmcQ9LRioupQDDFQo9g2XLWuCRRgNq
+         gFqtReUSLgMwxkMCuPdmElzYEF5A8yjJXhaIKMWkB4gcx/EWbjCitsWU2MNDY/OnPTmZ
+         XMjwRw4P1Tow8fEn2f863II1OaaZWrB6Cne6Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=fB9lBcu0GxVOEODBz8V+7rs0Bs5THwt6cZmanUr1lLo=;
+        b=aQUnF8dmfi0WPDgF5nlpWVCbruPtKF3kHKT0P3+8RGZ94/D/POT4BsO8jLYa7b9W0/
+         0cPf/AA0Md+ObZvuYbY+hCjebxNBJ08K+c1iBFH7r42UvQEI+bkTInIkd/yWrwlQhLtu
+         UVLMhgFzXNfXXcWgXFlTajDYmzTyO2//lHU1oiroxeGLjxT93e+H+XxfOEgaC10rgb6J
+         Epv0QLeSSVUcetA11t+/hfktmw00yEnpgt1y6HcecXpDEEIp0Y+trxLsOaobd8Fo7+Nz
+         bp86j32GsxDx27H2xVxqPz4lXskXSPjITBO24Vdl/ZF7NnEPjzMQ/ufmaslEloTzIUGj
+         +lCA==
+X-Gm-Message-State: AOAM530zpshQdi7f01CHiUWEVXeQpztBrD2s0DKbPujqUoOsduU9q3Mz
+        cxrpcuu/Yo9K3BOjsl1fa4qt/g==
+X-Google-Smtp-Source: ABdhPJwPzaOuD+XEtfNOGuZN5oIZf3keZN4SuV1dZfFtIedoBNSx8TeIh5FcxEUnPdwsMtYxom5HAw==
+X-Received: by 2002:a05:600c:2154:: with SMTP id v20mr11307893wml.34.1643284611118;
+        Thu, 27 Jan 2022 03:56:51 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id m12sm2394081wrp.61.2022.01.27.03.56.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 03:56:50 -0800 (PST)
+Date:   Thu, 27 Jan 2022 12:56:48 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Christian =?iso-8859-1?Q?K=F6nig?= 
+        <ckoenig.leichtzumerken@gmail.com>
+Cc:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linaro-mm-sig@lists.linaro.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org
+Subject: Re: [Linaro-mm-sig] Re: [Intel-gfx] [PATCH 02/19] dma-buf-map: Add
+ helper to initialize second map
+Message-ID: <YfKIgLKyLbCDtl7B@phenom.ffwll.local>
+Mail-Followup-To: Christian =?iso-8859-1?Q?K=F6nig?= <ckoenig.leichtzumerken@gmail.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linaro-mm-sig@lists.linaro.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org
+References: <20220126203702.1784589-3-lucas.demarchi@intel.com>
+ <f0dbdcc0-13b5-c484-0bf3-a1f8c3e48954@amd.com>
+ <20220127075728.ygwgorhnrwaocdqv@ldmartin-desk2>
+ <3066c6a7-fc73-d34d-d209-a3ff6818dfb6@amd.com>
+ <YfJedaoeJjE3grum@phenom.ffwll.local>
+ <20220127093332.wnkd2qy4tvwg5i5l@ldmartin-desk2>
+ <YfJtLkdkh4yde20f@phenom.ffwll.local>
+ <27aed6b1-b465-6a52-2b0a-d748c9798414@amd.com>
+ <YfJ/DvhxaGGppGV6@phenom.ffwll.local>
+ <50cf1f2f-3fb2-8abb-7497-dafcd97935f3@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 00/16] scsi: libsas and users: Factor out LLDD TMF code
-Content-Language: en-US
-To:     John Garry <john.garry@huawei.com>, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, artur.paszkiewicz@intel.com,
-        jinpu.wang@cloud.ionos.com, chenxiang66@hisilicon.com,
-        Ajish.Koshy@microchip.com
-Cc:     yanaijie@huawei.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linuxarm@huawei.com, liuqi115@huawei.com, Viswas.G@microchip.com
-References: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
- <1893d9ef-042b-af3b-74ea-dd4d0210c493@opensource.wdc.com>
- <14df160f-c0f2-cc9f-56d4-8eda67969e0b@huawei.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <14df160f-c0f2-cc9f-56d4-8eda67969e0b@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <50cf1f2f-3fb2-8abb-7497-dafcd97935f3@gmail.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/27/22 19:17, John Garry wrote:
-> On 27/01/2022 06:37, Damien Le Moal wrote:
+On Thu, Jan 27, 2022 at 12:44:21PM +0100, Christian König wrote:
+> Am 27.01.22 um 12:16 schrieb Daniel Vetter:
+> > On Thu, Jan 27, 2022 at 11:21:20AM +0100, Christian König wrote:
+> > > Am 27.01.22 um 11:00 schrieb Daniel Vetter:
+> > > > On Thu, Jan 27, 2022 at 01:33:32AM -0800, Lucas De Marchi wrote:
+> > > > > On Thu, Jan 27, 2022 at 09:57:25AM +0100, Daniel Vetter wrote:
+> > > > > > On Thu, Jan 27, 2022 at 09:02:54AM +0100, Christian König wrote:
+> > > > > > > Am 27.01.22 um 08:57 schrieb Lucas De Marchi:
+> > > > > > > > On Thu, Jan 27, 2022 at 08:27:11AM +0100, Christian König wrote:
+> > > > > > > > > Am 26.01.22 um 21:36 schrieb Lucas De Marchi:
+> > > > > > > > > > When dma_buf_map struct is passed around, it's useful to be able to
+> > > > > > > > > > initialize a second map that takes care of reading/writing to an offset
+> > > > > > > > > > of the original map.
+> > > > > > > > > > 
+> > > > > > > > > > Add a helper that copies the struct and add the offset to the proper
+> > > > > > > > > > address.
+> > > > > > > > > Well what you propose here can lead to all kind of problems and is
+> > > > > > > > > rather bad design as far as I can see.
+> > > > > > > > > 
+> > > > > > > > > The struct dma_buf_map is only to be filled in by the exporter and
+> > > > > > > > > should not be modified in this way by the importer.
+> > > > > > > > humn... not sure if I was  clear. There is no importer and exporter here.
+> > > > > > > Yeah, and exactly that's what I'm pointing out as problem here.
+> > > > > > > 
+> > > > > > > You are using the inter driver framework for something internal to the
+> > > > > > > driver. That is an absolutely clear NAK!
+> > > > > > > 
+> > > > > > > We could discuss that, but you guys are just sending around patches to do
+> > > > > > > this without any consensus that this is a good idea.
+> > > > > > Uh I suggested this, also we're already using dma_buf_map all over the
+> > > > > > place as a convenient abstraction. So imo that's all fine, it should allow
+> > > > > > drivers to simplify some code where on igpu it's in normal kernel memory
+> > > > > > and on dgpu it's behind some pci bar.
+> > > > > > 
+> > > > > > Maybe we should have a better name for that struct (and maybe also a
+> > > > > > better place), but way back when we discussed that bikeshed I didn't come
+> > > > > > up with anything better really.
+> > > > > I suggest iosys_map since it abstracts access to IO and system memory.
+> > > > > 
+> > > > > > > > There is a role delegation on filling out and reading a buffer when
+> > > > > > > > that buffer represents a struct layout.
+> > > > > > > > 
+> > > > > > > > struct bla {
+> > > > > > > >       int a;
+> > > > > > > >       int b;
+> > > > > > > >       int c;
+> > > > > > > >       struct foo foo;
+> > > > > > > >       struct bar bar;
+> > > > > > > >       int d;
+> > > > > > > > }
+> > > > > > > > 
+> > > > > > > > 
+> > > > > > > > This implementation allows you to have:
+> > > > > > > > 
+> > > > > > > >       fill_foo(struct dma_buf_map *bla_map) { ... }
+> > > > > > > >       fill_bar(struct dma_buf_map *bla_map) { ... }
+> > > > > > > > 
+> > > > > > > > and the first thing these do is to make sure the map it's pointing to
+> > > > > > > > is relative to the struct it's supposed to write/read. Otherwise you're
+> > > > > > > > suggesting everything to be relative to struct bla, or to do the same
+> > > > > > > > I'm doing it, but IMO more prone to error:
+> > > > > > > > 
+> > > > > > > >       struct dma_buf_map map = *bla_map;
+> > > > > > > >       dma_buf_map_incr(map, offsetof(...));
+> > > > > > Wrt the issue at hand I think the above is perfectly fine code. The idea
+> > > > > > with dma_buf_map is really that it's just a special pointer, so writing
+> > > > > > the code exactly as pointer code feels best. Unfortunately you cannot make
+> > > > > > them typesafe (because of C), so the code sometimes looks a bit ugly.
+> > > > > > Otherwise we could do stuff like container_of and all that with
+> > > > > > typechecking in the macros.
+> > > > > I had exactly this code above, but after writting quite a few patches
+> > > > > using it, particularly with functions that have to write to 2 maps (see
+> > > > > patch 6 for example), it felt much better to have something to
+> > > > > initialize correctly from the start
+> > > > > 
+> > > > > 	struct dma_buf_map other_map = *bla_map;
+> > > > > 	/* poor Lucas forgetting dma_buf_map_incr(map, offsetof(...)); */
+> > > > > 
+> > > > > is error prone and hard to debug since you will be reading/writting
+> > > > > from/to another location rather than exploding
+> > > > > 
+> > > > > While with the construct below
+> > > > > 
+> > > > > 	other_map;
+> > > > > 	...
+> > > > > 	other_map = INITIALIZER()
+> > > > > 
+> > > > > I can rely on the compiler complaining about uninitialized var. And
+> > > > > in most of the cases I can just have this single line in the beggining of the
+> > > > > function when the offset is constant:
+> > > > > 
+> > > > > 	struct dma_buf_map other_map = INITIALIZER(bla_map, offsetof(..));
+> > > > Hm yeah that's a good point that this allows us to rely on the compiler to
+> > > > check for uninitialized variables.
+> > > > 
+> > > > Maybe include the above (with editing, but keeping the examples) in the
+> > > > kerneldoc to explain why/how to use this? With that the concept at least
+> > > > has my
+> > > > 
+> > > > Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+> > > > 
+> > > > I'll leave it up to you & Christian to find a prettier color choice for
+> > > > the naming bikeshed.
+> > > There is one major issue remaining with this and that is dma_buf_vunmap():
+> > > 
+> > > void dma_buf_vunmap(struct dma_buf *dmabuf, struct dma_buf_map *map);
+> > > 
+> > > Here we expect the original pointer as returned by dma_buf_map(), otherwise
+> > > we vunmap() the wrong area!
+> > > 
+> > > For all TTM based driver this doesn't matter since we keep the vmap base
+> > > separately in the BO anyway (IIRC), but we had at least one case where this
+> > > made boom last year.
+> > Yeah but isn't that the same if it's just a void *?
+> > 
+> > If you pass the wrong pointer to an unmap function and not exactly what
+> > you go from the map function, then things go boom. This is like
+> > complaining that the following code wont work
+> > 
+> > 	u32 *stuff
+> > 
+> > 	stuff = kmap_local(some_page);
+> > 	*stuff++ = 0;
+> > 	*stuff = 1;
+> > 	kunmap_locak(stuff);
+> > 
+> > It's just ... don't do that :-) Also since we pass dma_buf_map by value
+> > and not by pointer anywhere, the risk of this happening is pretty low
+> > since you tend to work on a copy. Same with void * pointers really.
+> > 
+> > Now if people start to pass around struct dma_buf_map * as pointers for
+> > anything else than out parameters, then we're screwed. But that's like
+> > passing around void ** for lolz, which is just wrong (except when it's an
+> > out parameter or actually an array of pointers ofc).
+> > 
+> > Or I really don't get your concern and you mean something else?
 > 
-> Hi Damien,
+> No that's pretty much it. It's just that we hide the pointer inside a
+> structure and it is absolutely not obvious to a driver dev that you can't
+> do:
 > 
->> I did some light testing of this series (boot + some fio runs) and
->> everything looks good using my "ATTO Technology, Inc. ExpressSAS 12Gb/s
->> SAS/SATA HBA (rev 06)" HBA (x86_64 host).
+> dma_buf_vmap(.., &map);
+> dma_buf_map_inr(&map, x);
+> dma_buf_vunmap(.., &map);
 > 
-> Yeah, unfortunately these steps prob won't exercise much of the code 
-> changes here since I figure error handling would not kick in.
+> As bare minimum I strongly suggest that we add some WARN_ONs to the
+> framework to check that the pointer given to dma_buf_vunmap() is at least
+> page aligned.
 
-I have SMR drives on that adapter, and generating errors with these is
-*really* easy :)
-ZBC test suite forces errors to check ASC/ASCQ so it will be a good test.
+Yeah that might be a good idea. But then we also have to add that check to
+dma_buf_vmap, just in case a driver does something really funny :-)
+-Daniel
 
 > 
-> However using this same adapter type on my arm64 system has error 
-> handling kick in almost straight away - and the handling looks sane. A 
-> silver lining, I suppose ..
+> Christian.
 > 
->>
->> Of note is that "make W=1 M=drivers/scsi" complains with:
->>
->> drivers/scsi/pm8001/pm80xx_hwi.c:3938: warning: Function parameter or
->> member 'circularQ' not described in 'process_one_iomb'
+> > -Daniel
+> > 
+> > 
+> > > Christian.
+> > > 
+> > > > -Daniel
+> > > > 
+> > > > > Lucas De Marchi
+> > > > > 
+> > > > > > -Daniel
+> > > > > > 
+> > > > > > > > IMO this construct is worse because at a point in time in the function
+> > > > > > > > the map was pointing to the wrong thing the function was supposed to
+> > > > > > > > read/write.
+> > > > > > > > 
+> > > > > > > > It's also useful when the function has double duty, updating a global
+> > > > > > > > part of the struct and a table inside it (see example in patch 6)
+> > > > > > > > 
+> > > > > > > > thanks
+> > > > > > > > Lucas De Marchi
+> > > > > > -- 
+> > > > > > Daniel Vetter
+> > > > > > Software Engineer, Intel Corporation
+> > > > > > https://nam11.safelinks.protection.outlook.com/?url=http%3A%2F%2Fblog.ffwll.ch%2F&amp;data=04%7C01%7Cchristian.koenig%40amd.com%7C0654a16ea3444271d7c308d9e17bd35d%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637788744226808874%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=Q6soluBglaZLhLszdapaWuUVsqMq5qvJOKiJjO%2B9BTg%3D&amp;reserved=0
 > 
-> That's per-existing. I'll send a patch for that now along with another 
-> fix I found for that driver. ....
-> 
->>
->> And sparse/make C=1 complains about:
->>
->> drivers/scsi/libsas/sas_port.c:77:13: warning: context imbalance in
->> 'sas_form_port' - different lock contexts for basic block
-> 
-> I think it's talking about the port->phy_list_lock usage - it prob 
-> doesn't like segments where we fall out a loop with the lock held (which 
-> was grabbed in the loop). Anyway it looks ok. Maybe we can improve this.
-> 
->>
->> But I have not checked if it is something that your series touch.
->>
->> And there is a ton of complaints about __le32 use in the pm80xx code...
->> I can try to have a look at these if you want, on top of your series.
-> 
-> I really need to get make C=1 working for me - it segfaults in any env I 
-> have :(
-
-Weird... All I did was install sparse (dnf install) and it works for me.
-Running Fedora.
-
-I will send patches for these.
-
-> 
-> Thanks,
-> John
-
 
 -- 
-Damien Le Moal
-Western Digital Research
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
