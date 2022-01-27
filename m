@@ -2,131 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64FEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:50:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:51:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239536AbiA0Kuh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 05:50:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43717 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233448AbiA0Kuf (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 05:50:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643280635;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6Fc2g7RRS/5veLFVlWFZ0JAd/TstB7ATk2nJ8PQ8WRQ=;
-        b=hibh44FlHxvPYLwhkYSmKuzq5XbNzBCIzv8bCPRQcm4fG6tI/+k5wseMY6RIfkDrQJs36k
-        lgWihIP6UgJ0mq10NfYSPOw9EKpBi63BPhYX8ILZBrSgMnfa+/suut/7GKU/yc8YkOmnh9
-        OJFemdttd8p0RjqGx57LcBjhiopSAtg=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-2-OiFU6uWwP4eSMP607JZobw-1; Thu, 27 Jan 2022 05:50:33 -0500
-X-MC-Unique: OiFU6uWwP4eSMP607JZobw-1
-Received: by mail-wm1-f72.google.com with SMTP id l20-20020a05600c1d1400b0035153bf34c3so1251986wms.2
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 02:50:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6Fc2g7RRS/5veLFVlWFZ0JAd/TstB7ATk2nJ8PQ8WRQ=;
-        b=0HzGOENG/aHMriUQ+Zzky64XFKQq1mdF2xOTQ4PE8U1LASD4KnEvAsEndP79JHOvRW
-         unyZDYbu8tp/9/SDJkzJgw9Jzm2UUm0EpZ3NmFe/6y0so0TyWLoXEQ6E/V+qbFOiJ0KS
-         cjM6Vccgq5lOT1+/RfKseMso10OVbNOkimaNKq8jQybMY7KtI4C6JVuIRHZLc3H0i6Q2
-         7S4UI1im400L/yjNjXbLChlhhWAKLv8ik0h7gW9DGysa4RAMqarTR4J5KIuOcwskG9fx
-         0Q20TAmLka+rKbF76JTw0BJJfLDJVCUD+697dRqAOdmoUGoLuGr7a4rsSLSmCbZYf+eo
-         cwgQ==
-X-Gm-Message-State: AOAM532/WD/zywsq0/7WG86hbItXBVur7YgoyUWSWHh92K+kOv4HRnq5
-        CE+OkO8ze/lSsT6oILWhE8ENkUsb8Eqw4pRfKKGLm9GE8cxeRk7GBZUruosL+AZRHXGqF2kG5W2
-        d0w1Q+aXduZA87lIi4Ivy4J8a
-X-Received: by 2002:a05:6000:1acc:: with SMTP id i12mr2636061wry.492.1643280632297;
-        Thu, 27 Jan 2022 02:50:32 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzNH0Darpnr4Jl3HYou3CgHI6hafBenm/U34TNRMyZ82WXc0eLk9f+p/4dPBzISBOZBPFknQw==
-X-Received: by 2002:a05:6000:1acc:: with SMTP id i12mr2636048wry.492.1643280632126;
-        Thu, 27 Jan 2022 02:50:32 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id b11sm5331007wmq.46.2022.01.27.02.50.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 02:50:31 -0800 (PST)
-Message-ID: <b305cb36-1a09-c990-a3e6-98d420c62e3a@redhat.com>
-Date:   Thu, 27 Jan 2022 11:50:30 +0100
+        id S239718AbiA0Ku7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 05:50:59 -0500
+Received: from mga11.intel.com ([192.55.52.93]:55176 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233448AbiA0Kuz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 05:50:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643280655; x=1674816655;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=IIcFQcNnmoFXfCZm+wl/TFNBrrqeXuU1a6Y00BepP1Y=;
+  b=h2Faja2l0+tERTt2e+R79qJ4tAzcfj0kAEelsc5k2ZZcu88xWh3z6vjK
+   a7G/TB+YiyuR7/ExCLoA5qwNMyNkhplFYmiJHcAW5H3ckQwxrgu/JDLeR
+   krFcq8RHOT9cHSjbfGEnDYuo7RvsOrJHz76c7J1MBTLMHxA+az98gmle3
+   ohKnmunFGFr/cNh5XQ9EvjbHHWeNu/+XzN1531VE8GGfWaHSemZQsk8yx
+   iYTgRJaaUIa6wK6ZwusbSFoIU0Tc9QVaEpYC70cAB4rHz5I1q8rRrIOSY
+   t4H9y8FY4tp4bzgv12ZoL3QXmS5cU855amLOLg7PF6n0ReoVoeAOr5GLE
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="244416705"
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="244416705"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 02:50:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="581430621"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 27 Jan 2022 02:50:53 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nD2Mf-000MVF-1y; Thu, 27 Jan 2022 10:50:53 +0000
+Date:   Thu, 27 Jan 2022 18:49:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:dev.2022.01.25a] BUILD SUCCESS
+ fa92d727f94486195e12dc782fec17d103072101
+Message-ID: <61f278d1.gPHEq2M+kJEHn5xp%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] drm/doc: Add section in the introduction page about
- learning material
-Content-Language: en-US
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org
-Cc:     Jonathan Corbet <corbet@lwn.net>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Pekka Paalanen <pekka.paalanen@collabora.co.uk>
-References: <20220127082058.434421-1-javierm@redhat.com>
- <c99a7784-7ac4-e305-1a06-dfb514a409ff@suse.de>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <c99a7784-7ac4-e305-1a06-dfb514a409ff@suse.de>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Thomas,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.01.25a
+branch HEAD: fa92d727f94486195e12dc782fec17d103072101  srcutree: Use export for srcu_struct defined by DEFINE_STATIC_SRCU()
 
-On 1/27/22 10:18, Thomas Zimmermann wrote:
-> Hi Javier,
-> 
-> thanks for this patch.
-> 
-> Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
->
+elapsed time: 836m
 
-Thanks!
- 
-> Find some ideas for consideration below.
-> 
+configs tested: 169
+configs skipped: 3
 
-[snip]
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
->> +
->> +Learning material
->> +=================
-> 
-> Maybe 'External References'.
->
+gcc tested configs:
+arm                                 defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+arm64                               defconfig
+arm64                            allyesconfig
+i386                          randconfig-c001
+i386                 randconfig-c001-20220124
+powerpc              randconfig-c003-20220124
+m68k                         apollo_defconfig
+arc                    vdk_hs38_smp_defconfig
+mips                  decstation_64_defconfig
+sh                         ecovec24_defconfig
+sparc64                          alldefconfig
+h8300                    h8300h-sim_defconfig
+arm                         nhk8815_defconfig
+mips                         rt305x_defconfig
+arm                            zeus_defconfig
+nios2                         10m50_defconfig
+xtensa                              defconfig
+arc                        vdk_hs38_defconfig
+sh                          rsk7269_defconfig
+ia64                        generic_defconfig
+sh                           sh2007_defconfig
+um                                  defconfig
+xtensa                  audio_kc705_defconfig
+mips                         cobalt_defconfig
+powerpc                      makalu_defconfig
+arm                         lubbock_defconfig
+sh                           se7722_defconfig
+m68k                          amiga_defconfig
+powerpc                      ppc6xx_defconfig
+arm                             ezx_defconfig
+arm                          pxa3xx_defconfig
+powerpc                      pasemi_defconfig
+m68k                       m5208evb_defconfig
+arm                        oxnas_v6_defconfig
+sh                   sh7724_generic_defconfig
+sparc                            allyesconfig
+arc                            hsdk_defconfig
+arm                            hisi_defconfig
+i386                             alldefconfig
+sh                             espt_defconfig
+m68k                         amcore_defconfig
+mips                 decstation_r4k_defconfig
+sh                            migor_defconfig
+openrisc                 simple_smp_defconfig
+powerpc                      tqm8xx_defconfig
+m68k                       m5249evb_defconfig
+h8300                            alldefconfig
+arm                           corgi_defconfig
+arm                          pxa910_defconfig
+powerpc                  iss476-smp_defconfig
+arm                  randconfig-c002-20220127
+arm                  randconfig-c002-20220124
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+sh                               allmodconfig
+arc                                 defconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a002-20220124
+x86_64               randconfig-a003-20220124
+x86_64               randconfig-a001-20220124
+x86_64               randconfig-a004-20220124
+x86_64               randconfig-a005-20220124
+x86_64               randconfig-a006-20220124
+i386                 randconfig-a002-20220124
+i386                 randconfig-a005-20220124
+i386                 randconfig-a003-20220124
+i386                 randconfig-a004-20220124
+i386                 randconfig-a001-20220124
+i386                 randconfig-a006-20220124
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                randconfig-r042-20220125
+arc                  randconfig-r043-20220125
+arc                  randconfig-r043-20220124
+s390                 randconfig-r044-20220125
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
 
-Agreed, I'll change it.
+clang tested configs:
+arm                  colibri_pxa300_defconfig
+arm                          imote2_defconfig
+powerpc                      obs600_defconfig
+arm                            mmp2_defconfig
+mips                   sb1250_swarm_defconfig
+powerpc                    socrates_defconfig
+arm                              alldefconfig
+arm                      pxa255-idp_defconfig
+hexagon                             defconfig
+mips                     loongson2k_defconfig
+arm                        neponset_defconfig
+powerpc                     kmeter1_defconfig
+arm                           omap1_defconfig
+powerpc                     skiroot_defconfig
+i386                             allyesconfig
+powerpc                      walnut_defconfig
+arm                     am200epdkit_defconfig
+powerpc                 mpc832x_rdb_defconfig
+powerpc                 mpc836x_mds_defconfig
+powerpc                        fsp2_defconfig
+powerpc                      katmai_defconfig
+riscv                          rv32_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64               randconfig-a011-20220124
+x86_64               randconfig-a013-20220124
+x86_64               randconfig-a015-20220124
+x86_64               randconfig-a016-20220124
+x86_64               randconfig-a014-20220124
+x86_64               randconfig-a012-20220124
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                 randconfig-a011-20220124
+i386                 randconfig-a016-20220124
+i386                 randconfig-a013-20220124
+i386                 randconfig-a014-20220124
+i386                 randconfig-a015-20220124
+i386                 randconfig-a012-20220124
+riscv                randconfig-r042-20220124
+hexagon              randconfig-r045-20220124
+hexagon              randconfig-r041-20220124
+s390                 randconfig-r044-20220124
+riscv                randconfig-r042-20220126
+hexagon              randconfig-r045-20220126
+hexagon              randconfig-r041-20220126
 
->> +
->> +Since the Linux DRM layer supports complex graphics devices, it can be quite
->> +overwhelming for newcomers to get familiar with all the needed concepts and
->> +learn the subsystem's internals.
-> 
-> It sounds a bit intimdating to me. Can we give it a positive spin?
->
-
-Pekka also had reservations about this paragraph, so I think that will just
-drop it. The goal of having this section was to ease the learning curve but
-the way I worded it may reinforce the perception that DRM is hard to learn.
-
-> IMHO we could add a separate section that talks about complexity and 
-> provides guidelines about how to deal with it:  trivial HW? use simple 
-> pipe;  dedicated VRAM? try TTM;  awkward color formats?  see 
-> drm_format_helper.c
->
-
-Indeed. And we can add such section as a follow-up. Maybe referring to some
-of the drivers in drivers/gpu/drm/tiny.
-
-Best regards, -- 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
