@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 989E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:56:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B491C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 11:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240972AbiA0L4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 06:56:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41776 "EHLO
+        id S240983AbiA0L4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 06:56:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240115AbiA0L4j (ORCPT
+        with ESMTP id S240904AbiA0L4l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:56:39 -0500
+        Thu, 27 Jan 2022 06:56:41 -0500
 Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D38C061714
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:56:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CFCC06173B
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 03:56:41 -0800 (PST)
 Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 0BB591EC059D;
-        Thu, 27 Jan 2022 12:56:37 +0100 (CET)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id EF4FE1EC0354;
+        Thu, 27 Jan 2022 12:56:39 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1643284598;
+        t=1643284600;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=rNSth3tzSv/2p+hB53qPBBPKc721uGg6LNa/frseOlQ=;
-        b=lR1lU9UGT+hOXfhknlQI8ldfT8yTPEnTltd58/cfnCDvfuiax/3B2tP93+CTLbzSXhwkaG
-        RVQQltENVSRQJ/uUlwSeti4NSrXu9plxPlpGIXtacz7mhqhW6RC8DGZeV864UmGC1zYoBN
-        ezXuZDDc2FQJtDGOgL600MOzdUHcg58=
+        bh=1w1nfaXg2CU2hE5rhGblxO2NDdTodudQ/nnschEZiwc=;
+        b=p9vYLfjxowz4qeJ0lFL7kap64GJh8eeUakTC/utiBSz33qtHNc3pvZAOvtEcaKDvMy9DM9
+        KaRAb6LG/q3U8FFWTrGM7Jg3UM1LmLkMFyS0FWRlS2RwaMH36ij/CZrBttRQXAiuVkOsc2
+        FOTGYPBTyoY3xh2Km7tZcxwoeYwbovo=
 From:   Borislav Petkov <bp@alien8.de>
 To:     X86 ML <x86@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-Subject: [PATCH v2 4/6] x86/cpu: Remove "nosmep"
-Date:   Thu, 27 Jan 2022 12:56:24 +0100
-Message-Id: <20220127115626.14179-5-bp@alien8.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 6/6] x86/cpu: Remove "noclflush"
+Date:   Thu, 27 Jan 2022 12:56:26 +0100
+Message-Id: <20220127115626.14179-7-bp@alien8.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220127115626.14179-1-bp@alien8.de>
 References: <20220127115626.14179-1-bp@alien8.de>
@@ -48,62 +47,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Borislav Petkov <bp@suse.de>
 
-There should be no need to disable SMEP anymore.
+Not really needed anymore and there's clearcpuid=.
 
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt | 2 +-
- Documentation/x86/cpuinfo.rst                   | 4 ++--
- arch/x86/kernel/cpu/common.c                    | 7 -------
- 3 files changed, 3 insertions(+), 10 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt | 2 --
+ arch/x86/kernel/cpu/common.c                    | 8 --------
+ 2 files changed, 10 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 04b155a4298f..e3894159c22b 100644
+index dd398f83b335..9882c0cc9722 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3398,7 +3398,7 @@
- 			Disable SMAP (Supervisor Mode Access Prevention)
- 			even if it is supported by processor.
+@@ -3377,8 +3377,6 @@
  
--	nosmep		[X86,PPC64s]
-+	nosmep		[PPC64s]
- 			Disable SMEP (Supervisor Mode Execution Prevention)
- 			even if it is supported by processor.
+ 	nocache		[ARM]
  
-diff --git a/Documentation/x86/cpuinfo.rst b/Documentation/x86/cpuinfo.rst
-index 12fbe2b1e98a..08246e8ac835 100644
---- a/Documentation/x86/cpuinfo.rst
-+++ b/Documentation/x86/cpuinfo.rst
-@@ -140,8 +140,8 @@ from #define X86_FEATURE_UMIP (16*32 + 2).
+-	noclflush	[BUGS=X86] Don't use the CLFLUSH instruction
+-
+ 	delayacct	[KNL] Enable per-task delay accounting
  
- In addition, there exists a variety of custom command-line parameters that
- disable specific features. The list of parameters includes, but is not limited
--to, nofsgsbase, and nosmep. 5-level paging can also be disabled using
--"no5lvl". SMEP is disabled with the aforementioned parameter.
-+to, nofsgsbase, nosgx, noxsave, etc. 5-level paging can also be disabled using
-+"no5lvl".
- 
- e: The feature was known to be non-functional.
- ----------------------------------------------
+ 	nodsp		[SH] Disable hardware DSP at boot time.
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 7e5d695279bc..3d0a5340a678 100644
+index 3d0a5340a678..c090cc69c615 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -291,13 +291,6 @@ static inline void squash_the_stupid_serial_number(struct cpuinfo_x86 *c)
+@@ -1727,14 +1727,6 @@ void identify_secondary_cpu(struct cpuinfo_x86 *c)
+ 	update_srbds_msr();
  }
- #endif
  
--static __init int setup_disable_smep(char *arg)
+-static __init int setup_noclflush(char *arg)
 -{
--	setup_clear_cpu_cap(X86_FEATURE_SMEP);
+-	setup_clear_cpu_cap(X86_FEATURE_CLFLUSH);
+-	setup_clear_cpu_cap(X86_FEATURE_CLFLUSHOPT);
 -	return 1;
 -}
--__setup("nosmep", setup_disable_smep);
+-__setup("noclflush", setup_noclflush);
 -
- static __always_inline void setup_smep(struct cpuinfo_x86 *c)
+ void print_cpu_info(struct cpuinfo_x86 *c)
  {
- 	if (cpu_has(c, X86_FEATURE_SMEP))
+ 	const char *vendor = NULL;
 -- 
 2.29.2
 
