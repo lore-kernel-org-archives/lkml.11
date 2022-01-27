@@ -2,116 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5814AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE34C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:31:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244618AbiA0R22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:28:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
+        id S244642AbiA0Rby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:31:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244590AbiA0R2Z (ORCPT
+        with ESMTP id S244622AbiA0Rbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 12:28:25 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBADC061748
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:28:24 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id q204so4428167iod.8
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:28:24 -0800 (PST)
+        Thu, 27 Jan 2022 12:31:53 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB2EC061747
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:31:52 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id u6so6728754lfm.10
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 09:31:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NiHrTM8m6eB81b1pCE7srDrvMUba4g0skB5zfMI0lrw=;
-        b=JTdiPiRz3TEJdVVOZBIwh6J2HR7uxIGsNCLo2suPO+UCntkps90II56CuW9TwsGDY9
-         WPsAw+JgVZwEP7zBRT2VMZhYzfR34HDwCcZQkO+owhgbvI9DnzwPZ7Uvb6CHr8zfFtaS
-         V46vw8MIXsxuuRTOKMJsAyA9nHhQ6h3gnghE68EAhdlJY4kghFzVgK+w+1hAojsjV+9x
-         NwBLaSKcFoHk3GacoxvDpRGWuuuGFwJzXV4IeOamgTZEfz6cTkR7AkMa2E4f0t/lQnvM
-         fnL3TAlx7vnr81fecbLHb1YYLyPw6lJJDxAk7hSw8mAdHPV0MVfGNXHO3YM2fwgWk8bR
-         PiFg==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=Xawp1TwtSo/uo/1tbPqTEzWBuDJ4Y6t+ZX2/4mqpc+o=;
+        b=tvJb51SK9pl9ihres+CxFmedKvEw9bFtuhVR5WdFnCRdDOTuIEMwabJE1kAZ5hmw9k
+         TY28PIoWYpejGKA2zB6kDzlh6wFuzsVoFcRWRbXhVTVQpUv2RpezpOw6Qi8k28/x3LhM
+         1bZMx1x/Kw8Ieybgn5Lyl7NsR1ymit5pUoq6I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NiHrTM8m6eB81b1pCE7srDrvMUba4g0skB5zfMI0lrw=;
-        b=4Dsg+VvO3nx5CYO/FlBk3ELB9yFi5BypukkLeREswweWdJI5xpiFq2VMWb3XyZil0F
-         j5R6MbkngCVaPUod1N5hsDo42Z8QrpzslcFFf9boNQbRy0daxPwsjjIupex7poZtbsPZ
-         KqZ2aajtl2B8fy80RMNuYKnfju/h0EAlSbhYAQsZ2Bu3QVQOfHBKCXbrTZg5t+wyfWDX
-         CGnueDeNU/3uTPjVFVACL86cuyqMGmHIn+KoW2xPypDITeoSLjEECwCZnKfJMA1n7GQ5
-         A1txqonA2x9/hrfW0p0U9hVAiOQPCxYNYUxRcFif5PYYQF5jquwTlNuWfCOFmA9Beb0w
-         5zRw==
-X-Gm-Message-State: AOAM532zep83ncKLD379P8tPQw2OoPsUY5J31pQqapwyqRtzbrqnC4f0
-        ukpjXPsAPp1Xa5p40sLOfyw7l8qVEOBSCw==
-X-Google-Smtp-Source: ABdhPJwBcX5RQUdOi1bACPk4RQbIXtNWPZgPMzjdQ6FuG+c3n9alVtT2kKIy9lzWbmeLrFJeWk5I4g==
-X-Received: by 2002:a5e:dd41:: with SMTP id u1mr2594293iop.217.1643304504096;
-        Thu, 27 Jan 2022 09:28:24 -0800 (PST)
-Received: from [192.168.1.30] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id m14sm11636401iov.0.2022.01.27.09.28.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 09:28:23 -0800 (PST)
-Subject: Re: [PATCH -next V5] blk-mq: fix tag_get wait task can't be awakened
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Laibin Qiu <qiulaibin@huawei.com>
-Cc:     ming.lei@redhat.com, john.garry@huawei.com,
-        martin.petersen@oracle.com, hare@suse.de,
-        akpm@linux-foundation.org, bvanassche@acm.org,
-        andriy.shevchenko@linux.intel.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220113025536.1479653-1-qiulaibin@huawei.com>
- <20220127013238.GA1478141@roeck-us.net>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <bb1c7c15-ef4e-8c2f-4c01-758bf186e010@kernel.dk>
-Date:   Thu, 27 Jan 2022 10:28:22 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=Xawp1TwtSo/uo/1tbPqTEzWBuDJ4Y6t+ZX2/4mqpc+o=;
+        b=IwpijtzdnFHD7jgIglFae0a3NRqqzS7ea0N+VC1OkdBPkRs01v/RfEYfTizLzeUxp3
+         +zW3Y8f67ur0E1tvA+NpzAwhuVyzqB2XcCn5vWUwbfB1Bvcqkwjyp75HfaX+JGEBcVFH
+         /nkSSiZskBbMNnWLAAc6E0HKq15YpUYVw/wLRRDOwEoYWvxCXJRpBANbdR00AqO8XkO/
+         t6daERN7lZ5LEF+wuKVkrDtcdwwsUwoHsfdLiyFvgxAATTmFWKtXCkz79LwU5IbhPdNe
+         184DydI7K9J6ACe6z/rZ2MBKCbTVY9cIIWxN3ku5MNIIKC6T5pALP90SBS017stgy8ux
+         6e3Q==
+X-Gm-Message-State: AOAM532+kaXv8jpu9UGY5T3fvshZLiJ4C1roikazxNd2A4mUkcsLNPDY
+        u/zj0gAu7rHwjaKsnDURSKJr2g==
+X-Google-Smtp-Source: ABdhPJwPFC+0A5GkkdbCXcsa0Ip2DOjbqTjkpo4pPeBBj03PC4LuT64RBW9Hc31DrO3FWxxzkR4DOw==
+X-Received: by 2002:a05:6512:3408:: with SMTP id i8mr3356039lfr.17.1643304710661;
+        Thu, 27 Jan 2022 09:31:50 -0800 (PST)
+Received: from cloudflare.com ([2a01:110f:4809:d800::e00])
+        by smtp.gmail.com with ESMTPSA id i1sm958936ljn.39.2022.01.27.09.31.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 09:31:49 -0800 (PST)
+References: <20220113070245.791577-1-imagedong@tencent.com>
+ <87sftbobys.fsf@cloudflare.com>
+ <20220125224524.fkodqvknsluihw74@kafai-mbp.dhcp.thefacebook.com>
+ <CAADnVQKbYCCYjCMhEV7p1YzkAVSKvg-1VKfWVQYVL0TaESNxBQ@mail.gmail.com>
+ <20220125235320.fx775qsdtqon272v@kafai-mbp.dhcp.thefacebook.com>
+User-agent: mu4e 1.1.0; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Menglong Dong <menglong8.dong@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "Network Development" <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Mengen Sun <mengensun@tencent.com>, flyingpeng@tencent.com,
+        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
+Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct
+ bpf_sock'
+In-reply-to: <20220125235320.fx775qsdtqon272v@kafai-mbp.dhcp.thefacebook.com>
+Date:   Thu, 27 Jan 2022 18:31:48 +0100
+Message-ID: <8735l9rsor.fsf@cloudflare.com>
 MIME-Version: 1.0
-In-Reply-To: <20220127013238.GA1478141@roeck-us.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/26/22 6:32 PM, Guenter Roeck wrote:
-> Hi,
-> 
-> On Thu, Jan 13, 2022 at 10:55:36AM +0800, Laibin Qiu wrote:
->> In case of shared tags, there might be more than one hctx which
->> allocates from the same tags, and each hctx is limited to allocate at
->> most:
->>         hctx_max_depth = max((bt->sb.depth + users - 1) / users, 4U);
->>
->> tag idle detection is lazy, and may be delayed for 30sec, so there
->> could be just one real active hctx(queue) but all others are actually
->> idle and still accounted as active because of the lazy idle detection.
->> Then if wake_batch is > hctx_max_depth, driver tag allocation may wait
->> forever on this real active hctx.
->>
->> Fix this by recalculating wake_batch when inc or dec active_queues.
->>
->> Fixes: 0d2602ca30e41 ("blk-mq: improve support for shared tags maps")
->> Suggested-by: Ming Lei <ming.lei@redhat.com>
->> Suggested-by: John Garry <john.garry@huawei.com>
->> Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
-> 
-> I understand this problem has been reported already, but still:
-> 
-> This patch causes a hang in several of my qemu emulations when
-> trying to boot from usb. Reverting it fixes the problem. Bisect log
-> is attached.
-> 
-> Boot logs are available at
-> https://kerneltests.org/builders/qemu-arm-aspeed-master/builds/230/steps/qemubuildcommand/logs/stdio
-> but don't really show much: the affected tests simply hang until they
-> are aborted.
+On Wed, Jan 26, 2022 at 12:53 AM CET, Martin KaFai Lau wrote:
+> On Tue, Jan 25, 2022 at 03:02:37PM -0800, Alexei Starovoitov wrote:
+>> On Tue, Jan 25, 2022 at 2:45 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>> >
+>> > On Tue, Jan 25, 2022 at 08:24:27PM +0100, Jakub Sitnicki wrote:
+>> > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>> > > > index b0383d371b9a..891a182a749a 100644
+>> > > > --- a/include/uapi/linux/bpf.h
+>> > > > +++ b/include/uapi/linux/bpf.h
+>> > > > @@ -5500,7 +5500,11 @@ struct bpf_sock {
+>> > > >     __u32 src_ip4;
+>> > > >     __u32 src_ip6[4];
+>> > > >     __u32 src_port;         /* host byte order */
+>> > > > -   __u32 dst_port;         /* network byte order */
+>> > > > +   __u32 dst_port;         /* low 16-bits are in network byte order,
+>> > > > +                            * and high 16-bits are filled by 0.
+>> > > > +                            * So the real port in host byte order is
+>> > > > +                            * bpf_ntohs((__u16)dst_port).
+>> > > > +                            */
+>> > > >     __u32 dst_ip4;
+>> > > >     __u32 dst_ip6[4];
+>> > > >     __u32 state;
+>> > >
+>> > > I'm probably missing something obvious, but is there anything stopping
+>> > > us from splitting the field, so that dst_ports is 16-bit wide?
+>> > >
+>> > > I gave a quick check to the change below and it seems to pass verifier
+>> > > checks and sock_field tests.
+>> > >
+>> > > IDK, just an idea. Didn't give it a deeper thought.
+>> > >
+>> > > --8<--
+>> > >
+>> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>> > > index 4a2f7041ebae..344d62ccafba 100644
+>> > > --- a/include/uapi/linux/bpf.h
+>> > > +++ b/include/uapi/linux/bpf.h
+>> > > @@ -5574,7 +5574,8 @@ struct bpf_sock {
+>> > >       __u32 src_ip4;
+>> > >       __u32 src_ip6[4];
+>> > >       __u32 src_port;         /* host byte order */
+>> > > -     __u32 dst_port;         /* network byte order */
+>> > > +     __u16 unused;
+>> > > +     __u16 dst_port;         /* network byte order */
+>> > This will break the existing bpf prog.
+>> 
+>> I think Jakub's idea is partially expressed:
+>> +       case offsetof(struct bpf_sock, dst_port):
+>> +               bpf_ctx_record_field_size(info, sizeof(__u16));
+>> +               return bpf_ctx_narrow_access_ok(off, size, sizeof(__u16));
+>> 
+>> Either 'unused' needs to be after dst_port or
+>> bpf_sock_is_valid_access() needs to allow offset at 'unused'
+>> and at 'dst_port'.
+>> And allow u32 access though the size is actually u16.
+>> Then the existing bpf progs (without recompiling) should work?
+> Yes, I think that should work with the existing bpf progs.
+> I suspect putting 'dst_port' first and then followed by 'unused'
+> may be easier.  That will also serve as a natural doc for the
+> current behavior (the value is in the lower 16 bits).
 
-This one got reported a few days ago, can you check if applying:
+You're right. I can't count. Now fixed in [1].
 
-https://git.kernel.dk/cgit/linux-block/commit/?h=block-5.17&id=10825410b956dc1ed8c5fbc8bbedaffdadde7f20
+>
+> It can be extended to bpf_sk_lookup? bpf_sk_lookup can read at any
+> offset of these 4 bytes, so may need to read 0 during
+> convert_ctx_accesses?
 
-fixes it for you?
+Let's see what the feedback to [1] will be.
 
--- 
-Jens Axboe
-
+[1] https://lore.kernel.org/bpf/20220127172448.155686-1-jakub@cloudflare.com/T/#t
