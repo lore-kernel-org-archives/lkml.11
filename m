@@ -2,80 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:45:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 09:45:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238832AbiA0Jp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 04:45:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41742 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234378AbiA0Jp1 (ORCPT
+        id S238833AbiA0Jpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 04:45:39 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:32124 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238840AbiA0Jpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 04:45:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643276726;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TgdNOmxVZp1dDFXB5FAwhB64SXYVLfcMpBsoeczfvek=;
-        b=JHG4TTYKs93m9D0x5kd7DdNE0/d0XDfRZxp+w7nDsSRoHsRdTNqy7fyrd5eYDD2NqvxJc3
-        x+mhkdQSDn4jW3AGiSnDzcO10Trmqfi9ozDYDwUr9bNZ+Vqt0UK0t6uSVb6HMD8guiVzaX
-        9LVNq280akDYR6WLMSJXS3QUgPtvCIA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-130-1dA_-dmbMEiTj6c0TdnXSA-1; Thu, 27 Jan 2022 04:45:22 -0500
-X-MC-Unique: 1dA_-dmbMEiTj6c0TdnXSA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0788883DD26;
-        Thu, 27 Jan 2022 09:45:21 +0000 (UTC)
-Received: from localhost (ovpn-13-51.pek2.redhat.com [10.72.13.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 816896C1A7;
-        Thu, 27 Jan 2022 09:44:59 +0000 (UTC)
-Date:   Thu, 27 Jan 2022 17:44:56 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Dave Young <dyoung@redhat.com>, kexec@lists.infradead.org,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        linux-kernel@vger.kernel.org,
-        Amit Daniel Kachhap <amit.kachhap@arm.com>,
-        Christoph Hellwig <hch@lst.de>, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] Convert vmcore to use an iov_iter
-Message-ID: <20220127094456.GD13508@MiWiFi-R3L-srv>
-References: <20211213143927.3069508-1-willy@infradead.org>
- <Yc+iCla9zjUFkBXt@zeniv-ca.linux.org.uk>
+        Thu, 27 Jan 2022 04:45:36 -0500
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JkwcB5Bnzz8wf1;
+        Thu, 27 Jan 2022 17:42:34 +0800 (CST)
+Received: from dggpemm500004.china.huawei.com (7.185.36.219) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 27 Jan 2022 17:45:33 +0800
+Received: from huawei.com (10.175.124.27) by dggpemm500004.china.huawei.com
+ (7.185.36.219) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 27 Jan
+ 2022 17:45:32 +0800
+From:   Laibin Qiu <qiulaibin@huawei.com>
+To:     <axboe@kernel.dk>, <andriy.shevchenko@linux.intel.com>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <alex_y_xu@yahoo.ca>
+Subject: [PATCH -next] blk-mq: Fix wrong wakeup batch configuration which will cause hang
+Date:   Thu, 27 Jan 2022 18:00:47 +0800
+Message-ID: <20220127100047.1763746-1-qiulaibin@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yc+iCla9zjUFkBXt@zeniv-ca.linux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500004.china.huawei.com (7.185.36.219)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Commit 180dccb0dba4f ("blk-mq: fix tag_get wait task can't be
+awakened") will recalculating wake_batch when inc or dec active_queues
+to avoid wake_batch is > hctx_max_depth. At the same time, in order to
+not affect performance as much as possible, the minimum wakeup batch is
+set to 4. But when the QD is small (such as QD=1), if inc or dec
+active_queues will increase wakeup batch, which will lead to hang.
 
-On 01/01/22 at 12:36am, Al Viro wrote:
-> On Mon, Dec 13, 2021 at 02:39:24PM +0000, Matthew Wilcox (Oracle) wrote:
-> > For some reason several people have been sending bad patches to fix
-> > compiler warnings in vmcore recently.  Here's how it should be done.
-> > Compile-tested only on x86.  As noted in the first patch, s390 should
-> > take this conversion a bit further, but I'm not inclined to do that
-> > work myself.
-> 
-> A couple of notes: please, use iov_iter_count(i) instead of open-coding
-> i->count.  And there's a preexisting nastiness in read_vmcore() -
-> generally, a fault halfway through the read() is treated as a short read,
-> rather than -EFAULT...
+Fix this problem with the following strategies:
+QD          :  >= 32 | < 32
+---------------------------------
+wakeup batch:  8~4   | 3~1
 
-Willy must be busy with those tons of folio patches, since I have acked
-this patchset, I will update them as per your comment and repost them
-with v4.
+Fixes: 180dccb0dba4f ("blk-mq: fix tag_get wait task can't be awakened")
+Link: https://lore.kernel.org/linux-block/78cafe94-a787-e006-8851-69906f0c2128@huawei.com/T/#t
+Reported-by: Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
+Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
+---
+ lib/sbitmap.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Thanks for checking.
+diff --git a/lib/sbitmap.c b/lib/sbitmap.c
+index 6220fa67fb7e..09d293c30fd2 100644
+--- a/lib/sbitmap.c
++++ b/lib/sbitmap.c
+@@ -488,9 +488,13 @@ void sbitmap_queue_recalculate_wake_batch(struct sbitmap_queue *sbq,
+ 					    unsigned int users)
+ {
+ 	unsigned int wake_batch;
++	unsigned int min_batch;
++	unsigned int depth = (sbq->sb.depth + users - 1) / users;
+ 
+-	wake_batch = clamp_val((sbq->sb.depth + users - 1) /
+-			users, 4, SBQ_WAKE_BATCH);
++	min_batch = sbq->sb.depth >= (4 * SBQ_WAIT_QUEUES) ? 4 : 1;
++
++	wake_batch = clamp_val(depth / SBQ_WAIT_QUEUES,
++			min_batch, SBQ_WAKE_BATCH);
+ 	__sbitmap_queue_update_wake_batch(sbq, wake_batch);
+ }
+ EXPORT_SYMBOL_GPL(sbitmap_queue_recalculate_wake_batch);
+-- 
+2.22.0
 
