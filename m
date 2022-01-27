@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 439A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:12:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F567C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 18:12:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245729AbiA0SMY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:12:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
+        id S1343499AbiA0SMb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 13:12:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245567AbiA0SLg (ORCPT
+        with ESMTP id S245587AbiA0SLo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:11:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440A4C061751;
-        Thu, 27 Jan 2022 10:11:36 -0800 (PST)
+        Thu, 27 Jan 2022 13:11:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1690AC061759;
+        Thu, 27 Jan 2022 10:11:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11DBDB821D3;
-        Thu, 27 Jan 2022 18:11:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A200C340EA;
-        Thu, 27 Jan 2022 18:11:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A846061D5C;
+        Thu, 27 Jan 2022 18:11:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79FADC340E8;
+        Thu, 27 Jan 2022 18:11:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643307093;
-        bh=/SpOvRAzSZuL3nSSYY7xGjur0CIUWNo9JKuuksvoas8=;
+        s=korg; t=1643307103;
+        bh=hnC+WHQSB5Y9GOv0QCFpDjFeMVtgDx2Tl+exIvMj6zU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gg4M+mzp2cPYLOXnGIODWmSWQIEoczHQCh3cqNYiKpTDDy0+34YMAgoQZL8rZROBW
-         1MPR1IIi4bKIcgVinHH0DhnMmCIeow0Afigj25P30+OwZwuA/6LvvVfl/ahv6IWZQZ
-         e3AYhMS7spnNcvgWNSCSqc8Q918nLzHiT4ZA70uE=
+        b=l7l7wpzU7grIKATjbjLLdybYUzAnVqNJJ9G3VSGNgYilBGQBbnDqzoGd+FVGOuKsV
+         KelDKJbumoVMKBNFEdwLn5VUhbEshl4ySBelTv0wz4tZ/pkvVj5dPF5iqsIgTuOAHT
+         3dapyo7Q+5V6Wd9n4wZOR52rx883V4rC3/Cw4HDw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Manish Chopra <manishc@marvell.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Alok Prasad <palok@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 5/9] bnx2x: Invalidate fastpath HSI version for VFs
-Date:   Thu, 27 Jan 2022 19:09:40 +0100
-Message-Id: <20220127180259.065513581@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jan Kara <jack@suse.cz>
+Subject: [PATCH 5.16 8/9] select: Fix indefinitely sleeping task in poll_schedule_timeout()
+Date:   Thu, 27 Jan 2022 19:09:43 +0100
+Message-Id: <20220127180259.157774729@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20220127180258.892788582@linuxfoundation.org>
 References: <20220127180258.892788582@linuxfoundation.org>
@@ -51,53 +50,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+From: Jan Kara <jack@suse.cz>
 
-commit 802d4d207e75d7208ff75adb712b556c1e91cf1c upstream
+commit 68514dacf2715d11b91ca50d88de047c086fea9c upstream.
 
-Commit 0a6890b9b4df ("bnx2x: Utilize FW 7.13.15.0.")
-added validation for fastpath HSI versions for different
-client init which was not meant for SR-IOV VF clients, which
-resulted in firmware asserts when running VF clients with
-different fastpath HSI version.
+A task can end up indefinitely sleeping in do_select() ->
+poll_schedule_timeout() when the following race happens:
 
-This patch along with the new firmware support in patch #1
-fixes this behavior in order to not validate fastpath HSI
-version for the VFs.
+  TASK1 (thread1)             TASK2                   TASK1 (thread2)
+  do_select()
+    setup poll_wqueues table
+    with 'fd'
+                              write data to 'fd'
+                                pollwake()
+                                  table->triggered = 1
+                                                      closes 'fd' thread1 is
+                                                        waiting for
+    poll_schedule_timeout()
+      - sees table->triggered
+      table->triggered = 0
+      return -EINTR
+    loop back in do_select()
 
-Fixes: 0a6890b9b4df ("bnx2x: Utilize FW 7.13.15.0.")
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-Signed-off-by: Alok Prasad <palok@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+But at this point when TASK1 loops back, the fdget() in the setup of
+poll_wqueues fails.  So now so we never find 'fd' is ready for reading
+and sleep in poll_schedule_timeout() indefinitely.
+
+Treat an fd that got closed as a fd on which some event happened.  This
+makes sure cannot block indefinitely in do_select().
+
+Another option would be to return -EBADF in this case but that has a
+potential of subtly breaking applications that excercise this behavior
+and it happens to work for them.  So returning fd as active seems like a
+safer choice.
+
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+CC: stable@vger.kernel.org
+Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c |   13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ fs/select.c |   63 +++++++++++++++++++++++++++++++-----------------------------
+ 1 file changed, 33 insertions(+), 30 deletions(-)
 
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
-@@ -758,9 +758,18 @@ static void bnx2x_vf_igu_reset(struct bn
+--- a/fs/select.c
++++ b/fs/select.c
+@@ -458,9 +458,11 @@ get_max:
+ 	return max;
+ }
  
- void bnx2x_vf_enable_access(struct bnx2x *bp, u8 abs_vfid)
- {
-+	u16 abs_fid;
-+
-+	abs_fid = FW_VF_HANDLE(abs_vfid);
-+
- 	/* set the VF-PF association in the FW */
--	storm_memset_vf_to_pf(bp, FW_VF_HANDLE(abs_vfid), BP_FUNC(bp));
--	storm_memset_func_en(bp, FW_VF_HANDLE(abs_vfid), 1);
-+	storm_memset_vf_to_pf(bp, abs_fid, BP_FUNC(bp));
-+	storm_memset_func_en(bp, abs_fid, 1);
-+
-+	/* Invalidate fp_hsi version for vfs */
-+	if (bp->fw_cap & FW_CAP_INVALIDATE_VF_FP_HSI)
-+		REG_WR8(bp, BAR_XSTRORM_INTMEM +
-+			    XSTORM_ETH_FUNCTION_INFO_FP_HSI_VALID_E2_OFFSET(abs_fid), 0);
+-#define POLLIN_SET (EPOLLRDNORM | EPOLLRDBAND | EPOLLIN | EPOLLHUP | EPOLLERR)
+-#define POLLOUT_SET (EPOLLWRBAND | EPOLLWRNORM | EPOLLOUT | EPOLLERR)
+-#define POLLEX_SET (EPOLLPRI)
++#define POLLIN_SET (EPOLLRDNORM | EPOLLRDBAND | EPOLLIN | EPOLLHUP | EPOLLERR |\
++			EPOLLNVAL)
++#define POLLOUT_SET (EPOLLWRBAND | EPOLLWRNORM | EPOLLOUT | EPOLLERR |\
++			 EPOLLNVAL)
++#define POLLEX_SET (EPOLLPRI | EPOLLNVAL)
  
- 	/* clear vf errors*/
- 	bnx2x_vf_semi_clear_err(bp, abs_vfid);
+ static inline void wait_key_set(poll_table *wait, unsigned long in,
+ 				unsigned long out, unsigned long bit,
+@@ -527,6 +529,7 @@ static int do_select(int n, fd_set_bits
+ 					break;
+ 				if (!(bit & all_bits))
+ 					continue;
++				mask = EPOLLNVAL;
+ 				f = fdget(i);
+ 				if (f.file) {
+ 					wait_key_set(wait, in, out, bit,
+@@ -534,34 +537,34 @@ static int do_select(int n, fd_set_bits
+ 					mask = vfs_poll(f.file, wait);
+ 
+ 					fdput(f);
+-					if ((mask & POLLIN_SET) && (in & bit)) {
+-						res_in |= bit;
+-						retval++;
+-						wait->_qproc = NULL;
+-					}
+-					if ((mask & POLLOUT_SET) && (out & bit)) {
+-						res_out |= bit;
+-						retval++;
+-						wait->_qproc = NULL;
+-					}
+-					if ((mask & POLLEX_SET) && (ex & bit)) {
+-						res_ex |= bit;
+-						retval++;
+-						wait->_qproc = NULL;
+-					}
+-					/* got something, stop busy polling */
+-					if (retval) {
+-						can_busy_loop = false;
+-						busy_flag = 0;
+-
+-					/*
+-					 * only remember a returned
+-					 * POLL_BUSY_LOOP if we asked for it
+-					 */
+-					} else if (busy_flag & mask)
+-						can_busy_loop = true;
+-
+ 				}
++				if ((mask & POLLIN_SET) && (in & bit)) {
++					res_in |= bit;
++					retval++;
++					wait->_qproc = NULL;
++				}
++				if ((mask & POLLOUT_SET) && (out & bit)) {
++					res_out |= bit;
++					retval++;
++					wait->_qproc = NULL;
++				}
++				if ((mask & POLLEX_SET) && (ex & bit)) {
++					res_ex |= bit;
++					retval++;
++					wait->_qproc = NULL;
++				}
++				/* got something, stop busy polling */
++				if (retval) {
++					can_busy_loop = false;
++					busy_flag = 0;
++
++				/*
++				 * only remember a returned
++				 * POLL_BUSY_LOOP if we asked for it
++				 */
++				} else if (busy_flag & mask)
++					can_busy_loop = true;
++
+ 			}
+ 			if (res_in)
+ 				*rinp = res_in;
 
 
