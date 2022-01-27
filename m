@@ -2,150 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D817C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C59B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241031AbiA0MUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:20:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47388 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240990AbiA0MUM (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:20:12 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59617C061714;
-        Thu, 27 Jan 2022 04:20:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=apFD4UwkGbnUlS6QRwwlqJtZYogyGpQVvXHYQdU89mo=; b=RAzvWVT3QoIcd1wSs2pQDzCr8b
-        utwt3vbxz/RrDaxL58pAOfQR/+/GRKD2AzzRN0m54fa3sRpOt09Rm6VNBBVqbSBZm605853qYqtR4
-        UpyWDOeyi3RoCO4qadAapNaf4sA9e/nB576zo1ISzfWlUxXGyvGN1MaPL8614s0kKSb+e6y0BR4tS
-        GHHU7Zx/O8rahpO3JDeJKFxaxc3IQMsA40kh64t7gay/9MGGba9oMddpbO4dy2/+vxMHBYd9fermu
-        cpdlp69uG9ajzJpl5t/GrUVFf0VbK4x5fXiu653qop0byW2pNb6jDg5WhrH26JV355L9HrSmKBwJy
-        EwjqrwaA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nD3kf-004A8L-FF; Thu, 27 Jan 2022 12:19:45 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6E101300268;
-        Thu, 27 Jan 2022 13:19:43 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 4608A2B520929; Thu, 27 Jan 2022 13:19:43 +0100 (CET)
-Date:   Thu, 27 Jan 2022 13:19:43 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Tao Zhou <tao.zhou@linux.dev>
-Cc:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
-        pjt@google.com, posk@google.com, avagin@google.com,
-        jannh@google.com, tdelisle@uwaterloo.ca, mark.rutland@arm.com,
-        posk@posk.io
-Subject: Re: [RFC][PATCH v2 5/5] sched: User Mode Concurency Groups
-Message-ID: <YfKN3+84gtaIopHW@hirez.programming.kicks-ass.net>
-References: <20220120155517.066795336@infradead.org>
- <20220120160822.914418096@infradead.org>
- <Ye67uQa4CwUuQJVY@geo.homenetwork>
+        id S241035AbiA0MUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:20:47 -0500
+Received: from foss.arm.com ([217.140.110.172]:58282 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229971AbiA0MUq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 07:20:46 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7740D1063;
+        Thu, 27 Jan 2022 04:20:46 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.14.34])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2ACD73F7D8;
+        Thu, 27 Jan 2022 04:20:45 -0800 (PST)
+Date:   Thu, 27 Jan 2022 12:20:32 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Yinan Liu <yinan@linux.alibaba.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        Sachin Sant <sachinp@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [powerpc] ftrace warning kernel/trace/ftrace.c:2068 with
+ code-patching selftests
+Message-ID: <YfKOENgR6sLnHQmA@FVFF77S0Q05N>
+References: <944D10DA-8200-4BA9-8D0A-3BED9AA99F82@linux.ibm.com>
+ <e9422643-a210-b77f-a037-da63a9d2e925@linux.alibaba.com>
+ <20220124114548.30241947@gandalf.local.home>
+ <0fa0daec-881a-314b-e28b-3828e80bbd90@linux.alibaba.com>
+ <YfFclROd+0/61q2d@FVFF77S0Q05N>
+ <YfKGKWW5UfZ15kCW@FVFF77S0Q05N>
+ <CAMj1kXHgpr0KYx5PYO_SpqaN8Ar2kfmc9Pb-d26uaYDpjwTz9w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ye67uQa4CwUuQJVY@geo.homenetwork>
+In-Reply-To: <CAMj1kXHgpr0KYx5PYO_SpqaN8Ar2kfmc9Pb-d26uaYDpjwTz9w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 10:46:17PM +0800, Tao Zhou wrote:
-> Hi Peter,
+On Thu, Jan 27, 2022 at 01:03:34PM +0100, Ard Biesheuvel wrote:
+> On Thu, 27 Jan 2022 at 12:47, Mark Rutland <mark.rutland@arm.com> wrote:
+> >
+> > [adding LKML so this is easier for others to find]
+> >
+> > If anyone wants to follow the thread from the start, it's at:
+> >
+> >   https://lore.kernel.org/linuxppc-dev/944D10DA-8200-4BA9-8D0A-3BED9AA99F82@linux.ibm.com/
+> >
+> > Ard, I was under the impression that the 32-bit arm kernel was (virtually)
+> > relocatable, but I couldn't spot where, and suspect I'm mistaken. Do you know
+> > whether it currently does any boot-time dynamic relocation?
 > 
-> On Thu, Jan 20, 2022 at 04:55:22PM +0100, Peter Zijlstra wrote:
+> No, it does not.
+
+Thanks for comfirming!
+
+So 32-bit arm should be able to opt into the build-time sort as-is.
+
+> > Steve asked for a bit more detail on IRC, so the below is an attempt to explain
+> > what's actually going on here.
+> >
+> > The short answer is that relocatable kernels (e.g. those with KASLR support)
+> > need to handle the kernel being loaded at (somewhat) arbitrary virtual
+> > addresses. Even where code can be position-independent, any pointers in the
+> > kernel image (e.g. the contents of the mcount_loc table) need to be updated to
+> > account for the specific VA the kernel was loaded at -- arch code does this
+> > early at boot time by applying dynamic (ELF) relocations.
 > 
-> [...]
+> These architectures use place-relative extables for the same reason:
+> place relative references are resolved at build time rather than at
+> runtime during relocation, making a build time sort feasible.
 > 
-> > +/* pre-schedule() */
-> > +void umcg_wq_worker_sleeping(struct task_struct *tsk)
-> > +{
-> > +	struct umcg_task __user *self = READ_ONCE(tsk->umcg_task);
-> > +	int ret;
-> > +
-> > +	if (!tsk->umcg_server) {
-> > +		/*
-> > +		 * Already blocked before, the pages are unpinned.
-> > +		 */
-> > +		return;
-> > +	}
-> > +
-> > +	/* Must not fault, mmap_sem might be held. */
-> > +	pagefault_disable();
-> > +
-> > +	ret = umcg_update_state(tsk, self, UMCG_TASK_RUNNING, UMCG_TASK_BLOCKED);
-> > +	if (ret == -EAGAIN) {
-> > +		/*
-> > +		 * Consider:
-> > +		 *
-> > +		 *   self->state = UMCG_TASK_RUNNABLE | UMCG_TF_COND_WAIT;
-> > +		 *   ...
-> > +		 *   sys_umcg_wait();
-> > +		 *
-> > +		 * and the '...' code doing a blocking syscall/fault. This
-> > +		 * ensures that returns with UMCG_TASK_RUNNING, which will make
+> arch/alpha/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> arch/arm64/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> arch/ia64/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> arch/parisc/include/asm/uaccess.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> arch/powerpc/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> arch/riscv/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> arch/s390/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
+> arch/x86/include/asm/extable.h:#define ARCH_HAS_RELATIVE_EXTABLE
 > 
-> /UMCG_TASK_RUNNING/UMCG_TASK_RUNNABLE/
+> Note that the swap routine becomes something like the below, given
+> that the relative references need to be fixed up after the entry
+> changes place in the sorted list.
+> 
+> static void swap_ex(void *a, void *b, int size)
+> {
+>         struct exception_table_entry *x = a, *y = b, tmp;
+>         int delta = b - a;
+> 
+>         tmp = *x;
+>         x->insn = y->insn + delta;
+>         y->insn = tmp.insn - delta;
+>         ...
+> }
+> 
+> As a bonus, the resulting footprint of the table in the image is
+> reduced by 8x, given that every 8 byte pointer has an accompanying 24
+> byte RELA record, so we go from 32 bytes to 4 bytes for every call to
+> __gnu_mcount_mc.
 
-So the issue is that:
+Absolutely -- it'd be great if we could do that for the callsite locations; the
+difficulty is that the entries are generated by the compiler itself, so we'd
+either need some build/link time processing to convert each absolute 64-bit
+value to a relative 32-bit offset, or new compiler options to generate those as
+relative offsets from the outset.
 
-	self->state = UMCG_TASK_RUNNABLE | UMCG_TF_COND_WAIT;
-
-	<#PF>
-	  umcg_sys_enter()
-	    umcg_pin_user_page()
-	  schedule()
-	    sched_submit_work()
-	      umcg_wq_worker_sleeping()
-	        umcg_update_state(tsk, self, UMCG_TASK_RUNNING, UMCG_TASK_BLOCKED) // -EAGAIN
-		UMCG_DIE()
-
-Which is clearly not desirable.
-
-So this additinoal thing ensures that:
-
-		umcg_update_state(tsk, self, UMCG_TASK_RUNNABLE, UMCG_TASK_BLOCKED) // 0
-
-	  umcg_sys_exit()
-	    umcg_update_state(tsk, self, UMCG_TASK_BLOCKED, UMCG_TASK_RUNNABLE);
-	    umcg_enqueue_and_wake()
-
-	  umcg_notify_resume()
-	    umcg_wait()
-
-	// must be UMCG_TASK_RUNNING here
-	</#PF>
-
-So when the pagefault finally does return, it will have:
-UMCG_TASK_RUNNING.
-
-Which will then make sys_umcg_wait() return -EAGAIN and around we go.
-
-> > +		 * sys_umcg_wait() return with -EAGAIN.
-> > +		 */
-> > +		ret = umcg_update_state(tsk, self, UMCG_TASK_RUNNABLE, UMCG_TASK_BLOCKED);
-> > +	}
-> > +	if (ret)
-> > +		UMCG_DIE_PF("state");
-> > +
-> > +	if (umcg_wake_server(tsk))
-> > +		UMCG_DIE_PF("wake");
-> > +
-> > +	pagefault_enable();
-> > +
-> > +	/*
-> > +	 * We're going to sleep, make sure to unpin the pages, this ensures
-> > +	 * the pins are temporary. Also see umcg_sys_exit().
-> > +	 */
-> > +	umcg_unpin_pages();
-> > +}
+Thanks,
+Mark.
