@@ -2,139 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38ABFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB70FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 13:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241816AbiA0NjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 08:39:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242230AbiA0Nh6 (ORCPT
+        id S242137AbiA0NjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 08:39:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43286 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242015AbiA0NiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:37:58 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96ED7C0613EE;
-        Thu, 27 Jan 2022 05:34:44 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id bg19-20020a05600c3c9300b0034565e837b6so3316120wmb.1;
-        Thu, 27 Jan 2022 05:34:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=PtD0FgMryNIEfo1jRPVV0cUNzb19Sn8D3fM6blA12z8=;
-        b=mJEfK4o/cPw8XO1sAK5M7gsOLWGX80WauflsKooGb7ZFVVa+s4u32wNhJ0tg/klSo4
-         sqJu1MumMXoK58OinVz9HOj5EKN66PedW5tRPhyn3WrhM0pqnjndsRUMVPXjrP5e557S
-         xVcvoaedKwnKP5WnRXtjU736LRLI3UunPwNQMWWqvTlJPC7ogCr4tGM6zIkpS8CKpwc4
-         TtALbxfc2E2gE6y1ckb/C1QjWq1aoq06jUzOJFcb7L4S64vR6wRZRNvxTAP+TT79um4z
-         fsE/6bqfMz3U06V1OWVPgEU+NWIX8+d97nkTtWVZhWpcJNPUKwLtHfMwkLdcAyfhMoK8
-         YYDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=PtD0FgMryNIEfo1jRPVV0cUNzb19Sn8D3fM6blA12z8=;
-        b=IOi4dXdhKguuDFhNfm7ePwvsr88VT6nUFR7zeeHXcGUYzsiARaqDfi34eHDmJpWMf+
-         Rd7qfR9UJXclEZv+TkYD8iWqLrjrDYkUmdmaY7jQsvT7Ks7vgcoHrfZ4YQJsq2ofSO5B
-         zy8NhFq8dtwgX0dG/xJVpyxj6aL1mKSkt8kHXC5oo//Qbn0Ldg3eouLZfOPox7H8Nhwm
-         Lvt6qKTWHeVmt52u5BJHBR71mdnjY7/q15cgLSHGAr5twz5w4GEIGwE6aoSJ5S0h+N7r
-         GsA5ys2fL6/t1S9t/AsFRDDxG3nY1CtOyNQFbHbhURcVvyuiz457WKHyS75qBvVnLEA0
-         paCA==
-X-Gm-Message-State: AOAM5335JAxXgoZTukNkUbRjc7uI5Ls7EHVP2G8Oinb33ZOY/tAX/L8j
-        y5G1nnhTxmsshaiOgLmD1hiYn2/vrxE=
-X-Google-Smtp-Source: ABdhPJwpccnsbgjKRndlWasEVTPIjTprM6ThyfKPt7POLIcMIUxxWzIt7TDhKx/s2vN+i8nPotXfHQ==
-X-Received: by 2002:a05:600c:1e8b:: with SMTP id be11mr11928824wmb.96.1643290483143;
-        Thu, 27 Jan 2022 05:34:43 -0800 (PST)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id e13sm2572953wrq.35.2022.01.27.05.34.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 05:34:42 -0800 (PST)
-Date:   Thu, 27 Jan 2022 14:34:41 +0100
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Subject: Re: [PATCH] crypto: authenc - Fix sleep in atomic context in
- decrypt_tail
-Message-ID: <YfKfcRCOgCzYNLRG@Red>
-References: <Yd1SIHUNdLIvKhzz@Red>
- <YeD4rt1OVnEMBr+A@gondor.apana.org.au>
- <YeD6vt47+pAl0SxG@gondor.apana.org.au>
- <YeEiWmkyNwfgQgmn@Red>
- <YeZx1aVL0HnT9tCB@Red>
- <Yee2oKxPSLaYY31N@gondor.apana.org.au>
+        Thu, 27 Jan 2022 08:38:05 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 465DE61C06
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 13:38:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84951C340E4;
+        Thu, 27 Jan 2022 13:38:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643290684;
+        bh=Z4jXUhGXYRsf6W87aXU9TwJRX0rB6w8vez308ZXgmGk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cThq6PKD8052QciPNtsjzAI5JXCdzZ3Av3FiLuJIYnkhMe5xaJX9U9J0KMOHl8pNG
+         TpMvGdEQNUl6ohX+qs1i/5nT1oRcohtBIajMqmsCmxe1LwcVY56ZEx3o2yEAQt6eKV
+         YmUMg0mEkyekS5BDhrSu1vhNiTG1lZNnm1vVNcbfolMGPkf7B2sYZTE1iZa3a/G9Xp
+         Nqw0SGXrNxuPTYcbFYGu3urfpPsORyCMYDVJ15nEPAJEwH9V0PWXAJBeEuIsH+gGY4
+         Na6pMH6tGoB4871lw7K4zBdhkxAT1kghmmjlyl0MfKt7kmOTOACElrzjo+MG9ITIK1
+         pP/S9gGyqswXA==
+Date:   Thu, 27 Jan 2022 15:37:56 +0200
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Michal Hocko <mhocko@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Alexey Makhalov <amakhalov@vmware.com>,
+        Dennis Zhou <dennis@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>, Tejun Heo <tj@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Nico Pache <npache@redhat.com>,
+        Wei Yang <richard.weiyang@gmail.com>,
+        Rafael Aquini <raquini@redhat.com>,
+        Michal Hocko <mhocko@suse.com>
+Subject: Re: [PATCH 3/6] mm, memory_hotplug: drop arch_free_nodedata
+Message-ID: <YfKgNEgv8mIUxqRD@kernel.org>
+References: <20220127085305.20890-1-mhocko@kernel.org>
+ <20220127085305.20890-4-mhocko@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yee2oKxPSLaYY31N@gondor.apana.org.au>
+In-Reply-To: <20220127085305.20890-4-mhocko@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Wed, Jan 19, 2022 at 05:58:40PM +1100, Herbert Xu a écrit :
-> On Tue, Jan 18, 2022 at 08:52:53AM +0100, Corentin Labbe wrote:
-> >
-> > With my patch, I got:
-> > [   38.515668] BUG: sleeping function called from invalid context at crypto/skcipher.c:482
-> > [   38.523708] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 84, name: 1c15000.crypto-
-> > [   38.532176] preempt_count: 200, expected: 0
-> > [   38.536381] CPU: 6 PID: 84 Comm: 1c15000.crypto- Not tainted 5.16.0-next-20220115-00124-g13473e8fac33-dirty #116
-> > [   38.546551] Hardware name: Allwinner A83t board
-> > [   38.551100]  unwind_backtrace from show_stack+0x10/0x14
-> > [   38.556358]  show_stack from dump_stack_lvl+0x40/0x4c
-> > [   38.561428]  dump_stack_lvl from __might_resched+0x118/0x154
-> > [   38.567107]  __might_resched from skcipher_walk_virt+0xe8/0xec
-> > [   38.572955]  skcipher_walk_virt from crypto_cbc_decrypt+0x2c/0x170
-> > [   38.579147]  crypto_cbc_decrypt from crypto_skcipher_decrypt+0x38/0x5c
-> > [   38.585680]  crypto_skcipher_decrypt from authenc_verify_ahash_done+0x18/0x34
-> > [   38.592825]  authenc_verify_ahash_done from crypto_finalize_request+0x6c/0xe4
-> > [   38.599974]  crypto_finalize_request from sun8i_ss_hash_run+0x73c/0xb98
-> > [   38.606602]  sun8i_ss_hash_run from crypto_pump_work+0x1a8/0x330
-> > [   38.612616]  crypto_pump_work from kthread_worker_fn+0xa8/0x1c4
-> > [   38.618550]  kthread_worker_fn from kthread+0xf0/0x110
-> > [   38.623701]  kthread from ret_from_fork+0x14/0x2c
-> > [   38.628414] Exception stack(0xc2247fb0 to 0xc2247ff8)
-> > [   38.633468] 7fa0:                                     00000000 00000000 00000000 00000000
-> > [   38.641640] 7fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-> > [   38.649809] 7fe0:i 00000000 00000000 00000000 00000000 00000013 00000000
-> > 
-> > This is when testing hmac(sha1) on my crypto driver sun8i-ss and crypto testing authenc(hmac-sha1-sun8i-ss,cbc(aes-generic)).
-> > 
-> > Do you have any idea to better fix my issue ?
+On Thu, Jan 27, 2022 at 09:53:02AM +0100, Michal Hocko wrote:
+> From: Michal Hocko <mhocko@suse.com>
 > 
-> This backtrace is caused by a bug in authenc:
+> Prior to "mm: handle uninitialized numa nodes gracefully" memory hotplug
+> used to allocate pgdat when memory has been added to a node
+> (hotadd_init_pgdat) arch_free_nodedata has been only used in the
+> failure path because once the pgdat is exported (to be visible
+> by NODA_DATA(nid)) it cannot really be freed because there is no
+> synchronization available for that.
 > 
-> ---8<---
-> The function crypto_authenc_decrypt_tail discards its flags
-> argument and always relies on the flags from the original request
-> when starting its sub-request.
+> pgdat is allocated for each possible nodes now so the memory hotplug
+> doesn't need to do the ever use arch_free_nodedata so drop it.
 > 
-> This is clearly wrong as it may cause the SLEEPABLE flag to be
-> set when it shouldn't.
+> This patch doesn't introduce any functional change.
 > 
-> Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
-> Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> Acked-by: Rafael Aquini <raquini@redhat.com>
+> Signed-off-by: Michal Hocko <mhocko@suse.com>
+
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+
+> ---
+>  arch/ia64/mm/discontig.c       |  5 -----
+>  include/linux/memory_hotplug.h |  3 ---
+>  mm/memory_hotplug.c            | 10 ----------
+>  3 files changed, 18 deletions(-)
 > 
-> diff --git a/crypto/authenc.c b/crypto/authenc.c
-> index 670bf1a01d00..17f674a7cdff 100644
-> --- a/crypto/authenc.c
-> +++ b/crypto/authenc.c
-> @@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
->  		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
+> diff --git a/arch/ia64/mm/discontig.c b/arch/ia64/mm/discontig.c
+> index dd0cf4834eaa..73d0db36edb6 100644
+> --- a/arch/ia64/mm/discontig.c
+> +++ b/arch/ia64/mm/discontig.c
+> @@ -615,11 +615,6 @@ pg_data_t * __init arch_alloc_nodedata(int nid)
+>  	return memblock_alloc(size, SMP_CACHE_BYTES);
+>  }
 >  
->  	skcipher_request_set_tfm(skreq, ctx->enc);
-> -	skcipher_request_set_callback(skreq, aead_request_flags(req),
-> +	skcipher_request_set_callback(skreq, flags,
->  				      req->base.complete, req->base.data);
->  	skcipher_request_set_crypt(skreq, src, dst,
->  				   req->cryptlen - authsize, req->iv);
+> -void arch_free_nodedata(pg_data_t *pgdat)
+> -{
+> -	kfree(pgdat);
+> -}
+> -
+>  void arch_refresh_nodedata(int update_node, pg_data_t *update_pgdat)
+>  {
+>  	pgdat_list[update_node] = update_pgdat;
+> diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
+> index cdd66bfdf855..60f09d3ebb3d 100644
+> --- a/include/linux/memory_hotplug.h
+> +++ b/include/linux/memory_hotplug.h
+> @@ -24,17 +24,14 @@ struct vmem_altmap;
+>   * node_data[nid] = kzalloc() works well. But it depends on the architecture.
+>   *
+>   * In general, generic_alloc_nodedata() is used.
+> - * Now, arch_free_nodedata() is just defined for error path of node_hot_add.
+>   *
+>   */
+>  extern pg_data_t *arch_alloc_nodedata(int nid);
+> -extern void arch_free_nodedata(pg_data_t *pgdat);
+>  extern void arch_refresh_nodedata(int nid, pg_data_t *pgdat);
+>  
+>  #else /* CONFIG_HAVE_ARCH_NODEDATA_EXTENSION */
+>  
+>  #define arch_alloc_nodedata(nid)	generic_alloc_nodedata(nid)
+> -#define arch_free_nodedata(pgdat)	generic_free_nodedata(pgdat)
+>  
+>  #ifdef CONFIG_NUMA
+>  /*
+> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> index fc991831d296..875cdc7ffa58 100644
+> --- a/mm/memory_hotplug.c
+> +++ b/mm/memory_hotplug.c
+> @@ -1217,16 +1217,6 @@ static pg_data_t __ref *hotadd_init_pgdat(int nid)
+>  	return pgdat;
+>  }
+>  
+> -static void rollback_node_hotadd(int nid)
+> -{
+> -	pg_data_t *pgdat = NODE_DATA(nid);
+> -
+> -	arch_refresh_nodedata(nid, NULL);
+> -	free_percpu(pgdat->per_cpu_nodestats);
+> -	arch_free_nodedata(pgdat);
+> -}
+> -
+> -
+>  /*
+>   * __try_online_node - online a node if offlined
+>   * @nid: the node ID
 > -- 
+> 2.30.2
+> 
 
-This fixes my issue.
-
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-
-Thanks
+-- 
+Sincerely yours,
+Mike.
