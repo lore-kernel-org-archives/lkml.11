@@ -2,116 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF89C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 19:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 19:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244987AbiA0TmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 14:42:01 -0500
-Received: from mail-yb1-f175.google.com ([209.85.219.175]:36715 "EHLO
-        mail-yb1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235493AbiA0Tl7 (ORCPT
+        id S245650AbiA0Tmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 14:42:39 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:57358 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S245263AbiA0Tmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 14:41:59 -0500
-Received: by mail-yb1-f175.google.com with SMTP id c6so11967385ybk.3;
-        Thu, 27 Jan 2022 11:41:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tUWJiAdYBjZ8HLz3oqciBqeoHxb85E3/8hDab3DlNpU=;
-        b=uxeiCUN+5eX6VcXe2sk89FLR1P9GDxGh7cuB/Zo7qWl7O3JhfXNlRXxny7QVY4CI2b
-         yuEdIc5FrCDQZaThElEU1lctGK0A9HICeMBMCqfTY7o4Nse6r+Su/q5GIh5STKODoMng
-         BDm4gahfuLn6+Q6n+z2zlOd2o+Li6WiLHvPbhenG1TfZt9+3a38vyvSJHufornbVInYA
-         Cap2mfZeJaPE4TFvwu1431ypdM9RJtY8PE3qG7OnziAUgk6uRtsmj0s/D+HF99cF8jX9
-         5f0QEzwWlKshbt9aYN0TVrUoyBd2Qx/e/Hd0nVMK1sVT00iusd4JfkhwVGrPdbv55vuM
-         VK4w==
-X-Gm-Message-State: AOAM530ns80kld23oBoXqb07m04/cLRpzYvYKO43QU5mX5eJku2NneK5
-        do7Wt63RNZTHfJVcRk/vRnFmWZ38Eoeh7UZXRXg=
-X-Google-Smtp-Source: ABdhPJzAhU7n3ZgYoHOfkBD/LcfHwCSoimS44ijemNODiKTXOullNscJyRSESbLShxWNqlBc8/CGkCUJ7F7JQJ0coWg=
-X-Received: by 2002:a25:2fca:: with SMTP id v193mr7835374ybv.475.1643312518985;
- Thu, 27 Jan 2022 11:41:58 -0800 (PST)
-MIME-Version: 1.0
-References: <CAJZ5v0hvvYedSn5u-i7sjpoEHU4P65t7i1b2pVn=S1q0nHWgqQ@mail.gmail.com>
- <20220121210905.GA1114868@dhcp-10-100-145-180.wdc.com> <CAJZ5v0gybg+Wk+008UBFnm2WqrxowOarhst9Eh+91BN823mqNA@mail.gmail.com>
- <20220127193000.GC2266713@dhcp-10-100-145-180.wdc.com>
-In-Reply-To: <20220127193000.GC2266713@dhcp-10-100-145-180.wdc.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 27 Jan 2022 20:41:47 +0100
-Message-ID: <CAJZ5v0jYGjcSjvASLvTG_vtGZWac7pmK73C0W3YBDN8io25Hkg@mail.gmail.com>
-Subject: Re: [Bug] nvme blocks PC10 since v5.15 - bisected
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Christoph Hellwig <hch@lst.de>, Len Brown <lenb@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        m.heingbecker@googlemail.com,
-        linux-nvme <linux-nvme@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 27 Jan 2022 14:42:38 -0500
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20RJcvYs004439;
+        Thu, 27 Jan 2022 19:42:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=pj1NKpQbH5pDAnBSZ6ZEh9QlXO/BiqZbqDY+xndFINQ=;
+ b=ArUxI9xaJnMkc1m/ctLCFYLNYmbLq3j2EEPW4mhMbS9IlLQbC5TY9UfNjI0rROw8oi2u
+ 7Nenc9Kw208aEa34ewjzCclSsBPFlk3fwTXjIHEbvEsw5Mf9A/IPg5Z2ojFaMI6CKW8L
+ kj/hAWY4b6vnUz2W72pUtbiUQOD1vwG3Rkl2QU69f4BVgaJRuSGnTogXzI6KA37+VfUD
+ 7aE7dUsxtatUu6TDk/yPMTijyr5M7lKvY4Qa3TxaNgrREIyycOlQLxpaTtt34tYfMd9e
+ rvwjXlhUBpdZccrCAub+uelWNFBE9pxymSVFE6ei+5HiJHp6SpFnmqHMZ7AUWN5lZ7D/ gQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dv1brrc7t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 19:42:24 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20RJfDZQ012915;
+        Thu, 27 Jan 2022 19:42:23 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dv1brrc77-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 19:42:23 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20RJc5TI000707;
+        Thu, 27 Jan 2022 19:42:21 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3dr9j9uchp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 19:42:21 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20RJgIqw44499358
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 27 Jan 2022 19:42:18 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E45C25205A;
+        Thu, 27 Jan 2022 19:42:17 +0000 (GMT)
+Received: from sig-9-65-89-165.ibm.com (unknown [9.65.89.165])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 5DB0C52050;
+        Thu, 27 Jan 2022 19:42:15 +0000 (GMT)
+Message-ID: <38a2c2b2d1829e9949bd984958e880e54ae7cf5c.camel@linux.ibm.com>
+Subject: Re: [PATCH v9 06/23] ima: Move arch_policy_entry into ima_namespace
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Christian Brauner <brauner@kernel.org>,
+        Stefan Berger <stefanb@linux.vnet.ibm.com>
+Cc:     linux-integrity@vger.kernel.org, serge@hallyn.com,
+        christian.brauner@ubuntu.com, containers@lists.linux.dev,
+        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
+        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
+        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
+        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
+        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Stefan Berger <stefanb@linux.ibm.com>
+Date:   Thu, 27 Jan 2022 14:42:14 -0500
+In-Reply-To: <20220126091104.jbedxrewojcmvy3u@wittgenstein>
+References: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
+         <20220125224645.79319-7-stefanb@linux.vnet.ibm.com>
+         <20220126091104.jbedxrewojcmvy3u@wittgenstein>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: EFrkMEN0Vw9pu_-7IXT2CP4xF-M23kgt
+X-Proofpoint-ORIG-GUID: 8-dUcX1JxUB9y2GW9MGQi7Rsn0s9ApOg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-27_03,2022-01-27_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ malwarescore=0 phishscore=0 bulkscore=0 adultscore=0 mlxscore=0
+ priorityscore=1501 lowpriorityscore=0 suspectscore=0 impostorscore=0
+ clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201270112
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 8:30 PM Keith Busch <kbusch@kernel.org> wrote:
->
-> On Thu, Jan 27, 2022 at 08:02:07PM +0100, Rafael J. Wysocki wrote:
-> > On Fri, Jan 21, 2022 at 10:09 PM Keith Busch <kbusch@kernel.org> wrote:
-> > >
-> > > On Fri, Jan 21, 2022 at 08:00:49PM +0100, Rafael J. Wysocki wrote:
-> > > > Hi Keith,
-> > > >
-> > > > It is reported that the following commit
-> > > >
-> > > > commit e5ad96f388b765fe6b52f64f37e910c0ba4f3de7
-> > > > Author: Keith Busch <kbusch@kernel.org>
-> > > > Date:   Tue Jul 27 09:40:44 2021 -0700
-> > > >
-> > > >    nvme-pci: disable hmb on idle suspend
-> > > >
-> > > >    An idle suspend may or may not disable host memory access from devices
-> > > >    placed in low power mode. Either way, it should always be safe to
-> > > >    disable the host memory buffer prior to entering the low power mode, and
-> > > >    this should also always be faster than a full device shutdown.
-> > > >
-> > > >    Signed-off-by: Keith Busch <kbusch@kernel.org>
-> > > >    Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-> > > >    Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > > >
-> > > > is the source of a serious power regression occurring since 5.15
-> > > > (please see https://bugzilla.kernel.org/show_bug.cgi?id=215467).
-> > > >
-> > > > After this commit, the SoC on the affected system cannot enter
-> > > > C-states deeper than PC2 while suspended to idle which basically
-> > > > defeats the purpose of suspending.
-> > > >
-> > > > What may be happening is that nvme_disable_prepare_reset() that is not
-> > > > called any more in the ndev->nr_host_mem_descs case somehow causes the
-> > > > LTR of the device to change to "no requirement" which allows deeper
-> > > > C-states to be entered.
-> > > >
-> > > > Can you have a look at this, please?
-> > >
-> > > I thought platforms that wanted full device shutdown  behaviour would
-> > > always set acpi_storage_d3. Is that not happening here?
-> >
-> > Evidently, it isn't.
-> >
-> > Also that flag is about putting the device into D3, which need not be
-> > necessary as long as the LTR is set to "don't care".
->
-> The only NVMe spec guidance for a driver to initiate a controller
-> shutdown is to prepare for D3 transition. If this platform wants a full
-> device shutdown without D3, then I think we may need a quirk.
->
-> We did a shutdown before because we didn't know any better and it's the
-> safeset thing to do. That caused complaints for excessive resume
-> latency, so now we have a platform indicator to tell us if we should,
-> and we rely on that. Are you suggesting we instead consult the PCIe LTR
-> in addition to ACPI storage properties?
+On Wed, 2022-01-26 at 10:11 +0100, Christian Brauner wrote:
+> On Tue, Jan 25, 2022 at 05:46:28PM -0500, Stefan Berger wrote:
+> > From: Stefan Berger <stefanb@linux.ibm.com>
+> > 
+> > Move the arch_policy_entry pointer into ima_namespace.
+> > 
+> > When freeing the memory set the pointer to NULL.
+> > 
+> > Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> > ---
+> 
+> Only relevant for the initial imans (for now) since it is derived from a
+> boot parameter. Maybe mention this in the commit message.
 
-Possibly.
+Enabling architecture specific policy rules is based on
+CONFIG_IMA_ARCH_POLICY.  As the name implies, each architecture is free
+to define their own policy rules.  For example on x86, based on the
+secure boot mode both measurement and signature verification rules are
+defined for the kexec kernel image and kernel modules. Similarly on
+powerpc, different measurement and signature verification rules for the
+kexec kernel image and kernel modules are defined based on whether
+trusted boot, secure boot, or both are enabled [2].
 
-The point is that there is a regression on this particular system
-caused by the above change.  It needs to be dealt with this way or
-another.  Doing an additional LTR check may be the way to go, but it
-needs to be verified.
+As neither kexec nor loading kernel modules are applicable, the
+architecture policy rules are limited to initial imans.
+
+[1] security/integrity/ima/ima_efi.c 
+[2] arch/powerpc/kernel/ima_arch.c
+
+> 
+> Move into struct ima_namespace looks good,
+> Acked-by: Christian Brauner <brauner@kernel.org>
+
+Thanks, Christian.
+
+Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+
