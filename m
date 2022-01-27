@@ -2,181 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB2ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D9DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 14:44:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242549AbiA0OmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 09:42:22 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:37844 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231443AbiA0OmV (ORCPT
+        id S242563AbiA0Oo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 09:44:27 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:42318 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242557AbiA0Oo0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 09:42:21 -0500
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20REgG0F032474;
-        Thu, 27 Jan 2022 14:42:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=P8HPDF2B+rz03P5vqpmgInihEB3XcCedq/lzSTTJ+Kg=;
- b=VowFYLIQW3e0Y6SsD7SlMg4k/zrrT4EXpehrj6JZxyaiVaDejqvMwzv0jIOXH2n9V++7
- ztauGl/XNo1dKxQO+LL5csvKRHMQ3v31rLzF+GxLMaiOnT7zfDtWze+BxA1wPhrWiNTg
- ImA/RrHn97S3XUJ2zTanVJQYG6pkZbdH3yksHKVr2qfCwsrdmW6yK21BXat0Ga8GjWUG
- HHnbZ8G50JAahQUmWAOr2fMZv0jIg1GpgWm3GPC1FSvD6CBfC8RmeMqdYgQFJgYCGSyq
- C/nMcTD5diijaYv+IEsUw4hnEG1Uu5rJTpcqZ9nI/JjO0qPss4bO7gAWBf5uXAGMexfZ 7g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3duumca5vy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 14:42:19 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20REgJfX000300;
-        Thu, 27 Jan 2022 14:42:19 GMT
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3duumca5md-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 14:42:18 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20REWW6u015830;
-        Thu, 27 Jan 2022 14:41:53 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma03wdc.us.ibm.com with ESMTP id 3dr9jbm82v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 14:41:53 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20REfpd535324286
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 27 Jan 2022 14:41:51 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D2DF52805A;
-        Thu, 27 Jan 2022 14:41:51 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9CC1E28059;
-        Thu, 27 Jan 2022 14:41:50 +0000 (GMT)
-Received: from [9.65.230.214] (unknown [9.65.230.214])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 27 Jan 2022 14:41:50 +0000 (GMT)
-Message-ID: <da1b73df-f4c0-0013-0a34-229fd6057285@linux.ibm.com>
-Date:   Thu, 27 Jan 2022 09:41:49 -0500
+        Thu, 27 Jan 2022 09:44:26 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 5C51D1F3A9;
+        Thu, 27 Jan 2022 14:44:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1643294665; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cr3ctQmKfbS4sGDuTWUwYiSQNoJONGqojhFsGxcH7XU=;
+        b=HLr6Nh4iXXcg6paXWYBSgWX/X7dUFH0wcYEmVU9d3f/bR9kxvYPT9BfNP13nE0rRwMPbth
+        hjTjpyOsIqzTB1I8aSnM9kpc7v6mHZls3zH+TpcKUjQz/EyA22IxKSzlbbzB+Eg1fA0FMj
+        4Ku9jyRdAT06U+XqjfcEIL6jnc494HA=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 0991DA3B87;
+        Thu, 27 Jan 2022 14:44:24 +0000 (UTC)
+Date:   Thu, 27 Jan 2022 15:44:21 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexey Makhalov <amakhalov@vmware.com>,
+        Dennis Zhou <dennis@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>, Tejun Heo <tj@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Nico Pache <npache@redhat.com>,
+        Wei Yang <richard.weiyang@gmail.com>,
+        Rafael Aquini <raquini@redhat.com>
+Subject: Re: [PATCH 4/6] mm, memory_hotplug: reorganize new pgdat
+ initialization
+Message-ID: <YfKvxVkkJ415DH4t@dhcp22.suse.cz>
+References: <20220127085305.20890-1-mhocko@kernel.org>
+ <20220127085305.20890-5-mhocko@kernel.org>
+ <6db33bb0-c72a-5539-5873-14039702e2a3@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [RFC PATCH] s390: vfio-ap: Register the vfio_ap module for the
- "ap" parent bus
-Content-Language: en-US
-To:     Cornelia Huck <cohuck@redhat.com>, Thomas Huth <thuth@redhat.com>,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        linux-s390@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
-        Jason Herne <jjherne@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>
-References: <20211201141110.94636-1-thuth@redhat.com>
- <210e3c57-bdc2-09ed-3e41-8dab57e8f36c@linux.ibm.com>
- <319a5ce7-873b-b8b9-1fa8-f2a69b418ac4@redhat.com>
- <15a39981-37ca-ed2d-3baf-c4cb74f8c343@linux.ibm.com>
- <0f1c6b3e-7e33-6fd1-11e7-f4857ec55105@redhat.com> <87a6hbtbqn.fsf@redhat.com>
-From:   Tony Krowiak <akrowiak@linux.ibm.com>
-In-Reply-To: <87a6hbtbqn.fsf@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: lnjfUBdyydEkC-8FmM8Vfxv1SOGiOZ9e
-X-Proofpoint-ORIG-GUID: vBV8AmUdl1UEQs6tZy2ADC4xZ1RP23p1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-27_03,2022-01-27_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 suspectscore=0 phishscore=0 priorityscore=1501
- lowpriorityscore=0 bulkscore=0 clxscore=1015 mlxscore=0 spamscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2201270088
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6db33bb0-c72a-5539-5873-14039702e2a3@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu 27-01-22 13:46:53, David Hildenbrand wrote:
+> On 27.01.22 09:53, Michal Hocko wrote:
+> > From: Michal Hocko <mhocko@suse.com>
+> > 
+> > When a !node_online node is brought up it needs a hotplug specific
+> > initialization because the node could be either uninitialized yet or it
+> > could have been recycled after previous hotremove. hotadd_init_pgdat is
+> > responsible for that.
+> > 
+> > Internal pgdat state is initialized at two places currently
+> > 	- hotadd_init_pgdat
+> > 	- free_area_init_core_hotplug
+> > There is no real clear cut what should go where but this patch's chosen to
+> > move the whole internal state initialization into free_area_init_core_hotplug.
+> > hotadd_init_pgdat is still responsible to pull all the parts together -
+> > most notably to initialize zonelists because those depend on the overall topology.
+> > 
+> > This patch doesn't introduce any functional change.
+> > 
+> > Acked-by: Rafael Aquini <raquini@redhat.com>
+> > Signed-off-by: Michal Hocko <mhocko@suse.com>
+> > ---
+> >  include/linux/memory_hotplug.h |  2 +-
+> >  mm/memory_hotplug.c            | 28 +++-------------------------
+> >  mm/page_alloc.c                | 25 +++++++++++++++++++++++--
+> >  3 files changed, 27 insertions(+), 28 deletions(-)
+> > 
+> > diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
+> > index 60f09d3ebb3d..76bf2de86def 100644
+> > --- a/include/linux/memory_hotplug.h
+> > +++ b/include/linux/memory_hotplug.h
+> > @@ -319,7 +319,7 @@ extern void set_zone_contiguous(struct zone *zone);
+> >  extern void clear_zone_contiguous(struct zone *zone);
+> >  
+> >  #ifdef CONFIG_MEMORY_HOTPLUG
+> > -extern void __ref free_area_init_core_hotplug(int nid);
+> > +extern void __ref free_area_init_core_hotplug(struct pglist_data *pgdat);
+> >  extern int __add_memory(int nid, u64 start, u64 size, mhp_t mhp_flags);
+> >  extern int add_memory(int nid, u64 start, u64 size, mhp_t mhp_flags);
+> >  extern int add_memory_resource(int nid, struct resource *resource,
+> > diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> > index 875cdc7ffa58..ddc62f8b591f 100644
+> > --- a/mm/memory_hotplug.c
+> > +++ b/mm/memory_hotplug.c
+> > @@ -1166,39 +1166,16 @@ static pg_data_t __ref *hotadd_init_pgdat(int nid)
+> >  {
+> >  	struct pglist_data *pgdat;
+> >  
+> > -	pgdat = NODE_DATA(nid);
+> > -
+> >  	/*
+> >  	 * NODE_DATA is preallocated (free_area_init) but its internal
+> >  	 * state is not allocated completely. Add missing pieces.
+> >  	 * Completely offline nodes stay around and they just need
+> >  	 * reintialization.
+> >  	 */
+> > -	if (pgdat->per_cpu_nodestats == &boot_nodestats) {
+> > -		pgdat->per_cpu_nodestats =
+> > -			alloc_percpu(struct per_cpu_nodestat);
+> > -	} else {
+> > -		int cpu;
+> > -		/*
+> > -		 * Reset the nr_zones, order and highest_zoneidx before reuse.
+> > -		 * Note that kswapd will init kswapd_highest_zoneidx properly
+> > -		 * when it starts in the near future.
+> > -		 */
+> > -		pgdat->nr_zones = 0;
+> > -		pgdat->kswapd_order = 0;
+> > -		pgdat->kswapd_highest_zoneidx = 0;
+> > -		for_each_online_cpu(cpu) {
+> > -			struct per_cpu_nodestat *p;
+> > -
+> > -			p = per_cpu_ptr(pgdat->per_cpu_nodestats, cpu);
+> > -			memset(p, 0, sizeof(*p));
+> > -		}
+> > -	}
+> > -
+> > -	pgdat->node_start_pfn = 0;
+> > +	pgdat = NODE_DATA(nid);
+> >  
+> >  	/* init node's zones as empty zones, we don't have any present pages.*/
+> > -	free_area_init_core_hotplug(nid);
+> > +	free_area_init_core_hotplug(pgdat);
+> >  
+> >  	/*
+> >  	 * The node we allocated has no zone fallback lists. For avoiding
+> > @@ -1210,6 +1187,7 @@ static pg_data_t __ref *hotadd_init_pgdat(int nid)
+> >  	 * When memory is hot-added, all the memory is in offline state. So
+> >  	 * clear all zones' present_pages because they will be updated in
+> >  	 * online_pages() and offline_pages().
+> > +	 * TODO: should be in free_area_init_core_hotplug?
+> >  	 */
+> >  	reset_node_managed_pages(pgdat);
+> >  	reset_node_present_pages(pgdat);
+> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> > index 1a05669044d3..32d0189de4c5 100644
+> > --- a/mm/page_alloc.c
+> > +++ b/mm/page_alloc.c
+> > @@ -7506,12 +7506,33 @@ static void __meminit zone_init_internals(struct zone *zone, enum zone_type idx,
+> >   * NOTE: this function is only called during memory hotplug
+> >   */
+> >  #ifdef CONFIG_MEMORY_HOTPLUG
+> > -void __ref free_area_init_core_hotplug(int nid)
+> > +void __ref free_area_init_core_hotplug(struct pglist_data *pgdat)
+> >  {
+> > +	int nid = pgdat->node_id;
+> >  	enum zone_type z;
+> > -	pg_data_t *pgdat = NODE_DATA(nid);
+> > +	int cpu;
+> >  
+> >  	pgdat_init_internals(pgdat);
+> > +
+> > +	if (pgdat->per_cpu_nodestats == &boot_nodestats)
+> > +		pgdat->per_cpu_nodestats = alloc_percpu(struct per_cpu_nodestat);
+> > +
+> > +	/*
+> > +	 * Reset the nr_zones, order and highest_zoneidx before reuse.
+> > +	 * Note that kswapd will init kswapd_highest_zoneidx properly
+> > +	 * when it starts in the near future.
+> > +	 */
+> > +	pgdat->nr_zones = 0;
+> > +	pgdat->kswapd_order = 0;
+> > +	pgdat->kswapd_highest_zoneidx = 0;
+> > +	pgdat->node_start_pfn = 0;
+> > +	for_each_online_cpu(cpu) {
+> > +		struct per_cpu_nodestat *p;
+> > +
+> > +		p = per_cpu_ptr(pgdat->per_cpu_nodestats, cpu);
+> > +		memset(p, 0, sizeof(*p));
+> > +	}
+> > +
+> >  	for (z = 0; z < MAX_NR_ZONES; z++)
+> >  		zone_init_internals(&pgdat->node_zones[z], z, nid, 0);
+> >  }
+> 
+> I feel like we should be initializing all of this only once, just after
+> allocating the node. There should be no difference between a node we're
+> reusing and a "fresh" node. IOW, memory offlining should be resetting
+> all state accordingly when the last memory goes away.
+> 
+> But I might be wrong and this patch looks like an improvement, as you
+> say,  without functional change
 
+Yeah, I really wanted to have this simple and straightforward. To be
+completely honest I am not even sure this is necessary. Something really
+woth looking at.
+ 
+> Acked-by: David Hildenbrand <david@redhat.com>
 
-On 12/8/21 09:25, Cornelia Huck wrote:
-> On Wed, Dec 08 2021, Thomas Huth <thuth@redhat.com> wrote:
->
->> On 02/12/2021 09.33, Harald Freudenberger wrote:
->>> On 02.12.21 08:13, Thomas Huth wrote:
->>>> On 01/12/2021 18.10, Harald Freudenberger wrote:
->>>>> On 01.12.21 15:11, Thomas Huth wrote:
->>>>>> The crypto devices that we can use with the vfio_ap module are sitting
->>>>>> on the "ap" bus, not on the "vfio_ap" bus that the module defines
->>>>>> itself. With this change, the vfio_ap module now gets automatically
->>>>>> loaded if a supported crypto adapter is available in the host.
->>>>>>
->>>>>> Signed-off-by: Thomas Huth <thuth@redhat.com>
->>>>>> ---
->>>>>>     Note: Marked as "RFC" since I'm not 100% sure about it ...
->>>>>>           please review carefully!
->>>>>>
->>>>>>     drivers/s390/crypto/vfio_ap_drv.c | 2 +-
->>>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
->>>>>>
->>>>>> diff --git a/drivers/s390/crypto/vfio_ap_drv.c b/drivers/s390/crypto/vfio_ap_drv.c
->>>>>> index 4d2556bc7fe5..5580e40608a4 100644
->>>>>> --- a/drivers/s390/crypto/vfio_ap_drv.c
->>>>>> +++ b/drivers/s390/crypto/vfio_ap_drv.c
->>>>>> @@ -39,7 +39,7 @@ static struct ap_device_id ap_queue_ids[] = {
->>>>>>         { /* end of sibling */ },
->>>>>>     };
->>>>>>     -MODULE_DEVICE_TABLE(vfio_ap, ap_queue_ids);
->>>>>> +MODULE_DEVICE_TABLE(ap, ap_queue_ids);
->>>>>>       /**
->>>>>>      * vfio_ap_queue_dev_probe:
->>>>> Hello Thomas, interesting.
->>>>> Did you test this ? I mean did you build a kernel and have it run on a s390 with crypto cards available ?
->>>> Yes, I've tested it. Without the patch, the vfio_ap module does not get loaded automatically if a crypto card is available. With the patch applied, the vfio_ap module correctly gets loaded automatically on my system (similar to the vfio_ccw module).
->>>>
->>>>> My strong feeling is that this will make the AP bus code stumble as the code silently assumes there are exact
->>>>> two types of ap devices attached to the ap bus: ap cards and ap queues.
->>>> This is only about getting the module loaded automatically once such a device is available ... AFAIK it does not grab any of the devices automatically, so there shouldn't be any problems?
->>>>
->>>>    Thomas
->>>>
->>> Yes, of course for the automatic module load works this way. But you understand that now
->>> the vfio devices are childs of the ap bus and thus are siblings of the ap queue and ap card
->>> devices. As I wrote the ap bus code is not prepared to deal with a 3th type of devices
->>> dangling on the ap bus. So you should test what happens when there are real vfio ap devices
->>> in use together with 'regular' ap card and queue devices.
-> Um, the queues/cards are devices on the bus, and just can have
-> different drivers bound to them, right? The only device that the vfio-ap
-> driver creates is the matrix device (which does not live on the ap bus),
-> and this patch doesn't change that. It only correctly creates a table
-> for a driver that already matched on the ap bus.
->
->> I pondered about this for a while, but I still do not quite understand. The
->> MODULE_DEVICE_TABLE macro only adds a __mod_something_device_table symbol to
->> the module, it does not change the hierarchy of the vfio devices ... so this
->> is really only about loading the module automatically. Or do you say that
->> there is already a problem if a user loads the module manually and thus it
->> should not get loaded automatically?
-> Correct me if I'm wrong, but don't the devices on the ap bus need to be
-> actually configured before they can attach to a non-default
-> (i.e. vfio-ap) driver? IOW, it's not a simple bind operation, but extra
-> configuration is required, so a loaded vfio-ap module should not affect
-> any devices not configured to actually use it at all.
+Thanks!
 
-There are two bitmasks - apmask/aqmask - that identify the APQNs of the
-queues to be bound to the default drivers. All others are bound to
-the non-default driver (vfio_ap). So, you are correct, loading the vfio_ap
-module will not affect any queue devices not configured to use it.
-
->
->>> However, I am still not sure if it is preferable to have the vfio ap module loaded automatically. The majority
->>> of customers will never use vfio ap devices - this is specific to kvm hosts only.
->> vfio-ccw also gets loaded automatically via MODULE_DEVICE_TABLE, so I think
->> vfio-ap should be handled the same way.
->> (Or should we maybe rather remove the MODULE_DEVICE_TABLE line from both
->> modules instead?)
-> MODULE_DEVICE_TABLE declares "I can drive these devices", so it doesn't
-> feel correct to remove them. If the modules should not be autoloaded,
-> the system must be configured to not autoload them.
->
-> Besides, is loading an extra module really causing that much harm? Does
-> vfio-ap drag in too much other stuff?
->
-
+-- 
+Michal Hocko
+SUSE Labs
