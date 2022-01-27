@@ -2,172 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4384C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC31C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 12:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241366AbiA0MmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 07:42:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47105 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241395AbiA0MmH (ORCPT
+        id S241408AbiA0MmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 07:42:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241382AbiA0MmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 07:42:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643287327;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+ZCYUwqDDdrT8j+JPGM77Yy7DvHBOZi+hMacOjThVUY=;
-        b=hssR1OZpjc8SJIfcDb4IMSXoALBnz4g/TQi6cVdQzI3C7vl3GCc+bgA2fqinJaDltgwauJ
-        Qa475wXZvxMLNESWZum7ZyGwWN64sJjGpMWoLynFEWvEZ2uwf27CZ6/PDRraoivfqmwkJE
-        BggKqoD752n+ixHGCq07ZhY8ncn/QqQ=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-542-1YOUl5ZSMVyL5oz83cHZuw-1; Thu, 27 Jan 2022 07:42:05 -0500
-X-MC-Unique: 1YOUl5ZSMVyL5oz83cHZuw-1
-Received: by mail-wm1-f71.google.com with SMTP id bg32-20020a05600c3ca000b00349f2aca1beso1421658wmb.9
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 04:42:05 -0800 (PST)
+        Thu, 27 Jan 2022 07:42:06 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19B8C06174A;
+        Thu, 27 Jan 2022 04:42:05 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so7436792pju.2;
+        Thu, 27 Jan 2022 04:42:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Iqi3lBVf+uaBkRIvQ16oY2EMA/KLN24v0OYA9daSmGM=;
+        b=hIHTRqfZGtRmmbe3zGKxBV/yOlJtRteGQnSy+5NIWxIp9AasPD1vvZB97LoIGsIDQc
+         8KLgUob8fav1Z2/WpNLYRQjnosgaAs3ydKlxir/Xi7b0XH6/e+7XtZP0q8KoN0wDdwJD
+         t3Ayoh7QDuRWqiMv0MPOMD0OPAfkXZJYL+PpIPQl/quq0ealNHTJun1tbbrMJbvC6ZOo
+         FrRV1ZxHp0vBNn5wEx4TqHuoHwNSrndBxbqNcpah94Dp2RgsB8iCoAnSMWLpllcZX2hJ
+         RKWibYa50mbLu0s1vOlf38E4zqCr87CQ/3dcrOMBvOBq5QeeCbFPRh3QhxLe8bYn7noj
+         FDaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=+ZCYUwqDDdrT8j+JPGM77Yy7DvHBOZi+hMacOjThVUY=;
-        b=si7odQBPnPhyxaRpdUhxMCESIqZuLvo9z/+hvy+cQRicM7vKZ/tRy883dwO1ENvE/I
-         xsWWyR2wt8bui3eVTKgcbcPm7yTPm+o760tBzCagyY9YwjG9hgaNW6GqtZxqjzHh47qd
-         EmjtJT4kU/llC8p4zSRbU3xRrb2h8NsQ/aj9Xllfm5v/opI/SGIvLfFh+pSytXjQdcGQ
-         0BBZfB6Qg8/ht7tGi/pV6TMamK4M26S2t+C/QA3iFvaFQ33k00bFdt6VfMdFhiIL92k5
-         rlMETMdc8U0lM6MgTxYCoaZFrRGYychrMRU58rVjtMB3a2A6AaBJsu5o9jI/2N2aJTv2
-         2Sig==
-X-Gm-Message-State: AOAM532ZuapiO9QXvQSpURkFTwO1xf6/8J4wnK46w1BNReOoUt1yevq7
-        alwXX95vK4TaWbDrZEJ3LtO/+/atvpIDUt94sCUzFseRw9g4wxgu7ttrxSRCKQP6GGxsXAFBSz1
-        EfhJlQg2RTMx7dd7SdstY7P5Y
-X-Received: by 2002:a05:6000:2a2:: with SMTP id l2mr2917325wry.306.1643287324505;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Iqi3lBVf+uaBkRIvQ16oY2EMA/KLN24v0OYA9daSmGM=;
+        b=3+Cuz+T3m6DvY23S9hc+uvMUwWJzOMywiu8IFSFAqvZcUMSSIF7PuNfW8I7/8AxAQL
+         3jE7IVC1JWa3Ti2w2isifdF35KTe3sy7EncaBkLAXLLO9Cfz/NhUAzHyYxYCcp9upewl
+         BWKuZ4qRBBAH5HJ4HOXkKp8lald83P2jIvdq99+bW5HLR9Uir6PuNtzisZ5KQdktkxFx
+         gIwGV6IFb8bGnckaR8r7F+PUtO0X5DZ+fPWkdOg99wJRtjkS1Z8v5TJ95qVLRCA2sJwj
+         lau+ok2wlbwroWQ4iUnqSCjzv98Ow046yf5T4XQ8nyyaLsk3Qzoo3mmswR9mu6ohtPu+
+         qmEQ==
+X-Gm-Message-State: AOAM531NZFWy0JEFeIt2IPVCqsyIzYejUzVmW4a0QbAb2JLuL/S93fY5
+        cIpvXXJGVSZWmpuMQppwOps=
+X-Google-Smtp-Source: ABdhPJwukzDWSol7dDsWgIrzDEWgR22ezRZ04Kmn+TUWXtXAFRigDgBhu2UDR7ujUvYrsXGZ9YyiPw==
+X-Received: by 2002:a17:902:db0b:: with SMTP id m11mr3206717plx.104.1643287325364;
+        Thu, 27 Jan 2022 04:42:05 -0800 (PST)
+Received: from localhost.localdomain ([2400:2410:93a3:bc00:d205:ec9:b1c6:b9ee])
+        by smtp.gmail.com with ESMTPSA id m38sm19071298pgl.64.2022.01.27.04.42.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 27 Jan 2022 04:42:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJydYr4P2sdULpp26oBjp8Ca1fz+3CWDjiNf27VQMOA4/Yg68rBq308t6po6o05pm2mOjX23YQ==
-X-Received: by 2002:a05:6000:2a2:: with SMTP id l2mr2917301wry.306.1643287324225;
-        Thu, 27 Jan 2022 04:42:04 -0800 (PST)
-Received: from ?IPV6:2003:cb:c70d:8300:4812:9d4f:6cd8:7f47? (p200300cbc70d830048129d4f6cd87f47.dip0.t-ipconnect.de. [2003:cb:c70d:8300:4812:9d4f:6cd8:7f47])
-        by smtp.gmail.com with ESMTPSA id 6sm2558520wry.69.2022.01.27.04.42.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 04:42:03 -0800 (PST)
-Message-ID: <7b3eaee6-ae9b-5159-3cd8-5b38e7890229@redhat.com>
-Date:   Thu, 27 Jan 2022 13:42:02 +0100
+From:   Akira Kawata <akirakawata1@gmail.com>
+To:     akpm@linux-foundation.org, adobriyan@gmail.com,
+        viro@zeniv.linux.org.uk, keescook@chromium.org,
+        linux-fsdevel@vger.kernel.org, lukas.bulwahn@gmail.com
+Cc:     akirakawata1@gmail.com, kernel test robot <lkp@intel.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 1/2] fs/binfmt_elf: Fix AT_PHDR for unusual ELF files
+Date:   Thu, 27 Jan 2022 21:40:16 +0900
+Message-Id: <20220127124014.338760-2-akirakawata1@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220127124014.338760-1-akirakawata1@gmail.com>
+References: <20220127124014.338760-1-akirakawata1@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 3/6] mm, memory_hotplug: drop arch_free_nodedata
-Content-Language: en-US
-To:     Michal Hocko <mhocko@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>, Tejun Heo <tj@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Nico Pache <npache@redhat.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Rafael Aquini <raquini@redhat.com>,
-        Michal Hocko <mhocko@suse.com>
-References: <20220127085305.20890-1-mhocko@kernel.org>
- <20220127085305.20890-4-mhocko@kernel.org>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220127085305.20890-4-mhocko@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27.01.22 09:53, Michal Hocko wrote:
-> From: Michal Hocko <mhocko@suse.com>
-> 
-> Prior to "mm: handle uninitialized numa nodes gracefully" memory hotplug
-> used to allocate pgdat when memory has been added to a node
-> (hotadd_init_pgdat) arch_free_nodedata has been only used in the
-> failure path because once the pgdat is exported (to be visible
-> by NODA_DATA(nid)) it cannot really be freed because there is no
-> synchronization available for that.
-> 
-> pgdat is allocated for each possible nodes now so the memory hotplug
-> doesn't need to do the ever use arch_free_nodedata so drop it.
-> 
-> This patch doesn't introduce any functional change.
-> 
-> Acked-by: Rafael Aquini <raquini@redhat.com>
-> Signed-off-by: Michal Hocko <mhocko@suse.com>
-> ---
->  arch/ia64/mm/discontig.c       |  5 -----
->  include/linux/memory_hotplug.h |  3 ---
->  mm/memory_hotplug.c            | 10 ----------
->  3 files changed, 18 deletions(-)
-> 
-> diff --git a/arch/ia64/mm/discontig.c b/arch/ia64/mm/discontig.c
-> index dd0cf4834eaa..73d0db36edb6 100644
-> --- a/arch/ia64/mm/discontig.c
-> +++ b/arch/ia64/mm/discontig.c
-> @@ -615,11 +615,6 @@ pg_data_t * __init arch_alloc_nodedata(int nid)
->  	return memblock_alloc(size, SMP_CACHE_BYTES);
->  }
->  
-> -void arch_free_nodedata(pg_data_t *pgdat)
-> -{
-> -	kfree(pgdat);
-> -}
-> -
->  void arch_refresh_nodedata(int update_node, pg_data_t *update_pgdat)
->  {
->  	pgdat_list[update_node] = update_pgdat;
-> diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
-> index cdd66bfdf855..60f09d3ebb3d 100644
-> --- a/include/linux/memory_hotplug.h
-> +++ b/include/linux/memory_hotplug.h
-> @@ -24,17 +24,14 @@ struct vmem_altmap;
->   * node_data[nid] = kzalloc() works well. But it depends on the architecture.
->   *
->   * In general, generic_alloc_nodedata() is used.
-> - * Now, arch_free_nodedata() is just defined for error path of node_hot_add.
->   *
->   */
->  extern pg_data_t *arch_alloc_nodedata(int nid);
-> -extern void arch_free_nodedata(pg_data_t *pgdat);
->  extern void arch_refresh_nodedata(int nid, pg_data_t *pgdat);
->  
->  #else /* CONFIG_HAVE_ARCH_NODEDATA_EXTENSION */
->  
->  #define arch_alloc_nodedata(nid)	generic_alloc_nodedata(nid)
-> -#define arch_free_nodedata(pgdat)	generic_free_nodedata(pgdat)
->  
->  #ifdef CONFIG_NUMA
->  /*
-> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-> index fc991831d296..875cdc7ffa58 100644
-> --- a/mm/memory_hotplug.c
-> +++ b/mm/memory_hotplug.c
-> @@ -1217,16 +1217,6 @@ static pg_data_t __ref *hotadd_init_pgdat(int nid)
->  	return pgdat;
->  }
->  
-> -static void rollback_node_hotadd(int nid)
-> -{
-> -	pg_data_t *pgdat = NODE_DATA(nid);
-> -
-> -	arch_refresh_nodedata(nid, NULL);
-> -	free_percpu(pgdat->per_cpu_nodestats);
-> -	arch_free_nodedata(pgdat);
-> -}
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=197921
 
-As mentioned, maybe we want to rip out rollback_node_hotadd() in the
-previous patch.
+As pointed out in the discussion of buglink, we cannot calculate AT_PHDR
+as the sum of load_addr and exec->e_phoff.
 
-Acked-by: David Hildenbrand <david@redhat.com>
+: The AT_PHDR of ELF auxiliary vectors should point to the memory address
+: of program header. But binfmt_elf.c calculates this address as follows:
+:
+: NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
+:
+: which is wrong since e_phoff is the file offset of program header and
+: load_addr is the memory base address from PT_LOAD entry.
+:
+: The ld.so uses AT_PHDR as the memory address of program header. In normal
+: case, since the e_phoff is usually 64 and in the first PT_LOAD region, it
+: is the correct program header address.
+:
+: But if the address of program header isn't equal to the first PT_LOAD
+: address + e_phoff (e.g.  Put the program header in other non-consecutive
+: PT_LOAD region), ld.so will try to read program header from wrong address
+: then crash or use incorrect program header.
 
+This is because exec->e_phoff
+is the offset of PHDRs in the file and the address of PHDRs in the
+memory may differ from it. This patch fixes the bug by calculating the
+address of program headers from PT_LOADs directly.
+
+Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Acked-by: Kees Cook <keescook@chromium.org>
+---
+ fs/binfmt_elf.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index 0a25b8049b74..d120ab03795f 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -170,8 +170,8 @@ static int padzero(unsigned long elf_bss)
+ 
+ static int
+ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
+-		unsigned long load_addr, unsigned long interp_load_addr,
+-		unsigned long e_entry)
++		unsigned long interp_load_addr,
++		unsigned long e_entry, unsigned long phdr_addr)
+ {
+ 	struct mm_struct *mm = current->mm;
+ 	unsigned long p = bprm->p;
+@@ -257,7 +257,7 @@ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
+ 	NEW_AUX_ENT(AT_HWCAP, ELF_HWCAP);
+ 	NEW_AUX_ENT(AT_PAGESZ, ELF_EXEC_PAGESIZE);
+ 	NEW_AUX_ENT(AT_CLKTCK, CLOCKS_PER_SEC);
+-	NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
++	NEW_AUX_ENT(AT_PHDR, phdr_addr);
+ 	NEW_AUX_ENT(AT_PHENT, sizeof(struct elf_phdr));
+ 	NEW_AUX_ENT(AT_PHNUM, exec->e_phnum);
+ 	NEW_AUX_ENT(AT_BASE, interp_load_addr);
+@@ -822,7 +822,7 @@ static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
+ static int load_elf_binary(struct linux_binprm *bprm)
+ {
+ 	struct file *interpreter = NULL; /* to shut gcc up */
+- 	unsigned long load_addr = 0, load_bias = 0;
++	unsigned long load_addr, load_bias = 0, phdr_addr = 0;
+ 	int load_addr_set = 0;
+ 	unsigned long error;
+ 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
+@@ -1168,6 +1168,17 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 				reloc_func_desc = load_bias;
+ 			}
+ 		}
++
++		/*
++		 * Figure out which segment in the file contains the Program
++		 * Header table, and map to the associated memory address.
++		 */
++		if (elf_ppnt->p_offset <= elf_ex->e_phoff &&
++		    elf_ex->e_phoff < elf_ppnt->p_offset + elf_ppnt->p_filesz) {
++			phdr_addr = elf_ex->e_phoff - elf_ppnt->p_offset +
++				    elf_ppnt->p_vaddr;
++		}
++
+ 		k = elf_ppnt->p_vaddr;
+ 		if ((elf_ppnt->p_flags & PF_X) && k < start_code)
+ 			start_code = k;
+@@ -1203,6 +1214,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 	}
+ 
+ 	e_entry = elf_ex->e_entry + load_bias;
++	phdr_addr += load_bias;
+ 	elf_bss += load_bias;
+ 	elf_brk += load_bias;
+ 	start_code += load_bias;
+@@ -1266,8 +1278,8 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 		goto out;
+ #endif /* ARCH_HAS_SETUP_ADDITIONAL_PAGES */
+ 
+-	retval = create_elf_tables(bprm, elf_ex,
+-			  load_addr, interp_load_addr, e_entry);
++	retval = create_elf_tables(bprm, elf_ex, interp_load_addr,
++				   e_entry, phdr_addr);
+ 	if (retval < 0)
+ 		goto out;
+ 
 -- 
-Thanks,
-
-David / dhildenb
+2.25.1
 
