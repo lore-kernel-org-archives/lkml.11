@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7185CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8B2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 17:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245145AbiA0R4N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 12:56:13 -0500
-Received: from mga12.intel.com ([192.55.52.136]:65467 "EHLO mga12.intel.com"
+        id S245001AbiA0R4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 12:56:15 -0500
+Received: from mga02.intel.com ([134.134.136.20]:19413 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244850AbiA0RzZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S244847AbiA0RzZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 27 Jan 2022 12:55:25 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643306125; x=1674842125;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EcpsWPf8UJbDeP77dQwv3JjYYAgIDS+icWEivpBmEm8=;
-  b=MNZn1pn6vEKMhRvNuCB9wi5i2syugC8iPViDiJJbBUM8gIMRA6Rvh7nV
-   3ckDhrAWWOj2XfO26sS0UNR3E7L7ZvTeWUsmdYdrciasjgYc9A+PecVSC
-   /XqYiGOR7WbjfpvQYYeya8IyxQn0SYCQjcv+AN6aNEgszxKsbsFqkWmW/
-   TluwC7TNUkkYjUbqzyeb4sno5jk+/D1PPgMMltD/52WTNFidnzZleG6iI
-   WxyrWybgw2QcwtOnk8K0JTY7d2XT6MfK8FZxdagsbQ5WSYLHDT8JrphBi
-   vMCbKPQZqHpnGjzBlkMBtqDUMrg4kHbRP1hAyIO3b6ZCWPhv5e4Ylmjp6
+  bh=3l7R2+hjC6dyevgRc9pgdsZzcbxeEl2tX9Je9seBHP0=;
+  b=OjJk6Z103+zCRdGAJyTS1O3t6DxE2mhG6n+PtRc7DY8NuTqQ5ZCxByx9
+   oZhh8ckra1z6qODca4IUqJVh7Z7tnnBipRFU1+7wjMl3PuOlo3I9xmjLL
+   tV25viKz03V+wIKCyyrKUZCxSr1Kf19b0vEEDnXtl90g95x+clofK299U
+   FZocbDsUOXAyLtAvVE8Pyc0RRaDKzOjHMnObGjyqEitiAdWq/pq3Cku+l
+   cCF6hKCdFPGYrjEG8KeiKAyPw/lFQzs76tH2uzhu/+u5uDRp4KXLI+F5B
+   oat2DGWYONJcyP+MTgKluz8TQdfF1On69B5DwUn9scdG9k9sG616B0xkm
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="226899121"
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234302437"
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="226899121"
+   d="scan'208";a="234302437"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:08 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:11 -0800
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="674796062"
+   d="scan'208";a="674796134"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:08 -0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 09:55:11 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -40,9 +40,9 @@ To:     Dave Hansen <dave.hansen@linux.intel.com>,
 Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V8 06/44] mm/pkeys: Add Kconfig options for PKS
-Date:   Thu, 27 Jan 2022 09:54:27 -0800
-Message-Id: <20220127175505.851391-7-ira.weiny@intel.com>
+Subject: [PATCH V8 24/44] x86/entry: Define arch_{save|restore}_auxiliary_pt_regs()
+Date:   Thu, 27 Jan 2022 09:54:45 -0800
+Message-Id: <20220127175505.851391-25-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220127175505.851391-1-ira.weiny@intel.com>
 References: <20220127175505.851391-1-ira.weiny@intel.com>
@@ -54,62 +54,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Protection Key Supervisor, PKS, is a feature used by kernel code only.
-As such if no kernel users are configured the PKS code is unnecessary
-overhead.
+The x86 architecture supports the new auxiliary pt_regs space if
+ARCH_HAS_PTREGS_AUXILIARY is enabled.
 
-Define a Kconfig structure which allows kernel code to detect PKS
-support by an architecture and then subsequently enable that support
-within the architecture.
-
-ARCH_HAS_SUPERVISOR_PKEYS indicates to kernel consumers that an
-architecture supports pkeys.  PKS users can then select
-ARCH_ENABLE_SUPERVISOR_PKEYS to turn on the support within the
-architecture.
-
-If ARCH_ENABLE_SUPERVISOR_PKEYS is not selected architectures avoid the
-PKS overhead.
-
-ARCH_ENABLE_SUPERVISOR_PKEYS remains off until the first kernel use case
-sets it.
+Define the callbacks within the x86 code required by the core entry code
+when this support is enabled.
 
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V8
-	Split this out to a single change patch
+	New patch
 ---
- arch/x86/Kconfig | 1 +
- mm/Kconfig       | 4 ++++
- 2 files changed, 5 insertions(+)
+ arch/x86/include/asm/entry-common.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index ebe8fc76949a..a30fe85e27ac 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1867,6 +1867,7 @@ config X86_INTEL_MEMORY_PROTECTION_KEYS
- 	depends on X86_64 && (CPU_SUP_INTEL || CPU_SUP_AMD)
- 	select ARCH_USES_HIGH_VMA_FLAGS
- 	select ARCH_HAS_PKEYS
-+	select ARCH_HAS_SUPERVISOR_PKEYS
- 	help
- 	  Memory Protection Keys provides a mechanism for enforcing
- 	  page-based protections, but without requiring modification of the
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 3326ee3903f3..46f2bb15aa4e 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -804,6 +804,10 @@ config ARCH_USES_HIGH_VMA_FLAGS
- 	bool
- config ARCH_HAS_PKEYS
- 	bool
-+config ARCH_HAS_SUPERVISOR_PKEYS
-+	bool
-+config ARCH_ENABLE_SUPERVISOR_PKEYS
-+	bool
+diff --git a/arch/x86/include/asm/entry-common.h b/arch/x86/include/asm/entry-common.h
+index 43184640b579..5fa5dd2d539c 100644
+--- a/arch/x86/include/asm/entry-common.h
++++ b/arch/x86/include/asm/entry-common.h
+@@ -95,4 +95,16 @@ static __always_inline void arch_exit_to_user_mode(void)
+ }
+ #define arch_exit_to_user_mode arch_exit_to_user_mode
  
- config PERCPU_STATS
- 	bool "Collect percpu memory statistics"
++#ifdef CONFIG_ARCH_HAS_PTREGS_AUXILIARY
++
++static inline void arch_save_aux_pt_regs(struct pt_regs *regs)
++{
++}
++
++static inline void arch_restore_aux_pt_regs(struct pt_regs *regs)
++{
++}
++
++#endif
++
+ #endif
 -- 
 2.31.1
 
