@@ -2,208 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFED0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 27 Jan 2022 10:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239111AbiA0KSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 05:18:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46186 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238998AbiA0KSJ (ORCPT
+        id S239042AbiA0KSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 05:18:21 -0500
+Received: from azure-sdnproxy.icoremail.net ([52.237.72.81]:46682 "HELO
+        azure-sdnproxy-1.icoremail.net" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with SMTP id S239078AbiA0KSN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 05:18:09 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CCAC061714
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 02:18:08 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id f8so1868557pgf.8
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 02:18:08 -0800 (PST)
+        Thu, 27 Jan 2022 05:18:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FzKXCu84v+MEBRiOOvHJliiiXM+odd7Ou4VdHsoBS50=;
-        b=i890F8dpeDakBP+TSesc7zvw7eDIzB+Ahu3Bggz3XTamcTwnNJ6QHTJ1+28+9QJXSn
-         WaA/UINWRBJWl0zlofaoJng1ENEyfHsbXcVWuWjmtHKKXUKPrDiC3oo6QsOBlJDeGfzL
-         Njk/GKGd65QtZnJWbFeFdyAJxDlufiGEnvNQE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FzKXCu84v+MEBRiOOvHJliiiXM+odd7Ou4VdHsoBS50=;
-        b=hyFgXwFJWHaaB+azikFShA0HxFAX/UsXeDaDWg/iyYltut+CRfpY/EP9JeKJZ3U/Ns
-         ND/BFQDquS/QGymI9PpgOMElGF18RC5cOflj4v3L42YnCZEdLQ+afopyi9lKCi5sDNDi
-         g1+6dSne8uYHV+Sly5zsiUjxNMnp03afcrvQERhK/8LEninuj9/ASx3FYwZbl4NCEw5p
-         9UuMrT+xZC1DF3BHEjTdsEKJae/hk7gxfXsQr8IznMrp41tNS0JMbLm3Tg6ZacxyS7az
-         c6+tRGuSncMI69HQTWSQltnpNUPsq1vGWGz+jmu4b7Ah0TUAG9DH7OZxkDUS2XueKU3o
-         mGSA==
-X-Gm-Message-State: AOAM5319mOUBmue9uAcdqUSNQbLY3LgRnJuqKjIKEeXtaooWBhi47b3J
-        RiBs1N+essdRXdChs+SkFMhuIA==
-X-Google-Smtp-Source: ABdhPJyjGTq81SFhiP75e7+lMYKha/nBvwGuNIXXii0gYvqWguKVrF/+6fdHh7S1C8mDUnXKqpYjBg==
-X-Received: by 2002:a63:9:: with SMTP id 9mr2252152pga.101.1643278687945;
-        Thu, 27 Jan 2022 02:18:07 -0800 (PST)
-Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
-        by smtp.gmail.com with UTF8SMTPSA id k13sm4967022pff.25.2022.01.27.02.18.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 02:18:07 -0800 (PST)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org, josephsih@google.com,
-        Joseph Hwang <josephsih@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 2/2] Bluetooth: btintel: surface Intel telemetry events through mgmt
-Date:   Thu, 27 Jan 2022 18:17:59 +0800
-Message-Id: <20220127181738.v2.2.I63681490281b2392aa1ac05dff91a126394ab649@changeid>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-In-Reply-To: <20220127181738.v2.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
-References: <20220127181738.v2.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        d=pku.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id:In-Reply-To:References; bh=i96PtU2b97HIAJDX/tnEFGz4Lk
+        5BQrwuZTTW9wIWac4=; b=ZJwuybT2anQaR5ULWwyWG9E2X9ukRso2e+vDWkJgEf
+        PZQnQKHTQ+IV8+gmmeHJoA9H3qILMOyIhWw5H+/+0AAyqRwSKal6sw62fww33H2a
+        ra3j60oRo1fzCC0RfE6hWfIonVKK+Egm8EgODEBKkzpRP6a4h6lR7iKiKR/DwTiq
+        Y=
+Received: from localhost (unknown [10.129.21.144])
+        by front02 (Coremail) with SMTP id 54FpogCHeKR9cPJhttbWAA--.21700S2;
+        Thu, 27 Jan 2022 18:14:22 +0800 (CST)
+From:   Yongzhi Liu <lyz_cs@pku.edu.cn>
+To:     emma@anholt.net, airlied@linux.ie, daniel@ffwll.ch, mwen@igalia.com
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Yongzhi Liu <lyz_cs@pku.edu.cn>
+Subject: [PATCH v2] drm/v3d: fix missing unlock
+Date:   Thu, 27 Jan 2022 02:14:20 -0800
+Message-Id: <1643278460-100473-1-git-send-email-lyz_cs@pku.edu.cn>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <20220126205726.phfikh7kn3lks5ib@mail.igalia.com>
+References: <20220126205726.phfikh7kn3lks5ib@mail.igalia.com>
+X-CM-TRANSID: 54FpogCHeKR9cPJhttbWAA--.21700S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7tr43tw17Aw4fGryrWF1DAwb_yoW8Xw4Upr
+        WkX3sFvrWrJFW0939rAFn5u348W3W29a18GF97A398Xws0yr47Wa15CryUA34UCr1xGFW5
+        tF1Ygay0va4UAw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkC1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCF
+        04k20xvE74AGY7Cv6cx26w4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
+        AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCI
+        c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267
+        AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_
+        Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UU
+        UUU
+X-CM-SenderInfo: irzqijirqukmo6sn3hxhgxhubq/1tbiAwETBlPy7uIL1QAAsk
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When receiving a HCI vendor event, the kernel checks if it is an
-Intel telemetry event. If yes, the event is sent to bluez user
-space through the mgmt socket.
+[why]
+Unlock is needed on the error handling path to prevent dead lock.
+v3d_submit_cl_ioctl and v3d_submit_csd_ioctl is missing unlock.
 
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
-Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+[how]
+Fix this by change goto target on the error handling path.
+As unlock is handle in fail_unreserve, i keep the failures
+handling around there. So the goto targets a place between
+`fail_unreserve:` and `fail:`.
+
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
 ---
+ drivers/gpu/drm/v3d/v3d_gem.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Changes in v2:
-- Drop the pull_quality_report_data function from hci_dev.
-  Do not bother hci_dev with it. Do not bleed the details
-  into the core.
-
- drivers/bluetooth/btintel.c      | 27 ++++++++++++++++++++++++++-
- drivers/bluetooth/btintel.h      |  7 +++++++
- include/net/bluetooth/hci_core.h |  1 +
- net/bluetooth/hci_event.c        | 12 ++++++++++++
- 4 files changed, 46 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/bluetooth/btintel.c b/drivers/bluetooth/btintel.c
-index 1a4f8b227eac..9e1fdb68b669 100644
---- a/drivers/bluetooth/btintel.c
-+++ b/drivers/bluetooth/btintel.c
-@@ -2401,8 +2401,9 @@ static int btintel_setup_combined(struct hci_dev *hdev)
- 	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
- 	set_bit(HCI_QUIRK_NON_PERSISTENT_DIAG, &hdev->quirks);
+diff --git a/drivers/gpu/drm/v3d/v3d_gem.c b/drivers/gpu/drm/v3d/v3d_gem.c
+index c7ed2e1..d9c7b39 100644
+--- a/drivers/gpu/drm/v3d/v3d_gem.c
++++ b/drivers/gpu/drm/v3d/v3d_gem.c
+@@ -798,7 +798,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
  
--	/* Set up the quality report callback for Intel devices */
-+	/* Set up the quality report callbacks for Intel devices */
- 	hdev->set_quality_report = btintel_set_quality_report;
-+	hdev->is_quality_report_evt = btintel_is_quality_report_evt;
+ 		if (!render->base.perfmon) {
+ 			ret = -ENOENT;
+-			goto fail;
++			goto v3d_unlock;
+ 		}
+ 	}
  
- 	/* For Legacy device, check the HW platform value and size */
- 	if (skb->len == sizeof(ver) && skb->data[1] == 0x37) {
-@@ -2645,6 +2646,30 @@ void btintel_secure_send_result(struct hci_dev *hdev,
- }
- EXPORT_SYMBOL_GPL(btintel_secure_send_result);
+@@ -847,6 +847,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
  
-+#define INTEL_PREFIX		0x8087
-+#define TELEMETRY_CODE		0x03
-+
-+struct intel_prefix_evt_data {
-+	__le16 vendor_prefix;
-+	__u8 code;
-+	__u8 data[];   /* a number of struct intel_tlv subevents */
-+} __packed;
-+
-+bool btintel_is_quality_report_evt(struct sk_buff *skb)
-+{
-+	struct intel_prefix_evt_data *ev;
-+	u16 vendor_prefix;
-+
-+	if (skb->len < sizeof(struct intel_prefix_evt_data))
-+		return false;
-+
-+	ev = (struct intel_prefix_evt_data *)skb->data;
-+	vendor_prefix = __le16_to_cpu(ev->vendor_prefix);
-+
-+	return vendor_prefix == INTEL_PREFIX && ev->code == TELEMETRY_CODE;
-+}
-+EXPORT_SYMBOL_GPL(btintel_is_quality_report_evt);
-+
- MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
- MODULE_DESCRIPTION("Bluetooth support for Intel devices ver " VERSION);
- MODULE_VERSION(VERSION);
-diff --git a/drivers/bluetooth/btintel.h b/drivers/bluetooth/btintel.h
-index c9b24e9299e2..6dd4695b8b86 100644
---- a/drivers/bluetooth/btintel.h
-+++ b/drivers/bluetooth/btintel.h
-@@ -210,6 +210,7 @@ void btintel_bootup(struct hci_dev *hdev, const void *ptr, unsigned int len);
- void btintel_secure_send_result(struct hci_dev *hdev,
- 				const void *ptr, unsigned int len);
- int btintel_set_quality_report(struct hci_dev *hdev, bool enable);
-+bool btintel_is_quality_report_evt(struct sk_buff *skb);
- #else
+ fail_unreserve:
+ 	mutex_unlock(&v3d->sched_lock);
++v3d_unlock:
+ 	drm_gem_unlock_reservations(last_job->bo,
+ 				    last_job->bo_count, &acquire_ctx);
+ fail:
+@@ -1027,7 +1028,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
+ 						     args->perfmon_id);
+ 		if (!job->base.perfmon) {
+ 			ret = -ENOENT;
+-			goto fail;
++			goto v3d_unlock;
+ 		}
+ 	}
  
- static inline int btintel_check_bdaddr(struct hci_dev *hdev)
-@@ -305,4 +306,10 @@ static inline int btintel_set_quality_report(struct hci_dev *hdev, bool enable)
- {
- 	return -ENODEV;
- }
-+
-+static inline bool btintel_is_quality_report_evt(struct sk_buff *skb)
-+{
-+	return false;
-+}
-+
- #endif
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index b726fd595895..9d855ac1cb29 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -632,6 +632,7 @@ struct hci_dev {
- 	void (*cmd_timeout)(struct hci_dev *hdev);
- 	bool (*wakeup)(struct hci_dev *hdev);
- 	int (*set_quality_report)(struct hci_dev *hdev, bool enable);
-+	bool (*is_quality_report_evt)(struct sk_buff *skb);
- 	int (*get_data_path_id)(struct hci_dev *hdev, __u8 *data_path);
- 	int (*get_codec_config_data)(struct hci_dev *hdev, __u8 type,
- 				     struct bt_codec *codec, __u8 *vnd_len,
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 1b69d3efd415..892a48d2f6be 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4238,6 +4238,16 @@ static void aosp_quality_report_evt(struct hci_dev *hdev,  void *data,
- 				    QUALITY_SPEC_AOSP_BQR);
- }
+@@ -1056,6 +1057,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
  
-+static void intel_vendor_evt(struct hci_dev *hdev,  void *data,
-+			     struct sk_buff *skb)
-+{
-+	/* Only interested in the telemetry event for now. */
-+	if (hdev->set_quality_report &&
-+	    hdev->is_quality_report_evt && hdev->is_quality_report_evt(skb))
-+		mgmt_quality_report(hdev, skb->data, skb->len,
-+				    QUALITY_SPEC_INTEL_TELEMETRY);
-+}
-+
- /* Define the fixed vendor event prefixes below.
-  * Note: AOSP HCI Requirements use 0x54 and up as sub-event codes without
-  *       actually defining a vendor prefix. Refer to
-@@ -4246,6 +4256,7 @@ static void aosp_quality_report_evt(struct hci_dev *hdev,  void *data,
-  *       space to avoid collision.
-  */
- static unsigned char AOSP_BQR_PREFIX[] = { 0x58 };
-+static unsigned char INTEL_PREFIX[] = { 0x87, 0x80 };
- 
- /* Some vendor prefixes are fixed values and lengths. */
- #define FIXED_EVT_PREFIX(_prefix, _vendor_func)				\
-@@ -4283,6 +4294,7 @@ struct vendor_event_prefix {
- 	__u8 (*get_prefix_len)(struct hci_dev *hdev);
- } evt_prefixes[] = {
- 	FIXED_EVT_PREFIX(AOSP_BQR_PREFIX, aosp_quality_report_evt),
-+	FIXED_EVT_PREFIX(INTEL_PREFIX, intel_vendor_evt),
- 	DYNAMIC_EVT_PREFIX(get_msft_evt_prefix, get_msft_evt_prefix_len,
- 			   msft_vendor_evt),
- 
+ fail_unreserve:
+ 	mutex_unlock(&v3d->sched_lock);
++v3d_unlock:
+ 	drm_gem_unlock_reservations(clean_job->bo, clean_job->bo_count,
+ 				    &acquire_ctx);
+ fail:
 -- 
-2.35.0.rc0.227.g00780c9af4-goog
+2.7.4
 
