@@ -2,187 +2,320 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F08C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 11:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE2BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 11:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238767AbiA1LjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 06:39:22 -0500
-Received: from mga02.intel.com ([134.134.136.20]:45251 "EHLO mga02.intel.com"
+        id S239805AbiA1LkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 06:40:20 -0500
+Received: from mga04.intel.com ([192.55.52.120]:61633 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237846AbiA1LjU (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 06:39:20 -0500
+        id S237846AbiA1LkR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 06:40:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643369960; x=1674905960;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PN5o/kpKeDNPdKUsT9CVJhrOgWqfA5kU/QW51qp+kdw=;
-  b=CZ0TIM75DbYWSY9ioAr8AZHn0yYr0aWO/o21f+4ViL33qojOcPWtWpkF
-   43GSv+Cre9vmro+TFbisnPvr4gJb3bGuV0eARghf+TE5oqRKQ58vO+Mhw
-   2x4yYacqMGnPx1GjUvS26rmJuBhx0dREumgsYdfC6zkUkfv1jVZRfSgIZ
-   mkA7EGS0yCPST4qwTh7zHePE9zGvi5PJNHhG7poSD9TzRGuoO9yTbYusz
-   OC8CmGFxcldnakL9oBAJqUWYbGFR+hczFMoR2AoRda/+Z1+wJ/rAd6q2W
-   ps7u+uKro0MQxFgycKWvvPcf1lsXk2fGzjkiTMKTzpTJogud1y2CxhBbz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="234481919"
+  t=1643370017; x=1674906017;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=49ssLdElGLe3D6sL1BxJV3OuhqLdAjBt83buXikwV44=;
+  b=VtylgbCXBmHLM2HR7WrMZh+0hBPGljRJR4GiW6B2a26d6m/48dREHaIR
+   EivQdrev6Iwvf9u0JtlWhUyQRAKKHPGQxNSy6pU6bzu1pXBPNzhIs3N/z
+   eu5HgxarGCPgJe+qOgbfMCiLRHXC6pYSPTvlFdlRJYa0Aesx4NqBtgMgI
+   i4jwST96WNAle8Ec6UrH5dcZum3rhXLXtKIt3odZESe2EnDioeGqqZtKN
+   Mf1nUGkfwi/IJ/A7p9UXAvYOsQHKnpK/1Y6z+VMGqYkA79pyybeO/b5Ii
+   AHxiUKOYz46vMVtpXey6+5rsTPvcmFQBwPRdf4xYBGsWiIkmju3uluQpx
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="245946173"
 X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="234481919"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 03:39:18 -0800
+   d="scan'208";a="245946173"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 03:40:16 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="564171994"
+   d="scan'208";a="533478566"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 28 Jan 2022 03:39:15 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 28 Jan 2022 03:40:15 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nDPb0-000Nmz-O7; Fri, 28 Jan 2022 11:39:14 +0000
-Date:   Fri, 28 Jan 2022 19:38:30 +0800
+        id 1nDPby-000NnL-Un; Fri, 28 Jan 2022 11:40:14 +0000
+Date:   Fri, 28 Jan 2022 19:39:43 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     cgel.zte@gmail.com, kvalo@kernel.org
-Cc:     kbuild-all@lists.01.org, davem@davemloft.net, kuba@kernel.org,
-        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] wcn36xx: use struct_size over open coded arithmetic
-Message-ID: <202201281936.Qhf4hXej-lkp@intel.com>
-References: <20220128080430.1211593-1-chi.minghao@zte.com.cn>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:rcu/next] BUILD SUCCESS
+ 96a9263ec15daa8ac3d242963447dbcc0651c6a2
+Message-ID: <61f3d5ff.ToDhwBPy6WB9kV0D%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128080430.1211593-1-chi.minghao@zte.com.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
+branch HEAD: 96a9263ec15daa8ac3d242963447dbcc0651c6a2  srcu: Use invalid initial value for srcu_node GP sequence numbers
 
-Thank you for the patch! Yet something to improve:
+elapsed time: 1796m
 
-[auto build test ERROR on kvalo-wireless-drivers-next/master]
-[also build test ERROR on kvalo-wireless-drivers/master v5.17-rc1 next-20220128]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+configs tested: 244
+configs skipped: 3
 
-url:    https://github.com/0day-ci/linux/commits/cgel-zte-gmail-com/wcn36xx-use-struct_size-over-open-coded-arithmetic/20220128-160610
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git master
-config: arm-randconfig-c002-20220124 (https://download.01.org/0day-ci/archive/20220128/202201281936.Qhf4hXej-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/b6c0d24562c28f1e9a037c1aa7818c76854559e4
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review cgel-zte-gmail-com/wcn36xx-use-struct_size-over-open-coded-arithmetic/20220128-160610
-        git checkout b6c0d24562c28f1e9a037c1aa7818c76854559e4
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/firewire/ drivers/net/wireless/ath/wcn36xx/
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20220124
+powerpc              randconfig-c003-20220124
+powerpc                 mpc834x_itx_defconfig
+arm                         at91_dt_defconfig
+mips                         mpc30x_defconfig
+xtensa                              defconfig
+mips                        vocore2_defconfig
+arc                      axs103_smp_defconfig
+arm                       imx_v6_v7_defconfig
+m68k                       m5275evb_defconfig
+um                             i386_defconfig
+h8300                    h8300h-sim_defconfig
+arm                         s3c6400_defconfig
+m68k                        mvme147_defconfig
+mips                 decstation_r4k_defconfig
+nios2                         10m50_defconfig
+xtensa                  audio_kc705_defconfig
+powerpc                      ppc40x_defconfig
+powerpc                 mpc837x_mds_defconfig
+arm                         nhk8815_defconfig
+sparc64                          alldefconfig
+powerpc                      mgcoge_defconfig
+mips                            ar7_defconfig
+arm                           tegra_defconfig
+mips                         rt305x_defconfig
+arm                            zeus_defconfig
+sh                   secureedge5410_defconfig
+sh                           sh2007_defconfig
+sh                           se7721_defconfig
+parisc                generic-64bit_defconfig
+sparc                       sparc64_defconfig
+mips                        bcm47xx_defconfig
+arm                           sunxi_defconfig
+arm                        multi_v7_defconfig
+s390                       zfcpdump_defconfig
+arm                            pleb_defconfig
+m68k                          hp300_defconfig
+sh                ecovec24-romimage_defconfig
+m68k                       m5249evb_defconfig
+arm                             rpc_defconfig
+sh                               allmodconfig
+powerpc                  storcenter_defconfig
+arm                        keystone_defconfig
+sh                     sh7710voipgw_defconfig
+arm                        clps711x_defconfig
+arm                      footbridge_defconfig
+powerpc                      ep88xc_defconfig
+powerpc                      pasemi_defconfig
+sh                 kfr2r09-romimage_defconfig
+parisc                generic-32bit_defconfig
+arm                           viper_defconfig
+sh                         ecovec24_defconfig
+riscv                            allmodconfig
+arm                            xcep_defconfig
+sh                            shmin_defconfig
+ia64                      gensparse_defconfig
+arm                         lubbock_defconfig
+riscv                            allyesconfig
+powerpc                     rainier_defconfig
+mips                    maltaup_xpa_defconfig
+sh                        sh7763rdp_defconfig
+arm                          pxa910_defconfig
+powerpc                 mpc837x_rdb_defconfig
+arm                          pxa3xx_defconfig
+m68k                       m5208evb_defconfig
+arm                        oxnas_v6_defconfig
+arm                       omap2plus_defconfig
+arm                           h5000_defconfig
+powerpc                     tqm8541_defconfig
+mips                           xway_defconfig
+powerpc                      ppc6xx_defconfig
+arc                              alldefconfig
+arc                        nsimosci_defconfig
+arm                             pxa_defconfig
+s390                          debug_defconfig
+arm                         assabet_defconfig
+h8300                            alldefconfig
+powerpc                      tqm8xx_defconfig
+sparc                            alldefconfig
+arm                             ezx_defconfig
+h8300                               defconfig
+arm                           corgi_defconfig
+powerpc                  iss476-smp_defconfig
+h8300                     edosk2674_defconfig
+nios2                         3c120_defconfig
+xtensa                    xip_kc705_defconfig
+sh                         apsh4a3a_defconfig
+mips                           ci20_defconfig
+arm                  randconfig-c002-20220127
+arm                  randconfig-c002-20220124
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+i386                                defconfig
+i386                              debian-10.3
+sparc                            allyesconfig
+sparc                               defconfig
+i386                   debian-10.3-kselftests
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a002-20220124
+x86_64               randconfig-a003-20220124
+x86_64               randconfig-a001-20220124
+x86_64               randconfig-a004-20220124
+x86_64               randconfig-a005-20220124
+x86_64               randconfig-a006-20220124
+i386                 randconfig-a002-20220124
+i386                 randconfig-a005-20220124
+i386                 randconfig-a003-20220124
+i386                 randconfig-a004-20220124
+i386                 randconfig-a001-20220124
+i386                 randconfig-a006-20220124
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+arc                  randconfig-r043-20220124
+arc                  randconfig-r043-20220126
+riscv                randconfig-r042-20220127
+arc                  randconfig-r043-20220127
+s390                 randconfig-r044-20220127
+riscv                    nommu_k210_defconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
 
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/mm.h:30,
-                    from arch/arm/include/asm/cacheflush.h:10,
-                    from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/linux/if_ether.h:19,
-                    from include/linux/etherdevice.h:20,
-                    from drivers/net/wireless/ath/wcn36xx/smd.c:20:
-   drivers/net/wireless/ath/wcn36xx/smd.c: In function 'wcn36xx_smd_rsp_process':
->> include/linux/overflow.h:194:32: error: invalid type argument of '->' (have 'struct wcn36xx_hal_ind_msg')
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                ^~
-   drivers/net/wireless/ath/wcn36xx/smd.c:3350:35: note: in expansion of macro 'struct_size'
-    3350 |                 msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-         |                                   ^~~~~~~~~~~
-   In file included from include/linux/bitfield.h:10,
-                    from drivers/net/wireless/ath/wcn36xx/smd.c:19:
-   include/linux/overflow.h:194:63: error: invalid type argument of '->' (have 'struct wcn36xx_hal_ind_msg')
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                                               ^~
-   include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
-      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-         |                                                              ^
-   include/linux/compiler.h:258:51: note: in expansion of macro '__same_type'
-     258 | #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-         |                                                   ^~~~~~~~~~~
-   include/linux/overflow.h:194:44: note: in expansion of macro '__must_be_array'
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                            ^~~~~~~~~~~~~~~
-   drivers/net/wireless/ath/wcn36xx/smd.c:3350:35: note: in expansion of macro 'struct_size'
-    3350 |                 msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-         |                                   ^~~~~~~~~~~
-   include/linux/overflow.h:194:63: error: invalid type argument of '->' (have 'struct wcn36xx_hal_ind_msg')
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                                               ^~
-   include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
-      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-         |                                                              ^
-   include/linux/compiler.h:258:51: note: in expansion of macro '__same_type'
-     258 | #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-         |                                                   ^~~~~~~~~~~
-   include/linux/overflow.h:194:44: note: in expansion of macro '__must_be_array'
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                            ^~~~~~~~~~~~~~~
-   drivers/net/wireless/ath/wcn36xx/smd.c:3350:35: note: in expansion of macro 'struct_size'
-    3350 |                 msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-         |                                   ^~~~~~~~~~~
-   include/linux/build_bug.h:16:51: error: bit-field '<anonymous>' width not an integer constant
-      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-         |                                                   ^
-   include/linux/compiler.h:258:33: note: in expansion of macro 'BUILD_BUG_ON_ZERO'
-     258 | #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-         |                                 ^~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:44: note: in expansion of macro '__must_be_array'
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                            ^~~~~~~~~~~~~~~
-   drivers/net/wireless/ath/wcn36xx/smd.c:3350:35: note: in expansion of macro 'struct_size'
-    3350 |                 msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-         |                                   ^~~~~~~~~~~
-   In file included from include/linux/mm.h:30,
-                    from arch/arm/include/asm/cacheflush.h:10,
-                    from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/linux/if_ether.h:19,
-                    from include/linux/etherdevice.h:20,
-                    from drivers/net/wireless/ath/wcn36xx/smd.c:20:
->> include/linux/overflow.h:195:28: error: invalid type argument of unary '*' (have 'struct wcn36xx_hal_ind_msg')
-     195 |                     sizeof(*(p)))
-         |                            ^~~~
-   drivers/net/wireless/ath/wcn36xx/smd.c:3350:35: note: in expansion of macro 'struct_size'
-    3350 |                 msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-         |                                   ^~~~~~~~~~~
-
-
-vim +194 include/linux/overflow.h
-
-610b15c50e86eb Kees Cook           2018-05-07  180  
-610b15c50e86eb Kees Cook           2018-05-07  181  /**
-610b15c50e86eb Kees Cook           2018-05-07  182   * struct_size() - Calculate size of structure with trailing array.
-610b15c50e86eb Kees Cook           2018-05-07  183   * @p: Pointer to the structure.
-610b15c50e86eb Kees Cook           2018-05-07  184   * @member: Name of the array member.
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  185   * @count: Number of elements in the array.
-610b15c50e86eb Kees Cook           2018-05-07  186   *
-610b15c50e86eb Kees Cook           2018-05-07  187   * Calculates size of memory needed for structure @p followed by an
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  188   * array of @count number of @member elements.
-610b15c50e86eb Kees Cook           2018-05-07  189   *
-610b15c50e86eb Kees Cook           2018-05-07  190   * Return: number of bytes needed or SIZE_MAX on overflow.
-610b15c50e86eb Kees Cook           2018-05-07  191   */
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  192  #define struct_size(p, member, count)					\
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  193  	__ab_c_size(count,						\
-610b15c50e86eb Kees Cook           2018-05-07 @194  		    sizeof(*(p)->member) + __must_be_array((p)->member),\
-610b15c50e86eb Kees Cook           2018-05-07 @195  		    sizeof(*(p)))
-610b15c50e86eb Kees Cook           2018-05-07  196  
+clang tested configs:
+arm                  randconfig-c002-20220124
+riscv                randconfig-c006-20220124
+i386                 randconfig-c001-20220124
+powerpc              randconfig-c003-20220124
+mips                 randconfig-c004-20220124
+x86_64               randconfig-c007-20220124
+x86_64                        randconfig-c007
+arm                  randconfig-c002-20220125
+riscv                randconfig-c006-20220125
+powerpc              randconfig-c003-20220125
+mips                 randconfig-c004-20220125
+i386                          randconfig-c001
+s390                 randconfig-c005-20220125
+powerpc                     powernv_defconfig
+powerpc                 mpc8313_rdb_defconfig
+mips                  cavium_octeon_defconfig
+powerpc                    ge_imp3a_defconfig
+mips                         tb0219_defconfig
+powerpc                 mpc836x_mds_defconfig
+mips                          malta_defconfig
+powerpc                 mpc8560_ads_defconfig
+arm                       netwinder_defconfig
+arm                         orion5x_defconfig
+powerpc                   bluestone_defconfig
+mips                           ip27_defconfig
+powerpc                      ppc44x_defconfig
+powerpc                    socrates_defconfig
+powerpc                      obs600_defconfig
+arm                            mmp2_defconfig
+mips                   sb1250_swarm_defconfig
+arm                     davinci_all_defconfig
+arm                   milbeaut_m10v_defconfig
+powerpc                          allmodconfig
+arm                                 defconfig
+powerpc                 mpc8315_rdb_defconfig
+mips                     loongson2k_defconfig
+arm                        neponset_defconfig
+powerpc                     kmeter1_defconfig
+arm                    vt8500_v6_v7_defconfig
+powerpc                          g5_defconfig
+powerpc                      acadia_defconfig
+arm                        magician_defconfig
+mips                     cu1830-neo_defconfig
+mips                          rm200_defconfig
+arm                         s5pv210_defconfig
+powerpc                        fsp2_defconfig
+i386                             allyesconfig
+powerpc                      walnut_defconfig
+mips                malta_qemu_32r6_defconfig
+powerpc                 mpc832x_mds_defconfig
+powerpc                      katmai_defconfig
+arm                          pxa168_defconfig
+arm                       cns3420vb_defconfig
+arm                     am200epdkit_defconfig
+arm                          ixp4xx_defconfig
+arm                         bcm2835_defconfig
+powerpc                       ebony_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64               randconfig-a011-20220124
+x86_64               randconfig-a013-20220124
+x86_64               randconfig-a015-20220124
+x86_64               randconfig-a016-20220124
+x86_64               randconfig-a014-20220124
+x86_64               randconfig-a012-20220124
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                 randconfig-a011-20220124
+i386                 randconfig-a016-20220124
+i386                 randconfig-a013-20220124
+i386                 randconfig-a014-20220124
+i386                 randconfig-a015-20220124
+i386                 randconfig-a012-20220124
+riscv                randconfig-r042-20220124
+s390                 randconfig-r044-20220124
+hexagon              randconfig-r045-20220124
+hexagon              randconfig-r045-20220127
+hexagon              randconfig-r041-20220124
+hexagon              randconfig-r041-20220127
+riscv                randconfig-r042-20220126
+s390                 randconfig-r044-20220126
+hexagon              randconfig-r045-20220126
+hexagon              randconfig-r041-20220126
+hexagon              randconfig-r045-20220125
+hexagon              randconfig-r041-20220125
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
