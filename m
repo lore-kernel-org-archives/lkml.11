@@ -2,168 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44DF2C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 862DEC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349904AbiA1QCj (ORCPT
+        id S1349871AbiA1QCy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 11:02:39 -0500
-Received: from mout.perfora.net ([74.208.4.196]:56201 "EHLO mout.perfora.net"
+        Fri, 28 Jan 2022 11:02:54 -0500
+Received: from mout.perfora.net ([74.208.4.194]:41945 "EHLO mout.perfora.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349949AbiA1QC2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 11:02:28 -0500
+        id S1349929AbiA1QCg (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 11:02:36 -0500
 Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MfFlM-1muHqF05kY-00Oknr;
- Fri, 28 Jan 2022 17:01:21 +0100
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MQPne-1moIMl2Mk0-00TkUf;
+ Fri, 28 Jan 2022 17:02:00 +0100
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marek Vasut <marek.vasut@gmail.com>,
         Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Alex Marginean <alexandru.marginean@nxp.com>,
+        Rob Herring <robh@kernel.org>,
         Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ariel D'Alessandro <ariel.dalessandro@collabora.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Chester Lin <clin@suse.com>,
         Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Fabio Estevam <festevam@gmail.com>,
         Frank Rowand <frowand.list@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
         Jagan Teki <jagan@amarulasolutions.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Li Yang <leoyang.li@nxp.com>,
         Lucas Stach <l.stach@pengutronix.de>,
-        Martin KaFai Lau <kafai@fb.com>,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
         Oleksij Rempel <linux@rempel-privat.de>,
-        =?UTF-8?q?Oliver=20St=C3=A4bler?= <oliver.staebler@bytesatwork.ch>,
-        Olof Johansson <olof@lixom.net>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Will Deacon <will@kernel.org>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 00/12] arm64: prepare and add verdin imx8m mini support
-Date:   Fri, 28 Jan 2022 17:00:48 +0100
-Message-Id: <20220128160100.1228537-1-marcel@ziswiler.com>
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 11/12] dt-bindings: arm: fsl: add toradex,verdin-imx8mm et al.
+Date:   Fri, 28 Jan 2022 17:00:59 +0100
+Message-Id: <20220128160100.1228537-12-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220128160100.1228537-1-marcel@ziswiler.com>
+References: <20220128160100.1228537-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:XBMXSyJ9c8n2tynbNgt7ppKUmKRGaxcuubs/aQwLyBhLFrEzpdU
- 9HevJnBdbj6KHiJB7OADGoiKnKa2cyNhZIR0xbr4+mVK9t0dlPHKX5SWPCu5up95bUvu7xJ
- dsmUF7Kh7eRXvrOxDolIObnlrkZe7mKHeJrBEBYuSswKLbRuQ3OWINbhrJhmUCJdunjrwcY
- gO06SAkapGAnGvW4wmI0A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vSR/S7nqE60=:ID2LLGjD4h04zHbUZQFD6g
- FBxbKvnZtIN46bkcoejgeDnMcJyYWuotNCmXXXTAriAyfy/A1YE8u+aUhSshUxdfsNDmEjmTD
- 2S5g+ZZhhLLLFHdmQLEqR5hw4Wc77If5021nJoswfr3MhNrGwdjVmSWhntolqSCeZp/t9SHsG
- Bg9k6twePAlKEdqS4Sv4Z+atSrvblpiqHay5YkyyKOoJYLoW2YRi46t6AGX93vpH6e0xwiq/m
- trUZ5aTTHqI7roaovsathUfye5UiiVEWLJv0veyE3PJpfWB3KL6r1XTPn4cV+DUJL9PvE14UY
- amwoeFHPNz37yqtsstUumwzq6teiu0hOVZYP7KW1TxygO9fpf6Nkb+OOia68JogzbvrwnKPew
- 9qZYcSWhBdBTtGwb/7fAKwfEi9lTlDsAOTZ83r0bCd1aPQhvmpuTMeT2N8CrjptuljzkN7l9+
- 2FmpatEgxizfM9xM2mQf1LIcCF2WXfLZCb6uu1crz19rNxv3bBeKQP9XHwjjWUmeFprESt9HO
- AWLk+nJ7yzqH/hqy/7eR4UQ/EP8MYzLKnAX8JnNV/Bz+qXqkcQ3iQBmbxuu2PIBwuOtL4clAT
- nOCO176ZJyhK+oNeZpGvcCMwOuF2tctiTKxX/qdZiel9h4uCVeIsdpytmnxrGDdYbuWpRMC5I
- Ws0vpixSJYE3XRo/ijwhLsZQm2z5hvGA22pTyngbCz45amQ96HYlAlNWW9voXOOzL6F8=
+X-Provags-ID: V03:K1:bAanr1KODr2XuQ8TfSvDmeH0VV+hqXaJhtjCDQAqCc2MDw6ug6A
+ iIP14VDjYwimnlwkl+blzzeJLegL1s0uePeTons3RWzR4MaEQ0GQI+ArsaPlk180oHd+jEU
+ nBttFH29SYuv3pEGLzBTDTFX8ODwOdqknWG6hl/MGqx9iPu88kSvWz1iWwmFGUINo13PRcV
+ VrIb91KXzkxb+IivEPlyQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:3Hu205XtEWI=:UaJAAbqL2Fysl+B5lkudcF
+ gZjPjnWrN7tY/rCvteil1633gy2oDjusU92LjZxKe3NdliZVbTCJ2LD0P+FS0caJAQCIkMl5U
+ gqQDSBU8cxIDoT395kFTMlx5upSk6b6Gg/J/ux1p7u651Gwdi0WPsFVz/yxzqnPeWYvoFh9kG
+ NFvMDUGXWoZm2O1LYrZsVqS5CD/n53QnDa0DnQBccGh6n3C4i0Meei/bz9hAHaFZnl7RzEwN+
+ vbku6qcp+2cdCMKY7CDZcStoIaH0fv7ouhJtwyyQNE2ESuuDAFE2iwFbnkrH5Km3WenstUmez
+ +o8sIXX//2QPPrL4q38oZevWSrceOS4n2xcwbLFxx9AelIPfKlBUdTc6cSctaIscf+p0MvRBn
+ 8RoMQZoJQ8+VtCnQcnnuNBPek3q3T/yn1O2tW69hdLbkh2RAmiV9axXqM7grofL6Ut582PDnp
+ v8paZWvMb4bhIfHvsY7HxrFejxwwSTzj1C00cf/i7w7go0HV/yz7vjqhEmd7lP7xllpTTG+V6
+ RRjtRayMJe6C0dDwbkxGzgkIM0G8+0gjpAtkoLggt4Xvq+u06MF7JwQqeoUIyaP9TttjUV/fg
+ xeQXbgPYr9HNFDZ3/mvftPixdk22715APl/q3sgafcfxEMVBIEiWXaNm6sqisfw3waQtT5pfw
+ xYHQ0nXKxj9FZFsfBBwcpbrBKaucv3ykODP304kntjgdVGXuZZmrkhdsdPG82SfAwNak=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
+Add toradex,verdin-imx8mm for our new Verdin iMX8M Mini modules, its
+nonwifi and wifi variants and the carrier boards (both Dahlia and the
+Verdin Development Board) they may be mated in.
 
-Fix strange hex notation and gpio-hog example, rebuild default
-configuration, enable various relevant configuration options mainly to
-be built as modules, add toradex,verdin-imx8mm et al. to dt-bindings and
-finally, add initial support for Verdin iMX8M Mini.
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Acked-by: Rob Herring <robh@kernel.org>
 
-Changes in v3:
-- Rebase on top of shawnguo's for-next.
-- Drop [PATCH v2 02/11] ("dt-bindings: gpio: fix gpio-hog example") as
-  it already got applied by Bart.
-- Add Krzysztof's reviewed-by tag.
-- New separate patch only for re-ordering as suggested by Krzysztof.
-- Not dropping CONFIG_SECCOMP=y, CONFIG_SLIMBUS=m, CONFIG_INTERCONNECT=y
-  and CONFIG_CONFIGFS_FS=y as requested by Krzysztof.
-- New patch enabling imx8m pcie phy driver in arm64 defconfig.
-- Remove the 'pm-ignore-notify' property analogous to commit aafac22d6b23
-  ("arm64: dts: imx8mm/n: Remove the 'pm-ignore-notify' property").
-- Now with PCIe support finally having landed in -next enable it as well.
-- Add Krzysztof's acked-by tag.
+---
+
+(no changes since v2)
 
 Changes in v2:
-- Add Laurent's reviewed-by tag.
-- New patch following full defconfig analysis as requested by Krzysztof.
-- New patch following full defconfig analysis as requested by Krzysztof.
-- Done full defconfig analysis as requested by Krzysztof.
-- Add Song's acked-by tag.
-- A similar change got accepted for imx_v6_v7_defconfig. Further
-  discussion may be found in [1].
-[1] https://lore.kernel.org/lkml/20210920144938.314588-6-marcel@ziswiler.com/
-- Explain why enabling it may be a good idea as requested by Krzysztof.
-- Explain why enabling these may make sense and squash them relevant
-  changes as requested by Krzysztof.
 - Add Rob's acked-by tag.
 - Fix Colibri vs. Verdin copy/paste mistake. Thanks to Francesco Dolcini
   <francesco.dolcini@toradex.com> for pointing that out to me.
-- Remove bootargs which will be filled in by the bootloader as requested
-  by Krzysztof.
-- Remove the previously #ifdefed-out spi-nor as requested by Krzysztof.
-- Fix capitalisation in cover-letter.
 
-Marcel Ziswiler (12):
-  arm64: dts: imx8mm: fix strange hex notation
-  arm64: defconfig: enable taskstats configuration
-  arm64: defconfig: enable pcieaer configuration
-  arm64: defconfig: re-order default configuration
-  arm64: defconfig: rebuild default configuration
-  arm64: defconfig: enable bpf/cgroup firewalling
-  arm64: defconfig: enable imx8m pcie phy driver
-  arm64: defconfig: build imx-sdma as a module
-  arm64: defconfig: build r8169 as a module
-  arm64: defconfig: enable verdin-imx8mm relevant drivers as modules
-  dt-bindings: arm: fsl: add toradex,verdin-imx8mm et al.
-  arm64: dts: freescale: add initial support for verdin imx8m mini
+ .../devicetree/bindings/arm/fsl.yaml          | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
- .../devicetree/bindings/arm/fsl.yaml          |   21 +
- arch/arm64/boot/dts/freescale/Makefile        |    4 +
- .../arm64/boot/dts/freescale/imx8mm-pinfunc.h |    6 +-
- .../dts/freescale/imx8mm-verdin-dahlia.dtsi   |  150 ++
- .../boot/dts/freescale/imx8mm-verdin-dev.dtsi |   67 +
- .../imx8mm-verdin-nonwifi-dahlia.dts          |   18 +
- .../freescale/imx8mm-verdin-nonwifi-dev.dts   |   18 +
- .../dts/freescale/imx8mm-verdin-nonwifi.dtsi  |   75 +
- .../freescale/imx8mm-verdin-wifi-dahlia.dts   |   18 +
- .../dts/freescale/imx8mm-verdin-wifi-dev.dts  |   18 +
- .../dts/freescale/imx8mm-verdin-wifi.dtsi     |   95 ++
- .../boot/dts/freescale/imx8mm-verdin.dtsi     | 1291 +++++++++++++++++
- arch/arm64/configs/defconfig                  |  126 +-
- 13 files changed, 1839 insertions(+), 68 deletions(-)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-dahlia.dtsi
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-dev.dtsi
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi-dahlia.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi-dev.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi.dtsi
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi-dahlia.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi-dev.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi.dtsi
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index 5075fd8c1b42..4ddeb9b20195 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -770,6 +770,9 @@ properties:
+               - gw,imx8mm-gw7901          # i.MX8MM Gateworks Board
+               - gw,imx8mm-gw7902          # i.MX8MM Gateworks Board
+               - kontron,imx8mm-n801x-som  # i.MX8MM Kontron SL (N801X) SOM
++              - toradex,verdin-imx8mm     # Verdin iMX8M Mini Modules
++              - toradex,verdin-imx8mm-nonwifi  # Verdin iMX8M Mini Modules without Wi-Fi / BT
++              - toradex,verdin-imx8mm-wifi  # Verdin iMX8M Mini Wi-Fi / BT Modules
+               - variscite,var-som-mx8mm   # i.MX8MM Variscite VAR-SOM-MX8MM module
+               - prt,prt8mm                # i.MX8MM Protonic PRT8MM Board
+           - const: fsl,imx8mm
+@@ -788,6 +791,24 @@ properties:
+           - const: kontron,imx8mm-n801x-som
+           - const: fsl,imx8mm
+ 
++      - description: Toradex Boards with Verdin iMX8M Mini Modules
++        items:
++          - enum:
++              - toradex,verdin-imx8mm-nonwifi-dahlia # Verdin iMX8M Mini Module on Dahlia
++              - toradex,verdin-imx8mm-nonwifi-dev    # Verdin iMX8M Mini Module on Verdin Development Board
++          - const: toradex,verdin-imx8mm-nonwifi     # Verdin iMX8M Mini Module without Wi-Fi / BT
++          - const: toradex,verdin-imx8mm             # Verdin iMX8M Mini Module
++          - const: fsl,imx8mm
++
++      - description: Toradex Boards with Verdin iMX8M Mini Wi-Fi / BT Modules
++        items:
++          - enum:
++              - toradex,verdin-imx8mm-wifi-dahlia # Verdin iMX8M Mini Wi-Fi / BT Module on Dahlia
++              - toradex,verdin-imx8mm-wifi-dev    # Verdin iMX8M Mini Wi-Fi / BT M. on Verdin Development B.
++          - const: toradex,verdin-imx8mm-wifi     # Verdin iMX8M Mini Wi-Fi / BT Module
++          - const: toradex,verdin-imx8mm          # Verdin iMX8M Mini Module
++          - const: fsl,imx8mm
++
+       - description: Variscite VAR-SOM-MX8MM based boards
+         items:
+           - const: variscite,var-som-mx8mm-symphony
 -- 
 2.33.1
 
