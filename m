@@ -2,38 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16B6EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67A2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350102AbiA1QXy (ORCPT
+        id S1350134AbiA1QXz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 11:23:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59232 "EHLO
+        Fri, 28 Jan 2022 11:23:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59244 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350064AbiA1QXq (ORCPT
+        with ESMTP id S1350069AbiA1QXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 11:23:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D998761F0C
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:23:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52843C340E6;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E60161F2F
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:23:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA8FAC340EE;
         Fri, 28 Jan 2022 16:23:45 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nDU2K-00AT1L-Gh;
+        id 1nDU2K-00AT2U-Sf;
         Fri, 28 Jan 2022 11:23:44 -0500
-Message-ID: <20220128162344.355814811@goodmis.org>
+Message-ID: <20220128162344.722992572@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Fri, 28 Jan 2022 11:18:08 -0500
+Date:   Fri, 28 Jan 2022 11:18:10 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: [for-linus][PATCH 06/10] tools/tracing: Update Makefile to build rtla
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Tom Zanussi <zanussi@kernel.org>
+Subject: [for-linus][PATCH 08/10] tracing: Fix smatch warning for do while check in
+ event_hist_trigger_parse()
 References: <20220128161802.711119424@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -41,53 +43,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Tom Zanussi <zanussi@kernel.org>
 
-Update tracing Makefile to build/install/clean rtla tragets.
+The patch ec5ce0987541: "tracing: Allow whitespace to surround hist
+trigger filter" from Jan 15, 2018, leads to the following Smatch
+static checker warning:
 
-Link: https://lkml.kernel.org/r/20220126002234.79337-1-skhan@linuxfoundation.org
+    kernel/trace/trace_events_hist.c:6199 event_hist_trigger_parse()
+    warn: 'p' can't be NULL.
 
-Reviewed-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Since p is always checked for a NULL value at the top of loop and
+nothing in the rest of the loop will set it to NULL, the warning
+is correct and might as well be 1 to silence the warning.
+
+Link: https://lkml.kernel.org/r/a1d4c79766c0cf61e20438dc35244d216633fef6.1643319703.git.zanussi@kernel.org
+
+Fixes: ec5ce09875410 ("tracing: Allow whitespace to surround hist trigger filter")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- tools/tracing/Makefile | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ kernel/trace/trace_events_hist.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/tracing/Makefile b/tools/tracing/Makefile
-index 87e0ec48e2e7..95e485f12d97 100644
---- a/tools/tracing/Makefile
-+++ b/tools/tracing/Makefile
-@@ -1,11 +1,11 @@
- # SPDX-License-Identifier: GPL-2.0
- include ../scripts/Makefile.include
+diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+index e0860146dd39..b894d68082ea 100644
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -6199,7 +6199,7 @@ static int event_hist_trigger_parse(struct event_command *cmd_ops,
+ 			continue;
+ 		}
+ 		break;
+-	} while (p);
++	} while (1);
  
--all: latency
-+all: latency rtla
- 
--clean: latency_clean
-+clean: latency_clean rtla_clean
- 
--install: latency_install
-+install: latency_install rtla_install
- 
- latency:
- 	$(call descend,latency)
-@@ -16,4 +16,14 @@ latency_install:
- latency_clean:
- 	$(call descend,latency,clean)
- 
--.PHONY: all install clean latency latency_install latency_clean
-+rtla:
-+	$(call descend,rtla)
-+
-+rtla_install:
-+	$(call descend,rtla,install)
-+
-+rtla_clean:
-+	$(call descend,rtla,clean)
-+
-+.PHONY: all install clean latency latency_install latency_clean \
-+	rtla rtla_install rtla_clean
+ 	if (!p)
+ 		param = NULL;
 -- 
 2.33.0
