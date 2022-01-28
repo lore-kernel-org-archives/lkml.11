@@ -2,95 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 195CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 02:55:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB2CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 02:57:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345860AbiA1Czb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 21:55:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345665AbiA1Cy7 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 21:54:59 -0500
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C81C061758
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 18:54:58 -0800 (PST)
-Received: by mail-oi1-x22c.google.com with SMTP id b186so3609606oif.1
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 18:54:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eFxeqpfH1BWJVw2UYgQA/9Fqc+JOe8vXCmcuFnQMGhM=;
-        b=efgdGpdfspgWmt6dxtwpRqPwAVLI5lue+xF4g1NOuuslvB0RHbJ0tOh8gBq0Q+NsOw
-         Vi7pa6o7hgil3Tf+xZuf1CRXftk9ouQ1GIgVvunO3yfaJ56kP88wqTYlXcYWBmi7nc6l
-         ucnBhqP6hInmFP92RtqXsIgfGdfjHn1euaQDJX0pbxZ/vzzSO8Fw2xKiVcPxH3PUcB0p
-         +FUtvBfYv+/Da+oyxn78mwIrTGwGzjxGyD12d8Fiao86dFPv/RSvoZE/qZO6qDBclmdK
-         mlfgiMa5mqbqOBpH9V2CtxAcGmSw1mZjWLhEh+WYMeBU75tQ9yzcJgGC+KIx0Q9WxjNw
-         1ZMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eFxeqpfH1BWJVw2UYgQA/9Fqc+JOe8vXCmcuFnQMGhM=;
-        b=yl6zpS5967Q+ymcS+QvtePDUXK615BhiVOYpo3FUUDl/iuyLsSMpH2M5PGaLlVNNuH
-         p3poSXk/8374pl3MVE7GqMzK6TxVHXkrKo3++BMQlWELmDqDc9u2G4Y7gbGIlKkFO9LC
-         q91d395Hz94dueh2gImNihuIwDvafGnhmaIGpQNTAZ++6eio6mn+FWK8wng1UE3SxySw
-         CIp0TQKO/eGJnbekVEdXD9t8Y8zbHy68gkFS3o6Q1VtdGULy5I5lH2dWh1Pd7c0WiY1C
-         ND/NTYyGZkoSsMacLbe0yU6LxeYwQ+qqbr5UqXI9xaGAZGCW8IWhl0Wi5oLOv2GC13YO
-         6f9g==
-X-Gm-Message-State: AOAM53155x4kqTz3fR0iZlG6chytWcDbbOAzN9mq5S+Fdzszq8mp65KR
-        9jXqB0i0JN3am+x3uTnB7L63vA==
-X-Google-Smtp-Source: ABdhPJxbsRwIcg9eWkRkCBNVNWI7QPmFZ13+TpBg06dtViUS2MlnPIw0CvwHXgJdAU1jdpHh5y9lIg==
-X-Received: by 2002:a05:6808:3012:: with SMTP id ay18mr9650588oib.5.1643338497912;
-        Thu, 27 Jan 2022 18:54:57 -0800 (PST)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id k6sm5677352oop.28.2022.01.27.18.54.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 18:54:57 -0800 (PST)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 11/13] remoteproc: qcom: pas: Add SM8450 remoteproc support
-Date:   Thu, 27 Jan 2022 18:55:11 -0800
-Message-Id: <20220128025513.97188-12-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220128025513.97188-1-bjorn.andersson@linaro.org>
-References: <20220128025513.97188-1-bjorn.andersson@linaro.org>
+        id S234966AbiA1C5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 21:57:02 -0500
+Received: from mga17.intel.com ([192.55.52.151]:38587 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229811AbiA1C5B (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 21:57:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643338621; x=1674874621;
+  h=cc:subject:to:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=lQzpVBgtczAn5sAewXENYJpIAUiWWZKcbyftWJFiTnk=;
+  b=ehMl2PURoXyAUIkUlgHTDB9BfqLsE4sspvkPQVACKG3fMoT1qSWUKllw
+   2CjWsx9+Rpb/sGPje+6nsSQOjezlC7QUoVik6ZsK9Nva+NxDPFoB8Liyj
+   ZFtJsuBfCIbmv8OZ1AaLXYS+MwUKNBXxfxvA0fcQ3PaWbPYxMbv8mX3hz
+   qf5Alo7q3jUg415JJtnPD6g6weBww45mXJwG/kGFXNYETs2BoJGiukWrJ
+   Tv3GAK5BrdXHbwfJjZcHkGNAceX3ztWz1KdFa7dnTD+fw1zS59zBeNvi9
+   UNB+x8HPkTCXo3Ddd5F5ByVfqnEgBm2FkLqcpt+UdA8zETFZedAREtipE
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="227699932"
+X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
+   d="scan'208";a="227699932"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 18:54:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
+   d="scan'208";a="535953637"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by orsmga008.jf.intel.com with ESMTP; 27 Jan 2022 18:54:10 -0800
+Cc:     baolu.lu@linux.intel.com, bhelgaas@google.com,
+        mika.westerberg@linux.intel.com, koba.ko@canonical.com,
+        Russell Currey <ruscur@russell.cc>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Lalithambika Krishnakumar <lalithambika.krishnakumar@intel.com>,
+        Joerg Roedel <jroedel@suse.de>, linuxppc-dev@lists.ozlabs.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] PCI/AER: Disable AER service when link is in L2/L3
+ ready, L2 and L3 state
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+References: <20220127025418.1989642-1-kai.heng.feng@canonical.com>
+ <0259955f-8bbb-1778-f234-398f1356db8b@linux.intel.com>
+ <CAAd53p6+KPAJchh9Jx59Fkkj5FidSxsW0yHjLqooFjvu-Y9u7w@mail.gmail.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <11891652-40c6-f111-46b7-e96d1729815e@linux.intel.com>
+Date:   Fri, 28 Jan 2022 10:53:07 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAAd53p6+KPAJchh9Jx59Fkkj5FidSxsW0yHjLqooFjvu-Y9u7w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add audio, compute, sensor and modem remoteproc compatibles to the PAS
-remoteproc driver. The resources needed for each one matches those of
-SM8350, so its descs are reused.
+On 1/27/22 7:14 PM, Kai-Heng Feng wrote:
+> On Thu, Jan 27, 2022 at 3:01 PM Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>
+>> On 2022/1/27 10:54, Kai-Heng Feng wrote:
+>>> Commit 50310600ebda ("iommu/vt-d: Enable PCI ACS for platform opt in
+>>> hint") enables ACS, and some platforms lose its NVMe after resume from
+>>> S3:
+>>> [   50.947816] pcieport 0000:00:1b.0: DPC: containment event, status:0x1f01 source:0x0000
+>>> [   50.947817] pcieport 0000:00:1b.0: DPC: unmasked uncorrectable error detected
+>>> [   50.947829] pcieport 0000:00:1b.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Receiver ID)
+>>> [   50.947830] pcieport 0000:00:1b.0:   device [8086:06ac] error status/mask=00200000/00010000
+>>> [   50.947831] pcieport 0000:00:1b.0:    [21] ACSViol                (First)
+>>> [   50.947841] pcieport 0000:00:1b.0: AER: broadcast error_detected message
+>>> [   50.947843] nvme nvme0: frozen state error detected, reset controller
+>>>
+>>> It happens right after ACS gets enabled during resume.
+>>>
+>>> There's another case, when Thunderbolt reaches D3cold:
+>>> [   30.100211] pcieport 0000:00:1d.0: AER: Uncorrected (Non-Fatal) error received: 0000:00:1d.0
+>>> [   30.100251] pcieport 0000:00:1d.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
+>>> [   30.100256] pcieport 0000:00:1d.0:   device [8086:7ab0] error status/mask=00100000/00004000
+>>> [   30.100262] pcieport 0000:00:1d.0:    [20] UnsupReq               (First)
+>>> [   30.100267] pcieport 0000:00:1d.0: AER:   TLP Header: 34000000 08000052 00000000 00000000
+>>> [   30.100372] thunderbolt 0000:0a:00.0: AER: can't recover (no error_detected callback)
+>>> [   30.100401] xhci_hcd 0000:3e:00.0: AER: can't recover (no error_detected callback)
+>>> [   30.100427] pcieport 0000:00:1d.0: AER: device recovery failed
+>>>
+>>> So disable AER service to avoid the noises from turning power rails
+>>> on/off when the device is in low power states (D3hot and D3cold), as
+>>> PCIe spec "5.2 Link State Power Management" states that TLP and DLLP
+>>> transmission is disabled for a Link in L2/L3 Ready (D3hot), L2 (D3cold
+>>> with aux power) and L3 (D3cold).
+>>>
+>>> Bugzilla:https://bugzilla.kernel.org/show_bug.cgi?id=209149
+>>> Bugzilla:https://bugzilla.kernel.org/show_bug.cgi?id=215453
+>>> Fixes: 50310600ebda ("iommu/vt-d: Enable PCI ACS for platform opt in hint")
+>>
+>> I don't know what this fix has to do with the commit 50310600ebda.
+> 
+> Commit 50310600ebda only exposed the underlying issue. Do you think
+> "Fixes:" tag should change to other commits?
+> 
+>> Commit 50310600ebda only makes sure that PCI ACS is enabled whenever
+>> Intel IOMMU is on. Before this commit, PCI ACS could also be enabled
+>> and result in the same problem. Or anything I missed?
+> 
+> The system in question didn't enable ACS before commit 50310600ebda.
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- drivers/remoteproc/qcom_q6v5_pas.c | 4 ++++
- 1 file changed, 4 insertions(+)
+This commit exposed the issue on your configuration doesn't mean the
+fix should be back ported as far as that commit. I believe if you add
+intel-iommu=on in the kernel parameter, the issue still exists even you
+revert commit 50310600ebda or checkout a tag before it.
 
-diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
-index 5e806f657fec..1ae47cc153e5 100644
---- a/drivers/remoteproc/qcom_q6v5_pas.c
-+++ b/drivers/remoteproc/qcom_q6v5_pas.c
-@@ -879,6 +879,10 @@ static const struct of_device_id adsp_of_match[] = {
- 	{ .compatible = "qcom,sm8350-cdsp-pas", .data = &sm8350_cdsp_resource},
- 	{ .compatible = "qcom,sm8350-slpi-pas", .data = &sm8350_slpi_resource},
- 	{ .compatible = "qcom,sm8350-mpss-pas", .data = &mpss_resource_init},
-+	{ .compatible = "qcom,sm8450-adsp-pas", .data = &sm8350_adsp_resource},
-+	{ .compatible = "qcom,sm8450-cdsp-pas", .data = &sm8350_cdsp_resource},
-+	{ .compatible = "qcom,sm8450-slpi-pas", .data = &sm8350_slpi_resource},
-+	{ .compatible = "qcom,sm8450-mpss-pas", .data = &mpss_resource_init},
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, adsp_of_match);
--- 
-2.33.1
-
+Best regards,
+baolu
