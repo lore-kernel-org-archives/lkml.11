@@ -2,126 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18032C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FF8DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349069AbiA1NfU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:35:20 -0500
-Received: from mx.socionext.com ([202.248.49.38]:5514 "EHLO mx.socionext.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348965AbiA1NfJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 08:35:09 -0500
-Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
-  by mx.socionext.com with ESMTP; 28 Jan 2022 22:35:08 +0900
-Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
-        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id 5EBF92006E85;
-        Fri, 28 Jan 2022 22:35:08 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Fri, 28 Jan 2022 22:35:08 +0900
-Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id 1E4B6C1E22;
-        Fri, 28 Jan 2022 22:35:08 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH v2 3/3] pinctrl: uniphier: Add USB device pinmux settings
-Date:   Fri, 28 Jan 2022 22:35:03 +0900
-Message-Id: <1643376903-18623-4-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1643376903-18623-1-git-send-email-hayashi.kunihiko@socionext.com>
-References: <1643376903-18623-1-git-send-email-hayashi.kunihiko@socionext.com>
+        id S244951AbiA1NhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 08:37:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59258 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244552AbiA1NhJ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 08:37:09 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D1CC061714
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:37:09 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id qe6-20020a17090b4f8600b001b7aaad65b9so315079pjb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:37:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lMTcQ6qP0dwEhEJ1b2Pji1K8lhptV3Mxc6UezRbTYrM=;
+        b=kXXTVeqs6Ib4QSXjeuqfm7SqkcWy37ZYLefCrZswMokOFiYpXYk2i8xGJHf1Peip86
+         Ky618vKqFDTPpmBIKsXbr9C520RjAxsd6lMv4kBNnOSDGuJ/w2pUCbaqGcBpDAi8bOga
+         /dSjZ5ZiHIq4GDTnYrlG/W28FWC3hcs8/4n69FImqA4N88o6Ed9wTWMfHhNTMvfU+5v1
+         lR5IfhAFdO7KBV4BlTTdIMDIcv2Wnil+Otyn68Y/1ymm0vq2sY9ZexSR36jUW6RIAFr7
+         /IOTkFymKzTcqV/KRH+UokxmK5RB/0dMgGLeyWUNMZD++UrCM83pX+RZkqyNbmtUJ9Qk
+         RHyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lMTcQ6qP0dwEhEJ1b2Pji1K8lhptV3Mxc6UezRbTYrM=;
+        b=mNWUg2qtg8w4Tzsm/aCbQFPOIOwRh+Xp8uT+aho6IHJ90SJgiYZb1MjjWNm0GQhN7+
+         fum2PVicJycjDU3yc7cUohbXa58uBwGvZ3t+pQbGwYh6kiXjkfhuA2lMDMi2YLopqDJw
+         hZxAMio9KlJeO8YEnPvfSJWhi/20ij3tgj5ymHanPegwriwvkrU2sOGU6kFuLYj5LHLk
+         IfUc9gi0DpWCOsCE3ps0HMJ3kK5ry13bwaFYfb/ldOJYRM/Bs/ln1LoKr72tBrKQjTpE
+         NJ8OsmMoJhdT/zP8+ZEsZtKmlrRESCFCbsBxIQUFs9X23iQ0xs5wcOa7miYdmX9WzvDm
+         G74g==
+X-Gm-Message-State: AOAM533igDKugdXFnZVssQc1eTmEUL1MqiJN32JHwjujS7V3NGB9MvdR
+        FqlGpzokz+XFe2ctIGSPA1iLTc+y6Jhtbw==
+X-Google-Smtp-Source: ABdhPJx58u/IepgFllZjnObr67weMiu+W39wJlT1YIdB9vo7DBrkQ9VPV0QuPQLyUa0h7Urc1LzVVw==
+X-Received: by 2002:a17:90a:4109:: with SMTP id u9mr9890389pjf.120.1643377027341;
+        Fri, 28 Jan 2022 05:37:07 -0800 (PST)
+Received: from [192.168.1.116] ([66.219.217.159])
+        by smtp.gmail.com with ESMTPSA id k21sm9649920pff.33.2022.01.28.05.37.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Jan 2022 05:37:06 -0800 (PST)
+Subject: Re: [PATCH] MAINTAINERS: add bio.h to the block section
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     linux-kernel@vger.kernel.org
+References: <20220127064221.1314477-1-hch@lst.de>
+ <990369e1-0868-5cd1-2f97-286c50be2cba@kernel.dk>
+ <20220128074439.GA3098@lst.de>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <6aa375f6-31da-1edc-5a4c-c99c97500b5b@kernel.dk>
+Date:   Fri, 28 Jan 2022 06:37:04 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20220128074439.GA3098@lst.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add USB device pinmux settings for PXs2 and PXs3 SoCs. Only pins for
-ports 0 and 1 support USB device mode.
+On 1/28/22 12:44 AM, Christoph Hellwig wrote:
+> On Thu, Jan 27, 2022 at 10:20:50AM -0700, Jens Axboe wrote:
+>> On 1/26/22 11:42 PM, Christoph Hellwig wrote:
+>>> bio.h is pater of the block layer, so list it in the MAINTAINERS file
+>>            ^^^^^
+>>
+>> part?
+> 
+> Yes.  Do you want a resend?
 
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
----
- drivers/pinctrl/uniphier/pinctrl-uniphier-pxs2.c | 10 ++++++++--
- drivers/pinctrl/uniphier/pinctrl-uniphier-pxs3.c | 10 ++++++++--
- 2 files changed, 16 insertions(+), 4 deletions(-)
+Nope, I fixed it up while applying.
 
-diff --git a/drivers/pinctrl/uniphier/pinctrl-uniphier-pxs2.c b/drivers/pinctrl/uniphier/pinctrl-uniphier-pxs2.c
-index 7da8616f8d47..2a9dbf969f0b 100644
---- a/drivers/pinctrl/uniphier/pinctrl-uniphier-pxs2.c
-+++ b/drivers/pinctrl/uniphier/pinctrl-uniphier-pxs2.c
-@@ -817,8 +817,12 @@ static const unsigned uart3b_pins[] = {181, 182};
- static const int uart3b_muxvals[] = {10, 10};
- static const unsigned usb0_pins[] = {56, 57};
- static const int usb0_muxvals[] = {8, 8};
-+static const unsigned usb0_device_pins[] = {213};
-+static const int usb0_device_muxvals[] = {9};
- static const unsigned usb1_pins[] = {58, 59};
- static const int usb1_muxvals[] = {8, 8};
-+static const unsigned usb1_device_pins[] = {214};
-+static const int usb1_device_muxvals[] = {9};
- static const unsigned usb2_pins[] = {60, 61};
- static const int usb2_muxvals[] = {8, 8};
- static const unsigned usb3_pins[] = {62, 63};
-@@ -901,7 +905,9 @@ static const struct uniphier_pinctrl_group uniphier_pxs2_groups[] = {
- 	UNIPHIER_PINCTRL_GROUP(uart3),
- 	UNIPHIER_PINCTRL_GROUP(uart3b),
- 	UNIPHIER_PINCTRL_GROUP(usb0),
-+	UNIPHIER_PINCTRL_GROUP(usb0_device),
- 	UNIPHIER_PINCTRL_GROUP(usb1),
-+	UNIPHIER_PINCTRL_GROUP(usb1_device),
- 	UNIPHIER_PINCTRL_GROUP(usb2),
- 	UNIPHIER_PINCTRL_GROUP(usb3),
- 	UNIPHIER_PINCTRL_GROUP_GPIO(gpio_range0),
-@@ -942,8 +948,8 @@ static const char * const uart0_groups[] = {"uart0", "uart0b",
- static const char * const uart1_groups[] = {"uart1"};
- static const char * const uart2_groups[] = {"uart2"};
- static const char * const uart3_groups[] = {"uart3", "uart3b"};
--static const char * const usb0_groups[] = {"usb0"};
--static const char * const usb1_groups[] = {"usb1"};
-+static const char * const usb0_groups[] = {"usb0", "usb0_device"};
-+static const char * const usb1_groups[] = {"usb1", "usb1_device"};
- static const char * const usb2_groups[] = {"usb2"};
- static const char * const usb3_groups[] = {"usb3"};
- 
-diff --git a/drivers/pinctrl/uniphier/pinctrl-uniphier-pxs3.c b/drivers/pinctrl/uniphier/pinctrl-uniphier-pxs3.c
-index eb3c9b55f6e3..ab3bd2d9c6c7 100644
---- a/drivers/pinctrl/uniphier/pinctrl-uniphier-pxs3.c
-+++ b/drivers/pinctrl/uniphier/pinctrl-uniphier-pxs3.c
-@@ -855,8 +855,12 @@ static const unsigned int uart3_pins[] = {98, 99};
- static const int uart3_muxvals[] = {0, 0};
- static const unsigned int usb0_pins[] = {84, 85};
- static const int usb0_muxvals[] = {0, 0};
-+static const unsigned int usb0_device_pins[] = {110};
-+static const int usb0_device_muxvals[] = {2};
- static const unsigned int usb1_pins[] = {86, 87};
- static const int usb1_muxvals[] = {0, 0};
-+static const unsigned int usb1_device_pins[] = {111};
-+static const int usb1_device_muxvals[] = {2};
- static const unsigned int usb2_pins[] = {88, 89};
- static const int usb2_muxvals[] = {0, 0};
- static const unsigned int usb3_pins[] = {90, 91};
-@@ -942,7 +946,9 @@ static const struct uniphier_pinctrl_group uniphier_pxs3_groups[] = {
- 	UNIPHIER_PINCTRL_GROUP(uart2),
- 	UNIPHIER_PINCTRL_GROUP(uart3),
- 	UNIPHIER_PINCTRL_GROUP(usb0),
-+	UNIPHIER_PINCTRL_GROUP(usb0_device),
- 	UNIPHIER_PINCTRL_GROUP(usb1),
-+	UNIPHIER_PINCTRL_GROUP(usb1_device),
- 	UNIPHIER_PINCTRL_GROUP(usb2),
- 	UNIPHIER_PINCTRL_GROUP(usb3),
- 	UNIPHIER_PINCTRL_GROUP_GPIO(gpio_range0),
-@@ -982,8 +988,8 @@ static const char * const uart0_groups[] = {"uart0", "uart0_ctsrts",
- static const char * const uart1_groups[] = {"uart1"};
- static const char * const uart2_groups[] = {"uart2"};
- static const char * const uart3_groups[] = {"uart3"};
--static const char * const usb0_groups[] = {"usb0"};
--static const char * const usb1_groups[] = {"usb1"};
-+static const char * const usb0_groups[] = {"usb0", "usb0_device"};
-+static const char * const usb1_groups[] = {"usb1", "usb1_device"};
- static const char * const usb2_groups[] = {"usb2"};
- static const char * const usb3_groups[] = {"usb3"};
- 
 -- 
-2.7.4
+Jens Axboe
 
