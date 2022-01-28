@@ -2,81 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACDF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245328AbiA1Our (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:50:47 -0500
-Received: from mga03.intel.com ([134.134.136.65]:34145 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240449AbiA1Oup (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:50:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643381445; x=1674917445;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KENKt9ih+Iecy5W/jOM89XmtX4xsj3KyDe4f17+4BZk=;
-  b=jgvW6ke0JjW7CYezUdEtesIRv1VNt62pJnD65Y6SmhzGhbPWisxFSncQ
-   R5wQNURm3l70crcrusucS9ss43Jy95/RTgb9ATIbqk8wc0kPRkQmzvuaQ
-   /g0CgUp46u/vUVZQK7MQGa5w1e6zJCsCUP/xmYicTnq3Nu+1le6lZnXe6
-   g1CCAAswYp22cvIoZRsHeyrcy/SYLo7CgYXYGBEPW1UkXpMDQ4ANDYY0Z
-   ypGzAmoG36XZ30h5tDltWuoFRfif8GwMxXfue603Kvr/NVBcYzynBkHUo
-   Iax34ryoZVgGQGnXOm8EW6E18sgVjUO058SSv+59T/fu4ZXXIIEiRVCsa
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="247078286"
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="247078286"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 06:50:45 -0800
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="564215331"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 06:50:43 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nDSZG-00FRjI-V2;
-        Fri, 28 Jan 2022 16:49:38 +0200
-Date:   Fri, 28 Jan 2022 16:49:38 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     linus.walleij@linaro.org, michal.simek@xilinx.com,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Revert "pinctrl: zynqmp: Unify pin naming"
-Message-ID: <YfQCgnmyMOvB0V/k@smile.fi.intel.com>
-References: <20220127194602.21987-1-gerhard@engleder-embedded.com>
- <YfQBemA3bCz0FdYS@smile.fi.intel.com>
+        id S1344820AbiA1OvP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 09:51:15 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:37381 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230475AbiA1OvO (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 09:51:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643381291;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=iz8Ezjk18Z6wYZm+g6kbkcCyQRUTLyBEEhSEQinqcOw=;
+    b=ABaGBri3Bcgq05h/X9PBt42+pWoiBzEhuC8rjE/MM0BbND5U525ISO0fxInw8s1zhd
+    01pMDcyFeB/Of6dPkesCbi0WtuqaakUg8v+VqJ+73gvLF3N8qFfra2whGzl6/+7EPe2y
+    nt/ARaYCEwMr/VS6Rs+633anY2tLiJCf6tDk0CUCPCTRYAZYgDo/IxTypm4586F4Zisj
+    sTtc8k6bEsfqKc1N4ec63z3jFYKnwKv1cpHvX09qsbNEwT+Adwe9b9pWL8uGgnM54GDV
+    ba90xqgeUU+tt6WWQmyePmHfj7QRB/735pfaT6BGuakPIEmfjrK9+e0arza35weBhVGq
+    4J5w==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.38.0 AUTH)
+    with ESMTPSA id zaacbfy0SEmARaa
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Fri, 28 Jan 2022 15:48:10 +0100 (CET)
+Message-ID: <07c69ccd-dbc0-5c74-c68e-8636ec9179ef@hartkopp.net>
+Date:   Fri, 28 Jan 2022 15:48:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfQBemA3bCz0FdYS@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <eaafaca3-f003-ca56-c04c-baf6cf4f7627@hartkopp.net>
+ <890d8209-f400-a3b0-df9c-3e198e3834d6@huawei.com>
+ <1fb4407a-1269-ec50-0ad5-074e49f91144@hartkopp.net>
+ <2aba02d4-0597-1d55-8b3e-2c67386f68cf@huawei.com>
+ <64695483-ff75-4872-db81-ca55763f95cf@hartkopp.net>
+ <d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com>
+ <97339463-b357-3e0e-1cbf-c66415c08129@hartkopp.net>
+ <24e6da96-a3e5-7b4e-102b-b5676770b80e@hartkopp.net>
+ <20220128080704.ns5fzbyn72wfoqmx@pengutronix.de>
+ <72419ca8-b0cb-1e9d-3fcc-655defb662df@hartkopp.net>
+ <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 04:45:14PM +0200, Andy Shevchenko wrote:
-> On Thu, Jan 27, 2022 at 08:46:02PM +0100, Gerhard Engleder wrote:
-> > From: Gerhard Engleder <gerhard@engleder-embedded.com>
-> 
-> Thanks for your report, my comments below.
-> 
-> > This reverts commit 54784ff24971ed5bd3f1056edce998148709d0a7.
-> > 
-> > This patch changes the pin names from "MIO%d" to "MIO-%d", but all dts
-> > in arch/arm64/boot/dts/xilinx still use the old name. As a result my
-> > ZCU104 has no output on serial terminal and is not reachable over
-> > network.
-> 
-> And question here again, is the pin names ABI or not?
-> If it's an ABI, then it should be clarified in the documentation.
-> Otherwise, I'm wondering how this even may break anything.
+Hello Marc, hello William,
 
-Meanwhile I apply this to my tree and send as fix PR to Linus.
+On 28.01.22 09:46, Marc Kleine-Budde wrote:
+> On 28.01.2022 09:32:40, Oliver Hartkopp wrote:
+>>
+>>
+>> On 28.01.22 09:07, Marc Kleine-Budde wrote:
+>>> On 28.01.2022 08:56:19, Oliver Hartkopp wrote:
+>>>> I've seen the frame processing sometimes freezes for one second when
+>>>> stressing the isotp_rcv() from multiple sources. This finally freezes
+>>>> the entire softirq which is either not good and not needed as we only
+>>>> need to fix this race for stress tests - and not for real world usage
+>>>> that does not create this case.
+>>>
+>>> Hmmm, this doesn't sound good. Can you test with LOCKDEP enabled?
 
--- 
-With Best Regards,
-Andy Shevchenko
 
+>> #
+>> # Lock Debugging (spinlocks, mutexes, etc...)
+>> #
+>> CONFIG_LOCK_DEBUGGING_SUPPORT=y
+>> # CONFIG_PROVE_LOCKING is not set
+> CONFIG_PROVE_LOCKING=y
+
+Now enabled even more locking (seen relevant kernel config at the end).
+
+It turns out that there is no visible difference when using spin_lock() 
+or spin_trylock().
+
+I only got some of these kernel log entries
+
+Jan 28 11:13:14 silver kernel: [ 2396.323211] perf: interrupt took too 
+long (2549 > 2500), lowering kernel.perf_event_max_sample_rate to 78250
+Jan 28 11:25:49 silver kernel: [ 3151.172773] perf: interrupt took too 
+long (3188 > 3186), lowering kernel.perf_event_max_sample_rate to 62500
+Jan 28 11:45:24 silver kernel: [ 4325.583328] perf: interrupt took too 
+long (4009 > 3985), lowering kernel.perf_event_max_sample_rate to 49750
+Jan 28 12:15:46 silver kernel: [ 6148.238246] perf: interrupt took too 
+long (5021 > 5011), lowering kernel.perf_event_max_sample_rate to 39750
+Jan 28 13:01:45 silver kernel: [ 8907.303715] perf: interrupt took too 
+long (6285 > 6276), lowering kernel.perf_event_max_sample_rate to 31750
+
+But I get these sporadically anyway. No other LOCKDEP splat.
+
+At least the issue reported by William should be fixed now - but I'm 
+still unclear whether spin_lock() or spin_trylock() is the best approach 
+here in the NET_RX softirq?!?
+
+Best regards,
+Oliver
+
+
+$ grep LOCK .config | grep -v BLOCK | grep -v CLOCK
+CONFIG_LOCKDEP_SUPPORT=y
+# CONFIG_PM_WAKELOCKS is not set
+CONFIG_HAVE_HARDLOCKUP_DETECTOR_PERF=y
+# CONFIG_LOCK_EVENT_COUNTS is not set
+CONFIG_UNINLINE_SPIN_UNLOCK=y
+CONFIG_LOCK_SPIN_ON_OWNER=y
+CONFIG_ARCH_USE_QUEUED_SPINLOCKS=y
+CONFIG_QUEUED_SPINLOCKS=y
+CONFIG_ARCH_USE_QUEUED_RWLOCKS=y
+CONFIG_QUEUED_RWLOCKS=y
+CONFIG_SPLIT_PTLOCK_CPUS=4
+CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK=y
+CONFIG_PCI_LOCKLESS_CONFIG=y
+# CONFIG_DRM_DEBUG_MODESET_LOCK is not set
+CONFIG_HWSPINLOCK=y
+CONFIG_I8253_LOCK=y
+CONFIG_FILE_LOCKING=y
+# CONFIG_SECURITY_LOCKDOWN_LSM is not set
+# CONFIG_SECURITY_LANDLOCK is not set
+# CONFIG_CRYPTO_DEV_PADLOCK is not set
+CONFIG_ARCH_USE_CMPXCHG_LOCKREF=y
+CONFIG_LOCKUP_DETECTOR=y
+CONFIG_SOFTLOCKUP_DETECTOR=y
+# CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set
+CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC_VALUE=0
+CONFIG_HARDLOCKUP_DETECTOR_PERF=y
+CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
+CONFIG_HARDLOCKUP_DETECTOR=y
+# CONFIG_BOOTPARAM_HARDLOCKUP_PANIC is not set
+CONFIG_BOOTPARAM_HARDLOCKUP_PANIC_VALUE=0
+# CONFIG_TEST_LOCKUP is not set
+CONFIG_LOCK_DEBUGGING_SUPPORT=y
+CONFIG_PROVE_LOCKING=y
+CONFIG_PROVE_RAW_LOCK_NESTING=y
+# CONFIG_LOCK_STAT is not set
+CONFIG_DEBUG_SPINLOCK=y
+CONFIG_DEBUG_LOCK_ALLOC=y
+CONFIG_LOCKDEP=y
+CONFIG_LOCKDEP_BITS=15
+CONFIG_LOCKDEP_CHAINS_BITS=16
+CONFIG_LOCKDEP_STACK_TRACE_BITS=19
+CONFIG_LOCKDEP_STACK_TRACE_HASH_BITS=14
+CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS=12
+CONFIG_DEBUG_LOCKDEP=y
+# CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
+# CONFIG_LOCK_TORTURE_TEST is not set
+# CONFIG_CSD_LOCK_WAIT_DEBUG is not set
 
