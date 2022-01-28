@@ -2,127 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 346A1C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 01:43:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C09F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 01:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345127AbiA1Bnl (ORCPT
+        id S1345160AbiA1Bow (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 20:43:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36544 "EHLO
+        Thu, 27 Jan 2022 20:44:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345003AbiA1Bnk (ORCPT
+        with ESMTP id S1345144AbiA1Bov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 20:43:40 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5854C06173B
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 17:43:39 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id w11so7974994wra.4
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 17:43:39 -0800 (PST)
+        Thu, 27 Jan 2022 20:44:51 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE92C06173B
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 17:44:51 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id c24so6649165edy.4
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 17:44:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HPxukaaI+vBZceFwqPaqWSmknWB3EkzjOCzqNJeXZ6Y=;
-        b=MbuglyhJzGr5zJbIDXKc1BRjn3+qunjZnSYcTrv9Y93j/BhlkTmeMI9YN/xuwQluMO
-         VFSAhXFpENEXV8xKXKKrhCgsDt6ftUgtrjnTjQvmGQF59bmZWfhX31I7JPL9MM0uU/MP
-         ncHf5Hb/wgD7HKpM3FbEmCtqLYNUcUqpuJdGgeh51wP3umNBfITNpSI98FgOGsX+z5GR
-         McRsCzkVlCTPhX9o2q6WkHwAWfoIKJkoBtjEjQge3Duo4a16aIvfcoCymTbfrbOn++g0
-         efGKbnRNJkC7PcVDpVzufyMC1vvFJtrJoWLXxqcyZPPsqex9e47UCIDsz8mCBF/Tgucp
-         hokg==
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iYXIIUyrLfzJaPeKZf3W/sgGrDvN0wMAV7bAC7WPD3M=;
+        b=1KTeQNu1m8qReF3FsqMysxKY1VxJzC4sYVTjAyHhsq+a1vlVLpM2YLsiNMZS0x3wXm
+         Y0VJVuyXs9YWnnBcgzbPTYFgF617dw+mg/0Eb3g9Wmao8ObSTU2P1ITppGOx1iXWCCpw
+         0DSwoAM6EKzCh3OJQA0PwxS1xJElPjgoBpclzHHZokRNXUmNdMN6JkPqR/Nala+VLtYB
+         suqI6XxfkTZARJ+9S/b/C7d0dRPHa6UJ5D2iXTSQBpTd0NDRsxKzGiVG4SZaeKbEonVc
+         Phanfy++vHctLte9yA7dBz+90Od82cx10pUo7k7Rz6AUjPn1YAIe5KVF5O17qkw0J7FX
+         xj8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HPxukaaI+vBZceFwqPaqWSmknWB3EkzjOCzqNJeXZ6Y=;
-        b=zcj7JRXhUR5JzuIVsJ+5j3qqD3GDoQyihOzUjx1QY2ZP0OAZd2c36L2Ks5NsY1oe1W
-         +Qk+WRZhA/GKn3rYtEg+RqlDWXstzFtGSK0P4Le+bGA49gzVto8qzszDz6VNLWw07v6C
-         sdjFSZr7sHYkP1x5pEhRWIouGqaDhgieIM4/q6cQvJTXb+WKGI5BnUP/JorP3RjJkgZJ
-         9wVTGa4+/Y/0k4ql4YgZFPZuw4CuQpw4qBMZI3syl1KxJV2f5A7cRkn5giqi8lG48sAH
-         jxO27oZOBwNeZopkAdB+hNXhhnUAGnz51gTenmfpoBzQW7DvYkKQDpLoY9B0+VOxjphs
-         7YKA==
-X-Gm-Message-State: AOAM532LaJ+jthJJHsnV3Zt2IiEB0KZjyCd17F3plrwzdZwsUzgmCK8g
-        97jOOb8olFMZiI43OGfYgKH5Lw==
-X-Google-Smtp-Source: ABdhPJx4aLp51dgoa/rTPnzaY8XZzRPLihFZM2WxONP9GdXAXygo9Fr2IIFDjQWSLbuDb3/2MB9JfA==
-X-Received: by 2002:a05:6000:1884:: with SMTP id a4mr5074731wri.165.1643334218107;
-        Thu, 27 Jan 2022 17:43:38 -0800 (PST)
-Received: from localhost ([2a02:168:96c5:1:55ed:514f:6ad7:5bcc])
-        by smtp.gmail.com with ESMTPSA id 14sm4428247wrz.100.2022.01.27.17.43.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 17:43:37 -0800 (PST)
-From:   Jann Horn <jannh@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>
-Cc:     linux-kernel@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
-        Jann Horn <jannh@google.com>
-Subject: [PATCH net] net: dev: Detect dev_hold() after netdev_wait_allrefs()
-Date:   Fri, 28 Jan 2022 02:43:03 +0100
-Message-Id: <20220128014303.2334568-1-jannh@google.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iYXIIUyrLfzJaPeKZf3W/sgGrDvN0wMAV7bAC7WPD3M=;
+        b=ONeDB26NMwLymkCIsVy93RRjfes8agVYyY7B4V8dYuOLylXaaWQsxZCgDkpA1v9mXA
+         YWoF4POk29u3MtZkY6zqGI7cVG6/ikXUZxv4CF/n+JggpSi03eyQo9GQfbXmFcxAQT9S
+         p3pXzD21/14ZPmtmMESDTxNHW9CllP1f4oMs4LLFUWsALep7l/jiKZmVbBJIUNceGTPJ
+         QQmafXD6HE3hUrKv/lKPgVMEtrAVagLMPqZJ05KhoozTDmn71kBfEBBtmaUrPyPbJax9
+         veVpyQSr/H51CvlCsFUVN7j3cbo8M4J/YA0X3tO7YypVnh4YF7g1ikh42GZzws6N3bbe
+         9QCg==
+X-Gm-Message-State: AOAM532Ew2O9xoKKIWq78OHtFLZMk6ZSQrvqFyj1qy5oP/zH5Kxb2hnE
+        4h0prAjdDNmywB/vpZQ70hmaWtQMdE8A0u+IY/yz
+X-Google-Smtp-Source: ABdhPJzjF/RplyACj/w8hLgXo1uknB2oGFSxj5v5sDp4f/gCdMO3xDPCBYlF1V1ov4ADLrAbCjCk2M9vJHrSvIe79xk=
+X-Received: by 2002:a05:6402:2683:: with SMTP id w3mr6080257edd.405.1643334289633;
+ Thu, 27 Jan 2022 17:44:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+References: <018a9bb4-accb-c19a-5b0a-fde22f4bc822.ref@schaufler-ca.com>
+ <018a9bb4-accb-c19a-5b0a-fde22f4bc822@schaufler-ca.com> <20211012103243.xumzerhvhklqrovj@wittgenstein>
+ <d15f9647-f67e-2d61-d7bd-c364f4288287@schaufler-ca.com> <CAHC9VhT=dZbWzhst0hMLo0n7=UzWC5OYTMY=0x=LZ97HwG0UsA@mail.gmail.com>
+ <a19e0338-5240-4a6d-aecf-145539aecbce@schaufler-ca.com> <3daaf037-2e67-e939-805f-57a61d67f7b8@namei.org>
+In-Reply-To: <3daaf037-2e67-e939-805f-57a61d67f7b8@namei.org>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 27 Jan 2022 20:44:38 -0500
+Message-ID: <CAHC9VhSt+c6QksHef=kx3dN_ouVZG0_a6FERzXs2-uzKmyE_zg@mail.gmail.com>
+Subject: Re: [PATCH v2] LSM: general protection fault in legacy_parse_param
+To:     James Morris <jmorris@namei.org>
+Cc:     Casey Schaufler <casey@schaufler-ca.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Christian Brauner <christian@brauner.io>,
+        Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        syzbot <syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        selinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I've run into a bug where dev_hold() was being called after
-netdev_wait_allrefs(). But at that point, the device is already going
-away, and dev_hold() can't stop that anymore.
+On Thu, Jan 27, 2022 at 12:46 PM James Morris <jmorris@namei.org> wrote:
+> On Thu, 27 Jan 2022, Casey Schaufler wrote:
+>
+> > The usual LSM hook "bail on fail" scheme doesn't work for cases where
+> > a security module may return an error code indicating that it does not
+> > recognize an input.  In this particular case Smack sees a mount option
+> > that it recognizes, and returns 0. A call to a BPF hook follows, which
+> > returns -ENOPARAM, which confuses the caller because Smack has processed
+> > its data.
+> >
+> > The SELinux hook incorrectly returns 1 on success. There was a time
+> > when this was correct, however the current expectation is that it
+> > return 0 on success. This is repaired.
+> >
+> > Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
+> > Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+>
+>
+> Acked-by: James Morris <jamorris@linux.microsoft.com>
 
-To make such problems easier to diagnose in the future:
+Looks good to me too, thanks Casey.  Since James' already ACK'd it, I
+went ahead and pulled this into selinux/next.
 
- - For CONFIG_PCPU_DEV_REFCNT builds: Recheck in free_netdev() whether
-   the net refcount has been elevated. If this is detected, WARN() and
-   leak the object (to prevent worse consequences from a
-   use-after-free).
- - For builds without CONFIG_PCPU_DEV_REFCNT: Set the refcount to zero.
-   This signals to the generic refcount infrastructure that any attempt
-   to increment the refcount later is a bug.
+> > ---
+> >  security/security.c      | 17 +++++++++++++++--
+> >  security/selinux/hooks.c |  5 ++---
+> >  2 files changed, 17 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/security/security.c b/security/security.c
+> > index 3d4eb474f35b..e649c8691be2 100644
+> > --- a/security/security.c
+> > +++ b/security/security.c
+> > @@ -884,9 +884,22 @@ int security_fs_context_dup(struct fs_context *fc, struct
+> > fs_context *src_fc)
+> >       return call_int_hook(fs_context_dup, 0, fc, src_fc);
+> >  }
+> >
+> > -int security_fs_context_parse_param(struct fs_context *fc, struct
+> > fs_parameter *param)
+> > +int security_fs_context_parse_param(struct fs_context *fc,
+> > +                                 struct fs_parameter *param)
+> >  {
+> > -     return call_int_hook(fs_context_parse_param, -ENOPARAM, fc, param);
+> > +     struct security_hook_list *hp;
+> > +     int trc;
+> > +     int rc = -ENOPARAM;
+> > +
+> > +     hlist_for_each_entry(hp, &security_hook_heads.fs_context_parse_param,
+> > +                          list) {
+> > +             trc = hp->hook.fs_context_parse_param(fc, param);
+> > +             if (trc == 0)
+> > +                     rc = 0;
+> > +             else if (trc != -ENOPARAM)
+> > +                     return trc;
+> > +     }
+> > +     return rc;
+> >  }
+> >
+> >  int security_sb_alloc(struct super_block *sb)
+> > diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> > index 5b6895e4fc29..371f67a37f9a 100644
+> > --- a/security/selinux/hooks.c
+> > +++ b/security/selinux/hooks.c
+> > @@ -2860,10 +2860,9 @@ static int selinux_fs_context_parse_param(struct
+> > fs_context *fc,
+> >               return opt;
+> >
+> >       rc = selinux_add_opt(opt, param->string, &fc->security);
+> > -     if (!rc) {
+> > +     if (!rc)
+> >               param->string = NULL;
+> > -             rc = 1;
+> > -     }
+> > +
+> >       return rc;
+> >  }
 
-Signed-off-by: Jann Horn <jannh@google.com>
----
- net/core/dev.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1baab07820f6..f7916c0d226d 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9949,8 +9949,18 @@ void netdev_run_todo(void)
-=20
- 		netdev_wait_allrefs(dev);
-=20
-+		/* Drop the netdev refcount (which should be 1 at this point)
-+		 * to zero. If we're using the generic refcount code, this will
-+		 * tell it that any dev_hold() after this point is a bug.
-+		 */
-+#ifdef CONFIG_PCPU_DEV_REFCNT
-+		this_cpu_dec(*dev->pcpu_refcnt);
-+		BUG_ON(netdev_refcnt_read(dev) !=3D 0);
-+#else
-+		BUG_ON(!refcount_dec_and_test(&dev->dev_refcnt));
-+#endif
-+
- 		/* paranoia */
--		BUG_ON(netdev_refcnt_read(dev) !=3D 1);
- 		BUG_ON(!list_empty(&dev->ptype_all));
- 		BUG_ON(!list_empty(&dev->ptype_specific));
- 		WARN_ON(rcu_access_pointer(dev->ip_ptr));
-@@ -10293,6 +10303,12 @@ void free_netdev(struct net_device *dev)
- 	free_percpu(dev->xdp_bulkq);
- 	dev->xdp_bulkq =3D NULL;
-=20
-+	/* Recheck in case someone called dev_hold() between
-+	 * netdev_wait_allrefs() and here.
-+	 */
-+	if (WARN_ON(netdev_refcnt_read(dev) !=3D 0))
-+		return; /* leak memory, otherwise we might get UAF */
-+
- 	/*  Compatibility with error handling in drivers */
- 	if (dev->reg_state =3D=3D NETREG_UNINITIALIZED) {
- 		netdev_freemem(dev);
-
-base-commit: 23a46422c56144939c091c76cf389aa863ce9c18
---=20
-2.35.0.rc0.227.g00780c9af4-goog
-
+-- 
+paul-moore.com
