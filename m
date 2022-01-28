@@ -2,32 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 06:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6ABFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 06:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346536AbiA1G3V (ORCPT
+        id S1346558AbiA1G3X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 01:29:21 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:43534 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1346488AbiA1G3L (ORCPT
+        Fri, 28 Jan 2022 01:29:23 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:48930 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1346494AbiA1G3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 01:29:11 -0500
-X-UUID: b5d5a2e7869b468ca7c68449549ffa59-20220128
-X-UUID: b5d5a2e7869b468ca7c68449549ffa59-20220128
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        Fri, 28 Jan 2022 01:29:12 -0500
+X-UUID: 9f534976197b4844866c10c97f07efe4-20220128
+X-UUID: 9f534976197b4844866c10c97f07efe4-20220128
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
         (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1531445026; Fri, 28 Jan 2022 14:29:06 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 346881307; Fri, 28 Jan 2022 14:29:08 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 28 Jan 2022 14:29:05 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 28 Jan
- 2022 14:29:05 +0800
+ 15.0.1497.2; Fri, 28 Jan 2022 14:29:06 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 28 Jan 2022 14:29:04 +0800
+ Transport; Fri, 28 Jan 2022 14:29:05 +0800
 From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Matthias Brugger <matthias.bgg@gmail.com>
@@ -39,12 +36,10 @@ CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
         <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Tianping Fang <tianping.fang@mediatek.com>,
-        Eddie Hung <eddie.hung@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2 2/4] usb: xhci-mtk: add support ip-sleep wakeup for mt8195
-Date:   Fri, 28 Jan 2022 14:29:00 +0800
-Message-ID: <20220128062902.26273-2-chunfeng.yun@mediatek.com>
+        Eddie Hung <eddie.hung@mediatek.com>
+Subject: [PATCH v2 4/4] arm64: dts: mediatek: mt8195: enable usb remote wakeup
+Date:   Fri, 28 Jan 2022 14:29:02 +0800
+Message-ID: <20220128062902.26273-4-chunfeng.yun@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
 References: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
@@ -56,80 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support ip-sleep wakeup for mt8195, it's a specific revision for
-each USB controller, and not following IPM rule.
+Enable USB remote wakeup of all four xHCI controllers
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
 ---
-v2: add reviewed-by Matthias & AngeloGioacchino
----
- drivers/usb/host/xhci-mtk.c | 37 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+v2: based on new mt8195 base dts, no need add usb nodes
 
-diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
-index 91738af0ab14..96a0ff0bb11e 100644
---- a/drivers/usb/host/xhci-mtk.c
-+++ b/drivers/usb/host/xhci-mtk.c
-@@ -95,6 +95,19 @@
- #define WC0_SSUSB0_CDEN		BIT(6)
- #define WC0_IS_SPM_EN		BIT(1)
+Note:
+
+ depend on the reviewing patch:
+
+[v9,3/3] arm64: dts: Add mediatek SoC mt8195 and evaluation board
+https://patchwork.kernel.org/patch/12711296
+
+---
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+index 240a21708806..444e5448c9b1 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+@@ -573,6 +573,8 @@
+ 				 <&apmixedsys CLK_APMIXED_USB1PLL>,
+ 				 <&infracfg_ao CLK_INFRA_AO_SSUSB_XHCI>;
+ 			clock-names = "sys_ck", "ref_ck", "mcu_ck", "xhci_ck";
++			mediatek,syscon-wakeup = <&pericfg 0x400 103>;
++			wakeup-source;
+ 			status = "disabled";
+ 		};
  
-+/* mt8195 */
-+#define PERI_WK_CTRL0_8195	0x04
-+#define WC0_IS_P_95		BIT(30)	/* polarity */
-+#define WC0_IS_C_95(x)		((u32)(((x) & 0x7) << 27))
-+#define WC0_IS_EN_P3_95		BIT(26)
-+#define WC0_IS_EN_P2_95		BIT(25)
-+#define WC0_IS_EN_P1_95		BIT(24)
-+
-+#define PERI_WK_CTRL1_8195	0x20
-+#define WC1_IS_C_95(x)		((u32)(((x) & 0xf) << 28))
-+#define WC1_IS_P_95		BIT(12)
-+#define WC1_IS_EN_P0_95		BIT(6)
-+
- /* mt2712 etc */
- #define PERI_SSUSB_SPM_CTRL	0x0
- #define SSC_IP_SLEEP_EN	BIT(4)
-@@ -105,6 +118,10 @@ enum ssusb_uwk_vers {
- 	SSUSB_UWK_V2,
- 	SSUSB_UWK_V1_1 = 101,	/* specific revision 1.01 */
- 	SSUSB_UWK_V1_2,		/* specific revision 1.2 */
-+	SSUSB_UWK_V1_3,		/* mt8195 IP0 */
-+	SSUSB_UWK_V1_4,		/* mt8195 IP1 */
-+	SSUSB_UWK_V1_5,		/* mt8195 IP2 */
-+	SSUSB_UWK_V1_6,		/* mt8195 IP3 */
- };
+@@ -636,6 +638,8 @@
+ 				 <&apmixedsys CLK_APMIXED_USB1PLL>,
+ 				 <&pericfg_ao CLK_PERI_AO_SSUSB_1P_XHCI>;
+ 			clock-names = "sys_ck", "ref_ck", "mcu_ck","xhci_ck";
++			mediatek,syscon-wakeup = <&pericfg 0x400 104>;
++			wakeup-source;
+ 			status = "disabled";
+ 		};
  
- /*
-@@ -308,6 +325,26 @@ static void usb_wakeup_ip_sleep_set(struct xhci_hcd_mtk *mtk, bool enable)
- 		msk = WC0_SSUSB0_CDEN | WC0_IS_SPM_EN;
- 		val = enable ? msk : 0;
- 		break;
-+	case SSUSB_UWK_V1_3:
-+		reg = mtk->uwk_reg_base + PERI_WK_CTRL1_8195;
-+		msk = WC1_IS_EN_P0_95 | WC1_IS_C_95(0xf) | WC1_IS_P_95;
-+		val = enable ? (WC1_IS_EN_P0_95 | WC1_IS_C_95(0x1)) : 0;
-+		break;
-+	case SSUSB_UWK_V1_4:
-+		reg = mtk->uwk_reg_base + PERI_WK_CTRL0_8195;
-+		msk = WC0_IS_EN_P1_95 | WC0_IS_C_95(0x7) | WC0_IS_P_95;
-+		val = enable ? (WC0_IS_EN_P1_95 | WC0_IS_C_95(0x1)) : 0;
-+		break;
-+	case SSUSB_UWK_V1_5:
-+		reg = mtk->uwk_reg_base + PERI_WK_CTRL0_8195;
-+		msk = WC0_IS_EN_P2_95 | WC0_IS_C_95(0x7) | WC0_IS_P_95;
-+		val = enable ? (WC0_IS_EN_P2_95 | WC0_IS_C_95(0x1)) : 0;
-+		break;
-+	case SSUSB_UWK_V1_6:
-+		reg = mtk->uwk_reg_base + PERI_WK_CTRL0_8195;
-+		msk = WC0_IS_EN_P3_95 | WC0_IS_C_95(0x7) | WC0_IS_P_95;
-+		val = enable ? (WC0_IS_EN_P3_95 | WC0_IS_C_95(0x1)) : 0;
-+		break;
- 	case SSUSB_UWK_V2:
- 		reg = mtk->uwk_reg_base + PERI_SSUSB_SPM_CTRL;
- 		msk = SSC_IP_SLEEP_EN | SSC_SPM_INT_EN;
+@@ -655,6 +659,8 @@
+ 				 <&topckgen CLK_TOP_SSUSB_P2_REF>,
+ 				 <&pericfg_ao CLK_PERI_AO_SSUSB_2P_XHCI>;
+ 			clock-names = "sys_ck", "ref_ck", "xhci_ck";
++			mediatek,syscon-wakeup = <&pericfg 0x400 105>;
++			wakeup-source;
+ 			status = "disabled";
+ 		};
+ 
+@@ -674,6 +680,8 @@
+ 				 <&topckgen CLK_TOP_SSUSB_P3_REF>,
+ 				 <&pericfg_ao CLK_PERI_AO_SSUSB_3P_XHCI>;
+ 			clock-names = "sys_ck", "ref_ck", "xhci_ck";
++			mediatek,syscon-wakeup = <&pericfg 0x400 106>;
++			wakeup-source;
+ 			/* This controller is connected with a BT device.
+ 			 * Disable usb2 lpm to prevent konwn issues.
+ 			 */
 -- 
 2.18.0
 
