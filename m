@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FF30C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:20:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348928AbiA1NUC (ORCPT
+        id S1348873AbiA1NUI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:20:02 -0500
-Received: from server.lespinasse.org ([63.205.204.226]:50107 "EHLO
-        server.lespinasse.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348678AbiA1NTK (ORCPT
+        Fri, 28 Jan 2022 08:20:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348731AbiA1NTK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 08:19:10 -0500
+Received: from server.lespinasse.org (server.lespinasse.org [IPv6:2001:470:82ab::100:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAEB1C061753
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:19:08 -0800 (PST)
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
  d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-52-ed;
  t=1643375407; h=from : to : cc : subject : date : message-id :
  in-reply-to : references : mime-version : content-transfer-encoding :
- from; bh=7ZwO3JSFTMu+I+SD7pVtiWOQ8TjLyD2OehGAIC7WXjM=;
- b=kXZaaQKnfFfdx1WcuV/gsR3sFHyjkkWzgVlVIxl61xzaSmlhPKCw8k9+0tXt42thV1hgh
- 76J7O3GfBptE7fSCg==
+ from; bh=48igdK4XD2qyyw4H7eAGAtmCU5dM/sdUsGGChgdX+mc=;
+ b=Mhjb3jaW8n5cT4q9t7IwQYixbkD0AoAJ+xw9LX+B1BKrkYOiNMDcF1BsuBXLDnxS9YJi9
+ RhVexvhKEcXF04/AQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
  i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375407; h=from : to
  : cc : subject : date : message-id : in-reply-to : references :
  mime-version : content-transfer-encoding : from;
- bh=7ZwO3JSFTMu+I+SD7pVtiWOQ8TjLyD2OehGAIC7WXjM=;
- b=N+8pg6EwjJQ3+6Y7V4x16KZEvrtmwYS+Kkac+I8wPHurF9yISlUf9mrEqxGCFMpE8iKWo
- af//9oNNzfjUKvmlV90xDVOpnS9w6rIknF2VlARdpSg5gTndvdvI3korqttpbVfl6IUxQae
- O3VrDU2+4MMBPDgX1SU44DD1De1BaiokD4lkS+M6QKgl6CR1s/U5L7KYI8dBXx6sq7vxC4q
- 3pMrI0M/abW1VuAe5ZzAMd9o1YzyS9vkrsGGZhxx0gK2cmOrIUpP3cW3a+eNfZ9eN9Q9WZO
- hd1vFAxrPwIytcuycY+dTWvMIXOnOummJyesV0+o3FKbRWSh/AzaaJFY6OGw==
+ bh=48igdK4XD2qyyw4H7eAGAtmCU5dM/sdUsGGChgdX+mc=;
+ b=5s8QcT/Pe0E6zMe8gQOZSoZuokKcmnSQyMMr7nyXpESmSSSMVXIWQd1aYnbbC9YGDNAj8
+ aUl/zfdnGrEFhEn3N4PAhTN8iMevYWBb6Z1psZnu98HvYz2v3h6snm6FOsHBDKTsSbVPAxm
+ 1lziHA61mdd2LDX8yvJ7QZwvQ6OgO+zeNo/C8AlUMoVxDsdhJZjPnx+2rDjkAk7vhHok6LF
+ 7NWRmtIwOS/7e6XRDdV9Y8L3MDQlu9fqXoQiprHms0xKtY2BwwUSFE6Z6qN/B5SEhwxcv6F
+ mWwDUtp8fbL7RoWGeghYSQm1a2HibCixrOU4/RQ3B+3ErxvL/xVd5daVs3vA==
 Received: from zeus.lespinasse.org (zeus.lespinasse.org [10.0.0.150])
-        by server.lespinasse.org (Postfix) with ESMTPS id 34F95160AC3;
+        by server.lespinasse.org (Postfix) with ESMTPS id 3AA38160AC8;
         Fri, 28 Jan 2022 05:10:07 -0800 (PST)
 Received: by zeus.lespinasse.org (Postfix, from userid 1000)
-        id 1422920F30; Fri, 28 Jan 2022 05:10:07 -0800 (PST)
+        id 1F74A20459; Fri, 28 Jan 2022 05:10:07 -0800 (PST)
 From:   Michel Lespinasse <michel@lespinasse.org>
 To:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>
@@ -56,9 +59,9 @@ Cc:     kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Andy Lutomirski <luto@kernel.org>,
         Michel Lespinasse <michel@lespinasse.org>
-Subject: [PATCH v2 26/35] mm: implement speculative handling in wp_page_copy()
-Date:   Fri, 28 Jan 2022 05:09:57 -0800
-Message-Id: <20220128131006.67712-27-michel@lespinasse.org>
+Subject: [PATCH v2 30/35] mm: create new include/linux/vm_event.h header file
+Date:   Fri, 28 Jan 2022 05:10:01 -0800
+Message-Id: <20220128131006.67712-31-michel@lespinasse.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220128131006.67712-1-michel@lespinasse.org>
 References: <20220128131006.67712-1-michel@lespinasse.org>
@@ -68,132 +71,246 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change wp_page_copy() to handle the speculative case. This involves
-aborting speculative faults if they have to allocate an anon_vma,
-read-locking the mmu_notifier_lock to avoid races with
-mmu_notifier_register(), and using pte_map_lock() instead of
-pte_offset_map_lock() to complete the page fault.
+Split off the definitions necessary to update event counters from vmstat.h
+into a new vm_event.h file.
 
-Also change call sites to clear vmf->pte after unmapping the page table,
-in order to satisfy pte_map_lock()'s preconditions.
+The rationale is to allow header files included from mm.h to update
+counter events. vmstat.h can not be included from such header files,
+because it refers to page_pgdat() which is only defined later down
+in mm.h, and thus results in compile errors. vm_event.h does not refer
+to page_pgdat() and thus does not result in such errors.
 
 Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
 ---
- mm/memory.c | 42 +++++++++++++++++++++++++++++++++---------
- 1 file changed, 33 insertions(+), 9 deletions(-)
+ include/linux/vm_event.h | 105 +++++++++++++++++++++++++++++++++++++++
+ include/linux/vmstat.h   |  95 +----------------------------------
+ 2 files changed, 106 insertions(+), 94 deletions(-)
+ create mode 100644 include/linux/vm_event.h
 
-diff --git a/mm/memory.c b/mm/memory.c
-index 73b1a328b797..fd8984d89109 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3087,20 +3087,27 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
- 	pte_t entry;
- 	int page_copied = 0;
- 	struct mmu_notifier_range range;
-+	vm_fault_t ret = VM_FAULT_OOM;
+diff --git a/include/linux/vm_event.h b/include/linux/vm_event.h
+new file mode 100644
+index 000000000000..b3ae108a3841
+--- /dev/null
++++ b/include/linux/vm_event.h
+@@ -0,0 +1,105 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_VM_EVENT_H
++#define _LINUX_VM_EVENT_H
++
++#include <linux/types.h>
++#include <linux/percpu.h>
++#include <linux/mmzone.h>
++#include <linux/vm_event_item.h>
++#include <linux/atomic.h>
++
++#ifdef CONFIG_VM_EVENT_COUNTERS
++/*
++ * Light weight per cpu counter implementation.
++ *
++ * Counters should only be incremented and no critical kernel component
++ * should rely on the counter values.
++ *
++ * Counters are handled completely inline. On many platforms the code
++ * generated will simply be the increment of a global address.
++ */
++
++struct vm_event_state {
++	unsigned long event[NR_VM_EVENT_ITEMS];
++};
++
++DECLARE_PER_CPU(struct vm_event_state, vm_event_states);
++
++/*
++ * vm counters are allowed to be racy. Use raw_cpu_ops to avoid the
++ * local_irq_disable overhead.
++ */
++static inline void __count_vm_event(enum vm_event_item item)
++{
++	raw_cpu_inc(vm_event_states.event[item]);
++}
++
++static inline void count_vm_event(enum vm_event_item item)
++{
++	this_cpu_inc(vm_event_states.event[item]);
++}
++
++static inline void __count_vm_events(enum vm_event_item item, long delta)
++{
++	raw_cpu_add(vm_event_states.event[item], delta);
++}
++
++static inline void count_vm_events(enum vm_event_item item, long delta)
++{
++	this_cpu_add(vm_event_states.event[item], delta);
++}
++
++extern void all_vm_events(unsigned long *);
++
++extern void vm_events_fold_cpu(int cpu);
++
++#else
++
++/* Disable counters */
++static inline void count_vm_event(enum vm_event_item item)
++{
++}
++static inline void count_vm_events(enum vm_event_item item, long delta)
++{
++}
++static inline void __count_vm_event(enum vm_event_item item)
++{
++}
++static inline void __count_vm_events(enum vm_event_item item, long delta)
++{
++}
++static inline void all_vm_events(unsigned long *ret)
++{
++}
++static inline void vm_events_fold_cpu(int cpu)
++{
++}
++
++#endif /* CONFIG_VM_EVENT_COUNTERS */
++
++#ifdef CONFIG_NUMA_BALANCING
++#define count_vm_numa_event(x)     count_vm_event(x)
++#define count_vm_numa_events(x, y) count_vm_events(x, y)
++#else
++#define count_vm_numa_event(x) do {} while (0)
++#define count_vm_numa_events(x, y) do { (void)(y); } while (0)
++#endif /* CONFIG_NUMA_BALANCING */
++
++#ifdef CONFIG_DEBUG_TLBFLUSH
++#define count_vm_tlb_event(x)	   count_vm_event(x)
++#define count_vm_tlb_events(x, y)  count_vm_events(x, y)
++#else
++#define count_vm_tlb_event(x)     do {} while (0)
++#define count_vm_tlb_events(x, y) do { (void)(y); } while (0)
++#endif
++
++#ifdef CONFIG_DEBUG_VM_VMACACHE
++#define count_vm_vmacache_event(x) count_vm_event(x)
++#else
++#define count_vm_vmacache_event(x) do {} while (0)
++#endif
++
++#define __count_zid_vm_events(item, zid, delta) \
++	__count_vm_events(item##_NORMAL - ZONE_NORMAL + zid, delta)
++
++#endif /* _LINUX_VM_EVENT_H */
+diff --git a/include/linux/vmstat.h b/include/linux/vmstat.h
+index bfe38869498d..7c3c892ce89a 100644
+--- a/include/linux/vmstat.h
++++ b/include/linux/vmstat.h
+@@ -6,6 +6,7 @@
+ #include <linux/percpu.h>
+ #include <linux/mmzone.h>
+ #include <linux/vm_event_item.h>
++#include <linux/vm_event.h>
+ #include <linux/atomic.h>
+ #include <linux/static_key.h>
+ #include <linux/mmdebug.h>
+@@ -40,100 +41,6 @@ enum writeback_stat_item {
+ 	NR_VM_WRITEBACK_STAT_ITEMS,
+ };
  
--	if (unlikely(anon_vma_prepare(vma)))
--		goto oom;
-+	if (unlikely(!vma->anon_vma)) {
-+		if (vmf->flags & FAULT_FLAG_SPECULATIVE) {
-+			ret = VM_FAULT_RETRY;
-+			goto out;
-+		}
-+		if (__anon_vma_prepare(vma))
-+			goto out;
-+	}
- 
- 	if (is_zero_pfn(pte_pfn(vmf->orig_pte))) {
- 		new_page = alloc_zeroed_user_highpage_movable(vma,
- 							      vmf->address);
- 		if (!new_page)
--			goto oom;
-+			goto out;
- 	} else {
- 		new_page = alloc_page_vma(GFP_HIGHUSER_MOVABLE, vma,
- 				vmf->address);
- 		if (!new_page)
--			goto oom;
-+			goto out;
- 
- 		if (!cow_user_page(new_page, old_page, vmf)) {
- 			/*
-@@ -3117,11 +3124,16 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
- 	}
- 
- 	if (mem_cgroup_charge(page_folio(new_page), mm, GFP_KERNEL))
--		goto oom_free_new;
-+		goto out_free_new;
- 	cgroup_throttle_swaprate(new_page, GFP_KERNEL);
- 
- 	__SetPageUptodate(new_page);
- 
-+	if ((vmf->flags & FAULT_FLAG_SPECULATIVE) &&
-+	    !mmu_notifier_trylock(mm)) {
-+		ret = VM_FAULT_RETRY;
-+		goto out_free_new;
-+	}
- 	mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, mm,
- 				vmf->address & PAGE_MASK,
- 				(vmf->address & PAGE_MASK) + PAGE_SIZE);
-@@ -3130,7 +3142,11 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
- 	/*
- 	 * Re-check the pte - we dropped the lock
- 	 */
--	vmf->pte = pte_offset_map_lock(mm, vmf->pmd, vmf->address, &vmf->ptl);
-+	if (!pte_map_lock(vmf)) {
-+		ret = VM_FAULT_RETRY;
-+		/* put_page() will uncharge the page */
-+		goto out_notify;
-+	}
- 	if (likely(pte_same(*vmf->pte, vmf->orig_pte))) {
- 		if (old_page) {
- 			if (!PageAnon(old_page)) {
-@@ -3205,6 +3221,8 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
- 	 * the above ptep_clear_flush_notify() did already call it.
- 	 */
- 	mmu_notifier_invalidate_range_only_end(&range);
-+	if (vmf->flags & FAULT_FLAG_SPECULATIVE)
-+		mmu_notifier_unlock(mm);
- 	if (old_page) {
- 		/*
- 		 * Don't let another task, with possibly unlocked vma,
-@@ -3221,12 +3239,16 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
- 		put_page(old_page);
- 	}
- 	return page_copied ? VM_FAULT_WRITE : 0;
--oom_free_new:
-+out_notify:
-+	mmu_notifier_invalidate_range_only_end(&range);
-+	if (vmf->flags & FAULT_FLAG_SPECULATIVE)
-+		mmu_notifier_unlock(mm);
-+out_free_new:
- 	put_page(new_page);
--oom:
-+out:
- 	if (old_page)
- 		put_page(old_page);
--	return VM_FAULT_OOM;
-+	return ret;
- }
- 
- /**
-@@ -3369,6 +3391,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 			return wp_pfn_shared(vmf);
- 
- 		pte_unmap_unlock(vmf->pte, vmf->ptl);
-+		vmf->pte = NULL;
- 		return wp_page_copy(vmf);
- 	}
- 
-@@ -3407,6 +3430,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 	get_page(vmf->page);
- 
- 	pte_unmap_unlock(vmf->pte, vmf->ptl);
-+	vmf->pte = NULL;
- 	return wp_page_copy(vmf);
- }
- 
+-#ifdef CONFIG_VM_EVENT_COUNTERS
+-/*
+- * Light weight per cpu counter implementation.
+- *
+- * Counters should only be incremented and no critical kernel component
+- * should rely on the counter values.
+- *
+- * Counters are handled completely inline. On many platforms the code
+- * generated will simply be the increment of a global address.
+- */
+-
+-struct vm_event_state {
+-	unsigned long event[NR_VM_EVENT_ITEMS];
+-};
+-
+-DECLARE_PER_CPU(struct vm_event_state, vm_event_states);
+-
+-/*
+- * vm counters are allowed to be racy. Use raw_cpu_ops to avoid the
+- * local_irq_disable overhead.
+- */
+-static inline void __count_vm_event(enum vm_event_item item)
+-{
+-	raw_cpu_inc(vm_event_states.event[item]);
+-}
+-
+-static inline void count_vm_event(enum vm_event_item item)
+-{
+-	this_cpu_inc(vm_event_states.event[item]);
+-}
+-
+-static inline void __count_vm_events(enum vm_event_item item, long delta)
+-{
+-	raw_cpu_add(vm_event_states.event[item], delta);
+-}
+-
+-static inline void count_vm_events(enum vm_event_item item, long delta)
+-{
+-	this_cpu_add(vm_event_states.event[item], delta);
+-}
+-
+-extern void all_vm_events(unsigned long *);
+-
+-extern void vm_events_fold_cpu(int cpu);
+-
+-#else
+-
+-/* Disable counters */
+-static inline void count_vm_event(enum vm_event_item item)
+-{
+-}
+-static inline void count_vm_events(enum vm_event_item item, long delta)
+-{
+-}
+-static inline void __count_vm_event(enum vm_event_item item)
+-{
+-}
+-static inline void __count_vm_events(enum vm_event_item item, long delta)
+-{
+-}
+-static inline void all_vm_events(unsigned long *ret)
+-{
+-}
+-static inline void vm_events_fold_cpu(int cpu)
+-{
+-}
+-
+-#endif /* CONFIG_VM_EVENT_COUNTERS */
+-
+-#ifdef CONFIG_NUMA_BALANCING
+-#define count_vm_numa_event(x)     count_vm_event(x)
+-#define count_vm_numa_events(x, y) count_vm_events(x, y)
+-#else
+-#define count_vm_numa_event(x) do {} while (0)
+-#define count_vm_numa_events(x, y) do { (void)(y); } while (0)
+-#endif /* CONFIG_NUMA_BALANCING */
+-
+-#ifdef CONFIG_DEBUG_TLBFLUSH
+-#define count_vm_tlb_event(x)	   count_vm_event(x)
+-#define count_vm_tlb_events(x, y)  count_vm_events(x, y)
+-#else
+-#define count_vm_tlb_event(x)     do {} while (0)
+-#define count_vm_tlb_events(x, y) do { (void)(y); } while (0)
+-#endif
+-
+-#ifdef CONFIG_DEBUG_VM_VMACACHE
+-#define count_vm_vmacache_event(x) count_vm_event(x)
+-#else
+-#define count_vm_vmacache_event(x) do {} while (0)
+-#endif
+-
+-#define __count_zid_vm_events(item, zid, delta) \
+-	__count_vm_events(item##_NORMAL - ZONE_NORMAL + zid, delta)
+-
+ /*
+  * Zone and node-based page accounting with per cpu differentials.
+  */
 -- 
 2.20.1
 
