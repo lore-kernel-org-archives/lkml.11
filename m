@@ -2,107 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4526C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE192C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348770AbiA1NSI (ORCPT
+        id S1348771AbiA1NTJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:18:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348693AbiA1NRq (ORCPT
+        Fri, 28 Jan 2022 08:19:09 -0500
+Received: from server.lespinasse.org ([63.205.204.226]:47913 "EHLO
+        server.lespinasse.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244259AbiA1NTI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 08:17:46 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A71C061714;
-        Fri, 28 Jan 2022 05:17:46 -0800 (PST)
-Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nDR8H-0000Yc-Jl; Fri, 28 Jan 2022 14:17:41 +0100
-Message-ID: <afaa879e-c888-100e-ff2e-429a2457a014@leemhuis.info>
-Date:   Fri, 28 Jan 2022 14:17:41 +0100
+        Fri, 28 Jan 2022 08:19:08 -0500
+X-Greylist: delayed 540 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Jan 2022 08:19:08 EST
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
+ d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-52-ed;
+ t=1643375407; h=from : to : cc : subject : date : message-id :
+ in-reply-to : references : mime-version : content-transfer-encoding :
+ from; bh=hCAjH/3pJlWdfRDX/fRs7omFq2p1vEsDo9ifolTeLag=;
+ b=HD0KmvGGgLZfvgB0K6C7PZ2rjWPZ8D6sLYkWyssN+ArRq1kjZzSZeXmySfGfqBn5e2UgD
+ l7WYntcAlUF3hoDCg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
+ i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375407; h=from : to
+ : cc : subject : date : message-id : in-reply-to : references :
+ mime-version : content-transfer-encoding : from;
+ bh=hCAjH/3pJlWdfRDX/fRs7omFq2p1vEsDo9ifolTeLag=;
+ b=6rMpX8XrXHJaYfiULXAeV9/onNQ2iau6A3/0eyy0Ajx9IBierM3eTmEDSZnryrm8u8vOK
+ zRgYb2OlZ0xmYkay8H2Xw2P+q2ZqxT2iT6wKbvP0K486GTNCDKkrTJygUZM364JXX6Vjs2q
+ Sj5/WUtqMpz1J4KFYhCAaIV/fkttQSKOWpRLZOnJ79QT2k6Ku2COSOGbnNa3iiyrwgXzQsV
+ kv9V8h3LE4zesq4+lw/VV+nCZWv0cnxN6kivDSKZXxm/93k+qVR/ZM7uBvrRtO6q9l4xqRw
+ M1zrnzijpM7EP0TFMtLPZo8xECv1M1Odjsbe1Q5Tlo60BCX6L/rSKHLUwDGg==
+Received: from zeus.lespinasse.org (zeus.lespinasse.org [IPv6:fd00::150:0])
+        by server.lespinasse.org (Postfix) with ESMTPS id 08D59160969;
+        Fri, 28 Jan 2022 05:10:07 -0800 (PST)
+Received: by zeus.lespinasse.org (Postfix, from userid 1000)
+        id E1C6320476; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
+From:   Michel Lespinasse <michel@lespinasse.org>
+To:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
+        Jerome Glisse <jglisse@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Liam Howlett <liam.howlett@oracle.com>,
+        Rik van Riel <riel@surriel.com>,
+        Paul McKenney <paulmck@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Minchan Kim <minchan@google.com>,
+        Joel Fernandes <joelaf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Michel Lespinasse <michel@lespinasse.org>
+Subject: [PATCH v2 12/35] mm: separate mmap locked assertion from find_vma
+Date:   Fri, 28 Jan 2022 05:09:43 -0800
+Message-Id: <20220128131006.67712-13-michel@lespinasse.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220128131006.67712-1-michel@lespinasse.org>
+References: <20220128131006.67712-1-michel@lespinasse.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: Observation of a memory leak with commit 314001f0bf92 ("af_unix:
- Add OOB support")
-Content-Language: en-BW
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Rao Shoaib <rao.shoaib@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
-        regressions@lists.linux.dev
-References: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
- <20220109132038.38f8ae4f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <a754b7d0-8a20-9730-c439-1660994005d0@leemhuis.info>
- <CAKXUXMygcVJ2v5enu-KY9_2reC6+aAk8F9q5RiwwNp4wO-prug@mail.gmail.com>
- <20220110082949.3a14a738@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20220110082949.3a14a738@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1643375866;4d6407e0;
-X-HE-SMSGID: 1nDR8H-0000Yc-Jl
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10.01.22 17:29, Jakub Kicinski wrote:
-> On Mon, 10 Jan 2022 17:19:56 +0100 Lukas Bulwahn wrote:
->> It's a regression if some application or practical use case running fine on one
->> Linux kernel works worse or not at all with a newer version compiled using a
->> similar configuration.
->>
->> The af_unix functionality without oob support works before
->> 314001f0bf92 ("af_unix: Add OOB support").
->> The af_unix functionality without oob support works after 314001f0bf92
->> ("af_unix: Add OOB support").
->> The af_unix with oob support after the new feature with 314001f0bf92
->> ("af_unix: Add OOB support") makes a memory leak visible; we do not
->> know if this feature even triggers it or just makes it visible.
->>
->> Now, if we disable oob support we get a kernel without an observable
->> memory leak. However, oob support is added by default, and this makes
->> this memory leak visible. So, if oob support is turned into a
->> non-default option or nobody ever made use of the oob support before,
->> it really does not count as regression at all. The oob support did not
->> work before and now it works but just leaks a bit of memory---it is
->> potentially a bug, but not a regression. Of course, maybe oob support
->> is also just intended to make this memory leak observable, who knows?
->> Then, it is not even a bug, but a feature.
-> I see, thanks for the explanation. It wasn't clear from the "does not
-> repro on 5.15, does repro on net-next" type of wording that the repro
-> actually uses the new functionality.
+This adds a new __find_vma() function, which implements find_vma minus
+the mmap_assert_locked() assertion.
 
-Thx from my side, too.
+find_vma() is then implemented as an inline wrapper around __find_vma().
 
->> Thorsten's database is still quite empty, so let us keep tracking the
->> progress with regzbot. I guess we cannot mark "issues" in regzbot as a
->> true regression or as a bug (an issue that appears with a new
->> feature).
+Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
+---
+ drivers/gpu/drm/i915/i915_gpu_error.c | 4 ++--
+ include/linux/mm.h                    | 9 ++++++++-
+ mm/mmap.c                             | 5 ++---
+ 3 files changed, 12 insertions(+), 6 deletions(-)
 
-Yeah, I definitely don't want regzbot to be used to track ordinary
-issues, but sometimes it's hard to find clear boundaries between issue
-and regression. This is one, but I tend to say it's an issue, as users s
-won't notice the leak in practice afaics. But there are other areas that
-are greyish; an kernel Oops/Warning/BUG or a hang sometimes might also
-not strictly be a regression, but I guess tracking them might be a good
-idea, so I'm open to those.
+diff --git a/drivers/gpu/drm/i915/i915_gpu_error.c b/drivers/gpu/drm/i915/i915_gpu_error.c
+index 5ae812d60abe..94ab71a9b493 100644
+--- a/drivers/gpu/drm/i915/i915_gpu_error.c
++++ b/drivers/gpu/drm/i915/i915_gpu_error.c
+@@ -515,7 +515,7 @@ static void error_print_context(struct drm_i915_error_state_buf *m,
+ }
+ 
+ static struct i915_vma_coredump *
+-__find_vma(struct i915_vma_coredump *vma, const char *name)
++__i915_find_vma(struct i915_vma_coredump *vma, const char *name)
+ {
+ 	while (vma) {
+ 		if (strcmp(vma->name, name) == 0)
+@@ -529,7 +529,7 @@ __find_vma(struct i915_vma_coredump *vma, const char *name)
+ static struct i915_vma_coredump *
+ find_batch(const struct intel_engine_coredump *ee)
+ {
+-	return __find_vma(ee->vma, "batch");
++	return __i915_find_vma(ee->vma, "batch");
+ }
+ 
+ static void error_print_engine(struct drm_i915_error_state_buf *m,
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 4600dbb98cef..6f7712179503 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2751,10 +2751,17 @@ extern int expand_upwards(struct vm_area_struct *vma, unsigned long address);
+ #endif
+ 
+ /* Look up the first VMA which satisfies  addr < vm_end,  NULL if none. */
+-extern struct vm_area_struct * find_vma(struct mm_struct * mm, unsigned long addr);
++extern struct vm_area_struct * __find_vma(struct mm_struct * mm, unsigned long addr);
+ extern struct vm_area_struct * find_vma_prev(struct mm_struct * mm, unsigned long addr,
+ 					     struct vm_area_struct **pprev);
+ 
++static inline
++struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
++{
++	mmap_assert_locked(mm);
++	return __find_vma(mm, addr);
++}
++
+ /**
+  * find_vma_intersection() - Look up the first VMA which intersects the interval
+  * @mm: The process address space.
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 1e8fdb0b51ed..b09a2c875507 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2276,12 +2276,11 @@ get_unmapped_area(struct file *file, unsigned long addr, unsigned long len,
+ EXPORT_SYMBOL(get_unmapped_area);
+ 
+ /* Look up the first VMA which satisfies  addr < vm_end,  NULL if none. */
+-struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
++struct vm_area_struct *__find_vma(struct mm_struct *mm, unsigned long addr)
+ {
+ 	struct rb_node *rb_node;
+ 	struct vm_area_struct *vma;
+ 
+-	mmap_assert_locked(mm);
+ 	/* Check the cache first. */
+ 	vma = vmacache_find(mm, addr);
+ 	if (likely(vma))
+@@ -2308,7 +2307,7 @@ struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
+ 	return vma;
+ }
+ 
+-EXPORT_SYMBOL(find_vma);
++EXPORT_SYMBOL(__find_vma);
+ 
+ /*
+  * Same as find_vma, but also return a pointer to the previous VMA in *pprev.
+-- 
+2.20.1
 
-Anyway:
-
->> Also, this reproducer is automatically generated, so it barely
->> qualifies as "some application or practical use case", but at best as
->> some derived "stress test program" or "micro benchmark".
-
-I left it tracked until now, but after Jakub's reply nothing to actually
-address the issue seem to have happened. I guess in that case it's not
-that important and it's time to remove it from the list of open
-regressions tracked by regzbot, if that is okay for everyone:
-
-#regzbot invalid: not strictly a regression
-
-Ciao, Thorsten
