@@ -2,258 +2,501 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50815C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 00:54:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A057CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 00:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345520AbiA1Ayl (ORCPT
+        id S1344779AbiA1Azp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 19:54:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53500 "EHLO
+        Thu, 27 Jan 2022 19:55:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345081AbiA1Axz (ORCPT
+        with ESMTP id S1344826AbiA1Azh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 19:53:55 -0500
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7D0C06175B
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 16:53:51 -0800 (PST)
-Received: by mail-pf1-x44a.google.com with SMTP id d9-20020a62f809000000b004bb5ffee9b3so2462700pfh.15
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 16:53:51 -0800 (PST)
+        Thu, 27 Jan 2022 19:55:37 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BB8C061714;
+        Thu, 27 Jan 2022 16:55:36 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id u6so8569829lfm.10;
+        Thu, 27 Jan 2022 16:55:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=cvygIoGiSQi3oTt0w5ZXf8sI2CTAC6vrqi+OOTHPRDE=;
-        b=FVi96naPKGiz/aF8Eh+slKp5cJeQJ6po/1hq26mKVP/XUrxRfayPckK10ADhIvj3hI
-         i6+e5NIccsNi5PDn0+PxRt/33GHxddNO0Ne34QQopnoj+FDYcH65XRq7iGHIPEyvA2/9
-         iP3EZF0F13nryrttQEIQmptEdrFzblKIulKPzwhnxjnkIkqhEoom40mHGIVAXCG7LY7L
-         Prn8DXm3yKx5BQl7bBagSIkmAmX3q2PX/9+GyeOJec2+HzI5iJRp220XcVWN6tp4pMdo
-         +xjl65qgtOzI5iooEsKb0MpGDXnsfF9ZaGON1CIvLpJUyXGs2J8qZ83smaU5PEydAgbx
-         NrqA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uPfqXqCnZQyWiLqoHqK+K6Sm6LUScfhldLkzmE86PYs=;
+        b=IXbqPfPdxYWCCRNoB5GfmBm6gLtq2qsPcU2U0XAgwmZC/2NB+VofkA0Tyg4WFvGMe2
+         2gTZWhR2vFaKK6Xcnrb4oEfJ9onGUnpmx8wdsDn6clYhsVtbxpsZjy9dLiYJekUbygbM
+         +i0w0WD5QCRgupooJ+RnKWaajxrZ0Rx5/TWxqgA1nQytmuZeZAjPAHa3HdEl5LtOTz11
+         3wsGl3AN6iEH+Pu28JLYvnmJCtryxgsmfiEI0+L0LTbMmspnTdmbTIzsIXMxbLVVzDmU
+         aCwMYNOsRFtnLsBEm7VxH7479aggALchljZoXiLpH8UOsbAFPzpgimBLX1g1o+SfSdml
+         MH2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=cvygIoGiSQi3oTt0w5ZXf8sI2CTAC6vrqi+OOTHPRDE=;
-        b=Tkuzv8WvpJRXGnq6Zur8gQbgqtiHjc8ABwlbUz6gMA1ezrX6WkE7F3gtztCtlpuxZ0
-         OUYBJ8f05qrFZkkhsZ2osroD60kErAyVwwNZW1rawEVy+gXcThOVwYYP6Mfw+dJU70AP
-         SPJ769us0rPnKTsm2GkrHyHS63ol+c3DmZZTbw7DGoMJbznPUB2OgxU6ChEwDeiWodSJ
-         oumJYmz/03aaGeyINQ8Q6mZ/nTPMG9vL0qpZRhMik9UfhFWuk4gchhFVrmlNlD8prC3p
-         EM5jzi1Cw50pz2wfClTkr/w5QcB87KkbqTEm76GI7Xr1RiwhII9uIYAQQZb2C9x0CV0K
-         aW+A==
-X-Gm-Message-State: AOAM531GnKqODpZMNqaWKNBeuChylMpiy5CaRAliKKqi16reOTXaSSB5
-        zsVzBs8PLoQ2lobJ6WSSgRUjocTLqD8=
-X-Google-Smtp-Source: ABdhPJyb8tZJAL5p8BS/mQylHLPkXgqhV/ICfjkoJuopLsQFkNASSP9NS2yeeF9/K0Wc++PRvjolQ9+5vtQ=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:9a4b:: with SMTP id
- x11mr5995083plv.56.1643331230528; Thu, 27 Jan 2022 16:53:50 -0800 (PST)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 28 Jan 2022 00:52:08 +0000
-In-Reply-To: <20220128005208.4008533-1-seanjc@google.com>
-Message-Id: <20220128005208.4008533-23-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220128005208.4008533-1-seanjc@google.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH 22/22] KVM: SVM: Use kvm-x86-ops.h to fill svm_x86_ops
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <like.xu.linux@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uPfqXqCnZQyWiLqoHqK+K6Sm6LUScfhldLkzmE86PYs=;
+        b=tsfObk3M4lT9wdcjjT3m86Ta010CYKifYJcmP9Vf01fYnjpRaWIcduHUlEyTUleyoh
+         Lbi5abL8+o95/E+TPODx2ECccnLyqAI4j8vdgZYfDuZWI79bA5tdiFGryKt1iTVHWYth
+         WNtyfsEn016W32iC2NqCvF+cLvquhFPLWu79MEurEZy8yqVyjyDoST5AtihYUDVEIknB
+         6UVepgKbOSvGof05n447xRYT8FpaD1CsX7JkR91fx1FNm4APvP9pqud4fGcCyXEZNKl+
+         CVb3icZZPbprC7WBeh4Ci+QdQ58vHsfn+3Z3KQaWckw0asyCP2+7k1SbK85DfLKZB9u3
+         LPeg==
+X-Gm-Message-State: AOAM530PdIrF7bdqaE2uwIniZIsNBeGNO9wWF8NjdyS4EDcQGhHBkz57
+        FHJZFKAk+z3a1VGx/if5IbohlIVxrXK/6y20j08=
+X-Google-Smtp-Source: ABdhPJzKkwANx18s3dz7Q6/hs30nwVNez2elfD83wDb90hd4JZz6ctQ4An4hiHzAurhZiBcQe+MaSlifuxq5XFTdoWY=
+X-Received: by 2002:a05:6512:2289:: with SMTP id f9mr4272518lfu.537.1643331334748;
+ Thu, 27 Jan 2022 16:55:34 -0800 (PST)
+MIME-Version: 1.0
+References: <164329930161.843658.7387773437540491743.stgit@warthog.procyon.org.uk>
+ <164329937835.843658.13129382687019174242.stgit@warthog.procyon.org.uk>
+In-Reply-To: <164329937835.843658.13129382687019174242.stgit@warthog.procyon.org.uk>
+From:   Steve French <smfrench@gmail.com>
+Date:   Thu, 27 Jan 2022 18:55:23 -0600
+Message-ID: <CAH2r5mu4FeX2x=Xd0jDnQopTfhOBP_P91-NH-A+bNdx6THCu8A@mail.gmail.com>
+Subject: Re: [PATCH 4/4] cifs: Implement cache I/O by accessing the cache directly
+To:     David Howells <dhowells@redhat.com>
+Cc:     Shyam Prasad N <nspmangalore@gmail.com>,
+        CIFS <linux-cifs@vger.kernel.org>, linux-cachefs@redhat.com,
+        Jeff Layton <jlayton@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fill svm_x86_ops by including kvm-x86-ops.h and defining the appropriate
-macros.  Document the handful of exceptions where svm_x86_ops deviates
-from the "default" (mostly due to lack of hardware support for a related
-feature).
+Regression tests so far on Dave's cifs fscache patch series are going
+fine.  First series of tests I ran were this:
+http://smb3-test-rhel-75.southcentralus.cloudapp.azure.com/#/builders/11/builds/160
+but I have to run additional tests with fscache enabled etc.
 
-No functional change intended.
+I saw that checkpatch had some minor complaints on this patch (patch
+4) which I cleaned up, but was wondering other's thoughts on this
+checkpatch warning:
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/svm/svm.c | 156 +++++++++--------------------------------
- 1 file changed, 32 insertions(+), 124 deletions(-)
+WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code
+rather than BUG() or BUG_ON()
+#101: FILE: fs/cifs/file.c:4449:
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 7f70f456a5a5..b3761073fa81 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4464,138 +4464,46 @@ static int svm_vm_init(struct kvm *kvm)
- 	return 0;
- }
- 
-+/*
-+ * SVM unconditionally flushes between nested transition and so doesn't provide
-+ * a "flush all" variant, and a guest's ASID is tied to both guest and NPT
-+ * translations, thus there's no "flush guest" variant.
-+ */
-+#define svm_flush_tlb_all svm_flush_tlb_current
-+#define svm_flush_tlb_guest svm_flush_tlb_current
-+
-+/* APICv hooks not needed/implemented for AVIC. */
-+#define avic_guest_apic_has_interrupt NULL
-+#define avic_set_apic_access_page_addr NULL
-+#define avic_sync_pir_to_irr NULL
-+#define avic_pi_start_assignment NULL
-+
-+/* SVM has no hyperversior debug trap (VMX's Monitor Trap Flag). */
-+#define svm_update_emulated_instruction NULL
-+
-+/* SVM has no CPU assisted dirty logging (VMX's Page Modification Logging). */
-+#define svm_update_cpu_dirty_logging NULL
-+
-+/* SVM has no hypervisor timer (VMX's preemption timer). */
-+#define svm_set_hv_timer NULL
-+#define svm_cancel_hv_timer NULL
-+#define svm_migrate_timers NULL
-+#define svm_request_immediate_exit __kvm_request_immediate_exit
-+
- static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.name = "kvm_amd",
--
--	.hardware_unsetup = svm_hardware_unsetup,
--	.hardware_enable = svm_hardware_enable,
--	.hardware_disable = svm_hardware_disable,
--	.cpu_has_accelerated_tpr = svm_cpu_has_accelerated_tpr,
--	.has_emulated_msr = svm_has_emulated_msr,
--
--	.vcpu_create = svm_vcpu_create,
--	.vcpu_free = svm_vcpu_free,
--	.vcpu_reset = svm_vcpu_reset,
--
- 	.vm_size = sizeof(struct kvm_svm),
--	.vm_init = svm_vm_init,
--	.vm_destroy = svm_vm_destroy,
--
--	.prepare_switch_to_guest = svm_prepare_switch_to_guest,
--	.vcpu_load = svm_vcpu_load,
--	.vcpu_put = svm_vcpu_put,
--	.vcpu_blocking = avic_vcpu_blocking,
--	.vcpu_unblocking = avic_vcpu_unblocking,
--
--	.update_exception_bitmap = svm_update_exception_bitmap,
--	.get_msr_feature = svm_get_msr_feature,
--	.get_msr = svm_get_msr,
--	.set_msr = svm_set_msr,
--	.get_segment_base = svm_get_segment_base,
--	.get_segment = svm_get_segment,
--	.set_segment = svm_set_segment,
--	.get_cpl = svm_get_cpl,
--	.get_cs_db_l_bits = svm_get_cs_db_l_bits,
--	.set_cr0 = svm_set_cr0,
--	.post_set_cr3 = sev_post_set_cr3,
--	.is_valid_cr4 = svm_is_valid_cr4,
--	.set_cr4 = svm_set_cr4,
--	.set_efer = svm_set_efer,
--	.get_idt = svm_get_idt,
--	.set_idt = svm_set_idt,
--	.get_gdt = svm_get_gdt,
--	.set_gdt = svm_set_gdt,
--	.set_dr7 = svm_set_dr7,
--	.sync_dirty_debug_regs = svm_sync_dirty_debug_regs,
--	.cache_reg = svm_cache_reg,
--	.get_rflags = svm_get_rflags,
--	.set_rflags = svm_set_rflags,
--	.get_if_flag = svm_get_if_flag,
--
--	.flush_tlb_all = svm_flush_tlb_current,
--	.flush_tlb_current = svm_flush_tlb_current,
--	.flush_tlb_gva = svm_flush_tlb_gva,
--	.flush_tlb_guest = svm_flush_tlb_current,
--
--	.vcpu_pre_run = svm_vcpu_pre_run,
--	.vcpu_run = svm_vcpu_run,
--	.handle_exit = svm_handle_exit,
--	.skip_emulated_instruction = svm_skip_emulated_instruction,
--	.update_emulated_instruction = NULL,
--	.set_interrupt_shadow = svm_set_interrupt_shadow,
--	.get_interrupt_shadow = svm_get_interrupt_shadow,
--	.patch_hypercall = svm_patch_hypercall,
--	.inject_irq = svm_inject_irq,
--	.inject_nmi = svm_inject_nmi,
--	.queue_exception = svm_queue_exception,
--	.cancel_injection = svm_cancel_injection,
--	.interrupt_allowed = svm_interrupt_allowed,
--	.nmi_allowed = svm_nmi_allowed,
--	.get_nmi_mask = svm_get_nmi_mask,
--	.set_nmi_mask = svm_set_nmi_mask,
--	.enable_nmi_window = svm_enable_nmi_window,
--	.enable_irq_window = svm_enable_irq_window,
--	.update_cr8_intercept = svm_update_cr8_intercept,
--	.set_virtual_apic_mode = avic_set_virtual_apic_mode,
--	.refresh_apicv_exec_ctrl = avic_refresh_apicv_exec_ctrl,
--	.check_apicv_inhibit_reasons = avic_check_apicv_inhibit_reasons,
--	.load_eoi_exitmap = avic_load_eoi_exitmap,
--	.hwapic_irr_update = avic_hwapic_irr_update,
--	.hwapic_isr_update = avic_hwapic_isr_update,
--	.apicv_post_state_restore = avic_apicv_post_state_restore,
--
--	.set_tss_addr = svm_set_tss_addr,
--	.set_identity_map_addr = svm_set_identity_map_addr,
--	.get_mt_mask = svm_get_mt_mask,
--
--	.get_exit_info = svm_get_exit_info,
--
--	.vcpu_after_set_cpuid = svm_vcpu_after_set_cpuid,
--
--	.has_wbinvd_exit = svm_has_wbinvd_exit,
--
--	.get_l2_tsc_offset = svm_get_l2_tsc_offset,
--	.get_l2_tsc_multiplier = svm_get_l2_tsc_multiplier,
--	.write_tsc_offset = svm_write_tsc_offset,
--	.write_tsc_multiplier = svm_write_tsc_multiplier,
--
--	.load_mmu_pgd = svm_load_mmu_pgd,
--
--	.check_intercept = svm_check_intercept,
--	.handle_exit_irqoff = svm_handle_exit_irqoff,
--
--	.request_immediate_exit = __kvm_request_immediate_exit,
--
--	.sched_in = svm_sched_in,
- 
- 	.pmu_ops = &amd_pmu_ops,
- 	.nested_ops = &svm_nested_ops,
- 
--	.deliver_interrupt = svm_deliver_interrupt,
--	.dy_apicv_has_pending_interrupt = avic_dy_apicv_has_pending_interrupt,
--	.pi_update_irte = avic_pi_update_irte,
--	.setup_mce = svm_setup_mce,
-+#define KVM_X86_OP(func) .func = svm_##func,
-+#define KVM_X86_APICV_OP(func) .func = avic_##func,
-+#define KVM_X86_CVM_OP(func) .func = sev_##func,
- 
--	.smi_allowed = svm_smi_allowed,
--	.enter_smm = svm_enter_smm,
--	.leave_smm = svm_leave_smm,
--	.enable_smi_window = svm_enable_smi_window,
--
--	.mem_enc_ioctl = sev_mem_enc_ioctl,
--	.mem_enc_register_region = sev_mem_enc_register_region,
--	.mem_enc_unregister_region = sev_mem_enc_unregister_region,
--
--	.vm_copy_enc_context_from = sev_vm_copy_enc_context_from,
--	.vm_move_enc_context_from = sev_vm_move_enc_context_from,
--
--	.can_emulate_instruction = svm_can_emulate_instruction,
--
--	.apic_init_signal_blocked = svm_apic_init_signal_blocked,
--
--	.msr_filter_changed = svm_msr_filter_changed,
--	.complete_emulated_msr = svm_complete_emulated_msr,
--
--	.vcpu_deliver_sipi_vector = svm_vcpu_deliver_sipi_vector,
-+/* Hyper-V hooks are filled at runtime. */
-+#define KVM_X86_HYPERV_OP(func) .func = NULL,
-+#include <asm/kvm-x86-ops.h>
- };
- 
- /*
+ie
+
++ page = readahead_page(ractl);
++ BUG_ON(!page);
+
+On Thu, Jan 27, 2022 at 10:03 AM David Howells <dhowells@redhat.com> wrote:
+>
+> Move cifs to using fscache DIO API instead of the old upstream I/O API as
+> that has been removed.  This is a stopgap solution as the intention is that
+> at sometime in the future, the cache will move to using larger blocks and
+> won't be able to store individual pages in order to deal with the potential
+> for data corruption due to the backing filesystem being able insert/remove
+> bridging blocks of zeros into its extent list[1].
+>
+> cifs then reads and writes cache pages synchronously and one page at a time.
+>
+> The preferred change would be to use the netfs lib, but the new I/O API can
+> be used directly.  It's just that as the cache now needs to track data for
+> itself, caching blocks may exceed page size...
+>
+> This code is somewhat borrowed from my "fallback I/O" patchset[2].
+>
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: Steve French <smfrench@gmail.com>
+> cc: Shyam Prasad N <nspmangalore@gmail.com>
+> cc: linux-cifs@vger.kernel.org
+> cc: linux-cachefs@redhat.com
+> Link: https://lore.kernel.org/r/YO17ZNOcq+9PajfQ@mit.edu [1]
+> Link: https://lore.kernel.org/r/202112100957.2oEDT20W-lkp@intel.com/ [2]
+> ---
+>
+>  fs/cifs/file.c    |   55 +++++++++++++++++++++--
+>  fs/cifs/fscache.c |  126 +++++++++++++++++++++++++++++++++++++++++++++--------
+>  fs/cifs/fscache.h |   79 +++++++++++++++++++++------------
+>  3 files changed, 207 insertions(+), 53 deletions(-)
+>
+> diff --git a/fs/cifs/file.c b/fs/cifs/file.c
+> index be62dc29dc54..1b41b6f2a04b 100644
+> --- a/fs/cifs/file.c
+> +++ b/fs/cifs/file.c
+> @@ -4276,12 +4276,12 @@ cifs_readv_complete(struct work_struct *work)
+>                 } else
+>                         SetPageError(page);
+>
+> -               unlock_page(page);
+> -
+>                 if (rdata->result == 0 ||
+>                     (rdata->result == -EAGAIN && got_bytes))
+>                         cifs_readpage_to_fscache(rdata->mapping->host, page);
+>
+> +               unlock_page(page);
+> +
+>                 got_bytes -= min_t(unsigned int, PAGE_SIZE, got_bytes);
+>
+>                 put_page(page);
+> @@ -4396,7 +4396,11 @@ static void cifs_readahead(struct readahead_control *ractl)
+>         struct cifs_sb_info *cifs_sb = CIFS_FILE_SB(ractl->file);
+>         struct TCP_Server_Info *server;
+>         pid_t pid;
+> -       unsigned int xid, last_batch_size = 0;
+> +       unsigned int xid, nr_pages, last_batch_size = 0, cache_nr_pages = 0;
+> +       pgoff_t next_cached = ULONG_MAX;
+> +       bool caching = fscache_cookie_enabled(cifs_inode_cookie(ractl->mapping->host)) &&
+> +               cifs_inode_cookie(ractl->mapping->host)->cache_priv;
+> +       bool check_cache = caching;
+>
+>         xid = get_xid();
+>
+> @@ -4414,12 +4418,52 @@ static void cifs_readahead(struct readahead_control *ractl)
+>         /*
+>          * Chop the readahead request up into rsize-sized read requests.
+>          */
+> -       while (readahead_count(ractl) - last_batch_size) {
+> -               unsigned int i, nr_pages, got, rsize;
+> +       while ((nr_pages = readahead_count(ractl) - last_batch_size)) {
+> +               unsigned int i, got, rsize;
+>                 struct page *page;
+>                 struct cifs_readdata *rdata;
+>                 struct cifs_credits credits_on_stack;
+>                 struct cifs_credits *credits = &credits_on_stack;
+> +               pgoff_t index = readahead_index(ractl) + last_batch_size;
+> +
+> +               /*
+> +                * Find out if we have anything cached in the range of
+> +                * interest, and if so, where the next chunk of cached data is.
+> +                */
+> +               if (caching) {
+> +                       if (check_cache) {
+> +                               rc = cifs_fscache_query_occupancy(
+> +                                       ractl->mapping->host, index, nr_pages,
+> +                                       &next_cached, &cache_nr_pages);
+> +                               if (rc < 0)
+> +                                       caching = false;
+> +                               check_cache = false;
+> +                       }
+> +
+> +                       if (index == next_cached) {
+> +                               /*
+> +                                * TODO: Send a whole batch of pages to be read
+> +                                * by the cache.
+> +                                */
+> +                               page = readahead_page(ractl);
+> +                               BUG_ON(!page);
+> +                               if (cifs_readpage_from_fscache(ractl->mapping->host,
+> +                                                              page) < 0) {
+> +                                       /*
+> +                                        * TODO: Deal with cache read failure
+> +                                        * here, but for the moment, delegate
+> +                                        * that to readpage.
+> +                                        */
+> +                                       caching = false;
+> +                               }
+> +                               unlock_page(page);
+> +                               next_cached++;
+> +                               cache_nr_pages--;
+> +                               if (cache_nr_pages == 0)
+> +                                       check_cache = true;
+> +                               continue;
+> +                       }
+> +               }
+>
+>                 if (open_file->invalidHandle) {
+>                         rc = cifs_reopen_file(open_file, true);
+> @@ -4435,6 +4479,7 @@ static void cifs_readahead(struct readahead_control *ractl)
+>                 if (rc)
+>                         break;
+>                 nr_pages = min_t(size_t, rsize / PAGE_SIZE, readahead_count(ractl));
+> +               nr_pages = min_t(size_t, nr_pages, next_cached - index);
+>
+>                 /*
+>                  * Give up immediately if rsize is too small to read an entire
+> diff --git a/fs/cifs/fscache.c b/fs/cifs/fscache.c
+> index efaac4d5ff55..f98cfcc0d397 100644
+> --- a/fs/cifs/fscache.c
+> +++ b/fs/cifs/fscache.c
+> @@ -134,37 +134,127 @@ void cifs_fscache_release_inode_cookie(struct inode *inode)
+>         }
+>  }
+>
+> +static inline void fscache_end_operation(struct netfs_cache_resources *cres)
+> +{
+> +       const struct netfs_cache_ops *ops = fscache_operation_valid(cres);
+> +
+> +       if (ops)
+> +               ops->end_operation(cres);
+> +}
+> +
+>  /*
+> - * Retrieve a page from FS-Cache
+> + * Fallback page reading interface.
+>   */
+> -int __cifs_readpage_from_fscache(struct inode *inode, struct page *page)
+> +static int fscache_fallback_read_page(struct inode *inode, struct page *page)
+>  {
+> -       cifs_dbg(FYI, "%s: (fsc:%p, p:%p, i:0x%p\n",
+> -                __func__, CIFS_I(inode)->fscache, page, inode);
+> -       return -ENOBUFS; // Needs conversion to using netfslib
+> +       struct netfs_cache_resources cres;
+> +       struct fscache_cookie *cookie = cifs_inode_cookie(inode);
+> +       struct iov_iter iter;
+> +       struct bio_vec bvec[1];
+> +       int ret;
+> +
+> +       memset(&cres, 0, sizeof(cres));
+> +       bvec[0].bv_page         = page;
+> +       bvec[0].bv_offset       = 0;
+> +       bvec[0].bv_len          = PAGE_SIZE;
+> +       iov_iter_bvec(&iter, READ, bvec, ARRAY_SIZE(bvec), PAGE_SIZE);
+> +
+> +       ret = fscache_begin_read_operation(&cres, cookie);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       ret = fscache_read(&cres, page_offset(page), &iter, NETFS_READ_HOLE_FAIL,
+> +                          NULL, NULL);
+> +       fscache_end_operation(&cres);
+> +       return ret;
+>  }
+>
+>  /*
+> - * Retrieve a set of pages from FS-Cache
+> + * Fallback page writing interface.
+>   */
+> -int __cifs_readpages_from_fscache(struct inode *inode,
+> -                               struct address_space *mapping,
+> -                               struct list_head *pages,
+> -                               unsigned *nr_pages)
+> +static int fscache_fallback_write_page(struct inode *inode, struct page *page,
+> +                                      bool no_space_allocated_yet)
+>  {
+> -       cifs_dbg(FYI, "%s: (0x%p/%u/0x%p)\n",
+> -                __func__, CIFS_I(inode)->fscache, *nr_pages, inode);
+> -       return -ENOBUFS; // Needs conversion to using netfslib
+> +       struct netfs_cache_resources cres;
+> +       struct fscache_cookie *cookie = cifs_inode_cookie(inode);
+> +       struct iov_iter iter;
+> +       struct bio_vec bvec[1];
+> +       loff_t start = page_offset(page);
+> +       size_t len = PAGE_SIZE;
+> +       int ret;
+> +
+> +       memset(&cres, 0, sizeof(cres));
+> +       bvec[0].bv_page         = page;
+> +       bvec[0].bv_offset       = 0;
+> +       bvec[0].bv_len          = PAGE_SIZE;
+> +       iov_iter_bvec(&iter, WRITE, bvec, ARRAY_SIZE(bvec), PAGE_SIZE);
+> +
+> +       ret = fscache_begin_write_operation(&cres, cookie);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       ret = cres.ops->prepare_write(&cres, &start, &len, i_size_read(inode),
+> +                                     no_space_allocated_yet);
+> +       if (ret == 0)
+> +               ret = fscache_write(&cres, page_offset(page), &iter, NULL, NULL);
+> +       fscache_end_operation(&cres);
+> +       return ret;
+>  }
+>
+> -void __cifs_readpage_to_fscache(struct inode *inode, struct page *page)
+> +/*
+> + * Retrieve a page from FS-Cache
+> + */
+> +int __cifs_readpage_from_fscache(struct inode *inode, struct page *page)
+>  {
+> -       struct cifsInodeInfo *cifsi = CIFS_I(inode);
+> +       int ret;
+>
+> -       WARN_ON(!cifsi->fscache);
+> +       cifs_dbg(FYI, "%s: (fsc:%p, p:%p, i:0x%p\n",
+> +                __func__, cifs_inode_cookie(inode), page, inode);
+>
+> +       ret = fscache_fallback_read_page(inode, page);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       /* Read completed synchronously */
+> +       SetPageUptodate(page);
+> +       return 0;
+> +}
+> +
+> +void __cifs_readpage_to_fscache(struct inode *inode, struct page *page)
+> +{
+>         cifs_dbg(FYI, "%s: (fsc: %p, p: %p, i: %p)\n",
+> -                __func__, cifsi->fscache, page, inode);
+> +                __func__, cifs_inode_cookie(inode), page, inode);
+> +
+> +       fscache_fallback_write_page(inode, page, true);
+> +}
+> +
+> +/*
+> + * Query the cache occupancy.
+> + */
+> +int __cifs_fscache_query_occupancy(struct inode *inode,
+> +                                  pgoff_t first, unsigned nr_pages,
+> +                                  pgoff_t *_data_first,
+> +                                  unsigned int *_data_nr_pages)
+> +{
+> +       struct netfs_cache_resources cres;
+> +       struct fscache_cookie *cookie = cifs_inode_cookie(inode);
+> +       loff_t start, data_start;
+> +       size_t len, data_len;
+> +       int ret;
+>
+> -       // Needs conversion to using netfslib
+> +       ret = fscache_begin_read_operation(&cres, cookie);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       start = first * PAGE_SIZE;
+> +       len = nr_pages * PAGE_SIZE;
+> +       ret = cres.ops->query_occupancy(&cres, start, len, PAGE_SIZE,
+> +                                       &data_start, &data_len);
+> +       if (ret == 0) {
+> +               *_data_first = data_start / PAGE_SIZE;
+> +               *_data_nr_pages = len / PAGE_SIZE;
+> +       }
+> +
+> +       fscache_end_operation(&cres);
+> +       return ret;
+>  }
+> diff --git a/fs/cifs/fscache.h b/fs/cifs/fscache.h
+> index c6ca49ac33d4..ed4b08df1961 100644
+> --- a/fs/cifs/fscache.h
+> +++ b/fs/cifs/fscache.h
+> @@ -9,6 +9,7 @@
+>  #ifndef _CIFS_FSCACHE_H
+>  #define _CIFS_FSCACHE_H
+>
+> +#include <linux/swap.h>
+>  #include <linux/fscache.h>
+>
+>  #include "cifsglob.h"
+> @@ -58,14 +59,6 @@ void cifs_fscache_fill_coherency(struct inode *inode,
+>  }
+>
+>
+> -extern int cifs_fscache_release_page(struct page *page, gfp_t gfp);
+> -extern int __cifs_readpage_from_fscache(struct inode *, struct page *);
+> -extern int __cifs_readpages_from_fscache(struct inode *,
+> -                                        struct address_space *,
+> -                                        struct list_head *,
+> -                                        unsigned *);
+> -extern void __cifs_readpage_to_fscache(struct inode *, struct page *);
+> -
+>  static inline struct fscache_cookie *cifs_inode_cookie(struct inode *inode)
+>  {
+>         return CIFS_I(inode)->fscache;
+> @@ -80,33 +73,52 @@ static inline void cifs_invalidate_cache(struct inode *inode, unsigned int flags
+>                            i_size_read(inode), flags);
+>  }
+>
+> -static inline int cifs_readpage_from_fscache(struct inode *inode,
+> -                                            struct page *page)
+> -{
+> -       if (CIFS_I(inode)->fscache)
+> -               return __cifs_readpage_from_fscache(inode, page);
+> +extern int __cifs_fscache_query_occupancy(struct inode *inode,
+> +                                         pgoff_t first, unsigned nr_pages,
+> +                                         pgoff_t *_data_first,
+> +                                         unsigned int *_data_nr_pages);
+>
+> -       return -ENOBUFS;
+> +static inline int cifs_fscache_query_occupancy(struct inode *inode,
+> +                                              pgoff_t first, unsigned nr_pages,
+> +                                              pgoff_t *_data_first,
+> +                                              unsigned int *_data_nr_pages)
+> +{
+> +       if (!cifs_inode_cookie(inode))
+> +               return -ENOBUFS;
+> +       return __cifs_fscache_query_occupancy(inode, first, nr_pages,
+> +                                             _data_first, _data_nr_pages);
+>  }
+>
+> -static inline int cifs_readpages_from_fscache(struct inode *inode,
+> -                                             struct address_space *mapping,
+> -                                             struct list_head *pages,
+> -                                             unsigned *nr_pages)
+> +extern int __cifs_readpage_from_fscache(struct inode *, struct page *);
+> +extern void __cifs_readpage_to_fscache(struct inode *, struct page *);
+> +
+> +
+> +static inline int cifs_readpage_from_fscache(struct inode *inode,
+> +                                            struct page *page)
+>  {
+> -       if (CIFS_I(inode)->fscache)
+> -               return __cifs_readpages_from_fscache(inode, mapping, pages,
+> -                                                    nr_pages);
+> +       if (cifs_inode_cookie(inode))
+> +               return __cifs_readpage_from_fscache(inode, page);
+>         return -ENOBUFS;
+>  }
+>
+>  static inline void cifs_readpage_to_fscache(struct inode *inode,
+>                                             struct page *page)
+>  {
+> -       if (PageFsCache(page))
+> +       if (cifs_inode_cookie(inode))
+>                 __cifs_readpage_to_fscache(inode, page);
+>  }
+>
+> +static inline int cifs_fscache_release_page(struct page *page, gfp_t gfp)
+> +{
+> +       if (PageFsCache(page)) {
+> +               if (current_is_kswapd() || !(gfp & __GFP_FS))
+> +                       return false;
+> +               wait_on_page_fscache(page);
+> +               fscache_note_page_release(cifs_inode_cookie(page->mapping->host));
+> +       }
+> +       return true;
+> +}
+> +
+>  #else /* CONFIG_CIFS_FSCACHE */
+>  static inline
+>  void cifs_fscache_fill_coherency(struct inode *inode,
+> @@ -123,22 +135,29 @@ static inline void cifs_fscache_unuse_inode_cookie(struct inode *inode, bool upd
+>  static inline struct fscache_cookie *cifs_inode_cookie(struct inode *inode) { return NULL; }
+>  static inline void cifs_invalidate_cache(struct inode *inode, unsigned int flags) {}
+>
+> -static inline int
+> -cifs_readpage_from_fscache(struct inode *inode, struct page *page)
+> +static inline int cifs_fscache_query_occupancy(struct inode *inode,
+> +                                              pgoff_t first, unsigned nr_pages,
+> +                                              pgoff_t *_data_first,
+> +                                              unsigned int *_data_nr_pages)
+>  {
+> +       *_data_first = ULONG_MAX;
+> +       *_data_nr_pages = 0;
+>         return -ENOBUFS;
+>  }
+>
+> -static inline int cifs_readpages_from_fscache(struct inode *inode,
+> -                                             struct address_space *mapping,
+> -                                             struct list_head *pages,
+> -                                             unsigned *nr_pages)
+> +static inline int
+> +cifs_readpage_from_fscache(struct inode *inode, struct page *page)
+>  {
+>         return -ENOBUFS;
+>  }
+>
+> -static inline void cifs_readpage_to_fscache(struct inode *inode,
+> -                       struct page *page) {}
+> +static inline
+> +void cifs_readpage_to_fscache(struct inode *inode, struct page *page) {}
+> +
+> +static inline int nfs_fscache_release_page(struct page *page, gfp_t gfp)
+> +{
+> +       return true; /* May release page */
+> +}
+>
+>  #endif /* CONFIG_CIFS_FSCACHE */
+>
+>
+>
+
+
 -- 
-2.35.0.rc0.227.g00780c9af4-goog
+Thanks,
 
+Steve
