@@ -2,84 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA34FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 21:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27DA5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 22:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351673AbiA1V4J (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 16:56:09 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:39418 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235428AbiA1V4I (ORCPT
+        id S240202AbiA1WCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 17:02:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229608AbiA1WCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 16:56:08 -0500
-Received: from surface (unknown [174.127.243.168])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 582CB20B6C61;
-        Fri, 28 Jan 2022 13:56:08 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 582CB20B6C61
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1643406968;
-        bh=9JajQ2cBB5tapkpmhdqs1zZw1ZE4vcEc/n6fplQCYFQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Hiu0PF/MX8BJZLEC/B7FeSL0l8z7DjmO9m/BWsOiWAyrczXlJKEvpZYFY6dK3VvfT
-         0bV1rgImlH83GTHD4xjMSu0USVhT07qltqji91Obuy44IR1DNg73SpJpM5eZ6gfua9
-         2MdVYAB07s8L0LpiQdTCq4DF6+qRhax9Laz/pIrk=
-Date:   Fri, 28 Jan 2022 13:56:04 -0800
-From:   Juan Vazquez <juvazq@linux.microsoft.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Drivers: hv: vmbus: Fix memory leak in
- vmbus_add_channel_kobj
-Message-ID: <20220128215604.xuqdpnnn4yjqfaoy@surface>
-References: <20220126055247.8125-1-linmq006@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220126055247.8125-1-linmq006@gmail.com>
+        Fri, 28 Jan 2022 17:02:14 -0500
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565A1C061714
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 14:02:14 -0800 (PST)
+Received: by mail-pl1-x649.google.com with SMTP id q21-20020a170902edd500b0014ae79cc6d5so3830656plk.18
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 14:02:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=69G4sVrTM6Oebk85axmgqm6tVz3OwOvgPCpKMqCiPco=;
+        b=r9CLrnZJeyMD+YWaJkb33H8XK0Rn3mXzmfuhYPQYh1mXy84qQbpTOTaatS4U5Egjbg
+         DW/6TRosstDehWJ5fQzm7fZNEOv5pz9ozapCuK9mpifIQ9ERRCBfJHAhTbYrRl0dM7To
+         x9qsvr6qHgfjzNKy0uDwy+PRB0+ZvKoTWYlsOI8EwJ8QQdRYHud+lBq3+iNhJL5Drrrs
+         G71gK2hPwWBBtE03hteS058k8idPK4bmtqC7CxJdOyHnUBsjc2rCC1ZasKOC5OJe23zr
+         3QO8/3orXoumYcJR3NyZPN9pbFZPc78w0F+s4nCZBjq/DelD2laPH2sa+++ZE/Gph8ax
+         kbFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=69G4sVrTM6Oebk85axmgqm6tVz3OwOvgPCpKMqCiPco=;
+        b=0KLU1XI5Vc/tyVKlA+3N52mKO1sDvpY9TOnxAsCKlrKO80I3Z2jPt/ZmbM7lEHxU3o
+         HD3jRHYzzQZQsS3EaHVWLaNUxAooGspY4rnUX+TSCPvp94sb2kKOk1jP/aSvbx6sHN2x
+         2IfzieE4xe1TmgXZgRxqjaKPYqq0Uv80IvbbMu85WJra7xFPmqA9hhwGzD98vMq4Iep4
+         8f1NwBqoy29JcWJaloLbp0heP80eryWiTckJc5xRK7JSG4WuXVibHfn/oK2lAO8VISXF
+         qjF1AhGuW0En/82fOfWGkDwN3N2Xft0RGvguxYj1FgOO0pzQ/5m8FQXSg6QLk8EQ2Dpr
+         ky6g==
+X-Gm-Message-State: AOAM533VKe4FQzXybtxtGcYHBshaq1wz4zgjOu8vgGBekzguAxV5SV6L
+        J9gKcoEN9hOlxpAbzRh+veV5JCdplTd1
+X-Google-Smtp-Source: ABdhPJzk+NX1p5MORYml/JXQrYMcHyi1MKvCEYPbSjKfF+bc47ppwgtX0j9v2VNUKwlkUuQKDyP2zLPsK5z/
+X-Received: from pigloo.svl.corp.google.com ([2620:15c:2c5:13:562d:d821:bf6:b545])
+ (user=jmeurin job=sendgmr) by 2002:a63:e314:: with SMTP id
+ f20mr8051217pgh.577.1643407333621; Fri, 28 Jan 2022 14:02:13 -0800 (PST)
+Date:   Fri, 28 Jan 2022 14:01:56 -0800
+Message-Id: <20220128220156.4057446-1-jmeurin@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+Subject: [PATCH] Fix the size of the header read buffer.
+From:   Jean-Marc Eurin <jmeurin@google.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jean-Marc Eurin <jmeurin@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 05:52:46AM +0000, Miaoqian Lin wrote:
-> kobject_init_and_add() takes reference even when it fails.
-> According to the doc of kobject_init_and_add()：
-> 
->    If this function returns an error, kobject_put() must be called to
->    properly clean up the memory associated with the object.
-> 
-> Fix memory leak by calling kobject_put().
-> 
-> Fixes: c2e5df616e1a ("vmbus: add per-channel sysfs info")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/hv/vmbus_drv.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-> index 17bf55fe3169..9e055697783b 100644
-> --- a/drivers/hv/vmbus_drv.c
-> +++ b/drivers/hv/vmbus_drv.c
-> @@ -2028,8 +2028,10 @@ int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
->  	kobj->kset = dev->channels_kset;
->  	ret = kobject_init_and_add(kobj, &vmbus_chan_ktype, NULL,
->  				   "%u", relid);
-> -	if (ret)
-> +	if (ret) {
-> +		kobject_put(kobj);
->  		return ret;
-> +	}
->  
->  	ret = sysfs_create_group(kobj, &vmbus_chan_group);
-If sysfs_create_group() fails same cleanup I think is required.
+The read buffer size depends on the MTDOOPS_HEADER_SIZE.
 
-Later kobject_uevent() may fail according to doc, but there is no error
-handling, maybe a good moment to consider adding it and do same cleanup.
->  
-> -- 
-> 2.17.1
+Tested: Changed the header size, it doesn't panic, header is still
+read/written correctly.
+
+Signed-off-by: Jean-Marc Eurin <jmeurin@google.com>
+---
+ drivers/mtd/mtdoops.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mtd/mtdoops.c b/drivers/mtd/mtdoops.c
+index 227df24387df..09a26747f490 100644
+--- a/drivers/mtd/mtdoops.c
++++ b/drivers/mtd/mtdoops.c
+@@ -223,7 +223,7 @@ static void find_next_position(struct mtdoops_context *cxt)
+ {
+ 	struct mtd_info *mtd = cxt->mtd;
+ 	int ret, page, maxpos = 0;
+-	u32 count[2], maxcount = 0xffffffff;
++	u32 count[MTDOOPS_HEADER_SIZE/sizeof(u32)], maxcount = 0xffffffff;
+ 	size_t retlen;
+ 
+ 	for (page = 0; page < cxt->oops_pages; page++) {
+-- 
+2.35.0.rc2.247.g8bbb082509-goog
+
