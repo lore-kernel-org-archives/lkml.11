@@ -2,76 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA75C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DE0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236429AbiA1Kjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 05:39:45 -0500
-Received: from foss.arm.com ([217.140.110.172]:35540 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229462AbiA1Kjo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 05:39:44 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BB643113E;
-        Fri, 28 Jan 2022 02:39:43 -0800 (PST)
-Received: from [10.57.12.131] (unknown [10.57.12.131])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 59F8E3F766;
-        Fri, 28 Jan 2022 02:39:42 -0800 (PST)
-Subject: Re: [PATCH v2 2/2] cpufreq: qcom-hw: Delay enabling throttle_irq
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>, linux-pm@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Viresh Kumar <viresh.kumar@linaro.org>
-References: <20220128032554.155132-1-bjorn.andersson@linaro.org>
- <20220128032554.155132-2-bjorn.andersson@linaro.org>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-Message-ID: <5433250b-ee51-06e0-3ef8-ab287a112611@arm.com>
-Date:   Fri, 28 Jan 2022 10:39:40 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S243401AbiA1Kqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 05:46:52 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:52090 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229462AbiA1Kqv (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 05:46:51 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 2B27C212BB;
+        Fri, 28 Jan 2022 10:46:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643366810; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OD8nEPA3sVQza8mJuydHMBADe6lH+Ya/yaTN+xwoc/Q=;
+        b=UffG6f5PXP8ahy6qql7Xutw+HwAaTgwYLIsu9EwQERso0lIBQNivdhdwUil/RI0TiU3Csi
+        zbWsHyM2Izn/APD+GeXRl9G+KvcnUrE7b1/UwNFK0zRo1HkJBKx9NbO5B5tbT9i8kVRQPX
+        QQMW3BV2/H3ls8Z9JnxuzhQWfgJ769Y=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643366810;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OD8nEPA3sVQza8mJuydHMBADe6lH+Ya/yaTN+xwoc/Q=;
+        b=+7rsNw52SiNmHEWxftmBvpenuP+XCygSNtOP2zgkvjwyRXnkArC8DXYx80dCarF/40dUxq
+        JIyy3I72NUWLfBCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0A3FA13D17;
+        Fri, 28 Jan 2022 10:46:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id aGWOAZrJ82GbJAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Fri, 28 Jan 2022 10:46:50 +0000
+Message-ID: <584f1343-b285-bf8e-e48c-764c2a56bce3@suse.de>
+Date:   Fri, 28 Jan 2022 11:46:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <20220128032554.155132-2-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 31/37] drm: rcar-du: Add support for the nomodeset
+ kernel parameter
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20211217003752.3946210-1-javierm@redhat.com>
+ <20211217003752.3946210-32-javierm@redhat.com>
+ <164336121612.533872.1685181669511488706@Monstersaurus>
+ <eb27fa44-2972-4a6e-465f-b9e4775820f4@suse.de>
+ <YfPGnfly3GOAOlfp@pendragon.ideasonboard.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <YfPGnfly3GOAOlfp@pendragon.ideasonboard.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------JYw8Xy64K8VFllBbYPzDs6zz"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------JYw8Xy64K8VFllBbYPzDs6zz
+Content-Type: multipart/mixed; boundary="------------biTK0euxeLwrKMKHOb70092S";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+ Javier Martinez Canillas <javierm@redhat.com>,
+ dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Message-ID: <584f1343-b285-bf8e-e48c-764c2a56bce3@suse.de>
+Subject: Re: [PATCH v2 31/37] drm: rcar-du: Add support for the nomodeset
+ kernel parameter
+References: <20211217003752.3946210-1-javierm@redhat.com>
+ <20211217003752.3946210-32-javierm@redhat.com>
+ <164336121612.533872.1685181669511488706@Monstersaurus>
+ <eb27fa44-2972-4a6e-465f-b9e4775820f4@suse.de>
+ <YfPGnfly3GOAOlfp@pendragon.ideasonboard.com>
+In-Reply-To: <YfPGnfly3GOAOlfp@pendragon.ideasonboard.com>
 
+--------------biTK0euxeLwrKMKHOb70092S
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-On 1/28/22 3:25 AM, Bjorn Andersson wrote:
-> In the event that the SoC is under thermal pressure while booting it's
-> possible for the dcvs notification to happen inbetween the cpufreq
-> framework calling init and it actually updating the policy's
-> related_cpus cpumask.
-> 
-> Prior to the introduction of the thermal pressure update helper an empty
-> cpumask would simply result in the thermal pressure of no cpus being
-> updated, but the new code will attempt to dereference an invalid per_cpu
-> variable.
+SGkNCg0KQW0gMjguMDEuMjIgdW0gMTE6MzQgc2NocmllYiBMYXVyZW50IFBpbmNoYXJ0Og0K
+PiBIaSBUaG9tYXMsDQo+IA0KPiBPbiBGcmksIEphbiAyOCwgMjAyMiBhdCAxMDozMzoyMUFN
+ICswMTAwLCBUaG9tYXMgWmltbWVybWFubiB3cm90ZToNCj4+IEFtIDI4LjAxLjIyIHVtIDEw
+OjEzIHNjaHJpZWIgS2llcmFuIEJpbmdoYW06DQo+Pj4gUXVvdGluZyBKYXZpZXIgTWFydGlu
+ZXogQ2FuaWxsYXMgKDIwMjEtMTItMTcgMDA6Mzc6NDYpDQo+Pj4+IEFjY29yZGluZyB0byBk
+aXNhYmxlIERvY3VtZW50YXRpb24vYWRtaW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMudHh0
+LCB0aGlzDQo+Pj4+IHBhcmFtZXRlciBjYW4gYmUgdXNlZCB0byBkaXNhYmxlIGtlcm5lbCBt
+b2Rlc2V0dGluZy4NCj4+Pj4NCj4+Pj4gRFJNIGRyaXZlcnMgd2lsbCBub3QgcGVyZm9ybSBk
+aXNwbGF5LW1vZGUgY2hhbmdlcyBvciBhY2NlbGVyYXRlZCByZW5kZXJpbmcNCj4+Pj4gYW5k
+IG9ubHkgdGhlIHN5c3RlbSBmcmFtZWJ1ZmZlciB3aWxsIGJlIGF2YWlsYWJsZSBpZiBpdCB3
+YXMgc2V0LXVwLg0KPj4+DQo+Pj4gV2hhdCBpcyB0aGUgJ3N5c3RlbSBmcmFtZWJ1ZmZlcicg
+aW4gdGhpcyBpbnN0YW5jZT8gUmVhZGluZw0KPj4+IGh0dHBzOi8vd3d3Lmtlcm5lbC5vcmcv
+ZG9jL0RvY3VtZW50YXRpb24vYWRtaW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMudHh0DQo+
+Pj4gaXQgc291bmRzIGxpa2UgdGhhdCBtZWFucyBhbnl0aGluZyBhbHJlYWR5IHNldCB1cCBi
+eSB0aGUgYm9vdGxvYWRlci4NCj4+DQo+PiBFeGFjdGx5IHRoaXMuDQo+Pg0KPj4+PiBCdXQg
+b25seSBhIGZldyBEUk0gZHJpdmVycyBjdXJyZW50bHkgY2hlY2sgZm9yIG5vbW9kZXNldCwg
+bWFrZSB0aGlzIGRyaXZlcg0KPj4+PiB0byBhbHNvIHN1cHBvcnQgdGhlIGNvbW1hbmQgbGlu
+ZSBwYXJhbWV0ZXIuDQo+Pj4+DQo+Pj4+IFNpZ25lZC1vZmYtYnk6IEphdmllciBNYXJ0aW5l
+eiBDYW5pbGxhcyA8amF2aWVybUByZWRoYXQuY29tPg0KPj4+PiAtLS0NCj4+Pj4NCj4+Pj4g
+KG5vIGNoYW5nZXMgc2luY2UgdjEpDQo+Pj4+DQo+Pj4+ICAgIGRyaXZlcnMvZ3B1L2RybS9y
+Y2FyLWR1L3JjYXJfZHVfZHJ2LmMgfCAzICsrKw0KPj4+PiAgICAxIGZpbGUgY2hhbmdlZCwg
+MyBpbnNlcnRpb25zKCspDQo+Pj4+DQo+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9k
+cm0vcmNhci1kdS9yY2FyX2R1X2Rydi5jIGIvZHJpdmVycy9ncHUvZHJtL3JjYXItZHUvcmNh
+cl9kdV9kcnYuYw0KPj4+PiBpbmRleCA1YTgxMzFlZjgxZDUuLjk4MmU0NTAyMzNlZCAxMDA2
+NDQNCj4+Pj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL3JjYXItZHUvcmNhcl9kdV9kcnYuYw0K
+Pj4+PiArKysgYi9kcml2ZXJzL2dwdS9kcm0vcmNhci1kdS9yY2FyX2R1X2Rydi5jDQo+Pj4+
+IEBAIC03MDEsNiArNzAxLDkgQEAgc3RhdGljIHN0cnVjdCBwbGF0Zm9ybV9kcml2ZXIgcmNh
+cl9kdV9wbGF0Zm9ybV9kcml2ZXIgPSB7DQo+Pj4+ICAgIA0KPj4+PiAgICBzdGF0aWMgaW50
+IF9faW5pdCByY2FyX2R1X2luaXQodm9pZCkNCj4+Pj4gICAgew0KPj4+PiArICAgICAgIGlm
+IChkcm1fZmlybXdhcmVfZHJpdmVyc19vbmx5KCkpDQo+Pj4+ICsgICAgICAgICAgICAgICBy
+ZXR1cm4gLUVOT0RFVjsNCj4+Pj4gKw0KPj4+DQo+Pj4gVGhpcyB3aWxsIGNvbXBsZXRlbHkg
+ZGlzYWJsZSBhbGwgY29udHJvbCBvZiB0aGUgZGlzcGxheSBkZXZpY2Ugd2hlbg0KPj4+IG5v
+bW9kZXNldCBpcyBlbmFibGVkLg0KPj4+DQo+Pj4gSXMgdGhlcmUgYW55IHJlcXVpcmVtZW50
+IGZvciB1cyB0byBzdXBwb3J0IG91dHB1dHRpbmcgdG8gdGhlIGRpc3BsYXkgaWYNCj4+PiBp
+dCB3YXMgcHJldmlvdXNseSBzZXQgdXA/IHByZXN1bWFibHkgd2l0aG91dCBzZXR0aW5nIG9y
+IGNoYW5naW5nIGFueQ0KPj4+IG1vZGVzLCBidXQgc2ltcGx5IGFsbG93aW5nIHRoZSBleGlz
+dGluZyBmcmFtZSB0byBiZSB1cGRhdGVkPw0KPj4NCj4+IFRoZXJlJ3Mgbm8gcmVxdWlyZW1l
+bnQgZm9yIHlvdXIgZHJpdmVyLiBXZSBqdXN0IHdhbnQgYSBwYXJhbWV0ZXIgd2hlcmUNCj4+
+IHdlIGNhbiBjb252ZW5pZW50bHkgZGlzYWJsZSBtb3N0IG9mIERSTSdzIGRyaXZlcnMgYW5k
+IHJlZHVjZSBpdCB0byBhDQo+PiBtaW5pbXVtLiBIZWxwcyBkaXN0cmlidXRpb25zIHRvIHBy
+b3ZpZGUgYSBzaW1wbGUgZmFsbGJhY2sgbW9kZS4gIE1vc3QNCj4+IFBDSS1iYXNlZCBkcml2
+ZXJzIGFscmVhZHkgc3VwcG9ydCB0aGF0LiBOb3cgd2UncmUgYWRkZWQgaXQgdG8gdGhlIG90
+aGVyDQo+PiBkcml2ZXJzIGFzIHdlbGwuDQo+Pg0KPj4+DQo+Pj4gSSB0aGluayB0aGUgaW1w
+bGljYXRpb24gaXMgdGhhdCAnZmlybXdhcmUgZHJpdmVycycgd291bGQgbWVhbiBhIGRpc3Bs
+YXkNCj4+PiBjb3VsZCBiZSB1cGRhdGVkIHRocm91Z2ggc29tZSBmaXJtd2FyZSBpbnRlcmZh
+Y2UsIHdoaWNoIHdlIHdvbid0IGhhdmUNCj4+PiAuLi4gc28gaXQgc2VlbXMgcmVhc29uYWJs
+ZSB0byBhY2NlcHQgdGhhdCB0aGlzIHdob2xlIGRyaXZlciBjYW4gYmUNCj4+PiBkaXNhYmxl
+ZCBpbiB0aGF0IGluc3RhbmNlLg0KPj4NCj4+IEl0IGNhbm5vdCBiZSAnbW9kZS1zZXR0ZWQn
+LiBXZSBnZXQgYSBwcmUtY29uZmlndXJlZCBmcmFtZWJ1ZmZlciBmcm9tIHRoZQ0KPj4gZmly
+bXdhcmUgb3IgYm9vdGxvYWRlci4gV2hhdGV2ZXIgd2UgZHJhdyB0aGVyZSBzaG93cyB1cCBv
+biB0aGUgc2NyZWVuLg0KPiANCj4gSSBkb3VidCB0aGF0J3MgZ29pbmcgdG8gd29yayBhcyB5
+b3UgZXhwZWN0LCBjbG9ja3MgYW5kIHJlZ3VsYXRvcnMgd2lsbA0KPiBnZXQgZGlzYWJsZWQg
+YXQgYm9vdCBpZiBub3QgdXNlZCBieSBhbnkgZHJpdmVyLg0KDQpTaW1wbGVkcm0gYW5kIHNp
+bXBsZWZiIGF0dGFjaCB0byB0aGVzZSBmaXJtd2FyZSBmcmFtZWJ1ZmZlcnMuIEJvdGggDQpk
+cml2ZXJzIGxvb2sgYXQgdGhlIGRldmljZSB0cmVlIG5vZGVzIHRvIGFjcXVpcmUgdGhlIHJl
+bGV2YW50IGNsb2NrcyBhbmQgDQpyZWd1bGF0b3JzLg0KDQpCZXN0IHJlZ2FyZHMNClRob21h
+cw0KDQo+IA0KPj4+IFJlYWRpbmcgeW91ciBtYWlsIHRoYXQgYnJvdWdodCB0aGlzIHRocmVh
+ZCB1cCBpbiBteSBpbmJveCwgSSB0aGluaw0KPj4+IHlvdSd2ZSBhbHJlYWR5IGhpdCBtZXJn
+ZSBvbiB0aGlzLCBzbyBkb24ndCB3b3JyeSBhYm91dCBhZGRpbmcgYSB0YWcgaW4NCj4+PiB0
+aGF0IGluc3RhbmNlLCBidXQgSSB0aGluayB0aGlzIGlzIG9rLg0KPj4+DQo+Pj4gUmV2aWV3
+ZWQtYnk6IEtpZXJhbiBCaW5naGFtIDxraWVyYW4uYmluZ2hhbStyZW5lc2FzQGlkZWFzb25i
+b2FyZC5jb20+DQo+Pj4NCj4+Pj4gICAgICAgICAgIHJjYXJfZHVfb2ZfaW5pdChyY2FyX2R1
+X29mX3RhYmxlKTsNCj4+Pj4gICAgDQo+Pj4+ICAgICAgICAgICByZXR1cm4gcGxhdGZvcm1f
+ZHJpdmVyX3JlZ2lzdGVyKCZyY2FyX2R1X3BsYXRmb3JtX2RyaXZlcik7DQo+IA0KDQotLSAN
+ClRob21hcyBaaW1tZXJtYW5uDQpHcmFwaGljcyBEcml2ZXIgRGV2ZWxvcGVyDQpTVVNFIFNv
+ZnR3YXJlIFNvbHV0aW9ucyBHZXJtYW55IEdtYkgNCk1heGZlbGRzdHIuIDUsIDkwNDA5IE7D
+vHJuYmVyZywgR2VybWFueQ0KKEhSQiAzNjgwOSwgQUcgTsO8cm5iZXJnKQ0KR2VzY2jDpGZ0
+c2bDvGhyZXI6IEl2byBUb3Rldg0K
 
-Just to confirm, is that per-cpu var the 'policy->related_cpus' in this
-driver?
+--------------biTK0euxeLwrKMKHOb70092S--
 
-> 
-> Avoid this problem by using the newly reintroduced "ready" callback, to
-> postpone enabling the IRQ until the related_cpus cpumask is filled in.
-> 
-> Fixes: 0258cb19c77d ("cpufreq: qcom-cpufreq-hw: Use new thermal pressure update function")
+--------------JYw8Xy64K8VFllBbYPzDs6zz
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-You have 'Fixes' tagging here, which might be picked by the stable tree.
-The code uses the reverted callback .ready(), which might be missing
-there (since patch 1/2 doesn't have tagging). This patch looks like a
-proper fix for the root cause.
+-----BEGIN PGP SIGNATURE-----
 
-Anyway, I'm going to send a patch, which adds a check for null cpumask
-in the topology_update_thermal_pressure()
-It was removed after the review comments:
-https://lore.kernel.org/linux-pm/20211028054459.dve6s2my2tq7odem@vireshk-i7/
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmHzyZkFAwAAAAAACgkQlh/E3EQov+Am
+zg/6A8KJhkMNQBM1+DacCQhe64x6r3n+FeYAFi5C8pS0I6rCH+Rgb6RZjJ0Zc7Rh7sc29i6D6sJy
+fpVaEJnhnvdrpAb+h6VSyBKXsrwMzTlKfe5X2q1nFBbOZxb65lLfTS1aN1vnYwGI06tBId+aNi0i
+uy+AF/dNjrjFvq/bGZbkxODIxTGc486Z16g1X24QgT1rvnFDUzuTBR427JQUkibobInS+7k8abFA
+h0vvWKow02etvb0apT3XHhkBkr85I3pq7ge8CoqMB7PUJJcVwdEw9Rh2O3wltcctaAXesqu5dTbG
+lkX7DzZsO2egLbP7DhN1X2f+K4I/jZKoEtcDr/aog0OSJca7y0cMPRbISVeKdicI7Oaj2GZXOoHI
+XLS27ESzO7weJWjW+mJTiRQsOlXgZA6JTp1LkFv8dgSSC0GnVUyQa/fbvvLSTkfutiRMAa1+0kTW
+sQMfX8olL05T8iE66U/E7lBA5k/3KClNr3atOmB80OSA4CBA+yRdk8Gq5xj+tvUtVVNb5qbp21Hq
+M0EVsLR4Sw8+Sqw7QV/+kbnh9RKAdWKNr0Uj/4KNrogxWHlhrHBCsjmnaLq/9zfaJufkDJNZep/A
+cU4tf/O14SC3hfknv1PyVM60eJTUICfdaQIv7PKq7TtMREXZzH0Bs966ygRrMMgZKRhdj1H9+1Rq
+NLE=
+=jLcU
+-----END PGP SIGNATURE-----
 
-I'll also push that change for the stable tree.
-
-Regards,
-Lukasz
+--------------JYw8Xy64K8VFllBbYPzDs6zz--
