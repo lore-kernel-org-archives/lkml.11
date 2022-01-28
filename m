@@ -2,139 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C38CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:32:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 221A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347631AbiA1JcA (ORCPT
+        id S1347624AbiA1JcD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 04:32:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29991 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347612AbiA1Jb5 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 04:31:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643362317;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=f5A/C5kiEp1/LBNi9MRAUlEKU1cKas7e8kxGW0FiZoQ=;
-        b=e3n7m06fy3/DQUrlNm5UtoAnXKOcDrs6sEjINzgiO4DYY09a4jOFgUtAl+mvTPtaulm8ss
-        Qdhn1ewzUP535+kBMBQmVmKRYnpMKfKXkt+AZqdcmTAeaZmWR1Imz2Nx1cdLtnNQiOT80l
-        TZFOX6ChP+jVMJyFzsRFcNSvev2CEBg=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-662-zC8DlF5mPTOUW0hy1t-7iA-1; Fri, 28 Jan 2022 04:31:55 -0500
-X-MC-Unique: zC8DlF5mPTOUW0hy1t-7iA-1
-Received: by mail-ed1-f69.google.com with SMTP id f21-20020a50d555000000b00407a8d03b5fso2759406edj.9
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:31:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=f5A/C5kiEp1/LBNi9MRAUlEKU1cKas7e8kxGW0FiZoQ=;
-        b=bGVzSUZVnav2fwUJjoJ7IZGl4xqYWuYi8xULZB2ycVzIn/c2qfkSxC83JDDMdATBLt
-         8Gpj3bbU7h/vOpL6B4ERhpsxEv9CdyPxL8Q7Vh55pWzrsuIgmRsAtMQyaFi36p4XjZ+l
-         RbTTfhVHzQ1KNCDwUTt3LTdYCBPvCDHGv5XBKuu2J2SPFfVRW38PLvzlVHbRGL48KKtd
-         0p4UdWP8nHsdIXiccLx4Q2kB/HhGJvnUjU5rqcX03A1sPDKpM328buZwmNFVL/LHVGkf
-         YhxFIHJPZjX5Z6Nm03SV6vzQVrsfxrekREUT2mPpzAO6vVjzTHO/pMUVlk0iURnnP5Dw
-         aNDA==
-X-Gm-Message-State: AOAM532u9Q2W8TALbTF7a41GJqehwT7H3k4ZKMKRs5cZa/Ut/kE0moGt
-        r9T/CYug0GeU8cQBHI8kE3wZ4RHZWG1kn/3lKMNSK8P5pQahXOUTaQoHzfJS98CidllRi5/5y+6
-        Q3eEXUY1G/7cnM6TxCSkODryf
-X-Received: by 2002:a05:6402:2682:: with SMTP id w2mr7239620edd.355.1643362314424;
-        Fri, 28 Jan 2022 01:31:54 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzq2XcKLD8u9nkhxIX+xxB2DKFLZ7ljDiXbsciOfiq2sHMfns2CyXpaKzoSo2qM4CjQVOz+oA==
-X-Received: by 2002:a05:6402:2682:: with SMTP id w2mr7239607edd.355.1643362314230;
-        Fri, 28 Jan 2022 01:31:54 -0800 (PST)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id x12sm11516164edv.57.2022.01.28.01.31.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jan 2022 01:31:53 -0800 (PST)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+        Fri, 28 Jan 2022 04:32:03 -0500
+Received: from mail.thorsis.com ([92.198.35.195]:58922 "EHLO mail.thorsis.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1347617AbiA1Jb6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 04:31:58 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.thorsis.com (Postfix) with ESMTP id 14AFE2984;
+        Fri, 28 Jan 2022 10:31:57 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at mail.thorsis.com
+Received: from mail.thorsis.com ([127.0.0.1])
+        by localhost (mail.thorsis.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id cATs4BJi6wes; Fri, 28 Jan 2022 10:31:57 +0100 (CET)
+Received: by mail.thorsis.com (Postfix, from userid 109)
+        id E6D7CCE9; Fri, 28 Jan 2022 10:31:56 +0100 (CET)
+Date:   Fri, 28 Jan 2022 10:31:45 +0100
+From:   Alexander Dahl <ada@thorsis.com>
+To:     Jonathan Corbet <corbet@lwn.net>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?utf-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        Yury Norov <yury.norov@gmail.com>
-Subject: RE: [PATCH 43/54] drivers/hv: replace cpumask_weight with
- cpumask_weight_eq
-In-Reply-To: <MWHPR21MB1593C8511E18E4539CECAEC5D7219@MWHPR21MB1593.namprd21.prod.outlook.com>
-References: <20220123183925.1052919-1-yury.norov@gmail.com>
- <20220123183925.1052919-44-yury.norov@gmail.com>
- <87sftdij76.fsf@redhat.com>
- <MWHPR21MB1593C8511E18E4539CECAEC5D7219@MWHPR21MB1593.namprd21.prod.outlook.com>
-Date:   Fri, 28 Jan 2022 10:31:52 +0100
-Message-ID: <8735l8gq9j.fsf@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Florian Eckert <fe@dev.tdt.de>
+Subject: Re: [PATCH v1 1/1] docs: process: submitting-patches: Clarify the
+ Reported-by usage
+Message-ID: <YfO37KjTS7B2W2bH@ada.ifak-system.com>
+Mail-Followup-To: Jonathan Corbet <corbet@lwn.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Florian Eckert <fe@dev.tdt.de>
+References: <20220127155334.47154-1-andriy.shevchenko@linux.intel.com>
+ <87o83xrwk9.fsf@meer.lwn.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87o83xrwk9.fsf@meer.lwn.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Michael Kelley (LINUX)" <mikelley@microsoft.com> writes:
+Hello,
 
-> From: Vitaly Kuznetsov <vkuznets@redhat.com> Sent: Monday, January 24, 2022 1:20 AM
->> 
->> Yury Norov <yury.norov@gmail.com> writes:
->> 
-...
->> >
->> > diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
->> > index 60375879612f..7420a5fd47b5 100644
->> > --- a/drivers/hv/channel_mgmt.c
->> > +++ b/drivers/hv/channel_mgmt.c
->> > @@ -762,8 +762,8 @@ static void init_vp_index(struct vmbus_channel *channel)
->> >  		}
->> >  		alloced_mask = &hv_context.hv_numa_map[numa_node];
->> >
->> > -		if (cpumask_weight(alloced_mask) ==
->> > -		    cpumask_weight(cpumask_of_node(numa_node))) {
->> > +		if (cpumask_weight_eq(alloced_mask,
->> > +			    cpumask_weight(cpumask_of_node(numa_node)))) {
->> 
->> This code is not performace critical and I prefer the old version:
->> 
->>  	cpumask_weight() == cpumask_weight()
->> 
->>  looks better than
->> 
->> 	cpumask_weight_eq(..., cpumask_weight())
->> 
->> (let alone the inner cpumask_of_node()) to me.
->> 
->> >  			/*
->> >  			 * We have cycled through all the CPUs in the node;
->> >  			 * reset the alloced map.
->> 
-> I agree with Vitaly in preferring the old version, and indeed performance
-> here is a shrug.  But actually, I think the old version is a poorly coded way
-> to determine if the two cpumasks are equal. The following would correctly
-> capture the intent:
->
-> 	if (cpumask_equal(alloced_mask, cpumask_of_node(numa_node))
->
+Am Thu, Jan 27, 2022 at 09:08:06AM -0700 schrieb Jonathan Corbet:
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+> 
+> > It's unclear from "Submitting Patches" documentation that Reported-by
+> > is not supposed to be used against new features. (It's more clear
+> > in the section 5.4 "Patch formatting and changelogs" of the "A guide
+> > to the Kernel Development Process", where it suggests that change
+> > should fix something existing in the kernel. Clarify the Reported-by
+> > usage in the "Submitting Patches".
+> >
+> > Reported-by: Florian Eckert <fe@dev.tdt.de>
+> 
+> You're sure this added documentation isn't a new feature that shouldn't
+> have a Reported-by? :)
+> 
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > ---
+> >  Documentation/process/submitting-patches.rst | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/process/submitting-patches.rst b/Documentation/process/submitting-patches.rst
+> > index 31ea120ce531..24c1a5565385 100644
+> > --- a/Documentation/process/submitting-patches.rst
+> > +++ b/Documentation/process/submitting-patches.rst
+> > @@ -495,7 +495,8 @@ Using Reported-by:, Tested-by:, Reviewed-by:, Suggested-by: and Fixes:
+> >  The Reported-by tag gives credit to people who find bugs and report them and it
+> >  hopefully inspires them to help us again in the future.  Please note that if
+> >  the bug was reported in private, then ask for permission first before using the
+> > -Reported-by tag.
+> > +Reported-by tag. A new feature can't be reported since there is no code in the
+> > +kernel to fix.
+> 
+> How about instead something like "Reported-by is intended for bugs;
+> please do not use it to credit feature requests"?
 
-Indeed. While it seems that only CPUs from 'cpumask_of_node(numa_node)'
-can be set in 'alloced_mask' (and thus the comparison is valid), there's
-no real need to weigh anything. I'll send a patch.
+What should be used for feature requests then? Suggested-by? Would it
+help to mention it here?
 
--- 
-Vitaly
-
+Greets
+Alex
