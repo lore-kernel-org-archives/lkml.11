@@ -2,60 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D2CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:01:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D460C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346609AbiA1HBk (ORCPT
+        id S1346618AbiA1HDG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 02:01:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37326 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232306AbiA1HBi (ORCPT
+        Fri, 28 Jan 2022 02:03:06 -0500
+Received: from isilmar-4.linta.de ([136.243.71.142]:33098 "EHLO
+        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232306AbiA1HDE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 02:01:38 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA1A261B1D;
-        Fri, 28 Jan 2022 07:01:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E512BC340E0;
-        Fri, 28 Jan 2022 07:01:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643353297;
-        bh=z2I2Um866BGasCtCvh1o4l4DwVYcayzXqVnPJxw8USM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=katFI5tB4zQhYjo3ZimrLAk7w+U4bGAqB+36RB5Kqwi4UqQP8mIftfIEKHQzAzx+M
-         aVeM/+dnxyLA8AE/sf7rT+Rgonzf9oHcDZdgUOoxxOu3Y1qDJzzYAA/H7pW/0+Hq+o
-         ahp7H8Wf7pLYBDfCIk4UTcleHQ7RUWxk2aXvBXZo=
-Date:   Fri, 28 Jan 2022 08:01:33 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Zichar Zhang <zichar.zhang@linaro.org>
-Cc:     john.stultz@linaro.org, krossmo@google.com, lee.jones@linaro.org,
-        len.brown@intel.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, nayakvij@google.com, pavel@ucw.cz,
-        rafael@kernel.org, sumit.semwal@linaro.org, amit.pundir@linaro.org,
-        kernel-team@android.com
-Subject: Re: [PATCH 1/1] [RFC] wakeup_reason: Add infrastructure to log and
- report why the system resumed from suspend.
-Message-ID: <YfOUzZ4scTZAWnxl@kroah.com>
-References: <CAE9iGoiCZZBkyX9ZWnhSDMjWmucOmybCOp=XTr6Hz5rN9GNyrw@mail.gmail.com>
- <20220128045522.3505336-1-zichar.zhang@linaro.org>
+        Fri, 28 Jan 2022 02:03:04 -0500
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id B291B201400;
+        Fri, 28 Jan 2022 07:03:01 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 952388075F; Fri, 28 Jan 2022 08:02:54 +0100 (CET)
+Date:   Fri, 28 Jan 2022 08:02:54 +0100
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH v2 6/6] hw_random: credit entropy for low quality sources of
+ randomness
+Message-ID: <YfOVHnM+cfIw1Ii7@owl.dominikbrodowski.net>
+References: <20220124202951.28579-1-linux@dominikbrodowski.net>
+ <20220124202951.28579-6-linux@dominikbrodowski.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220128045522.3505336-1-zichar.zhang@linaro.org>
+In-Reply-To: <20220124202951.28579-6-linux@dominikbrodowski.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 12:55:22PM +0800, Zichar Zhang wrote:
-> 
-> Signed-off-by: Zichar Zhang <zichar.zhang@linaro.org>
-> Change-Id: Id70f3cbec15f24ea999d7f643e9589be9c047f2b
+In case the entropy quality is low, there may be less than one bit to
+credit in the call to add_hwgenerator_randomness(): The number of bytes
+returned by rng_get_data() multiplied by the current quality (in entropy
+bits per 1024 bits of input) must be larger than 128 to credit at least
+one bit. However, imx-rngc.c sets the quality to 19, but may return less
+than 32 bytes; hid_u2fzero.c sets the quality to 1; and users may override
+the quality setting manually.
 
-Please always run checkpatch.pl on your submissions so that you do not
-get people asking you to run checkpatch.pl on your submissions.
+In case there is less than one bit to credit, keep track of it and add
+that credit to the next iteration.
 
-thanks,
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+---
+ drivers/char/hw_random/core.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-greg k-h
+This patch needed an update, as noted by the kernel test robot: the
+initialiation of entropy_credit = 0 must be outside the loop.
+
+That's the only change between v1 and v2 of this patch. The other five
+patches sent earlier do not (yet?) need an update.
+
+diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
+index bc9f95cbac92..f327f7493585 100644
+--- a/drivers/char/hw_random/core.c
++++ b/drivers/char/hw_random/core.c
+@@ -424,6 +424,7 @@ static int __init register_miscdev(void)
+ 
+ static int hwrng_fillfn(void *unused)
+ {
++	size_t entropy, entropy_credit = 0; /* in 1/1024 of a bit */
+ 	long rc;
+ 
+ 	while (!kthread_should_stop()) {
+@@ -445,9 +446,17 @@ static int hwrng_fillfn(void *unused)
+ 			msleep_interruptible(10000);
+ 			continue;
+ 		}
++
++		/* If we cannot credit at least one bit of entropy,
++		 * keep track of the remainder for the next iteration
++		 */
++		entropy = rc * current_quality * 8 + entropy_credit;
++		if ((entropy >> 10) == 0)
++			entropy_credit = entropy;
++
+ 		/* Outside lock, sure, but y'know: randomness. */
+ 		add_hwgenerator_randomness((void *)rng_fillbuf, rc,
+-					   rc * current_quality * 8 >> 10);
++					   entropy >> 10);
+ 	}
+ 	hwrng_fill = NULL;
+ 	return 0;
+-- 
+2.35.0
+
