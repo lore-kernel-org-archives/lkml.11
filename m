@@ -2,100 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1ECDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 22:11:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D74C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 22:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350085AbiA1WLM (ORCPT
+        id S1351302AbiA1WLW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 17:11:12 -0500
-Received: from mout.gmx.net ([212.227.15.18]:52023 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229608AbiA1WLL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 17:11:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643407862;
-        bh=bEeUJC3i3htr2+186+xh0G3nfWq3BNhbq5STMlDxzU8=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=EH8cb7CRfGs0YUTvH/l16GKFsNxQB07YX1ikEsj13ROfpP8w+G+XaLnKXN2QS1hsC
-         Red01BHca3IOiRVGQMsgxf0e2vLCkZ1/sW7SQ3pgkGwGhxKn4uxYT9spcKr75Sj6bT
-         haRWXhoVyxPSIob2Mgq8ImQbvyPkA3izsuLsj5Vg=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([89.0.80.162]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MDQiS-1n4C3P3hVG-00AS99; Fri, 28
- Jan 2022 23:11:01 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Rob Herring <robh+dt@kernel.org>, openbmc@lists.ozlabs.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH] ARM: dts: wpcm450: Enable watchdog by default
-Date:   Fri, 28 Jan 2022 23:10:53 +0100
-Message-Id: <20220128221054.2002911-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.34.1
+        Fri, 28 Jan 2022 17:11:22 -0500
+Received: from mx0a-00010702.pphosted.com ([148.163.156.75]:54006 "EHLO
+        mx0b-00010702.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1351312AbiA1WLS (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 17:11:18 -0500
+X-Greylist: delayed 545 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Jan 2022 17:11:18 EST
+Received: from pps.filterd (m0098780.ppops.net [127.0.0.1])
+        by mx0a-00010702.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20SK6qk6019747;
+        Fri, 28 Jan 2022 16:01:59 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ni.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=PPS11062020;
+ bh=Y38zlJ4UqEHWdqufGAo7/SyWZeDxw+P8OUAJREwTN7Y=;
+ b=CcYENQ2cdeasGh38kS7zSbuwtSlUB//3U/wOl3m4iPbBozNfT2IYoQQ2c0vNpr1Sf2rr
+ bYnxIz/2I1LX+GoddRFzN6LdkN8kyxjSs2kwj1bpVnR+rDzKUkYl8J+LHlhazJfLubq4
+ wUNwJIw2up5ntx0VdzpoSDyoeL9NyW5PLl7FqDWUibANjAOSL1jnaoT/bATTvq1/wV0E
+ 3ytMHpAdW5ys8voaXg/jYqlxadlGM/IWv4hWgCHclB7SJYKWQsb+bytl6051UfBYOPav
+ lRuXxO3IbsHBTtkQjPB6DFXudwBhK+ijuHyFmiDkZTKGCjHAxI9S6/rA0iCUfbboOqFE rg== 
+Received: from ni.com ([130.164.80.24])
+        by mx0a-00010702.pphosted.com (PPS) with ESMTPS id 3dvb2khe8b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 28 Jan 2022 16:01:59 -0600
+Received: from us-aus-exhub2.ni.corp.natinst.com (us-aus-exhub2.ni.corp.natinst.com [130.164.68.32])
+        by us-aus-skprod3.natinst.com (8.16.1.2/8.16.1.2) with ESMTPS id 20SM1wPL005328
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 28 Jan 2022 16:01:58 -0600
+Received: from us-aus-exch4.ni.corp.natinst.com (130.164.68.14) by
+ us-aus-exhub2.ni.corp.natinst.com (130.164.68.32) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.28; Fri, 28 Jan 2022 16:01:58 -0600
+Received: from us-aus-exhub2.ni.corp.natinst.com (130.164.68.32) by
+ us-aus-exch4.ni.corp.natinst.com (130.164.68.14) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.28; Fri, 28 Jan 2022 16:01:58 -0600
+Received: from starthinker.amer.corp.natinst.com (172.18.68.32) by
+ us-aus-exhub2.ni.corp.natinst.com (130.164.68.32) with Microsoft SMTP Server
+ id 15.0.1497.28 via Frontend Transport; Fri, 28 Jan 2022 16:01:58 -0600
+From:   Brenda Streiff <brenda.streiff@ni.com>
+CC:     <brenda.streiff@ni.com>, Masahiro Yamada <masahiroy@kernel.org>,
+        <linux-kbuild@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] kconfig: let 'shell' return enough output for deep path names
+Date:   Fri, 28 Jan 2022 16:01:28 -0600
+Message-ID: <20220128220131.10956-1-brenda.streiff@ni.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:MFrSRbBqxcvFIu0fH4f2jjf542T47yvK8RSqkovEh64f9ueZ/6c
- Jr8N8OtCAx/OucJW2XgkGiDXB/4ZnBpg3hIPr5Svio06Vfkoba855QMYzg8vUuTFsinWWJU
- 3fXMu1IwGRpF2+jy874gIqqdK387TIAQ2DAGZLFepJIIFGCPDyelBRNPaYy3MP1pw5eGoYL
- YrsNy8DUyrQQuqysWQMKw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BnV6HWXCrfo=:npCPAtpG1+EP7b0f78X6Bd
- Z+wYWQ6VAcbLOW1hmomXZW+hVgfTZz3lgJnerQ+TM7jn5K6/afq3XRK9IhIhHCA1mmjDqmrsr
- in2BD7J5aBly2ghq0zRUr2xKW7s1UQzmQAjHhdH75A/G6iZ7faEB4pi3+vMrnXi/J9CDHEIrI
- JLxtrfe15SZqfnXmvXboNbS2sU4zaAMhDRYJClysEM6mmCEAP55w88ULXq0sm+0y9qphKKyjc
- eKFySxE2AjbXRyzxJQHAFeQGhaemm+wSckKTtxYKcW5UMDoNQ5miR3xcTN7MlQfXFlCWGcQ7o
- gGt60BbXVdoIK3YV1EpkIuOz7TUXiEGOABr7wSt0M0bLkPLcpsaMTZn6+XHWLs3Edv7G3c4Ol
- floeonwVcT9Xadnw5Am1DjsffCdcoUboo19vkm64yAPo4nw2L7k/ME+qrMkgXvGPDSXsv8bQ9
- +rBUC7wdUU/6hEV9jl89sNQ7S8cKzClsCBgTXqR9qjmzqoE0QTVZpOLvHksqJtqX1FaS3cEe2
- vEEDGq6A2nqSLq0b/ocSVqtLEsz3h/JQtyARyE2m/P6HINyDIXxL7E9ZLVqZmciZJCzntXy9O
- PIdu5qXe0lRbfFQsoqFFQJOkKF/IzBDBq8Jb9Ene27UPwtGsjbwwqkMEwmrFgjOeabHPCSvMP
- gNxYci+ctLmMGNxuEhKFwBlk+WEyUTmauD1PYY3t3m2B3AF6g4cj0VOco46bbi81R5cNFb/3u
- Ymu6xy61StIvGY3d4lhM+ZIbuC9s0pR1YU/QFPnnnpqdbChPTHHlpnQkpkKCA+4M9XEv5QUa5
- nq/i5PJMpXznSj4csaEWsuazKwYFeQL5yVjjdJIupwawEAVUX3LrXUzosBznkeRHLcdkU1DIr
- 79PUzgutsKLjb+ORvR5xjGY4MrB8E9goSGQUBnNyYsgODg/4Pl1GJrwJoZMzhp+exW9g7GPm0
- jKM4Q5VfSXJbuYawP3eeXdBKhPDX4cVsGz+HK2aS722pxYjdB6Zg0iKRWg9/A8A7ZuC64Qh6O
- UzIDULQGUlUg6a0pqgpStpbhLXKmsB95EFbxEEnOkEkixjDjViG9kiQwRKjSt4dM8n02Pb4ct
- OUwsumfnzjgm6s=
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: Y_SjhD1U4DVN0zvX31VPAznAf8jZkn20
+X-Proofpoint-GUID: Y_SjhD1U4DVN0zvX31VPAznAf8jZkn20
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-28_08,2022-01-28_01,2021-12-02_01
+X-Proofpoint-Spam-Reason: orgsafe
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The watchdog timer is always usable, regardless of board design, so
-there is no point in marking the watchdog device as disabled-by-default
-in nuvoton-wpcm450.dtsi.
+The 'shell' built-in only returns the first 256 bytes of the command's
+output. In some cases, 'shell' is used to return a path; by bumping up
+the buffer size to 4096 this lets us capture up to PATH_MAX.
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
- arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts | 4 ----
- arch/arm/boot/dts/nuvoton-wpcm450.dtsi                      | 1 -
- 2 files changed, 5 deletions(-)
+The specific case where I ran into this was due to commit 1e860048c53e
+("gcc-plugins: simplify GCC plugin-dev capability test"). After this
+change, we now use `$(shell,$(CC) -print-file-name=3Dplugin)` to return
+a path; if the gcc path is particularly long, then the path ends up
+truncated at the 256 byte mark, which makes the HAVE_GCC_PLUGINS
+depends test always fail.
 
-diff --git a/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts b=
-/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts
-index 3ee61251a16d0..1ae7ae4804275 100644
-=2D-- a/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts
-+++ b/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts
-@@ -77,7 +77,3 @@ &serial1 {
- 	/* "Serial over LAN" port. Connected to ttyS2 of the host system. */
- 	status =3D "okay";
- };
--
--&watchdog0 {
--	status =3D "okay";
--};
-diff --git a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi b/arch/arm/boot/dts/nu=
-voton-wpcm450.dtsi
-index 93595850a4c3c..b9b669cd632f1 100644
-=2D-- a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
-+++ b/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
-@@ -81,7 +81,6 @@ watchdog0: watchdog@b800101c {
- 			interrupts =3D <1 IRQ_TYPE_LEVEL_HIGH>;
- 			reg =3D <0xb800101c 0x4>;
- 			clocks =3D <&clk24m>;
--			status =3D "disabled";
- 		};
+Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
+---
+ scripts/kconfig/preprocess.c                                  | 2 +-
+ scripts/kconfig/tests/preprocess/builtin_func/Kconfig         | 3 +++
+ scripts/kconfig/tests/preprocess/builtin_func/expected_stdout | 1 +
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
- 		aic: interrupt-controller@b8002000 {
-=2D-
-2.34.1
+diff --git a/scripts/kconfig/preprocess.c b/scripts/kconfig/preprocess.c
+index 0590f86df6e4..748da578b418 100644
+--- a/scripts/kconfig/preprocess.c
++++ b/scripts/kconfig/preprocess.c
+@@ -141,7 +141,7 @@ static char *do_lineno(int argc, char *argv[])
+ static char *do_shell(int argc, char *argv[])
+ {
+ 	FILE *p;
+-	char buf[256];
++	char buf[4096];
+ 	char *cmd;
+ 	size_t nread;
+ 	int i;
+diff --git a/scripts/kconfig/tests/preprocess/builtin_func/Kconfig b/script=
+s/kconfig/tests/preprocess/builtin_func/Kconfig
+index baa328827911..e9791a97f731 100644
+--- a/scripts/kconfig/tests/preprocess/builtin_func/Kconfig
++++ b/scripts/kconfig/tests/preprocess/builtin_func/Kconfig
+@@ -25,3 +25,6 @@ $(warning,$(shell,printf 'hello\nworld\n\n4\n\n\n'))
+ # 'lineno' to the line number.
+ $(warning,filename=3D$(filename))
+ $(warning,lineno=3D$(lineno))
++
++# 'shell' can return more than 256 bytes of output
++$(info,$(shell,printf 'hello%01024dworld\n' '0'))
+diff --git a/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout =
+b/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout
+index 82de3a7e97de..8e03e4dfe8f6 100644
+--- a/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout
++++ b/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout
+@@ -1 +1,2 @@
+ hello world 0
++hello000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+000000000000000000000000000000000000000000000000000000000000000000000000000=
+0000000000000000000000000000000000000000000000000000000world
+--=20
+2.20.1
 
