@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 494A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348909AbiA1NTl (ORCPT
+        id S1348967AbiA1NTp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:19:41 -0500
-Received: from server.lespinasse.org ([63.205.204.226]:35959 "EHLO
-        server.lespinasse.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348643AbiA1NTJ (ORCPT
+        Fri, 28 Jan 2022 08:19:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348654AbiA1NTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 08:19:09 -0500
+Received: from server.lespinasse.org (server.lespinasse.org [IPv6:2001:470:82ab::100:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3613CC06174E
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:19:08 -0800 (PST)
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
  d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-52-ed;
  t=1643375407; h=from : to : cc : subject : date : message-id :
  in-reply-to : references : mime-version : content-transfer-encoding :
- from; bh=UxJsNKcxVkmfEwrc0wLrYxktFQMDzJ2NvtD6CGXLcSg=;
- b=6r7aPZUUazHr0Yx+Qnh+976CFWlOQ4YNyXZG/9wDEuqKvF1jaH590LzBlXz8Je2wT6aJb
- sogFe4e9NylpbJwBQ==
+ from; bh=BFnS2HVemFqBghBQYQoit3Mzm0TjMbmSrEenm665k8w=;
+ b=2dpLWkBE9v0lknlSIzYPOUv9ofd7VbjV/VSh/N5tA3XRDjPy8JwdzJcC1peuzvFj7CHoh
+ 7yhOi/faRp4ngfHBQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
  i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375407; h=from : to
  : cc : subject : date : message-id : in-reply-to : references :
  mime-version : content-transfer-encoding : from;
- bh=UxJsNKcxVkmfEwrc0wLrYxktFQMDzJ2NvtD6CGXLcSg=;
- b=cTAUtcMfHA1B3iEc5GrsP2U2HjGn6DIPIpn7HZ2gtLjdNDl8krMjya4tVaK+5OTEA+wWr
- Xnj0JsNTJP/v2UE6Qsd7hSwMV2FYZb/nMEA+ldwp10eTwW0rADGPdxnBB0m+O1JNdfdTyqv
- DWC7tylQgCiEGBa3oQfzqNx34zEWcKxrdjdG5t1zaryzw8AnVDwsekcgtaT7VAtf2Kd5SWG
- 5j8zgxXTRAe0xi5ToCDyGNZTmpWWZqs9+6c9rc7+Iq/vJ0rEbK2KxJ4ohHyWwm+TXbktBQe
- jtI88AyNoZA1+73B7ej+1TJ+MKPzv+tBflBZwOqGNbR2DaZWuOFVvuP5R8TA==
-Received: from zeus.lespinasse.org (zeus.lespinasse.org [10.0.0.150])
-        by server.lespinasse.org (Postfix) with ESMTPS id 1758B16099D;
-        Fri, 28 Jan 2022 05:10:07 -0800 (PST)
+ bh=BFnS2HVemFqBghBQYQoit3Mzm0TjMbmSrEenm665k8w=;
+ b=LXpqXihdo7IvGRJFBVCLL2z4CQzI6N+qpPgYIEda11ogFMEAadWWEJW4swjM25P9IqB20
+ h1Yo5Cl3w5IBtDesp8ESchFm1g+O9UEcQmSf+6PMvPuXxYmgpzkIwhwYea6CY33/lbWRHd6
+ 3O0VrccO8zNPJBE9Sp1RqqbzTPRHXWCdSSh6bXYc/ZGFIRudFc9tRPqmkhL16of3LSIh8mb
+ S9WPbCxJlnKfiiwiuA8d2lvr/FJUS/T6tmzY4SPCjVo0vOkuHL7zRyozEHq5jIFj7o4BdUY
+ k6qm3DpgdiNfOmVAnYMtSTkMrzRc8asV9g3wYWhxGNfIzEOlBTtEBwtu2n1Q==
+Received: from zeus.lespinasse.org (zeus.lespinasse.org [IPv6:fd00::150:0])
+        by server.lespinasse.org (Postfix) with ESMTPS id EF82D160965;
+        Fri, 28 Jan 2022 05:10:06 -0800 (PST)
 Received: by zeus.lespinasse.org (Postfix, from userid 1000)
-        id F241320481; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
+        id D3FD620459; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
 From:   Michel Lespinasse <michel@lespinasse.org>
 To:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>
@@ -56,9 +59,9 @@ Cc:     kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Andy Lutomirski <luto@kernel.org>,
         Michel Lespinasse <michel@lespinasse.org>
-Subject: [PATCH v2 18/35] mm: implement speculative handling in do_anonymous_page()
-Date:   Fri, 28 Jan 2022 05:09:49 -0800
-Message-Id: <20220128131006.67712-19-michel@lespinasse.org>
+Subject: [PATCH v2 07/35] x86/mm: define ARCH_SUPPORTS_SPECULATIVE_PAGE_FAULT
+Date:   Fri, 28 Jan 2022 05:09:38 -0800
+Message-Id: <20220128131006.67712-8-michel@lespinasse.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220128131006.67712-1-michel@lespinasse.org>
 References: <20220128131006.67712-1-michel@lespinasse.org>
@@ -68,65 +71,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change do_anonymous_page() to handle the speculative case.
-This involves aborting speculative faults if they have to allocate a new
-anon_vma, and using pte_map_lock() instead of pte_offset_map_lock()
-to complete the page fault.
+Set ARCH_SUPPORTS_SPECULATIVE_PAGE_FAULT so that the speculative fault
+handling code can be compiled on this architecture.
 
 Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
 ---
- mm/memory.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ arch/x86/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/mm/memory.c b/mm/memory.c
-index 1ce837e47395..8d036140634d 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3846,8 +3846,12 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
- 						vma->vm_page_prot));
- 	} else {
- 		/* Allocate our own private page. */
--		if (unlikely(anon_vma_prepare(vma)))
--			goto oom;
-+		if (unlikely(!vma->anon_vma)) {
-+			if (vmf->flags & FAULT_FLAG_SPECULATIVE)
-+				return VM_FAULT_RETRY;
-+			if (__anon_vma_prepare(vma))
-+				goto oom;
-+		}
- 		page = alloc_zeroed_user_highpage_movable(vma, vmf->address);
- 		if (!page)
- 			goto oom;
-@@ -3869,8 +3873,10 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
- 			entry = pte_mkwrite(pte_mkdirty(entry));
- 	}
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index ebe8fc76949a..378bc33bac54 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -34,6 +34,7 @@ config X86_64
+ 	select SWIOTLB
+ 	select ARCH_HAS_ELFCORE_COMPAT
+ 	select ZONE_DMA32
++	select ARCH_SUPPORTS_SPECULATIVE_PAGE_FAULT
  
--	vmf->pte = pte_offset_map_lock(vma->vm_mm, vmf->pmd, vmf->address,
--			&vmf->ptl);
-+	if (!pte_map_lock(vmf)) {
-+		ret = VM_FAULT_RETRY;
-+		goto release;
-+	}
- 	if (!pte_none(*vmf->pte)) {
- 		update_mmu_tlb(vma, vmf->address, vmf->pte);
- 		goto unlock;
-@@ -3885,6 +3891,8 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
- 		pte_unmap_unlock(vmf->pte, vmf->ptl);
- 		if (page)
- 			put_page(page);
-+		if (vmf->flags & FAULT_FLAG_SPECULATIVE)
-+			return VM_FAULT_RETRY;
- 		return handle_userfault(vmf, VM_UFFD_MISSING);
- 	}
- 
-@@ -3902,6 +3910,7 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
- 	return 0;
- unlock:
- 	pte_unmap_unlock(vmf->pte, vmf->ptl);
-+release:
- 	if (page)
- 		put_page(page);
- 	return ret;
+ config FORCE_DYNAMIC_FTRACE
+ 	def_bool y
 -- 
 2.20.1
 
