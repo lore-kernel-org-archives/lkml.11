@@ -2,118 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 641F7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:25:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349116AbiA1OYb (ORCPT
+        id S1349138AbiA1OZa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:24:31 -0500
-Received: from mga01.intel.com ([192.55.52.88]:14015 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349109AbiA1OY1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:24:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643379867; x=1674915867;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=xChxVhzIhaTTa+OGJbz0k6Hw1HEJzyGMSh7aO2ZLbLw=;
-  b=midQALOJ4nblaKcBD7NkkAl9gt2obN9cluZVgeJFN9lzETTzwzozCzoe
-   mfM0XFAOMvZO/oxFbZnT6AJspsCJZJL6I17ML+wM31NPtD2oCOUHhFMZ/
-   1JBHEs/lMSZ86/PyDRyYnhrO931Ff0uSPmbblD1OP0rbzd2u9JV9YYNho
-   7mnmuS0b5x0leNr2ncYAtUzayvZGP+jtOc+h+4zsmcjl/aL+UlVluAk+2
-   G3u9A34vH0w0J4uXSq4DqaPNIVqCce7t7dh7kPK4wcsObCfFzl3GMir88
-   wJsskAr2M1B5jQEtUf9bbZBwUz2NFI2D4ZV4AmSdn+W8Ix3rh8fw6g+2R
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="271589631"
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="271589631"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 06:24:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="536149392"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 28 Jan 2022 06:24:25 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDSAr-000NyC-1Q; Fri, 28 Jan 2022 14:24:25 +0000
-Date:   Fri, 28 Jan 2022 22:23:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Pirko <jiri@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jpirko-mlxsw:jiri_devel_linecards 37/58]
- drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:344:39: error: passing
- argument 1 of 'mlxsw_linecard_provision_fail' from incompatible pointer type
-Message-ID: <202201282226.T1KtFC5Q-lkp@intel.com>
+        Fri, 28 Jan 2022 09:25:30 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:35522 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S245047AbiA1OZ3 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 09:25:29 -0500
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20SDa6jq000403;
+        Fri, 28 Jan 2022 14:25:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=UTlrCQsN9wvW4smbvkC4PWfNrFCit0FQ5oUvlfRUla0=;
+ b=F+FWOl7ym1BE0rVtbMJs9VJUZnIZsd3NDLTFLIz4SEkWKbM4JHP2cARlCvEy9iDa3+aO
+ b0C0vBMN15tcW1W3fTS3OS+bz2P1618P+6aG8t0lyHzrgw8XdAfohhDcMUQRcL+N63ju
+ F3Qbhqq9+oPoju7puVTnlhbW9+EjHE0pnkTfxJDtrA8TlZZ8ByXX/V7A2mDPJ3j1QFD2
+ 6CIjwNpmLs0YOVNQnsJBBgS6GbXJM1k5BFd8AE+s/RW6NSRc+qka+xin0zmq1Z4MOLNX
+ Ya+fIXvaszJkx8Udko5PDQY06NXP/B49EUwDsgIfQbAQ/XJjHJOYL2LGNkHodwgmq18l BQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dvg79jqhj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 28 Jan 2022 14:25:09 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20SDcwNT008686;
+        Fri, 28 Jan 2022 14:25:08 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dvg79jqgy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 28 Jan 2022 14:25:08 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20SDxFT2027105;
+        Fri, 28 Jan 2022 14:06:54 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma02dal.us.ibm.com with ESMTP id 3dt1xc1wpe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 28 Jan 2022 14:06:54 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20SE6qWC40829318
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 28 Jan 2022 14:06:52 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9033B11206F;
+        Fri, 28 Jan 2022 14:06:52 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3676E112070;
+        Fri, 28 Jan 2022 14:06:52 +0000 (GMT)
+Received: from [9.47.158.152] (unknown [9.47.158.152])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri, 28 Jan 2022 14:06:52 +0000 (GMT)
+Message-ID: <aff500e2-b52d-c153-8d23-f9b84e6bb182@linux.ibm.com>
+Date:   Fri, 28 Jan 2022 09:06:51 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v9 08/23] ima: Move measurement list related variables
+ into ima_namespace
+Content-Language: en-US
+To:     Mimi Zohar <zohar@linux.ibm.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Stefan Berger <stefanb@linux.vnet.ibm.com>
+Cc:     linux-integrity@vger.kernel.org, serge@hallyn.com,
+        christian.brauner@ubuntu.com, containers@lists.linux.dev,
+        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
+        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
+        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
+        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
+        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org
+References: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
+ <20220125224645.79319-9-stefanb@linux.vnet.ibm.com>
+ <20220126092159.4rgclr5s3jli7aqy@wittgenstein>
+ <9ca21852-17ee-fc99-4764-300cd5199810@linux.ibm.com>
+ <fc0fda8455140dce4f5af25fa8deef66ba931a95.camel@linux.ibm.com>
+From:   Stefan Berger <stefanb@linux.ibm.com>
+In-Reply-To: <fc0fda8455140dce4f5af25fa8deef66ba931a95.camel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: oIW9bFUFWFaNwjmefRAMiOe6HdhKuKxF
+X-Proofpoint-ORIG-GUID: LLxiEZz_RB3P6Es0z-JWYOWamC0gQxR2
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-28_04,2022-01-27_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ clxscore=1015 bulkscore=0 priorityscore=1501 spamscore=0 adultscore=0
+ lowpriorityscore=0 suspectscore=0 mlxlogscore=999 impostorscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201280090
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
-head:   e29aaaea5a4ec1a13a522a428fed7ce715a01d0d
-commit: 73018c57f04b9844d72620e46dd767eb0fc1ad01 [37/58] mlxsw: core_linecards: Probe devices for provisioned line card and attach them
-config: alpha-allmodconfig (https://download.01.org/0day-ci/archive/20220128/202201282226.T1KtFC5Q-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jpirko/linux_mlxsw/commit/73018c57f04b9844d72620e46dd767eb0fc1ad01
-        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
-        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
-        git checkout 73018c57f04b9844d72620e46dd767eb0fc1ad01
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash drivers/net/ethernet/mellanox/mlxsw/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 1/27/22 16:48, Mimi Zohar wrote:
+> On Wed, 2022-01-26 at 17:23 -0500, Stefan Berger wrote:
+>> On 1/26/22 04:21, Christian Brauner wrote:
+>>> On Tue, Jan 25, 2022 at 05:46:30PM -0500, Stefan Berger wrote:
+>>>> From: Stefan Berger <stefanb@linux.ibm.com>
+>>>>
+>>>> Move measurement list related variables into the ima_namespace. This way
+>>>> a front-end like securityfs can show the measurement list inside an IMA
+>>>> namespace.
+>>>>
+>>>> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+>>>> ---
+>>>>    security/integrity/ima/ima.h             |  5 +++--
+>>>>    security/integrity/ima/ima_fs.c          |  6 ++++--
+>>>>    security/integrity/ima/ima_init_ima_ns.c |  5 +++++
+>>>>    security/integrity/ima/ima_kexec.c       | 12 ++++++-----
+>>>>    security/integrity/ima/ima_queue.c       | 27 +++++++++++-------------
+>>>>    5 files changed, 31 insertions(+), 24 deletions(-)
+>>>>
+>>>> diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
+>>>> index 340a59174670..45706836a77b 100644
+>>>> --- a/security/integrity/ima/ima.h
+>>>> +++ b/security/integrity/ima/ima.h
+>>>> @@ -106,7 +106,6 @@ struct ima_queue_entry {
+>>>>    	struct list_head later;		/* place in ima_measurements list */
+>>>>    	struct ima_template_entry *entry;
+>>>>    };
+>>>> -extern struct list_head ima_measurements;	/* list of all measurements */
+>>>>    
+>>>>    /* Some details preceding the binary serialized measurement list */
+>>>>    struct ima_kexec_hdr {
+>>>> @@ -136,6 +135,8 @@ struct ima_namespace {
+>>>>    	struct ima_rule_entry *arch_policy_entry;
+>>>>    
+>>>>    	struct ima_h_table ima_htable;
+>>>> +	struct list_head ima_measurements;	/* list of all measurements */
+>>>> +	unsigned long binary_runtime_size;	/* used by init_ima_ns */
+>>>>    } __randomize_layout;
+>>> Moving this into struct imans seems sane to me but I'm not going to ack
+>>> it because I don't have enough knowledge to guarantee that this code
+>>> will only run for init_ima_ns. I'll leave that to Mimi.
+> Moving the ima_measurements to the ima_namespace is needed for
+> namespacing the IMA measurement list (next stage).  I think moving it
+> now is fine.
+And besides that we can now already how an empty measurement list 
+without having to special case the code.
+>
+>> The code modifying binary_runtime_size may do this for all IMA
+>> namespaces but the esulting value of binary_runtime_size may only
+>> matter in init_ima_ns (not 100% sure, but Mimi seems to say so). Moving
+>> it into ima_namespace rather than special-casing the code keeps the code
+>> readable.
+> Right, there are other changes like moving the binary_runtime_size to
+> the namespace, which aren't needed, but are being done, I guess, for
+> aesthetics.  The binary_runtime_size is only used for allocating the
+> memory needed for carrying the measurement list across kexec.  Anything
+> related to carrying or restoring the measurement list across kexec is
+> limited to ima_init_ns.
+>
+>> There are also some case in the code that may do something like this:
+>>
+>> if (ns == &init_ima_ns)
+>>
+>>       foo = xyz;
+>>
+>> Those will go away when foo is moved into the namespace and then it
+>> becomes ns->foo = xyz, which is much saner for readability but
+>> unavoidable for some variables at this stage.
+> Since binary_runtime_size is limited to the ima_init_ns, should it be
+> conditional?
 
-All errors (new ones prefixed by >>):
-
-   drivers/net/ethernet/mellanox/mlxsw/core_linecards.c: In function 'mlxsw_linecard_status_event_to_work':
->> drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:344:39: error: passing argument 1 of 'mlxsw_linecard_provision_fail' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     344 |         mlxsw_linecard_provision_fail(linecard);
-         |                                       ^~~~~~~~
-         |                                       |
-         |                                       struct mlxsw_linecard *
-   drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:153:62: note: expected 'struct mlxsw_core *' but argument is of type 'struct mlxsw_linecard *'
-     153 | static void mlxsw_linecard_provision_fail(struct mlxsw_core *mlxsw_core,
-         |                                           ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
->> drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:344:9: error: too few arguments to function 'mlxsw_linecard_provision_fail'
-     344 |         mlxsw_linecard_provision_fail(linecard);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:153:13: note: declared here
-     153 | static void mlxsw_linecard_provision_fail(struct mlxsw_core *mlxsw_core,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+Moving it into ima_namespace keeps the code clean from these kind of 
+constructs above. I would move it... The less of these constructs are 
+there the less confusing it is, IMO. But ymmv.
 
 
-vim +/mlxsw_linecard_provision_fail +344 drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
 
-57299b50dc9224 Jiri Pirko 2022-01-28  334  
-57299b50dc9224 Jiri Pirko 2022-01-28  335  static void mlxsw_linecard_status_event_to_work(struct work_struct *work)
-57299b50dc9224 Jiri Pirko 2022-01-28  336  {
-57299b50dc9224 Jiri Pirko 2022-01-28  337  	struct mlxsw_linecard *linecard =
-57299b50dc9224 Jiri Pirko 2022-01-28  338  		container_of(work, struct mlxsw_linecard,
-57299b50dc9224 Jiri Pirko 2022-01-28  339  			     status_event_to_dw.work);
-57299b50dc9224 Jiri Pirko 2022-01-28  340  
-57299b50dc9224 Jiri Pirko 2022-01-28  341  	dev_err(linecard->linecards->bus_info->dev, "linecard %u: Timeout reached waiting on %s status event",
-57299b50dc9224 Jiri Pirko 2022-01-28  342  		linecard->slot_index,
-57299b50dc9224 Jiri Pirko 2022-01-28  343  		mlxsw_linecard_status_event_type_name[linecard->status_event_type_to]);
-57299b50dc9224 Jiri Pirko 2022-01-28 @344  	mlxsw_linecard_provision_fail(linecard);
-57299b50dc9224 Jiri Pirko 2022-01-28  345  }
-57299b50dc9224 Jiri Pirko 2022-01-28  346  
-
-:::::: The code at line 344 was first introduced by commit
-:::::: 57299b50dc9224b8512f83e641ae92cc128016cf TMP: event timeout
-
-:::::: TO: Jiri Pirko <jiri@nvidia.com>
-:::::: CC: Jiri Pirko <jiri@nvidia.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
+> thanks,
+>
+> Mimi
+>
