@@ -2,103 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F53EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 08:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3316EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 08:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347155AbiA1IEk (ORCPT
+        id S1347163AbiA1IG1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 03:04:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiA1IEj (ORCPT
+        Fri, 28 Jan 2022 03:06:27 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:30317 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237542AbiA1IGZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 03:04:39 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE057C061714;
-        Fri, 28 Jan 2022 00:04:38 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id y17so4539762qtx.9;
-        Fri, 28 Jan 2022 00:04:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3TT5bHFkruxbVd2ktp2QQbLXvdZSrdDVPPNEsULjQf8=;
-        b=eaLzwa9Kslys8dp2UL461qM6t3WgE7Bfc5PK217VTpcTfKKbK3d0cEbymTYH01R/GH
-         QHX92kd8N35181AMIaJ31faLpMYXkAnZZw42QfZacVMnn/n5K0masi8UIy/lGzGti75X
-         stLgR7sZrGvcM2jziAg+L5S06eoPCAWX77HzXlRJxTSvjTy9mgqwXB2lgnDa7WS30Tm5
-         ErJcAVqUZ3f/C/7+nbMAosLmw38xJ4e+1yMnRE1wLSP3b8ZgO8WGHAi3cTAd4vzhtrdZ
-         iFKP0d3sUwJPPyI59NoNZUiH4tQrdWY3kVrHCaf80L+On6QsROPxsAyMLM99KSl8wcdn
-         ZT6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3TT5bHFkruxbVd2ktp2QQbLXvdZSrdDVPPNEsULjQf8=;
-        b=vIOF2yMsCKW3XpaXRWSJspHr4wxEF+eiQsTj8a/n59F+W5eywhAS86xyEdAx0tn15g
-         YksvA3yilW6XiXHqfYHxsH8Ilp5qcKuNkFEyEbZCjr6Z3GnICaq8vNfxq12L2wPbljXS
-         WMxhYPas9p964IwhpBV/10n+TBWgnUJ/oprvDj2dLn5koKRd8n3ogdKd6ZKDB3k1D+Kh
-         xi3I+0kZWO3CHZMzCzGCJxgrBs4E6CdvjwiwHo3+CBQmATLbmn/KcYgfdAof8FO2rhU1
-         H1aWwqITyDCa7raf5sx8m9Wk2vy/qU0xX7tYMTRRSZ06HKjXmkY9TICA+sYRUsqFiAGL
-         Y7ww==
-X-Gm-Message-State: AOAM531FMZNOqHmX0juyDeaAVDE195Rf2FEfKEuqNoK7+fl3AZUVoO8/
-        FR/J5qnJA1Sa760sH5G8mO5p2mSoAkI=
-X-Google-Smtp-Source: ABdhPJy8Dm/EfYX+j0uTQdaKcdWk7EsyXceDYatXLLNPMDv32jBEQEzCKxba6h7EKqO9GYeGcnxpDQ==
-X-Received: by 2002:a05:622a:1042:: with SMTP id f2mr5333187qte.231.1643357077913;
-        Fri, 28 Jan 2022 00:04:37 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id 195sm2780348qkf.30.2022.01.28.00.04.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jan 2022 00:04:37 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kvalo@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] wcn36xx: use struct_size over open coded arithmetic
-Date:   Fri, 28 Jan 2022 08:04:30 +0000
-Message-Id: <20220128080430.1211593-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 28 Jan 2022 03:06:25 -0500
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JlVPl04PVzbk7m;
+        Fri, 28 Jan 2022 16:05:31 +0800 (CST)
+Received: from [10.40.193.166] (10.40.193.166) by
+ dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Fri, 28 Jan 2022 16:06:22 +0800
+Subject: Re: [PATCH 06/16] scsi: libsas: Add sas_task.tmf
+To:     John Garry <john.garry@huawei.com>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "artur.paszkiewicz@intel.com" <artur.paszkiewicz@intel.com>,
+        "jinpu.wang@cloud.ionos.com" <jinpu.wang@cloud.ionos.com>,
+        "Ajish.Koshy@microchip.com" <Ajish.Koshy@microchip.com>
+References: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
+ <1643110372-85470-7-git-send-email-john.garry@huawei.com>
+ <e349aedb-71ad-8bf2-d3c3-920a83a56eae@hisilicon.com>
+ <6b31c696-9808-764b-489b-4d2de91051b9@huawei.com>
+CC:     yanaijie <yanaijie@huawei.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        Linuxarm <linuxarm@huawei.com>,
+        "liuqi (BA)" <liuqi115@huawei.com>,
+        "Viswas.G@microchip.com" <Viswas.G@microchip.com>,
+        "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>
+From:   "chenxiang (M)" <chenxiang66@hisilicon.com>
+Message-ID: <b2f04325-f116-8fb4-b8c8-313e19c18ea4@hisilicon.com>
+Date:   Fri, 28 Jan 2022 16:06:22 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
+In-Reply-To: <6b31c696-9808-764b-489b-4d2de91051b9@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.40.193.166]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 
-Replace zero-length array with flexible-array member and make use
-of the struct_size() helper in kmalloc(). For example:
 
-struct wcn36xx_hal_ind_msg {
-	struct list_head list;
-	size_t msg_len;
-	u8 msg[];
-};
+在 2022/1/28 0:01, John Garry 写道:
+> On 27/01/2022 12:55, chenxiang (M) wrote:
+>>> -    slot->tmf = tmf;
+>>> -    slot->is_internal = tmf;
+>> In kernel 5.17-rc1(with above two lines on), it seems there is a issue
+>> for ata disk reset command as tmf = null while it is internal command.
+>
+> ok, thanks for the notice. Would this fix it:
 
-Make use of the struct_size() helper instead of an open-coded version
-in order to avoid any potential type mistakes.
+Yes, it should fix it, and i just notice that it seems solve the issue 
+in the last patch of this patchset (including this fix in the last patch).
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
----
- drivers/net/wireless/ath/wcn36xx/smd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index caeb68901326..16036881542f 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -3347,7 +3347,7 @@ int wcn36xx_smd_rsp_process(struct rpmsg_device *rpdev,
- 	case WCN36XX_HAL_DELETE_STA_CONTEXT_IND:
- 	case WCN36XX_HAL_PRINT_REG_INFO_IND:
- 	case WCN36XX_HAL_SCAN_OFFLOAD_IND:
--		msg_ind = kmalloc(sizeof(*msg_ind) + len, GFP_ATOMIC);
-+		msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
- 		if (!msg_ind) {
- 			wcn36xx_err("Run out of memory while handling SMD_EVENT (%d)\n",
- 				    msg_header->msg_type);
--- 
-2.25.1
+>
+> diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c 
+> b/drivers/scsi/hisi_sas/hisi_sas_main.c
+> index a05ec7aece5a..0e12c9329ee5 100644
+> --- a/drivers/scsi/hisi_sas/hisi_sas_main.c
+> +++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
+> @@ -427,8 +427,6 @@ void hisi_sas_task_deliver(struct hisi_hba *hisi_hba,
+>      cmd_hdr_base = hisi_hba->cmd_hdr[dlvry_queue];
+>      slot->cmd_hdr = &cmd_hdr_base[dlvry_queue_slot];
+>
+> -    slot->tmf = tmf;
+> -    slot->is_internal = tmf;
+>      task->lldd_task = slot;
+>
+>      memset(slot->cmd_hdr, 0, sizeof(struct hisi_sas_cmd_hdr));
+> @@ -1380,12 +1378,13 @@ static int hisi_sas_softreset_ata_disk(struct 
+> domain_device *device)
+>      struct hisi_hba *hisi_hba = dev_to_hisi_hba(device);
+>      struct device *dev = hisi_hba->dev;
+>      int s = sizeof(struct host_to_dev_fis);
+> +    struct hisi_sas_tmf_task tmf = {};
+>
+>      ata_for_each_link(link, ap, EDGE) {
+>          int pmp = sata_srst_pmp(link);
+>
+>          hisi_sas_fill_ata_reset_cmd(link->device, 1, pmp, fis);
+> -        rc = hisi_sas_exec_internal_tmf_task(device, fis, s, NULL);
+> +        rc = hisi_sas_exec_internal_tmf_task(device, fis, s, &tmf);
+>          if (rc != TMF_RESP_FUNC_COMPLETE)
+>              break;
+>      }
+> @@ -1396,7 +1395,7 @@ static int hisi_sas_softreset_ata_disk(struct 
+> domain_device *device)
+>
+>              hisi_sas_fill_ata_reset_cmd(link->device, 0, pmp, fis);
+>              rc = hisi_sas_exec_internal_tmf_task(device, fis,
+> -                                 s, NULL);
+> +                                 s, &tmf);
+>              if (rc != TMF_RESP_FUNC_COMPLETE)
+>                  dev_err(dev, "ata disk %016llx de-reset failed\n",
+>                      SAS_ADDR(device->sas_addr));
+>
+>>
+>>>        task->lldd_task = slot;
+>
+>
+>
+> .
+>
 
