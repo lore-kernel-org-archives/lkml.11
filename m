@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2315C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C59F1C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:24:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350172AbiA1QX7 (ORCPT
+        id S1350181AbiA1QYB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 11:23:59 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59232 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350070AbiA1QXq (ORCPT
+        Fri, 28 Jan 2022 11:24:01 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35354 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350067AbiA1QXr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 11:23:46 -0500
+        Fri, 28 Jan 2022 11:23:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C17861F0C;
-        Fri, 28 Jan 2022 16:23:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D959FC340ED;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 469F1B82649
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:23:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 268BDC340EB;
         Fri, 28 Jan 2022 16:23:45 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nDU2L-00AT33-2V;
-        Fri, 28 Jan 2022 11:23:45 -0500
-Message-ID: <20220128162344.907304795@goodmis.org>
+        id 1nDU2K-00AT0n-Au;
+        Fri, 28 Jan 2022 11:23:44 -0500
+Message-ID: <20220128162344.174630205@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Fri, 28 Jan 2022 11:18:11 -0500
+Date:   Fri, 28 Jan 2022 11:18:07 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        stable@vger.kernel.org, Yordan Karadzhov <ykaradzhov@vmware.com>,
-        Tom Zanussi <zanussi@kernel.org>
-Subject: [for-linus][PATCH 09/10] tracing: Propagate is_signed to expression
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: [for-linus][PATCH 05/10] rtla: Make doc build optional
 References: <20220128161802.711119424@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -41,47 +41,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Zanussi <zanussi@kernel.org>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-During expression parsing, a new expression field is created which
-should inherit the properties of the operands, such as size and
-is_signed.
+rtla build fails due to doc build dependency on rst2man. Make
+doc build optional so rtla could be built without docs. Leave
+the install dependency on doc_install alone.
 
-is_signed propagation was missing, causing spurious errors with signed
-operands.  Add it in parse_expr() and parse_unary() to fix the problem.
+Link: https://lkml.kernel.org/r/20220126001301.79096-1-skhan@linuxfoundation.org
 
-Link: https://lkml.kernel.org/r/f4dac08742fd7a0920bf80a73c6c44042f5eaa40.1643319703.git.zanussi@kernel.org
-
-Cc: stable@vger.kernel.org
-Fixes: 100719dcef447 ("tracing: Add simple expression support to hist triggers")
-Reported-by: Yordan Karadzhov <ykaradzhov@vmware.com>
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215513
-Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace_events_hist.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/tracing/rtla/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-index b894d68082ea..ada87bfb5bb8 100644
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -2503,6 +2503,8 @@ static struct hist_field *parse_unary(struct hist_trigger_data *hist_data,
- 		(HIST_FIELD_FL_TIMESTAMP | HIST_FIELD_FL_TIMESTAMP_USECS);
- 	expr->fn = hist_field_unary_minus;
- 	expr->operands[0] = operand1;
-+	expr->size = operand1->size;
-+	expr->is_signed = operand1->is_signed;
- 	expr->operator = FIELD_OP_UNARY_MINUS;
- 	expr->name = expr_str(expr, 0);
- 	expr->type = kstrdup_const(operand1->type, GFP_KERNEL);
-@@ -2719,6 +2721,7 @@ static struct hist_field *parse_expr(struct hist_trigger_data *hist_data,
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 2d52ff0bff7d..7c39728d08de 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -59,7 +59,7 @@ endif
+ .PHONY:	all
+ all:	rtla
  
- 		/* The operand sizes should be the same, so just pick one */
- 		expr->size = operand1->size;
-+		expr->is_signed = operand1->is_signed;
+-rtla: $(OBJ) doc
++rtla: $(OBJ)
+ 	$(CC) -o rtla $(LDFLAGS) $(OBJ) $(LIBS)
  
- 		expr->operator = field_op;
- 		expr->type = kstrdup_const(operand1->type, GFP_KERNEL);
+ static: $(OBJ)
 -- 
 2.33.0
