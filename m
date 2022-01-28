@@ -2,181 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A88C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9173FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235142AbiA1Usy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 15:48:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35840 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234741AbiA1Usv (ORCPT
+        id S236410AbiA1UtJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 15:49:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235562AbiA1UtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 15:48:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643402930;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ac/R7Nle50JhmzIM8hFqFYPCurgpW7MZIFOk9+B/A4U=;
-        b=WgGjzAzFggm4BdosLQc/7xFrIUiyszUB64ambWf3//Y9WJfgEt1dyIY6awHthiNfivchMK
-        VgimbvUUigy1Ab8TM6UqSTTLCB0XkvburdlMLZuqsnRp3YdkkkZ63KklyOdAzDmiq9KL0h
-        riB24LKHsJTo9M4p6bEamLBE0B8DLHA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-22-OcHjuN9jOs6Ac0nRWWonxg-1; Fri, 28 Jan 2022 15:48:49 -0500
-X-MC-Unique: OcHjuN9jOs6Ac0nRWWonxg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CCCF61006AA7;
-        Fri, 28 Jan 2022 20:48:47 +0000 (UTC)
-Received: from [10.22.34.217] (unknown [10.22.34.217])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E96CD6AB86;
-        Fri, 28 Jan 2022 20:48:46 +0000 (UTC)
-Message-ID: <fc2ddce7-d5f7-b9ce-3413-b6ffa87a7251@redhat.com>
-Date:   Fri, 28 Jan 2022 15:48:46 -0500
+        Fri, 28 Jan 2022 15:49:06 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6711DC061747
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 12:49:06 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id n12-20020a05600c3b8c00b0034eb13edb8eso5238441wms.0
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 12:49:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ESpslK+beLC9Gzg3G2enDgpikVrsMthhnTttwFurZUU=;
+        b=RP0QkJu8mO0x6vjhFhpMD0CnzenWOihV+I6CsFJCVRy1BUBlML6BMv5TM79Q6UwVzV
+         Q49gSU5/RYQINK6HLaS5CXWV3+8gDGaSMWIHm/ccFn/BRCXaIOpv10z43Agz3ChPuvul
+         3RXA5KAwqmXE6cdaADXIegXtdIqwlWYcpe0SLKrVgRMwzPUc9X9C08MF/UzWhBd3dG8i
+         S3T72uFAR+EnJuBdZm1HYdzgaIvKDCI52JDclgzSjeiNiC2MNQqVCcPUi9qr8nU46E4S
+         GGjiWSElUEP+4eoS2KPXkIJ5BuboqXsCAWqTi4pWs/QmGi02kjrzhXRoAGYb+fygo8c3
+         DXUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ESpslK+beLC9Gzg3G2enDgpikVrsMthhnTttwFurZUU=;
+        b=H6CydvPCqwupjE9m8NzTLtl2sD1IEP+5ry+b4TfMImu9XaCgBJcd+88RJnlpWhZQV0
+         CkhzjxCemQsHi2ob89MyGTiq+1rlhYTskU6Rb7EQHtKfFkvucdDIXVJQMh2J17nAw144
+         LciZP3i/wvj6OWcVnNkqns50K1NhnWFiNbIo+OcHeDcX71rZzJZTiC91Xs84tJsBr+Rk
+         LobXnb3sghrWSC3nwaIlAjHXnnLnzSXu8Vgei66q39lPiojHxwf3xltUwTkbt+Rh7AEK
+         6fa4D8+vu9KIoyLLJjkg/YK+stM+w9pPvAbvC2KxoEFoMnR3pUqfnZpZEGjeo3TiS6/B
+         HFiw==
+X-Gm-Message-State: AOAM531ZXoVxX8ceHae8kZAaMFsDW6Z5OT08FdwqBIZHc/L40Z8I2Zcp
+        25qJji+uLoAzU+PoagPSf7LUnQ==
+X-Google-Smtp-Source: ABdhPJyRLqDpTjXu1yxfsjJq5ifIjnvy4f+FrKjjZCvZEITvEPBmieIMqU1Z4SOsk40t9IJp++Qv3w==
+X-Received: by 2002:a05:600c:4f8d:: with SMTP id n13mr17088213wmq.45.1643402944959;
+        Fri, 28 Jan 2022 12:49:04 -0800 (PST)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id l10sm5453398wrz.20.2022.01.28.12.49.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Jan 2022 12:49:04 -0800 (PST)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     linux@roeck-us.net, robh+dt@kernel.org, linus.walleij@linaro.org,
+        wim@linux-watchdog.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH] dt-bindings: watchdog: convert faraday,ftwdt010 to yaml
+Date:   Fri, 28 Jan 2022 20:48:56 +0000
+Message-Id: <20220128204856.494643-1-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [EXT] [PATCH] scsi: bnx2fc: make bnx2fc_recv_frame mp safe
-Content-Language: en-US
-To:     "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc:     Nilesh Javali <njavali@marvell.com>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        GR-QLogic-Storage-Upstream <GR-QLogic-Storage-Upstream@marvell.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        "mlombard@redhat.com" <mlombard@redhat.com>,
-        "guazhang@redhat.com" <guazhang@redhat.com>
-References: <20220124145110.442335-1-jmeneghi@redhat.com>
- <DM6PR18MB3034D4C12A94CF3121F8B565D2219@DM6PR18MB3034.namprd18.prod.outlook.com>
-From:   John Meneghini <jmeneghi@redhat.com>
-Organization: RHEL Core Storge Team
-In-Reply-To: <DM6PR18MB3034D4C12A94CF3121F8B565D2219@DM6PR18MB3034.namprd18.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks.
+Converts watchdog/faraday,ftwdt010.txt to yaml.
+This permits to detect missing properties like clocks and resets or
+compatible like moxa,moxart-watchdog.
 
-Martin, is it too late to get this into staging for v5.17-rc2?
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+---
+ .../bindings/watchdog/faraday,ftwdt010.txt    | 22 -------
+ .../bindings/watchdog/faraday,ftwdt010.yaml   | 60 +++++++++++++++++++
+ 2 files changed, 60 insertions(+), 22 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
+ create mode 100644 Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
 
-Please merge this patch.
-
-/John
-
-On 1/27/22 00:13, Saurav Kashyap wrote:
-> Hi John,
-> 
->> -----Original Message-----
->> From: John Meneghini <jmeneghi@redhat.com>
->> Sent: Monday, January 24, 2022 8:21 PM
->> To: Saurav Kashyap <skashyap@marvell.com>
->> Cc: Nilesh Javali <njavali@marvell.com>; linux-scsi@vger.kernel.org; linux-
->> kernel@vger.kernel.org; GR-QLogic-Storage-Upstream <GR-QLogic-Storage-
->> Upstream@marvell.com>; mlombard@redhat.com; guazhang@redhat.com
->> Subject: [EXT] [PATCH] scsi: bnx2fc: make bnx2fc_recv_frame mp safe
->>
->> External Email
->>
->> ----------------------------------------------------------------------
->>      Running tests with a debug kernel shows that bnx2fc_recv_frame is
->>      modifying the per_cpu lport stats counters in a non-mpsafe way.
->>      Just boot a debug kernel and run the bnx2fc driver with the hardware
->>      enabled.
->>
->>      [ 1391.699147] BUG: using smp_processor_id() in preemptible [00000000]
->> code: bnx2fc_
->>      [ 1391.699160] caller is bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
->>      [ 1391.699174] CPU: 2 PID: 4355 Comm: bnx2fc_l2_threa Kdump: loaded
->> Tainted: G    B
->>      [ 1391.699180] Hardware name: HP ProLiant DL120 G7, BIOS J01
->> 07/01/2013
->>      [ 1391.699183] Call Trace:
->>      [ 1391.699188]  dump_stack_lvl+0x57/0x7d
->>      [ 1391.699198]  check_preemption_disabled+0xc8/0xd0
->>      [ 1391.699205]  bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
->>      [ 1391.699215]  ? do_raw_spin_trylock+0xb5/0x180
->>      [ 1391.699221]  ? bnx2fc_npiv_create_vports.isra.0+0x4e0/0x4e0 [bnx2fc]
->>      [ 1391.699229]  ? bnx2fc_l2_rcv_thread+0xb7/0x3a0 [bnx2fc]
->>      [ 1391.699240]  bnx2fc_l2_rcv_thread+0x1af/0x3a0 [bnx2fc]
->>      [ 1391.699250]  ? bnx2fc_ulp_init+0xc0/0xc0 [bnx2fc]
->>      [ 1391.699258]  kthread+0x364/0x420
->>      [ 1391.699263]  ? _raw_spin_unlock_irq+0x24/0x50
->>      [ 1391.699268]  ? set_kthread_struct+0x100/0x100
->>      [ 1391.699273]  ret_from_fork+0x22/0x30
->>
->>      To fix the problem: restore the old get_cpu/put_cpu code with some
->>      modifications to reduce the size of the critical section.
->>
->> Fixes: d576a5e80cd0 ("bnx2fc: Improve stats update mechanism")
->> Tested-by: Guangwu Zhang <guazhang@redhat.com>
->> Signed-off-by: John Meneghini <jmeneghi@redhat.com>
->> ---
->>   drivers/scsi/bnx2fc/bnx2fc_fcoe.c | 21 +++++++++++++--------
->>   1 file changed, 13 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
->> b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
->> index 71fa62bd3083..e41a94dc2d1f 100644
->> --- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
->> +++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
->> @@ -508,7 +508,8 @@ static int bnx2fc_l2_rcv_thread(void *arg)
->>
->>   static void bnx2fc_recv_frame(struct sk_buff *skb)
->>   {
->> -	u32 fr_len;
->> +	u64 crc_err;
->> +	u32 fr_len, fr_crc;
->>   	struct fc_lport *lport;
->>   	struct fcoe_rcv_info *fr;
->>   	struct fc_stats *stats;
->> @@ -542,6 +543,11 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
->>   	skb_pull(skb, sizeof(struct fcoe_hdr));
->>   	fr_len = skb->len - sizeof(struct fcoe_crc_eof);
->>
->> +	stats = per_cpu_ptr(lport->stats, get_cpu());
->> +	stats->RxFrames++;
->> +	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
->> +	put_cpu();
->> +
->>   	fp = (struct fc_frame *)skb;
->>   	fc_frame_init(fp);
->>   	fr_dev(fp) = lport;
->> @@ -624,16 +630,15 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
->>   		return;
->>   	}
->>
->> -	stats = per_cpu_ptr(lport->stats, smp_processor_id());
->> -	stats->RxFrames++;
->> -	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
->> +	fr_crc = le32_to_cpu(fr_crc(fp));
->>
->> -	if (le32_to_cpu(fr_crc(fp)) !=
->> -			~crc32(~0, skb->data, fr_len)) {
->> -		if (stats->InvalidCRCCount < 5)
->> +	if (unlikely(fr_crc != ~crc32(~0, skb->data, fr_len))) {
->> +		stats = per_cpu_ptr(lport->stats, get_cpu());
->> +		crc_err = (stats->InvalidCRCCount++);
->> +		put_cpu();
->> +		if (crc_err < 5)
->>   			printk(KERN_WARNING PFX "dropping frame with "
->>   			       "CRC error\n");
->> -		stats->InvalidCRCCount++;
->>   		kfree_skb(skb);
->>   		return;
->>   	}
->> --
-> 
-> Thanks for the patch.
-> 
-> Acked-by: Saurav Kashyap <skashyap@marvell.com>
-> 
->> 2.27.0
-> 
+diff --git a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
+deleted file mode 100644
+index 9ecdb502e605..000000000000
+--- a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
++++ /dev/null
+@@ -1,22 +0,0 @@
+-Faraday Technology FTWDT010 watchdog
+-
+-This is an IP part from Faraday Technology found in the Gemini
+-SoCs and others.
+-
+-Required properties:
+-- compatible : must be one of
+-  "faraday,ftwdt010"
+-  "cortina,gemini-watchdog", "faraday,ftwdt010"
+-- reg : shall contain base register location and length
+-- interrupts : shall contain the interrupt for the watchdog
+-
+-Optional properties:
+-- timeout-sec : the default watchdog timeout in seconds.
+-
+-Example:
+-
+-watchdog@41000000 {
+-	compatible = "faraday,ftwdt010";
+-	reg = <0x41000000 0x1000>;
+-	interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
+-};
+diff --git a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
+new file mode 100644
+index 000000000000..377529b21267
+--- /dev/null
++++ b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
+@@ -0,0 +1,60 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/watchdog/faraday,ftwdt010.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Faraday Technology FTWDT010 watchdog
++
++maintainers:
++  - Linus Walleij <linus.walleij@linaro.org>
++
++description: |
++  This is an IP part from Faraday Technology found in the Gemini
++  SoCs and others.
++
++properties:
++  compatible:
++    oneOf:
++      - const: "faraday,ftwdt010"
++      - items:
++          - const: "cortina,gemini-watchdog"
++          - const: "faraday,ftwdt010"
++      - items:
++          - const: "moxa,moxart-watchdog"
++          - const: "faraday,ftwdt010"
++  reg:
++    maxItems: 1
++  resets:
++    maxItems: 1
++  clocks:
++    maxItems: 1
++  clock-names:
++    const: PCLK
++  interrupts:
++    maxItems: 1
++  timeout-sec:
++    description: the default watchdog timeout in seconds.
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    watchdog@41000000 {
++      compatible = "faraday,ftwdt010";
++      reg = <0x41000000 0x1000>;
++      interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
++    };
++  - |
++    watchdog: watchdog@98500000 {
++      compatible = "moxa,moxart-watchdog", "faraday,ftwdt010";
++      reg = <0x98500000 0x10>;
++      clocks = <&clk_apb>;
++      clock-names = "PCLK";
++    };
++...
+-- 
+2.34.1
 
