@@ -2,116 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0904AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B2EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:09:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235710AbiA1JIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 04:08:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52558 "EHLO
+        id S240359AbiA1JJk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 04:09:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232481AbiA1JIP (ORCPT
+        with ESMTP id S1347483AbiA1JHm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 04:08:15 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09379C061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:08:15 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1nDNEg-00082M-Vr; Fri, 28 Jan 2022 10:08:03 +0100
-Message-ID: <dd30b476f0378a4ae4639ffff635e55093bd070c.camel@pengutronix.de>
-Subject: Re: [RFC PATCH] PCI: imx6: Handle the abort from user-space
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Richard Zhu <hongxing.zhu@nxp.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?UTF-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Jason Liu <jason.hui.liu@nxp.com>
-Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Date:   Fri, 28 Jan 2022 10:07:58 +0100
-In-Reply-To: <20220128082920.591115-1-francesco.dolcini@toradex.com>
-References: <20220128082920.591115-1-francesco.dolcini@toradex.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Fri, 28 Jan 2022 04:07:42 -0500
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4BCC06173B
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:07:42 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:3999:e79d:cb59:f2ec])
+        by albert.telenet-ops.be with bizsmtp
+        id o97e2600p04fKGS0697fYU; Fri, 28 Jan 2022 10:07:40 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nDNEI-00BjuV-NZ; Fri, 28 Jan 2022 10:07:38 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nDNEH-005psG-W2; Fri, 28 Jan 2022 10:07:37 +0100
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Anup Patel <anup.patel@wdc.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v4 1/2] dt-bindings: timer: sifive,clint: Fix number of interrupts
+Date:   Fri, 28 Jan 2022 10:07:35 +0100
+Message-Id: <e6a4c5b20d2acb52125d7d6e6c7e3694d7cb182c.1643360652.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1643360652.git.geert@linux-m68k.org>
+References: <cover.1643360652.git.geert@linux-m68k.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, dem 28.01.2022 um 09:29 +0100 schrieb Francesco Dolcini:
-> From: Jason Liu <jason.hui.liu@nxp.com>
-> 
-> The driver install one hook to handle the external abort, but issue
-> is that if the abort introduced from user space code, the following
-> code unsigned long instr = *(unsigned long *)pc; which will created
-> another data-abort(page domain fault) if CONFIG_CPU_SW_DOMAIN_PAN.
-> 
-> The patch does not intent to use copy_from_user and then do the hack
-> due to the security consideration. In fact, we can just return and
-> report the external abort to user-space.
-> 
-I'm not sure how userspace would be able to trigger this abort. Maybe
-invalid access to a device cfg space via sysfs?
+The number of interrupts lacks an upper bound, thus assuming one,
+causing properly grouped "interrupts-extended" properties to be flagged
+as an error by "make dtbs_check".
 
-However the patch seems to do the right thing in that case.
+Fix this by adding the missing "maxItems", using the architectural
+maximum of 4095 interrupts.
 
-Acked-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+v4:
+  - Use architectural maximum instead of practical maximum of 10,
+
+v3:
+  - Add Acked-by,
+
+v2:
+  - Split in two patches,
+  - Improve patch description and document limit rationale.
+---
+ Documentation/devicetree/bindings/timer/sifive,clint.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/timer/sifive,clint.yaml b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+index 8d5f4687add9e81e..fe4b73c3f269fc0f 100644
+--- a/Documentation/devicetree/bindings/timer/sifive,clint.yaml
++++ b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+@@ -44,6 +44,7 @@ properties:
  
-> Signed-off-by: Jason Liu <jason.hui.liu@nxp.com>
-> Reviewed-by: Richard Zhu <hongxing.zhu@nxp.com>
-> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-> ---
-> We have this patch from NXP downstream kernel [1] in our kernel branch [2]
-> since a long time, to me it would make sense to upstream it. Any concern?
-> 
-> [1] https://source.codeaurora.org/external/imxsupport/linux-imx/commit/?id=62dfb2fb953463dd1b6710567c9e174672a98f24
-> [2] https://git.toradex.com/cgit/linux-toradex.git/commit/?id=2b42547cf659f979be2defdff6a99f921b33d0f1
-> ---
->  drivers/pci/controller/dwc/pci-imx6.c | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-> index 6974bd5aa116..6b178a29e253 100644
-> --- a/drivers/pci/controller/dwc/pci-imx6.c
-> +++ b/drivers/pci/controller/dwc/pci-imx6.c
-> @@ -27,6 +27,7 @@
->  #include <linux/resource.h>
->  #include <linux/signal.h>
->  #include <linux/types.h>
-> +#include <linux/uaccess.h>
->  #include <linux/interrupt.h>
->  #include <linux/reset.h>
->  #include <linux/phy/phy.h>
-> @@ -297,8 +298,15 @@ static int imx6q_pcie_abort_handler(unsigned long addr,
->  		unsigned int fsr, struct pt_regs *regs)
->  {
->  	unsigned long pc = instruction_pointer(regs);
-> -	unsigned long instr = *(unsigned long *)pc;
-> -	int reg = (instr >> 12) & 15;
-> +	unsigned long instr;
-> +	int reg;
-> +
-> +	/* if the abort from user-space, just return and report it */
-> +	if (user_mode(regs))
-> +		return 1;
-> +
-> +	instr = *(unsigned long *)pc;
-> +	reg = (instr >> 12) & 15;
->  
->  	/*
->  	 * If the instruction being executed was a read,
-
+   interrupts-extended:
+     minItems: 1
++    maxItems: 4095
+ 
+ additionalProperties: false
+ 
+-- 
+2.25.1
 
