@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68F3BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50573C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348859AbiA1NTX (ORCPT
+        id S1348888AbiA1NT1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:19:23 -0500
-Received: from server.lespinasse.org ([63.205.204.226]:54401 "EHLO
+        Fri, 28 Jan 2022 08:19:27 -0500
+Received: from server.lespinasse.org ([63.205.204.226]:49217 "EHLO
         server.lespinasse.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245035AbiA1NTI (ORCPT
+        with ESMTP id S244929AbiA1NTI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 08:19:08 -0500
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
  d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-52-ed;
- t=1643375406; h=from : to : cc : subject : date : message-id :
+ t=1643375407; h=from : to : cc : subject : date : message-id :
  in-reply-to : references : mime-version : content-transfer-encoding :
- from; bh=Y2k4uPVeoJirwL08p+/VJjxEhsePEHeg9Wr+pPi/UaM=;
- b=WVJsEvoRqkBk1wBf/PQvT+xODXvkJZ2W/KdNjDE+io9o82HbpdsxP3huXOEqePeoiipqa
- 4ZiZYFmKjNnl0n6DQ==
+ from; bh=Y8IXLxDDo2uMYY4ajZ7hmxbwiY+i3sSuKQUk/LNtie0=;
+ b=JulGTkO46MGgZky++qtpQvRETNq3Kvq78SzsTBHZsrHaUN9jXkTfXps3VAXviSm18hICX
+ LVSWndI82XWWqqdCA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
- i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375406; h=from : to
+ i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375407; h=from : to
  : cc : subject : date : message-id : in-reply-to : references :
  mime-version : content-transfer-encoding : from;
- bh=Y2k4uPVeoJirwL08p+/VJjxEhsePEHeg9Wr+pPi/UaM=;
- b=vSQ8s0/J8zRmO0ii8kp4Dal6J6g7+90+5Tg8FB0H2IdHKfFKMNcbY4uu/b23/wp85T5aM
- pOnoLkegyz82Ymv86cgI3Mob1ZWkjQNPdDjPdfSgstcziSsUGjmhsQLiAN4Oq3KjFDqih0C
- akrA6ZElzAceI7GfqcA/Hx3uB4xgwNGlh4eo+ViqOgSTp0ckD0tcvXWGE2eciaPmXCP7mpw
- cGEv2SmbXGevETiQwcjSC3/R20Z7R6KHdPlCkgiUFqy7JfGWasujKkQIZwyeKPSD4jS+ymv
- FfkyfV9r8+INSo2NieNZfKcM0gOcwiJ1e5tDXPb88krQfhDssX28SUscD+QA==
-Received: from zeus.lespinasse.org (zeus.lespinasse.org [IPv6:fd00::150:0])
-        by server.lespinasse.org (Postfix) with ESMTPS id DAEF516094C;
+ bh=Y8IXLxDDo2uMYY4ajZ7hmxbwiY+i3sSuKQUk/LNtie0=;
+ b=4enGUh1ZmMgQDoOfcwGDX6So/GAUJzChFZrj0x0JBbHZKScmZ+TBT55iyG5zBKYpXL28h
+ NrBvAXE6QHVK2mUNGqxc36/lRElOKGSv9R9kgQ5OOVI+rFSImBPsqh9NywYl2FCI/ffiYGx
+ UzIFaW8nKVjB3WZPa8XIhhvGglpAEqQDdRJB2ph2OPAbpF3/sudBMhAemmqgc9zLmKuNGpb
+ kT3ltigDwFTH5EZ/6mnLDzWUzu72aqKHQ9rUQudTPDcl7vl31w9KO+cOET3hhaQJbzUnFNK
+ KcmghUoMfRWQkZzgtyVaCqaRfI7XKb9rtQsyClQb6Vwf5vMkCbyCnefxf7fA==
+Received: from zeus.lespinasse.org (zeus.lespinasse.org [10.0.0.150])
+        by server.lespinasse.org (Postfix) with ESMTPS id 0031F160966;
         Fri, 28 Jan 2022 05:10:06 -0800 (PST)
 Received: by zeus.lespinasse.org (Postfix, from userid 1000)
-        id C5D6220328; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
+        id D9AAA20132; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
 From:   Michel Lespinasse <michel@lespinasse.org>
 To:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>
@@ -56,9 +56,9 @@ Cc:     kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Andy Lutomirski <luto@kernel.org>,
         Michel Lespinasse <michel@lespinasse.org>
-Subject: [PATCH v2 02/35] mmap locking API: mmap_lock_is_contended returns a bool
-Date:   Fri, 28 Jan 2022 05:09:33 -0800
-Message-Id: <20220128131006.67712-3-michel@lespinasse.org>
+Subject: [PATCH v2 09/35] mm: add do_handle_mm_fault()
+Date:   Fri, 28 Jan 2022 05:09:40 -0800
+Message-Id: <20220128131006.67712-10-michel@lespinasse.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220128131006.67712-1-michel@lespinasse.org>
 References: <20220128131006.67712-1-michel@lespinasse.org>
@@ -68,32 +68,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change mmap_lock_is_contended to return a bool value, rather than an
-int which the callers are then supposed to interpret as a bool. This
-is to ensure consistency with other mmap lock API functions (such as
-the trylock functions).
+Add a new do_handle_mm_fault function, which extends the existing
+handle_mm_fault() API by adding an mmap sequence count, to be used
+in the FAULT_FLAG_SPECULATIVE case.
+
+In the initial implementation, FAULT_FLAG_SPECULATIVE always fails
+(by returning VM_FAULT_RETRY).
+
+The existing handle_mm_fault() API is kept as a wrapper around
+do_handle_mm_fault() so that we do not have to immediately update
+every handle_mm_fault() call site.
 
 Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
 ---
- include/linux/mmap_lock.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/mm.h | 12 +++++++++---
+ mm/memory.c        | 10 +++++++---
+ 2 files changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/mmap_lock.h b/include/linux/mmap_lock.h
-index 96e113e23d04..db9785e11274 100644
---- a/include/linux/mmap_lock.h
-+++ b/include/linux/mmap_lock.h
-@@ -162,9 +162,9 @@ static inline void mmap_assert_write_locked(struct mm_struct *mm)
- 	VM_BUG_ON_MM(!rwsem_is_locked(&mm->mmap_lock), mm);
- }
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 7f7aa3f0a396..4600dbb98cef 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1851,9 +1851,15 @@ int generic_error_remove_page(struct address_space *mapping, struct page *page);
+ int invalidate_inode_page(struct page *page);
  
--static inline int mmap_lock_is_contended(struct mm_struct *mm)
-+static inline bool mmap_lock_is_contended(struct mm_struct *mm)
+ #ifdef CONFIG_MMU
+-extern vm_fault_t handle_mm_fault(struct vm_area_struct *vma,
+-				  unsigned long address, unsigned int flags,
+-				  struct pt_regs *regs);
++extern vm_fault_t do_handle_mm_fault(struct vm_area_struct *vma,
++		unsigned long address, unsigned int flags,
++		unsigned long seq, struct pt_regs *regs);
++static inline vm_fault_t handle_mm_fault(struct vm_area_struct *vma,
++		unsigned long address, unsigned int flags,
++		struct pt_regs *regs)
++{
++	return do_handle_mm_fault(vma, address, flags, 0, regs);
++}
+ extern int fixup_user_fault(struct mm_struct *mm,
+ 			    unsigned long address, unsigned int fault_flags,
+ 			    bool *unlocked);
+diff --git a/mm/memory.c b/mm/memory.c
+index f83e06b1dafb..aa24cd8c06e9 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -4761,11 +4761,15 @@ static inline void mm_account_fault(struct pt_regs *regs,
+  * The mmap_lock may have been released depending on flags and our
+  * return value.  See filemap_fault() and __folio_lock_or_retry().
+  */
+-vm_fault_t handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
+-			   unsigned int flags, struct pt_regs *regs)
++vm_fault_t do_handle_mm_fault(struct vm_area_struct *vma,
++		unsigned long address, unsigned int flags,
++		unsigned long seq, struct pt_regs *regs)
  {
--	return rwsem_is_contended(&mm->mmap_lock);
-+	return rwsem_is_contended(&mm->mmap_lock) != 0;
- }
+ 	vm_fault_t ret;
  
- #endif /* _LINUX_MMAP_LOCK_H */
++	if (flags & FAULT_FLAG_SPECULATIVE)
++		return VM_FAULT_RETRY;
++
+ 	__set_current_state(TASK_RUNNING);
+ 
+ 	count_vm_event(PGFAULT);
+@@ -4807,7 +4811,7 @@ vm_fault_t handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
+ 
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(handle_mm_fault);
++EXPORT_SYMBOL_GPL(do_handle_mm_fault);
+ 
+ #ifndef __PAGETABLE_P4D_FOLDED
+ /*
 -- 
 2.20.1
 
