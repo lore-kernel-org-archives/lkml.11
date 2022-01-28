@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCEDC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEFE3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:59:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343937AbiA1U7N (ORCPT
+        id S1344836AbiA1U7O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 15:59:13 -0500
-Received: from mga11.intel.com ([192.55.52.93]:37556 "EHLO mga11.intel.com"
+        Fri, 28 Jan 2022 15:59:14 -0500
+Received: from mga06.intel.com ([134.134.136.31]:32231 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241786AbiA1U7F (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S241008AbiA1U7F (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 15:59:05 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643403545; x=1674939545;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=yBU3sLS+Lgz2kPgXMhsfbKdvUBXEv9uGAAkeVU4p2WI=;
-  b=XFM+newj4UBzbnXeHIuMwmBZb9v55IGgGMesFRW98pIWGyk2Yf+0LSV6
-   y5/YJpME4iaqheZRZf7bg70JmHOfnWYgMo+9RBeEInsb3/LSAp1oh48V/
-   VY7rBoIyxg6YmgJfnDbk8xAV0TEU15Nhqstm7pe15Na4ZJGOjh2OK41o9
-   vxR8o7DqjGr1/kL4MR+BqoXKY8QD3ZVzwgzcqWM3Pwo7q/KQGofV7Zy16
-   j0PFwBPgVPbgRJYGIgiZ/cCrK3YBd0MPbxuXl/GK0HQdHUq33Sr4K2gDh
-   kMr+YDy5sDegYWh2aVND86G/Ttvnml59holXqdGyQwCM8+OY+y3Th4qen
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="244796840"
+  t=1643403544; x=1674939544;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=XLFOJ42QSEt64e/fj9dxrEEhNpzUCEMbRZv0ZUhkFsU=;
+  b=nMNafLCv4Ktgu994dCcbemvgKC7/J2jS2miNp6ETgvXWnRYpeWq8/Oav
+   /wsT/3d6F32a+o6b3Af/b4yGfpJ4tFQauJQA2GFQlMqD2dwlcNsSiKrDE
+   eb8AwwOX98nqHquTLTJOcBgoKfAaPeWnAKPDs92o4Hl5qOXu4iYYUoeF4
+   nfPnpjzz0IqbxN4oaYyvRPXFDhDR7RXpfulKhW61JeQq4imvQC8qujB1Z
+   ikJSjI5/MJUrp9lcaOhl20RID6JG16Jugz2qZtbmDhMtWiWotzy7jTNBu
+   VWF62SvxVzXshAbeGNfwX/vqmlWnGEORt4H5faPMO2RH/tzPwHsORXSvD
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="307926106"
 X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="244796840"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 12:59:02 -0800
+   d="scan'208";a="307926106"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 12:59:02 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="564315491"
+   d="scan'208";a="618832816"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 28 Jan 2022 12:58:55 -0800
+  by FMSMGA003.fm.intel.com with ESMTP; 28 Jan 2022 12:58:55 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 7CDD594; Fri, 28 Jan 2022 22:59:09 +0200 (EET)
+        id 964E8235; Fri, 28 Jan 2022 22:59:09 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
         Sean Christopherson <seanjc@google.com>,
@@ -62,95 +62,93 @@ Cc:     Andi Kleen <ak@linux.intel.com>,
         linux-mm@kvack.org, linux-coco@lists.linux.dev,
         linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv3 0/7] Implement support for unaccepted memory
-Date:   Fri, 28 Jan 2022 23:58:59 +0300
-Message-Id: <20220128205906.27503-1-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv3 2/7] efi/x86: Get full memory map in allocate_e820()
+Date:   Fri, 28 Jan 2022 23:59:01 +0300
+Message-Id: <20220128205906.27503-3-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220128205906.27503-1-kirill.shutemov@linux.intel.com>
+References: <20220128205906.27503-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UEFI Specification version 2.9 introduces the concept of memory
-acceptance: Some Virtual Machine platforms, such as Intel TDX or AMD
-SEV-SNP, requiring memory to be accepted before it can be used by the
-guest. Accepting happens via a protocol specific for the Virtual
-Machine platform.
+Currently allocate_e820() only interested in the size of map and size of
+memory descriptor to determine how many e820 entries the kernel needs.
 
-Accepting memory is costly and it makes VMM allocate memory for the
-accepted guest physical address range. It's better to postpone memory
-acceptance until memory is needed. It lowers boot time and reduces
-memory overhead.
+UEFI Specification version 2.9 introduces a new memory type --
+unaccepted memory. To track unaccepted memory kernel needs to allocate
+a bitmap. The size of the bitmap is dependent on the maximum physical
+address present in the system. A full memory map is required to find
+the maximum address.
 
-The kernel needs to know what memory has been accepted. Firmware
-communicates this information via memory map: a new memory type --
-EFI_UNACCEPTED_MEMORY -- indicates such memory.
+Modify allocate_e820() to get a full memory map.
 
-Range-based tracking works fine for firmware, but it gets bulky for
-the kernel: e820 has to be modified on every page acceptance. It leads
-to table fragmentation, but there's a limited number of entries in the
-e820 table
+This is preparation for the next patch that implements handling of
+unaccepted memory in EFI stub.
 
-Another option is to mark such memory as usable in e820 and track if the
-range has been accepted in a bitmap. One bit in the bitmap represents
-2MiB in the address space: one 4k page is enough to track 64GiB or
-physical address space.
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+---
+ drivers/firmware/efi/libstub/x86-stub.c | 28 ++++++++++++-------------
+ 1 file changed, 13 insertions(+), 15 deletions(-)
 
-In the worst-case scenario -- a huge hole in the middle of the
-address space -- It needs 256MiB to handle 4PiB of the address
-space.
-
-Any unaccepted memory that is not aligned to 2M gets accepted upfront.
-
-The approach lowers boot time substantially. Boot to shell is ~2.5x
-faster for 4G TDX VM and ~4x faster for 64G.
-
-Patches 1-6/7 are generic and don't have any dependencies on TDX. They
-should serve AMD SEV needs as well. TDX-specific code isolated in the
-last patch. This patch requires the core TDX patchset which is currently
-under review.
-
-Kirill A. Shutemov (7):
-  mm: Add support for unaccepted memory
-  efi/x86: Get full memory map in allocate_e820()
-  efi/x86: Implement support for unaccepted memory
-  x86/boot/compressed: Handle unaccepted memory
-  x86/mm: Reserve unaccepted memory bitmap
-  x86/mm: Provide helpers for unaccepted memory
-  x86/tdx: Unaccepted memory support
-
- Documentation/x86/zero-page.rst              |  1 +
- arch/x86/Kconfig                             |  1 +
- arch/x86/boot/compressed/Makefile            |  1 +
- arch/x86/boot/compressed/bitmap.c            | 86 ++++++++++++++++++
- arch/x86/boot/compressed/kaslr.c             | 14 ++-
- arch/x86/boot/compressed/misc.c              | 11 +++
- arch/x86/boot/compressed/tdx.c               | 27 ++++++
- arch/x86/boot/compressed/unaccepted_memory.c | 75 ++++++++++++++++
- arch/x86/include/asm/page.h                  |  5 ++
- arch/x86/include/asm/shared/tdx.h            | 21 +++++
- arch/x86/include/asm/tdx.h                   | 19 ----
- arch/x86/include/asm/unaccepted_memory.h     | 17 ++++
- arch/x86/include/uapi/asm/bootparam.h        |  3 +-
- arch/x86/kernel/e820.c                       | 10 +++
- arch/x86/kernel/tdx.c                        |  6 ++
- arch/x86/mm/Makefile                         |  2 +
- arch/x86/mm/unaccepted_memory.c              | 94 ++++++++++++++++++++
- drivers/firmware/efi/Kconfig                 | 15 ++++
- drivers/firmware/efi/efi.c                   |  1 +
- drivers/firmware/efi/libstub/x86-stub.c      | 88 ++++++++++++++----
- include/linux/efi.h                          |  3 +-
- include/linux/page-flags.h                   | 27 ++++++
- mm/internal.h                                | 15 ++++
- mm/memblock.c                                |  8 ++
- mm/page_alloc.c                              | 23 ++++-
- 25 files changed, 534 insertions(+), 39 deletions(-)
- create mode 100644 arch/x86/boot/compressed/bitmap.c
- create mode 100644 arch/x86/boot/compressed/unaccepted_memory.c
- create mode 100644 arch/x86/include/asm/unaccepted_memory.h
- create mode 100644 arch/x86/mm/unaccepted_memory.c
-
+diff --git a/drivers/firmware/efi/libstub/x86-stub.c b/drivers/firmware/efi/libstub/x86-stub.c
+index 01ddd4502e28..d18cac8ab436 100644
+--- a/drivers/firmware/efi/libstub/x86-stub.c
++++ b/drivers/firmware/efi/libstub/x86-stub.c
+@@ -569,30 +569,28 @@ static efi_status_t alloc_e820ext(u32 nr_desc, struct setup_data **e820ext,
+ }
+ 
+ static efi_status_t allocate_e820(struct boot_params *params,
++				  struct efi_boot_memmap *map,
+ 				  struct setup_data **e820ext,
+ 				  u32 *e820ext_size)
+ {
+-	unsigned long map_size, desc_size, map_key;
+ 	efi_status_t status;
+-	__u32 nr_desc, desc_version;
++	__u32 nr_desc;
+ 
+-	/* Only need the size of the mem map and size of each mem descriptor */
+-	map_size = 0;
+-	status = efi_bs_call(get_memory_map, &map_size, NULL, &map_key,
+-			     &desc_size, &desc_version);
+-	if (status != EFI_BUFFER_TOO_SMALL)
+-		return (status != EFI_SUCCESS) ? status : EFI_UNSUPPORTED;
+-
+-	nr_desc = map_size / desc_size + EFI_MMAP_NR_SLACK_SLOTS;
++	status = efi_get_memory_map(map);
++	if (status != EFI_SUCCESS)
++		return status;
+ 
+-	if (nr_desc > ARRAY_SIZE(params->e820_table)) {
+-		u32 nr_e820ext = nr_desc - ARRAY_SIZE(params->e820_table);
++	nr_desc = *map->map_size / *map->desc_size;
++	if (nr_desc > ARRAY_SIZE(params->e820_table) - EFI_MMAP_NR_SLACK_SLOTS) {
++		u32 nr_e820ext = nr_desc - ARRAY_SIZE(params->e820_table) +
++			EFI_MMAP_NR_SLACK_SLOTS;
+ 
+ 		status = alloc_e820ext(nr_e820ext, e820ext, e820ext_size);
+ 		if (status != EFI_SUCCESS)
+-			return status;
++			goto out;
+ 	}
+-
++out:
++	efi_bs_call(free_pool, *map->map);
+ 	return EFI_SUCCESS;
+ }
+ 
+@@ -642,7 +640,7 @@ static efi_status_t exit_boot(struct boot_params *boot_params, void *handle)
+ 	priv.boot_params	= boot_params;
+ 	priv.efi		= &boot_params->efi_info;
+ 
+-	status = allocate_e820(boot_params, &e820ext, &e820ext_size);
++	status = allocate_e820(boot_params, &map, &e820ext, &e820ext_size);
+ 	if (status != EFI_SUCCESS)
+ 		return status;
+ 
 -- 
 2.34.1
 
