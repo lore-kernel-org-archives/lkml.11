@@ -2,88 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25862C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E76E7C433EF
 	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232535AbiA1Keb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 05:34:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30242 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231618AbiA1Ke0 (ORCPT
+        id S233576AbiA1Kec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 05:34:32 -0500
+Received: from perceval.ideasonboard.com ([213.167.242.64]:38006 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232120AbiA1Ke2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 05:34:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643366065;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Quc4skgWQnhYb+89AvQYjxil+ByV/pBG/nU7QFXNosI=;
-        b=OmMl5+uKVGJe6Q4mJIUEzw2+Fbal5hzB1t/awcfjDE0l7KffIsVzZTONK6HQzBUuLdqKX1
-        SURJf6cCslomkuc10zr99u0x2Eex528oXZOyjl21Xe2DRh0zO4uAC8/n55jdaFPzZj80Ap
-        EmCPYyeHYKGMR/OXij+dXPAU31gNYLQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-386-gM9IMD9IOuKE_VIN-ADfgw-1; Fri, 28 Jan 2022 05:34:22 -0500
-X-MC-Unique: gM9IMD9IOuKE_VIN-ADfgw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 180CD1083F61;
-        Fri, 28 Jan 2022 10:34:21 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.193.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C790A7B6D5;
-        Fri, 28 Jan 2022 10:34:18 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     linux-hyperv@vger.kernel.org, Wei Liu <wei.liu@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Michael Kelley <mikelley@microsoft.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Dexuan Cui <decui@microsoft.com>
-Subject: [PATCH 2/2] Drivers: hv: Compare cpumasks and not their weights in init_vp_index()
-Date:   Fri, 28 Jan 2022 11:34:12 +0100
-Message-Id: <20220128103412.3033736-3-vkuznets@redhat.com>
-In-Reply-To: <20220128103412.3033736-1-vkuznets@redhat.com>
-References: <20220128103412.3033736-1-vkuznets@redhat.com>
+        Fri, 28 Jan 2022 05:34:28 -0500
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 6A6D3B9C;
+        Fri, 28 Jan 2022 11:34:26 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1643366066;
+        bh=SjngVim/bAf9eBc4Da9VVdDH4QW1J82EoUqAY4mOegc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iIqVB+7jiNvEi7UPEfL67GXviPPO5/o3PB4DBuzEpg9fSbb0AATxZL2mqIDQQcANj
+         v8v6AmI/srfB2KUotIg5IvS35m/GHPvurjFIJ/DRqeC88pmKvnGJq1JNfpGDtYVANf
+         zvAnZ2+TEMafOBeJESYCAfNJMA7aGxI2yv4UD+ac=
+Date:   Fri, 28 Jan 2022 12:34:05 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 31/37] drm: rcar-du: Add support for the nomodeset
+ kernel parameter
+Message-ID: <YfPGnfly3GOAOlfp@pendragon.ideasonboard.com>
+References: <20211217003752.3946210-1-javierm@redhat.com>
+ <20211217003752.3946210-32-javierm@redhat.com>
+ <164336121612.533872.1685181669511488706@Monstersaurus>
+ <eb27fa44-2972-4a6e-465f-b9e4775820f4@suse.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <eb27fa44-2972-4a6e-465f-b9e4775820f4@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The condition is supposed to check whether 'allocated_mask' got fully
-exhausted, i.e. there's no free CPU on the NUMA node left so we have
-to use one of the already used CPUs. As only bits which correspond
-to CPUs from 'cpumask_of_node(numa_node)' get set in 'allocated_mask',
-checking for the equal weights is technically correct but not obvious.
-Let's compare cpumasks directly.
+Hi Thomas,
 
-No functional change intended.
+On Fri, Jan 28, 2022 at 10:33:21AM +0100, Thomas Zimmermann wrote:
+> Am 28.01.22 um 10:13 schrieb Kieran Bingham:
+> > Quoting Javier Martinez Canillas (2021-12-17 00:37:46)
+> >> According to disable Documentation/admin-guide/kernel-parameters.txt, this
+> >> parameter can be used to disable kernel modesetting.
+> >>
+> >> DRM drivers will not perform display-mode changes or accelerated rendering
+> >> and only the system framebuffer will be available if it was set-up.
+> > 
+> > What is the 'system framebuffer' in this instance? Reading
+> > https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt
+> > it sounds like that means anything already set up by the bootloader.
+> 
+> Exactly this.
+> 
+> >> But only a few DRM drivers currently check for nomodeset, make this driver
+> >> to also support the command line parameter.
+> >>
+> >> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> >> ---
+> >>
+> >> (no changes since v1)
+> >>
+> >>   drivers/gpu/drm/rcar-du/rcar_du_drv.c | 3 +++
+> >>   1 file changed, 3 insertions(+)
+> >>
+> >> diff --git a/drivers/gpu/drm/rcar-du/rcar_du_drv.c b/drivers/gpu/drm/rcar-du/rcar_du_drv.c
+> >> index 5a8131ef81d5..982e450233ed 100644
+> >> --- a/drivers/gpu/drm/rcar-du/rcar_du_drv.c
+> >> +++ b/drivers/gpu/drm/rcar-du/rcar_du_drv.c
+> >> @@ -701,6 +701,9 @@ static struct platform_driver rcar_du_platform_driver = {
+> >>   
+> >>   static int __init rcar_du_init(void)
+> >>   {
+> >> +       if (drm_firmware_drivers_only())
+> >> +               return -ENODEV;
+> >> +
+> > 
+> > This will completely disable all control of the display device when
+> > nomodeset is enabled.
+> > 
+> > Is there any requirement for us to support outputting to the display if
+> > it was previously set up? presumably without setting or changing any
+> > modes, but simply allowing the existing frame to be updated?
+> 
+> There's no requirement for your driver. We just want a parameter where 
+> we can conveniently disable most of DRM's drivers and reduce it to a 
+> minimum. Helps distributions to provide a simple fallback mode.  Most 
+> PCI-based drivers already support that. Now we're added it to the other 
+> drivers as well.
+> 
+> > 
+> > I think the implication is that 'firmware drivers' would mean a display
+> > could be updated through some firmware interface, which we won't have
+> > ... so it seems reasonable to accept that this whole driver can be
+> > disabled in that instance.
+> 
+> It cannot be 'mode-setted'. We get a pre-configured framebuffer from the 
+> firmware or bootloader. Whatever we draw there shows up on the screen.
 
-Suggested-by: Michael Kelley <mikelley@microsoft.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- drivers/hv/channel_mgmt.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I doubt that's going to work as you expect, clocks and regulators will
+get disabled at boot if not used by any driver.
 
-diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
-index 52cf6ae525e9..26d269ba947c 100644
---- a/drivers/hv/channel_mgmt.c
-+++ b/drivers/hv/channel_mgmt.c
-@@ -762,8 +762,7 @@ static void init_vp_index(struct vmbus_channel *channel)
- 		}
- 		allocated_mask = &hv_context.hv_numa_map[numa_node];
- 
--		if (cpumask_weight(allocated_mask) ==
--		    cpumask_weight(cpumask_of_node(numa_node))) {
-+		if (cpumask_equal(allocated_mask, cpumask_of_node(numa_node))) {
- 			/*
- 			 * We have cycled through all the CPUs in the node;
- 			 * reset the allocated map.
+> > Reading your mail that brought this thread up in my inbox, I think
+> > you've already hit merge on this, so don't worry about adding a tag in
+> > that instance, but I think this is ok.
+> > 
+> > Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+> > 
+> >>          rcar_du_of_init(rcar_du_of_table);
+> >>   
+> >>          return platform_driver_register(&rcar_du_platform_driver);
+
 -- 
-2.34.1
+Regards,
 
+Laurent Pinchart
