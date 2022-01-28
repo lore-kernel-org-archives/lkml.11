@@ -2,188 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C71DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B611C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:14:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350480AbiA1RNy (ORCPT
+        id S1350489AbiA1ROK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 12:13:54 -0500
-Received: from mga06.intel.com ([134.134.136.31]:14665 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239932AbiA1RNx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 12:13:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643390033; x=1674926033;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DlxeEj08eU3l+CcffcmNLw4TqlFei4v68U+XxbQa+Yo=;
-  b=M+p7axsouZH1tg+0P7l5IcP8wIIjHDbUcf2bM6uwZimJEaJcdWbOriXP
-   mOxlJ5PI7drFxSac9awhQ2zoYPAQyUcppRPZ1RhjAGB+622A8OcgiKtRR
-   5HOjwABqB08s0+uzJjcs1AgvN5FpopXQD0wISNUqeQCSR92Q+3us2+Chv
-   9hYRAbxIWB+BcugsdJQTBm+uGcXyXxefMit2jgBCbO2gPkRzcabv15Av9
-   /9jOi5T+umITp7aStfiZMxsS+49dMJcysTPuiGYwcs5OUWI6Xe7iyOBmD
-   Z8pw2gYY9uRij7OSTrkuMerhftxXoZAiQS1DIKx9S8S9CBMPoXrpUTN0H
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="307886910"
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="307886910"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 09:06:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="581909687"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 28 Jan 2022 09:06:38 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDUhq-000O74-3o; Fri, 28 Jan 2022 17:06:38 +0000
-Date:   Sat, 29 Jan 2022 01:06:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     cgel.zte@gmail.com, jiri@resnulli.us
-Cc:     kbuild-all@lists.01.org, ivecera@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] net/switchdev: use struct_size over open coded arithmetic
-Message-ID: <202201290005.GR1IxnQb-lkp@intel.com>
-References: <20220128075729.1211352-1-chi.minghao@zte.com.cn>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128075729.1211352-1-chi.minghao@zte.com.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Fri, 28 Jan 2022 12:14:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239932AbiA1ROK (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 12:14:10 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2072C061714;
+        Fri, 28 Jan 2022 09:14:09 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id q75so5720802pgq.5;
+        Fri, 28 Jan 2022 09:14:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=3HKvw7RmRl9AmLbgC4sjiOJOnps10BqulQIk/YMasUM=;
+        b=V+of1R+dqR7p3vfs7edHrhH7kXfGFKcKThZN9TiZjMY4tyfa6hlisnp1JDgmZLVrsV
+         ItvTpvu2cZzrQnic1W1yvZq7ZMPFS6UGbjXAu/rSEQpAIUTNHg2rGbIt7v/9PRqcwuV1
+         Hr+aWDGnfgvC3rNqJDbCYsgH9k/SmVUSez2P7BkHusXpBDqjyPKp0w01gMRhh2VftcLT
+         FnmhJ7YqAWV9E70bZCkmqRf+5PgzTVR/zzj21l4eyZVjOFyS2Rw+1uY+j2P8zqZ3GPOr
+         YH0CEICmjc4Bw7Qk0tQWf8vFVDezSbhbaOJcghHsX29jNCekuXnkrUerdqWMNWTU9mmH
+         U9KQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3HKvw7RmRl9AmLbgC4sjiOJOnps10BqulQIk/YMasUM=;
+        b=110MRnCsVVrGfxT7AL8dj0ex9Oa/RJgIveAbJD6ht7irWm+dKrpymvCeIWaeGIQJ3B
+         TCOUxlU71GC7ol7EeKCg2uLSwNvxpWVwmVPTbM4xtGjnV8a+EZmBtabFDS5vIXoald4D
+         ECZvR++OjA092GWbSi9Q5PgrdV5+0kH9nVCG61GFRIgmnppPx9ToDdkflTOWfRLHWHnX
+         du1v5FwZZKdN1bPaqsX3AAewegu6tSugxPkeJhBxcrpIt1IfgLuUZ6CWhDfW6QqM1Jnz
+         W97T2LqIeK3iQ/Te7A4ZPwkTsAW5CSGuK4CmjZtMjyUzN4a7t4hsTy6STZvi8egL+WBY
+         qpbg==
+X-Gm-Message-State: AOAM533RjaomgmL+KwfYvfX4tWKz6n7i2bCS2IU6nI/FDmGHl7G7zjXW
+        8asm4zbwAWmW26ZJt4TBYKs=
+X-Google-Smtp-Source: ABdhPJzyj2s37MUyXeQ5otVkNfOpDjIDAn9bLvgGUPoTXA7E84cwE8k4iXyVZBfXra8gBXD7dZuqvg==
+X-Received: by 2002:a05:6a00:14cf:: with SMTP id w15mr6294747pfu.53.1643390049558;
+        Fri, 28 Jan 2022 09:14:09 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id l14sm10420502pjf.1.2022.01.28.09.14.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Jan 2022 09:14:09 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Vinod Koul <vkoul@kernel.org>,
+        Zhangfei Gao <zhangfei.gao@marvell.com>,
+        Arnd Bergmann <arnd@arndb.de>, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] dmaengine: mmp_pdma: Fix missing IRQ check in mmp_pdma_probe
+Date:   Fri, 28 Jan 2022 17:14:03 +0000
+Message-Id: <20220128171403.29878-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+This func misses checking for platform_get_irq()'s call and may passes the
+negative error codes to request_threaded_irq(), which takes unsigned IRQ #,
+causing it to fail with -EINVAL, overriding an original error code.
+Stop calling request_threaded_irq() with invalid IRQ #s.
 
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.17-rc1 next-20220128]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/cgel-zte-gmail-com/net-switchdev-use-struct_size-over-open-coded-arithmetic/20220128-155848
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 23a46422c56144939c091c76cf389aa863ce9c18
-config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220129/202201290005.GR1IxnQb-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/bf0e33a8c3deb700b95173a37dd16754341ba70e
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review cgel-zte-gmail-com/net-switchdev-use-struct_size-over-open-coded-arithmetic/20220128-155848
-        git checkout bf0e33a8c3deb700b95173a37dd16754341ba70e
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/mm.h:30,
-                    from arch/x86/include/asm/cacheflush.h:5,
-                    from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/net/net_namespace.h:40,
-                    from include/linux/netdevice.h:37,
-                    from net/switchdev/switchdev.c:13:
-   net/switchdev/switchdev.c: In function 'switchdev_deferred_enqueue':
->> include/linux/overflow.h:194:18: error: invalid type argument of '->' (have 'struct switchdev_deferred_item')
-     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                  ^~
-   net/switchdev/switchdev.c:88:19: note: in expansion of macro 'struct_size'
-      88 |  dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
-         |                   ^~~~~~~~~~~
-   In file included from include/linux/container_of.h:5,
-                    from include/linux/kernel.h:21,
-                    from net/switchdev/switchdev.c:8:
-   include/linux/overflow.h:194:49: error: invalid type argument of '->' (have 'struct switchdev_deferred_item')
-     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                                 ^~
-   include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
-      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-         |                                                              ^
-   include/linux/compiler.h:258:46: note: in expansion of macro '__same_type'
-     258 | #define __must_be_array(a) BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-         |                                              ^~~~~~~~~~~
-   include/linux/overflow.h:194:30: note: in expansion of macro '__must_be_array'
-     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                              ^~~~~~~~~~~~~~~
-   net/switchdev/switchdev.c:88:19: note: in expansion of macro 'struct_size'
-      88 |  dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
-         |                   ^~~~~~~~~~~
-   include/linux/overflow.h:194:49: error: invalid type argument of '->' (have 'struct switchdev_deferred_item')
-     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                                 ^~
-   include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
-      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-         |                                                              ^
-   include/linux/compiler.h:258:46: note: in expansion of macro '__same_type'
-     258 | #define __must_be_array(a) BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-         |                                              ^~~~~~~~~~~
-   include/linux/overflow.h:194:30: note: in expansion of macro '__must_be_array'
-     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                              ^~~~~~~~~~~~~~~
-   net/switchdev/switchdev.c:88:19: note: in expansion of macro 'struct_size'
-      88 |  dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
-         |                   ^~~~~~~~~~~
-   include/linux/build_bug.h:16:51: error: bit-field '<anonymous>' width not an integer constant
-      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-         |                                                   ^
-   include/linux/compiler.h:258:28: note: in expansion of macro 'BUILD_BUG_ON_ZERO'
-     258 | #define __must_be_array(a) BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-         |                            ^~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:30: note: in expansion of macro '__must_be_array'
-     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                              ^~~~~~~~~~~~~~~
-   net/switchdev/switchdev.c:88:19: note: in expansion of macro 'struct_size'
-      88 |  dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
-         |                   ^~~~~~~~~~~
-   In file included from include/linux/mm.h:30,
-                    from arch/x86/include/asm/cacheflush.h:5,
-                    from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/net/net_namespace.h:40,
-                    from include/linux/netdevice.h:37,
-                    from net/switchdev/switchdev.c:13:
->> include/linux/overflow.h:195:14: error: invalid type argument of unary '*' (have 'struct switchdev_deferred_item')
-     195 |       sizeof(*(p)))
-         |              ^~~~
-   net/switchdev/switchdev.c:88:19: note: in expansion of macro 'struct_size'
-      88 |  dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
-         |                   ^~~~~~~~~~~
-
-
-vim +194 include/linux/overflow.h
-
-610b15c50e86eb Kees Cook           2018-05-07  180  
-610b15c50e86eb Kees Cook           2018-05-07  181  /**
-610b15c50e86eb Kees Cook           2018-05-07  182   * struct_size() - Calculate size of structure with trailing array.
-610b15c50e86eb Kees Cook           2018-05-07  183   * @p: Pointer to the structure.
-610b15c50e86eb Kees Cook           2018-05-07  184   * @member: Name of the array member.
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  185   * @count: Number of elements in the array.
-610b15c50e86eb Kees Cook           2018-05-07  186   *
-610b15c50e86eb Kees Cook           2018-05-07  187   * Calculates size of memory needed for structure @p followed by an
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  188   * array of @count number of @member elements.
-610b15c50e86eb Kees Cook           2018-05-07  189   *
-610b15c50e86eb Kees Cook           2018-05-07  190   * Return: number of bytes needed or SIZE_MAX on overflow.
-610b15c50e86eb Kees Cook           2018-05-07  191   */
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  192  #define struct_size(p, member, count)					\
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  193  	__ab_c_size(count,						\
-610b15c50e86eb Kees Cook           2018-05-07 @194  		    sizeof(*(p)->member) + __must_be_array((p)->member),\
-610b15c50e86eb Kees Cook           2018-05-07 @195  		    sizeof(*(p)))
-610b15c50e86eb Kees Cook           2018-05-07  196  
-
+Fixes: c8acd6aa6bed ("dmaengine: mmp-pdma support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/dma/mmp_pdma.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/dma/mmp_pdma.c b/drivers/dma/mmp_pdma.c
+index 5a53d7fcef01..c03f4f7ece88 100644
+--- a/drivers/dma/mmp_pdma.c
++++ b/drivers/dma/mmp_pdma.c
+@@ -1067,6 +1067,8 @@ static int mmp_pdma_probe(struct platform_device *op)
+ 	if (irq_num != dma_channels) {
+ 		/* all chan share one irq, demux inside */
+ 		irq = platform_get_irq(op, 0);
++		if (irq < 0)
++			return irq;
+ 		ret = devm_request_irq(pdev->dev, irq, mmp_pdma_int_handler,
+ 				       IRQF_SHARED, "pdma", pdev);
+ 		if (ret)
+-- 
+2.17.1
+
