@@ -2,293 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C451C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244407AbiA1OCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:02:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36826 "EHLO
+        id S245205AbiA1ODW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 09:03:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343836AbiA1OCr (ORCPT
+        with ESMTP id S238986AbiA1ODV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:02:47 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E64C061714;
-        Fri, 28 Jan 2022 06:02:46 -0800 (PST)
-Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nDRpt-0006lJ-JA; Fri, 28 Jan 2022 15:02:45 +0100
-Message-ID: <f7eb4a3e-9799-3fe4-d464-d84dd9e64510@leemhuis.info>
-Date:   Fri, 28 Jan 2022 15:02:45 +0100
+        Fri, 28 Jan 2022 09:03:21 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577B7C061714;
+        Fri, 28 Jan 2022 06:03:21 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id s5so16403176ejx.2;
+        Fri, 28 Jan 2022 06:03:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1LJkgBxQZGz+DBCDqTCv/zlH6Pf6EPJaEcwYrjb9pWI=;
+        b=J5JhoCWcxWO7nN7IEpEBYaQzLhmcZpmAIVyRqe6sm45L7acqIKxsXW/mE29spAU3UN
+         yuGsRZnGQQZEM3PFzAfP8ric79ObM7f69lRlimzVuSmYrRafJpAfy8NHi4eh3rKKW15P
+         SjdfbfH0YUJGG405tVNPbMpInHh0izSvR18GsXoqMpc6wnNUMTfOGWsHdsFQO8k8CWRr
+         bGfyBBa1xBS3byorg1zARbW0dQ5zpszNET8vkVl6+/NQ2x1iI2Q48+njzcoYh6Eh+dlE
+         36syofIRL27r6YJ4PdDzie8Uc133DkoDzGomYvdobj3L8LKzdvA8pwKc/+rM5mw1/eE2
+         Fzvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1LJkgBxQZGz+DBCDqTCv/zlH6Pf6EPJaEcwYrjb9pWI=;
+        b=OmQlxaC4YrnPLK2vbiMX2r/BUD4UjLQtGyrGBBpu4IWGitfQKXSgCpr1QE/DeITgSa
+         TV56qzJO3dTmOWgurZc0EaB/OsuYaBILCBNkJ0PdclQ25pdJ/gK6adxgh/vQ3za2xGte
+         Q2KLRsGgKm0sme39mzAKju7ooyfsK6TyCAvbf4IHAHlqrB+oCXTjXQ9+XhU6gxJuoYh9
+         z/fJK5P374lg4ZGxI8ERt/830Ab9Gnxhimoz+kpCeVgm/hSdhQLJaXJlazLjWT/lBwvC
+         kGE4neWgJYKF2dfdJKP/DFmKMWIjJzDmQGgAZ6QI+Md+c76gJbzoMFPuSdsMqUTfOrhv
+         gXFg==
+X-Gm-Message-State: AOAM531u8rf26EhfT+qf4dx0FORhPIPoCbNJb6MFVeBhusGdf70+32uJ
+        epHMDGPyN/+b7X9iC2bvcwrrCnKX9XWkAvYiYac=
+X-Google-Smtp-Source: ABdhPJwDNhPs1YDqEHAdWX84zLhRjEXZ+jIj1Fk6pGf01xg1LP+H0kz88ItE8Gkigt8fi+9typWdCYl8rVFF4VPEwis=
+X-Received: by 2002:a17:907:94d5:: with SMTP id dn21mr7325773ejc.77.1643378599791;
+ Fri, 28 Jan 2022 06:03:19 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: Possible regression: unable to mount CIFS 1.0 shares from older
- machines since 76a3c92ec9e0668e4cd0e9ff1782eb68f61a179c
-Content-Language: en-BS
-To:     ronnie sahlberg <ronniesahlberg@gmail.com>
-Cc:     Davyd McColl <davydm@gmail.com>, Steve French <smfrench@gmail.com>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <CAJjP=Bt52AW_w2sKnM=MbckPkH1hevPMJVWm_Wf+wThmR72YTg@mail.gmail.com>
- <CAH2r5mt_2f==5reyc0HmMLvYJVmP4Enykwauo+LQoFGFbVFeRQ@mail.gmail.com>
- <CAJjP=BvNVOj3KRnhFgk6xiwnxVhxE-sN98-pr6e1Kzc5Xg5EvQ@mail.gmail.com>
- <CAH2r5mvsetx5G+c=8ePh+X8ng7FvMrnuM9+FJ4Sid4b3E+T41Q@mail.gmail.com>
- <CAJjP=BvqZUnJPq=C0OUKbXr=mbJd7a6YDSJC-sNY1j_33_e-uw@mail.gmail.com>
- <CAN05THSGwCKckQoeB6D91iBv0Sed+ethK7tde7GSc1UzS-0OYg@mail.gmail.com>
- <CAJjP=BvcWrF-k_sFxak1mgHAHVVS7_JZow+h_47XB1VzG2+Drw@mail.gmail.com>
- <ebf8c487-0377-834e-fbb7-725cceae1fbb@leemhuis.info>
- <CAN05THRJJj48ueb34t18Yj=JYuhiwZ8hTvOssX4D6XhNpjx-bg@mail.gmail.com>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <CAN05THRJJj48ueb34t18Yj=JYuhiwZ8hTvOssX4D6XhNpjx-bg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1643378567;6088f3b0;
-X-HE-SMSGID: 1nDRpt-0006lJ-JA
+References: <20220128055604.2077738-1-kai.heng.feng@canonical.com>
+In-Reply-To: <20220128055604.2077738-1-kai.heng.feng@canonical.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 28 Jan 2022 16:01:42 +0200
+Message-ID: <CAHp75Vcz01FwHUF5NAUhn4mfTgzoHBMEBkqPbfPHU=tNr_9Zdw@mail.gmail.com>
+Subject: Re: [PATCH v2] Input: adxl34x: Add ACPI HID table
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        linux-input <linux-input@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28.01.22 14:50, ronnie sahlberg wrote:
-> On Fri, Jan 28, 2022 at 11:30 PM Thorsten Leemhuis
-> <regressions@leemhuis.info> wrote:
->>
->> Hi, this is your Linux kernel regression tracker speaking.
->>
->> Top-posting for once, to make this easy accessible to everyone.
->>
->> Davyd, Ronnie, and/or Steve: What the status here? It seems after some
->> productive debugging back and forth it seems everyone forgot about this.
->> Or was progress made somewhere and I just missed it?
-> 
-> I tried but can not find a system old enough to reproduce.
-> Remember, this is an authentication mechanism that Microsoft begged
-> people to stop using and migrate away from over 20 years ago.
-> Win2k works just fine, as does samba3.0.
-> I have no idea if Samba 2.0 works with current cifs.ko   but then
-> again  I seriously doubt you can even get samba 2.0 to even compile on
-> a modern
-> machine as so many APIs have changed or just gone away since the late 90s.
-> 
-> I tried, but there is just so much time you can spend on something
-> that was declared obsolete 20 years ago.
+On Fri, Jan 28, 2022 at 7:56 AM Kai-Heng Feng
+<kai.heng.feng@canonical.com> wrote:
+>
+> x86 boards may use ACPI HID "ADS0345" for adxl34x device.
 
-I can fully understand that -- otoh then I'd normally say "well, then
-let's just revert the commit that causes this". But in this case I can
-understand that it might not be wise.
+the adxl34x
 
-There is one thing that would help me to judge this situation better:
+> Analog replied:
+> "ADS034X is not a valid PNP ID. ADS0345 would be.
+> I'm not aware that this ID is already taken.
+> Feel free to submit a mainline Linux input mailing list patch."
+>
+> So add an ACPI match table for that accordingly.
 
-Davyd, did a default Win11 install connect fine with standard settings
-or did you have to modify something in the registry to make it work
-there (which you might have done years ago in case you updated the
-machine!), as Ronnie suspected? Or was this already clarified in this
-thread somewhere and I just missed that (in that case: sorry!)?
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Thanks!
 
-Ciao, Thorsten
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+> v2:
+>  - Drop ACPI_PTR()
+>  - Drop redundant empty line and comma
+>  - Add info from vendor
+>
+>  drivers/input/misc/adxl34x-i2c.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/drivers/input/misc/adxl34x-i2c.c b/drivers/input/misc/adxl34x-i2c.c
+> index a3b5f88d2bd16..b9af581cde800 100644
+> --- a/drivers/input/misc/adxl34x-i2c.c
+> +++ b/drivers/input/misc/adxl34x-i2c.c
+> @@ -155,11 +155,18 @@ static const struct of_device_id adxl34x_of_id[] = {
+>
+>  MODULE_DEVICE_TABLE(of, adxl34x_of_id);
+>
+> +static const struct acpi_device_id adxl34x_acpi_match[] = {
+> +       { "ADS0345" },
+> +       { }
+> +};
+> +MODULE_DEVICE_TABLE(acpi, adxl34x_acpi_match);
+> +
+>  static struct i2c_driver adxl34x_driver = {
+>         .driver = {
+>                 .name = "adxl34x",
+>                 .pm = &adxl34x_i2c_pm,
+>                 .of_match_table = adxl34x_of_id,
+> +               .acpi_match_table = adxl34x_acpi_match,
+>         },
+>         .probe    = adxl34x_i2c_probe,
+>         .remove   = adxl34x_i2c_remove,
+> --
+> 2.33.1
+>
 
->> Ciao, Thorsten
->>
->> #regzbot poke
->>
->>
->> On 12.01.22 06:49, Davyd McColl wrote:
->>> Hi Ronnie
->>>
->>> The regular fstab line for this mount is:
->>>
->>> //mede8er/mede8er  /mnt/mede8er-smb  cifs
->>> noauto,guest,users,uid=daf,gid=daf,iocharset=utf8,vers=1.0,nobrl,sec=none
->>>  0  0
->>>
->>> Altering the end of the options from "sec=none" to
->>> "username=guest,sec=ntlmssp" or "guest,sec=ntlmssp" results in failure
->>> to mount
->>> (tested on my patched kernel, which still supports the original fstab
->>> line), with dmesg containing:
->>>
->>> [45753.525219] CIFS: VFS: Use of the less secure dialect vers=1.0 is
->>> not recommended unless required for acc
->>> ess to very old servers
->>> [45753.525222] CIFS: Attempting to mount \\mede8er\mede8er
->>> [45756.861351] CIFS: VFS: Unable to select appropriate authentication method!
->>> [45756.861361] CIFS: VFS: \\mede8er Send error in SessSetup = -22
->>> [45756.861395] CIFS: VFS: cifs_mount failed w/return code = -22
->>>
->>> There is no way that I know of to set up users for smb auth on this
->>> device - it only supports guest connections.
->>>
->>> -d
->>>
->>>
->>> On Wed, 12 Jan 2022 at 04:32, ronnie sahlberg <ronniesahlberg@gmail.com> wrote:
->>>>
->>>> Thanks for the network traces.
->>>>
->>>> In the traces, both win11 and linux are not using even NTLM but the
->>>> even older "share password" authentication mode where you specify a
->>>> password for the share in the TreeConnect command.
->>>> That is something I think we should not support at all.
->>>>
->>>> What is the exact mount command line you use?
->>>> Can you try mounting the share using a username and ntlmssp ?
->>>> I.e. username=your-user,sec=ntlmssp  on the mount command
->>>>
->>>> regards
->>>> ronnie sahlberg
->>>>
->>>> On Wed, Jan 12, 2022 at 6:57 AM Davyd McColl <davydm@gmail.com> wrote:
->>>>>
->>>>> Hi Steve
->>>>>
->>>>> As requested, wireshark captures to the device in question, as well as
->>>>> the fstab entry I have for the device:
->>>>> - win11, browsing with explorer
->>>>> - win11, net use
->>>>> - unpatched linux 5.16.0 attempt to mount
->>>>> - patched linux 5.16.0 successful mount
->>>>> - fstab entry - note that I have to specify samba version 1.0 as the
->>>>> default has changed and the mount fails otherwise. Explicitly
->>>>> specifying 2.0 errors and suggests that I should select a different
->>>>> version.
->>>>>
->>>>> -d
->>>>>
->>>>> On Tue, 11 Jan 2022 at 00:13, Steve French <smfrench@gmail.com> wrote:
->>>>>>
->>>>>> I would be surprised if Windows 11 still negotiates (with default
->>>>>> registry settings) SMB1 much less NTLMv1 in SMB1, but I have not tried
->>>>>> Windows 11 with an NTLMv1 only server (they are hard to find - I may
->>>>>> have an original NT4 and an NT3.5 CD somewhere - might be possible to
->>>>>> install a VM with NT3.5 but that is really really old and not sure I
->>>>>> can find those CDs).
->>>>>>
->>>>>> Is it possible to send me the wireshark trace (or other network trace)
->>>>>> of the failing mount from Linux and also the one with the succeeding
->>>>>> NET USE from Windows 11 to the same server?
->>>>>>
->>>>>> Hopefully it is something unrelated to NTLMv1, there has been a LOT of
->>>>>> pushback across the world, across products in making sure no one uses
->>>>>> SMB1 anymore.  See e.g.
->>>>>> https://techcommunity.microsoft.com/t5/storage-at-microsoft/stop-using-smb1/ba-p/425858
->>>>>> and https://twitter.com/nerdpyle/status/776900804712148993
->>>>>>
->>>>>> On Mon, Jan 10, 2022 at 2:30 PM Davyd McColl <davydm@gmail.com> wrote:
->>>>>>>
->>>>>>> I don't understand. I tracked down the exact commit where the issue
->>>>>>> occurs with a 2 hour git bisect. This was after first confirming that
->>>>>>> my older 5.14 kernel did not display the symptoms. I can still connect
->>>>>>> to the share via windows 11 explorer. I don't know what else I need to
->>>>>>> do here to show where the issue was introduced?
->>>>>>>
->>>>>>> Apologies for bouncing mails - literally no email client I have seems
->>>>>>> to be capable of plaintext emails, so every time I forget, I have to
->>>>>>> find a browser with the gmail web interface to reply.
->>>>>>>
->>>>>>> -d
->>>>>>>
->>>>>>> On Mon, 10 Jan 2022 at 19:31, Steve French <smfrench@gmail.com> wrote:
->>>>>>>>
->>>>>>>> I want to make sure that we don't have an unrelated regression
->>>>>>>> involved here since NTLMv2 replaced NTLMv1 over 20 years ago (googling
->>>>>>>> this e.g. I see "NTLMv2, introduced in Windows NT 4.0 SP4 and natively
->>>>>>>> supported in Windows 2000")  and should be the default for Windows
->>>>>>>> NT4, Windows 2000 etc. as well as any version of Samba from the last
->>>>>>>> 15 years+.  I have significant concerns with adding mechanisms that
->>>>>>>> were asked to be disabled ~19 years ago e.g. see
->>>>>>>> https://support.microsoft.com/en-us/topic/security-guidance-for-ntlmv1-and-lm-network-authentication-da2168b6-4a31-0088-fb03-f081acde6e73
->>>>>>>> due to security concerns.
->>>>>>>>
->>>>>>>> Can we double check that there are not other issues involved in your example?
->>>>>>>>
->>>>>>>> The concerns about NTLMv1 security concerns (and why it should never
->>>>>>>> be used) are very persuasive e.g. many articles like
->>>>>>>> https://miriamxyra.com/2017/11/08/stop-using-lan-manager-and-ntlmv1/
->>>>>>>>
->>>>>>>> On Mon, Jan 10, 2022 at 7:48 AM Davyd McColl <davydm@gmail.com> wrote:
->>>>>>>>>
->>>>>>>>> Good day
->>>>>>>>>
->>>>>>>>> I'm following advice from the thread at
->>>>>>>>> https://bugzilla.kernel.org/show_bug.cgi?id=215375 as to how to report
->>>>>>>>> this, so please bear with me and redirect me as necessary.
->>>>>>>>>
->>>>>>>>> Since commit 76a3c92ec9e0668e4cd0e9ff1782eb68f61a179c, I'm unable to
->>>>>>>>> mount a CIFS 1.0 share ( from a media player: mede8er med600x3d, which
->>>>>>>>> runs some older linux). Apparently I'm not the only one, according to
->>>>>>>>> that thread, though the other affected party there is windows-based.
->>>>>>>>>
->>>>>>>>> I first logged this in the Gentoo bugtracker
->>>>>>>>> (https://bugs.gentoo.org/821895) and a reversion patch is available
->>>>>>>>> there for the time being.
->>>>>>>>>
->>>>>>>>> I understand that some of the encryption methods upon which the
->>>>>>>>> original feature relied are to be removed and, as such, the ability to
->>>>>>>>> mount these older shares was removed. This is sure to affect anyone
->>>>>>>>> running older Windows virtual machines (or older, internally-visible
->>>>>>>>> windows hosts) in addition to anyone attempting to connect to shares
->>>>>>>>> from esoteric devices like mine.
->>>>>>>>>
->>>>>>>>> Whilst I understand the desire to clean up code and remove dead
->>>>>>>>> branches, I'd really appreciate it if this particular feature remains
->>>>>>>>> available either by kernel configuration (which suits me fine, but is
->>>>>>>>> likely to be a hassle for anyone running a binary distribution) or via
->>>>>>>>> boot parameters. In the mean-time, I'm updating my own sync software
->>>>>>>>> to support this older device because if I can't sync media to the
->>>>>>>>> player, the device is not very useful to me.
->>>>>>>>>
->>>>>>>>> Thanks
->>>>>>>>> -d
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>> --
->>>>>>>> Thanks,
->>>>>>>>
->>>>>>>> Steve
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> --
->>>>>>> -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
->>>>>>> If you say that getting the money is the most important thing
->>>>>>> You will spend your life completely wasting your time
->>>>>>> You will be doing things you don't like doing
->>>>>>> In order to go on living
->>>>>>> That is, to go on doing things you don't like doing
->>>>>>>
->>>>>>> Which is stupid.
->>>>>>>
->>>>>>> - Alan Watts
->>>>>>> https://www.youtube.com/watch?v=-gXTZM_uPMY
->>>>>>>
->>>>>>> Quidquid latine dictum sit, altum sonatur.
->>>>>>
->>>>>>
->>>>>>
->>>>>> --
->>>>>> Thanks,
->>>>>>
->>>>>> Steve
->>>>>
->>>>>
->>>>>
->>>>> --
->>>>> -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
->>>>> If you say that getting the money is the most important thing
->>>>> You will spend your life completely wasting your time
->>>>> You will be doing things you don't like doing
->>>>> In order to go on living
->>>>> That is, to go on doing things you don't like doing
->>>>>
->>>>> Which is stupid.
->>>>>
->>>>> - Alan Watts
->>>>> https://www.youtube.com/watch?v=-gXTZM_uPMY
->>>>>
->>>>> Quidquid latine dictum sit, altum sonatur.
->>>
->>>
->>>
->>
-> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
