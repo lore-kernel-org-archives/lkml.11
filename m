@@ -2,99 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE30C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349121AbiA1OYU (ORCPT
+        id S1349116AbiA1OYb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:24:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349109AbiA1OYS (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:24:18 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB89C061714;
-        Fri, 28 Jan 2022 06:24:18 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id k6-20020a05600c1c8600b003524656034cso1125162wms.2;
-        Fri, 28 Jan 2022 06:24:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=maJHvbktVEBb7xJacQ1lqleTWcxE1EbrXGVkYr99UvM=;
-        b=T5z4S/MCNI/qviacNFzJPaSK74K0DxoVrVdy2ybpvJ6W2vghC1XZlOwoaGifgfTu9w
-         2FuwJguzNfcC8VYLSEki2EB6L7T/Uzayljsm717N85LH6jeW7iYtUAWzq5sAiHkMMP+2
-         XYowlKgw2qrjNuswkyXPCWMZ28BpK7Nt5RIKFbu0N5AyEb8nrcfsZXKQ3AsqFVJ8V8rR
-         Na6em4lGwseYLwhJmKsmN2c5miVCFK9nLoyf5GvN46i64kG6CKPbsBDUBofFYbOP5ab6
-         FH9Tv3WRg8s52I4urjAXMavaq1RO8FERxtB1+EmOmcrwkAfhT4cKswVqySFoOZYCW3Aq
-         +P8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=maJHvbktVEBb7xJacQ1lqleTWcxE1EbrXGVkYr99UvM=;
-        b=MQB2ZP1RSyhQDsPVFu+YTH19OayhoIniKcMko40+nyaYIhQkORQJZ1DylywfTsqV7k
-         5Q+Z8Rwa6FKdJ1MelAwhPQalDsoDupUAqKzkKING6decRlwsG5QKcb7wanNw3PLhwyEr
-         ZUWYyLtq3KujEK//gbjwCd5SI01bx+jehA51WUoHk0OxLJ205N+44Rf3TMPKQ8ixeNtV
-         HS3yjbahZHC54JzngkqRafxzP2UEflZAcJ3Dw/W/SntT3e2KnRIN7XTvyJAc5ac0nn50
-         NcFRi3LC4V7s7O5EkhEy2Yu5VeIgkrmhx5zapXg3R+s8Bf3aqvVadgojLrIShGh/ZMaw
-         9lZA==
-X-Gm-Message-State: AOAM533rUWFJxCbeRPkgib+clEklxfstOXXhn2XhQsS3b5BQpYatiKG9
-        RpugiFHlbxmIxaB8ohSuF2dc+er0m94=
-X-Google-Smtp-Source: ABdhPJyrAAweglttUU3cVtQ742y5T+pFHDzH12KsHeRL2SE97ADX5uXzOwH4lKCMElpjyGqlXqMX4A==
-X-Received: by 2002:a1c:9ad0:: with SMTP id c199mr16179664wme.156.1643379857129;
-        Fri, 28 Jan 2022 06:24:17 -0800 (PST)
-Received: from debian (host-2-98-43-34.as13285.net. [2.98.43.34])
-        by smtp.gmail.com with ESMTPSA id t4sm4860844wro.71.2022.01.28.06.24.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jan 2022 06:24:16 -0800 (PST)
-Date:   Fri, 28 Jan 2022 14:24:14 +0000
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH 5.4 00/11] 5.4.175-rc1 review
-Message-ID: <YfP8jnJeBCnOhQTi@debian>
-References: <20220127180258.362000607@linuxfoundation.org>
+        Fri, 28 Jan 2022 09:24:31 -0500
+Received: from mga01.intel.com ([192.55.52.88]:14015 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1349109AbiA1OY1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 09:24:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643379867; x=1674915867;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xChxVhzIhaTTa+OGJbz0k6Hw1HEJzyGMSh7aO2ZLbLw=;
+  b=midQALOJ4nblaKcBD7NkkAl9gt2obN9cluZVgeJFN9lzETTzwzozCzoe
+   mfM0XFAOMvZO/oxFbZnT6AJspsCJZJL6I17ML+wM31NPtD2oCOUHhFMZ/
+   1JBHEs/lMSZ86/PyDRyYnhrO931Ff0uSPmbblD1OP0rbzd2u9JV9YYNho
+   7mnmuS0b5x0leNr2ncYAtUzayvZGP+jtOc+h+4zsmcjl/aL+UlVluAk+2
+   G3u9A34vH0w0J4uXSq4DqaPNIVqCce7t7dh7kPK4wcsObCfFzl3GMir88
+   wJsskAr2M1B5jQEtUf9bbZBwUz2NFI2D4ZV4AmSdn+W8Ix3rh8fw6g+2R
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="271589631"
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="271589631"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 06:24:27 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="536149392"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 28 Jan 2022 06:24:25 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nDSAr-000NyC-1Q; Fri, 28 Jan 2022 14:24:25 +0000
+Date:   Fri, 28 Jan 2022 22:23:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Pirko <jiri@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jpirko-mlxsw:jiri_devel_linecards 37/58]
+ drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:344:39: error: passing
+ argument 1 of 'mlxsw_linecard_provision_fail' from incompatible pointer type
+Message-ID: <202201282226.T1KtFC5Q-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220127180258.362000607@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
+head:   e29aaaea5a4ec1a13a522a428fed7ce715a01d0d
+commit: 73018c57f04b9844d72620e46dd767eb0fc1ad01 [37/58] mlxsw: core_linecards: Probe devices for provisioned line card and attach them
+config: alpha-allmodconfig (https://download.01.org/0day-ci/archive/20220128/202201282226.T1KtFC5Q-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jpirko/linux_mlxsw/commit/73018c57f04b9844d72620e46dd767eb0fc1ad01
+        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
+        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
+        git checkout 73018c57f04b9844d72620e46dd767eb0fc1ad01
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash drivers/net/ethernet/mellanox/mlxsw/
 
-On Thu, Jan 27, 2022 at 07:09:01PM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.175 release.
-> There are 11 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sat, 29 Jan 2022 18:02:51 +0000.
-> Anything received after that time might be too late.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Build test:
-mips (gcc version 11.2.1 20220121): 65 configs -> no new failure
-arm (gcc version 11.2.1 20220121): 107 configs -> no new failure
-arm64 (gcc version 11.2.1 20220121): 2 configs -> no failure
-x86_64 (gcc version 11.2.1 20220121): 4 configs -> no failure
+All errors (new ones prefixed by >>):
 
-Boot test:
-x86_64: Booted on my test laptop. No regression.
-x86_64: Booted on qemu. No regression. [1]
+   drivers/net/ethernet/mellanox/mlxsw/core_linecards.c: In function 'mlxsw_linecard_status_event_to_work':
+>> drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:344:39: error: passing argument 1 of 'mlxsw_linecard_provision_fail' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     344 |         mlxsw_linecard_provision_fail(linecard);
+         |                                       ^~~~~~~~
+         |                                       |
+         |                                       struct mlxsw_linecard *
+   drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:153:62: note: expected 'struct mlxsw_core *' but argument is of type 'struct mlxsw_linecard *'
+     153 | static void mlxsw_linecard_provision_fail(struct mlxsw_core *mlxsw_core,
+         |                                           ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+>> drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:344:9: error: too few arguments to function 'mlxsw_linecard_provision_fail'
+     344 |         mlxsw_linecard_provision_fail(linecard);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:153:13: note: declared here
+     153 | static void mlxsw_linecard_provision_fail(struct mlxsw_core *mlxsw_core,
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
-[1]. https://openqa.qa.codethink.co.uk/tests/665
 
+vim +/mlxsw_linecard_provision_fail +344 drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
 
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+57299b50dc9224 Jiri Pirko 2022-01-28  334  
+57299b50dc9224 Jiri Pirko 2022-01-28  335  static void mlxsw_linecard_status_event_to_work(struct work_struct *work)
+57299b50dc9224 Jiri Pirko 2022-01-28  336  {
+57299b50dc9224 Jiri Pirko 2022-01-28  337  	struct mlxsw_linecard *linecard =
+57299b50dc9224 Jiri Pirko 2022-01-28  338  		container_of(work, struct mlxsw_linecard,
+57299b50dc9224 Jiri Pirko 2022-01-28  339  			     status_event_to_dw.work);
+57299b50dc9224 Jiri Pirko 2022-01-28  340  
+57299b50dc9224 Jiri Pirko 2022-01-28  341  	dev_err(linecard->linecards->bus_info->dev, "linecard %u: Timeout reached waiting on %s status event",
+57299b50dc9224 Jiri Pirko 2022-01-28  342  		linecard->slot_index,
+57299b50dc9224 Jiri Pirko 2022-01-28  343  		mlxsw_linecard_status_event_type_name[linecard->status_event_type_to]);
+57299b50dc9224 Jiri Pirko 2022-01-28 @344  	mlxsw_linecard_provision_fail(linecard);
+57299b50dc9224 Jiri Pirko 2022-01-28  345  }
+57299b50dc9224 Jiri Pirko 2022-01-28  346  
 
---
-Regards
-Sudip
+:::::: The code at line 344 was first introduced by commit
+:::::: 57299b50dc9224b8512f83e641ae92cc128016cf TMP: event timeout
 
+:::::: TO: Jiri Pirko <jiri@nvidia.com>
+:::::: CC: Jiri Pirko <jiri@nvidia.com>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
