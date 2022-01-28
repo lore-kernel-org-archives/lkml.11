@@ -2,125 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01604C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9380CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245422AbiA1Q2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 11:28:06 -0500
-Received: from mga05.intel.com ([192.55.52.43]:9372 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231221AbiA1Q2F (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 11:28:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643387285; x=1674923285;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iDEdIyx/eA82CyxCDokO/3tZLh4lgebJYwjeiPMLUqE=;
-  b=QoKMLjxhxXAMPvweGpnCH4NYh9N5pTf4F4EMdUmYjLjmLtVIh4DzePIC
-   fl1uJXW7a0MpZpqnPVGB2gH3XizTgG9NRWNT2nxhfxDo3Ns+XysQJ4ubd
-   1HWS8nO82OI0MjL0t/YYFLjj/touNqPM29WTvMKHSTl1uPVI+j0Ws6mnM
-   8wShmmSlJus/wdHghdMr9DPX3UL6paQIMz16j+8vPx+j4cfGR/iFTV7g1
-   aYBd22JnmMFDCAtXldPJCNQjhT9ie3lsYqk6kcRoQMQ23g7/LjZWg+mp1
-   pRwyo45l9dqkFDp4gzHog+gJvdDzxx7KoC0B39X06hu1EUMiqgDNBvHIq
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="333502956"
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="333502956"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 08:28:05 -0800
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="480790453"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 08:28:01 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nDU5P-00FTd6-Vl;
-        Fri, 28 Jan 2022 18:26:55 +0200
-Date:   Fri, 28 Jan 2022 18:26:55 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        "maintainer:BROADCOM BCM281XX/BCM11XXX/BCM216XX ARM ARCHITE..." 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jason Wang <wangborong@cdjrlc.com>,
-        Marc Zyngier <maz@kernel.org>,
-        "open list:PIN CONTROL SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH] pinctrl: bcm2835: Fix a few error paths
-Message-ID: <YfQZT3NokrgF5OQA@smile.fi.intel.com>
-References: <20220127215033.267227-1-f.fainelli@gmail.com>
- <YfP/TuEERCrgst+k@smile.fi.intel.com>
- <f28cba7f-6799-9f08-71b2-249a2a506913@gmail.com>
+        id S245614AbiA1Q3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 11:29:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231221AbiA1Q3D (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 11:29:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C21C061714
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 08:29:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8948561EE0
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:29:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D33BAC340E6
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:29:01 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="CIBNIxAP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1643387339;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HO9B6AQD9lhtTNqYreWDbICBEhJE9ur8i2dfTih+tHU=;
+        b=CIBNIxAPQM2eCdTK8k/3cBsl/z2fbSw/8xR9uT8598k4f5xaNBQvqyNXpVE8DqdgVZKXZ3
+        qy8PKeMwm+CMz5MM6NLBCqv8Baf20Y9INe13tDTs9IDv4lzJj1ig06iU3h0dEhAq+n9E5j
+        3q5P8nQMZSfUPYiXTZ1FJnZeeN21u4I=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 835cb781 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Fri, 28 Jan 2022 16:28:59 +0000 (UTC)
+Received: by mail-yb1-f182.google.com with SMTP id k31so20097110ybj.4
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 08:28:59 -0800 (PST)
+X-Gm-Message-State: AOAM532/Si7RxDsEie4urdmDi5aVCEnmrjvdjZlG6RAu8SctOVoIb4dT
+        Z4vhRJMXThSjbJAflhmk2zeqOwm8kbb+K65GaHg=
+X-Google-Smtp-Source: ABdhPJwHJSqim1eChQeFVNv7DjxALppZZR6DCq8GZ2fMKkhrHRwkzyC9HESBcw6m481Y6mE99h1tgc11wobLFb6O84Q=
+X-Received: by 2002:a25:2284:: with SMTP id i126mr12674192ybi.245.1643387338043;
+ Fri, 28 Jan 2022 08:28:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f28cba7f-6799-9f08-71b2-249a2a506913@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <YfMa0QgsjCVdRAvJ@latitude> <CAHmME9pb9A4SN6TTjNvvxKqw1L3gXVOX7KKihfEH4AgKGNGZ2A@mail.gmail.com>
+ <YfOqsOiNfURyvFRX@linutronix.de> <CAHmME9qBj2gL=spp3AUEo-Ri4r0KQq-KrR-f6dG++xXQvzcA7A@mail.gmail.com>
+ <YfQXgaAyBBEYSspV@linutronix.de>
+In-Reply-To: <YfQXgaAyBBEYSspV@linutronix.de>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 28 Jan 2022 17:28:47 +0100
+X-Gmail-Original-Message-ID: <CAHmME9qhdRbFT26beStH3JYLiE0mpAZz-jp1jJsJdJNZKFpbvA@mail.gmail.com>
+Message-ID: <CAHmME9qhdRbFT26beStH3JYLiE0mpAZz-jp1jJsJdJNZKFpbvA@mail.gmail.com>
+Subject: Re: "BUG: Invalid wait context" in invalidate_batched_entropy
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Andy Lutomirski <luto@amacapital.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 08:12:02AM -0800, Florian Fainelli wrote:
-> On 1/28/2022 6:35 AM, Andy Shevchenko wrote:
-> > On Thu, Jan 27, 2022 at 01:50:31PM -0800, Florian Fainelli wrote:
-> > > After commit 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio
-> > > hogs") a few error paths would not unwind properly the registration of
-> > > gpio ranges. Correct that by assigning a single error label and goto it
-> > > whenever we encounter a fatal error.
-> > 
-> > >   1 file changed, 15 insertions(+), 8 deletions(-)
-> > 
-> > While this seems legit per se, my eyes caught this:
-> > 
-> > 
-> > >   	if (!girq->parents) {
-> > > -		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
-> > > -		return -ENOMEM;
-> > > +		err = -ENOMEM;
-> > > +		goto out_remove;
-> > 
-> > Non-devm....
-> > 
-> > >   	}
-> > >   	if (is_7211) {
-> > >   		pc->wake_irq = devm_kcalloc(dev, BCM2835_NUM_IRQS,
-> > >   					    sizeof(*pc->wake_irq),
-> > >   					    GFP_KERNEL);
-> > 
-> > ...followed by devm.
-> > 
-> > It means more ordering bugs in the ->remove() and error path are lurking
-> > around. Can you double check and be sure that we do not have a case where
-> > non-devm registration code followed by devm?
-> 
-> It seems to me like we are fine with the patch as is, because:
-> 
-> - girq->parents is allocated with devm
-> - pc->wake_irq is allocated with devm
-> - name is allocated with devm
-> 
-> and those are the only variables being allocated for which we also process
-> an error handling path.
+Hi Sebastian,
 
-Okay, thanks.
+On Fri, Jan 28, 2022 at 5:19 PM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+> Correct. You must not acquire a spinlock_t while holding a
+> raw_spinlock_t. This is because on PREEMPT_RT the spinlock_t is a
+> sleeping lock while raw_spinlock_t disables preemption/ interrupts and
+> sleeping is not possible.
+>         Documentation/locking/locktypes.rst
+>
+> On non-PREEMPT both lock types (spinlock_t & raw_spinlock_t) behave in
+> the same way but lockdep can tell them apart with
+> CONFIG_PROVE_RAW_LOCK_NESTING=y and show code that is problematic on RT.
 
-My worries that it might be the case when the GPIO ranges have been removed by
-explicit call in ->remove() followed by some interrupt or so and oops or
-misbehaviour because of that.
+Gotcha. Surely, then, Andy's patch at least goes some of the way
+toward fixing this, since it outright _removes_ a spinlock_t. There is
+still the other spinlock_t that you want removed, I realize, though
+this doesn't appear to be the one from Jonathan's bug report. It
+sounds like Andy's patch might be one side of the fix, and your patch
+the other?
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Jason
