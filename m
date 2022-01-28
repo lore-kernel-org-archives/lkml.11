@@ -2,86 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55ED1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343536AbiA1RRc (ORCPT
+        id S1343544AbiA1RRv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 12:17:32 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:60638 "EHLO vps0.lunn.ch"
+        Fri, 28 Jan 2022 12:17:51 -0500
+Received: from mga05.intel.com ([192.55.52.43]:14547 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237031AbiA1RRa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 12:17:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ThL5B3SxUa7qxAOrbzfcl7naTiKrbrgrI94+8lWwPms=; b=RBFksZ1/XbrW4de45UCM4rl41F
-        hXWBlKHI3PMZ4oDkc8yRK1nCjlIyrQmKxYcQuT/LhBFvtIkeOKeDi1pjTXaRT2XA7jrq8JX2fq04M
-        amBBaM8ptflnIEZ2QkPcgM+31R8Dm0P77UmHloNn7Y/ZJ5KU4P5HLMjle5uP8OsvF4dw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nDUsD-003CdP-Bm; Fri, 28 Jan 2022 18:17:21 +0100
-Date:   Fri, 28 Jan 2022 18:17:21 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        David.Laight@aculab.com, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 1/2] net: dsa: mv88e6xxx: Improve performance
- of busy bit polling
-Message-ID: <YfQlIamPBML0JaET@lunn.ch>
-References: <20220128162650.2510062-1-tobias@waldekranz.com>
- <20220128162650.2510062-2-tobias@waldekranz.com>
+        id S237031AbiA1RRk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 12:17:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643390260; x=1674926260;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Ke2wrUMps46nHfuBAnrVSoXp2njP9IujpN3LbU8dadY=;
+  b=l+EHs0sIew6ySate3ufTP6B1TFUa+KzLAGaZ7J7wEQ3nHbxA9lP16H6s
+   haB+FtVHv33SeozOohTToRmumvs322I36LmUhXFS/HXLhwo+XUcEsoStg
+   qjAUJkTEcfYoVUye3x4GWYMiypHvU6EQIFWk85Lia23DuJ5cuRyFZy/ni
+   H8fHRjyBns9bBXI0BLf7Pye9ut5PyIuN5RFeQfaRqEtnJIaHfCdlGMRG0
+   er9d578Y7wKnzbWsjzYRULAujIjiByvVMWtlpBoFMQj5nIrxpYTPMuQQ6
+   A9CyDoNLCMt9ngAN32Dkn29IBE18rCtzMZ6VMktd6Mda/IVMjM7y3M8zV
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="333512984"
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="333512984"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 09:17:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="675150176"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 28 Jan 2022 09:17:39 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nDUsU-000O8E-Dp; Fri, 28 Jan 2022 17:17:38 +0000
+Date:   Sat, 29 Jan 2022 01:16:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Hans Verkuil <hverkuil@xs4all.nl>
+Subject: [hverkuil-media-tree:for-v5.18k 104/107] vimc-capture.c:undefined
+ reference to `vb2_dma_contig_memops'
+Message-ID: <202201290150.rJgwsyjj-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220128162650.2510062-2-tobias@waldekranz.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 05:26:49PM +0100, Tobias Waldekranz wrote:
-> Avoid a long delay when a busy bit is still set and has to be polled
-> again.
-> 
-> Measurements on a system with 2 Opals (6097F) and one Agate (6352)
-> show that even with this much tighter loop, we have about a 50% chance
-> of the bit being cleared on the first poll, all other accesses see the
-> bit being cleared on the second poll.
-> 
-> On a standard MDIO bus running MDC at 2.5MHz, a single access with 32
-> bits of preamble plus 32 bits of data takes 64*(1/2.5MHz) = 25.6us.
-> 
-> This means that mv88e6xxx_smi_direct_wait took 26us + CPU overhead in
-> the fast scenario, but 26us + 1500us + 26us + CPU overhead in the slow
-> case - bringing the average close to 1ms.
-> 
-> With this change in place, the slow case is closer to 2*26us + CPU
-> overhead, with the average well below 100us - a 10x improvement.
-> 
-> This translates to real-world winnings. On a 3-chip 20-port system,
-> the modprobe time drops by 88%:
-> 
-> Before:
-> 
-> root@coronet:~# time modprobe mv88e6xxx
-> real    0m 15.99s
-> user    0m 0.00s
-> sys     0m 1.52s
-> 
-> After:
-> 
-> root@coronet:~# time modprobe mv88e6xxx
-> real    0m 2.21s
-> user    0m 0.00s
-> sys     0m 1.54s
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+tree:   git://linuxtv.org/hverkuil/media_tree.git for-v5.18k
+head:   ab1804e24c2d3bb0b511db538d9e834e260db16b
+commit: 6e0f23d9552db48996f82eaa5659fb50c692c6a2 [104/107] media: vimc: Add support for contiguous DMA buffers
+config: m68k-randconfig-r026-20220126 (https://download.01.org/0day-ci/archive/20220129/202201290150.rJgwsyjj-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
+        git fetch --no-tags hverkuil-media-tree for-v5.18k
+        git checkout 6e0f23d9552db48996f82eaa5659fb50c692c6a2
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-    Andrew
+All errors (new ones prefixed by >>):
+
+   m68k-linux-ld: drivers/media/test-drivers/vimc/vimc-capture.o: in function `vimc_cap_add':
+>> vimc-capture.c:(.text+0x6f0): undefined reference to `vb2_dma_contig_memops'
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
