@@ -2,99 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91905C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D19EFC43219
 	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 03:55:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345887AbiA1Dy4 (ORCPT
+        id S1345901AbiA1Dy6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 22:54:56 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:57434 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231289AbiA1Dyy (ORCPT
+        Thu, 27 Jan 2022 22:54:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345880AbiA1Dy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 22:54:54 -0500
-X-UUID: 5d80ea5c43b0439084d8498aac0e2afa-20220128
-X-UUID: 5d80ea5c43b0439084d8498aac0e2afa-20220128
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1400675196; Fri, 28 Jan 2022 11:54:50 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 28 Jan 2022 11:54:49 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 28 Jan
- 2022 11:54:49 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 28 Jan 2022 11:54:47 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        "Tzung-Bi Shih" <tzungbi@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        Steve Cho <stevecho@chromium.org>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v2, 4/7] media: mtk-vcodec: Adds compatible for mt8195
-Date:   Fri, 28 Jan 2022 11:54:37 +0800
-Message-ID: <20220128035440.24533-5-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220128035440.24533-1-yunfei.dong@mediatek.com>
-References: <20220128035440.24533-1-yunfei.dong@mediatek.com>
+        Thu, 27 Jan 2022 22:54:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD82C061747;
+        Thu, 27 Jan 2022 19:54:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F05961E4D;
+        Fri, 28 Jan 2022 03:54:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24020C340E0;
+        Fri, 28 Jan 2022 03:54:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643342094;
+        bh=F6nMqm2BNQjdzdmorsoB0MzkOs8aAyfe1virzyMv7AM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=q2ot7KCJasSgw2zrePoc+6uDJQ8W8Aq6gwt9RHYZfIAPNnXMhmkl04oN4V/nWZR2x
+         bBlYZ7Z/rHNbYjZZu/O5sW7FLje9EWYOjS0TJNVSIqOznqzpUFwPMdb4/BEoYMg20C
+         RQ6YJjtHQuZHgWwzYAvwXRIfbWTtMPLT7JzYovdSEuo0tQEhyw0gNAsDzYs38qkIJ/
+         yQPrxu5JF+seZk8FTZNLWy0B6Mv81GXg0IrgT1rryQcz/ul1ag8NZyUDd1J0s2+tWb
+         9+g1U9N4PoVhmeYMeluzbsAnqh5cqH/6Xy6Gt/k0k0wo2Z2XIalOJDO/9niPvBL333
+         R5UsSTlz9r7LA==
+Date:   Fri, 28 Jan 2022 11:54:48 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Device Tree Mailing List <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] arm64: dts: imx8m{m,n}_venice*: add gpio-line-names
+Message-ID: <20220128035447.GZ4686@dragon>
+References: <20211215001812.9006-1-tharvey@gateworks.com>
+ <20220126090739.GH4686@dragon>
+ <CAJ+vNU3Xj-b2BSc_6MQrtrh-G=5dMdMmw0S8EtujVz_7FvkQ0w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ+vNU3Xj-b2BSc_6MQrtrh-G=5dMdMmw0S8EtujVz_7FvkQ0w@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds compatible for mt8195 platform.
+On Thu, Jan 27, 2022 at 02:49:41PM -0800, Tim Harvey wrote:
+> On Wed, Jan 26, 2022 at 1:07 AM Shawn Guo <shawnguo@kernel.org> wrote:
+> >
+> > On Tue, Dec 14, 2021 at 04:18:12PM -0800, Tim Harvey wrote:
+> > > Add gpio-line-names for the various GPIO's used on Gateworks Venice
+> > > boards. Note that these GPIO's are typically 'configured' in Boot
+> > > Firmware via gpio-hog therefore we only configure line names to keep the
+> > > boot firmware configuration from changing on kernel init.
+> > >
+> > > Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+> >
+> > It doesn't apply to my imx/dt64 branch.  Could you rebase?
+> >
+> 
+> Shawn,
+> 
+> Sure, I'll try to submit another version within a couple of days.
+> 
+> Did you happen to see 'arm64: dts: imx8mm-venice*: add PCIe support'
+> [1]? It seems to have been archived for some reason and it may have to
+> be rebased after I re-post this one unless you can take that now.
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-Reviewed-by: Macpaul Lin <macpaul.lin@mediatek.com>
----
- drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c | 4 ++++
- 1 file changed, 4 insertions(+)
+I forgot to reply, but I had already pick that up.
 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-index 2d21d0010c9c..938bf14e4e8c 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-@@ -468,6 +468,10 @@ static const struct of_device_id mtk_vcodec_match[] = {
- 		.compatible = "mediatek,mt8186-vcodec-dec",
- 		.data = &mtk_vdec_single_core_pdata,
- 	},
-+	{
-+		.compatible = "mediatek,mt8195-vcodec-dec",
-+		.data = &mtk_lat_sig_core_pdata,
-+	},
- 	{},
- };
- 
--- 
-2.25.1
-
+Shawn
