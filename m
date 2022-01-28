@@ -2,71 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C50FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 02:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 356C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 03:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241071AbiA1C7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 21:59:36 -0500
-Received: from helcar.hmeau.com ([216.24.177.18]:60572 "EHLO fornost.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231668AbiA1C7f (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 21:59:35 -0500
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1nDHTR-0006y2-9A; Fri, 28 Jan 2022 13:58:54 +1100
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 28 Jan 2022 13:58:53 +1100
-Date:   Fri, 28 Jan 2022 13:58:53 +1100
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Christian Eggers <ceggers@arri.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: PROBLEM: encryption test failures since "crypto: mxs-dcp - Use
- sg_mapping_iter to copy data"
-Message-ID: <YfNb7WMXWv1flCvM@gondor.apana.org.au>
-References: <2126453.Icojqenx9y@localhost.localdomain>
- <414858de-f279-c5ce-83ca-5c28d6c847b1@seco.com>
+        id S241905AbiA1DBE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 22:01:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231668AbiA1DBD (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 22:01:03 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF19DC061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 19:01:02 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id z20so7077958ljo.6
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 19:01:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=F84DYakvuLBEq/LFB2ws2YNLFQbiWLW7yWyIuFSGm9A=;
+        b=P3BDa79Q79WUZxRorc58wRuL9vXb5o3A+Z1yoD1tHD5glgzELmUdkNc48bNqKHcQ+K
+         1w9kJSuvvSEwU/Xvcl5MSWgSiAZULCbEkHzU1YIsG/a3JWXKXps3Z+e6Awif8hFqCYFs
+         EwHS0haTILGDkXl+dghorZIXNgajMah8fMcCVK7deKhJ4kzxwVxKWmBYzFDeGZx5SYzi
+         hTDFiXPl6fTiuwJlruATBthypY8/tdFzcMriHwU3+38Qiy3+bYgOyHh/WAuZFDlkXBDN
+         FShj2tWnOdWZO1yTZXHlAgh5yqKOxTsKeU5UgduB6n3ZracgZj7kNO7ancJtIHYJr/jK
+         P2jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=F84DYakvuLBEq/LFB2ws2YNLFQbiWLW7yWyIuFSGm9A=;
+        b=C+cbDkAddjIU0tkSrqoTtgTz5iLvX+DqKQvHOMGQH3+KhjRLyr3c7OQsvhp+/80/zL
+         +nOrTQsRw8UklfIHdRxot7UHdxUWz5uoPG/PFf2paSRr+qY5b+2KBlPP5QA+3ElWwvop
+         aYhiSoJMJ/SQp4dYdyLjmXoi9eAgyTHtIdR5U0s1vQo55QkaG/modMtcrU8X2VwS2R6T
+         EQ48KGtJWoxoocZr6cqKx9G0NGhuIi0PWsjzvzotA1p7ppEjXnfF7DqvCuuzqXtgxm+C
+         mmdThwKrrBCRerHJZSmdldE244ey8oYCqeGEouIR+d9MrkHFspXfoDR1CJVnAyaLRwxI
+         davA==
+X-Gm-Message-State: AOAM533/s9evxWmZ6zQlf8zIdZ2RdNbmJkmZFKov+sMtqkT1YLnwwFat
+        3373Pc3rm4KcrIaoywQL2T0UnHS8myyOtyajokK4wg==
+X-Google-Smtp-Source: ABdhPJzqLHEPA7wSh2amBSoys9ADVcZGpARaznHy7BG0OynBIzR4PwT4xJVYpvRpS1tC4bN36yQbOTXPY53moY2C/mc=
+X-Received: by 2002:a2e:9f4a:: with SMTP id v10mr4633421ljk.47.1643338861173;
+ Thu, 27 Jan 2022 19:01:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <414858de-f279-c5ce-83ca-5c28d6c847b1@seco.com>
+References: <20220128014303.2334568-1-jannh@google.com> <CANn89iKWaERfs1iW8jVyRZT8K1LwWM9efiRsx8E1U3CDT39dyw@mail.gmail.com>
+ <CAG48ez0sXEjePefCthFdhDskCFhgcnrecEn2jFfteaqa2qwDnQ@mail.gmail.com>
+ <CANn89iKmCYq+WBu_S4OvKOXqRSagTg=t8xKq0WC_Rrw+TpKsbw@mail.gmail.com>
+ <CAG48ez2wyQwc5XMKKw8835-4t6+x=X3kPY_CPUqZeh=xQ2krqQ@mail.gmail.com> <CANn89iKVQBDoAwx+yuJ0P0OAV59bav_abh87BA6n7JuzMKMtCQ@mail.gmail.com>
+In-Reply-To: <CANn89iKVQBDoAwx+yuJ0P0OAV59bav_abh87BA6n7JuzMKMtCQ@mail.gmail.com>
+From:   Jann Horn <jannh@google.com>
+Date:   Fri, 28 Jan 2022 04:00:34 +0100
+Message-ID: <CAG48ez0WY2WgPjk4zuT5tZdEy_qt+fh+R_XTr21_Vug9a8ggmg@mail.gmail.com>
+Subject: Re: [PATCH net] net: dev: Detect dev_hold() after netdev_wait_allrefs()
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Oliver Neukum <oneukum@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 12:31:48PM -0500, Sean Anderson wrote:
-> Hi Christian,
-> 
-> On 1/27/22 12:23 PM, Christian Eggers wrote:
-> > SoC: i.MX6ULL
-> > 
-> > After upgrading from v5.10.65-rt53 to v5.10.73-rt54 I get two additional messages on boot:
-> > 
-> > ...
-> > [ 3.786333] alg: skcipher: ecb-aes-dcp encryption test failed (wrong result) on test vector 0, cfg="two even aligned splits"
-> > [ 3.789020] alg: skcipher: cbc-aes-dcp encryption test failed (wrong result) on test vector 0, cfg="two even aligned splits"
-> > [ 3.793741] mxs-dcp 2280000.crypto: mxs_dcp: initialized
-> > ..
-> > 
-> > After reverting the commit
-> > 
-> > 2e6d793e1bf0 ("crypto: mxs-dcp - Use sg_mapping_iter to copy data")
-> > 
-> > the error messages above disappear again.
-> 
-> Can you try applying the patch in [1] on top of your revert?
+On Fri, Jan 28, 2022 at 3:53 AM Eric Dumazet <edumazet@google.com> wrote:
+> On Thu, Jan 27, 2022 at 6:48 PM Jann Horn <jannh@google.com> wrote:
+>
+> > When someone is using NET_DEV_REFCNT_TRACKER for slow debugging, they
+> > should also be able to take the performance hit of
+> > CONFIG_PCPU_DEV_REFCNT and rely on the normal increment-from-zero
+> > detection of the generic refcount code, right? (Maybe
+> > NET_DEV_REFCNT_TRACKER should depend on !CONFIG_PCPU_DEV_REFCNT?)
+>
+> NET_DEV_REFCNT_TRACKER is not slow, I think it has neglectable cost really.
+> (I could not see any difference in my tests)
 
-Please resubmit your patch with a proper Subject, otherwise it'll
-be automatically discarded by patchwork.
-
-Thanks,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Ah, sorry. I misread the Kconfig text.
