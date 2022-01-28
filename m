@@ -2,30 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9BDC4167B
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 06:29:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C11C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 06:29:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346522AbiA1G3S (ORCPT
+        id S1346512AbiA1G3U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 01:29:18 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:43470 "EHLO
+        Fri, 28 Jan 2022 01:29:20 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:43502 "EHLO
         mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S242393AbiA1G3K (ORCPT
+        with ESMTP id S237265AbiA1G3K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 01:29:10 -0500
-X-UUID: b02262b5534f4d32b9529e3dc2dc5059-20220128
-X-UUID: b02262b5534f4d32b9529e3dc2dc5059-20220128
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+X-UUID: aa9056f5144e44749c19611c6fac7515-20220128
+X-UUID: aa9056f5144e44749c19611c6fac7515-20220128
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
         (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 946290845; Fri, 28 Jan 2022 14:29:07 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 28 Jan 2022 14:29:05 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1596489570; Fri, 28 Jan 2022 14:29:05 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 28 Jan 2022 14:29:04 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 28 Jan
+ 2022 14:29:04 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 28 Jan 2022 14:29:05 +0800
+ Transport; Fri, 28 Jan 2022 14:29:03 +0800
 From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Matthias Brugger <matthias.bgg@gmail.com>
@@ -37,13 +39,13 @@ CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
         <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Tianping Fang <tianping.fang@mediatek.com>,
-        Eddie Hung <eddie.hung@mediatek.com>
-Subject: [PATCH v2 3/4] arm64: dts: mediatek: mt8195: add efuse node and cells
-Date:   Fri, 28 Jan 2022 14:29:01 +0800
-Message-ID: <20220128062902.26273-3-chunfeng.yun@mediatek.com>
+        Eddie Hung <eddie.hung@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2 1/4] dt-bindings: usb: mtk-xhci: add support ip-sleep for mt8195
+Date:   Fri, 28 Jan 2022 14:28:59 +0800
+Message-ID: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
-References: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -52,102 +54,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add efuse node and cells used by t-phy to fix the bit shift issue
+There are 4 USB controllers on MT8195, each controller's wakeup control is
+different, add some specific versions for them.
 
 Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
-v2: use hw auto load for u2phy which has no this issue
-
-Note:
-
- depend on the reviewing patch:
-
-[v9,3/3] arm64: dts: Add mediatek SoC mt8195 and evaluation board
-https://patchwork.kernel.org/patch/12711296
+v2:
+  1. fix typo 'specific' suggested by Rob
+  2. add acked-by AngeloGioacchino
 ---
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 55 ++++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+ .../devicetree/bindings/usb/mediatek,mtk-xhci.yaml          | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index a363e82f6988..240a21708806 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -695,6 +695,53 @@
- 			status = "disabled";
- 		};
+diff --git a/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml b/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
+index 11f7bacd4e2b..41efb51638d1 100644
+--- a/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
++++ b/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
+@@ -146,7 +146,11 @@ properties:
+             2 - used by mt2712 etc, revision 2 following IPM rule;
+             101 - used by mt8183, specific 1.01;
+             102 - used by mt8192, specific 1.02;
+-          enum: [1, 2, 101, 102]
++            103 - used by mt8195, IP0, specific 1.03;
++            104 - used by mt8195, IP1, specific 1.04;
++            105 - used by mt8195, IP2, specific 1.05;
++            106 - used by mt8195, IP3, specific 1.06;
++          enum: [1, 2, 101, 102, 103, 104, 105, 106]
  
-+		efuse: efuse@11c10000 {
-+			compatible = "mediatek,mt8195-efuse", "mediatek,efuse";
-+			reg = <0 0x11c10000 0 0x1000>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			u3_tx_imp_p0: usb3-tx-imp@184 {
-+				reg = <0x184 0x1>;
-+				bits = <0 5>;
-+			};
-+			u3_rx_imp_p0: usb3-rx-imp@184 {
-+				reg = <0x184 0x2>;
-+				bits = <5 5>;
-+			};
-+			u3_intr_p0: usb3-intr@185 {
-+				reg = <0x185 0x1>;
-+				bits = <2 6>;
-+			};
-+			comb_tx_imp_p1: usb3-tx-imp@186 {
-+				reg = <0x186 0x1>;
-+				bits = <0 5>;
-+			};
-+			comb_rx_imp_p1: usb3-rx-imp@186 {
-+				reg = <0x186 0x2>;
-+				bits = <5 5>;
-+			};
-+			comb_intr_p1: usb3-intr@187 {
-+				reg = <0x187 0x1>;
-+				bits = <2 6>;
-+			};
-+			u2_intr_p0: usb2-intr-p0@188 {
-+				reg = <0x188 0x1>;
-+				bits = <0 5>;
-+			};
-+			u2_intr_p1: usb2-intr-p1@188 {
-+				reg = <0x188 0x2>;
-+				bits = <5 5>;
-+			};
-+			u2_intr_p2: usb2-intr-p2@189 {
-+				reg = <0x189 0x1>;
-+				bits = <2 5>;
-+			};
-+			u2_intr_p3: usb2-intr-p3@189 {
-+				reg = <0x189 0x2>;
-+				bits = <7 5>;
-+			};
-+		};
-+
- 		u3phy2: t-phy@11c40000 {
- 			compatible = "mediatek,mt8195-tphy", "mediatek,generic-tphy-v3";
- 			#address-cells = <1>;
-@@ -877,6 +924,10 @@
- 				clocks = <&apmixedsys CLK_APMIXED_PLL_SSUSB26M>,
- 					 <&topckgen CLK_TOP_SSUSB_PHY_P1_REF>;
- 				clock-names = "ref", "da_ref";
-+				nvmem-cells = <&comb_intr_p1>,
-+					      <&comb_rx_imp_p1>,
-+					      <&comb_tx_imp_p1>;
-+				nvmem-cell-names = "intr", "rx_imp", "tx_imp";
- 				#phy-cells = <1>;
- 			};
- 		};
-@@ -901,6 +952,10 @@
- 				clocks = <&apmixedsys CLK_APMIXED_PLL_SSUSB26M>,
- 					 <&topckgen CLK_TOP_SSUSB_PHY_REF>;
- 				clock-names = "ref", "da_ref";
-+				nvmem-cells = <&u3_intr_p0>,
-+					      <&u3_rx_imp_p0>,
-+					      <&u3_tx_imp_p0>;
-+				nvmem-cell-names = "intr", "rx_imp", "tx_imp";
- 				#phy-cells = <1>;
- 			};
- 		};
+   mediatek,u3p-dis-msk:
+     $ref: /schemas/types.yaml#/definitions/uint32
 -- 
 2.18.0
 
