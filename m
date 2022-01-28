@@ -2,110 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99598C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 08:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0CCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 08:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347176AbiA1IHX (ORCPT
+        id S1347181AbiA1II1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 03:07:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38436 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237542AbiA1IHW (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 03:07:22 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A8BDC061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 00:07:21 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nDMHn-0008MM-VU; Fri, 28 Jan 2022 09:07:12 +0100
-Received: from pengutronix.de (unknown [195.138.59.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 1FB97258C1;
-        Fri, 28 Jan 2022 08:07:10 +0000 (UTC)
-Date:   Fri, 28 Jan 2022 09:07:04 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
-Message-ID: <20220128080704.ns5fzbyn72wfoqmx@pengutronix.de>
-References: <53279d6d-298c-5a85-4c16-887c95447825@hartkopp.net>
- <280e10c1-d1f4-f39e-fa90-debd56f1746d@huawei.com>
- <eaafaca3-f003-ca56-c04c-baf6cf4f7627@hartkopp.net>
- <890d8209-f400-a3b0-df9c-3e198e3834d6@huawei.com>
- <1fb4407a-1269-ec50-0ad5-074e49f91144@hartkopp.net>
- <2aba02d4-0597-1d55-8b3e-2c67386f68cf@huawei.com>
- <64695483-ff75-4872-db81-ca55763f95cf@hartkopp.net>
- <d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com>
- <97339463-b357-3e0e-1cbf-c66415c08129@hartkopp.net>
- <24e6da96-a3e5-7b4e-102b-b5676770b80e@hartkopp.net>
+        Fri, 28 Jan 2022 03:08:27 -0500
+Received: from mga18.intel.com ([134.134.136.126]:11371 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229758AbiA1IIY (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 03:08:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643357304; x=1674893304;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=pITGzVCbZRtpq2q1aOKadxl2UAcX3Welnaw3bRtitQo=;
+  b=iBllToQDx84abThRyPqwKZrzGLa9jBnVY3ybO6LSilOHu7tErHBvc4v5
+   Gm2o00DFv0vfsH6bTlVywTFORfOklGY6/+zWvaDU/t0g1J4ZlFjErcKBu
+   /IQymy6ZQ86VBOgySpyZln2NIbXovFMbveqjnOkOikV+vA013981D+HhL
+   9KUKf/TNlmkn7g1vRMiJy7MOHSSNEOgk3PUinyt1Y2grY/P1uljwzp0fa
+   F2s90QZwbypiUPXvJjXf8T+AO2p0P8x1khtvXnZRDSfZsOIBy5XlZbusQ
+   mJNxEKHRxWXUXs7p9v0Febh4a4QWcGZK+BDD7pyM5Rl5ESE88U4B/aULR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="230651803"
+X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
+   d="scan'208";a="230651803"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 00:08:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
+   d="scan'208";a="536041501"
+Received: from npg-dpdk-haiyue-1.sh.intel.com ([10.67.118.194])
+  by orsmga008.jf.intel.com with ESMTP; 28 Jan 2022 00:08:08 -0800
+From:   Haiyue Wang <haiyue.wang@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Haiyue Wang <haiyue.wang@intel.com>,
+        Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Bailey Forrest <bcf@google.com>,
+        Shailend Chand <shailend@google.com>,
+        Sagi Shahar <sagis@google.com>,
+        Yangchun Fu <yangchun@google.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v1] gve: fix the wrong AdminQ buffer queue index check
+Date:   Fri, 28 Jan 2022 15:38:22 +0800
+Message-Id: <20220128073824.7209-1-haiyue.wang@intel.com>
+X-Mailer: git-send-email 2.35.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="okf44ik46sxcmcxb"
-Content-Disposition: inline
-In-Reply-To: <24e6da96-a3e5-7b4e-102b-b5676770b80e@hartkopp.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The 'tail' and 'head' are 'unsigned int' type free-running count, when
+'head' is overflow, the 'int i (= tail) < u32 head' will be false:
 
---okf44ik46sxcmcxb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Only '- loop 0: idx = 63' result is shown, so it needs to use 'int' type
+to compare, it can handle the overflow correctly.
 
-On 28.01.2022 08:56:19, Oliver Hartkopp wrote:
-> I've seen the frame processing sometimes freezes for one second when
-> stressing the isotp_rcv() from multiple sources. This finally freezes
-> the entire softirq which is either not good and not needed as we only
-> need to fix this race for stress tests - and not for real world usage
-> that does not create this case.
+typedef uint32_t u32;
 
-Hmmm, this doesn't sound good. Can you test with LOCKDEP enabled?
+int main()
+{
+        u32 tail, head;
+        int stail, shead;
+        int i, loop;
 
->=20
-> Therefore I created a V2 patch which uses the spin_trylock() to simply dr=
-op
-> the incomming frame in the race condition.
->=20
-> https://lore.kernel.org/linux-can/20220128074327.52229-1-socketcan@hartko=
-pp.net/T/
->=20
-> Please take a look, if it also fixes the issue in your test setup.
+        tail = 0xffffffff;
+        head = 0x00000000;
 
-regards,
-Marc
+        for (i = tail, loop = 0; i < head; i++) {
+                unsigned int idx = i & 63;
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+                printf("+ loop %d: idx = %u\n", loop++, idx);
+        }
 
---okf44ik46sxcmcxb
-Content-Type: application/pgp-signature; name="signature.asc"
+        stail = tail;
+        shead = head;
+        for (i = stail, loop = 0; i < shead; i++) {
+                unsigned int idx = i & 63;
 
------BEGIN PGP SIGNATURE-----
+                printf("- loop %d: idx = %u\n", loop++, idx);
+        }
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmHzpCUACgkQqclaivrt
-76keTwf8DTeqV+BuWMfRr0sG/Kf+YqVkvDMJEAp9BOhrDmAB6eGQJT+NMkuSbxTm
-gSKhG19jokryR+ASqS6HEyO9AOa/A+bRi10fB2rGaL8dh0uuOgLkQ0SavIF3cmRg
-ngWB0m8SpNuNXsVlC9sW3+oS8wAZWRq4Rqm17oT+clPWfkWOCYK4cYa8kgggUJxr
-Wv6T88+Px5s6A5T1vJuWgmdpor+kRwd8XqQAuo5Co/FSS+9/8XDqTCeojq78I0Rj
-4U1GqShTYups/UBgAQbQ8my8hg2YKVtcYMlCEMpceL5bXwpJCA75P3DIrJbp6jO0
-2UdFQmbulB0gcl6MYbA/X3bdhcIN7w==
-=WjFN
------END PGP SIGNATURE-----
+        return 0;
+}
 
---okf44ik46sxcmcxb--
+Fixes: 5cdad90de62c ("gve: Batch AQ commands for creating and destroying queues.")
+
+Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+---
+ drivers/net/ethernet/google/gve/gve_adminq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
+index 2ad7f57f7e5b..f7621ab672b9 100644
+--- a/drivers/net/ethernet/google/gve/gve_adminq.c
++++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+@@ -301,7 +301,7 @@ static int gve_adminq_parse_err(struct gve_priv *priv, u32 status)
+  */
+ static int gve_adminq_kick_and_wait(struct gve_priv *priv)
+ {
+-	u32 tail, head;
++	int tail, head;
+ 	int i;
+ 
+ 	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
+-- 
+2.35.0
+
