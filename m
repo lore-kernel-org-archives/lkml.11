@@ -2,112 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5554AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D07C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347101AbiA1HtF (ORCPT
+        id S1347014AbiA1Hro (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 02:49:05 -0500
-Received: from mga04.intel.com ([192.55.52.120]:13161 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243077AbiA1Hsv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 02:48:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643356131; x=1674892131;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yA9I1TVBAWLRwxa+kG83/UciNiFWOt5jTTLojABMHJc=;
-  b=Hhu+Kw+mPXfXIHz19qz9thMoPF0gyxQP4SpeBcZG4THqproq5YZPF4ks
-   qDf9fhpvonXqMdct9BXAZRJQlCxIMtETgFycaEmQfnxMyfKfchyziHHWa
-   vUdF3gGylf/YZ70PPH/Omqpz4ekYVfbLyKDoIEdJUk3WT0oZkXYzhmDuN
-   N87GOhzAJBxe4ZCJe1czyrq16coK2W8iMlzVDxECKdVyRyB8URWStTE1U
-   /3p4BvzGav3Msl8RWkLBoxbavzu1cedbORNhSKzrE97IeXt4WjNlpLKti
-   h2GRuVpY36hhuZeWoInJ6kSdav+C/U8cQ4IAlEMbPA7CWWi/iuPi/kbER
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="245912884"
-X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
-   d="scan'208";a="245912884"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 23:48:50 -0800
-X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
-   d="scan'208";a="581776906"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 23:48:43 -0800
-Received: by lahna (sSMTP sendmail emulation); Fri, 28 Jan 2022 09:48:41 +0200
-Date:   Fri, 28 Jan 2022 09:48:41 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Rajat Jain <rajatja@google.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatxjain@gmail.com>,
-        Dmitry Torokhov <dtor@google.com>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] PCI: ACPI: Allow internal devices to be marked as
- untrusted
-Message-ID: <YfOf2X7Snm7cvDRV@lahna>
-References: <20220120000409.2706549-1-rajatja@google.com>
- <20220121214117.GA1154852@bhelgaas>
- <Ye5GvQbFKo+CFtRb@lahna>
- <Ye/X7E2dKb+zem34@lahna>
- <Ye/btvA1rLB2rp02@kroah.com>
- <Ye/zTHR5aCG58z87@lahna>
- <CAJZ5v0gitdeEAxcgSoB1=VHA9FnRdCtmUqA_cN_f1a2yFRDghQ@mail.gmail.com>
- <CACK8Z6H2DLTJgxgS3pcvfOh=5S8cxEMKvwEPfB9zoVf1g2H_UQ@mail.gmail.com>
+        Fri, 28 Jan 2022 02:47:44 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:38425 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346983AbiA1Hrm (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 02:47:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643356062; x=1674892062;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=jgK4xynC59GISi910hm1lHj1RaNAMv7xK8Hd4WWychM=;
+  b=l/qHkzNESTTNCz/AobzivFEkJG4MixbZW29GcDDUpNW0vr2SwPdKkGJS
+   XiYybR4nuw6d0xuTyPU1gGx9WHjlCRrJdV649bD/XnZWIUXPFpuqMcbC7
+   t5qDo5k5C1CnPaATyWoMVTy+scGrRNSrBVkfTNm9+8omk/4zGRAS07iC+
+   Q=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 27 Jan 2022 23:47:42 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 23:47:41 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 27 Jan 2022 23:47:41 -0800
+Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 27 Jan 2022 23:47:36 -0800
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Prasad <quic_psodagud@quicinc.com>,
+        Huang Yiwei <hyiwei@codeaurora.org>,
+        "Sai Prakash Ranjan" <quic_saipraka@quicinc.com>
+Subject: [PATCHv2 1/9] soc: qcom: llcc: Add support for 16 ways of allocation
+Date:   Fri, 28 Jan 2022 13:17:08 +0530
+Message-ID: <a7a5f64259c2c02628f03fb59b91e9fa78da2dfb.1643355594.git.quic_saipraka@quicinc.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1643355594.git.quic_saipraka@quicinc.com>
+References: <cover.1643355594.git.quic_saipraka@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACK8Z6H2DLTJgxgS3pcvfOh=5S8cxEMKvwEPfB9zoVf1g2H_UQ@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Huang Yiwei <hyiwei@codeaurora.org>
 
-On Thu, Jan 27, 2022 at 02:26:07PM -0800, Rajat Jain wrote:
-> Hello Rafael, Bjorn, Mika, Dmitry, Greg,
-> 
-> Thanks a lot for your comments.
-> 
-> On Tue, Jan 25, 2022 at 6:45 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> >
-> > On Tue, Jan 25, 2022 at 1:55 PM Mika Westerberg
-> > <mika.westerberg@linux.intel.com> wrote:
-> > >
-> > > On Tue, Jan 25, 2022 at 12:15:02PM +0100, Greg Kroah-Hartman wrote:
-> > > > On Tue, Jan 25, 2022 at 12:58:52PM +0200, Mika Westerberg wrote:
-> > > > > On Mon, Jan 24, 2022 at 08:27:17AM +0200, Mika Westerberg wrote:
-> > > > > > > > This patch introduces a new "UntrustedDevice" property that can be used
-> > > > > > > > by the firmware to mark any device as untrusted.
-> > > > > >
-> > > > > > I think this new property should be documented somewhere too (also
-> > > > > > explain when to use it instead of ExternalFacingPort). If not in the
-> > > > > > next ACPI spec or some supplemental doc then perhaps in the DT bindings
-> > > > > > under Documentation/devicetree/bindings.
-> > > > >
-> > > > > Actually Microsoft has similar already:
-> > > > >
-> > > > > https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-internal-pcie-ports-accessible-to-users-and-requiring-dma-protection
-> > > > >
-> > > > > I think we should use that too here.
-> 
-> But because this property also applies to a root port (only), it only
-> helps if the device is downstream a PCIe root port. In our case, we
-> have an internal (wifi) device 00:14.3 (sits on the internal PCI bus
-> 0), so cannot use this.
+Add support for 16 ways of allocation for LLCC HW version 2.1.0
+and later.
 
-Right. I wonder if we can expand it to cover all internal devices, not
-just PCIe root ports? We anyways need to support that property so does
-not make much sense to me to invent yet another that does pretty much
-the same thing.
+Signed-off-by: Huang Yiwei <hyiwei@codeaurora.org>
+Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+---
+ drivers/soc/qcom/llcc-qcom.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
+index ec52f29c8867..b3a34f117a7c 100644
+--- a/drivers/soc/qcom/llcc-qcom.c
++++ b/drivers/soc/qcom/llcc-qcom.c
+@@ -29,8 +29,8 @@
+ #define ATTR1_FIXED_SIZE_SHIFT        0x03
+ #define ATTR1_PRIORITY_SHIFT          0x04
+ #define ATTR1_MAX_CAP_SHIFT           0x10
+-#define ATTR0_RES_WAYS_MASK           GENMASK(11, 0)
+-#define ATTR0_BONUS_WAYS_MASK         GENMASK(27, 16)
++#define ATTR0_RES_WAYS_MASK           GENMASK(15, 0)
++#define ATTR0_BONUS_WAYS_MASK         GENMASK(31, 16)
+ #define ATTR0_BONUS_WAYS_SHIFT        0x10
+ #define LLCC_STATUS_READ_DELAY        100
+ 
+-- 
+2.33.1
+
