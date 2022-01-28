@@ -2,139 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE9CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B8CC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346991AbiA1Hrm (ORCPT
+        id S1347022AbiA1Hr5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 02:47:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346853AbiA1Hrh (ORCPT
+        Fri, 28 Jan 2022 02:47:57 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:38425 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1347057AbiA1Hrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 02:47:37 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78217C06173B;
-        Thu, 27 Jan 2022 23:47:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=u8U0/Ai5mbQzGHpMhOzTxk2dLwnQvDLgWPnPvMcwTlA=; b=oqnQD992oMMsoVP2DYTG8sHVk/
-        Oxf214lSUukxCU1DjtlMOsUsh31Aa9sSIsDtcfKE+tmzK8XSWJof8Yyy+4ZwKhEejcqae1CDROjqA
-        zxdNl6BSBmyiL8rgq7NfvH6ZyN2nJDWnDA+ftM5ULiS+AKfPMACXuw+anwE4HfJDJlx6w9NTad0VR
-        zR2fqiOYed9wlHBKzycsbnYzTOOYxEVJ5QMEmgUe8922Re7d+4LK4KqEhJKuChAPM8OaNSR/9DktO
-        McB1DnXCbPyZ+GQM5J4Jsc5MAFqqzMfhyj2gUFu8EWb0rXtmZsXk61IfjF7ePZJzrXcxsZGuSU/nN
-        +Ns0bUMA==;
-Received: from [2001:4bb8:180:4c4c:73e:e8c7:4199:32d7] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nDLyn-000rEN-TG; Fri, 28 Jan 2022 07:47:34 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     torvalds@linux-foundation.org, viro@zeniv.linux.org.uk,
-        dhowells@redhat.com
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH v2] fs: rename S_KERNEL_FILE
-Date:   Fri, 28 Jan 2022 08:47:31 +0100
-Message-Id: <20220128074731.1623738-1-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
+        Fri, 28 Jan 2022 02:47:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643356067; x=1674892067;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=wMZlFlCb84aD0YjAhO0uLEuPJULrmhQSmpDp/x+j5O0=;
+  b=kOnAFl62EDZ2t2nfUBvxa54ulLHbivXrrXXDdVhSDBPTKFHYMhrIEZEb
+   yx0sqdpzs8FC8S8CI5vTNqeJd4e94oboigWjIM3HOFJgrADTW3mB3gmg7
+   GSw5rl689fdARxvWnzqdjEzEOTswBmf7jwaBmwFDAumqvFcdo6EXzA1K+
+   I=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 27 Jan 2022 23:47:47 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 23:47:47 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 27 Jan 2022 23:47:46 -0800
+Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 27 Jan 2022 23:47:42 -0800
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Prasad <quic_psodagud@quicinc.com>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Subject: [PATCHv2 2/9] soc: qcom: llcc: Update the logic for version info extraction
+Date:   Fri, 28 Jan 2022 13:17:09 +0530
+Message-ID: <a82d7c32348c51fcc2b63e220d91b318bf706c83.1643355594.git.quic_saipraka@quicinc.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1643355594.git.quic_saipraka@quicinc.com>
+References: <cover.1643355594.git.quic_saipraka@quicinc.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-S_KERNEL_FILE is grossly misnamed.  We have plenty of files hold open by
-the kernel kernel using filp_open.  This flag OTOH signals the inode as
-being a special snowflake that cachefiles holds onto that can't be
-unlinked because of ..., erm, pixie dust.  So clearly mark it as such.
+LLCC HW version info is made up of major, branch, minor and echo
+version bits each of which are 8bits. Several features in newer
+LLCC HW are based on the full version rather than just major or
+minor versions such as write-subcache enable which is applicable
+for versions v2.0.0.0 and later, also upcoming write-subcache
+cacheable for SM8450 SoC which is only present in versions v2.1.0.0
+and later, so it makes it easier and cleaner to just directly
+compare with the full version than adding additional major/branch/
+minor/echo version checks. So remove the earlier major version check
+and add full version check for those features.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 ---
+ drivers/soc/qcom/llcc-qcom.c       | 9 +++++----
+ include/linux/soc/qcom/llcc-qcom.h | 4 ++--
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
-Changes since v1:
- - fix commit message typos
-
- fs/cachefiles/namei.c | 12 ++++++------
- fs/namei.c            |  2 +-
- include/linux/fs.h    |  2 +-
- 3 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/fs/cachefiles/namei.c b/fs/cachefiles/namei.c
-index 9bd692870617c..599dc13a7d9ab 100644
---- a/fs/cachefiles/namei.c
-+++ b/fs/cachefiles/namei.c
-@@ -20,8 +20,8 @@ static bool __cachefiles_mark_inode_in_use(struct cachefiles_object *object,
- 	struct inode *inode = d_backing_inode(dentry);
- 	bool can_use = false;
+diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
+index b3a34f117a7c..8d4953800fa9 100644
+--- a/drivers/soc/qcom/llcc-qcom.c
++++ b/drivers/soc/qcom/llcc-qcom.c
+@@ -37,7 +37,6 @@
+ #define CACHE_LINE_SIZE_SHIFT         6
  
--	if (!(inode->i_flags & S_KERNEL_FILE)) {
--		inode->i_flags |= S_KERNEL_FILE;
-+	if (!(inode->i_flags & S_CACHEFILE)) {
-+		inode->i_flags |= S_CACHEFILE;
- 		trace_cachefiles_mark_active(object, inode);
- 		can_use = true;
- 	} else {
-@@ -51,7 +51,7 @@ static void __cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
- {
- 	struct inode *inode = d_backing_inode(dentry);
+ #define LLCC_COMMON_HW_INFO           0x00030000
+-#define LLCC_MAJOR_VERSION_MASK       GENMASK(31, 24)
  
--	inode->i_flags &= ~S_KERNEL_FILE;
-+	inode->i_flags &= ~S_CACHEFILE;
- 	trace_cachefiles_mark_inactive(object, inode);
- }
+ #define LLCC_COMMON_STATUS0           0x0003000c
+ #define LLCC_LB_CNT_MASK              GENMASK(31, 28)
+@@ -55,6 +54,8 @@
  
-@@ -742,7 +742,7 @@ static struct dentry *cachefiles_lookup_for_cull(struct cachefiles_cache *cache,
- 		goto lookup_error;
- 	if (d_is_negative(victim))
- 		goto lookup_put;
--	if (d_inode(victim)->i_flags & S_KERNEL_FILE)
-+	if (d_inode(victim)->i_flags & S_CACHEFILE)
- 		goto lookup_busy;
- 	return victim;
+ #define BANK_OFFSET_STRIDE	      0x80000
  
-@@ -789,11 +789,11 @@ int cachefiles_cull(struct cachefiles_cache *cache, struct dentry *dir,
- 	/* check to see if someone is using this object */
- 	inode = d_inode(victim);
- 	inode_lock(inode);
--	if (inode->i_flags & S_KERNEL_FILE) {
-+	if (inode->i_flags & S_CACHEFILE) {
- 		ret = -EBUSY;
- 	} else {
- 		/* Stop the cache from picking it back up */
--		inode->i_flags |= S_KERNEL_FILE;
-+		inode->i_flags |= S_CACHEFILE;
- 		ret = 0;
++#define LLCC_VERSION_2_0_0_0          0x02000000
++
+ /**
+  * struct llcc_slice_config - Data associated with the llcc slice
+  * @usecase_id: Unique id for the client's use case
+@@ -504,7 +505,7 @@ static int _qcom_llcc_cfg_program(const struct llcc_slice_config *config,
+ 			return ret;
  	}
- 	inode_unlock(inode);
-diff --git a/fs/namei.c b/fs/namei.c
-index d81f04f8d8188..7402277ecc1f5 100644
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -3959,7 +3959,7 @@ int vfs_rmdir(struct user_namespace *mnt_userns, struct inode *dir,
  
- 	error = -EBUSY;
- 	if (is_local_mountpoint(dentry) ||
--	    (dentry->d_inode->i_flags & S_KERNEL_FILE))
-+	    (dentry->d_inode->i_flags & S_CACHEFILE))
- 		goto out;
+-	if (drv_data->major_version == 2) {
++	if (drv_data->version >= LLCC_VERSION_2_0_0_0) {
+ 		u32 wren;
  
- 	error = security_inode_rmdir(dir, dentry);
-diff --git a/include/linux/fs.h b/include/linux/fs.h
-index c8510da6cc6dc..099d7e03d46e6 100644
---- a/include/linux/fs.h
-+++ b/include/linux/fs.h
-@@ -2173,7 +2173,7 @@ struct super_operations {
- #define S_ENCRYPTED	(1 << 14) /* Encrypted file (using fs/crypto/) */
- #define S_CASEFOLD	(1 << 15) /* Casefolded file */
- #define S_VERITY	(1 << 16) /* Verity file (using fs/verity/) */
--#define S_KERNEL_FILE	(1 << 17) /* File is in use by the kernel (eg. fs/cachefiles) */
-+#define S_CACHEFILE	(1 << 17) /* In use as cachefile, can't be unlinked */
+ 		wren = config->write_scid_en << config->slice_id;
+@@ -598,12 +599,12 @@ static int qcom_llcc_probe(struct platform_device *pdev)
+ 		goto err;
+ 	}
  
- /*
-  * Note that nosuid etc flags are inode-specific: setting some file-system
+-	/* Extract major version of the IP */
++	/* Extract version of the IP */
+ 	ret = regmap_read(drv_data->bcast_regmap, LLCC_COMMON_HW_INFO, &version);
+ 	if (ret)
+ 		goto err;
+ 
+-	drv_data->major_version = FIELD_GET(LLCC_MAJOR_VERSION_MASK, version);
++	drv_data->version = version;
+ 
+ 	ret = regmap_read(drv_data->regmap, LLCC_COMMON_STATUS0,
+ 						&num_banks);
+diff --git a/include/linux/soc/qcom/llcc-qcom.h b/include/linux/soc/qcom/llcc-qcom.h
+index 9e8fd92c96b7..beecf00b707d 100644
+--- a/include/linux/soc/qcom/llcc-qcom.h
++++ b/include/linux/soc/qcom/llcc-qcom.h
+@@ -83,7 +83,7 @@ struct llcc_edac_reg_data {
+  * @bitmap: Bit map to track the active slice ids
+  * @offsets: Pointer to the bank offsets array
+  * @ecc_irq: interrupt for llcc cache error detection and reporting
+- * @major_version: Indicates the LLCC major version
++ * @version: Indicates the LLCC version
+  */
+ struct llcc_drv_data {
+ 	struct regmap *regmap;
+@@ -96,7 +96,7 @@ struct llcc_drv_data {
+ 	unsigned long *bitmap;
+ 	u32 *offsets;
+ 	int ecc_irq;
+-	u32 major_version;
++	u32 version;
+ };
+ 
+ #if IS_ENABLED(CONFIG_QCOM_LLCC)
 -- 
-2.30.2
+2.33.1
 
