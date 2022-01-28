@@ -2,94 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 839D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5554AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347063AbiA1Hsq (ORCPT
+        id S1347101AbiA1HtF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 02:48:46 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:46720 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347076AbiA1HsX (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 02:48:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643356104; x=1674892104;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7kckOmRKyq54j2yB6AzUrEcAKcHonOPFGbtH7xzTgzQ=;
-  b=yGyRgtcK8zzjG5L41v8ZUDgHgNWlbcwwn+Pcr/7dblH3VK50JzhlN4nh
-   KiWNcTjSQCzVSkFk1pU6jwEG34/o6aD+RG5pm7AE+3p/2sgErHNLIhf+a
-   Ickr64R3YUCEMYdluwiWIpmOqlYRK+EIBWJ1uPZh4d6Qwl8aO4supRwCL
-   8=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 27 Jan 2022 23:48:23 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 23:48:23 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 27 Jan 2022 23:48:23 -0800
-Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 27 Jan 2022 23:48:18 -0800
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rajendra Nayak <quic_rjendra@quicinc.com>,
-        Prasad <quic_psodagud@quicinc.com>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Subject: [PATCHv2 9/9] arm64: dts: qcom: sm8450: Add LLCC/system-cache-controller node
-Date:   Fri, 28 Jan 2022 13:17:16 +0530
-Message-ID: <7995d003b77d5e066658af5b2cfa22ccb40b6cf7.1643355594.git.quic_saipraka@quicinc.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <cover.1643355594.git.quic_saipraka@quicinc.com>
-References: <cover.1643355594.git.quic_saipraka@quicinc.com>
+        Fri, 28 Jan 2022 02:49:05 -0500
+Received: from mga04.intel.com ([192.55.52.120]:13161 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243077AbiA1Hsv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 02:48:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643356131; x=1674892131;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yA9I1TVBAWLRwxa+kG83/UciNiFWOt5jTTLojABMHJc=;
+  b=Hhu+Kw+mPXfXIHz19qz9thMoPF0gyxQP4SpeBcZG4THqproq5YZPF4ks
+   qDf9fhpvonXqMdct9BXAZRJQlCxIMtETgFycaEmQfnxMyfKfchyziHHWa
+   vUdF3gGylf/YZ70PPH/Omqpz4ekYVfbLyKDoIEdJUk3WT0oZkXYzhmDuN
+   N87GOhzAJBxe4ZCJe1czyrq16coK2W8iMlzVDxECKdVyRyB8URWStTE1U
+   /3p4BvzGav3Msl8RWkLBoxbavzu1cedbORNhSKzrE97IeXt4WjNlpLKti
+   h2GRuVpY36hhuZeWoInJ6kSdav+C/U8cQ4IAlEMbPA7CWWi/iuPi/kbER
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="245912884"
+X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
+   d="scan'208";a="245912884"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 23:48:50 -0800
+X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
+   d="scan'208";a="581776906"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 23:48:43 -0800
+Received: by lahna (sSMTP sendmail emulation); Fri, 28 Jan 2022 09:48:41 +0200
+Date:   Fri, 28 Jan 2022 09:48:41 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Rajat Jain <rajatja@google.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rajat Jain <rajatxjain@gmail.com>,
+        Dmitry Torokhov <dtor@google.com>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Pavel Machek <pavel@denx.de>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] PCI: ACPI: Allow internal devices to be marked as
+ untrusted
+Message-ID: <YfOf2X7Snm7cvDRV@lahna>
+References: <20220120000409.2706549-1-rajatja@google.com>
+ <20220121214117.GA1154852@bhelgaas>
+ <Ye5GvQbFKo+CFtRb@lahna>
+ <Ye/X7E2dKb+zem34@lahna>
+ <Ye/btvA1rLB2rp02@kroah.com>
+ <Ye/zTHR5aCG58z87@lahna>
+ <CAJZ5v0gitdeEAxcgSoB1=VHA9FnRdCtmUqA_cN_f1a2yFRDghQ@mail.gmail.com>
+ <CACK8Z6H2DLTJgxgS3pcvfOh=5S8cxEMKvwEPfB9zoVf1g2H_UQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACK8Z6H2DLTJgxgS3pcvfOh=5S8cxEMKvwEPfB9zoVf1g2H_UQ@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a DT node for Last level cache (aka. system cache) controller
-which provides control over the last level cache present on SM8450
-SoC.
+Hi,
 
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sm8450.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+On Thu, Jan 27, 2022 at 02:26:07PM -0800, Rajat Jain wrote:
+> Hello Rafael, Bjorn, Mika, Dmitry, Greg,
+> 
+> Thanks a lot for your comments.
+> 
+> On Tue, Jan 25, 2022 at 6:45 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
+> >
+> > On Tue, Jan 25, 2022 at 1:55 PM Mika Westerberg
+> > <mika.westerberg@linux.intel.com> wrote:
+> > >
+> > > On Tue, Jan 25, 2022 at 12:15:02PM +0100, Greg Kroah-Hartman wrote:
+> > > > On Tue, Jan 25, 2022 at 12:58:52PM +0200, Mika Westerberg wrote:
+> > > > > On Mon, Jan 24, 2022 at 08:27:17AM +0200, Mika Westerberg wrote:
+> > > > > > > > This patch introduces a new "UntrustedDevice" property that can be used
+> > > > > > > > by the firmware to mark any device as untrusted.
+> > > > > >
+> > > > > > I think this new property should be documented somewhere too (also
+> > > > > > explain when to use it instead of ExternalFacingPort). If not in the
+> > > > > > next ACPI spec or some supplemental doc then perhaps in the DT bindings
+> > > > > > under Documentation/devicetree/bindings.
+> > > > >
+> > > > > Actually Microsoft has similar already:
+> > > > >
+> > > > > https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-internal-pcie-ports-accessible-to-users-and-requiring-dma-protection
+> > > > >
+> > > > > I think we should use that too here.
+> 
+> But because this property also applies to a root port (only), it only
+> helps if the device is downstream a PCIe root port. In our case, we
+> have an internal (wifi) device 00:14.3 (sits on the internal PCI bus
+> 0), so cannot use this.
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-index 10c25ad2d0c7..5a3d050b94f7 100644
---- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-@@ -1102,6 +1102,13 @@ usb_1_dwc3: usb@a600000 {
- 				phy-names = "usb2-phy", "usb3-phy";
- 			};
- 		};
-+
-+		system-cache-controller@19200000 {
-+			compatible = "qcom,sm8450-llcc";
-+			reg = <0 0x19200000 0 0x580000>, <0 0x19a00000 0 0x80000>;
-+			reg-names = "llcc_base", "llcc_broadcast_base";
-+			interrupts = <GIC_SPI 266 IRQ_TYPE_LEVEL_HIGH>;
-+		};
- 	};
- 
- 	timer {
--- 
-2.33.1
-
+Right. I wonder if we can expand it to cover all internal devices, not
+just PCIe root ports? We anyways need to support that property so does
+not make much sense to me to invent yet another that does pretty much
+the same thing.
