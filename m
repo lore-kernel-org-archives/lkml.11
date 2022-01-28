@@ -2,159 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58859C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 15:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A26EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 15:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349566AbiA1Pai (ORCPT
+        id S1349571AbiA1Pba (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 10:30:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33396 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349549AbiA1Pah (ORCPT
+        Fri, 28 Jan 2022 10:31:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348350AbiA1Pb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 10:30:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643383836;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R1MzpLEHNt998Fp+0Cju8ZrRTa2fyOAxv9mE2xz2mj8=;
-        b=RHCWMW/M80xhF6VAmDFK9fitsDJxxnM3wnsaF79bbSMisX8fwMzm1bk+tPquR9uORVHjTc
-        0NDlFeZhnCxo04d1Zw9T5TgSxGwzf8Dq1vKQTL5iy/KBE7NqejNIknYHX5uSslUkbJ6WGb
-        JnezzaM0jBbGhj0AF669oPbbHkZc4tY=
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
- [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-cJn6qmtYPCGS7kgdcdFd_w-1; Fri, 28 Jan 2022 10:30:35 -0500
-X-MC-Unique: cJn6qmtYPCGS7kgdcdFd_w-1
-Received: by mail-oo1-f72.google.com with SMTP id a7-20020a4ad5c7000000b002dacfc3d40cso3325080oot.9
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 07:30:35 -0800 (PST)
+        Fri, 28 Jan 2022 10:31:29 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CAFC061747;
+        Fri, 28 Jan 2022 07:31:28 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id b9so12486952lfq.6;
+        Fri, 28 Jan 2022 07:31:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KHs6ffmXoNgB7PgAET8KZkcoI47YhdLdQfWEN1wdVIY=;
+        b=EGy5kBsZs7mue/dnKJkIJKYEb3NQuujucP9629Oezmt3hmr2Lda276tchLhN/H10cm
+         hSTdd88xh4xET4rO+9cz4tQYS8wqjSGbq9JQp3ayfHKoHp6RllbhpLfwA9/WieAp8Tu4
+         YG7RyoNJz/fdrgUu+ym8BUjRayCPZbZMT5jVMJFll74/40/smf4liERf4Owi7UpMCfmp
+         v1Y4AEREiPkDhWkBoKFU2J3Gi5G2838nldCF++lrZUyftLFNQMNkyzPtUO35hnzhCOfz
+         Y5+01YB4OO9SyWNPSfjTw8C1+FN/UXmCue4UiGMXKwoO3l8J/8EPp4YXhGO8Bo02eNSA
+         l06A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=R1MzpLEHNt998Fp+0Cju8ZrRTa2fyOAxv9mE2xz2mj8=;
-        b=j0q1Un2orT7dSxfVWgPR16xWsJRdClPrtb9HbtflGM7Vn3vxfet6E7/gLJGMQlVyBs
-         aUvIMc84EdAr9N4YFpR7kJyBP5t2hvMR1Je7fbVqok024YOb3lrAyYyAIo6QNbHZB4jd
-         0dcqNeCGQkGMNyUfjM+iw8JlCwcaQVVS5e7HwRCwppqbow7xkwYrkhZ0tobMFO9KohJn
-         MvqckN+rdzG1BW/waKQ60xnZoYYnM1K6FO4oh5ex42/hoaGoGdvnxTqcgFdWU4WKt5Bb
-         Joy9it3+iL8sa7s7MPy+fmpJT4pmMtdKuY24nMcbeTbYi9zOvCDjjnA7pruIzZNd2kzq
-         JOiw==
-X-Gm-Message-State: AOAM533ktk3Pk8wfEhosUOTAjiH5xkeTvyRI+FAvZnuS2MhCgu+zT3Dx
-        SYoPMKqpcYue7Y5tdUQRdDQG+RdJG0tdlewqy0FyEwUsKgfPhftZm7Iz4SjBQF/IYQzoeIVkzTc
-        rzq80+CQEwB8yk4YTmwba1ZgL
-X-Received: by 2002:a9d:69c1:: with SMTP id v1mr5199551oto.134.1643383834425;
-        Fri, 28 Jan 2022 07:30:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwrc2gAf4ubCCj0EwhXokMaa2jqu7rpkjWiv6FEjBV/7u+RmiWHylH0XXldFnbrntjxa/Fp/Q==
-X-Received: by 2002:a9d:69c1:: with SMTP id v1mr5199538oto.134.1643383834219;
-        Fri, 28 Jan 2022 07:30:34 -0800 (PST)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id ay14sm13152476oib.5.2022.01.28.07.30.32
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KHs6ffmXoNgB7PgAET8KZkcoI47YhdLdQfWEN1wdVIY=;
+        b=4IyRYXe6jAxtrM5xjlocPDt4hvCVWPOxI0ZEKYs0+OFxKWlidPhxNFOqQCE44eMOdg
+         Atx4Uc3/eyKEGUU4LJEDpgj6gVjvoxVTZLdSZj8qVRIiyGbcRNQ9aNsq5qIi5VVTWK0y
+         69KA9YRPlD4mMtpCjVrws78ODTAg7KF5WlY3mIT4gTasryuIb3CKuM4nvwCVExUnCFNY
+         M6qp54LSOZY0rhtjvAnjMYqAaJHqhbKJfZ7KjUI7KdXmidiRkw0kNfZZ/hNlDHcNRNYu
+         Y7lmSb/g/1kng+ej7sIXxeDMxAOSH+IC257J1QEw+ukPzaaONX8UJPggnpJ4y1Xn7Vay
+         KWAA==
+X-Gm-Message-State: AOAM5326Ed3QEvZ8UFGksjowgWH5tOOKJn8vv3zxMkpEHMYT90w4L2wN
+        I0m6/V2JiGzHbXpom8gJw+cG9plyHPo=
+X-Google-Smtp-Source: ABdhPJxVsONRJJAvcxhzc27gfPk/RvQsfat/2Ev+rmO3fwe+uwXQHNrZwU5ASImIhbDRO2lCZinLFQ==
+X-Received: by 2002:a05:6512:12d6:: with SMTP id p22mr6686448lfg.231.1643383886725;
+        Fri, 28 Jan 2022 07:31:26 -0800 (PST)
+Received: from [192.168.1.103] ([31.173.86.67])
+        by smtp.gmail.com with ESMTPSA id t6sm2570898lfp.128.2022.01.28.07.31.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Jan 2022 07:30:33 -0800 (PST)
-Subject: Re: [PATCH] scsi: megaraid: cleanup formatting of megaraid
-To:     Joe Perches <joe@perches.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Finn Thain <fthain@linux-m68k.org>,
-        Miguel Ojeda <ojeda@kernel.org>
-Cc:     kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        shivasharan.srikanteshwara@broadcom.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, nathan@kernel.org,
-        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-References: <20220127151945.1244439-1-trix@redhat.com>
- <953eb015-4b78-f7b-5dc1-6491c6bf27e@linux-m68k.org>
- <CAKwvOdnWHVV+3s8SO=Q8FfZ7hVekRVDL5q+7CwAk_z44xaex8w@mail.gmail.com>
- <fb308f51-f16b-3d9b-80c2-180940236b00@redhat.com>
- <5554a75f65fddab4de60d61fd503fe73773dafbb.camel@perches.com>
- <c801989d-5f3e-84d2-24a0-7022be70da98@redhat.com>
- <7bff2de309384b7c9ee71ad90881d1e0bbe0a781.camel@perches.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <0567fce4-256a-e1b1-dc66-221ba97153d5@redhat.com>
-Date:   Fri, 28 Jan 2022 07:30:31 -0800
+        Fri, 28 Jan 2022 07:31:26 -0800 (PST)
+Subject: Re: [PATCH] usb: usb251xb: add boost-up property support
+To:     Tommaso Merciai <tomm.merciai@gmail.com>
+Cc:     linuxfancy@googlegroups.com,
+        Richard Leitner <richard.leitner@skidata.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220121232612.7283-1-tomm.merciai@gmail.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <be1c8dcc-1136-f101-3129-4d6587b9204b@gmail.com>
+Date:   Fri, 28 Jan 2022 18:31:25 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <7bff2de309384b7c9ee71ad90881d1e0bbe0a781.camel@perches.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220121232612.7283-1-tomm.merciai@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello!
 
-On 1/28/22 12:41 AM, Joe Perches wrote:
-> On Thu, 2022-01-27 at 21:31 -0800, Tom Rix wrote:
->> On 1/27/22 6:43 PM, Joe Perches wrote:
->>> On Thu, 2022-01-27 at 16:32 -0800, Tom Rix wrote:
->>>> On 1/27/22 2:47 PM, Nick Desaulniers wrote:
->>>>> + Miguel (the clang-format maintainer), Joe (checkpatch maintainer)
->>>>> These criticisms are worth reviewing.
->>>>>
->>>>> On Thu, Jan 27, 2022 at 2:38 PM Finn Thain <fthain@linux-m68k.org> wrote:
->>>>>> On Thu, 27 Jan 2022, trix@redhat.com wrote:
->>>>>>
->>>>>>> From: Tom Rix <trix@redhat.com>
->>>>>>>
->>>>>>> checkpatch reports several hundred formatting errors. Run these files
->>>>>>> through clang-format and knock off some of them.
->>>>>>>
->>>>>> That method seems like a good recipe for endless churn unless checkpatch
->>>>>> and clang-format really agree about these style rules.
->>>>>>
->>>>>> Why use checkpatch to assess code style, if we could simply diff the
->>>>>> existing source with the output from clang-format... but it seems that
->>>>>> clang-format harms readability, makes indentation errors and uses
->>>>>> inconsistent style rules. Some examples:
->>>> Problems with clang-format should be fixed, I'll take a look.
->>>>
->>>> I was reviewing this file for another isseue and could not get past how
->>>> horredously bad it was and really did not want to manually fix the 400+
->>>> formatting errors.  I will drop this patch and use the use these files
->>>> to verify the .clang-format .
->>> I think this is more an issue with clang-format than with checkpatch.
->>>
->>> If you have specific issues with what checkpatch reports for this
->>> file (or any other file), let me know.
->> Yes, I agree. Its a clang-format problem.
->>
->> I will be looking to minimize the .clang-format settings to only those
->> that agree with checkpatch.
->>
->> Then add settings back in later if their problems can be worked out.
-> Another option would be to use:
->
-> 	./scripts/checkpatch.pl -f --fix[-inplace] [--types=<list>] <files>
->
-> where types is an optional list of specific things to change
->
-> see:
-> 	./scripts/checkpatch.pl --list-types --verbose
->
-> to show the possible types.
->
-> Only some of these types can be changed with --fix or --fix-inplace
->
-> If using checkpatch to change formatting, it sometimes can be useful
-> to run checkpatch --fix multiple times on the same file as a
-> checkpatch --fix can create a change than checkpatch will suggest
-> should itself be fixed.
->
-> Of course another option is to do nothing as many will complain,
-> sometimes senselessly, about 'churn'.
+On 1/22/22 2:26 AM, Tommaso Merciai wrote:
 
-A testsuite for the fixers may help with churn
+> Add u8 property to support boost-up register of usb251xb hub.
+> boost-up property control USB electrical drive strenght
 
-Any interest or thought on organization ?
+  Strength.
 
-I can take stab at one.
+> This register can be set:
+> 
+>  - Normal mode -> 0x00
+>  - Low         -> 0x01
+>  - Medium      -> 0x10
+>  - High        -> 0x11
+> 
+> (Normal Default)
+> 
+> References:
+>  - http://www.mouser.com/catalog/specsheets/2514.pdf p29
+> 
+> Signed-off-by: Tommaso Merciai <tomm.merciai@gmail.com>
+> ---
+>  drivers/usb/misc/usb251xb.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/misc/usb251xb.c b/drivers/usb/misc/usb251xb.c
+> index 507deef1f709..74fd8ac0c303 100644
+> --- a/drivers/usb/misc/usb251xb.c
+> +++ b/drivers/usb/misc/usb251xb.c
+> @@ -543,6 +544,12 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
+>  	if (of_property_read_u16_array(np, "language-id", &hub->lang_id, 1))
+>  		hub->lang_id = USB251XB_DEF_LANGUAGE_ID;
+>  
+> +	if (!of_property_read_u8(np, "boost-up", &property_u8)){
+> +		hub->boost_up = property_u8;
+> +	} else {
+> +		hub->boost_up = USB251XB_DEF_BOOST_UP;
+> +	}
 
-Tom
+   No need for {} here at all.
 
->
->
->
+[...]
 
+MBR, Sergey
