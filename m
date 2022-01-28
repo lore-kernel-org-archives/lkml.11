@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93578C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 15:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9BDC43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 15:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349779AbiA1P6p (ORCPT
+        id S1349587AbiA1P7B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 10:58:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
+        Fri, 28 Jan 2022 10:59:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231145AbiA1P6i (ORCPT
+        with ESMTP id S1349782AbiA1P6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 10:58:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCC6C06173B
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 07:58:38 -0800 (PST)
+        Fri, 28 Jan 2022 10:58:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3410BC061714;
+        Fri, 28 Jan 2022 07:58:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CC8161EAF
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 15:58:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A0D4C340E7;
-        Fri, 28 Jan 2022 15:58:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDB42B8263F;
+        Fri, 28 Jan 2022 15:58:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 879EFC340E0;
+        Fri, 28 Jan 2022 15:58:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643385517;
-        bh=I6A4BBJmtFNGYfY78duMBHkLQCr0djtkeEScL1vltss=;
+        s=k20201202; t=1643385524;
+        bh=TNhGzP3L4A62xIW3WqJXmAepqSZa9f/QpFgq2evI+GY=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=uxFmIBryjr1ZV/KyebvQMJQU+bWY32fswAF28YtL/G/IHgGGWI/hlsqjnfWZ6+8gO
-         E2z+rs3/R1ES+fCALYc2CsCDNuhzXJlyqQLUDe7rX5cvzpGJIx21TFd3B3EEmYyKyY
-         AtodREZQ21a1bDt4Jy+/0TvrrTUtDEeT+BUZNLB6zXjsRwSd+RJhGghhUYRGZRn4b8
-         wRMH5oBmqIyqFCYECp4BNmtI+XR9wsMPPOEr1ULJFELfmbAXtockQw2/lnZmeTjITn
-         ryoE50AVvLXJJBKveUrnPg8sOMc8ReGYBB8ocurmVlIX7GH8R0ucXmJk3KXHCZqosy
-         Wftc6pCTjL2+w==
+        b=cLo52bKzZ8GfrFghA1xPWJnhoWIHtxlzjqxTcLxSjmrczYwy/J4qkSuMpHTCKCa28
+         7RBkW6WwTtldAUfdfUM1PbzM+qMGbjCXRdFNDNsSaQmTsNnh9VvZp15iTBu7yHcQIB
+         lkvX/Yo80fbskFQpSmkn8WCOCGR2HT6NmWVHEJsF/AdjbazXjTvfG9ISD6d91Gt6Uk
+         8FASTGnHiVa+u45iJnBg0PZ0fHZFI5bVGHSX89k87WIkRx8LPM8ea0vRZf1BgAQbSE
+         6UN1EZPa5S2Z2YcbTW+8lPryFcd1epj4tLzioc3056J+8wHNxJ2Ole0Qf4rpsw8QyK
+         q83EIDhiCkQ8Q==
 From:   Mark Brown <broonie@kernel.org>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, tiwai@suse.com,
-        alsa-devel@alsa-project.org, perex@perex.cz, lgirdwood@gmail.com,
-        quic_srivasam@quicinc.com, pierre-louis.bossart@linux.intel.com
-In-Reply-To: <20220126113549.8853-1-srinivas.kandagatla@linaro.org>
-References: <20220126113549.8853-1-srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH 0/4] ASoC: qcom: fixes for Qualcomm codecs and q6apm
-Message-Id: <164338551575.1711238.8376590607688196814.b4-ty@kernel.org>
-Date:   Fri, 28 Jan 2022 15:58:35 +0000
+To:     Liam Girdwood <lgirdwood@gmail.com>, Rob Herring <robh@kernel.org>,
+        Derek Fang <derek.fang@realtek.com>
+Cc:     linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org
+In-Reply-To: <20220126231358.1637174-1-robh@kernel.org>
+References: <20220126231358.1637174-1-robh@kernel.org>
+Subject: Re: [PATCH] ASoC: dt-bindings: realtek,rt5682s: Drop Tegra specifics from example
+Message-Id: <164338552327.1711274.18356400085950572134.b4-ty@kernel.org>
+Date:   Fri, 28 Jan 2022 15:58:43 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -50,30 +50,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 26 Jan 2022 11:35:45 +0000, Srinivas Kandagatla wrote:
-> Some recent testing found few issues with wcd938x and lpass-tx codec drivers.
-> WCD938x was accessing array out of boundaries resulting in corruption and
-> system crashes along with not handling kcontrol put return values correctly
-> and rx-macro had incorrect sidetone registers offsets. One final fix in q6apm
-> to add a check if graph started before stopping it.
+On Wed, 26 Jan 2022 17:13:58 -0600, Rob Herring wrote:
+> There's no need to complicate examples with a platform specific macro.
+> It also complicates example parsing to figure out the number of interrupt
+> cells in examples (based on bracketing).
 > 
 > 
-> [...]
 
 Applied to
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-linus
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
 Thanks!
 
-[1/4] ASoC: codecs: wcd938x: fix incorrect used of portid
-      commit: c5c1546a654f613e291a7c5d6f3660fc1eb6d0c7
-[2/4] ASoC: codecs: lpass-rx-macro: fix sidetone register offsets
-      commit: fca041a3ab70a099a6d5519ecb689b6279bd04f3
-[3/4] ASoC: codecs: wcd938x: fix return value of mixer put function
-      commit: bd2347fd67d8da0fa76296507cc556da0a233bcb
-[4/4] ASoC: qdsp6: q6apm-dai: only stop graphs that are started
-      commit: 8f2e5c65ec7534cce6d315fccf2c3aef023f68f0
+[1/1] ASoC: dt-bindings: realtek,rt5682s: Drop Tegra specifics from example
+      commit: 0cfe76156cc1c7f8a707969c03ed2242db8f0292
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
