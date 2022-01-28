@@ -2,112 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6ABFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 06:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74525C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 06:30:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346558AbiA1G3X (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 01:29:23 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:48930 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1346494AbiA1G3M (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 01:29:12 -0500
-X-UUID: 9f534976197b4844866c10c97f07efe4-20220128
-X-UUID: 9f534976197b4844866c10c97f07efe4-20220128
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 346881307; Fri, 28 Jan 2022 14:29:08 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 28 Jan 2022 14:29:06 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 28 Jan 2022 14:29:05 +0800
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        <linux-usb@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Tianping Fang <tianping.fang@mediatek.com>,
-        Eddie Hung <eddie.hung@mediatek.com>
-Subject: [PATCH v2 4/4] arm64: dts: mediatek: mt8195: enable usb remote wakeup
-Date:   Fri, 28 Jan 2022 14:29:02 +0800
-Message-ID: <20220128062902.26273-4-chunfeng.yun@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
-References: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
+        id S242521AbiA1GaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 01:30:12 -0500
+Received: from helcar.hmeau.com ([216.24.177.18]:60628 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231443AbiA1GaJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 01:30:09 -0500
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1nDKkx-0001Jr-1S; Fri, 28 Jan 2022 17:29:12 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 28 Jan 2022 17:29:10 +1100
+Date:   Fri, 28 Jan 2022 17:29:10 +1100
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
+        linux@rasmusvillemoes.dk, akpm@linux-foundation.org,
+        mirq-linux@rere.qmqm.pl, gregkh@linuxfoundation.org,
+        peterz@infradead.org, David.Laight@aculab.com, joe@perches.com,
+        dennis@kernel.org, kernel@esmil.dk, npiggin@gmail.com,
+        matti.vaittinen@fi.rohmeurope.com, aklimov@redhat.com,
+        linux-kernel@vger.kernel.org, steffen.klassert@secunet.com,
+        daniel.m.jordan@oracle.com, linux-crypto@vger.kernel.org
+Subject: Re: [PATCH 21/54] kernel: replace cpumask_weight with cpumask_empty
+ in padata.c
+Message-ID: <YfONNmDkwcKK+Ik2@gondor.apana.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220123183925.1052919-22-yury.norov@gmail.com>
+X-Newsgroups: apana.lists.os.linux.cryptoapi,apana.lists.os.linux.kernel
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable USB remote wakeup of all four xHCI controllers
+Yury Norov <yury.norov@gmail.com> wrote:
+> padata_do_parallel() calls cpumask_weight() to check if any bit of a
+> given cpumask is set. We can do it more efficiently with cpumask_empty()
+> because cpumask_empty() stops traversing the cpumask as soon as it finds
+> first set bit, while cpumask_weight() counts all bits unconditionally.
+> 
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+> kernel/padata.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
----
-v2: based on new mt8195 base dts, no need add usb nodes
-
-Note:
-
- depend on the reviewing patch:
-
-[v9,3/3] arm64: dts: Add mediatek SoC mt8195 and evaluation board
-https://patchwork.kernel.org/patch/12711296
-
----
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 240a21708806..444e5448c9b1 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -573,6 +573,8 @@
- 				 <&apmixedsys CLK_APMIXED_USB1PLL>,
- 				 <&infracfg_ao CLK_INFRA_AO_SSUSB_XHCI>;
- 			clock-names = "sys_ck", "ref_ck", "mcu_ck", "xhci_ck";
-+			mediatek,syscon-wakeup = <&pericfg 0x400 103>;
-+			wakeup-source;
- 			status = "disabled";
- 		};
- 
-@@ -636,6 +638,8 @@
- 				 <&apmixedsys CLK_APMIXED_USB1PLL>,
- 				 <&pericfg_ao CLK_PERI_AO_SSUSB_1P_XHCI>;
- 			clock-names = "sys_ck", "ref_ck", "mcu_ck","xhci_ck";
-+			mediatek,syscon-wakeup = <&pericfg 0x400 104>;
-+			wakeup-source;
- 			status = "disabled";
- 		};
- 
-@@ -655,6 +659,8 @@
- 				 <&topckgen CLK_TOP_SSUSB_P2_REF>,
- 				 <&pericfg_ao CLK_PERI_AO_SSUSB_2P_XHCI>;
- 			clock-names = "sys_ck", "ref_ck", "xhci_ck";
-+			mediatek,syscon-wakeup = <&pericfg 0x400 105>;
-+			wakeup-source;
- 			status = "disabled";
- 		};
- 
-@@ -674,6 +680,8 @@
- 				 <&topckgen CLK_TOP_SSUSB_P3_REF>,
- 				 <&pericfg_ao CLK_PERI_AO_SSUSB_3P_XHCI>;
- 			clock-names = "sys_ck", "ref_ck", "xhci_ck";
-+			mediatek,syscon-wakeup = <&pericfg 0x400 106>;
-+			wakeup-source;
- 			/* This controller is connected with a BT device.
- 			 * Disable usb2 lpm to prevent konwn issues.
- 			 */
+Patch applied.  Thanks.
 -- 
-2.18.0
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
