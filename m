@@ -2,85 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D48C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6098BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:10:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344387AbiA1XKC (ORCPT
+        id S1346770AbiA1XKK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 18:10:02 -0500
-Received: from mout.gmx.net ([212.227.17.21]:42117 "EHLO mout.gmx.net"
+        Fri, 28 Jan 2022 18:10:10 -0500
+Received: from mout.gmx.net ([212.227.15.19]:52127 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243573AbiA1XKA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 18:10:00 -0500
+        id S1344400AbiA1XKH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 18:10:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643411398;
-        bh=nKOgNNjjbb6iRRpllOw9CofNg19QrVk3e0lNK8nkpmA=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=CbTgmQzercNn4ovhqp2FVGVWr0fSzwDDzZLmxXYcvLWcIjQVwpS09PwOTmTo/XIlD
-         UefV02XMytSHycwvNNRQrsvBmQiZ2Z+RUtSkZx/kSf6EwEj7btWn3hujlts4hH9Akt
-         lw13e2UbGx51BenEa+L8HXfO/epc7h/IxbX6G6v8=
+        s=badeba3b8450; t=1643411401;
+        bh=YkOgAasWKFL5PqtYuaKrziNPA6t6TWtBGIK2VpojFBc=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=NeQc2ECq2cHbOnMXrFqejqxN/NKTFpRX+cKNFon3hcPl949QQqGWVYo4m1hZ9/fyB
+         MrvcIMJZHPjFgcsQki2e/N+s+F72jTRgutb/BnI33duHgmnFRRDzfT1h1TfQd6Sqe0
+         q4ad6Xo/nOX2L1+rd3ZlG70gKUtkzetLruJzGL/k=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([89.0.80.162]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MRCKC-1mqOf400Dk-00N9H3; Sat, 29
- Jan 2022 00:09:58 +0100
+Received: from longitude ([89.0.80.162]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1M7sDg-1n9iV12kUc-0050it; Sat, 29
+ Jan 2022 00:10:01 +0100
 From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
 To:     linux-clk@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-Subject: [PATCH 0/4] clk drivers: Terminate clk_div_table with sentinel element
-Date:   Sat, 29 Jan 2022 00:09:18 +0100
-Message-Id: <20220128230922.2047140-1-j.neuschaefer@gmx.net>
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Keguang Zhang <keguang.zhang@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-mips@vger.kernel.org
+Subject: [PATCH 2/4] clk: loongson1: Terminate clk_div_table with sentinel element
+Date:   Sat, 29 Jan 2022 00:09:20 +0100
+Message-Id: <20220128230922.2047140-3-j.neuschaefer@gmx.net>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220128230922.2047140-1-j.neuschaefer@gmx.net>
+References: <20220128230922.2047140-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:tbVADY7hTofNy/iKkkZ/jbRLr1vGtv/6YJWw2FH6bg/7syrKjZf
- QCmPQ+w52QP43UQoIcRKpE1QdThN1G3L6w/fLsdGTQy3Os8KYtwWNvnk57bzMf58ov95fjB
- 5FYeIZD5abMkmXjDaBClBv6WxBbCgINREU9Yf+48aFuWNX1jGbZNcwyfBOrb437oyFVN2Uj
- h6F1XMhGJzAZ/RuNmLC0g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Rzwj+X1v+Fs=:W5+WGgXirIxBZKI7vrk48j
- rwrlQkAP9vIUUVZ5jXIElpayL+SkldFNErLH4QYIP+9EsqkILY1Rd5MW0LVH4oJwWRiwVLucx
- EvKRQOy0ynyaErqB3N1c8GQdqT1T5/q1cJEi19SMIGAnvBuvNqK1s1hVnIIEgJ7Xre6BKFBEE
- YzJGum3N1L9dAQz4yb7+8MYILFvoxR5JANdlKpsvl9N5SfPmQWjAIeQ6b31awvPe1VV4XLQcp
- VH2v2EVyvxupg/bJi8/Yp3hY5IXgTRCQDJEKEN6MnwnfmJW+4d9atXqgLBWQq2fn7PeJS8M/Z
- LyiopGYh3SGLi8P7eFLwvcCKe31lzXDbykQiRovCY1qMRkEuk/H5+mES+IuszIAr2YtVLAFjY
- hdZc68Uec/h7KdIWoTghJvmiEQZT9wHHjY1VPOHN+xC7VhLlmPrADChlfVBbupjOlq9jXjgU5
- V9wN7EEILUwLlwTKI3WJy6QnejtsWsjBHVWZA8cB8N9KzGV7pe6YPgAuLi4PQN2zcGiG75pnu
- ByXlBLj7EkWv8M12KV/2l94GXzrslhrRxSKiRRwybAvfJ1dzEzH5imyHgzslK9re2r+tppv1N
- r5RyzTb6UGY9XxgdLuwJwXFOaQcK1CRnbTiIbtJI/qCxmJlxjE7y/z0TdpsGUtUr++2mYaOFp
- sZ996inDXQMbd20J05e6JpAJG5GalfFA1Y6ld6ZtaT7n8Ihf3/1v9AGk7cD1Yud0WaqHhrtZt
- G23mzPDQQDj6Rgb7GyM+1cZMzzutb0GL+XnJpx4pYl/6QxpBgG0SaYiBolAefwAkpojO9s/SV
- 3P9jPkD46/y/aH2aiVKab1cetsHSMns2U71A0ZbXvBL1nRO5wO0JOzxsMHo00+2kPpKq++YNe
- hKaR6qcCRfMIcbTuMukgzbv+4yGoqbnA0ztWxWyNES/GWjXDaEJU1oiZt/B1FSW4+iKr48nrk
- okN2Hho6qFCPBtlPYcbJIXrveIxWOYKO9fNrsTFBV0CKnstpfzMoIcPBezH87uXck8Qmc1Y8Q
- mJWOpfqB5CQ+8FYPpM04ej42JpriL/0l01tGEvMm0X0cawXtZB7GKYxILslue+urR1QQyID9C
- 7rYvHg+ZSGm/q0=
+X-Provags-ID: V03:K1:nZ8SJq7BpTEcPnWOM9Te0gkmF9e9dOoAILUHTJNguPc7Cnm2RHV
+ O6GUWmUGaAbvxy+K7YZl5sWP0MjdV6Xhl1TSew/MYhEAEmNZtNfy/XFHJWFGlGMlIYQEt1S
+ 5HqmtxNaRvgIGiT0PM1Fs0SLFY432NiA68lQB7hAWnzolA3GMZcO3hlCgMZB91VgDLvgpZN
+ tjNSR6nWwfL0MUH3KjOBw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:yao6eQGl4PM=:eCZ3r7lvohoK7z/DrboGgN
+ FQmgyNEGsQ7zCH+uXNy74kQVHGOUyefs9QbM2Or2oxbXWQ84oXNPq0+jasQ2Tv1HzrIqLmxT6
+ Ce3LlyVmiUoYP/i+oS0bTq7sc1vRXs5X/dJ1lsVzhcFraETxQd8JxAT9AbL9G95+DSCBmZb5V
+ HRVIav7jqNGjlcK+3/e9ihgVm1VCRZSqAUOw71htg8JFOflJMIPiA1Dyf9z2mcjTb1XRHOfsu
+ 2RO/xryeg9xZdU6cLHGLz03CEMo3JAffS/HvnneXggPyRuDLsBIRGYLX6g/a+zsfatM7fXj9O
+ W7BKlTJISF7EyllHlBJ8nHPp0/ZuCWB3ZUYcehX8qog25vPWzLXNzkX2pDWSqkVNbxtMTmgw/
+ 6QJc1Q5XQb1nr31jy0Bs1imumR9p7VEtIZWB75IWEj4Yhw6vk2tTRxdS4NSguUksqU+UIBsd/
+ tF346EqQWheWZ+6a+BA5DH8bWZ23zSZ4a+RQd26vFOpwO9eWCkn1Qer0FeVO76pqteRenRhsd
+ v+13sHdY/1gFaQk+epiMRc7ikU4lPyE9St/RXa5LFAl8eq06nssH4Vw7j8SfLon33XxBkCapc
+ TBSJ34hBk6NtD299fOfNDvhXvMkYge3r2atUdLQURUHdvR4hN62UXjcL+mr/gfVR4+LVp/ZnI
+ CwV4aI2nRAe80lv027NUr+3hBSakX1wnzPwRc/TLPxQaZgcVsPgMNP4uUWuxJC3qHzzUCgxBS
+ DAmnAxxeLmT4F6hCdwAsYYSKp/4dXGjgTSL8sDcvXpYxyfn/ViSoOO5fr2yDvxfQot8WA1tlH
+ lAFJfKmGU1bNIeO0W5tzLGv44qC38IEeX1c3FddSHsZPWFf+2Tm3P82j565qASdPK4987qy0L
+ D4c1mpmL86FzfVq51m3aX60xlgXthNUwK+/WVdNUY8qYrx7l5NDCvBqGZnUIAcCJxPB2MC7F4
+ T58s27HK1WG6e/P+ZAzLMJEy02Y6Ax/tpX2pep7cxLQH6i3U/B4Lcv0UNBvYOFM3qtSWKSsIc
+ aMQx6QlEGzNj/FdZl96aYY1uusS5NXXgFkKhOdin/T3A5EOtj2fS486fldWN6Lm134YHe0EYC
+ Tn6NHSTBHJT3nc=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I noticed that some of the clk_div_tables in different drivers are not
-terminated with a sentinel element. This may cause the code in
-clk-divider.c to read garbage that happens to be beyond the end.
+In order that the end of a clk_div_table can be detected, it must be
+terminated with a sentinel element (.div =3D 0).
 
-This patchset fixed all instances of this bug that I could find, except
-for a case in drivers/phy/ti/phy-j721e-wiz.c that is already fixed in
-linux-next:
-  https://lore.kernel.org/lkml/20220117110108.4117-1-kishon@ti.com/
-
-Jonathan Neusch=C3=A4fer (4):
-  clk: actions: Terminate clk_div_table with sentinel element
-  clk: loongson1: Terminate clk_div_table with sentinel element
-  clk: hisilicon: Terminate clk_div_table with sentinel element
-  clk: clps711x: Terminate clk_div_table with sentinel element
-
- drivers/clk/actions/owl-s700.c         | 1 +
- drivers/clk/actions/owl-s900.c         | 4 ++--
- drivers/clk/clk-clps711x.c             | 2 ++
- drivers/clk/hisilicon/clk-hi3559a.c    | 4 ++--
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+=2D--
  drivers/clk/loongson1/clk-loongson1c.c | 1 +
- 5 files changed, 8 insertions(+), 4 deletions(-)
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/clk/loongson1/clk-loongson1c.c b/drivers/clk/loongson=
+1/clk-loongson1c.c
+index 703f87622cf5f..6b29ae9ede3e5 100644
+=2D-- a/drivers/clk/loongson1/clk-loongson1c.c
++++ b/drivers/clk/loongson1/clk-loongson1c.c
+@@ -37,6 +37,7 @@ static const struct clk_div_table ahb_div_table[] =3D {
+ 	[1] =3D { .val =3D 1, .div =3D 4 },
+ 	[2] =3D { .val =3D 2, .div =3D 3 },
+ 	[3] =3D { .val =3D 3, .div =3D 3 },
++	[4] =3D { .val =3D 0, .div =3D 0 },
+ };
+
+ void __init ls1x_clk_init(void)
 =2D-
 2.34.1
 
