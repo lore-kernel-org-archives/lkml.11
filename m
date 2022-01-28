@@ -2,102 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB96FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C439BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350056AbiA1QXl (ORCPT
+        id S1350077AbiA1QXq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 11:23:41 -0500
-Received: from relay035.a.hostedemail.com ([64.99.140.35]:45260 "EHLO
-        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S238502AbiA1QXi (ORCPT
+        Fri, 28 Jan 2022 11:23:46 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59170 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350055AbiA1QXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 11:23:38 -0500
-Received: from omf20.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay09.hostedemail.com (Postfix) with ESMTP id A95A022591;
-        Fri, 28 Jan 2022 16:23:33 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id C78062002A;
-        Fri, 28 Jan 2022 16:23:29 +0000 (UTC)
-Message-ID: <3707328ca9cbad0ecc0adb5d6df95e671b0f9270.camel@perches.com>
-Subject: Re: [PATCH] scsi: megaraid: cleanup formatting of megaraid
-From:   Joe Perches <joe@perches.com>
-To:     Tom Rix <trix@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Finn Thain <fthain@linux-m68k.org>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        shivasharan.srikanteshwara@broadcom.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, nathan@kernel.org,
-        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Date:   Fri, 28 Jan 2022 08:23:28 -0800
-In-Reply-To: <0567fce4-256a-e1b1-dc66-221ba97153d5@redhat.com>
-References: <20220127151945.1244439-1-trix@redhat.com>
-         <953eb015-4b78-f7b-5dc1-6491c6bf27e@linux-m68k.org>
-         <CAKwvOdnWHVV+3s8SO=Q8FfZ7hVekRVDL5q+7CwAk_z44xaex8w@mail.gmail.com>
-         <fb308f51-f16b-3d9b-80c2-180940236b00@redhat.com>
-         <5554a75f65fddab4de60d61fd503fe73773dafbb.camel@perches.com>
-         <c801989d-5f3e-84d2-24a0-7022be70da98@redhat.com>
-         <7bff2de309384b7c9ee71ad90881d1e0bbe0a781.camel@perches.com>
-         <0567fce4-256a-e1b1-dc66-221ba97153d5@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Fri, 28 Jan 2022 11:23:45 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30E9D61F1F;
+        Fri, 28 Jan 2022 16:23:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 981B4C340F1;
+        Fri, 28 Jan 2022 16:23:44 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.95)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1nDU2J-00ASz9-PL;
+        Fri, 28 Jan 2022 11:23:43 -0500
+Message-ID: <20220128162343.618746472@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Fri, 28 Jan 2022 11:18:04 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [for-linus][PATCH 02/10] tracing/histogram: Fix a potential memory leak for kstrdup()
+References: <20220128161802.711119424@goodmis.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: udysuemusgnoujnxpumymmtkzku8o18g
-X-Rspamd-Server: rspamout01
-X-Rspamd-Queue-Id: C78062002A
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18uluthQpEWU+bd4U+W52I3l2ayfxC7k3o=
-X-HE-Tag: 1643387009-44340
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(adding checkpatch reviewers Dwaipayan and Lukas)
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Original thread: https://lore.kernel.org/lkml/20220127151945.1244439-1-trix@redhat.com/
+kfree() is missing on an error path to free the memory allocated by
+kstrdup():
 
-On Fri, 2022-01-28 at 07:30 -0800, Tom Rix wrote:
-> On 1/28/22 12:41 AM, Joe Perches wrote:
-> > Another option would be to use:
-> > 
-> > 	./scripts/checkpatch.pl -f --fix[-inplace] [--types=<list>] <files>
-> > 
-> > where types is an optional list of specific things to change
-> > 
-> > see:
-> > 	./scripts/checkpatch.pl --list-types --verbose
-> > 
-> > to show the possible types.
-> > 
-> > Only some of these types can be changed with --fix or --fix-inplace
-> > 
-> > If using checkpatch to change formatting, it sometimes can be useful
-> > to run checkpatch --fix multiple times on the same file as a
-> > checkpatch --fix can create a change than checkpatch will suggest
-> > should itself be fixed.
-> > 
-> > Of course another option is to do nothing as many will complain,
-> > sometimes senselessly, about 'churn'.
-> 
-> A testsuite for the fixers may help with churn
+  p = param = kstrdup(data->params[i], GFP_KERNEL);
 
-Likely not, as IMO churn is an 'eye of beholder' issue.
+So it is better to free it via kfree(p).
 
-> Any interest or thought on organization ?
+Link: https://lkml.kernel.org/r/tencent_C52895FD37802832A3E5B272D05008866F0A@qq.com
 
-Not really.
+Cc: stable@vger.kernel.org
+Fixes: d380dcde9a07c ("tracing: Fix now invalid var_ref_vals assumption in trace action")
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ kernel/trace/trace_events_hist.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-The checkpatch --fix code isn't perfect as it's just regexes.
-
-When writing the --fix code, I've always just used the kernel
-sources and git history to inspect/verify suggested changes.  
-
-> I can take stab at one.
-
-Enjoy.
-
-
+diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+index 5e6a988a8a51..cd9610688ddc 100644
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -3935,6 +3935,7 @@ static int trace_action_create(struct hist_trigger_data *hist_data,
+ 
+ 			var_ref_idx = find_var_ref_idx(hist_data, var_ref);
+ 			if (WARN_ON(var_ref_idx < 0)) {
++				kfree(p);
+ 				ret = var_ref_idx;
+ 				goto err;
+ 			}
+-- 
+2.33.0
