@@ -2,124 +2,330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B67F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:44:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B95C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349137AbiA1Oob (ORCPT
+        id S1349396AbiA1OpC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:44:31 -0500
-Received: from mga06.intel.com ([134.134.136.31]:1049 "EHLO mga06.intel.com"
+        Fri, 28 Jan 2022 09:45:02 -0500
+Received: from foss.arm.com ([217.140.110.172]:47710 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349091AbiA1Oo3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:44:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643381069; x=1674917069;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9MubXPOrZMSDvuDAk4wR9yXEG5Ff3JUogxZoDw218Ag=;
-  b=ApYxAwcepOdTxcRZcEtwu2fKfF/w8BNz4XyXGmuCDjdkSAkvaI3Kocbk
-   5/JaDnOiM+q5jI/VsDG6KeV9AVR8O3q19nAjSpINngFFsi1M+YUT5AFRq
-   J6GnKMP1wfyTJCVD9XaHxDGX7LSEZIo1fwMgK+momCtRFni3Sj16xJ2mA
-   2Z3HbVNZbD62gmk+pbHMqKrS9Onm5QXjc4VXMxWRNoJDrlY9q6Zhicd3p
-   WlZ2NIMrJhlo5acVUSFGk3jVaUbog2Z0oPCKdgDWQ/CgepOyDNJy6mDNl
-   7SdvtrKaPUGdV+suAlSORP8jTfakrqRrAbpwkBvQHaPlaraGKc5ceL76F
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="307846274"
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="307846274"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 06:44:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="618739123"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Jan 2022 06:44:26 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDSUD-000NzG-US; Fri, 28 Jan 2022 14:44:25 +0000
-Date:   Fri, 28 Jan 2022 22:43:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Will Deacon <will@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
- 2786/2952] arch/arm64/kvm/arm.c:2011:39: error: use of undeclared identifier
- 'smccc_trng_available'
-Message-ID: <202201282248.FsZz69z1-lkp@intel.com>
+        id S1349377AbiA1Oo7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 09:44:59 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8AEA612FC;
+        Fri, 28 Jan 2022 06:44:58 -0800 (PST)
+Received: from e120937-lin (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9D62E3F793;
+        Fri, 28 Jan 2022 06:44:57 -0800 (PST)
+Date:   Fri, 28 Jan 2022 14:44:51 +0000
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     Vincenzo Frascino <vincenzo.frascino@arm.com>
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v3] kselftest: Fix vdso_test_abi return status
+Message-ID: <20220128144451.GC5776@e120937-lin>
+References: <20220128130701.17511-1-vincenzo.frascino@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220128130701.17511-1-vincenzo.frascino@arm.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
-head:   0eaf0db549770f64aa4a81fa6361ad40e42c99f9
-commit: 888643ea37b504cb32afdd6430698d1e92a79a71 [2786/2952] ANDROID: KVM: arm64: relay entropy requests from protected guests directly to secure
-config: arm64-randconfig-r022-20220124 (https://download.01.org/0day-ci/archive/20220128/202201282248.FsZz69z1-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f32dccb9a43b02ce4e540d6ba5dbbdb188f2dc7d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/888643ea37b504cb32afdd6430698d1e92a79a71
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
-        git checkout 888643ea37b504cb32afdd6430698d1e92a79a71
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+On Fri, Jan 28, 2022 at 01:07:01PM +0000, Vincenzo Frascino wrote:
+> vdso_test_abi contains a batch of tests that verify the validity of the
+> vDSO ABI.
+> 
+> When a vDSO symbol is not found the relevant test is skipped reporting
+> KSFT_SKIP. All the tests return values are then added in a single
+> variable which is checked to verify failures. This approach can have
+> side effects which result in reporting the wrong kselftest exit status.
+> 
+> Fix vdso_test_abi verifying the return code of each test separately.
+> 
+> Cc: Shuah Khan <shuah@kernel.org>
+> Cc: Andy Lutomirski <luto@kernel.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Reported-by: Cristian Marussi <cristian.marussi@arm.com>
+> Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
+> ---
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hi,
 
-All errors (new ones prefixed by >>):
+LGTM.
 
->> arch/arm64/kvm/arm.c:2011:39: error: use of undeclared identifier 'smccc_trng_available'
-           kvm_nvhe_sym(smccc_trng_available) = smccc_trng_available;
-                                                ^
-   1 error generated.
+Tested-by: Cristian Marussi <cristian.marussi@arm.com>
 
+Thanks,
+Cristian
 
-vim +/smccc_trng_available +2011 arch/arm64/kvm/arm.c
-
-  1997	
-  1998	static int kvm_hyp_init_protection(u32 hyp_va_bits)
-  1999	{
-  2000		void *addr = phys_to_virt(hyp_mem_base);
-  2001		int ret;
-  2002	
-  2003		kvm_nvhe_sym(id_aa64pfr0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1);
-  2004		kvm_nvhe_sym(id_aa64pfr1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64PFR1_EL1);
-  2005		kvm_nvhe_sym(id_aa64isar0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64ISAR0_EL1);
-  2006		kvm_nvhe_sym(id_aa64isar1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64ISAR1_EL1);
-  2007		kvm_nvhe_sym(id_aa64mmfr0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
-  2008		kvm_nvhe_sym(id_aa64mmfr1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR1_EL1);
-  2009		kvm_nvhe_sym(id_aa64mmfr2_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR2_EL1);
-  2010		kvm_nvhe_sym(__icache_flags) = __icache_flags;
-> 2011		kvm_nvhe_sym(smccc_trng_available) = smccc_trng_available;
-  2012	
-  2013		ret = create_hyp_mappings(addr, addr + hyp_mem_size, PAGE_HYP);
-  2014		if (ret)
-  2015			return ret;
-  2016	
-  2017		ret = init_stage2_iommu();
-  2018		if (ret < 0)
-  2019			return ret;
-  2020	
-  2021		ret = do_pkvm_init(hyp_va_bits, (enum kvm_iommu_driver)ret);
-  2022		if (ret)
-  2023			return ret;
-  2024	
-  2025		free_hyp_pgds();
-  2026	
-  2027		return 0;
-  2028	}
-  2029	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>  tools/testing/selftests/vDSO/vdso_test_abi.c | 135 +++++++++----------
+>  1 file changed, 62 insertions(+), 73 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/vDSO/vdso_test_abi.c b/tools/testing/selftests/vDSO/vdso_test_abi.c
+> index 3d603f1394af..d670d5b2a626 100644
+> --- a/tools/testing/selftests/vDSO/vdso_test_abi.c
+> +++ b/tools/testing/selftests/vDSO/vdso_test_abi.c
+> @@ -33,110 +33,114 @@ typedef long (*vdso_clock_gettime_t)(clockid_t clk_id, struct timespec *ts);
+>  typedef long (*vdso_clock_getres_t)(clockid_t clk_id, struct timespec *ts);
+>  typedef time_t (*vdso_time_t)(time_t *t);
+>  
+> -static int vdso_test_gettimeofday(void)
+> +#define VDSO_TEST_PASS_MSG()	"\n%s(): PASS\n", __func__
+> +#define VDSO_TEST_FAIL_MSG(x)	"\n%s(): %s FAIL\n", __func__, x
+> +#define VDSO_TEST_SKIP_MSG(x)	"\n%s(): SKIP: Could not find %s\n", __func__, x
+> +
+> +static void vdso_test_gettimeofday(void)
+>  {
+>  	/* Find gettimeofday. */
+>  	vdso_gettimeofday_t vdso_gettimeofday =
+>  		(vdso_gettimeofday_t)vdso_sym(version, name[0]);
+>  
+>  	if (!vdso_gettimeofday) {
+> -		printf("Could not find %s\n", name[0]);
+> -		return KSFT_SKIP;
+> +		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[0]));
+> +		return;
+>  	}
+>  
+>  	struct timeval tv;
+>  	long ret = vdso_gettimeofday(&tv, 0);
+>  
+>  	if (ret == 0) {
+> -		printf("The time is %lld.%06lld\n",
+> -		       (long long)tv.tv_sec, (long long)tv.tv_usec);
+> +		ksft_print_msg("The time is %lld.%06lld\n",
+> +			       (long long)tv.tv_sec, (long long)tv.tv_usec);
+> +		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
+>  	} else {
+> -		printf("%s failed\n", name[0]);
+> -		return KSFT_FAIL;
+> +		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[0]));
+>  	}
+> -
+> -	return KSFT_PASS;
+>  }
+>  
+> -static int vdso_test_clock_gettime(clockid_t clk_id)
+> +static void vdso_test_clock_gettime(clockid_t clk_id)
+>  {
+>  	/* Find clock_gettime. */
+>  	vdso_clock_gettime_t vdso_clock_gettime =
+>  		(vdso_clock_gettime_t)vdso_sym(version, name[1]);
+>  
+>  	if (!vdso_clock_gettime) {
+> -		printf("Could not find %s\n", name[1]);
+> -		return KSFT_SKIP;
+> +		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[1]));
+> +		return;
+>  	}
+>  
+>  	struct timespec ts;
+>  	long ret = vdso_clock_gettime(clk_id, &ts);
+>  
+>  	if (ret == 0) {
+> -		printf("The time is %lld.%06lld\n",
+> -		       (long long)ts.tv_sec, (long long)ts.tv_nsec);
+> +		ksft_print_msg("The time is %lld.%06lld\n",
+> +			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
+> +		ksft_test_result_pass(VDSO_TEST_PASS_MSG());;
+>  	} else {
+> -		printf("%s failed\n", name[1]);
+> -		return KSFT_FAIL;
+> +		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[1]));
+>  	}
+> -
+> -	return KSFT_PASS;
+>  }
+>  
+> -static int vdso_test_time(void)
+> +static void vdso_test_time(void)
+>  {
+>  	/* Find time. */
+>  	vdso_time_t vdso_time =
+>  		(vdso_time_t)vdso_sym(version, name[2]);
+>  
+>  	if (!vdso_time) {
+> -		printf("Could not find %s\n", name[2]);
+> -		return KSFT_SKIP;
+> +		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[2]));
+> +		return;
+>  	}
+>  
+>  	long ret = vdso_time(NULL);
+>  
+>  	if (ret > 0) {
+> -		printf("The time in hours since January 1, 1970 is %lld\n",
+> +		ksft_print_msg("The time in hours since January 1, 1970 is %lld\n",
+>  				(long long)(ret / 3600));
+> +		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
+>  	} else {
+> -		printf("%s failed\n", name[2]);
+> -		return KSFT_FAIL;
+> +		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[2]));
+>  	}
+> -
+> -	return KSFT_PASS;
+>  }
+>  
+> -static int vdso_test_clock_getres(clockid_t clk_id)
+> +static void vdso_test_clock_getres(clockid_t clk_id)
+>  {
+> +	int clock_getres_fail = 0;
+> +
+>  	/* Find clock_getres. */
+>  	vdso_clock_getres_t vdso_clock_getres =
+>  		(vdso_clock_getres_t)vdso_sym(version, name[3]);
+>  
+>  	if (!vdso_clock_getres) {
+> -		printf("Could not find %s\n", name[3]);
+> -		return KSFT_SKIP;
+> +		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[3]));
+> +		return;
+>  	}
+>  
+>  	struct timespec ts, sys_ts;
+>  	long ret = vdso_clock_getres(clk_id, &ts);
+>  
+>  	if (ret == 0) {
+> -		printf("The resolution is %lld %lld\n",
+> -		       (long long)ts.tv_sec, (long long)ts.tv_nsec);
+> +		ksft_print_msg("The vdso resolution is %lld %lld\n",
+> +			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
+>  	} else {
+> -		printf("%s failed\n", name[3]);
+> -		return KSFT_FAIL;
+> +		clock_getres_fail++;
+>  	}
+>  
+>  	ret = syscall(SYS_clock_getres, clk_id, &sys_ts);
+>  
+> -	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec)) {
+> -		printf("%s failed\n", name[3]);
+> -		return KSFT_FAIL;
+> -	}
+> +	ksft_print_msg("The syscall resolution is %lld %lld\n",
+> +			(long long)sys_ts.tv_sec, (long long)sys_ts.tv_nsec);
+>  
+> -	return KSFT_PASS;
+> +	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec))
+> +		clock_getres_fail++;
+> +
+> +	if (clock_getres_fail > 0) {
+> +		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[3]));
+> +	} else {
+> +		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
+> +	}
+>  }
+>  
+>  const char *vdso_clock_name[12] = {
+> @@ -158,36 +162,23 @@ const char *vdso_clock_name[12] = {
+>   * This function calls vdso_test_clock_gettime and vdso_test_clock_getres
+>   * with different values for clock_id.
+>   */
+> -static inline int vdso_test_clock(clockid_t clock_id)
+> +static inline void vdso_test_clock(clockid_t clock_id)
+>  {
+> -	int ret0, ret1;
+> -
+> -	ret0 = vdso_test_clock_gettime(clock_id);
+> -	/* A skipped test is considered passed */
+> -	if (ret0 == KSFT_SKIP)
+> -		ret0 = KSFT_PASS;
+> -
+> -	ret1 = vdso_test_clock_getres(clock_id);
+> -	/* A skipped test is considered passed */
+> -	if (ret1 == KSFT_SKIP)
+> -		ret1 = KSFT_PASS;
+> +	ksft_print_msg("\nclock_id: %s\n", vdso_clock_name[clock_id]);
+>  
+> -	ret0 += ret1;
+> +	vdso_test_clock_gettime(clock_id);
+>  
+> -	printf("clock_id: %s", vdso_clock_name[clock_id]);
+> -
+> -	if (ret0 > 0)
+> -		printf(" [FAIL]\n");
+> -	else
+> -		printf(" [PASS]\n");
+> -
+> -	return ret0;
+> +	vdso_test_clock_getres(clock_id);
+>  }
+>  
+> +#define VDSO_TEST_PLAN	16
+> +
+>  int main(int argc, char **argv)
+>  {
+>  	unsigned long sysinfo_ehdr = getauxval(AT_SYSINFO_EHDR);
+> -	int ret;
+> +
+> +	ksft_print_header();
+> +	ksft_set_plan(VDSO_TEST_PLAN);
+>  
+>  	if (!sysinfo_ehdr) {
+>  		printf("AT_SYSINFO_EHDR is not present!\n");
+> @@ -201,44 +192,42 @@ int main(int argc, char **argv)
+>  
+>  	vdso_init_from_sysinfo_ehdr(getauxval(AT_SYSINFO_EHDR));
+>  
+> -	ret = vdso_test_gettimeofday();
+> +	vdso_test_gettimeofday();
+>  
+>  #if _POSIX_TIMERS > 0
+>  
+>  #ifdef CLOCK_REALTIME
+> -	ret += vdso_test_clock(CLOCK_REALTIME);
+> +	vdso_test_clock(CLOCK_REALTIME);
+>  #endif
+>  
+>  #ifdef CLOCK_BOOTTIME
+> -	ret += vdso_test_clock(CLOCK_BOOTTIME);
+> +	vdso_test_clock(CLOCK_BOOTTIME);
+>  #endif
+>  
+>  #ifdef CLOCK_TAI
+> -	ret += vdso_test_clock(CLOCK_TAI);
+> +	vdso_test_clock(CLOCK_TAI);
+>  #endif
+>  
+>  #ifdef CLOCK_REALTIME_COARSE
+> -	ret += vdso_test_clock(CLOCK_REALTIME_COARSE);
+> +	vdso_test_clock(CLOCK_REALTIME_COARSE);
+>  #endif
+>  
+>  #ifdef CLOCK_MONOTONIC
+> -	ret += vdso_test_clock(CLOCK_MONOTONIC);
+> +	vdso_test_clock(CLOCK_MONOTONIC);
+>  #endif
+>  
+>  #ifdef CLOCK_MONOTONIC_RAW
+> -	ret += vdso_test_clock(CLOCK_MONOTONIC_RAW);
+> +	vdso_test_clock(CLOCK_MONOTONIC_RAW);
+>  #endif
+>  
+>  #ifdef CLOCK_MONOTONIC_COARSE
+> -	ret += vdso_test_clock(CLOCK_MONOTONIC_COARSE);
+> +	vdso_test_clock(CLOCK_MONOTONIC_COARSE);
+>  #endif
+>  
+>  #endif
+>  
+> -	ret += vdso_test_time();
+> -
+> -	if (ret > 0)
+> -		return KSFT_FAIL;
+> +	vdso_test_time();
+>  
+> -	return KSFT_PASS;
+> +	ksft_print_cnts();
+> +	return ksft_get_fail_cnt() == 0 ? KSFT_PASS : KSFT_FAIL;
+>  }
+> -- 
+> 2.34.1
+> 
