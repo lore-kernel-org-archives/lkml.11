@@ -2,142 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C25DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 03:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 04:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345938AbiA1D47 (ORCPT
+        id S1345915AbiA1EM4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 22:56:59 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:43292 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S236975AbiA1D45 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 22:56:57 -0500
-X-UUID: e0c46802a0b24894a529fc5c348bfa81-20220128
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=Ki3tbpVWiEYMpuDYTaVuYUnoJkzzsKlE4zbJqbbT/u4=;
-        b=k6469J3zrEHR7CnIZkzEd7Ep1w2bCbe/MNEIQcr3eA/m4JbsMVJUM38v4LwXNlI0NJD0pxnKA2dD84FCNfmx1VwHWTYesGamtVp/QFhR0BZPz2DbOJUjMnKvm1J80LQXh2cIOdSs6nomr3CZ07LCzc6eksGpQpDtcbA2W4QQqug=;
-X-UUID: e0c46802a0b24894a529fc5c348bfa81-20220128
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 941237735; Fri, 28 Jan 2022 11:54:52 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 28 Jan 2022 11:54:50 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 28 Jan 2022 11:54:49 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        Steve Cho <stevecho@chromium.org>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v2, 5/7] media: mtk-vcodec: Different codec using different capture format
-Date:   Fri, 28 Jan 2022 11:54:38 +0800
-Message-ID: <20220128035440.24533-6-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220128035440.24533-1-yunfei.dong@mediatek.com>
-References: <20220128035440.24533-1-yunfei.dong@mediatek.com>
+        Thu, 27 Jan 2022 23:12:56 -0500
+Received: from mga07.intel.com ([134.134.136.100]:13981 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236875AbiA1EMz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 23:12:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643343174; x=1674879174;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=GcP2MoAXQFr6kxmHRpgDspSpSakAHFWOf6BA1RZwCcU=;
+  b=jq7kvkwrz2R6U7cTIZEzx8WJUhEbDe+PdvMD0mGf37GP1NKZyO0rxxPJ
+   +ck2jzSa1GizmpfSPU/4We7et8DlxfUteipL7HpePauibNh+FYRLfYt/L
+   yXGqsd3CvZkT1rMp2FKzzbyKQz+ZdwTznkDSe3FoPa0XubvV6jnH9/sTz
+   MdfsXIKLIjDTGNKaDCSkZM6/D539Jl5ZAzEQRl092OKC+4e4Ssh6onEgY
+   qGrT9m4vxVDm8U3zMg+jiu2pIRBpCs15nwkj8NiG/9lww3VVX3QiY0Gjj
+   0HVmBwpkh6vCh3E0VDYH5fQvHOvfjL3KBsnVOaCIfWQiLtzK5c7F8H3ih
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="310356564"
+X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
+   d="scan'208";a="310356564"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 20:12:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
+   d="scan'208";a="480588314"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 27 Jan 2022 20:12:53 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nDId2-000NRR-Lv; Fri, 28 Jan 2022 04:12:52 +0000
+Date:   Fri, 28 Jan 2022 12:12:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:dev.2022.01.26a] BUILD SUCCESS
+ 7d3886f148ec8caf0369854cb812a4bff2f8c7cb
+Message-ID: <61f36d11.VdJtJke4PY+eAerb%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Vp8 need to use MM21, but vp9 and h264 need to use HyFbc mode
-for mt8195. Vp8/vp9/h264 use the same MM21 format for mt8192.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.01.26a
+branch HEAD: 7d3886f148ec8caf0369854cb812a4bff2f8c7cb  srcu: Use invalid initial value for srcu_node GP sequence numbers
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+elapsed time: 1541m
+
+configs tested: 186
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20220124
+powerpc                 mpc834x_itx_defconfig
+arm                         at91_dt_defconfig
+mips                         mpc30x_defconfig
+xtensa                              defconfig
+mips                        vocore2_defconfig
+powerpc                      mgcoge_defconfig
+mips                            ar7_defconfig
+arm                           tegra_defconfig
+parisc                generic-64bit_defconfig
+sparc                       sparc64_defconfig
+mips                        bcm47xx_defconfig
+arm                           sunxi_defconfig
+arm                        multi_v7_defconfig
+s390                       zfcpdump_defconfig
+arm                            pleb_defconfig
+openrisc                         alldefconfig
+arc                     haps_hs_smp_defconfig
+sh                 kfr2r09-romimage_defconfig
+parisc                generic-32bit_defconfig
+arm                           viper_defconfig
+sh                         ecovec24_defconfig
+riscv                            allmodconfig
+nios2                            allyesconfig
+arm                            xcep_defconfig
+sh                            shmin_defconfig
+powerpc                      ppc40x_defconfig
+ia64                      gensparse_defconfig
+riscv                            allyesconfig
+powerpc                     rainier_defconfig
+mips                    maltaup_xpa_defconfig
+sh                        sh7763rdp_defconfig
+arm                          pxa910_defconfig
+powerpc                 mpc837x_rdb_defconfig
+powerpc                     tqm8541_defconfig
+mips                           xway_defconfig
+sh                        edosk7705_defconfig
+sh                             espt_defconfig
+powerpc                      ppc6xx_defconfig
+arc                              alldefconfig
+arc                        nsimosci_defconfig
+ia64                        generic_defconfig
+h8300                     edosk2674_defconfig
+nios2                         3c120_defconfig
+xtensa                    xip_kc705_defconfig
+sh                         apsh4a3a_defconfig
+mips                           ci20_defconfig
+arm                  randconfig-c002-20220127
+arm                  randconfig-c002-20220124
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a002-20220124
+x86_64               randconfig-a003-20220124
+x86_64               randconfig-a004-20220124
+x86_64               randconfig-a005-20220124
+x86_64               randconfig-a006-20220124
+x86_64               randconfig-a001-20220124
+i386                 randconfig-a002-20220124
+i386                 randconfig-a005-20220124
+i386                 randconfig-a003-20220124
+i386                 randconfig-a004-20220124
+i386                 randconfig-a001-20220124
+i386                 randconfig-a006-20220124
+i386                          randconfig-a003
+i386                          randconfig-a001
+i386                          randconfig-a005
+x86_64                        randconfig-a002
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                randconfig-r042-20220127
+riscv                randconfig-r042-20220125
+arc                  randconfig-r043-20220127
+arc                  randconfig-r043-20220125
+arc                  randconfig-r043-20220124
+s390                 randconfig-r044-20220127
+s390                 randconfig-r044-20220125
+arc                  randconfig-r043-20220126
+riscv                    nommu_k210_defconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+
+clang tested configs:
+arm                  randconfig-c002-20220124
+riscv                randconfig-c006-20220124
+i386                 randconfig-c001-20220124
+powerpc              randconfig-c003-20220124
+mips                 randconfig-c004-20220124
+x86_64               randconfig-c007-20220124
+powerpc                     powernv_defconfig
+powerpc                 mpc8313_rdb_defconfig
+powerpc                 mpc8560_ads_defconfig
+arm                       netwinder_defconfig
+arm                         orion5x_defconfig
+powerpc                   bluestone_defconfig
+mips                           ip27_defconfig
+powerpc                      ppc44x_defconfig
+arm                     davinci_all_defconfig
+arm                   milbeaut_m10v_defconfig
+powerpc                          allmodconfig
+arm                                 defconfig
+arm                    vt8500_v6_v7_defconfig
+powerpc                          g5_defconfig
+powerpc                      acadia_defconfig
+arm                        magician_defconfig
+mips                     cu1830-neo_defconfig
+powerpc                      walnut_defconfig
+i386                             allyesconfig
+mips                malta_qemu_32r6_defconfig
+powerpc                 mpc832x_mds_defconfig
+powerpc                      katmai_defconfig
+arm                      tct_hammer_defconfig
+arm                         bcm2835_defconfig
+powerpc                       ebony_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64               randconfig-a011-20220124
+x86_64               randconfig-a013-20220124
+x86_64               randconfig-a015-20220124
+x86_64               randconfig-a016-20220124
+x86_64               randconfig-a014-20220124
+x86_64               randconfig-a012-20220124
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+x86_64                        randconfig-a005
+i386                 randconfig-a011-20220124
+i386                 randconfig-a013-20220124
+i386                 randconfig-a012-20220124
+i386                 randconfig-a014-20220124
+i386                 randconfig-a016-20220124
+i386                 randconfig-a015-20220124
+riscv                randconfig-r042-20220126
+riscv                randconfig-r042-20220124
+s390                 randconfig-r044-20220126
+s390                 randconfig-r044-20220124
+hexagon              randconfig-r045-20220124
+hexagon              randconfig-r045-20220126
+hexagon              randconfig-r041-20220124
+hexagon              randconfig-r041-20220126
+hexagon              randconfig-r045-20220127
+hexagon              randconfig-r041-20220127
+
 ---
- .../platform/mtk-vcodec/mtk_vcodec_dec.c      | 41 +++++++++++++++++++
- 1 file changed, 41 insertions(+)
-
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-index 6ad17e69e32d..f2ced0147534 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-@@ -35,6 +35,44 @@ mtk_vdec_find_format(struct v4l2_format *f,
- 	return NULL;
- }
- 
-+static bool mtk_vdec_get_cap_fmt(struct mtk_vcodec_ctx *ctx, int format_index)
-+{
-+	const struct mtk_vcodec_dec_pdata *dec_pdata = ctx->dev->vdec_pdata;
-+	const struct mtk_video_fmt *fmt;
-+	struct mtk_q_data *q_data;
-+	int num_frame_count = 0, i;
-+	bool ret = true;
-+
-+	for (i = 0; i < *dec_pdata->num_formats; i++) {
-+		if (dec_pdata->vdec_formats[i].type != MTK_FMT_FRAME)
-+			continue;
-+
-+		num_frame_count++;
-+	}
-+
-+	if (num_frame_count == 1)
-+		return true;
-+
-+	fmt = &dec_pdata->vdec_formats[format_index];
-+	q_data = &ctx->q_data[MTK_Q_DATA_SRC];
-+	switch (q_data->fmt->fourcc) {
-+	case V4L2_PIX_FMT_VP8_FRAME:
-+		if (fmt->fourcc == V4L2_PIX_FMT_MM21)
-+			ret = true;
-+		break;
-+	case V4L2_PIX_FMT_H264_SLICE:
-+	case V4L2_PIX_FMT_VP9_FRAME:
-+		if (fmt->fourcc == V4L2_PIX_FMT_MM21)
-+			ret = false;
-+		break;
-+	default:
-+		ret = true;
-+		break;
-+	};
-+
-+	return ret;
-+}
-+
- static struct mtk_q_data *mtk_vdec_get_q_data(struct mtk_vcodec_ctx *ctx,
- 					      enum v4l2_buf_type type)
- {
-@@ -578,6 +616,9 @@ static int vidioc_enum_fmt(struct v4l2_fmtdesc *f, void *priv,
- 		    dec_pdata->vdec_formats[i].type != MTK_FMT_FRAME)
- 			continue;
- 
-+		if (!output_queue && !mtk_vdec_get_cap_fmt(ctx, i))
-+			continue;
-+
- 		if (j == f->index)
- 			break;
- 		++j;
--- 
-2.25.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
