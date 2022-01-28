@@ -2,66 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B124AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2CD7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:36:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350594AbiA1RgN (ORCPT
+        id S1350640AbiA1RgW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 12:36:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43860 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343996AbiA1Rfy (ORCPT
+        Fri, 28 Jan 2022 12:36:22 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34172 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344118AbiA1RgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 12:35:54 -0500
+        Fri, 28 Jan 2022 12:36:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D30F16174A;
-        Fri, 28 Jan 2022 17:35:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3F750C340E0;
-        Fri, 28 Jan 2022 17:35:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0CCBB82697
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 17:36:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 72BBBC340E7;
+        Fri, 28 Jan 2022 17:36:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643391353;
-        bh=/Tzn423wGCZKenoTa6p6kiJ0VgXX2np/EV2OSXFEMiQ=;
+        s=k20201202; t=1643391360;
+        bh=MpzAkYPWMqMbcKS9Dt6FS9n72VnMrPG6kgNGgMVPZho=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=JdUqmgg9wRsSvQwNILyOnmXAKZtiTusB078OLlxaeVsw4/wp9eYB6oG7TXLiyRApx
-         KTL+v3z1yJbN/LQhzgYL4u1AQHQ0DridZyjI8900Swt9NwV/uEQmhh79njZFanPyIW
-         hEEovGNlnRat4yhF4p5ggJuKqTG+Psc8t0EwOUcDHas9S/n9fl4d9kepl2PUA9Xcin
-         nTT3FKj9t0ZlaWmXPHcz7DC8jnWFM1UctIJLOX253h3fTVQ2VR7Z9VEWZSttzQUbxl
-         O0A1AzHLFs28hkGluOTvFOPR0re3/UqDTcYLHl+uVc0akJqUKl3lUUxvO42tGaug5H
-         c0C/OOuRSgdxA==
+        b=OSggc8vfvmntqmWcTbY+F20BXCFXX86tTIr/ys+X0+rJijAZHmozuQML/2OpNqVLF
+         Ygd+KDQt1OAWWYSTZBmfDMxAUEbKW60Iwnd9qHcPtchEVm+JOV1gJntKXfUI2wEHpO
+         UY/GQhxW8JY+x0xRgP3hZLFD4+VqtIXdKcdAzDAxiD3D79/3bdYxOPiZx22iJpi1Hr
+         iN8Aj2p3qOCWANZYFCAAnMP9KHWtPngusujBojZ4LTI0MGPCPLnamzrDqtxKed8E3R
+         EcQaZP53R6mt8ihz5CQHvllUUYUzTXmxK59FYEr/NhsNtAMfhbYmCqpOXvqR/CVV4u
+         NYYVfU7eIOuWQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2C0AFF6079F;
-        Fri, 28 Jan 2022 17:35:53 +0000 (UTC)
-Subject: Re: [GIT PULL] RCU Tasks fix for systems with non-power-of-two numbers
- of CPUs
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5BA42E5D087;
+        Fri, 28 Jan 2022 17:36:00 +0000 (UTC)
+Subject: Re: [GIT PULL] ucount rlimit fixes for v5.17-rc2
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220128143251.GA2398275@paulmck-ThinkPad-P17-Gen-1>
-References: <20220128143251.GA2398275@paulmck-ThinkPad-P17-Gen-1>
-X-PR-Tracked-List-Id: <rcu.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220128143251.GA2398275@paulmck-ThinkPad-P17-Gen-1>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/rcu-urgent.2022.01.26a
-X-PR-Tracked-Commit-Id: da123016ca8cb5697366c0b2dd55059b976e67e4
+In-Reply-To: <871r0rss9q.fsf@email.froward.int.ebiederm.org>
+References: <871r0rss9q.fsf@email.froward.int.ebiederm.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <871r0rss9q.fsf@email.froward.int.ebiederm.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git ucount-rlimit-fixes-for-v5.17-rc2
+X-PR-Tracked-Commit-Id: f9d87929d451d3e649699d0f1d74f71f77ad38f5
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: a773abf72eb0cac008743891068ca6edecc44683
-Message-Id: <164339135317.16649.17815520284057549170.pr-tracker-bot@kernel.org>
-Date:   Fri, 28 Jan 2022 17:35:53 +0000
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
-        rcu@vger.kernel.org, andrii.nakryiko@gmail.com, kafai@fb.com,
-        neeraj.iitr10@gmail.com, Mark.Rutland@arm.com, hca@linux.ibm.com,
-        kernel-team@fb.com
+X-PR-Merge-Commit-Id: 76fcbc9c7c57a5d44e7ca493d8f2f6eba3964f29
+Message-Id: <164339136037.16649.16600309859649262810.pr-tracker-bot@kernel.org>
+Date:   Fri, 28 Jan 2022 17:36:00 +0000
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, Alexey Gladkov <legion@kernel.org>,
+        Qian Cai <quic_qiancai@quicinc.com>,
+        Mathias Krause <minipli@grsecurity.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 28 Jan 2022 06:32:51 -0800:
+The pull request you sent on Fri, 28 Jan 2022 11:07:45 -0600:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/rcu-urgent.2022.01.26a
+> git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git ucount-rlimit-fixes-for-v5.17-rc2
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/a773abf72eb0cac008743891068ca6edecc44683
+https://git.kernel.org/torvalds/c/76fcbc9c7c57a5d44e7ca493d8f2f6eba3964f29
 
 Thank you!
 
