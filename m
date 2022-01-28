@@ -2,110 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E257DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7344FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238100AbiA1UtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 15:49:18 -0500
-Received: from mail-ej1-f50.google.com ([209.85.218.50]:40688 "EHLO
-        mail-ej1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238025AbiA1UtO (ORCPT
+        id S239804AbiA1Uwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 15:52:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236318AbiA1Uwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 15:49:14 -0500
-Received: by mail-ej1-f50.google.com with SMTP id p15so19878776ejc.7;
-        Fri, 28 Jan 2022 12:49:14 -0800 (PST)
+        Fri, 28 Jan 2022 15:52:47 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8E4C061714;
+        Fri, 28 Jan 2022 12:52:46 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id bu18so14176090lfb.5;
+        Fri, 28 Jan 2022 12:52:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=FxgoJ87HkOo4Sya7mWsI9Jkjvlhv0yv3YR69qNwYcgY=;
+        b=FASeYDqXNB7SNFPPSMjeNYgeeX65/uG3+UKBDXjBMIjiwA71UcIShrtJzoOijUNBxW
+         fd62G9kbA7ttoa4DPaUbg9B3M0xvk3MkVH8AiT6DgmjNm1Y4iBai0RrA9FhIhmqG7M24
+         5TO0XK0nW31E5zHyvFpgUbLsc/5VYC2Mq+0L8lj0YOEaiHdKUv8JN4O4ZSjmn5KCPF0b
+         OVobR2UcqH6/tjRleXAThquVCIrGv5qOLlGDjkSqBDzfICN6P4cbwWCYLo+sFFieDNXC
+         uaSGYsnWKU1WcHpHRI16xwMD03y1GYYOk9VHsP41ov5dN3AKBXv4ttrysDMlPsDuIa8C
+         u0dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jq5dwGgkiq/tjKMtkNEpgpX6pW2tDIubIfAQctI09OQ=;
-        b=R8QrTPQ1TnxjfVBxm/vPbSs+zZoij6ff/S5aKTxlp2+ttjb1Q0WhRqnUjx2ZJ3Biei
-         UNfKTz3xzLPiQBTHWFK+9MgXkQnFBTEHa/MJwGRcvhyD1sIgWKfQP58v0VPU/Jt0brDv
-         RDZ+p8wigIcTVvF+lp8GckSZBkL5TNCBWlEgitH4IgrssdqOOxGv/LSeOHrqX6VlZCji
-         7p40IOYzL/RVtIftNnJ18ieDX7mUYDGt2M7EsYAtgzcKYvDc6ncet4P/omXQfNCwOb/1
-         hrSRId/zJ0PckyUyi8iR72kNXSB7rHnY8/+DWgQBd7oiPkixruHoafy3n07v9JHlX62T
-         xsTQ==
-X-Gm-Message-State: AOAM531KCam80TpzOUu3GawXJjFWqyCT9OrYcAFaMGPTDKmLJ0fWESwb
-        A9CTKcA60IvXKE4+q/jI+F8zgR0vTXdjgoQO6/o=
-X-Google-Smtp-Source: ABdhPJy/HStjEBmsl8P/QuvAKGCD5KVvaoBga4gudMrXZBSCYYO7DY4qoIKGdMjUOarIsRls2oxcIn9/TIrpW/CHaSQ=
-X-Received: by 2002:a17:906:910:: with SMTP id i16mr7916287ejd.677.1643402953464;
- Fri, 28 Jan 2022 12:49:13 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FxgoJ87HkOo4Sya7mWsI9Jkjvlhv0yv3YR69qNwYcgY=;
+        b=c68TFuTzXGkuGQ4gLN26F3doZp69OuF6ODH7jmz+qH2/U6MyY0v1T2ZnI6cqQuTjCN
+         /Colzg2rABaNpVkD4GG94Ru0ToR0huM/Bw4qf/sOvXEqSlXK10uT6YpQq0TFBgMsec2c
+         o1GQmwBelhHl1I7NkohN8EWGJxGLUK++7L6KF7sVZEbfLWp5AyeH2HJuuJ8OScF0yDfW
+         XDveDO8MOQyQnnkbsLcRqfe9YplhQNWhayMgo9Sqv8nR457kB0rBV+BeMMOxmnd2BvrV
+         2daJsXyA/yy3q9WLDtyLC7x9mH6bm+CRee5oqVTz+a1Wu2aLHeLg7i9lU7cUT26y1i6p
+         ScdA==
+X-Gm-Message-State: AOAM533uQl2yT4IieP5mUU4o/DAm2GraBfUjTI7jnNLWNR7srt+l7saQ
+        lJyongi+fd9WsBSFz2FNwsY=
+X-Google-Smtp-Source: ABdhPJyljK+IMPeEvoQrkr8pES9R2ymfkjp48tGYsn/vuifjCmeWhNCPgqE8CaO/iUAYRBR04YeWWA==
+X-Received: by 2002:ac2:5604:: with SMTP id v4mr7184599lfd.284.1643403164687;
+        Fri, 28 Jan 2022 12:52:44 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.225.90])
+        by smtp.gmail.com with ESMTPSA id z13sm2651546lft.92.2022.01.28.12.52.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Jan 2022 12:52:44 -0800 (PST)
+Message-ID: <0647fd91-f0a7-4cf7-4f80-cd5dc3f2f6a2@gmail.com>
+Date:   Fri, 28 Jan 2022 23:52:42 +0300
 MIME-Version: 1.0
-References: <YfQpy5yGGqY8T0wW@jupiter.dyndns.org> <a7ef2455-ede5-2238-639b-b3a66842a04b@intel.com>
-In-Reply-To: <a7ef2455-ede5-2238-639b-b3a66842a04b@intel.com>
-From:   Brent Spillner <spillner@acm.org>
-Date:   Fri, 28 Jan 2022 20:48:47 +0000
-Message-ID: <CAGwJgaNa2u8vmxsnaSdpSH+ZO0e2GCYObSwC+j03843gXQ_vwg@mail.gmail.com>
-Subject: Re: [PATCH] arch:x86:pci:irq.c: Improve log message when IRQ cannot
- be identified
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     bhelgaas@google.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] ath9k_htc: fix uninit value bugs
+Content-Language: en-US
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com,
+        vasanth@atheros.com, Sujith.Manoharan@atheros.com,
+        senthilkumar@atheros.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+References: <20220115122733.11160-1-paskripkin@gmail.com>
+ <164337315159.4876.15861801637015517784.kvalo@kernel.org>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <164337315159.4876.15861801637015517784.kvalo@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 6:00 PM Dave Hansen <dave.hansen@intel.com> wrote:
-> Shockingly enough, that parameter is in the documentation:
-> and double-shockingly, it's even called out as X86-32-only:
+Hi Kalle,
 
-Right, seeing that is what convinced me that not customizing the log
-message for x86_64 could be considered a (admittedly very minor) bug,
-and perhaps worth fixing.
+On 1/28/22 15:32, Kalle Valo wrote:
+>> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+>> Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+>> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+>> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+> 
+> Patch applied to ath-next branch of ath.git, thanks.
+> 
+> d1e0df1c57bd ath9k_htc: fix uninit value bugs
+> 
 
-> Given that, do we really need to refer to the line numbers of the
-> implementation which will probably be stale by the time this is merged
-> anyway?
+Thanks, Kalle! Can you also, please, check out this one too :)
+Quite old, but syzbot is getting mad with this bug (like 20k hits). Thanks!
 
-Understood, will change the commit message to just refer to the
-command line documentation.
 
-> Any chance you could make that, um, a bit more readable?  It's OK to add
-> brackets to the else{} for readability even if they're not *strictly*
-> necessary.
->
-> It might also be nice to use
->
->         if (IS_ENABLED(CONFIG_FOO))
->                 ...
->
-> rather than the #ifdefs.
+https://lore.kernel.org/all/20210922164204.32680-1-paskripkin@gmail.com/
 
-I don't mind doing either of those if that's the maintainer consensus,
-but would note that neither would be consistent with the surrounding
-code. Prior to the patch, the .c files in arch/x86/pci contain a total
-of 33 #ifdefs and just one IS_ENABLED(), and systematically avoid
-superfluous braces around single-statement if/else/for bodies.
-Granted, the code has other style problems and triggers a number of
-checkpatch.pl warnings (although not in the region affected by this
-patch), but I was trying to be as light a touch as possible.
 
-> I'd also be perfectly OK having two different strings rather than
-> relying on string concatenation and the #ifdefs.
->
-> Is the "or enabling ACPI" message really necessary?
 
-Not strictly necessary--- it seems fair to assume that anyone
-disabling ACPI does so intentionally and with good reason--- but I
-thought it might stimulate the right thought process for someone who
-doesn't understand why their hardware isn't being properly detected,
-as ACPI triggers some very different code paths through this driver.
 
-It seems like the multiline string literal is your main pain point--- would
-
-+#ifdef CONFIG_ACPI
-+                       if (acpi_noirq)
-+                               msg = "; consider removing acpi=noirq";
-+                       else
-+                               msg = "; recommend verifying UEFI/BIOS
-IRQ options";
-+#else
-+                       msg = "; recommend verifying UEFI/BIOS IRQ
-options or enabling ACPI";
-+#endif
-
-be OK without going to IS_ENABLED()?  (Personally, I think the #ifdef
-style is more readable.)
+With regards,
+Pavel Skripkin
