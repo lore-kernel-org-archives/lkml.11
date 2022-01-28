@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 017CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00275C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348879AbiA1NU2 (ORCPT
+        id S1349188AbiA1NUa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:20:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55006 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348754AbiA1NTL (ORCPT
+        Fri, 28 Jan 2022 08:20:30 -0500
+Received: from server.lespinasse.org ([63.205.204.226]:54317 "EHLO
+        server.lespinasse.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348741AbiA1NTL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 08:19:11 -0500
-Received: from server.lespinasse.org (server.lespinasse.org [IPv6:2001:470:82ab::100:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED46DC061747
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:19:08 -0800 (PST)
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
  d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-52-ed;
  t=1643375407; h=from : to : cc : subject : date : message-id :
  in-reply-to : references : mime-version : content-transfer-encoding :
- from; bh=WKv5bmQRqPHdZUO4LXo+QEVU5+AgH+NzFasQ6BtkXFM=;
- b=/llg3A/maOZyNvvtAsqPMT8BSicLcbnbTOgrCs9XoOeH6gnm+d0cUa1QPJAqq4O8MYZk+
- 73okmSGTVaB7uXOAw==
+ from; bh=Ws6nSBPjrVyMpiYOH2Cl/taOt/D/Mr8ccdsRtTt0KNg=;
+ b=hZUoPYqCiSZU/TZEOEN3hUdTisHLznIpWUYnuiF4iT5phPKIe7MHJlrRXGB51QKAU7t8p
+ tm979gzz3ai95sUBg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
  i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375407; h=from : to
  : cc : subject : date : message-id : in-reply-to : references :
  mime-version : content-transfer-encoding : from;
- bh=WKv5bmQRqPHdZUO4LXo+QEVU5+AgH+NzFasQ6BtkXFM=;
- b=isSEOn+qW7HslS9ExCPC4SWo6ixC3JaQtA/XDcgOW/HSjp235iI6dbuuhQWVnRuW3C4VC
- uRo57aSyhVd7UxYlHuifDAq7xC7OAJVnykW+5LpOPvsqHyO0fvzHtEyGaSJUUSc7CqFFm/Y
- f1UKBDtJAXBGHOuTmsMGu6qrs5b+pNzdA1bQ34JZYbkQLf44t13EMFyrga+f9AXa9GS7G53
- enzvE6DnD84v9hHe1ky+dyUTlXSOY08Oer0XUwqyqHSkurysfooyCTMjsrS5KRj/PVI3i+v
- tIRp6oX2lYonjB00oQJKO6OFfmuobq1OxPPYGWKNhfaNDoAx3E7ifbr3/sew==
+ bh=Ws6nSBPjrVyMpiYOH2Cl/taOt/D/Mr8ccdsRtTt0KNg=;
+ b=05qrSfOE11cRELTpZK5FABvk64z57z07taWkOiDYqtdoFu2bmZLuEQAjGKjj/MH0ZvTkm
+ p6BJDLlUAOtvNI4JmkRFKG9ml3GDuOMGAbpKn7p1XJle0rrCxJZOSJqEOM6dkuuI+0R1fu3
+ wLjgl8np3i5Hetx1zPKy6+1seCqxTWLB89owIomdh0CCra0zkxLKWk+erkEmj3tqrxL+JIU
+ UYyhGcMfQAosylV0usu6jbJz8PGjmIVuY1e26bh1EwsCXM9cAORG9AmhA6uJIqThjEKYVMn
+ 8h7uIC1xHx6NyJ3ma9cGi8IpvVZkD6slsz36NBeMAZUIDr7Mbwrdmi1ANzGA==
 Received: from zeus.lespinasse.org (zeus.lespinasse.org [10.0.0.150])
-        by server.lespinasse.org (Postfix) with ESMTPS id 36C7E160AC7;
+        by server.lespinasse.org (Postfix) with ESMTPS id 4784B160AE1;
         Fri, 28 Jan 2022 05:10:07 -0800 (PST)
 Received: by zeus.lespinasse.org (Postfix, from userid 1000)
-        id 1CA4E2023B; Fri, 28 Jan 2022 05:10:07 -0800 (PST)
+        id 2DBAD20FB5; Fri, 28 Jan 2022 05:10:07 -0800 (PST)
 From:   Michel Lespinasse <michel@lespinasse.org>
 To:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>
@@ -59,9 +56,9 @@ Cc:     kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Andy Lutomirski <luto@kernel.org>,
         Michel Lespinasse <michel@lespinasse.org>
-Subject: [PATCH v2 29/35] mm: disable rcu safe vma freeing for single threaded user space
-Date:   Fri, 28 Jan 2022 05:10:00 -0800
-Message-Id: <20220128131006.67712-30-michel@lespinasse.org>
+Subject: [PATCH v2 35/35] powerpc/mm: attempt speculative mm faults first
+Date:   Fri, 28 Jan 2022 05:10:06 -0800
+Message-Id: <20220128131006.67712-36-michel@lespinasse.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220128131006.67712-1-michel@lespinasse.org>
 References: <20220128131006.67712-1-michel@lespinasse.org>
@@ -71,40 +68,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Performance tuning: as single threaded userspace does not use
-speculative page faults, it does not require rcu safe vma freeing.
-Turn this off to avoid the related (small) extra overheads.
+Attempt speculative mm fault handling first, and fall back to the
+existing (non-speculative) code if that fails.
 
-For multi threaded userspace, we often see a performance benefit from
-the rcu safe vma freeing - even in tests that do not have any frequent
-concurrent page faults ! This is because rcu safe vma freeing prevents
-recently released vmas from being immediately reused in a new thread.
+This follows the lines of the x86 speculative fault handling code,
+but with some minor arch differences such as the way that the
+access_pkey_error case is handled
 
 Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
 ---
- kernel/fork.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/powerpc/mm/fault.c | 64 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
 
-diff --git a/kernel/fork.c b/kernel/fork.c
-index db92e42d0087..34600fe86743 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -384,10 +384,12 @@ void vm_area_free(struct vm_area_struct *vma)
- {
- 	free_vma_anon_name(vma);
- #ifdef CONFIG_SPECULATIVE_PAGE_FAULT
--	call_rcu(&vma->vm_rcu, __vm_area_free);
--#else
--	kmem_cache_free(vm_area_cachep, vma);
-+	if (atomic_read(&vma->vm_mm->mm_users) > 1) {
-+		call_rcu(&vma->vm_rcu, __vm_area_free);
-+		return;
-+	}
- #endif
-+	kmem_cache_free(vm_area_cachep, vma);
- }
+diff --git a/arch/powerpc/mm/fault.c b/arch/powerpc/mm/fault.c
+index eb8ecd7343a9..3f039504e8fd 100644
+--- a/arch/powerpc/mm/fault.c
++++ b/arch/powerpc/mm/fault.c
+@@ -395,6 +395,10 @@ static int ___do_page_fault(struct pt_regs *regs, unsigned long address,
+ 	int is_write = page_fault_is_write(error_code);
+ 	vm_fault_t fault, major = 0;
+ 	bool kprobe_fault = kprobe_page_fault(regs, 11);
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
++	struct vm_area_struct pvma;
++	unsigned long seq;
++#endif
  
- static void account_kernel_stack(struct task_struct *tsk, int account)
+ 	if (unlikely(debugger_fault_handler(regs) || kprobe_fault))
+ 		return 0;
+@@ -451,6 +455,63 @@ static int ___do_page_fault(struct pt_regs *regs, unsigned long address,
+ 	if (is_exec)
+ 		flags |= FAULT_FLAG_INSTRUCTION;
+ 
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
++	/*
++	 * No need to try speculative faults for kernel or
++	 * single threaded user space.
++	 */
++	if (!(flags & FAULT_FLAG_USER) || atomic_read(&mm->mm_users) == 1)
++		goto no_spf;
++
++	count_vm_event(SPF_ATTEMPT);
++	seq = mmap_seq_read_start(mm);
++	if (seq & 1) {
++		count_vm_spf_event(SPF_ABORT_ODD);
++		goto spf_abort;
++	}
++	rcu_read_lock();
++	vma = __find_vma(mm, address);
++	if (!vma || vma->vm_start > address) {
++		rcu_read_unlock();
++		count_vm_spf_event(SPF_ABORT_UNMAPPED);
++		goto spf_abort;
++	}
++	if (!vma_is_anonymous(vma)) {
++		rcu_read_unlock();
++		count_vm_spf_event(SPF_ABORT_NO_SPECULATE);
++		goto spf_abort;
++	}
++	pvma = *vma;
++	rcu_read_unlock();
++	if (!mmap_seq_read_check(mm, seq, SPF_ABORT_VMA_COPY))
++		goto spf_abort;
++	vma = &pvma;
++#ifdef CONFIG_PPC_MEM_KEYS
++	if (unlikely(access_pkey_error(is_write, is_exec,
++				       (error_code & DSISR_KEYFAULT), vma))) {
++		count_vm_spf_event(SPF_ABORT_ACCESS_ERROR);
++		goto spf_abort;
++	}
++#endif /* CONFIG_PPC_MEM_KEYS */
++	if (unlikely(access_error(is_write, is_exec, vma))) {
++		count_vm_spf_event(SPF_ABORT_ACCESS_ERROR);
++		goto spf_abort;
++	}
++	fault = do_handle_mm_fault(vma, address,
++				   flags | FAULT_FLAG_SPECULATIVE, seq, regs);
++	major |= fault & VM_FAULT_MAJOR;
++
++	if (fault_signal_pending(fault, regs))
++		return user_mode(regs) ? 0 : SIGBUS;
++	if (!(fault & VM_FAULT_RETRY))
++		goto done;
++
++spf_abort:
++	count_vm_event(SPF_ABORT);
++no_spf:
++
++#endif	/* CONFIG_SPECULATIVE_PAGE_FAULT */
++
+ 	/* When running in the kernel we expect faults to occur only to
+ 	 * addresses in user space.  All other faults represent errors in the
+ 	 * kernel and should generate an OOPS.  Unfortunately, in the case of an
+@@ -522,6 +583,9 @@ static int ___do_page_fault(struct pt_regs *regs, unsigned long address,
+ 	}
+ 
+ 	mmap_read_unlock(current->mm);
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
++done:
++#endif
+ 
+ 	if (unlikely(fault & VM_FAULT_ERROR))
+ 		return mm_fault_error(regs, address, fault);
 -- 
 2.20.1
 
