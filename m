@@ -2,314 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 050D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 04:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A7B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 04:20:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346008AbiA1EUL (ORCPT
+        id S1345993AbiA1EUO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 23:20:11 -0500
-Received: from mga03.intel.com ([134.134.136.65]:38022 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345968AbiA1ET4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 23:19:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643343596; x=1674879596;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FjoGarZzuqSjMpwHHQsNsciwmBhli4BwtOz9VjpJDOE=;
-  b=OGchKycvJyKuhtPRXX+ACF3BRGRUt6VCNVJzrjrUdT/y9YuufXGuwi7T
-   n7mCEqmyVAsBAjsvJCxvPTrvO/PJds1HrmvBjL485NsP1r2wYswGZdeUE
-   1NLgF1CyvkEyDVRql558Z09HuW+HY1vO7P4/fqFPkGYaJ5/qeFjor9doj
-   159gGhTOdoalVRNN9Ttw/a2BO0lxAj9zzOIjsf+tAh4seqnvp3Ja0+TZw
-   WORZ4dI+XGsQvqif1nLjjaE8S5Uxk3Iq0ap5GF5tGFvVb5n/pUhCxqB1T
-   MhcSJbOCob9ccOp5+tr8i0UgTD5VmFFwftaDyz1RxMs+p8+UMxGCbvB9U
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="246989337"
-X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
-   d="scan'208";a="246989337"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 20:19:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
-   d="scan'208";a="696941467"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 27 Jan 2022 20:19:53 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDIjp-000NSF-0o; Fri, 28 Jan 2022 04:19:53 +0000
-Date:   Fri, 28 Jan 2022 12:19:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [clangbuiltlinux:reachability 2/6] include/linux/rcupdate.h:1001:2:
- error: expected ')'
-Message-ID: <202201281234.J3kmDPwj-lkp@intel.com>
+        Thu, 27 Jan 2022 23:20:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43526 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345984AbiA1EUF (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 23:20:05 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 481C0C061747
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 20:20:05 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id o64so5376297pjo.2
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 20:20:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ajou.ac.kr; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xP6WrADaNbB0GbMBvmvKXCGpVRVlLUvmPuBP6oo9BPE=;
+        b=Nog1IxHG8ewwb12bB4cc99R9HJGwAV3G2dAdD7/9IZhUQC/N6BcZBeQZed6JDRcLFg
+         r7+RtZnUgUcp0EfjFQfi5mYbIrPwS5ERtIu9qh9F9fGRiT3tSZMoISAyhLblGe6hOuud
+         0notX9+1XeuqkKOTwWtxgdKApu5uPJXcPU4ds=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xP6WrADaNbB0GbMBvmvKXCGpVRVlLUvmPuBP6oo9BPE=;
+        b=BsYr5jPsL2NygLInqE5Cs49RfLwXnr0TLOcSXMVT31CHJi+qOr8U8xU2wVz6cZjatn
+         TYNCKFdeohrONLHzxFbmDlGAGa6uLFWXr/pAOiZSM5Lh9mWcgjvlq+XEYMULPcqUqiZ1
+         ZXNvdWskIrNx2jo2dkR4KdPkyrpgOaXzvZ50GDQJ+HA8adC/0MIrsShVLl716LZcJF7Y
+         R3uUSipd9vCMQ1X2FvRfuJW7jq4kF+9tGoUu6ZnbT8Ezg9OZ872z1NO9vR9W8iI62XaQ
+         Zt8DFUaeo2P57DBnQRG0mQTefX+l0icswxhXRFTivSKaG40DPK9hjy2hwHjScTX0FV3W
+         GAAw==
+X-Gm-Message-State: AOAM531MhLY1cIIh0PckAfddUZJA/2kI7nNMmloDuqogzoaS3h7G+buV
+        rQGlQaXPnFR7vJ9Se8sjpIM9Zw==
+X-Google-Smtp-Source: ABdhPJy6v7QquJ7Gewn9ovJal1hBbR4rfVL8RsZmH7cOJxXAY98IlDPTrp4SsItB8MmrIHlLHtX4kg==
+X-Received: by 2002:a17:90a:7102:: with SMTP id h2mr7854820pjk.65.1643343604488;
+        Thu, 27 Jan 2022 20:20:04 -0800 (PST)
+Received: from swarm08 ([210.107.197.32])
+        by smtp.gmail.com with ESMTPSA id a38sm7135993pfx.46.2022.01.27.20.20.02
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 27 Jan 2022 20:20:04 -0800 (PST)
+Date:   Fri, 28 Jan 2022 13:19:59 +0900
+From:   Jonghyeon Kim <tome01@ajou.ac.kr>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     dan.j.williams@intel.com, vishal.l.verma@intel.com,
+        dave.jiang@intel.com, akpm@linux-foundation.org,
+        nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH 1/2] mm/memory_hotplug: Export shrink span functions for
+ zone and node
+Message-ID: <20220128041959.GA20345@swarm08>
+References: <20220126170002.19754-1-tome01@ajou.ac.kr>
+ <5d02ea0e-aca6-a64b-23de-bc9307572d17@redhat.com>
+ <20220127094142.GA31409@swarm08>
+ <696b782f-0b50-9861-a34d-cf750d4244bd@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <696b782f-0b50-9861-a34d-cf750d4244bd@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ClangBuiltLinux/linux reachability
-head:   1ebaf6b87ee4d103be3d3f6e00fa4fcb18e7865e
-commit: 473c4f04fa49864f6955062435d8bab02ff87862 [2/6] x86: bug.h: merge asm in __WARN_FLAGS
-config: i386-randconfig-a011-20220124 (https://download.01.org/0day-ci/archive/20220128/202201281234.J3kmDPwj-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ClangBuiltLinux/linux/commit/473c4f04fa49864f6955062435d8bab02ff87862
-        git remote add clangbuiltlinux https://github.com/ClangBuiltLinux/linux
-        git fetch --no-tags clangbuiltlinux reachability
-        git checkout 473c4f04fa49864f6955062435d8bab02ff87862
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 prepare
+On Thu, Jan 27, 2022 at 10:54:23AM +0100, David Hildenbrand wrote:
+> On 27.01.22 10:41, Jonghyeon Kim wrote:
+> > On Wed, Jan 26, 2022 at 06:04:50PM +0100, David Hildenbrand wrote:
+> >> On 26.01.22 18:00, Jonghyeon Kim wrote:
+> >>> Export shrink_zone_span() and update_pgdat_span() functions to head
+> >>> file. We need to update real number of spanned pages for NUMA nodes and
+> >>> zones when we add memory device node such as device dax memory.
+> >>>
+> >>
+> >> Can you elaborate a bit more what you intend to fix?
+> >>
+> >> Memory onlining/offlining is reponsible for updating the node/zone span,
+> >> and that's triggered when the dax/kmem mamory gets onlined/offlined.
+> >>
+> > Sure, sorry for the lack of explanation of the intended fix.
+> > 
+> > Before onlining nvdimm memory using dax(devdax or fsdax), these memory belong to
+> > cpu NUMA nodes, which extends span pages of node/zone as a ZONE_DEVICE. So there
+> > is no problem because node/zone contain these additional non-visible memory
+> > devices to the system.
+> > But, if we online dax-memory, zone[ZONE_DEVICE] of CPU NUMA node is hot-plugged
+> > to new NUMA node(but CPU-less). I think there is no need to hold
+> > zone[ZONE_DEVICE] pages on the original node.
+> > 
+> > Additionally, spanned pages are also used to calculate the end pfn of a node.
+> > Thus, it is needed to maintain accurate page stats for node/zone.
+> > 
+> > My machine contains two CPU-socket consisting of DRAM and Intel DCPMM
+> > (DC persistent memory modules) with App-Direct mode.
+> > 
+> > Below are my test results.
+> > 
+> > Before memory onlining:
+> > 
+> > 	# ndctl create-namespace --mode=devdax
+> > 	# ndctl create-namespace --mode=devdax
+> > 	# cat /proc/zoneinfo | grep -E "Node|spanned" | paste - -
+> > 	Node 0, zone      DMA	        spanned  4095
+> > 	Node 0, zone    DMA32	        spanned  1044480
+> > 	Node 0, zone   Normal	        spanned  7864320
+> > 	Node 0, zone  Movable	        spanned  0
+> > 	Node 0, zone   Device	        spanned  66060288
+> > 	Node 1, zone      DMA	        spanned  0
+> > 	Node 1, zone    DMA32	        spanned  0
+> > 	Node 1, zone   Normal	        spanned  8388608
+> > 	Node 1, zone  Movable	        spanned  0
+> > 	Node 1, zone   Device	        spanned  66060288
+> > 
+> > After memory onlining:
+> > 
+> > 	# daxctl reconfigure-device --mode=system-ram --no-online dax0.0
+> > 	# daxctl reconfigure-device --mode=system-ram --no-online dax1.0
+> > 
+> > 	# cat /proc/zoneinfo | grep -E "Node|spanned" | paste - -
+> > 	Node 0, zone      DMA	        spanned  4095
+> > 	Node 0, zone    DMA32	        spanned  1044480
+> > 	Node 0, zone   Normal	        spanned  7864320
+> > 	Node 0, zone  Movable	        spanned  0
+> > 	Node 0, zone   Device	        spanned  66060288
+> > 	Node 1, zone      DMA	        spanned  0
+> > 	Node 1, zone    DMA32	        spanned  0
+> > 	Node 1, zone   Normal	        spanned  8388608
+> > 	Node 1, zone  Movable	        spanned  0
+> > 	Node 1, zone   Device	        spanned  66060288
+> > 	Node 2, zone      DMA	        spanned  0
+> > 	Node 2, zone    DMA32	        spanned  0
+> > 	Node 2, zone   Normal	        spanned  65011712
+> > 	Node 2, zone  Movable	        spanned  0
+> > 	Node 2, zone   Device	        spanned  0
+> > 	Node 3, zone      DMA	        spanned  0
+> > 	Node 3, zone    DMA32	        spanned  0
+> > 	Node 3, zone   Normal	        spanned  65011712
+> > 	Node 3, zone  Movable	        spanned  0
+> > 	Node 3, zone   Device	        spanned  0
+> > 
+> > As we can see, Node 0 and 1 still have zone_device pages after memory onlining.
+> > This causes problem that Node 0 and Node 2 have same end of pfn values, also 
+> > Node 1 and Node 3 have same problem.
+> 
+> Thanks for the information, that makes it clearer.
+> 
+> While this unfortunate, the node/zone span is something fairly
+> unreliable/unusable for user space. Nodes and zones can overlap just easily.
+> 
+> What counts are present/managed pages in the node/zone.
+> 
+> So at least I don't count this as something that "needs fixing",
+> it's more something that's nice to handle better if easily possible.
+> 
+> See below.
+> 
+> > 
+> >>> Signed-off-by: Jonghyeon Kim <tome01@ajou.ac.kr>
+> >>> ---
+> >>>  include/linux/memory_hotplug.h | 3 +++
+> >>>  mm/memory_hotplug.c            | 6 ++++--
+> >>>  2 files changed, 7 insertions(+), 2 deletions(-)
+> >>>
+> >>> diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
+> >>> index be48e003a518..25c7f60c317e 100644
+> >>> --- a/include/linux/memory_hotplug.h
+> >>> +++ b/include/linux/memory_hotplug.h
+> >>> @@ -337,6 +337,9 @@ extern void move_pfn_range_to_zone(struct zone *zone, unsigned long start_pfn,
+> >>>  extern void remove_pfn_range_from_zone(struct zone *zone,
+> >>>  				       unsigned long start_pfn,
+> >>>  				       unsigned long nr_pages);
+> >>> +extern void shrink_zone_span(struct zone *zone, unsigned long start_pfn,
+> >>> +			     unsigned long end_pfn);
+> >>> +extern void update_pgdat_span(struct pglist_data *pgdat);
+> >>>  extern bool is_memblock_offlined(struct memory_block *mem);
+> >>>  extern int sparse_add_section(int nid, unsigned long pfn,
+> >>>  		unsigned long nr_pages, struct vmem_altmap *altmap);
+> >>> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> >>> index 2a9627dc784c..38f46a9ef853 100644
+> >>> --- a/mm/memory_hotplug.c
+> >>> +++ b/mm/memory_hotplug.c
+> >>> @@ -389,7 +389,7 @@ static unsigned long find_biggest_section_pfn(int nid, struct zone *zone,
+> >>>  	return 0;
+> >>>  }
+> >>>  
+> >>> -static void shrink_zone_span(struct zone *zone, unsigned long start_pfn,
+> >>> +void shrink_zone_span(struct zone *zone, unsigned long start_pfn,
+> >>>  			     unsigned long end_pfn)
+> >>>  {
+> >>>  	unsigned long pfn;
+> >>> @@ -428,8 +428,9 @@ static void shrink_zone_span(struct zone *zone, unsigned long start_pfn,
+> >>>  		}
+> >>>  	}
+> >>>  }
+> >>> +EXPORT_SYMBOL_GPL(shrink_zone_span);
+> >>
+> >> Exporting both as symbols feels very wrong. This is memory
+> >> onlining/offlining internal stuff.
+> > 
+> > I agree with you that your comment. I will find another approach to avoid
+> > directly using onlining/offlining internal stuff while updating node/zone span.
+> 
+> IIRC, to handle what you intend to handle properly want to look into teaching
+> remove_pfn_range_from_zone() to handle zone_is_zone_device().
+> 
+> There is a big fat comment:
+> 
+> 	/*
+> 	 * Zone shrinking code cannot properly deal with ZONE_DEVICE. So
+> 	 * we will not try to shrink the zones - which is okay as
+> 	 * set_zone_contiguous() cannot deal with ZONE_DEVICE either way.
+> 	 */
+> 	if (zone_is_zone_device(zone))
+> 		return;
+> 
+> 
+> Similarly, try_offline_node() spells this out:
+> 
+> 	/*
+> 	 * If the node still spans pages (especially ZONE_DEVICE), don't
+> 	 * offline it. A node spans memory after move_pfn_range_to_zone(),
+> 	 * e.g., after the memory block was onlined.
+> 	 */
+> 	if (pgdat->node_spanned_pages)
+> 		return;
+> 
+> 
+> So once you handle remove_pfn_range_from_zone() cleanly, you'll cleanly handle
+> try_offline_node() implicitly.
+> 
+> Trying to update the node span manually without teaching node/zone shrinking code how to
+> handle ZONE_DEVICE properly is just a hack that will only sometimes work. Especially, it
+> won't work if the range of interest is still surrounded by other ranges.
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks for your pointing out, I missed those comments.
+I will keep trying to handle node/zone span updating process.
 
-All errors (new ones prefixed by >>):
-
-   include/linux/lockdep.h:316:2: note: expanded from macro 'lockdep_assert_held'
-           lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
-           ^
-   include/linux/lockdep.h:310:7: note: expanded from macro 'lockdep_assert'
-           do { WARN_ON(debug_locks && !(cond)); } while (0)
-                ^
-   include/asm-generic/bug.h:123:3: note: expanded from macro 'WARN_ON'
-                   __WARN();                                               \
-                   ^
-   include/asm-generic/bug.h:96:19: note: expanded from macro '__WARN'
-   #define __WARN()                __WARN_FLAGS(BUGFLAG_TAINT(TAINT_WARN))
-                                   ^
-   arch/x86/include/asm/bug.h:82:25: note: expanded from macro '__WARN_FLAGS'
-           _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);                  \
-                                  ^
-   In file included from arch/x86/kernel/asm-offsets.c:9:
-   In file included from include/linux/crypto.h:20:
-   In file included from include/linux/slab.h:15:
-   In file included from include/linux/gfp.h:6:
-   In file included from include/linux/mmzone.h:16:
-   include/linux/seqlock.h:278:1: error: expected ')'
-   SEQCOUNT_LOCKNAME(rwlock,       rwlock_t,        __SEQ_RT, s->lock,        read,     read_lock(s->lock))
-   ^
-   include/linux/seqlock.h:247:13: note: expanded from macro 'SEQCOUNT_LOCKNAME'
-           __SEQ_LOCK(lockdep_assert_held(lockmember));                    \
-                      ^
-   include/linux/lockdep.h:316:2: note: expanded from macro 'lockdep_assert_held'
-           lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
-           ^
-   include/linux/lockdep.h:310:7: note: expanded from macro 'lockdep_assert'
-           do { WARN_ON(debug_locks && !(cond)); } while (0)
-                ^
-   include/asm-generic/bug.h:123:3: note: expanded from macro 'WARN_ON'
-                   __WARN();                                               \
-                   ^
-   include/asm-generic/bug.h:96:19: note: expanded from macro '__WARN'
-   #define __WARN()                __WARN_FLAGS(BUGFLAG_TAINT(TAINT_WARN))
-                                   ^
-   arch/x86/include/asm/bug.h:82:25: note: expanded from macro '__WARN_FLAGS'
-           _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);                  \
-                                  ^
-   In file included from arch/x86/kernel/asm-offsets.c:9:
-   In file included from include/linux/crypto.h:20:
-   In file included from include/linux/slab.h:15:
-   In file included from include/linux/gfp.h:6:
-   In file included from include/linux/mmzone.h:16:
-   include/linux/seqlock.h:279:1: error: expected ')'
-   SEQCOUNT_LOCKNAME(mutex,        struct mutex,    true,     s->lock,        mutex,    mutex_lock(s->lock))
-   ^
-   include/linux/seqlock.h:247:13: note: expanded from macro 'SEQCOUNT_LOCKNAME'
-           __SEQ_LOCK(lockdep_assert_held(lockmember));                    \
-                      ^
-   include/linux/lockdep.h:316:2: note: expanded from macro 'lockdep_assert_held'
-           lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
-           ^
-   include/linux/lockdep.h:310:7: note: expanded from macro 'lockdep_assert'
-           do { WARN_ON(debug_locks && !(cond)); } while (0)
-                ^
-   include/asm-generic/bug.h:123:3: note: expanded from macro 'WARN_ON'
-                   __WARN();                                               \
-                   ^
-   include/asm-generic/bug.h:96:19: note: expanded from macro '__WARN'
-   #define __WARN()                __WARN_FLAGS(BUGFLAG_TAINT(TAINT_WARN))
-                                   ^
-   arch/x86/include/asm/bug.h:82:25: note: expanded from macro '__WARN_FLAGS'
-           _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);                  \
-                                  ^
-   In file included from arch/x86/kernel/asm-offsets.c:9:
-   In file included from include/linux/crypto.h:20:
-   In file included from include/linux/slab.h:15:
-   In file included from include/linux/gfp.h:6:
-   In file included from include/linux/mmzone.h:16:
-   include/linux/seqlock.h:280:1: error: expected ')'
-   SEQCOUNT_LOCKNAME(ww_mutex,     struct ww_mutex, true,     &s->lock->base, ww_mutex, ww_mutex_lock(s->lock, NULL))
-   ^
-   include/linux/seqlock.h:247:13: note: expanded from macro 'SEQCOUNT_LOCKNAME'
-           __SEQ_LOCK(lockdep_assert_held(lockmember));                    \
-                      ^
-   include/linux/lockdep.h:316:2: note: expanded from macro 'lockdep_assert_held'
-           lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
-           ^
-   include/linux/lockdep.h:310:7: note: expanded from macro 'lockdep_assert'
-           do { WARN_ON(debug_locks && !(cond)); } while (0)
-                ^
-   include/asm-generic/bug.h:123:3: note: expanded from macro 'WARN_ON'
-                   __WARN();                                               \
-                   ^
-   include/asm-generic/bug.h:96:19: note: expanded from macro '__WARN'
-   #define __WARN()                __WARN_FLAGS(BUGFLAG_TAINT(TAINT_WARN))
-                                   ^
-   arch/x86/include/asm/bug.h:82:25: note: expanded from macro '__WARN_FLAGS'
-           _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);                  \
-                                  ^
-   In file included from arch/x86/kernel/asm-offsets.c:9:
-   In file included from include/linux/crypto.h:20:
-   In file included from include/linux/slab.h:15:
-   In file included from include/linux/gfp.h:6:
-   In file included from include/linux/mmzone.h:21:
-   In file included from include/linux/mm_types.h:10:
-   In file included from include/linux/rbtree.h:24:
->> include/linux/rcupdate.h:1001:2: error: expected ')'
-           WARN_ON_ONCE(func != (rcu_callback_t)~0L);
-           ^
-   include/asm-generic/bug.h:106:3: note: expanded from macro 'WARN_ON_ONCE'
-                   __WARN_FLAGS(BUGFLAG_ONCE |                     \
-                   ^
-   arch/x86/include/asm/bug.h:82:25: note: expanded from macro '__WARN_FLAGS'
-           _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);                  \
-                                  ^
-   In file included from arch/x86/kernel/asm-offsets.c:9:
-   In file included from include/linux/crypto.h:20:
-   In file included from include/linux/slab.h:15:
-   In file included from include/linux/gfp.h:6:
-   In file included from include/linux/mmzone.h:23:
-   In file included from include/linux/local_lock.h:5:
->> include/linux/local_lock_internal.h:30:2: error: expected ')'
-           DEBUG_LOCKS_WARN_ON(l->owner);
-           ^
-   include/linux/debug_locks.h:31:4: note: expanded from macro 'DEBUG_LOCKS_WARN_ON'
-                           WARN(1, "DEBUG_LOCKS_WARN_ON(%s)", #c);         \
-                           ^
-   include/asm-generic/bug.h:132:3: note: expanded from macro 'WARN'
-                   __WARN_printf(TAINT_WARN, format);                      \
-                   ^
-   include/asm-generic/bug.h:100:3: note: expanded from macro '__WARN_printf'
-                   __WARN_FLAGS(BUGFLAG_NO_CUT_HERE | BUGFLAG_TAINT(taint));\
-                   ^
-   arch/x86/include/asm/bug.h:82:25: note: expanded from macro '__WARN_FLAGS'
-           _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);                  \
-                                  ^
-   In file included from arch/x86/kernel/asm-offsets.c:9:
-   In file included from include/linux/crypto.h:20:
-   In file included from include/linux/slab.h:15:
-   In file included from include/linux/gfp.h:6:
-   In file included from include/linux/mmzone.h:23:
-   In file included from include/linux/local_lock.h:5:
-   include/linux/local_lock_internal.h:36:2: error: expected ')'
-           DEBUG_LOCKS_WARN_ON(l->owner != current);
-           ^
-   include/linux/debug_locks.h:31:4: note: expanded from macro 'DEBUG_LOCKS_WARN_ON'
-                           WARN(1, "DEBUG_LOCKS_WARN_ON(%s)", #c);         \
-                           ^
-   include/asm-generic/bug.h:132:3: note: expanded from macro 'WARN'
-                   __WARN_printf(TAINT_WARN, format);                      \
-                   ^
-   include/asm-generic/bug.h:100:3: note: expanded from macro '__WARN_printf'
-                   __WARN_FLAGS(BUGFLAG_NO_CUT_HERE | BUGFLAG_TAINT(taint));\
-                   ^
-   arch/x86/include/asm/bug.h:82:25: note: expanded from macro '__WARN_FLAGS'
-           _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);                  \
-                                  ^
-   In file included from arch/x86/kernel/asm-offsets.c:9:
-   In file included from include/linux/crypto.h:20:
-   In file included from include/linux/slab.h:15:
-   In file included from include/linux/gfp.h:6:
-   In file included from include/linux/mmzone.h:942:
-   In file included from include/linux/memory_hotplug.h:7:
-   In file included from include/linux/notifier.h:16:
->> include/linux/srcu.h:188:2: error: expected ')'
-           WARN_ON_ONCE(idx & ~0x1);
-           ^
-   include/asm-generic/bug.h:106:3: note: expanded from macro 'WARN_ON_ONCE'
-                   __WARN_FLAGS(BUGFLAG_ONCE |                     \
-                   ^
-   arch/x86/include/asm/bug.h:82:25: note: expanded from macro '__WARN_FLAGS'
-           _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);                  \
-                                  ^
-   In file included from arch/x86/kernel/asm-offsets.c:9:
-   In file included from include/linux/crypto.h:20:
-   In file included from include/linux/slab.h:19:
->> include/linux/percpu-refcount.h:280:2: error: expected ')'
-           WARN_ON_ONCE(!rcu_read_lock_held());
-           ^
-   include/asm-generic/bug.h:106:3: note: expanded from macro 'WARN_ON_ONCE'
-                   __WARN_FLAGS(BUGFLAG_ONCE |                     \
-                   ^
-   arch/x86/include/asm/bug.h:82:25: note: expanded from macro '__WARN_FLAGS'
-           _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);                  \
-                                  ^
-   In file included from arch/x86/kernel/asm-offsets.c:10:
->> include/linux/sched.h:1816:2: error: expected ')'
-           WARN_ON(p->user_cpus_ptr);
-           ^
-   include/asm-generic/bug.h:123:3: note: expanded from macro 'WARN_ON'
-                   __WARN();                                               \
-                   ^
-   include/asm-generic/bug.h:96:19: note: expanded from macro '__WARN'
-   #define __WARN()                __WARN_FLAGS(BUGFLAG_TAINT(TAINT_WARN))
-                                   ^
-   arch/x86/include/asm/bug.h:82:25: note: expanded from macro '__WARN_FLAGS'
-           _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);                  \
-                                  ^
-   fatal error: too many errors emitted, stopping now [-ferror-limit=]
-   20 errors generated.
-   make[2]: *** [scripts/Makefile.build:121: arch/x86/kernel/asm-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1197: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
-
-vim +1001 include/linux/rcupdate.h
-
-74de6960c99d8d Paul E. McKenney 2018-07-24   980  
-2aa5503026ceaa Paul E. McKenney 2018-11-20   981  /**
-000601bb62330f Tobias Klauser   2020-07-09   982   * rcu_head_after_call_rcu() - Has this rcu_head been passed to call_rcu()?
-74de6960c99d8d Paul E. McKenney 2018-07-24   983   * @rhp: The rcu_head structure to test.
-2aa5503026ceaa Paul E. McKenney 2018-11-20   984   * @f: The function passed to call_rcu() along with @rhp.
-74de6960c99d8d Paul E. McKenney 2018-07-24   985   *
-74de6960c99d8d Paul E. McKenney 2018-07-24   986   * Returns @true if the @rhp has been passed to call_rcu() with @func,
-74de6960c99d8d Paul E. McKenney 2018-07-24   987   * and @false otherwise.  Emits a warning in any other case, including
-74de6960c99d8d Paul E. McKenney 2018-07-24   988   * the case where @rhp has already been invoked after a grace period.
-74de6960c99d8d Paul E. McKenney 2018-07-24   989   * Calls to this function must not race with callback invocation.  One way
-74de6960c99d8d Paul E. McKenney 2018-07-24   990   * to avoid such races is to enclose the call to rcu_head_after_call_rcu()
-74de6960c99d8d Paul E. McKenney 2018-07-24   991   * in an RCU read-side critical section that includes a read-side fetch
-74de6960c99d8d Paul E. McKenney 2018-07-24   992   * of the pointer to the structure containing @rhp.
-74de6960c99d8d Paul E. McKenney 2018-07-24   993   */
-74de6960c99d8d Paul E. McKenney 2018-07-24   994  static inline bool
-74de6960c99d8d Paul E. McKenney 2018-07-24   995  rcu_head_after_call_rcu(struct rcu_head *rhp, rcu_callback_t f)
-74de6960c99d8d Paul E. McKenney 2018-07-24   996  {
-b699cce1604e82 Neeraj Upadhyay  2019-03-11   997  	rcu_callback_t func = READ_ONCE(rhp->func);
-b699cce1604e82 Neeraj Upadhyay  2019-03-11   998  
-b699cce1604e82 Neeraj Upadhyay  2019-03-11   999  	if (func == f)
-74de6960c99d8d Paul E. McKenney 2018-07-24  1000  		return true;
-b699cce1604e82 Neeraj Upadhyay  2019-03-11 @1001  	WARN_ON_ONCE(func != (rcu_callback_t)~0L);
-74de6960c99d8d Paul E. McKenney 2018-07-24  1002  	return false;
-74de6960c99d8d Paul E. McKenney 2018-07-24  1003  }
-74de6960c99d8d Paul E. McKenney 2018-07-24  1004  
-
-:::::: The code at line 1001 was first introduced by commit
-:::::: b699cce1604e828f19c39845252626eb78cdf38a rcu: Do a single rhp->func read in rcu_head_after_call_rcu()
-
-:::::: TO: Neeraj Upadhyay <neeraju@codeaurora.org>
-:::::: CC: Paul E. McKenney <paulmck@linux.ibm.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> -- 
+> Thanks,
+> 
+> David / dhildenb
+> 
