@@ -2,93 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 06:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC97C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 06:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346337AbiA1GRe (ORCPT
+        id S1346346AbiA1GSW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 01:17:34 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:33878
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1346329AbiA1GRb (ORCPT
+        Fri, 28 Jan 2022 01:18:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346329AbiA1GSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 01:17:31 -0500
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 59FEE4000F
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 06:17:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643350650;
-        bh=0t1V4zvmNPJT9wYj/Pd8jJat58ip8FOEKuqF28wuRD4=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=FyJ2/j2wgzrB4h9LmTBiQO7jB3URILRuw7et+JxYY6p/3Ii4ogyi/VupkdKNEfoyx
-         C2Osh0A+OLKDLiWWO1Q4DuquXp8cNh1YM8WqKggfMkXhZtUABhoBUsTQ4EOTF8lGWj
-         Hd4g6CI1JGwqDV+HI3PtkIGPni2VhnyIDbOag2S0xU9DLjv0cHgOp+bJ34BzYR22Vb
-         Zw5H332OMbjxYRb8nNUy0KOh7v4N4OGJaaNqkIJlSEZRydhcdX6cYprI9J14Szybc2
-         O7FMMKQ0J2VegHe8DK49iorVSjqdZVZUZW1g8aVhBX4xO4BKhFNlxaH3bCVDv0cpM9
-         Q1p1q3VIhrSMg==
-Received: by mail-wr1-f70.google.com with SMTP id w19-20020adf8bd3000000b001df887ad0caso531018wra.18
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 22:17:30 -0800 (PST)
+        Fri, 28 Jan 2022 01:18:20 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D909C06173B
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 22:18:20 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id ah7so12559914ejc.4
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 22:18:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ionos.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Lt8KNb/m46lTmKOmkwglDC4yqStdQ6NhHi7nDy+wPxg=;
+        b=PFMaFWxOe0RtiFl0RKboCgHp519n7nd2AeO37R/2S18vF26/0w9igzJWpCbMjN4Hf/
+         iKgVnutjzn+/u3GwXwJDMSbIll/DrnyyN319T1Njm5+fUiqzLZfAt3Q+sihKFyuvTHfg
+         BVa9AplFZB9JouQ1cVYSRlxfno4Xa7vohAJCuc6gM2CvFAOBHRHr4sl8jTOr1wdSe3Rx
+         RWEsHNIQpvvB1fScPF9URTxXPg9v6lbS8JZ+p91SZG9VZeva/jQsIep2VKXGWKMycZb6
+         fIBO+QCQWw7MqBvG8rXwbIeAJzljT+x+BUynjC0shzVXmyRyYrBWlWVcK0Rj81hVDiTR
+         /LLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0t1V4zvmNPJT9wYj/Pd8jJat58ip8FOEKuqF28wuRD4=;
-        b=fD1bCdG5WlPnnlLOF3FEsX1M6M0IIBc+RVKhgX9Q/n2pl+tMwp893Zz/RjOX1+g5fQ
-         rpcQdu8ndvCasLlmZvJqx65DHds1ys1D9nFDUrr7fTq4Jbb/94Gl8IW81mYi2ZmTL+TT
-         mgtOlGEsOhIUX1caCo21L0w2dzUoKEHysJ3CMpZyEH3DZ+NYqy6cWJPw37gHjzhPoV3b
-         4yj+jdxuPW4qtz8QDrJLQyu3s2+/O7bjR83eUxa8Wnyzvlsc+CfglILGaXOLsiwuKdYx
-         0p6hKWCn6/Z4APUd/0Q5UsgKSpY+oYe8LtLCJlDxNhvqcwpb7SzdU5jlOP0k8wQ8cC6n
-         TcrQ==
-X-Gm-Message-State: AOAM532Fl4c3QJ/hAmYR/LMyTw/FWJLBqMqKWtrxJP6LQM80yKjfTmlP
-        R4ylt3ErKbtKpuQuQz4HO8v1cWKBrtDiH8D7RIv7agMtHhC9dbG3x/IYIUaVA5LBFiTSa+acJlU
-        RzNMQ0W5CC4fTS5jYFmDyQ52aOilmdJpSOkD9lYK2TQ==
-X-Received: by 2002:adf:fb05:: with SMTP id c5mr5875251wrr.220.1643350649374;
-        Thu, 27 Jan 2022 22:17:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxnfGoUTSgGUq+FTJ1O5uTS7OjWZEbG246bwyKtGG3BSFUg0GOMLfkbUl4tx/4Z1J+yMAiWqg==
-X-Received: by 2002:adf:fb05:: with SMTP id c5mr5875223wrr.220.1643350649139;
-        Thu, 27 Jan 2022 22:17:29 -0800 (PST)
-Received: from [192.168.123.94] (ip-088-152-144-107.um26.pools.vodafone-ip.de. [88.152.144.107])
-        by smtp.gmail.com with ESMTPSA id m6sm1158698wmq.6.2022.01.27.22.17.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 22:17:28 -0800 (PST)
-Message-ID: <6cd57022-6fe3-d065-dbe3-e9487894a94c@canonical.com>
-Date:   Fri, 28 Jan 2022 07:17:27 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Lt8KNb/m46lTmKOmkwglDC4yqStdQ6NhHi7nDy+wPxg=;
+        b=noZk7qLImOJF8l+DEugwak2Ntzk+ytH2ACGbMI3CTjs+ZEJZAAb8l46Sv1EaPZkF+T
+         zy7yX2iUcohoWWlfiASrDCGKm7DJcG/Sapy+plOgRscX3Z7TntdFKiwOLNxG0lYxWjnr
+         x5+VJWL/gdf00jkxfEgTvjINMFTAYLjVZYn0FsXqXuoAhDqbPf7gznkcoWKNdufQCLUr
+         KVVxnDMk82dBdgUvkY6GmlYiiW5GwkR99w9+KZaAnRcKxaa1QCRodALCJ1jJfYih8o6E
+         jGWJ7CzpJJcVmdwS//mF5E7qA6nJ16lR7JIbFoK15RX2/aTzWMj3DoqOvGvO6MoJAYuQ
+         rRNw==
+X-Gm-Message-State: AOAM531exDYNOVSdHZNzatgIPawCd81yVR71CoCROiePP6pRR2wI5SqL
+        FY2iTDwf7P7kyoRXXXskk6np41vA99YPiyxLcpoIwN4xDFCooQ==
+X-Google-Smtp-Source: ABdhPJwY1penhEMI+8/AGF8qPOmc8YqR6syjMoix33PxXWWna4oa8W24r9Tc1PDZLpfzyPb5gLlBBo34M3Vh+hvDmIw=
+X-Received: by 2002:a17:907:1b1c:: with SMTP id mp28mr5704751ejc.624.1643350698470;
+ Thu, 27 Jan 2022 22:18:18 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return
- value
-Content-Language: en-US
-To:     Sunil V L <sunilvl@ventanamicro.com>
-Cc:     linux-efi@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>,
-        stable@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-References: <20220128045004.4843-1-sunilvl@ventanamicro.com>
-From:   Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-In-Reply-To: <20220128045004.4843-1-sunilvl@ventanamicro.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <1643289172-165636-1-git-send-email-john.garry@huawei.com> <1643289172-165636-3-git-send-email-john.garry@huawei.com>
+In-Reply-To: <1643289172-165636-3-git-send-email-john.garry@huawei.com>
+From:   Jinpu Wang <jinpu.wang@ionos.com>
+Date:   Fri, 28 Jan 2022 07:18:07 +0100
+Message-ID: <CAMGffEkrKq7kZK=dEEXcm-nA9A2VfUUTTLiXDTTXP4Q3nPo02g@mail.gmail.com>
+Subject: Re: [PATCH 2/3] scsi: pm8001: Fix use-after-free for aborted TMF sas_task
+To:     John Garry <john.garry@huawei.com>
+Cc:     jinpu.wang@ionos.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, damien.lemoal@opensource.wdc.com,
+        Ajish.Koshy@microchip.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Viswas.G@microchip.com,
+        chenxiang66@hisilicon.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/28/22 05:50, Sunil V L wrote:
-> The get_boot_hartid_from_fdt() function currently returns U32_MAX
-> for failure case which is not correct because U32_MAX is a valid
-> hartid value. This patch fixes the issue by returning error code.
-> 
-> Fixes: d7071743db31 ("RISC-V: Add EFI stub support.")
-> Cc: stable@vger.kernel.org
-> 
-> Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
-
-Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+On Thu, Jan 27, 2022 at 2:18 PM John Garry <john.garry@huawei.com> wrote:
+>
+> Currently a use-after-free may occur if a TMF sas_task is aborted before
+> we handle the IO completion in mpi_ssp_completion(). The abort occurs due
+> to timeout.
+>
+> When the timeout occurs, the SAS_TASK_STATE_ABORTED flag is set and the
+> sas_task is freed in pm8001_exec_internal_tmf_task().
+>
+> However, if the IO completion occurs later, the IO completion still thinks
+> that the sas_task is available. Fix this by clearing the ccb->task if
+> the TMF times out - the IO completion handler does nothing if this pointer
+> is cleared.
+>
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>
+> Note: For hisi_sas driver we already do something similar. However there
+> we also flush the completion queue interrupt to ensure that there is no
+> race in clearing the task pointer. Please advise if/how something similar
+> can be done here.
+Not I'm aware of, but microchip guys know better.
+Thx John!
+Acked-by: Jack Wang <jinpu.wang@ionos.com>
+>
+>  drivers/scsi/pm8001/pm8001_sas.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
+> index 160ee8b228c9..32edda3e55c6 100644
+> --- a/drivers/scsi/pm8001/pm8001_sas.c
+> +++ b/drivers/scsi/pm8001/pm8001_sas.c
+> @@ -769,8 +769,13 @@ static int pm8001_exec_internal_tmf_task(struct domain_device *dev,
+>                 res = -TMF_RESP_FUNC_FAILED;
+>                 /* Even TMF timed out, return direct. */
+>                 if (task->task_state_flags & SAS_TASK_STATE_ABORTED) {
+> +                       struct pm8001_ccb_info *ccb = task->lldd_task;
+> +
+>                         pm8001_dbg(pm8001_ha, FAIL, "TMF task[%x]timeout.\n",
+>                                    tmf->tmf);
+> +
+> +                       if (ccb)
+> +                               ccb->task = NULL;
+>                         goto ex_err;
+>                 }
+>
+> --
+> 2.26.2
+>
