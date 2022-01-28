@@ -2,90 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA93C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6113BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:06:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351052AbiA1UDW (ORCPT
+        id S1351058AbiA1UGF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 15:03:22 -0500
-Received: from mga05.intel.com ([192.55.52.43]:28403 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234277AbiA1UDS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 15:03:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643400198; x=1674936198;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3CBqo9wC6SYWLiBJXSytiwe5Oe58CLW3FLA0qDovUXU=;
-  b=jkJceV0cge9mXLXtGwQxnjg/l9Kc2WYVUpTX/ceY/uwa/JWvQa9F0xKV
-   QROttXf37r9CDCGtlzdRKbjRJSou4tCExiJmTshB7Hflfpx5fOcPbCSrE
-   +S9GooJ5SggxLv4aV5qwjDfaEkoxXmfB8+AVI97uuZa/xisA7sUjZKazn
-   lKTSxbh/vMwdM7Ow1OMKUKMg4naDfpun7IEyjqXBn7H2pPkTh8mEEGpIr
-   hj15kUvBZMlZpc8Uh/JuLJjHI/5YCwIMJ29HsCue5lW6dst7GOOn4SBHu
-   tNLkGgBrU9uKCchHlQ3PKGRLidgtFs+2muQ70sh/BYEzpADCYy03aD9jU
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="333541639"
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="333541639"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 12:02:21 -0800
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="675188885"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 12:02:15 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nDXQj-00FYpG-UB;
-        Fri, 28 Jan 2022 22:01:09 +0200
-Date:   Fri, 28 Jan 2022 22:01:09 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Tan Jui Nee <jui.nee.tan@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Kate Hsuan <hpa@redhat.com>,
-        Jonathan Yong <jonathan.yong@intel.com>,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-gpio@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org
-Cc:     Jean Delvare <jdelvare@suse.com>, Peter Tyser <ptyser@xes-inc.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Gross <markgross@kernel.org>,
-        Henning Schild <henning.schild@siemens.com>
-Subject: Re: [PATCH v3 7/8] mfd: lpc_ich: Add support for pinctrl in non-ACPI
- system
-Message-ID: <YfRLhWwcf9CfKwSN@smile.fi.intel.com>
-References: <20211221181526.53798-1-andriy.shevchenko@linux.intel.com>
- <20211221181526.53798-8-andriy.shevchenko@linux.intel.com>
+        Fri, 28 Jan 2022 15:06:05 -0500
+Received: from mail-dm6nam12on2138.outbound.protection.outlook.com ([40.107.243.138]:24992
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234277AbiA1UGD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 15:06:03 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fktAqssuPmKyMVUz65r6XxsSV2tglx3ofeqp8IlzF8tJZMxKaPD1UHI+xCgZTrGPi1pAlGg+pUT5Z+meCtYrVamqgIL6rqlPfhv7LQzjGsceUJzG2TU/88gYKTC/kYcTAZe7lseg2q8epJAnZhVOIKqRYnG0W9se96qElKdqwn0SWdIc0GsrZjeKHvl98KstSZWwYCJJNJIxNJMPDxntoPwDVvTekANtTGH1Kh29atn1UPLjq4rzUWYoR6TazBhZuu19yjpoVj++6bwIUs1nd6962bTK7+FhWyD23B97fkG6dc9FLcPnPrIqVazfmTSEwSjO4pIRrmR/r8fvTeB5PQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cK/1LA6KEtx1ERaM6rz8b3aJv6RvJWyas2Vmh/LMWRA=;
+ b=LBB2arjz6GUWaF1/fDVqv9+Nagtw6yKS+HuE7iNm561NTDkBukkf8/dEyA9kpUMNodCYABdw202uFZZJbgZe4vejLDKnrds9nt1mRuTPRfSeze3iPCbwxKfupri9usQ0DS3kIvbaPCmb1MwbayGT6+uH2CmCFiMIxsVMqdXWhp7iWM+OLRgYKJfZewn+lIplQ1KEC7Y5ldfnHANhXbQ65JK2T68jOPmvRerLJo2qDMwcxncLJdlrHn+zB6tMSAkX4lDDgeaWmz7Bzwr+sR0nC0Soxb4YxRLuiBmLZ7jwRcDIu4LUkQpDhPL5+kNaUtHAyjIyg6bDu+qNYgu7oJsloQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cK/1LA6KEtx1ERaM6rz8b3aJv6RvJWyas2Vmh/LMWRA=;
+ b=u6b+2W/hpGKHSZukH+d4Rz7QNtlyZhz1rsQozUAGmAXrOPElf/buoM6Ey2xdGFy9/c70BPJpQQ4erF3zEcaZvn5GeF8cjjlXbNo4po/VYD9CwzSP1izXiq2nM6ii8dsYrpZjqA4OAoihLRdMbUbGXATiB7POrpADlo2GVGDflCA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by CH0PR10MB4969.namprd10.prod.outlook.com
+ (2603:10b6:610:c8::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Fri, 28 Jan
+ 2022 20:06:02 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4909.017; Fri, 28 Jan 2022
+ 20:06:02 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH v4 net-next 0/2] use bulk reads for ocelot statistics
+Date:   Fri, 28 Jan 2022 12:05:47 -0800
+Message-Id: <20220128200549.1634446-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR03CA0152.namprd03.prod.outlook.com
+ (2603:10b6:303:8d::7) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211221181526.53798-8-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4e190373-36dd-4563-7a7b-08d9e2999b7e
+X-MS-TrafficTypeDiagnostic: CH0PR10MB4969:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR10MB49695F83BAA45FCB0171F785A4229@CH0PR10MB4969.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1468;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9NO54B7ouH0+pOK9WVNDcwpsW5T5vnnNCn7amW72hADRgNl3evr0y8+27tPrYEDri8ckHt+ufEy4oG92qQzWJrmWWjpDSKk9qHmkb7W8FNCmT/a5Yg+0yIh1wqDW6v6Hqh0aAG8D/HOs8xFo2DZcAj6RgnR/yY2OKH3uF37GPTHw0bohak3mQHd4xQolJvfm8ofw1L+GzyVKJeji0AQv9hGGAMG0Kora2D0TxW3W9Lk2/07ix3FEBy3vgeGKWLCV5IYOtrFQrPxL33T5I+Mz8DedewUb0iF9jEDzQWBmApplNTsL3BJp9hk21x9aYQ75W8/49QLEpaBix1jltKCx/2JCEYOIpRVNV4dYAC3oGjf6PntjKjOXY/EgmyedJTe20QBnBxrsMIjNWBiB/8iQgjogtPvjsUu1m1cyg4pEpv/pqy05Bg/iDK6vGdIVv1vF5tr9mJvej6meFF9nNmsYkvUpHp/Tww2OVg578assSz8A1VIYBUzxsIxRLYboDiQ3xiaosy2vCMiqVWA9bzq+Sbns+xzpcrGNFzDhJbygWtZ1K+b2pjO4zxUjkUXePBH3moiY2NTG4rHuvj2EQZdWE3YUqN3F+w0dmlt34KFBJKWfpbbnsbblkSMzSmLhc3lhMd8VS5AbA8JYHd5J0I24MR3BbIo5u9Wb8s7OCRw1lpug6ekuM0RAa5hPtmpcdkK45+vv8gTEA2GXRlLwXf1qOA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(39830400003)(396003)(376002)(136003)(42606007)(346002)(366004)(83380400001)(2616005)(66556008)(66946007)(66476007)(36756003)(6506007)(6512007)(8676002)(6666004)(4326008)(8936002)(52116002)(38100700002)(38350700002)(26005)(44832011)(54906003)(5660300002)(316002)(508600001)(86362001)(6486002)(2906002)(186003)(1076003)(20210929001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hWKFx4s4s7eS1rPOXb5Zd/e5lfWtgzzH9i8iwIC4EvAO4UGksGLQksxvV9+O?=
+ =?us-ascii?Q?zQhB7IwCebnYGN3l2q7BoiT2GtmP/N6to2mUYVu6VP6IxjHg1Dr7jCmcoaGJ?=
+ =?us-ascii?Q?XuuWWu2+IFUA2/AlTrr8s+GrVXeguk+XdVOVVu1w3c/gLbN0NfgHh4twRXL1?=
+ =?us-ascii?Q?3sQBsHIsC21uibH1V6Qj7BeYXJSt6MSUj15C324/QBc3aIRo777nsh6egjjE?=
+ =?us-ascii?Q?9t44a6mT76nNqLUtYOWjDPgBPEkP1RlkuMarLc9q9DhQGwu9zoTgXSF0yi03?=
+ =?us-ascii?Q?ccbCUlvJNoLwBq/AV3mQKgA1BXvyz4VYwMTx4x4ugrqspamuH5dHyTFyqE/e?=
+ =?us-ascii?Q?gZVcDDmxgE+x5oWJ5v/worb6XMqsKsLrLz3C0va8nEk/XJtMMIt+eIIgh64B?=
+ =?us-ascii?Q?Rtcu9tkfDH207c/NjdVRr5x6TB/XXYr5Dne9GxJNpmo+bB1y3dMJjHE7fsIn?=
+ =?us-ascii?Q?8GeZ54SOzQB57kL0e2toqzVVIAl9l8RmcfJ2d79M2ojtTUGEIjXsM3fs8V1c?=
+ =?us-ascii?Q?GEG4vZF+L0FyQSkIPnx8MnqHSWqEp07dwrbXwg8YuwaCAR2wyX9gtjNqPwgF?=
+ =?us-ascii?Q?cffFzakyCWyGN4oUSBhILbaLHISPnfhgcV6F/fG+y9urjPjFKEyI3+hyF6Nw?=
+ =?us-ascii?Q?zYqv2oTaN4/fi+33sFr31SgZTb6/0JIwbhAO1cZrVNGpuix48g/Czv7YbWax?=
+ =?us-ascii?Q?nvF0vakR8BTGzxwsltTZOCsC2FzdsfRNEYhQ7YXSzHODmXr3Bw7qSaSORR95?=
+ =?us-ascii?Q?UJGqP1TdQ3YFFTzGZ51A9wl9RpntazyZ3Q3fKveASA3WfZi0fsmlvNlQmJBd?=
+ =?us-ascii?Q?PwhjKuIGMDEpel2JR4LFr40GHYQMurVVDvcxGXWSKu9yZhu+FdWJ/O0F5z0R?=
+ =?us-ascii?Q?+KIfqbZVv0EidQtbcKed0QW87Ko9Fri1CpamRWdG97BRxMMWSGBMqv3aI4KT?=
+ =?us-ascii?Q?/QbVqclDFLMFuixcmWGMYKKhejx9eN6dgS2x2ftQ+u9BLsCC8qv4ENlyZVIE?=
+ =?us-ascii?Q?bvdTo/qeDPWK21YssBN8LprZO0R3YhowveRjRuUvhusT2q/x+aScJ9Q9wi47?=
+ =?us-ascii?Q?PsU2N+HySlMp2mn0F2O5vzFsePGl6zlI838tYO1ylZFeSYtnwngLaDr5guD5?=
+ =?us-ascii?Q?GziQZQgDDysixSVcaWlltHSGPl1zDFGNjdzZXqjGeLVgISjX9YBcGQPBNqvd?=
+ =?us-ascii?Q?mTD/gXam5j8vGexbw537PMit3YrIaPzMpoZfeU9JuXDih6EcJy4U0NJoRmCe?=
+ =?us-ascii?Q?+qscBn2qi9gXsW6Gg+KRBGSAE9Zyb+XiBz4Vp0RmD/6XD2Ofq3xBNuFyCYOn?=
+ =?us-ascii?Q?h5cVrXwocmahjNyOEVfw4pb1KtPswgV3F+cCd6wRjinATJip1e6um1BlfGjY?=
+ =?us-ascii?Q?YLljDHDTLRdDa38T7IBIrgcSBsO4N30GIyHZPHS2i7Ho4kfkW7Par9B3hBqv?=
+ =?us-ascii?Q?6NQ1TVsqbAMcXsFJYAdGwhLWs6MDAXvkSd/JtXJT3Us753CDogUJvFgc2bwM?=
+ =?us-ascii?Q?MyM+rHxrEqeAo/HguOVJAjfSVhRbsz3Ej/sLUYgBVs8/lC9F8wdho03f+Gbg?=
+ =?us-ascii?Q?5vMToD4tEB0AWfmsWDoU5BEZnayx0IAyPBxQj1kL0tOAFUEUmKdlrKlpLk1M?=
+ =?us-ascii?Q?46ai39CVvtWB8ooi7X+ATEfWHSVTTWgNGVvgXhOMtSW/fdCnkCXkWnIWvCpE?=
+ =?us-ascii?Q?5PtQjA=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e190373-36dd-4563-7a7b-08d9e2999b7e
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2022 20:06:01.9391
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8XWMqUKcMIezHAlG4K7i1chaEhBkYHw0xT4IXfQJrJtzVWQKXWg6AfesOE13vgQYhJL2HVizAjsESi2bz7jad/LpLaUbo4Xo/UmTUwbaviM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB4969
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Dec 21, 2021 at 08:15:25PM +0200, Andy Shevchenko wrote:
-> From: Tan Jui Nee <jui.nee.tan@intel.com>
-> 
-> Add support for non-ACPI systems, such as system that uses
-> Advanced Boot Loader (ABL) whereby a platform device has to be created
-> in order to bind with pin control and GPIO.
-> 
-> At the moment, Intel Apollo Lake In-Vehicle Infotainment (IVI) system
-> requires a driver to hide and unhide P2SB to lookup P2SB BAR and pass
-> the PCI BAR address to GPIO.
+Ocelot loops over memory regions to gather stats on different ports.
+These regions are mostly continuous, and are ordered. This patch set
+uses that information to break the stats reads into regions that can get
+read in bulk.
 
-Lee, are you fine with this change? I hope I fixed all your comments.
+The motiviation is for general cleanup, but also for SPI. Performing two
+back-to-back reads on a SPI bus require toggling the CS line, holding,
+re-toggling the CS line, sending 3 address bytes, sending N padding
+bytes, then actually performing the read. Bulk reads could reduce almost
+all of that overhead, but require that the reads are performed via
+regmap_bulk_read.
+
+v1 > v2: reword commit messages
+v2 > v3: correctly mark this for net-next when sending
+v3 > v4: calloc array instead of zalloc per review
+
+Colin Foster (2):
+  net: mscc: ocelot: add ability to perform bulk reads
+  net: mscc: ocelot: use bulk reads for stats
+
+ drivers/net/ethernet/mscc/ocelot.c    | 74 ++++++++++++++++++++++-----
+ drivers/net/ethernet/mscc/ocelot_io.c | 13 +++++
+ include/soc/mscc/ocelot.h             | 12 +++++
+ 3 files changed, 86 insertions(+), 13 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
