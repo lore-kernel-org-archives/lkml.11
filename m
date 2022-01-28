@@ -2,122 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16474C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 19:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 117A4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 19:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350712AbiA1TAQ (ORCPT
+        id S1350761AbiA1TDQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 14:00:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
+        Fri, 28 Jan 2022 14:03:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233548AbiA1TAK (ORCPT
+        with ESMTP id S233548AbiA1TDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 14:00:10 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB02C061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 11:00:09 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id x7so13603456lfu.8
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 11:00:09 -0800 (PST)
+        Fri, 28 Jan 2022 14:03:15 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAEE7C061714
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 11:03:14 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id c6so21326720ybk.3
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 11:03:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qBRm3X+bFlq2uddMz4dS1v977rSddYeT1DVBPmoaXm0=;
-        b=AV3VOxfAW4xYtFVAqVWiqtqdAo2gePPE6r5NNM7Fle0w13Ckd39WxVpKUkjIj4ivt8
-         3T+5rVMZvBKFSvkfYWLcRGSeRLAz+BDzFTEeTrxLea2DWAm1Sb8U3PNGOxaIm32gs/Xa
-         Vor8qlVZUZxrtccQLgBLDfq3rHkZTP/+ih0xyKaNKbDclffG7qEmS5arelN/bAfo7j0k
-         eN6hWiMBvgPiE8qDn9AJ70q7c95UtrjrzbS8g9rtYv7K48cX2rYPgU5Y7zV7tiPXg3Nc
-         wc3QhElD5tEwheHgwqTgoH7dnPbuBjUSQ2H2zzTcy7pqvimLKRZkA2L1ccA0gVeHkwQD
-         pxXA==
+        bh=3hlBZRfJeaaEMgpDJfGF4VXTiNMRL5u5A8XWDhcHgIU=;
+        b=RB+iJtZRYF0dkmWtZQjZrE5l2GCNTyyleglmYgfhw2DfTccUOrvGv9t6I6Yk7N3fd1
+         i90XCiFg/0xlIqHxlY0zFOXcxPwjk7qLfB9xsvV/FxdncdXC32oYUY+M/uVFIzbbRkHS
+         sGAHLY2u0DS9/gwV0Bw8Llaky5XDQPsalA9CkpoF7O7nCYaGNpqK/b3tj5Zq48+wjJoe
+         QMaTbI9e0mRXYA0VjJ2MYyLeZM271Ly4gVi94O4Z7JeGjWaG7KtuFAcrocfly191vqsq
+         BP+/8tBvp4hnN0JJUQazPDSUO82daB1GopBf7zqzTLm5faaI3mAwSJt3f4JT1K0I7IBP
+         yiIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qBRm3X+bFlq2uddMz4dS1v977rSddYeT1DVBPmoaXm0=;
-        b=v8W7SS0nVbLMiwL+dUufWHN8ebL57GAdevRCdVwAFNHLJB4tftRRaOeueV9SSdFlin
-         cXkC5BamcIc/HQEDRD7Z+Ana37IRq5GsPMpLFz7LScX1E/iaub2xiBuZOpDALolnQcL3
-         CN+NQCiDfheNc0LKquGW/P+3cpxKyaJiOqMRupfP6Po+XJM2opvgrdAovye18C8lViLB
-         A/sn82HvOnArlZ7M4vT4Muw6EOG79owVVKalA0DEGk98TQTP9ebdxouqNI0VsNBB3sWz
-         H9aWF5ewhOGxSo9XG5eMyIpDSBw0S0CFk1FPD3Ez1OXLQo89+hQ7f2O1R3XEluIXsOPw
-         6yEw==
-X-Gm-Message-State: AOAM5302lsuvwHhiyiTxbrQuwIF8zqjdiqC8F8/WNGolh7iah/ekyoF9
-        Ga5y+cmJaEXDlpX2BVtj65L2EZTcXFUu7o5bfrA3Cw==
-X-Google-Smtp-Source: ABdhPJwNFA5r7YIfbCUFseh+GJz1V3CzzkTvSH4ZreVsrxw477tiR6JvbprCbzDWW7JfZ4pEFuXrrHASRZQs18PzbiQ=
-X-Received: by 2002:ac2:5510:: with SMTP id j16mr7086081lfk.240.1643396407846;
- Fri, 28 Jan 2022 11:00:07 -0800 (PST)
+        bh=3hlBZRfJeaaEMgpDJfGF4VXTiNMRL5u5A8XWDhcHgIU=;
+        b=f2WEkQqv2BmWr6/SG3EviHDclUnkZewqHlu8qAYpJY+aqfCvQ3Y0aWceqWBmnzIeW+
+         9EdspyYngqqBwVmEZjBpsENBplNxAcRQrUDjNppePYRNc8BG00t4D862n1wT4oWa8kN6
+         P6oIlTxXojrnHT7VqO6EoNxWxhxAkaKPHTXumO5xaBMSR4Fp21kyrDJUvzMwsWIS5D+c
+         dTmwsqgD5h5sQkh9x1c+OVFAeHi3dAXZC6Ipa+Cdez9T4Bdqs5g8K5PtpQ8rqeD+8JTr
+         sG2vONz8TgREpN0QIjHyglljCNY/ZepJV3c+qGmO1uHG22WtRRGTInFl+ijRj6oy/jeC
+         tKdg==
+X-Gm-Message-State: AOAM531TAXpfA4rWxWHGjyTbUJggXh6VkjRiJEmAYA4VW6lwJ22NVXqT
+        fnevsbs8bHGurCW6ku24VsRQkEzNs3z1d0SvGqVPpYr+XWA=
+X-Google-Smtp-Source: ABdhPJzzfPPKuV+kEV5XP50RjBgFVl8NGNQtLCUEqsEPQE6Z940iaylmOzR016fVVotXJrtEZoq5NTeoaKbhpkUa57Y=
+X-Received: by 2002:a05:6902:704:: with SMTP id k4mr14250783ybt.355.1643396593140;
+ Fri, 28 Jan 2022 11:03:13 -0800 (PST)
 MIME-Version: 1.0
-References: <20220128105746.2459-1-changbin.du@gmail.com> <20220128152147.mwjkf45z72qwdikq@mail.google.com>
-In-Reply-To: <20220128152147.mwjkf45z72qwdikq@mail.google.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 28 Jan 2022 10:59:55 -0800
-Message-ID: <CAKwvOdncnh1sGjaBDOepQrAc+AHgEr=gWTJqKSxwvPu0f5A1dg@mail.gmail.com>
-Subject: Re: [PATCH] kallsyms: ignore local block labels generated by compiler
-To:     Changbin Du <changbin.du@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        linux-riscv@lists.infradead.org
+References: <20220126202427.3047814-1-pgwipeout@gmail.com> <20220127093307.GJ23490@pengutronix.de>
+In-Reply-To: <20220127093307.GJ23490@pengutronix.de>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Fri, 28 Jan 2022 14:03:02 -0500
+Message-ID: <CAMdYzYomk6_PLgkWSY9owd98vPtFGiHPmAwwnrx8vchf05uYLw@mail.gmail.com>
+Subject: Re: [PATCH] drm/bridge: synopsys/dw-hdmi: set cec clock rate
+To:     Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Pierre-Hugues Husson <phh@phh.me>,
+        Archit Taneja <architt@codeaurora.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+        dri-devel@lists.freedesktop.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 7:21 AM Changbin Du <changbin.du@gmail.com> wrote:
+On Thu, Jan 27, 2022 at 4:33 AM Sascha Hauer <s.hauer@pengutronix.de> wrote:
 >
-> On Fri, Jan 28, 2022 at 06:57:46PM +0800, Changbin Du wrote:
-> > The llvm compiler can generate lots of local block labels and they might
-> > overlap with C defined symbols. So let's ignore such local labels.
-> >
-> > Before this change, dumpstack shows a local symbol for epc:
-> > [    0.040341][    T0] Hardware name: riscv-virtio,qemu (DT)
-> > [    0.040376][    T0] epc : .LBB6_14+0x22/0x6a
-> > [    0.040452][    T0]  ra : restore_all+0x12/0x6e
-> >
-> > After this change, the C defined symbol is shown which is expected:
-> > [    0.035795][    T0] Hardware name: riscv-virtio,qemu (DT)
-> > [    0.036332][    T0] epc : trace_hardirqs_on+0x54/0x13c
-> > [    0.036567][    T0]  ra : restore_all+0x12/0x6e
-> >
-> > Signed-off-by: Changbin Du <changbin.du@gmail.com>
-> > ---
-> >  scripts/kallsyms.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-> > index 54ad86d13784..5f4be9d72a32 100644
-> > --- a/scripts/kallsyms.c
-> > +++ b/scripts/kallsyms.c
-> > @@ -108,6 +108,7 @@ static bool is_ignored_symbol(const char *name, char type)
-> >       /* Symbol names that begin with the following are ignored.*/
-> >       static const char * const ignored_prefixes[] = {
-> >               "$",                    /* local symbols for ARM, MIPS, etc. */
-> > +             ".LBB",                 /* local block labels generated by compiler */
-> I aslo found many symbols like '.Ltmpxxx', '.L__unnamed_xx'. So should we just
-> ignore all symbols prefixed by '.L'?
+> Hi Peter,
+>
+> On Wed, Jan 26, 2022 at 03:24:26PM -0500, Peter Geis wrote:
+> > The hdmi-cec clock must be 32khz in order for cec to work correctly.
+> > Ensure after enabling the clock we set it in order for the hardware to
+> > work as expected.
+> > Warn on failure, in case this is a static clock that is slighty off.
+> > Fixes hdmi-cec support on Rockchip devices.
+>
+> You removed this sentence in v2, but I just wanted to mention that
+> clk_set_rate() won't fail when the desired clock rate can't be
+> archieved. Instead, you will get the best rate that actually can be
+> reached. If you want to check that you are happy with the rate you'll
+> have to do a clk_round_rate() before setting the rate or a
+> clk_get_rate() afterwards.
 
-.L prefixes are "local labels" meaning they don't get an entry in the
-symbol table.  The trade off is that there is no such convention
-between compiler generated local label naming conventions, vs hand
-written ones.  If we omit all local labels, then it might be
-surprising that a handwritten local label disappeared from this list.
-I think though that we should omit all local labels, and if someone
-needs a label to appear in their dumpstack, then they should simply
-drop the .L prefix on their handwritten label.
+Thanks, the behavior in v2 is actually what I'm looking for.
+I dug into clk_set_rate while checking into its interaction with
+clk_prepare and I came to this conclusion.
+
+
 
 >
-> >               ".LASANPC",             /* s390 kasan local symbols */
-> >               "__crc_",               /* modversions */
-> >               "__efistub_",           /* arm64 EFI stub namespace */
-> > --
-> > 2.32.0
-> >
+> Sascha
 >
 > --
-> Cheers,
-> Changbin Du
-
-
-
--- 
-Thanks,
-~Nick Desaulniers
+> Pengutronix e.K.                           |                             |
+> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
