@@ -2,101 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 688ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 06:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9BDC4167B
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 06:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346508AbiA1G3R (ORCPT
+        id S1346522AbiA1G3S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 01:29:17 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:59108 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242495AbiA1G3G (ORCPT
+        Fri, 28 Jan 2022 01:29:18 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:43470 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S242393AbiA1G3K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 01:29:06 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 7D31C21101;
-        Fri, 28 Jan 2022 06:29:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643351345; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xpapT37KcxaYOeeQYt+sGcIsazRv7BTtatupftedrF0=;
-        b=jOIkTwXv8I/BNPcVaUZMccPLMdv7gYAcODw3KAsgpoZi3HbCyu+UzuoaCrgTBTfUx7RO6a
-        8G/7Z0FRbD8ncn4CZQRF+hNelwTjHKj+i2xzIqSBSgj6N167UPwE9wW2Eo0PNRBY1WYPs1
-        9STYjKzmKUvIKQhu8dhmgZszLhJQWFc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643351345;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xpapT37KcxaYOeeQYt+sGcIsazRv7BTtatupftedrF0=;
-        b=fRLo7kpURe7NYcJahmFg5gZfZCivitQUKm75iwXxaJJ0+gRNvm0D8C6fTOQJzVSDlIViri
-        seKhrDL40QzkXKDA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6DA0F13780;
-        Fri, 28 Jan 2022 06:29:05 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id QYCPGjGN82G3MQAAMHmgww
-        (envelope-from <osalvador@suse.de>); Fri, 28 Jan 2022 06:29:05 +0000
+        Fri, 28 Jan 2022 01:29:10 -0500
+X-UUID: b02262b5534f4d32b9529e3dc2dc5059-20220128
+X-UUID: b02262b5534f4d32b9529e3dc2dc5059-20220128
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <chunfeng.yun@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 946290845; Fri, 28 Jan 2022 14:29:07 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 28 Jan 2022 14:29:05 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 28 Jan 2022 14:29:05 +0800
+From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        <linux-usb@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Tianping Fang <tianping.fang@mediatek.com>,
+        Eddie Hung <eddie.hung@mediatek.com>
+Subject: [PATCH v2 3/4] arm64: dts: mediatek: mt8195: add efuse node and cells
+Date:   Fri, 28 Jan 2022 14:29:01 +0800
+Message-ID: <20220128062902.26273-3-chunfeng.yun@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
+References: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
-Date:   Fri, 28 Jan 2022 07:29:05 +0100
-From:   Oscar Salvador <osalvador@suse.de>
-To:     Michal Hocko <mhocko@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
-        Nico Pache <npache@redhat.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Rafael Aquini <raquini@redhat.com>,
-        Michal Hocko <mhocko@suse.com>
-Subject: Re: [PATCH 3/6] mm, memory_hotplug: drop arch_free_nodedata
-In-Reply-To: <20220127085305.20890-4-mhocko@kernel.org>
-References: <20220127085305.20890-1-mhocko@kernel.org>
- <20220127085305.20890-4-mhocko@kernel.org>
-User-Agent: Roundcube Webmail
-Message-ID: <51a7daf7815d000ac0fdb57755a054b2@suse.de>
-X-Sender: osalvador@suse.de
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-27 09:53, Michal Hocko wrote:
-> From: Michal Hocko <mhocko@suse.com>
-> 
-> Prior to "mm: handle uninitialized numa nodes gracefully" memory 
-> hotplug
-> used to allocate pgdat when memory has been added to a node
-> (hotadd_init_pgdat) arch_free_nodedata has been only used in the
-> failure path because once the pgdat is exported (to be visible
-> by NODA_DATA(nid)) it cannot really be freed because there is no
-> synchronization available for that.
-> 
-> pgdat is allocated for each possible nodes now so the memory hotplug
-> doesn't need to do the ever use arch_free_nodedata so drop it.
-> 
-> This patch doesn't introduce any functional change.
-> 
-> Acked-by: Rafael Aquini <raquini@redhat.com>
-> Signed-off-by: Michal Hocko <mhocko@suse.com>
+Add efuse node and cells used by t-phy to fix the bit shift issue
 
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+---
+v2: use hw auto load for u2phy which has no this issue
 
+Note:
+
+ depend on the reviewing patch:
+
+[v9,3/3] arm64: dts: Add mediatek SoC mt8195 and evaluation board
+https://patchwork.kernel.org/patch/12711296
+---
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi | 55 ++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+index a363e82f6988..240a21708806 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+@@ -695,6 +695,53 @@
+ 			status = "disabled";
+ 		};
+ 
++		efuse: efuse@11c10000 {
++			compatible = "mediatek,mt8195-efuse", "mediatek,efuse";
++			reg = <0 0x11c10000 0 0x1000>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			u3_tx_imp_p0: usb3-tx-imp@184 {
++				reg = <0x184 0x1>;
++				bits = <0 5>;
++			};
++			u3_rx_imp_p0: usb3-rx-imp@184 {
++				reg = <0x184 0x2>;
++				bits = <5 5>;
++			};
++			u3_intr_p0: usb3-intr@185 {
++				reg = <0x185 0x1>;
++				bits = <2 6>;
++			};
++			comb_tx_imp_p1: usb3-tx-imp@186 {
++				reg = <0x186 0x1>;
++				bits = <0 5>;
++			};
++			comb_rx_imp_p1: usb3-rx-imp@186 {
++				reg = <0x186 0x2>;
++				bits = <5 5>;
++			};
++			comb_intr_p1: usb3-intr@187 {
++				reg = <0x187 0x1>;
++				bits = <2 6>;
++			};
++			u2_intr_p0: usb2-intr-p0@188 {
++				reg = <0x188 0x1>;
++				bits = <0 5>;
++			};
++			u2_intr_p1: usb2-intr-p1@188 {
++				reg = <0x188 0x2>;
++				bits = <5 5>;
++			};
++			u2_intr_p2: usb2-intr-p2@189 {
++				reg = <0x189 0x1>;
++				bits = <2 5>;
++			};
++			u2_intr_p3: usb2-intr-p3@189 {
++				reg = <0x189 0x2>;
++				bits = <7 5>;
++			};
++		};
++
+ 		u3phy2: t-phy@11c40000 {
+ 			compatible = "mediatek,mt8195-tphy", "mediatek,generic-tphy-v3";
+ 			#address-cells = <1>;
+@@ -877,6 +924,10 @@
+ 				clocks = <&apmixedsys CLK_APMIXED_PLL_SSUSB26M>,
+ 					 <&topckgen CLK_TOP_SSUSB_PHY_P1_REF>;
+ 				clock-names = "ref", "da_ref";
++				nvmem-cells = <&comb_intr_p1>,
++					      <&comb_rx_imp_p1>,
++					      <&comb_tx_imp_p1>;
++				nvmem-cell-names = "intr", "rx_imp", "tx_imp";
+ 				#phy-cells = <1>;
+ 			};
+ 		};
+@@ -901,6 +952,10 @@
+ 				clocks = <&apmixedsys CLK_APMIXED_PLL_SSUSB26M>,
+ 					 <&topckgen CLK_TOP_SSUSB_PHY_REF>;
+ 				clock-names = "ref", "da_ref";
++				nvmem-cells = <&u3_intr_p0>,
++					      <&u3_rx_imp_p0>,
++					      <&u3_tx_imp_p0>;
++				nvmem-cell-names = "intr", "rx_imp", "tx_imp";
+ 				#phy-cells = <1>;
+ 			};
+ 		};
 -- 
-Oscar Salvador
-SUSE Labs
+2.18.0
+
