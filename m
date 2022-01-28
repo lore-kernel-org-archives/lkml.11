@@ -2,116 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 502FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 12:39:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC16C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 12:41:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348607AbiA1Mj4 (ORCPT
+        id S1348615AbiA1MlJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 07:39:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:55757 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348560AbiA1Mjy (ORCPT
+        Fri, 28 Jan 2022 07:41:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237505AbiA1MlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 07:39:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643373593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XLdIy983W00HY23HijSjN7Dj8OaLX+kcdPFkbzmAAbQ=;
-        b=VNPaYnQgfOgedBbULORcVXFcaErsb72/pHha23aKMZVvWc0HeVUIQ43cwBP1xQvyfq7v+1
-        axCXa7oJpo4MlVwKjEEIe98eHNTqAAOafRpGoXTNASVDUkNBbZNq4tONwRjNxZpHOpbOk9
-        KFj+fyz0gLFVG4L/Q5KMRc5mCbZx5oU=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-299-QPbxzhJ0McmChJXD6fh1MA-1; Fri, 28 Jan 2022 07:39:50 -0500
-X-MC-Unique: QPbxzhJ0McmChJXD6fh1MA-1
-Received: by mail-ed1-f72.google.com with SMTP id b26-20020a056402139a00b004094fddbbdfso2995694edv.12
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 04:39:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XLdIy983W00HY23HijSjN7Dj8OaLX+kcdPFkbzmAAbQ=;
-        b=Np03DXNzi+Q7R0gMH1/i8z6rXltcfTW0jV9Wc3OR9VtNrPrH8lQxL9qOtCeAB4mmAQ
-         RULn9vdEjo6Fkta/BEC4tP+JDJNaDeq2u3bRr28tztYJKezAjIAicYIjerYT5D7ofgql
-         LvVArQROLw7gVzoYyelYVKQ9pVx+/kzWDDMW8CemB40pdckSIjQ/tB8et5jaVsK+XbVS
-         n7nH5b9JcW0Ijrl9Hpwwm7tzPauP5mRsAEZTn7caNjixYmeT8eIMFEDIjr5IJVW+J90A
-         RS5ESLQ7Qb//MhTAjSIGLtJ9uKuhIXVvuX/7OiGMR+u9X34K89GwYYIzEA+PALRfVGXm
-         PdyA==
-X-Gm-Message-State: AOAM530oSAFdfU6ba1FbnOKb1o2H/iujRwONYjw/FGGgq04Wz+1nupIl
-        vRZNwi9Uk9eAGnaHZSZWfeK2DZw6badHWsIOxpC30rTF1hbfbG6eshuzQS1nFaufo9bK+H5pZBD
-        KZWB+eE0Y99zXdsy1wnWkN9+i
-X-Received: by 2002:aa7:d799:: with SMTP id s25mr7885087edq.272.1643373589390;
-        Fri, 28 Jan 2022 04:39:49 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx24fxwd87A17OyboBva44f+bn420kREB83IoTX6XY5R1S3dYOyCYPwMJDB+SRMkrWzyxZHfA==
-X-Received: by 2002:aa7:d799:: with SMTP id s25mr7885074edq.272.1643373589175;
-        Fri, 28 Jan 2022 04:39:49 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id gj10sm5543335ejb.192.2022.01.28.04.39.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Jan 2022 04:39:48 -0800 (PST)
-Message-ID: <86b78fe0-7123-4534-6aaf-12bd30463665@redhat.com>
-Date:   Fri, 28 Jan 2022 13:39:47 +0100
+        Fri, 28 Jan 2022 07:41:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEE9C061714;
+        Fri, 28 Jan 2022 04:41:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ACE2619B9;
+        Fri, 28 Jan 2022 12:41:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA84CC340E6;
+        Fri, 28 Jan 2022 12:40:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643373666;
+        bh=QTzghuuSPtxJUTuUKx+W2/InQdxW15PSFwUv7VwUABw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fDDCmQCAaMcJEavgtcJqwJ2QJDBq3pXRsPPc/l3by+2yESxDGmW5Kc9OAQqn3MlGS
+         9u8Jv1ppUGuCND2rokmY9SaMNtaybtUEWIbP9oXZ0jFRJDx82sG3zyppd2O0w9G76o
+         Uf6erkYS+tgPQeVG5Z4aajPuWDNl06NAHpm7V+osyHiEA1BafH1iqrwBRt4Nwh5f7b
+         wTP3ylF7iEUpGtGw+XjQr3MkFPOrG30hsWP/p9VE+pXFzTebvsbCxultxHFmtTO7Ho
+         qvm2eN+tw7ziwQofhdfjUSM4ZDTzEncDr5Kmwnm/HUP8sHcsjZTVNARCCP6qFvyT/z
+         eHYTGTk6Yk5gg==
+Date:   Fri, 28 Jan 2022 13:40:55 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Yong Wu <yong.wu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Hans Verkuil <hverkuil@xs4all.nl>, Joerg Roedel <jroedel@suse.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        David Airlie <airlied@linux.ie>,
+        Evan Green <evgreen@chromium.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Will Deacon <will.deacon@arm.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>, <youlin.pei@mediatek.com>,
+        Matthias Kaehlcke <mka@chromium.org>, <anan.sun@mediatek.com>,
+        <yi.kuo@mediatek.com>, <acourbot@chromium.org>,
+        <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        "Dafna Hirschfeld" <dafna.hirschfeld@collabora.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Eizan Miyamoto <eizan@chromium.org>,
+        <anthony.huang@mediatek.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH v10 02/13] iommu/mediatek-v1: Free the existed fwspec if
+ the master dev already has
+Message-ID: <20220128134055.720bb43c@coco.lan>
+In-Reply-To: <20220117070510.17642-3-yong.wu@mediatek.com>
+References: <20220117070510.17642-1-yong.wu@mediatek.com>
+        <20220117070510.17642-3-yong.wu@mediatek.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v3 0/5] KVM: nVMX: Fix Windows 11 + WSL2 + Enlightened
- VMCS
-Content-Language: en-US
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-References: <20220112170134.1904308-1-vkuznets@redhat.com>
- <87k0exktsx.fsf@redhat.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <87k0exktsx.fsf@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 15:22, Vitaly Kuznetsov wrote:
-> Vitaly Kuznetsov <vkuznets@redhat.com> writes:
-> 
->> Changes since v2 [Sean]:
->> - Tweak a comment in PATCH5.
->> - Add Reviewed-by: tags to PATCHes 3 and 5.
->>
->> Original description:
->>
->> Windows 11 with enabled Hyper-V role doesn't boot on KVM when Enlightened
->> VMCS interface is provided to it. The observed behavior doesn't conform to
->> Hyper-V TLFS. In particular, I'm observing 'VMREAD' instructions trying to
->> access field 0x4404 ("VM-exit interruption information"). TLFS, however, is
->> very clear this should not be happening:
->>
->> "Any VMREAD or VMWRITE instructions while an enlightened VMCS is active is
->> unsupported and can result in unexpected behavior."
->>
->> Microsoft confirms this is a bug in Hyper-V which is supposed to get fixed
->> eventually. For the time being, implement a workaround in KVM allowing
->> VMREAD instructions to read from the currently loaded Enlightened VMCS.
->>
->> Patches 1-2 are unrelated fixes to VMX feature MSR filtering when eVMCS is
->> enabled. Patches 3 and 4 are preparatory changes, patch 5 implements the
->> workaround.
->>
-> 
-> Paolo,
-> 
-> would it be possible to pick this up for 5.17? Technically, this is a
-> "fix", even if the bug itself is not in KVM)
+Hi Matthias/Yong,
 
-Yes, it is.  I have queued the patch, and feel free to send a 5.16 
-backport too.
+Are you ok if this patch gets merged via the media tree together with the
+remaining series, or do you prefer to apply it via SoC tree instead?
 
-Paolo
+Regards,
+Mauro
 
+
+Em Mon, 17 Jan 2022 15:04:59 +0800
+Yong Wu <yong.wu@mediatek.com> escreveu:
+
+> When the iommu master device enters of_iommu_xlate, the ops may be
+> NULL(iommu dev is defered), then it will initialize the fwspec here:
+> 
+> [<c0c9c5bc>] (dev_iommu_fwspec_set) from [<c06bda80>]
+> (iommu_fwspec_init+0xbc/0xd4)
+> [<c06bd9c4>] (iommu_fwspec_init) from [<c06c0db4>]
+> (of_iommu_xlate+0x7c/0x12c)
+> [<c06c0d38>] (of_iommu_xlate) from [<c06c10e8>]
+> (of_iommu_configure+0x144/0x1e8)
+> 
+> BUT the mtk_iommu_v1.c only supports arm32, the probing flow still is a bit
+> weird. We always expect create the fwspec internally. otherwise it will
+> enter here and return fail.
+> 
+> static int mtk_iommu_create_mapping(struct device *dev,
+> 				    struct of_phandle_args *args)
+> {
+>         ...
+> 	if (!fwspec) {
+> 	        ....
+> 	} else if (dev_iommu_fwspec_get(dev)->ops != &mtk_iommu_ops) {
+>                 >>>>>>>>>>Enter here. return fail.<<<<<<<<<<<<  
+> 		return -EINVAL;
+> 	}
+> 	...
+> }
+> 
+> Thus, Free the existed fwspec if the master device already has fwspec.
+> 
+> This issue is reported at:
+> https://lore.kernel.org/linux-mediatek/trinity-7d9ebdc9-4849-4d93-bfb5-429dcb4ee449-1626253158870@3c-app-gmx-bs01/
+> 
+> Reported-by: Frank Wunderlich <frank-w@public-files.de>
+> Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Acked-by: Joerg Roedel <jroedel@suse.de>
+> Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  drivers/iommu/mtk_iommu_v1.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index be22fcf988ce..1467ba1e4417 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -425,6 +425,15 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+>  	struct mtk_iommu_data *data;
+>  	int err, idx = 0;
+>  
+> +	/*
+> +	 * In the deferred case, free the existed fwspec.
+> +	 * Always initialize the fwspec internally.
+> +	 */
+> +	if (fwspec) {
+> +		iommu_fwspec_free(dev);
+> +		fwspec = dev_iommu_fwspec_get(dev);
+> +	}
+> +
+>  	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
+>  					   "#iommu-cells",
+>  					   idx, &iommu_spec)) {
+
+
+
+Thanks,
+Mauro
