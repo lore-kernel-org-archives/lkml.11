@@ -2,98 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9AC7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F526C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351795AbiA1XK0 (ORCPT
+        id S1351789AbiA1XKh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 18:10:26 -0500
-Received: from mout.gmx.net ([212.227.15.19]:33977 "EHLO mout.gmx.net"
+        Fri, 28 Jan 2022 18:10:37 -0500
+Received: from mga03.intel.com ([134.134.136.65]:9057 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348632AbiA1XKT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 18:10:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643411408;
-        bh=XTOsqOf/WkGgWaJmFVDvq2fS2L0XA1LpZOg14b+J6aU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=YygBBZ5iScRMA4AoV+o8J1pCELgFolYTdMG0CXcTGMyp8/+ubYh3kbQ9k36F3UcKP
-         KCN1BNRJ5iegdnG04f6lllXOAkttkbQC+55yf2za2x4oVHjcT01gbyURNwyTYsfZ3X
-         RtgRouHJbEBmtM6muTqziQ9Oo4jJiTBAf6MqfCBY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([89.0.80.162]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MUXpK-1mn5Hc0zMO-00QU3d; Sat, 29
- Jan 2022 00:10:08 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-clk@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dongjiu Geng <gengdongjiu@huawei.com>
-Subject: [PATCH 3/4] clk: hisilicon: Terminate clk_div_table with sentinel element
-Date:   Sat, 29 Jan 2022 00:09:21 +0100
-Message-Id: <20220128230922.2047140-4-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220128230922.2047140-1-j.neuschaefer@gmx.net>
-References: <20220128230922.2047140-1-j.neuschaefer@gmx.net>
+        id S1351797AbiA1XK1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 18:10:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643411427; x=1674947427;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=XpKab4uNQUdpvhLF1knf4E4kUDvkXGcbGb7oNXJ1OBk=;
+  b=MhHhKNOHAi9WcPG5dw9sI48GtIK+M6T+kIQEWi2HuTYxpLxNbfnRfSHd
+   EkbDYkM7krjdLsRFPkWy/NP5Rv8oQveiieDPPCZ+rdoB9ZEOHsVAM21sd
+   oBm3aMeqBlON5qUaLGmoZTl2Eidoyfbtl2eic71CsZ2DylKFCPWT3l2NE
+   TjWm1+PsIGMFl/zpPIg8gYRtsq+pWCuHtiaVBeumnodq3XLcb63Vp3w1P
+   OOKY+zfq2LRwDra4FRDlgiQvMSHIBGrJ02YPkcuLfWqwvYb9wmYfAL/+J
+   8q807BDeWi3UvlwM6HYKhShpUO6i6nF5U1L0xhDFVAZQH09Uqn2JYoNir
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="247162500"
+X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
+   d="scan'208";a="247162500"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 15:10:25 -0800
+X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
+   d="scan'208";a="697245965"
+Received: from zhenkuny-mobl2.amr.corp.intel.com (HELO [10.209.84.59]) ([10.209.84.59])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 15:10:25 -0800
+Message-ID: <01a47dd8-4717-7b07-39ad-45fee1f78311@intel.com>
+Date:   Fri, 28 Jan 2022 15:10:24 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.2
+Content-Language: en-US
+To:     ira.weiny@intel.com, Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-kernel@vger.kernel.org
+References: <20220127175505.851391-1-ira.weiny@intel.com>
+ <20220127175505.851391-9-ira.weiny@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH V8 08/44] x86/fault: Adjust WARN_ON for PKey fault
+In-Reply-To: <20220127175505.851391-9-ira.weiny@intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:kONIbwxFhEejB7eJDZdPACNkE1PmoNbMHGkDDbM7hjzeR9BZCnw
- HeWjmYbc2kqd+twNi5vIC1S4pneVR3PUqxtyQJxQKsjfrBlEmAkySZ3fJFcHHq/wnCeXBom
- CCH7rgkIvsYUpfXTbgNq3m/LRkuCUWahy1w9srDTICMSOzVZlsTCp9exjVsc5GF3jWCepv+
- ARL1GfZNlgsMSl+S2Aulw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:nZ/aFuC7uE4=:OGCoIazl94MmvwSxlI+Oc1
- QiuIsuRNCfBh9ItVQVQOQiHhNaxBWGrosw806SpSd+llxe03npVOFKBmnmBqazWq2EivnHWsI
- Uc5ZY/jwPPyn6Rzu0HJcZh8t5DAerYvQsi+2TQbTvYvymkf/4a+GJxxRJU0gcd8ip3kaczkWl
- lH5YCYrjdVMS2v5lDT9aVOLA/O35oM79ahgg39F61Sqe3EhFwT/mHSKSX695AYBAt9mmFFTvb
- jAo7kfLdO3bavKHsT1xOiP4DN79Bw97PF60wWjCfl+eoF1cUuNNg9iOYQaWSlhyU/NXxiAdM9
- noRqCT8eT95t+9/+Cj1uZdcxkobcwMHkc5sFHf4ccOarZXkk98YyhMcawn8pZ7eig82I+xQ57
- zfOVbjXIg8VUPFCIapdcu49fGhiFdLz1jYlpS9UjSCJT2OLfgks5XYtH/FIWVWxYj0ZZd8ATW
- LEjbRayw/nHDnHXFNfTkwOm9gObvUFQJ/UW/TdLXMKKVzPPaTWWb2QjG3E3VGlgC6Mi2NEAR+
- Ei8b6xKSNxABVR+GbNmFJq5zGXLuS1qcSAytM2XkOe8O86NVpuk0Xr49g8IpE+fWdtCwpAbRF
- 7087BSIiO865SyvapTBhOlnsOlqbPZE+GcHtGJCjjd2B+KO/Mhd8juu8OPE+OxJUS8iGGzMTH
- YN1qX2SbizsacCmoTsVHpvJ0tCIuOp17YtCaHv/eYub2JVXVhZFWQiYhZpsxkr2chq90i0ltO
- SQL6vXsh+zlUzipXyfZJt8339GilzA7DY0re+s88J9digLdK5e3f7yXpzBUeRmeFsb6JYqCh6
- HFbGz9LtgzsXXX+eTLmvI1ycNWn/Q07WDkbNCOql+zl59yWhWpLgyVnheHK72xTxxlaSwizUL
- ASyxUzpDr2R5E+rF2DhTnkkYMleJWOzWXAHWPqJiZmY1TB2S5rCMpjwCiHg0DtAGYXDGpIOey
- 6mO3pT0ryPKf0n2OgbNVTs8rWJC2ZxJD7qaerpKF63utBiSDaBdtpMCpll9R4K4ygimzaPcq8
- 0Aj3nuEBR0pGBS9/Alh/OV+8tqkHfPbWEZMMmahEySeonRYmCMBgE50N0XUYQs2IFAadoIcdv
- nhQp9PQTdWC+ao=
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order that the end of a clk_div_table can be detected, it must be
-terminated with a sentinel element (.div =3D 0).
+On 1/27/22 09:54, ira.weiny@intel.com wrote:
+> From: Ira Weiny <ira.weiny@intel.com>
+> 
+> Previously if a Protection key fault occurred it indicated something
+> very wrong because user page mappings are not supposed to be in the
+> kernel address space.
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
- drivers/clk/hisilicon/clk-hi3559a.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This is missing a key point.  The problem is PK faults on "*kernel*
+addresses.
 
-diff --git a/drivers/clk/hisilicon/clk-hi3559a.c b/drivers/clk/hisilicon/c=
-lk-hi3559a.c
-index 56012a3d02192..28c2a0630474d 100644
-=2D-- a/drivers/clk/hisilicon/clk-hi3559a.c
-+++ b/drivers/clk/hisilicon/clk-hi3559a.c
-@@ -611,8 +611,8 @@ static struct hisi_mux_clock hi3559av100_shub_mux_clks=
-[] =3D {
+> Now PKey faults may happen on kernel mappings if the feature is enabled.
 
+One nit: I've been using "pkeys" and "pkey" as the terms.  I usually
+don't capitalize them except at the beginning of a sentence.
 
- /* shub div clk */
--static struct clk_div_table shub_spi_clk_table[] =3D {{0, 8}, {1, 4}, {2,=
- 2}};
--static struct clk_div_table shub_uart_div_clk_table[] =3D {{1, 8}, {2, 4}=
-};
-+static struct clk_div_table shub_spi_clk_table[] =3D {{0, 8}, {1, 4}, {2,=
- 2}, {}};
-+static struct clk_div_table shub_uart_div_clk_table[] =3D {{1, 8}, {2, 4}=
-, {}};
+> If PKS is enabled, avoid the warning in the fault path.
+> 
+> Cc: Sean Christopherson <seanjc@google.com>
+> Cc: Dan Williams <dan.j.williams@intel.com>
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> ---
+>  arch/x86/mm/fault.c | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+> index d0074c6ed31a..6ed91b632eac 100644
+> --- a/arch/x86/mm/fault.c
+> +++ b/arch/x86/mm/fault.c
+> @@ -1148,11 +1148,15 @@ do_kern_addr_fault(struct pt_regs *regs, unsigned long hw_error_code,
+>  		   unsigned long address)
+>  {
+>  	/*
+> -	 * Protection keys exceptions only happen on user pages.  We
+> -	 * have no user pages in the kernel portion of the address
+> -	 * space, so do not expect them here.
+> +	 * X86_PF_PK (Protection key exceptions) may occur on kernel addresses
+> +	 * when PKS (PKeys Supervisor) is enabled.
+> +	 *
+> +	 * However, if PKS is not enabled WARN if this exception is seen
+> +	 * because there are no user pages in the kernel portion of the address
+> +	 * space.
+>  	 */
+> -	WARN_ON_ONCE(hw_error_code & X86_PF_PK);
+> +	WARN_ON_ONCE(!cpu_feature_enabled(X86_FEATURE_PKS) &&
+> +		     (hw_error_code & X86_PF_PK));
+>  
+>  #ifdef CONFIG_X86_32
+>  	/*
 
- static struct hisi_divider_clock hi3559av100_shub_div_clks[] =3D {
- 	{ HI3559AV100_SHUB_SPI_SOURCE_CLK, "clk_spi_clk", "shub_clk", 0, 0x20, 2=
-4, 2,
-=2D-
-2.34.1
+I'm wondering if this warning is even doing us any good.  I'm pretty
+sure it's never triggered on me at least.  Either way, let's not get too
+carried away with the comment.  I think this should do:
 
+	/*
+	 * PF_PF faults should only occur on kernel
+	 * addresses when supervisor pkeys are enabled.
+	 */
