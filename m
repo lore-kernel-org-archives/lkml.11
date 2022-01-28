@@ -2,117 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 02:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7783C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 02:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234966AbiA1C5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 21:57:02 -0500
-Received: from mga17.intel.com ([192.55.52.151]:38587 "EHLO mga17.intel.com"
+        id S237115AbiA1C5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 21:57:34 -0500
+Received: from mga17.intel.com ([192.55.52.151]:38657 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229811AbiA1C5B (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 21:57:01 -0500
+        id S229811AbiA1C5c (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 21:57:32 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643338621; x=1674874621;
-  h=cc:subject:to:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=lQzpVBgtczAn5sAewXENYJpIAUiWWZKcbyftWJFiTnk=;
-  b=ehMl2PURoXyAUIkUlgHTDB9BfqLsE4sspvkPQVACKG3fMoT1qSWUKllw
-   2CjWsx9+Rpb/sGPje+6nsSQOjezlC7QUoVik6ZsK9Nva+NxDPFoB8Liyj
-   ZFtJsuBfCIbmv8OZ1AaLXYS+MwUKNBXxfxvA0fcQ3PaWbPYxMbv8mX3hz
-   qf5Alo7q3jUg415JJtnPD6g6weBww45mXJwG/kGFXNYETs2BoJGiukWrJ
-   Tv3GAK5BrdXHbwfJjZcHkGNAceX3ztWz1KdFa7dnTD+fw1zS59zBeNvi9
-   UNB+x8HPkTCXo3Ddd5F5ByVfqnEgBm2FkLqcpt+UdA8zETFZedAREtipE
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="227699932"
+  t=1643338652; x=1674874652;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=sbB5DbFwgn6MZ3jXJtvL/bQpgxlHMv6s1gejhPlpnDk=;
+  b=hy9s5xoU9xB7zy/2hBqgwtzkb8rcN74l5spzaRdRCCs7Gh7Y7OjfsY0P
+   qZxq0wJzly0MngIGFeWbakV2z4M2Z40ETgCG26X8rbA+xdCfWOFEnGNfG
+   GQ/hFDC6Mg3FjJs71gPb2S/+R+CUVIv2YZNpbt+N24gJgzHep27klMFKC
+   Q0ma2qqODEHyx/X+AYqaV1gDAhaUrOE6PZ68S6ngmVZnomQnd/lSFOM4X
+   RwqAJ0pUV0TPqYWDNGwEe/1rHFxSVCXvTxNr3ygTBjmKYLGswV9iK/MaJ
+   v0CmxAuY7dyKnM9tmzCznoS6VA8fCRV3Eii1WSgB4ddPtJJbepPqDdDW/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="227700251"
 X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
-   d="scan'208";a="227699932"
+   d="scan'208";a="227700251"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 18:54:14 -0800
-X-ExtLoop1: 1
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 18:56:58 -0800
 X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
-   d="scan'208";a="535953637"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by orsmga008.jf.intel.com with ESMTP; 27 Jan 2022 18:54:10 -0800
-Cc:     baolu.lu@linux.intel.com, bhelgaas@google.com,
-        mika.westerberg@linux.intel.com, koba.ko@canonical.com,
-        Russell Currey <ruscur@russell.cc>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        Lalithambika Krishnakumar <lalithambika.krishnakumar@intel.com>,
-        Joerg Roedel <jroedel@suse.de>, linuxppc-dev@lists.ozlabs.org,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] PCI/AER: Disable AER service when link is in L2/L3
- ready, L2 and L3 state
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-References: <20220127025418.1989642-1-kai.heng.feng@canonical.com>
- <0259955f-8bbb-1778-f234-398f1356db8b@linux.intel.com>
- <CAAd53p6+KPAJchh9Jx59Fkkj5FidSxsW0yHjLqooFjvu-Y9u7w@mail.gmail.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <11891652-40c6-f111-46b7-e96d1729815e@linux.intel.com>
-Date:   Fri, 28 Jan 2022 10:53:07 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+   d="scan'208";a="535955362"
+Received: from yangzhon-virtual.bj.intel.com (HELO yangzhon-Virtual) ([10.238.145.56])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-SHA256; 27 Jan 2022 18:56:55 -0800
+Date:   Fri, 28 Jan 2022 10:41:32 +0800
+From:   Yang Zhong <yang.zhong@intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, yang.zhong@intel.com
+Subject: Re: [PATCH 2/3] KVM: x86: add system attribute to retrieve full set
+ of supported xsave states
+Message-ID: <20220128024132.GA10089@yangzhon-Virtual>
+References: <20220126152210.3044876-1-pbonzini@redhat.com>
+ <20220126152210.3044876-3-pbonzini@redhat.com>
+ <YfK71pSnmtpnSJQ8@google.com>
 MIME-Version: 1.0
-In-Reply-To: <CAAd53p6+KPAJchh9Jx59Fkkj5FidSxsW0yHjLqooFjvu-Y9u7w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YfK71pSnmtpnSJQ8@google.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/27/22 7:14 PM, Kai-Heng Feng wrote:
-> On Thu, Jan 27, 2022 at 3:01 PM Lu Baolu <baolu.lu@linux.intel.com> wrote:
->>
->> On 2022/1/27 10:54, Kai-Heng Feng wrote:
->>> Commit 50310600ebda ("iommu/vt-d: Enable PCI ACS for platform opt in
->>> hint") enables ACS, and some platforms lose its NVMe after resume from
->>> S3:
->>> [   50.947816] pcieport 0000:00:1b.0: DPC: containment event, status:0x1f01 source:0x0000
->>> [   50.947817] pcieport 0000:00:1b.0: DPC: unmasked uncorrectable error detected
->>> [   50.947829] pcieport 0000:00:1b.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Receiver ID)
->>> [   50.947830] pcieport 0000:00:1b.0:   device [8086:06ac] error status/mask=00200000/00010000
->>> [   50.947831] pcieport 0000:00:1b.0:    [21] ACSViol                (First)
->>> [   50.947841] pcieport 0000:00:1b.0: AER: broadcast error_detected message
->>> [   50.947843] nvme nvme0: frozen state error detected, reset controller
->>>
->>> It happens right after ACS gets enabled during resume.
->>>
->>> There's another case, when Thunderbolt reaches D3cold:
->>> [   30.100211] pcieport 0000:00:1d.0: AER: Uncorrected (Non-Fatal) error received: 0000:00:1d.0
->>> [   30.100251] pcieport 0000:00:1d.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
->>> [   30.100256] pcieport 0000:00:1d.0:   device [8086:7ab0] error status/mask=00100000/00004000
->>> [   30.100262] pcieport 0000:00:1d.0:    [20] UnsupReq               (First)
->>> [   30.100267] pcieport 0000:00:1d.0: AER:   TLP Header: 34000000 08000052 00000000 00000000
->>> [   30.100372] thunderbolt 0000:0a:00.0: AER: can't recover (no error_detected callback)
->>> [   30.100401] xhci_hcd 0000:3e:00.0: AER: can't recover (no error_detected callback)
->>> [   30.100427] pcieport 0000:00:1d.0: AER: device recovery failed
->>>
->>> So disable AER service to avoid the noises from turning power rails
->>> on/off when the device is in low power states (D3hot and D3cold), as
->>> PCIe spec "5.2 Link State Power Management" states that TLP and DLLP
->>> transmission is disabled for a Link in L2/L3 Ready (D3hot), L2 (D3cold
->>> with aux power) and L3 (D3cold).
->>>
->>> Bugzilla:https://bugzilla.kernel.org/show_bug.cgi?id=209149
->>> Bugzilla:https://bugzilla.kernel.org/show_bug.cgi?id=215453
->>> Fixes: 50310600ebda ("iommu/vt-d: Enable PCI ACS for platform opt in hint")
->>
->> I don't know what this fix has to do with the commit 50310600ebda.
+On Thu, Jan 27, 2022 at 03:35:50PM +0000, Sean Christopherson wrote:
+> On Wed, Jan 26, 2022, Paolo Bonzini wrote:
+> > +static int kvm_x86_dev_get_attr(struct kvm_device_attr *attr)
+> > +{
+> > +	if (attr->group)
+> > +		return -ENXIO;
+> > +
+> > +	switch (attr->attr) {
+> > +	case KVM_X86_XCOMP_GUEST_SUPP:
+> > +		if (put_user(supported_xcr0, (u64 __user *)attr->addr))
 > 
-> Commit 50310600ebda only exposed the underlying issue. Do you think
-> "Fixes:" tag should change to other commits?
+> Deja vu[*].
 > 
->> Commit 50310600ebda only makes sure that PCI ACS is enabled whenever
->> Intel IOMMU is on. Before this commit, PCI ACS could also be enabled
->> and result in the same problem. Or anything I missed?
+>   arch/x86/kvm/x86.c: In function ‘kvm_x86_dev_get_attr’:
+>   arch/x86/kvm/x86.c:4345:46: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+>    4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+>         |                                              ^
+>   arch/x86/include/asm/uaccess.h:221:31: note: in definition of macro ‘do_put_user_call’
+>     221 |         register __typeof__(*(ptr)) __val_pu asm("%"_ASM_AX);           \
+>         |                               ^~~
+>   arch/x86/kvm/x86.c:4345:21: note: in expansion of macro ‘put_user’
+>    4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+>         |                     ^~~~~~~~
+>   arch/x86/kvm/x86.c:4345:46: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+>    4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+>         |                                              ^
+>   arch/x86/include/asm/uaccess.h:223:21: note: in definition of macro ‘do_put_user_call’
+>     223 |         __ptr_pu = (ptr);                                               \
+>         |                     ^~~
+>   arch/x86/kvm/x86.c:4345:21: note: in expansion of macro ‘put_user’
+>    4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+>         |                     ^~~~~~~~
+>   arch/x86/kvm/x86.c:4345:46: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+>    4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+>         |                                              ^
+>   arch/x86/include/asm/uaccess.h:230:45: note: in definition of macro ‘do_put_user_call’
+>     230 |                        [size] "i" (sizeof(*(ptr)))                      \
+>         |                                             ^~~
+>   arch/x86/kvm/x86.c:4345:21: note: in expansion of macro ‘put_user’
+>    4345 |                 if (put_user(supported_xcr0, (u64 __user *)attr->addr))
 > 
-> The system in question didn't enable ACS before commit 50310600ebda.
+> Given that we're collectively 2 for 2 in mishandling {g,s}et_attr(), what about
+> a prep pacth like so?  Compile tested only...
+>
 
-This commit exposed the issue on your configuration doesn't mean the
-fix should be back ported as far as that commit. I believe if you add
-intel-iommu=on in the kernel parameter, the issue still exists even you
-revert commit 50310600ebda or checkout a tag before it.
+  Sean, It's strange that I could not find those issues in my last day's build.
+  
+  My build environment:
+  #make -v
+  GNU Make 4.3
+  
+  # gcc -v
+  gcc version 9.3.0 (Ubuntu 9.3.0-17ubuntu1~20.04)
 
-Best regards,
-baolu
+  I will apply your extra patch to check again, thanks!
+  
+
+  Yang
+
+ 
+> From: Sean Christopherson <seanjc@google.com>
+> Date: Thu, 27 Jan 2022 07:31:53 -0800
+> Subject: [PATCH] KVM: x86: Add a helper to retrieve userspace address from
+>  kvm_device_attr
+> 
+> Add a helper to handle converting the u64 userspace address embedded in
+> struct kvm_device_attr into a userspace pointer, it's all too easy to
+> forget the intermediate "unsigned long" cast as well as the truncation
+> check.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/x86.c | 28 +++++++++++++++++++++-------
+>  1 file changed, 21 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 8033eca6f3a1..67836f7c71f5 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -4335,14 +4335,28 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+>  	return r;
+>  }
+> 
+> +static inline void __user *kvm_get_attr_addr(struct kvm_device_attr *attr)
+> +{
+> +	void __user *uaddr = (void __user*)(unsigned long)attr->addr;
+> +
+> +	if ((u64)(unsigned long)uaddr != attr->addr)
+> +		return ERR_PTR(-EFAULT);
+> +	return uaddr;
+> +}
+> +
+>  static int kvm_x86_dev_get_attr(struct kvm_device_attr *attr)
+>  {
+> +	u64 __user *uaddr = kvm_get_attr_addr(attr);
+> +
+>  	if (attr->group)
+>  		return -ENXIO;
+> 
+> +	if (IS_ERR(uaddr))
+> +		return PTR_ERR(uaddr);
+> +
+>  	switch (attr->attr) {
+>  	case KVM_X86_XCOMP_GUEST_SUPP:
+> -		if (put_user(supported_xcr0, (u64 __user *)attr->addr))
+> +		if (put_user(supported_xcr0, uaddr))
+>  			return -EFAULT;
+>  		return 0;
+>  	default:
+> @@ -5070,11 +5084,11 @@ static int kvm_arch_tsc_has_attr(struct kvm_vcpu *vcpu,
+>  static int kvm_arch_tsc_get_attr(struct kvm_vcpu *vcpu,
+>  				 struct kvm_device_attr *attr)
+>  {
+> -	u64 __user *uaddr = (u64 __user *)(unsigned long)attr->addr;
+> +	u64 __user *uaddr = kvm_get_attr_addr(attr);
+>  	int r;
+> 
+> -	if ((u64)(unsigned long)uaddr != attr->addr)
+> -		return -EFAULT;
+> +	if (IS_ERR(uaddr))
+> +		return PTR_ERR(uaddr);
+> 
+>  	switch (attr->attr) {
+>  	case KVM_VCPU_TSC_OFFSET:
+> @@ -5093,12 +5107,12 @@ static int kvm_arch_tsc_get_attr(struct kvm_vcpu *vcpu,
+>  static int kvm_arch_tsc_set_attr(struct kvm_vcpu *vcpu,
+>  				 struct kvm_device_attr *attr)
+>  {
+> -	u64 __user *uaddr = (u64 __user *)(unsigned long)attr->addr;
+> +	u64 __user *uaddr = kvm_get_attr_addr(attr);
+>  	struct kvm *kvm = vcpu->kvm;
+>  	int r;
+> 
+> -	if ((u64)(unsigned long)uaddr != attr->addr)
+> -		return -EFAULT;
+> +	if (IS_ERR(uaddr))
+> +		return PTR_ERR(uaddr);
+> 
+>  	switch (attr->attr) {
+>  	case KVM_VCPU_TSC_OFFSET: {
+> --
+> 
+> 
+> 
+> [*] https://lore.kernel.org/all/20211007231647.3553604-1-seanjc@google.com
+> 
+> 
+> > +			return -EFAULT;
+> > +		return 0;
+> > +	default:
+> > +		return -ENXIO;
+> > +		break;
+> > +	}
+> > +}
+> > +
