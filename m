@@ -2,115 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 08:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B99C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 08:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243059AbiA1IlX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 03:41:23 -0500
-Received: from relay036.a.hostedemail.com ([64.99.140.36]:62202 "EHLO
-        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231660AbiA1IlW (ORCPT
+        id S243155AbiA1IlZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 03:41:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:44448 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232136AbiA1IlW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 03:41:22 -0500
-Received: from omf02.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay12.hostedemail.com (Postfix) with ESMTP id 3A86E12033B;
-        Fri, 28 Jan 2022 08:41:20 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf02.hostedemail.com (Postfix) with ESMTPA id AF44C80014;
-        Fri, 28 Jan 2022 08:40:52 +0000 (UTC)
-Message-ID: <7bff2de309384b7c9ee71ad90881d1e0bbe0a781.camel@perches.com>
-Subject: Re: [PATCH] scsi: megaraid: cleanup formatting of megaraid
-From:   Joe Perches <joe@perches.com>
-To:     Tom Rix <trix@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Finn Thain <fthain@linux-m68k.org>,
-        Miguel Ojeda <ojeda@kernel.org>
-Cc:     kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        shivasharan.srikanteshwara@broadcom.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, nathan@kernel.org,
-        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Date:   Fri, 28 Jan 2022 00:41:10 -0800
-In-Reply-To: <c801989d-5f3e-84d2-24a0-7022be70da98@redhat.com>
-References: <20220127151945.1244439-1-trix@redhat.com>
-         <953eb015-4b78-f7b-5dc1-6491c6bf27e@linux-m68k.org>
-         <CAKwvOdnWHVV+3s8SO=Q8FfZ7hVekRVDL5q+7CwAk_z44xaex8w@mail.gmail.com>
-         <fb308f51-f16b-3d9b-80c2-180940236b00@redhat.com>
-         <5554a75f65fddab4de60d61fd503fe73773dafbb.camel@perches.com>
-         <c801989d-5f3e-84d2-24a0-7022be70da98@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643359281;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZoOlUeTcIB3lde6agUIzDy5+c2Kj0vOnYJNRZPTSdL4=;
+        b=akm9+BmFfw4+SymGGiuDjA//xG/hI5HvaAGQ1wr9ANlVPO1OMMqB+6Okpmk6ir0L0BwfT9
+        9x2y/2cLRx0CaJ3eBbHM9pPtmb80jmby26JIE3DdAKIG3jOuQyOx2HbxY3ZEx4oHoNJDiX
+        Na8eMlfYnoo39MJHVjzODzIQuV2dMlU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-117-nNApc-HJP5qRgbGOPvgBjA-1; Fri, 28 Jan 2022 03:41:20 -0500
+X-MC-Unique: nNApc-HJP5qRgbGOPvgBjA-1
+Received: by mail-wm1-f69.google.com with SMTP id o194-20020a1ca5cb000000b00350b177fb22so4785712wme.3
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 00:41:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=ZoOlUeTcIB3lde6agUIzDy5+c2Kj0vOnYJNRZPTSdL4=;
+        b=B0ROMEYVBKFglwty45rBVPB/VNJA3PXj5a1cI47IcWp5mITGXy3hYr+unA8AI8Eblx
+         uIXlCZK0AHOxGSjpaatnk3OsVjyM+ml+08RRlV38mziqS/NbwdiMo2L+almm7eMI6KsQ
+         kWF05ml3z/XnFGfiqRauWdDI/OrJWBsL6X1zfT/z+M5EG9Jncgf2WL74NuvQ2BVDk6Gs
+         6IhIgkp0voeFxoFFxWsupFJOkgIbx7nU1cuoJcNOZFZ9eR7z/g57OSk2ZqTgOQsyWnSX
+         BxfszuW/8mZtM/sj/0YiV0ck0RhaJxQQeF0Ti8RIz1cRqnsbzh6nSjEHHMRRqGnxeo3z
+         tsAw==
+X-Gm-Message-State: AOAM530yBswVQ+E3wtxgsFX0g039Dfdt2i2FTNDAQxtsU3jBZ3h/2/tb
+        oN7bK3wXQnNAUtJEYC+eLI7G7YIVxG7oFdffawwGWo6MrPs4BB04Jk8vDh0XuHqZg01Skh+3/oi
+        vKHVGw3zWoAJfbhuvw5zADM+Z
+X-Received: by 2002:a05:600c:3d10:: with SMTP id bh16mr6696129wmb.127.1643359278851;
+        Fri, 28 Jan 2022 00:41:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxDYshvnGcRSoQjNBBVvUbNaeHYsPPNmiz9uM5jWeFmAZDN6EGM2Es8WGNrnAHlANkpfhkOFQ==
+X-Received: by 2002:a05:600c:3d10:: with SMTP id bh16mr6696103wmb.127.1643359278632;
+        Fri, 28 Jan 2022 00:41:18 -0800 (PST)
+Received: from ?IPV6:2003:cb:c70e:5c00:522f:9bcd:24a0:cd70? (p200300cbc70e5c00522f9bcd24a0cd70.dip0.t-ipconnect.de. [2003:cb:c70e:5c00:522f:9bcd:24a0:cd70])
+        by smtp.gmail.com with ESMTPSA id h127sm17207297wmh.2.2022.01.28.00.41.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Jan 2022 00:41:17 -0800 (PST)
+Message-ID: <205231d0-2b4e-7d93-1028-2d501c1cbf74@redhat.com>
+Date:   Fri, 28 Jan 2022 09:41:16 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Stat-Signature: ee1qasspf45yao75rasduwrdbsym8kor
-X-Rspamd-Server: rspamout01
-X-Rspamd-Queue-Id: AF44C80014
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/s1CB6P0Qi+bndabNk32vMkM+MW6PtAhg=
-X-HE-Tag: 1643359252-762821
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Linux MM <linux-mm@kvack.org>
+References: <20220126095557.32392-1-david@redhat.com>
+ <20220126095557.32392-7-david@redhat.com>
+ <CAHbLzkpRgeYkPHUc3KAUc_Fr-YexQxK1cH92Suueac5GrwZHsw@mail.gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH RFC v2 6/9] mm/khugepaged: remove reuse_swap_page() usage
+In-Reply-To: <CAHbLzkpRgeYkPHUc3KAUc_Fr-YexQxK1cH92Suueac5GrwZHsw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-01-27 at 21:31 -0800, Tom Rix wrote:
-> On 1/27/22 6:43 PM, Joe Perches wrote:
-> > On Thu, 2022-01-27 at 16:32 -0800, Tom Rix wrote:
-> > > On 1/27/22 2:47 PM, Nick Desaulniers wrote:
-> > > > + Miguel (the clang-format maintainer), Joe (checkpatch maintainer)
-> > > > These criticisms are worth reviewing.
-> > > > 
-> > > > On Thu, Jan 27, 2022 at 2:38 PM Finn Thain <fthain@linux-m68k.org> wrote:
-> > > > > On Thu, 27 Jan 2022, trix@redhat.com wrote:
-> > > > > 
-> > > > > > From: Tom Rix <trix@redhat.com>
-> > > > > > 
-> > > > > > checkpatch reports several hundred formatting errors. Run these files
-> > > > > > through clang-format and knock off some of them.
-> > > > > > 
-> > > > > That method seems like a good recipe for endless churn unless checkpatch
-> > > > > and clang-format really agree about these style rules.
-> > > > > 
-> > > > > Why use checkpatch to assess code style, if we could simply diff the
-> > > > > existing source with the output from clang-format... but it seems that
-> > > > > clang-format harms readability, makes indentation errors and uses
-> > > > > inconsistent style rules. Some examples:
-> > > Problems with clang-format should be fixed, I'll take a look.
-> > > 
-> > > I was reviewing this file for another isseue and could not get past how
-> > > horredously bad it was and really did not want to manually fix the 400+
-> > > formatting errors.  I will drop this patch and use the use these files
-> > > to verify the .clang-format .
-> > I think this is more an issue with clang-format than with checkpatch.
-> > 
-> > If you have specific issues with what checkpatch reports for this
-> > file (or any other file), let me know.
+On 27.01.22 22:23, Yang Shi wrote:
+> On Wed, Jan 26, 2022 at 2:00 AM David Hildenbrand <david@redhat.com> wrote:
+>>
+>> reuse_swap_page() currently indicates if we can write to an anon page
+>> without COW. A COW is required if the page is shared by multiple
+>> processes (either already mapped or via swap entries) or if there is
+>> concurrent writeback that cannot tolerate concurrent page modifications.
+>>
+>> reuse_swap_page() doesn't check for pending references from other
+>> processes that already unmapped the page, however,
+>> is_refcount_suitable() essentially does the same thing in the context of
+>> khugepaged. khugepaged is the last remaining user of reuse_swap_page() and
+>> we want to remove that function.
+>>
+>> In the context of khugepaged, we are not actually going to write to the
+>> page and we don't really care about other processes mapping the page:
+>> for example, without swap, we don't care about shared pages at all.
+>>
+>> The current logic seems to be:
+>> * Writable: -> Not shared, but might be in the swapcache. Nobody can
+>>   fault it in from the swapcache as there are no other swap entries.
+>> * Readable and not in the swapcache: Might be shared (but nobody can
+>>   fault it in from the swapcache).
+>> * Readable and in the swapcache: Might be shared and someone might be
+>>   able to fault it in from the swapcache. Make sure we're the exclusive
+>>   owner via reuse_swap_page().
+>>
+>> Having to guess due to lack of comments and documentation, the current
+>> logic really only wants to make sure that a page that might be shared
+>> cannot be faulted in from the swapcache while khugepaged is active.
+>> It's hard to guess why that is that case and if it's really still required,
+>> but let's try keeping that logic unmodified.
 > 
-> Yes, I agree. Its a clang-format problem.
+> I don't think it could be faulted in while khugepaged is active since
+> khugepaged does hold mmap_lock in write mode IIUC. So page fault is
+> serialized against khugepaged.
+
+It could get faulted in by another process sharing the page, because we 
+only synchronize against the current process.
+
 > 
-> I will be looking to minimize the .clang-format settings to only those 
-> that agree with checkpatch.
-> 
-> Then add settings back in later if their problems can be worked out.
-
-Another option would be to use:
-
-	./scripts/checkpatch.pl -f --fix[-inplace] [--types=<list>] <files>
-
-where types is an optional list of specific things to change
-
-see:
-	./scripts/checkpatch.pl --list-types --verbose
-
-to show the possible types.
-
-Only some of these types can be changed with --fix or --fix-inplace
-
-If using checkpatch to change formatting, it sometimes can be useful
-to run checkpatch --fix multiple times on the same file as a
-checkpatch --fix can create a change than checkpatch will suggest
-should itself be fixed.
-
-Of course another option is to do nothing as many will complain,
-sometimes senselessly, about 'churn'.
+> My wild guess is that collapsing shared pages was not supported before
+> v5.8, so we need reuse_swap_page() to tell us if the page in swap
+> cache is shared or not. But it is not true anymore. And khugepaged
+> just allocates a THP then copy the data from base pages to huge page
+> then replace PTEs to PMD, it doesn't change the content of the page,
+> so I failed to see a problem by collapsing a shared page in swap
+> cache. But I'm really not entirely sure, I may miss something...
 
 
+Looking more closely where this logic originates from, it was introduced in:
+
+commit 10359213d05acf804558bda7cc9b8422a828d1cd
+Author: Ebru Akagunduz <ebru.akagunduz@gmail.com>
+Date:   Wed Feb 11 15:28:28 2015 -0800
+
+    mm: incorporate read-only pages into transparent huge pages
+    
+    This patch aims to improve THP collapse rates, by allowing THP collapse in
+    the presence of read-only ptes, like those left in place by do_swap_page
+    after a read fault.
+    
+    Currently THP can collapse 4kB pages into a THP when there are up to
+    khugepaged_max_ptes_none pte_none ptes in a 2MB range.  This patch applies
+    the same limit for read-only ptes.
+
+
+The change essentially results in a read-only mapped PTE page getting copied and
+mapped writable via a new PMD-mapped THP.
+
+It mentions do_swap_page(), so I assume it just tried to do what do_swap_page()
+would do when trying to map a page swapped in from the page cache writable
+immediately.
+
+But we differ from do_swap_page() that we're not actually going to map the page
+writable, we're going to copy the page (__collapse_huge_page_copy()) and map
+the copy writable.
+
+I assume we can remove that logic.
+
+-- 
+Thanks,
+
+David / dhildenb
 
