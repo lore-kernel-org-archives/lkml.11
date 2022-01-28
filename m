@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A5EC35273
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 00:26:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61932C35275
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 00:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344577AbiA1A0c (ORCPT
+        id S1344624AbiA1A0f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 19:26:32 -0500
-Received: from ale.deltatee.com ([204.191.154.188]:46978 "EHLO
+        Thu, 27 Jan 2022 19:26:35 -0500
+Received: from ale.deltatee.com ([204.191.154.188]:46948 "EHLO
         ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235971AbiA1A00 (ORCPT
+        with ESMTP id S236199AbiA1A00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 27 Jan 2022 19:26:26 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Cc:To:From:content-disposition;
-        bh=0VjpBnfEXTqeS7LssS80lKjFqlCuU84Zlsdnl3oeMpI=; b=s+iKXLCRsc+FunOheuw5aq1lFe
-        A3yhmwa7yvIPlR+O4DL+kig4M+u0iProbdm2Z/k9TQ6V5GE6VD41v7xCnzaCpBc6VxhWojkEFUGlK
-        yJFShL2es4N5xsnMFnWxQCqOI+6QIkN2s796jh173f2MhCcEo0wMO5G/HBgWs7UXUrfNK4XIomtIN
-        IZLFtYyw+qCrWSirVzZW8oqDHd6scxRM/Bogwwrv+2TB8D16dLCievCu+ti7YfMxUGCeTBwKAtFB1
-        orWWKfeJH5SIoMbWa/ccX8n2rO/VQI36kH5LbgN8Qj+qk7MBOb/cNvZn5PLstKbV5YphGTQ269YBo
-        wZym8kRA==;
+        bh=V/05GzOrgOl/UyUBKWfOm8imWYPgACNjFeMcbOGPBpc=; b=tLr1nf2CgmrXo3UylgDfejDLSA
+        e7xAEnjM8MryfrJln0g42DeGCO4Tau2qcnIyG0UAgpBgHzPO155HM9LjSV55iVUuzjEEw/Aw0kTPf
+        VoJL03pfwmN1Z9/T5DG4l3j86mVC9N/D0lVn2KL/Fre6jUPLw23Ngw4A2wNNmC+Cj7XRA3I29ze9G
+        +/3EKIHzq2e29X3Gi5t4Ar5qNunlgnF/Jn2SL3QEX2T8gRsF9UlXfYMUHtDay/KcBT+wL1lQ/ToF1
+        Zkql/xSSCKKCXzk8vdecuhOKVjmehApGrLxNwOwyAj8sVjRx6Ycgw1RCx9yNmydD9HwLubB9aHPm/
+        h739BC5Q==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
         by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1nDF5r-005OcZ-Pd; Thu, 27 Jan 2022 17:26:24 -0700
+        id 1nDF5p-005OcX-U8; Thu, 27 Jan 2022 17:26:23 -0700
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1nDF5p-0001dP-P3; Thu, 27 Jan 2022 17:26:21 -0700
+        id 1nDF5m-0001cD-7l; Thu, 27 Jan 2022 17:26:18 -0700
 From:   Logan Gunthorpe <logang@deltatee.com>
 To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
         linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
@@ -54,65 +54,134 @@ Cc:     Stephen Bates <sbates@raithlin.com>,
         Martin Oliveira <martin.oliveira@eideticom.com>,
         Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
         Ralph Campbell <rcampbell@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>
-Date:   Thu, 27 Jan 2022 17:26:11 -0700
-Message-Id: <20220128002614.6136-22-logang@deltatee.com>
+        Alex Sierra <alex.sierra@amd.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        "Darrick J . Wong" <djwong@kernel.org>
+Date:   Thu, 27 Jan 2022 17:25:51 -0700
+Message-Id: <20220128002614.6136-2-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220128002614.6136-1-logang@deltatee.com>
 References: <20220128002614.6136-1-logang@deltatee.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, logang@deltatee.com
+X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, christian.koenig@amd.com, alex.sierra@amd.com, tytso@mit.edu, helgaas@kernel.org, djwong@kernel.org
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v5 21/24] block: set FOLL_PCI_P2PDMA in bio_map_user_iov()
+Subject: [PATCH v5 01/24] ext4/xfs: add page refcount helper
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a bio's queue supports PCI P2PDMA, set FOLL_PCI_P2PDMA for
-iov_iter_get_pages_flags(). This allows PCI P2PDMA pages to be
-passed from userspace and enables the NVMe passthru requests to
-use P2PDMA pages.
+From: Ralph Campbell <rcampbell@nvidia.com>
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+There are several places where ZONE_DEVICE struct pages assume a reference
+count == 1 means the page is idle and free. Instead of open coding this,
+add a helper function to hide this detail.
+
+Signed-off-by: Ralph Campbell <rcampbell@nvidia.com>
+Signed-off-by: Alex Sierra <alex.sierra@amd.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Theodore Ts'o <tytso@mit.edu>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
 ---
- block/blk-map.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ fs/dax.c            |  4 ++--
+ fs/ext4/inode.c     |  5 +----
+ fs/fuse/dax.c       |  4 +---
+ fs/xfs/xfs_file.c   |  4 +---
+ include/linux/dax.h | 10 ++++++++++
+ 5 files changed, 15 insertions(+), 12 deletions(-)
 
-diff --git a/block/blk-map.c b/block/blk-map.c
-index 4526adde0156..7508448e290c 100644
---- a/block/blk-map.c
-+++ b/block/blk-map.c
-@@ -234,6 +234,7 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
- 		gfp_t gfp_mask)
- {
- 	unsigned int max_sectors = queue_max_hw_sectors(rq->q);
-+	unsigned int flags = 0;
- 	struct bio *bio;
- 	int ret;
- 	int j;
-@@ -246,13 +247,17 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
- 		return -ENOMEM;
- 	bio->bi_opf |= req_op(rq);
+diff --git a/fs/dax.c b/fs/dax.c
+index cd03485867a7..d9b856cf6436 100644
+--- a/fs/dax.c
++++ b/fs/dax.c
+@@ -369,7 +369,7 @@ static void dax_disassociate_entry(void *entry, struct address_space *mapping,
+ 	for_each_mapped_pfn(entry, pfn) {
+ 		struct page *page = pfn_to_page(pfn);
  
-+	if (blk_queue_pci_p2pdma(rq->q))
-+		flags |= FOLL_PCI_P2PDMA;
+-		WARN_ON_ONCE(trunc && page_ref_count(page) > 1);
++		WARN_ON_ONCE(trunc && !dax_page_unused(page));
+ 		WARN_ON_ONCE(page->mapping && page->mapping != mapping);
+ 		page->mapping = NULL;
+ 		page->index = 0;
+@@ -383,7 +383,7 @@ static struct page *dax_busy_page(void *entry)
+ 	for_each_mapped_pfn(entry, pfn) {
+ 		struct page *page = pfn_to_page(pfn);
+ 
+-		if (page_ref_count(page) > 1)
++		if (!dax_page_unused(page))
+ 			return page;
+ 	}
+ 	return NULL;
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 5f79d265d06a..99e3ed7bcd06 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -3899,10 +3899,7 @@ int ext4_break_layouts(struct inode *inode)
+ 		if (!page)
+ 			return 0;
+ 
+-		error = ___wait_var_event(&page->_refcount,
+-				atomic_read(&page->_refcount) == 1,
+-				TASK_INTERRUPTIBLE, 0, 0,
+-				ext4_wait_dax_page(inode));
++		error = dax_wait_page(inode, page, ext4_wait_dax_page);
+ 	} while (error == 0);
+ 
+ 	return error;
+diff --git a/fs/fuse/dax.c b/fs/fuse/dax.c
+index 182b24a14804..f8b3f30d2303 100644
+--- a/fs/fuse/dax.c
++++ b/fs/fuse/dax.c
+@@ -676,9 +676,7 @@ static int __fuse_dax_break_layouts(struct inode *inode, bool *retry,
+ 		return 0;
+ 
+ 	*retry = true;
+-	return ___wait_var_event(&page->_refcount,
+-			atomic_read(&page->_refcount) == 1, TASK_INTERRUPTIBLE,
+-			0, 0, fuse_wait_dax_page(inode));
++	return dax_wait_page(inode, page, fuse_wait_dax_page);
+ }
+ 
+ /* dmap_end == 0 leads to unmapping of whole file */
+diff --git a/fs/xfs/xfs_file.c b/fs/xfs/xfs_file.c
+index 22ad207bedf4..57a440666935 100644
+--- a/fs/xfs/xfs_file.c
++++ b/fs/xfs/xfs_file.c
+@@ -859,9 +859,7 @@ xfs_break_dax_layouts(
+ 		return 0;
+ 
+ 	*retry = true;
+-	return ___wait_var_event(&page->_refcount,
+-			atomic_read(&page->_refcount) == 1, TASK_INTERRUPTIBLE,
+-			0, 0, xfs_wait_dax_page(inode));
++	return dax_wait_page(inode, page, xfs_wait_dax_page);
+ }
+ 
+ int
+diff --git a/include/linux/dax.h b/include/linux/dax.h
+index 9fc5f99a0ae2..479939b3be40 100644
+--- a/include/linux/dax.h
++++ b/include/linux/dax.h
+@@ -201,6 +201,16 @@ static inline bool dax_mapping(struct address_space *mapping)
+ 	return mapping->host && IS_DAX(mapping->host);
+ }
+ 
++static inline bool dax_page_unused(struct page *page)
++{
++	return page_ref_count(page) == 1;
++}
 +
- 	while (iov_iter_count(iter)) {
- 		struct page **pages;
- 		ssize_t bytes;
- 		size_t offs, added = 0;
- 		int npages;
- 
--		bytes = iov_iter_get_pages_alloc(iter, &pages, LONG_MAX, &offs);
-+		bytes = iov_iter_get_pages_alloc_flags(iter, &pages, LONG_MAX,
-+						       &offs, flags);
- 		if (unlikely(bytes <= 0)) {
- 			ret = bytes ? bytes : -EFAULT;
- 			goto out_unmap;
++#define dax_wait_page(_inode, _page, _wait_cb)				\
++	___wait_var_event(&(_page)->_refcount,				\
++		dax_page_unused(_page),				\
++		TASK_INTERRUPTIBLE, 0, 0, _wait_cb(_inode))
++
+ #ifdef CONFIG_DEV_DAX_HMEM_DEVICES
+ void hmem_register_device(int target_nid, struct resource *r);
+ #else
 -- 
 2.30.2
 
