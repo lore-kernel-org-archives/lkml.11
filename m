@@ -2,80 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00009C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:02:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A04C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235062AbiA1JCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 04:02:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbiA1JCC (ORCPT
+        id S235739AbiA1JD0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 04:03:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:21830 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230179AbiA1JDY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 04:02:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3D7C061714;
-        Fri, 28 Jan 2022 01:02:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CFA461DBD;
-        Fri, 28 Jan 2022 09:02:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B82AC340E0;
-        Fri, 28 Jan 2022 09:01:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643360521;
-        bh=31fx5tHLJzU+vPN38r10In2ER25EqDfino7bwR2/XmQ=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=a7PvePT63NftL8k5FWO7EKdFJ8RTHHZCTaOZAUX4PKNCJRvnmfcwraxBYzEQ/AlC0
-         N8ZgxSFEYClGxnQsX3rGbH722yPa3AaZ586WVc2gODL+Edn7dG3hErpDtWOXzL+bE5
-         aBgH0d9WSd2Ni/GePyYeAx7lvNT5XYfui8KgxGfE69oCuyHeBQ8MaeoMJZYX/SZj9f
-         HKhRjKu/p+sFpkT364DRGMYv2jzN7vzy0VgpwduTjP9rLhVfaeGtneo5ApEl3arqsz
-         say5ThVDp1GP98YY73xdRYIFS4QX+gsK3byT0r2IrrgXzpcbpt4ib+oy1u1U/5jQFx
-         +xnJyJNbZAgbQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     luciano.coelho@intel.com, davem@davemloft.net, kuba@kernel.org,
-        trix@redhat.com, johannes.berg@intel.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] dvm: use struct_size over open coded arithmetic
-References: <20220128080206.1211452-1-chi.minghao@zte.com.cn>
-Date:   Fri, 28 Jan 2022 11:01:54 +0200
-In-Reply-To: <20220128080206.1211452-1-chi.minghao@zte.com.cn> (cgel zte's
-        message of "Fri, 28 Jan 2022 08:02:06 +0000")
-Message-ID: <87o83wi67x.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Fri, 28 Jan 2022 04:03:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643360604;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k6fRFZaCxJ9/sKr7eukzgsxP2eZihqtSLhrBXhP7zxA=;
+        b=GfDddd73q9tt9uPHozJOcVxY51iVwyDXqkMZbqw2DArnLJJsGLv9iQlVS7peL+adRJ0JzJ
+        LhlTCqHaUZP8mwaIcKJNhCefRer3fGEbBDm9586Wm/CZbTah/GV79ousSYMExEeuV+weXV
+        zxKaXqf776jnH/WWz9/PHrzY6kuhQIE=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-237-7hb1BxDBOG6N-c7CHq0Vhw-1; Fri, 28 Jan 2022 04:03:23 -0500
+X-MC-Unique: 7hb1BxDBOG6N-c7CHq0Vhw-1
+Received: by mail-ed1-f72.google.com with SMTP id ed6-20020a056402294600b004090fd8a936so2732376edb.23
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:03:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=k6fRFZaCxJ9/sKr7eukzgsxP2eZihqtSLhrBXhP7zxA=;
+        b=gdTnXDtnEqBbXZVO/+zwTahiwn/XRwTVVC0sDa/sELirZp8/iBYXOh+zQHCDnRa99P
+         ySYrjovato7DIxb+6IsW3ZjPr6o+NSjXLaZ8l+VOZMtavfBXstIciCwuMhqF8p8mp/P4
+         kdxV013p6BgYqgoo2Q2/35md6z781449s3I13YXdPDkDyqNafX5MrDLa3PDmjxPKpXNe
+         tIGZ2CK7HSZg4HdOoueDK0jzYMMEcPaEm/MPAKfy46BIqqFdcreIn6Z/f2dASYPc/XdL
+         ukf95P3QHL5tdNYlt4YaMNSMIuqfoIGHdw+aO4Vbc7sG8AtoAcQpFhQVKsXglvppNYGo
+         wmcw==
+X-Gm-Message-State: AOAM5310VWO07m7ogv3J36X5YlKbvByIUwcocad1UU8kEw3lW+F3So/d
+        lXBiEyU1wxJ3oXFN3KOud8mxPEZrEx6fScuBV+taZpv9/XJjrm9LYkVg7Xavd37e4qyuRL0h+94
+        m5nIxnbOoBaV0o2oTTlcl9joO
+X-Received: by 2002:aa7:d313:: with SMTP id p19mr7550079edq.380.1643360601822;
+        Fri, 28 Jan 2022 01:03:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzwLTfB+FQpW/Kh46RzIU62HlxvCR6hkBiYhxXWrkOPDyzrf6sUvdJ0chSBKeGemvbFZzeuFw==
+X-Received: by 2002:aa7:d313:: with SMTP id p19mr7550062edq.380.1643360601598;
+        Fri, 28 Jan 2022 01:03:21 -0800 (PST)
+Received: from ?IPV6:2003:cb:c70e:5c00:522f:9bcd:24a0:cd70? (p200300cbc70e5c00522f9bcd24a0cd70.dip0.t-ipconnect.de. [2003:cb:c70e:5c00:522f:9bcd:24a0:cd70])
+        by smtp.gmail.com with ESMTPSA id u12sm12634499edq.8.2022.01.28.01.03.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Jan 2022 01:03:21 -0800 (PST)
+Message-ID: <847ceb80-d379-b704-8b47-0d662468370b@redhat.com>
+Date:   Fri, 28 Jan 2022 10:03:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v3 3/4] mm: Change zap_details.zap_mapping into even_cows
+Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     Alistair Popple <apopple@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Hugh Dickins <hughd@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>
+References: <20220128045412.18695-1-peterx@redhat.com>
+ <20220128045412.18695-4-peterx@redhat.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220128045412.18695-4-peterx@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cgel.zte@gmail.com writes:
+On 28.01.22 05:54, Peter Xu wrote:
+> Currently we have a zap_mapping pointer maintained in zap_details, when it is
+> specified we only want to zap the pages that has the same mapping with what the
+> caller has specified.
+> 
+> But what we want to do is actually simpler: we want to skip zapping
+> private (COW-ed) pages in some cases.  We can refer to unmap_mapping_pages()
+> callers where we could have passed in different even_cows values.  The other
+> user is unmap_mapping_folio() where we always want to skip private pages.
+> 
+> According to Hugh, we used a mapping pointer for historical reason, as
+> explained here:
+> 
+>   https://lore.kernel.org/lkml/391aa58d-ce84-9d4-d68d-d98a9c533255@google.com/
+> 
+> Quotting partly from Hugh:
 
-> From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
->
-> Replace zero-length array with flexible-array member and make use
-> of the struct_size() helper in kmalloc(). For example:
->
-> struct iwl_wipan_noa_data {
-> 	...
-> 	u8 data[];
-> };
->
-> Make use of the struct_size() helper instead of an open-coded version
-> in order to avoid any potential type mistakes.
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+s/Quotting/Quoting/
+
+> 
+>   Which raises the question again of why I did not just use a boolean flag
+>   there originally: aah, I think I've found why.  In those days there was a
+>   horrible "optimization", for better performance on some benchmark I guess,
+>   which when you read from /dev/zero into a private mapping, would map the zero
+>   page there (look up read_zero_pagealigned() and zeromap_page_range() if you
+>   dare).  So there was another category of page to be skipped along with the
+>   anon COWs, and I didn't want multiple tests in the zap loop, so checking
+>   check_mapping against page->mapping did both.  I think nowadays you could do
+>   it by checking for PageAnon page (or genuine swap entry) instead.
+> 
+> This patch replaced the zap_details.zap_mapping pointer into the even_cows
+> boolean, then we check it against PageAnon.
+> 
+> Suggested-by: Hugh Dickins <hughd@google.com>
+> Signed-off-by: Peter Xu <peterx@redhat.com>
 > ---
->  drivers/net/wireless/intel/iwlwifi/dvm/rx.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  mm/memory.c | 16 +++++++---------
+>  1 file changed, 7 insertions(+), 9 deletions(-)
+> 
+> diff --git a/mm/memory.c b/mm/memory.c
+> index 14d8428ff4db..ffa8c7dfe9ad 100644
+> --- a/mm/memory.c
+> +++ b/mm/memory.c
+> @@ -1309,8 +1309,8 @@ copy_page_range(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma)
+>   * Parameter block passed down to zap_pte_range in exceptional cases.
+>   */
+>  struct zap_details {
+> -	struct address_space *zap_mapping;	/* Check page->mapping if set */
+>  	struct folio *single_folio;	/* Locked folio to be unmapped */
+> +	bool even_cows;			/* Zap COWed private pages too? */
+>  };
+>  
+>  /* Whether we should zap all COWed (private) pages too */
+> @@ -1321,13 +1321,10 @@ static inline bool should_zap_cows(struct zap_details *details)
+>  		return true;
+>  
+>  	/* Or, we zap COWed pages only if the caller wants to */
+> -	return !details->zap_mapping;
+> +	return details->even_cows;
+>  }
+>  
+> -/*
+> - * We set details->zap_mapping when we want to unmap shared but keep private
+> - * pages. Return true if we should zap this page, false otherwise.
+> - */
+> +/* Decides whether we should zap this page with the page pointer specified */
+>  static inline bool should_zap_page(struct zap_details *details, struct page *page)
+>  {
+>  	/* If we can make a decision without *page.. */
+> @@ -1338,7 +1335,8 @@ static inline bool should_zap_page(struct zap_details *details, struct page *pag
+>  	if (!page)
+>  		return true;
+>  
+> -	return details->zap_mapping == page_rmapping(page);
+> +	/* Otherwise we should only zap non-anon pages */
+> +	return !PageAnon(page);
+>  }
+>  
+>  static unsigned long zap_pte_range(struct mmu_gather *tlb,
+> @@ -3403,7 +3401,7 @@ void unmap_mapping_folio(struct folio *folio)
+>  	first_index = folio->index;
+>  	last_index = folio->index + folio_nr_pages(folio) - 1;
+>  
+> -	details.zap_mapping = mapping;
+> +	details.even_cows = false;
 
-The prefix should be "iwlwifi: dvm:".
+Already initialized to 0 via struct zap_details details = { };
+
+We could think about
+
+struct zap_details details = {
+	.single_folio = folio,
+};
+
+>  	details.single_folio = folio;
+>  
+>  	i_mmap_lock_write(mapping);
+> @@ -3432,7 +3430,7 @@ void unmap_mapping_pages(struct address_space *mapping, pgoff_t start,
+>  	pgoff_t	first_index = start;
+>  	pgoff_t	last_index = start + nr - 1;
+>  
+> -	details.zap_mapping = even_cows ? NULL : mapping;
+> +	details.even_cows = even_cows;
+>  	if (last_index < first_index)
+>  		last_index = ULONG_MAX;
+>  
+
+Eventually
+
+struct zap_details details = {
+	.even_cows = even_cows,
+};
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Thanks,
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+David / dhildenb
+
