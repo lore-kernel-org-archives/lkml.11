@@ -2,104 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A87B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6139AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347890AbiA1Kcz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 05:32:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347878AbiA1Kcy (ORCPT
+        id S231150AbiA1KeX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 05:34:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:31789 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229555AbiA1KeW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 05:32:54 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DDFC061747;
-        Fri, 28 Jan 2022 02:32:54 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 7FA23471;
-        Fri, 28 Jan 2022 11:32:51 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1643365971;
-        bh=QVy9zl0W8jMMsuagrjFHi3f0S0j/21GAM2lTr0325W0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OeUrFGsKU4F+E6XXqPJtoup86EbTlroJpYbUqeD5i+PX4+dXjEb7W9340/J4SIcHd
-         T37s/gyVQQei5Dn+UprtOlaaFCdjISEtPNMZQVcYMGwPMcPQ+b26YTkac5DKDejO2u
-         cEgyqZu4Auv8KCmFfYgT5K8vk6CnArkU8ZvSAVsI=
-Date:   Fri, 28 Jan 2022 12:32:30 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Zhou Qingyang <zhou1615@umn.edu>, kjlu@umn.edu,
-        Benoit Parrot <bparrot@ti.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: ti-vpe: cal: Fix a NULL pointer dereference in
- cal_ctx_v4l2_init_formats()
-Message-ID: <YfPGPssBW5l1r8ew@pendragon.ideasonboard.com>
-References: <20220124172001.62457-1-zhou1615@umn.edu>
- <YfPDOOtlGPRfp3Vo@kroah.com>
+        Fri, 28 Jan 2022 05:34:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643366062;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=sH8hNE8QNqDm4q7zd5u3rJiinzGbKInxk5HJjzs+H10=;
+        b=JFLcZacDrho9krS8y7MAXtymMMBcneUAKTg4QczSVZUM6TrvZzYfS4KkG1Rt71FGIrC1Kk
+        O9SWcaguO51alVwP66I3+f47NCylsne9iosaN5d0tgZ3cSjEX6cC1PxgoJLN8/UqO4C2Xm
+        YycuOfkeqCSmbHg2vHLCGCiRfSE91pg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-424-6WeNzuTMM6-mjdlJpcAAcg-1; Fri, 28 Jan 2022 05:34:16 -0500
+X-MC-Unique: 6WeNzuTMM6-mjdlJpcAAcg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8A81B1898292;
+        Fri, 28 Jan 2022 10:34:15 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.193.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2D40D7B6D5;
+        Fri, 28 Jan 2022 10:34:12 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     linux-hyperv@vger.kernel.org, Wei Liu <wei.liu@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Michael Kelley <mikelley@microsoft.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>
+Subject: [PATCH 0/2] Drivers: hv: Minor cleanup around init_vp_index()
+Date:   Fri, 28 Jan 2022 11:34:10 +0100
+Message-Id: <20220128103412.3033736-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YfPDOOtlGPRfp3Vo@kroah.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+Two minor changes with no functional change intended:
+- s,alloced,allocated
+- compare cpumasks and not their weights
 
-On Fri, Jan 28, 2022 at 11:19:36AM +0100, Greg KH wrote:
-> On Tue, Jan 25, 2022 at 01:20:01AM +0800, Zhou Qingyang wrote:
-> > In cal_ctx_v4l2_init_formats(), devm_kzalloc() is assigned to fw and there
-> > is a dereference of it after that, which could lead to NULL pointer
-> > dereference on failure of devm_kzalloc().
-> > 
-> > Fix this bug by adding a NULL check of ctx->active_fmt.
-> > 
-> > This bug was found by a static analyzer.
-> > 
-> > Builds with 'make allyesconfig' show no new warnings,
-> > and our static analyzer no longer warns about this code.
-> > 
-> > Fixes: 7168155002cf ("media: ti-vpe: cal: Move format handling to cal.c and expose helpers")
-> > Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-> > --
-> > The analysis employs differential checking to identify inconsistent 
-> > security operations (e.g., checks or kfrees) between two code paths 
-> > and confirms that the inconsistent operations are not recovered in the
-> > current function or the callers, so they constitute bugs. 
-> > 
-> > Note that, as a bug found by static analysis, it can be a false
-> > positive or hard to trigger. Multiple researchers have cross-reviewed
-> > the bug.
-> > 
-> >  drivers/media/platform/ti-vpe/cal-video.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/drivers/media/platform/ti-vpe/cal-video.c b/drivers/media/platform/ti-vpe/cal-video.c
-> > index 7799da1cc261..3e936a2ca36c 100644
-> > --- a/drivers/media/platform/ti-vpe/cal-video.c
-> > +++ b/drivers/media/platform/ti-vpe/cal-video.c
-> > @@ -823,6 +823,9 @@ static int cal_ctx_v4l2_init_formats(struct cal_ctx *ctx)
-> >  	/* Enumerate sub device formats and enable all matching local formats */
-> >  	ctx->active_fmt = devm_kcalloc(ctx->cal->dev, cal_num_formats,
-> >  				       sizeof(*ctx->active_fmt), GFP_KERNEL);
-> > +	if (!ctx->active_fmt)
-> > +		return -ENOMEM;
-> > +
-> >  	ctx->num_active_fmt = 0;
-> >  
-> >  	for (j = 0, i = 0; ; ++j) {
-> 
-> As stated before, umn.edu is still not allowed to contribute to the
-> Linux kernel.  Please work with your administration to resolve this
-> issue.
+Vitaly Kuznetsov (2):
+  Drivers: hv: Rename 'alloced' to 'allocated'
+  Drivers: hv: Compare cpumasks and not their weights in init_vp_index()
 
-I thought this had been resolved, my bad. I can drop the patch, but it
-fixes a real bug (although unlikely). Should I re-author this fix ?
+ drivers/hv/channel_mgmt.c | 19 +++++++++----------
+ drivers/hv/hyperv_vmbus.h | 14 +++++++-------
+ drivers/hv/vmbus_drv.c    |  2 +-
+ 3 files changed, 17 insertions(+), 18 deletions(-)
 
 -- 
-Regards,
+2.34.1
 
-Laurent Pinchart
