@@ -2,83 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6872C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:06:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5AF2C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345750AbiA1OGx (ORCPT
+        id S1346162AbiA1OHv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:06:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37808 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344330AbiA1OGt (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:06:49 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C39AC061714;
-        Fri, 28 Jan 2022 06:06:49 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id a8so16318351ejc.8;
-        Fri, 28 Jan 2022 06:06:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V90r59PqZxvu1aYpRHwQxj9CjfznCDlFhS5gKOQxDqI=;
-        b=F9hGRyzkpH2M5+KDdfdNdn7LwMNCxKlT2MfqGjs6wNBz/hl7zuOwFkhU42+kl1tJpn
-         mChrQE7ABryFYz5r/27dCKspkGbVlO3pkKNbZppwi0Qof6zTbX+s2XPmEM0QHNMIx7Zg
-         U8p0+kKlmtpsTihYIwhqh3DrnBnzh2ZkZScq8zse/yH7ymgiOrFo7ctBEaY/IYHv8AR1
-         bnhy/xmkTz0iQa3q5hejXpRT+o0ixt1QqodzsjYUkOyRtq9U9/BRBy7wCZMfarD0KGTJ
-         55qQ5HEV46F58kiN9SH5BAk1A4clrurJWt6YIO54m1aHsDKfb3X0E5OMOWVqIZsKR4IG
-         d+UA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V90r59PqZxvu1aYpRHwQxj9CjfznCDlFhS5gKOQxDqI=;
-        b=eep8dTZtjNOm6XIk2j/hZiZPuWl8na3AOvIhQROejb7ABvusnUrYuYDGZvXDBQD0YO
-         veYfpC7XEb/9uXwtZZX7y49KQ6JRFd52VIEDMob66aYj53Cu+HuYBETdJYgkINoc4w0H
-         +yvIGHgIwJJgnTMChfc8xPKqSxbFPOdL3uwLAKf9MW5eNcAMDn+ezi6jI6IjcRrxC0Bb
-         i19iYHdlgK5KdmNuD0aKoiz9yrIQ5W0Pww0HKtCIzaJq/5wL5cwlyCUoFjQsNqyIWb/B
-         9FEDVMULoxUNWquzw8rHgPBqi3ijERI0GihKAK7M93K/LXtMyXVWnkV1D6UdZbElP9Ql
-         nDTA==
-X-Gm-Message-State: AOAM5335dOqASPYqeDiUSN4UqnjDcoEXRIUwU1G1olaWC47N0ALsPUDU
-        J4x4fzm+xRHB0P7BqY2l/kInvKrImKRLoI6WiuCc2In/vn0f91WG
-X-Google-Smtp-Source: ABdhPJytN1RgypEc3MnBCQEniu6x9owRgmxL1r5jJqWOr08GuE/9g+DHM6rJ6NXg2bSu4IOzO48Ts3xUWDMylyjFKI4=
-X-Received: by 2002:a17:906:604d:: with SMTP id p13mr6820778ejj.639.1643378807748;
- Fri, 28 Jan 2022 06:06:47 -0800 (PST)
+        Fri, 28 Jan 2022 09:07:51 -0500
+Received: from vps5.brixit.nl ([192.81.221.234]:47618 "EHLO vps5.brixit.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240958AbiA1OHt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 09:07:49 -0500
+Received: from [192.168.20.2] (unknown [77.239.252.99])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by vps5.brixit.nl (Postfix) with ESMTPSA id 0861061BA7;
+        Fri, 28 Jan 2022 14:07:46 +0000 (UTC)
+Message-ID: <22c14d50-7585-ced5-24e2-8c0b417fa0db@postmarketos.org>
+Date:   Fri, 28 Jan 2022 17:07:45 +0300
 MIME-Version: 1.0
-References: <20220128055604.2077738-1-kai.heng.feng@canonical.com> <CAHp75Vcz01FwHUF5NAUhn4mfTgzoHBMEBkqPbfPHU=tNr_9Zdw@mail.gmail.com>
-In-Reply-To: <CAHp75Vcz01FwHUF5NAUhn4mfTgzoHBMEBkqPbfPHU=tNr_9Zdw@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 28 Jan 2022 16:05:09 +0200
-Message-ID: <CAHp75Veti6hPmESaeD8obV0F3zZ7cpcK8mXdReJXb8+1oPp_hg@mail.gmail.com>
-Subject: Re: [PATCH v2] Input: adxl34x: Add ACPI HID table
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-input <linux-input@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] arm64: dts: qcom: sm8150: Add ufs power-domain entries
+Content-Language: en-US
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        linux-arm-msm@vger.kernel.org
+Cc:     bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        bjorn.andersson@linaro.org, agross@kernel.org,
+        Rob Herring <robh@kernel.org>
+References: <20220120082803.15535-1-bhupesh.sharma@linaro.org>
+From:   Alexey Minnekhanov <alexeymin@postmarketos.org>
+In-Reply-To: <20220120082803.15535-1-bhupesh.sharma@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 4:01 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Fri, Jan 28, 2022 at 7:56 AM Kai-Heng Feng
-> <kai.heng.feng@canonical.com> wrote:
+At 20.01.2022 11:28, Bhupesh Sharma wrote:
+> Add power-domain entries for UFS controller & phy nodes
+> in sm8150 dts.
+> 
+> ...
+> +			power-domains = <&gcc UFS_PHY_GDSC>;
+>   			resets = <&gcc GCC_UFS_PHY_BCR>;
+>   			reset-names = "rst";
+> ...
+> +			power-domains = <&gcc UFS_CARD_GDSC>,
+> +					<&gcc UFS_PHY_GDSC>;
+> +			power-domain-names = "ufs_card_gdsc", "ufs_phy_gdsc";
 
-...
+Strange, but I don't see neither UFS_PHY_GDSC nor UFS_CARD_GDSC in 
+gcc-sm8150.c [1] (and accordingly not in 
+include/dt-bindings/clock/qcom,gcc-sm8150.h), but they are present in 
+corresponding files for sm8250 [2].
 
-> >  drivers/input/misc/adxl34x-i2c.c | 7 +++++++
+By quick look at downstream sm8150-gdsc.dtsi addresses seem to be 
+similar to one used on sm8250, so I'm guessing gcc-sm8150 has to be 
+fixed first for this patch to work?
 
-Hold on, why in this driver and not
-
-drivers/iio/accel/adxl345_i2c.c
-drivers/iio/accel/adxl345_spi.c
-
-?
+[1] 
+https://elixir.bootlin.com/linux/v5.17-rc1/source/drivers/clk/qcom/gcc-sm8150.c#L3716
+[2] 
+https://elixir.bootlin.com/linux/v5.17-rc1/source/drivers/clk/qcom/gcc-sm8250.c#L3522
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Regards
+Alexey Minnekhanov
+postmarketOS developer
+https://www.postmarketos.org
