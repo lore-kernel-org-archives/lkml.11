@@ -2,116 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAC9C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 02:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39505C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 02:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345501AbiA1Clt (ORCPT
+        id S1345508AbiA1CmG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 21:41:49 -0500
-Received: from conssluserg-03.nifty.com ([210.131.2.82]:20782 "EHLO
-        conssluserg-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241696AbiA1Clr (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 21:41:47 -0500
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 20S2fY8X008122;
-        Fri, 28 Jan 2022 11:41:34 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 20S2fY8X008122
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1643337694;
-        bh=4JwARZdKVo3l5mCIOwcu21mpuSYlPGM/jXChU9Tmvv8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=lMJ1QSht7dX1owf3nll55YpxS/G/4siojSVe7w7p2iLOjEA5y0bMCCqyjSJUN/54B
-         +eSlP9dCRjPQUnQd3pqwf3YCEEtCw+z/shb0W6gc2VZT4iOj8Kxeg/j+pXouSgNUjs
-         B8oxA1r5s9CiIsu3waOEi6UawlRbFKmYdCSjCTub2bIzh9fh+/JDV2Uz+NQ4XOSoKC
-         lD0X3ilOn6GUkg0CjTtQ4EB4CAq/rOIiT+SzHTrkKxH1sPyK37BKuZJeaai8uHJu6S
-         hhD+LSPmPrRt5zH0pevbvO9ztWegM52QpkEoxZ3LWd4Q8UPHPOZgqSZHfr2yXA0iT/
-         AXH44hL8KcwtQ==
-X-Nifty-SrcIP: [209.85.216.45]
-Received: by mail-pj1-f45.google.com with SMTP id d5so5161591pjk.5;
-        Thu, 27 Jan 2022 18:41:34 -0800 (PST)
-X-Gm-Message-State: AOAM533WE2OgiQsewbJZXxBa0Lu0n8DGYHp/J7JO2FiHfZRkWFtc8krV
-        FstK4jae3NaRXdcDKdDabGfeE8f8PQkj2NneJ0Y=
-X-Google-Smtp-Source: ABdhPJy1GiKZizyfLYhMezNIV1ytKYsoKKMkU59dG1DjFD/iKFc6IodPKJ/Y/ET9SfcyfEuczaNspQfIJ50T03XKddU=
-X-Received: by 2002:a17:90b:1647:: with SMTP id il7mr9537952pjb.119.1643337693823;
- Thu, 27 Jan 2022 18:41:33 -0800 (PST)
+        Thu, 27 Jan 2022 21:42:06 -0500
+Received: from mga14.intel.com ([192.55.52.115]:3811 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241696AbiA1CmF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 21:42:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643337725; x=1674873725;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qJGD54+z4s9uimUk4jVCMGmOmDNCKMZ5udJCxiNXpGY=;
+  b=I5pvLefs1Y9bdUIq9J39wwpJlzzYFW2Xah+Q3xoE8/uWr4BlvEkWmJTE
+   +y8j9N2WKuPECJna10wLtigUb/omA53NRXysmhYY+VYtsB1BlY3vmooDj
+   6mLKXzP8r9zAQjRGw7pkbuGlypHj77KN27fsJkpAdBGyGhQCLqr+DVByz
+   n65mtZE2hl2TJFzwYvrp+nt8zubVNT3WV6474291WmAXxZSyZzugK5dYO
+   faCEPT9F3460bhTPlNWGe2t0CWq0aztcDp3XFw794nZ35IKO+gFE6TV5n
+   CrDZh2W+gck//UJztqf++zM3RBNk9Q8gFCEHS8I/4ph6IBpbJT8YfLB4Z
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="247247720"
+X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
+   d="scan'208";a="247247720"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 18:42:05 -0800
+X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
+   d="scan'208";a="769962897"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 18:42:05 -0800
+Date:   Thu, 27 Jan 2022 18:42:00 -0800
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <YfNVBzN67rSu/QcE@otcwcpicx3.sc.intel.com>
+References: <20211217220136.2762116-1-fenghua.yu@intel.com>
+ <20211217220136.2762116-6-fenghua.yu@intel.com>
+ <87ee4w6g1n.ffs@tglx>
+ <87bl006fdb.ffs@tglx>
+ <Ye8RmmKpJT8brmDE@otcwcpicx3.sc.intel.com>
+ <878rv46eg3.ffs@tglx>
+ <YfAUutQhqS6ejUFU@otcwcpicx3.sc.intel.com>
+ <87k0em4lu9.ffs@tglx>
+ <YfGGk7kWNc9q2YwV@otcwcpicx3.sc.intel.com>
+ <8735la41qb.ffs@tglx>
 MIME-Version: 1.0
-References: <20220112224342.958358-1-quic_eberman@quicinc.com>
-In-Reply-To: <20220112224342.958358-1-quic_eberman@quicinc.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 28 Jan 2022 11:40:56 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQ4wXjLfz_+6QeT06tKr_2Pan0qtxf=adKQtCNagZ+5wQ@mail.gmail.com>
-Message-ID: <CAK7LNAQ4wXjLfz_+6QeT06tKr_2Pan0qtxf=adKQtCNagZ+5wQ@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: Add environment variables for userprogs flags
-To:     Elliot Berman <quic_eberman@quicinc.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Fangrui Song <maskray@google.com>,
-        Matthias Maennich <maennich@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8735la41qb.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(+CC: Arnd)
+Hi, Thomas,
 
-On Thu, Jan 13, 2022 at 7:44 AM Elliot Berman <quic_eberman@quicinc.com> wrote:
->
-> Allow additional arguments be passed to userprogs compilation.
-> Reproducible clang builds need to provide a sysroot and gcc path to
-> ensure same toolchain is used across hosts. KCFLAGS is not currently
-> used for any user programs compilation, so add new USERCFLAGS and
-> USERLDFLAGS which serves similar purpose as HOSTCFLAGS/HOSTLDFLAGS.
->
-> Specifically, I'm trying to force CC_CAN_LINK to consistently fail in
-> an environment where a user sysroot is not specifically available.
-> Currently, Clang might automatically detect GCC installation on hosts
-> which have it installed to a default location in /. With addition of
-> these environment variables, our build environment can do like
-> "--sysroot=/dev/null" to force sysroot detection to fail.
->
-> Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
-> ---
+On Wed, Jan 26, 2022 at 10:38:04PM +0100, Thomas Gleixner wrote:
+> On Wed, Jan 26 2022 at 09:36, Fenghua Yu wrote:
+> > On Wed, Jan 26, 2022 at 03:23:42PM +0100, Thomas Gleixner wrote:
+> >> On Tue, Jan 25 2022 at 07:18, Fenghua Yu wrote:
+> >> While looking at ioasid_put() usage I tripped over the following UAF
+> >> issue:
+> >> 
+> >> --- a/drivers/iommu/intel/iommu.c
+> >> +++ b/drivers/iommu/intel/iommu.c
+> >> @@ -4817,8 +4817,10 @@ static int aux_domain_add_dev(struct dma
+> >>  	auxiliary_unlink_device(domain, dev);
+> >>  link_failed:
+> >>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+> >> -	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
+> >> +	if (list_empty(&domain->subdevices) && domain->default_pasid > 0) {
+> >>  		ioasid_put(domain->default_pasid);
+> >> +		domain->default_pasid = INVALID_IOASID;
+> >> +	}
+> >>  
+> >>  	return ret;
+> >>  }
+> >> @@ -4847,8 +4849,10 @@ static void aux_domain_remove_dev(struct
+> >>  
+> >>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+> >>  
+> >> -	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
+> >> +	if (list_empty(&domain->subdevices) && domain->default_pasid > 0) {
+> >>  		ioasid_put(domain->default_pasid);
+> >> +		domain->default_pasid = INVALID_IOASID;
+> >> +	}
+> >>  }
+> >>  
+> >>  static int prepare_domain_attach_device(struct iommu_domain *domain,
+> >
+> > The above patch fixes an existing issue. I will put it in a separate patch,
+> > right?
+> 
+> Correct.
+> 
+> > It cannot be applied cleanly to the upstream tree. Do you want me to base
+> > the above patch (and the whole patch set) to the upstream tree or a specific
+> > tip branch?
+> 
+> Against Linus tree please so that the bugfix applies.
+> 
+> > I will fold the following patch into patch #5. The patch #11 (the doc patch)
+> > also needs to remove one paragraph talking about refcount.
+> >
+> > So I will send the whole patch set with the following changes:
+> > 1. One new bug fix patch (the above patch)
 
+When I study your above aux_domain bug fix path, I find more aux_domain bugs.
+But then I find aux_domain will be completely removed because all aux_domain
+related callbacks are not called and are dead code (no wonder there are
+so many bugs in aux_domain). Please see this series: https://lore.kernel.org/linux-iommu/20220124071103.2097118-4-baolu.lu@linux.intel.com/
+For the series, Baolu confirms that he is "pretty sure that should be part
+of v5.18". And I don't find the series calls any IOASID function after
+removing the aux_domain code.
 
-> --- a/usr/include/Makefile
-> +++ b/usr/include/Makefile
-> @@ -12,6 +12,9 @@ UAPI_CFLAGS := -std=c90 -Wall -Werror=implicit-function-declaration
->  # It is here just because CONFIG_CC_CAN_LINK is tested with -m32 or -m64.
->  UAPI_CFLAGS += $(filter -m32 -m64, $(KBUILD_CFLAGS))
->
-> +# USERCFLAGS might contain sysroot location for CC
-> +UAPI_CFLAGS += $(USERCFLAGS)
->
+So that means we don't need to fix those issues in the dead aux_domain
+code any more because it will be completely removed in 5.18, right?
 
-I am OK with this patch, but I was not sure with this line.
+If you agree, I will not include the aux_domain fix patch or any other
+aux_domain fix patches in the up-coming v3. Is that OK?
 
-Initially, I thought exported UAPI headers should be self-contained.
-In other words, we should be able to compile-test them without
-relying on compiler or libc headers.
+> > 2. Updated patch #5 (with the following patch folded)
 
-Is this achievable or not?
+I will still change ioasid_put() in the aux_domain callbacks to ioasid_free()
+in patch #5. So compilation will pass. Baolu's series will remove
+the entire aux_domain code in 5.18.
 
-I think Arnd is an expert in this area.
-I hope some input from him.
+> > 3. Updated patch #11 (removing refcount description)
+> 
+> Looks good.
+> 
 
+Thanks.
 
-
-
-
- +
->  override c_flags = $(UAPI_CFLAGS) -Wp,-MMD,$(depfile) -I$(objtree)/usr/include
->
->  # The following are excluded for now because they fail to build.
-> --
-> 2.25.1
->
-
-
--- 
-Best Regards
-Masahiro Yamada
+-Fenghua
