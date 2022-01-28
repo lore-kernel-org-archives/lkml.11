@@ -2,65 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA48C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:18:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 419ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244048AbiA1KSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 05:18:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40368 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347467AbiA1KSH (ORCPT
+        id S1347080AbiA1KTR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 05:19:17 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57596 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244074AbiA1KTQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 05:18:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCD3C06173B;
-        Fri, 28 Jan 2022 02:18:07 -0800 (PST)
+        Fri, 28 Jan 2022 05:19:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2ED661E48;
-        Fri, 28 Jan 2022 10:18:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B43D4C340E0;
-        Fri, 28 Jan 2022 10:18:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A99E761E68;
+        Fri, 28 Jan 2022 10:19:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81342C340E0;
+        Fri, 28 Jan 2022 10:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643365086;
-        bh=FpyUHmjkG6laiyj9unPeqvCUaLot+5PMgUU2jkkgb6U=;
+        s=korg; t=1643365155;
+        bh=aRjNrr6JfZGMor2sYsrMy3B0FPYOJjTbnEogKUClVis=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mwzHz0bC/pNzofos1H7lO3sobNhSNKjXt90GM/nfKZvB/nva9WZNGOC8lSxyqcuVQ
-         76XULi2NupYz3aq+8GkUDzbV5onjlAPK1vJNgvmxHHJGTqI1XPnqDuSOvF3Mdlnxuw
-         Q1zCdlFuoAeRWnIXWjYTKdZsN8YlI49y6zEU7FvM=
-Date:   Fri, 28 Jan 2022 11:17:57 +0100
+        b=Msuo97Xu9roIczJKbLy7DLCJ9O6J75VpJINVZMjPkdwvfkdAW3MYmFoX51F7PJrwj
+         eeHVmvu9sUfAO8pWxEtxH7VQRyHc6G7kxZvxB8sifRlQ6cZ70nk83yPpJQmKC7dwIw
+         w9zyhmHtZ08shYZisR8AaNUXv4xmguWePLZe7muA=
+Date:   Fri, 28 Jan 2022 11:19:12 +0100
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Zhou Qingyang <zhou1615@umn.edu>
-Cc:     kjlu@umn.edu, "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Lv Zheng <lv.zheng@intel.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ACPI / tables: Fix a NULL pointer dereference in
- acpi_table_initrd_override()
-Message-ID: <YfPC1aFxtt9TazL9@kroah.com>
-References: <20220124164251.52466-1-zhou1615@umn.edu>
+Cc:     kjlu@umn.edu, Dinh Nguyen <dinguyen@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] clk: socfpga: Fix a memory leak bug in
+ socfpga_gate_init()
+Message-ID: <YfPDINOCa5jLx+a+@kroah.com>
+References: <20220124165316.55449-1-zhou1615@umn.edu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220124164251.52466-1-zhou1615@umn.edu>
+In-Reply-To: <20220124165316.55449-1-zhou1615@umn.edu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 12:42:51AM +0800, Zhou Qingyang wrote:
-> In acpi_table_initrd_override(), the return value of acpi_os_map_memory()
-> is assigned to table and there is a dereference of it after that.
-> acpi_os_map_memory() will return NULL on failure, which may lead to NULL
-> pointer dereference.
+On Tue, Jan 25, 2022 at 12:53:16AM +0800, Zhou Qingyang wrote:
+> In socfpga_gate_init(), when ops fails, socfpga_clk is not released or
+> passed out, which could lead to a memleak.
 > 
-> Fix this bug by adding a NULL check of table.
+> Fix this bug by adding a kfree of socfpga_clk on the failure path of ops.
 > 
 > This bug was found by a static analyzer.
 > 
 > Builds with 'make allyesconfig' show no new warnings,
 > and our static analyzer no longer warns about this code.
 > 
-> Fixes: 5ae74f2cc2f1 ("ACPI / tables: Move table override mechanisms to tables.c")
+> Fixes: a30a67be7b6e ("clk: socfpga: Don't have get_parent for single parent ops")
 > Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
 > ---
 > The analysis employs differential checking to identify inconsistent 
@@ -72,24 +69,25 @@ On Tue, Jan 25, 2022 at 12:42:51AM +0800, Zhou Qingyang wrote:
 > positive or hard to trigger. Multiple researchers have cross-reviewed
 > the bug.
 > 
->  drivers/acpi/tables.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  drivers/clk/socfpga/clk-gate.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/acpi/tables.c b/drivers/acpi/tables.c
-> index 0741a4933f62..8b10c192ed32 100644
-> --- a/drivers/acpi/tables.c
-> +++ b/drivers/acpi/tables.c
-> @@ -696,6 +696,10 @@ acpi_table_initrd_override(struct acpi_table_header *existing_table,
->  	while (table_offset + ACPI_HEADER_SIZE <= all_tables_size) {
->  		table = acpi_os_map_memory(acpi_tables_addr + table_offset,
->  					   ACPI_HEADER_SIZE);
-> +		if (!table) {
-> +			return AE_NO_MEMORY;
-> +		}
-> +
->  		if (table_offset + table->length > all_tables_size) {
->  			acpi_os_unmap_memory(table, ACPI_HEADER_SIZE);
->  			WARN_ON(1);
+> diff --git a/drivers/clk/socfpga/clk-gate.c b/drivers/clk/socfpga/clk-gate.c
+> index 53d6e3ec4309..0ca5e0000925 100644
+> --- a/drivers/clk/socfpga/clk-gate.c
+> +++ b/drivers/clk/socfpga/clk-gate.c
+> @@ -188,8 +188,10 @@ void __init socfpga_gate_init(struct device_node *node)
+>  		return;
+>  
+>  	ops = kmemdup(&gateclk_ops, sizeof(gateclk_ops), GFP_KERNEL);
+> -	if (WARN_ON(!ops))
+> +	if (WARN_ON(!ops)) {
+> +		kfree(socfpga_clk);
+>  		return;
+> +	}
+>  
+>  	rc = of_property_read_u32_array(node, "clk-gate", clk_gate, 2);
+>  	if (rc)
 > -- 
 > 2.25.1
 > 
