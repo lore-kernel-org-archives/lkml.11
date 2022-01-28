@@ -2,158 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED64C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C92C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 15:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346071AbiA1O64 (ORCPT
+        id S1346897AbiA1PAB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:58:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
+        Fri, 28 Jan 2022 10:00:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242261AbiA1O6z (ORCPT
+        with ESMTP id S232586AbiA1O7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:58:55 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27240C061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 06:58:55 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id h20-20020a17090adb9400b001b518bf99ffso11179483pjv.1
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 06:58:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=KHGm27mRNAvmdz8X1HGEOFhtT+fnoAeLqf/TbX8jecs=;
-        b=QX96t5uexOK585+jsEWZcsn9OlOppUJtIL9dCbdq90ZkD6G/9EK7dl6ftkdDLv3SJ4
-         297H8HUCpS2thXv3WKzXQL3oq7nyvVTZZMw0b3gNjn0YSYt854ImR+jeHYxWHlR1eXUC
-         UPN1WJmL9qha17aftZUm790Ha3WN4wsQsSQSUTD5CU5L5AD+c3Q1WVqdEQoowep4o8i5
-         gnPVhkh1qy44EHNatFuSaiLTDv4QW6KRwOSd3IX9gTJXcYKaHbrTVpkJKWwcqgSTj9JS
-         7WbK+BbgOY+JGFEBdbxRzB/qC8aljsrCaL8wXzRLdMU8RqnVEnWw6ahz3L1Ny6c5klRg
-         eN4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KHGm27mRNAvmdz8X1HGEOFhtT+fnoAeLqf/TbX8jecs=;
-        b=dHK7zVco6KQQi9BMDK8Gi+Av25c5GcshVZRYOPF/sOn0Ut/rAXrixbiSlH39Q0IBIC
-         HDO7GPZZs6RUscAkNc44r3otXvu9pYvlhAdS6yKgquHE+oGVfv7gy9UVzuFjh28fhrwS
-         qaagCFhioHoey9a/+WSELfJ+sRtINcJoTUfkrg44/RUUVEEC7bacpx8AQkNsVlIiTiCs
-         86kC5fkJvsRunovkW5I7APOJxx9AHnjnuN8RtEgw+l/Sj0SsIKoKFmrzgTf+YHtaCl4B
-         Mr/eO62kkAG0l2jRs24RAeyS78waifQSvwcrjGX2W2RJQ5wPx0oYcCX5XQ234hWD/Bdv
-         /NZQ==
-X-Gm-Message-State: AOAM533+6igljYcFjjOWxeNKuFZnUh8HOqsFlfurxk8lCFXQBRgT1eNT
-        s2goSOqLP8C51UNsOnxxf34SLirgPckxNesiO27J7WhNAtV+qQ==
-X-Google-Smtp-Source: ABdhPJyoeuHdawWTX1fkovIXW+x8syaFep3Ntoh7Frv6h+Ux1STXcUY9n7FibfP1dz5lmL8j7eyJT0dQ+q10aFblEzE=
-X-Received: by 2002:a17:902:d48a:: with SMTP id c10mr8691771plg.139.1643381934663;
- Fri, 28 Jan 2022 06:58:54 -0800 (PST)
+        Fri, 28 Jan 2022 09:59:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26059C061714;
+        Fri, 28 Jan 2022 06:59:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D25BCB824FE;
+        Fri, 28 Jan 2022 14:59:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E653EC340E0;
+        Fri, 28 Jan 2022 14:59:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643381989;
+        bh=/uP5vvPUBDipAzrUPDGSTlRiO2kQLT1St7WxjZjMoZk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KaCJ79tkFQvlEpR301IzypviUYVubfPBjlOsca0nvdWG1Xn7aOKyWYO8nu+VHoOxq
+         z+7LbBCCoKKEoPiWkRzH7JvrtP/2RAr/8+tDGtKD1qjEs6ugWYyL2q8E5WvSMPRbuH
+         nVgt0gWpzAeqcjncb3w8WOh4EPmSsiC6YChX/bcEZpHX1hbcNehVJSUj1yk35f0+eD
+         BFBwIiUW7+cqgIzbMfoJTmuRom0tnBpATDnijlDpURSy40q8JWlFzHXqnBZaHN1Ngg
+         dfzl4tqGb9+fIWYKA289jDwwy8eA16SESsXYAUPhRMFWd6yBIbaclE5ycpq1M00KvA
+         EPczk6P2rUXkQ==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: stmmac: dwmac-sun8i: make clk really gated during rpm suspended
+Date:   Fri, 28 Jan 2022 22:52:13 +0800
+Message-Id: <20220128145213.2454-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220120001621.705352-2-jsd@semihalf.com> <20220128144811.783279-1-jsd@semihalf.com>
-In-Reply-To: <20220128144811.783279-1-jsd@semihalf.com>
-From:   =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
-Date:   Fri, 28 Jan 2022 15:58:43 +0100
-Message-ID: <CAOtMz3OxWhgWqRYiPEdSmLWOChoy_UujxhW2358qZrGdtw+PPg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] i2c-designware: Add support for AMD PSP semaphore
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Raul E Rangel <rrangel@chromium.org>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "Deucher, Alexander" <alexander.deucher@amd.com>,
-        "Easow, Nimesh" <Nimesh.Easow@amd.com>,
-        "Limonciello, Mario" <mario.limonciello@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Currently, the dwmac-sun8i's stmmaceth clk isn't disabled even if the
+the device has been runtime suspended. The reason is the driver gets
+the "stmmaceth" clk as tx_clk and enabling it during probe. But
+there's no other usage of tx_clk except preparing and enabling, so
+we can remove tx_clk and its usage then rely on the common routine
+stmmac_probe_config_dt() to prepare and enable the stmmaceth clk
+during driver initialization, and benefit from the runtime pm feature
+after probed.
 
-Adding proper Andy's email address (and removing wrong one) in the
-whole patchset. Sorry for noise!
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+---
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 30 +++++++------------
+ 1 file changed, 11 insertions(+), 19 deletions(-)
 
-Best Regards,
-Jan
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index 09644ab0d87a..f86cc83003f2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -16,6 +16,7 @@
+ #include <linux/of_net.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/regmap.h>
+ #include <linux/stmmac.h>
+@@ -57,7 +58,6 @@ struct emac_variant {
+ };
+ 
+ /* struct sunxi_priv_data - hold all sunxi private data
+- * @tx_clk:	reference to MAC TX clock
+  * @ephy_clk:	reference to the optional EPHY clock for the internal PHY
+  * @regulator:	reference to the optional regulator
+  * @rst_ephy:	reference to the optional EPHY reset for the internal PHY
+@@ -68,7 +68,6 @@ struct emac_variant {
+  * @mux_handle:	Internal pointer used by mdio-mux lib
+  */
+ struct sunxi_priv_data {
+-	struct clk *tx_clk;
+ 	struct clk *ephy_clk;
+ 	struct regulator *regulator;
+ 	struct reset_control *rst_ephy;
+@@ -579,22 +578,14 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
+ 		}
+ 	}
+ 
+-	ret = clk_prepare_enable(gmac->tx_clk);
+-	if (ret) {
+-		dev_err(&pdev->dev, "Could not enable AHB clock\n");
+-		goto err_disable_regulator;
+-	}
+-
+ 	if (gmac->use_internal_phy) {
+ 		ret = sun8i_dwmac_power_internal_phy(netdev_priv(ndev));
+ 		if (ret)
+-			goto err_disable_clk;
++			goto err_disable_regulator;
+ 	}
+ 
+ 	return 0;
+ 
+-err_disable_clk:
+-	clk_disable_unprepare(gmac->tx_clk);
+ err_disable_regulator:
+ 	if (gmac->regulator)
+ 		regulator_disable(gmac->regulator);
+@@ -1043,8 +1034,6 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
+ 	if (gmac->variant->soc_has_internal_phy)
+ 		sun8i_dwmac_unpower_internal_phy(gmac);
+ 
+-	clk_disable_unprepare(gmac->tx_clk);
+-
+ 	if (gmac->regulator)
+ 		regulator_disable(gmac->regulator);
+ }
+@@ -1167,12 +1156,6 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	gmac->tx_clk = devm_clk_get(dev, "stmmaceth");
+-	if (IS_ERR(gmac->tx_clk)) {
+-		dev_err(dev, "Could not get TX clock\n");
+-		return PTR_ERR(gmac->tx_clk);
+-	}
+-
+ 	/* Optional regulator for PHY */
+ 	gmac->regulator = devm_regulator_get_optional(dev, "phy");
+ 	if (IS_ERR(gmac->regulator)) {
+@@ -1254,6 +1237,12 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 	ndev = dev_get_drvdata(&pdev->dev);
+ 	priv = netdev_priv(ndev);
+ 
++	/* the MAC is runtime suspended after stmmac_dvr_probe(), so we
++	 * need to ensure the MAC resume back before other operations such
++	 * as reset.
++	 */
++	pm_runtime_get_sync(&pdev->dev);
++
+ 	/* The mux must be registered after parent MDIO
+ 	 * so after stmmac_dvr_probe()
+ 	 */
+@@ -1272,12 +1261,15 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 			goto dwmac_remove;
+ 	}
+ 
++	pm_runtime_put(&pdev->dev);
++
+ 	return 0;
+ 
+ dwmac_mux:
+ 	reset_control_put(gmac->rst_ephy);
+ 	clk_put(gmac->ephy_clk);
+ dwmac_remove:
++	pm_runtime_put_noidle(&pdev->dev);
+ 	stmmac_dvr_remove(&pdev->dev);
+ dwmac_exit:
+ 	sun8i_dwmac_exit(pdev, gmac);
+-- 
+2.34.1
 
-
-pt., 28 sty 2022 o 15:48 Jan Dabros <jsd@semihalf.com> napisa=C5=82(a):
->
-> This patchset comprises support for new i2c-designware controller setup o=
-n some
-> AMD Cezanne SoCs, where x86 is sharing i2c bus with PSP. PSP uses the sam=
-e
-> controller and acts as an i2c arbitrator there (x86 is leasing bus from i=
-t).
->
-> First commit aims to improve generic i2c-designware code by adding extra =
-locking
-> on probe() and disable() paths. I would like to ask someone with access t=
-o
-> boards which use Intel BayTrail(CONFIG_I2C_DESIGNWARE_BAYTRAIL) to verify
-> behavior of my changes on such setup.
->
-> Second commit adds support for new PSP semaphore arbitration mechanism.
-> Implementation is similar to the one from i2c-designware-baytrail.c howev=
-er
-> there are two main differences:
-> 1) Add new ACPI ID in order to protect against silent binding of the old =
-driver
-> to the setup with PSP semaphore. Extra flag ARBITRATION_SEMAPHORE added t=
-o this
-> new _HID allows to recognize setup with PSP.
-> 2) Beside acquire_lock() and release_lock() methods we are also applying =
-quirks
-> to the lock_bus() and unlock_bus() global adapter methods. With this in p=
-lace
-> all i2c clients drivers may lock i2c bus for a desired number of i2c
-> transactions (e.g. write-wait-read) without being aware of that such bus =
-is
-> shared with another entity.
->
-> This patchset is a follow-up to the RFC sent earlier on LKML [1], with re=
-view
-> comments applied.
->
-> Looking forward to some feedback.
->
-> [1] https://lkml.org/lkml/2021/12/22/219
->
-> v1 -> v2:
-> * Remove usage of unions
-> * Get rid of unnecessary __packed attributes
-> * Switch to use iopoll.h and bitfields.h APIs were applicable
-> * Follow the convention to check for the error first
-> * Reorder entries (includes, table entries) alphabetically
-> * Add necessary includes
-> * Add Kconfig dependency on X86_64
-> (above two fixes for "kernel test robot <lkp@intel.com>" issues)
-> * Modify probe() to use terminating entry for traversing through table
->   instead of ARRAY_SIZE
-> * Fix typos in comments
-> * Rebase patchset
->
-> Jan Dabros (2):
->   i2c: designware: Add missing locks
->   i2c: designware: Add AMD PSP I2C bus support
->
->  MAINTAINERS                                  |   1 +
->  drivers/acpi/acpi_apd.c                      |   7 +-
->  drivers/i2c/busses/Kconfig                   |  11 +
->  drivers/i2c/busses/Makefile                  |   1 +
->  drivers/i2c/busses/i2c-designware-amdpsp.c   | 373 +++++++++++++++++++
->  drivers/i2c/busses/i2c-designware-baytrail.c |  10 +-
->  drivers/i2c/busses/i2c-designware-common.c   |  12 +
->  drivers/i2c/busses/i2c-designware-core.h     |  18 +-
->  drivers/i2c/busses/i2c-designware-master.c   |   6 +
->  drivers/i2c/busses/i2c-designware-platdrv.c  |  61 +++
->  10 files changed, 489 insertions(+), 11 deletions(-)
->  create mode 100644 drivers/i2c/busses/i2c-designware-amdpsp.c
->
-> --
-> 2.35.0.rc0.227.g00780c9af4-goog
->
