@@ -2,263 +2,397 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C1B5C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351861AbiA1Xve convert rfc822-to-8bit (ORCPT
+        id S1351905AbiA1Xvo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 18:51:34 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38442 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1351850AbiA1Xv3 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 18:51:29 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20SKOkQI018916
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 15:51:29 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dv8umee4f-9
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 15:51:28 -0800
-Received: from twshared11487.23.frc3.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 28 Jan 2022 15:51:27 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 559E628E032D4; Fri, 28 Jan 2022 15:45:44 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
-        <iii@linux.ibm.com>, Song Liu <songliubraving@fb.com>
-Subject: [PATCH v7 bpf-next 9/9] bpf, x86_64: use bpf_jit_binary_pack_alloc
-Date:   Fri, 28 Jan 2022 15:45:17 -0800
-Message-ID: <20220128234517.3503701-10-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220128234517.3503701-1-song@kernel.org>
-References: <20220128234517.3503701-1-song@kernel.org>
+        Fri, 28 Jan 2022 18:51:44 -0500
+Received: from mga11.intel.com ([192.55.52.93]:48859 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351892AbiA1Xvi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 18:51:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643413898; x=1674949898;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ehfsCCjOdGU+puOWYXMjVAXTnfyRC+63WeCqzDsYCo8=;
+  b=GK15YzCH/YxWEDDRmbH6hzSpPCAwT94Sgfq1W0d6WmFaITsjyBzVWRFL
+   GbfZf7WpPZid3ormcVTgt9Wepvo9FXu23td1tID7nYzSBMMKrN7GYW48i
+   i1ICIBJgusJqui76+C7CNKJa4vx37LAzFPl47TiYtAklDF9Qt1T1xpid+
+   D3h7oXbmKjjseWRbKAc9H2zbghXfXM1dCOW3BEkevtmD8Meikg7ZO5asE
+   THZK4Mu5I6xa4d7d3FeiI2vFR/3XuQRrncxPp7WAA7FEYAJheoAv4lhk0
+   pQlMhkYCj4mqL6pXZnJXo5u+ZnzxgXAzwThq24vhUWvo58YSS9kCLn7+w
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="244818044"
+X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
+   d="scan'208";a="244818044"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 15:51:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
+   d="scan'208";a="564352998"
+Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
+  by orsmga001.jf.intel.com with ESMTP; 28 Jan 2022 15:51:26 -0800
+From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     rafael@kernel.org, lenb@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v3] ACPI / fan: Properly handle fine grain control
+Date:   Fri, 28 Jan 2022 15:51:18 -0800
+Message-Id: <20220128235118.1693865-1-srinivas.pandruvada@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: X0j6oUDuklCVvOgRIdWNn7EDRj6qPXC3
-X-Proofpoint-GUID: X0j6oUDuklCVvOgRIdWNn7EDRj6qPXC3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-28_08,2022-01-28_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 adultscore=0 mlxscore=0
- spamscore=0 bulkscore=0 suspectscore=0 malwarescore=0 mlxlogscore=960
- priorityscore=1501 impostorscore=0 lowpriorityscore=0 clxscore=1034
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201280129
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <songliubraving@fb.com>
+When _FIF object specifies support for fine grain control, then fan speed
+can be set from 0 to 100% with the recommended minimum "step size" via
+_FSL object. Here the control value doesn't need to match any value from
+_FPS object.
 
-Use bpf_jit_binary_pack_alloc in x86_64 jit. The jit engine first writes
-the program to the rw buffer. When the jit is done, the program is copied
-to the final location with bpf_jit_binary_pack_finalize.
+Currently we have a simple solution implemented which just pick maximum
+control value from _FPS to display the actual state, but this is not
+optimal when there is a big window between two control values in
+_FPS. Also there is no way to set to any speed which doesn't match
+control values in _FPS. The system firmware can start the fan at speed
+which doesn't match any control value.
 
-Note that we need to do bpf_tail_call_direct_fixup after finalize.
-Therefore, the text_live = false logic in __bpf_arch_text_poke is no
-longer needed.
+To support fine grain control (when supported) via thermal sysfs:
+- cooling device max state is not _FPS state count but it will be
+100 / _FIF.step_size
+- cooling device current state is 100 / _FIF.step_size
+- cooling device set state will set the control value
+curr_state * _FIF.step_size plus any adjustment for 100%.
+By the spec, when control value do not sum to 100% because of
+_FIF.step_size, OSPM may select an appropriate ending Level increment
+to reach 100%.
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
+In addition publish attributes, which helps in implementing
+algorithm in the user space to optimize fan control. These
+attributes are presened in the same directory as the performance
+states.
+1. Support of fine grain control
+Publish support of presence of fine grain control so that fan speed
+can be tuned correctly. This attribute is called "fine_grain_control".
+2. fan speed
+Publish the actual fan rpm in sysfs. Knowing fan rpm is helpful to
+reduce noise level and use passive control instead. Also fan performance
+may not be same over time, so the same control value may not be enough
+to run the fan at a speed. So a feedback value of speed is helpful. This
+sysfs attribute is called "fan_speed_rpm".
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- arch/x86/net/bpf_jit_comp.c | 59 +++++++++++++++++++------------------
- 1 file changed, 31 insertions(+), 28 deletions(-)
+v3
+Added fine_grain_control attribute.
+v2-update
+Change log is missed for v2.
+v2
+Fix for build issue as reported by Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 9792bf10d881..afb957e63e3d 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -330,8 +330,7 @@ static int emit_jump(u8 **pprog, void *func, void *ip)
+ .../acpi/fan_performance_states.rst           |  29 +++-
+ drivers/acpi/fan.c                            | 164 +++++++++++++++---
+ 2 files changed, 164 insertions(+), 29 deletions(-)
+
+diff --git a/Documentation/admin-guide/acpi/fan_performance_states.rst b/Documentation/admin-guide/acpi/fan_performance_states.rst
+index 98fe5c333121..2aec8e89dbd9 100644
+--- a/Documentation/admin-guide/acpi/fan_performance_states.rst
++++ b/Documentation/admin-guide/acpi/fan_performance_states.rst
+@@ -58,5 +58,30 @@ For example::
+  $cat /sys/bus/acpi/devices/INT3404:00/state1
+  25:0:3200:12500:1250
+ 
+-When a given field is not populated or its value provided by the platform
+-firmware is invalid, the "not-defined" string is shown instead of the value.
++ACPI Fan Fine Grain Control
++=============================
++
++When _FIF object specifies support for fine grain control, then fan speed
++can be set from 0 to 100% with the recommended minimum "step size" via
++_FSL object. User can adjust fan speed using thermal sysfs cooling device.
++
++Here use can look at fan performance states for a reference speed (speed_rpm)
++and set it by changing cooling device cur_state. If the fine grain control
++is supported then user can also adjust to some other speeds which are
++not defined in the performance states.
++
++The support of fine grain control is presented via sysfs attribute
++"fine_grain_control". If fine grain control is present, this attribute
++will show "1" otherwise "0".
++
++This sysfs attribute is presented in the same directory as performance states.
++
++ACPI Fan Performance Feedback
++=============================
++
++The optional _FST object provides status information for the fan device.
++This includes field to provide current fan speed in revolutions per minute
++at which the fan is rotating.
++
++This speed is presented in the sysfs using the attribute "fan_speed_rpm",
++in the same directory as performance states.
+diff --git a/drivers/acpi/fan.c b/drivers/acpi/fan.c
+index 5cd0ceb50bc8..ab586be2d4fc 100644
+--- a/drivers/acpi/fan.c
++++ b/drivers/acpi/fan.c
+@@ -64,12 +64,20 @@ struct acpi_fan_fif {
+ 	u64 low_speed_notification;
+ };
+ 
++struct acpi_fan_fst {
++	u64 revision;
++	u64 control;
++	u64 speed;
++};
++
+ struct acpi_fan {
+ 	bool acpi4;
+ 	struct acpi_fan_fif fif;
+ 	struct acpi_fan_fps *fps;
+ 	int fps_count;
+ 	struct thermal_cooling_device *cdev;
++	struct device_attribute fst_speed;
++	struct device_attribute fine_grain_control;
+ };
+ 
+ static struct platform_driver acpi_fan_driver = {
+@@ -89,20 +97,23 @@ static int fan_get_max_state(struct thermal_cooling_device *cdev, unsigned long
+ 	struct acpi_device *device = cdev->devdata;
+ 	struct acpi_fan *fan = acpi_driver_data(device);
+ 
+-	if (fan->acpi4)
+-		*state = fan->fps_count - 1;
+-	else
++	if (fan->acpi4) {
++		if (fan->fif.fine_grain_ctrl)
++			*state = 100 / (int)fan->fif.step_size;
++		else
++			*state = fan->fps_count - 1;
++	} else {
+ 		*state = 1;
++	}
++
+ 	return 0;
  }
  
- static int __bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
--				void *old_addr, void *new_addr,
--				const bool text_live)
-+				void *old_addr, void *new_addr)
+-static int fan_get_state_acpi4(struct acpi_device *device, unsigned long *state)
++static int fan_get_fps(struct acpi_device *device, struct acpi_fan_fst *fst)
  {
- 	const u8 *nop_insn = x86_nops[5];
- 	u8 old_insn[X86_PATCH_SIZE];
-@@ -365,10 +364,7 @@ static int __bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- 		goto out;
- 	ret = 1;
- 	if (memcmp(ip, new_insn, X86_PATCH_SIZE)) {
--		if (text_live)
--			text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
--		else
--			memcpy(ip, new_insn, X86_PATCH_SIZE);
-+		text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
- 		ret = 0;
+ 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
+-	struct acpi_fan *fan = acpi_driver_data(device);
+ 	union acpi_object *obj;
+ 	acpi_status status;
+-	int control, i;
+ 
+ 	status = acpi_evaluate_object(device->handle, "_FST", NULL, &buffer);
+ 	if (ACPI_FAILURE(status)) {
+@@ -119,31 +130,51 @@ static int fan_get_state_acpi4(struct acpi_device *device, unsigned long *state)
+ 		goto err;
  	}
- out:
-@@ -384,7 +380,7 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- 		/* BPF poking in modules is not supported */
+ 
+-	control = obj->package.elements[1].integer.value;
++	fst->revision = obj->package.elements[0].integer.value;
++	fst->control = obj->package.elements[1].integer.value;
++	fst->speed = obj->package.elements[2].integer.value;
++
++	status = 0;
++err:
++	kfree(obj);
++	return status;
++}
++
++static int fan_get_state_acpi4(struct acpi_device *device, unsigned long *state)
++{
++	struct acpi_fan *fan = acpi_driver_data(device);
++	struct acpi_fan_fst fst;
++	int status;
++	int control, i;
++
++	status = fan_get_fps(device, &fst);
++	if (status)
++		return status;
++
++	control = fst.control;
++
++	if (fan->fif.fine_grain_ctrl) {
++		/* This control should be same what we set using _FSL by spec */
++		if (control > 100) {
++			dev_dbg(&device->dev, "Invalid control value returned\n");
++			return -EINVAL;
++		}
++
++		*state = control / (int)fan->fif.step_size;
++		return 0;
++	}
++
+ 	for (i = 0; i < fan->fps_count; i++) {
+-		/*
+-		 * When Fine Grain Control is set, return the state
+-		 * corresponding to maximum fan->fps[i].control
+-		 * value compared to the current speed. Here the
+-		 * fan->fps[] is sorted array with increasing speed.
+-		 */
+-		if (fan->fif.fine_grain_ctrl && control < fan->fps[i].control) {
+-			i = (i > 0) ? i - 1 : 0;
++		if (control == fan->fps[i].control)
+ 			break;
+-		} else if (control == fan->fps[i].control) {
+-			break;
+-		}
+ 	}
+ 	if (i == fan->fps_count) {
+ 		dev_dbg(&device->dev, "Invalid control value returned\n");
+-		status = -EINVAL;
+-		goto err;
++		return -EINVAL;
+ 	}
+ 
+ 	*state = i;
+ 
+-err:
+-	kfree(obj);
+ 	return status;
+ }
+ 
+@@ -187,12 +218,36 @@ static int fan_set_state_acpi4(struct acpi_device *device, unsigned long state)
+ {
+ 	struct acpi_fan *fan = acpi_driver_data(device);
+ 	acpi_status status;
++	u64 value = state;
++	int max_state;
++
++	if (fan->fif.fine_grain_ctrl)
++		max_state = 100 / (int)fan->fif.step_size;
++	else
++		max_state = fan->fps_count - 1;
+ 
+-	if (state >= fan->fps_count)
++	if (state > max_state)
  		return -EINVAL;
  
--	return __bpf_arch_text_poke(ip, t, old_addr, new_addr, true);
-+	return __bpf_arch_text_poke(ip, t, old_addr, new_addr);
+-	status = acpi_execute_simple_method(device->handle, "_FSL",
+-					    fan->fps[state].control);
++	if (fan->fif.fine_grain_ctrl) {
++		int rem;
++
++		value *= fan->fif.step_size;
++
++		/*
++		 * In the event OSPM’s incremental selections of Level
++		 * using the StepSize field value do not sum to 100%,
++		 * OSPM may select an appropriate ending Level
++		 * increment to reach 100%.
++		 */
++		rem = 100 - value;
++		if (rem && rem < fan->fif.step_size)
++			value = 100;
++	} else {
++		value = fan->fps[state].control;
++	}
++
++	status = acpi_execute_simple_method(device->handle, "_FSL", value);
+ 	if (ACPI_FAILURE(status)) {
+ 		dev_dbg(&device->dev, "Failed to set state by _FSL\n");
+ 		return status;
+@@ -258,6 +313,12 @@ static int acpi_fan_get_fif(struct acpi_device *device)
+ 		status = -EINVAL;
+ 	}
+ 
++	/* If there is a bug in step size and set as 0, change to 1 */
++	if (!fan->fif.step_size)
++		fan->fif.step_size = 1;
++	/* If step size > 9, change to 9 (by spec valid values 1-9) */
++	if (fan->fif.step_size > 9)
++		fan->fif.step_size = 9;
+ err:
+ 	kfree(obj);
+ 	return status;
+@@ -303,6 +364,27 @@ static ssize_t show_state(struct device *dev, struct device_attribute *attr, cha
+ 	return count;
  }
  
- #define EMIT_LFENCE()	EMIT3(0x0F, 0xAE, 0xE8)
-@@ -558,24 +554,15 @@ static void bpf_tail_call_direct_fixup(struct bpf_prog *prog)
- 		mutex_lock(&array->aux->poke_mutex);
- 		target = array->ptrs[poke->tail_call.key];
- 		if (target) {
--			/* Plain memcpy is used when image is not live yet
--			 * and still not locked as read-only. Once poke
--			 * location is active (poke->tailcall_target_stable),
--			 * any parallel bpf_arch_text_poke() might occur
--			 * still on the read-write image until we finally
--			 * locked it as read-only. Both modifications on
--			 * the given image are under text_mutex to avoid
--			 * interference.
--			 */
- 			ret = __bpf_arch_text_poke(poke->tailcall_target,
- 						   BPF_MOD_JUMP, NULL,
- 						   (u8 *)target->bpf_func +
--						   poke->adj_off, false);
-+						   poke->adj_off);
- 			BUG_ON(ret < 0);
- 			ret = __bpf_arch_text_poke(poke->tailcall_bypass,
- 						   BPF_MOD_JUMP,
- 						   (u8 *)poke->tailcall_target +
--						   X86_PATCH_SIZE, NULL, false);
-+						   X86_PATCH_SIZE, NULL);
- 			BUG_ON(ret < 0);
- 		}
- 		WRITE_ONCE(poke->tailcall_target_stable, true);
-@@ -867,7 +854,7 @@ static void emit_nops(u8 **pprog, int len)
- 
- #define INSN_SZ_DIFF (((addrs[i] - addrs[i - 1]) - (prog - temp)))
- 
--static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
-+static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image, u8 *rw_image,
- 		  int oldproglen, struct jit_context *ctx, bool jmp_padding)
++static ssize_t show_fan_speed(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct acpi_device *acpi_dev = container_of(dev, struct acpi_device, dev);
++	struct acpi_fan_fst fst;
++	int status;
++
++	status = fan_get_fps(acpi_dev, &fst);
++	if (status)
++		return status;
++
++	return sprintf(buf, "%lld\n", fst.speed);
++}
++
++static ssize_t show_fine_grain_control(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct acpi_device *acpi_dev = container_of(dev, struct acpi_device, dev);
++	struct acpi_fan *fan = acpi_driver_data(acpi_dev);
++
++	return sprintf(buf, "%lld\n", fan->fif.fine_grain_ctrl);
++}
++
+ static int acpi_fan_get_fps(struct acpi_device *device)
  {
- 	bool tail_call_reachable = bpf_prog->aux->tail_call_reachable;
-@@ -894,8 +881,8 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 	push_callee_regs(&prog, callee_regs_used);
+ 	struct acpi_fan *fan = acpi_driver_data(device);
+@@ -311,15 +393,35 @@ static int acpi_fan_get_fps(struct acpi_device *device)
+ 	acpi_status status;
+ 	int i;
  
- 	ilen = prog - temp;
--	if (image)
--		memcpy(image + proglen, temp, ilen);
-+	if (rw_image)
-+		memcpy(rw_image + proglen, temp, ilen);
- 	proglen += ilen;
- 	addrs[0] = proglen;
- 	prog = temp;
-@@ -1324,8 +1311,10 @@ st:			if (is_imm8(insn->off))
- 					pr_err("extable->insn doesn't fit into 32-bit\n");
- 					return -EFAULT;
- 				}
--				ex->insn = delta;
-+				/* switch ex to rw buffer for writes */
-+				ex = (void *)rw_image + ((void *)ex - (void *)image);
++	sysfs_attr_init(&fan->fine_grain_control.attr);
++	fan->fine_grain_control.show = show_fine_grain_control;
++	fan->fine_grain_control.store = NULL;
++	fan->fine_grain_control.attr.name = "fine_grain_control";
++	fan->fine_grain_control.attr.mode = 0444;
++	status = sysfs_create_file(&device->dev.kobj, &fan->fine_grain_control.attr);
++	if (status)
++		return status;
++
++
++	/* _FST is present if we are here */
++	sysfs_attr_init(&fan->fst_speed.attr);
++	fan->fst_speed.show = show_fan_speed;
++	fan->fst_speed.store = NULL;
++	fan->fst_speed.attr.name = "fan_speed_rpm";
++	fan->fst_speed.attr.mode = 0444;
++	status = sysfs_create_file(&device->dev.kobj, &fan->fst_speed.attr);
++	if (status)
++		goto rem_fine_grain_attr;
++
+ 	status = acpi_evaluate_object(device->handle, "_FPS", NULL, &buffer);
+ 	if (ACPI_FAILURE(status))
+-		return status;
++		goto rem_fst_attr;
  
-+				ex->insn = delta;
- 				ex->type = EX_TYPE_BPF;
+ 	obj = buffer.pointer;
+ 	if (!obj || obj->type != ACPI_TYPE_PACKAGE || obj->package.count < 2) {
+ 		dev_err(&device->dev, "Invalid _FPS data\n");
+ 		status = -EINVAL;
+-		goto err;
++		goto rem_fst_attr;
+ 	}
  
- 				if (dst_reg > BPF_REG_9) {
-@@ -1706,7 +1695,7 @@ st:			if (is_imm8(insn->off))
- 				pr_err("bpf_jit: fatal error\n");
- 				return -EFAULT;
- 			}
--			memcpy(image + proglen, temp, ilen);
-+			memcpy(rw_image + proglen, temp, ilen);
- 		}
- 		proglen += ilen;
- 		addrs[i] = proglen;
-@@ -2247,6 +2236,7 @@ int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs)
+ 	fan->fps_count = obj->package.count - 1; /* minus revision field */
+@@ -368,6 +470,14 @@ static int acpi_fan_get_fps(struct acpi_device *device)
+ 
+ err:
+ 	kfree(obj);
++	if (!status)
++		return 0;
++rem_fst_attr:
++	sysfs_remove_file(&device->dev.kobj, &fan->fst_speed.attr);
++
++rem_fine_grain_attr:
++	sysfs_remove_file(&device->dev.kobj, &fan->fine_grain_control.attr);
++
+ 	return status;
  }
  
- struct x64_jit_data {
-+	struct bpf_binary_header *rw_header;
- 	struct bpf_binary_header *header;
- 	int *addrs;
- 	u8 *image;
-@@ -2259,6 +2249,7 @@ struct x64_jit_data {
- 
- struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- {
-+	struct bpf_binary_header *rw_header = NULL;
- 	struct bpf_binary_header *header = NULL;
- 	struct bpf_prog *tmp, *orig_prog = prog;
- 	struct x64_jit_data *jit_data;
-@@ -2267,6 +2258,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	bool tmp_blinded = false;
- 	bool extra_pass = false;
- 	bool padding = false;
-+	u8 *rw_image = NULL;
- 	u8 *image = NULL;
- 	int *addrs;
- 	int pass;
-@@ -2302,6 +2294,8 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 		oldproglen = jit_data->proglen;
- 		image = jit_data->image;
- 		header = jit_data->header;
-+		rw_header = jit_data->rw_header;
-+		rw_image = (void *)rw_header + ((void *)image - (void *)header);
- 		extra_pass = true;
- 		padding = true;
- 		goto skip_init_addrs;
-@@ -2332,12 +2326,12 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	for (pass = 0; pass < MAX_PASSES || image; pass++) {
- 		if (!padding && pass >= PADDING_PASSES)
- 			padding = true;
--		proglen = do_jit(prog, addrs, image, oldproglen, &ctx, padding);
-+		proglen = do_jit(prog, addrs, image, rw_image, oldproglen, &ctx, padding);
- 		if (proglen <= 0) {
- out_image:
- 			image = NULL;
- 			if (header)
--				bpf_jit_binary_free(header);
-+				bpf_jit_binary_pack_free(header, rw_header);
- 			prog = orig_prog;
- 			goto out_addrs;
- 		}
-@@ -2361,8 +2355,9 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 				sizeof(struct exception_table_entry);
- 
- 			/* allocate module memory for x86 insns and extable */
--			header = bpf_jit_binary_alloc(roundup(proglen, align) + extable_size,
--						      &image, align, jit_fill_hole);
-+			header = bpf_jit_binary_pack_alloc(roundup(proglen, align) + extable_size,
-+							   &image, align, &rw_header, &rw_image,
-+							   jit_fill_hole);
- 			if (!header) {
- 				prog = orig_prog;
- 				goto out_addrs;
-@@ -2378,14 +2373,22 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 
- 	if (image) {
- 		if (!prog->is_func || extra_pass) {
-+			/*
-+			 * bpf_jit_binary_pack_finalize fails in two scenarios:
-+			 *   1) header is not pointing to proper module memory;
-+			 *   2) the arch doesn't support bpf_arch_text_copy().
-+			 *
-+			 * Both cases are serious bugs that we should not continue.
-+			 */
-+			BUG_ON(bpf_jit_binary_pack_finalize(prog, header, rw_header));
- 			bpf_tail_call_direct_fixup(prog);
--			bpf_jit_binary_lock_ro(header);
- 		} else {
- 			jit_data->addrs = addrs;
- 			jit_data->ctx = ctx;
- 			jit_data->proglen = proglen;
- 			jit_data->image = image;
- 			jit_data->header = header;
-+			jit_data->rw_header = rw_header;
- 		}
- 		prog->bpf_func = (void *)image;
- 		prog->jited = 1;
 -- 
-2.30.2
+2.31.1
 
