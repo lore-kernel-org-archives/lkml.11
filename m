@@ -2,133 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A14C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 258FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243768AbiA1UZ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 15:25:58 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58708 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232469AbiA1UZ4 (ORCPT
+        id S1345834AbiA1U3N (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 15:29:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:54985 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232469AbiA1U3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 15:25:56 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 28 Jan 2022 15:29:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643401752;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/R+jUAO4Zdq+RoAvmdtDhiLJNzkXYPpweQSqLQO/lto=;
+        b=FCz9RshPwYf0bqP9+3eb4R0TW3f8Mr8XNImsC3f0qZ7d9SceGa4C/2UdQ1Fobu9GmkcI5M
+        pTcGgFC6lmFUH3BPTeKLtcCvxw/sr7rqK9SJcUBQxgjw+3zgpbRnEOXV/41YyK7pTpTaZ+
+        F6wvyReqHhEqR3me2mM4S+l1r1O72Rw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-67-4fDoml85Pk2hZ_OUQCpw6A-1; Fri, 28 Jan 2022 15:29:10 -0500
+X-MC-Unique: 4fDoml85Pk2hZ_OUQCpw6A-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FAD0B825E4;
-        Fri, 28 Jan 2022 20:25:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D38DC340E7;
-        Fri, 28 Jan 2022 20:25:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643401554;
-        bh=Ph1OyR1ecXlZ+Bdc35dZNoDYirpUuMYM5Ao7nVsb3XM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ly2c+WcC64vuUxS2yM7Ja9KzeZG3/gUJ1Me66weZMQ9tFKcHzxHs7/lLFpT77b8do
-         Ir05XW4W+FHR3B1mQY7Gd8MxBksc1AJAX+tvMO4CasGVPWPXsY5GWvzZ2ilV5abDN/
-         iuuNU3qDhYhTQhPH3AxCcGFSF3qNyNSGQe2Rk2PiRzvxmTeVzSEUCBVoZNtAYF/wGW
-         qG2q0AJWQJgSZbZA3ohuhCyltyY/t9lzl13gDj300WdUwZLDNW7ByoQi88vLJHCbrO
-         qUjnD+wlaAR4+lSUktSgQ7tAwfdPOqjJODrv0cW+KT9AFqOsPy/25wtcl6nF9Fu1z1
-         qaH2bknZ/h+8g==
-Date:   Fri, 28 Jan 2022 12:25:52 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
-        "stefanb@linux.ibm.com" <stefanb@linux.ibm.com>,
-        "linux-fscrypt@vger.kernel.org" <linux-fscrypt@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC][PATCH v3a 00/11] ima: support fs-verity digests and
- signatures (alternative)
-Message-ID: <YfRRUBZpQv2Hi1sL@sol.localdomain>
-References: <20220127184614.2837938-1-roberto.sassu@huawei.com>
- <YfLz8NftvbZtKvLT@sol.localdomain>
- <YfL0+q/ekv4H8lZg@sol.localdomain>
- <d122893c426f44aa95d5168773b60b9d@huawei.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0A7108143E5;
+        Fri, 28 Jan 2022 20:29:09 +0000 (UTC)
+Received: from vbendel-laptop-2020.redhat.com (unknown [10.40.195.44])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A0D235E26B;
+        Fri, 28 Jan 2022 20:29:06 +0000 (UTC)
+From:   vbendel@redhat.com
+To:     paul@paul-moore.com, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org
+Cc:     omosnace@redhat.com, selinux@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Vratislav Bendel <vbendel@redhat.com>
+Subject: [PATCH 0/3] selinux: Fix and clean policydb->cond_list error paths 
+Date:   Fri, 28 Jan 2022 21:28:55 +0100
+Message-Id: <20220128202858.96935-1-vbendel@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d122893c426f44aa95d5168773b60b9d@huawei.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 09:05:01AM +0000, Roberto Sassu wrote:
-> > From: Eric Biggers [mailto:ebiggers@kernel.org]
-> > Sent: Thursday, January 27, 2022 8:40 PM
-> > On Thu, Jan 27, 2022 at 11:35:12AM -0800, Eric Biggers wrote:
-> > > On Thu, Jan 27, 2022 at 07:46:09PM +0100, Roberto Sassu wrote:
-> > > > I wanted to propose a different approach for handling fsverity digests and
-> > > > signatures, compared to:
-> > > >
-> > > > https://lore.kernel.org/linux-integrity/20220126000658.138345-1-
-> > zohar@linux.ibm.com/
-> > > >
-> > > > In the original proposal, a new signature version has been introduced (v3)
-> > > > to allow the possibility of signing the digest of a more flexible data
-> > > > structure, ima_file_id, which could also include the fsverity file digest.
-> > > >
-> > > > While the new signature type would be sufficient to handle fsverity file
-> > > > digests, the problem is that its format would not be compatible with the
-> > > > signature format supported by the built-in verification module in fsverity.
-> > > > The rpm package manager already has an extension to include fsverity
-> > > > signatures, with the existing format, in the RPM header.
-> > > >
-> > > > Given that the fsverity signature is in the PKCS#7 format, IMA has already
-> > > > the capability of handling it with the existing code, more specifically the
-> > > > modsig code. It would be sufficient to provide to modsig the correct data
-> > > > to avoid introducing a new signature format.
-> > >
-> > > I think it would be best to get people moved off of the fs-verity built-in
-> > > signatures, rather than further extend the use of it.  PKCS#7 is a pretty
-> > > terrible signature format.  The IMA one is better, though it's unfortunate that
-> > > IMA still relies on X.509 for keys.
-> > 
-> > Note, the only reason that support for fs-verity built-in signatures was added
-> > to RPM is that people didn't want to use IMA:
-> > https://lore.kernel.org/linux-fscrypt/b49b4367-51e7-f62a-6209-
-> > b46a6880824b@gmail.com
-> > 
-> > If people are going to use IMA anyway, then there would be no point.
-> 
-> Hi Eric
-> 
-> I thought that the solution I came with could satisfy multiple needs.
-> 
-> For people that don't want to use IMA, they could still continue
-> to use the existing signature format, and wait for an LSM that
-> satisfy their needs. They also have the option to migrate to the
-> new signature format you are defining. But will those people be
-> willing to switch to something IMA-specific?
-> 
-> For people that use IMA, they could benefit from the effort
-> of people creating packages with the original fsverity signature.
-> 
-> For people that are skeptical about IMA, they could be interested
-> in trying the full solution, which would probably be more easily
-> available if the efforts from both sides converge.
-> 
-> If, as you say, you have concerns about the existing signature
-> format, wouldn't it be better that you address them from the
-> fsverity side, so that all users of fsverity can benefit from it?
-> 
-> Currently, fsverity hashes the formatted digest whose format
-> is FSVerity<digest algo><digest size><digest>. Couldn't IMA
-> hash the same data as well?
-> 
-> An idea could be to always sign the formatted digest, and have
-> a selector for the signature format: IMA, PKCS#7 or PGP.
+There are two users of policydb->cond_list: cond_read_list()
+and duplicate_policydb_cond_list(). If any of them gets an error,
+usually an -ENOMEM, the error-path-cleanup *_destroy() functions
+get called twice: firstly from these two and secondly from
+the caller functions' error paths.
 
-Adding support for the new IMA signature format to fsverity_verify_signature()
-*might* make sense.  (When I added this code, my understanding was that it was
-just verifying signatures the way the kernel usually verifies signatures.  I
-don't think I realized there was a more direct, PKCS#7-less way to do it and
-that IMA used that way.)  However, it would be better to use this as an
-opportunity to move people off of the built-in signatures entirely, either by
-switching to a full userspace solution or by switching to IMA.
+In case such -ENOMEM happens while assigning cond_node data, i.e.
+while ->cond_list_len is already non-zero, it leads to inappropriate
+dereferencing of policydb->cond_list[] data in the second called
+cond_list_destroy() from the caller functions' error paths, resulting
+with:
+- NULL pointer deref from cond_read_list();
+- use-after-free + double-free from duplicate_policydb_cond_list().
+(the cond_read_list() manages to set ->cond_list to NULL)
 
-Part of the problem with IMA is that no one wants to use it because it has
-terrible documentation.  It sounds like it's really complicated, and tied to
-specific TCG standards and to TPMs.  I think if it was documented better, people
-would find it more attractive and wouldn't be trying to avoid it at all costs.
+Patch 1/3 simply makes the error behavior consistent by always setting
+->cond_list to NULL.
 
-- Eric
+Patch 2/3 fixes the actual bug by resetting ->cond_list_len to 0,
+so any subsequent cond_list_destroy() calls would become noop.
+
+Patch 3/3 cleans up the duplicate *_destroy calls on these error paths,
+albeit it's a bit questionable and I'm looking for feedback on it:
+- on one hand the idea is that the caller functions call the *_destroy()
+bits anyway, hence removing duplicate efforts (which also fixes the bug,
+but I'd still prefer to apply patches 1 and 2 regardless);
+- on the other hand it's appropriate and more bug-proof for a function
+to clean everything it allocated on error.
+Hence I'm looking forward to seeing what approach the upstream would find
+more appropriate.
+
+Signed-off-by: Vratislav Bendel <vbendel@redhat.com>
+
+
