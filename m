@@ -2,162 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27487C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3753CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245400AbiA1Q1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 11:27:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
+        id S239213AbiA1Q1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 11:27:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239213AbiA1Q06 (ORCPT
+        with ESMTP id S239651AbiA1Q1G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 11:26:58 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3902C061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 08:26:57 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id x7so12804965lfu.8
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 08:26:57 -0800 (PST)
+        Fri, 28 Jan 2022 11:27:06 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F20C061714;
+        Fri, 28 Jan 2022 08:27:05 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id i30so6571656pfk.8;
+        Fri, 28 Jan 2022 08:27:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=nz10n5ifCC7jilAgmrhoGezCuubLvVaE9a6SaZb/KRM=;
-        b=J4T1axblWo2VjbOpI6MSS/XqleKMuc3xv/oPPvXCdlFRSykfHaHfxOARecbkZdiMK2
-         63+9Q16JMLDCtnzlc+prrkyM2CfGJ9C3xcWTLpTrEWTA3jJT+DFY9wgzgCIWd7P9dYrH
-         MIDYyiYTjdvnK2TMUMQmgMn9reR/+pMw8E7DBrKKc2zJjP/sk5vH5j3TzoK186s6l+sU
-         XHi0/vsNbCPk9Wjx6r48HaX1slR1EenNZc4kPogvbug3Wsf0V4Vkakau9Ahp4kuvfmWg
-         Zag0pznXkbJykbzb2/37t7HcWtdGD8jt+YR5hY7rNed4ILEuu4o0GUQThQgNUdd2biTF
-         fBMw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=bWZgK4gENKweviGq61XA/rmJYJGiVtxyhw5iXYJLZoY=;
+        b=PECSZQYAYXkD3mMKIZKiVyZGl77cqLWt6A4lEn55N+rFQURGeKq8jaqXr4gW1LO378
+         cnTWHmJyCVjtk8NFNxYiYEtNGxWgJZrDKvAwk2g8nWTVx/T/UQ/mC2IRk05UIE3RfIeI
+         EdhXh0LMYwv1IzXfWS+UXnJurltqMC/W+4bDbzulXzbdnCWLf1E+vgTwFN6rPVl3DKpu
+         eVCRgEdr70hJczKvvrapBPBsHGIEVx8EGS5DFFn2KzSrN/plkN7Cw33QaqJi9TKja64y
+         InjkSWqU700p4wNcPuaonz5iO9r8ILwU+/hYnTH+oWStiEDADgPWoes5nk67hueEA3NR
+         eS4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=nz10n5ifCC7jilAgmrhoGezCuubLvVaE9a6SaZb/KRM=;
-        b=fVdmDeqZISaweu3ISmzCv+VUTAqL3DtFGo4ZL/IkrIpGKPjxUYXgVNpuQGvcW4ka+e
-         7bkeWMyrg/OSI7mV9agjR4vfZRNN97JJVIMVQXSQzviF96vTEFKHDPkYczS/O6U1vBzH
-         urzf+uuWznGnxlgwmVPJTfRnNUquPoDFbuB03AjkoEPympl/WJjas+ECEe4BLrk5Y1VY
-         2qTti2phdAvByf04lw+dCYw9Q5w0QoufMKgLBGK9+uapY50eVNaeH1Lq8qAC/yDxqNCU
-         rtBG8mdhQlgAdzSbljTh5mFUWPA86DHLrh173avJn6hoOUaGZMjxYcHd9t9t0+CKvQJX
-         skuQ==
-X-Gm-Message-State: AOAM533rRyK+FImJ2QhFXFWJF0uqgoHMgbIVZDe6JbRo01uz/U0Moqms
-        i0yw68K/q2QsmtB1C5hOY93SXw==
-X-Google-Smtp-Source: ABdhPJzcbdJrYGxeN2XkmQMIFB/uwv9rfLlwXrQ83Ox458wMfhw4lgxAc6IqSZS58Wzexzuc4q2pQw==
-X-Received: by 2002:a05:6512:68a:: with SMTP id t10mr6587439lfe.520.1643387216011;
-        Fri, 28 Jan 2022 08:26:56 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id v17sm1954968ljh.5.2022.01.28.08.26.55
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bWZgK4gENKweviGq61XA/rmJYJGiVtxyhw5iXYJLZoY=;
+        b=PGPMFGwdQK4dJE4elZimyFnj6y5044oYvV2ymEGtu2BCY3VpGkI5JVG9YTPtfDCIQZ
+         ShQD1bc0yJx8I7DYqGlJ1PxOHHGTQrx1OO94mZr9hQc89FR4uN83TS2alnk/qiqLrxNY
+         4157UOEPyhbW0H+jc31phxr9jFsv+geVnSczS7VmitZPQEZ6qG23LfUtvWLmC9gTFY1Z
+         KudspjfVtefEUhvzXqP7ynrYp24mzgUprbUQZPhw3ANjHfeMb11Yc/SMBcQnayn2JPal
+         XIiRLYWktQ6rKDXGXwqH/uuONEEmDsBEVR6FkHJE0aevCP63mS8/EOZCBKAlhL09T9n0
+         BufA==
+X-Gm-Message-State: AOAM530Vgxso2NQgiUtRAtU63tVQOtLb8eWd139zfo92CTSqkcpMBson
+        tMwUi7HbESf6nWyMlUCkh4w=
+X-Google-Smtp-Source: ABdhPJzHRxTaT1hQsyB8qF99mucheQrXgRw6cPvCMRIof35jPGSennqfsXHmoVidCMujs6Fu/M9nZg==
+X-Received: by 2002:a05:6a00:a1f:: with SMTP id p31mr280079pfh.40.1643387225240;
+        Fri, 28 Jan 2022 08:27:05 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id n186sm2588815pfn.91.2022.01.28.08.27.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jan 2022 08:26:55 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, David.Laight@ACULAB.COM,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        Fri, 28 Jan 2022 08:27:04 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Vinod Koul <vkoul@kernel.org>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, dmaengine@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 net-next 2/2] net: dsa: mv88e6xxx: Improve indirect addressing performance
-Date:   Fri, 28 Jan 2022 17:26:50 +0100
-Message-Id: <20220128162650.2510062-3-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220128162650.2510062-1-tobias@waldekranz.com>
-References: <20220128162650.2510062-1-tobias@waldekranz.com>
-MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+Cc:     linmq006@gmail.com
+Subject: [PATCH] dmaengine: k3dma: Add missing IRQ check in k3_dma_probe
+Date:   Fri, 28 Jan 2022 16:26:59 +0000
+Message-Id: <20220128162659.14227-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before this change, both the read and write callback would start out
-by asserting that the chip's busy flag was cleared. However, both
-callbacks also made sure to wait for the clearing of the busy bit
-before returning - making the initial check superfluous. The only
-time that would ever have an effect was if the busy bit was initially
-set for some reason.
+This check misses checking for  platform_get_irq()'s call and may passes
+the negative error codes to devm_request_irq(), which takes unsigned IRQ #,
+causing it to fail with -EINVAL, overriding an original error code.
+Stop calling devm_request_irq() with invalid IRQ #s.
 
-With that in mind, make sure to perform an initial check of the busy
-bit, after which both read and write can rely the previous operation
-to have waited for the bit to clear.
-
-This cuts the number of operations on the underlying MDIO bus by 25%
-
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Fixes: 8e6152bc660e ("dmaengine: Add hisilicon k3 DMA engine driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.h |  1 +
- drivers/net/dsa/mv88e6xxx/smi.c  | 24 ++++++++++++++----------
- 2 files changed, 15 insertions(+), 10 deletions(-)
+ drivers/dma/k3dma.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 8271b8aa7b71..438cee853d07 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -392,6 +392,7 @@ struct mv88e6xxx_chip {
- struct mv88e6xxx_bus_ops {
- 	int (*read)(struct mv88e6xxx_chip *chip, int addr, int reg, u16 *val);
- 	int (*write)(struct mv88e6xxx_chip *chip, int addr, int reg, u16 val);
-+	int (*init)(struct mv88e6xxx_chip *chip);
- };
+diff --git a/drivers/dma/k3dma.c b/drivers/dma/k3dma.c
+index ecdaada95120..3c2c44efc8f6 100644
+--- a/drivers/dma/k3dma.c
++++ b/drivers/dma/k3dma.c
+@@ -878,6 +878,8 @@ static int k3_dma_probe(struct platform_device *op)
+ 	}
  
- struct mv88e6xxx_mdio_bus {
-diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
-index 728ef3f54ec5..a990271b7482 100644
---- a/drivers/net/dsa/mv88e6xxx/smi.c
-+++ b/drivers/net/dsa/mv88e6xxx/smi.c
-@@ -111,11 +111,6 @@ static int mv88e6xxx_smi_indirect_read(struct mv88e6xxx_chip *chip,
- {
- 	int err;
- 
--	err = mv88e6xxx_smi_direct_wait(chip, chip->sw_addr,
--					MV88E6XXX_SMI_CMD, 15, 0);
--	if (err)
--		return err;
--
- 	err = mv88e6xxx_smi_direct_write(chip, chip->sw_addr,
- 					 MV88E6XXX_SMI_CMD,
- 					 MV88E6XXX_SMI_CMD_BUSY |
-@@ -139,11 +134,6 @@ static int mv88e6xxx_smi_indirect_write(struct mv88e6xxx_chip *chip,
- {
- 	int err;
- 
--	err = mv88e6xxx_smi_direct_wait(chip, chip->sw_addr,
--					MV88E6XXX_SMI_CMD, 15, 0);
--	if (err)
--		return err;
--
- 	err = mv88e6xxx_smi_direct_write(chip, chip->sw_addr,
- 					 MV88E6XXX_SMI_DATA, data);
- 	if (err)
-@@ -162,9 +152,20 @@ static int mv88e6xxx_smi_indirect_write(struct mv88e6xxx_chip *chip,
- 					 MV88E6XXX_SMI_CMD, 15, 0);
- }
- 
-+static int mv88e6xxx_smi_indirect_init(struct mv88e6xxx_chip *chip)
-+{
-+	/* Ensure that the chip starts out in the ready state. As both
-+	 * reads and writes always ensure this on return, they can
-+	 * safely depend on the chip not being busy on entry.
-+	 */
-+	return mv88e6xxx_smi_direct_wait(chip, chip->sw_addr,
-+					 MV88E6XXX_SMI_CMD, 15, 0);
-+}
-+
- static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_indirect_ops = {
- 	.read = mv88e6xxx_smi_indirect_read,
- 	.write = mv88e6xxx_smi_indirect_write,
-+	.init = mv88e6xxx_smi_indirect_init,
- };
- 
- int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
-@@ -182,5 +183,8 @@ int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
- 	chip->bus = bus;
- 	chip->sw_addr = sw_addr;
- 
-+	if (chip->smi_ops->init)
-+		return chip->smi_ops->init(chip);
-+
- 	return 0;
- }
+ 	irq = platform_get_irq(op, 0);
++	if (irq < 0)
++		return irq;
+ 	ret = devm_request_irq(&op->dev, irq,
+ 			k3_dma_int_handler, 0, DRIVER_NAME, d);
+ 	if (ret)
 -- 
-2.25.1
+2.17.1
 
