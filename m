@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 494A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348967AbiA1NTp (ORCPT
+        id S1348995AbiA1NTs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:19:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54992 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348654AbiA1NTJ (ORCPT
+        Fri, 28 Jan 2022 08:19:48 -0500
+Received: from server.lespinasse.org ([63.205.204.226]:55603 "EHLO
+        server.lespinasse.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348647AbiA1NTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 08:19:09 -0500
-Received: from server.lespinasse.org (server.lespinasse.org [IPv6:2001:470:82ab::100:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3613CC06174E
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:19:08 -0800 (PST)
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
  d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-52-ed;
  t=1643375407; h=from : to : cc : subject : date : message-id :
  in-reply-to : references : mime-version : content-transfer-encoding :
- from; bh=BFnS2HVemFqBghBQYQoit3Mzm0TjMbmSrEenm665k8w=;
- b=2dpLWkBE9v0lknlSIzYPOUv9ofd7VbjV/VSh/N5tA3XRDjPy8JwdzJcC1peuzvFj7CHoh
- 7yhOi/faRp4ngfHBQ==
+ from; bh=JSt5tP5xkVG5wLZyDHEk5pGq0dzCPYUPeDFK2yvWOFo=;
+ b=UAVmTeYX7BoelafF+11e5Yij26EpOqoi2+SKLGoVB+sWhqpaTodl8r7ba2TXA4DlhBMj6
+ Gv3hKJu1eHEVn2zAQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
  i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375407; h=from : to
  : cc : subject : date : message-id : in-reply-to : references :
  mime-version : content-transfer-encoding : from;
- bh=BFnS2HVemFqBghBQYQoit3Mzm0TjMbmSrEenm665k8w=;
- b=LXpqXihdo7IvGRJFBVCLL2z4CQzI6N+qpPgYIEda11ogFMEAadWWEJW4swjM25P9IqB20
- h1Yo5Cl3w5IBtDesp8ESchFm1g+O9UEcQmSf+6PMvPuXxYmgpzkIwhwYea6CY33/lbWRHd6
- 3O0VrccO8zNPJBE9Sp1RqqbzTPRHXWCdSSh6bXYc/ZGFIRudFc9tRPqmkhL16of3LSIh8mb
- S9WPbCxJlnKfiiwiuA8d2lvr/FJUS/T6tmzY4SPCjVo0vOkuHL7zRyozEHq5jIFj7o4BdUY
- k6qm3DpgdiNfOmVAnYMtSTkMrzRc8asV9g3wYWhxGNfIzEOlBTtEBwtu2n1Q==
+ bh=JSt5tP5xkVG5wLZyDHEk5pGq0dzCPYUPeDFK2yvWOFo=;
+ b=njsY8m4dJHMheGaNgReEskIosMqjhGUGKujjCERT5W6pORlzUbLcOBHgYDo85CwJTmyIv
+ JrgspqaoGOZsXaacBVouzEF3HBr/vKRB7ltnhGzOhj2d7mrIUemc1oY1nIIXGg0Oljc7kYH
+ l8EcRTacsvBuvhEIBsV86TNIm/A01F/vl4mFzqFCcJxefIRWt+5fcLYqNDKj4ijSi9mRFi8
+ +zn2VwH2wPleE3koirkvwut300CYH8N39cnnNWoEEgXpbkaRgIGJ0zqWvMr7Y9BPsYRzytO
+ n1DDFM/2eTFeTp+lmWOSUICk1L67MCPLTHNx2d8wgj1Lr21vEB67fF3KRNSQ==
 Received: from zeus.lespinasse.org (zeus.lespinasse.org [IPv6:fd00::150:0])
-        by server.lespinasse.org (Postfix) with ESMTPS id EF82D160965;
-        Fri, 28 Jan 2022 05:10:06 -0800 (PST)
+        by server.lespinasse.org (Postfix) with ESMTPS id 1331C16098D;
+        Fri, 28 Jan 2022 05:10:07 -0800 (PST)
 Received: by zeus.lespinasse.org (Postfix, from userid 1000)
-        id D3FD620459; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
+        id EF6CC2044B; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
 From:   Michel Lespinasse <michel@lespinasse.org>
 To:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>
@@ -59,9 +56,9 @@ Cc:     kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Andy Lutomirski <luto@kernel.org>,
         Michel Lespinasse <michel@lespinasse.org>
-Subject: [PATCH v2 07/35] x86/mm: define ARCH_SUPPORTS_SPECULATIVE_PAGE_FAULT
-Date:   Fri, 28 Jan 2022 05:09:38 -0800
-Message-Id: <20220128131006.67712-8-michel@lespinasse.org>
+Subject: [PATCH v2 17/35] mm: add pte_map_lock() and pte_spinlock()
+Date:   Fri, 28 Jan 2022 05:09:48 -0800
+Message-Id: <20220128131006.67712-18-michel@lespinasse.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220128131006.67712-1-michel@lespinasse.org>
 References: <20220128131006.67712-1-michel@lespinasse.org>
@@ -71,26 +68,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set ARCH_SUPPORTS_SPECULATIVE_PAGE_FAULT so that the speculative fault
-handling code can be compiled on this architecture.
+pte_map_lock() and pte_spinlock() are used by fault handlers to ensure
+the pte is mapped and locked before they commit the faulted page to the
+mm's address space at the end of the fault.
+
+The functions differ in their preconditions; pte_map_lock() expects
+the pte to be unmapped prior to the call, while pte_spinlock() expects
+it to be already mapped.
+
+In the speculative fault case, the functions verify, after locking the pte,
+that the mmap sequence count has not changed since the start of the fault,
+and thus that no mmap lock writers have been running concurrently with
+the fault. After that point the page table lock serializes any further
+races with concurrent mmap lock writers.
+
+If the mmap sequence count check fails, both functions will return false
+with the pte being left unmapped and unlocked.
 
 Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
 ---
- arch/x86/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/mm.h | 38 ++++++++++++++++++++++++++
+ mm/memory.c        | 66 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 104 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index ebe8fc76949a..378bc33bac54 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -34,6 +34,7 @@ config X86_64
- 	select SWIOTLB
- 	select ARCH_HAS_ELFCORE_COMPAT
- 	select ZONE_DMA32
-+	select ARCH_SUPPORTS_SPECULATIVE_PAGE_FAULT
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 2e2122bd3da3..7f1083fb94e0 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3394,5 +3394,43 @@ madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
+ }
+ #endif
  
- config FORCE_DYNAMIC_FTRACE
- 	def_bool y
++#ifdef CONFIG_MMU
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
++
++bool __pte_map_lock(struct vm_fault *vmf);
++
++static inline bool pte_map_lock(struct vm_fault *vmf)
++{
++	VM_BUG_ON(vmf->pte);
++	return __pte_map_lock(vmf);
++}
++
++static inline bool pte_spinlock(struct vm_fault *vmf)
++{
++	VM_BUG_ON(!vmf->pte);
++	return __pte_map_lock(vmf);
++}
++
++#else	/* !CONFIG_SPECULATIVE_PAGE_FAULT */
++
++#define pte_map_lock(__vmf)						\
++({									\
++	struct vm_fault *vmf = __vmf;					\
++	vmf->pte = pte_offset_map_lock(vmf->vma->vm_mm, vmf->pmd,	\
++				       vmf->address, &vmf->ptl);	\
++	true;								\
++})
++
++#define pte_spinlock(__vmf)						\
++({									\
++	struct vm_fault *vmf = __vmf;					\
++	vmf->ptl = pte_lockptr(vmf->vma->vm_mm, vmf->pmd);		\
++	spin_lock(vmf->ptl);						\
++	true;								\
++})
++
++#endif	/* CONFIG_SPECULATIVE_PAGE_FAULT */
++#endif	/* CONFIG_MMU */
++
+ #endif /* __KERNEL__ */
+ #endif /* _LINUX_MM_H */
+diff --git a/mm/memory.c b/mm/memory.c
+index d0db10bd5bee..1ce837e47395 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -2745,6 +2745,72 @@ EXPORT_SYMBOL_GPL(apply_to_existing_page_range);
+ #define speculative_page_walk_end()   local_irq_enable()
+ #endif
+ 
++bool __pte_map_lock(struct vm_fault *vmf)
++{
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++	pmd_t pmdval;
++#endif
++	pte_t *pte = vmf->pte;
++	spinlock_t *ptl;
++
++	if (!(vmf->flags & FAULT_FLAG_SPECULATIVE)) {
++		vmf->ptl = pte_lockptr(vmf->vma->vm_mm, vmf->pmd);
++		if (!pte)
++			vmf->pte = pte_offset_map(vmf->pmd, vmf->address);
++		spin_lock(vmf->ptl);
++		return true;
++	}
++
++	speculative_page_walk_begin();
++	if (!mmap_seq_read_check(vmf->vma->vm_mm, vmf->seq))
++		goto fail;
++	/*
++	 * The mmap sequence count check guarantees that the page
++	 * tables are still valid at that point, and
++	 * speculative_page_walk_begin() ensures that they stay around.
++	 */
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++	/*
++	 * We check if the pmd value is still the same to ensure that there
++	 * is not a huge collapse operation in progress in our back.
++	 */
++	pmdval = READ_ONCE(*vmf->pmd);
++	if (!pmd_same(pmdval, vmf->orig_pmd))
++		goto fail;
++#endif
++	ptl = pte_lockptr(vmf->vma->vm_mm, vmf->pmd);
++	if (!pte)
++		pte = pte_offset_map(vmf->pmd, vmf->address);
++	/*
++	 * Try locking the page table.
++	 *
++	 * Note that we might race against zap_pte_range() which
++	 * invalidates TLBs while holding the page table lock.
++	 * We are still under the speculative_page_walk_begin() section,
++	 * and zap_pte_range() could thus deadlock with us if we tried
++	 * using spin_lock() here.
++	 *
++	 * We also don't want to retry until spin_trylock() succeeds,
++	 * because of the starvation potential against a stream of lockers.
++	 */
++	if (unlikely(!spin_trylock(ptl)))
++		goto fail;
++	if (!mmap_seq_read_check(vmf->vma->vm_mm, vmf->seq))
++		goto unlock_fail;
++	speculative_page_walk_end();
++	vmf->pte = pte;
++	vmf->ptl = ptl;
++	return true;
++
++unlock_fail:
++	spin_unlock(ptl);
++fail:
++	if (pte)
++		pte_unmap(pte);
++	speculative_page_walk_end();
++	return false;
++}
++
+ #endif	/* CONFIG_SPECULATIVE_PAGE_FAULT */
+ 
+ /*
 -- 
 2.20.1
 
