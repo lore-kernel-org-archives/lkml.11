@@ -2,88 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EADAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F45C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243345AbiA1JHp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 04:07:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
+        id S1347441AbiA1JIK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 04:08:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347499AbiA1JHn (ORCPT
+        with ESMTP id S243205AbiA1JII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 04:07:43 -0500
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF1FC06173B
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:07:43 -0800 (PST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:3999:e79d:cb59:f2ec])
-        by albert.telenet-ops.be with bizsmtp
-        id o97e2600a04fKGS0697eYP; Fri, 28 Jan 2022 10:07:41 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nDNEI-00BjuU-Gc; Fri, 28 Jan 2022 10:07:38 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nDNEH-005psA-Ur; Fri, 28 Jan 2022 10:07:37 +0100
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Anup Patel <anup.patel@wdc.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v4 0/2] dt-bindings: timer: sifive, clint: Miscellaneous improvements
-Date:   Fri, 28 Jan 2022 10:07:34 +0100
-Message-Id: <cover.1643360652.git.geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
+        Fri, 28 Jan 2022 04:08:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8E5C061714
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:08:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DE3561DD4
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 09:08:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E483C340E6
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 09:08:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643360887;
+        bh=MBPptDMDLXtaR5MsyxmkNUko6KgF89JBb4LWE/5IspQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Mvd473QlfFn4YG9t+8AZ1ZOY9dYFmVntTj4atlc8TjJZyIaiwnC10Eee6mXQW2Iyt
+         agYKYWHhG6dcy/xQrGjtQnE3fDVWHFB2GWHi786hVoiqSnto1pjvtIziSabz4gS09w
+         Mhw7SkFUkNm4PYoPDR3HFDq6ei0VtDlG8XJsCiqbACAW4Qj1T7itBgYP6WnxlzClPq
+         +opLhRlbFrfDCrgJjyD0XZWEVXCg6plz5tAG1NV7qcPaNac2uo/dVCtOizLTNeCV6c
+         PBnTTYpK5qpuRY1jHhmUg8noE+Gw9SUYWBygQcLhl0qO5iDBufTtYu+4YE8km5/kZV
+         +ZIVacsWUVpaw==
+Received: by mail-wm1-f50.google.com with SMTP id f202-20020a1c1fd3000000b0034dd403f4fbso3594758wmf.1
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:08:07 -0800 (PST)
+X-Gm-Message-State: AOAM5303bXNWyGE3rg/1SNYON36tRWU8tpjkdRmRVbEkOtfTjWxpjvxq
+        lQK7TgR8+wmFoUqqT1EvrqUXXkbE86/MEKFfTO8=
+X-Google-Smtp-Source: ABdhPJxjT5/5vck5qJabBN55fX7BJ0vvbma1AuCDsJeN+RrvQ2LQEWctCgqI5L+HxoJd55ca5kY53enpOFJeSAdY2ZY=
+X-Received: by 2002:a05:600c:a47:: with SMTP id c7mr6538271wmq.25.1643360885904;
+ Fri, 28 Jan 2022 01:08:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220124170555.1054480-1-ardb@kernel.org> <YfG/Wi5OBHeDRPdg@kernel.org>
+In-Reply-To: <YfG/Wi5OBHeDRPdg@kernel.org>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Fri, 28 Jan 2022 10:07:54 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXHrS-=5Lc7rFz9Jaq8Nshss+VDgoP6n95D+w+1WB3OZEQ@mail.gmail.com>
+Message-ID: <CAMj1kXHrS-=5Lc7rFz9Jaq8Nshss+VDgoP6n95D+w+1WB3OZEQ@mail.gmail.com>
+Subject: Re: [PATCH] mm: make 'highmem' symbol ro_after_init
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-	Hi all,
+On Wed, 26 Jan 2022 at 22:38, Mike Rapoport <rppt@kernel.org> wrote:
+>
+> On Mon, Jan 24, 2022 at 06:05:55PM +0100, Ard Biesheuvel wrote:
+> > The 'highmem' variable is only set at boot, so we can make it
+> > ro_after_init and prevent it from being corrupted inadvertently, or from
+> > ending up in a contended cacheline.
+> >
+> > Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+>
+> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+>
+> > ---
+> >  mm/memory.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/mm/memory.c b/mm/memory.c
+> > index c125c4969913..50e82cb94ccc 100644
+> > --- a/mm/memory.c
+> > +++ b/mm/memory.c
+> > @@ -106,7 +106,7 @@ EXPORT_SYMBOL(mem_map);
+> >   * highstart_pfn must be the same; there must be no gap between ZONE_NORMAL
+> >   * and ZONE_HIGHMEM.
+> >   */
+> > -void *high_memory;
+> > +void *high_memory __ro_after_init;
+> >  EXPORT_SYMBOL(high_memory);
+> >
+> >  /*
+> > --
+> > 2.30.2
+> >
+> >
+>
 
-This patch series contains two improvements for the SiFive CLINT DT
-bindings.
 
-Changes compared to v3[1]:
-  - Use architectural maximum instead of practical maximum of 10,
-  - Add Reviewed-by (this time for real ;-).
+This turns out to break CONFIG_MEMORY_HOTPLUG on x86, as it updates
+max_pfn, max_low_pfn and high_memory after init.
 
-Changes compared to v2[2]:
-  - Add Acked-by, Reviewed-by.
-
-Changes compared to v1[3]:
-  - Split in two patches,
-  - Improve patch description and document limit rationale.
-
-Thanks!
-
-[1] https://lore.kernel.org/r/cover.1639744468.git.geert@linux-m68k.org/
-[2] https://lore.kernel.org/r/cover.1639662093.git.geert@linux-m68k.org
-[3] https://lore.kernel.org/r/20211125152317.162958-1-geert@linux-m68k.org
-
-Geert Uytterhoeven (2):
-  dt-bindings: timer: sifive,clint: Fix number of interrupts
-  dt-bindings: timer: sifive,clint: Group interrupt tuples
-
- .../devicetree/bindings/timer/sifive,clint.yaml          | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
--- 
-2.25.1
-
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
+So probably best to make all of those __read_mostly instead.
