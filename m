@@ -2,92 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEE7C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE9CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346977AbiA1Hrk (ORCPT
+        id S1346991AbiA1Hrm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 02:47:40 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:56931 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346951AbiA1Hrg (ORCPT
+        Fri, 28 Jan 2022 02:47:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346853AbiA1Hrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 02:47:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643356056; x=1674892056;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=c9Am6qH8JLyj1WRxdU6JExADb+ukurj3xhJlMoIyOTM=;
-  b=Xh0JbzjtTZIkn68ptpLXM3U3LzAVJf2ei9/MunKuHhQlZC5WzkyoR06J
-   tkZ7qSeBKCqSvC47tuTwcKP/b/JD9fv5GpLXsqNnO7YOUCep0N1A7i7k1
-   sv8hOgPDcb/dFFLjF07dclfsGQyjkHx6H9kP01Dah9+ddlqSP/CRpCY1d
-   E=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 27 Jan 2022 23:47:36 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 23:47:35 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 27 Jan 2022 23:47:35 -0800
-Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 27 Jan 2022 23:47:31 -0800
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rajendra Nayak <quic_rjendra@quicinc.com>,
-        Prasad <quic_psodagud@quicinc.com>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Subject: [PATCHv2 0/9] soc: qcom: llcc: Add LLCC support for SM8450 SoC
-Date:   Fri, 28 Jan 2022 13:17:07 +0530
-Message-ID: <cover.1643355594.git.quic_saipraka@quicinc.com>
-X-Mailer: git-send-email 2.33.1
+        Fri, 28 Jan 2022 02:47:37 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78217C06173B;
+        Thu, 27 Jan 2022 23:47:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=u8U0/Ai5mbQzGHpMhOzTxk2dLwnQvDLgWPnPvMcwTlA=; b=oqnQD992oMMsoVP2DYTG8sHVk/
+        Oxf214lSUukxCU1DjtlMOsUsh31Aa9sSIsDtcfKE+tmzK8XSWJof8Yyy+4ZwKhEejcqae1CDROjqA
+        zxdNl6BSBmyiL8rgq7NfvH6ZyN2nJDWnDA+ftM5ULiS+AKfPMACXuw+anwE4HfJDJlx6w9NTad0VR
+        zR2fqiOYed9wlHBKzycsbnYzTOOYxEVJ5QMEmgUe8922Re7d+4LK4KqEhJKuChAPM8OaNSR/9DktO
+        McB1DnXCbPyZ+GQM5J4Jsc5MAFqqzMfhyj2gUFu8EWb0rXtmZsXk61IfjF7ePZJzrXcxsZGuSU/nN
+        +Ns0bUMA==;
+Received: from [2001:4bb8:180:4c4c:73e:e8c7:4199:32d7] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nDLyn-000rEN-TG; Fri, 28 Jan 2022 07:47:34 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     torvalds@linux-foundation.org, viro@zeniv.linux.org.uk,
+        dhowells@redhat.com
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH v2] fs: rename S_KERNEL_FILE
+Date:   Fri, 28 Jan 2022 08:47:31 +0100
+Message-Id: <20220128074731.1623738-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series adds support for LLCC on SM8450 SoC. It mainly
-consists of LLCC driver changes to incorporate newer LLCC HW found
-on SM8450 SoC and the corresponding DT bits to enable LLCC.
-Based on qcom/for-next branch.
+S_KERNEL_FILE is grossly misnamed.  We have plenty of files hold open by
+the kernel kernel using filp_open.  This flag OTOH signals the inode as
+being a special snowflake that cachefiles holds onto that can't be
+unlinked because of ..., erm, pixie dust.  So clearly mark it as such.
 
-Changes in v2:
- * Fix version assignment to drv_data.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Amir Goldstein <amir73il@gmail.com>
+---
 
-Huang Yiwei (1):
-  soc: qcom: llcc: Add support for 16 ways of allocation
+Changes since v1:
+ - fix commit message typos
 
-Sai Prakash Ranjan (8):
-  soc: qcom: llcc: Update the logic for version info extraction
-  soc: qcom: llcc: Add write-cache cacheable support
-  soc: qcom: llcc: Add missing llcc configuration data
-  soc: qcom: llcc: Update register offsets for newer LLCC HW
-  soc: qcom: llcc: Add configuration data for SM8450 SoC
-  dt-bindings: arm: msm: Add LLCC compatible for SM8350
-  dt-bindings: arm: msm: Add LLCC compatible for SM8450
-  arm64: dts: qcom: sm8450: Add LLCC/system-cache-controller node
+ fs/cachefiles/namei.c | 12 ++++++------
+ fs/namei.c            |  2 +-
+ include/linux/fs.h    |  2 +-
+ 3 files changed, 8 insertions(+), 8 deletions(-)
 
- .../bindings/arm/msm/qcom,llcc.yaml           |   2 +
- arch/arm64/boot/dts/qcom/sm8450.dtsi          |   7 ++
- drivers/soc/qcom/llcc-qcom.c                  | 102 +++++++++++++++---
- include/linux/soc/qcom/llcc-qcom.h            |   9 +-
- 4 files changed, 105 insertions(+), 15 deletions(-)
-
+diff --git a/fs/cachefiles/namei.c b/fs/cachefiles/namei.c
+index 9bd692870617c..599dc13a7d9ab 100644
+--- a/fs/cachefiles/namei.c
++++ b/fs/cachefiles/namei.c
+@@ -20,8 +20,8 @@ static bool __cachefiles_mark_inode_in_use(struct cachefiles_object *object,
+ 	struct inode *inode = d_backing_inode(dentry);
+ 	bool can_use = false;
+ 
+-	if (!(inode->i_flags & S_KERNEL_FILE)) {
+-		inode->i_flags |= S_KERNEL_FILE;
++	if (!(inode->i_flags & S_CACHEFILE)) {
++		inode->i_flags |= S_CACHEFILE;
+ 		trace_cachefiles_mark_active(object, inode);
+ 		can_use = true;
+ 	} else {
+@@ -51,7 +51,7 @@ static void __cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
+ {
+ 	struct inode *inode = d_backing_inode(dentry);
+ 
+-	inode->i_flags &= ~S_KERNEL_FILE;
++	inode->i_flags &= ~S_CACHEFILE;
+ 	trace_cachefiles_mark_inactive(object, inode);
+ }
+ 
+@@ -742,7 +742,7 @@ static struct dentry *cachefiles_lookup_for_cull(struct cachefiles_cache *cache,
+ 		goto lookup_error;
+ 	if (d_is_negative(victim))
+ 		goto lookup_put;
+-	if (d_inode(victim)->i_flags & S_KERNEL_FILE)
++	if (d_inode(victim)->i_flags & S_CACHEFILE)
+ 		goto lookup_busy;
+ 	return victim;
+ 
+@@ -789,11 +789,11 @@ int cachefiles_cull(struct cachefiles_cache *cache, struct dentry *dir,
+ 	/* check to see if someone is using this object */
+ 	inode = d_inode(victim);
+ 	inode_lock(inode);
+-	if (inode->i_flags & S_KERNEL_FILE) {
++	if (inode->i_flags & S_CACHEFILE) {
+ 		ret = -EBUSY;
+ 	} else {
+ 		/* Stop the cache from picking it back up */
+-		inode->i_flags |= S_KERNEL_FILE;
++		inode->i_flags |= S_CACHEFILE;
+ 		ret = 0;
+ 	}
+ 	inode_unlock(inode);
+diff --git a/fs/namei.c b/fs/namei.c
+index d81f04f8d8188..7402277ecc1f5 100644
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -3959,7 +3959,7 @@ int vfs_rmdir(struct user_namespace *mnt_userns, struct inode *dir,
+ 
+ 	error = -EBUSY;
+ 	if (is_local_mountpoint(dentry) ||
+-	    (dentry->d_inode->i_flags & S_KERNEL_FILE))
++	    (dentry->d_inode->i_flags & S_CACHEFILE))
+ 		goto out;
+ 
+ 	error = security_inode_rmdir(dir, dentry);
+diff --git a/include/linux/fs.h b/include/linux/fs.h
+index c8510da6cc6dc..099d7e03d46e6 100644
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -2173,7 +2173,7 @@ struct super_operations {
+ #define S_ENCRYPTED	(1 << 14) /* Encrypted file (using fs/crypto/) */
+ #define S_CASEFOLD	(1 << 15) /* Casefolded file */
+ #define S_VERITY	(1 << 16) /* Verity file (using fs/verity/) */
+-#define S_KERNEL_FILE	(1 << 17) /* File is in use by the kernel (eg. fs/cachefiles) */
++#define S_CACHEFILE	(1 << 17) /* In use as cachefile, can't be unlinked */
+ 
+ /*
+  * Note that nosuid etc flags are inode-specific: setting some file-system
 -- 
-2.33.1
+2.30.2
 
