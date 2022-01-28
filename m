@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E539C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348891AbiA1NTi (ORCPT
+        id S1348909AbiA1NTl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:19:38 -0500
-Received: from server.lespinasse.org ([63.205.204.226]:50591 "EHLO
+        Fri, 28 Jan 2022 08:19:41 -0500
+Received: from server.lespinasse.org ([63.205.204.226]:35959 "EHLO
         server.lespinasse.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348606AbiA1NTJ (ORCPT
+        with ESMTP id S1348643AbiA1NTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 08:19:09 -0500
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
  d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-52-ed;
- t=1643375406; h=from : to : cc : subject : date : message-id :
+ t=1643375407; h=from : to : cc : subject : date : message-id :
  in-reply-to : references : mime-version : content-transfer-encoding :
- from; bh=XOBjo9P4P5QXbaTzEPxUaN/dHjWwd81pn2JDgJBu6Nw=;
- b=Zgl+0z8dPqYhAgCkfq3ZaZLo8J9FklZBrFYZ4KUxrJk41QL0gHK48EflaTggGi9/FdgST
- /d9N/2pIOp1kt5sAg==
+ from; bh=UxJsNKcxVkmfEwrc0wLrYxktFQMDzJ2NvtD6CGXLcSg=;
+ b=6r7aPZUUazHr0Yx+Qnh+976CFWlOQ4YNyXZG/9wDEuqKvF1jaH590LzBlXz8Je2wT6aJb
+ sogFe4e9NylpbJwBQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
- i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375406; h=from : to
+ i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375407; h=from : to
  : cc : subject : date : message-id : in-reply-to : references :
  mime-version : content-transfer-encoding : from;
- bh=XOBjo9P4P5QXbaTzEPxUaN/dHjWwd81pn2JDgJBu6Nw=;
- b=RXZkQsc2fCt/keozAMU/+XTvOIbG+hRQ17sOqDMwCKaDiYIBy5bbSMu1P7SzsdOIgr897
- WQ9H4PuFncpvLdHeCZmk3ra+Z6DWX8BPsJWxn6LEiGOKr1JqS0I2+w+I383l8o8/1aZM/Fd
- qRUP0R0hKcZ1PsULYeWwhiUsYSZFa1GmB1l2PyVhUayXj9CD6nNDa5kiDtFv+C4UW/6/anx
- VwJbO6oUIWxKuKVbXkpglJtm+UIBFSmE5DYQq3BG2jFi+7KEvYUh2jPlutoQqdgL/vC3ueP
- shObKmkZFJqxctv+L/84bRkDjWtOFNxoPQCrJmC5bsFMy6MCfCk5rHKHYRww==
-Received: from zeus.lespinasse.org (zeus.lespinasse.org [IPv6:fd00::150:0])
-        by server.lespinasse.org (Postfix) with ESMTPS id E3C61160951;
-        Fri, 28 Jan 2022 05:10:06 -0800 (PST)
+ bh=UxJsNKcxVkmfEwrc0wLrYxktFQMDzJ2NvtD6CGXLcSg=;
+ b=cTAUtcMfHA1B3iEc5GrsP2U2HjGn6DIPIpn7HZ2gtLjdNDl8krMjya4tVaK+5OTEA+wWr
+ Xnj0JsNTJP/v2UE6Qsd7hSwMV2FYZb/nMEA+ldwp10eTwW0rADGPdxnBB0m+O1JNdfdTyqv
+ DWC7tylQgCiEGBa3oQfzqNx34zEWcKxrdjdG5t1zaryzw8AnVDwsekcgtaT7VAtf2Kd5SWG
+ 5j8zgxXTRAe0xi5ToCDyGNZTmpWWZqs9+6c9rc7+Iq/vJ0rEbK2KxJ4ohHyWwm+TXbktBQe
+ jtI88AyNoZA1+73B7ej+1TJ+MKPzv+tBflBZwOqGNbR2DaZWuOFVvuP5R8TA==
+Received: from zeus.lespinasse.org (zeus.lespinasse.org [10.0.0.150])
+        by server.lespinasse.org (Postfix) with ESMTPS id 1758B16099D;
+        Fri, 28 Jan 2022 05:10:07 -0800 (PST)
 Received: by zeus.lespinasse.org (Postfix, from userid 1000)
-        id CB74720337; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
+        id F241320481; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
 From:   Michel Lespinasse <michel@lespinasse.org>
 To:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>
@@ -56,9 +56,9 @@ Cc:     kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Andy Lutomirski <luto@kernel.org>,
         Michel Lespinasse <michel@lespinasse.org>
-Subject: [PATCH v2 04/35] do_anonymous_page: use update_mmu_tlb()
-Date:   Fri, 28 Jan 2022 05:09:35 -0800
-Message-Id: <20220128131006.67712-5-michel@lespinasse.org>
+Subject: [PATCH v2 18/35] mm: implement speculative handling in do_anonymous_page()
+Date:   Fri, 28 Jan 2022 05:09:49 -0800
+Message-Id: <20220128131006.67712-19-michel@lespinasse.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220128131006.67712-1-michel@lespinasse.org>
 References: <20220128131006.67712-1-michel@lespinasse.org>
@@ -68,33 +68,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-update_mmu_tlb() can be used instead of update_mmu_cache() when the
-page fault handler detects that it lost the race to another page fault.
-
-It looks like this one call was missed in
-https://patchwork.kernel.org/project/linux-mips/patch/1590375160-6997-2-git-send-email-maobibo@loongson.cn
-after Andrew asked to replace all update_mmu_cache() calls with an alias
-in the previous version of this patch here:
-https://patchwork.kernel.org/project/linux-mips/patch/1590031837-9582-2-git-send-email-maobibo@loongson.cn/#23374625
+Change do_anonymous_page() to handle the speculative case.
+This involves aborting speculative faults if they have to allocate a new
+anon_vma, and using pte_map_lock() instead of pte_offset_map_lock()
+to complete the page fault.
 
 Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
 ---
- mm/memory.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/memory.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
 diff --git a/mm/memory.c b/mm/memory.c
-index c125c4969913..cd9432df3a27 100644
+index 1ce837e47395..8d036140634d 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
-@@ -3799,7 +3799,7 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
- 	vmf->pte = pte_offset_map_lock(vma->vm_mm, vmf->pmd, vmf->address,
- 			&vmf->ptl);
- 	if (!pte_none(*vmf->pte)) {
--		update_mmu_cache(vma, vmf->address, vmf->pte);
-+		update_mmu_tlb(vma, vmf->address, vmf->pte);
- 		goto release;
+@@ -3846,8 +3846,12 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
+ 						vma->vm_page_prot));
+ 	} else {
+ 		/* Allocate our own private page. */
+-		if (unlikely(anon_vma_prepare(vma)))
+-			goto oom;
++		if (unlikely(!vma->anon_vma)) {
++			if (vmf->flags & FAULT_FLAG_SPECULATIVE)
++				return VM_FAULT_RETRY;
++			if (__anon_vma_prepare(vma))
++				goto oom;
++		}
+ 		page = alloc_zeroed_user_highpage_movable(vma, vmf->address);
+ 		if (!page)
+ 			goto oom;
+@@ -3869,8 +3873,10 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
+ 			entry = pte_mkwrite(pte_mkdirty(entry));
  	}
  
+-	vmf->pte = pte_offset_map_lock(vma->vm_mm, vmf->pmd, vmf->address,
+-			&vmf->ptl);
++	if (!pte_map_lock(vmf)) {
++		ret = VM_FAULT_RETRY;
++		goto release;
++	}
+ 	if (!pte_none(*vmf->pte)) {
+ 		update_mmu_tlb(vma, vmf->address, vmf->pte);
+ 		goto unlock;
+@@ -3885,6 +3891,8 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
+ 		pte_unmap_unlock(vmf->pte, vmf->ptl);
+ 		if (page)
+ 			put_page(page);
++		if (vmf->flags & FAULT_FLAG_SPECULATIVE)
++			return VM_FAULT_RETRY;
+ 		return handle_userfault(vmf, VM_UFFD_MISSING);
+ 	}
+ 
+@@ -3902,6 +3910,7 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
+ 	return 0;
+ unlock:
+ 	pte_unmap_unlock(vmf->pte, vmf->ptl);
++release:
+ 	if (page)
+ 		put_page(page);
+ 	return ret;
 -- 
 2.20.1
 
