@@ -2,120 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43062C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 11:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE31FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 11:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348107AbiA1LRB (ORCPT
+        id S1348114AbiA1LSS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 06:17:01 -0500
-Received: from mga11.intel.com ([192.55.52.93]:58694 "EHLO mga11.intel.com"
+        Fri, 28 Jan 2022 06:18:18 -0500
+Received: from mga12.intel.com ([192.55.52.136]:58853 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231681AbiA1LRA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 06:17:00 -0500
+        id S231681AbiA1LSQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 06:18:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643368620; x=1674904620;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7/urSxgK5M61VAwFxn/ZreTPy7aGvuUCzsahFXwQz7U=;
-  b=g5V52OSHzo1497dg4XXytKjEoysNAVkbXV+csr/2XI1imLrbr22Nz/EG
-   lDtCbtGgsh0zU3c/k3qqLGeokIAS3O6xbWQiY8zp2p4vVcgIHcCnX/1yQ
-   ENbegv46oPhsubTC/O0+uPpZA60KcKvQ3J3xtQFp+5r99vE+R0BZVr5nG
-   JxxlMQok/Y6WzpElh/snLfCYGsUhzkyglSEb+AhDJYLj/EN8khzwBEMMk
-   bmo6A918DE0MeRQAqKXTvmziBVfWjk1qzn41OnGKe9K58RtMMllxA98Kv
-   FWjtmuqkx5d2Bka6YRmnKeV3C8GEqhwwyilxMLP0/+Uas5acUsF0GRveg
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="244703777"
+  t=1643368696; x=1674904696;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=NJGR6MdoUIo0FwESDeTGIJKeR0quDcROma1moapxKII=;
+  b=XCarFkmaiacBnrOC12pIrKI8rUzHsNR3nQ7+juSGeWeTqgg0xa1yf8Qo
+   JGPZWkQD7oTG+694UJg9yL9Z0bgnJ/SaWnqPrmVewapBT2KwBLUiJnea6
+   ViZ+qWoP7FYzdRhLmoVoAbdv0i9noow5I5HMUlkfnRCmgaXJe4rgyNN3j
+   Z6Vhrs/JHnpO9QxKYVCYYvqI2UVandoa3hw0UB1LKl/2u4ECO9McqOMRH
+   SSSU8kqEMe8q8mlAya9u3cabzzZKMpMv5QxcI80IF/0jmAqGsZkruzDc6
+   uHgHaRUcd+F4/3Q10lHEFKT0trZ++x4HKZx1l8iA+OSvprm/2Sp51p3SB
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="227080893"
 X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="244703777"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 03:17:00 -0800
+   d="scan'208";a="227080893"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 03:18:16 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="480705558"
-Received: from npg-dpdk-haiyue-1.sh.intel.com ([10.67.118.194])
-  by orsmga006.jf.intel.com with ESMTP; 28 Jan 2022 03:16:57 -0800
-From:   Haiyue Wang <haiyue.wang@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Haiyue Wang <haiyue.wang@intel.com>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bailey Forrest <bcf@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Shailend Chand <shailend@google.com>,
-        Yangchun Fu <yangchun@google.com>,
-        Sagi Shahar <sagis@google.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] gve: fix the wrong AdminQ buffer queue index check
-Date:   Fri, 28 Jan 2022 18:47:14 +0800
-Message-Id: <20220128104716.9020-1-haiyue.wang@intel.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220128073824.7209-1-haiyue.wang@intel.com>
-References: <20220128073824.7209-1-haiyue.wang@intel.com>
+   d="scan'208";a="697062938"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 28 Jan 2022 03:18:14 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nDPGg-000NmB-0d; Fri, 28 Jan 2022 11:18:14 +0000
+Date:   Fri, 28 Jan 2022 19:18:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:paulmck/linux-rcu/dev 94/94]
+ kernel/rcu/srcutree.c:313:6: warning: no previous prototype for function
+ 'spin_lock_irqsave_ssp_contention'
+Message-ID: <202201281904.qRllNV38-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 'tail' and 'head' are 'unsigned int' type free-running count, when
-'head' is overflow, the 'int i (= tail) < u32 head' will be false:
+tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/dev
+head:   903a93309e5a59497d3c178cabb67ecc6c843a69
+commit: 903a93309e5a59497d3c178cabb67ecc6c843a69 [94/94] srcu: Add contention-triggered addition of srcu_node tree
+config: hexagon-randconfig-r015-20220128 (https://download.01.org/0day-ci/archive/20220128/202201281904.qRllNV38-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/903a93309e5a59497d3c178cabb67ecc6c843a69
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/dev
+        git checkout 903a93309e5a59497d3c178cabb67ecc6c843a69
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/firewire/ kernel/rcu/
 
-Only '- loop 0: idx = 63' result is shown, so it needs to use 'int' type
-to compare, it can handle the overflow correctly.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-typedef uint32_t u32;
+All warnings (new ones prefixed by >>):
 
-int main()
-{
-        u32 tail, head;
-        int stail, shead;
-        int i, loop;
+>> kernel/rcu/srcutree.c:313:6: warning: no previous prototype for function 'spin_lock_irqsave_ssp_contention' [-Wmissing-prototypes]
+   void spin_lock_irqsave_ssp_contention(struct srcu_struct *ssp, unsigned long *flags)
+        ^
+   kernel/rcu/srcutree.c:313:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void spin_lock_irqsave_ssp_contention(struct srcu_struct *ssp, unsigned long *flags)
+   ^
+   static 
+   1 warning generated.
 
-        tail = 0xffffffff;
-        head = 0x00000000;
 
-        for (i = tail, loop = 0; i < head; i++) {
-                unsigned int idx = i & 63;
+vim +/spin_lock_irqsave_ssp_contention +313 kernel/rcu/srcutree.c
 
-                printf("+ loop %d: idx = %u\n", loop++, idx);
-        }
+   306	
+   307	/*
+   308	 * Acquire the specified srcu_struct structure's ->lock, but check for
+   309	 * excessive contention, which results in initiation of a transition
+   310	 * to SRCU_SIZE_BIG.  But only if the srcutree.convert_to_big module
+   311	 * parameter permits this.
+   312	 */
+ > 313	void spin_lock_irqsave_ssp_contention(struct srcu_struct *ssp, unsigned long *flags)
+   314	{
+   315		unsigned long j;
+   316	
+   317		if (spin_trylock_irqsave_rcu_node(ssp, *flags))
+   318			return;
+   319		spin_lock_irqsave_rcu_node(ssp, *flags);
+   320		if (!(convert_to_big & 0x10) || ssp->srcu_size_state)
+   321			return;
+   322		j = jiffies;
+   323		if (ssp->srcu_size_jiffies != j) {
+   324			ssp->srcu_size_jiffies = j;
+   325			ssp->srcu_n_lock_retries = 0;
+   326		}
+   327		if (++ssp->srcu_n_lock_retries <= small_contention_lim)
+   328			return;
+   329		__srcu_transition_to_big(ssp);
+   330	}
+   331	
 
-        stail = tail;
-        shead = head;
-        for (i = stail, loop = 0; i < shead; i++) {
-                unsigned int idx = i & 63;
-
-                printf("- loop %d: idx = %u\n", loop++, idx);
-        }
-
-        return 0;
-}
-
-Fixes: 5cdad90de62c ("gve: Batch AQ commands for creating and destroying queues.")
-Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
 ---
-v2: Fix empty lines surround the Fixes tag
----
- drivers/net/ethernet/google/gve/gve_adminq.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
-index 2ad7f57f7e5b..f7621ab672b9 100644
---- a/drivers/net/ethernet/google/gve/gve_adminq.c
-+++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-@@ -301,7 +301,7 @@ static int gve_adminq_parse_err(struct gve_priv *priv, u32 status)
-  */
- static int gve_adminq_kick_and_wait(struct gve_priv *priv)
- {
--	u32 tail, head;
-+	int tail, head;
- 	int i;
- 
- 	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
--- 
-2.35.0
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
