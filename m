@@ -2,146 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:14:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 044F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348929AbiA1OOn (ORCPT
+        id S1349024AbiA1OUx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:14:43 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:53126 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348069AbiA1OOl (ORCPT
+        Fri, 28 Jan 2022 09:20:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348069AbiA1OUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:14:41 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 8E2311F385;
-        Fri, 28 Jan 2022 14:14:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643379280; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CTHAmo7gQBUFA1fTDySimisIz/TBMzybVfp9a9saT4Q=;
-        b=Br58rQV4TYwrowQa6637A4b+moWJk+s72s31wv5NA85IbeRSj2FH0MJoj6ejEVBC8WKOxK
-        YFl6EuzrttQAvXfuNiI2OJI3i/IYCeKxgS0J++ahGWUoJ+NAJY70Li/l0N0tql1POs55fe
-        nVAbj08A5zimTJHy/wwAVEeG/gEVSfI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643379280;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CTHAmo7gQBUFA1fTDySimisIz/TBMzybVfp9a9saT4Q=;
-        b=DCEBqbOv/dHXxtGmJWmsYD0iyk/HhW/q4LaDm9GwQF8zHLkLDu9gfb77CmRkuLk49cyx8w
-        +LuhKOEwUzJ/ilCg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 07B3813487;
-        Fri, 28 Jan 2022 14:14:40 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 8zpKAFD682FLHAAAMHmgww
-        (envelope-from <nstange@suse.de>); Fri, 28 Jan 2022 14:14:40 +0000
-From:   Nicolai Stange <nstange@suse.de>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Nicolai Stange <nstange@suse.de>,
-        Stephan Mueller <smueller@chronox.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hannes Reinecke <hare@suse.de>, Torsten Duwe <duwe@suse.de>,
-        Zaibo Xu <xuzaibo@huawei.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        qat-linux@intel.com, keyrings@vger.kernel.org, simo@redhat.com,
-        Eric Biggers <ebiggers@kernel.org>, Petr Vorel <pvorel@suse.cz>
-Subject: Re: [v2 PATCH] crypto: api - Disallow sha1 in FIPS-mode while allowing hmac(sha1)
-References: <20211209090358.28231-1-nstange@suse.de> <87r1a7thy0.fsf@suse.de>
-        <YcvEkfS4cONDXXB9@gondor.apana.org.au>
-        <2468270.qO8rWLYou6@tauon.chronox.de>
-        <YdepEhTI/LB9wdJr@gondor.apana.org.au>
-        <Yd0gInht+V+Kcsw2@gondor.apana.org.au> <871r1eyamd.fsf@suse.de>
-        <Yd1dK//76455cHdz@gondor.apana.org.au>
-        <YeEVSaMEVJb3cQkq@gondor.apana.org.au> <87k0f2hefl.fsf@suse.de>
-        <YeFWnscvXtv73KBl@gondor.apana.org.au>
-Date:   Fri, 28 Jan 2022 15:14:39 +0100
-In-Reply-To: <YeFWnscvXtv73KBl@gondor.apana.org.au> (Herbert Xu's message of
-        "Fri, 14 Jan 2022 21:55:26 +1100")
-Message-ID: <87v8y4dk1c.fsf@suse.de>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.3 (gnu/linux)
+        Fri, 28 Jan 2022 09:20:52 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC45DC061714;
+        Fri, 28 Jan 2022 06:20:51 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id p7so10094718edc.12;
+        Fri, 28 Jan 2022 06:20:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+J7Y28MxCnMYBbIsUpYD7C4RITvnrtVaqSAjjPutwc4=;
+        b=OyXxgsA7XeWtgJF/nhNOdz3kkv/fl7EiCMyq4HQ6tmuDq7Usg1rm+BdxRDMd5xdVgP
+         g8dQBdqTXYn4aErOt7DdbLDPykWd8DJJLNbqWXb+KFn7d2fubrYszQ9CNZEkstHZXO/h
+         0WrUllYs2RfE0N7BAZNBjJvV7Do2/mdS2SrW9zdyYuXFVeyebyENflf8MRYl6cPTpIOW
+         d8xdI3F306FDiQ415DKKoYbK7tPRxZg4tGMa06o9UeiLjF6ll88D6WrICEgNwcFSjt7C
+         6aA+RpXtx4zBkAkJ5zLhP30npkqCLD2DZloM6Vmoj4ijIhRRUawNnDCtVG+Pafln3b1Y
+         Z/NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+J7Y28MxCnMYBbIsUpYD7C4RITvnrtVaqSAjjPutwc4=;
+        b=6bedi2WV8mSgMPtXoMX/bVDphFj2rOBT58pPvXD5njPmqejwcmOlGQ9RfdlTSy6Ibu
+         8gxJPKKmM0jC2lk8RH75XGqycdYvrzI0MZwlW8mWW9TM4/hvpIGZMWXp/Jvu0B2Fy0iG
+         qy+1XW/cZ45ZJK8TdrtII6HyHgJpJ8Ub+iDMrCmGNdKsSBODBZVXLgpBdkZeX1IvzXgc
+         p4Xm5GrbMDkF9vs7ur0y7i118jDFiG5ELVlE7px4UmIE5DEEp94tiJH5w+IFPXOLtPsO
+         1sd1bd83A5Vt/Qv5WFcLxcWFoUfhR4ikERsBM1YnZNbmuhwN0x248KuHLbPSBVi5ADj8
+         upbQ==
+X-Gm-Message-State: AOAM533GnaNlbpWm17OjFy5Bmh0V9lmGJkRkcE+EmE1pGKKwjMpIrNkk
+        8fuDLsN23NGDxebseDjTfvPGZdDkzZRSvQO0KpbbGEuXR6vBXA==
+X-Google-Smtp-Source: ABdhPJxblons+zl0iKzVvNBCyWrNzlRY/6qPcM6d5TbNTj6qyvel4wqyOJ/Nq/Wtxh4kAvN5OohBS46Y2CU58jXaihg=
+X-Received: by 2002:a05:6402:350d:: with SMTP id b13mr8392678edd.125.1643379649912;
+ Fri, 28 Jan 2022 06:20:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220125161245.418882-1-horatiu.vultur@microchip.com> <20220125164659.GA31440@COLIN-DESKTOP1.localdomain>
+In-Reply-To: <20220125164659.GA31440@COLIN-DESKTOP1.localdomain>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 28 Jan 2022 16:19:12 +0200
+Message-ID: <CAHp75Vc71mnKST5aFGEivoU8ZhmmRf-ArNYVMb5Cf52jE8jetQ@mail.gmail.com>
+Subject: Re: [PATCH] pinctrl: microchip-sgpio: Fix support for regmap
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen.Hegelund@microchip.com,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Herbert Xu <herbert@gondor.apana.org.au> writes:
+On Wed, Jan 26, 2022 at 3:19 AM Colin Foster
+<colin.foster@in-advantage.com> wrote:
+> On Tue, Jan 25, 2022 at 05:12:45PM +0100, Horatiu Vultur wrote:
 
-> On Fri, Jan 14, 2022 at 10:09:02AM +0100, Nicolai Stange wrote:
->
->> This looks all good to me, but as !->fips_allowed tests aren't skipped
->> over anymore now, it would perhaps make sense to make their failure
->> non-fatal in FIPS mode. Because in FIPS mode a failure could mean a
->> panic and some of the existing TVs might not pass because of e.g. some
->> key length checks or so active only for fips_enabled...
->
-> You mean a buggy non-FIPS algorithm that fails when tested in
-> FIPS mode?  I guess we could skip the panic in that case if
-> everyone is happy with that.  Stephan?
+> The only difference is I
+> had copied reg_stride into sgpio_priv instead of making regmap_config
+> file-scope.
 
-One more thing I just realized: dracut's fips module ([1]) modprobes
-tcrypt (*) and failure is considered fatal, i.e. the system would not
-boot up.
+I'm wondering if we may access config via a pointer to regmap.
 
-First of all this would mean that tcrypt_test() needs to ignore
--ECANCELED return values from alg_test() in FIPS mode, in addition to
-the -EINVAL it is already prepared for.
-
-However, chances are that some of the !fips_allowed algorithms looped
-over by tcrypt are not available (i.e. not enabled at build time) and as
-this change here makes alg_test() to unconditionally attempt a test
-execution now, this would fail with -ENOENT AFAICS.
-
-One way to work around this is to make tcrypt_test() to ignore -ENOENT
-in addition to -EINVAL and -ECANCELED.
-
-It might be undesirable though that the test executions triggered from
-tcrypt would still instantiate/load a ton of !fips_allowed algorithms at
-boot, most of which will effectively be inaccessible (because they're
-not used as FIPS_INTERNAL arguments to fips_allowed =3D=3D 1 template
-instances).
-
-So how about making alg_test() to skip the !fips_allowed tests in FIPS
-mode as before, but to return -ECANCELED and eventually set
-FIPS_INTERNAL as implemented with this patch here.
-
-This would imply that FIPS_INTERNAL algorithms by themselves remain
-untested, but I think this might be Ok as they would be usable only as
-template arguments in fips_allowed instantiations. That is, they will
-still receive some form of testing when the larger construction they're
-part of gets tested.
-
-For example, going with the "dh" example, where "dh" and "ffdhe3072(dh)"
-would have fips_allowed unset and set respecively, ffdhe3072(dh) as
-a whole would get tested, but not the "dh" argument individually.
-
-Stephan, would this approach work from a FIPS 140-3 perspective?
-
-Thanks!
-
-Nicolai
-
-[1] https://git.kernel.org/pub/scm/boot/dracut/dracut.git/tree/modules.d/01=
-fips/fips.sh#n106
-(*) I'm not sure why this is being done, but it is what it is.
-
---=20
-SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg, G=
-ermany
-(HRB 36809, AG N=C3=BCrnberg), GF: Ivo Totev
+-- 
+With Best Regards,
+Andy Shevchenko
