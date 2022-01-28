@@ -2,143 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE28C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 15:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BAE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 15:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349742AbiA1P4C (ORCPT
+        id S1349754AbiA1P5p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 10:56:02 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.171]:40303 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349718AbiA1P4B (ORCPT
+        Fri, 28 Jan 2022 10:57:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43052 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349744AbiA1P5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 10:56:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643384996;
-    s=strato-dkim-0002; d=chronox.de;
-    h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
-    From:Subject:Sender;
-    bh=FbbK5BCqwc+LVSOODivmoMY7VA5yrwUnCl/SUOH2vUk=;
-    b=FYm+mIGjvMuxIoWGb4E8SJnLihAlEBBxtcdxXp55elBwEY4A6sAolUt+rDPK9UxlCo
-    ZI11nop0nQwfkl5DlPVitY6M/5DeCYyItwF6OO95XAHZto1BAhWqdstwYaUjTaJ3Vn+C
-    QEF2k3EEC6S8iPAFs2J4vwosklPuPQr/4EpfEneRBxDI3VEDqNXIa8xvWON4rCzNUN+I
-    vtDQ45hu2wc4zeLpdHFdfShijxwvmRw16WKBifpC8St7Xg6/cmxumj0pV4vOP3J4Tu3x
-    uzCgMCZLaMYaaQn+w2hs1QgjcnpHWOcw/99WZ478v+JUNe06qEsvOgTBP7cudrgaapgg
-    hBXA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2ERcEykfu11Y98lp/T7+hdri+uKZK8TKWEqNyiHySGSa9k9xmwdNnzGHXvSOeuZzLM="
-X-RZG-CLASS-ID: mo00
-Received: from tauon.chronox.de
-    by smtp.strato.de (RZmta 47.38.0 DYNA|AUTH)
-    with ESMTPSA id v5f65ay0SFntwxY
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 28 Jan 2022 16:49:55 +0100 (CET)
-From:   Stephan Mueller <smueller@chronox.de>
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Nicolai Stange <nstange@suse.de>
-Cc:     Nicolai Stange <nstange@suse.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hannes Reinecke <hare@suse.de>, Torsten Duwe <duwe@suse.de>,
-        Zaibo Xu <xuzaibo@huawei.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        qat-linux@intel.com, keyrings@vger.kernel.org, simo@redhat.com,
-        Eric Biggers <ebiggers@kernel.org>, Petr Vorel <pvorel@suse.cz>
-Subject: Re: [v2 PATCH] crypto: api - Disallow sha1 in FIPS-mode while allowing hmac(sha1)
-Date:   Fri, 28 Jan 2022 16:49:54 +0100
-Message-ID: <1738803.My4pmAdfGn@tauon.chronox.de>
-In-Reply-To: <87v8y4dk1c.fsf@suse.de>
-References: <20211209090358.28231-1-nstange@suse.de> <YeFWnscvXtv73KBl@gondor.apana.org.au> <87v8y4dk1c.fsf@suse.de>
+        Fri, 28 Jan 2022 10:57:44 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51E9961EA8
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 15:57:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADAB5C340EE
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 15:57:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643385463;
+        bh=IQ8hvyw1pDAvDp94xvG8YbiEIf7ZBPJyDu22r8ISfVw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=VNz1du+TBjld4PhPZ+jkdPNJiAVgrFEcCQMeV1IqW4tQxuagjbz750OUKZYNO9Wqe
+         5Ramldm2aALYNHOqEtVoUe/KzJ+9j2fGR2FHzVonemL+LT3wGtyfYuZ6CteNb1hqTF
+         OXI2GJLwBTYodJGgenkJ6c2FIYeid+gulDzFkbqEcdM9UXwjgYV+Aow9Dm0eumZinc
+         Ns4nKSiQ0vomivo5dR6fLv+zTujyFIhazzVts2vMEKKYc+krpOzL8M7yY5gLfh66s4
+         7w0URWeLM3EXoEIfmJupi3xQTR4hPuaX1NsYY+SJIt0fUn0KJJJHkR7/jetdjWLdEV
+         8j7gPnfuljTGg==
+Received: by mail-ej1-f45.google.com with SMTP id ka4so17346858ejc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 07:57:43 -0800 (PST)
+X-Gm-Message-State: AOAM533SKy2xg2m/6aX51KQZxlhCtxqoeephHpzy+i7kHG8uogpDhzq0
+        d6b8pzjiBlbx8wn43eKojQT6SchfJRB+tuLnGA==
+X-Google-Smtp-Source: ABdhPJyMCW3ZK9Ri660QNZ9AOmvNSPBp9tIK7lI4yHvpk7o6D/w1vWVHsyn828J7qAojrYyUdg5EKyBrHHxW5i1lJ8U=
+X-Received: by 2002:a17:907:3ea8:: with SMTP id hs40mr7443689ejc.48.1643385461799;
+ Fri, 28 Jan 2022 07:57:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+References: <20220127143623.123025-1-angelogioacchino.delregno@collabora.com>
+ <CAAOTY__yO6Cq8qt8RSh9AX68mJEv+wWvuhY0_p-PTJ=eJD_7aA@mail.gmail.com>
+ <b8911eab-1419-60ad-ef07-25a5de365a52@collabora.com> <ddb05e08-f81a-11f9-8091-9af0c57e687d@collabora.com>
+In-Reply-To: <ddb05e08-f81a-11f9-8091-9af0c57e687d@collabora.com>
+From:   Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Date:   Fri, 28 Jan 2022 23:57:30 +0800
+X-Gmail-Original-Message-ID: <CAAOTY_8ZPmUEizdVEOWb26FV+3qpndk=t1N2vYyFCd4K2RM0Nw@mail.gmail.com>
+Message-ID: <CAAOTY_8ZPmUEizdVEOWb26FV+3qpndk=t1N2vYyFCd4K2RM0Nw@mail.gmail.com>
+Subject: Re: [PATCH v3] drm/mediatek: mtk_dsi: Avoid EPROBE_DEFER loop with
+ external bridge
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        David Airlie <airlied@linux.ie>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        andrzej.hajda@intel.com,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Collabora Kernel ML <kernel@collabora.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, 28. Januar 2022, 15:14:39 CET schrieb Nicolai Stange:
+AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> =E6=96=
+=BC
+2022=E5=B9=B41=E6=9C=8828=E6=97=A5 =E9=80=B1=E4=BA=94 =E4=B8=8B=E5=8D=885:1=
+3=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> Il 27/01/22 16:46, AngeloGioacchino Del Regno ha scritto:
+> > Il 27/01/22 16:21, Chun-Kuang Hu ha scritto:
+> >> Hi, Angelo:
+> >>
+> >> AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> =
+=E6=96=BC
+> >> 2022=E5=B9=B41=E6=9C=8827=E6=97=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=
+=8810:36=E5=AF=AB=E9=81=93=EF=BC=9A
+> >>>
+> >>> DRM bridge drivers are now attaching their DSI device at probe time,
+> >>> which requires us to register our DSI host in order to let the bridge
+> >>> to probe: this recently started producing an endless -EPROBE_DEFER
+> >>> loop on some machines that are using external bridges, like the
+> >>> parade-ps8640, found on the ACER Chromebook R13.
+> >>>
+> >>> Now that the DSI hosts/devices probe sequence is documented, we can
+> >>> do adjustments to the mtk_dsi driver as to both fix now and make sure
+> >>> to avoid this situation in the future: for this, following what is
+> >>> documented in drm_bridge.c, move the mtk_dsi component_add() to the
+> >>> mtk_dsi_ops.attach callback and delete it in the detach callback;
+> >>> keeping in mind that we are registering a drm_bridge for our DSI,
+> >>> which is only used/attached if the DSI Host is bound, it wouldn't
+> >>> make sense to keep adding our bridge at probe time (as it would
+> >>> be useless to have it if mtk_dsi_ops.attach() fails!), so also move
+> >>> that one to the dsi host attach function (and remove it in detach).
+> >>>
+> >>> Fixes: 209264a85707 ("drm/bridge: Document the probe issue with MIPI-=
+DSI bridges")
+> >>
+> >> The fixed tag should indicate the patch which cause the bug, but why a
+> >> patch just adding document would cause bug?
+> >> So no any patch cause bug? This patch just want to prevent a possible =
+bug?
+> >>
+> >
+> > I think you've missed my previous message on v2, so I will paste it her=
+e:
+> >
+> > unfortunately I couldn't find a valid commit for a Fixes tag. This
+> > started being an issue at some point, when the DRM was changed to
+> > adhere to the documented probe sequence: the MediaTek DSI driver was
+> > not the only one that got broken/affected by these changes.
+> >
+> > If you have any advice on which commit should be tagged, I'm open for
+> > any kind of suggestion.
+> >
+> >
+> > I tried to check on other drivers which got fixed for the same behavior=
+,
+> > for example drm/msm, but none of them had a Fixes tag.
+> > When the DRM got changed to adhere to this sequence, some drm/bridge
+> > drivers were also changed; this has created some incompatibilities with
+> > some drm drivers, including drm/msm and drm/mediatek.
+> >
+> > This commit is not fixing a latent bug that was introduced in drm/media=
+tek
+> > but rather one that was induced by the new, fixed, probe flow that got
+> > recently documented - and to which drivers should adhere; failing to ad=
+here
+> > to that will produce an endless -EPROBE_DEFER loop, due to other driver=
+s
+> > (as mentioned, for example drm/bridge drivers) having been changed to u=
+se
+> > that probe sequence.
+> >
+> >
+> > Regards,
+> > Angelo
+> >
+>
+> I've been thinking about another solution to this issue.
+>
+> Would it be fine if I send a v4 that removes the Fixes tag, but adds the =
+following?
+>
+> Cc: stable@kernel.org # v5.15+
 
-Hi Nicolai,
+It's ok to me. According to the documented format [1], I think this should =
+be
 
-> Herbert Xu <herbert@gondor.apana.org.au> writes:
-> > On Fri, Jan 14, 2022 at 10:09:02AM +0100, Nicolai Stange wrote:
-> >> This looks all good to me, but as !->fips_allowed tests aren't skipped
-> >> over anymore now, it would perhaps make sense to make their failure
-> >> non-fatal in FIPS mode. Because in FIPS mode a failure could mean a
-> >> panic and some of the existing TVs might not pass because of e.g. some
-> >> key length checks or so active only for fips_enabled...
-> > 
-> > You mean a buggy non-FIPS algorithm that fails when tested in
-> > FIPS mode?  I guess we could skip the panic in that case if
-> > everyone is happy with that.  Stephan?
-> 
-> One more thing I just realized: dracut's fips module ([1]) modprobes
-> tcrypt (*) and failure is considered fatal, i.e. the system would not
-> boot up.
-> 
-> First of all this would mean that tcrypt_test() needs to ignore
-> -ECANCELED return values from alg_test() in FIPS mode, in addition to
-> the -EINVAL it is already prepared for.
-> 
-> However, chances are that some of the !fips_allowed algorithms looped
-> over by tcrypt are not available (i.e. not enabled at build time) and as
-> this change here makes alg_test() to unconditionally attempt a test
-> execution now, this would fail with -ENOENT AFAICS.
-> 
-> One way to work around this is to make tcrypt_test() to ignore -ENOENT
-> in addition to -EINVAL and -ECANCELED.
-> 
-> It might be undesirable though that the test executions triggered from
-> tcrypt would still instantiate/load a ton of !fips_allowed algorithms at
-> boot, most of which will effectively be inaccessible (because they're
-> not used as FIPS_INTERNAL arguments to fips_allowed == 1 template
-> instances).
-> 
-> So how about making alg_test() to skip the !fips_allowed tests in FIPS
-> mode as before, but to return -ECANCELED and eventually set
-> FIPS_INTERNAL as implemented with this patch here.
-> 
-> This would imply that FIPS_INTERNAL algorithms by themselves remain
-> untested, but I think this might be Ok as they would be usable only as
-> template arguments in fips_allowed instantiations. That is, they will
-> still receive some form of testing when the larger construction they're
-> part of gets tested.
-> 
-> For example, going with the "dh" example, where "dh" and "ffdhe3072(dh)"
-> would have fips_allowed unset and set respecively, ffdhe3072(dh) as
-> a whole would get tested, but not the "dh" argument individually.
-> 
-> Stephan, would this approach work from a FIPS 140-3 perspective?
+Cc: <stable@vger.kernel.org> # 5.15.x
 
-Are we sure that we always will have power-up tests of the compound algorithms 
-when we disable the lower-level algorithm testing?
+[1] https://www.kernel.org/doc/html/v5.16/process/stable-kernel-rules.html
 
-For example, consider the DH work you are preparing: we currently have a self 
-test for dh - which then will be marked as FIPS_INTERNAL and not executed. 
-Would we now have self tests for modpXXX(dh) or ffdheXXX(dh)? If not, how 
-would it be guaranteed that DH is tested?
+Regards,
+Chun-Kuang.
 
-The important part is that the algorithm testing is guaranteed. I see a number 
-of alg_test_null in testmgr.c. I see the potential that some algorithms do not 
-get tested at all when we skip FIPS_INTERNAL algorithms.
-
-From a FIPS perspective it is permissible that compound algo power up tests 
-are claimed to cover respective lower-level algos.
-
-> 
-> Thanks!
-> 
-> Nicolai
-> 
-> [1]
-> https://git.kernel.org/pub/scm/boot/dracut/dracut.git/tree/modules.d/01fips
-> /fips.sh#n106 (*) I'm not sure why this is being done, but it is what it is.
-
-
-Ciao
-Stephan
-
-
+>
+> >> Regards,
+> >> Chun-Kuang.
+> >>
+> >>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@=
+collabora.com>
+> >>> Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+> >>> Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
+> >>>
+> >>> ---
+> >>>   drivers/gpu/drm/mediatek/mtk_dsi.c | 167 +++++++++++++++-----------=
+---
+> >>>   1 file changed, 84 insertions(+), 83 deletions(-)
+> >>>
+>
+>
+> --
+> AngeloGioacchino Del Regno
+> Software Engineer
+>
+> Collabora Ltd.
+> Platinum Building, St John's Innovation Park, Cambridge CB4 0DS, UK
+> Registered in England & Wales, no. 5513718
