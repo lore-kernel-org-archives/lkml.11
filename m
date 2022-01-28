@@ -2,103 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A1FAC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:38:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA119C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347683AbiA1JiO (ORCPT
+        id S1347668AbiA1JjO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 04:38:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347666AbiA1JiI (ORCPT
+        Fri, 28 Jan 2022 04:39:14 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:37408 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S235076AbiA1JjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 04:38:08 -0500
-Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513B1C061749
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:38:08 -0800 (PST)
-Received: by mail-vs1-xe32.google.com with SMTP id g23so2275033vsf.7
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:38:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E/VIyc5JpK2Sy5loT9a2HcHWg2TrorJJxRaogeKP25w=;
-        b=EibPllimp8WZIwxJdUGUIFAlIuZdyznPvrXJ7caP5EDkiBNUVM4ihiUoIfNxC6TVSx
-         YE207qfvpl7N/VHWz1SefuMcAFD5mqGieRSegzXNyYGWfyIdkPkwWByrIvqWimbKQ8Un
-         /lbUGxvPlDX06Jf/32nPUu5Q90vZSrQ0/ovfo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E/VIyc5JpK2Sy5loT9a2HcHWg2TrorJJxRaogeKP25w=;
-        b=FHKFclORWNtAhQI9Mdh6eLnInDYuGoJmKeq7t8e4NfMD1psAhTnxcthivZcQY6Hs3V
-         55Tnw/IsSCccPegcos0yQCNPFBkzMEHbCy5GhB9SAG1czS4jSAZ6xRLTlf3pHgk1jXjY
-         WgzTwOI6Yg2npki+ubjqkZKkFT9VBXrOj0PazpRZTpazrk9fb5VWboW1yRR8TcC/vvPC
-         jbDBhxCd4VF9RyVTCsMUXh95qCQppv31q7Lsy9i2U8jc3d72Q8gMif5p8+YKOCaGgIwD
-         qrRHHy3oEWu2qS7+xcZLTOQV0SqlSFQ1vZ/wMtM/LzBgjtxMGwkiazP0E2V7iKyswurj
-         YC3w==
-X-Gm-Message-State: AOAM533Tho8Fr7H0WBjn6DDp6z1EidIhmMngPU+x+pzqTSb7v0i1rBrq
-        XZtcXf8syePaYwJbOnOxsToXSd9pESIURWuuPLMwyQ==
-X-Google-Smtp-Source: ABdhPJwGf3F8vVWMx/hAPOM/tzuC6mlnTkkNvV3zFtYKADK7sTRpnxjvKNE9DMzHauL+NEVwnl4j38I6/K9jRDhQk7E=
-X-Received: by 2002:a67:c390:: with SMTP id s16mr3769368vsj.61.1643362687362;
- Fri, 28 Jan 2022 01:38:07 -0800 (PST)
-MIME-Version: 1.0
-References: <164325106958.29787.4865219843242892726.stgit@noble.brown> <164325158954.29787.7856652136298668100.stgit@noble.brown>
-In-Reply-To: <164325158954.29787.7856652136298668100.stgit@noble.brown>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Fri, 28 Jan 2022 10:37:56 +0100
-Message-ID: <CAJfpegt-igF8HqsDUcMzfU0jYv8WpofLy0Uv0YnXLzsfx=tkGg@mail.gmail.com>
-Subject: Re: [PATCH 1/9] Remove inode_congested()
-To:     NeilBrown <neilb@suse.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-mm <linux-mm@kvack.org>,
-        linux-nilfs@vger.kernel.org,
-        Linux NFS list <linux-nfs@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        Ext4 <linux-ext4@vger.kernel.org>, ceph-devel@vger.kernel.org,
-        drbd-dev@lists.linbit.com, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org
+        Fri, 28 Jan 2022 04:39:13 -0500
+X-UUID: e9dc301affb34158a208a53be4e13ed2-20220128
+X-UUID: e9dc301affb34158a208a53be4e13ed2-20220128
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 506976823; Fri, 28 Jan 2022 17:39:09 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 28 Jan 2022 17:39:08 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 28 Jan 2022 17:39:07 +0800
+Message-ID: <01cc69cdf7773962140c01fe37b12ab2c9491c25.camel@mediatek.com>
+Subject: Re: [PATCH 2/2] iommu/mediatek: Add mt8186 iommu support
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <youlin.pei@mediatek.com>,
+        <anan.sun@mediatek.com>, <xueqi.zhang@mediatek.com>,
+        <yen-chang.chen@mediatek.com>, <mingyuan.ma@mediatek.com>,
+        <yf.wang@mediatek.com>, <libo.kang@mediatek.com>,
+        <chengci.xu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+Date:   Fri, 28 Jan 2022 17:39:06 +0800
+In-Reply-To: <b52a1df8-58f4-baa2-cfb6-9c56244caa0f@collabora.com>
+References: <20220125093244.18230-1-yong.wu@mediatek.com>
+         <20220125093244.18230-3-yong.wu@mediatek.com>
+         <b52a1df8-58f4-baa2-cfb6-9c56244caa0f@collabora.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 at 03:47, NeilBrown <neilb@suse.de> wrote:
->
-> inode_congested() reports if the backing-device for the inode is
-> congested.  Few bdi report congestion any more, only ceph, fuse, and
-> nfs.  Having support just for those is unlikely to be useful.
->
-> The places which test inode_congested() or it variants like
-> inode_write_congested(), avoid initiating IO if congestion is present.
-> We now have to rely on other places in the stack to back off, or abort
-> requests - we already do for everything except these 3 filesystems.
->
-> So remove inode_congested() and related functions, and remove the call
-> sites, assuming that inode_congested() always returns 'false'.
+On Thu, 2022-01-27 at 12:28 +0100, AngeloGioacchino Del Regno wrote:
+> Il 25/01/22 10:32, Yong Wu ha scritto:
+> > Add mt8186 iommu supports.
+> > 
+> > Signed-off-by: Anan Sun <anan.sun@mediatek.com>
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > ---
+> >   drivers/iommu/mtk_iommu.c | 17 +++++++++++++++++
+> >   1 file changed, 17 insertions(+)
 
-Looks to me this is going to "break" fuse; e.g. readahead path will go
-ahead and try to submit more requests, even if the queue is getting
-congested.   In this case the readahead submission will eventually
-block, which is counterproductive.
+[snip]
 
-I think we should *first* make sure all call sites are substituted
-with appropriate mechanisms in the affected filesystems and as a last
-step remove the superfluous bdi congestion mechanism.
+> >   static const struct mtk_iommu_plat_data mt8192_data = {
+> >   	.m4u_plat       = M4U_MT8192,
+> >   	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS |
+> > OUT_ORDER_WR_EN |
+> > @@ -1470,6 +1486,7 @@ static const struct of_device_id
+> > mtk_iommu_of_ids[] = {
+> >   	{ .compatible = "mediatek,mt8167-m4u", .data = &mt8167_data},
+> >   	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
+> >   	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
+> > +	{ .compatible = "mediatek,mt8186-iommu-mm", .data =
+> > &mt8186_data_mm},
+> 
+> Hello!
+> 
+> Is there any particular reason why this compatible is not
+> "mediatek,mt8186-m4u"?
 
-You are saying that all fs except these three already have such
-mechanisms in place, right?  Can you elaborate on that?
+There is no special reason. In the previous SoC, We only support MM
+IOMMU, it was called by "m4u". In the lastest SoC, We have the other
+types IOMMU, like for INFRA masters and APU, thus they are called "mm
+iommu", "infra iommu" and "apu iommu". Of course, "m4u" means "mm
+iommu".
 
-Thanks,
-Miklos
+> 
+> Thanks,
+> Angelo
+> 
+> >   	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
+> >   	{ .compatible = "mediatek,mt8195-iommu-infra", .data =
+> > &mt8195_data_infra},
+> >   	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data =
+> > &mt8195_data_vdo},
+> 
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+
