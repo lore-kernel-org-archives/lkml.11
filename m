@@ -2,251 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE67BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA03AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346999AbiA1Hkl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 02:40:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60404 "EHLO
+        id S242794AbiA1Hlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 02:41:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346980AbiA1Hk2 (ORCPT
+        with ESMTP id S230196AbiA1Hli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 02:40:28 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4717CC061751
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 23:40:28 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id me13so13047700ejb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 23:40:28 -0800 (PST)
+        Fri, 28 Jan 2022 02:41:38 -0500
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B19C06173B
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 23:41:37 -0800 (PST)
+Received: by mail-vs1-xe2e.google.com with SMTP id x13so1982914vsl.10
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 23:41:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZCH+JyiI/z1JIM+4pF5s5JvuLtr7uuds8HBjs4fGJQU=;
-        b=qu3RlSb0ysp9uXkzIY4K1ChmWvlOerzqyPInTxHgEoydbQ2nNicGeZQZdobwqep+ZV
-         isAPJWiYeP4KBKMkYugObIVVEovbPO7ZIqAU2JOWtHMvuTN6smjDcaZvtk52zB6lD6De
-         WQs00qq7On6Q3+bJEZvACEfG0t0l5TSqoqTOH2QVPeEmu+/1PAPZjhuXvexSdsSrmv7c
-         W3RVcs3jGZFzpXdtApfoF/eFFmv5ORDFbKwsdJeDrnz5wVG0RwiQWtK9EK6hORwk7Ba4
-         4/tr1lEBDw2cupw+xFmx0WXvTJPdY6OapH4fkidM7vQXgXMdW8xYM3EqFDJmUUyTvjv7
-         WF8Q==
+         :cc:content-transfer-encoding;
+        bh=tjuChuAHIbTONdAQAHBnCnWD6+3PJQKXKvwxTCI2J/E=;
+        b=OHDZJVNKNvd51WXna1TJHIyvBpowWCZYV0yhQO/nF8L7S9dzh/tjGv8sCtF0z17ia5
+         rGHcBvtEYiFMQq0Wr8a3ub30vbx5ea2nHZUvWJhmAvI3d+Ce47oxDnr3XclVRQ20b4Vl
+         2BHxfu+FppFyvUlYx2lBr8jAxhv/OtNiMt5BY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZCH+JyiI/z1JIM+4pF5s5JvuLtr7uuds8HBjs4fGJQU=;
-        b=OdgP2Ejt2oJucK1Odo/F+oe+hdRQ1vrngoirk1staAmuSzhSF+H2z8tEunDZmUgiNr
-         ovCpQjT3rRLipjHj3zu9SJXbpvSNGScMSVDm/iuC8ZStjx+AiIL/WcyYMbjzQEvZj9Yu
-         3uvQyq8OdWcTOnOMD38t8f41yvsvV9AGmEA2gfubqNK1ZFsyLYXKaQZuP/y6tl4iWi7c
-         39FMKEVVgVFdJrV+MDvZ7FSAPyYuz15v9b5jwkA53w9VRPkDFmxZcbVJ7YxEOt5YjVy2
-         dNuoNBgbvn5NVC+QFnXBeH2fkvt9x4/0F2fFeAHoQawVhJWmignIL724AWe43fIZ2RG7
-         7D1g==
-X-Gm-Message-State: AOAM531vgD5C+y8KFZTaPqkeSx6RhzSSxZJSD3XtfZqD2ZcNz3tgYddw
-        DFVJjFJBv0c1nG220hOiKGgcH6UVBNPOBR5npB0=
-X-Google-Smtp-Source: ABdhPJwsFpTI9P5/HfdGGAOAPz0QvlBBgcmBJ8GjUVyuv4BTQL53/xfj4YwxfOls/rriIC76705y9/YY/xeyBHg/Zz4=
-X-Received: by 2002:a17:907:72c3:: with SMTP id du3mr6001124ejc.457.1643355626691;
- Thu, 27 Jan 2022 23:40:26 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tjuChuAHIbTONdAQAHBnCnWD6+3PJQKXKvwxTCI2J/E=;
+        b=MnnQtbNtvOZyEXwwT3dRjCriBx8suRWq6A78lUb2AMrqChi3u3MMfajb4GRHP+XqWg
+         9RNGgN0L/qXPjQj+5jxWD4hMT7oBVx1GwmKxAaCqzo8H7QU9fi2hDcWg6vCDge8u+Kej
+         ps+RlMTFKXr9A+MaBwA3oiwsVMTzdXUJJZuWJFjOIbWNEt//FS3P5ZZFN3L1Iw6NNywg
+         YOV/Nsc7jhzgwwqe56a3P9Z1ceYQvknIHanzFGxPiiosGZWBNhESTd1DWXIzPQTTF1qX
+         FE2fRd5OrQ1g/Y4hBm66M44z3onXaVmXpaKIBSXJvGU9fWgVEYTB8JJ2j1hPfyDd5W7N
+         duhA==
+X-Gm-Message-State: AOAM531oqUdjQFhvV3BntPLpWkIfpf1O50zoOUSuDiRb6//Kbtyyj9jF
+        EYsXR8UhGOWVw0DsU2H4L4csMm+koSScgx4JGS50wQ==
+X-Google-Smtp-Source: ABdhPJx78U5dqaYdGDDjyP4sYKpRRIlBGG2rs/pGeuMOgJ3BVhghYYIztse0PMYH5rLWFPBO/z9XrdjaeP3NnPFwHm4=
+X-Received: by 2002:a67:f492:: with SMTP id o18mr3401067vsn.55.1643355696611;
+ Thu, 27 Jan 2022 23:41:36 -0800 (PST)
 MIME-Version: 1.0
-References: <20220126080947.4529-1-yangyicong@hisilicon.com>
- <20220126080947.4529-3-yangyicong@hisilicon.com> <YfK9DSMFabjYm/MV@BLR-5CG11610CF.amd.com>
- <CAGsJ_4xL3tynB9P=rKMoX2otW4bMMU5Z-P9zSudMV3+fr2hpXw@mail.gmail.com> <20220128071337.GC618915@linux.vnet.ibm.com>
-In-Reply-To: <20220128071337.GC618915@linux.vnet.ibm.com>
-From:   Barry Song <21cnbao@gmail.com>
-Date:   Fri, 28 Jan 2022 07:40:15 +1300
-Message-ID: <CAGsJ_4yoUONACY-j+9XxSNC0VgmdyRdHC=z87dWvZvVSASzXRQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] sched/fair: Scan cluster before scanning LLC in
- wake-up path
-To:     Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-Cc:     "Gautham R. Shenoy" <gautham.shenoy@amd.com>,
-        Yicong Yang <yangyicong@hisilicon.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        prime.zeng@huawei.com,
-        Jonathan Cameron <jonathan.cameron@huawei.com>,
-        ego@linux.vnet.ibm.com, Linuxarm <linuxarm@huawei.com>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Guodong Xu <guodong.xu@linaro.org>
+References: <20220127083545.1020423-1-skyostil@chromium.org>
+ <20220127083545.1020423-2-skyostil@chromium.org> <YfJogh+yk1FHWSMC@kroah.com>
+In-Reply-To: <YfJogh+yk1FHWSMC@kroah.com>
+From:   Sami Kyostila <skyostil@chromium.org>
+Date:   Fri, 28 Jan 2022 18:41:25 +1100
+Message-ID: <CAPuLczsKqFOsqf-d39HOMHZaFQb2vmv054HUOj2+amQGE=oPkw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] drivers/misc: add a driver for HPS
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>, dtor@chromium.org,
+        evanbenn@chromium.org, arnd@arndb.de
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 8:13 PM Srikar Dronamraju
-<srikar@linux.vnet.ibm.com> wrote:
+to 27. tammik. 2022 klo 20.40 Greg KH (gregkh@linuxfoundation.org) kirjoitt=
+i:
 >
-> * Barry Song <21cnbao@gmail.com> [2022-01-28 09:21:08]:
->
-> > On Fri, Jan 28, 2022 at 4:41 AM Gautham R. Shenoy
-> > <gautham.shenoy@amd.com> wrote:
-> > >
-> > > On Wed, Jan 26, 2022 at 04:09:47PM +0800, Yicong Yang wrote:
-> > > > From: Barry Song <song.bao.hua@hisilicon.com>
-> > > >
-> > > > For platforms having clusters like Kunpeng920, CPUs within the same
-> > > > cluster have lower latency when synchronizing and accessing shared
-> > > > resources like cache. Thus, this patch tries to find an idle cpu
-> > > > within the cluster of the target CPU before scanning the whole LLC
-> > > > to gain lower latency.
-> > > >
-> > > > Note neither Kunpeng920 nor x86 Jacobsville supports SMT, so this
-> > > > patch doesn't consider SMT for this moment.
-> > > >
-> > > > Testing has been done on Kunpeng920 by pinning tasks to one numa
-> > > > and two numa. On Kunpeng920, Each numa has 8 clusters and each
-> > > > cluster has 4 CPUs.
-> > > >
-> > > > With this patch, We noticed enhancement on tbench within one
-> > > > numa or cross two numa.
-> > > >
-> > > > On numa 0:
-> > > >                             5.17-rc1                patched
-> > > > Hmean     1        324.73 (   0.00%)      378.01 *  16.41%*
-> > > > Hmean     2        645.36 (   0.00%)      754.63 *  16.93%*
-> > > > Hmean     4       1302.09 (   0.00%)     1507.54 *  15.78%*
-> > > > Hmean     8       2612.03 (   0.00%)     2982.57 *  14.19%*
-> > > > Hmean     16      5307.12 (   0.00%)     5886.66 *  10.92%*
-> > > > Hmean     32      9354.22 (   0.00%)     9908.13 *   5.92%*
-> > > > Hmean     64      7240.35 (   0.00%)     7278.78 *   0.53%*
-> > > > Hmean     128     6186.40 (   0.00%)     6187.85 (   0.02%)
-> > > >
-> > > > On numa 0-1:
-> > > >                             5.17-rc1                patched
-> > > > Hmean     1        320.01 (   0.00%)      378.44 *  18.26%*
-> > > > Hmean     2        643.85 (   0.00%)      752.52 *  16.88%*
-> > > > Hmean     4       1287.36 (   0.00%)     1505.62 *  16.95%*
-> > > > Hmean     8       2564.60 (   0.00%)     2955.29 *  15.23%*
-> > > > Hmean     16      5195.69 (   0.00%)     5814.74 *  11.91%*
-> > > > Hmean     32      9769.16 (   0.00%)    10872.63 *  11.30%*
-> > > > Hmean     64     15952.50 (   0.00%)    17281.98 *   8.33%*
-> > > > Hmean     128    13113.77 (   0.00%)    13895.20 *   5.96%*
-> > > > Hmean     256    10997.59 (   0.00%)    11244.69 *   2.25%*
-> > > > Hmean     512    14623.60 (   0.00%)    15526.25 *   6.17%*
-> > > >
-> > > > This will also help to improve the MySQL. With MySQL server
-> > > > running on numa 0 and client running on numa 1, both QPS and
-> > > > latency is imporved on read-write case:
-> > > >                         5.17-rc1        patched
-> > > > QPS-16threads        143333.2633    145077.4033(+1.22%)
-> > > > QPS-24threads        195085.9367    202719.6133(+3.91%)
-> > > > QPS-32threads        241165.6867      249020.74(+3.26%)
-> > > > QPS-64threads        244586.8433    253387.7567(+3.60%)
-> > > > avg-lat-16threads           2.23           2.19(+1.19%)
-> > > > avg-lat-24threads           2.46           2.36(+3.79%)
-> > > > avg-lat-36threads           2.66           2.57(+3.26%)
-> > > > avg-lat-64threads           5.23           5.05(+3.44%)
-> > > >
-> > > > Tested-by: Yicong Yang <yangyicong@hisilicon.com>
-> > > > Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
-> > > > Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> > > > ---
-> > > >  kernel/sched/fair.c | 46 +++++++++++++++++++++++++++++++++++++++++----
-> > > >  1 file changed, 42 insertions(+), 4 deletions(-)
-> > > >
-> > > > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> > > > index 5146163bfabb..2f84a933aedd 100644
-> > > > --- a/kernel/sched/fair.c
-> > > > +++ b/kernel/sched/fair.c
-> > > > @@ -6262,12 +6262,46 @@ static inline int select_idle_smt(struct task_struct *p, struct sched_domain *sd
-> > > >
-> > > >  #endif /* CONFIG_SCHED_SMT */
-> > > >
-> > > > +#ifdef CONFIG_SCHED_CLUSTER
-> > > > +/*
-> > > > + * Scan the cluster domain for idle CPUs and clear cluster cpumask after scanning
-> > > > + */
-> > > > +static inline int scan_cluster(struct task_struct *p, int prev_cpu, int target)
-> > > > +{
-> > > > +     struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
-> > > > +     struct sched_domain *sd = rcu_dereference(per_cpu(sd_cluster, target));
-> > > > +     int cpu, idle_cpu;
-> > > > +
-> > > > +     /* TODO: Support SMT case while a machine with both cluster and SMT born */
-> > > > +     if (!sched_smt_active() && sd) {
-> > > > +             for_each_cpu_and(cpu, cpus, sched_domain_span(sd)) {
-> > > > +                     idle_cpu = __select_idle_cpu(cpu, p);
-> > > > +                     if ((unsigned int)idle_cpu < nr_cpumask_bits)
-> > > > +                             return idle_cpu;
-> > > > +             }
-> > > > +
-> > > > +             /* Don't ping-pong tasks in and out cluster frequently */
-> > > > +             if (cpus_share_resources(target, prev_cpu))
-> > > > +                     return target;
-> > >
-> > > We reach here when there aren't any idle CPUs within the
-> > > cluster. However there might be idle CPUs in the MC domain. Is a busy
-> > > @target preferable to a potentially idle CPU within the larger domain
-> > > ?
+> On Thu, Jan 27, 2022 at 07:35:44PM +1100, Sami Ky=C3=B6stil=C3=A4 wrote:
+> > This patch introduces a driver for the ChromeOS snooping protection
+> > sensor (aka. HPS). The driver supports a sensor connected to the I2C bu=
+s
+> > and identified as "GOOG0020" in the ACPI tables.
 > >
-> > Hi Gautham,
+> > When loaded, the driver exports the sensor to userspace through a
+> > character device. This initial version of the device only supports powe=
+r
+> > management, i.e., communicating with the sensor must be done through I2=
+C
+> > from userspace.
 > >
->
-> Hi Barry,
->
->
-> > My benchmark showed some performance regression while load was medium or above
-> > if we grabbed idle cpu in and out the cluster. it turned out the
-> > regression disappeared if
-> > we blocked the ping-pong. so the logic here is that if we have scanned
-> > and found an
-> > idle cpu within the cluster before, we don't let the task jumping back
-> > and forth frequently
-> > as cache synchronization is higher cost. but the code still allows
-> > scanning out of the cluster
-> > if we haven't packed waker and wakee together yet.
+> > Power management is implemented by enabling the respective power GPIO
+> > while at least one userspace process holds an open fd on the character
+> > device. By default, the device is powered down if there are no active
+> > clients.
 > >
->
-> Like what Gautham said, should we choose the same cluster if we find that
-> there are no idle-cpus in the LLC? This way we avoid ping-pong if there are
-> no idle-cpus but we still pick an idle-cpu to a busy cpu?
-
-Hi Srikar,
-I am sorry I didn't get your question. Currently the code works as below:
-if task A wakes up task B, and task A is in LLC0 and task B is in LLC1.
-we will scan the cluster of A before scanning the whole LLC0, in this case,
-cluster of A is the closest sibling, so it is the better choice than other CPUs
-which are in LLC0 but not in the cluster of A. But we do scan all cpus of LLC0
-afterwards if we fail to find an idle CPU in the cluster.
-
-After a while, if the cluster of A gets an idle CPU and pulls B into the
-cluster, we prefer not pushing B out of the cluster of A again though
-there might be an idle CPU outside. as benchmark shows getting an
-idle CPU out of the cluster of A doesn't bring performance improvement
-but performance decreases as B might be getting in and getting out
-the cluster of A very frequently, then cache coherence ping-pong.
-
-Note we are only returning target while if
-(cpus_share_resources(target, prev_cpu))
-is true. So we are not losing chance to pull B to the LLC of A while LLC0 has
-an idle one.
-
->
-> > it might not be a universal win in all kinds of workload. we saw
-> > tbench, mysql benefit from
-> > the whole change. but pgbench seems not always. so we are still on the
-> > way to make possible
-> > further tuning here.
+> > Note that the driver makes no effort to preserve the state of the senso=
+r
+> > between power down and power up events. Userspace is responsible for
+> > reinitializing any needed state once power has been restored.
 > >
+> > The device firmware, I2C protocol and other documentation is available
+> > at https://chromium.googlesource.com/chromiumos/platform/hps-firmware.
 >
-> > >
-> > >
-> > > --
-> > > Thanks and Regards
-> > > gautham.
-> >
-> > Thanks
-> > Barry
->
-> --
-> Thanks and Regards
-> Srikar Dronamraju
+> How about a userspace tool that interacts with this new ioctl interface
+> as well so that we can understand how the driver is supposed to work?
 
-Thanks
-Barry
+Sure, here's a small example that shows how to read a magic register
+value from the device:
+https://gist.github.com/skyostil/13d60a288919d18d00b20e81dfe018cd
+
+(Let me know if you'd prefer this to be checked into the tree somewhere.)
+
+Here's also a patch that makes the production daemon use this
+interface: https://chromium-review.googlesource.com/c/chromiumos/platform2/=
++/3353640
+
+> >
+> > Signed-off-by: Sami Ky=C3=B6stil=C3=A4 <skyostil@chromium.org>
+> > ---
+> >
+> >  MAINTAINERS            |   6 ++
+> >  drivers/misc/Kconfig   |  10 ++
+> >  drivers/misc/Makefile  |   1 +
+> >  drivers/misc/hps-i2c.c | 223 +++++++++++++++++++++++++++++++++++++++++
+> >  4 files changed, 240 insertions(+)
+> >  create mode 100644 drivers/misc/hps-i2c.c
+> >
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index ea3e6c914384..9dea4b8c2ab5 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -8798,6 +8798,12 @@ S:     Maintained
+> >  W:   http://artax.karlin.mff.cuni.cz/~mikulas/vyplody/hpfs/index-e.cgi
+> >  F:   fs/hpfs/
+> >
+> > +HPS (ChromeOS snooping protection sensor) DRIVER
+> > +M:   Sami Ky=C3=B6stil=C3=A4 <skyostil@chromium.org>
+> > +R:   Evan Benn <evanbenn@chromium.org>
+> > +S:   Maintained
+> > +F:   drivers/misc/hps-i2c.c
+> > +
+> >  HSI SUBSYSTEM
+> >  M:   Sebastian Reichel <sre@kernel.org>
+> >  S:   Maintained
+> > diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+> > index 0f5a49fc7c9e..b48b7803f537 100644
+> > --- a/drivers/misc/Kconfig
+> > +++ b/drivers/misc/Kconfig
+> > @@ -244,6 +244,16 @@ config HP_ILO
+> >         To compile this driver as a module, choose M here: the
+> >         module will be called hpilo.
+> >
+> > +config HPS_I2C
+> > +     tristate "ChromeOS HPS device support"
+> > +     depends on HID && I2C && PM
+> > +     help
+> > +       Say Y here if you want to enable support for the ChromeOS
+> > +       anti-snooping sensor (HPS), attached via I2C. The driver suppor=
+ts a
+> > +       sensor connected to the I2C bus and exposes it as a character d=
+evice.
+> > +       To save power, the sensor is automatically powered down when no
+> > +       clients are accessing it.
+> > +
+> >  config QCOM_COINCELL
+> >       tristate "Qualcomm coincell charger support"
+> >       depends on MFD_SPMI_PMIC || COMPILE_TEST
+> > diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+> > index a086197af544..162a7d530dab 100644
+> > --- a/drivers/misc/Makefile
+> > +++ b/drivers/misc/Makefile
+> > @@ -26,6 +26,7 @@ obj-$(CONFIG_SGI_GRU)               +=3D sgi-gru/
+> >  obj-$(CONFIG_CS5535_MFGPT)   +=3D cs5535-mfgpt.o
+> >  obj-$(CONFIG_GEHC_ACHC)              +=3D gehc-achc.o
+> >  obj-$(CONFIG_HP_ILO)         +=3D hpilo.o
+> > +obj-$(CONFIG_HPS_I2C)                +=3D hps-i2c.o
+> >  obj-$(CONFIG_APDS9802ALS)    +=3D apds9802als.o
+> >  obj-$(CONFIG_ISL29003)               +=3D isl29003.o
+> >  obj-$(CONFIG_ISL29020)               +=3D isl29020.o
+> > diff --git a/drivers/misc/hps-i2c.c b/drivers/misc/hps-i2c.c
+> > new file mode 100644
+> > index 000000000000..fe9f073b0352
+> > --- /dev/null
+> > +++ b/drivers/misc/hps-i2c.c
+> > @@ -0,0 +1,223 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * Driver for the ChromeOS anti-snooping sensor (HPS), attached via I2=
+C.
+> > + *
+> > + * The driver exposes HPS as a character device, although currently no=
+ read or
+> > + * write operations are supported. Instead, the driver only controls t=
+he power
+> > + * state of the sensor, keeping it on only while userspace holds an op=
+en file
+> > + * descriptor to the HPS device.
+> > + *
+> > + * Copyright 2022 Google LLC.
+> > + */
+> > +
+> > +#include <linux/acpi.h>
+> > +#include <linux/cdev.h>
+> > +#include <linux/fs.h>
+> > +#include <linux/gpio/consumer.h>
+> > +#include <linux/i2c.h>
+> > +#include <linux/module.h>
+> > +#include <linux/pm_runtime.h>
+> > +
+> > +#define HPS_ACPI_ID          "GOOG0020"
+> > +#define HPS_MAX_DEVICES              1
+> > +
+> > +struct hps_drvdata {
+> > +     struct i2c_client *client;
+> > +
+> > +     struct cdev cdev;
+> > +     struct class *cdev_class;
+>
+> As you only have 1 device, please just use the miscdev interface, not
+> the chardev interface.  Makes your code much smaller and easier to
+> review and maintain over time and does not "burn" a whole major number
+> for this tiny driver.
+
+Will do, thanks for the tip!
+
+>
+> thanks,
+>
+> greg k-h
+
+
+
+- Sami
