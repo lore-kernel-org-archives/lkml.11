@@ -2,131 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEC8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 037FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245406AbiA1Nwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:52:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232854AbiA1Nwj (ORCPT
+        id S231977AbiA1Nyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 08:54:33 -0500
+Received: from qproxy1-pub.mail.unifiedlayer.com ([173.254.64.10]:34873 "EHLO
+        qproxy1-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232774AbiA1Nyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 08:52:39 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048D9C06173B
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:52:39 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nDRft-000104-Ul; Fri, 28 Jan 2022 14:52:25 +0100
-Received: from pengutronix.de (unknown [195.138.59.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B752525D63;
-        Fri, 28 Jan 2022 13:52:23 +0000 (UTC)
-Date:   Fri, 28 Jan 2022 14:52:17 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Steve Longerbeam <slongerbeam@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Martin Kepplinger <martink@posteo.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        linux-staging@lists.linux.dev, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com,
-        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
-Subject: Re: [PATCH] media: imx: imx8mq-mipi_csi2: Remove unneeded code
-Message-ID: <20220128135217.ncvjlffzpxxmqbjo@pengutronix.de>
-References: <20220128133649.1393201-1-usama.anjum@collabora.com>
+        Fri, 28 Jan 2022 08:54:32 -0500
+Received: from alt-proxy28.mail.unifiedlayer.com (unknown [74.220.216.123])
+        by qproxy1.mail.unifiedlayer.com (Postfix) with ESMTP id D93148032FBA
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 13:54:31 +0000 (UTC)
+Received: from cmgw14.mail.unifiedlayer.com (unknown [10.0.90.129])
+        by progateway1.mail.pro1.eigbox.com (Postfix) with ESMTP id 301C61003BE02
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 13:54:31 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id DRhunK7JK2s5dDRhunzPwd; Fri, 28 Jan 2022 13:54:31 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=BOh2EHcG c=1 sm=1 tr=0 ts=61f3f597
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=DghFqjY3_ZEA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=U4_wLaSDwdVF22gBXvgA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Ox6JJNhG9ib98sEZW2gK85YbeDqfQLKuvNf4lK7WR9E=; b=BhEyABq7JEUtUIBJld1GUl/UM4
+        ucL65b1uevgSzaxE4goEDZkC+bIfRexwGYtcD6e8zQEgOvQMNTVd2na7tiibvCJM988Jd5WyizwF9
+        IbU88zv0sNDRdRd2jBCcM0vPe;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:52012 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nDRhu-0037UC-99; Fri, 28 Jan 2022 06:54:30 -0700
+Message-ID: <1feb90c2-58c7-8a8d-e9ef-4f2f687d76a1@w6rz.net>
+Date:   Fri, 28 Jan 2022 05:54:28 -0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dx5rohrd5cck77jd"
-Content-Disposition: inline
-In-Reply-To: <20220128133649.1393201-1-usama.anjum@collabora.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.16 0/9] 5.16.4-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com
+References: <20220127180258.892788582@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220127180258.892788582@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nDRhu-0037UC-99
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:52012
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 12
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 1/27/22 10:09, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.4 release.
+> There are 9 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sat, 29 Jan 2022 18:02:51 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.4-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
---dx5rohrd5cck77jd
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-On 28.01.2022 18:36:49, Muhammad Usama Anjum wrote:
-> ret is constant in imx8mq_mipi_csi_pm_suspend(). This function cannot
-> return error. Remove the return variable. Simplify other functions which
-> are using this function.
->=20
-> Fixes: f0c2ba1ed4ad ("media: imx: imx8mq-mipi_csi2: fix system resume")
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> ---
->  drivers/staging/media/imx/imx8mq-mipi-csi2.c | 16 ++++------------
->  1 file changed, 4 insertions(+), 12 deletions(-)
->=20
-> diff --git a/drivers/staging/media/imx/imx8mq-mipi-csi2.c b/drivers/stagi=
-ng/media/imx/imx8mq-mipi-csi2.c
-> index 3b9fa75efac6b..c992b845e63d1 100644
-> --- a/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-> +++ b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-[...]
->  static int imx8mq_mipi_csi_pm_resume(struct device *dev)
-> @@ -742,15 +739,12 @@ static int __maybe_unused imx8mq_mipi_csi_suspend(s=
-truct device *dev)
->  {
->  	struct v4l2_subdev *sd =3D dev_get_drvdata(dev);
->  	struct csi_state *state =3D mipi_sd_to_csi2_state(sd);
-> -	int ret;
-> =20
-> -	ret =3D imx8mq_mipi_csi_pm_suspend(dev);
-> -	if (ret)
-> -		return ret;
-> +	imx8mq_mipi_csi_pm_suspend(dev);
-> =20
->  	state->state |=3D ST_SUSPENDED;
+Tested-by: Ron Economos <re@w6rz.net>
 
-
-what about this flag?
-
-Marc
-> =20
-> -	return ret;
-> +	return 0;
->  }
-
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---dx5rohrd5cck77jd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmHz9Q4ACgkQqclaivrt
-76lVnwf+NtLWUcGwRaQU8qVIfD2JIN5aGN77aOgc7JGPbxiAkgkUykI369EyomLn
-oYXYq5vqJBX028EJq7ON0lPwN89keJ0eK/zIUns+iwNq8qeKeiT0tdZEIcF7zSkN
-zbwTw8HScw962Js4SOlDqK2HZdnTq27zkI3H4EVxKwu6UWxfHnJjwU0nwDVIt3vQ
-o+YOvYGjRqYeDZpGgyBOvbVRVI8Q19wSa9HxSLbYqOkJCQ7LWm3NTuNIZ2dUiuHi
-UqjO12a7S4bUnW8u7tOIFh1IxMH8wfoV4icv+EcDFgdM4ucEkkyVD81xChU8PY/P
-okLuFoWo4I1iCaTY+Ucelrmx7to+OQ==
-=yv42
------END PGP SIGNATURE-----
-
---dx5rohrd5cck77jd--
