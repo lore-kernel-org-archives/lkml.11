@@ -2,192 +2,332 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF1CCC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:23:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349093AbiA1OXa (ORCPT
+        id S1349107AbiA1OYK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:23:30 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48472 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245002AbiA1OX2 (ORCPT
+        Fri, 28 Jan 2022 09:24:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245002AbiA1OYG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:23:28 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AAFF61DE7;
-        Fri, 28 Jan 2022 14:23:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4B10C340E0;
-        Fri, 28 Jan 2022 14:23:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643379807;
-        bh=LYhkprRvLrA3vMAJrEsv8ea57hE3swowf7ZT1KwKUis=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FOcAls+kII9MJBiEqxP5cE3fjiFNDl5j2UVqjQs20U+O/Xb+ngjaFiCR9DuViLlll
-         oJrxof9wthaJWEV/9iAVIkrCqRieiJ7DMec9mwlze27CJQpqPUgT3suSTYpxu9zmpQ
-         u4d5lJAH9iAJ23JcaaebQknzQ6k5ybpQm9IsAYo1d0Jp3e8VzQPAUwYTrWx83pL1sM
-         UZwn6qPw+w/pwS/S1PjJsy9OZm0iw1MfA6ZI9FnzkopiYNOGTxrbFWrGEvmiQSNW/q
-         +BdNa9WJQ28ieom6DFC0IMYDWGvqzlxeKdVRczgrMq23JU+fXcSVrDpetvLMEHDJ3j
-         zFDVfjKw3mseA==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: stmmac: properly handle with runtime pm in stmmac_dvr_remove()
-Date:   Fri, 28 Jan 2022 22:15:50 +0800
-Message-Id: <20220128141550.2350-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Fri, 28 Jan 2022 09:24:06 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71206C061714;
+        Fri, 28 Jan 2022 06:24:05 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id c10so18996884ybb.2;
+        Fri, 28 Jan 2022 06:24:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BYqDknQKLoLAH6WiXOTGhrQYV+nYaTbuzhxY8gD65Uw=;
+        b=HrqvBJuaiFfGgOwsQAAxqTBvQeuB59C2ISjn78IwP5sYczU9ln5MSGiROaaUSgs8pv
+         fyECaRAGKJj8iYWlGQEh6dWu6CAERzLXH13djPyyZBzlQfMvjvBLj5B/E7MYZBVDq5gJ
+         4QQ8Kz769nqJpqJXb8seghLLooj7Rjc6JfFiXga29+U6QVqYawqtmCDfJd882M93Cdli
+         43rCbba9y0eh/PSGqC108BGq57qv2TBxOEnEXgY1IwsKjggM9pBg50uSfNHBkUsqG3bk
+         bhX8TQJC6p4NhjPGYK9PYtn4s4G3GK4XuwKcJ2sz5lbuG5N0noMngyhgliaNU4If6Vrn
+         Fojg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BYqDknQKLoLAH6WiXOTGhrQYV+nYaTbuzhxY8gD65Uw=;
+        b=s/QRp63gpZJEOxlCcB+XixMzfcEXVIYwJsUtq9psrblkidSuitYmKr3djCGzna4yRH
+         xG5IvmgZ+pi064OpwZx063+ypa2cSukOp1biZ6zdDQ/Rzfq/hs6eZOzokHxp49dHvQ3L
+         hvANHgzTPzUYZPrQ9fb31YoiJaTxnJO6JtANeIajGDy+ZeJ6bjGSQ5rDyuqfPS5ZodLW
+         3fwF/UsiNmkzoSAYkV1RIKvPEo0xGaeesMIyCfhNmOXq2r0G4b/3CSgxXm1nKmSYRkkd
+         dpDutvz9leCXa4CtMWwkZgI2WqB6I8ZUReHuXYdTsFzwMJSuJQIFCvZczbWS+2EKxCq0
+         lBLg==
+X-Gm-Message-State: AOAM531+qhvzuAv7/cOFxjhZOUCzJRyH3YmGv1ye4gJDosxFy45pIYtB
+        wKsIV9A0pL0nHi4+oxA6hzE5cpr1DTkrGzQBh5Q=
+X-Google-Smtp-Source: ABdhPJwNXh0o3Wjn6B5V3usQhdXdEKDF27jzHUCDo4lSGDeIL22Kb8rADv0GUJaw5z5aDXKyY89zUdSNvbPOBe82gGA=
+X-Received: by 2002:a25:5387:: with SMTP id h129mr12120591ybb.669.1643379844593;
+ Fri, 28 Jan 2022 06:24:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAJjP=Bt52AW_w2sKnM=MbckPkH1hevPMJVWm_Wf+wThmR72YTg@mail.gmail.com>
+ <CAH2r5mt_2f==5reyc0HmMLvYJVmP4Enykwauo+LQoFGFbVFeRQ@mail.gmail.com>
+ <CAJjP=BvNVOj3KRnhFgk6xiwnxVhxE-sN98-pr6e1Kzc5Xg5EvQ@mail.gmail.com>
+ <CAH2r5mvsetx5G+c=8ePh+X8ng7FvMrnuM9+FJ4Sid4b3E+T41Q@mail.gmail.com>
+ <CAJjP=BvqZUnJPq=C0OUKbXr=mbJd7a6YDSJC-sNY1j_33_e-uw@mail.gmail.com>
+ <CAN05THSGwCKckQoeB6D91iBv0Sed+ethK7tde7GSc1UzS-0OYg@mail.gmail.com>
+ <CAJjP=BvcWrF-k_sFxak1mgHAHVVS7_JZow+h_47XB1VzG2+Drw@mail.gmail.com>
+ <ebf8c487-0377-834e-fbb7-725cceae1fbb@leemhuis.info> <CAN05THRJJj48ueb34t18Yj=JYuhiwZ8hTvOssX4D6XhNpjx-bg@mail.gmail.com>
+ <f7eb4a3e-9799-3fe4-d464-d84dd9e64510@leemhuis.info>
+In-Reply-To: <f7eb4a3e-9799-3fe4-d464-d84dd9e64510@leemhuis.info>
+From:   ronnie sahlberg <ronniesahlberg@gmail.com>
+Date:   Sat, 29 Jan 2022 00:23:53 +1000
+Message-ID: <CAN05THQbR4d55kx6MEHGcn-iLZKJG1C0vhq19wfo=NrB6q1Apg@mail.gmail.com>
+Subject: Re: Possible regression: unable to mount CIFS 1.0 shares from older
+ machines since 76a3c92ec9e0668e4cd0e9ff1782eb68f61a179c
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Davyd McColl <davydm@gmail.com>, Steve French <smfrench@gmail.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are two issues with runtime pm handling in stmmac_dvr_remove():
+On Sat, Jan 29, 2022 at 12:02 AM Thorsten Leemhuis
+<regressions@leemhuis.info> wrote:
+>
+> On 28.01.22 14:50, ronnie sahlberg wrote:
+> > On Fri, Jan 28, 2022 at 11:30 PM Thorsten Leemhuis
+> > <regressions@leemhuis.info> wrote:
+> >>
+> >> Hi, this is your Linux kernel regression tracker speaking.
+> >>
+> >> Top-posting for once, to make this easy accessible to everyone.
+> >>
+> >> Davyd, Ronnie, and/or Steve: What the status here? It seems after some
+> >> productive debugging back and forth it seems everyone forgot about this.
+> >> Or was progress made somewhere and I just missed it?
+> >
+> > I tried but can not find a system old enough to reproduce.
+> > Remember, this is an authentication mechanism that Microsoft begged
+> > people to stop using and migrate away from over 20 years ago.
+> > Win2k works just fine, as does samba3.0.
+> > I have no idea if Samba 2.0 works with current cifs.ko   but then
+> > again  I seriously doubt you can even get samba 2.0 to even compile on
+> > a modern
+> > machine as so many APIs have changed or just gone away since the late 90s.
+> >
+> > I tried, but there is just so much time you can spend on something
+> > that was declared obsolete 20 years ago.
+>
+> I can fully understand that -- otoh then I'd normally say "well, then
+> let's just revert the commit that causes this". But in this case I can
+> understand that it might not be wise.
 
-1. the mac is runtime suspended before stopping dma and rx/tx. We
-need to ensure the device is properly resumed back.
+Right now you can likely just revert it. Maybe in the next kernel too.
+But in a kernel not too far into the future some of the crypto primitives that
+this depended on will simply not exist any more in the linux kernel
+and will not be
+available through the standard api.
 
-2. the stmmaceth clk enable/disable isn't balanced in both exit and
-error handling code path. Take the exit code path for example, when we
-unbind the driver or rmmod the driver module, the mac is runtime
-suspended as said above, so the stmmaceth clk is disabled, but
-	stmmac_dvr_remove()
-	  stmmac_remove_config_dt()
-	    clk_disable_unprepare()
-CCF will complain this time. The error handling code path suffers
-from the similar situtaion.
+At that point it is no longer a matter of just reverting the patch but
+a matter of
+re-importing an equivalent crypto replacement and port cifs.ko to its new api.
 
-Here are kernel warnings in error handling code path on Allwinner D1
-platform:
+That is a lot of work and maintenance for something that is obsolete.
 
-[    1.604695] ------------[ cut here ]------------
-[    1.609328] bus-emac already disabled
-[    1.613015] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:952 clk_core_disable+0xcc/0xec
-[    1.621039] CPU: 0 PID: 38 Comm: kworker/u2:1 Not tainted 5.14.0-rc4#1
-[    1.627653] Hardware name: Allwinner D1 NeZha (DT)
-[    1.632443] Workqueue: events_unbound deferred_probe_work_func
-[    1.638286] epc : clk_core_disable+0xcc/0xec
-[    1.642561]  ra : clk_core_disable+0xcc/0xec
-[    1.646835] epc : ffffffff8023c2ec ra : ffffffff8023c2ec sp : ffffffd00411bb10
-[    1.654054]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : ffffffff80ed6a6f
-[    1.661272]  t1 : ffffffff80ed6a60 t2 : 0000000000000000 s0 : ffffffe001509e00
-[    1.668489]  s1 : 0000000000000001 a0 : 0000000000000019 a1 : ffffffff80e80bd8
-[    1.675707]  a2 : 00000000ffffefff a3 : 00000000000000f4 a4 : 0000000000000002
-[    1.682924]  a5 : 0000000000000001 a6 : 0000000000000030 a7 : 00000000028f5c29
-[    1.690141]  s2 : 0000000000000800 s3 : ffffffe001375000 s4 : ffffffe01fdf7a80
-[    1.697358]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
-[    1.704577]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
-[    1.711794]  s11: ffffffe001b80760 t3 : 0000000000000062 t4 : ffffffffffffffff
-[    1.719012]  t5 : ffffffff80e0f6d8 t6 : ffffffd00411b8f0
-[    1.724321] status: 8000000201800100 badaddr: 0000000000000000 cause: 0000000000000003
-[    1.732233] [<ffffffff8023c2ec>] clk_core_disable+0xcc/0xec
-[    1.737810] [<ffffffff80240430>] clk_disable+0x38/0x78
-[    1.742956] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
-[    1.748451] [<ffffffff8031a500>] stmmac_remove_config_dt+0x1c/0x4c
-[    1.754646] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
-[    1.760484] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
-[    1.765975] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
-[    1.771382] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
-[    1.777305] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
-[    1.783402] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
-[    1.789324] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
-[    1.795508] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
-[    1.802125] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
-[    1.807701] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
-[    1.813277] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
-[    1.818852] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
-[    1.825122] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
-[    1.830872] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
-[    1.836362] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-[    1.841335] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-[    1.846304] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
-[    1.852054] [<ffffffff80026564>] kthread+0x124/0x160
-[    1.857021] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
-[    1.862770] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
-[    1.868956] ---[ end trace 8d5c6046255f84a0 ]---
-[    1.873675] ------------[ cut here ]------------
-[    1.878366] bus-emac already unprepared
-[    1.882378] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:810 clk_core_unprepare+0xe4/0x168
-[    1.890673] CPU: 0 PID: 38 Comm: kworker/u2:1 Tainted: G        W	5.14.0-rc4 #1
-[    1.898674] Hardware name: Allwinner D1 NeZha (DT)
-[    1.903464] Workqueue: events_unbound deferred_probe_work_func
-[    1.909305] epc : clk_core_unprepare+0xe4/0x168
-[    1.913840]  ra : clk_core_unprepare+0xe4/0x168
-[    1.918375] epc : ffffffff8023d6cc ra : ffffffff8023d6cc sp : ffffffd00411bb10
-[    1.925593]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : 0000000000000002
-[    1.932811]  t1 : ffffffe01f743be0 t2 : 0000000000000040 s0 : ffffffe001509e00
-[    1.940029]  s1 : 0000000000000001 a0 : 000000000000001b a1 : ffffffe00143a800
-[    1.947246]  a2 : 0000000000000000 a3 : 00000000000000f4 a4 : 0000000000000001
-[    1.954463]  a5 : 0000000000000000 a6 : 0000000005fce2a5 a7 : 0000000000000001
-[    1.961680]  s2 : 0000000000000800 s3 : ffffffff80afeb90 s4 : ffffffe01fdf7a80
-[    1.968898]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
-[    1.976115]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
-[    1.983333]  s11: ffffffe001b80760 t3 : ffffffff80b39120 t4 : 0000000000000001
-[    1.990550]  t5 : 0000000000000000 t6 : ffffffe001600002
-[    1.995859] status: 8000000201800120 badaddr: 0000000000000000 cause: 0000000000000003
-[    2.003771] [<ffffffff8023d6cc>] clk_core_unprepare+0xe4/0x168
-[    2.009609] [<ffffffff802403a0>] clk_unprepare+0x24/0x3c
-[    2.014929] [<ffffffff8031a508>] stmmac_remove_config_dt+0x24/0x4c
-[    2.021125] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
-[    2.026965] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
-[    2.032463] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
-[    2.037871] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
-[    2.043795] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
-[    2.049892] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
-[    2.055815] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
-[    2.061999] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
-[    2.068616] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
-[    2.074193] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
-[    2.079769] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
-[    2.085345] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
-[    2.091616] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
-[    2.097367] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
-[    2.102858] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-[    2.107830] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-[    2.112800] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
-[    2.118551] [<ffffffff80026564>] kthread+0x124/0x160
-[    2.123520] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
-[    2.129268] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
-[    2.135455] ---[ end trace 8d5c6046255f84a1 ]---
 
-Fixes: 5ec55823438e ("net: stmmac: add clocks management for gmac driver")
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 639a753266e6..bde76ea2deec 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7252,6 +7252,10 @@ int stmmac_dvr_remove(struct device *dev)
- 
- 	netdev_info(priv->dev, "%s: removing driver", __func__);
- 
-+	pm_runtime_get_sync(dev);
-+	pm_runtime_disable(dev);
-+	pm_runtime_put_noidle(dev);
-+
- 	stmmac_stop_all_dma(priv);
- 	stmmac_mac_set(priv, priv->ioaddr, false);
- 	netif_carrier_off(ndev);
-@@ -7270,8 +7274,6 @@ int stmmac_dvr_remove(struct device *dev)
- 	if (priv->plat->stmmac_rst)
- 		reset_control_assert(priv->plat->stmmac_rst);
- 	reset_control_assert(priv->plat->stmmac_ahb_rst);
--	pm_runtime_put(dev);
--	pm_runtime_disable(dev);
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI)
- 		stmmac_mdio_unregister(ndev);
--- 
-2.34.1
-
+>
+> There is one thing that would help me to judge this situation better:
+>
+> Davyd, did a default Win11 install connect fine with standard settings
+> or did you have to modify something in the registry to make it work
+> there (which you might have done years ago in case you updated the
+> machine!), as Ronnie suspected? Or was this already clarified in this
+> thread somewhere and I just missed that (in that case: sorry!)?
+>
+> Ciao, Thorsten
+>
+> >> Ciao, Thorsten
+> >>
+> >> #regzbot poke
+> >>
+> >>
+> >> On 12.01.22 06:49, Davyd McColl wrote:
+> >>> Hi Ronnie
+> >>>
+> >>> The regular fstab line for this mount is:
+> >>>
+> >>> //mede8er/mede8er  /mnt/mede8er-smb  cifs
+> >>> noauto,guest,users,uid=daf,gid=daf,iocharset=utf8,vers=1.0,nobrl,sec=none
+> >>>  0  0
+> >>>
+> >>> Altering the end of the options from "sec=none" to
+> >>> "username=guest,sec=ntlmssp" or "guest,sec=ntlmssp" results in failure
+> >>> to mount
+> >>> (tested on my patched kernel, which still supports the original fstab
+> >>> line), with dmesg containing:
+> >>>
+> >>> [45753.525219] CIFS: VFS: Use of the less secure dialect vers=1.0 is
+> >>> not recommended unless required for acc
+> >>> ess to very old servers
+> >>> [45753.525222] CIFS: Attempting to mount \\mede8er\mede8er
+> >>> [45756.861351] CIFS: VFS: Unable to select appropriate authentication method!
+> >>> [45756.861361] CIFS: VFS: \\mede8er Send error in SessSetup = -22
+> >>> [45756.861395] CIFS: VFS: cifs_mount failed w/return code = -22
+> >>>
+> >>> There is no way that I know of to set up users for smb auth on this
+> >>> device - it only supports guest connections.
+> >>>
+> >>> -d
+> >>>
+> >>>
+> >>> On Wed, 12 Jan 2022 at 04:32, ronnie sahlberg <ronniesahlberg@gmail.com> wrote:
+> >>>>
+> >>>> Thanks for the network traces.
+> >>>>
+> >>>> In the traces, both win11 and linux are not using even NTLM but the
+> >>>> even older "share password" authentication mode where you specify a
+> >>>> password for the share in the TreeConnect command.
+> >>>> That is something I think we should not support at all.
+> >>>>
+> >>>> What is the exact mount command line you use?
+> >>>> Can you try mounting the share using a username and ntlmssp ?
+> >>>> I.e. username=your-user,sec=ntlmssp  on the mount command
+> >>>>
+> >>>> regards
+> >>>> ronnie sahlberg
+> >>>>
+> >>>> On Wed, Jan 12, 2022 at 6:57 AM Davyd McColl <davydm@gmail.com> wrote:
+> >>>>>
+> >>>>> Hi Steve
+> >>>>>
+> >>>>> As requested, wireshark captures to the device in question, as well as
+> >>>>> the fstab entry I have for the device:
+> >>>>> - win11, browsing with explorer
+> >>>>> - win11, net use
+> >>>>> - unpatched linux 5.16.0 attempt to mount
+> >>>>> - patched linux 5.16.0 successful mount
+> >>>>> - fstab entry - note that I have to specify samba version 1.0 as the
+> >>>>> default has changed and the mount fails otherwise. Explicitly
+> >>>>> specifying 2.0 errors and suggests that I should select a different
+> >>>>> version.
+> >>>>>
+> >>>>> -d
+> >>>>>
+> >>>>> On Tue, 11 Jan 2022 at 00:13, Steve French <smfrench@gmail.com> wrote:
+> >>>>>>
+> >>>>>> I would be surprised if Windows 11 still negotiates (with default
+> >>>>>> registry settings) SMB1 much less NTLMv1 in SMB1, but I have not tried
+> >>>>>> Windows 11 with an NTLMv1 only server (they are hard to find - I may
+> >>>>>> have an original NT4 and an NT3.5 CD somewhere - might be possible to
+> >>>>>> install a VM with NT3.5 but that is really really old and not sure I
+> >>>>>> can find those CDs).
+> >>>>>>
+> >>>>>> Is it possible to send me the wireshark trace (or other network trace)
+> >>>>>> of the failing mount from Linux and also the one with the succeeding
+> >>>>>> NET USE from Windows 11 to the same server?
+> >>>>>>
+> >>>>>> Hopefully it is something unrelated to NTLMv1, there has been a LOT of
+> >>>>>> pushback across the world, across products in making sure no one uses
+> >>>>>> SMB1 anymore.  See e.g.
+> >>>>>> https://techcommunity.microsoft.com/t5/storage-at-microsoft/stop-using-smb1/ba-p/425858
+> >>>>>> and https://twitter.com/nerdpyle/status/776900804712148993
+> >>>>>>
+> >>>>>> On Mon, Jan 10, 2022 at 2:30 PM Davyd McColl <davydm@gmail.com> wrote:
+> >>>>>>>
+> >>>>>>> I don't understand. I tracked down the exact commit where the issue
+> >>>>>>> occurs with a 2 hour git bisect. This was after first confirming that
+> >>>>>>> my older 5.14 kernel did not display the symptoms. I can still connect
+> >>>>>>> to the share via windows 11 explorer. I don't know what else I need to
+> >>>>>>> do here to show where the issue was introduced?
+> >>>>>>>
+> >>>>>>> Apologies for bouncing mails - literally no email client I have seems
+> >>>>>>> to be capable of plaintext emails, so every time I forget, I have to
+> >>>>>>> find a browser with the gmail web interface to reply.
+> >>>>>>>
+> >>>>>>> -d
+> >>>>>>>
+> >>>>>>> On Mon, 10 Jan 2022 at 19:31, Steve French <smfrench@gmail.com> wrote:
+> >>>>>>>>
+> >>>>>>>> I want to make sure that we don't have an unrelated regression
+> >>>>>>>> involved here since NTLMv2 replaced NTLMv1 over 20 years ago (googling
+> >>>>>>>> this e.g. I see "NTLMv2, introduced in Windows NT 4.0 SP4 and natively
+> >>>>>>>> supported in Windows 2000")  and should be the default for Windows
+> >>>>>>>> NT4, Windows 2000 etc. as well as any version of Samba from the last
+> >>>>>>>> 15 years+.  I have significant concerns with adding mechanisms that
+> >>>>>>>> were asked to be disabled ~19 years ago e.g. see
+> >>>>>>>> https://support.microsoft.com/en-us/topic/security-guidance-for-ntlmv1-and-lm-network-authentication-da2168b6-4a31-0088-fb03-f081acde6e73
+> >>>>>>>> due to security concerns.
+> >>>>>>>>
+> >>>>>>>> Can we double check that there are not other issues involved in your example?
+> >>>>>>>>
+> >>>>>>>> The concerns about NTLMv1 security concerns (and why it should never
+> >>>>>>>> be used) are very persuasive e.g. many articles like
+> >>>>>>>> https://miriamxyra.com/2017/11/08/stop-using-lan-manager-and-ntlmv1/
+> >>>>>>>>
+> >>>>>>>> On Mon, Jan 10, 2022 at 7:48 AM Davyd McColl <davydm@gmail.com> wrote:
+> >>>>>>>>>
+> >>>>>>>>> Good day
+> >>>>>>>>>
+> >>>>>>>>> I'm following advice from the thread at
+> >>>>>>>>> https://bugzilla.kernel.org/show_bug.cgi?id=215375 as to how to report
+> >>>>>>>>> this, so please bear with me and redirect me as necessary.
+> >>>>>>>>>
+> >>>>>>>>> Since commit 76a3c92ec9e0668e4cd0e9ff1782eb68f61a179c, I'm unable to
+> >>>>>>>>> mount a CIFS 1.0 share ( from a media player: mede8er med600x3d, which
+> >>>>>>>>> runs some older linux). Apparently I'm not the only one, according to
+> >>>>>>>>> that thread, though the other affected party there is windows-based.
+> >>>>>>>>>
+> >>>>>>>>> I first logged this in the Gentoo bugtracker
+> >>>>>>>>> (https://bugs.gentoo.org/821895) and a reversion patch is available
+> >>>>>>>>> there for the time being.
+> >>>>>>>>>
+> >>>>>>>>> I understand that some of the encryption methods upon which the
+> >>>>>>>>> original feature relied are to be removed and, as such, the ability to
+> >>>>>>>>> mount these older shares was removed. This is sure to affect anyone
+> >>>>>>>>> running older Windows virtual machines (or older, internally-visible
+> >>>>>>>>> windows hosts) in addition to anyone attempting to connect to shares
+> >>>>>>>>> from esoteric devices like mine.
+> >>>>>>>>>
+> >>>>>>>>> Whilst I understand the desire to clean up code and remove dead
+> >>>>>>>>> branches, I'd really appreciate it if this particular feature remains
+> >>>>>>>>> available either by kernel configuration (which suits me fine, but is
+> >>>>>>>>> likely to be a hassle for anyone running a binary distribution) or via
+> >>>>>>>>> boot parameters. In the mean-time, I'm updating my own sync software
+> >>>>>>>>> to support this older device because if I can't sync media to the
+> >>>>>>>>> player, the device is not very useful to me.
+> >>>>>>>>>
+> >>>>>>>>> Thanks
+> >>>>>>>>> -d
+> >>>>>>>>
+> >>>>>>>>
+> >>>>>>>>
+> >>>>>>>> --
+> >>>>>>>> Thanks,
+> >>>>>>>>
+> >>>>>>>> Steve
+> >>>>>>>
+> >>>>>>>
+> >>>>>>>
+> >>>>>>> --
+> >>>>>>> -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+> >>>>>>> If you say that getting the money is the most important thing
+> >>>>>>> You will spend your life completely wasting your time
+> >>>>>>> You will be doing things you don't like doing
+> >>>>>>> In order to go on living
+> >>>>>>> That is, to go on doing things you don't like doing
+> >>>>>>>
+> >>>>>>> Which is stupid.
+> >>>>>>>
+> >>>>>>> - Alan Watts
+> >>>>>>> https://www.youtube.com/watch?v=-gXTZM_uPMY
+> >>>>>>>
+> >>>>>>> Quidquid latine dictum sit, altum sonatur.
+> >>>>>>
+> >>>>>>
+> >>>>>>
+> >>>>>> --
+> >>>>>> Thanks,
+> >>>>>>
+> >>>>>> Steve
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>> --
+> >>>>> -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+> >>>>> If you say that getting the money is the most important thing
+> >>>>> You will spend your life completely wasting your time
+> >>>>> You will be doing things you don't like doing
+> >>>>> In order to go on living
+> >>>>> That is, to go on doing things you don't like doing
+> >>>>>
+> >>>>> Which is stupid.
+> >>>>>
+> >>>>> - Alan Watts
+> >>>>> https://www.youtube.com/watch?v=-gXTZM_uPMY
+> >>>>>
+> >>>>> Quidquid latine dictum sit, altum sonatur.
+> >>>
+> >>>
+> >>>
+> >>
+> >
