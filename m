@@ -2,123 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70568C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:36:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233576AbiA1Kec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 05:34:32 -0500
-Received: from perceval.ideasonboard.com ([213.167.242.64]:38006 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232120AbiA1Ke2 (ORCPT
+        id S229987AbiA1KgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 05:36:04 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4542 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229462AbiA1KgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 05:34:28 -0500
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 6A6D3B9C;
-        Fri, 28 Jan 2022 11:34:26 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1643366066;
-        bh=SjngVim/bAf9eBc4Da9VVdDH4QW1J82EoUqAY4mOegc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iIqVB+7jiNvEi7UPEfL67GXviPPO5/o3PB4DBuzEpg9fSbb0AATxZL2mqIDQQcANj
-         v8v6AmI/srfB2KUotIg5IvS35m/GHPvurjFIJ/DRqeC88pmKvnGJq1JNfpGDtYVANf
-         zvAnZ2+TEMafOBeJESYCAfNJMA7aGxI2yv4UD+ac=
-Date:   Fri, 28 Jan 2022 12:34:05 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 31/37] drm: rcar-du: Add support for the nomodeset
- kernel parameter
-Message-ID: <YfPGnfly3GOAOlfp@pendragon.ideasonboard.com>
-References: <20211217003752.3946210-1-javierm@redhat.com>
- <20211217003752.3946210-32-javierm@redhat.com>
- <164336121612.533872.1685181669511488706@Monstersaurus>
- <eb27fa44-2972-4a6e-465f-b9e4775820f4@suse.de>
+        Fri, 28 Jan 2022 05:36:04 -0500
+Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JlYfK20Qjz6892T;
+        Fri, 28 Jan 2022 18:31:37 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 28 Jan 2022 11:36:02 +0100
+Received: from localhost (10.47.76.156) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 28 Jan
+ 2022 10:36:01 +0000
+Date:   Fri, 28 Jan 2022 10:35:54 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     jagath jogj <jagathjog1996@gmail.com>
+CC:     <jic23@kernel.org>, <lars@metafoo.de>,
+        <andriy.shevchenko@linux.intel.com>, <aardelean@deviqon.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: IIO Device Driver for Maxim DS3502 potentiometer
+Message-ID: <20220128103554.000028ff@Huawei.com>
+In-Reply-To: <CAM+2Eu+G2YK-O4ioYCBTJOs9VV9k5fVfQSii+m3kcyouJRg_vA@mail.gmail.com>
+References: <CAM+2Eu+G2YK-O4ioYCBTJOs9VV9k5fVfQSii+m3kcyouJRg_vA@mail.gmail.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <eb27fa44-2972-4a6e-465f-b9e4775820f4@suse.de>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.76.156]
+X-ClientProxiedBy: lhreml731-chm.china.huawei.com (10.201.108.82) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+On Fri, 28 Jan 2022 09:11:28 +0530
+jagath jogj <jagathjog1996@gmail.com> wrote:
 
-On Fri, Jan 28, 2022 at 10:33:21AM +0100, Thomas Zimmermann wrote:
-> Am 28.01.22 um 10:13 schrieb Kieran Bingham:
-> > Quoting Javier Martinez Canillas (2021-12-17 00:37:46)
-> >> According to disable Documentation/admin-guide/kernel-parameters.txt, this
-> >> parameter can be used to disable kernel modesetting.
-> >>
-> >> DRM drivers will not perform display-mode changes or accelerated rendering
-> >> and only the system framebuffer will be available if it was set-up.
-> > 
-> > What is the 'system framebuffer' in this instance? Reading
-> > https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt
-> > it sounds like that means anything already set up by the bootloader.
+> Hello,
 > 
-> Exactly this.
+> I have a Maxim DS3502 potentiometer breakout and I have written an IIO
+> driver for learning purposes and tested with Raspberry pi and wanted
+> to send patches of the driver for the IIO sub-system.
 > 
-> >> But only a few DRM drivers currently check for nomodeset, make this driver
-> >> to also support the command line parameter.
-> >>
-> >> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> >> ---
-> >>
-> >> (no changes since v1)
-> >>
-> >>   drivers/gpu/drm/rcar-du/rcar_du_drv.c | 3 +++
-> >>   1 file changed, 3 insertions(+)
-> >>
-> >> diff --git a/drivers/gpu/drm/rcar-du/rcar_du_drv.c b/drivers/gpu/drm/rcar-du/rcar_du_drv.c
-> >> index 5a8131ef81d5..982e450233ed 100644
-> >> --- a/drivers/gpu/drm/rcar-du/rcar_du_drv.c
-> >> +++ b/drivers/gpu/drm/rcar-du/rcar_du_drv.c
-> >> @@ -701,6 +701,9 @@ static struct platform_driver rcar_du_platform_driver = {
-> >>   
-> >>   static int __init rcar_du_init(void)
-> >>   {
-> >> +       if (drm_firmware_drivers_only())
-> >> +               return -ENODEV;
-> >> +
-> > 
-> > This will completely disable all control of the display device when
-> > nomodeset is enabled.
-> > 
-> > Is there any requirement for us to support outputting to the display if
-> > it was previously set up? presumably without setting or changing any
-> > modes, but simply allowing the existing frame to be updated?
+> Can I send the patches for DS3502 POT for review?
 > 
-> There's no requirement for your driver. We just want a parameter where 
-> we can conveniently disable most of DRM's drivers and reduce it to a 
-> minimum. Helps distributions to provide a simple fallback mode.  Most 
-> PCI-based drivers already support that. Now we're added it to the other 
-> drivers as well.
+> The setup used to write driver
+> Raspberry pi 3b
+> DS3502 breakout board
+> Raspberry pi latest kernel branch - https://github.com/raspberrypi/linux
 > 
-> > 
-> > I think the implication is that 'firmware drivers' would mean a display
-> > could be updated through some firmware interface, which we won't have
-> > ... so it seems reasonable to accept that this whole driver can be
-> > disabled in that instance.
-> 
-> It cannot be 'mode-setted'. We get a pre-configured framebuffer from the 
-> firmware or bootloader. Whatever we draw there shows up on the screen.
+> Regards,
+> Jagath
 
-I doubt that's going to work as you expect, clocks and regulators will
-get disabled at boot if not used by any driver.
+Hi Jagath,
 
-> > Reading your mail that brought this thread up in my inbox, I think
-> > you've already hit merge on this, so don't worry about adding a tag in
-> > that instance, but I think this is ok.
-> > 
-> > Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-> > 
-> >>          rcar_du_of_init(rcar_du_of_table);
-> >>   
-> >>          return platform_driver_register(&rcar_du_platform_driver);
+Welcome to IIO.
 
--- 
-Regards,
+Absolutely on sending the patches for review.
+You'll need to rebase them on latest mainline from kernel.org
+(pick a tagged version which would currently be 5.17-rc1_
 
-Laurent Pinchart
+and then follow the documentation for how to submit a patch in
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+
+Feel free to ask if you have any questions about the process.
+
+Looking forwards to seeing your code.
+
+Thanks,
+
+Jonathan
