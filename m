@@ -2,124 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41887C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242671AbiA1Nyw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:54:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35080 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235200AbiA1Nyu (ORCPT
+        id S239174AbiA1N6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 08:58:34 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:43218 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231741AbiA1N6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 08:54:50 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67605C06173B;
-        Fri, 28 Jan 2022 05:54:50 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id ah7so16283284ejc.4;
-        Fri, 28 Jan 2022 05:54:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W+HVO9pfWKvtQNPEDK/I430Md9WsgnnHul3CbcaOVZQ=;
-        b=Z2ELedQwJYz39tK4+PNoaYeMbVIHl7NAlHepJHX0f7jqb5+GMp+mf1tg2GNnP7C1WZ
-         AHvHlEcwz6rBoSieI4EmTZ6u1n6KIDvT7iNSLfNhbXSiIqVqAljN/0AyE2MO2RgRV563
-         n4/nSeaaWcguzSZUJlyZ8Lp2FqktAq8YkOW1btwKrlF8BceAf7vV06B91ouOZUW2OBdG
-         KuFaS1Cn6qs+j4shaT3eVGbo5pbU91z/JjDScOfI5eHu7Hg/ChZqtKAZUgoo4qUSFFvZ
-         cOiGLb+EvRHD4Rt15nI2IUiKiyOzV70Hm0IDPILXk66hlPiYCoBuM61WPjVDmj/6ixQb
-         prUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W+HVO9pfWKvtQNPEDK/I430Md9WsgnnHul3CbcaOVZQ=;
-        b=H0rRRCXtzP+ZpIGJbzWU+BB/YNpISS4AdZQ50SAU8w4G+sdSFK3PcZzHZsXsgaABgz
-         QAPW9bNvteLHGZlf+cIPd5AgSaOq2pWgIW8kljupLPfrh/kjopxLdWTqW31DYY7aFHnE
-         77uhPWbbFtKILJV+YJKlpTPzIubLyM5wDDkIzd7RZIvWnq/GyCBcIrI7ArXch5FhQbMz
-         K7y2yWxmEPhAamRrB85crMiXR7vHkZI6TQ4HrhfVnuFCCDz5K/g7otnapTaoZrICVGue
-         nbJbN65InOwud0N50mVHlpPSbX9FRI+U7WyuWwlOGFrOS460qcV70o2IX3yXCumE5q+n
-         z7DA==
-X-Gm-Message-State: AOAM533JAOSLuY4Lq0Kobn/991+BpL7aWIQk88gQ6Rfid4nz+TML1Toe
-        ILWjVLenWHk77IdqUF0EOJtYll8t18h73qYRECs=
-X-Google-Smtp-Source: ABdhPJyxCcBk99rUQp6U3SzpQdyerpPcALccJkGIBAlJSRaoWZdv2CoAwgPjTfHSCh/AG6gJHd0h1//AZ6QidA+nU+A=
-X-Received: by 2002:a17:906:7948:: with SMTP id l8mr6852057ejo.636.1643378088706;
- Fri, 28 Jan 2022 05:54:48 -0800 (PST)
+        Fri, 28 Jan 2022 08:58:32 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20SB53ff008036;
+        Fri, 28 Jan 2022 05:58:23 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0220;
+ bh=dpHLngKpzeSUefPC+0h4EN3iJnANrfkMo9Dxfn4BYrI=;
+ b=kr85X4gV9SaMMjyF0ZVhjgslFHntjRqIf3ATl1JygFuOc95vZDUdtnlNYpKHPAYnVHPC
+ F0QSP6J7gFVAI3M+sw/62X/y9h5el5CtwR4DYKT3gJ72asoHsa8ZnqJ08gdweswj6V0X
+ Y6GfA3pfVocAbr4Tj2yyll80NvVfSbQC8zSfQvD3LkiMnSssFEdXpD9a7oySRJKGdazr
+ XfxAJNHJQ+0TytXWQx7HBRdMd0uH4hmGgxwrqKd+Jb4xjbDWNMA4OxunsGjdb0Tf7KYv
+ 5odonp0Emo2FDYtrqnZNS+ixRpXUtKO1fzsXbjoUzF3U2f9WE1x8PBHBV8xf+bY+df1p 7Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3dusebmugt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 28 Jan 2022 05:58:23 -0800
+Received: from m0045851.ppops.net (m0045851.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 20SDqAnB004714;
+        Fri, 28 Jan 2022 05:58:22 -0800
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3dusebmugn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 28 Jan 2022 05:58:22 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 28 Jan
+ 2022 05:58:20 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Fri, 28 Jan 2022 05:58:20 -0800
+Received: from localhost.localdomain (unknown [10.28.34.29])
+        by maili.marvell.com (Postfix) with ESMTP id 724323F706F;
+        Fri, 28 Jan 2022 05:58:15 -0800 (PST)
+From:   Shijith Thotton <sthotton@marvell.com>
+To:     Arnaud Ebalard <arno@natisbad.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Boris Brezillon <bbrezillon@kernel.org>
+CC:     Shijith Thotton <sthotton@marvell.com>,
+        <linux-crypto@vger.kernel.org>, <jerinj@marvell.com>,
+        <sgoutham@marvell.com>, <anoobj@marvell.com>,
+        "Srujana Challa" <schalla@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Ovidiu Panait" <ovidiu.panait@windriver.com>,
+        chiminghao <chi.minghao@zte.com.cn>,
+        Suheil Chandran <schandran@marvell.com>,
+        Lukasz Bartosik <lbartosik@marvell.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3] crypto: octeontx2: remove CONFIG_DM_CRYPT check
+Date:   Fri, 28 Jan 2022 19:27:42 +0530
+Message-ID: <2ea465e8bde7f4d03757ae398d38f62a350dd28c.1643378034.git.sthotton@marvell.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <3ef09bf0c4adf7bc33f01f60cb8ce96e8f77b58c.1642786900.git.sthotton@marvell.com>
+References: <3ef09bf0c4adf7bc33f01f60cb8ce96e8f77b58c.1642786900.git.sthotton@marvell.com>
 MIME-Version: 1.0
-References: <20220128042054.2062060-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20220128042054.2062060-1-kai.heng.feng@canonical.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 28 Jan 2022 15:53:11 +0200
-Message-ID: <CAHp75VfC873djcc4Z2+HhzR8z3Uaute3g0Fgr1dvOs_v=gD3Lw@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: humidity: hdc100x: Add ACPI HID table
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Your Name <you@example.com>,
-        Chris Lesiak <chris.lesiak@licor.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: uu0_W5SP2KJD5K_e5La4MF_ZAQtB5Kx_
+X-Proofpoint-GUID: m9vOcveRtMH810eaaRkxxo3sKUaOzXZS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-28_04,2022-01-27_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 6:21 AM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
->
-> x86 boards may use ACPI HID "TXNW1010" for the hdc100x device.
->
-> TI told us "The ACPI ID for TI is: https://uefi.org/node/1028 (TXNW),
-> therefore it would most likely be appropriate to use TXNW1010."
+No issues were found while using the driver with dm-crypt enabled. So
+CONFIG_DM_CRYPT check in the driver can be removed.
 
-So, they basically agree on using it, did I get it right?
+This also fixes the NULL pointer dereference in driver release if
+CONFIG_DM_CRYPT is enabled.
 
-> So add an ACPI match table for that accordingly.
+...
+Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
+...
+Call trace:
+ crypto_unregister_alg+0x68/0xfc
+ crypto_unregister_skciphers+0x44/0x60
+ otx2_cpt_crypto_exit+0x100/0x1a0
+ otx2_cptvf_remove+0xf8/0x200
+ pci_device_remove+0x3c/0xd4
+ __device_release_driver+0x188/0x234
+ device_release_driver+0x2c/0x4c
+...
 
-Assuming TI is aware of the ID,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Fixes: 6f03f0e8b6c8 ("crypto: octeontx2 - register with linux crypto framework")
+Signed-off-by: Shijith Thotton <sthotton@marvell.com>
+---
+ .../crypto/marvell/octeontx2/otx2_cptvf_algs.c  | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
-> v3:
->  - Add info from vendor
->  - Drop redundant line and comma.
->  - Wording change.
->
-> v2:
->  - Change the ID to follow ACPI Spec
->  - Add __maybe_unused to avoid compiler warning
->
->  drivers/iio/humidity/hdc100x.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-> index 9e0fce917ce4c..47f8e8ef56d68 100644
-> --- a/drivers/iio/humidity/hdc100x.c
-> +++ b/drivers/iio/humidity/hdc100x.c
-> @@ -417,10 +417,17 @@ static const struct of_device_id hdc100x_dt_ids[] = {
->  };
->  MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
->
-> +static const struct acpi_device_id hdc100x_acpi_match[] = {
-> +       { "TXNW1010" },
-> +       { }
-> +};
-> +MODULE_DEVICE_TABLE(acpi, hdc100x_acpi_match);
-> +
->  static struct i2c_driver hdc100x_driver = {
->         .driver = {
->                 .name   = "hdc100x",
->                 .of_match_table = hdc100x_dt_ids,
-> +               .acpi_match_table = hdc100x_acpi_match,
->         },
->         .probe = hdc100x_probe,
->         .id_table = hdc100x_id,
-> --
-> 2.33.1
->
-
-
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+index 2748a3327e39..f8f8542ce3e4 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+@@ -1634,16 +1634,13 @@ static inline int cpt_register_algs(void)
+ {
+ 	int i, err = 0;
+ 
+-	if (!IS_ENABLED(CONFIG_DM_CRYPT)) {
+-		for (i = 0; i < ARRAY_SIZE(otx2_cpt_skciphers); i++)
+-			otx2_cpt_skciphers[i].base.cra_flags &=
+-							~CRYPTO_ALG_DEAD;
+-
+-		err = crypto_register_skciphers(otx2_cpt_skciphers,
+-						ARRAY_SIZE(otx2_cpt_skciphers));
+-		if (err)
+-			return err;
+-	}
++	for (i = 0; i < ARRAY_SIZE(otx2_cpt_skciphers); i++)
++		otx2_cpt_skciphers[i].base.cra_flags &= ~CRYPTO_ALG_DEAD;
++
++	err = crypto_register_skciphers(otx2_cpt_skciphers,
++					ARRAY_SIZE(otx2_cpt_skciphers));
++	if (err)
++		return err;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(otx2_cpt_aeads); i++)
+ 		otx2_cpt_aeads[i].base.cra_flags &= ~CRYPTO_ALG_DEAD;
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
