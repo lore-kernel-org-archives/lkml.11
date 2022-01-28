@@ -2,121 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C39C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245205AbiA1ODW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:03:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36962 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238986AbiA1ODV (ORCPT
+        id S1344147AbiA1ODl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 09:03:41 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:50100 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238986AbiA1ODj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:03:21 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577B7C061714;
-        Fri, 28 Jan 2022 06:03:21 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id s5so16403176ejx.2;
-        Fri, 28 Jan 2022 06:03:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1LJkgBxQZGz+DBCDqTCv/zlH6Pf6EPJaEcwYrjb9pWI=;
-        b=J5JhoCWcxWO7nN7IEpEBYaQzLhmcZpmAIVyRqe6sm45L7acqIKxsXW/mE29spAU3UN
-         yuGsRZnGQQZEM3PFzAfP8ric79ObM7f69lRlimzVuSmYrRafJpAfy8NHi4eh3rKKW15P
-         SjdfbfH0YUJGG405tVNPbMpInHh0izSvR18GsXoqMpc6wnNUMTfOGWsHdsFQO8k8CWRr
-         bGfyBBa1xBS3byorg1zARbW0dQ5zpszNET8vkVl6+/NQ2x1iI2Q48+njzcoYh6Eh+dlE
-         36syofIRL27r6YJ4PdDzie8Uc133DkoDzGomYvdobj3L8LKzdvA8pwKc/+rM5mw1/eE2
-         Fzvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1LJkgBxQZGz+DBCDqTCv/zlH6Pf6EPJaEcwYrjb9pWI=;
-        b=OmQlxaC4YrnPLK2vbiMX2r/BUD4UjLQtGyrGBBpu4IWGitfQKXSgCpr1QE/DeITgSa
-         TV56qzJO3dTmOWgurZc0EaB/OsuYaBILCBNkJ0PdclQ25pdJ/gK6adxgh/vQ3za2xGte
-         Q2KLRsGgKm0sme39mzAKju7ooyfsK6TyCAvbf4IHAHlqrB+oCXTjXQ9+XhU6gxJuoYh9
-         z/fJK5P374lg4ZGxI8ERt/830Ab9Gnxhimoz+kpCeVgm/hSdhQLJaXJlazLjWT/lBwvC
-         kGE4neWgJYKF2dfdJKP/DFmKMWIjJzDmQGgAZ6QI+Md+c76gJbzoMFPuSdsMqUTfOrhv
-         gXFg==
-X-Gm-Message-State: AOAM531u8rf26EhfT+qf4dx0FORhPIPoCbNJb6MFVeBhusGdf70+32uJ
-        epHMDGPyN/+b7X9iC2bvcwrrCnKX9XWkAvYiYac=
-X-Google-Smtp-Source: ABdhPJwDNhPs1YDqEHAdWX84zLhRjEXZ+jIj1Fk6pGf01xg1LP+H0kz88ItE8Gkigt8fi+9typWdCYl8rVFF4VPEwis=
-X-Received: by 2002:a17:907:94d5:: with SMTP id dn21mr7325773ejc.77.1643378599791;
- Fri, 28 Jan 2022 06:03:19 -0800 (PST)
-MIME-Version: 1.0
-References: <20220128055604.2077738-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20220128055604.2077738-1-kai.heng.feng@canonical.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 28 Jan 2022 16:01:42 +0200
-Message-ID: <CAHp75Vcz01FwHUF5NAUhn4mfTgzoHBMEBkqPbfPHU=tNr_9Zdw@mail.gmail.com>
-Subject: Re: [PATCH v2] Input: adxl34x: Add ACPI HID table
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-input <linux-input@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 28 Jan 2022 09:03:39 -0500
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20SD6HZR030935;
+        Fri, 28 Jan 2022 14:03:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : in-reply-to : references : content-type : mime-version :
+ date : content-transfer-encoding; s=pp1;
+ bh=lzD27m9tVyI10xVC7XyEDLr4pq/3o3FXlGhpDw5JHt4=;
+ b=HZtpc9J2CwrhFbMwHr4txaUKABbsXwBVetQXLt0kCqvBH+bwQqO2BxIBBYLVh3o5CvyV
+ Gmo+FXYIC8InNyzTHamLOqtJK/B0avs3hvUoM85/r6bJ+QkXH+staoOoPhhUboyjKA5w
+ QsApBtuDCYw9p+iHzA2lfuYwbo0+FYeIK3FIm+TKRDDV3eBNr0TNajnO41MlZ13BlmyV
+ j1+bqSRKrJWnpMJ1vJRKPbV/QBp6VouPsMeg3dpv0sO0Undh480OJ4FQXyy5XjM14GSI
+ cq4bEUImHeVNzxnQymSvFYgtuEPRyi3Lb10PcpY2wDsERqhWj3k36IBsLD4gva7UOHE0 7A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dvgqwhf22-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 28 Jan 2022 14:03:15 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20SD9qNT015365;
+        Fri, 28 Jan 2022 14:03:14 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dvgqwheyf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 28 Jan 2022 14:03:14 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20SE0ekU016233;
+        Fri, 28 Jan 2022 14:03:11 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06ams.nl.ibm.com with ESMTP id 3dr96ka38j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 28 Jan 2022 14:03:11 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20SE382Q35979684
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 28 Jan 2022 14:03:08 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0625A5204E;
+        Fri, 28 Jan 2022 14:03:08 +0000 (GMT)
+Received: from sig-9-65-83-59.ibm.com (unknown [9.65.83.59])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 57B305206B;
+        Fri, 28 Jan 2022 14:03:05 +0000 (GMT)
+Message-ID: <258c7c5e1aebfc9376560549794d43e744654713.camel@linux.ibm.com>
+Subject: Re: [PATCH v9 16/23] ima: Implement ima_free_policy_rules() for
+ freeing of an ima_namespace
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Stefan Berger <stefanb@linux.vnet.ibm.com>,
+        linux-integrity@vger.kernel.org
+Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Stefan Berger <stefanb@linux.ibm.com>
+In-Reply-To: <20220125224645.79319-17-stefanb@linux.vnet.ibm.com>
+References: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
+         <20220125224645.79319-17-stefanb@linux.vnet.ibm.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+Mime-Version: 1.0
+Date:   Fri, 28 Jan 2022 09:02:23 -0500
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: Xzjbnohdiwo_aRI8Gc6kV7Yr2shG8kIu
+X-Proofpoint-GUID: f8tz81gN8LY9ADPXjR3bdBEWWTE-OFYz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-28_03,2022-01-27_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
+ adultscore=0 bulkscore=0 impostorscore=0 priorityscore=1501 malwarescore=0
+ clxscore=1015 suspectscore=0 mlxlogscore=999 mlxscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2201280090
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 7:56 AM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
->
-> x86 boards may use ACPI HID "ADS0345" for adxl34x device.
+Hi Stefan,
 
-the adxl34x
+On Tue, 2022-01-25 at 17:46 -0500, Stefan Berger wrote:
+> From: Stefan Berger <stefanb@linux.ibm.com>
+> 
+> Implement ima_free_policy_rules() that is needed when an ima_namespace
+> is freed.
+> 
+> Only reset temp_ima_appraise when using init_ima_ns.
 
-> Analog replied:
-> "ADS034X is not a valid PNP ID. ADS0345 would be.
-> I'm not aware that this ID is already taken.
-> Feel free to submit a mainline Linux input mailing list patch."
->
-> So add an ACPI match table for that accordingly.
+Instead of having to walk the policy rules to know if there are any
+"appraise" rules, the ima_appraise flag is set.  For now, only reset
+temp_ima_appraise flag on failed policy rule updates for init_ima_ns.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Thanks!
-
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> 
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> 
 > ---
-> v2:
->  - Drop ACPI_PTR()
->  - Drop redundant empty line and comma
->  - Add info from vendor
->
->  drivers/input/misc/adxl34x-i2c.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/drivers/input/misc/adxl34x-i2c.c b/drivers/input/misc/adxl34x-i2c.c
-> index a3b5f88d2bd16..b9af581cde800 100644
-> --- a/drivers/input/misc/adxl34x-i2c.c
-> +++ b/drivers/input/misc/adxl34x-i2c.c
-> @@ -155,11 +155,18 @@ static const struct of_device_id adxl34x_of_id[] = {
->
->  MODULE_DEVICE_TABLE(of, adxl34x_of_id);
->
-> +static const struct acpi_device_id adxl34x_acpi_match[] = {
-> +       { "ADS0345" },
-> +       { }
-> +};
-> +MODULE_DEVICE_TABLE(acpi, adxl34x_acpi_match);
+>  v9:
+>   - Only reset temp_ima_appraise when using init_ima_ns.
+> ---
+>  security/integrity/ima/ima.h        |  1 +
+>  security/integrity/ima/ima_policy.c | 20 +++++++++++++++++++-
+>  2 files changed, 20 insertions(+), 1 deletion(-)
+> 
+> diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
+> index aea8fb8d2854..8c757223d549 100644
+> --- a/security/integrity/ima/ima.h
+> +++ b/security/integrity/ima/ima.h
+> @@ -329,6 +329,7 @@ void ima_update_policy_flags(struct ima_namespace *ns);
+>  ssize_t ima_parse_add_rule(struct ima_namespace *ns, char *rule);
+>  void ima_delete_rules(struct ima_namespace *ns);
+>  int ima_check_policy(struct ima_namespace *ns);
+> +void ima_free_policy_rules(struct ima_namespace *ns);
+>  void *ima_policy_start(struct seq_file *m, loff_t *pos);
+>  void *ima_policy_next(struct seq_file *m, void *v, loff_t *pos);
+>  void ima_policy_stop(struct seq_file *m, void *v);
+> diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima/ima_policy.c
+> index e8140e73d80b..47f2d1b5d156 100644
+> --- a/security/integrity/ima/ima_policy.c
+> +++ b/security/integrity/ima/ima_policy.c
+> @@ -1880,13 +1880,31 @@ void ima_delete_rules(struct ima_namespace *ns)
+>  {
+>  	struct ima_rule_entry *entry, *tmp;
+>  
+> -	temp_ima_appraise = 0;
+> +	if (ns == &init_ima_ns)
+> +		temp_ima_appraise = 0;
 > +
->  static struct i2c_driver adxl34x_driver = {
->         .driver = {
->                 .name = "adxl34x",
->                 .pm = &adxl34x_i2c_pm,
->                 .of_match_table = adxl34x_of_id,
-> +               .acpi_match_table = adxl34x_acpi_match,
->         },
->         .probe    = adxl34x_i2c_probe,
->         .remove   = adxl34x_i2c_remove,
-> --
-> 2.33.1
->
+>  	list_for_each_entry_safe(entry, tmp, &ns->ima_temp_rules, list) {
+>  		list_del(&entry->list);
+>  		ima_free_rule(entry);
+>  	}
+>  }
+>  
+> +/**
+> + * ima_free_policy_rules - free all policy rules
+> + * @ns: IMA namespace that has the policy
+> + */
+> +void ima_free_policy_rules(struct ima_namespace *ns)
+> +{
+> +	struct ima_rule_entry *entry, *tmp;
+> +
+> +	ima_delete_rules(ns);
 
+When the IMA policy is being extended, new rules are temporarily added
+to the ima_temp_rules list.  If the entire set of rules being added are
+valid, they're appended to the tail.
 
--- 
-With Best Regards,
-Andy Shevchenko
+There shouldn't be any rules on the ima_temp_rules list unless the
+policy is currently being extended.  Is that possible at this point?
+
+> +
+> +	list_for_each_entry_safe(entry, tmp, &ns->ima_policy_rules, list) {
+> +		list_del(&entry->list);
+> +		ima_free_rule(entry);
+> +	}
+> +}
+> +
+>  #define __ima_hook_stringify(func, str)	(#func),
+>  
+>  const char *const func_tokens[] = {
+
+thanks,
+
+Mimi
+
