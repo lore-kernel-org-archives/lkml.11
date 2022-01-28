@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 589A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE90C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237662AbiA1JEP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 04:04:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51492 "EHLO
+        id S238016AbiA1JEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 04:04:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236881AbiA1JEE (ORCPT
+        with ESMTP id S236195AbiA1JEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 04:04:04 -0500
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61761C061748
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C503C061714
         for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:04:04 -0800 (PST)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:3999:e79d:cb59:f2ec])
-        by laurent.telenet-ops.be with bizsmtp
-        id o9402600N04fKGS01940tA; Fri, 28 Jan 2022 10:04:01 +0100
+        by michel.telenet-ops.be with bizsmtp
+        id o9402600S04fKGS06940hR; Fri, 28 Jan 2022 10:04:00 +0100
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1nDNAm-00BjtB-14; Fri, 28 Jan 2022 10:04:00 +0100
+        id 1nDNAm-00Bjt9-4B; Fri, 28 Jan 2022 10:04:00 +0100
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1nDNAl-005poq-In; Fri, 28 Jan 2022 10:03:59 +0100
+        id 1nDNAl-005pod-GP; Fri, 28 Jan 2022 10:03:59 +0100
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
@@ -34,61 +34,56 @@ To:     Thomas Gleixner <tglx@linutronix.de>,
         Sagar Kadam <sagar.kadam@sifive.com>
 Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 2/2] dt-bindings: interrupt-controller: sifive,plic: Group interrupt tuples
-Date:   Fri, 28 Jan 2022 10:03:58 +0100
-Message-Id: <211705e74a2ce77de43d036c5dea032484119bf7.1643360419.git.geert@linux-m68k.org>
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v4 0/2] dt-bindings: interrupt-controller: sifive, plic: Miscellaneous improvements
+Date:   Fri, 28 Jan 2022 10:03:56 +0100
+Message-Id: <cover.1643360419.git.geert@linux-m68k.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1643360419.git.geert@linux-m68k.org>
-References: <cover.1643360419.git.geert@linux-m68k.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To improve human readability and enable automatic validation, the tuples
-in "interrupts-extended" properties should be grouped using angle
-brackets.
+	Hi all,
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
-v4:
-  - No changes,
+This patch series contains two improvements for the SiFive PLIC DT
+bindings.
 
-v3:
-  - Add Reviewed-by,
+Changes compared to v3[1]:
+  - Use architectural maximum instead of practical maximum of 9,
 
-v2:
-  - Split in two patches.
----
- .../interrupt-controller/sifive,plic-1.0.0.yaml       | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+Changes compared to v2[2]:
+  - Add Acked-by, Reviewed-by.
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-index 57c06126c99502fa..0dfa6b26e09910a8 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-@@ -91,12 +91,11 @@ examples:
-       #interrupt-cells = <1>;
-       compatible = "sifive,fu540-c000-plic", "sifive,plic-1.0.0";
-       interrupt-controller;
--      interrupts-extended = <
--        &cpu0_intc 11
--        &cpu1_intc 11 &cpu1_intc 9
--        &cpu2_intc 11 &cpu2_intc 9
--        &cpu3_intc 11 &cpu3_intc 9
--        &cpu4_intc 11 &cpu4_intc 9>;
-+      interrupts-extended = <&cpu0_intc 11>,
-+                            <&cpu1_intc 11>, <&cpu1_intc 9>,
-+                            <&cpu2_intc 11>, <&cpu2_intc 9>,
-+                            <&cpu3_intc 11>, <&cpu3_intc 9>,
-+                            <&cpu4_intc 11>, <&cpu4_intc 9>;
-       reg = <0xc000000 0x4000000>;
-       riscv,ndev = <10>;
-     };
+Changes compared to v1[3]:
+  - Split in two patches,
+  - Improve patch description and document limit rationale.
+
+Thanks!
+
+[1] https://lore.kernel.org/r/cover.1639744106.git.geert@linux-m68k.org/
+[2] https://lore.kernel.org/r/cover.1639661878.git.geert@linux-m68k.org
+[3] https://lore.kernel.org/r/20211125152233.162868-1-geert@linux-m68k.org
+
+Geert Uytterhoeven (2):
+  dt-bindings: interrupt-controller: sifive,plic: Fix number of
+    interrupts
+  dt-bindings: interrupt-controller: sifive,plic: Group interrupt tuples
+
+ .../interrupt-controller/sifive,plic-1.0.0.yaml      | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
 -- 
 2.25.1
 
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
