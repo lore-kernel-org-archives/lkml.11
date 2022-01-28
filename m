@@ -2,96 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8398C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA48C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:18:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347813AbiA1KS3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 05:18:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40446 "EHLO
+        id S244048AbiA1KSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 05:18:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347703AbiA1KSU (ORCPT
+        with ESMTP id S1347467AbiA1KSH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 05:18:20 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832ACC061748;
-        Fri, 28 Jan 2022 02:18:20 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id q22so8319252ljh.7;
-        Fri, 28 Jan 2022 02:18:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ix2P1Qb5ofQ32QsYkBPXKMooy+IhErtwFmSskoxD7SE=;
-        b=HeDUP1mJe5Wh7L3Q7OGU3bD0vrHT35bY3RPQL27RrmknbAcnZRL5iJpoWD+mFG2SV2
-         qh0YRbrARJJ+Qlu3XnBT6QX8t+1gBDwL6iyvf6B9E+4T8F+PH4dKJvdiJWG4ILQTdBFe
-         WMqyYiiSSKliFToRWugPWsxurGNdumszzo2nbc73NZRzcG9E8wj2bohO8yQKy+FwDFVN
-         eLW+xh6jHZCMB2dGEz7dsTfL/PX5Ckx7r27LBzA3/upqJrcE0BHt2zfGIqrd6PDx2sGS
-         1Mmpox9pvKYsUotNxW6VPOKYv03J3WHh2cViaiSQTjzDEyNOybPo+1gOWUf4iwgXJmaa
-         zZHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ix2P1Qb5ofQ32QsYkBPXKMooy+IhErtwFmSskoxD7SE=;
-        b=umT7Tx/4cEMUv8aAsrL6uD0nIaaoAHLWxLYGigqPPZRCcC7UAsr1o05REQXBh85mfL
-         GHKIkLsnfIFYE9ZJ+RRuRktOqYjY/he07KyactgmuSGZwMWYqZyJYgVsoZW+IVdfbDax
-         oWFN5gwRaXvu7Uwu8jqtP5asdC1pq+4KKf1DAwz6cNX4sFzsxmb2+D3WaoCP5sAf06ur
-         2Wo0yn11PB+vwhr6kmt6+jYt7yTBKs/rxxBn5srBopVGAPRmtOjJ1ge2Weu5pOf+KHRB
-         984sjNwLfjLxM58vQiJg3UKs4rVNCioZWit5h1zITMsLtZjZKCpI+nZLM5BJWMHL3pxE
-         GI5w==
-X-Gm-Message-State: AOAM531MpJv+vbLzSN5BG+383TBRWhMQ+G+djmafnJBGdar+KO1wwEY1
-        qZSXS0KPT5VPPDCnBA99KF4=
-X-Google-Smtp-Source: ABdhPJyB16VsXVJnNjJMJADy3aApl/JsRwD6PTo2A73BfnawYgkLg1UmTv6X0o3ez3H1uCaT+ZH+Ew==
-X-Received: by 2002:a2e:9f4a:: with SMTP id v10mr5239509ljk.233.1643365098684;
-        Fri, 28 Jan 2022 02:18:18 -0800 (PST)
-Received: from [192.168.1.103] ([31.173.81.83])
-        by smtp.gmail.com with ESMTPSA id j15sm1005692lfr.203.2022.01.28.02.18.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Jan 2022 02:18:17 -0800 (PST)
-Subject: Re: [PATCH 1/7] genirq: Provide generic_handle_irq_safe().
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>
-References: <20220127113303.3012207-1-bigeasy@linutronix.de>
- <20220127113303.3012207-2-bigeasy@linutronix.de>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <c26a4348-fa0c-6eb6-a571-7dbc454c05d0@gmail.com>
-Date:   Fri, 28 Jan 2022 13:18:14 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Fri, 28 Jan 2022 05:18:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCD3C06173B;
+        Fri, 28 Jan 2022 02:18:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2ED661E48;
+        Fri, 28 Jan 2022 10:18:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B43D4C340E0;
+        Fri, 28 Jan 2022 10:18:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643365086;
+        bh=FpyUHmjkG6laiyj9unPeqvCUaLot+5PMgUU2jkkgb6U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mwzHz0bC/pNzofos1H7lO3sobNhSNKjXt90GM/nfKZvB/nva9WZNGOC8lSxyqcuVQ
+         76XULi2NupYz3aq+8GkUDzbV5onjlAPK1vJNgvmxHHJGTqI1XPnqDuSOvF3Mdlnxuw
+         Q1zCdlFuoAeRWnIXWjYTKdZsN8YlI49y6zEU7FvM=
+Date:   Fri, 28 Jan 2022 11:17:57 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Zhou Qingyang <zhou1615@umn.edu>
+Cc:     kjlu@umn.edu, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Lv Zheng <lv.zheng@intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ACPI / tables: Fix a NULL pointer dereference in
+ acpi_table_initrd_override()
+Message-ID: <YfPC1aFxtt9TazL9@kroah.com>
+References: <20220124164251.52466-1-zhou1615@umn.edu>
 MIME-Version: 1.0
-In-Reply-To: <20220127113303.3012207-2-bigeasy@linutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124164251.52466-1-zhou1615@umn.edu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/27/22 2:32 PM, Sebastian Andrzej Siewior wrote:
-
-> Provide generic_handle_irq_safe() which can be used can used from any
-                                          ^^^^^^^^^^^^^^^^^^^^
-   You're repeating yourself. :-)
-
-> context.
+On Tue, Jan 25, 2022 at 12:42:51AM +0800, Zhou Qingyang wrote:
+> In acpi_table_initrd_override(), the return value of acpi_os_map_memory()
+> is assigned to table and there is a dereference of it after that.
+> acpi_os_map_memory() will return NULL on failure, which may lead to NULL
+> pointer dereference.
 > 
-> Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-[...]
+> Fix this bug by adding a NULL check of table.
+> 
+> This bug was found by a static analyzer.
+> 
+> Builds with 'make allyesconfig' show no new warnings,
+> and our static analyzer no longer warns about this code.
+> 
+> Fixes: 5ae74f2cc2f1 ("ACPI / tables: Move table override mechanisms to tables.c")
+> Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+> ---
+> The analysis employs differential checking to identify inconsistent 
+> security operations (e.g., checks or kfrees) between two code paths 
+> and confirms that the inconsistent operations are not recovered in the
+> current function or the callers, so they constitute bugs. 
+> 
+> Note that, as a bug found by static analysis, it can be a false
+> positive or hard to trigger. Multiple researchers have cross-reviewed
+> the bug.
+> 
+>  drivers/acpi/tables.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/acpi/tables.c b/drivers/acpi/tables.c
+> index 0741a4933f62..8b10c192ed32 100644
+> --- a/drivers/acpi/tables.c
+> +++ b/drivers/acpi/tables.c
+> @@ -696,6 +696,10 @@ acpi_table_initrd_override(struct acpi_table_header *existing_table,
+>  	while (table_offset + ACPI_HEADER_SIZE <= all_tables_size) {
+>  		table = acpi_os_map_memory(acpi_tables_addr + table_offset,
+>  					   ACPI_HEADER_SIZE);
+> +		if (!table) {
+> +			return AE_NO_MEMORY;
+> +		}
+> +
+>  		if (table_offset + table->length > all_tables_size) {
+>  			acpi_os_unmap_memory(table, ACPI_HEADER_SIZE);
+>  			WARN_ON(1);
+> -- 
+> 2.25.1
+> 
 
-MBR, Sergey
+As stated before, umn.edu is still not allowed to contribute to the
+Linux kernel.  Please work with your administration to resolve this
+issue.
+
