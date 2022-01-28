@@ -2,127 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1540FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CDB8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347718AbiA1Jrb (ORCPT
+        id S1347728AbiA1JsA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 04:47:31 -0500
-Received: from mga03.intel.com ([134.134.136.65]:15409 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238349AbiA1Jra (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 04:47:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643363250; x=1674899250;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=Fq9sQu/cN/lUsmIqrFTexk8KVRNWRRIf2vdhORwEjNA=;
-  b=Qf3oLsjHRAf/su0eHffVmM+qMudN9axNyeuXp7+DAQV+kRHRJqrDie1n
-   sOIjpUUpqFhBPBK37gBj+78iRis4+AUZA8hi8XttIlKnF8tJgXN1B68eu
-   lNLmcBj6zo8aDfC6AidMgdWkRCfYFr+Ju9HgYHDsV21TGddo4CCRk9oDf
-   NE/NSyvhnZjjautVbn17kCmZZAizxh4yVIw6tHNcWKYmgHYy/ZMQHcvEk
-   6iUXZr93l3uw2qfF0OWX79N8JG60Na63Iu02Dc7dy5QGkeHVRsWMC5XGj
-   gZ9k/x+9NAbsHIY8T6t2FVCLlv7idYhs7fhv3Q07IPfjcVWdI6ljY4LYy
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="247035970"
-X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="247035970"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 01:47:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="564147519"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga001.jf.intel.com with ESMTP; 28 Jan 2022 01:47:26 -0800
-To:     =?UTF-8?B?6LCi5rOT5a6H?= <xiehongyu1@kylinos.cn>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     Hongyu Xie <xy521521@gmail.com>, mathias.nyman@intel.com,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        125707942@qq.com, stable@vger.kernel.org
-References: <20220126094126.923798-1-xy521521@gmail.com>
- <YfEZFtf9K8pFC8Mw@kroah.com>
- <c7f6a8bb-76b6-cd2d-7551-b599a8276f5c@kylinos.cn>
- <YfEnbRW3oU0ouGqH@kroah.com>
- <e86972d3-e4a0-ad81-45ea-21137e3bfcb6@kylinos.cn>
- <7af5b318-b1ac-0c74-1782-04ba50a3b5fa@linux.intel.com>
- <ce40f4cd-a110-80b1-f766-e94dd8cedc7e@kylinos.cn>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH -next] xhci: fix two places when dealing with return value
- of function xhci_check_args
-Message-ID: <6da59964-ce0e-c202-8a9c-a753a1908f3e@linux.intel.com>
-Date:   Fri, 28 Jan 2022 11:48:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        Fri, 28 Jan 2022 04:48:00 -0500
+Received: from mout.kundenserver.de ([212.227.17.24]:38531 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238349AbiA1Jry (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 04:47:54 -0500
+Received: from mail-ot1-f50.google.com ([209.85.210.50]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N4i7l-1mDxa439SJ-011lZn for <linux-kernel@vger.kernel.org>; Fri, 28 Jan
+ 2022 10:47:51 +0100
+Received: by mail-ot1-f50.google.com with SMTP id b17-20020a9d4791000000b005a17fc2dfc1so5212514otf.1
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:47:51 -0800 (PST)
+X-Gm-Message-State: AOAM532nlG+2m9noW03doFBUhBE4LrbsaHU+Z8fQlp+kIirttZ906/lE
+        0ntWwcrNnsOQhjPG6NtbC5Fu0ZtjVa6T+WWu3QY=
+X-Google-Smtp-Source: ABdhPJzp5Htqdb3JCf1jG/gt+ko6hgo2qDAGRuEKahvQHJAf7ZWXKFdwm35JJI8P+vzIjl+GoGQzBeTuVTRQ8fiY8Bc=
+X-Received: by 2002:a9d:654f:: with SMTP id q15mr4360244otl.119.1643363270457;
+ Fri, 28 Jan 2022 01:47:50 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <ce40f4cd-a110-80b1-f766-e94dd8cedc7e@kylinos.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20220127083545.1020423-1-skyostil@chromium.org>
+ <20220127083545.1020423-3-skyostil@chromium.org> <YfJovN7clqBZ8NDr@kroah.com> <CAPuLczsLSnojXG8zyWBq6P50S8dVN3LcTi+2L0j-zLbwC_cJ0g@mail.gmail.com>
+In-Reply-To: <CAPuLczsLSnojXG8zyWBq6P50S8dVN3LcTi+2L0j-zLbwC_cJ0g@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 28 Jan 2022 10:47:33 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a09twTx-UFGw9u_b0CtJJGbwbyO3Z_aL+Tr3iHrvgv_kA@mail.gmail.com>
+Message-ID: <CAK8P3a09twTx-UFGw9u_b0CtJJGbwbyO3Z_aL+Tr3iHrvgv_kA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] drivers/misc: add transfer ioctl for HPS
+To:     Sami Kyostila <skyostil@chromium.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Dmitry Torokhov <dtor@chromium.org>, evanbenn@chromium.org,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:PTH2ElbtVe3/KL0i681dJ4wG/ei1nUVFyFWgx+HzTvBvh7TIdIe
+ P0zPaCmZGyrCcQKo6Tdhh5Zxn9phm6uENOBYCxSb65JllAYsBED35vZhdArLW/AcGQZjIGO
+ PMjeSGRYjpU9sAowKsZFxX+Is5OjDBWyEnqZ+fB0EBwP4q9KOvjpp+UI2CBxJkBWaDHef7/
+ sWWl9FUsWbnjmWCI1/HGw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:8CRc2LhxDQs=:pwe1vLDL0M79nbl+KBxzcd
+ AIfwLRjXPcBYvkH7JmiQV/1tUsJJSXMwPSbBR+5OKueuK19IKHvygA5YSQgk+acgBOZ9tePG3
+ sql2togQ6WVJQV3D4VzWLzNv8JTN4PlHYoDYKx3SGDoN85an+rTt+iOcsLKgM6Rd+JQxJld3G
+ HEZvGuqVs+O2aNi0Fn5HcMbTT57ZUb2y6Joc3oASGVSZYhXll0b93B01mL76+fKGDGeiLIf+6
+ ok/VXziZvk98oRJmWYM7BcgS129ycEVtLGRngRZ7ds+NcR1edWoK1vYk2lxUUYHTk5FsaxDdX
+ 0CM6jWq777T4sljv5Kyy80USV0XuJug+Ll+gin8Dlr9nkjuBoG+MVyNxgw2xfvSpnQBR+iNGj
+ 8mSvINL6oucYTdB34DNSGTupO9khhUe+zZSCWnZTqEc3WAIy/09vJKoVosaRHTWDWYFI2k/cK
+ amXFcZX+GZaJuTQpsuGQ1RY4YhFqW4ZPKi3Ar6mVoc/wwZj+NVSTzdygvHNCcAPs9aQzC2vPX
+ D4EvD9pIcSQiUvXACxf+cvzudj+21xeg9QANCC2siKS5cW8hv4GUs0+Yssyp5jL487eF/4jg8
+ PTE88yVIZzMtSPKHHEsG6xS0Se+zaHj2AqVz+eoq3/2jqULZ3EEgu+9jViymKOeWFo7fOTEVY
+ vsef77mVAC0bVEH7pZvBdk9dQXEw+KkvL9UDacDLoJirmp1XTA9CdPKQ5qIUyKZXSoro=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+On Fri, Jan 28, 2022 at 8:42 AM Sami Kyostila <skyostil@chromium.org> wrote:
+> to 27. tammik. 2022 klo 20.41 Greg KH (gregkh@linuxfoundation.org) kirjoitti:
 
-On 28.1.2022 5.48, 谢泓宇 wrote:
-> Hi Mathias,
-> 
->> xhci_urb_enqueue() shouldn't be called for roothub urbs, but if it is then we
->> should continue to return -EINVAL
-> 
-> xhci_urb_enqueue() won't be called for roothub urbs, only for none roothub urbs(see usb_hcd_submit_urb()).> 
-> So xhci_urb_enqueue() will not get 0 from xhci_check_args().
-> 
-> Still return -EINVAL if xhci_check_args() returns 0 in xhci_urb_enqueue()?
-> 
+> >
+> > Why can't you just do normal i2c transfers to/from userspace instead of
+> > requring a custom ioctl?
+>
+> The main reason is security: without this driver, in order to talk to
+> HPS the userspace daemon needs read/write access to the entire I2C
+> controller (e.g., /dev/i2c-0). This means the daemon can also control
+> any other I2C device which happens to be on the same bus. With a
+> separate ioctl we can limit access to just HPS.
+>
+> As far as I can tell, there's no way to restrict access on a
+> per-device level with normal i2c, but I'd be happy to be proven wrong
+> :)
 
-Yes. That is what it used to return. 
-This is more about code maintaining practice than this specific patch.
+I don't know if is correct, but I trust your research on that. However,
+I would still argue that instead of adding a custom low-level interface to
+give user access to a single raw i2c device, we would be better off doing
+one of two other approaches:
 
-Only make the necessary change to fix a bug, especially if the patch is going
-to stable kernels. 
-The change to return success ("0") instead of -EINVAL in xhci_urb_enqueue() for 
-roothub URBs is irrelevant in fixing your issue.
+a) add the generic interface you are missing -- it seems unlikely that you
+are the only user that has come across this issue, and adding a generic
+per-device interface to complement the per-controller one would likely
+help avoid others coming up with the same thing elsewhere, using yet
+another set of custom ioctls.
 
-Debugging future issues is a lot harder when there are small undocumented
-unrelated functional changes scattered around bugfixing patches.
+b) move part of your application into the kernel, and provide a high-level
+abstraction for your device in place of the low-level i2c access.
 
-Other reason is that even if you can be almost certain xhci_urb_enqueue() won't
-be called for roothub urbs for this kernel version, it's possible some old stable
-kernel code looks very different, and this change can break that stable version.
-
-Seemingly odd checks in code can indicate the old original code was flawed, and
-quickly worked around by adding the odd check.
-That kernel version might still depend on this odd check even if newer versions
-are fixed properly.
-
->>
->> xhci_check_args() should be rewritten later, but first we want a targeted fix
->> that can go to stable.
->>
->> Your original patch would be ok after following modification:
->> if (ret <= 0)
->>     return ret ? ret : -EINVAL;
-> 
-> I have two questions:
-> 
->     1) Why return -EINVAL for roothub urbs?
-
-- For all reasons stated above
-- Because it used to, and changing it doesn't fix anything
-- Because urbs sent to xhci_urb_enqueue() should have a valid urb->dev->parent,
-  if they don't have it then they are INVALID
-
-> 
->     2) Should I change all the return statements about xhci_check_args() in drivers/usb/host/xhci.c?
-> 
->     There are 6 of them.
-
-Only make sure your patch doesn't change the functionality unnecessarily.
-There are two places where we return -EINVAL if xhci_check_args() returns 0:
-xhci_urb_enqueue() and xhci_check_streams_endpoint()
-Keep that functionality.
-
-Thanks
-Mathias
+          Arnd
