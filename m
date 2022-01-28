@@ -2,122 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71CDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 21:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 21:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350962AbiA1V10 (ORCPT
+        id S1344782AbiA1Vb3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 16:27:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244758AbiA1V1Y (ORCPT
+        Fri, 28 Jan 2022 16:31:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52841 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236333AbiA1Vb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 16:27:24 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7FBC06173B
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 13:27:24 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id o11so7641600pjf.0
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 13:27:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BstT/Nbt3MI2dru2W9T6xWAwyUw0xClca5K9dP8OMlI=;
-        b=iBrSApDLmp0ob8yP+f6nZttYwwTgQD6Z6ydFvMo0ZIWknm3IhYzIiDlMRP4PT7Pnsr
-         DVNwGnS9VhpW9fAJNzyNpvDgOCk909OhTnDW9oJDeTtpCLpG0cD5T47tDNJlNFR7FWms
-         MT7Z/COaK6wwhvAZg+L0jwnP+qXkLGebvPcBxHV6l8uAYyHfyFa/3Jtv/SkBZkoOT2e4
-         Zec4M1yLGbWKmb+SNcL/GubTuEVnvk7rkBRjGkirz08RRoTWhbpG4eaIT4PZdDzzg2rA
-         MfxZ2B8qi+FpcI1ikwwvdIPA1YOn2XZT3GTkaXrBq7N1lvmOgtH4vYKKIe0BS7lMK3Va
-         uS7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BstT/Nbt3MI2dru2W9T6xWAwyUw0xClca5K9dP8OMlI=;
-        b=FCtUxt+hbDRZoY747ST2IUIU1keQS+awQKLR6KK+w0SHfRG0Igij5lXr4XQNMq8UsR
-         l131Sk8z4dofnMl89UMr0fNdUlUUmDZLsoZSL0ay3YbOJVYMgFveIM0QT5tyXANjcSAZ
-         ffFtD62in7gx4I4bpWmhVYqRob58WE68KnSed/dgT52OsRgFV2UgrCqdAYQWNOKKSDRG
-         JTveXhbYGkvizjPkUdnfWhAYj6fypeUaHtk0BA5v939baGZvqGeFIh6n+9F1aQYaxEQ/
-         VuvkqdZ+4kXpVQzWADLPmX34kX5/pYBeOHeKFM1XpgBxFgLGBAx19M0Txi0WgeABAGIU
-         QI0w==
-X-Gm-Message-State: AOAM531TEowEQc8cnbbKI8l90C3bGBac+GJgnDQl/ImS8CZ4aQyZuAAU
-        L5vvYwxT1fTlSVxBpehqv9TU7dHRrnT4F8Ft8AC47BvBwWsg8UKk
-X-Google-Smtp-Source: ABdhPJx7NwvP5XlHjebOh7PFpV+CrZSWAcRC9Nb8gN4ufJz0/29/ZJjy4h4crUGtUR0qUrzyAOADMD0d679g06NRs1Y=
-X-Received: by 2002:a17:903:187:: with SMTP id z7mr10311618plg.123.1643405243887;
- Fri, 28 Jan 2022 13:27:23 -0800 (PST)
+        Fri, 28 Jan 2022 16:31:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643405486;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cPaaPTwaHnrZy5BBxHC8AwDN/oX7cxF5Nc5fiuL/xAs=;
+        b=L1JMuwJe5kfMqxQiPSc02NKDIsEuZ6FkbEfmxIa0wffJxLyJpgbSZnI9p/c48Kxop+6aEw
+        D6gzfYmDfsvWiyHhND65z6sOuPOOuPs5A0ok1UW44DVqnk7oZ/kq+/yRm/37fZP7B3br5V
+        83QAaa501fO2h47uoe2EamSZzPrSEi0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-70-vIGYNqzuMMah-cPnGiTNJQ-1; Fri, 28 Jan 2022 16:31:23 -0500
+X-MC-Unique: vIGYNqzuMMah-cPnGiTNJQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 84FD5814243;
+        Fri, 28 Jan 2022 21:31:21 +0000 (UTC)
+Received: from [10.22.33.1] (unknown [10.22.33.1])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 42AE8E2FE;
+        Fri, 28 Jan 2022 21:31:08 +0000 (UTC)
+Message-ID: <e14e8c96-b2e3-cb57-2c35-284116798225@redhat.com>
+Date:   Fri, 28 Jan 2022 16:31:07 -0500
 MIME-Version: 1.0
-References: <20211013191320.2490913-1-dlatypov@google.com> <CAFd5g47=aO3e8d4_GGcgY9BK43Z0Oo6SGD-2e5rJDp5r3k4XXQ@mail.gmail.com>
- <CAGS_qxoziNGNVpsUfvUfOReADY0PdriV2gJJ7+LUzzd+7BU-Ow@mail.gmail.com>
- <0f85025124359304c8a2a97d007b66d5655645c1.camel@codeconstruct.com.au> <CAGS_qxpvX74vnAGhC=TAxFy1NT3mXB0S3AHUZvK2FA59hDijxA@mail.gmail.com>
-In-Reply-To: <CAGS_qxpvX74vnAGhC=TAxFy1NT3mXB0S3AHUZvK2FA59hDijxA@mail.gmail.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Fri, 28 Jan 2022 16:27:12 -0500
-Message-ID: <CAFd5g47mYnqyu0DBJmxHjVcdTfc5ig-X6P9wu4bLYw+FhqaYCQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] kunit: flatten kunit_suite*** to kunit_suite** in executor
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     Jeremy Kerr <jk@codeconstruct.com.au>, davidgow@google.com,
-        linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 2/2] mm/page_owner: Dump memcg information
+Content-Language: en-US
+To:     Ira Weiny <ira.weiny@intel.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Rafael Aquini <aquini@redhat.com>
+References: <20220128195642.416743-1-longman@redhat.com>
+ <20220128195642.416743-3-longman@redhat.com>
+ <20220128212249.GI785175@iweiny-DESK2.sc.intel.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220128212249.GI785175@iweiny-DESK2.sc.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 4:19 PM Daniel Latypov <dlatypov@google.com> wrote:
+On 1/28/22 16:22, Ira Weiny wrote:
+> On Fri, Jan 28, 2022 at 02:56:42PM -0500, Waiman Long wrote:
+>> It was found that a number of offlined memcgs were not freed because
+>> they were pinned by some charged pages that were present. Even "echo
+>> 1 > /proc/sys/vm/drop_caches" wasn't able to free those pages. These
+>> offlined but not freed memcgs tend to increase in number over time with
+>> the side effect that percpu memory consumption as shown in /proc/meminfo
+>> also increases over time.
+>>
+>> In order to find out more information about those pages that pin
+>> offlined memcgs, the page_owner feature is extended to dump memory
+>> cgroup information especially whether the cgroup is offlined or not.
+>>
+>> Signed-off-by: Waiman Long <longman@redhat.com>
+>> ---
+>>   mm/page_owner.c | 28 ++++++++++++++++++++++++++++
+>>   1 file changed, 28 insertions(+)
+>>
+>> diff --git a/mm/page_owner.c b/mm/page_owner.c
+>> index c52ce9d6bc3b..e5d8c642296b 100644
+>> --- a/mm/page_owner.c
+>> +++ b/mm/page_owner.c
+>> @@ -10,6 +10,7 @@
+>>   #include <linux/migrate.h>
+>>   #include <linux/stackdepot.h>
+>>   #include <linux/seq_file.h>
+>> +#include <linux/memcontrol.h>
+>>   #include <linux/sched/clock.h>
+>>   
+>>   #include "internal.h"
+>> @@ -339,6 +340,7 @@ print_page_owner(char __user *buf, size_t count, unsigned long pfn,
+>>   		depot_stack_handle_t handle)
+>>   {
+>>   	int ret = 0, pageblock_mt, page_mt;
+>> +	unsigned long __maybe_unused memcg_data;
+>>   	char *kbuf;
+>>   
+>>   	count = min_t(size_t, count, PAGE_SIZE);
+>> @@ -371,6 +373,32 @@ print_page_owner(char __user *buf, size_t count, unsigned long pfn,
+>>   			"Page has been migrated, last migrate reason: %s\n",
+>>   			migrate_reason_names[page_owner->last_migrate_reason]);
+>>   
+>> +#ifdef CONFIG_MEMCG
+>> +	/*
+>> +	 * Look for memcg information and print it out
+>> +	 */
+>> +	memcg_data = READ_ONCE(page->memcg_data);
+>> +	if (memcg_data) {
+>> +		struct mem_cgroup *memcg = page_memcg_check(page);
+>> +		bool onlined;
+>> +		char name[80];
+>> +
+>> +		if (memcg_data & MEMCG_DATA_OBJCGS)
+>> +			SNPRINTF(kbuf, count, ret, err, "Slab cache page\n");
+>> +
+>> +		if (!memcg)
+>> +			goto copy_out;
+>> +
+>> +		onlined = (memcg->css.flags & CSS_ONLINE);
+>> +		cgroup_name(memcg->css.cgroup, name, sizeof(name) - 1);
+>> +		SNPRINTF(kbuf, count, ret, err, "Charged %sto %smemcg %s\n",
+>                                                          ^^^
+> 						Extra specifier?
 >
-> On Wed, Oct 13, 2021 at 6:55 PM Jeremy Kerr <jk@codeconstruct.com.au> wrote:
-> > Resulting in the .kunit_test_suites section just being a set of
-> > contiguous pointers to struct kunit_suite. We get the number of suites
-> > from the section size.
->
-> <snip>
->
-> >
-> > That was my thinking, anyway. I think it probably makes sense to do that
-> > cleanup after the section patch, as that means we don't need any
-> > post-processing on the suites arrays.
->
-> To be honest, I'm actually tempted to pay the cost of postprocessing
-> and proposing a change like this for real.
-> Going from kunit_suite*** to ** shaves off a lot of code from the unit
-> test and the filtering code path.
->
-> Specifically I'm thinking this can go into the kunit branch,
-> https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git/?h=kunit
-> Then when we have the series reworking modules, one of two things can happen.
-> 1. if we get to kunit_suite** with null-terminated arrays, fixing the
-> executor just means dropping the post-processing step.
-> 2. If we get to kunit_suite* as mentioned above, then there'll be a
-> bit more work, but not as much.
->
-> Alternatively, I can wait and send you an updated version of this
-> patch to include at the start of your series like
-> PATCH 1/x: this patch with post-processing, using either * or **
-> ...
-> PATCH x/x: final rework, and drop the postprocessing
->
-> It's just that the prospect of submitting a patch that reduces so much
-> code makes me eager to try and get it submitted :)
+> Did this compile without warnings?
 
-I agree. Honestly, just changing the type signature from `struct
-kunit_suite * const * const *` to `struct kunit_suite * const *` in
-the suite_set struct sells me on this. I missed this before, but now
-that I am aware of this, I would like to see it go in soon.
+Yes, there was no warning.
 
-> Brendan and David seem ok with paying the bit of runtime overhead for
-> post-processing, esp. if we time it so this patch lands in the same
+Cheers,
+Longmna
 
-I'm absolutely fine with it. We are nowhere near the point where that
-matters at all.
+> Ira
+>
+>> +			PageMemcgKmem(page) ? "(via objcg) " : "",
+>> +			onlined ? "" : "offlined ", name);
+>> +	}
+>> +
+>> +copy_out:
+>> +#endif
+>> +
+>>   	SNPRINTF(kbuf, count, ret, err, "\n");
+>>   
+>>   	if (copy_to_user(buf, kbuf, ret))
+>> -- 
+>> 2.27.0
+>>
+>>
 
-> Linux release as the module rework.
-> But I can hold off if it'll make your life more difficult.
-
-Also agree. I am excited to see Jeremy's new module code. I don't want
-to make his life any harder than it already is ;-)
-
-> >
-> > Cheers,
-> >
-> >
-> > Jeremy
