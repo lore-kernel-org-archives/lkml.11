@@ -2,137 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A092C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:30:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD50C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 07:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346810AbiA1Haz (ORCPT
+        id S1346818AbiA1Hdr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 02:30:55 -0500
-Received: from mga04.intel.com ([192.55.52.120]:11836 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242692AbiA1Hax (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 02:30:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643355053; x=1674891053;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=4s/YY4fDv/OF06n6oNWa+SaeSxVS4e1wXdQ0vMdNYqs=;
-  b=V2Fd9IMvg12PDfqdPTZ0QdiXxybTuTab85JS53byMnpdQ0w75UD7wnaQ
-   /MS6loi/4q39j+D/SsA10Ow5mm0w+C46ppXobHMAuTHiPu2I2w5f0T5fT
-   jzOPdWbToosJUFjuuu/hJhPCdJM7OGnjbcEMa9GLh/Qtkq67MunAzarDa
-   M0DG/P+sGbmGgwIGGIz5g6IHCkYRSd/JriO4CT0e5g4b8egl9VPi4+Iy/
-   d1YBCszh+nHklwPxltiE9u3hl96F3702EGPw9d6pEozeESrKNGehT50t5
-   xZQsEhuXqEB2fa1OAVzyLX7MQrrzw2U6ZX5pNn/Hb0r6DcAiEMKq4eLCa
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="245908944"
-X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
-   d="scan'208";a="245908944"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 23:30:53 -0800
-X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
-   d="scan'208";a="618639528"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.11])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 23:30:51 -0800
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@suse.de>, linux-kernel@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>, Rik van Riel <riel@surriel.com>
-Subject: Re: [RFC PATCH 1/2] NUMA balancing: fix NUMA topology type for
- memory tiering system
-References: <20220128023842.1946583-1-ying.huang@intel.com>
-        <20220128052345.GA618915@linux.vnet.ibm.com>
-Date:   Fri, 28 Jan 2022 15:30:50 +0800
-In-Reply-To: <20220128052345.GA618915@linux.vnet.ibm.com> (Srikar Dronamraju's
-        message of "Fri, 28 Jan 2022 10:53:45 +0530")
-Message-ID: <87czkctiz9.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 28 Jan 2022 02:33:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242692AbiA1Hdq (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 02:33:46 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B6AC061714;
+        Thu, 27 Jan 2022 23:33:46 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id z131so4476623pgz.12;
+        Thu, 27 Jan 2022 23:33:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B8tMpG+tnSHKk9q7aoQpG1aih0nJ6Wa+B2x2HTN3gO4=;
+        b=Ks3QwAahRU3Dvrq0QLU3Xr+lWweSjd0SnqGvlXxdHUQ+DODFkZzJgTUbBYeHvVk44n
+         qgVb+ENsLez5ygYFHclrwXTLtL3KLzQbvSmOYCyX70TG9+Ywzk4OGbYkohVewFbnw4Dq
+         b9Ve0AnrYGcwwFgqM67PYDOEE/FJU+xdiFjs8fBwIwSf8GP0OanonBpWi1K4PHUR5WUN
+         Zp5K/WazfsNaf+XoxUw+joWLu12Bv+74y8JaNpjxid8zmHd2tE7r5fNCOyB2WkVQFIRi
+         P+l3GopXDFYvoQ1xIw3ReGtJnAYDCaOsKJEUTwRb3FRTuAPvzTSJHftAR/6IClx4siM+
+         FAKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B8tMpG+tnSHKk9q7aoQpG1aih0nJ6Wa+B2x2HTN3gO4=;
+        b=riHCkwV4rDZvfkoH6zRw8Ng5tqEx/Rkc+PV+aQp8Y4ZypGEnZnFYuGiPqt7AAx0XP6
+         iDqOwXbD+9CELKwZb2XjKDtOztbL5CHCpwPsq32uI6d+OilP2XjIPIJ/PZyGOL8vv/gD
+         J/rNK+w7aEor4VxGTE5L4hTOLdeg7O+WkqM517A02LhxmzJTLTkidVTAYVHldpQ0bWHw
+         2nYR6tC/3HG2snGW5YCooM2DD+pFZdJENTmSaJDiYetVV+O1UeK9kSGXqGra3oCrufB2
+         JfShxAJQrT1zLcckmdufN9ZZ7oW0hGHzrHImiKlw9AdbeQ0lerJkpMhjpMyupbbbvPRa
+         XlTQ==
+X-Gm-Message-State: AOAM531bjD9KST9BLDukvLyFUQIvs1r+kPI9YpEIkbs9W7PI9qNAn6p8
+        wErxUbYKEWvJYrUWrT1i9LQ=
+X-Google-Smtp-Source: ABdhPJwlwbmWxqFhIfJnFbmHbX/vaSKE4miPmU9BRUFWQ+EB7kN3o7niGKVEWf7NpyX/RfYJ+Hn0Iw==
+X-Received: by 2002:a05:6a00:80d:: with SMTP id m13mr6838777pfk.48.1643355225635;
+        Thu, 27 Jan 2022 23:33:45 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.8])
+        by smtp.gmail.com with ESMTPSA id q17sm8548846pfu.160.2022.01.27.23.33.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 23:33:45 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     dsahern@kernel.org, kuba@kernel.org
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, pablo@netfilter.org, kadlec@netfilter.org,
+        fw@strlen.de, imagedong@tencent.com, edumazet@google.com,
+        alobakin@pm.me, paulb@nvidia.com, keescook@chromium.org,
+        talalahmad@google.com, haokexin@gmail.com, memxor@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        cong.wang@bytedance.com, mengensun@tencent.com
+Subject: [PATCH v3 net-next 0/7] net: use kfree_skb_reason() for ip/udp packet receive
+Date:   Fri, 28 Jan 2022 15:33:12 +0800
+Message-Id: <20220128073319.1017084-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Srikar Dronamraju <srikar@linux.vnet.ibm.com> writes:
+From: Menglong Dong <imagedong@tencent.com>
 
-> * Huang Ying <ying.huang@intel.com> [2022-01-28 10:38:41]:
->
->> 
->> One possible fix is to ignore CPU-less nodes when detecting NUMA
->> topology type in init_numa_topology_type().  That works well for the
->> example system.  Is it good in general for any system with CPU-less
->> nodes?
->> 
->
-> A CPUless node at the time online doesn't necessarily mean a CPUless node
-> for the entire boot. For example: On PowerVM Lpars, aka powerpc systems,
-> some of the nodes may start as CPUless nodes and then CPUS may get
-> populated/hotplugged on them.
+In this series patches, kfree_skb() is replaced with kfree_skb_reason()
+during ipv4 and udp4 packet receiving path, and following drop reasons
+are introduced:
 
-Got it!
+SKB_DROP_REASON_SOCKET_FILTER
+SKB_DROP_REASON_NETFILTER_DROP
+SKB_DROP_REASON_OTHERHOST
+SKB_DROP_REASON_IP_CSUM
+SKB_DROP_REASON_IP_INHDR
+SKB_DROP_REASON_IP_RPFILTER
+SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST
+SKB_DROP_REASON_XFRM_POLICY
+SKB_DROP_REASON_IP_NOPROTO
+SKB_DROP_REASON_SOCKET_RCVBUFF
+SKB_DROP_REASON_PROTO_MEM
 
-> Hence I am not sure if adding a check for CPUless nodes at node online may
-> work for such systems.
+TCP is more complex, so I left it in the next series.
 
-How about something as below?
+I just figure out how __print_symbolic() works. It doesn't base on the
+array index, but searching for symbols by loop. So I'm a little afraid
+it's performance.
 
-Best Regards,
-Huang, Ying
+Changes since v2:
+- use SKB_DROP_REASON_PKT_TOO_SMALL for a path in ip_rcv_core()
 
------------------------8<-----------------------------
+Changes since v1:
+- add document for all drop reasons, as David advised
+- remove unreleated cleanup
+- remove EARLY_DEMUX and IP_ROUTE_INPUT drop reason
+- replace {UDP, TCP}_FILTER with SOCKET_FILTER
 
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index d201a7052a29..733e8bd930b4 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -1737,7 +1737,13 @@ static void init_numa_topology_type(void)
- 	}
- 
- 	for_each_online_node(a) {
-+		if (!node_state(a, N_CPU))
-+			continue;
-+
- 		for_each_online_node(b) {
-+			if (!node_state(b, N_CPU))
-+				continue;
-+
- 			/* Find two nodes furthest removed from each other. */
- 			if (node_distance(a, b) < n)
- 				continue;
-@@ -1849,6 +1855,13 @@ void sched_init_numa(void)
- 
- 			sched_domains_numa_masks[i][j] = mask;
- 
-+			/*
-+			 * The mask will be initialized when the first CPU of
-+			 * the node is onlined.
-+			 */
-+			if (!node_state(j, N_CPU))
-+				continue;
-+
- 			for_each_node(k) {
- 				/*
- 				 * Distance information can be unreliable for
-@@ -1919,8 +1932,10 @@ void sched_init_numa(void)
- 		return;
- 
- 	bitmap_zero(sched_numa_onlined_nodes, nr_node_ids);
--	for_each_online_node(i)
--		bitmap_set(sched_numa_onlined_nodes, i, 1);
-+	for_each_online_node(i) {
-+		if (node_state(i, N_CPU))
-+			bitmap_set(sched_numa_onlined_nodes, i, 1);
-+	}
- }
- 
- static void __sched_domains_numa_masks_set(unsigned int node)
-@@ -1928,7 +1943,7 @@ static void __sched_domains_numa_masks_set(unsigned int node)
- 	int i, j;
- 
- 	/*
--	 * NUMA masks are not built for offline nodes in sched_init_numa().
-+	 * NUMA masks are not built for offline/CPU-less nodes in sched_init_numa().
- 	 * Thus, when a CPU of a never-onlined-before node gets plugged in,
- 	 * adding that new CPU to the right NUMA masks is not sufficient: the
- 	 * masks of that CPU's node must also be updated.
+
+Menglong Dong (7):
+  net: skb_drop_reason: add document for drop reasons
+  net: netfilter: use kfree_drop_reason() for NF_DROP
+  net: ipv4: use kfree_skb_reason() in ip_rcv_core()
+  net: ipv4: use kfree_skb_reason() in ip_rcv_finish_core()
+  net: ipv4: use kfree_skb_reason() in ip_protocol_deliver_rcu()
+  net: udp: use kfree_skb_reason() in udp_queue_rcv_one_skb()
+  net: udp: use kfree_skb_reason() in __udp_queue_rcv_skb()
+
+ include/linux/skbuff.h     | 38 ++++++++++++++++++++++++++++++++------
+ include/trace/events/skb.h | 11 +++++++++++
+ net/ipv4/ip_input.c        | 31 +++++++++++++++++++++++--------
+ net/ipv4/udp.c             | 22 ++++++++++++++++------
+ net/netfilter/core.c       |  3 ++-
+ 5 files changed, 84 insertions(+), 21 deletions(-)
+
+-- 
+2.27.0
+
