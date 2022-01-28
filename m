@@ -2,216 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95392C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 05:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E8DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 05:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238640AbiA1FQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 00:16:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
+        id S239485AbiA1FYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 00:24:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232856AbiA1FQJ (ORCPT
+        with ESMTP id S231458AbiA1FYC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 00:16:09 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F3BBC06173B
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 21:16:09 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id e28so5124798pfj.5
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 21:16:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Xy7V1RKBgPy7ej3aLewZ5fgpZQ6691qdKaJczzqlNHk=;
-        b=dvy7Hfy2AHdOXqtC7FdYxoxNBYCQzybLnMezlpbU7QfAVQ94QYX7yYbzPaX4ZM99aa
-         JGTaixtkYrNUgotaWxqqyRofLShMxqEjk4rlkyGfzntMnDprBkc5c76+8oDm835SA6Gs
-         rL+x0Bkz+dD/OLxKax+lWYebU1P+JkSxNJTT8vrlLwJtOVbzIN5v7OWTnPJBttegPugO
-         FV6mPeqs51H88DF5LBRHkc2a+Fhhu0ldsNGOwPi/kk1LWGwO2Nf0sNZXyMYfNU2b735I
-         djNR59SP7DmpBilvPJAAqvWfmbCixzOOPSuPHhOiCzHB9ATSCnef3wMrY/NG6KdMbat9
-         pdUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Xy7V1RKBgPy7ej3aLewZ5fgpZQ6691qdKaJczzqlNHk=;
-        b=uoj18li5TbzUD9ZgXkvKYGF1UvI6Mb3JefERbcbKZuXGeFoPCzEen/q46uzpMmZrSl
-         GEDtT2kA53J/H01W0XbhJW01zebJW7mvIHQnwt0llU9VPXKsKwK/uGpbshxendLPc6nE
-         1uMx7yV+mmshB0O3PrWIatE3JBis3LrUAhQQZnWG5WaVkQKJVOyOOW1xGfEUR9FpR1HP
-         lXjqxhceZMe4xzQ79daqrPmmByT7l61RpGo2MN7e+eoxEoKPw6VoH6KsEh/BCPsEnLMn
-         XMPhIkpStiUPTF3wCbPdJS3+MfzkNeHk4KLl+LOY+vu8w1Ck0ICdaHisKDY6cKUpDBCV
-         WJKQ==
-X-Gm-Message-State: AOAM5300O5pXZfUFK2e5kkmGPohZSoESlwHIw4TYXpVLbjFyolL10S9O
-        OfwK3yq5ulmENBARDlrmFHmxMw==
-X-Google-Smtp-Source: ABdhPJwcDyOeN54f5ywguadGTIVI8TcNaRt3WmrVCPE7jF6+vI+RUWxhwFLhAJHDtO7JUAZ3sRrvBA==
-X-Received: by 2002:a63:f650:: with SMTP id u16mr5337290pgj.2.1643346968484;
-        Thu, 27 Jan 2022 21:16:08 -0800 (PST)
-Received: from sunil-ThinkPad-T490 ([49.206.3.187])
-        by smtp.gmail.com with ESMTPSA id b22sm7617198pfl.121.2022.01.27.21.16.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 21:16:08 -0800 (PST)
-Date:   Fri, 28 Jan 2022 10:46:00 +0530
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Heinrich Schuchardt <xypron.glpk@gmx.de>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, linux-efi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Anup Patel <apatel@ventanamicro.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        Abner Chang <abner.chang@hpe.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>
-Subject: Re: [RFC PATCH 1/1] riscv/efi_stub: Add support for
- RISCV_EFI_BOOT_PROTOCOL
-Message-ID: <20220128051600.GB5018@sunil-ThinkPad-T490>
-References: <20220126110615.33371-1-sunilvl@ventanamicro.com>
- <20220126110615.33371-2-sunilvl@ventanamicro.com>
- <667AE324-A8D2-41ED-B9DF-62750F3C2574@gmx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <667AE324-A8D2-41ED-B9DF-62750F3C2574@gmx.de>
+        Fri, 28 Jan 2022 00:24:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3C9C061714;
+        Thu, 27 Jan 2022 21:24:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D38C8B824A6;
+        Fri, 28 Jan 2022 05:23:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD05C340E0;
+        Fri, 28 Jan 2022 05:23:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643347438;
+        bh=InGcFOenKPC/QOiDv3FJsk4CYya1ULt9TSe2kRvu7Do=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SgSxFm4Ju5sIXl12Li0Qn/uucKdZkzVhdwnYhACCFs8MQ8iBKgntRZ/+mn0ODd9mY
+         +ja4LefpOka56rZ1feOG41Su9HtTI5NB20Yt59r68IZJO0M6X2jw8hcn//Cw/3N5bq
+         S2h7WLUDeO7f6spp/yim1buq6yE2fAuPpdibU6URpdvvzM++bYkWohzPw6wmV+68tt
+         sQeB8gA4aV11RhN6UqEJPJ9ee8NooCAC7CIZXTeBbyTrn/tmJMhG8beCtvqMjq4EeW
+         dVm+QEQSF51QOAF+ljafvTTrQhSA4EGWXYQ/vTlf3YkxgKpRjYLWvms2auVHytQU09
+         jgTPC5m4tJL3Q==
+Date:   Fri, 28 Jan 2022 14:23:48 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?UTF-8?B?QW5kcsOp?= Almeida <andrealmeid@collabora.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>, Andi Kleen <ak@linux.intel.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
+        Song Liu <song@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        German Gomez <german.gomez@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        masami.hiramatsu.pt@hitachi.com, eranian@google.com
+Subject: Re: [PATCH v2 0/4] Reference count checker and related fixes
+Message-Id: <20220128142348.17d51894dbdb35c9a9449567@kernel.org>
+In-Reply-To: <CAP-5=fXyJeX3b3egcAOfPndmYhakrsdKu7HttnHEH2DKP-6Vxw@mail.gmail.com>
+References: <20220125204602.4137477-1-irogers@google.com>
+        <CAP-5=fXyJeX3b3egcAOfPndmYhakrsdKu7HttnHEH2DKP-6Vxw@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 08:47:35AM +0100, Heinrich Schuchardt wrote:
-> Am 26. Januar 2022 12:06:15 MEZ schrieb Sunil V L <sunilvl@ventanamicro.com>:
-> >This patch adds the support for getting the boot hart ID in
-> >Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL.
-> 
-> It would be helpful to add a link to the spec in the commit message and maybe a comment that this protocol is needed for the ACPI use case.
+On Thu, 27 Jan 2022 13:33:23 -0800
+Ian Rogers <irogers@google.com> wrote:
 
-Sure. Will add.
-
-> 
+> On Tue, Jan 25, 2022 at 12:46 PM Ian Rogers <irogers@google.com> wrote:
 > >
-> >Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
-> >---
-> > drivers/firmware/efi/libstub/efistub.h    | 15 ++++++++++++
-> > drivers/firmware/efi/libstub/riscv-stub.c | 28 ++++++++++++++++++++---
-> > include/linux/efi.h                       |  1 +
-> > 3 files changed, 41 insertions(+), 3 deletions(-)
+> > This v2 patch set has the main reference count patch for cpu map from
+> > the first set and then adds reference count checking to nsinfo. The
+> > reference count checking on nsinfo helped diagnose a data race bug
+> > which is fixed in the independent patches 2 and 3.
 > >
-> >diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-> >index edb77b0621ea..0428f8816942 100644
-> >--- a/drivers/firmware/efi/libstub/efistub.h
-> >+++ b/drivers/firmware/efi/libstub/efistub.h
-> >@@ -720,6 +720,21 @@ union efi_tcg2_protocol {
-> > 	} mixed_mode;
-> > };
-> > 
-> >+typedef union riscv_efi_boot_protocol riscv_efi_boot_protocol_t;
-> >+
-> >+union riscv_efi_boot_protocol {
-> >+	struct {
-> >+		u64 revision;
-> >+		efi_status_t (__efiapi *get_boot_hartid)(
-> >+							 riscv_efi_boot_protocol_t *,
-> >+							 size_t *);
+> > The perf tool has a class of memory problems where reference counts
+> > are used incorrectly. Memory/address sanitizers and valgrind don't
+> > provide useful ways to debug these problems, you see a memory leak
+> > where the only pertinent information is the original allocation
+> > site. What would be more useful is knowing where a get fails to have a
+> > corresponding put, where there are double puts, etc.
+> >
+> > This work was motivated by the roll-back of:
+> > https://lore.kernel.org/linux-perf-users/20211118193714.2293728-1-irogers@google.com/
+> > where fixing a missed put resulted in a use-after-free in a different
+> > context. There was a sense in fixing the issue that a game of
+> > wac-a-mole had been embarked upon in adding missed gets and puts.
+> >
+> > The basic approach of the change is to add a level of indirection at
+> > the get and put calls. Get allocates a level of indirection that, if
+> > no corresponding put is called, becomes a memory leak (and associated
+> > stack trace) that leak sanitizer can report. Similarly if two puts are
+> > called for the same get, then a double free can be detected by address
+> > sanitizer. This can also detect the use after put, which should also
+> > yield a segv without a sanitizer.
+> >
+> > Adding reference count checking to cpu map was done as a proof of
+> > concept, it yielded little other than a location where the use of get
+> > could be cleaner by using its result. Reference count checking on
+> > nsinfo identified a double free of the indirection layer and the
+> > related threads, thereby identifying a data race as discussed here:
+> > https://lore.kernel.org/linux-perf-users/CAP-5=fWZH20L4kv-BwVtGLwR=Em3AOOT+Q4QGivvQuYn5AsPRg@mail.gmail.com/
+> > Accordingly the dso->lock was extended and use to cover the race.
+> >
+> > An alternative that was considered was ref_tracker:
+> >  https://lwn.net/Articles/877603/
+> > ref_tracker requires use of a reference counted struct to also use a
+> > cookie/tracker. The cookie is combined with data in a ref_tracker_dir
+> > to spot double puts. When an object is finished with leaks can be
+> > detected, as with this approach when leak analysis happens. This
+> > approach was preferred as it doesn't introduce cookies, spots use
+> > after put and appears moderately more neutral to the API. Weaknesses
+> > of the implemented approcah are not being able to do adhoc leak
+> > detection and a preference for adding an accessor API to structs. I
+> > believe there are other issues and welcome suggestions.
 > 
-> I prefer to have parameter names for readability
+> And so we've been here before (Dec 2015 to be exact). Namhyung pointed me to:
+> https://lore.kernel.org/all/20151209021047.10245.8918.stgit@localhost.localdomain/
+> by Masami Hiramatsu. In this work he adds a leak sanitizer style
+> reference count checker that will describe locations of puts and gets
+> for diagnosis. Firstly that's an awesome achievement! This work is
+> different in that it isn't trying to invent a leak sanitizer, it is
+> just using the existing one. By adding a level of indirection this
+> work can catch use after put and pairs gets with puts to make lifetime
+> analysis more automatic. An advantage of Masami's work is that it
+> doesn't change data-structures and after the initial patch-set is
+> somewhat transparent. Overall I prefer the approach in these patches,
+> future patches can look to clean up the API as Masami has.
 
-Sure. Will add.
+Thanks for referring my series :-D The series aimed to solve the refcount
+usage issue in the perf which lead the object leaks. At that moment,
+I found that there were 2 patterns, refcount start from 0 and start from 1.
+That made me confused what I should do for using a object.
+But the perf uses linux/refcount.h now, I hope such issue has already gone.
+(but the object leakage seems not fixed fully yet, as you found.)
 
-> 
-> According to the platform specification mhartid is MXLEN wide. UINTN (size_t) is SXLEN wide. 
-> 
-> Does this have any implications on how we define the protocol?
+BTW, I think the introducing UNWRAP_* macro may put a burden on future
+development. If it is inevitable, we should consider it as carefully as
+possible. Or, it may cause another issue (it is easily missed that the new
+patch does not use UNWRAP_* for object reference, because it is natual.)
 
-I don't think so. EFI and kernel will be at same privilige level. So, it
-is not really an issue for this protocol. 
+So I agree with you that you to clean up the API. :-)
+I think we can make yet another refcount.h for user space debugging and
+replace it with the linux/refcount.h.
 
-But when MXLEN > SXLEN (ex: 64 vs 32), then implementation need to
-ensure hartid value is 32 bit only so that when it is passed from M-mode
-firmware to S-mode, it gets correct value. But again this is not an
-issue from this EFI protocol perspective.
+Thank you,
 
-> 
-> >+	};
-> >+	struct {
-> >+		u32 revision;
-> >+		u32 get_boot_hartid;>+	} mixed_mode;
-> >+};
-> >+
-> > typedef union efi_load_file_protocol efi_load_file_protocol_t;
-> > typedef union efi_load_file_protocol efi_load_file2_protocol_t;
-> > 
-> >diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
-> >index 380e4e251399..c7add4eb5453 100644
-> >--- a/drivers/firmware/efi/libstub/riscv-stub.c
-> >+++ b/drivers/firmware/efi/libstub/riscv-stub.c
-> >@@ -46,12 +46,34 @@ static u32 get_boot_hartid_from_fdt(void)
-> > 	return fdt32_to_cpu(*prop);
-> > }
-> > 
-> >+static u32 get_boot_hartid_from_efi(void)
-> >+{
-> 
-> The returned value must be UINTN /size_t like the protocol. This width must be carried to the legacy entry point of Linux.
-> 
-> >+	efi_guid_t boot_protocol_guid = RISCV_EFI_BOOT_PROTOCOL_GUID;
-> >+	efi_status_t status;
-> >+	riscv_efi_boot_protocol_t *boot_protocol;
-> >+	size_t boot_hart_id;
-> >+
-> >+	status = efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
-> >+			     (void **)&boot_protocol);
-> >+	if (status == EFI_SUCCESS) {
-> >+		status = efi_call_proto(boot_protocol,
-> >+					get_boot_hartid, &boot_hart_id);
-> >+		if (status == EFI_SUCCESS) {
-> >+			return (u32)boot_hart_id;
-> >+		}
-> >+	}
-> >+	return U32_MAX;
-> 
-> U32_MAX is a legal value for the hart id.
-
-Yeah. This is an existing issue in get_boot_hartid_from_fdt() for which
-I have sent a fix patch. Once that gets accepted, I will fix
-get_boot_hartid_from_efi() and send RFC V2 patch.
-
-> 
-> >+}
-> >+
-> > efi_status_t check_platform_features(void)
-> > {
-> >-	hartid = get_boot_hartid_from_fdt();
-> >+	hartid = get_boot_hartid_from_efi();
-> > 	if (hartid == U32_MAX) {
-> >-		efi_err("/chosen/boot-hartid missing or invalid!\n");
-> >-		return EFI_UNSUPPORTED;
-> >+		hartid = get_boot_hartid_from_fdt();
-> >+		if (hartid == U32_MAX) {
-> 
-> U32_MAX is a legal value for the hart id. Please, separate status and value.
-
-Will fix it.
-
-Thank you very much for the feedback.
-Sunil
-
-> 
-> Best regards
-> 
-> Heinrich
-> 
-> >+			efi_err("/chosen/boot-hartid missing or invalid!\n");
-> >+			return EFI_UNSUPPORTED;
-> >+		}
-> > 	}
-> > 	return EFI_SUCCESS;
-> > }
-> >diff --git a/include/linux/efi.h b/include/linux/efi.h
-> >index ccd4d3f91c98..9822c730207c 100644
-> >--- a/include/linux/efi.h
-> >+++ b/include/linux/efi.h
-> >@@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
-> > #define EFI_CONSOLE_OUT_DEVICE_GUID		EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
-> > #define APPLE_PROPERTIES_PROTOCOL_GUID		EFI_GUID(0x91bd12fe, 0xf6c3, 0x44fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
-> > #define EFI_TCG2_PROTOCOL_GUID			EFI_GUID(0x607f766c, 0x7455, 0x42be,  0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
-> >+#define RISCV_EFI_BOOT_PROTOCOL_GUID		EFI_GUID(0xccd15fec, 0x6f73, 0x4eec,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
-> > #define EFI_LOAD_FILE_PROTOCOL_GUID		EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
-> > #define EFI_LOAD_FILE2_PROTOCOL_GUID		EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
-> > #define EFI_RT_PROPERTIES_TABLE_GUID		EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
-> 
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
