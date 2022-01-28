@@ -2,102 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C24C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:12:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 10:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244404AbiA1KML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 05:12:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38926 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243644AbiA1KMJ (ORCPT
+        id S244487AbiA1KMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 05:12:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:36314 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243748AbiA1KM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 05:12:09 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8401CC061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 02:12:09 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id q204so7081355iod.8
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 02:12:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wNPUfF1dwsGSwixCd2rgdU0h/HhD4TFDiOUvTQkWOEw=;
-        b=M7eajZzEWKAncpyXdu/HipsM/BbPDnRWxumzOXgLR3bNg3puk4HY8RWpErAOAyvZRJ
-         dLuxXEMFGu0r76nmAuFHh+cILobCzGgMKju5UFC+pQwBi0BdyNpldCDaDxu+H/aEyT2+
-         VrbLU9n4jkA5Fg45qihW1O4j0sGAVjEQ8z/sv+5jRl18OPR9yIxQWrEoOBp4y7DVK9Bm
-         ipmTMEOSgZgqJra4/6TZczJGTqa/NEfaQTIkBqBaDYWSbalOaqIaBbwV7vADAvD6+wEw
-         iSbxk6KLEW3Si+dazP8BDLOZAIgOGJiNTfTpQLxSjvsy1eIs64w9hm2UCFDlacn8hUgy
-         B3Pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wNPUfF1dwsGSwixCd2rgdU0h/HhD4TFDiOUvTQkWOEw=;
-        b=NlnIAH9rDLpYMUhWFIeN/+n/ih2B9AKtBdeU1w9sytLHXFD3Ddb25E+Dck/uP3+iAm
-         bGQJtSEeAhsvO81BYIntojGB7R356SLw/aByb4UbJJL6kGeLx0nNJnG3wo9+TvC3QxXl
-         704OHiPp+k1gbrbldecK8IORQIrOsF+IXsZjOKZAKNHTtzw6ll0P4+PczLwPktFoUdmn
-         Ck/BlfNJi6T6E2x5DEFIS1hMuLTDD6KYzgkZGWTAj/ezecymOf59E4ROMbh2WnHofe82
-         9iIrjuBytg1j3OvvI4IviV1XzowNP3OoAlHESRXHxBOLs6XtPFGJEGb3LdLhIa+HPZjw
-         vPnw==
-X-Gm-Message-State: AOAM532vZvyuFPl9vvkLi0NuXzT0WBwoll+RlW+MOd72XDjNelx3r2o8
-        1WPJFr8D5I0TFKczySKr7fVfyQVSWjZLtTaqMds=
-X-Google-Smtp-Source: ABdhPJzA47HiAINhIev418uQPCnpTvMVzET/UujTk/Xfo0TPNEGz8HIjGdEOu3Tn8BgVJiYxgWxjHGWM1CF4UL+nCTg=
-X-Received: by 2002:a5e:9249:: with SMTP id z9mr4758438iop.188.1643364728844;
- Fri, 28 Jan 2022 02:12:08 -0800 (PST)
+        Fri, 28 Jan 2022 05:12:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643364749;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vrB8wKd/YuQDRzVLBwG4KgSFnRULjzQXEtQgJ4S5oNc=;
+        b=I0SqErYooRrn5ZBOHjHEs3SmIxrzzELlo3jWXNvrVQgSxqqE1TWZDSBSDRE9NtHCjsbZ++
+        5bRB2q5WwynoZBNaaG+y7uTstdSL4mWrTdNuLMZjWTBaeHjaeToBUelQajXoetempl1+ux
+        4Vg3FjNqJOL6pdRIsH5rMaNJ7hCwloA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-339-O80TzOU3MMC2GBxfNuzNFA-1; Fri, 28 Jan 2022 05:12:24 -0500
+X-MC-Unique: O80TzOU3MMC2GBxfNuzNFA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 84E102F45;
+        Fri, 28 Jan 2022 10:12:22 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DBEC260C41;
+        Fri, 28 Jan 2022 10:12:20 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220128074731.1623738-1-hch@lst.de>
+References: <20220128074731.1623738-1-hch@lst.de>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     dhowells@redhat.com, torvalds@linux-foundation.org,
+        viro@zeniv.linux.org.uk, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
+        Chaitanya Kulkarni <chaitanyak@nvidia.com>
+Subject: Re: [PATCH v2] fs: rename S_KERNEL_FILE
 MIME-Version: 1.0
-References: <20220111161937.56272-1-pankaj.gupta.linux@gmail.com>
-In-Reply-To: <20220111161937.56272-1-pankaj.gupta.linux@gmail.com>
-From:   Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Date:   Fri, 28 Jan 2022 11:11:57 +0100
-Message-ID: <CAM9Jb+gDKEt_XK-cE-2Q08u8EM3cYMTegrwM01R9m4JYe32mbA@mail.gmail.com>
-Subject: Re: [RFC v3 0/2] virtio-pmem: Asynchronous flush
-To:     Linux NVDIMM <nvdimm@lists.linux.dev>,
-        virtualization@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        jmoyer <jmoyer@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Pankaj Gupta <pankaj.gupta@ionos.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <918224.1643364739.1@warthog.procyon.org.uk>
+Date:   Fri, 28 Jan 2022 10:12:19 +0000
+Message-ID: <918225.1643364739@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ping
+Christoph Hellwig <hch@lst.de> wrote:
 
->  Jeff reported preflush order issue with the existing implementation
->  of virtio pmem preflush. Dan suggested[1] to implement asynchronous flush
->  for virtio pmem using work queue as done in md/RAID. This patch series
->  intends to solve the preflush ordering issue and makes the flush asynchronous
->  for the submitting thread. Also, adds the flush coalscing logic.
->
->  Submitting this RFC v3 series for review. Thank You!
->
->  RFC v2 -> RFC v3
->  - Improve commit log message - patch1.
->  - Improve return error handling for Async flush.
->  - declare'INIT_WORK' only once.
->  - More testing and bug fix.
->
->  [1] https://marc.info/?l=linux-kernel&m=157446316409937&w=2
->
-> Pankaj Gupta (2):
->   virtio-pmem: Async virtio-pmem flush
->   pmem: enable pmem_submit_bio for asynchronous flush
->
->  drivers/nvdimm/nd_virtio.c   | 74 +++++++++++++++++++++++++++---------
->  drivers/nvdimm/pmem.c        | 15 ++++++--
->  drivers/nvdimm/region_devs.c |  4 +-
->  drivers/nvdimm/virtio_pmem.c | 10 +++++
->  drivers/nvdimm/virtio_pmem.h | 16 ++++++++
->  5 files changed, 98 insertions(+), 21 deletions(-)
->
-> --
-> 2.25.1
->
+> S_KERNEL_FILE is grossly misnamed.  We have plenty of files hold
+
+"held".
+
+> open by the kernel kernel using filp_open.
+
+You said "kernel" twice.
+
+And so what?  Cachefiles holds files open by filp_open - but it can only do so
+temporarily otherwise EMFILE/ENFILE and OOMs start to become a serious problem
+because it could end up holding thousands of files open (one or two of the
+xfstests cause this to happen).
+
+Further, holding the file open *doesn't* prevent cachefilesd from trying to
+cull the file to make space whilst it's "in use".
+
+Yet further, I'm not holding the directories that form the cache layout open
+with filp_open at all - I'm not reading them, so that would just be a waste of
+resources - but I really don't want cachefilesd culling them because it sees
+they're empty but cachefiles is holding them ready.
+
+> This flag OTOH signals the inode as being a special snowflake that
+> cachefiles holds onto that can't be unlinked because of ..., erm, pixie
+> dust.
+
+Really?  I presume you read the explanation I gave of the races that are a
+consequence of splitting the driver between the kernel and userspace?  I could
+avoid them - or at least mitigate them - by keeping my own list of all the
+inodes in use by cachefiles so that cachefilesd can query it.  I did, in fact,
+use to have such a list, but the core kernel already has such lists and the
+facilities to translate pathnames into internal objects, so my stuff ought to
+be redundant - all I need is one inode flag.
+
+Further, that inode flag can be shared with anyone else who wants to do
+something similar.  It's just an "I'm using this" lock.  There's no particular
+reason to limit its use to cachefiles.  In fact, it is better if it is then
+shared so that in the unlikely event that two drivers try to use the same
+file, an error will occur.
+
+I do use it to defend cachefiles against itself also.  In the event that
+there's a bug or a race and it tries to reuse its own cache - particularly
+with something like NFS that can have multiple superblocks for the same
+source, just with different I/O parameters, for example - this can lead to
+data corruption.  I try to defend against it in fscache also, but there can be
+delayed effects due to object finalisation being done in the background after
+fscache has returned to the netfs.
+
+Now, I do think there's an argument to be made for splitting the flag into
+two, as I advanced in a proposed patch.  One piece would just be an "I'm using
+this", the other would be a "don't delete this" flag.  Both are of potential
+use to other drivers.
+
+I take it you'd prefer this to be done a different way?
+
+David
+
