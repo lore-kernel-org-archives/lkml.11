@@ -2,153 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A336C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9431C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244883AbiA1QBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 11:01:54 -0500
-Received: from foss.arm.com ([217.140.110.172]:51310 "EHLO foss.arm.com"
+        id S245396AbiA1QBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 11:01:55 -0500
+Received: from mout.perfora.net ([74.208.4.197]:44765 "EHLO mout.perfora.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242668AbiA1QBw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 11:01:52 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EB214113E;
-        Fri, 28 Jan 2022 08:01:51 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [10.57.13.45])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 36E003F793;
-        Fri, 28 Jan 2022 08:01:50 -0800 (PST)
-Date:   Fri, 28 Jan 2022 16:01:41 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Krzysztof Adamski <krzysztof.adamski@nokia.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        Matija Glavinic-Pecotic <matija.glavinic-pecotic.ext@nokia.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] arm64: move efi_reboot to restart handler
-Message-ID: <YfQTZTUNaeGi+8tG@FVFF77S0Q05N>
-References: <YfP0osb45uJldtM9@localhost.localdomain>
+        id S240275AbiA1QBx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 11:01:53 -0500
+Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MehX4-1mtjsV1bqq-00OCZV;
+ Fri, 28 Jan 2022 17:01:27 +0100
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 02/12] arm64: defconfig: enable taskstats configuration
+Date:   Fri, 28 Jan 2022 17:00:50 +0100
+Message-Id: <20220128160100.1228537-3-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220128160100.1228537-1-marcel@ziswiler.com>
+References: <20220128160100.1228537-1-marcel@ziswiler.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfP0osb45uJldtM9@localhost.localdomain>
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:Bls3vD3D4I52dndQWer56Br8z0AiS3qTYqdmgZ4n40bzbS0r9AB
+ NiDVPWn0zOaWEvmqCoS6yXBacmZEo3iBT9uzFWk6LCfunob2qy+ojM62a7DhIHTEJHtWICq
+ 9G/DFj55DNfNstU1iuvm76VAxe+UZU78WsjcW8EeETzsG11QmLRGqlxEf388DDKqgGyckA0
+ W5Q+Q2CP+EfackEyyir/w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ioP21XAimqY=:RarCGpCf4BTne1rKbcXvxn
+ vVLYStlgbYobi79DYSGq+AJs67+yrs9NhNqXN6CJClZJlkWJBpsc2zPrUXSQAP6c10eYH1QGI
+ 9esWMrYzqKtWxpXeGA/OVjICq5Mky7bAshYkHlu2NfHQR+LeC2Il/0lho9EBk3aF18DAEjSAq
+ mbYHzw9Zcrtq2ApNsBZVURWCCH0Ck6b54JJix0/sQFMRvuFxMmW1yEi62IN9l3vzpRwe0z6z+
+ sdKgnelGKsLDxdfsfTTSwVcawNDuki5D1WQGtLCIz16eyNnM9mZw3j19os8ar3tP7xF2MGQvs
+ TcELHjkw6SnEzZBknJ3mVDPgsMZsaDllWsmbMA6w2Fig4+6BFlva7QnYPge/+IYeKHjPjx3Dm
+ 74+iwac5EWYJ36CvcedFAA1buPPen1Bun6ykD6NuMuwtW9SA3JFKLSMGqU9GVvddg9I94Z0nW
+ LswMBraCH3+CIBFxs/gGcK+xi30BDUKJc7v9YxinmI8p7tTgLwU5V1EANvCcnmLLwqz3OgU99
+ g6HkEfVdfFs5YYLygC3DRl0oMzFMTFQ9P+WaA8krDKNJqEVpIeb6KUNrIS8hHmWsYSDao8E09
+ BPZ03W9+irwZGJP4RofSIDHpVqBCa8dmTXxGM0dwrASh94VyIO+rxnpVYybVQaqE9Drb7tjDj
+ 2VW5Z8+7M2Qpti2vb/mAxw8WlAoWK+4Ym43VVPjhhF60Q5a3mnGMxqd2ZOghF2LPuK8s=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 02:50:26PM +0100, Krzysztof Adamski wrote:
-> On EFI enabled arm64 systems, efi_reboot was called before
-> do_kernel_restart, completely omitting the reset_handlers functionality.
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-As I pointed out before, per the EFI spec we *need* to do this before any other
-restart mechanism so that anything which EFI ties to the restart actually
-occurs as expected -- e.g. UpdateCapsule(), as the comment says.
-AFAICT, either:
+Enable CONFIG_TASKSTATS which is required for CONFIG_TASK_XACCT (and
+subsequently CONFIG_TASK_IO_ACCOUNTING). Previously, taskstats got
+pulled in by KVM but that got changed in commit 63b3f96e1a98
+("kvm: Select SCHED_INFO instead of TASK_DELAY_ACCT").
 
-* The other restart handlers have lower priority, in which case they'll be
-  called after this anyway, and in such cases this patch is not necessary.
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-* At least one other restart handler has higher priority, and the EFI restart
-  isn't actually used, and so any functionaltiy tied to the EFI restart will
-  not work on that machine.
+---
 
-> By registering efi_reboot as part of the chain with slightly elevated
-> priority, we make it run before the default handler but still allow
-> plugging in other handlers.
-> Thanks to that, things like gpio_restart, restart handlers in
-> watchdog_core, mmc or mtds are working on those platforms.
+Changes in v3:
+- Add Krzysztof's reviewed-by tag.
 
-On which platforms is it necessary that these are used in preference to the EFI
-restart? Can you please give a specific example?
+Changes in v2:
+- New patch following full defconfig analysis as requested by Krzysztof.
 
-If there's a specific platform that needs this, then we should call that out
-and explain why the EFI restart isn't actually required on that (or if it is,
-and functionality is broken, why that's acceptable).
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Otherwise this patch is making this logic more complicated *and* making it
-possible to have problems which we avoid by construction today, without any
-actual benefit.
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 30516dc0b70e..b057b08c0fc2 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -7,6 +7,7 @@ CONFIG_PREEMPT=y
+ CONFIG_IRQ_TIME_ACCOUNTING=y
+ CONFIG_BSD_PROCESS_ACCT=y
+ CONFIG_BSD_PROCESS_ACCT_V3=y
++CONFIG_TASKSTATS=y
+ CONFIG_TASK_XACCT=y
+ CONFIG_TASK_IO_ACCOUNTING=y
+ CONFIG_IKCONFIG=y
+-- 
+2.33.1
 
-Thanks,
-Mark.
-
-> The priority 130 is one higher than PSCI, to overrule that but still
-> allow to easily register higher prio handlers, if needed.
-> 
-> Signed-off-by: Krzysztof Adamski <krzysztof.adamski@nokia.com>
-> ---
-> 
-> Changes in v2:
->   - Register the handler in EFI code, instead of arm64 setup.c
->   - Remove the contdition from the handler - it should be run in all
->     cases when it is registered
->   - Bump the priority to 130 to make it completly obious this should be
->     run before PSCI (which has priority of 129)
-> 
->  arch/arm64/kernel/process.c        |  7 -------
->  drivers/firmware/efi/arm-runtime.c | 21 +++++++++++++++++++++
->  2 files changed, 21 insertions(+), 7 deletions(-)
-> 
-> diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
-> index 5369e649fa79..b86ef77bb0c8 100644
-> --- a/arch/arm64/kernel/process.c
-> +++ b/arch/arm64/kernel/process.c
-> @@ -130,13 +130,6 @@ void machine_restart(char *cmd)
->  	local_irq_disable();
->  	smp_send_stop();
->  
-> -	/*
-> -	 * UpdateCapsule() depends on the system being reset via
-> -	 * ResetSystem().
-> -	 */
-> -	if (efi_enabled(EFI_RUNTIME_SERVICES))
-> -		efi_reboot(reboot_mode, NULL);
-> -
->  	/* Now call the architecture specific reboot code. */
->  	do_kernel_restart(cmd);
->  
-> diff --git a/drivers/firmware/efi/arm-runtime.c b/drivers/firmware/efi/arm-runtime.c
-> index 3359ae2adf24..b9a2cdbe80b4 100644
-> --- a/drivers/firmware/efi/arm-runtime.c
-> +++ b/drivers/firmware/efi/arm-runtime.c
-> @@ -80,6 +80,24 @@ static bool __init efi_virtmap_init(void)
->  	return true;
->  }
->  
-> +static int efi_restart(struct notifier_block *nb, unsigned long action,
-> +		       void *data)
-> +{
-> +	/*
-> +	 * UpdateCapsule() depends on the system being reset via
-> +	 * ResetSystem().
-> +	 */
-> +	efi_reboot(reboot_mode, NULL);
-> +
-> +	return NOTIFY_DONE;
-> +}
-> +
-> +static struct notifier_block efi_restart_nb = {
-> +	.notifier_call = efi_restart,
-> +	/* We want this to take priority over PSCI which has priority of 129. */
-> +	.priority = 130,
-> +};
-> +
->  /*
->   * Enable the UEFI Runtime Services if all prerequisites are in place, i.e.,
->   * non-early mapping of the UEFI system table and virtual mappings for all
-> @@ -148,6 +166,9 @@ static int __init arm_enable_runtime_services(void)
->  	efi_native_runtime_setup();
->  	set_bit(EFI_RUNTIME_SERVICES, &efi.flags);
->  
-> +	if (IS_ENABLED(CONFIG_ARM64))
-> +		register_restart_handler(&efi_restart_nb);
-> +
->  	return 0;
->  }
->  early_initcall(arm_enable_runtime_services);
-> -- 
-> 2.34.1
-> 
