@@ -2,122 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B966C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57186C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237951AbiA1JGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 04:06:12 -0500
-Received: from mga01.intel.com ([192.55.52.88]:58006 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231806AbiA1JGL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 04:06:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643360771; x=1674896771;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ErjsXDgw1zcYUyJCH4F/5Es1o0tzYO07CJyPW7u/PWQ=;
-  b=gMgaShS5GG6tfHfDVnQ73jSi0He5BtP3XCjSLDgyWhleIOQ6ytIM8AN8
-   YfT0I26RtD5s0xu1QIb3JDtxaQ6jIJc7dFYJhTPTIJz/0SLMoy/HwkzMa
-   VMncnT7hb+LcB7zUxOOiQIezs+eKaQkIMKNMMHnp1jlXazvzaSmru3z35
-   MwLEyQwm64A2dkSvo9YYWyrtguSgUlTFvc0LIqw0NumDucFhc2A0O2njr
-   7//cyfF0iXsDADor37uSMa5pdtDSs5gnk7P0OppQj0rvPscDfcqIGcAq9
-   RZsltNkN7GuKdh+2HLrRGwuiZFPKPl6OPeT4O3zwhqVXfgTP5Y7C+2cHN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="271543133"
-X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="271543133"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 01:06:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="496076015"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 28 Jan 2022 01:06:07 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDNCo-000NgL-JB; Fri, 28 Jan 2022 09:06:06 +0000
-Date:   Fri, 28 Jan 2022 17:05:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     tangmeng <tangmeng@uniontech.com>, tglx@linutronix.de,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        john.stultz@linaro.org, sboyd@kernel.org
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, tangmeng <tangmeng@uniontech.com>
-Subject: Re: [PATCH] kernel/time: move timer sysctls to its own file
-Message-ID: <202201281620.Rwng44TW-lkp@intel.com>
-References: <20220128065505.16685-1-tangmeng@uniontech.com>
+        id S240742AbiA1JG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 04:06:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237969AbiA1JGX (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 04:06:23 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE31C06173B
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:06:23 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id k18so9519093wrg.11
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:06:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xKmKkemO7LZgNH3z0FyPV0a1F2pctQzcwkbzVf+pn9M=;
+        b=dMjEiUSnrp58PvxtH8/oq3uk2znAwoXs16+ia+Di+iOLZWWrdxj1szC1T8NAzX/gps
+         Pt8T8++gA+3eGQxk785oSrLqWGJdXzyYzgYvqx7BtIPIusrsdYU/OUmX4buHQzaVOsyd
+         I2GdFE2nwLxRGW3VhTokvS5WpQ5E7/19VRiuzYkUSMWAj+P7z9tzgIyx5K9z4GxiB7Ip
+         BeUR2/u3SCO/rN+Cbs01UtQjK2gDMsPOzWti1O1KnyY3AcKYkaNIKWSI46p0Nia80PVX
+         UDoBkKTzZuI/qK/EkT3CGKvbsreqwuhwv6Qqf7zeVI2HFmxZTIvexSh1B1aC5vXlGOTu
+         5C9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xKmKkemO7LZgNH3z0FyPV0a1F2pctQzcwkbzVf+pn9M=;
+        b=5TmTA79c0OwmPIdrWTLCNCnvh5roC1QJSngD3qLcFruJCKMfgv52gJRalm8lTHxLmQ
+         s6DE2TPjwIq0Fo8PuSkfqh1yK59lEu1dRqe7I5bmWxNmyenCIiWkcGUVEZJlVKlXnDRG
+         Bfg6Mt2+0LxfV+goV2mZ0YVbkDNsoIC1WQdcB3FdxxF2N6l1AmXFyq13Yfw5HZ7dU0UR
+         NeIEudqHqk+0gr98R+lCa+ZyQY/h0Z5GCFABAYeU+119SmBaVLX/TACxoNRKgZwxQcrG
+         l3B9b9tpNLnrMUUS5l4WRpJK+S8URLCvZzQQXmK8G3nOpTZ8VZgxj5ExQ4/Fi34wR8nQ
+         iefg==
+X-Gm-Message-State: AOAM533RqhwgyrX+S7uNwiYqQjmQWxgJ8y/bFLQ5FqraoqoR6hFP9vPw
+        Dsu+W8lQhiOa1iqszNscD4Pm7mqfm9YmbDfyttjpMQ==
+X-Google-Smtp-Source: ABdhPJyi2j2no5AvzLexpxvXn1W3Bl71f/NV5cWi8/uC4z/VF2s2n5jyqjBFmXLiJFR1/nEBiZPeQCSoIZM2KrosgAc=
+X-Received: by 2002:a5d:6b48:: with SMTP id x8mr6411882wrw.86.1643360781694;
+ Fri, 28 Jan 2022 01:06:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128065505.16685-1-tangmeng@uniontech.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <cover.1643360419.git.geert@linux-m68k.org> <f73a0aead89e1426b146c4c64f797aa035868bf0.1643360419.git.geert@linux-m68k.org>
+In-Reply-To: <f73a0aead89e1426b146c4c64f797aa035868bf0.1643360419.git.geert@linux-m68k.org>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Fri, 28 Jan 2022 14:36:10 +0530
+Message-ID: <CAAhSdy2r-F8cJR8feV9c5-RHATe3Wv7ioYU2RwgNbwUMBJhHJA@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] dt-bindings: interrupt-controller: sifive, plic:
+ Fix number of interrupts
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi tangmeng,
+On Fri, Jan 28, 2022 at 2:34 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> The number of interrupts lacks an upper bound, thus assuming one,
+> causing properly grouped "interrupts-extended" properties to be flagged
+> as an error by "make dtbs_check".
+>
+> Fix this by adding the missing "maxItems", using the architectural
+> maximum of 15872 interrupts.
+>
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-Thank you for the patch! Yet something to improve:
+Looks good to me.
 
-[auto build test ERROR on tip/timers/core]
-[also build test ERROR on linus/master kees/for-next/pstore v5.17-rc1 next-20220128]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Reviewed-by: Anup Patel <anup@brainfault.org>
 
-url:    https://github.com/0day-ci/linux/commits/tangmeng/kernel-time-move-timer-sysctls-to-its-own-file/20220128-145647
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 35e13e9da9afbce13c1d36465504ece4e65f24fe
-config: arc-randconfig-r012-20220128 (https://download.01.org/0day-ci/archive/20220128/202201281620.Rwng44TW-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/5b925ed59a284ee735fd46cb2afa74858509887b
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review tangmeng/kernel-time-move-timer-sysctls-to-its-own-file/20220128-145647
-        git checkout 5b925ed59a284ee735fd46cb2afa74858509887b
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash kernel/time/
+Regards,
+Anup
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   kernel/time/timer.c: In function 'init_timers':
->> kernel/time/timer.c:2047:9: error: implicit declaration of function 'timer_sysctl_init'; did you mean 'sysctl_init'? [-Werror=implicit-function-declaration]
-    2047 |         timer_sysctl_init();
-         |         ^~~~~~~~~~~~~~~~~
-         |         sysctl_init
-   In file included from include/linux/perf_event.h:25,
-                    from include/linux/trace_events.h:10,
-                    from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from kernel/time/timer.c:35:
-   At top level:
-   arch/arc/include/asm/perf_event.h:126:27: warning: 'arc_pmu_cache_map' defined but not used [-Wunused-const-variable=]
-     126 | static const unsigned int arc_pmu_cache_map[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
-         |                           ^~~~~~~~~~~~~~~~~
-   arch/arc/include/asm/perf_event.h:91:27: warning: 'arc_pmu_ev_hw_map' defined but not used [-Wunused-const-variable=]
-      91 | static const char * const arc_pmu_ev_hw_map[] = {
-         |                           ^~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +2047 kernel/time/timer.c
-
-  2041	
-  2042	void __init init_timers(void)
-  2043	{
-  2044		init_timer_cpus();
-  2045		posix_cputimers_init_work();
-  2046		open_softirq(TIMER_SOFTIRQ, run_timer_softirq);
-> 2047		timer_sysctl_init();
-  2048	}
-  2049	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> ---
+> v4:
+>   - Use architectural maximum instead of practical maximum of 9,
+>
+> v3:
+>   - Add Acked-by,
+>
+> v2:
+>   - Split in two patches,
+>   - Improve patch description and document limit rationale.
+> ---
+>  .../bindings/interrupt-controller/sifive,plic-1.0.0.yaml         | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> index 28b6b17fe4b26778..57c06126c99502fa 100644
+> --- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> +++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> @@ -62,6 +62,7 @@ properties:
+>
+>    interrupts-extended:
+>      minItems: 1
+> +    maxItems: 15872
+>      description:
+>        Specifies which contexts are connected to the PLIC, with "-1" specifying
+>        that a context is not present. Each node pointed to should be a
+> --
+> 2.25.1
+>
+>
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
