@@ -2,116 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09079C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 05:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7696C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 05:25:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241771AbiA1FYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 00:24:07 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:60194 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231458AbiA1FYF (ORCPT
+        id S242261AbiA1FZq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 00:25:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231458AbiA1FZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 00:24:05 -0500
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20S4gVeN021001;
-        Fri, 28 Jan 2022 05:23:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : reply-to : references : mime-version : content-type
- : in-reply-to; s=pp1; bh=N8c6f9rrM/7nONQTPrGqnOSST8MztLJ9N5JYV+zxdGs=;
- b=ncpPzwDca4czHjb6h6QnI77DLS1AqrSfaKigJDMu1Mlq5CzTYvK73PSaG2WlciKhsKhE
- v4hU+waWsPoY1xK1JSAJB3xEVDRl6oJx9Rq5mhxVGn6WKFOB7iKwb8z0wJFWThagKDeq
- x99KDtij89eItyEO1gc67BFuAJTr4xR8iJoxDrfOhGx/gY6Hp4c54KF9cT6Nw/v3H4bU
- xr+KteoVVyNkQh8MuM0i1AJmq21wMC35EXf4+07lyOG8f0w614M8icHXrYcWFbycm0pu
- HujI25cv+jOg7YPUOQmdbae5WYgCFOWgRaZKHdDpomq8MoTQa5d6Yvp4W/glARnF1mnz cA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dv9purjtv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 05:23:53 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20S4x8ip012621;
-        Fri, 28 Jan 2022 05:23:52 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dv9purjta-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 05:23:52 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20S5MIxG023963;
-        Fri, 28 Jan 2022 05:23:50 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma02fra.de.ibm.com with ESMTP id 3dr9ja3qkp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 05:23:50 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20S5Nmb744630430
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 28 Jan 2022 05:23:48 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E6EB7AE04D;
-        Fri, 28 Jan 2022 05:23:47 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2B02BAE059;
-        Fri, 28 Jan 2022 05:23:46 +0000 (GMT)
-Received: from linux.vnet.ibm.com (unknown [9.126.150.29])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Fri, 28 Jan 2022 05:23:45 +0000 (GMT)
-Date:   Fri, 28 Jan 2022 10:53:45 +0530
-From:   Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-To:     Huang Ying <ying.huang@intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@suse.de>, linux-kernel@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>, Rik van Riel <riel@surriel.com>
-Subject: Re: [RFC PATCH 1/2] NUMA balancing: fix NUMA topology type for
- memory tiering system
-Message-ID: <20220128052345.GA618915@linux.vnet.ibm.com>
-Reply-To: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-References: <20220128023842.1946583-1-ying.huang@intel.com>
+        Fri, 28 Jan 2022 00:25:45 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAC9C061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 21:25:45 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id e28so5142876pfj.5
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 21:25:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DUZSzAcBhhZobyRqFeEeGc1759qGpQJqQcRHPtjlbUQ=;
+        b=TEF4bPPwMHipCR6h448CMERqnyvi/R7CVUVo5I/BGCZC6VmMF1O1OVn0AzQrJunM5F
+         pvT8wXP3kw91xkxEvvjkgNF88OTWWptcIwbkLV0sMyhRJcJkSlbgLeA8MqF75pZDssrG
+         E2YrUZf4Vsovudo+OfLuj2FYq72lWEVnxDtTU+HsbodjxLJmO4CuQLNEadbhDTNH4D1B
+         Zkw7Zu51/0k+OQVj9jDxtcDJrxS4mknTzssjtUAWER5ROv3PkYz96pkAgcYpntX53QP5
+         X23kPt64tl6woC8cCvq6BBnJT4jbr2gMCnJZRT1o5riDDFA4Wajg7sZsmiXSfXYVroza
+         viog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DUZSzAcBhhZobyRqFeEeGc1759qGpQJqQcRHPtjlbUQ=;
+        b=6auVUG13jtyytYv+KLAXDPTTfha1ClYOwf/Y7uXUlPGjnTcLVlwkX9LFFXYTiNQvkj
+         StkjgvfxtHJyWbWrLanLzJRfKYN/I0u6nNiXswgncGYhs4ejRJtueEWTv7+kIHMG2U5w
+         Ax/2brRsUOjHz3egiEmWomg+frJenkk7wuLVArzgv5+DtEtnEFBTye+ldy4dNRlVb12M
+         Eux/AiMswd26+eWTW5pB6fuHCc0JvixS9WSre5nCHcvwsfpSCBwHa3KD0ohKxoOMcpSD
+         W1gMmNKP8UXFdeBmyZeyezkkXa/BSXANEG5P29lwxpmG+6azFXkQIbGKX6elnc8z6Lqq
+         U7bA==
+X-Gm-Message-State: AOAM532VkkR1+NSKBOKmjfnXdXG4cBjbmKla0VIk6lg1A+KMoAFaS1NL
+        lJpM4xyTuCOzex4M3dLsP++nJA==
+X-Google-Smtp-Source: ABdhPJwGmC85dSyvoA9FlcpwnwdXnTb6JDpj7JG673O2Cyimnrc2fRGqbcNyrCwVYDsKEKcCA2K32A==
+X-Received: by 2002:a62:e317:: with SMTP id g23mr6320329pfh.49.1643347544629;
+        Thu, 27 Jan 2022 21:25:44 -0800 (PST)
+Received: from localhost.localdomain ([122.171.184.231])
+        by smtp.gmail.com with ESMTPSA id b20sm7731744pfv.134.2022.01.27.21.25.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 21:25:44 -0800 (PST)
+From:   Anup Patel <apatel@ventanamicro.com>
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH v2 0/6] RISC-V IPI Improvements
+Date:   Fri, 28 Jan 2022 10:54:59 +0530
+Message-Id: <20220128052505.859518-1-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-In-Reply-To: <20220128023842.1946583-1-ying.huang@intel.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: vS33TxzT8d0NU51wZOkmmFCK4CmChOJG
-X-Proofpoint-ORIG-GUID: paZdJlyaX5HVqwiOyc6dU3bWc3_1rHTX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-27_06,2022-01-27_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
- spamscore=0 phishscore=0 adultscore=0 suspectscore=0 impostorscore=0
- lowpriorityscore=0 priorityscore=1501 clxscore=1011 mlxlogscore=999
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201280029
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Huang Ying <ying.huang@intel.com> [2022-01-28 10:38:41]:
+This series aims to improve IPI support in Linux RISC-V in following ways:
+ 1) Treat IPIs as normal per-CPU interrupts instead of having custom RISC-V
+    specific hooks. This also makes Linux RISC-V IPI support aligned with
+    other architectures.
+ 2) Remote TLB flushes and icache flushes should prefer local IPIs instead
+    of SBI calls whenever we have specialized hardware (such as RISC-V AIA
+    IMSIC and RISC-V ACLINT) which allows S-mode software to directly inject
+    IPIs without any assistance from M-mode runtime firmware.
 
-> 
-> One possible fix is to ignore CPU-less nodes when detecting NUMA
-> topology type in init_numa_topology_type().  That works well for the
-> example system.  Is it good in general for any system with CPU-less
-> nodes?
-> 
+These patches were already part of the "Linux RISC-V ACLINT Support" series
+but this now a separate series so that it can be merged independently of
+the "Linux RISC-V ACLINT Support" series.
+(Refer, https://lore.kernel.org/lkml/20211007123632.697666-1-anup.patel@wdc.com/)
 
-A CPUless node at the time online doesn't necessarily mean a CPUless node
-for the entire boot. For example: On PowerVM Lpars, aka powerpc systems,
-some of the nodes may start as CPUless nodes and then CPUS may get
-populated/hotplugged on them.
+These patches are also a preparatory patches for the up-coming:
+ 1) Linux RISC-V ACLINT support
+ 2) Linux RISC-V AIA support
+ 3) KVM RISC-V TLB flush improvements
 
-Hence I am not sure if adding a check for CPUless nodes at node online may
-work for such systems.
+These patches can also be found in riscv_ipi_imp_v2 branch at:
+https://github.com/avpatel/linux.git
 
-> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-> Suggested-by: Peter Zijlstra <peterz@infradead.org>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Mel Gorman <mgorman@suse.de>
-> Cc: Rik van Riel <riel@surriel.com>
-> Cc: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-> ---
->  kernel/sched/topology.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
+Changes since v1:
+ - Use synthetic fwnode for INTC instead of irq_set_default_host() in PATCH2
+
+Anup Patel (6):
+  RISC-V: Clear SIP bit only when using SBI IPI operations
+  irqchip/riscv-intc: Create domain using named fwnode
+  RISC-V: Treat IPIs as normal Linux IRQs
+  RISC-V: Allow marking IPIs as suitable for remote FENCEs
+  RISC-V: Use IPIs for remote TLB flush when possible
+  RISC-V: Use IPIs for remote icache flush when possible
+
+ arch/riscv/Kconfig                |   1 +
+ arch/riscv/include/asm/ipi-mux.h  |  45 ++++++
+ arch/riscv/include/asm/irq.h      |   2 +
+ arch/riscv/include/asm/sbi.h      |   2 +
+ arch/riscv/include/asm/smp.h      |  49 +++++--
+ arch/riscv/kernel/Makefile        |   1 +
+ arch/riscv/kernel/cpu-hotplug.c   |   3 +-
+ arch/riscv/kernel/ipi-mux.c       | 223 ++++++++++++++++++++++++++++++
+ arch/riscv/kernel/irq.c           |  16 ++-
+ arch/riscv/kernel/sbi.c           |  18 ++-
+ arch/riscv/kernel/smp.c           | 164 +++++++++++-----------
+ arch/riscv/kernel/smpboot.c       |   5 +-
+ arch/riscv/mm/cacheflush.c        |   5 +-
+ arch/riscv/mm/tlbflush.c          |  93 +++++++++++--
+ drivers/clocksource/timer-clint.c |  21 ++-
+ drivers/clocksource/timer-riscv.c |  11 +-
+ drivers/irqchip/irq-riscv-intc.c  |  67 ++++-----
+ drivers/irqchip/irq-sifive-plic.c |  19 +--
+ 18 files changed, 563 insertions(+), 182 deletions(-)
+ create mode 100644 arch/riscv/include/asm/ipi-mux.h
+ create mode 100644 arch/riscv/kernel/ipi-mux.c
 
 -- 
-Thanks and Regards
-Srikar Dronamraju
+2.25.1
+
