@@ -2,152 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EA4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:45:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEAC2C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349038AbiA1NpM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:45:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26830 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243502AbiA1NpD (ORCPT
+        id S239144AbiA1Nqh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 08:46:37 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:31240 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232870AbiA1Nqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 08:45:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643377502;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=10Eey55xTkOQ+M0ixDUVHuv817gP1iR41jEopYowSyE=;
-        b=fcsaRwoZgyyUFmjWIantrZ4qGlceLuq4v5EgUrxzl0c9xV6+n/2ue+YYbwzH1LUTD2uvdI
-        7ZlYPjAkODwrC6sjfb/uo3+LmF0ahCIH+G86Ioc52tCVTugWuSTt0amSqDYmTHA6T2YqFw
-        4JuLVx+owjxbrJtbe6cFt1SLuLLb8VY=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-504-8Gc8rxJgNHWnLVbNzlqDww-1; Fri, 28 Jan 2022 08:45:01 -0500
-X-MC-Unique: 8Gc8rxJgNHWnLVbNzlqDww-1
-Received: by mail-ed1-f69.google.com with SMTP id i22-20020a50fd16000000b00405039f2c59so3071020eds.1
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:45:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=10Eey55xTkOQ+M0ixDUVHuv817gP1iR41jEopYowSyE=;
-        b=iWSICKvMj2NX3ctgg0WTUMS5NIYwstdQqIerm0dMDJp827Iu4vuzWAYQjPBsiZhAV/
-         LMouwF6wUdhK3HuxrKHOrajuYXWfC+uaSpUkeWxA4th3rUGGsFQTOq7/dYobjalKtTiN
-         /x+jCAFrvm0fEw+3PiTTpcuCoA/Wf7v/WCdNnEz7uZsfjj0vnwE+d8cFIdFi2tTLxEhC
-         zzUKfFeKi0pr8XkRmDdXMKwAtatTgzMqxZe+nJacHm+QSv3Twpo9wCNKdnuhP/PpC91r
-         Kv/K+6HVy9od37SkTl8l9fVnufQpek9Jci97btl41mlntlOfh8oBvJklo2N/23uxxfVe
-         n61Q==
-X-Gm-Message-State: AOAM533I/4bmsyc6f3vusetuwvYHZglzxWFsrNt3SA+QLGm1Qc5jWko8
-        ge+J75IC79EnIqycP9QVtr1XCa/O3T39g6miU8k+03c+y60sBUZbS65f/3lccRGTYW7y6mUhwzG
-        3QSMPUQtAY7VTxlt/qIG0Qkys
-X-Received: by 2002:a17:906:c154:: with SMTP id dp20mr6684490ejc.184.1643377499211;
-        Fri, 28 Jan 2022 05:44:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzNCBP2VMhlbABcw/y5YRl4UJdpLwVqkyx6+POBcHA0b4voAnDuiuMbH6TeQTA5UHRobKcEMA==
-X-Received: by 2002:a17:906:c154:: with SMTP id dp20mr6684430ejc.184.1643377498306;
-        Fri, 28 Jan 2022 05:44:58 -0800 (PST)
-Received: from ?IPV6:2003:cb:c70e:5c00:522f:9bcd:24a0:cd70? (p200300cbc70e5c00522f9bcd24a0cd70.dip0.t-ipconnect.de. [2003:cb:c70e:5c00:522f:9bcd:24a0:cd70])
-        by smtp.gmail.com with ESMTPSA id g24sm10046770ejx.11.2022.01.28.05.44.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Jan 2022 05:44:57 -0800 (PST)
-Message-ID: <661673b1-5559-d234-da7a-c07263aef520@redhat.com>
-Date:   Fri, 28 Jan 2022 14:44:56 +0100
+        Fri, 28 Jan 2022 08:46:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643377595; x=1674913595;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bDfnqX6+hpeWXzc/AVZDL/trniYBTrCP/mQvXnxNfqA=;
+  b=xsQELTyMVxSXjrD1qcE4OeMxiLAh1jmqhsAQvQaAyhmO0ZN1PjKDDitj
+   ZwFuppTI6xRNohCrOOsf/MXU8sPuy6cJV2Zb3XxFaCLUhzba2MtDpE9Gg
+   G9gUOoBwzkCZ3U9c9aJB1x6FRNF7ucQFh11nX8bGGNYQTenqYMdkQQeG3
+   uKmt4M3Zlf/8tzy5puYQ6ePP09gqv8lPMMNl4+H6VCu6cdGcwie2mz3CA
+   TxLhVSsWFmZMopKDRpbeILHpKjPd9F+iE6gjpvmLphJrMsVM409ILtO/S
+   FBbrjhYSDtRw1e6M8xnfufJOlAAk2ZlPmVbOuTEnvxyYXRBy/Q2Imkemv
+   Q==;
+IronPort-SDR: nJPr/vSfiDznuhXmEXxXslXnyXVkInzIZj2A8v/gsVBTl2+FQdWhjTue5MdpAl14NYsrMgB/FT
+ VGxm2RtdJn9HPAj1O2BEj4vweUFzIF22gOG4NRir4+HflqGdIaM3JSCQbRSny+OGb0SvVeiYMw
+ 3KQmuIEyVqKB7xN7qUm+CK9lOYvRymCcdQP9IxjLWgQBuO8DSpTuMSc+Z6yLp9M435wUK9Cw2L
+ sLvaoDUBnqTpJ5HcLAPxZkdeBYCG/XKznOlGP+Hua2eznIvf9+i6kIWiwS84yv0biBhBtktBdn
+ 0NiYonrsoAx296smfr8n4gGr
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="84004966"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jan 2022 06:46:30 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 28 Jan 2022 06:46:28 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 28 Jan 2022 06:46:28 -0700
+Date:   Fri, 28 Jan 2022 14:48:55 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
+        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
+        <vladimir.oltean@nxp.com>, <andrew@lunn.ch>
+Subject: Re: [PATCH net-next 3/7] net: lan966x: Add support for ptp clocks
+Message-ID: <20220128134855.cewcsuk77di6kahz@soft-dev3-1.localhost>
+References: <20220127102333.987195-1-horatiu.vultur@microchip.com>
+ <20220127102333.987195-4-horatiu.vultur@microchip.com>
+ <20220127152841.GC20642@hoboy.vegasvil.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-US
-To:     Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org,
-        Nadav Amit <nadav.amit@gmail.com>
-References: <20220126095557.32392-1-david@redhat.com>
- <20220126095557.32392-2-david@redhat.com>
- <595b8e80-96c0-dab6-5d13-652f0a0e40ec@suse.cz>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH RFC v2 1/9] mm: optimize do_wp_page() for exclusive pages
- in the swapcache
-In-Reply-To: <595b8e80-96c0-dab6-5d13-652f0a0e40ec@suse.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220127152841.GC20642@hoboy.vegasvil.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28.01.22 13:53, Vlastimil Babka wrote:
-> On 1/26/22 10:55, David Hildenbrand wrote:
->> Liang Zhang reported [1] that the current COW logic in do_wp_page() is
->> sub-optimal when it comes to swap+read fault+write fault of anonymous
->> pages that have a single user, visible via a performance degradation in
->> the redis benchmark. Something similar was previously reported [2] by
->> Nadav with a simple reproducer.
+The 01/27/2022 07:28, Richard Cochran wrote:
 > 
-> Can we make the description more self-contained? I.e. describe that
-> sub-optimal COW means we copy when it's not necessary, and this can happen
-> if swap-out is followed by a swap-in for read and a then a write fault
-> (IIUC), because the swap cache reference increases page_count()..
+> On Thu, Jan 27, 2022 at 11:23:29AM +0100, Horatiu Vultur wrote:
+> 
+> > +static int lan966x_ptp_phc_init(struct lan966x *lan966x,
+> > +                             int index,
+> > +                             struct ptp_clock_info *clock_info)
+> > +{
+> > +     struct lan966x_phc *phc = &lan966x->phc[index];
+> > +
+> > +     phc->info = *clock_info;
+> > +     phc->clock = ptp_clock_register(&phc->info, lan966x->dev);
+> > +     if (IS_ERR(phc->clock))
+> > +             return PTR_ERR(phc->clock);
+> > +
+> > +     phc->index = index;
+> > +     phc->lan966x = lan966x;
+> > +
+> > +     /* PTP Rx stamping is always enabled.  */
+> > +     phc->hwtstamp_config.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
+> 
+> Not true -- you allow it to be disabled in the next patch!
 
-Sure, I can add some more details.
+Actually the other patch is wrong. The HW will timestamp all the frames.
+I will update the other patch in the next version.
 
 > 
->> Let's optimize for pages that have been added to the swapcache but only
->> have an exclusive owner. Try removing the swapcache reference if there is
->> hope that we're the exclusive user.
+> Thanks,
+> Richard
 > 
-> Can we expect any downside for reclaim efficiency due to the more aggressive
-> removal from swapcache? Probably not, as we are doing the removal when the
-> page is about to get dirty, so we wouldn't be able to reuse any previously
-> swapped out content anyway. Maybe it's even beneficial?
-
-We're only try removing the swapcache reference if it's likely that we
-succeed in reusing the page after we succeeded in removing the swapcache
-reference (IOW, no other swap entries, no writeback).
-
-So the early "page_count(page) > 1 + PageSwapCache(page)" check is of
-big value I think. It should be rare that we remove the reference and
-still end up with "page_count(page) != 1".
-
-And if we're reusing the page (re-dirtying it), removing it from the
-swapache is the right thing to do: reuse_swap_cache() would have done
-the same.
-
-[...]
-
->>
->> Reported-by: Liang Zhang <zhangliang5@huawei.com>
->> Reported-by: Nadav Amit <nadav.amit@gmail.com>
->> Signed-off-by: David Hildenbrand <david@redhat.com>
 > 
-> Acked-by: Vlastimil Babka <vbabka@suse.cz>
-
-Thanks!
-
+> > +
+> > +     return 0;
+> > +}
 
 -- 
-Thanks,
-
-David / dhildenb
-
+/Horatiu
