@@ -2,64 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D5E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF25AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241840AbiA1NLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:11:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233659AbiA1NLb (ORCPT
+        id S241928AbiA1NMl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 08:12:41 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:56479 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243254AbiA1NMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 08:11:31 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802E2C061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:11:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=3qDIrPC1sd2mSZKvlKsgL9uxMifmMEKbthxfAkSx5kA=; b=u1WPBHt/xVQRP0HWO1mc1wHJGN
-        5DKe/hG+F+5u3KyOeuksDGT6En82LF5qy2V7H2xlqOWTGJRx+iE7YG/bZ7TU9lnuJZcDHyqyvjtkm
-        cvbYycJ2bqaQesHgp+KXus+6yWYgPhZ1uGCoNxuWoDx3Wefg4Vv98QB7ZQIsly7zRwAqYczrlCjbI
-        yzIEKcMoFKxKyc8PIZplw30y68SJlrTBi+uy8Q873ffGFq3Wb5iug9vaGcii+BbNKCOIaLpc+PAns
-        cBuddHt3OTYu53VrRTLVqavBhqCMdnm8V+OxkXS8e8b4L78evGCG2ei3JCWCLvtUHEOWOp+E6Ah82
-        F0qO9ptw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nDR2G-006Q6f-C0; Fri, 28 Jan 2022 13:11:28 +0000
-Date:   Fri, 28 Jan 2022 13:11:28 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Karolina Drobnik <karolinadrobnik@gmail.com>
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
-        mike.rapoport@gmail.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 10/16] memblock tests: Add skeleton of the memblock
- simulator
-Message-ID: <YfPrgGpfi+ZqaBz/@casper.infradead.org>
-References: <cover.1643206612.git.karolinadrobnik@gmail.com>
- <92442409bbc72476509a2ceb2e182473ac69612b.1643206612.git.karolinadrobnik@gmail.com>
- <YfKm0sx1JT+7IRSJ@casper.infradead.org>
- <78c62135ee4bc56ae144b266ffaabe8d2afb2928.camel@gmail.com>
+        Fri, 28 Jan 2022 08:12:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643375559; x=1674911559;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/ejLmChYenH18764UxenA4ND6LEmeX84jKu63tda12w=;
+  b=BHFFFtKWJW3zGkQF13LAJlmN/QX1jhamF8Uuiwhmg+e4wJWrxXqVrrTF
+   KomTCq/XNFy68wLC3JpHHddI7rQPksoBox9ULB1GFuHdLnDHzwAxBJY+E
+   EQ3lEYlKx+0MzcVPzofsPn78NoJPPRpi43lT3DVV8iE5DrPlPgcF5T1iz
+   41rxh7ig6QiN/QrsnRJihfHiJIN0O4SYT7+5NwUN3/Grrhl+cgkXsZknC
+   ssQUgni2x7V5p4CSZgIuG3tfO0bgglTUYStMynDNGYhqYluC0jh1J5/th
+   Pj0KVGs6FBNaYiaSN1Xx8YY/IqTPgtmA7s7mGV+brBPeot47dGKCrR+59
+   g==;
+IronPort-SDR: zwSyQreqDgtyTnr3R42rblV8WywKmgIDum0hI7VPbJ1jYrcZz2faTtxDFB6PI0e40Z9rxTseFB
+ qU6YqT9o9C51OKewBcglYl3rnruoPwcF8TIiqEdb6OrvtvPpKYJrTaQAHxYkE7Oe9q0d9GRFQy
+ KvoyP1AY8vHYbueZsZqIvHlzJZMhDf3WHK4dqdv+20vIbFS/yW01jMfy4lgp/HIkspgY49BJcd
+ ORF4SfZySy3YBJ2krdwYhbxnj1IsnWs9ufCVJxzg2DVv8yQ23ZWya0Mw+A/bDwLZkalkwP9RK0
+ Q4Vy4MjvAv/5DzeYGSV5Ky1i
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="144206746"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jan 2022 06:12:37 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 28 Jan 2022 06:12:37 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 28 Jan 2022 06:12:37 -0700
+Date:   Fri, 28 Jan 2022 14:15:04 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
+        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
+        <vladimir.oltean@nxp.com>, <andrew@lunn.ch>
+Subject: Re: [PATCH net-next 2/7] net: lan966x: Add registers that are use
+ for ptp functionality
+Message-ID: <20220128131504.onazx77qag32bbjc@soft-dev3-1.localhost>
+References: <20220127102333.987195-1-horatiu.vultur@microchip.com>
+ <20220127102333.987195-3-horatiu.vultur@microchip.com>
+ <20220127151836.GA20642@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <78c62135ee4bc56ae144b266ffaabe8d2afb2928.camel@gmail.com>
+In-Reply-To: <20220127151836.GA20642@hoboy.vegasvil.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 12:25:55PM +0100, Karolina Drobnik wrote:
-> On Thu, 2022-01-27 at 14:06 +0000, Matthew Wilcox wrote:
-> > On Thu, Jan 27, 2022 at 02:21:28PM +0100, Karolina Drobnik wrote:
-> > > +# Memblock simulator requires AddressSanitizer (libasan) and
-> > > liburcu libraries
-> > 
-> > Stale comment?  You don't seem to actually use liburcu.
-> 
-> I'm using uatomic_inc and uatomic_dec in tools/lib/slab.c. But, you're
-> right, memblock simulator doesn't use liburcu per se but uses code that
-> requires it. I wasn't sure where and how to communicate it, so I added
-> this comment here.
+The 01/27/2022 07:18, Richard Cochran wrote:
 
-I thought the comment was stale because you don't link against liburcu.
-Maybe you can use uatomic_inc() without adding -lurcu to the link step.
+Hi Richard,
+
+> 
+> On Thu, Jan 27, 2022 at 11:23:28AM +0100, Horatiu Vultur wrote:
+> > This patch adds the registers that will be used to configure the PHC in
+> > the HW.
+> 
+> See "This patch" in Documentation/process/submitting-patches.rst
+
+Yes, I will update this in the next version.
+
+> 
+> Thanks,
+> Richard
+
+-- 
+/Horatiu
