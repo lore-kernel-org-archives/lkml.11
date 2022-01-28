@@ -2,111 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB65C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:07:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B8B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350449AbiA1RH5 (ORCPT
+        id S1350458AbiA1RIX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 12:07:57 -0500
-Received: from out03.mta.xmission.com ([166.70.13.233]:46226 "EHLO
-        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350436AbiA1RHz (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 12:07:55 -0500
-Received: from in02.mta.xmission.com ([166.70.13.52]:43554)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nDUj3-00GW3C-RL; Fri, 28 Jan 2022 10:07:53 -0700
-Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:52512 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nDUj2-00DYw5-PQ; Fri, 28 Jan 2022 10:07:53 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-cc:     <linux-kernel@vger.kernel.org>, Alexey Gladkov <legion@kernel.org>,
-        Qian Cai <quic_qiancai@quicinc.com>,
-        Mathias Krause <minipli@grsecurity.net>
-Date:   Fri, 28 Jan 2022 11:07:45 -0600
-Message-ID: <871r0rss9q.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 28 Jan 2022 12:08:23 -0500
+Received: from foss.arm.com ([217.140.110.172]:54686 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1350436AbiA1RIT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 12:08:19 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5AEF7113E;
+        Fri, 28 Jan 2022 09:08:18 -0800 (PST)
+Received: from e113632-lin (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 597973F793;
+        Fri, 28 Jan 2022 09:08:17 -0800 (PST)
+From:   Valentin Schneider <valentin.schneider@arm.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Huang Ying <ying.huang@intel.com>
+Cc:     Mel Gorman <mgorman@suse.de>, linux-kernel@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        Rik van Riel <riel@surriel.com>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>
+Subject: Re: [RFC PATCH 1/2] NUMA balancing: fix NUMA topology type for memory tiering system
+In-Reply-To: <YfQGdqQy/VrEU32N@hirez.programming.kicks-ass.net>
+References: <20220128023842.1946583-1-ying.huang@intel.com> <YfQGdqQy/VrEU32N@hirez.programming.kicks-ass.net>
+Date:   Fri, 28 Jan 2022 17:08:12 +0000
+Message-ID: <87sft7okjn.mognet@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-XM-SPF: eid=1nDUj2-00DYw5-PQ;;;mid=<871r0rss9q.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX191V4gNPonv3DqUo0r49RovzeWWyGRlyz4=
-X-SA-Exim-Connect-IP: 68.110.24.146
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [GIT PULL] ucount rlimit fixes for v5.17-rc2
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 28/01/22 16:06, Peter Zijlstra wrote:
+> On Fri, Jan 28, 2022 at 10:38:41AM +0800, Huang Ying wrote:
+>>  kernel/sched/topology.c | 6 ++++++
+>>  1 file changed, 6 insertions(+)
+>>
+>> diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+>> index 9f26e6b651fe..ba975a29d444 100644
+>> --- a/kernel/sched/topology.c
+>> +++ b/kernel/sched/topology.c
+>> @@ -1738,7 +1738,13 @@ void init_numa_topology_type(void)
+>>      }
+>>
+>>      for_each_online_node(a) {
+>> +		if (!node_state(a, N_CPU))
+>> +			continue;
+>> +
+>>              for_each_online_node(b) {
+>> +			if (!node_state(b, N_CPU))
+>> +				continue;
+>> +
+>>                      /* Find two nodes furthest removed from each other. */
+>>                      if (node_distance(a, b) < n)
+>>                              continue;
+>
+> I think you forgot some.. by not skipping CPU-less nodes in
+> sched_init_numa() the whole premise of init_numa_topology_type() goes
+> out the window as well, by virtue of getting sched_domains_numa_levels
+> and sched_max_numa_distance wrong.
+>
+> Did I get them all?
+>
 
-Linus,
+On the topology.c side of things I think so, but I'm thinking
+score_nearby_nodes() and preferred_group_nid() would need some updating as
+well.
 
-Please pull the ucount-rlimit-fixes-for-v5.17-rc2 branch from the git tree:
+> Do we want something like:
+>
+> #define for_each_possible_cpu_node(n)	for (n = 0; n < nr_node_ids; n++) if (!node_state(n, N_CPU)) continue; else
+> #define for_each_online_cpu_node(n)	for_each_online_node(n) if (!node_state(n, N_CPU)) continue; else
+>
+> To clean that up?
+>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git ucount-rlimit-fixes-for-v5.17-rc2
-  HEAD: f9d87929d451d3e649699d0f1d74f71f77ad38f5 ucount:  Make get_ucount a safe get_user replacement
+Looks reasonable!
 
-
-From: "Eric W. Biederman" <ebiederm@xmission.com>
-Date: Mon, 24 Jan 2022 12:46:50 -0600
-Subject: [PATCH] ucount:  Make get_ucount a safe get_user replacement
-
-When the ucount code was refactored to create get_ucount it was missed
-that some of the contexts in which a rlimit is kept elevated can be
-the only reference to the user/ucount in the system.
-
-Ordinary ucount references exist in places that also have a reference
-to the user namspace, but in POSIX message queues, the SysV shm code,
-and the SIGPENDING code there is no independent user namespace
-reference.
-
-Inspection of the the user_namespace show no instance of circular
-references between struct ucounts and the user_namespace.  So
-hold a reference from struct ucount to it's user_namespace to
-resolve this problem.
-
-Link: https://lore.kernel.org/lkml/YZV7Z+yXbsx9p3JN@fixkernel.com/
-Reported-by: Qian Cai <quic_qiancai@quicinc.com>
-Reported-by: Mathias Krause <minipli@grsecurity.net>
-Tested-by: Mathias Krause <minipli@grsecurity.net>
-Reviewed-by: Mathias Krause <minipli@grsecurity.net>
-Reviewed-by: Alexey Gladkov <legion@kernel.org>
-Fixes: d64696905554 ("Reimplement RLIMIT_SIGPENDING on top of ucounts")
-Fixes: 6e52a9f0532f ("Reimplement RLIMIT_MSGQUEUE on top of ucounts")
-Fixes: d7c9e99aee48 ("Reimplement RLIMIT_MEMLOCK on top of ucounts")
-Cc: stable@vger.kernel.org
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
- kernel/ucount.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/kernel/ucount.c b/kernel/ucount.c
-index 7b32c356ebc5..65b597431c86 100644
---- a/kernel/ucount.c
-+++ b/kernel/ucount.c
-@@ -190,6 +190,7 @@ struct ucounts *alloc_ucounts(struct user_namespace *ns, kuid_t uid)
- 			kfree(new);
- 		} else {
- 			hlist_add_head(&new->node, hashent);
-+			get_user_ns(new->ns);
- 			spin_unlock_irq(&ucounts_lock);
- 			return new;
- 		}
-@@ -210,6 +211,7 @@ void put_ucounts(struct ucounts *ucounts)
- 	if (atomic_dec_and_lock_irqsave(&ucounts->count, &ucounts_lock, flags)) {
- 		hlist_del_init(&ucounts->node);
- 		spin_unlock_irqrestore(&ucounts_lock, flags);
-+		put_user_ns(ucounts->ns);
- 		kfree(ucounts);
- 	}
- }
--- 
-2.29.2
-
-Eric
+> ---
+> --- a/kernel/sched/topology.c
+> +++ b/kernel/sched/topology.c
+> @@ -1684,8 +1684,12 @@ static void sched_numa_warn(const char *
+>
+>       for (i = 0; i < nr_node_ids; i++) {
+>               printk(KERN_WARNING "  ");
+> -		for (j = 0; j < nr_node_ids; j++)
+> -			printk(KERN_CONT "%02d ", node_distance(i,j));
+> +		for (j = 0; j < nr_node_ids; j++) {
+> +			if (!node_state(i, N_CPU) || !node_state(j, N_CPU))
+> +				printk(KERN_CONT "(%02d) ", node_distance(i,j));
+> +			else
+> +				printk(KERN_CONT " %02d  ", node_distance(i,j));
+> +		}
+>               printk(KERN_CONT "\n");
+>       }
+>       printk(KERN_WARNING "\n");
+> @@ -1737,7 +1741,13 @@ static void init_numa_topology_type(void
+>       }
+>
+>       for_each_online_node(a) {
+> +		if (!node_state(a, N_CPU))
+> +			continue;
+> +
+>               for_each_online_node(b) {
+> +			if (!node_state(b, N_CPU))
+> +				continue;
+> +
+>                       /* Find two nodes furthest removed from each other. */
+>                       if (node_distance(a, b) < n)
+>                               continue;
+> @@ -1756,6 +1766,9 @@ static void init_numa_topology_type(void
+>                       return;
+>               }
+>       }
+> +
+> +	pr_err("Failed to find a NUMA topology type, defaulting to DIRECT\n");
+> +	sched_numa_topology_type = NUMA_DIRECT;
+>  }
+>
+>
+> @@ -1778,9 +1791,15 @@ void sched_init_numa(void)
+>
+>       bitmap_zero(distance_map, NR_DISTANCE_VALUES);
+>       for (i = 0; i < nr_node_ids; i++) {
+> +		if (!node_state(i, N_CPU))
+> +			continue;
+> +
+>               for (j = 0; j < nr_node_ids; j++) {
+>                       int distance = node_distance(i, j);
+>
+> +			if (!node_state(j, N_CPU))
+> +				continue;
+> +
+>                       if (distance < LOCAL_DISTANCE || distance >= NR_DISTANCE_VALUES) {
+>                               sched_numa_warn("Invalid distance value range");
+>                               return;
+> @@ -1863,6 +1882,12 @@ void sched_init_numa(void)
+>                               if (sched_debug() && (node_distance(j, k) != node_distance(k, j)))
+>                                       sched_numa_warn("Node-distance not symmetric");
+>
+> +				if (!node_state(j, N_CPU))
+> +					continue;
+> +
+> +				if (!node_state(j, N_CPU))
+> +					continue;
+> +
+>                               if (node_distance(j, k) > sched_domains_numa_distance[i])
+>                                       continue;
+>
+> @@ -1943,6 +1968,9 @@ static void __sched_domains_numa_masks_s
+>                       if (!node_online(j) || node == j)
+>                               continue;
+>
+> +			if (!node_state(j, N_CPU))
+> +				continue;
+> +
+>                       if (node_distance(j, node) > sched_domains_numa_distance[i])
+>                               continue;
+>
+> @@ -1974,6 +2002,9 @@ void sched_domains_numa_masks_set(unsign
+>                       if (!node_online(j))
+>                               continue;
+>
+> +			if (!node_state(j, N_CPU))
+> +				continue;
+> +
+>                       /* Set ourselves in the remote node's masks */
+>                       if (node_distance(j, node) <= sched_domains_numa_distance[i])
+>                               cpumask_set_cpu(cpu, sched_domains_numa_masks[i][j]);
