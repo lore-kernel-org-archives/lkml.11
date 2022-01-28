@@ -2,106 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 117A4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 19:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37066C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 19:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350761AbiA1TDQ (ORCPT
+        id S1350802AbiA1TKZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 14:03:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50318 "EHLO
+        Fri, 28 Jan 2022 14:10:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233548AbiA1TDP (ORCPT
+        with ESMTP id S233548AbiA1TKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 14:03:15 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAEE7C061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 11:03:14 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id c6so21326720ybk.3
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 11:03:14 -0800 (PST)
+        Fri, 28 Jan 2022 14:10:22 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC2DC061714
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 11:10:22 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id k17so7048665plk.0
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 11:10:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3hlBZRfJeaaEMgpDJfGF4VXTiNMRL5u5A8XWDhcHgIU=;
-        b=RB+iJtZRYF0dkmWtZQjZrE5l2GCNTyyleglmYgfhw2DfTccUOrvGv9t6I6Yk7N3fd1
-         i90XCiFg/0xlIqHxlY0zFOXcxPwjk7qLfB9xsvV/FxdncdXC32oYUY+M/uVFIzbbRkHS
-         sGAHLY2u0DS9/gwV0Bw8Llaky5XDQPsalA9CkpoF7O7nCYaGNpqK/b3tj5Zq48+wjJoe
-         QMaTbI9e0mRXYA0VjJ2MYyLeZM271Ly4gVi94O4Z7JeGjWaG7KtuFAcrocfly191vqsq
-         BP+/8tBvp4hnN0JJUQazPDSUO82daB1GopBf7zqzTLm5faaI3mAwSJt3f4JT1K0I7IBP
-         yiIQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qBrhGKhqGDo3ZZGcfTOvBOKxFA+ZreyYbNcf2efMXZM=;
+        b=eCZT8ZHOAxpHWEDrUQItUG+sx9VZ3ivRTx1df1Hb5Ao4XU7bhUL0XL2KBld709fVmg
+         IDG1SPPN7PGddHggtZ7UvMZKXPII86162snNhV14EycqAolc90+QaWRv3QLntN6Dm1Pl
+         nUkCG8lpzib1yRSSeLP62nAkHwE+KizSFaUN8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3hlBZRfJeaaEMgpDJfGF4VXTiNMRL5u5A8XWDhcHgIU=;
-        b=f2WEkQqv2BmWr6/SG3EviHDclUnkZewqHlu8qAYpJY+aqfCvQ3Y0aWceqWBmnzIeW+
-         9EdspyYngqqBwVmEZjBpsENBplNxAcRQrUDjNppePYRNc8BG00t4D862n1wT4oWa8kN6
-         P6oIlTxXojrnHT7VqO6EoNxWxhxAkaKPHTXumO5xaBMSR4Fp21kyrDJUvzMwsWIS5D+c
-         dTmwsqgD5h5sQkh9x1c+OVFAeHi3dAXZC6Ipa+Cdez9T4Bdqs5g8K5PtpQ8rqeD+8JTr
-         sG2vONz8TgREpN0QIjHyglljCNY/ZepJV3c+qGmO1uHG22WtRRGTInFl+ijRj6oy/jeC
-         tKdg==
-X-Gm-Message-State: AOAM531TAXpfA4rWxWHGjyTbUJggXh6VkjRiJEmAYA4VW6lwJ22NVXqT
-        fnevsbs8bHGurCW6ku24VsRQkEzNs3z1d0SvGqVPpYr+XWA=
-X-Google-Smtp-Source: ABdhPJzzfPPKuV+kEV5XP50RjBgFVl8NGNQtLCUEqsEPQE6Z940iaylmOzR016fVVotXJrtEZoq5NTeoaKbhpkUa57Y=
-X-Received: by 2002:a05:6902:704:: with SMTP id k4mr14250783ybt.355.1643396593140;
- Fri, 28 Jan 2022 11:03:13 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qBrhGKhqGDo3ZZGcfTOvBOKxFA+ZreyYbNcf2efMXZM=;
+        b=bw0ik1HZoWmWsX8aj6yzS/f/rBnCttCF+cPVLSGLCxPPv9nBliKbbMLnNOKgPS3Y0S
+         JHLde8b43OJxm6lnQBel2UaXZ9j+3BiHKlY0fQASyRMuzcWwNj7um+H/ZsZYm1KIKnpS
+         ygUzvMh0IS9WCGojB2v0L3EnR/dD7UMwqkMqNYeC/dNOOfLS5fRnXJIBSV6AIGcYe5pV
+         ktJgr3eZr7rGovNKg/BRm6AM0ACAD/4DP2KBXy/dWHDIUNDgThV3G6iUaGGT2uy908SI
+         Rfs5B1cJkH4ieDgZuxNHPxB2rcSyhp5rvWIVos4QktRxBWIqWgDKsRK3agVvi2Yv3Tji
+         p9Wg==
+X-Gm-Message-State: AOAM531Wk8wmXaT5GmZX1zZ1vNJjfwaZN5a1OXCJYd0X5ZIp43SKgBO6
+        VENlj9jlSoMgTvR78HS/SnNfwGbNHAW/2A==
+X-Google-Smtp-Source: ABdhPJwkfZT7H5g+ncTdGNx1L3u8QiZklleP3FKxab6bzRDhnivkR2Cau7R+nbnX7dJOZ7yw7amTDg==
+X-Received: by 2002:a17:90a:5890:: with SMTP id j16mr11399493pji.185.1643397021641;
+        Fri, 28 Jan 2022 11:10:21 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id d2sm3142742pju.2.2022.01.28.11.10.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Jan 2022 11:10:21 -0800 (PST)
+Date:   Fri, 28 Jan 2022 11:10:20 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Marco Elver <elver@google.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Alexander Potapenko <glider@google.com>, llvm@lists.linux.dev,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] stack: Constrain stack offset randomization with
+ Clang builds
+Message-ID: <202201281058.83EC9565@keescook>
+References: <20220128114446.740575-1-elver@google.com>
+ <20220128114446.740575-2-elver@google.com>
 MIME-Version: 1.0
-References: <20220126202427.3047814-1-pgwipeout@gmail.com> <20220127093307.GJ23490@pengutronix.de>
-In-Reply-To: <20220127093307.GJ23490@pengutronix.de>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Fri, 28 Jan 2022 14:03:02 -0500
-Message-ID: <CAMdYzYomk6_PLgkWSY9owd98vPtFGiHPmAwwnrx8vchf05uYLw@mail.gmail.com>
-Subject: Re: [PATCH] drm/bridge: synopsys/dw-hdmi: set cec clock rate
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pierre-Hugues Husson <phh@phh.me>,
-        Archit Taneja <architt@codeaurora.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        dri-devel@lists.freedesktop.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128114446.740575-2-elver@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 4:33 AM Sascha Hauer <s.hauer@pengutronix.de> wrote:
->
-> Hi Peter,
->
-> On Wed, Jan 26, 2022 at 03:24:26PM -0500, Peter Geis wrote:
-> > The hdmi-cec clock must be 32khz in order for cec to work correctly.
-> > Ensure after enabling the clock we set it in order for the hardware to
-> > work as expected.
-> > Warn on failure, in case this is a static clock that is slighty off.
-> > Fixes hdmi-cec support on Rockchip devices.
->
-> You removed this sentence in v2, but I just wanted to mention that
-> clk_set_rate() won't fail when the desired clock rate can't be
-> archieved. Instead, you will get the best rate that actually can be
-> reached. If you want to check that you are happy with the rate you'll
-> have to do a clk_round_rate() before setting the rate or a
-> clk_get_rate() afterwards.
+On Fri, Jan 28, 2022 at 12:44:46PM +0100, Marco Elver wrote:
+> All supported versions of Clang perform auto-init of __builtin_alloca()
+> when stack auto-init is on (CONFIG_INIT_STACK_ALL_{ZERO,PATTERN}).
+> 
+> add_random_kstack_offset() uses __builtin_alloca() to add a stack
+> offset. This means, when CONFIG_INIT_STACK_ALL_{ZERO,PATTERN} is
+> enabled, add_random_kstack_offset() will auto-init that unused portion
+> of the stack used to add an offset.
+> 
+> There are several problems with this:
+> 
+> 	1. These offsets can be as large as 1023 bytes. Performing
+> 	   memset() on them isn't exactly cheap, and this is done on
+> 	   every syscall entry.
+> 
+> 	2. Architectures adding add_random_kstack_offset() to syscall
+> 	   entry implemented in C require them to be 'noinstr' (e.g. see
+> 	   x86 and s390). The potential problem here is that a call to
+> 	   memset may occur, which is not noinstr.
+> 
+> A x86_64 defconfig kernel with Clang 11 and CONFIG_VMLINUX_VALIDATION shows:
+> 
+>  | vmlinux.o: warning: objtool: do_syscall_64()+0x9d: call to memset() leaves .noinstr.text section
+>  | vmlinux.o: warning: objtool: do_int80_syscall_32()+0xab: call to memset() leaves .noinstr.text section
+>  | vmlinux.o: warning: objtool: __do_fast_syscall_32()+0xe2: call to memset() leaves .noinstr.text section
+>  | vmlinux.o: warning: objtool: fixup_bad_iret()+0x2f: call to memset() leaves .noinstr.text section
+> 
+> Clang 14 (unreleased) will introduce a way to skip alloca initialization
+> via __builtin_alloca_uninitialized() (https://reviews.llvm.org/D115440).
+> 
+> Constrain RANDOMIZE_KSTACK_OFFSET to only be enabled if no stack
+> auto-init is enabled, the compiler is GCC, or Clang is version 14+. Use
+> __builtin_alloca_uninitialized() if the compiler provides it, as is done
+> by Clang 14.
+> 
+> Link: https://lkml.kernel.org/r/YbHTKUjEejZCLyhX@elver.google.com
+> Fixes: 39218ff4c625 ("stack: Optionally randomize kernel stack offset each syscall")
+> Signed-off-by: Marco Elver <elver@google.com>
+> ---
+>  arch/Kconfig                     |  1 +
+>  include/linux/randomize_kstack.h | 14 ++++++++++++--
+>  2 files changed, 13 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/Kconfig b/arch/Kconfig
+> index 2cde48d9b77c..c5b50bfe31c1 100644
+> --- a/arch/Kconfig
+> +++ b/arch/Kconfig
+> @@ -1163,6 +1163,7 @@ config RANDOMIZE_KSTACK_OFFSET
+>  	bool "Support for randomizing kernel stack offset on syscall entry" if EXPERT
+>  	default y
+>  	depends on HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
+> +	depends on INIT_STACK_NONE || !CC_IS_CLANG || CLANG_VERSION >= 140000
 
-Thanks, the behavior in v2 is actually what I'm looking for.
-I dug into clk_set_rate while checking into its interaction with
-clk_prepare and I came to this conclusion.
+This makes it _unavailable_ for folks with Clang < 14, which seems
+too strong, especially since it's run-time off by default. I'd prefer
+dropping this hunk and adding some language to the _DEFAULT help noting
+the specific performance impact on Clang < 14.
 
+>  	help
+>  	  The kernel stack offset can be randomized (after pt_regs) by
+>  	  roughly 5 bits of entropy, frustrating memory corruption
+> diff --git a/include/linux/randomize_kstack.h b/include/linux/randomize_kstack.h
+> index 91f1b990a3c3..5c711d73ed10 100644
+> --- a/include/linux/randomize_kstack.h
+> +++ b/include/linux/randomize_kstack.h
+> @@ -17,8 +17,18 @@ DECLARE_PER_CPU(u32, kstack_offset);
+>   * alignment. Also, since this use is being explicitly masked to a max of
+>   * 10 bits, stack-clash style attacks are unlikely. For more details see
+>   * "VLAs" in Documentation/process/deprecated.rst
+> + *
+> + * The normal alloca() can be initialized with INIT_STACK_ALL. Initializing the
+> + * unused area on each syscall entry is expensive, and generating an implicit
+> + * call to memset() may also be problematic (such as in noinstr functions).
+> + * Therefore, if the compiler provides it, use the "uninitialized" variant.
 
+Can you include the note that GCC doesn't initialize its alloca()?
 
->
-> Sascha
->
-> --
-> Pengutronix e.K.                           |                             |
-> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Otherwise, yeah, looks good to me.
+
+-Kees
+
+>   */
+> -void *__builtin_alloca(size_t size);
+> +#if __has_builtin(__builtin_alloca_uninitialized)
+> +#define __kstack_alloca __builtin_alloca_uninitialized
+> +#else
+> +#define __kstack_alloca __builtin_alloca
+> +#endif
+> +
+>  /*
+>   * Use, at most, 10 bits of entropy. We explicitly cap this to keep the
+>   * "VLA" from being unbounded (see above). 10 bits leaves enough room for
+> @@ -37,7 +47,7 @@ void *__builtin_alloca(size_t size);
+>  	if (static_branch_maybe(CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT,	\
+>  				&randomize_kstack_offset)) {		\
+>  		u32 offset = raw_cpu_read(kstack_offset);		\
+> -		u8 *ptr = __builtin_alloca(KSTACK_OFFSET_MAX(offset));	\
+> +		u8 *ptr = __kstack_alloca(KSTACK_OFFSET_MAX(offset));	\
+>  		/* Keep allocation even after "ptr" loses scope. */	\
+>  		asm volatile("" :: "r"(ptr) : "memory");		\
+>  	}								\
+> -- 
+> 2.35.0.rc0.227.g00780c9af4-goog
+> 
+
+-- 
+Kees Cook
