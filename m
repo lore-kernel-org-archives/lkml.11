@@ -2,117 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23585C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D48C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245555AbiA1XJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 18:09:35 -0500
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:10080 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243573AbiA1XJe (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 18:09:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643411374; x=1674947374;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=/WErSQ5riLjTn9G82iWYYkqLnkTM7a6hv6C1CsU4/Wc=;
-  b=U04MmxlRcwoYYqlGGmwnFCId4ynwzyuk1vC+YhBdrqnqMSPaG+1h6BzC
-   oMKQpeQleFOIrNtflnGlZVKtfpViJR+KVSpB95LtCu9qmKph1c5xBvAiA
-   sR/DjUQJC0o+9iaYIYwbxB5ZwdGg9OQpTlDEf+5z1nNZVAmFvHhqUOiTM
-   s=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 28 Jan 2022 15:09:33 -0800
-X-QCInternal: smtphost
-Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 15:09:33 -0800
-Received: from [10.46.160.247] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Fri, 28 Jan
- 2022 15:09:31 -0800
-Subject: Re: [RESEND PATCH 1/2] dt-bindings: firmware: arm,scmi: define
- support for name based regulators
-To:     Mark Brown <broonie@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        <devicetree@vger.kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
-        "Cristian Marussi" <cristian.marussi@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        "Subbaraman Narayanamurthy" <quic_subbaram@quicinc.com>
-References: <cover.1643069954.git.quic_collinsd@quicinc.com>
- <fcd130891cc1d52cb09b8bfc866ab7ef1ce3b2a1.1643069954.git.quic_collinsd@quicinc.com>
- <YfREsxeSSX2pbALf@sirena.org.uk>
-From:   David Collins <quic_collinsd@quicinc.com>
-Message-ID: <8355035c-6d90-adfd-c4e1-7bb37a2d8055@quicinc.com>
-Date:   Fri, 28 Jan 2022 15:09:30 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1344387AbiA1XKC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 18:10:02 -0500
+Received: from mout.gmx.net ([212.227.17.21]:42117 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243573AbiA1XKA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 18:10:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1643411398;
+        bh=nKOgNNjjbb6iRRpllOw9CofNg19QrVk3e0lNK8nkpmA=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=CbTgmQzercNn4ovhqp2FVGVWr0fSzwDDzZLmxXYcvLWcIjQVwpS09PwOTmTo/XIlD
+         UefV02XMytSHycwvNNRQrsvBmQiZ2Z+RUtSkZx/kSf6EwEj7btWn3hujlts4hH9Akt
+         lw13e2UbGx51BenEa+L8HXfO/epc7h/IxbX6G6v8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([89.0.80.162]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MRCKC-1mqOf400Dk-00N9H3; Sat, 29
+ Jan 2022 00:09:58 +0100
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-clk@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+Subject: [PATCH 0/4] clk drivers: Terminate clk_div_table with sentinel element
+Date:   Sat, 29 Jan 2022 00:09:18 +0100
+Message-Id: <20220128230922.2047140-1-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <YfREsxeSSX2pbALf@sirena.org.uk>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:tbVADY7hTofNy/iKkkZ/jbRLr1vGtv/6YJWw2FH6bg/7syrKjZf
+ QCmPQ+w52QP43UQoIcRKpE1QdThN1G3L6w/fLsdGTQy3Os8KYtwWNvnk57bzMf58ov95fjB
+ 5FYeIZD5abMkmXjDaBClBv6WxBbCgINREU9Yf+48aFuWNX1jGbZNcwyfBOrb437oyFVN2Uj
+ h6F1XMhGJzAZ/RuNmLC0g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Rzwj+X1v+Fs=:W5+WGgXirIxBZKI7vrk48j
+ rwrlQkAP9vIUUVZ5jXIElpayL+SkldFNErLH4QYIP+9EsqkILY1Rd5MW0LVH4oJwWRiwVLucx
+ EvKRQOy0ynyaErqB3N1c8GQdqT1T5/q1cJEi19SMIGAnvBuvNqK1s1hVnIIEgJ7Xre6BKFBEE
+ YzJGum3N1L9dAQz4yb7+8MYILFvoxR5JANdlKpsvl9N5SfPmQWjAIeQ6b31awvPe1VV4XLQcp
+ VH2v2EVyvxupg/bJi8/Yp3hY5IXgTRCQDJEKEN6MnwnfmJW+4d9atXqgLBWQq2fn7PeJS8M/Z
+ LyiopGYh3SGLi8P7eFLwvcCKe31lzXDbykQiRovCY1qMRkEuk/H5+mES+IuszIAr2YtVLAFjY
+ hdZc68Uec/h7KdIWoTghJvmiEQZT9wHHjY1VPOHN+xC7VhLlmPrADChlfVBbupjOlq9jXjgU5
+ V9wN7EEILUwLlwTKI3WJy6QnejtsWsjBHVWZA8cB8N9KzGV7pe6YPgAuLi4PQN2zcGiG75pnu
+ ByXlBLj7EkWv8M12KV/2l94GXzrslhrRxSKiRRwybAvfJ1dzEzH5imyHgzslK9re2r+tppv1N
+ r5RyzTb6UGY9XxgdLuwJwXFOaQcK1CRnbTiIbtJI/qCxmJlxjE7y/z0TdpsGUtUr++2mYaOFp
+ sZ996inDXQMbd20J05e6JpAJG5GalfFA1Y6ld6ZtaT7n8Ihf3/1v9AGk7cD1Yud0WaqHhrtZt
+ G23mzPDQQDj6Rgb7GyM+1cZMzzutb0GL+XnJpx4pYl/6QxpBgG0SaYiBolAefwAkpojO9s/SV
+ 3P9jPkD46/y/aH2aiVKab1cetsHSMns2U71A0ZbXvBL1nRO5wO0JOzxsMHo00+2kPpKq++YNe
+ hKaR6qcCRfMIcbTuMukgzbv+4yGoqbnA0ztWxWyNES/GWjXDaEJU1oiZt/B1FSW4+iKr48nrk
+ okN2Hho6qFCPBtlPYcbJIXrveIxWOYKO9fNrsTFBV0CKnstpfzMoIcPBezH87uXck8Qmc1Y8Q
+ mJWOpfqB5CQ+8FYPpM04ej42JpriL/0l01tGEvMm0X0cawXtZB7GKYxILslue+urR1QQyID9C
+ 7rYvHg+ZSGm/q0=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/28/22 11:32 AM, Mark Brown wrote:
-> On Mon, Jan 24, 2022 at 04:27:35PM -0800, David Collins wrote:
-> 
->> Name based SCMI regulator specification helps ensure that an SCMI
->> agent doesn't need to be aware of the numbering scheme used for
-> 
-> What is a "SCMI agent" in this context?  This is changing how the DT
-> bindings are specified, at some point things are going to need to be
-> hard coded.
+I noticed that some of the clk_div_tables in different drivers are not
+terminated with a sentinel element. This may cause the code in
+clk-divider.c to read garbage that happens to be beyond the end.
 
-An SCMI agent is the entity that issues SCMI commands (i.e. the
-consumer).  An SCMI platform is the entity that receives the SCMI
-commands and performs the necessary operations (i.e. the provider).
-This is the terminology used in the ARM SCMI spec [1].
+This patchset fixed all instances of this bug that I could find, except
+for a case in drivers/phy/ti/phy-j721e-wiz.c that is already fixed in
+linux-next:
+  https://lore.kernel.org/lkml/20220117110108.4117-1-kishon@ti.com/
 
-A typical system layout could have an agent that is the application
-processor (running Linux) and a platform that is an embedded controller.
+Jonathan Neusch=C3=A4fer (4):
+  clk: actions: Terminate clk_div_table with sentinel element
+  clk: loongson1: Terminate clk_div_table with sentinel element
+  clk: hisilicon: Terminate clk_div_table with sentinel element
+  clk: clps711x: Terminate clk_div_table with sentinel element
 
-The system layout that this patch is targeted for consists of an SCMI
-platform implemented in software in the primary Linux OS on the
-application processor and an SCMI agent in a guest VM (also running
-Linux).  This provides paravirtualized regulator control to the guest VM
-where full virtualization is not supported.
+ drivers/clk/actions/owl-s700.c         | 1 +
+ drivers/clk/actions/owl-s900.c         | 4 ++--
+ drivers/clk/clk-clps711x.c             | 2 ++
+ drivers/clk/hisilicon/clk-hi3559a.c    | 4 ++--
+ drivers/clk/loongson1/clk-loongson1c.c | 1 +
+ 5 files changed, 8 insertions(+), 4 deletions(-)
 
-During the course of development of these software images, it may be
-necessary to add or reorder the set of SCMI voltage domains (regulators)
-implemented on the platform side.  If the voltage domains are only
-identified and matched based on the ID number, then it is easy for the
-platform and agent to get out of sync.
+=2D-
+2.34.1
 
-Using the voltage domain name instead of ID number for identification
-and matching provides robust assurance of correct regulator usage in the
-face of domains being added, removed, or reordered on the platform side.
-
-
->> +              regulator-name: true
->> +
->> +            anyOf:
->> +              - required:
->> +                  - reg
->> +              - required:
->> +                  - regulator-name
-> 
-> This is abusing the existing regulator-name property which is there to
-> allow a human readable descriptive string to be attached to a regulator.
-> It should have no effect other than being included in diagnostic output.
-
-Would you be ok with a new DT property being added in place of
-"regulator-name" in this patch which serves the same matching purpose
-(perhaps "arm,scmi-domain-name")?
-
-Thanks,
-David
-
-[1]: https://developer.arm.com/documentation/den0056/latest
