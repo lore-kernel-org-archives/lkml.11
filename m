@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8288BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 22:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 254A4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 22:26:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351693AbiA1W0w (ORCPT
+        id S1351687AbiA1W0z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 17:26:52 -0500
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:16634 "EHLO
+        Fri, 28 Jan 2022 17:26:55 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:24118 "EHLO
         mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1350536AbiA1W0p (ORCPT
+        by vger.kernel.org with ESMTP id S230083AbiA1W0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 17:26:45 -0500
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20SMCr2E026412;
-        Fri, 28 Jan 2022 22:26:25 GMT
+        Fri, 28 Jan 2022 17:26:50 -0500
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20SMClLO025308;
+        Fri, 28 Jan 2022 22:26:31 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : content-transfer-encoding : content-type :
- mime-version; s=corp-2021-07-09;
- bh=VDi15XLVCeiRhTyOpC/WFBPISzs3GfCeTu7QsYH+8hQ=;
- b=Y1BXfBGcEHw/5avWTZiRhx6Pax52LeRgfjgQqdTSh8dy2vfmbW326I/9ftRRrunnEkeo
- 7WWYunYBwvrX6jehvTqt15ENI+PdJxJh0lsWL5QFhsHolprW73P5m4yAxdzKN/SfC+Mg
- Hdm+Te1vth/S8WJ7GNQjrgYKX+ioN4/hrSGfXjI+Jlo0B7ORv0SRMLcIqcJG/r49x1lC
- 7yGj6A0F8O3t7XyL7LVcxo++I2s3POYaeo4677gSUYjejgEspwC67EUjn9C/5N/ZGpD1
- TinKOYssxMvFuu5loabT9VK+8cBK0S3iVBr+pgQoNK97GNX9/CvP+PUYIqyJ+BOw7DOp gg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3duxnp44v1-1
+ subject : date : message-id : in-reply-to : references :
+ content-transfer-encoding : content-type : mime-version;
+ s=corp-2021-07-09; bh=yqpG1+R0S7YWx/GMZU+Cz0Xpv0yKbr+4G04dykhKLrE=;
+ b=KNc9sqPIF0QqAF91IjE7C19qBoR+vfv4viO7wR9EYSuCtynooSi/VZ0McZehfM/6GZte
+ fjuRy/Eupa7K6E0YM+TaIEjmuVGUu46aLZZSp8Kjp7kRmBhFQ9J840i9+L6jIbOqfqLP
+ Vp/wLDr58Q/xm6ulawtWv1DnIRqSq4EE/T6OSqnBoAaJaakOwJ0zzPuEobBr9EH3eONk
+ XFgcAGEUgHJNKX0QIMszQdgCL6spxwl2O4fRlC1oFE6Er/xrThTPZcye1PkvNrAU+p51
+ QuCd72iVPmBamEg7f+WVgkHgeoqZCeIlA36JpKex7GOX5N755z0FjE6WxP7KboMsucCO Bg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3duwrxmmj8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 28 Jan 2022 22:26:24 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20SMHCvB084116;
-        Fri, 28 Jan 2022 22:26:23 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2171.outbound.protection.outlook.com [104.47.56.171])
-        by aserp3020.oracle.com with ESMTP id 3dtaxd8nf4-1
+        Fri, 28 Jan 2022 22:26:31 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20SMFiJ3102183;
+        Fri, 28 Jan 2022 22:26:30 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2170.outbound.protection.outlook.com [104.47.56.170])
+        by aserp3030.oracle.com with ESMTP id 3dr7ypma8r-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 28 Jan 2022 22:26:23 +0000
+        Fri, 28 Jan 2022 22:26:30 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oULSmRZ3j/RrwiKpbiNwt18u63TSMboKfd4YCZWRQeeGQOwrDEPSX9d28T1HXghQHJHY8PZwn7440QATf5lPlk/xIlo+wI5x2+Rb7suTARTMpQj3R20BJLSLAECLcd0Ktnwr8u8pMFBrknjKNX3emgf2xzcyRPiXXmCmD2CM7wSFprbsFDobnpnCna5v7RN8tIdcRC4kLwSFUHRcA9oD6T1y3FHwDRdPHOsn2GA6r1TXd9xgJLCT7EtYd3gJpwjQvoqTZplMel0qNCJZ/FDudydosZCfkDV44+WJ36xuRkMarG5dsMIh2XUHyxGnjFuYta6+OmHMjX3t2z1nUexyjQ==
+ b=Ymk5EerJNYWnljgjCV7FDkh51DkBqJePwPPd5X4w9sUn2rHe1istCc0HGoLP7bKcVO+eNvoWj8BzjoAT4lly52yFJZtu+EuCU2mO9sDAt3D+mbSo5oCZYHGdtc3YLUyEagK3K1fu9ZIq3uMKy8MVFFIalDshRmFTnor/QdWVpkQL1tXcqzh3NpFmX96n7fBtswomSq2wGgdof38AhN8AirH7Nf8OQXGZ2hYSaaGprJMMHBwSVAPnZI/zBwL9UCphMObTLPzyRLpvQz0sUAfhJJFtYHg3Qsmlp4IvxcRGA36/q2/HalKwEKZ5OFAacoMoZyl4F04yY/pG60JnPGWebA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VDi15XLVCeiRhTyOpC/WFBPISzs3GfCeTu7QsYH+8hQ=;
- b=b31w8kDmbmxrQyX3OyLERmS72jDEyqxhXCZsO1ogH9xmQW0tPKF0FP/z14gQo+9RpDvWvJtIiORE+7FQf3BnW0PlPuYwrCBkqrUqsVeinalde4n8YJGmQdNqwZDlJYHMmBe7dRcj9Ry6w+ZjCcb4PI/STdpKyAytMt8YYtmHeTAode8XbtTh+4e9KUg6sIiuLYCNvP6rVmG6F29L/JVyabeo5rora1QWfVaHoG5ZBqCM1SrWItyiJNpe4MYVg4k+IKlZ+GNlxp0o0sHkHGBYkdn4B6xiM473EE6EqJQl9+oBq7WDZNdUTSbGMNp8iU8tbrc6/aMiwTZFYxudWT2LBg==
+ bh=yqpG1+R0S7YWx/GMZU+Cz0Xpv0yKbr+4G04dykhKLrE=;
+ b=RaWJmzzWUncBQEArN+pvJ+gSE4gFPgMBrW4BZuMkFOARbGWxydCs/1mYHEWW6e2v8oD4Gls9sL6N24MhfOYJTpgUwOF/J4T5e6l3BD2aMoJ4P5XEyMOrtq+A1ZpRBRB1kS4WMXfG1i9OXOj5wuct5ELSijDWHUMzU/1WVJyMLhkR/2zOHVnfbHk9HsNS/XcbPUBHlztJDtn6m7UMbxmkuEO5r8koZMwQjHa59zTXuqOZrEOwk1c20EppBZLD3MBzXuBsO4Ry/Q6HKK9I2cCSTqgTqGQlviFpa/Oo5aQVQY1cmw0Jn2n4d5naCWjpdyWxAQqANuncDdoUQ6Ep4oCRUw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VDi15XLVCeiRhTyOpC/WFBPISzs3GfCeTu7QsYH+8hQ=;
- b=o3V4iyCkBzdI2qe4PpvEHW6jfQujiHNudPTEXQ4sN9PgobSegh+G+sHC0xcYS4UJHsCbEIJrHegS/6C/kBxbOjdSZ4WJiCC0vzVTmd+KrFLjMesn0VxxCZLjYNFOODzP62YeZo3PVYU2yvGcDUvQF8MvWIhp/0tqBpFZYF75NRA=
+ bh=yqpG1+R0S7YWx/GMZU+Cz0Xpv0yKbr+4G04dykhKLrE=;
+ b=R5Fudtp6YUmO5uRj22+GP6zbUY2TV/Xv89zNsLO1giBrEr25s1NGkER2WPGYUiCtvcConc4i0fWGYDIFyp0LdT2Q392pEPnCdMR0nS0xZ+HIZiA/AIjBqiaO7nwL+TPK4X65cjIDR9CUfCedQ2gsQuZ7wJg1a6F7tHEt/GCrdOY=
 Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
  by DM6PR10MB2587.namprd10.prod.outlook.com (2603:10b6:5:b1::28) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.19; Fri, 28 Jan
- 2022 22:26:21 +0000
+ 2022 22:26:27 +0000
 Received: from BY5PR10MB4196.namprd10.prod.outlook.com
  ([fe80::90eb:bb07:608b:7556]) by BY5PR10MB4196.namprd10.prod.outlook.com
  ([fe80::90eb:bb07:608b:7556%7]) with mapi id 15.20.4930.019; Fri, 28 Jan 2022
- 22:26:21 +0000
+ 22:26:27 +0000
 From:   Mike Kravetz <mike.kravetz@oracle.com>
 To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
 Cc:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
@@ -70,10 +70,12 @@ Cc:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
         Shuah Khan <shuah@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Mike Kravetz <mike.kravetz@oracle.com>
-Subject: [PATCH 0/3] Add hugetlb MADV_DONTNEED support
-Date:   Fri, 28 Jan 2022 14:26:02 -0800
-Message-Id: <20220128222605.66828-1-mike.kravetz@oracle.com>
+Subject: [PATCH 3/3] userfaultfd/selftests: enable huegtlb remap and remove event testing
+Date:   Fri, 28 Jan 2022 14:26:05 -0800
+Message-Id: <20220128222605.66828-4-mike.kravetz@oracle.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220128222605.66828-1-mike.kravetz@oracle.com>
+References: <20220128222605.66828-1-mike.kravetz@oracle.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: MWHPR07CA0016.namprd07.prod.outlook.com
@@ -81,102 +83,221 @@ X-ClientProxiedBy: MWHPR07CA0016.namprd07.prod.outlook.com
  (2603:10b6:a03:20d::23)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 93d7a860-474c-4eb6-b2c3-08d9e2ad35d8
+X-MS-Office365-Filtering-Correlation-Id: dffc2cdc-efb5-4d58-5ccc-08d9e2ad399c
 X-MS-TrafficTypeDiagnostic: DM6PR10MB2587:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR10MB25878F51E767D60577C33015E2229@DM6PR10MB2587.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
+X-Microsoft-Antispam-PRVS: <DM6PR10MB25876158E1547E9309E6184EE2229@DM6PR10MB2587.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OnvGj8aI8K/Dqmgv5mUuyxOg8+CErdLPf20TtFqsChqqFy7n1XqS3f0B+9/tL9wCoIN+eKFsX6Ph0b45oM1Uoss5zBRDgoi/Uo2n/wOQKeuf60x/t/W/5UjxA1JyWBuUZUyR6u0BFy3AbGqtk0idomFh0NcQkgLSA7GCm9DDj4T7o3RnBw+r3f7VxKmglb5If8CV5ThGuQIoXQi39OoYNgPvIlkfG3ilYZNl1R+o05W47KGp0LPX2u1TwhAyn1hv/pvIH+UhLEcNUAsAoB2IHBmwSvZoxcMhlhgIAH/eaIZxOAXt+vOR8hCRfhQtzYj/KdvZD8kJlqc6KLJaTlY0+on/qoXeRobeCXgDPzL+2StWZoNLLUgHGakiRTpZMfpoge2SLRM4bQEUxZ5B+hV/da095uZjs8y6xOqjcEX7CWxyIhpoVWEA4hFg8xCCJq8GQXk3YIHFBnHm5OhYIqD83qy0pgNee0UlX5a+7QILqF64oYPH8TnbUeiZPvSkdcX97pn/LRyPg7+aKNceK2A1eHISS+iBWOav3fpALpcSwIsrqqAuqKDNmd7dDLVUOWYb5Ad3uiO7snMPB/rFMItlllBWtxuE7yMR1Ll6w57DL7SdeMBQU7SUKa7pTzFAG+3RqucFzyQW5d4siZAyN7BjID8MzGv79WPlexqkGmRG1VhatkAtfiwtNBkse8+MLjA7SOShIgnQFKIw0x2j0KNfwA==
+X-Microsoft-Antispam-Message-Info: DTpHd0c9N+dGjGsR4lpf5MEIneq5Puy0aJZPqZA5NGR4ZN77jGYRZVP+5jFfPOa5x8ejAmm3JlUJdH8SlAyozYmjRhR0FuI+06nb32hj4K9JeXYkm98s26eZGeEaIwbp5lUWh/w/EFqGYAeh687tqQSxBTRIJoHcirw3zmK/YPpE+ohHye7MZ9/BsZDJODTDe8g+FPJCZIq+4aAyEqtdkeiou6T7gmeEACQtB2VCO/Ui7n0iiwBi/TTBhObO684Iv4rnu928jIm2QJjwiwf6pXgLvm1UZNOF9SWyjf2G68rCK+qWPLt7mPTouA/oqr4vmEu5zJNPIFLlHqd/UILR+KZQaVVtcEr7pPaF63/6o53GYABhlN+BD7k8j9o+uItSGmHAnNSFQ7QGK3O2+lkUzlRTRn38dD3kAzym3MOD8SZNZyh/fszPgfaWOk+S0KYkx2hNmKzyihSFzngl652QZw2gzAVPfEtq9025EroY4rxL+AWYbKG5Yb/ILYx/a9Q6WVEHU0qcXiNI82nq1wJxw2LFLeXpsx3bdiOU8gEceCj9eopyliIpeszd/tUNIzqoQmQyR4XkDNSmha4dWC30Gd+kt2i2P8PQaw0HgN3QL5uEQFUTUhH4bjh2mNUrKHM/SkpU6aTRFVnH7vcsK0spvnmDyxro5ZejXSyfjGv10dQl6zrKIZXPwOiqWyhl+ppiMuKLlYzAOrls6zsAConAtA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8676002)(7416002)(66556008)(66476007)(8936002)(36756003)(66946007)(44832011)(38100700002)(38350700002)(54906003)(316002)(4326008)(5660300002)(6506007)(6512007)(6666004)(52116002)(107886003)(2906002)(83380400001)(508600001)(86362001)(6486002)(2616005)(1076003)(186003)(26005)(20210929001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?C9kcLp7yIP7DM1FQToj9Qso8ejTzC2QI9OJjkT7X7psgZRy2rYZMF6abnct0?=
- =?us-ascii?Q?l+3SDItdDKteGCqt0jN8sOXKd5Q2MlqF1Akv4Cjy1it7FUfOFfgav1HZNknd?=
- =?us-ascii?Q?UkTXp079Z/OI4u7NqRQLRv/pEmjjjPmDUkmVaOnFSkp+lKfTVXs6BpV3kfPu?=
- =?us-ascii?Q?/nQLBbx/AQ1QbWlrI4VLFK7YgbR90Cs30mQkCx6gqlBdbapqohubOQAmOl7a?=
- =?us-ascii?Q?xdhrtoc5wYWaqe7dexuP+hACMSq8NXBGQCT5fF3zHRH//jiX0YtgHee1qpt+?=
- =?us-ascii?Q?f1yE+rmIvCHwdkZ3sC5GxF+ytE3DSH3TZfhscAEwRhx3uPMfWkfO82p308Ln?=
- =?us-ascii?Q?3wDjYxU4+orxJ1zxaJFw9GIdf+e1ZfEcuLJ0woty6/+G4d5wbQQJgnV8SwIG?=
- =?us-ascii?Q?1i0FHrRt+nAf8dl3ImHVoX8BDrwx2ASZO+lrf3oR9zihlIBeVjj4+LJwwHID?=
- =?us-ascii?Q?pNj+G+8kzmOWDJ7FMG+h4SubgnvK9qevooeHtGk3dq7C30KRs8k5Hvt5BIiE?=
- =?us-ascii?Q?n/A1u4yEo4ASFV1LDC20VlMxqPP9NDaN0V5u6Y8pSkGWeM1/BP7ZVCWcgFEE?=
- =?us-ascii?Q?JgMQJ6EIRM7e97YW019O6H7QuPhP6UVvB2vSL7zLbpCXV26ddcF04jjtaBJC?=
- =?us-ascii?Q?rnHKU5/SjmA2hmLczp835ZH8LAwbvFL8tStYcUxgCI09gtaTrI8LzYlCnZuC?=
- =?us-ascii?Q?hZQfyFyZikwaxo5rZpP37CKQqF4wCTb1RtFkIR9GWESrBk/kn7+uHYga9yCT?=
- =?us-ascii?Q?YhQ0/5vtQESqHpPk9ZxOP5+DtpARlpcGf8pKk5XaLxuIrg0s6XEs1Pa1fMGm?=
- =?us-ascii?Q?sV/0klzmMUWtr/XVl1Ti2dyx7wkGxvNDw5O6XOpXRO3faygDYpTMpRx8/pNr?=
- =?us-ascii?Q?KsfPt2/gNW9OcRR66xU44gj8jtN1hAyT4M1bAD6Q9ZXxUlj9thNlPXdNb2se?=
- =?us-ascii?Q?e77XnGaQyUS14dXEUusqdQYJq02+hFuYLa4uGlD+WtYo6kw3zALQU2S0h5/O?=
- =?us-ascii?Q?KvY2l8o7cGaT0YJc81Jr+STD0cY0ieoZalyo1YO5qVKO8KL/O8cVNvlOL2VM?=
- =?us-ascii?Q?ypjogJfY8llb1vOGIivMPTKFzGt5zxNNMNT0PX4D5uHUzHSlAYvtl6LyaO1o?=
- =?us-ascii?Q?7WjCneugV+mUYt3GC0SFHZ99uUKanlNrWnY83Z2gS1bG31IqZMIsTzOHMaWt?=
- =?us-ascii?Q?x1lp25JaDcAo4KstdOWmi4e4zMfLkiTRlf6ELgYqqstarttdZ687jp2KeyYJ?=
- =?us-ascii?Q?lzhdbaCPv7OYZrP3SqCEC40HFmd4bxaqzRGJb+OMccWIn4RbV+JQt7nEW/wh?=
- =?us-ascii?Q?yuSeIsDJV8zZEdgbqeCzeVQSaYqz9SpLImxDtlquur7ls+I2kX4NED2qDFlP?=
- =?us-ascii?Q?xJTm/WwdK9hsL6f9vqaf3L8Rs15A29LLTGDiqp13xGnXXnHkSMlMw0uA9Oem?=
- =?us-ascii?Q?7NY/Tv+tk39JjTXdF/vqNNrHlJjQQEt/LI2/gtcTJKdrpxHnObFlXQRDm/bc?=
- =?us-ascii?Q?iI+0YaJxxKsH9eYliVpvSqKv0WcLWVm7mYiqgJKVxOdCUpI4nf/bLMN3CzKW?=
- =?us-ascii?Q?g9e4LI0De2esd15l0f722tW1fzPeqnBiOB0XJYUVbIjv5S9N2MFzeCbW6wHZ?=
- =?us-ascii?Q?PZUxJjSUISWEn9/joW3kOJo=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9IkqiqXdBZgGmP9NUiGDpl8S+NC/VPLb44ikN6FhSZ8lPlw+p2Gjhm7Jm+uH?=
+ =?us-ascii?Q?GE2wk/04a6yYoTepHXnn8xX06iZxqiqU/YcQOktrDTwx1fX6DfBeP9c6AIeU?=
+ =?us-ascii?Q?0VKkv22PIf/Oha2ZPOq2nSS+qm//OrfuTzSY3d4ipzkbHWVyZIzyl4wDMhUj?=
+ =?us-ascii?Q?UpSAx/vxStqFf1AITa3GxtwQf7n4pqyC5kKjWmtfrNz35Dfc40fI99PCE6HD?=
+ =?us-ascii?Q?SztDuWdrlIveb0ECzYSdeSEje4IibZ/LI29RS7IxRNlobgSM1qhstIyywnby?=
+ =?us-ascii?Q?g0EPmzrY5dqLPuisGQMinGOGh2c60PQKva2n0Apl/vXOZrBPQ2upDIf2sew2?=
+ =?us-ascii?Q?KAYDTl8WgpjXJhKxdv4qxT3q4jzBdCz6oBSAlq8Hrsz+aObBgPeXyzGtntTX?=
+ =?us-ascii?Q?QvpQA7wZKNjQXo5OAPXMgsOnmIFJLEEBmV717elZ1NQHnJh7E/o2oStrqlgQ?=
+ =?us-ascii?Q?hrIrJIDIQTW96CVxM0pLwArdyhhu73+4W095aI9HeJhXpWbipia1gmIB/k/P?=
+ =?us-ascii?Q?fQBh4AGFBOOm87tQ0B90Fubo3aS6dpg0xsArV+zJX1S9OkuYn2F354CO8eGM?=
+ =?us-ascii?Q?gDkt3XPJE/2mkCvoUsLsCqyKhilDfv23Ddc3tORBGhr0Fqag+gK+y7qW1NbS?=
+ =?us-ascii?Q?itFsixVK1QGY/QFVvoIxg80oUf/tg8hSmZjzI8eLy2mevXCws47OVnlFZ+tL?=
+ =?us-ascii?Q?QxLRxFWb7uj4nHQjSS6wsGl11rymqdcwyve5aKE7EViT+LbC5E01LGfgAEm5?=
+ =?us-ascii?Q?+dyW5q6TMxY/RKaZPcG71nbV4Wg7IpAEbqVG4DzDtJmDBlM+kbfiS97tfxpr?=
+ =?us-ascii?Q?9oRIav84/oU6cy5czsjHazk5gK/iCkQSkT9nMC2OAA7kpOnshrY4mNZyBd+O?=
+ =?us-ascii?Q?TPaNF+icGXGplpTBlu7iUPqAjk74MXrctETYbSC2wW6GcWfXZKzeoYcjHLMM?=
+ =?us-ascii?Q?i/q4xjZzPbPFjNmutzE07d/Wjxnh+G93JBeKruTFfj8Pl+TKWNLHYJ/XApHi?=
+ =?us-ascii?Q?uUzsIhFj/0byOCodNz4O/80153uWhVAWw3I2yYq4OJm5liEg6hbLM5NzdqQt?=
+ =?us-ascii?Q?832SgY1ZSYrh3npaOm3U8NDm0VfYWjmOd51xteff7Q9/MINYgI98FOUMH7mO?=
+ =?us-ascii?Q?aN99JWz8LNOqXuIsOTncZ2DQs/+/AYDKbqL9EIyFQR622HUuPlBD9OmrdzwA?=
+ =?us-ascii?Q?wHJ1hm3UlXFCSLYACTxMcTalRnyT7fhW7kpyJh3o7INKyC5dpNFpyo826JQk?=
+ =?us-ascii?Q?rwJCDxtCBxsV8IxCZ041v4w6iO4jYZmLCuibUE/2aOATgoSNDxTxUmjN5fXj?=
+ =?us-ascii?Q?g1NyoGiAPuIer9lDG1Dq9tW6ojAv+6fOIX6zdiVtqw7065ZR8mjbUZ+b3OwA?=
+ =?us-ascii?Q?xhWJI7EDe7Cb1ZRasnYS4Xmv7pPTiov0AHP9TIPPaepQx2D5NjfFvY3Wy9FO?=
+ =?us-ascii?Q?cZrtfVS1Z+8RqGdelNJ5re29YrDb6+rdVUcenIrqS1nJ834LKpafWM4vk0Mp?=
+ =?us-ascii?Q?GUKq6PEB9cWfHn12bQRKySIOQ+d5wuCVD9emItdJnogj7odZ3BLJrbYi5nPi?=
+ =?us-ascii?Q?yjP5On56v8vo8vbJwlTVXlp0u8jYwkr4W4AnlRFxE2mnytOwZqyQSh3vEp51?=
+ =?us-ascii?Q?IoRQGxCFQn1XX0LAavN5cpU=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 93d7a860-474c-4eb6-b2c3-08d9e2ad35d8
+X-MS-Exchange-CrossTenant-Network-Message-Id: dffc2cdc-efb5-4d58-5ccc-08d9e2ad399c
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2022 22:26:21.1811
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2022 22:26:27.6072
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HAu4j8+3FDYY6AymbL0YuQuWdZCYO9lE5G5k+VI9vhbBe4NIdBmyRy0E33UskUx3nu1YRQphjIQR5rSLs1mHUw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5YYOGcYIZO4JBVAP357LgA9gXG22HXj4nEdOz7FmJB8AgTKBnVii6ZI7JplWAw29dZ/79EaslUm8uyL34uJquw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2587
 X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10241 signatures=673430
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0 mlxscore=0
- phishscore=0 suspectscore=0 spamscore=0 mlxlogscore=912 adultscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0 bulkscore=0
+ suspectscore=0 malwarescore=0 adultscore=0 mlxlogscore=999 mlxscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
  definitions=main-2201280125
-X-Proofpoint-GUID: qnx91tcKPX_5EnMr8YOqOckQbSb_phUt
-X-Proofpoint-ORIG-GUID: qnx91tcKPX_5EnMr8YOqOckQbSb_phUt
+X-Proofpoint-GUID: p0VjFWuNcIM0NxSGoJp-e9OMb4gzw-_a
+X-Proofpoint-ORIG-GUID: p0VjFWuNcIM0NxSGoJp-e9OMb4gzw-_a
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Userfaultfd selftests for hugetlb does not perform UFFD_EVENT_REMAP
-testing.  However, mremap support was recently added in commit
-550a7d60bd5e ("mm, hugepages: add mremap() support for hugepage backed
-vma").  While attempting to enable mremap support in the test, it was
-discovered that the mremap test indirectly depends on MADV_DONTNEED.
+With MADV_DONTNEED support added to hugetlb mappings, mremap testing
+can also be enabled for hugetlb.
 
-madvise does not allow MADV_DONTNEED for hugetlb mappings.  However,
-that is primarily due to the check in can_madv_lru_vma().  By simply
-removing the check and adding huge page alignment, MADV_DONTNEED can
-be made to work for hugetlb mappings.
+Modify the tests to use madvise MADV_DONTNEED and MADV_REMOVE instead of
+fallocate hole puch for releasing hugetlb pages.
 
-Do note that there is no compelling use case for adding this support.
-This was discussed in the RFC [1].  However, adding support makes sense
-as it is fairly trivial and brings hugetlb functionality more in line
-with 'normal' memory.
+Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+---
+ tools/testing/selftests/vm/userfaultfd.c | 67 ++++++++++++------------
+ 1 file changed, 34 insertions(+), 33 deletions(-)
 
-After enabling support, add selftest for MADV_DONTNEED as well as
-MADV_REMOVE.  Then update userfaultfd selftest.
-
-RFC -> v1
-- Fixed alignment issues when calling zap_page_range.  Naoya
-- Added checks for invalid arguments and misalignment to selftest.
-
-Mike Kravetz (3):
-  mm: enable MADV_DONTNEED for hugetlb mappings
-  selftests/vm: add hugetlb madvise MADV_DONTNEED MADV_REMOVE test
-  userfaultfd/selftests: enable huegtlb remap and remove event testing
-
- mm/madvise.c                                 |  24 +-
- tools/testing/selftests/vm/Makefile          |   1 +
- tools/testing/selftests/vm/hugetlb-madvise.c | 401 +++++++++++++++++++
- tools/testing/selftests/vm/run_vmtests.sh    |  12 +
- tools/testing/selftests/vm/userfaultfd.c     |  67 ++--
- 5 files changed, 470 insertions(+), 35 deletions(-)
- create mode 100644 tools/testing/selftests/vm/hugetlb-madvise.c
-
+diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
+index d3fd24f9fae8..f5578ef85560 100644
+--- a/tools/testing/selftests/vm/userfaultfd.c
++++ b/tools/testing/selftests/vm/userfaultfd.c
+@@ -88,7 +88,6 @@ static bool test_uffdio_minor = false;
+ static bool map_shared;
+ static int shm_fd;
+ static int huge_fd;
+-static char *huge_fd_off0;
+ static unsigned long long *count_verify;
+ static int uffd = -1;
+ static int uffd_flags, finished, *pipefd;
+@@ -124,9 +123,9 @@ const char *examples =
+     "./userfaultfd anon 100 99999\n\n"
+     "# Run share memory test on 1GiB region with 99 bounces:\n"
+     "./userfaultfd shmem 1000 99\n\n"
+-    "# Run hugetlb memory test on 256MiB region with 50 bounces (using /dev/hugepages/hugefile):\n"
++    "# Run hugetlb memory test on 256MiB region with 50 bounces:\n"
+     "./userfaultfd hugetlb 256 50 /dev/hugepages/hugefile\n\n"
+-    "# Run the same hugetlb test but using shmem:\n"
++    "# Run the same hugetlb test but using shared file:\n"
+     "./userfaultfd hugetlb_shared 256 50 /dev/hugepages/hugefile\n\n"
+     "# 10MiB-~6GiB 999 bounces anonymous test, "
+     "continue forever unless an error triggers\n"
+@@ -223,10 +222,13 @@ static void noop_alias_mapping(__u64 *start, size_t len, unsigned long offset)
+ 
+ static void hugetlb_release_pages(char *rel_area)
+ {
+-	if (fallocate(huge_fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
+-		      rel_area == huge_fd_off0 ? 0 : nr_pages * page_size,
+-		      nr_pages * page_size))
+-		err("fallocate() failed");
++	if (!map_shared) {
++		if (madvise(rel_area, nr_pages * page_size, MADV_DONTNEED))
++			err("madvise(MADV_DONTNEED) failed");
++	} else {
++		if (madvise(rel_area, nr_pages * page_size, MADV_REMOVE))
++			err("madvise(MADV_REMOVE) failed");
++	}
+ }
+ 
+ static void hugetlb_allocate_area(void **alloc_area)
+@@ -234,26 +236,37 @@ static void hugetlb_allocate_area(void **alloc_area)
+ 	void *area_alias = NULL;
+ 	char **alloc_area_alias;
+ 
+-	*alloc_area = mmap(NULL, nr_pages * page_size, PROT_READ | PROT_WRITE,
+-			   (map_shared ? MAP_SHARED : MAP_PRIVATE) |
+-			   MAP_HUGETLB |
+-			   (*alloc_area == area_src ? 0 : MAP_NORESERVE),
+-			   huge_fd, *alloc_area == area_src ? 0 :
+-			   nr_pages * page_size);
++	if (!map_shared)
++		*alloc_area = mmap(NULL,
++			nr_pages * page_size,
++			PROT_READ | PROT_WRITE,
++			MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB |
++				(*alloc_area == area_src ? 0 : MAP_NORESERVE),
++			-1,
++			0);
++	else
++		*alloc_area = mmap(NULL,
++			nr_pages * page_size,
++			PROT_READ | PROT_WRITE,
++			MAP_SHARED |
++				(*alloc_area == area_src ? 0 : MAP_NORESERVE),
++			huge_fd,
++			*alloc_area == area_src ? 0 : nr_pages * page_size);
+ 	if (*alloc_area == MAP_FAILED)
+ 		err("mmap of hugetlbfs file failed");
+ 
+ 	if (map_shared) {
+-		area_alias = mmap(NULL, nr_pages * page_size, PROT_READ | PROT_WRITE,
+-				  MAP_SHARED | MAP_HUGETLB,
+-				  huge_fd, *alloc_area == area_src ? 0 :
+-				  nr_pages * page_size);
++		area_alias = mmap(NULL,
++			nr_pages * page_size,
++			PROT_READ | PROT_WRITE,
++			MAP_SHARED,
++			huge_fd,
++			*alloc_area == area_src ? 0 : nr_pages * page_size);
+ 		if (area_alias == MAP_FAILED)
+ 			err("mmap of hugetlb file alias failed");
+ 	}
+ 
+ 	if (*alloc_area == area_src) {
+-		huge_fd_off0 = *alloc_area;
+ 		alloc_area_alias = &area_src_alias;
+ 	} else {
+ 		alloc_area_alias = &area_dst_alias;
+@@ -266,12 +279,7 @@ static void hugetlb_alias_mapping(__u64 *start, size_t len, unsigned long offset
+ {
+ 	if (!map_shared)
+ 		return;
+-	/*
+-	 * We can't zap just the pagetable with hugetlbfs because
+-	 * MADV_DONTEED won't work. So exercise -EEXIST on a alias
+-	 * mapping where the pagetables are not established initially,
+-	 * this way we'll exercise the -EEXEC at the fs level.
+-	 */
++
+ 	*start = (unsigned long) area_dst_alias + offset;
+ }
+ 
+@@ -424,7 +432,6 @@ static void uffd_test_ctx_clear(void)
+ 		uffd = -1;
+ 	}
+ 
+-	huge_fd_off0 = NULL;
+ 	munmap_area((void **)&area_src);
+ 	munmap_area((void **)&area_src_alias);
+ 	munmap_area((void **)&area_dst);
+@@ -922,10 +929,7 @@ static int faulting_process(int signal_test)
+ 	struct sigaction act;
+ 	unsigned long signalled = 0;
+ 
+-	if (test_type != TEST_HUGETLB)
+-		split_nr_pages = (nr_pages + 1) / 2;
+-	else
+-		split_nr_pages = nr_pages;
++	split_nr_pages = (nr_pages + 1) / 2;
+ 
+ 	if (signal_test) {
+ 		sigbuf = &jbuf;
+@@ -982,9 +986,6 @@ static int faulting_process(int signal_test)
+ 	if (signal_test)
+ 		return signalled != split_nr_pages;
+ 
+-	if (test_type == TEST_HUGETLB)
+-		return 0;
+-
+ 	area_dst = mremap(area_dst, nr_pages * page_size,  nr_pages * page_size,
+ 			  MREMAP_MAYMOVE | MREMAP_FIXED, area_src);
+ 	if (area_dst == MAP_FAILED)
+@@ -1667,7 +1668,7 @@ int main(int argc, char **argv)
+ 	}
+ 	nr_pages = nr_pages_per_cpu * nr_cpus;
+ 
+-	if (test_type == TEST_HUGETLB) {
++	if (test_type == TEST_HUGETLB && map_shared) {
+ 		if (argc < 5)
+ 			usage();
+ 		huge_fd = open(argv[4], O_CREAT | O_RDWR, 0755);
 -- 
 2.34.1
 
