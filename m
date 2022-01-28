@@ -2,143 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D33E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350513AbiA1RQw (ORCPT
+        id S1343536AbiA1RRc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 12:16:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53964 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237031AbiA1RQv (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 12:16:51 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2245FC061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 09:16:51 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id ah7so18168108ejc.4
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 09:16:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i3JH2uswymAsKpMUeWYj6Rrvu9IBeiXIZ4PRQpmFOBI=;
-        b=IFOZ8SQ/4LRnLylIohKZy/v6LW7gUkwz17ky/+vepKc8ib+dXSfN0Ny3Qqx5elgK8v
-         RR8JuJaOfAaVRo4NnYX3+sx2uPzu91PpBMPh2+LPuL18RwNZK3ycH9HrYjYn4hlaPnUl
-         xrWvkTk3kNTmwhFk2HSQZFAFrkQb0lgCQvVmY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i3JH2uswymAsKpMUeWYj6Rrvu9IBeiXIZ4PRQpmFOBI=;
-        b=dPbZoXhNqcs2aB12Ys+1CHesTQb41Tss3iHnSYo90aua6sCGZRwqxZheaSnB4fSBec
-         MlbiURdrWSbM+lwJLwtOOYg3od+Q8I34aCxmNBy4CqpomWRibObSnhV00MvOVLPb7976
-         RAp9xMYZ/QVHHs/QbSWCcyb9THIgfvwvUXKpbc+eyie1/xkcrRrMdGA3cEglm1x0O40c
-         R9uWUaawSAq9dmKkNmuuhKL/6Xv9huJm4gcqCMTdsdxUEL+V9rAr0kwuWXxLCP4/PTkT
-         HjG2fIkXTQb2YFek9ab4vl9ohF/CPddnod3N1DvJvpgbW5I7Cj8kjIbtB68+z/4AuWuR
-         Q8Mg==
-X-Gm-Message-State: AOAM5318i8im+iRCKjnoleAWVNmgNwP4JVvc4wc8gUWsXrq4cZVO8BSm
-        2/xEykUfP0LZeg86u4P4gHG3RKznuFVmlsSf
-X-Google-Smtp-Source: ABdhPJwzVlN4G5uBO63SDOLA3/YyUPFOrwT3nfCAuAADfi2HqtQmfLPuh9RLA+AGakY33H8FQwDf9w==
-X-Received: by 2002:a17:907:3e1d:: with SMTP id hp29mr7577355ejc.701.1643390209127;
-        Fri, 28 Jan 2022 09:16:49 -0800 (PST)
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com. [209.85.128.44])
-        by smtp.gmail.com with ESMTPSA id gh14sm10058625ejb.126.2022.01.28.09.16.48
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Jan 2022 09:16:48 -0800 (PST)
-Received: by mail-wm1-f44.google.com with SMTP id m26so2489715wms.0
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 09:16:48 -0800 (PST)
-X-Received: by 2002:a05:600c:3846:: with SMTP id s6mr10914921wmr.26.1643390198229;
- Fri, 28 Jan 2022 09:16:38 -0800 (PST)
+        Fri, 28 Jan 2022 12:17:32 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:60638 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237031AbiA1RRa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 12:17:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ThL5B3SxUa7qxAOrbzfcl7naTiKrbrgrI94+8lWwPms=; b=RBFksZ1/XbrW4de45UCM4rl41F
+        hXWBlKHI3PMZ4oDkc8yRK1nCjlIyrQmKxYcQuT/LhBFvtIkeOKeDi1pjTXaRT2XA7jrq8JX2fq04M
+        amBBaM8ptflnIEZ2QkPcgM+31R8Dm0P77UmHloNn7Y/ZJ5KU4P5HLMjle5uP8OsvF4dw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nDUsD-003CdP-Bm; Fri, 28 Jan 2022 18:17:21 +0100
+Date:   Fri, 28 Jan 2022 18:17:21 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        David.Laight@aculab.com, Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 1/2] net: dsa: mv88e6xxx: Improve performance
+ of busy bit polling
+Message-ID: <YfQlIamPBML0JaET@lunn.ch>
+References: <20220128162650.2510062-1-tobias@waldekranz.com>
+ <20220128162650.2510062-2-tobias@waldekranz.com>
 MIME-Version: 1.0
-References: <20220128065310.GF8421@xsang-OptiPlex-9020> <CAHk-=wgT6wuBB=pK2bGNQbioNCdJHT8Jnvs+4oT25jX1JFyhgg@mail.gmail.com>
- <20220128120421.kzo5iduigr7k55bs@quack3.lan> <87a6ffst4j.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <87a6ffst4j.fsf@email.froward.int.ebiederm.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 28 Jan 2022 19:16:21 +0200
-X-Gmail-Original-Message-ID: <CAHk-=wjzWVW1xvVLCOvw-MMoVK9kiRn5CUx2am8jPdo09mHgjA@mail.gmail.com>
-Message-ID: <CAHk-=wjzWVW1xvVLCOvw-MMoVK9kiRn5CUx2am8jPdo09mHgjA@mail.gmail.com>
-Subject: Re: [ocfs2] c42ff46f97: sysctl_table_check_failed
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Jan Kara <jack@suse.cz>, kernel test robot <oliver.sang@intel.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Amir Goldstein <amir73il@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Antti Palosaari <crope@iki.fi>, Arnd Bergmann <arnd@arndb.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Benjamin LaHaise <bcrl@kvack.org>,
-        Clemens Ladisch <clemens@ladisch.de>,
-        David Airlie <airlied@linux.ie>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Kees Cook <keescook@chromium.org>,
-        Lukas Middendorf <kernel@tuxforce.de>,
-        Mark Fasheh <mark@fasheh.com>, Paul Turner <pjt@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Qing Wang <wangqing@vivo.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Stephen Kitt <steve@sk2.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Xiaoming Ni <nixiaoming@huawei.com>,
-        Douglas Gilbert <dgilbert@interlog.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128162650.2510062-2-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 6:49 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->
-> Yes.  There is a register_sysctl_paths that can be used if you want/need
-> the embedded directories.  That probably would have been a better
-> choice for an automated conversion.
->
-> But since this there is only the single file in a single directory
-> register_sysctl() with the full path is perfectly fine in this case.
->
-> Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
+On Fri, Jan 28, 2022 at 05:26:49PM +0100, Tobias Waldekranz wrote:
+> Avoid a long delay when a busy bit is still set and has to be polled
+> again.
+> 
+> Measurements on a system with 2 Opals (6097F) and one Agate (6352)
+> show that even with this much tighter loop, we have about a 50% chance
+> of the bit being cleared on the first poll, all other accesses see the
+> bit being cleared on the second poll.
+> 
+> On a standard MDIO bus running MDC at 2.5MHz, a single access with 32
+> bits of preamble plus 32 bits of data takes 64*(1/2.5MHz) = 25.6us.
+> 
+> This means that mv88e6xxx_smi_direct_wait took 26us + CPU overhead in
+> the fast scenario, but 26us + 1500us + 26us + CPU overhead in the slow
+> case - bringing the average close to 1ms.
+> 
+> With this change in place, the slow case is closer to 2*26us + CPU
+> overhead, with the average well below 100us - a 10x improvement.
+> 
+> This translates to real-world winnings. On a 3-chip 20-port system,
+> the modprobe time drops by 88%:
+> 
+> Before:
+> 
+> root@coronet:~# time modprobe mv88e6xxx
+> real    0m 15.99s
+> user    0m 0.00s
+> sys     0m 1.52s
+> 
+> After:
+> 
+> root@coronet:~# time modprobe mv88e6xxx
+> real    0m 2.21s
+> user    0m 0.00s
+> sys     0m 1.54s
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 
-I was doing filesystem pull requests anyway, and as a result (I tend
-to group things by topic if there's multiple things pending) I already
-committed that patch of mine based on Jan's reviewed/tested-by, so
-this reviewed-by ended up not in the tree.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-But maybe somebody should check the other automated conversions for
-the same issue? Hint hint.
-
-Also, I'm somewhat unhappy about the fact that apparently the kernel
-test robot already found this issue back in November of last year, yet
-it made it to mainline several months later without being fixed.
-
-It's hard to tell from this link:
-
-  https://lists.01.org/hyperkitty/list/lkp@lists.01.org/thread/KQ2F6TPJWMDVEXJM4WTUC4DU3EH3YJVT/
-
-but it does look like that original report only made it to that lkp
-list and not the actual people listed on the commit itself? That would
-explain why the report was overlooked.
-
-Kind of sad.
-
-              Linus
+    Andrew
