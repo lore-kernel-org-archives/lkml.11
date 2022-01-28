@@ -2,127 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 281D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 15:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 805C7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 15:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349679AbiA1Psn (ORCPT
+        id S1349685AbiA1Puo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 10:48:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38600 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349674AbiA1Psg (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 10:48:36 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCBAE61EAF;
-        Fri, 28 Jan 2022 15:48:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04082C340E0;
-        Fri, 28 Jan 2022 15:48:34 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="kLRYDf9A"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1643384911;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=afS3WGdnGZ/VkOZ9tM3e4D9ZLBZhJx51UxfbNvv5dVY=;
-        b=kLRYDf9AvET+nOKJMWCRZiMjVRTA9e+RZa039YYQbod5VAwz+SBrmIHoDbMd9eCixUNDFK
-        GioAOYVs0AbECGWq478QgcRvmI2KQikVnA8Jb90tP4eDKLUrJkPC+s1LLpovHBQvrSzASL
-        nyLZ3oATdbdjlizufAcctom6sebHTis=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8acf7f8a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 28 Jan 2022 15:48:30 +0000 (UTC)
-Received: by mail-yb1-f182.google.com with SMTP id i10so19645195ybt.10;
-        Fri, 28 Jan 2022 07:48:30 -0800 (PST)
-X-Gm-Message-State: AOAM5314+J7WpIL02GrP1qHhAnqbGW5ASMjPb1tjDTI79NsaBjrup/+P
-        M05Iyhu+d8LhxmI+xUiRIsMOUyGVOc+bjXkZmu0=
-X-Google-Smtp-Source: ABdhPJwLQ60clurEPTZzzpoZk727685/gP25/VhCSEi8LvcIcXO9SmQsDz6gEjQ705/XdbOU+I4lYWxtrFHY2yUowkg=
-X-Received: by 2002:a25:ace0:: with SMTP id x32mr13836935ybd.255.1643384908760;
- Fri, 28 Jan 2022 07:48:28 -0800 (PST)
+        Fri, 28 Jan 2022 10:50:44 -0500
+Received: from mga05.intel.com ([192.55.52.43]:5661 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231634AbiA1Pun (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 10:50:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643385043; x=1674921043;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=npIxVhztpMDECgOifmErszH5rV4znUpEPLrfuaXefao=;
+  b=MT9QuO+9NunRCLuzatJGeNoWN55DCnigcDPAsyPHzFbOjFwBUTs1DLOF
+   gXQFGki8hJWMi7MZzmopf76F7COwlj4lFnxO+o9Y/M9p0zSEB1gVzEtZN
+   W+f18Kqe3oKRIiFW1aJ/93u88opR83+nMyXwznMtjtGci/QKv5sz7FJ64
+   sexxDLIrsYkSjzPTbaieKMBzftaXcWasSn1J8K7ndUbLnBfsoE9E6seFU
+   k8s32BHsphJfDe1iX+UQA1uL4lYPGstgl/gvboQiQjj7SpFByTDo0di7Z
+   g6OuSkujugR8ScEvM3vajIIJXPPK197/a3JGqJA1riq/TTBn+kpOHO76H
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="333494488"
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="333494488"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 07:50:23 -0800
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="480776099"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 07:50:19 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nDTUw-00FSg4-1p;
+        Fri, 28 Jan 2022 17:49:14 +0200
+Date:   Fri, 28 Jan 2022 17:49:13 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jan =?utf-8?B?RMSFYnJvxZs=?= <jsd@semihalf.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Raul E Rangel <rrangel@chromium.org>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "Deucher, Alexander" <alexander.deucher@amd.com>,
+        "Easow, Nimesh" <Nimesh.Easow@amd.com>,
+        "Limonciello, Mario" <mario.limonciello@amd.com>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v2 2/2] i2c: designware: Add AMD PSP I2C bus support
+Message-ID: <YfQQeWdciv/JtqLD@smile.fi.intel.com>
+References: <20220120001621.705352-2-jsd@semihalf.com>
+ <20220128144811.783279-1-jsd@semihalf.com>
+ <20220128144811.783279-3-jsd@semihalf.com>
+ <CAOtMz3MnM6knabs0kF6urpE+Thm6rj++6Yy9G=ky2r9uOByH5Q@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAHmME9pb9A4SN6TTjNvvxKqw1L3gXVOX7KKihfEH4AgKGNGZ2A@mail.gmail.com>
- <20220128153344.34211-1-Jason@zx2c4.com>
-In-Reply-To: <20220128153344.34211-1-Jason@zx2c4.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 28 Jan 2022 16:48:17 +0100
-X-Gmail-Original-Message-ID: <CAHmME9pe2BEJV4WiZNHmDmH_XK621Qqr1JCBdgTNZmr4JGBA4w@mail.gmail.com>
-Message-ID: <CAHmME9pe2BEJV4WiZNHmDmH_XK621Qqr1JCBdgTNZmr4JGBA4w@mail.gmail.com>
-Subject: Re: [PATCH] random: remove batched entropy locking
-To:     Andy Lutomirski <luto@amacapital.net>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     Andy Lutomirski <luto@kernel.org>, stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAOtMz3MnM6knabs0kF6urpE+Thm6rj++6Yy9G=ky2r9uOByH5Q@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+On Fri, Jan 28, 2022 at 03:59:40PM +0100, Jan Dąbroś wrote:
+> Hi,
+> 
+> Adding proper Andy's email address (and removing wrong one) in the
+> whole patchset. Sorry for noise!
 
-On Fri, Jan 28, 2022 at 4:34 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> Andy - could you take a look at this and let me know if it's still
-> correct after I've ported it out of your series and into a standalone
-> thing here? I'd prefer to hold off on moving forward on this until I
-> receive our green light. I'm also still a bit uncertain about your NB:
-> comment regarding the acceptable race. If you could elaborate on that
-> argument, it might save me a few cycles with my thinking cap on.
-[...]
-> +       position = READ_ONCE(batch->position);
-> +       /* NB: position can change to ARRAY_SIZE(batch->entropy_u64) out
-> +        * from under us -- see invalidate_batched_entropy().  If this,
-> +        * happens it's okay if we still return the data in the batch. */
-> +       if (unlikely(position + 1 > ARRAY_SIZE(batch->entropy_u64))) {
->                 extract_crng((u8 *)batch->entropy_u64);
-> -               batch->position = 0;
-> +               position = 0;
+Thanks!
 
-So the argument for this is something along the lines of -- if the
-pool is invalidated _after_ the position value is read, in the worst
-case, we read old data, and then we set position to value 1, so the
-remaining reads _also_ are of invalidated data, and then eventually
-this depletes and we get newly extracted data? So this means that in
-some racey situations, we're lengthening the window during which
-get_random_u{32,64}() returns bad randomness, right?
+> pt., 28 sty 2022 o 15:48 Jan Dabros <jsd@semihalf.com> napisał(a):
+> >
+> > Implement an I2C controller sharing mechanism between the host (kernel)
+> > and PSP co-processor on some platforms equipped with AMD Cezanne SoC.
+> >
+> > On these platforms we need to implement "software" i2c arbitration.
+> > Default arbitration owner is PSP and kernel asks for acquire as well
+> > as inform about release of the i2c bus via mailbox mechanism.
+> >
+> >             +---------+
+> >  <- ACQUIRE |         |
+> >   +---------|   CPU   |\
+> >   |         |         | \      +----------+  SDA
+> >   |         +---------+  \     |          |-------
+> > MAILBOX                   +--> |  I2C-DW  |  SCL
+> >   |         +---------+        |          |-------
+> >   |         |         |        +----------+
+> >   +---------|   PSP   |
+> >    <- ACK   |         |
+> >             +---------+
+> >
+> >             +---------+
+> >  <- RELEASE |         |
+> >   +---------|   CPU   |
+> >   |         |         |        +----------+  SDA
+> >   |         +---------+        |          |-------
+> > MAILBOX                   +--> |  I2C-DW  |  SCL
+> >   |         +---------+  /     |          |-------
+> >   |         |         | /      +----------+
+> >   +---------|   PSP   |/
+> >    <- ACK   |         |
+> >             +---------+
+> >
+> > The solution is similar to i2c-designware-baytrail.c implementation, where
+> > we are using a generic i2c-designware-* driver with a small "wrapper".
+> >
+> > In contrary to baytrail semaphore implementation, beside internal
+> > acquire_lock() and release_lock() methods we are also applying quirks to
+> > lock_bus() and unlock_bus() global adapter methods. With this in place
+> > all i2c clients drivers may lock i2c bus for a desired number of i2c
+> > transactions (e.g. write-wait-read) without being aware of that such bus
+> > is shared with another entity.
+> >
+> > Modify i2c_dw_probe_lock_support() to select correct semaphore
+> > implementation at runtime, since now we have more than one available.
+> >
+> > Configure new matching ACPI ID "AMDI0019" and register
+> > ARBITRATION_SEMAPHORE flag in order to distinguish setup with PSP
+> > arbitration.
+> >
+> > Add myself as a reviewer for I2C DesignWare in order to help with reviewing
+> > and testing possible changes touching new i2c-designware-amdpsp.c module.
+> >
+> > Signed-off-by: Jan Dabros <jsd@semihalf.com>
 
-Couldn't that race be avoided entirely by something like the below?
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Reported-by: kernel test robot <lkp@intel.com>
 
-Jason
+New feature can't be reported.
+If you want to give a credit to CI, do it in changelog.
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 50c50a59847e..664f1a7eb293 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -2082,14 +2082,15 @@ u64 get_random_u64(void)
-  u64 ret;
-  unsigned long flags;
-  struct batched_entropy *batch;
-- unsigned int position;
-+ unsigned int position, original;
-  static void *previous;
+...
 
-  warn_unseeded_randomness(&previous);
+> > +       depends on X86_64
 
-  local_irq_save(flags);
-  batch = this_cpu_ptr(&batched_entropy_u64);
-- position = READ_ONCE(batch->position);
-+try_again:
-+ original = position = READ_ONCE(batch->position);
-  /* NB: position can change to ARRAY_SIZE(batch->entropy_u64) out
-  * from under us -- see invalidate_batched_entropy().  If this
-  * happens it's okay if we still return the data in the batch. */
-@@ -2098,6 +2099,8 @@ u64 get_random_u64(void)
-  position = 0;
-  }
-  ret = batch->entropy_u64[position++];
-+ if (unlikely(cmpxchg(&batch->position, original, batch) != original))
-+ goto try_again;
-  WRITE_ONCE(batch->position, position);
-  local_irq_restore(flags);
-  return ret;
+Not sure if it's better than using non-atomic IO helpers.
+At least you can't run 32-bit kernels on that platforms
+in order to get this functionality working. Doest it mean
+those platforms do not have 32-bit compatibility mode
+anymore?
+
+...
+
+> > +#include <linux/io-64-nonatomic-lo-hi.h>
+
+Ah, this is not needed if you keep code running exclusively on 64-bit
+platforms.
+
+...
+
+> > +struct psp_mbox {
+> > +       u32 cmd_fields;
+
+> > +       phys_addr_t i2c_req_addr;
+
+But phys_addr_t is platform-dependent type. Perhaps you meant to use u64 here
+always?
+
+> > +} __packed;
+
+...
+
+> > +       struct psp_mbox __iomem *mbox = (struct psp_mbox __iomem *)mbox_iomem;
+
+For void * pointers the cast is implied, i.o.w. it's not needed here.
+
+...
+
+> > +static int psp_send_check_i2c_req(struct psp_i2c_req *req)
+> > +{
+> > +       if (psp_send_cmd(req))
+
+> > +               return -EIO;
+
+Why is error code shadowed?
+
+> > +       return check_i2c_req_sts(req);
+> > +}
+
+...
+
+> > +cleanup:
+> > +       mutex_unlock(&psp_i2c_access_mutex);
+> > +       return 0;
+
+Not sure I understand why we ignore all above errors here.
+
+...
+
+> > +       if (!dev || !dev->dev)
+> > +               return -ENODEV;
+
+At which circumstances may we get
+	dev != NULL
+	dev->dev == NULL
+?
+
+...
+
+> >         if (!dev || !dev->dev)
+> > -               return 0;
+> > +               return -ENODEV;
+
+I see the same here, perhaps Hans knows the answer :-)
+
+...
+
+> > +static int i2c_dw_probe_lock_support(struct dw_i2c_dev *dev)
+> > +{
+> > +       const struct i2c_dw_semaphore_callbacks *ptr;
+> > +       int i = 0;
+> > +       int ret;
+> > +
+> > +       ptr = i2c_dw_semaphore_cb_table;
+> > +
+> > +       dev->semaphore_idx = -1;
+> > +
+> > +       while (ptr->probe) {
+> > +               ret = ptr->probe(dev);
+> > +               if (ret) {
+
+> > +                       /*
+> > +                        * If there is no semaphore device attached to this
+> > +                        * controller, we shouldn't abort general i2c_controller
+> > +                        * probe.
+> > +                        */
+> > +                       if (ret == -ENODEV) {
+> > +                               i++;
+> > +                               ptr++;
+> > +                               continue;
+> > +                       } else {
+
+Redundant 'else', but see below.
+
+> > +                               return ret;
+> > +                       }
+
+May it be
+
+	    if (ret != -ENODEV)
+	        return ret;
+
+	    i++;
+	    ptr++;
+	    continue;
+
+?
+
+> > +               }
+> > +
+> > +               dev->semaphore_idx = i;
+> > +               break;
+> > +       }
+> > +
+> > +       return 0;
+> > +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
