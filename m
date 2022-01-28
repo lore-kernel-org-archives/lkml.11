@@ -2,124 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE747C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236217AbiA1JDb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 04:03:31 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:31250 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235560AbiA1JD2 (ORCPT
+        id S236742AbiA1JDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 04:03:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:27706 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236195AbiA1JDa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 04:03:28 -0500
-Received: from dggeme752-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JlWgb0MQpzbkCc;
-        Fri, 28 Jan 2022 17:02:35 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by dggeme752-chm.china.huawei.com
- (10.3.19.98) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.21; Fri, 28
- Jan 2022 17:03:26 +0800
-From:   h00486469 <hewenliang4@huawei.com>
-To:     <catalin.marinas@arm.com>, <will@kernel.org>,
-        <punit.agrawal@arm.com>, <peterz@infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <hewenliang4@huawei.com>, <hejingxian@huawei.com>
-Subject: [PATCH] arm64: fix slab-out-of-bounds in emulation_proc_handler when accessing concurrently
-Date:   Fri, 28 Jan 2022 17:03:24 +0800
-Message-ID: <20220128090324.2727688-1-hewenliang4@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Fri, 28 Jan 2022 04:03:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643360609;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XCYM+IqJr0NFevLxvsCw0V8lGLw4f7ESZlzKqk6nbbk=;
+        b=IX+Q3TCJe5atFXqTK1mi1bDl81ywMTk+w0CzcVfuJtFIFAkS8sCYXapxgImIgP2QQF0D3W
+        cOgBejaud4sstm1cD44kP+2J47UJJYfjgwRIDKkjgLDYK6+esGf5udDm3TkqlzZDzF4msU
+        zhdU07aqCp+tyzNR4iy5l1X1AJGxv4M=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-121-ECnkCWsuNT23-QgxaB_e_g-1; Fri, 28 Jan 2022 04:03:24 -0500
+X-MC-Unique: ECnkCWsuNT23-QgxaB_e_g-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A194C83DD22;
+        Fri, 28 Jan 2022 09:03:21 +0000 (UTC)
+Received: from localhost (ovpn-12-152.pek2.redhat.com [10.72.12.152])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2814C4DC3A;
+        Fri, 28 Jan 2022 09:03:13 +0000 (UTC)
+Date:   Fri, 28 Jan 2022 17:03:11 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Petr Mladek <pmladek@suse.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
+        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "john.ogness@linutronix.de" <john.ogness@linutronix.de>,
+        "feng.tang@intel.com" <feng.tang@intel.com>,
+        "kexec@lists.infradead.org" <kexec@lists.infradead.org>,
+        "dyoung@redhat.com" <dyoung@redhat.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "anton@enomsg.org" <anton@enomsg.org>,
+        "ccross@android.com" <ccross@android.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>
+Subject: Re: [PATCH V3] panic: Move panic_print before kmsg dumpers
+Message-ID: <20220128090311.GA27201@MiWiFi-R3L-srv>
+References: <20220114183046.428796-1-gpiccoli@igalia.com>
+ <20220119071318.GA4977@MiWiFi-R3L-srv>
+ <YegytkfED+QI56Y8@alley>
+ <20220120085115.GB18398@MiWiFi-R3L-srv>
+ <63621138-2a41-26c2-524e-d889068f157a@igalia.com>
+ <20220121023119.GB4579@MiWiFi-R3L-srv>
+ <MWHPR21MB1593A32A3433F5F262796FCFD75B9@MWHPR21MB1593.namprd21.prod.outlook.com>
+ <20220122043351.GA2596@MiWiFi-R3L-srv>
+ <MWHPR21MB15933573F5C81C5250BF6A1CD75E9@MWHPR21MB1593.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggeme752-chm.china.huawei.com (10.3.19.98)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MWHPR21MB15933573F5C81C5250BF6A1CD75E9@MWHPR21MB1593.namprd21.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: hewenliang <hewenliang4@huawei.com>
+On 01/24/22 at 04:57pm, Michael Kelley (LINUX) wrote:
+> From: Baoquan He <bhe@redhat.com> Sent: Friday, January 21, 2022 8:34 PM
+> > 
+> > On 01/21/22 at 03:00pm, Michael Kelley (LINUX) wrote:
+> > > From: Baoquan He <bhe@redhat.com> Sent: Thursday, January 20, 2022 6:31 PM
+> > > >
+> > > > On 01/20/22 at 06:36pm, Guilherme G. Piccoli wrote:
+> > > > > Hi Baoquan, some comments inline below:
+> > > > >
+> > > > > On 20/01/2022 05:51, Baoquan He wrote:
+> 
+> [snip]
+> 
+> > > > > Do you think it should be necessary?
+> > > > > How about if we allow users to just "panic_print" with or without the
+> > > > > "crash_kexec_post_notifiers", then we pursue Petr suggestion of
+> > > > > refactoring the panic notifiers? So, after this future refactor, we
+> > > > > might have a much clear code.
+> > > >
+> > > > I haven't read Petr's reply in another panic notifier filter thread. For
+> > > > panic notifier, it's only enforced to use on HyperV platform, excepto of
+> > > > that, users need to explicitly add "crash_kexec_post_notifiers=1" to enable
+> > > > it. And we got bug report on the HyperV issue. In our internal discussion,
+> > > > we strongly suggest HyperV dev to change the default enablement, instead
+> > > > leave it to user to decide.
+> > > >
+> > >
+> > > Regarding Hyper-V:   Invoking the Hyper-V notifier prior to running the
+> > > kdump kernel is necessary for correctness.  During initial boot of the
+> > > main kernel, the Hyper-V and VMbus code in Linux sets up several guest
+> > > physical memory pages that are shared with Hyper-V, and that Hyper-V
+> > > may write to.   A VMbus connection is also established. Before kexec'ing
+> > > into the kdump kernel, the sharing of these pages must be rescinded
+> > > and the VMbus connection must be terminated.   If this isn't done, the
+> > > kdump kernel will see strange memory overwrites if these shared guest
+> > > physical memory pages get used for something else.
+> > >
+> > > I hope we've found and fixed all the problems where the Hyper-V
+> > > notifier could get hung.  Unfortunately, the Hyper-V interfaces were
+> > > designed long ago without the Linux kexec scenario in mind, and they
+> > > don't provide a simple way to reset everything except by doing a
+> > > reboot that goes back through the virtual BIOS/UEFI.  So the Hyper-V
+> > > notifier code is more complicated than would be desirable, and in
+> > > particular, terminating the VMbus connection is tricky.
+> > >
+> > > This has been an evolving area of understanding.  It's only been the last
+> > > couple of years that we've fully understood the implications of these
+> > > shared memory pages on the kexec/kdump scenario and what it takes
+> > > to reset everything so the kexec'ed kernel will work.
+> > 
+> > Glad to know these background details, thx, Michael. While from the
+> > commit which introduced it and the code comment above code, I thought
+> > Hyper-V wants to collect data before crash dump. If this is the true,
+> > it might be helpful to add these in commit log or add as code comment,
+> > and also help to defend you when people question it.
+> > 
+> > int __init hv_common_init(void)
+> > {
+> >         int i;
+> > 
+> >         /*
+> >          * Hyper-V expects to get crash register data or kmsg when
+> >          * crash enlightment is available and system crashes. Set
+> >          * crash_kexec_post_notifiers to be true to make sure that
+> >          * calling crash enlightment interface before running kdump
+> >          * kernel.
+> >          */
+> >         if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE)
+> >                 crash_kexec_post_notifiers = true;
+> > 
+> > 	......
+> > }
+> 
+> In the Azure cloud, collecting data before crash dumps is a motivation
+> as well for setting crash_kexec_post_notifiers to true.   That way as
+> cloud operator we can see broad failure trends, and in specific cases
+> customers often expect the cloud operator to be able to provide info
+> about a problem even if they have taken a kdump.  Where did you
+> envision adding a comment in the code to help clarify these intentions?
+> 
+> I looked at the code again, and should revise my previous comments
+> somewhat.   The Hyper-V resets that I described indeed must be done
+> prior to kexec'ing the kdump kernel.   Most such resets are actually
+> done via __crash_kexec() -> machine_crash_shutdown(), not via the
+> panic notifier. However, the Hyper-V panic notifier must terminate the
+> VMbus connection, because that must be done even if kdump is not
+> being invoked.  See commit 74347a99e73.
+> 
+> Most of the hangs seen in getting into the kdump kernel on Hyper-V/Azure 
+> were probably due to the machine_crash_shutdown() path, and not due
+> to running the panic notifiers prior to kexec'ing the kdump kernel.  The
+> exception is terminating the VMbus connection, which had problems that
+> are hopefully now fixed because of adding a timeout.
+Thanks for detailed information.
 
-SAN reports an issue of slab-out-of-bounds in emulation_proc_handler
-when we try to read/write the interfaces in /proc/sys/abi concurrently.
-So we need to add emulation_proc_lock to protect table->data and insn
-from data corruption in emulation_proc_handler.
+So I can understand the status as:
+===
+Hyper-V needed panic_notifier to execute before __crash_kexec() in
+the past, because VMbus connection need be terminated, that's done in
+commit 74347a99e73 as a workaround when panic happened, whether kdump is
+enabled or not. But now, the VMbus connection termination is not needed
+anymore since it's fixed by adding a timeout on Hyper-V.
 
-The stack is follows:
-Call trace:
- dump_backtrace+0x0/0x310
- show_stack+0x28/0x38
- dump_stack+0xec/0x15c
- print_address_description+0x68/0x2d0
- kasan_report+0x130/0x2f0
- __asan_load4+0x88/0xb0
- emulation_proc_handler+0x58/0x158
- proc_sys_call_handler+0x1dc/0x228
- proc_sys_read+0x44/0x58
- __vfs_read+0xe0/0x320
- vfs_read+0xbc/0x1c0
- __arm64_sys_read+0x50/0x60
- el0_svc_common+0xc8/0x2b8
- el0_svc_handler+0xf8/0x160
- el0_svc+0x10/0x218
+Then, in the current kernel, panic_notifier is taken to execute on Hyper-V
+by default just because of one reason, Hyper-V wants to collect data
+before crash dump. The data collecting is motivate by trying to see
+broad failure trends as cloud operator on Azure cloud, and in specific
+cases providing info to customer even if they have taken vmcore.
+===
 
-Allocated by task 1:
- kasan_kmalloc+0xe0/0x190
- kmem_cache_alloc_trace+0x18c/0x418
- register_insn_emulation+0x4c/0x2b0
- armv8_deprecated_init+0x40/0x108
- do_one_initcall+0xb4/0x508
- kernel_init_freeable+0x7d0/0x8e0
- kernel_init+0x20/0x1a8
- ret_from_fork+0x10/0x18
-
-Mmeory state around the buggy address:
->ffff8026dacf0b00: 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc
-
-Fixes: 587064b610c7 ("arm64: Add framework for legacy instruction emulation")
-Signed-off-by: hewenliang <hewenliang4@huawei.com>
-Signed-off-by: hejingxian <hejingxian@huawei.com>
-Signed-off-by: fulin <fulin@huawei.com>
----
- arch/arm64/kernel/armv8_deprecated.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
-index 6875a16b09d2..d2ac483b0dd8 100644
---- a/arch/arm64/kernel/armv8_deprecated.c
-+++ b/arch/arm64/kernel/armv8_deprecated.c
-@@ -59,6 +59,7 @@ struct insn_emulation {
- static LIST_HEAD(insn_emulation);
- static int nr_insn_emulated __initdata;
- static DEFINE_RAW_SPINLOCK(insn_emulation_lock);
-+static DEFINE_MUTEX(emulation_proc_lock);
- 
- static void register_emulation_hooks(struct insn_emulation_ops *ops)
- {
-@@ -207,9 +208,12 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
- 				  loff_t *ppos)
- {
- 	int ret = 0;
--	struct insn_emulation *insn = (struct insn_emulation *) table->data;
--	enum insn_emulation_mode prev_mode = insn->current_mode;
-+	struct insn_emulation *insn;
-+	enum insn_emulation_mode prev_mode;
- 
-+	mutex_lock(&emulation_proc_lock);
-+	insn = (struct insn_emulation *) table->data;
-+	prev_mode = insn->current_mode;
- 	table->data = &insn->current_mode;
- 	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
- 
-@@ -224,6 +228,7 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
- 	}
- ret:
- 	table->data = insn;
-+	mutex_unlock(&emulation_proc_lock);
- 	return ret;
- }
- 
--- 
-2.27.0
+Do I get it right?
 
