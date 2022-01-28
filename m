@@ -2,121 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1340C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 03:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9575C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 03:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345870AbiA1Dt0 (ORCPT
+        id S1345874AbiA1Dyz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 22:49:26 -0500
-Received: from mailgw.kylinos.cn ([123.150.8.42]:40173 "EHLO nksmu.kylinos.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1345802AbiA1DtZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 22:49:25 -0500
-X-UUID: facb723e0da54eb09d073fef8ee6ec25-20220128
-X-CPASD-INFO: 70958ec4a68e43d3a33cd22ff1ff1fb9
-        @gIBzVWWXkWSNVnqxg3avbYFkY5OUXlK1qGuGll-
-        WjlmVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3hnJzVWiTkw==
-X-CPASD-FEATURE: 0.0
-X-CLOUD-ID: 70958ec4a68e43d3a33cd22ff1ff1fb9
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,EXT:0.0,OB:0.0,URL:-5,T
-        VAL:143.0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:198.0,IP:-2.0,MAL:0.0,ATTNUM:0
-        .0,PHF:-5.0,PHC:-5.0,SPF:4.0,EDMS:-3,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CF
-        OB:0.0,SPC:0.0,SIG:-5,AUF:13,DUF:32000,ACD:177,DCD:279,SL:0,AG:0,CFC:0.231,CF
-        SR:0.192,UAT:0,RAF:2,VERSION:2.3.4
-X-CPASD-ID: facb723e0da54eb09d073fef8ee6ec25-20220128
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1, 1
-X-UUID: facb723e0da54eb09d073fef8ee6ec25-20220128
-X-User: xiehongyu1@kylinos.cn
-Received: from [172.20.4.10] [(116.128.244.169)] by nksmu.kylinos.cn
-        (envelope-from <xiehongyu1@kylinos.cn>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256 128/128)
-        with ESMTP id 1692616607; Fri, 28 Jan 2022 12:01:59 +0800
-Message-ID: <ce40f4cd-a110-80b1-f766-e94dd8cedc7e@kylinos.cn>
-Date:   Fri, 28 Jan 2022 11:48:34 +0800
+        Thu, 27 Jan 2022 22:54:55 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:57396 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230508AbiA1Dyx (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 22:54:53 -0500
+X-UUID: e618ce8d20004574a7c5fc67cee901b1-20220128
+X-UUID: e618ce8d20004574a7c5fc67cee901b1-20220128
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 972822335; Fri, 28 Jan 2022 11:54:49 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 28 Jan 2022 11:54:47 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 28 Jan 2022 11:54:46 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Steve Cho <stevecho@chromium.org>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v2, 3/7] dt-bindings: media: mtk-vcodec: Adds decoder dt-bindings for mt8195
+Date:   Fri, 28 Jan 2022 11:54:36 +0800
+Message-ID: <20220128035440.24533-4-yunfei.dong@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220128035440.24533-1-yunfei.dong@mediatek.com>
+References: <20220128035440.24533-1-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH -next] xhci: fix two places when dealing with return value
- of function xhci_check_args
-Content-Language: en-US
-To:     Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     Hongyu Xie <xy521521@gmail.com>, mathias.nyman@intel.com,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        125707942@qq.com, stable@vger.kernel.org
-References: <20220126094126.923798-1-xy521521@gmail.com>
- <YfEZFtf9K8pFC8Mw@kroah.com>
- <c7f6a8bb-76b6-cd2d-7551-b599a8276f5c@kylinos.cn>
- <YfEnbRW3oU0ouGqH@kroah.com>
- <e86972d3-e4a0-ad81-45ea-21137e3bfcb6@kylinos.cn>
- <7af5b318-b1ac-0c74-1782-04ba50a3b5fa@linux.intel.com>
-From:   =?UTF-8?B?6LCi5rOT5a6H?= <xiehongyu1@kylinos.cn>
-In-Reply-To: <7af5b318-b1ac-0c74-1782-04ba50a3b5fa@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mathias,
+Adds decoder dt-bindings for mt8195.
 
-On 2022/1/27 17:43, Mathias Nyman wrote:
-> On 26.1.2022 14.49, Hongyu Xie wrote:
->
->>> Anyway, why is this unique to this one driver?  Why does it not show up
->>> for any other driver?
->> The whole thing is not about a particular driver. The thing is xhci_urb_enqueue shouldn't change the return value of xhci_check_args from -ENODEV to -EINVAL. Many other drivers only check if the return value of xchi_check_args is <= 0.
-> Agree, lets return -ENODEV when appropriate.
->
->>>> The whole point is, if xhci_check_args returns value A, xhci_urb_enqueque
->>>> shouldn't return any
->>>> other value, because that will change some driver's behavior(like r8152.c).
->>> But you are changing how the code currently works.  Are you sure you
->>> want to have this "succeed" if this is on a root hub?
->> Yes, I'm changing how the code currently works but not on a root hub.
->>>> 2."So if 0 is returned, you will now return that here, is that ok?
->>>> That is a change in functionality.
->>>> But this can only ever be the case for a root hub, is that ok?"
->>>>
->>>> It's the same logic, but now xhci_urb_enqueue can return -ENODEV if xHC is
->>>> halted.
->>>> If it happens on a root hub,  xhci_urb_enqueue won't be called.
->>>>
->>>> 3."Again, this means all is good?  Why is this being called for a root hub?"
->>>>
->>>> It is the same logic with the old one, but now xhci_check_streams_endpoint
->>>> can return -ENODEV if xHC is halted.
->>> This still feels wrong to me, but I'll let the maintainer decide, as I
->>> don't understand why a root hub is special here.
->> Thanks please. usb_submit_urb will call usb_hcd_submit_urb. And usb_hcd_submit_urb will call rh_urb_enqueue if it's on a root hub instead of calling hcd->driver->urb_enqueue(which is xhci_urb_enqueue in this case).
-> xhci_urb_enqueue() shouldn't be called for roothub urbs, but if it is then we
-> should continue to return -EINVAL
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+Reviewed-by: Macpaul Lin <macpaul.lin@mediatek.com>
+---
+ .../bindings/media/mediatek,vcodec-subdev-decoder.yaml           | 1 +
+ 1 file changed, 1 insertion(+)
 
-xhci_urb_enqueue() won't be called for roothub urbs, only for none 
-roothub urbs(see usb_hcd_submit_urb()).
+diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
+index a3c892338ac0..a2f2db29daed 100644
+--- a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
++++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
+@@ -50,6 +50,7 @@ properties:
+     enum:
+       - mediatek,mt8192-vcodec-dec
+       - mediatek,mt8186-vcodec-dec
++      - mediatek,mt8195-vcodec-dec
+ 
+   reg:
+     maxItems: 1
+-- 
+2.25.1
 
-So xhci_urb_enqueue() will not get 0 from xhci_check_args().
-
-Still return -EINVAL if xhci_check_args() returns 0 in xhci_urb_enqueue()?
-
->
-> xhci_check_args() should be rewritten later, but first we want a targeted fix
-> that can go to stable.
->
-> Your original patch would be ok after following modification:
-> if (ret <= 0)
-> 	return ret ? ret : -EINVAL;
-
-I have two questions:
-
-     1) Why return -EINVAL for roothub urbs?
-
-     2) Should I change all the return statements about 
-xhci_check_args() in drivers/usb/host/xhci.c?
-
-     There are 6 of them.
-
->
-> Thanks
-> -Mathias
