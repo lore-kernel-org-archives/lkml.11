@@ -2,118 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0233BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E72A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349999AbiA1QSU (ORCPT
+        id S1350008AbiA1QSk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 11:18:20 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:30834 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235638AbiA1QSS (ORCPT
+        Fri, 28 Jan 2022 11:18:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33374 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350001AbiA1QSj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 11:18:18 -0500
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20SFofX8030052;
-        Fri, 28 Jan 2022 16:17:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : references : date : in-reply-to : message-id : mime-version :
- content-type; s=pp1; bh=WIIEnY4LQjNNxPmo8R0V8UME5jMvyPgAX65kRzl76DE=;
- b=sEpNqsY6iohNXVKa0ENno++Xz7TAgntaSy7RompeOswHByMidzv92b8BM+VSPiDR1xDz
- RJ3H5z4cfbfgNeIv9lK0ghlCl84ejUfU3u7NiULdzdCiMz7D53tKz9bEFQKYCt9DSezV
- GoGP1UqUdPipIJ51tro+Te7VsYUWr0wlL75m0GkFYw8mNouM60cd5P6EBctcZx82csYM
- Z5B9+JFxJY1VS6X5uqPJ2G6cxIZzfJhQuyqzZcVjOr4ik9/s0qwO+IS8gETrUwPt2hja
- YHWp5lpZOuwxXttWbCZA7dmRbRAHzH/YscyzJzHsjgjoUy4MDeMCsuA6n/DEqGLmcnaR KA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dvh61up2b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 16:17:42 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20SFrJSh018510;
-        Fri, 28 Jan 2022 16:17:41 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dvh61up1f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 16:17:41 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20SGEC6U032075;
-        Fri, 28 Jan 2022 16:17:39 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 3dr9ja373e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 16:17:39 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20SGHX7n38011174
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 28 Jan 2022 16:17:33 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A1525AE055;
-        Fri, 28 Jan 2022 16:17:33 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2D677AE045;
-        Fri, 28 Jan 2022 16:17:33 +0000 (GMT)
-Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Fri, 28 Jan 2022 16:17:33 +0000 (GMT)
-From:   Sven Schnelle <svens@linux.ibm.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yinan Liu <yinan@linux.alibaba.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sachin Sant <sachinp@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, hca@linux.ibm.com,
-        linux-s390@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: ftrace hangs waiting for rcu
-References: <20220127114249.03b1b52b@gandalf.local.home>
-        <YfLjIOlGfFmbh1Zv@FVFF77S0Q05N> <yt9dy231yq90.fsf_-_@linux.ibm.com>
-        <YfQCohKWJg9H+uID@FVFF77S0Q05N> <yt9dee4rn8q7.fsf@linux.ibm.com>
-        <YfQVzba5thVs+qap@FVFF77S0Q05N>
-Date:   Fri, 28 Jan 2022 17:17:32 +0100
-In-Reply-To: <YfQVzba5thVs+qap@FVFF77S0Q05N> (Mark Rutland's message of "Fri,
-        28 Jan 2022 16:11:57 +0000")
-Message-ID: <yt9da6ffn8bn.fsf@linux.ibm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        Fri, 28 Jan 2022 11:18:39 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8DFDB80D74
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:18:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF5CFC340E0;
+        Fri, 28 Jan 2022 16:18:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643386716;
+        bh=5exY9uOMkEaMytzz1h3HlcN+jA0Ebiq+qOauv1/HweE=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=LBRtyZLDsrS8qptMkv/VNG4XneYDFp7dNTZfcF5br6Dng/V4ieyNpqS+ATxgBI58z
+         BiKGgxekz31evg68ccUEZLpCoKqX0Tgl4Y7+Y/rIXw2MGxbZYuHw1fqQEje2man3Vv
+         JPHxFHqIPNXOPgse/XSIpOy9g6HtTie9X3J0CLGB1vxcKnMnJg7l8SiX/phBCEyKHj
+         C2LVbe/Egqfe+Kz5MJqp8e8+9s/2gdR4TOkur0+YQaLX0KyUSvS9SVpYT8z7EOg1lV
+         7IYIOhMzZClc6KhGWE+BgZTThmn8dK1Zs29oKviwOHO1oXKfY+ogu3iF9yAlm+PDY3
+         OCwsTzKWShGZQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 8C1215C098D; Fri, 28 Jan 2022 08:18:36 -0800 (PST)
+Date:   Fri, 28 Jan 2022 08:18:36 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [ammarfaizi2-block:paulmck/linux-rcu/dev 94/94]
+ kernel/rcu/srcutree.c:313:6: warning: no previous prototype for function
+ 'spin_lock_irqsave_ssp_contention'
+Message-ID: <20220128161836.GM4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <202201281920.PD1buizH-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: u8O8FusVp6nn3H4y_5Ekm_czzhxm816Q
-X-Proofpoint-ORIG-GUID: jYcgQy5HdrGbbLk3NI1FNR-A0FeeLH0u
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-28_05,2022-01-28_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=948
- lowpriorityscore=0 malwarescore=0 adultscore=0 impostorscore=0
- suspectscore=0 spamscore=0 priorityscore=1501 mlxscore=0 clxscore=1015
- phishscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201280101
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202201281920.PD1buizH-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark,
+On Fri, Jan 28, 2022 at 07:07:42PM +0800, kernel test robot wrote:
+> tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/dev
+> head:   903a93309e5a59497d3c178cabb67ecc6c843a69
+> commit: 903a93309e5a59497d3c178cabb67ecc6c843a69 [94/94] srcu: Add contention-triggered addition of srcu_node tree
+> config: arm-s5pv210_defconfig (https://download.01.org/0day-ci/archive/20220128/202201281920.PD1buizH-lkp@intel.com/config)
+> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install arm cross compiling tool for clang build
+>         # apt-get install binutils-arm-linux-gnueabi
+>         # https://github.com/ammarfaizi2/linux-block/commit/903a93309e5a59497d3c178cabb67ecc6c843a69
+>         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+>         git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/dev
+>         git checkout 903a93309e5a59497d3c178cabb67ecc6c843a69
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash kernel/rcu/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
 
-Mark Rutland <mark.rutland@arm.com> writes:
+I will fold in addition of "static" with attribution, thank you!
 
-> On Fri, Jan 28, 2022 at 05:08:48PM +0100, Sven Schnelle wrote:
->> We noticed the PR from Paul and are currently testing the fix. So far
->> it's looking good. The configuration where we have seen the hang is a
->> bit unusual:
->> 
->> - 16 physical CPUs on the kvm host
->> - 248 logical CPUs inside kvm
->
-> Aha! 248 is notably *NOT* a power of two, and in this case the shift would be
-> wrong (ilog2() would give 7, when we need a shift of 8).
->
-> So I suspect you're hitting the same issue as I was.
+							Thanx, Paul
 
-Argh, indeed! I somehow changed 'power of two' to 'odd number' in my
-head. I guess it's time for the weekend. :-)
-
-Thanks!
+> All warnings (new ones prefixed by >>):
+> 
+> >> kernel/rcu/srcutree.c:313:6: warning: no previous prototype for function 'spin_lock_irqsave_ssp_contention' [-Wmissing-prototypes]
+>    void spin_lock_irqsave_ssp_contention(struct srcu_struct *ssp, unsigned long *flags)
+>         ^
+>    kernel/rcu/srcutree.c:313:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+>    void spin_lock_irqsave_ssp_contention(struct srcu_struct *ssp, unsigned long *flags)
+>    ^
+>    static 
+>    1 warning generated.
+> 
+> 
+> vim +/spin_lock_irqsave_ssp_contention +313 kernel/rcu/srcutree.c
+> 
+>    306	
+>    307	/*
+>    308	 * Acquire the specified srcu_struct structure's ->lock, but check for
+>    309	 * excessive contention, which results in initiation of a transition
+>    310	 * to SRCU_SIZE_BIG.  But only if the srcutree.convert_to_big module
+>    311	 * parameter permits this.
+>    312	 */
+>  > 313	void spin_lock_irqsave_ssp_contention(struct srcu_struct *ssp, unsigned long *flags)
+>    314	{
+>    315		unsigned long j;
+>    316	
+>    317		if (spin_trylock_irqsave_rcu_node(ssp, *flags))
+>    318			return;
+>    319		spin_lock_irqsave_rcu_node(ssp, *flags);
+>    320		if (!(convert_to_big & 0x10) || ssp->srcu_size_state)
+>    321			return;
+>    322		j = jiffies;
+>    323		if (ssp->srcu_size_jiffies != j) {
+>    324			ssp->srcu_size_jiffies = j;
+>    325			ssp->srcu_n_lock_retries = 0;
+>    326		}
+>    327		if (++ssp->srcu_n_lock_retries <= small_contention_lim)
+>    328			return;
+>    329		__srcu_transition_to_big(ssp);
+>    330	}
+>    331	
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
