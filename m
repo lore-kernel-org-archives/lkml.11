@@ -2,126 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D166C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351850AbiA1Xvq convert rfc822-to-8bit (ORCPT
+        id S1344472AbiA1XxM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 18:51:46 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:53212 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1351878AbiA1Xvg (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 18:51:36 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 20SKoIXa002143
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 15:51:35 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3dv695y15n-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 15:51:35 -0800
-Received: from twshared11487.23.frc3.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 28 Jan 2022 15:51:27 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 6A33A28E02F8B; Fri, 28 Jan 2022 15:45:34 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
-        <iii@linux.ibm.com>, Song Liu <song@kernel.org>
-Subject: [PATCH v7 bpf-next 5/9] x86/alternative: introduce text_poke_copy
-Date:   Fri, 28 Jan 2022 15:45:13 -0800
-Message-ID: <20220128234517.3503701-6-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220128234517.3503701-1-song@kernel.org>
-References: <20220128234517.3503701-1-song@kernel.org>
+        Fri, 28 Jan 2022 18:53:12 -0500
+Received: from mga09.intel.com ([134.134.136.24]:46226 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351878AbiA1XwA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 18:52:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643413920; x=1674949920;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=hfvER/Y5/Pa8WlFEj567GqBFmOXKBuevJD08dUwAxpQ=;
+  b=BC9tQmgwgM432UzRISR1x2Lt9Ba0W33MGAbaUYZLJJd2oUE3WmT8pl05
+   dOdz63C4ZhJmcFCUwIbo0SROAk/zilTlCRXG+ABhvNn0uoGU2EYkpDZhD
+   QhyaZHWzo7kwneSV9acsfJk9akhFj2bmdFLnnO545AxnjyR8lx2v6afv5
+   X2I3sBtd8MF+LfKEi78CJ40NtILapF5FjJTMBLZ6YWIj3dfYirvK8ikHw
+   9I846Rd2ocPmNTWQu2nK+rstg+YJcJbwVGIA5gc4GuJFWDV/ytmZ8mGSl
+   mJzggUs/7QcsCBGBGzJOzAfMI5ahahi1CrMhrn5+VQ3AxkgUdqMmvb2qr
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="246989638"
+X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
+   d="scan'208";a="246989638"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 15:51:59 -0800
+X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
+   d="scan'208";a="697255156"
+Received: from zhenkuny-mobl2.amr.corp.intel.com (HELO [10.209.84.59]) ([10.209.84.59])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 15:51:59 -0800
+Message-ID: <f72b0e17-11bf-b12e-fe7a-d38b0833acdc@intel.com>
+Date:   Fri, 28 Jan 2022 15:51:56 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: uCGZOHZgE6mIPj8uii87BOJi62EMGL7F
-X-Proofpoint-GUID: uCGZOHZgE6mIPj8uii87BOJi62EMGL7F
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-28_08,2022-01-28_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 mlxscore=0
- suspectscore=0 impostorscore=0 phishscore=0 priorityscore=1501 spamscore=0
- lowpriorityscore=0 malwarescore=0 adultscore=0 clxscore=1015
- mlxlogscore=361 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2201280130
-X-FB-Internal: deliver
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.2
+Content-Language: en-US
+To:     Ira Weiny <ira.weiny@intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-kernel@vger.kernel.org
+References: <20220127175505.851391-1-ira.weiny@intel.com>
+ <20220127175505.851391-7-ira.weiny@intel.com>
+ <9c4a8275-236d-67b6-07f9-5e46f66396c0@intel.com>
+ <20220128231015.GK785175@iweiny-DESK2.sc.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH V8 06/44] mm/pkeys: Add Kconfig options for PKS
+In-Reply-To: <20220128231015.GK785175@iweiny-DESK2.sc.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This will be used by BPF jit compiler to dump JITed binary to a RX huge
-page, and thus allow multiple BPF programs sharing the a huge (2MB) page.
+On 1/28/22 15:10, Ira Weiny wrote:
+> This issue is that because PKS users are in kernel only and are not part of the
+> architecture specific code there needs to be 2 mechanisms within the Kconfig
+> structure.  One to communicate an architectures support PKS such that the user
+> who needs it can depend on that config as well as a second to allow that user
+> to communicate back to the architecture to enable PKS.
 
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Song Liu <song@kernel.org>
----
- arch/x86/include/asm/text-patching.h |  1 +
- arch/x86/kernel/alternative.c        | 32 ++++++++++++++++++++++++++++
- 2 files changed, 33 insertions(+)
+I *think* the point here is to ensure that PKS isn't compiled in unless
+it is supported *AND* needed.  You have to have architecture support
+(ARCH_HAS_SUPERVISOR_PKEYS) to permit features that depend on PKS to be
+enabled.  Then, once one ore more of *THOSE* is enabled,
+ARCH_ENABLE_SUPERVISOR_PKEYS comes into play and actually compiles the
+feature in.
 
-diff --git a/arch/x86/include/asm/text-patching.h b/arch/x86/include/asm/text-patching.h
-index b7421780e4e9..4cc18ba1b75e 100644
---- a/arch/x86/include/asm/text-patching.h
-+++ b/arch/x86/include/asm/text-patching.h
-@@ -44,6 +44,7 @@ extern void text_poke_early(void *addr, const void *opcode, size_t len);
- extern void *text_poke(void *addr, const void *opcode, size_t len);
- extern void text_poke_sync(void);
- extern void *text_poke_kgdb(void *addr, const void *opcode, size_t len);
-+extern void *text_poke_copy(void *addr, const void *opcode, size_t len);
- extern int poke_int3_handler(struct pt_regs *regs);
- extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void *emulate);
- 
-diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 23fb4d51a5da..903a415c19fa 100644
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -1102,6 +1102,38 @@ void *text_poke_kgdb(void *addr, const void *opcode, size_t len)
- 	return __text_poke(addr, opcode, len);
- }
- 
-+/**
-+ * text_poke_copy - Copy instructions into (an unused part of) RX memory
-+ * @addr: address to modify
-+ * @opcode: source of the copy
-+ * @len: length to copy, could be more than 2x PAGE_SIZE
-+ *
-+ * Not safe against concurrent execution; useful for JITs to dump
-+ * new code blocks into unused regions of RX memory. Can be used in
-+ * conjunction with synchronize_rcu_tasks() to wait for existing
-+ * execution to quiesce after having made sure no existing functions
-+ * pointers are live.
-+ */
-+void *text_poke_copy(void *addr, const void *opcode, size_t len)
-+{
-+	unsigned long start = (unsigned long)addr;
-+	size_t patched = 0;
-+
-+	if (WARN_ON_ONCE(core_kernel_text(start)))
-+		return NULL;
-+
-+	while (patched < len) {
-+		unsigned long ptr = start + patched;
-+		size_t s;
-+
-+		s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
-+
-+		__text_poke((void *)ptr, opcode + patched, s);
-+		patched += s;
-+	}
-+	return addr;
-+}
-+
- static void do_sync_core(void *info)
- {
- 	sync_core();
--- 
-2.30.2
+In other words, there are two things that must happen before the code
+gets compiled in:
+
+1. Arch support
+2. One or more features to use the arch support
 
