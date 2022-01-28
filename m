@@ -2,118 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B65DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F38D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351565AbiA1X5U convert rfc822-to-8bit (ORCPT
+        id S1351864AbiA1X55 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 18:57:20 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:10008 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344727AbiA1X5R (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 18:57:17 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20SKe9fD026412
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 15:57:16 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dv8um6b98-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 15:57:16 -0800
-Received: from twshared0654.04.ash8.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 28 Jan 2022 15:57:14 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id F3B2528E02F93; Fri, 28 Jan 2022 15:45:35 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
-        <iii@linux.ibm.com>, Song Liu <song@kernel.org>
-Subject: [PATCH v7 bpf-next 6/9] bpf: introduce bpf_arch_text_copy
-Date:   Fri, 28 Jan 2022 15:45:14 -0800
-Message-ID: <20220128234517.3503701-7-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220128234517.3503701-1-song@kernel.org>
-References: <20220128234517.3503701-1-song@kernel.org>
+        Fri, 28 Jan 2022 18:57:57 -0500
+Received: from mga01.intel.com ([192.55.52.88]:58319 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351805AbiA1X54 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 18:57:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643414276; x=1674950276;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=tz7e0tzVR/4hFqtXh/0q9PQknw+tZiR4F+jHhGqqpME=;
+  b=CPxfO7o9pFbGauMZgMf8OmNCva5VuD38wja0reAnKyzHmQRLoJqRTsXf
+   w7NuK8AwWjNlkO5FB/qrZbA5mnM9KXVVl5xAzTlsCHEx8u2p5lznlYwGO
+   HKEV3Gpx8QK//gwcbkytzekHDfJIl9Ze8Pr9CsI+qwHT/Ph4A+UOA4uJC
+   0jeiOC7+4fNeGw1EFn8uQHodQsGBSa/6DgIhd3LofeqIn+zRl0JTZXjHL
+   x9h/ml+cz3Sk5JtXbhiD/CPvZqVlqp4dcjZaZ50b659qaZ0cNpfLEgutP
+   WYVbTaKrWU6qrG4/ZCqfCG7AkrhLqIVh/Z+JYlH6NK4xBGE03CHcjvY7+
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="271681558"
+X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
+   d="scan'208";a="271681558"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 15:57:56 -0800
+X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
+   d="scan'208";a="697256247"
+Received: from zhenkuny-mobl2.amr.corp.intel.com (HELO [10.209.84.59]) ([10.209.84.59])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 15:57:55 -0800
+Message-ID: <49195bef-1a3f-447b-3de5-daaefbed8561@intel.com>
+Date:   Fri, 28 Jan 2022 15:57:52 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: bMCnYoILlEqUjdhJic2dWCNsqpqDaA5A
-X-Proofpoint-GUID: bMCnYoILlEqUjdhJic2dWCNsqpqDaA5A
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-28_08,2022-01-28_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 spamscore=0 bulkscore=0
- priorityscore=1501 lowpriorityscore=0 impostorscore=0 malwarescore=0
- suspectscore=0 clxscore=1015 mlxscore=0 phishscore=0 adultscore=0
- mlxlogscore=998 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201280130
-X-FB-Internal: deliver
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.2
+Content-Language: en-US
+To:     ira.weiny@intel.com, Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-kernel@vger.kernel.org
+References: <20220127175505.851391-1-ira.weiny@intel.com>
+ <20220127175505.851391-11-ira.weiny@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH V8 10/44] Documentation/pkeys: Add initial PKS
+ documentation
+In-Reply-To: <20220127175505.851391-11-ira.weiny@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This will be used to copy JITed text to RO protected module memory. On
-x86, bpf_arch_text_copy is implemented with text_poke_copy.
+On 1/27/22 09:54, ira.weiny@intel.com wrote:
+> From: Ira Weiny <ira.weiny@intel.com>
+> 
+> Add initial overview and configuration information about PKS.
+> 
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> ---
+>  Documentation/core-api/protection-keys.rst | 57 ++++++++++++++++++++--
+>  1 file changed, 53 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
+> index 12331db474aa..58670e3ee39e 100644
+> --- a/Documentation/core-api/protection-keys.rst
+> +++ b/Documentation/core-api/protection-keys.rst
+> @@ -12,6 +12,9 @@ PKeys Userspace (PKU) is a feature which is found on Intel's Skylake "Scalable
+>  Processor" Server CPUs and later.  And it will be available in future
+>  non-server Intel parts and future AMD processors.
+>  
+> +Protection Keys for Supervisor pages (PKS) is available in the SDM since May
+> +2020.
 
-bpf_arch_text_copy returns pointer to dst on success, and ERR_PTR(errno)
-on errors.
+I'd just remove this.  Folks don't need to know the SDM history.  I'd
+only talk about it here if they would have a hard time finding it
+somehow.  Seeing as its in the main SDM, I can't see how that's a problem.
 
-Signed-off-by: Song Liu <song@kernel.org>
----
- arch/x86/net/bpf_jit_comp.c | 7 +++++++
- include/linux/bpf.h         | 2 ++
- kernel/bpf/core.c           | 5 +++++
- 3 files changed, 14 insertions(+)
+>  pkeys work by dedicating 4 previously Reserved bits in each page table entry to
+>  a "protection key", giving 16 possible keys.
+>  
+> @@ -22,13 +25,20 @@ and Write Disable) for each of 16 keys.
+>  Being a CPU register, PKRU is inherently thread-local, potentially giving each
+>  thread a different set of protections from every other thread.
+>  
+> -There are two instructions (RDPKRU/WRPKRU) for reading and writing to the
+> -register.  The feature is only available in 64-bit mode, even though there is
+> +For Userspace (PKU), there are two instructions (RDPKRU/WRPKRU) for reading and
+> +writing to the register.
+> +
+> +For Supervisor (PKS), the register (MSR_IA32_PKRS) is accessible only to the
+> +kernel through rdmsr and wrmsr.
+> +
+> +The feature is only available in 64-bit mode, even though there is
+>  theoretically space in the PAE PTEs.  These permissions are enforced on data
+>  access only and have no effect on instruction fetches.
+>  
+> -Syscalls
+> -========
+> +
+> +
+> +Syscalls for user space keys
+> +============================
+>  
+>  There are 3 system calls which directly interact with pkeys::
+>  
+> @@ -95,3 +105,42 @@ with a read()::
+>  The kernel will send a SIGSEGV in both cases, but si_code will be set
+>  to SEGV_PKERR when violating protection keys versus SEGV_ACCERR when
+>  the plain mprotect() permissions are violated.
+> +
+> +
+> +Kernel API for PKS support
+> +==========================
+> +
+> +Overview
+> +--------
+> +
+> +Similar to user space pkeys, supervisor pkeys allow additional protections to
+> +be defined for a supervisor mappings.  Unlike user space pkeys, violations of
+> +these protections result in a kernel oops.
+> +
+> +Supervisor Memory Protection Keys (PKS) is a feature which is found on Intel's
+> +Sapphire Rapids (and later) "Scalable Processor" Server CPUs.  It will also be
+> +available in future non-server Intel parts.
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index ce1f86f245c9..9792bf10d881 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -2413,3 +2413,10 @@ bool bpf_jit_supports_kfunc_call(void)
- {
- 	return true;
- }
-+
-+void *bpf_arch_text_copy(void *dst, void *src, size_t len)
-+{
-+	if (text_poke_copy(dst, src, len) == NULL)
-+		return ERR_PTR(-EINVAL);
-+	return dst;
-+}
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 28ac752f21ba..7f58fe256671 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -2350,6 +2350,8 @@ enum bpf_text_poke_type {
- int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- 		       void *addr1, void *addr2);
- 
-+void *bpf_arch_text_copy(void *dst, void *src, size_t len);
-+
- struct btf_id_set;
- bool btf_id_set_contains(const struct btf_id_set *set, u32 id);
- 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 7cbcf6bfbb52..dc0142e20c72 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2448,6 +2448,11 @@ int __weak bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- 	return -ENOTSUPP;
- }
- 
-+void * __weak bpf_arch_text_copy(void *dst, void *src, size_t len)
-+{
-+	return ERR_PTR(-ENOTSUPP);
-+}
-+
- DEFINE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
- EXPORT_SYMBOL(bpf_stats_enabled_key);
- 
--- 
-2.30.2
+This is a little weird.  You've already talked about PKRS and then later
+introduce the feature?
 
+Also, perhaps this CPU model bit should just be next to the CPU model
+bit about PKU.
+
+> +Also qemu has support as well: https://www.qemu.org/2021/04/30/qemu-6-0-0/
+> +
+> +Kconfig
+> +-------
+> +Kernel users intending to use PKS support should depend on
+> +ARCH_HAS_SUPERVISOR_PKEYS, and select ARCH_ENABLE_SUPERVISOR_PKEYS to turn on
+> +this support within the core.
+
+Maybe this should talk about the Kconfig options a bit more.  Maybe even
+an example:
+
+config MY_NEW_FEATURE
+	depends on ARCH_HAS_SUPERVISOR_PKEYS
+	select ARCH_ENABLE_SUPERVISOR_PKEYS
+
+This will make "MY_NEW_FEATURE" unavailable unless the architecture sets
+ARCH_HAS_SUPERVISOR_PKEYS.  It also makes it possible for multiple
+independent features to  "select ARCH_ENABLE_SUPERVISOR_PKEYS".  PKS
+support will not be compiled into the kernel unless one or more features
+selects ARCH_ENABLE_SUPERVISOR_PKEYS.
+
+> +MSR details
+> +-----------
+> +
+> +It should be noted that the underlying WRMSR(MSR_IA32_PKRS) is not serializing
+> +but still maintains ordering properties similar to WRPKRU.
+
+s/It should be noted that the underlying //
+
+I'd probably say:
+
+	WRMSR is typically an architecturally serializing instruction.
+	However, WRMSR(MSR_IA32_PKRS) is an exceptions.  It is not a
+	serializing instruction and instead maintains ordering
+	properties similar to WRPKRU.
+
+and maybe:
+
+	Check the WRPKRU documentation in the latest version of the SDM
+	for details.
+
+> +Older versions of the SDM on PKRS may be wrong with regard to this
+> +serialization.  The text should be the same as that of WRPKRU.  From the WRPKRU
+> +text:
+> +
+> +	WRPKRU will never execute transiently. Memory accesses
+> +	affected by PKRU register will not execute (even transiently)
+> +	until all prior executions of WRPKRU have completed execution
+> +	and updated the PKRU register.
+
+I wouldn't go over this.  Software has bugs.  Documentation has bugs.  I
+expect folks to use the most recent version.
+
+BTW, there are still a few places in SDM 076 that miss mentioning the
+non-serializing properties of PKRS.  I also don't see anything
+specifically about the speculative behavior.  There might be fixes on
+the way, but can you double-check?
