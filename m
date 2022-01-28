@@ -2,315 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAAD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 12:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 12:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244733AbiA1M14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 07:27:56 -0500
-Received: from foss.arm.com ([217.140.110.172]:40738 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229568AbiA1M1y (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 07:27:54 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5DFB011D4;
-        Fri, 28 Jan 2022 04:27:54 -0800 (PST)
-Received: from e119884-lin.cambridge.arm.com (e119884-lin.cambridge.arm.com [10.1.196.72])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 386463F766;
-        Fri, 28 Jan 2022 04:27:53 -0800 (PST)
-From:   Vincenzo Frascino <vincenzo.frascino@arm.com>
-To:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     vincenzo.frascino@arm.com, Shuah Khan <shuah@kernel.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Cristian Marussi <cristian.marussi@arm.com>
-Subject: [PATCH v2] kselftest: Fix vdso_test_abi return status
-Date:   Fri, 28 Jan 2022 12:27:44 +0000
-Message-Id: <20220128122744.17248-1-vincenzo.frascino@arm.com>
-X-Mailer: git-send-email 2.34.1
+        id S1348386AbiA1MbH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 07:31:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:40542 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229568AbiA1MbG (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 07:31:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643373065;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XIRDUYVVBIv4oABEPDHoK/N//51UTD6HqpxDkdZpS2Q=;
+        b=bAt/JJgFyM0R+AUe8QIg0PpbNp4rBH6GiWqEaeaK04+8EbDqMQtxp5thQK2yXJ8Njb5Y8f
+        5qJQBNfcAKjGhJtkdjoqaK9H4C8McNzBcyxzcQ+4/91L/IbfpPjM9+jXm6OwUnEn8bB7TR
+        6AyoqhqQJ4+bYJekOmVduz1yGvA59gA=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-5-Xtk46rxHPTibWYwzftUzqw-1; Fri, 28 Jan 2022 07:31:04 -0500
+X-MC-Unique: Xtk46rxHPTibWYwzftUzqw-1
+Received: by mail-ed1-f71.google.com with SMTP id w3-20020a50c443000000b0040696821132so2955606edf.22
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 04:31:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XIRDUYVVBIv4oABEPDHoK/N//51UTD6HqpxDkdZpS2Q=;
+        b=ac/tpE/lsAu5KBGA+i8xKe1gJpvxzrKNZpMqDveGGXPP0Idy6vcyGlVdDxMx04kNUs
+         kqyybC1xz/haB8licmfV0C0UqUoiLrynPhKjWCMV8GfXS7oG1jcfgjg+q5oFliVhDKWi
+         wQoGJnfJ+qaUJ3p+hU5QcIlN8Hwal3TPtwHfd2dwPxhHtFydgRRkLWGEdnD1mz4PBaJ1
+         6LBasjZHmr5d71GMwtDWWgAYhDDd881ZMITW9CyRFQet8p+BiHl1Ym+YDfifmH56dhpP
+         Afn/vTBI81a9SqHzM01jRsXapWQ7AJ6lDG1RSKOAmSERRPXTSQtecPQLDYhVXj1mfaGS
+         MOfQ==
+X-Gm-Message-State: AOAM530RUvl3ANhfkR7lWe49hG7nodD6+GPaMNXQ5XBvAZmlMImI17Hc
+        WwtBDDZjeKeYxLaiVO8xc2L0eFtgd1zGb3AsDxmmFoVVIBVg55Q7DLNNALMTWXrMq9ophQ50Y9V
+        JRSON3e8DGH7qv4KDTgkPEPZypNAYSVJdBKtjmcJh
+X-Received: by 2002:a17:907:1b1a:: with SMTP id mp26mr6704322ejc.450.1643373062516;
+        Fri, 28 Jan 2022 04:31:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyvjyELGFxOKKskpejzb2JP1D9Jfa6SMOyCUQiGyJQjx+SNJ8mteW7mUFRCEu3JrdCTAqBI9cdGrOOA1I7u5dE=
+X-Received: by 2002:a17:907:1b1a:: with SMTP id mp26mr6704304ejc.450.1643373062272;
+ Fri, 28 Jan 2022 04:31:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <YfMpk7DM9zA7NfmI@debian>
+In-Reply-To: <YfMpk7DM9zA7NfmI@debian>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Fri, 28 Jan 2022 09:30:50 -0300
+Message-ID: <CAAq0SUnNtS8b3419egw-WVH8ic+MxH8oQELm1K0s4iqt8pYKnQ@mail.gmail.com>
+Subject: Re: Regression with 5021d709b31b ("tty: serial: Use fifo in 8250
+ console driver")
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Wander Lairson Costa <wander@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vdso_test_abi contains a batch of tests that verify the validity of the
-vDSO ABI.
+On Thu, Jan 27, 2022 at 8:24 PM Sudip Mukherjee
+<sudipm.mukherjee@gmail.com> wrote:
+>
+> Hi Wander,
+>
+> Not sure if this has been reported before but since last few weeks I am
+> seeing a problem with the rpi4 serial port on my test setup. The initial
+> boot message will be completely garbled as you can see at:
+> https://lava.qa.codethink.co.uk/scheduler/job/543#L380.
+> The last good boot was https://lava.qa.codethink.co.uk/scheduler/job/540#L390.
+>
+> The bisect log:
+>
+> # bad: [455e73a07f6e288b0061dfcf4fcf54fa9fe06458] Merge tag 'clk-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/clk/linux
+> # good: [7e7b69654724c72bd3219b71f58937845dca0b2b] Merge tag 'dma-mapping-5.17' of git://git.infradead.org/users/hch/dma-mapping
+> git bisect start '455e73a07f6e288b0061dfcf4fcf54fa9fe06458' '7e7b69654724c72bd3219b71f58937845dca0b2b'
+> # bad: [342465f5337f7bd5b8bd3b6f939ac12b620cbb43] Merge tag 'tty-5.17-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty
+> git bisect bad 342465f5337f7bd5b8bd3b6f939ac12b620cbb43
+> # good: [6dc69d3d0d18d587ab9d809fe060ba4417cf0279] Merge tag 'driver-core-5.17-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core
+> git bisect good 6dc69d3d0d18d587ab9d809fe060ba4417cf0279
+> # good: [e269f7acdc53623769da31135f60afeb3a65eaff] staging: r8188eu: remove the private ioctl "wps_assoc_req_ie"
+> git bisect good e269f7acdc53623769da31135f60afeb3a65eaff
+> # bad: [ad234e2bac274a43c9fa540bde8cd9f0c627b71f] tty: serial: meson: Drop the legacy compatible strings and clock code
+> git bisect bad ad234e2bac274a43c9fa540bde8cd9f0c627b71f
+> # good: [c66453ce8af8bac78a72ba4e21fd9a86720127d7] tty: fix kernel-doc in n_tty.c
+> git bisect good c66453ce8af8bac78a72ba4e21fd9a86720127d7
+> # good: [0882b473b084df31288003b3bee974aabac9dcf9] tty: serial: samsung: Enable console as module
+> git bisect good 0882b473b084df31288003b3bee974aabac9dcf9
+> # bad: [b4a29b94804c4774f22555651296b838df6ec0e4] serial: 8250: Move Alpha-specific quirk out of the core
+> git bisect bad b4a29b94804c4774f22555651296b838df6ec0e4
+> # good: [e822b4973f49015e1c6f63b91c8641ed9bfaf229] tty/ldsem: Fix syntax errors in comments
+> git bisect good e822b4973f49015e1c6f63b91c8641ed9bfaf229
+> # good: [fb09d0ac07725b442b32dbf53f0ab0bea54804e9] tty: Fix the keyboard led light display problem
+> git bisect good fb09d0ac07725b442b32dbf53f0ab0bea54804e9
+> # bad: [5021d709b31b8a14317998a33cbc78be0de9ab30] tty: serial: Use fifo in 8250 console driver
+> git bisect bad 5021d709b31b8a14317998a33cbc78be0de9ab30
+> # good: [adbfddc757aec1ed54ccb35c4a7ca9170df827e0] docs/driver-api: Replace a comma in the n_gsm.rst with a double colon
+> git bisect good adbfddc757aec1ed54ccb35c4a7ca9170df827e0
+> # first bad commit: [5021d709b31b8a14317998a33cbc78be0de9ab30] tty: serial: Use fifo in 8250 console driver
+>
+> And, indeed reverting 5021d709b31b ("tty: serial: Use fifo in 8250 console
+> driver") on top of 23a46422c561 ("Merge tag 'net-5.17-rc2' of
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net") fixes the problem
+> for me.
+>
+> This is seen on every boot and I will be happy to test any patch.
+>
 
-When a vDSO symbol is not found the relevant test is skipped reporting
-KSFT_SKIP. All the tests return values are then added in a single
-variable which is checked to verify failures. This approach can have
-side effects which result in reporting the wrong kselftest exit status.
+Hi Sudip,
 
-Fix vdso_test_abi verifying the return code of each test separately.
+Thanks for the report. As Greg said, the patch has been reverted. In
+the meantime, could you please apply this patch and report if the
+problem still happens:
 
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Reported-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
----
- tools/testing/selftests/vDSO/vdso_test_abi.c | 143 ++++++++-----------
- 1 file changed, 62 insertions(+), 81 deletions(-)
+diff --git a/drivers/tty/serial/8250/8250_port.c
+b/drivers/tty/serial/8250/8250_port.c
+index 2abb3de11a48..d3a93e5d55f7 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3343,7 +3343,7 @@ static void serial8250_console_fifo_write(struct
+uart_8250_port *up,
+ {
+        int i;
+        const char *end = s + count;
+-       unsigned int fifosize = up->port.fifosize;
++       unsigned int fifosize = up->tx_loadsz;
+        bool cr_sent = false;
 
-diff --git a/tools/testing/selftests/vDSO/vdso_test_abi.c b/tools/testing/selftests/vDSO/vdso_test_abi.c
-index 3d603f1394af..3e4dd47e404e 100644
---- a/tools/testing/selftests/vDSO/vdso_test_abi.c
-+++ b/tools/testing/selftests/vDSO/vdso_test_abi.c
-@@ -33,110 +33,106 @@ typedef long (*vdso_clock_gettime_t)(clockid_t clk_id, struct timespec *ts);
- typedef long (*vdso_clock_getres_t)(clockid_t clk_id, struct timespec *ts);
- typedef time_t (*vdso_time_t)(time_t *t);
- 
--static int vdso_test_gettimeofday(void)
-+#define VDSO_TEST_PASS_MSG()	"\n%s(): PASS\n", __func__
-+#define VDSO_TEST_FAIL_MSG(x)	"\n%s(): %s FAIL\n", __func__, x
-+#define VDSO_TEST_SKIP_MSG(x)	"\n%s(): SKIP: Could not find %s\n", __func__, x
-+
-+static void vdso_test_gettimeofday(void)
- {
- 	/* Find gettimeofday. */
- 	vdso_gettimeofday_t vdso_gettimeofday =
- 		(vdso_gettimeofday_t)vdso_sym(version, name[0]);
- 
--	if (!vdso_gettimeofday) {
--		printf("Could not find %s\n", name[0]);
--		return KSFT_SKIP;
--	}
-+	if (!vdso_gettimeofday)
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[0]));
- 
- 	struct timeval tv;
- 	long ret = vdso_gettimeofday(&tv, 0);
- 
- 	if (ret == 0) {
--		printf("The time is %lld.%06lld\n",
--		       (long long)tv.tv_sec, (long long)tv.tv_usec);
-+		ksft_print_msg("The time is %lld.%06lld\n",
-+			       (long long)tv.tv_sec, (long long)tv.tv_usec);
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
- 	} else {
--		printf("%s failed\n", name[0]);
--		return KSFT_FAIL;
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[0]));
- 	}
--
--	return KSFT_PASS;
- }
- 
--static int vdso_test_clock_gettime(clockid_t clk_id)
-+static void vdso_test_clock_gettime(clockid_t clk_id)
- {
- 	/* Find clock_gettime. */
- 	vdso_clock_gettime_t vdso_clock_gettime =
- 		(vdso_clock_gettime_t)vdso_sym(version, name[1]);
- 
--	if (!vdso_clock_gettime) {
--		printf("Could not find %s\n", name[1]);
--		return KSFT_SKIP;
--	}
-+	if (!vdso_clock_gettime)
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[1]));
- 
- 	struct timespec ts;
- 	long ret = vdso_clock_gettime(clk_id, &ts);
- 
- 	if (ret == 0) {
--		printf("The time is %lld.%06lld\n",
--		       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-+		ksft_print_msg("The time is %lld.%06lld\n",
-+			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());;
- 	} else {
--		printf("%s failed\n", name[1]);
--		return KSFT_FAIL;
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[1]));
- 	}
--
--	return KSFT_PASS;
- }
- 
--static int vdso_test_time(void)
-+static void vdso_test_time(void)
- {
- 	/* Find time. */
- 	vdso_time_t vdso_time =
- 		(vdso_time_t)vdso_sym(version, name[2]);
- 
--	if (!vdso_time) {
--		printf("Could not find %s\n", name[2]);
--		return KSFT_SKIP;
--	}
-+	if (!vdso_time)
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[2]));
- 
- 	long ret = vdso_time(NULL);
- 
- 	if (ret > 0) {
--		printf("The time in hours since January 1, 1970 is %lld\n",
-+		ksft_print_msg("The time in hours since January 1, 1970 is %lld\n",
- 				(long long)(ret / 3600));
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
- 	} else {
--		printf("%s failed\n", name[2]);
--		return KSFT_FAIL;
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[2]));
- 	}
--
--	return KSFT_PASS;
- }
- 
--static int vdso_test_clock_getres(clockid_t clk_id)
-+static void vdso_test_clock_getres(clockid_t clk_id)
- {
-+	int clock_getres_fail = 0;
-+
- 	/* Find clock_getres. */
- 	vdso_clock_getres_t vdso_clock_getres =
- 		(vdso_clock_getres_t)vdso_sym(version, name[3]);
- 
--	if (!vdso_clock_getres) {
--		printf("Could not find %s\n", name[3]);
--		return KSFT_SKIP;
--	}
-+	if (!vdso_clock_getres)
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[3]));
- 
- 	struct timespec ts, sys_ts;
- 	long ret = vdso_clock_getres(clk_id, &ts);
- 
- 	if (ret == 0) {
--		printf("The resolution is %lld %lld\n",
--		       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-+		ksft_print_msg("The vdso resolution is %lld %lld\n",
-+			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
- 	} else {
--		printf("%s failed\n", name[3]);
--		return KSFT_FAIL;
-+		clock_getres_fail++;
- 	}
- 
- 	ret = syscall(SYS_clock_getres, clk_id, &sys_ts);
- 
--	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec)) {
--		printf("%s failed\n", name[3]);
--		return KSFT_FAIL;
--	}
-+	ksft_print_msg("The syscall resolution is %lld %lld\n",
-+			(long long)sys_ts.tv_sec, (long long)sys_ts.tv_nsec);
-+
-+	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec))
-+		clock_getres_fail++;
- 
--	return KSFT_PASS;
-+	if (clock_getres_fail > 0) {
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[3]));
-+	} else {
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
-+	}
- }
- 
- const char *vdso_clock_name[12] = {
-@@ -158,36 +154,23 @@ const char *vdso_clock_name[12] = {
-  * This function calls vdso_test_clock_gettime and vdso_test_clock_getres
-  * with different values for clock_id.
-  */
--static inline int vdso_test_clock(clockid_t clock_id)
-+static inline void vdso_test_clock(clockid_t clock_id)
- {
--	int ret0, ret1;
--
--	ret0 = vdso_test_clock_gettime(clock_id);
--	/* A skipped test is considered passed */
--	if (ret0 == KSFT_SKIP)
--		ret0 = KSFT_PASS;
-+	ksft_print_msg("\nclock_id: %s\n", vdso_clock_name[clock_id]);
- 
--	ret1 = vdso_test_clock_getres(clock_id);
--	/* A skipped test is considered passed */
--	if (ret1 == KSFT_SKIP)
--		ret1 = KSFT_PASS;
-+	vdso_test_clock_gettime(clock_id);
- 
--	ret0 += ret1;
--
--	printf("clock_id: %s", vdso_clock_name[clock_id]);
--
--	if (ret0 > 0)
--		printf(" [FAIL]\n");
--	else
--		printf(" [PASS]\n");
--
--	return ret0;
-+	vdso_test_clock_getres(clock_id);
- }
- 
-+#define VDSO_TEST_PLAN	16
-+
- int main(int argc, char **argv)
- {
- 	unsigned long sysinfo_ehdr = getauxval(AT_SYSINFO_EHDR);
--	int ret;
-+
-+	ksft_print_header();
-+	ksft_set_plan(VDSO_TEST_PLAN);
- 
- 	if (!sysinfo_ehdr) {
- 		printf("AT_SYSINFO_EHDR is not present!\n");
-@@ -201,44 +184,42 @@ int main(int argc, char **argv)
- 
- 	vdso_init_from_sysinfo_ehdr(getauxval(AT_SYSINFO_EHDR));
- 
--	ret = vdso_test_gettimeofday();
-+	vdso_test_gettimeofday();
- 
- #if _POSIX_TIMERS > 0
- 
- #ifdef CLOCK_REALTIME
--	ret += vdso_test_clock(CLOCK_REALTIME);
-+	vdso_test_clock(CLOCK_REALTIME);
- #endif
- 
- #ifdef CLOCK_BOOTTIME
--	ret += vdso_test_clock(CLOCK_BOOTTIME);
-+	vdso_test_clock(CLOCK_BOOTTIME);
- #endif
- 
- #ifdef CLOCK_TAI
--	ret += vdso_test_clock(CLOCK_TAI);
-+	vdso_test_clock(CLOCK_TAI);
- #endif
- 
- #ifdef CLOCK_REALTIME_COARSE
--	ret += vdso_test_clock(CLOCK_REALTIME_COARSE);
-+	vdso_test_clock(CLOCK_REALTIME_COARSE);
- #endif
- 
- #ifdef CLOCK_MONOTONIC
--	ret += vdso_test_clock(CLOCK_MONOTONIC);
-+	vdso_test_clock(CLOCK_MONOTONIC);
- #endif
- 
- #ifdef CLOCK_MONOTONIC_RAW
--	ret += vdso_test_clock(CLOCK_MONOTONIC_RAW);
-+	vdso_test_clock(CLOCK_MONOTONIC_RAW);
- #endif
- 
- #ifdef CLOCK_MONOTONIC_COARSE
--	ret += vdso_test_clock(CLOCK_MONOTONIC_COARSE);
-+	vdso_test_clock(CLOCK_MONOTONIC_COARSE);
- #endif
- 
- #endif
- 
--	ret += vdso_test_time();
--
--	if (ret > 0)
--		return KSFT_FAIL;
-+	vdso_test_time();
- 
--	return KSFT_PASS;
-+	ksft_print_cnts();
-+	return ksft_get_fail_cnt() == 0 ? KSFT_PASS : KSFT_FAIL;
- }
--- 
-2.34.1
+        while (s != end) {
+@@ -3409,8 +3409,8 @@ void serial8250_console_write(struct
+uart_8250_port *up, const char *s,
+        }
+
+        use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+-               port->fifosize > 1 &&
+-               (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
++               up->tx_loadsz > 1 &&
++               (up->fcr & UART_FCR_ENABLE_FIFO) &&
+                /*
+                 * After we put a data in the fifo, the controller will send
+                 * it regardless of the CTS state. Therefore, only use fifo
+
+
+>
+> --
+> Regards
+> Sudip
+>
 
