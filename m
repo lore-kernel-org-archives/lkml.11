@@ -2,108 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0F02C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 21:37:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D92C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 21:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351513AbiA1VhI (ORCPT
+        id S1351567AbiA1VhM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 16:37:08 -0500
-Received: from vps-vb.mhejs.net ([37.28.154.113]:34544 "EHLO vps-vb.mhejs.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347668AbiA1VhF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 16:37:05 -0500
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nDYvI-0008TI-5c; Fri, 28 Jan 2022 22:36:48 +0100
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, Michal Hocko <mhocko@suse.com>,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: x86: Fix rmap allocation for very large memslots
-Date:   Fri, 28 Jan 2022 22:36:42 +0100
-Message-Id: <1acaee7fa7ef7ab91e51f4417572b099caf2f400.1643405658.git.maciej.szmigiero@oracle.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 28 Jan 2022 16:37:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351511AbiA1VhJ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 16:37:09 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDB7C06173B
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 13:37:08 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id j2so20128841ejk.6
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 13:37:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=CUuoA1H1xCLa0a1bVW4NlOMKpUawKO6N9kfvmo3RGOM=;
+        b=U4gZi4VClu3Fy3b0MUuy+OH+FPtbaikctEYX0ZAeCHxIky1wQ3Bv9sLZYdRg3sg8jn
+         gQ1TXW9cQQmRIce4Ur/I/oZRJXONbWQcitCi62NNG88NPyiRR+VM+o4JLs4Dq6pKlLfV
+         AcoEjvvNLllQuFcBUmosqPuyp+bqe3K28zBRwUKVQwN21sapCudCqhEcwXysEXBsV7MM
+         sqaSGvuY3gaejvqSaltDVaWFAfdhdJzBPwug1N3YFxZG1jE3HY3ZSB96jaV2sot9rL4T
+         Lk2G8s1Xc7Kjce44nsgXExVd/IwlbhuqsTeJYKLhn2asN1FSNCIKYWjURZbpdZ/y/6m3
+         +bww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CUuoA1H1xCLa0a1bVW4NlOMKpUawKO6N9kfvmo3RGOM=;
+        b=OJpYIa/aek0zPCc58HIFc7BBxibkIk9vojit+dxQoaNaq6Xe8IcD/lDhI6FKhyWv6Q
+         /MFZelURl6+6Bw/+dmKsUCE4g/BXoCYSBOhKsXNFt/428OJ0TJWi18EyssffqeOSFLTq
+         Dry70hryH6BCnB2Ge8IHvEvBMPZxw8kJ1+T8qZZfosv/tDLrJje+TGIjCE++2Vs77FbN
+         HR6kWN3iNo1O8z3sT82JDAUbHjah3QtLdlP4PSxj8qXP3wPls1fBbt5dKlcP7SUPWrpi
+         fLQjChPs38/4An1qiAU3UI+4plljHt4Ao2IuY4MjafoR1HXbXzpEk+ZA+veDYkjP1MzM
+         2G6g==
+X-Gm-Message-State: AOAM532pfRSukP4mZTwnCr9qhfklKhcBmgbj4bj8k0B2d/hLeRgIwqP1
+        pFj6fUiWhyQ9psD1SAKIAh4ekQvT/onIRWzWirnW93o7qV9paA==
+X-Google-Smtp-Source: ABdhPJxVAzum5yLTwHC5et+cUTTSy3/uTZLz/Hrr/hiuqjfdxn1Bg2Sxql6rOIt5SPVlxQ+oLnZsJk3HnWnNlRZVAGo=
+X-Received: by 2002:a17:906:794f:: with SMTP id l15mr8765287ejo.75.1643405827189;
+ Fri, 28 Jan 2022 13:37:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220127215222.159049-1-dlatypov@google.com> <CAFd5g47imcBAPNqrX+ZpmVzw8mgaPiBX_ip0euFAgmTA3cxitA@mail.gmail.com>
+In-Reply-To: <CAFd5g47imcBAPNqrX+ZpmVzw8mgaPiBX_ip0euFAgmTA3cxitA@mail.gmail.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Fri, 28 Jan 2022 13:36:55 -0800
+Message-ID: <CAGS_qxoSn16TgDUvQTUpamu1xzY85Cbqy7Qg94fyKwjE4jw7Fg@mail.gmail.com>
+Subject: Re: [PATCH] kunit: cleanup assertion macro internal variables
+To:     Brendan Higgins <brendanhiggins@google.com>
+Cc:     davidgow@google.com, linux-kernel@vger.kernel.org,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        skhan@linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>
+On Fri, Jan 28, 2022 at 1:21 PM Brendan Higgins
+<brendanhiggins@google.com> wrote:
+>
+> On Thu, Jan 27, 2022 at 4:52 PM Daniel Latypov <dlatypov@google.com> wrot=
+e:
+> >
+> > All the operands should be tagged `const`.
+> > We're only assigning them to variables so that we can compare them (e.g=
+.
+> > check if left =3D=3D right, etc.) and avoid evaluating expressions mult=
+iple
+> > times.
+> >
+> > There's no need for them to be mutable.
+>
+> Agreed.
+>
+> > Also rename the helper variable `loc` to `__loc` like we do with
+> > `__assertion` and `__strs` to avoid potential name collisions with user
+> > code.
+>
+> Probably not necessary since we create a new code block (we are inside
+> of an if-statement, do-while-loop, etc), but I don't really care
+> either way.
 
-Commit 7661809d493b ("mm: don't allow oversized kvmalloc() calls") has
-forbidden using kvmalloc() to make allocations larger than INT_MAX (2 GiB).
+You're totally right that this doesn't matter with our current macros.
 
-Unfortunately, adding a memslot exceeding 1 TiB in size will result in rmap
-code trying to make an allocation exceeding this limit.
-Besides failing this allocation, such operation will also trigger a
-WARN_ON_ONCE() added by the aforementioned commit.
+given
+int loc =3D 42;
+KUNIT_EXPECT_TRUE(test, loc);
+KUNIT_EXPECT_EQ(test, loc, 42);
 
-Since we probably still want to use kernel slab for small rmap allocations
-let's only redirect such oversized allocations to vmalloc.
+becomes
+do {
+        if (__builtin_expect(!!(!(!!(loc) =3D=3D !!true)), 0)) {
+                /* we don't use the operands in here, so `loc` is fine */
+                static const struct kunit_loc loc =3D {
+                        .file =3D "lib/kunit/kunit-example-test.c", .line =
+=3D 25
+                };
+...
+do {
+        typeof(loc) __left =3D (loc);
+        typeof(42) __right =3D (42);
+        do {
+                /* We never reference the expression again, so `loc` is fin=
+e */
+                if (__builtin_expect(!!(!(__left =3D=3D __right)), 0)) {
+                        static const struct kunit_loc loc =3D {
+                                .file =3D "lib/kunit/kunit-example-test.c",
+                                .line =3D 24
+                        };
 
-A possible alternative would be to add some kind of a __GFP_LARGE flag to
-skip the INT_MAX check behind kvmalloc(), however this will impact the
-common kernel memory allocation code, not just KVM.
+But reminder: this was *not* the case until very recently.
+Sau we didn't have my earlier patch to move the `if(!(passed))` check
+into the macro.
+Then we'd have issues, e.g.
+../lib/kunit/kunit-example-test.c: In function =E2=80=98example_simple_test=
+=E2=80=99:
+../include/kunit/test.h:828:26: error: wrong type argument to unary
+exclamation mark
+  828 |                         !!(condition) =3D=3D !!expected_true,
+                \
+      |
+...
+../lib/kunit/kunit-example-test.c:25:9: note: in expansion of macro
+=E2=80=98KUNIT_EXPECT_TRUE=E2=80=99
+   25 |         KUNIT_EXPECT_TRUE(test, loc);
+      |         ^~~~~~~~~~~~~~~~~
 
-Fixes: a7c3e901a4 ("mm: introduce kv[mz]alloc helpers")
-Cc: stable@vger.kernel.org
-Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
----
- arch/x86/kvm/x86.c | 26 +++++++++++++++++++-------
- 1 file changed, 19 insertions(+), 7 deletions(-)
+So being defensive here lets us change up our implementation more freely.
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 8033eca6f3a1..c64bac8614c7 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11806,24 +11806,36 @@ void kvm_arch_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
- 
- int memslot_rmap_alloc(struct kvm_memory_slot *slot, unsigned long npages)
- {
--	const int sz = sizeof(*slot->arch.rmap[0]);
-+	const size_t sz = sizeof(*slot->arch.rmap[0]);
- 	int i;
- 
- 	for (i = 0; i < KVM_NR_PAGE_SIZES; ++i) {
- 		int level = i + 1;
--		int lpages = __kvm_mmu_slot_lpages(slot, npages, level);
-+		size_t lpages = __kvm_mmu_slot_lpages(slot, npages, level);
-+		size_t rmap_size;
- 
- 		if (slot->arch.rmap[i])
- 			continue;
- 
--		slot->arch.rmap[i] = kvcalloc(lpages, sz, GFP_KERNEL_ACCOUNT);
--		if (!slot->arch.rmap[i]) {
--			memslot_rmap_free(slot);
--			return -ENOMEM;
--		}
-+		if (unlikely(check_mul_overflow(lpages, sz, &rmap_size)))
-+			goto ret_fail;
-+
-+		/* kvzalloc() only allows sizes up to INT_MAX */
-+		if (unlikely(rmap_size > INT_MAX))
-+			slot->arch.rmap[i] = __vmalloc(rmap_size,
-+						       GFP_KERNEL_ACCOUNT | __GFP_ZERO);
-+		else
-+			slot->arch.rmap[i] = kvzalloc(rmap_size, GFP_KERNEL_ACCOUNT);
-+
-+		if (!slot->arch.rmap[i])
-+			goto ret_fail;
- 	}
- 
- 	return 0;
-+
-+ret_fail:
-+	memslot_rmap_free(slot);
-+	return -ENOMEM;
- }
- 
- static int kvm_alloc_memslot_metadata(struct kvm *kvm,
+>
+> > Signed-off-by: Daniel Latypov <dlatypov@google.com>
+>
+> Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
