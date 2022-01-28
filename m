@@ -2,125 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD9FC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0249EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 16:04:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349890AbiA1QEB (ORCPT
+        id S1349909AbiA1QEc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 11:04:01 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:17664 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S240248AbiA1QD7 (ORCPT
+        Fri, 28 Jan 2022 11:04:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47730 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235310AbiA1QEb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 11:03:59 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20SFonVV010379;
-        Fri, 28 Jan 2022 16:03:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=gtiUGNNErj1tF6ZBPCrxpuaTVneQFhIz7Mui8/YHGbE=;
- b=eH9qWv0jWgek1Py9j78Kt0d5hIJjv6yuStHMFv7Tw1/e9VMfJC5mv2Kkl3miTfv/bffR
- HlGW43TR7AFUp75ZaUj/BAQ+QxsR9X/qOG5YhmO0LlQLt0Ltr45bviEMDB+4+Nha5b9t
- ysWS/m338bouelpvhwgojT2HwCIFolPjLFVXft6oShMlYvhKm+5t6SCDBJDUKEs7jIz1
- n/9OLIk8Q0JTJFryfUK7fp2HTjnnYlG/95IzPdInZ7z/jNrpKvp9lCfWPmo6dYFyNvXc
- iry1u8mT6SI7Ldzn99Z7kB8v/YkHJS+u15c6u6Rngf6OUStcAWbBnu+weuaDvbNEZLQ7 DA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dvgqj3skb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 16:03:47 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20SFox9n011204;
-        Fri, 28 Jan 2022 16:03:46 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dvgqj3sje-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 16:03:46 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20SG2WaV017346;
-        Fri, 28 Jan 2022 16:03:44 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma05fra.de.ibm.com with ESMTP id 3dr9j9rk2s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 16:03:44 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20SG3fEx44368140
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 28 Jan 2022 16:03:41 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 76FA7A4068;
-        Fri, 28 Jan 2022 16:03:41 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 27DF3A4060;
-        Fri, 28 Jan 2022 16:03:39 +0000 (GMT)
-Received: from sig-9-65-83-59.ibm.com (unknown [9.65.83.59])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 28 Jan 2022 16:03:39 +0000 (GMT)
-Message-ID: <a72131dea70845bd7741d7e9f4d49671d538aa79.camel@linux.ibm.com>
-Subject: Re: [PATCH v9 09/23] ima: Move some IMA policy and filesystem
- related variables into ima_namespace
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>,
-        Stefan Berger <stefanb@linux.vnet.ibm.com>,
-        linux-integrity@vger.kernel.org
-Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org
-Date:   Fri, 28 Jan 2022 11:03:38 -0500
-In-Reply-To: <be31137d-57d9-24f7-01f6-f33080dd4bba@linux.ibm.com>
-References: <20220125224645.79319-1-stefanb@linux.vnet.ibm.com>
-         <20220125224645.79319-10-stefanb@linux.vnet.ibm.com>
-         <1af8f2155730c38dcd510016fe82bc90e4acee39.camel@linux.ibm.com>
-         <be31137d-57d9-24f7-01f6-f33080dd4bba@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Wvz4tC0BTiAZ0g5VC94FeFwVo4JnkoHA
-X-Proofpoint-ORIG-GUID: b32T8YgdimPamh-EsXgoSLFynR4y7Myp
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-28_04,2022-01-28_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- bulkscore=0 priorityscore=1501 mlxlogscore=999 clxscore=1015 adultscore=0
- suspectscore=0 lowpriorityscore=0 mlxscore=0 spamscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2201280097
+        Fri, 28 Jan 2022 11:04:31 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9AA461EE0
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:04:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31E5FC340E6
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:04:30 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="CdJcfcLO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1643385867;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7FKobJhoy7WUzr8IQkz4Rgy6lr68RmX0KGYKnV3Jq7A=;
+        b=CdJcfcLOfzJ5JEQ/fL6px0XaBMVQJ1QF8rReA5bzI5xJo3ryKXdsfBXzjn1kmtbpJHrEqB
+        1udybHl1Z1HityIxnFgmhHG9iOqbzww27iykrtAPjak0dz42s///dMUnqNSJrD0bwgDhhN
+        Cnld6iFAOvk0c8oxQccrVHeExW6mAwQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3223b17e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Fri, 28 Jan 2022 16:04:27 +0000 (UTC)
+Received: by mail-yb1-f176.google.com with SMTP id g14so19772291ybs.8
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 08:04:26 -0800 (PST)
+X-Gm-Message-State: AOAM5301q/iJ3G4ozOxlfo2yZBPa305LFlgkcZPB4KfYfFPhbMFJgRJw
+        L9coOMpm08ysCraLmx4FHQdEpjz/l4XJnsfU7Tw=
+X-Google-Smtp-Source: ABdhPJz7lBHvwJwjzcVYDzmaYorqDYCZA6cOCAlHTPjQk3rucBn0pxiKQU7dcjGChsxx5YjN+Xi4Sad+FSndrkFl294=
+X-Received: by 2002:a25:bd08:: with SMTP id f8mr6053390ybk.121.1643385864960;
+ Fri, 28 Jan 2022 08:04:24 -0800 (PST)
+MIME-Version: 1.0
+References: <YfMa0QgsjCVdRAvJ@latitude> <CAHmME9pb9A4SN6TTjNvvxKqw1L3gXVOX7KKihfEH4AgKGNGZ2A@mail.gmail.com>
+ <YfOqsOiNfURyvFRX@linutronix.de>
+In-Reply-To: <YfOqsOiNfURyvFRX@linutronix.de>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 28 Jan 2022 17:04:13 +0100
+X-Gmail-Original-Message-ID: <CAHmME9qBj2gL=spp3AUEo-Ri4r0KQq-KrR-f6dG++xXQvzcA7A@mail.gmail.com>
+Message-ID: <CAHmME9qBj2gL=spp3AUEo-Ri4r0KQq-KrR-f6dG++xXQvzcA7A@mail.gmail.com>
+Subject: Re: "BUG: Invalid wait context" in invalidate_batched_entropy
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Andy Lutomirski <luto@amacapital.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-01-28 at 10:44 -0500, Stefan Berger wrote:
-> On 1/27/22 17:30, Mimi Zohar wrote:
-> > On Tue, 2022-01-25 at 17:46 -0500, Stefan Berger wrote:
-> >> From: Stefan Berger <stefanb@linux.ibm.com>
-> >>
-> >> Move the ima_write_mutex, ima_fs_flag, and valid_policy variables into
-> >> ima_namespace. This way each IMA namespace can set those variables
-> >> independently.
-> > This patch description needs to be expanded a bit, indicating why
-> > they're being moved together.  These flags are needed when loading a
-> > policy. Please also update the "struct ima_namespace" comment.
-> 
-> I'll extend the above sentence like this:
-> 
-> ... those variables independently in its instance of securityfs.
+Hi Sebastian/Jonathan,
 
-That doesn't explain anything as to what these flags are or how they're
-used.  Perhaps something like,  "Move the variables - ima_write_mutex,
-ima_fs_flag, and valid_policy - related to updating the IMA policy into
-the ima_namespace.  This way each IMA namespace can set these variables
-independently."
+On Fri, Jan 28, 2022 at 9:35 AM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+> This report is due to CONFIG_PROVE_LOCKING=y _and_
+> CONFIG_PROVE_RAW_LOCK_NESTING=y. It reports a nesting problem
+> (raw_spinlock_t -> spinlock_t lock ordering) which becomes a real
+> problem on PREEMPT_RT.
 
-Did you notice my comment inline below?
+Hmm, I'm still having a tough time reproducing this. I'm trying to
+understand your intuition. Is the problem you see that something else
+in the IRQ path uses a raw_spinlock_t, and then with that lock still
+held, we call invalidate_batched_entropy(), which takes an ordinary
+spinlock_t, non-raw? And taking a spinlock-t while holding a
+raw_spinlock_t is illegal?
 
-thanks,
-
-Mimi
-
+Jason
