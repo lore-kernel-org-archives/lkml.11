@@ -2,152 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B214C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B28C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 17:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344081AbiA1RWw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 12:22:52 -0500
-Received: from foss.arm.com ([217.140.110.172]:55398 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344068AbiA1RVA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 12:21:00 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C20AE113E;
-        Fri, 28 Jan 2022 09:20:59 -0800 (PST)
-Received: from [10.57.86.104] (unknown [10.57.86.104])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 916063F793;
-        Fri, 28 Jan 2022 09:20:54 -0800 (PST)
-Subject: Re: [PATCH 2/2] perf arm-spe: Parse more SPE fields and store source
-To:     Ali Saidi <alisaidi@amazon.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     benh@kernel.crashing.org, Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        James Clark <james.clark@arm.com>,
-        Andrew Kilroy <andrew.kilroy@arm.com>
-References: <20220125192016.20538-1-alisaidi@amazon.com>
- <20220125192016.20538-3-alisaidi@amazon.com>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <b1b3697d-4a0a-d041-5cbd-e08fec9e658c@arm.com>
-Date:   Fri, 28 Jan 2022 17:20:23 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S235230AbiA1RXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 12:23:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54760 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350997AbiA1RVw (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 12:21:52 -0500
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF0BC0613A7;
+        Fri, 28 Jan 2022 09:20:05 -0800 (PST)
+Received: by mail-ot1-x32c.google.com with SMTP id d18-20020a9d51d2000000b005a09728a8c2so6359563oth.3;
+        Fri, 28 Jan 2022 09:20:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UwbQPftUNn9yAB4yzqKeQDB/pWC4kXl5NucfopNQ3ag=;
+        b=PWuAAkFkDtJVYG819y6ifto/NACTzta68iof02lYXGK4TQCZ6YMwgpN6x9wGagpTkD
+         i0EsTVdeo+F/4UtWOICMnSpByL4d8E2QtiDXKxRyVNS23Ik15kjtMaH5bsNQ8KZCBR7I
+         a0d+7BEf2jH6K+izh54gYOll0z3ec2q43de18V1jcr1UPlgSxdSC4l+dmcThpwizmIq4
+         w0EYEQFz1T1zElGgk8xJ7KRPprPSoDGttAyOnXaxCp8Ze2AC4WE9ije+JsSVAn82xuFK
+         uweG/N5/k6zc4rYLV0ib3U4euYOuQOvLVaqCDK7o1M7eGyF+94uMF1V8xB/t0cXov9ju
+         HYlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=UwbQPftUNn9yAB4yzqKeQDB/pWC4kXl5NucfopNQ3ag=;
+        b=VlJCHt3bLnn5Q8so5UtvXO4uB1jetm9y6GrF4tLnNw2NyQA2P+Wjb8j3R17V3WXkFT
+         sZOyXi4Qh/Jphixj9j0bRD6gzxVs4q8qrSQvFiTuv8U/stj34G8NiLnCt4F+9zs1El3y
+         FUPS7PvUj0R5OXhZ/qb2NiABBQXjaeD+cqFPC9iHNnrweRZraPXwRHN9hz2XPJxjX+HW
+         sA/6OqWDnB2FguyBAEX7plK8pHsquMJ94WtB2qNnYlMUhM9ilsMG8e2jeQuw8agJauu8
+         gG0gfPWOjXw//4OGD+QKtBLQqIazva48yeh4Ie3kHRNk1NWGeNRUJ1ApzddX3kn/4Awb
+         HwcQ==
+X-Gm-Message-State: AOAM5331xnxEFsLmwr/lOJiaPzv0xFCOcHT1DYHKb18zlayHOaNkzpMv
+        KAunmngZKoYJ2Qb0Ut9AyW8=
+X-Google-Smtp-Source: ABdhPJyvhy6GpcH81DShxWe8ImoRoO9OShyxokZ7SwtkWzv+0GKqFn3QzOSGVNutpWMxaWa4rky3xQ==
+X-Received: by 2002:a9d:7e88:: with SMTP id m8mr5100388otp.123.1643390405340;
+        Fri, 28 Jan 2022 09:20:05 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id t21sm3983087otq.81.2022.01.28.09.20.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Jan 2022 09:20:04 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Fri, 28 Jan 2022 09:20:03 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
+        linus.walleij@linaro.org, mripard@kernel.org, wens@csie.org,
+        jernej.skrabec@gmail.com, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, zhangn1985@gmail.com
+Subject: Re: [BUG] pinctrl: reg-fixed-voltage usb0-vbus: error -EINVAL: can't
+ get GPIO
+Message-ID: <20220128172003.GA2666058@roeck-us.net>
+References: <Yea3rBmY+MO4AhhV@Red>
+ <2f82dbe8-50d6-d905-9065-d3869948aa06@xs4all.nl>
 MIME-Version: 1.0
-In-Reply-To: <20220125192016.20538-3-alisaidi@amazon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2f82dbe8-50d6-d905-9065-d3869948aa06@xs4all.nl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ali,
+On Tue, Jan 18, 2022 at 03:13:20PM +0100, Hans Verkuil wrote:
+> On 1/18/22 13:50, Corentin Labbe wrote:
+> > Hello
+> > 
+> > As reported on old googlegroup sunxi mainling list, on linux-next-20220118, USB storage fail to bring up on orangepiPC.
+> > We can see some error logs in dmesg:
+> > reg-fixed-voltage usb0-vbus: error -EINVAL: can't get GPIO
+> > reg-fixed-voltage: probe of usb0-vbus failed with error -22
+> > 
+> > This is bisected to: 8df89a7cbc63c7598c00611ad17b67e8d5b4fad3 pinctrl-sunxi: don't call pinctrl_gpio_direction()
+> > 
+> > Reverting this commit lead to a working USB storage being setuped.
+> 
+> Hmm, I'll bet it's EPROBE_DEFER related.
+> 
 
-On 25/01/2022 19:20, Ali Saidi wrote:
-> Decode more SPE events and op types to allow for processing by perf
-> scripts. For example looking for branches which may indicate candidates
-> for conversion to a CSEL, store exclusives that are candidates for
-> conversion to LSE atomics and record the source information for memory
-> ops.
->
-> Signed-off-by: Ali Saidi <alisaidi@amazon.com>
-> ---
->  .../util/arm-spe-decoder/arm-spe-decoder.c     | 18 ++++++++++++++++++
->  .../util/arm-spe-decoder/arm-spe-decoder.h     |  8 ++++++++
->  2 files changed, 26 insertions(+)
->
-> diff --git a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
-> index 5e390a1a79ab..177bac0f7128 100644
-> --- a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
-> +++ b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
-> @@ -191,6 +191,20 @@ static int arm_spe_read_record(struct arm_spe_decoder *decoder)
->  					decoder->record.op = ARM_SPE_ST;
->  				else
->  					decoder->record.op = ARM_SPE_LD;
-> +				if (SPE_OP_PKT_IS_LDST_ATOMIC(payload)) {
-> +					if (payload & SPE_OP_PKT_AT)
-> +						decoder->record.op |= ARM_SPE_LDST_ATOMIC;
+No. For me the problem is only seen if I try to boot from the second usb
+interface with the orangepi-pc qemu emulation, but not when I try to boot
+from the first usb interface. That alone makes it unlikely to be an
+EPROBE_DEFER related problem.
 
-In "utils/arm-spe.c" we check "if (record->op == ARM_SPE_LD)" so this
-ORing could break some of the generated samples.
+Some debugging with your code in the tree:
 
-> +					if (payload & SPE_OP_PKT_EXCL)
-> +						decoder->record.op |= ARM_SPE_LDST_EXCL;
-> +					if (payload & SPE_OP_PKT_AR)
-> +						decoder->record.op |= ARM_SPE_LDST_ACQREL;
-> +				}
-> +			} else if (idx == SPE_OP_PKT_HDR_CLASS_BR_ERET) {
-> +				decoder->record.op = ARM_SPE_BR;
-> +				if (payload & SPE_OP_PKT_COND)
-> +					decoder->record.op |= ARM_SPE_BR_COND;
-> +				if (SPE_OP_PKT_IS_INDIRECT_BRANCH(payload))
-> +					decoder->record.op |= ARM_SPE_BR_IND;
->  			}
->  			break;
->  		case ARM_SPE_EVENTS:
-> @@ -218,8 +232,12 @@ static int arm_spe_read_record(struct arm_spe_decoder *decoder)
->  			if (payload & BIT(EV_MISPRED))
->  				decoder->record.type |= ARM_SPE_BRANCH_MISS;
->  
-> +			if (payload & BIT(EV_NOT_TAKEN))
-> +				decoder->record.type |= ARM_SPE_BR_NOT_TAKEN;
-> +
->  			break;
->  		case ARM_SPE_DATA_SOURCE:
-> +			decoder->record.source = payload;
->  			break;
->  		case ARM_SPE_BAD:
->  			break;
-> diff --git a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
-> index 69b31084d6be..113e427afe99 100644
-> --- a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
-> +++ b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
-> @@ -22,11 +22,18 @@ enum arm_spe_sample_type {
->  	ARM_SPE_TLB_MISS	= 1 << 5,
->  	ARM_SPE_BRANCH_MISS	= 1 << 6,
->  	ARM_SPE_REMOTE_ACCESS	= 1 << 7,
-> +	ARM_SPE_BR_NOT_TAKEN	= 1 << 8,
+[    7.076227] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ########### sunxi_pmx_gpio_set_direction: offset=10, input=0
+[    7.076567] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ########### sunxi_pinctrl_gpio_direction_output: offset=10, value=1, ret=-22
+[    7.076992] leds-gpio: probe of leds failed with error -22
+[    7.081645] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ########### sunxi_pmx_gpio_set_direction: offset=2, input=0
+[    7.081887] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ########### sunxi_pinctrl_gpio_direction_output: offset=2, value=0, ret=-22
+[    7.082424] reg-fixed-voltage usb0-vbus: error -EINVAL: can't get GPIO
+[    7.082793] reg-fixed-voltage: probe of usb0-vbus failed with error -22
+[    7.129355] sun8i-h3-pinctrl 1c20800.pinctrl: ########### sunxi_pmx_gpio_set_direction: offset=166, input=1
+[    7.129844] sun8i-h3-pinctrl 1c20800.pinctrl: ######### sunxi_pinctrl_gpio_direction_input: offset=166, ret=0
+[    7.130788] sunxi-mmc 1c0f000.mmc: Got CD GPIO
+[    7.169391] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ########### sunxi_pmx_gpio_set_direction: offset=3, input=1
+[    7.169663] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ######### sunxi_pinctrl_gpio_direction_input: offset=3, ret=-22
+[    7.170054] gpio-keys r_gpio_keys: failed to get gpio: -22
+[    7.170262] gpio-keys: probe of r_gpio_keys failed with error -22
 
-Can you rename it to ARM_SPE_BRANCH_NOT_TAKEN for consistency?
+And after reverting it:
 
->  };
->  
->  enum arm_spe_op_type {
->  	ARM_SPE_LD		= 1 << 0,
->  	ARM_SPE_ST		= 1 << 1,
-> +	ARM_SPE_LDST_EXCL	= 1 << 2,
-> +	ARM_SPE_LDST_ATOMIC	= 1 << 3,
-> +	ARM_SPE_LDST_ACQREL	= 1 << 4,
-> +	ARM_SPE_BR		= 1 << 5,
-> +	ARM_SPE_BR_COND		= 1 << 6,
-> +	ARM_SPE_BR_IND		= 1 << 7,
+[    6.138097] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ########### sunxi_pmx_gpio_set_direction: offset=362, input=0
+[    6.138375] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ########### sunxi_pinctrl_gpio_direction_output: offset=10, value=1, ret=0
+[    6.140762] sun8i-h3-pinctrl 1c20800.pinctrl: ########### sunxi_pmx_gpio_set_direction: offset=15, input=0
+[    6.140918] sun8i-h3-pinctrl 1c20800.pinctrl: ########### sunxi_pinctrl_gpio_direction_output: offset=15, value=0, ret=0
+[    6.142808] sun8i-h3-pinctrl 1c20800.pinctrl: supply vcc-pf not found, using dummy regulator
+[    6.148879] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ########### sunxi_pmx_gpio_set_direction: offset=354, input=0
+[    6.149086] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ########### sunxi_pinctrl_gpio_direction_output: offset=2, value=0, ret=0
+[    6.154485] sun8i-h3-pinctrl 1c20800.pinctrl: supply vcc-pg not found, using dummy regulator
+[    6.155657] sun8i-h3-pinctrl 1c20800.pinctrl: ########### sunxi_pmx_gpio_set_direction: offset=204, input=1
+[    6.155853] sun8i-h3-pinctrl 1c20800.pinctrl: ######### sunxi_pinctrl_gpio_direction_input: offset=204, ret=0
+[    6.174411] ehci-platform 1c1b000.usb: EHCI Host Controller
+[    6.174737] ehci-platform 1c1b000.usb: new USB bus registered, assigned bus number 3
+[    6.188776] sun8i-h3-pinctrl 1c20800.pinctrl: ########### sunxi_pmx_gpio_set_direction: offset=166, input=1
+[    6.189149] sun8i-h3-pinctrl 1c20800.pinctrl: ######### sunxi_pinctrl_gpio_direction_input: offset=166, ret=0
+[    6.189720] sunxi-mmc 1c0f000.mmc: Got CD GPIO
+...
+[    6.674660] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ########### sunxi_pmx_gpio_set_direction: offset=355, input=1
+[    6.674796] sun8i-h3-r-pinctrl 1f02c00.pinctrl: ######### sunxi_pinctrl_gpio_direction_input: offset=3, ret=0
 
-I'm not sure if we should keep everything in one enum/bitmask. I'm also
-looking at adding more of the data from the packets to the record, and
-considering refactoring the record structure. I'll share here when I
-have something.
+In other words, there is some offset translation missing with your patch,
+causing -EINVAL returns.
 
-Thanks,
-German
-
->  };
->  
->  struct arm_spe_record {
-> @@ -40,6 +47,7 @@ struct arm_spe_record {
->  	u64 virt_addr;
->  	u64 phys_addr;
->  	u64 context_id;
-> +	u16 source;
->  };
->  
->  struct arm_spe_insn;
+Guenter
