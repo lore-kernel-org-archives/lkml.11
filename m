@@ -2,132 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D74C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 22:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC46C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 22:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351302AbiA1WLW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 17:11:22 -0500
-Received: from mx0a-00010702.pphosted.com ([148.163.156.75]:54006 "EHLO
-        mx0b-00010702.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1351312AbiA1WLS (ORCPT
+        id S234624AbiA1WOP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 17:14:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230408AbiA1WOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 17:11:18 -0500
-X-Greylist: delayed 545 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Jan 2022 17:11:18 EST
-Received: from pps.filterd (m0098780.ppops.net [127.0.0.1])
-        by mx0a-00010702.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20SK6qk6019747;
-        Fri, 28 Jan 2022 16:01:59 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ni.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PPS11062020;
- bh=Y38zlJ4UqEHWdqufGAo7/SyWZeDxw+P8OUAJREwTN7Y=;
- b=CcYENQ2cdeasGh38kS7zSbuwtSlUB//3U/wOl3m4iPbBozNfT2IYoQQ2c0vNpr1Sf2rr
- bYnxIz/2I1LX+GoddRFzN6LdkN8kyxjSs2kwj1bpVnR+rDzKUkYl8J+LHlhazJfLubq4
- wUNwJIw2up5ntx0VdzpoSDyoeL9NyW5PLl7FqDWUibANjAOSL1jnaoT/bATTvq1/wV0E
- 3ytMHpAdW5ys8voaXg/jYqlxadlGM/IWv4hWgCHclB7SJYKWQsb+bytl6051UfBYOPav
- lRuXxO3IbsHBTtkQjPB6DFXudwBhK+ijuHyFmiDkZTKGCjHAxI9S6/rA0iCUfbboOqFE rg== 
-Received: from ni.com ([130.164.80.24])
-        by mx0a-00010702.pphosted.com (PPS) with ESMTPS id 3dvb2khe8b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 16:01:59 -0600
-Received: from us-aus-exhub2.ni.corp.natinst.com (us-aus-exhub2.ni.corp.natinst.com [130.164.68.32])
-        by us-aus-skprod3.natinst.com (8.16.1.2/8.16.1.2) with ESMTPS id 20SM1wPL005328
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 28 Jan 2022 16:01:58 -0600
-Received: from us-aus-exch4.ni.corp.natinst.com (130.164.68.14) by
- us-aus-exhub2.ni.corp.natinst.com (130.164.68.32) with Microsoft SMTP Server
- (TLS) id 15.0.1497.28; Fri, 28 Jan 2022 16:01:58 -0600
-Received: from us-aus-exhub2.ni.corp.natinst.com (130.164.68.32) by
- us-aus-exch4.ni.corp.natinst.com (130.164.68.14) with Microsoft SMTP Server
- (TLS) id 15.0.1497.28; Fri, 28 Jan 2022 16:01:58 -0600
-Received: from starthinker.amer.corp.natinst.com (172.18.68.32) by
- us-aus-exhub2.ni.corp.natinst.com (130.164.68.32) with Microsoft SMTP Server
- id 15.0.1497.28 via Frontend Transport; Fri, 28 Jan 2022 16:01:58 -0600
-From:   Brenda Streiff <brenda.streiff@ni.com>
-CC:     <brenda.streiff@ni.com>, Masahiro Yamada <masahiroy@kernel.org>,
-        <linux-kbuild@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] kconfig: let 'shell' return enough output for deep path names
-Date:   Fri, 28 Jan 2022 16:01:28 -0600
-Message-ID: <20220128220131.10956-1-brenda.streiff@ni.com>
-X-Mailer: git-send-email 2.20.1
+        Fri, 28 Jan 2022 17:14:09 -0500
+X-Greylist: delayed 321 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 28 Jan 2022 14:14:08 PST
+Received: from server.lespinasse.org (server.lespinasse.org [IPv6:2001:470:82ab::100:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54C7C061714
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 14:14:08 -0800 (PST)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
+ d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-53-ed;
+ t=1643407726; h=date : from : to : cc : subject : message-id :
+ references : mime-version : content-type : in-reply-to : from;
+ bh=MgiqllyeJOK6ke8ALz34tVMuWcndkNzeGKveDDtwgdU=;
+ b=LoO/GOsvakR3vVPtL+fRsQHD5oCcmLVBOF5LsweZ1jLDYs5y13zouTA654R9b9ZuXNPs9
+ pgSs7ASuPkI6vtADw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
+ i=@lespinasse.org; q=dns/txt; s=srv-53-rsa; t=1643407726; h=date :
+ from : to : cc : subject : message-id : references : mime-version :
+ content-type : in-reply-to : from;
+ bh=MgiqllyeJOK6ke8ALz34tVMuWcndkNzeGKveDDtwgdU=;
+ b=ig7DDtU3eMmcYVw8h1wL5+iURSLHTLgFEtFd7x47OQ/jtrSuN/GIQ9qK4P3gSNpWXbUop
+ xUWT5xTJM7bKmTUrtPDVslUjcCmYfRYDDtSTFK6Rw8tuCJAx6thziim7BP1XCsXXTRk69g7
+ wxkQvl/KfZ0ZDmOXKhnaiXowSDBDVb83JV5WWRqmOwYY20h5BWXumkKuenhv1QnJAsqTUB5
+ oBSOJ0rlIdPrDzV0ghe4tcGIpiTF+asNbc+390tLJRuU16VdtmNR3O4iiWifroHYc/tEI3L
+ 0gFfSp5HNEsAQeiVx/HK2W5y47oziP6pP+haTgv0wMWhwDW5s6kQwVV/080A==
+Received: by server.lespinasse.org (Postfix, from userid 1000)
+        id 3EF7F16094C; Fri, 28 Jan 2022 14:08:46 -0800 (PST)
+Date:   Fri, 28 Jan 2022 14:08:46 -0800
+From:   Michel Lespinasse <michel@lespinasse.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Michel Lespinasse <michel@lespinasse.org>,
+        Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        llvm@lists.linux.dev, kbuild-all@lists.01.org, kernel-team@fb.com,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        Jerome Glisse <jglisse@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: Re: [PATCH v2 18/35] mm: implement speculative handling in
+ do_anonymous_page()
+Message-ID: <20220128220846.GA18863@lespinasse.org>
+References: <20220128131006.67712-19-michel@lespinasse.org>
+ <202201290445.uKuWeLmf-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Y_SjhD1U4DVN0zvX31VPAznAf8jZkn20
-X-Proofpoint-GUID: Y_SjhD1U4DVN0zvX31VPAznAf8jZkn20
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-28_08,2022-01-28_01,2021-12-02_01
-X-Proofpoint-Spam-Reason: orgsafe
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202201290445.uKuWeLmf-lkp@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 'shell' built-in only returns the first 256 bytes of the command's
-output. In some cases, 'shell' is used to return a path; by bumping up
-the buffer size to 4096 this lets us capture up to PATH_MAX.
+On Sat, Jan 29, 2022 at 05:03:53AM +0800, kernel test robot wrote:
+> >> mm/memory.c:3876:20: warning: variable 'vmf' is uninitialized when used within its own initialization [-Wuninitialized]
+>            if (!pte_map_lock(vmf)) {
+>                 ~~~~~~~~~~~~~^~~~
+>    include/linux/mm.h:3418:25: note: expanded from macro 'pte_map_lock'
+>            struct vm_fault *vmf = __vmf;                                   \
+>                             ~~~   ^~~~~
+>    1 warning generated.
 
-The specific case where I ran into this was due to commit 1e860048c53e
-("gcc-plugins: simplify GCC plugin-dev capability test"). After this
-change, we now use `$(shell,$(CC) -print-file-name=3Dplugin)` to return
-a path; if the gcc path is particularly long, then the path ends up
-truncated at the 256 byte mark, which makes the HAVE_GCC_PLUGINS
-depends test always fail.
+Ah, that's interesting - this works with gcc, but breaks with clang.
 
-Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
+The following amended patch should fix this:
+(I only added underscores to the pte_map_lock and pte_spinlock macros)
+
+------------------------------------ 8< ---------------------------------
+
+mm: add pte_map_lock() and pte_spinlock()
+
+pte_map_lock() and pte_spinlock() are used by fault handlers to ensure
+the pte is mapped and locked before they commit the faulted page to the
+mm's address space at the end of the fault.
+
+The functions differ in their preconditions; pte_map_lock() expects
+the pte to be unmapped prior to the call, while pte_spinlock() expects
+it to be already mapped.
+
+In the speculative fault case, the functions verify, after locking the pte,
+that the mmap sequence count has not changed since the start of the fault,
+and thus that no mmap lock writers have been running concurrently with
+the fault. After that point the page table lock serializes any further
+races with concurrent mmap lock writers.
+
+If the mmap sequence count check fails, both functions will return false
+with the pte being left unmapped and unlocked.
+
+Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
 ---
- scripts/kconfig/preprocess.c                                  | 2 +-
- scripts/kconfig/tests/preprocess/builtin_func/Kconfig         | 3 +++
- scripts/kconfig/tests/preprocess/builtin_func/expected_stdout | 1 +
- 3 files changed, 5 insertions(+), 1 deletion(-)
+ include/linux/mm.h | 38 ++++++++++++++++++++++++++
+ mm/memory.c        | 66 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 104 insertions(+)
 
-diff --git a/scripts/kconfig/preprocess.c b/scripts/kconfig/preprocess.c
-index 0590f86df6e4..748da578b418 100644
---- a/scripts/kconfig/preprocess.c
-+++ b/scripts/kconfig/preprocess.c
-@@ -141,7 +141,7 @@ static char *do_lineno(int argc, char *argv[])
- static char *do_shell(int argc, char *argv[])
- {
- 	FILE *p;
--	char buf[256];
-+	char buf[4096];
- 	char *cmd;
- 	size_t nread;
- 	int i;
-diff --git a/scripts/kconfig/tests/preprocess/builtin_func/Kconfig b/script=
-s/kconfig/tests/preprocess/builtin_func/Kconfig
-index baa328827911..e9791a97f731 100644
---- a/scripts/kconfig/tests/preprocess/builtin_func/Kconfig
-+++ b/scripts/kconfig/tests/preprocess/builtin_func/Kconfig
-@@ -25,3 +25,6 @@ $(warning,$(shell,printf 'hello\nworld\n\n4\n\n\n'))
- # 'lineno' to the line number.
- $(warning,filename=3D$(filename))
- $(warning,lineno=3D$(lineno))
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 2e2122bd3da3..80894db6f01a 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3394,5 +3394,43 @@ madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
+ }
+ #endif
+ 
++#ifdef CONFIG_MMU
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
 +
-+# 'shell' can return more than 256 bytes of output
-+$(info,$(shell,printf 'hello%01024dworld\n' '0'))
-diff --git a/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout =
-b/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout
-index 82de3a7e97de..8e03e4dfe8f6 100644
---- a/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout
-+++ b/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout
-@@ -1 +1,2 @@
- hello world 0
-+hello000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-0000000000000000000000000000000000000000000000000000000world
---=20
++bool __pte_map_lock(struct vm_fault *vmf);
++
++static inline bool pte_map_lock(struct vm_fault *vmf)
++{
++	VM_BUG_ON(vmf->pte);
++	return __pte_map_lock(vmf);
++}
++
++static inline bool pte_spinlock(struct vm_fault *vmf)
++{
++	VM_BUG_ON(!vmf->pte);
++	return __pte_map_lock(vmf);
++}
++
++#else	/* !CONFIG_SPECULATIVE_PAGE_FAULT */
++
++#define pte_map_lock(____vmf)						\
++({									\
++	struct vm_fault *__vmf = ____vmf;				\
++	__vmf->pte = pte_offset_map_lock(__vmf->vma->vm_mm, __vmf->pmd,	\
++					 __vmf->address, &__vmf->ptl);	\
++	true;								\
++})
++
++#define pte_spinlock(____vmf)						\
++({									\
++	struct vm_fault *__vmf = ____vmf;				\
++	__vmf->ptl = pte_lockptr(__vmf->vma->vm_mm, __vmf->pmd);	\
++	spin_lock(__vmf->ptl);						\
++	true;								\
++})
++
++#endif	/* CONFIG_SPECULATIVE_PAGE_FAULT */
++#endif	/* CONFIG_MMU */
++
+ #endif /* __KERNEL__ */
+ #endif /* _LINUX_MM_H */
+diff --git a/mm/memory.c b/mm/memory.c
+index d0db10bd5bee..1ce837e47395 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -2745,6 +2745,72 @@ EXPORT_SYMBOL_GPL(apply_to_existing_page_range);
+ #define speculative_page_walk_end()   local_irq_enable()
+ #endif
+ 
++bool __pte_map_lock(struct vm_fault *vmf)
++{
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++	pmd_t pmdval;
++#endif
++	pte_t *pte = vmf->pte;
++	spinlock_t *ptl;
++
++	if (!(vmf->flags & FAULT_FLAG_SPECULATIVE)) {
++		vmf->ptl = pte_lockptr(vmf->vma->vm_mm, vmf->pmd);
++		if (!pte)
++			vmf->pte = pte_offset_map(vmf->pmd, vmf->address);
++		spin_lock(vmf->ptl);
++		return true;
++	}
++
++	speculative_page_walk_begin();
++	if (!mmap_seq_read_check(vmf->vma->vm_mm, vmf->seq))
++		goto fail;
++	/*
++	 * The mmap sequence count check guarantees that the page
++	 * tables are still valid at that point, and
++	 * speculative_page_walk_begin() ensures that they stay around.
++	 */
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++	/*
++	 * We check if the pmd value is still the same to ensure that there
++	 * is not a huge collapse operation in progress in our back.
++	 */
++	pmdval = READ_ONCE(*vmf->pmd);
++	if (!pmd_same(pmdval, vmf->orig_pmd))
++		goto fail;
++#endif
++	ptl = pte_lockptr(vmf->vma->vm_mm, vmf->pmd);
++	if (!pte)
++		pte = pte_offset_map(vmf->pmd, vmf->address);
++	/*
++	 * Try locking the page table.
++	 *
++	 * Note that we might race against zap_pte_range() which
++	 * invalidates TLBs while holding the page table lock.
++	 * We are still under the speculative_page_walk_begin() section,
++	 * and zap_pte_range() could thus deadlock with us if we tried
++	 * using spin_lock() here.
++	 *
++	 * We also don't want to retry until spin_trylock() succeeds,
++	 * because of the starvation potential against a stream of lockers.
++	 */
++	if (unlikely(!spin_trylock(ptl)))
++		goto fail;
++	if (!mmap_seq_read_check(vmf->vma->vm_mm, vmf->seq))
++		goto unlock_fail;
++	speculative_page_walk_end();
++	vmf->pte = pte;
++	vmf->ptl = ptl;
++	return true;
++
++unlock_fail:
++	spin_unlock(ptl);
++fail:
++	if (pte)
++		pte_unmap(pte);
++	speculative_page_walk_end();
++	return false;
++}
++
+ #endif	/* CONFIG_SPECULATIVE_PAGE_FAULT */
+ 
+ /*
+-- 
 2.20.1
 
