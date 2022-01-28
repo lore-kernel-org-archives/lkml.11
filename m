@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DADBCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349020AbiA1NTw (ORCPT
+        id S1348923AbiA1NTy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:19:52 -0500
-Received: from server.lespinasse.org ([63.205.204.226]:48179 "EHLO
-        server.lespinasse.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348649AbiA1NTJ (ORCPT
+        Fri, 28 Jan 2022 08:19:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348657AbiA1NTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 08:19:09 -0500
+Received: from server.lespinasse.org (server.lespinasse.org [IPv6:2001:470:82ab::100:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 120A7C06174A
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:19:08 -0800 (PST)
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
  d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-52-ed;
- t=1643375407; h=from : to : cc : subject : date : message-id :
+ t=1643375406; h=from : to : cc : subject : date : message-id :
  in-reply-to : references : mime-version : content-transfer-encoding :
- from; bh=RYRG+RuiDLezST/iL383W/LGMqkq0+0jM8HYaFAclmo=;
- b=BuXQmxj+3qKNjh5SRNWcL7LLU2E6uJfm8wDD99iZdIdaSW/+achmhWRJVgL+JEBSZlC3j
- OnYzFu0fiC/xuMuCw==
+ from; bh=G/sA6eDUTFkJatHlYWtCSRczmeD8GU3nVA1OA3tvlIA=;
+ b=tuPOkcHJ7H0s/Mhca9LNqtBRVRnxk4Z1cxNgHh1WZEWb3QpuUGtcwZy4f8DWLk1PcUhmd
+ rcUhZq0JYrenQUACw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
- i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375407; h=from : to
+ i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375406; h=from : to
  : cc : subject : date : message-id : in-reply-to : references :
  mime-version : content-transfer-encoding : from;
- bh=RYRG+RuiDLezST/iL383W/LGMqkq0+0jM8HYaFAclmo=;
- b=qovUC5kJOR5SWthTEplixMntG75b2ioozUwSL1SQG2/I0QJfwaCZaveagDAT3SvSW0OSo
- 6X0lpayd1t0B+kOvU58pqxi9AQbq1ypQ+MZGGH5jHAQ4/gHtj2w/h3oJKA6hx9FfutTN6iN
- ElE7OO3KTJ2Pt7uN9B7GQWgevhaeA7H6hD5CK/Du826mUrGPxsz8Y4Gdy/k4jllcQptecR0
- MHxHVeMRIICOAatbkGkWnCUhM2foKHhMqtb6BvJyajBZ2un2PPReaDo5NWn04xCJ3YS6POX
- bZFxXLLebTvnUTbza7nsPMPSu2xdDGldD3WgCUazwyK3bAS3tC1QN90SxKbg==
+ bh=G/sA6eDUTFkJatHlYWtCSRczmeD8GU3nVA1OA3tvlIA=;
+ b=UUc/5KznUB/vjclApSqjaIYr8v/XO5q9CLULFAyaUUfl+3xsPLAkaGNCYMBA/yCy1uyGt
+ khyVk+i8AVLLJuTiB6TzU0juIZ1Hqx5PbrWz6PgZT+z8dA2YweCyKOCY4KfyM4oz8MkTdaC
+ TLKiY6x/E97IBRpjLe+NlLjpsFLk/x/H/gE+NBVz2t4ygqbfZ+AYzexTQOWJYnANhm4Dmq9
+ iI76H58ibXNib1XjCLS24jDqARW3/Se1x2aCqNfaB7+YHyRH6+64ZqOQSfEI4KTm0oM1Ka3
+ KrdnBvUw5MTunj6/frgh0lu6raOrHSZpeU7fm77fXPGm4F14ivu3vbS/637Q==
 Received: from zeus.lespinasse.org (zeus.lespinasse.org [IPv6:fd00::150:0])
-        by server.lespinasse.org (Postfix) with ESMTPS id 14FC516098E;
-        Fri, 28 Jan 2022 05:10:07 -0800 (PST)
+        by server.lespinasse.org (Postfix) with ESMTPS id DECE5160950;
+        Fri, 28 Jan 2022 05:10:06 -0800 (PST)
 Received: by zeus.lespinasse.org (Postfix, from userid 1000)
-        id ECAE620478; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
+        id C8AC720330; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
 From:   Michel Lespinasse <michel@lespinasse.org>
 To:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>
@@ -56,9 +59,9 @@ Cc:     kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Andy Lutomirski <luto@kernel.org>,
         Michel Lespinasse <michel@lespinasse.org>
-Subject: [PATCH v2 16/35] mm: implement speculative handling in __handle_mm_fault().
-Date:   Fri, 28 Jan 2022 05:09:47 -0800
-Message-Id: <20220128131006.67712-17-michel@lespinasse.org>
+Subject: [PATCH v2 03/35] mmap locking API: name the return values
+Date:   Fri, 28 Jan 2022 05:09:34 -0800
+Message-Id: <20220128131006.67712-4-michel@lespinasse.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220128131006.67712-1-michel@lespinasse.org>
 References: <20220128131006.67712-1-michel@lespinasse.org>
@@ -68,147 +71,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The speculative path calls speculative_page_walk_begin() before walking
-the page table tree to prevent page table reclamation. The logic is
-otherwise similar to the non-speculative path, but with additional
-restrictions: in the speculative path, we do not handle huge pages or
-wiring new pages tables.
+In the mmap locking API, the *_killable() functions return an error
+(or 0 on success), and the *_trylock() functions return a boolean
+(true on success).
+
+Rename the return values "int error" and "bool ok", respectively,
+rather than using "ret" for both cases which I find less readable.
 
 Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
 ---
- include/linux/mm.h |  6 ++++
- mm/memory.c        | 77 ++++++++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 81 insertions(+), 2 deletions(-)
+ include/linux/mmap_lock.h | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 6f7712179503..2e2122bd3da3 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -483,6 +483,10 @@ struct vm_fault {
- 	};
- 	enum fault_flag flags;		/* FAULT_FLAG_xxx flags
- 					 * XXX: should really be 'const' */
-+#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-+	unsigned long seq;
-+	pmd_t orig_pmd;
-+#endif
- 	pmd_t *pmd;			/* Pointer to pmd entry matching
- 					 * the 'address' */
- 	pud_t *pud;			/* Pointer to pud entry matching
-@@ -490,9 +494,11 @@ struct vm_fault {
- 					 */
- 	union {
- 		pte_t orig_pte;		/* Value of PTE at the time of fault */
-+#ifndef CONFIG_SPECULATIVE_PAGE_FAULT
- 		pmd_t orig_pmd;		/* Value of PMD at the time of fault,
- 					 * used by PMD fault only.
- 					 */
-+#endif
- 	};
+diff --git a/include/linux/mmap_lock.h b/include/linux/mmap_lock.h
+index db9785e11274..1b14468183d7 100644
+--- a/include/linux/mmap_lock.h
++++ b/include/linux/mmap_lock.h
+@@ -81,22 +81,22 @@ static inline void mmap_write_lock_nested(struct mm_struct *mm, int subclass)
  
- 	struct page *cow_page;		/* Page handler may use for COW fault */
-diff --git a/mm/memory.c b/mm/memory.c
-index 37a4b92bd4bf..d0db10bd5bee 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -4581,7 +4581,7 @@ static vm_fault_t handle_pte_fault(struct vm_fault *vmf)
-  * return value.  See filemap_fault() and __folio_lock_or_retry().
-  */
- static vm_fault_t __handle_mm_fault(struct vm_area_struct *vma,
--		unsigned long address, unsigned int flags)
-+		unsigned long address, unsigned int flags, unsigned long seq)
+ static inline int mmap_write_lock_killable(struct mm_struct *mm)
  {
- 	struct vm_fault vmf = {
- 		.vma = vma,
-@@ -4596,6 +4596,79 @@ static vm_fault_t __handle_mm_fault(struct vm_area_struct *vma,
- 	p4d_t *p4d;
- 	vm_fault_t ret;
+-	int ret;
++	int error;
  
-+#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-+	if (flags & FAULT_FLAG_SPECULATIVE) {
-+		pgd_t pgdval;
-+		p4d_t p4dval;
-+		pud_t pudval;
-+
-+		vmf.seq = seq;
-+
-+		speculative_page_walk_begin();
-+		pgd = pgd_offset(mm, address);
-+		pgdval = READ_ONCE(*pgd);
-+		if (pgd_none(pgdval) || unlikely(pgd_bad(pgdval)))
-+			goto spf_fail;
-+
-+		p4d = p4d_offset(pgd, address);
-+		p4dval = READ_ONCE(*p4d);
-+		if (p4d_none(p4dval) || unlikely(p4d_bad(p4dval)))
-+			goto spf_fail;
-+
-+		vmf.pud = pud_offset(p4d, address);
-+		pudval = READ_ONCE(*vmf.pud);
-+		if (pud_none(pudval) || unlikely(pud_bad(pudval)) ||
-+		    unlikely(pud_trans_huge(pudval)) ||
-+		    unlikely(pud_devmap(pudval)))
-+			goto spf_fail;
-+
-+		vmf.pmd = pmd_offset(vmf.pud, address);
-+		vmf.orig_pmd = READ_ONCE(*vmf.pmd);
-+
-+		/*
-+		 * pmd_none could mean that a hugepage collapse is in
-+		 * progress in our back as collapse_huge_page() mark
-+		 * it before invalidating the pte (which is done once
-+		 * the IPI is catched by all CPU and we have interrupt
-+		 * disabled).  For this reason we cannot handle THP in
-+		 * a speculative way since we can't safely identify an
-+		 * in progress collapse operation done in our back on
-+		 * that PMD.
-+		 */
-+		if (unlikely(pmd_none(vmf.orig_pmd) ||
-+			     is_swap_pmd(vmf.orig_pmd) ||
-+			     pmd_trans_huge(vmf.orig_pmd) ||
-+			     pmd_devmap(vmf.orig_pmd)))
-+			goto spf_fail;
-+
-+		/*
-+		 * The above does not allocate/instantiate page-tables because
-+		 * doing so would lead to the possibility of instantiating
-+		 * page-tables after free_pgtables() -- and consequently
-+		 * leaking them.
-+		 *
-+		 * The result is that we take at least one non-speculative
-+		 * fault per PMD in order to instantiate it.
-+		 */
-+
-+		vmf.pte = pte_offset_map(vmf.pmd, address);
-+		vmf.orig_pte = READ_ONCE(*vmf.pte);
-+		barrier();
-+		if (pte_none(vmf.orig_pte)) {
-+			pte_unmap(vmf.pte);
-+			vmf.pte = NULL;
-+		}
-+
-+		speculative_page_walk_end();
-+
-+		return handle_pte_fault(&vmf);
-+
-+	spf_fail:
-+		speculative_page_walk_end();
-+		return VM_FAULT_RETRY;
-+	}
-+#endif	/* CONFIG_SPECULATIVE_PAGE_FAULT */
-+
- 	pgd = pgd_offset(mm, address);
- 	p4d = p4d_alloc(mm, pgd, address);
- 	if (!p4d)
-@@ -4815,7 +4888,7 @@ vm_fault_t do_handle_mm_fault(struct vm_area_struct *vma,
- 	if (unlikely(is_vm_hugetlb_page(vma)))
- 		ret = hugetlb_fault(vma->vm_mm, vma, address, flags);
- 	else
--		ret = __handle_mm_fault(vma, address, flags);
-+		ret = __handle_mm_fault(vma, address, flags, seq);
+ 	__mmap_lock_trace_start_locking(mm, true);
+-	ret = down_write_killable(&mm->mmap_lock);
+-	__mmap_lock_trace_acquire_returned(mm, true, ret == 0);
+-	return ret;
++	error = down_write_killable(&mm->mmap_lock);
++	__mmap_lock_trace_acquire_returned(mm, true, !error);
++	return error;
+ }
  
- 	if (flags & FAULT_FLAG_USER) {
- 		mem_cgroup_exit_user_fault();
+ static inline bool mmap_write_trylock(struct mm_struct *mm)
+ {
+-	bool ret;
++	bool ok;
+ 
+ 	__mmap_lock_trace_start_locking(mm, true);
+-	ret = down_write_trylock(&mm->mmap_lock) != 0;
+-	__mmap_lock_trace_acquire_returned(mm, true, ret);
+-	return ret;
++	ok = down_write_trylock(&mm->mmap_lock) != 0;
++	__mmap_lock_trace_acquire_returned(mm, true, ok);
++	return ok;
+ }
+ 
+ static inline void mmap_write_unlock(struct mm_struct *mm)
+@@ -120,22 +120,22 @@ static inline void mmap_read_lock(struct mm_struct *mm)
+ 
+ static inline int mmap_read_lock_killable(struct mm_struct *mm)
+ {
+-	int ret;
++	int error;
+ 
+ 	__mmap_lock_trace_start_locking(mm, false);
+-	ret = down_read_killable(&mm->mmap_lock);
+-	__mmap_lock_trace_acquire_returned(mm, false, ret == 0);
+-	return ret;
++	error = down_read_killable(&mm->mmap_lock);
++	__mmap_lock_trace_acquire_returned(mm, false, !error);
++	return error;
+ }
+ 
+ static inline bool mmap_read_trylock(struct mm_struct *mm)
+ {
+-	bool ret;
++	bool ok;
+ 
+ 	__mmap_lock_trace_start_locking(mm, false);
+-	ret = down_read_trylock(&mm->mmap_lock) != 0;
+-	__mmap_lock_trace_acquire_returned(mm, false, ret);
+-	return ret;
++	ok = down_read_trylock(&mm->mmap_lock) != 0;
++	__mmap_lock_trace_acquire_returned(mm, false, ok);
++	return ok;
+ }
+ 
+ static inline void mmap_read_unlock(struct mm_struct *mm)
 -- 
 2.20.1
 
