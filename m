@@ -2,109 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7911AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC26CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349350AbiA1OkB (ORCPT
+        id S1349369AbiA1OlJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:40:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
+        Fri, 28 Jan 2022 09:41:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245244AbiA1OkA (ORCPT
+        with ESMTP id S1349356AbiA1OlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:40:00 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E404C061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 06:40:00 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id h20-20020a17090adb9400b001b518bf99ffso11134170pjv.1
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 06:40:00 -0800 (PST)
+        Fri, 28 Jan 2022 09:41:07 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F54C061714
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 06:41:06 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id n12-20020a05600c3b8c00b0034eb13edb8eso4809802wms.0
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 06:41:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Da56eqCpT5eZsQ7VAU7ez+0LQLRQGKjBHCcbtfBfsaE=;
-        b=tDNLTzTMcPDvlgGiFjaQKZbSzVTdJd/meI7qSMDnPyqBjqeVZrKQapeK/+vPZoaj7F
-         dDpqXSGisnPYBbUr3TRoDmLL/RJGUYQVvOVt8ifHsR4A2PHH7Dk67VSYXGVFDjGuqDI5
-         kQxAFS0+AajErsU+0ylf8/VTB2iEiKEE/FVc4N5cuXITUGCzqqXP+35f3B+6dWT90k1f
-         te4R3rshoEYzC6k+jV7CIv6iar7hGaN7QqbGkhatoDA6CxAb65z/oAJ3PYJYP8ZFeSKQ
-         NPoeFj7DXC4Gg2tea95DQENygBck01PKXTedXkSd37ICVpcdzp/C3E4PWRdiDuLH71Uq
-         h+7g==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zxRA/z+rIvvKpPSi5vpIRUkcRSZ3WwPALJ5ojRw+TVY=;
+        b=ogmYuHfaxqr6MuzBEAMi0rmjhc+yaBO7xXzb+RVf0cwWkP+ECWpCrfFjtL7dSdjLWV
+         6QY8TS5p05WOZp/EEBTELv+3UraSzdJkORT0eXsSAHu4i/9Vyx4u8UjW1JyTnOM9VPKH
+         1QjCl6AG3vL4s0RSqY6/GEH5/AgD9EnSaNVyyN//AQMLkvM1zaJv68OY+oNJ2xHQsnXV
+         ZZIG86nT+YFLPP9FVDvfYjiSxSWkUnCHKL3l9VYj6yobltnA6lfv8MoorkfaFzkoVCwC
+         tmyrl6HHa2fXa56IqZj4lxFrsWow4cJDfJx6cL65g4zzMFD8pr7R091aa+wUPiJZJz2V
+         s/ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Da56eqCpT5eZsQ7VAU7ez+0LQLRQGKjBHCcbtfBfsaE=;
-        b=NLMOftI3cmT8suM/GO5j+i9YE9cOhSNLrsd3qIw4tUrt6xaGeYiJk8xX8AoTSeIxFe
-         6YBkqxWZQsah++ZHp+3anFKLNzL7oqcEaI2hlLXCAh1WVJriyQKc5ZpPTspce+A4BPik
-         oslug7bkctbAy2vYtXhlrsXvhSAB06ICrglfhOKEy7runXMjRkHQoE9MOdNO2Zy1ejHM
-         qXYaoaxT0xBpjxvb5xwI1DL4BmKq557qNEvpInY6TCwSYuWyX5KdLUWDf2pTbdox/nM9
-         2WonDHT0SEGEwO12PvSv/wIEaAaEbKAVahiunMMlisbOdmv2YNXz+vDz24pemtFnnE0V
-         PrwQ==
-X-Gm-Message-State: AOAM532HL0ZzpEKlQThsrRdnea7sHQk7PSNyCyxitvBXU671IWlNFNo0
-        p1crqxrHuFOvAPnN7Fa8cJxIWYVwAvkum0o75WvnOQ==
-X-Google-Smtp-Source: ABdhPJxIwXQ7ZpbUhLKW21kmDek5BCkLgMLBW/fdro2nwuivp4xixQ6F3zIy0pd4EGju2h/70DOhqhyE/VmftplT4x8=
-X-Received: by 2002:a17:903:24d:: with SMTP id j13mr8457420plh.145.1643380800014;
- Fri, 28 Jan 2022 06:40:00 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zxRA/z+rIvvKpPSi5vpIRUkcRSZ3WwPALJ5ojRw+TVY=;
+        b=EN9btGiGG0no8SiMHDWNxIXp94KswyN9AbDz1zju6Cz9iUrA4pF/VHg/yBfHliNt6n
+         VJq5TJtFqACSKQTFZB3udMP/RWSriM7SGIf6vnSWW0GDKBqu1uKSKnNUiUMPT2akBF3a
+         p0oaZDrM1zup6iwUDFCLSeFDsIeLBOa4rrNSGThQc3Tkoxwfj2dr1pfOoiMYNODoJfmw
+         giBt769D1cYbUfryyD+Gp9CHJ2K+eIZoUTcyJ47IprQONe9mGZNRkC3jezhh30X3hClX
+         yF9ncvvW5ZRS16s7nzadTEKgwiWuKBzw/kNcOhlWJoWwo8Akka+/NqR4qJ1MJk4G6Shv
+         wdlQ==
+X-Gm-Message-State: AOAM532VphSTmZv+lxmUy1QzJDxzLfzCfDLJupyY4w+po821xggGFOrS
+        9fU+xts0c6GsXmN2oA4pR6hNjw==
+X-Google-Smtp-Source: ABdhPJwJifrlbLKVorSrG7JKpeTMTKUOqCLid0O4FsYzEbpJ4fA22S//Eks9XJ2hd9adjsSsaP1ppA==
+X-Received: by 2002:a1c:a90d:: with SMTP id s13mr7732674wme.32.1643380864973;
+        Fri, 28 Jan 2022 06:41:04 -0800 (PST)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id j4sm5511130wrq.81.2022.01.28.06.41.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Jan 2022 06:41:04 -0800 (PST)
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Jason Wessel <jason.wessel@windriver.com>,
+        Douglas Anderson <dianders@chromium.org>
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Subject: [PATCH] kdb: Fix the putarea helper function
+Date:   Fri, 28 Jan 2022 14:40:55 +0000
+Message-Id: <20220128144055.207267-1-daniel.thompson@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220120001621.705352-3-jsd@semihalf.com> <202201202353.tVXCQlqh-lkp@intel.com>
- <YemXXCsy4lBsCmDx@smile.fi.intel.com>
-In-Reply-To: <YemXXCsy4lBsCmDx@smile.fi.intel.com>
-From:   =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
-Date:   Fri, 28 Jan 2022 15:39:49 +0100
-Message-ID: <CAOtMz3NE8iOE9KBMP+MVC71mkFWwsiQyjJGs+5Nct3diR2k-HA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] i2c: designware: Add AMD PSP I2C bus support
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        kbuild-all@lists.01.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Raul E Rangel <rrangel@chromium.org>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-czw., 20 sty 2022 o 18:12 Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
->
-> On Thu, Jan 20, 2022 at 11:33:05PM +0800, kernel test robot wrote:
->
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> >
-> > All errors (new ones prefixed by >>):
-> >
-> >    drivers/i2c/busses/i2c-designware-amdpsp.c: In function 'psp_send_cm=
-d':
-> > >> drivers/i2c/busses/i2c-designware-amdpsp.c:130:2: error: implicit de=
-claration of function 'writeq'; did you mean 'writel'? [-Werror=3Dimplicit-=
-function-declaration]
-> >      130 |  writeq((uintptr_t)__psp_pa((void *)req), &mbox->i2c_req_add=
-r);
-> >          |  ^~~~~~
-> >          |  writel
-> >    cc1: some warnings being treated as errors
->
-> Adding io-64-nonatomic-lo-hi.h after io.h should fix this.
+Currently kdb_putarea_size() uses copy_from_kernel_nofault() to write *to*
+arbitrary kernel memory. This is obviously wrong and means the memory
+modify ('mm') command is a serious risk to debugger stability: if we poke
+to a bad address we'll double-fault and lose our debug session.
 
-Correct, thanks! Actually io.h is directly included from
-io-64-nonatomic-lo-hi.h.
+Fix this the (very) obvious way.
 
-Best Regards,
-Jan
+Note that there are two Fixes: tags because the API was renamed and this
+patch will only trivially backport as far as the rename (and this is
+probably enough). Nevertheless Christoph's rename did not introduce this
+problem so I wanted to record that!
 
+Fixes: fe557319aa06 ("maccess: rename probe_kernel_{read,write} to copy_{from,to}_kernel_nofault")
+Fixes: 5d5314d6795f ("kdb: core for kgdb back end (1 of 2)")
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+---
+ kernel/debug/kdb/kdb_support.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+diff --git a/kernel/debug/kdb/kdb_support.c b/kernel/debug/kdb/kdb_support.c
+index df2bface866ef..85cb51c4a17e6 100644
+--- a/kernel/debug/kdb/kdb_support.c
++++ b/kernel/debug/kdb/kdb_support.c
+@@ -291,7 +291,7 @@ int kdb_getarea_size(void *res, unsigned long addr, size_t size)
+  */
+ int kdb_putarea_size(unsigned long addr, void *res, size_t size)
+ {
+-	int ret = copy_from_kernel_nofault((char *)addr, (char *)res, size);
++	int ret = copy_to_kernel_nofault((char *)addr, (char *)res, size);
+ 	if (ret) {
+ 		if (!KDB_STATE(SUPPRESS)) {
+ 			kdb_func_printf("Bad address 0x%lx\n", addr);
+
+base-commit: e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+--
+2.34.1
+
