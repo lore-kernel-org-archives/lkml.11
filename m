@@ -2,72 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87468C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 04:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 04:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345980AbiA1EUA (ORCPT
+        id S1346004AbiA1EUG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 23:20:00 -0500
-Received: from mga04.intel.com ([192.55.52.120]:23907 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345967AbiA1ETz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 23:19:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643343595; x=1674879595;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YwUzDndx8KsWkO0pU7mV4VOgoPpD3+rTT7DTileunWY=;
-  b=eXOddZJtmqB9zatiOe4b9Z0Y0QSGIy76JEvYAuTsoVUst5HnZCQP2jJZ
-   NpXNLPiA5B47z0zL2l5CbWDXFdJZz3fOlZMMqMV5KjHrBm8UHPHTPOFq5
-   u6m/W89yG0OkwM6B80NLMrzGVQi9asCSk2SVeo0hFvlIjFGoMMg4f7T08
-   nfjaNET/MBuj/xcIgqfu4PY1OpEJXY4/7rliCh002X8eWDr2rAHWV7jZp
-   k4ry79tpWtsjc5YAdVJ5YRnft5mo4bCVXsoQ/es68ts3Q/2C4PC5tZQzm
-   Hp7YrbcBh3MG1U1fCRRmyN4R+luKVJVhY/pnhd5M3iPv96NlYjtfgMyDy
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="245884866"
-X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
-   d="scan'208";a="245884866"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 20:19:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; 
-   d="scan'208";a="480590569"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 27 Jan 2022 20:19:53 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDIjp-000NSH-1b; Fri, 28 Jan 2022 04:19:53 +0000
-Date:   Fri, 28 Jan 2022 12:19:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: dtbs_check: arch/arm/boot/dts/socfpga_arria5_socdk.dt.yaml: /:
- '3-3-v-regulator' does not match any of the regexes: '.*-names$',
- '.*-supply$', '^#.*-cells$', '^#[a-zA-Z0-9,+\-._]{0,63}$',
- '^[a-zA-Z][a-zA-Z0-9,+\-._]{0,63}$', '^[a-zA-Z][a-zA-Z0-9,+\-._]{0,...
-Message-ID: <202201281238.OIJj04Zi-lkp@intel.com>
+        Thu, 27 Jan 2022 23:20:06 -0500
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:54766
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236875AbiA1ET4 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 27 Jan 2022 23:19:56 -0500
+Received: from [192.168.1.9] (unknown [222.129.35.96])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 6587341988;
+        Fri, 28 Jan 2022 04:19:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643343594;
+        bh=qJivR/0SfF6KYekc1Fj6mI+NGXa+UlyMrVTHUfa7zAc=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=hpseaTnQ9pHxaszHmm9QXlN3a3Hv3HapEBtlQzEy+ZnjdwAopDUhD6xZd9vQ2qhc6
+         wVv52sx1elMogbVW8/Q4nCoGvFS0EQB8qYvKO7na9uZ2ZkATYEvL5O3zUaupatU+Pt
+         WOGeJ8vK8gOA77pNoSH8WfW3ayyhi/hRWfMhLOHQiNhAIxqDuza4p/XNTtERhdPwPH
+         sU4As/zB8/mhJQGsIiHBPcAl5O/wDo22MIABFtvDuWnYcUP4gaSLwG88M9pEL4A/R9
+         VwBWShO0aCZnRzcII47CiBplGz6qd+9cWJJMFWl0Kq4kNBUP8/A+aPMsyMeOLoJfZq
+         Fa3O/OLNV4L0w==
+Message-ID: <e75d006c-c9ae-9479-28b4-4cdacf1c51db@canonical.com>
+Date:   Fri, 28 Jan 2022 12:19:38 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] net: usb: r8152: Add MAC passthrough support for
+ RTL8153BL
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Mario.Limonciello@amd.com, kuba@kernel.org,
+        henning.schild@siemens.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
+References: <20220127100109.12979-1-aaron.ma@canonical.com>
+ <YfKp81yJWd95Jrg7@lunn.ch>
+From:   Aaron Ma <aaron.ma@canonical.com>
+In-Reply-To: <YfKp81yJWd95Jrg7@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   0280e3c58f92b2fe0e8fbbdf8d386449168de4a8
-commit: 4483397b03536506535d611b0cb28a81a69e8edf ARM: socfpga: drop ARCH_SOCFPGA
-date:   10 months ago
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce: make ARCH=arm dtbs_check
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 1/27/22 22:19, Andrew Lunn wrote:
+> On Thu, Jan 27, 2022 at 06:01:09PM +0800, Aaron Ma wrote:
+>> RTL8153-BL is used in Lenovo Thunderbolt4 dock.
+>> Add the support of MAC passthrough.
+>> This is ported from Realtek Outbox driver r8152.53.56-2.15.0.
+>>
+>> There are 2 kinds of rules for MAC passthrough of Lenovo products,
+>> 1st USB vendor ID belongs to Lenovo, 2nd the chip of RTL8153-BL
+>> is dedicated for Lenovo. Check the ocp data first then set ACPI object
+>> names.
+>>
+>> Suggested-by: Hayes Wang <hayeswang@realtek.com>
+>> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+>> ---
+>>   drivers/net/usb/r8152.c | 44 ++++++++++++++++++++++-------------------
+>>   1 file changed, 24 insertions(+), 20 deletions(-)
+>>
+>> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+>> index ee41088c5251..df997b330ee4 100644
+>> --- a/drivers/net/usb/r8152.c
+>> +++ b/drivers/net/usb/r8152.c
+>> @@ -718,6 +718,7 @@ enum spd_duplex {
+>>   #define AD_MASK			0xfee0
+>>   #define BND_MASK		0x0004
+>>   #define BD_MASK			0x0001
+>> +#define BL_MASK                 BIT(3)
+> 
+> Just to be sure, this is defined by Realtek? This is not just Lenovo
+> just misusing a reserved bit?
+> 
 
+ From what I know, It's defined by Realtek to identify customized product.
+It shouldn't be misusing.
+Also it's used by Realtek outbox driver.
 
-dtcheck warnings: (new ones prefixed by >>)
+Aaron
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>       Andrew
