@@ -2,99 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF0B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 00:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD32C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 00:53:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344728AbiA1Awt (ORCPT
+        id S1344778AbiA1AxR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 19:52:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53138 "EHLO
+        Thu, 27 Jan 2022 19:53:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344693AbiA1Awo (ORCPT
+        with ESMTP id S1344753AbiA1AxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 19:52:44 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C593C061714;
-        Thu, 27 Jan 2022 16:52:44 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so4933394pjb.1;
-        Thu, 27 Jan 2022 16:52:44 -0800 (PST)
+        Thu, 27 Jan 2022 19:53:14 -0500
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916D0C061714
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 16:53:14 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id u133-20020a63798b000000b0034c0630b044so2395676pgc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 16:53:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=kJNJijaZP88bXaGh2neEJJTBJFiP0w2gHmp/ePTGmfE=;
-        b=Po0m9GwR4K5QGnYFsOD9VIGezFAmYKv8sSEdSQs73gaOb8zTj652zlhO0OM0JocENu
-         phKz4ktlibQH+zFL1blG7oFD1ZlZx30uYh2CObrVThOm0EbY6jbHrT3i0WaiDRjwAjnd
-         sx/umYh1v7K/ChixkoP0/+6F70WfrHLDGsyNw6mBg1sXbh+pb/Qa3EXYkfmcB8ehA6vv
-         lc2uYUtw4O3Rq+62BuvhdYq3sBgKRkT+S8+wnbikPY/tf239JndUPit6GRzjXeTSt0tQ
-         nQQ6BoTFj2M9V6Gk66qnPqIXLBRaP/RcF8FmYSYMJW+hRrbHTwGgcxjOgT1xhsJyI3PO
-         JstQ==
+        d=google.com; s=20210112;
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=F61j0F7c9zoKgby3PQl1mNL9ZrlLxor56/UJzaP+oiU=;
+        b=CEqXBfrBZd79fyTbp0puUZP/DX5xUEbmTFg98TZPwU9bR0LE3VV/wlifZ2L6BOcLyF
+         d8hBJk06qo84fmxQMNzVsV4yCCLovsiFjTge54eju+46uSveSM8vfoenGh/mBxhB1Iyp
+         MxBir0niAx+VwqtFciM4MMO77q2SAYj0VliLbxXfAs79638xGPUwuaPPrQVddvKflWr4
+         f21jn8j1pP5x/PiEz5giVePsELBVa2BNao7TXicb63D+B7T3tz+UiA5GFssy55uJL3tb
+         uPhXVy4qqbYIFuM5iIQrXi6WpTy0vrFM2rQ3lQOOQRqmoGBflY+cNPiW2a0P0VN1g0uh
+         H2nA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kJNJijaZP88bXaGh2neEJJTBJFiP0w2gHmp/ePTGmfE=;
-        b=EqUwkshUGUua1HcEukLKXabq8D3KFEowqDofeLjzhlClA80a16hrbk7PZaUVu0z1vy
-         /KNfIlEFoBNLps7MLZAIV0ZcEGbyDfyZI8fkuzmUZTwuWqNSaVPnHj2aGzTHJpl96WVj
-         Oh6UKwmnjigrDjfJa/wTR1oj7wzyo3KG1Zn6DpyviCyaOvqfB4i6N9Bzy7JN8rzKw/+T
-         fXwawa5fp4tgImveRelpYugOidRa13srMULZmOZKomSPtTPmQECfaDbYkNXpuWhYLzEW
-         hzgQB/7nxWy3vkSVupq7md2+4lElUacZj+fEmmQzs0WyCczYSDSZxYQgb1V+SL04jp8q
-         Qykg==
-X-Gm-Message-State: AOAM530jG4Ip362UFGFrTZptgBkHlVEUKEVES905PrJAMD+MUM1QOdlu
-        EgMD6BMfu+n5YIDZgaDjWiA=
-X-Google-Smtp-Source: ABdhPJyZvcGvnXTFOj9DXoRU8MIzgborilNzBKzkr9QYRaOpCf2XP6lo3DCpe2B59JJJvtpYn+yK7g==
-X-Received: by 2002:a17:902:6b02:: with SMTP id o2mr5684636plk.56.1643331163740;
-        Thu, 27 Jan 2022 16:52:43 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id z124sm6529852pfb.166.2022.01.27.16.52.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 16:52:42 -0800 (PST)
-Message-ID: <6bf2f177-93f9-c1fb-ac06-ffe946a72abf@gmail.com>
-Date:   Thu, 27 Jan 2022 16:52:40 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5.15 00/12] 5.15.18-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com
-References: <20220127180259.078563735@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220127180259.078563735@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=F61j0F7c9zoKgby3PQl1mNL9ZrlLxor56/UJzaP+oiU=;
+        b=kbIG5nVKFj3lAoCgniht5A06t8lYDPomIqgSMoRLJVGNPsT3a51rFTiJnyHuvGECeF
+         Kn4d6rzzP8CSXZDF9BDjFWpEJL0gIPyTYUF5iJ1mbeElB2VjLeUENPLR8W9hgQf8Ss8f
+         eRwKluldtiFwo/7Hb85VDYFJXeoTcRRZHtXNj3oa3vMe1+u1jBiYuvokdYEdOQgY3+yX
+         qeX3+McXxZGqUMJ+0TkDdaOamfVRto/eGtFGjcHObs3BNqGCrQDMjuAsI2ha580yo9qZ
+         RvxKyzLtsBOv362i4eiIm3rPSjHk37hUQY7eKbhoY3w0Q8I6mHphlFVCoIFhP3R7MqAg
+         6nnA==
+X-Gm-Message-State: AOAM533rbdG3vQk+xaXFM9Mwwd8tL/lm/ADkKcWJq6FoDD4z/u2NOKrL
+        Uml0dcHxWTvmJCvrgLURYO/Ceuxvbto=
+X-Google-Smtp-Source: ABdhPJxKMzW9sJVgtEOECBfryqZAa4rBQSxux7XpGkq+Z6SfHqHwtDOqJKUEV8pkZ/VNpPSwcL61rA/o3ug=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:90a:d494:: with SMTP id
+ s20mr7010937pju.239.1643331194087; Thu, 27 Jan 2022 16:53:14 -0800 (PST)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Fri, 28 Jan 2022 00:51:46 +0000
+Message-Id: <20220128005208.4008533-1-seanjc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+Subject: [PATCH 00/22] KVM: x86: Fill *_x86_ops via kvm-x86-ops.h
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <like.xu.linux@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Use kvm-x86-ops.h to fill vmx_x86_ops and svm_x86_ops, with a bunch of
+cleanup along the way to make that happen.  Aside from removing a lot of
+boilerplate code, the part I most like about fill via kvm-x86-ops.h is
+that it provides enforcement that (a) new kvm_x86_ops hooks get added to
+kvm-x86-ops.h and (b) vendor code has to implement _something_, even if
+it's a redirect to NULL, which provides documentation of what's going on.
+
+Patch 01 isn't exactly necessary for this series, my hope is that Maxim's
+bug fix for the AVIC race can go on top without introducing too much
+conflict for either of us.
+
+Sean Christopherson (22):
+  KVM: x86: Drop unnecessary and confusing KVM_X86_OP_NULL macro
+  KVM: x86: Move delivery of non-APICv interrupt into vendor code
+  KVM: x86: Drop export for .tlb_flush_current() static_call key
+  KVM: x86: Rename kvm_x86_ops pointers to align w/ preferred vendor
+    names
+  KVM: x86: Use static_call() for .vcpu_deliver_sipi_vector()
+  KVM: VMX: Call vmx_get_cpl() directly in handle_dr()
+  KVM: xen: Use static_call() for invoking kvm_x86_ops hooks
+  KVM: nVMX: Refactor PMU refresh to avoid referencing
+    kvm_x86_ops.pmu_ops
+  KVM: x86: Uninline and export hv_track_root_tdp()
+  KVM: x86: Unexport kvm_x86_ops
+  KVM: x86: Use static_call() for copy/move encryption context ioctls()
+  KVM: x86: Allow different macros for APICv, CVM, and Hyper-V
+    kvm_x86_ops
+  KVM: VMX: Rename VMX functions to conform to kvm_x86_ops names
+  KVM: VMX: Use kvm-x86-ops.h to fill vmx_x86_ops
+  KVM: x86: Move get_cs_db_l_bits() helper to SVM
+  KVM: SVM: Rename svm_flush_tlb() to svm_flush_tlb_current()
+  KVM: SVM: Remove unused MAX_INST_SIZE #define
+  KVM: SVM: Rename AVIC helpers to use "avic" prefix instead of "svm"
+  KVM: x86: Use more verbose names for mem encrypt kvm_x86_ops hooks
+  KVM: SVM: Rename SEV implemenations to conform to kvm_x86_ops hooks
+  KVM: SVM: Rename hook implementations to conform to kvm_x86_ops' names
+  KVM: SVM: Use kvm-x86-ops.h to fill svm_x86_ops
+
+ arch/x86/include/asm/kvm-x86-ops.h | 131 ++++++++++--------
+ arch/x86/include/asm/kvm_host.h    |  32 ++---
+ arch/x86/kvm/kvm_onhyperv.c        |  14 ++
+ arch/x86/kvm/kvm_onhyperv.h        |  14 +-
+ arch/x86/kvm/lapic.c               |  12 +-
+ arch/x86/kvm/mmu/mmu.c             |   6 +-
+ arch/x86/kvm/svm/avic.c            |  28 ++--
+ arch/x86/kvm/svm/sev.c             |  18 +--
+ arch/x86/kvm/svm/svm.c             | 214 ++++++++++-------------------
+ arch/x86/kvm/svm/svm.h             |  41 +++---
+ arch/x86/kvm/vmx/nested.c          |   5 +-
+ arch/x86/kvm/vmx/nested.h          |   3 +-
+ arch/x86/kvm/vmx/pmu_intel.c       |   3 +-
+ arch/x86/kvm/vmx/posted_intr.c     |   6 +-
+ arch/x86/kvm/vmx/posted_intr.h     |   4 +-
+ arch/x86/kvm/vmx/vmx.c             | 178 +++++++-----------------
+ arch/x86/kvm/x86.c                 |  79 +++++------
+ arch/x86/kvm/xen.c                 |   4 +-
+ 18 files changed, 324 insertions(+), 468 deletions(-)
 
 
-On 1/27/2022 10:09 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.18 release.
-> There are 12 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sat, 29 Jan 2022 18:02:51 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.18-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
-
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+base-commit: b029c138e8f090f5cb9ba77ef20509f903ef0004
 -- 
-Florian
+2.35.0.rc0.227.g00780c9af4-goog
+
