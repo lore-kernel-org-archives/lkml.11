@@ -2,315 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49188C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA04C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:10:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241823AbiA1NHP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:07:15 -0500
-Received: from foss.arm.com ([217.140.110.172]:43040 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241382AbiA1NHM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 08:07:12 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 613471396;
-        Fri, 28 Jan 2022 05:07:11 -0800 (PST)
-Received: from e119884-lin.cambridge.arm.com (e119884-lin.cambridge.arm.com [10.1.196.72])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3A29A3F766;
-        Fri, 28 Jan 2022 05:07:10 -0800 (PST)
-From:   Vincenzo Frascino <vincenzo.frascino@arm.com>
-To:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     vincenzo.frascino@arm.com, Shuah Khan <shuah@kernel.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Cristian Marussi <cristian.marussi@arm.com>
-Subject: [PATCH v3] kselftest: Fix vdso_test_abi return status
-Date:   Fri, 28 Jan 2022 13:07:01 +0000
-Message-Id: <20220128130701.17511-1-vincenzo.frascino@arm.com>
-X-Mailer: git-send-email 2.34.1
+        id S241729AbiA1NKX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 08:10:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233659AbiA1NKV (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 08:10:21 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3726C061714
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:10:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=dSfLUGYv4E6j5ZfEuP1bDYMKuO4xSZnMF479I4hHJhg=; b=n2L1lUt8O9GCnrz0w20k0x4D3S
+        r69UE7eAcE7eZ57R4NE9e/IER0mID5oZE/5QxWUrkCLnN4Lcfw8QccCbxymFeBwvKebtd1VkZgAZs
+        KPLVGcdRIvoPh0EWAb22W7DHIXUgAo74B2BW4lI7YTHTL/6E2TV8gO124GdjTTxTKJRPfFJsL1ST/
+        jh7yuSmq+9MI03t2admG0M2BD+UvhV8okeJjAo/lGC2RL+koaLiYnfJhTtuRiweQC5KYZ7VboGo0o
+        /WBjAQpDPJ3i73PSWUum8p3gmIOabL/5BZ/CykjJfysYW86b6gsd9Hn5TUywGvfqT75aDUjksVXPs
+        4bHcjOOg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nDR13-006PoW-EX; Fri, 28 Jan 2022 13:10:13 +0000
+Date:   Fri, 28 Jan 2022 13:10:13 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Karolina Drobnik <karolinadrobnik@gmail.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        mike.rapoport@gmail.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 06/16] tools/include: Add cache.h stub
+Message-ID: <YfPrNUf9ekEpeEbv@casper.infradead.org>
+References: <cover.1643206612.git.karolinadrobnik@gmail.com>
+ <fa6e6abc6a214f85089c8a10b8df72d0402c6166.1643206612.git.karolinadrobnik@gmail.com>
+ <YfKlfoKXyFZxB/UD@casper.infradead.org>
+ <066fa177642ce6907df06819676cd29c0745e816.camel@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <066fa177642ce6907df06819676cd29c0745e816.camel@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vdso_test_abi contains a batch of tests that verify the validity of the
-vDSO ABI.
+On Fri, Jan 28, 2022 at 12:13:54PM +0100, Karolina Drobnik wrote:
+> On Thu, 2022-01-27 at 14:00 +0000, Matthew Wilcox wrote:
+> > On Thu, Jan 27, 2022 at 02:21:24PM +0100, Karolina Drobnik wrote:
+> > > +++ b/tools/include/linux/cache.h
+> > > @@ -0,0 +1,10 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0 */
+> > > +#ifndef _TOOLS_LINUX_CACHE_H
+> > > +#define _TOOLS_LINUX_CACHE_H
+> > > +
+> > > +#define L1_CACHE_SHIFT         5
+> > > +#define L1_CACHE_BYTES         BIT(L1_CACHE_SHIFT)
+> > > +
+> > > +#define SMP_CACHE_BYTES L1_CACHE_BYTES
+> > > +
+> > > +#endif
+> > 
+> > You've added an implicit dependency on include/vdso/bits.h which
+> > seems
+> > unpleasant ...
+> 
+> I'll admit that I just tried to make checkpatch.pl happy with this
+> change. But you're right, adding such a dependency is undesirable. I
+> can define it as (1 << L1_CACHE_SHIFT) and ignore the warning.
+> 
+> Is it fine to do so for tools/testing code?
 
-When a vDSO symbol is not found the relevant test is skipped reporting
-KSFT_SKIP. All the tests return values are then added in a single
-variable which is checked to verify failures. This approach can have
-side effects which result in reporting the wrong kselftest exit status.
-
-Fix vdso_test_abi verifying the return code of each test separately.
-
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Reported-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
----
- tools/testing/selftests/vDSO/vdso_test_abi.c | 135 +++++++++----------
- 1 file changed, 62 insertions(+), 73 deletions(-)
-
-diff --git a/tools/testing/selftests/vDSO/vdso_test_abi.c b/tools/testing/selftests/vDSO/vdso_test_abi.c
-index 3d603f1394af..d670d5b2a626 100644
---- a/tools/testing/selftests/vDSO/vdso_test_abi.c
-+++ b/tools/testing/selftests/vDSO/vdso_test_abi.c
-@@ -33,110 +33,114 @@ typedef long (*vdso_clock_gettime_t)(clockid_t clk_id, struct timespec *ts);
- typedef long (*vdso_clock_getres_t)(clockid_t clk_id, struct timespec *ts);
- typedef time_t (*vdso_time_t)(time_t *t);
- 
--static int vdso_test_gettimeofday(void)
-+#define VDSO_TEST_PASS_MSG()	"\n%s(): PASS\n", __func__
-+#define VDSO_TEST_FAIL_MSG(x)	"\n%s(): %s FAIL\n", __func__, x
-+#define VDSO_TEST_SKIP_MSG(x)	"\n%s(): SKIP: Could not find %s\n", __func__, x
-+
-+static void vdso_test_gettimeofday(void)
- {
- 	/* Find gettimeofday. */
- 	vdso_gettimeofday_t vdso_gettimeofday =
- 		(vdso_gettimeofday_t)vdso_sym(version, name[0]);
- 
- 	if (!vdso_gettimeofday) {
--		printf("Could not find %s\n", name[0]);
--		return KSFT_SKIP;
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[0]));
-+		return;
- 	}
- 
- 	struct timeval tv;
- 	long ret = vdso_gettimeofday(&tv, 0);
- 
- 	if (ret == 0) {
--		printf("The time is %lld.%06lld\n",
--		       (long long)tv.tv_sec, (long long)tv.tv_usec);
-+		ksft_print_msg("The time is %lld.%06lld\n",
-+			       (long long)tv.tv_sec, (long long)tv.tv_usec);
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
- 	} else {
--		printf("%s failed\n", name[0]);
--		return KSFT_FAIL;
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[0]));
- 	}
--
--	return KSFT_PASS;
- }
- 
--static int vdso_test_clock_gettime(clockid_t clk_id)
-+static void vdso_test_clock_gettime(clockid_t clk_id)
- {
- 	/* Find clock_gettime. */
- 	vdso_clock_gettime_t vdso_clock_gettime =
- 		(vdso_clock_gettime_t)vdso_sym(version, name[1]);
- 
- 	if (!vdso_clock_gettime) {
--		printf("Could not find %s\n", name[1]);
--		return KSFT_SKIP;
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[1]));
-+		return;
- 	}
- 
- 	struct timespec ts;
- 	long ret = vdso_clock_gettime(clk_id, &ts);
- 
- 	if (ret == 0) {
--		printf("The time is %lld.%06lld\n",
--		       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-+		ksft_print_msg("The time is %lld.%06lld\n",
-+			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());;
- 	} else {
--		printf("%s failed\n", name[1]);
--		return KSFT_FAIL;
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[1]));
- 	}
--
--	return KSFT_PASS;
- }
- 
--static int vdso_test_time(void)
-+static void vdso_test_time(void)
- {
- 	/* Find time. */
- 	vdso_time_t vdso_time =
- 		(vdso_time_t)vdso_sym(version, name[2]);
- 
- 	if (!vdso_time) {
--		printf("Could not find %s\n", name[2]);
--		return KSFT_SKIP;
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[2]));
-+		return;
- 	}
- 
- 	long ret = vdso_time(NULL);
- 
- 	if (ret > 0) {
--		printf("The time in hours since January 1, 1970 is %lld\n",
-+		ksft_print_msg("The time in hours since January 1, 1970 is %lld\n",
- 				(long long)(ret / 3600));
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
- 	} else {
--		printf("%s failed\n", name[2]);
--		return KSFT_FAIL;
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[2]));
- 	}
--
--	return KSFT_PASS;
- }
- 
--static int vdso_test_clock_getres(clockid_t clk_id)
-+static void vdso_test_clock_getres(clockid_t clk_id)
- {
-+	int clock_getres_fail = 0;
-+
- 	/* Find clock_getres. */
- 	vdso_clock_getres_t vdso_clock_getres =
- 		(vdso_clock_getres_t)vdso_sym(version, name[3]);
- 
- 	if (!vdso_clock_getres) {
--		printf("Could not find %s\n", name[3]);
--		return KSFT_SKIP;
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[3]));
-+		return;
- 	}
- 
- 	struct timespec ts, sys_ts;
- 	long ret = vdso_clock_getres(clk_id, &ts);
- 
- 	if (ret == 0) {
--		printf("The resolution is %lld %lld\n",
--		       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-+		ksft_print_msg("The vdso resolution is %lld %lld\n",
-+			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
- 	} else {
--		printf("%s failed\n", name[3]);
--		return KSFT_FAIL;
-+		clock_getres_fail++;
- 	}
- 
- 	ret = syscall(SYS_clock_getres, clk_id, &sys_ts);
- 
--	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec)) {
--		printf("%s failed\n", name[3]);
--		return KSFT_FAIL;
--	}
-+	ksft_print_msg("The syscall resolution is %lld %lld\n",
-+			(long long)sys_ts.tv_sec, (long long)sys_ts.tv_nsec);
- 
--	return KSFT_PASS;
-+	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec))
-+		clock_getres_fail++;
-+
-+	if (clock_getres_fail > 0) {
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[3]));
-+	} else {
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
-+	}
- }
- 
- const char *vdso_clock_name[12] = {
-@@ -158,36 +162,23 @@ const char *vdso_clock_name[12] = {
-  * This function calls vdso_test_clock_gettime and vdso_test_clock_getres
-  * with different values for clock_id.
-  */
--static inline int vdso_test_clock(clockid_t clock_id)
-+static inline void vdso_test_clock(clockid_t clock_id)
- {
--	int ret0, ret1;
--
--	ret0 = vdso_test_clock_gettime(clock_id);
--	/* A skipped test is considered passed */
--	if (ret0 == KSFT_SKIP)
--		ret0 = KSFT_PASS;
--
--	ret1 = vdso_test_clock_getres(clock_id);
--	/* A skipped test is considered passed */
--	if (ret1 == KSFT_SKIP)
--		ret1 = KSFT_PASS;
-+	ksft_print_msg("\nclock_id: %s\n", vdso_clock_name[clock_id]);
- 
--	ret0 += ret1;
-+	vdso_test_clock_gettime(clock_id);
- 
--	printf("clock_id: %s", vdso_clock_name[clock_id]);
--
--	if (ret0 > 0)
--		printf(" [FAIL]\n");
--	else
--		printf(" [PASS]\n");
--
--	return ret0;
-+	vdso_test_clock_getres(clock_id);
- }
- 
-+#define VDSO_TEST_PLAN	16
-+
- int main(int argc, char **argv)
- {
- 	unsigned long sysinfo_ehdr = getauxval(AT_SYSINFO_EHDR);
--	int ret;
-+
-+	ksft_print_header();
-+	ksft_set_plan(VDSO_TEST_PLAN);
- 
- 	if (!sysinfo_ehdr) {
- 		printf("AT_SYSINFO_EHDR is not present!\n");
-@@ -201,44 +192,42 @@ int main(int argc, char **argv)
- 
- 	vdso_init_from_sysinfo_ehdr(getauxval(AT_SYSINFO_EHDR));
- 
--	ret = vdso_test_gettimeofday();
-+	vdso_test_gettimeofday();
- 
- #if _POSIX_TIMERS > 0
- 
- #ifdef CLOCK_REALTIME
--	ret += vdso_test_clock(CLOCK_REALTIME);
-+	vdso_test_clock(CLOCK_REALTIME);
- #endif
- 
- #ifdef CLOCK_BOOTTIME
--	ret += vdso_test_clock(CLOCK_BOOTTIME);
-+	vdso_test_clock(CLOCK_BOOTTIME);
- #endif
- 
- #ifdef CLOCK_TAI
--	ret += vdso_test_clock(CLOCK_TAI);
-+	vdso_test_clock(CLOCK_TAI);
- #endif
- 
- #ifdef CLOCK_REALTIME_COARSE
--	ret += vdso_test_clock(CLOCK_REALTIME_COARSE);
-+	vdso_test_clock(CLOCK_REALTIME_COARSE);
- #endif
- 
- #ifdef CLOCK_MONOTONIC
--	ret += vdso_test_clock(CLOCK_MONOTONIC);
-+	vdso_test_clock(CLOCK_MONOTONIC);
- #endif
- 
- #ifdef CLOCK_MONOTONIC_RAW
--	ret += vdso_test_clock(CLOCK_MONOTONIC_RAW);
-+	vdso_test_clock(CLOCK_MONOTONIC_RAW);
- #endif
- 
- #ifdef CLOCK_MONOTONIC_COARSE
--	ret += vdso_test_clock(CLOCK_MONOTONIC_COARSE);
-+	vdso_test_clock(CLOCK_MONOTONIC_COARSE);
- #endif
- 
- #endif
- 
--	ret += vdso_test_time();
--
--	if (ret > 0)
--		return KSFT_FAIL;
-+	vdso_test_time();
- 
--	return KSFT_PASS;
-+	ksft_print_cnts();
-+	return ksft_get_fail_cnt() == 0 ? KSFT_PASS : KSFT_FAIL;
- }
--- 
-2.34.1
-
+checkpatch warnings are recommendations.  Only fix checkpatch errors.
