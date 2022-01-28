@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D5BC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53571C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 20:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351270AbiA1U3a (ORCPT
+        id S1351312AbiA1U3f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 15:29:30 -0500
-Received: from mga02.intel.com ([134.134.136.20]:61402 "EHLO mga02.intel.com"
+        Fri, 28 Jan 2022 15:29:35 -0500
+Received: from mga03.intel.com ([134.134.136.65]:63494 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351189AbiA1U3X (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S1351160AbiA1U3X (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 15:29:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643401763; x=1674937763;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Bqxtojtmx5tWusYvxR//2iaQnYjgCUiRMbM+LXacmWg=;
-  b=XKs8FwdYe8GPtgq0CZ8O01d/+EKkABzUde4lnEz6PGPxuQfnazpATNZv
-   BrECuxMoBLHPO2EdOfojyv4sRYFmEslYfDCmOyItPnkyE3A/anbHidQXK
-   vMidY0Jw/wq3+HSdRgfCNy7ZQXvS2oZxudy9DqCIKrQzbznw4U+fwySRj
-   kdDGjJMoUhpcBoyYFdgW2aA+PZzpGmvFI+6/kO/LFPvAvNqtUwARWVIQ6
-   /rZfYFFlEM6O8l0z8zNLB3ZmQti4cfEVKI5VKqcJTxLoN82n+7u4csg+f
-   +LY3ngU5ASO5lPY5tzejYXv+W3+HSvm6BjSDsWQ9K3/j74PRj3NAd+eEd
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="234578002"
+  bh=fB10nwZMIIkZgxpaLbu+h5IIsCNWZL2euG5C+O9nJak=;
+  b=JoPRlVt1GWrH0oV/Zq43OasnIoKS1nfQeWAB6q3tDgTJugvBsKenVnbl
+   pdR4MoI8eZNkIP0naawh2o1Tqerj1UzpSx/VoK2MnsbhYjW7olXiLjWqH
+   CaTvd4RqnAhZFZhoDFCyJtXdebVImFONSezpOXAOlh7bcqpuvHX2sG+hA
+   AkKfFvjIxc+QfsF8Qn6W7QcYeziso/dzuM1mlcRaLq0D8EK7wCAoCAuFF
+   aUITJLYi4Ui84Ty6P0vdybaDzaIk0T2NdP+o3GvnXktp8x9KXgWd3HFZu
+   S25dLxzO/kk9uX8GdM7JaLDPwBTukm3aN/GrGQp1GIlQHXLQU1/ACfzG/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="247142797"
 X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="234578002"
+   d="scan'208";a="247142797"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 12:29:22 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 12:29:23 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="618827694"
+   d="scan'208";a="618827712"
 Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Jan 2022 12:29:22 -0800
+  by FMSMGA003.fm.intel.com with ESMTP; 28 Jan 2022 12:29:23 -0800
 From:   Fenghua Yu <fenghua.yu@intel.com>
 To:     "Thomas Gleixner" <tglx@linutronix.de>,
         "Dave Hansen" <dave.hansen@linux.intel.com>,
@@ -51,9 +51,9 @@ To:     "Thomas Gleixner" <tglx@linutronix.de>,
 Cc:     iommu@lists.linux-foundation.org, "x86" <x86@kernel.org>,
         "linux-kernel" <linux-kernel@vger.kernel.org>,
         Fenghua Yu <fenghua.yu@intel.com>
-Subject: [PATCH v3 03/11] iommu/ioasid: Introduce a helper to check for valid PASIDs
-Date:   Fri, 28 Jan 2022 12:28:57 -0800
-Message-Id: <20220128202905.2274672-4-fenghua.yu@intel.com>
+Subject: [PATCH v3 09/11] x86/cpufeatures: Re-enable ENQCMD
+Date:   Fri, 28 Jan 2022 12:29:03 -0800
+Message-Id: <20220128202905.2274672-10-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20220128202905.2274672-1-fenghua.yu@intel.com>
 References: <20220128202905.2274672-1-fenghua.yu@intel.com>
@@ -63,45 +63,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pasid_valid() is defined to check if a given PASID is valid.
+Since ENQCMD is handled by #GP fix up, it can be re-enabled.
 
-Suggested-by: Ashok Raj <ashok.raj@intel.com>
-Suggested-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+The ENQCMD feature can only be used if CONFIG_INTEL_IOMMU_SVM is set. Add
+X86_FEATURE_ENQCMD to the disabled features mask as appropriate so that
+cpu_feature_enabled() can be used to check the feature.
+
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 ---
 v2:
-- Define a helper pasid_valid() (Ashok, Jacob, Thomas, Tony)
+- Update the commit message (Tony).
 
- include/linux/ioasid.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/x86/include/asm/disabled-features.h | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-index e9dacd4b9f6b..2237f64dbaae 100644
---- a/include/linux/ioasid.h
-+++ b/include/linux/ioasid.h
-@@ -41,6 +41,10 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
- void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
- int ioasid_set_data(ioasid_t ioasid, void *data);
-+static inline bool pasid_valid(ioasid_t ioasid)
-+{
-+	return ioasid != INVALID_IOASID;
-+}
+diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
+index 8f28fafa98b3..1231d63f836d 100644
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@ -56,8 +56,11 @@
+ # define DISABLE_PTI		(1 << (X86_FEATURE_PTI & 31))
+ #endif
  
- #else /* !CONFIG_IOASID */
- static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-@@ -78,5 +82,10 @@ static inline int ioasid_set_data(ioasid_t ioasid, void *data)
- 	return -ENOTSUPP;
- }
+-/* Force disable because it's broken beyond repair */
+-#define DISABLE_ENQCMD		(1 << (X86_FEATURE_ENQCMD & 31))
++#ifdef CONFIG_INTEL_IOMMU_SVM
++# define DISABLE_ENQCMD		0
++#else
++# define DISABLE_ENQCMD		(1 << (X86_FEATURE_ENQCMD & 31))
++#endif
  
-+static inline bool pasid_valid(ioasid_t ioasid)
-+{
-+	return false;
-+}
-+
- #endif /* CONFIG_IOASID */
- #endif /* __LINUX_IOASID_H */
+ #ifdef CONFIG_X86_SGX
+ # define DISABLE_SGX	0
 -- 
 2.35.0
 
