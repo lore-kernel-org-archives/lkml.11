@@ -2,101 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A071C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 274B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349428AbiA1OqC (ORCPT
+        id S1349446AbiA1OqY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:46:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:47120 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349400AbiA1OqB (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:46:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643381160;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=HFyK9YSPqzN8UFNpZeb69roURTWWg8qSsNbo2x59knA=;
-        b=XqXACsWfg+QtuDhFZqX2yw2l+3eWHtSuezIjJ1CQZjURYwFBgzeiTRxq3tpsFHhEsr93r3
-        phvyzEVr43j8uEEAScZeAO/qhy8eP+gmIhnoTrw46LeAey85pNrIiOwLMCiAKQhvQ4RXtO
-        yNs2KQ0ydkYKz6HTCMzOvtUVoyWDnjY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-1-0TLvl7ZXOlOCj-4oqSTr-g-1; Fri, 28 Jan 2022 09:45:55 -0500
-X-MC-Unique: 0TLvl7ZXOlOCj-4oqSTr-g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BC69C814246;
-        Fri, 28 Jan 2022 14:45:53 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.193.182])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D923C7B9E3;
-        Fri, 28 Jan 2022 14:45:41 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, David Hildenbrand <david@redhat.com>,
-        stable@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Oscar Salvador <osalvador@suse.de>
-Subject: [PATCH v1] drivers/base/memory: add memory block to memory group after registration succeeded
-Date:   Fri, 28 Jan 2022 15:45:40 +0100
-Message-Id: <20220128144540.153902-1-david@redhat.com>
+        Fri, 28 Jan 2022 09:46:24 -0500
+Received: from mga01.intel.com ([192.55.52.88]:15609 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1349429AbiA1OqV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 09:46:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643381181; x=1674917181;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gngqOiUeR2m46p7MVs22OwqlK1CJHBbYd0zK1GE/vrQ=;
+  b=Xm9soSbJM/vpwWUgXDp7Ygrjfs+WU9ZRp3K/NvDs9gKkxdZEX+rMt8qX
+   FQYmEStwQk3jnNpc/6W1b+zjM75MhT9bHFBiz6AUOiIea6cr+CqPr+03z
+   hMdthx+eIwyeU2vnTg1u7ffqeiXM8vFb3B21tjQG2gUTIclvWn6mQ1VOY
+   bP8jTyvft4XT9WZteyV6URTc1ghkfDLuYqBx915h2irZp77gU+5lMkTNR
+   8Th4ymdea5tR9E74u/wESG85oFs9PCHDxuaeNv5M1gqH0zYGK54k9iYSS
+   5ExFV3Omi0F2dkTgGb4zw5JF/CiSAshiOvH8rgwSXkIf+XDv/8jmo8Hnw
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="271592687"
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="271592687"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 06:46:21 -0800
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="478305093"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 06:46:19 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nDSV0-00FRfY-Ko;
+        Fri, 28 Jan 2022 16:45:14 +0200
+Date:   Fri, 28 Jan 2022 16:45:14 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     linus.walleij@linaro.org, michal.simek@xilinx.com,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Revert "pinctrl: zynqmp: Unify pin naming"
+Message-ID: <YfQBemA3bCz0FdYS@smile.fi.intel.com>
+References: <20220127194602.21987-1-gerhard@engleder-embedded.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127194602.21987-1-gerhard@engleder-embedded.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If register_memory() fails, we freed the memory block but already added
-the memory block to the group list, not good. Let's defer adding the
-block to the memory group to after registering the memory block device.
+On Thu, Jan 27, 2022 at 08:46:02PM +0100, Gerhard Engleder wrote:
+> From: Gerhard Engleder <gerhard@engleder-embedded.com>
 
-We do handle it properly during unregister_memory(), but that's not
-called when the registration fails.
+Thanks for your report, my comments below.
 
-Fixes: 028fc57a1c36 ("drivers/base/memory: introduce "memory groups" to logically group memory blocks")
-Cc: stable@vger.kernel.org # v5.15+
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- drivers/base/memory.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+> This reverts commit 54784ff24971ed5bd3f1056edce998148709d0a7.
+> 
+> This patch changes the pin names from "MIO%d" to "MIO-%d", but all dts
+> in arch/arm64/boot/dts/xilinx still use the old name. As a result my
+> ZCU104 has no output on serial terminal and is not reachable over
+> network.
 
-diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index 365cd4a7f239..60c38f9cf1a7 100644
---- a/drivers/base/memory.c
-+++ b/drivers/base/memory.c
-@@ -663,14 +663,16 @@ static int init_memory_block(unsigned long block_id, unsigned long state,
- 	mem->nr_vmemmap_pages = nr_vmemmap_pages;
- 	INIT_LIST_HEAD(&mem->group_next);
- 
-+	ret = register_memory(mem);
-+	if (ret)
-+		return ret;
-+
- 	if (group) {
- 		mem->group = group;
- 		list_add(&mem->group_next, &group->memory_blocks);
- 	}
- 
--	ret = register_memory(mem);
--
--	return ret;
-+	return 0;
- }
- 
- static int add_memory_block(unsigned long base_section_nr)
+And question here again, is the pin names ABI or not?
+If it's an ABI, then it should be clarified in the documentation.
+Otherwise, I'm wondering how this even may break anything.
+
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
