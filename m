@@ -2,170 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B6BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCAD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 23:46:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344513AbiA1XlG (ORCPT
+        id S1344528AbiA1XqD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 18:41:06 -0500
-Received: from mga06.intel.com ([134.134.136.31]:42619 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230352AbiA1XlE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 18:41:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643413264; x=1674949264;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nf2qFgTJ6fU4pbmhpPpUz4DEKZhXCEzLYp+lk4cBfBw=;
-  b=ghpDxoVk8dWi1gn0nqeUFD6khzIp3E3x5JmZ4WwOPh0hmYvbsukHp4ly
-   p5BPA57DKpfY+e6ckeWA39UjU+rU/7b410s2FnlmiXodHw/Qc+buK9pxd
-   tHlcn8U6ngtyV/mnNNfBUr5zLNPZLX62GbQim0+6iKiPEaEChxhxhiTEG
-   mPvpT61xbApC45/4Lkk4L3djl5meSyBfVnvuek7LekEjiRTxVSZXnKuvG
-   bq1EdR5AKlF/rNpiqmeAdnoEd8C2tBo6TK04L/6IihmyNwNi6sMhnCQcG
-   uqXWbs/fItEnY06mb5MNW/SxeDMw9hQ/i+GFeJKQByy+pZ5juUQSUaYRl
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="307947244"
-X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
-   d="scan'208";a="307947244"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 15:41:04 -0800
-X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
-   d="scan'208";a="536332950"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 15:41:03 -0800
-Date:   Fri, 28 Jan 2022 15:41:03 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V8 09/44] x86/pkeys: Enable PKS on cpus which support it
-Message-ID: <20220128234103.GL785175@iweiny-DESK2.sc.intel.com>
-References: <20220127175505.851391-1-ira.weiny@intel.com>
- <20220127175505.851391-10-ira.weiny@intel.com>
- <f9db9626-de92-65a4-57f1-cf94511dd137@intel.com>
+        Fri, 28 Jan 2022 18:46:03 -0500
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:47129 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230352AbiA1XqB (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 18:46:01 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id A380D5803A7;
+        Fri, 28 Jan 2022 18:46:00 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Fri, 28 Jan 2022 18:46:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=xUwCqbFq5p1l8yHGU
+        oeM5CsdqnzYrFZbgfX57fO0sno=; b=EyZDGmMbZXj3HYgnEN8Ymbbo/jc2DIZ3Z
+        Qpu7CUUstdRFb/Dr2e1rD/Hr3ULWiTkOMRz83O9iN4j3RXRzQ8HATWtu7lgHKj/f
+        tQnVQ+tBhqrGFWKlzROuVq2hN2hC3Nj8anWpNHWJ8OYzUK9h1Yf4Um3CyhZkvtRS
+        iFb1sIDVYRwyxqythbFCiZuJrqLiQLK4KTo8Q/m3wKi3vnoiSUbFb7KMcXexnHEp
+        GEyskn3Y11I8Rg/HLXtgn95VNjJ+28TWTuElb5vDbYLJz9S8L0lL8KhSBXU5Guoq
+        3DPVHqMOga/H3flVKT7zht7E0svjaFKW8cblPLMDaetHuH2Eg6zHA==
+X-ME-Sender: <xms:OID0YdM1wA1GxHlUBm1HWAjxWL0c8sd4g5KNh2QpYtKOirvAy92VPQ>
+    <xme:OID0Yf-YrGvUUh9Eju41yuBlO0uePrxZAziWhbtv1wbL-hxYElY8s822dpd9tRy1V
+    4zz-X1u_rGUYFlLCNE>
+X-ME-Received: <xmr:OID0YcSWZg4nmwrn_xpTvFflBMYvX7VrMy8mGq15BXPw_MDIqym202Eg4lPO4EIWuV1VVW-jLsFF7RFe5yx4ndL_xBzsfEds4KQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrfeeigddufecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvufgjkfhfgggtsehttdertddttddvnecuhfhrohhmpefhihhnnhcuvfhh
+    rghinhcuoehfthhhrghinheslhhinhhugidqmheikehkrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeekveevtdekfedtfefhvdfgleelfefhtdefieetjeejvefghfdufeejkeehgfeu
+    udenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepfhhthhgrihhnsehlihhnuhigqdhmieekkhdr
+    ohhrgh
+X-ME-Proxy: <xmx:OID0YZu1tYar0MhX_v0vfzusxVV_OJPC956fqgPfooHR48_oBITJaA>
+    <xmx:OID0YVdZr61Jrf5Vn3OCclg7DJSpaeU1V7BCKqpEHNW5qcCE3RLZqQ>
+    <xmx:OID0YV3QB80lXtTxb8E1jvlkoU_4PiBwTORdLy9YvysgT3Whn8O49Q>
+    <xmx:OID0YV20Vqd8eJQSk_4w5hbMfRHLH4lYyGH4iG1MDjyz_KJlmN_8KQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 28 Jan 2022 18:45:57 -0500 (EST)
+Date:   Sat, 29 Jan 2022 10:45:53 +1100 (AEDT)
+From:   Finn Thain <fthain@linux-m68k.org>
+To:     Tom Rix <trix@redhat.com>
+cc:     Joe Perches <joe@perches.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>, kashyap.desai@broadcom.com,
+        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, nathan@kernel.org,
+        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH] scsi: megaraid: cleanup formatting of megaraid
+In-Reply-To: <0567fce4-256a-e1b1-dc66-221ba97153d5@redhat.com>
+Message-ID: <56b761a-6cf9-23ab-c849-eff27e5e831e@linux-m68k.org>
+References: <20220127151945.1244439-1-trix@redhat.com> <953eb015-4b78-f7b-5dc1-6491c6bf27e@linux-m68k.org> <CAKwvOdnWHVV+3s8SO=Q8FfZ7hVekRVDL5q+7CwAk_z44xaex8w@mail.gmail.com> <fb308f51-f16b-3d9b-80c2-180940236b00@redhat.com> <5554a75f65fddab4de60d61fd503fe73773dafbb.camel@perches.com>
+ <c801989d-5f3e-84d2-24a0-7022be70da98@redhat.com> <7bff2de309384b7c9ee71ad90881d1e0bbe0a781.camel@perches.com> <0567fce4-256a-e1b1-dc66-221ba97153d5@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f9db9626-de92-65a4-57f1-cf94511dd137@intel.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 03:18:29PM -0800, Dave Hansen wrote:
-> On 1/27/22 09:54, ira.weiny@intel.com wrote:
-> > Protection Keys for Supervisor pages (PKS) enables fast, hardware thread
-> > specific, manipulation of permission restrictions on supervisor page
-> > mappings.  It uses the same mechanism of Protection Keys as those on
-> > User mappings but applies that mechanism to supervisor mappings using a
-> > supervisor specific MSR.
-> > 
-> > Bit 24 of CR4 is used to enable the feature by software.  Define
-> > pks_setup() to be called when PKS is configured.
-> 
-> Again, no need to specify the bit numbers.  We have it in the code. :)
-> At most, just say something like:
-> 
-> 	PKS is enabled by a new bit in a control register.
-> or
-> 	PKS is enabled by a new bit in CR4.
-> 
-> > Initially, pks_setup() initializes the per-cpu MSR with 0 to enable all
-> > access on all pkeys.
-> 
-> Why not just make it restrictive to start out?  That's what we do for PKU.
+On Fri, 28 Jan 2022, Tom Rix wrote:
 
-This maintains compatibility with the code prior to this patch.  Ie no
-restrictions on kernel mappings.
+> A testsuite for the fixers may help with churn
+> 
+> Any interest or thought on organization ?
+> 
 
-I'll place the default value patch before this one and use it in this patch.
+Here's one way:
 
-> 
-> > asm/pks.h is added as a new file to store new
-> > internal functions and structures such as pks_setup().
-> 
-> One writing nit: try to speak in active voice.
-> 
-> Passive: "Foo is added"
-> Active: "Add foo"
-> 
-> It actually makes thing shorter and easier to read:
-> 
-> 	Add asm/pks.h to store new internal functions and structures
-> 	such as pks_setup().
+1. Identify some source files that are exemplary (i.e. good style).
+2. Run a new script to introduce style mistakes into those files.
+3. Run the Reformatter Under Test on those files.
+4. Compare the output with the original files.
 
-Ok.  I'll update the commit message.
+But that's not sufficient to prevent more style patches (churn). We still 
+need a way to avoid wasting everyone's time writing, submitting, reviewing 
+and merging the inevitably incomplete style patches that may contain 
+regressions and cause conflicts.
 
-> 
-> > diff --git a/arch/x86/include/uapi/asm/processor-flags.h b/arch/x86/include/uapi/asm/processor-flags.h
-> > index bcba3c643e63..191c574b2390 100644
-> > --- a/arch/x86/include/uapi/asm/processor-flags.h
-> > +++ b/arch/x86/include/uapi/asm/processor-flags.h
-> > @@ -130,6 +130,8 @@
-> >  #define X86_CR4_SMAP		_BITUL(X86_CR4_SMAP_BIT)
-> >  #define X86_CR4_PKE_BIT		22 /* enable Protection Keys support */
-> >  #define X86_CR4_PKE		_BITUL(X86_CR4_PKE_BIT)
-> > +#define X86_CR4_PKS_BIT		24 /* enable Protection Keys for Supervisor */
-> > +#define X86_CR4_PKS		_BITUL(X86_CR4_PKS_BIT)
-> >  
-> >  /*
-> >   * x86-64 Task Priority Register, CR8
-> > diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-> > index 7b8382c11788..83c1abce7d93 100644
-> > --- a/arch/x86/kernel/cpu/common.c
-> > +++ b/arch/x86/kernel/cpu/common.c
-> > @@ -59,6 +59,7 @@
-> >  #include <asm/cpu_device_id.h>
-> >  #include <asm/uv/uv.h>
-> >  #include <asm/sigframe.h>
-> > +#include <asm/pks.h>
-> >  
-> >  #include "cpu.h"
-> >  
-> > @@ -1632,6 +1633,7 @@ static void identify_cpu(struct cpuinfo_x86 *c)
-> >  
-> >  	x86_init_rdrand(c);
-> >  	setup_pku(c);
-> > +	pks_setup();
-> >  
-> >  	/*
-> >  	 * Clear/Set all flags overridden by options, need do it
-> > diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-> > index cf12d8bf122b..02629219e683 100644
-> > --- a/arch/x86/mm/pkeys.c
-> > +++ b/arch/x86/mm/pkeys.c
-> > @@ -206,3 +206,19 @@ u32 pkey_update_pkval(u32 pkval, int pkey, u32 accessbits)
-> >  	pkval &= ~(PKEY_ACCESS_MASK << shift);
-> >  	return pkval | accessbits << shift;
-> >  }
-> > +
-> > +#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
-> > +
-> > +/*
-> > + * PKS is independent of PKU and either or both may be supported on a CPU.
-> > + */
-> > +void pks_setup(void)
-> > +{
-> > +	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-> > +		return;
-> > +
-> > +	wrmsrl(MSR_IA32_PKRS, 0);
-> 
-> This probably needs a one-line comment about what it's doing.  As a
-> general rule, I'd much rather have a one-sentence note in a code comment
-> than in the changelog.
+The tooling I would like to see is not a script to introduce style 
+mistakes but an editor for binaries, such that C is not the "source" at 
+all but only an ephemeral representation to make it easier for humans to 
+effect changes to binaries (and debug info, commentary etc.)
 
-Fair enough,
-Ira
-
-> 
-> > +	cr4_set_bits(X86_CR4_PKS);
-> > +}
-> > +
-> > +#endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-> 
+Nonetheless, perfecting the clang-format tool is a good step towards a 
+better workflow, which I described once before. 
+https://lore.kernel.org/r/alpine.LNX.2.23.453.2010281344120.31@nippy.intranet/
