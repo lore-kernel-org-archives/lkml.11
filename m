@@ -2,193 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1AEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 18:53:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E35A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 18:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350696AbiA1SxN (ORCPT
+        id S1350714AbiA1Szl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 13:53:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
+        Fri, 28 Jan 2022 13:55:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238277AbiA1SxM (ORCPT
+        with ESMTP id S1350626AbiA1Szi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 13:53:12 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C7AC061714;
-        Fri, 28 Jan 2022 10:53:12 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id b186so7837312oif.1;
-        Fri, 28 Jan 2022 10:53:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pu4NSwnKcN2ktpCmENizSopNqGrtbHMNjwjQQEL3R9o=;
-        b=FMrK316cn1uFMuGw08XpxR3ytnj/a+OHArDyn4WZuTbrMozATGItbEp0OF5NCLdAKs
-         55wlAj/pLNbR3IY3wNMdQl3KC05xFW3ejCodXst/6aJbcvoC3IM/fFTHJDl7GsH7oQBy
-         H7Y3Ytxd0Q7Nh+hczHmz4zi+PNfK8YcG3iLFzzRqksyG+JcZJSXzEJxqF74+FoHNlcYC
-         jUiQfgStsVfpTNx84W9cfYSSasVqiH0lk2vQqJwoQslYryCMj7ob7TyO/VVc3uORYddv
-         Uau/3O3gWAWmqTVLpvUZ8Mj7cCmj+u/piSuDb5t6UzbGAFPwQzXC7a8fCCwnlP0dK3eC
-         CvOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pu4NSwnKcN2ktpCmENizSopNqGrtbHMNjwjQQEL3R9o=;
-        b=5i+g5bI8THJ9X21GMTkGGdgGq3XKLrtC1qbkTQrZ0FLTuj+hi4LzE00HzpzGzZI0yX
-         8t6F08W39VAF0Rl172I0aqnYBeCeTK/vOrDgGQgODewKW/zkCBSx6y4JAD+zVnp4uOiT
-         2aX8rGaPCIV+ynFa7PBATRA7x9szSfZu9yv91Nbd/z4Pw0QY9ZLqfvlkpZH6wQ3ElEx/
-         rp65RfGJA/ZvAQ/haumnhK83yq/Wbi+6+H3T7FabelvRpILBLiM6fVK2F5axTcP6DW1j
-         bCIuy66M44YAIMBs6da4sTuu5l2P/aspGAr6uSuvYcOcXXdprE7X9Nbey6fJTqaOR3id
-         OlKA==
-X-Gm-Message-State: AOAM531Wm7Nm6SCyu+m8OH5+wGSo6UV+htAnmH5eRuvTAIZWVW5NOf15
-        tRPV39XjsnQm+MYqDZ9zp+SLw/G2NR2AniSlaqM=
-X-Google-Smtp-Source: ABdhPJwKCzD8Rt5qit1gwag3Yzd6XxPW5CpF0ZA2+xx+dEK0So5xF+3/9NNczU849tHElw52wJ2ouSprPSX7g2wTnww=
-X-Received: by 2002:a05:6808:2189:: with SMTP id be9mr11097293oib.93.1643395991750;
- Fri, 28 Jan 2022 10:53:11 -0800 (PST)
+        Fri, 28 Jan 2022 13:55:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7C4C06174A
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 10:55:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1B13617AC
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 18:55:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F4CDC340E7;
+        Fri, 28 Jan 2022 18:55:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643396136;
+        bh=xA8Ep0YfhZQNU2v7DBLtpJhxzd6pHkO59kXWUQ58m2I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nn+lKmbj5RRcD2XU/XkSh9QSUHQoXcjMBlfUEREkDmgiIJEgfnJBWUqiOJUKqIXe5
+         hjfViPftgOY2Xc870cS2omSHlbx6CA6EFUwlfUPtaD4VJAO0EReqVIiuMMoTBqICxD
+         Ga5JUzClU3WaIf7FtEnIJGZoUfAAomxbaB5yNayEnbcBFwL7upJXZkKup1NqeS7wCK
+         JKZcAxxWFnPIGoONo0MTwRj/D0PgC1Lu/uw6VjILd2ZlmvIlPbs1CnxUX3qiI4N3q0
+         69v1Hz/nsu42s10bfpn0+6hWkjVAT1lT07UoSfIGMQIOnI6QMB96ApNton0pdjD+CN
+         c2JdsZIjd2DCQ==
+Date:   Fri, 28 Jan 2022 11:55:31 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Marco Elver <elver@google.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Kees Cook <keescook@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Alexander Potapenko <glider@google.com>, llvm@lists.linux.dev,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] stack: Constrain stack offset randomization with
+ Clang builds
+Message-ID: <YfQ8IwCSzbtAhC3B@dev-arch.archlinux-ax161>
+References: <20220128114446.740575-1-elver@google.com>
+ <20220128114446.740575-2-elver@google.com>
 MIME-Version: 1.0
-References: <20220128173502.594099-1-colin.i.king@gmail.com> <6a5b1f8e-22a1-9c26-aea4-6bb38c4aa084@amd.com>
-In-Reply-To: <6a5b1f8e-22a1-9c26-aea4-6bb38c4aa084@amd.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Fri, 28 Jan 2022 13:53:00 -0500
-Message-ID: <CADnq5_PxSH6e-QgN7_srR4w47WCNdXTp6VGNZz0=sXp-ivw4Mg@mail.gmail.com>
-Subject: Re: [PATCH][next] drm/amd/display: fix spelling mistake: synatpics -> synaptics
-To:     Harry Wentland <harry.wentland@amd.com>
-Cc:     Colin Ian King <colin.i.king@gmail.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, kernel-janitors@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128114446.740575-2-elver@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+On Fri, Jan 28, 2022 at 12:44:46PM +0100, Marco Elver wrote:
+> All supported versions of Clang perform auto-init of __builtin_alloca()
+> when stack auto-init is on (CONFIG_INIT_STACK_ALL_{ZERO,PATTERN}).
+> 
+> add_random_kstack_offset() uses __builtin_alloca() to add a stack
+> offset. This means, when CONFIG_INIT_STACK_ALL_{ZERO,PATTERN} is
+> enabled, add_random_kstack_offset() will auto-init that unused portion
+> of the stack used to add an offset.
+> 
+> There are several problems with this:
+> 
+> 	1. These offsets can be as large as 1023 bytes. Performing
+> 	   memset() on them isn't exactly cheap, and this is done on
+> 	   every syscall entry.
+> 
+> 	2. Architectures adding add_random_kstack_offset() to syscall
+> 	   entry implemented in C require them to be 'noinstr' (e.g. see
+> 	   x86 and s390). The potential problem here is that a call to
+> 	   memset may occur, which is not noinstr.
+> 
+> A x86_64 defconfig kernel with Clang 11 and CONFIG_VMLINUX_VALIDATION shows:
+> 
+>  | vmlinux.o: warning: objtool: do_syscall_64()+0x9d: call to memset() leaves .noinstr.text section
+>  | vmlinux.o: warning: objtool: do_int80_syscall_32()+0xab: call to memset() leaves .noinstr.text section
+>  | vmlinux.o: warning: objtool: __do_fast_syscall_32()+0xe2: call to memset() leaves .noinstr.text section
+>  | vmlinux.o: warning: objtool: fixup_bad_iret()+0x2f: call to memset() leaves .noinstr.text section
+> 
+> Clang 14 (unreleased) will introduce a way to skip alloca initialization
+> via __builtin_alloca_uninitialized() (https://reviews.llvm.org/D115440).
+> 
+> Constrain RANDOMIZE_KSTACK_OFFSET to only be enabled if no stack
+> auto-init is enabled, the compiler is GCC, or Clang is version 14+. Use
+> __builtin_alloca_uninitialized() if the compiler provides it, as is done
+> by Clang 14.
+> 
+> Link: https://lkml.kernel.org/r/YbHTKUjEejZCLyhX@elver.google.com
+> Fixes: 39218ff4c625 ("stack: Optionally randomize kernel stack offset each syscall")
+> Signed-off-by: Marco Elver <elver@google.com>
 
-Alex
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
-On Fri, Jan 28, 2022 at 12:59 PM Harry Wentland <harry.wentland@amd.com> wrote:
->
->
->
-> On 2022-01-28 12:35, Colin Ian King wrote:
-> > There are quite a few spelling mistakes in various function names
-> > and error messages. Fix these.
-> >
-> > Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
->
-> Reviewed-by: Harry Wentland <harry.wentland@amd.com>
->
-> Harry
->
-> > ---
-> >  .../amd/display/amdgpu_dm/amdgpu_dm_helpers.c | 32 +++++++++----------
-> >  1 file changed, 16 insertions(+), 16 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-> > index 75b5299b3576..db4ab01267e4 100644
-> > --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-> > +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-> > @@ -539,7 +539,7 @@ bool dm_helpers_submit_i2c(
-> >  }
-> >
-> >  #if defined(CONFIG_DRM_AMD_DC_DCN)
-> > -static bool execute_synatpics_rc_command(struct drm_dp_aux *aux,
-> > +static bool execute_synaptics_rc_command(struct drm_dp_aux *aux,
-> >               bool is_write_cmd,
-> >               unsigned char cmd,
-> >               unsigned int length,
-> > @@ -578,7 +578,7 @@ static bool execute_synatpics_rc_command(struct drm_dp_aux *aux,
-> >       ret = drm_dp_dpcd_write(aux, SYNAPTICS_RC_COMMAND, &rc_cmd, sizeof(rc_cmd));
-> >
-> >       if (ret < 0) {
-> > -             DRM_ERROR("     execute_synatpics_rc_command - write cmd ..., err = %d\n", ret);
-> > +             DRM_ERROR("     execute_synaptics_rc_command - write cmd ..., err = %d\n", ret);
-> >               return false;
-> >       }
-> >
-> > @@ -600,7 +600,7 @@ static bool execute_synatpics_rc_command(struct drm_dp_aux *aux,
-> >               drm_dp_dpcd_read(aux, SYNAPTICS_RC_DATA, data, length);
-> >       }
-> >
-> > -     DC_LOG_DC("     execute_synatpics_rc_command - success = %d\n", success);
-> > +     DC_LOG_DC("     execute_synaptics_rc_command - success = %d\n", success);
-> >
-> >       return success;
-> >  }
-> > @@ -618,54 +618,54 @@ static void apply_synaptics_fifo_reset_wa(struct drm_dp_aux *aux)
-> >       data[3] = 'U';
-> >       data[4] = 'S';
-> >
-> > -     if (!execute_synatpics_rc_command(aux, true, 0x01, 5, 0, data))
-> > +     if (!execute_synaptics_rc_command(aux, true, 0x01, 5, 0, data))
-> >               return;
-> >
-> >       // Step 3 and 4
-> > -     if (!execute_synatpics_rc_command(aux, false, 0x31, 4, 0x220998, data))
-> > +     if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x220998, data))
-> >               return;
-> >
-> >       data[0] &= (~(1 << 1)); // set bit 1 to 0
-> > -     if (!execute_synatpics_rc_command(aux, true, 0x21, 4, 0x220998, data))
-> > +     if (!execute_synaptics_rc_command(aux, true, 0x21, 4, 0x220998, data))
-> >               return;
-> >
-> > -     if (!execute_synatpics_rc_command(aux, false, 0x31, 4, 0x220D98, data))
-> > +     if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x220D98, data))
-> >               return;
-> >
-> >       data[0] &= (~(1 << 1)); // set bit 1 to 0
-> > -     if (!execute_synatpics_rc_command(aux, true, 0x21, 4, 0x220D98, data))
-> > +     if (!execute_synaptics_rc_command(aux, true, 0x21, 4, 0x220D98, data))
-> >               return;
-> >
-> > -     if (!execute_synatpics_rc_command(aux, false, 0x31, 4, 0x221198, data))
-> > +     if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x221198, data))
-> >               return;
-> >
-> >       data[0] &= (~(1 << 1)); // set bit 1 to 0
-> > -     if (!execute_synatpics_rc_command(aux, true, 0x21, 4, 0x221198, data))
-> > +     if (!execute_synaptics_rc_command(aux, true, 0x21, 4, 0x221198, data))
-> >               return;
-> >
-> >       // Step 3 and 5
-> > -     if (!execute_synatpics_rc_command(aux, false, 0x31, 4, 0x220998, data))
-> > +     if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x220998, data))
-> >               return;
-> >
-> >       data[0] |= (1 << 1); // set bit 1 to 1
-> > -     if (!execute_synatpics_rc_command(aux, true, 0x21, 4, 0x220998, data))
-> > +     if (!execute_synaptics_rc_command(aux, true, 0x21, 4, 0x220998, data))
-> >               return;
-> >
-> > -     if (!execute_synatpics_rc_command(aux, false, 0x31, 4, 0x220D98, data))
-> > +     if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x220D98, data))
-> >               return;
-> >
-> >       data[0] |= (1 << 1); // set bit 1 to 1
-> >               return;
-> >
-> > -     if (!execute_synatpics_rc_command(aux, false, 0x31, 4, 0x221198, data))
-> > +     if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x221198, data))
-> >               return;
-> >
-> >       data[0] |= (1 << 1); // set bit 1 to 1
-> > -     if (!execute_synatpics_rc_command(aux, true, 0x21, 4, 0x221198, data))
-> > +     if (!execute_synaptics_rc_command(aux, true, 0x21, 4, 0x221198, data))
-> >               return;
-> >
-> >       // Step 6
-> > -     if (!execute_synatpics_rc_command(aux, true, 0x02, 0, 0, NULL))
-> > +     if (!execute_synaptics_rc_command(aux, true, 0x02, 0, 0, NULL))
-> >               return;
-> >
-> >       DC_LOG_DC("Done apply_synaptics_fifo_reset_wa\n");
->
+One comment below.
+
+> ---
+>  arch/Kconfig                     |  1 +
+>  include/linux/randomize_kstack.h | 14 ++++++++++++--
+>  2 files changed, 13 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/Kconfig b/arch/Kconfig
+> index 2cde48d9b77c..c5b50bfe31c1 100644
+> --- a/arch/Kconfig
+> +++ b/arch/Kconfig
+> @@ -1163,6 +1163,7 @@ config RANDOMIZE_KSTACK_OFFSET
+>  	bool "Support for randomizing kernel stack offset on syscall entry" if EXPERT
+>  	default y
+>  	depends on HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
+> +	depends on INIT_STACK_NONE || !CC_IS_CLANG || CLANG_VERSION >= 140000
+>  	help
+>  	  The kernel stack offset can be randomized (after pt_regs) by
+>  	  roughly 5 bits of entropy, frustrating memory corruption
+> diff --git a/include/linux/randomize_kstack.h b/include/linux/randomize_kstack.h
+> index 91f1b990a3c3..5c711d73ed10 100644
+> --- a/include/linux/randomize_kstack.h
+> +++ b/include/linux/randomize_kstack.h
+> @@ -17,8 +17,18 @@ DECLARE_PER_CPU(u32, kstack_offset);
+>   * alignment. Also, since this use is being explicitly masked to a max of
+>   * 10 bits, stack-clash style attacks are unlikely. For more details see
+>   * "VLAs" in Documentation/process/deprecated.rst
+> + *
+> + * The normal alloca() can be initialized with INIT_STACK_ALL. Initializing the
+> + * unused area on each syscall entry is expensive, and generating an implicit
+> + * call to memset() may also be problematic (such as in noinstr functions).
+> + * Therefore, if the compiler provides it, use the "uninitialized" variant.
+>   */
+> -void *__builtin_alloca(size_t size);
+
+Is it okay to remove the declaration? Why was it even added in the first
+place (Kees)?
+
+> +#if __has_builtin(__builtin_alloca_uninitialized)
+> +#define __kstack_alloca __builtin_alloca_uninitialized
+> +#else
+> +#define __kstack_alloca __builtin_alloca
+> +#endif
+> +
+>  /*
+>   * Use, at most, 10 bits of entropy. We explicitly cap this to keep the
+>   * "VLA" from being unbounded (see above). 10 bits leaves enough room for
+> @@ -37,7 +47,7 @@ void *__builtin_alloca(size_t size);
+>  	if (static_branch_maybe(CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT,	\
+>  				&randomize_kstack_offset)) {		\
+>  		u32 offset = raw_cpu_read(kstack_offset);		\
+> -		u8 *ptr = __builtin_alloca(KSTACK_OFFSET_MAX(offset));	\
+> +		u8 *ptr = __kstack_alloca(KSTACK_OFFSET_MAX(offset));	\
+>  		/* Keep allocation even after "ptr" loses scope. */	\
+>  		asm volatile("" :: "r"(ptr) : "memory");		\
+>  	}								\
+> -- 
+> 2.35.0.rc0.227.g00780c9af4-goog
+> 
+> 
