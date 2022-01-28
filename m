@@ -2,176 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0168BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 01:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1738C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 01:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345139AbiA1Bg1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 20:36:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:23908 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235209AbiA1Bg0 (ORCPT
+        id S235499AbiA1Bly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 27 Jan 2022 20:41:54 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:35879 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230132AbiA1Blx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 20:36:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643333785;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JcYKtS421ws0gC+d9NqwTyqIBwVVHbKtxBormtVmgOQ=;
-        b=Rl22Y9aQHQAjo/r7m9DgUcGuBaOLbPNWvbuTB1B20C5wTYLzkweOSeVUcBJGEqr1JZ6AiW
-        16SHwpVE7IaFGE/4SCrYQhODEb2t6YS72clg3TqnA/vXZiNBbzpbL736ErpZocK6njLSV7
-        ssyy9ABUBBaSKKJoTEMej+nuA0RzM9k=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-447-tAissa03MxauhYCuSBocXQ-1; Thu, 27 Jan 2022 20:36:24 -0500
-X-MC-Unique: tAissa03MxauhYCuSBocXQ-1
-Received: by mail-wm1-f69.google.com with SMTP id s190-20020a1ca9c7000000b00347c6c39d9aso2258266wme.5
-        for <linux-kernel@vger.kernel.org>; Thu, 27 Jan 2022 17:36:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JcYKtS421ws0gC+d9NqwTyqIBwVVHbKtxBormtVmgOQ=;
-        b=bM++s5MrmjFvttwD2ygBKyFZYJ88byYboe0TVz+ekphSALEKV/G4sitV5XUKRSdP4B
-         NI20y7JXQ6n+V0ZWMqx6vkN2hWag7xILeaKVSEdszQfFeN32xVtOHl5EjMG7/puBD2aY
-         tOA5jHxsihaZHfj4nqxPkMfhwEo691Vks/LWWo+cy1EBblGPb3PUNzmH+kMLE/KleNgk
-         XmERZl/JMEGCopTpO1jLCqxUIBFvF79CFpTguey1E2knh/xROb2tqSA0oHX/SjJJ3YqU
-         Qb4+vUmTYtAldi1aJuIMDMrKNTTNP9CYjiJfTrsOmjUMSeSBr3zRLTMV9vtzjNbOul2d
-         6FiQ==
-X-Gm-Message-State: AOAM5309iy2aAMXno+gtU13oYjpIporX/kFb9Azyup+us4p+cXJVk4ye
-        hiZv2mS1jeYcgtCywyDALzwUIoZsTKw8pKnVFaVSeKpYYgVOaU3A0SoycLfqdGCzt9fm7u2J85z
-        RhS4pbZTq03aGdW5gVvWS+A+V
-X-Received: by 2002:a5d:64e2:: with SMTP id g2mr5230157wri.700.1643333782837;
-        Thu, 27 Jan 2022 17:36:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw+hI5kCTICGWtlKGl7cRSb69fbDbnUyNCyIAHUqHS4kKgcVWKvvMjpxzsrRpePTXKPGiDEcA==
-X-Received: by 2002:a5d:64e2:: with SMTP id g2mr5230140wri.700.1643333782535;
-        Thu, 27 Jan 2022 17:36:22 -0800 (PST)
-Received: from xz-m1.local ([64.64.123.9])
-        by smtp.gmail.com with ESMTPSA id m6sm3903137wrw.54.2022.01.27.17.36.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 17:36:22 -0800 (PST)
-Date:   Fri, 28 Jan 2022 09:36:14 +0800
-From:   Peter Xu <peterx@redhat.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     John Hubbard <jhubbard@nvidia.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Jan Kara <jack@suse.cz>,
-        =?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH] mm: Fix invalid page pointer returned with FOLL_PIN gups
-Message-ID: <YfNIjqPpty0YkLJP@xz-m1.local>
-References: <20220125033700.69705-1-peterx@redhat.com>
- <f5400544-f602-0bb4-5cb1-5ac682e41974@nvidia.com>
- <20220127004206.GP8034@ziepe.ca>
- <YfJjhop3senAUjue@xz-m1.local>
- <20220127152538.GQ8034@ziepe.ca>
+        Thu, 27 Jan 2022 20:41:53 -0500
+Received: from kwepemi500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JlKt34L5PzccpN;
+        Fri, 28 Jan 2022 09:40:59 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500020.china.huawei.com (7.221.188.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 28 Jan 2022 09:41:50 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 28 Jan 2022 09:41:49 +0800
+From:   Peng Liu <liupeng256@huawei.com>
+To:     <glider@google.com>, <elver@google.com>, <dvyukov@google.com>,
+        <corbet@lwn.net>, <sumit.semwal@linaro.org>,
+        <christian.koenig@amd.com>, <akpm@linux-foundation.org>
+CC:     <kasan-dev@googlegroups.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linaro-mm-sig@lists.linaro.org>,
+        <linux-mm@kvack.org>, <liupeng256@huawei.com>
+Subject: [PATCH v2] kfence: Make test case compatible with run time set sample interval
+Date:   Fri, 28 Jan 2022 01:57:52 +0000
+Message-ID: <20220128015752.931256-1-liupeng256@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220127152538.GQ8034@ziepe.ca>
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 11:25:38AM -0400, Jason Gunthorpe wrote:
-> On Thu, Jan 27, 2022 at 05:19:56PM +0800, Peter Xu wrote:
-> 
-> > > > > diff --git a/mm/gup.c b/mm/gup.c
-> > > > > index f0af462ac1e2..8ebc04058e97 100644
-> > > > > +++ b/mm/gup.c
-> > > > > @@ -440,7 +440,7 @@ static int follow_pfn_pte(struct vm_area_struct *vma, unsigned long address,
-> > > > >   		pte_t *pte, unsigned int flags)
-> > > > >   {
-> > > > >   	/* No page to get reference */
-> > > > > -	if (flags & FOLL_GET)
-> > > > > +	if (flags & (FOLL_GET | FOLL_PIN))
-> > > > >   		return -EFAULT;
-> > > > 
-> > > > Yes. This clearly fixes the problem that the patch describes, and also
-> > > > clearly matches up with the Fixes tag. So that's correct.
-> > > 
-> > > It is a really confusing though, why not just always return -EEXIST
-> > > here?
-> > 
-> > Because in current code GUP handles -EEXIST and -EFAULT differently?
-> 
-> That has nothing to do with here. We shouldn't be deciding what the
-> top layer does way down here. Return the correct error code for what
-> was discovered at this layer the upper loop should make the decision
-> what it should do
-> 
-> > We do early bail out on -EFAULT.  -EEXIST was first introduced in 2015 from
-> > Kirill for not failing some mlock() or mmap(MAP_POPULATE) on dax (1027e4436b6).
-> > Then in 2017 it got used again with pud-sized thp (a00cc7d9dd93d) on dax too.
-> > They seem to service the same goal and it seems to be designed that -EEXIST
-> > shouldn't fail GUP immediately.
-> 
-> It must fail GUP immeidately if there is a pages list.
+The parameter kfence_sample_interval can be set via boot parameter
+and late shell command, which is convenient for automatical tests
+and KFENCE parameter optimation. However, KFENCE test case just use
+compile time CONFIG_KFENCE_SAMPLE_INTERVAL, this will make KFENCE
+test case not run as user desired. This patch will make KFENCE test
+case compatible with run-time-set sample interval.
 
-Right, but my point is we don't have an user at all for follow_page_mask()
-returning -EEXIST with a **page which is non-NULL.  Or did I miss it?
+v1->v2:
+- Use EXPORT_SYMBOL_GPL replace EXPORT_SYMBOL
 
-> 
-> Callers that want an early failure must pass in NULL for pages, it is
-> just that simple. It has nothing to do with the FOLL flags.
-> 
-> A WARN_ON would be appropriate to compare the FOLL flags against the
-> pages. eg FOLL_GET without a pages is nonsense and should be
-> immediately aborted. On the other hand, we avoid this by construction
-> internal to gup.c
+Signed-off-by: Peng Liu <liupeng256@huawei.com>
+---
+ include/linux/kfence.h  | 2 ++
+ mm/kfence/core.c        | 3 ++-
+ mm/kfence/kfence_test.c | 8 ++++----
+ 3 files changed, 8 insertions(+), 5 deletions(-)
 
-We have something like that already, although it's only a VM_BUG_ON() not a
-BUG_ON() or WARN_ON() at the entry of __get_user_pages():
-
-	VM_BUG_ON(!!pages != !!(gup_flags & (FOLL_GET | FOLL_PIN)));
-
-> 
-> > > > Here, however, I think we need to consider this a little more carefully,
-> > > > and attempt to actually fix up this case. It is never going to be OK
-> > > > here, to return a **pages array that has these little landmines of
-> > > > potentially uninitialized pointers. And so continuing on *at all* seems
-> > > > very wrong.
-> > > 
-> > > Indeed, it should just be like this:
-> > > 
-> > > @@ -1182,6 +1182,10 @@ static long __get_user_pages(struct mm_struct *mm,
-> > >                          * Proper page table entry exists, but no corresponding
-> > >                          * struct page.
-> > >                          */
-> > > +                       if (pages) {
-> > > +                               page = ERR_PTR(-EFAULT);
-> > > +                               goto out;
-> > > +                       }
-> > >                         goto next_page;
-> > >                 } else if (IS_ERR(page)) {
-> > >                         ret = PTR_ERR(page);
-> > 
-> > IIUC not failing -EEXIST immediately seems to be what we want.
-> 
-> Which is what this does, for the only case it is acceptable - a null
-> page list.
-> 
-> > From that POV, WARN_ON_ONCE() helps better on exposing an illegal return of
-> > -EEXIST (as mentioned in the commit message) than the -EFAULT convertion, IMHO.
-> 
-> Again, that is upside down, -EEXIST should not be a illegal return. It
-> should be valid, have a defined meaning 'the vaddr exists but has no
-> struct page' and the top loop, and only the top loop, makes the
-> decision what to do about it.
-
-I believe this works too and I think I get your point, but as stated above it's
-just not used yet so the path is not useful to any real code path.
-
-Especially with above VM_BUG_ON() it means if we'll go into the "if (pages)" we
-should have already triggered the VM_BUG_ON() condition when entering the function.
-
-Thanks,
-
+diff --git a/include/linux/kfence.h b/include/linux/kfence.h
+index 4b5e3679a72c..f49e64222628 100644
+--- a/include/linux/kfence.h
++++ b/include/linux/kfence.h
+@@ -17,6 +17,8 @@
+ #include <linux/atomic.h>
+ #include <linux/static_key.h>
+ 
++extern unsigned long kfence_sample_interval;
++
+ /*
+  * We allocate an even number of pages, as it simplifies calculations to map
+  * address to metadata indices; effectively, the very first page serves as an
+diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+index 5ad40e3add45..13128fa13062 100644
+--- a/mm/kfence/core.c
++++ b/mm/kfence/core.c
+@@ -47,7 +47,8 @@
+ 
+ static bool kfence_enabled __read_mostly;
+ 
+-static unsigned long kfence_sample_interval __read_mostly = CONFIG_KFENCE_SAMPLE_INTERVAL;
++unsigned long kfence_sample_interval __read_mostly = CONFIG_KFENCE_SAMPLE_INTERVAL;
++EXPORT_SYMBOL_GPL(kfence_sample_interval); /* Export for test modules. */
+ 
+ #ifdef MODULE_PARAM_PREFIX
+ #undef MODULE_PARAM_PREFIX
+diff --git a/mm/kfence/kfence_test.c b/mm/kfence/kfence_test.c
+index a22b1af85577..50dbb815a2a8 100644
+--- a/mm/kfence/kfence_test.c
++++ b/mm/kfence/kfence_test.c
+@@ -268,13 +268,13 @@ static void *test_alloc(struct kunit *test, size_t size, gfp_t gfp, enum allocat
+ 	 * 100x the sample interval should be more than enough to ensure we get
+ 	 * a KFENCE allocation eventually.
+ 	 */
+-	timeout = jiffies + msecs_to_jiffies(100 * CONFIG_KFENCE_SAMPLE_INTERVAL);
++	timeout = jiffies + msecs_to_jiffies(100 * kfence_sample_interval);
+ 	/*
+ 	 * Especially for non-preemption kernels, ensure the allocation-gate
+ 	 * timer can catch up: after @resched_after, every failed allocation
+ 	 * attempt yields, to ensure the allocation-gate timer is scheduled.
+ 	 */
+-	resched_after = jiffies + msecs_to_jiffies(CONFIG_KFENCE_SAMPLE_INTERVAL);
++	resched_after = jiffies + msecs_to_jiffies(kfence_sample_interval);
+ 	do {
+ 		if (test_cache)
+ 			alloc = kmem_cache_alloc(test_cache, gfp);
+@@ -608,7 +608,7 @@ static void test_gfpzero(struct kunit *test)
+ 	int i;
+ 
+ 	/* Skip if we think it'd take too long. */
+-	KFENCE_TEST_REQUIRES(test, CONFIG_KFENCE_SAMPLE_INTERVAL <= 100);
++	KFENCE_TEST_REQUIRES(test, kfence_sample_interval <= 100);
+ 
+ 	setup_test_cache(test, size, 0, NULL);
+ 	buf1 = test_alloc(test, size, GFP_KERNEL, ALLOCATE_ANY);
+@@ -739,7 +739,7 @@ static void test_memcache_alloc_bulk(struct kunit *test)
+ 	 * 100x the sample interval should be more than enough to ensure we get
+ 	 * a KFENCE allocation eventually.
+ 	 */
+-	timeout = jiffies + msecs_to_jiffies(100 * CONFIG_KFENCE_SAMPLE_INTERVAL);
++	timeout = jiffies + msecs_to_jiffies(100 * kfence_sample_interval);
+ 	do {
+ 		void *objects[100];
+ 		int i, num = kmem_cache_alloc_bulk(test_cache, GFP_ATOMIC, ARRAY_SIZE(objects),
 -- 
-Peter Xu
+2.18.0.huawei.25
 
