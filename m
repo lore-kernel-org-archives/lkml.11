@@ -2,72 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5AF2C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2205C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 14:09:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346162AbiA1OHv (ORCPT
+        id S1347234AbiA1OJw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 09:07:51 -0500
-Received: from vps5.brixit.nl ([192.81.221.234]:47618 "EHLO vps5.brixit.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240958AbiA1OHt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:07:49 -0500
-Received: from [192.168.20.2] (unknown [77.239.252.99])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by vps5.brixit.nl (Postfix) with ESMTPSA id 0861061BA7;
-        Fri, 28 Jan 2022 14:07:46 +0000 (UTC)
-Message-ID: <22c14d50-7585-ced5-24e2-8c0b417fa0db@postmarketos.org>
-Date:   Fri, 28 Jan 2022 17:07:45 +0300
+        Fri, 28 Jan 2022 09:09:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240958AbiA1OJv (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 09:09:51 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38BE6C061714
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 06:09:51 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id c23so11132518wrb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 06:09:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=c0MbAYZn48s/2sw8+6sJEGK9DVzD/LP2yU/tzes0Wew=;
+        b=KnoYpCROJNJ4KeVjiMHVRjI3Nw6MBdLiVMYBKyWi5SjTGkUNhmLXnrLxkxBTE/uvzm
+         1i7z3jyz9HYmoZNAG5Loy00qH2mtg+iFqBgPPlltZlvuAUpVQzHJC/Zh5YvuO8bbiuKV
+         EhY0GkfgFO0pVCtVfHeoBwIMjXpF7AfmFwBBlSPZrfauweTohE5pmPCqYrkC4s7Xusfz
+         4HPmI5qzz1+q+sdmUh4Ity1hlHsWh5wpsKT4x8GRkQTfDY1KyAL6lGRKpMiXEM/O84+/
+         bEb7k6+NG5FdGoGanjw1rOia/TgJAtC6p47O0pODeUAm6OEJWTT+h5i60wvVX+nLYbKo
+         twmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c0MbAYZn48s/2sw8+6sJEGK9DVzD/LP2yU/tzes0Wew=;
+        b=z5i1stM+u59daHW83pOw4IrFEaNOlYC5ZTk1yDrIcYYUZNGElSRzGx5Fi2v/EpLUO9
+         VrTcAUtc6gbAsBx001ut1DH2NFpVuf7ZT84WjboVoU5ehHNj3Mf1UavQQItf8Z/wg04+
+         TTzMG8gHkJ0TOYcNU1vKWjb3SMGzCTZrwUm+Dr82nROvu2Nxm9KKrC4X7NnUOsJ4643T
+         kt+qzHouDGDXdc2VKKnhCdli5OVR07bEo6eYjl4lSEg05eQVkM4zaQNzSTZp59NtY+Rl
+         LaGUpF1+VaDluAcSM+qffnZDKPfayqwmmkt7VwsVHsHnJxu9K4cldDXpfb0B0fTHbFMc
+         4glA==
+X-Gm-Message-State: AOAM533lsYp22wFGJuB6WkittVzmCqKg5KPPX1ccPTaJJd3JsR0819GO
+        xPtJzvZhm9DSN8N9RK6LKku9+A==
+X-Google-Smtp-Source: ABdhPJwcwaW5k4PCVMl0xIx5mubfMQwAXKgrPRB+Y2ibDaLBwjoVmYeQufxi/ZaCrtP5AiArmXZMSw==
+X-Received: by 2002:adf:d1ed:: with SMTP id g13mr7395000wrd.477.1643378989779;
+        Fri, 28 Jan 2022 06:09:49 -0800 (PST)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id w22sm4811774wra.59.2022.01.28.06.09.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Jan 2022 06:09:49 -0800 (PST)
+Date:   Fri, 28 Jan 2022 14:09:47 +0000
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Luis Chamberlain <mcgrof@kernel.org>, Jessica Yu <jeyu@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "kgdb-bugreport@lists.sourceforge.net" 
+        <kgdb-bugreport@lists.sourceforge.net>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v2 4/5] modules: Add
+ CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
+Message-ID: <20220128140947.n2xea77txqohfbfj@maple.lan>
+References: <cover.1643282353.git.christophe.leroy@csgroup.eu>
+ <af8519537d2a5c36b71a2f48ba9b81c07c93a5c4.1643282353.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] arm64: dts: qcom: sm8150: Add ufs power-domain entries
-Content-Language: en-US
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        linux-arm-msm@vger.kernel.org
-Cc:     bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org,
-        bjorn.andersson@linaro.org, agross@kernel.org,
-        Rob Herring <robh@kernel.org>
-References: <20220120082803.15535-1-bhupesh.sharma@linaro.org>
-From:   Alexey Minnekhanov <alexeymin@postmarketos.org>
-In-Reply-To: <20220120082803.15535-1-bhupesh.sharma@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <af8519537d2a5c36b71a2f48ba9b81c07c93a5c4.1643282353.git.christophe.leroy@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At 20.01.2022 11:28, Bhupesh Sharma wrote:
-> Add power-domain entries for UFS controller & phy nodes
-> in sm8150 dts.
+On Thu, Jan 27, 2022 at 11:28:09AM +0000, Christophe Leroy wrote:
+> Add CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC to allow architectures
+> to request having modules data in vmalloc area instead of module area.
 > 
-> ...
-> +			power-domains = <&gcc UFS_PHY_GDSC>;
->   			resets = <&gcc GCC_UFS_PHY_BCR>;
->   			reset-names = "rst";
-> ...
-> +			power-domains = <&gcc UFS_CARD_GDSC>,
-> +					<&gcc UFS_PHY_GDSC>;
-> +			power-domain-names = "ufs_card_gdsc", "ufs_phy_gdsc";
+> This is required on powerpc book3s/32 in order to set data non
+> executable, because it is not possible to set executability on page
+> basis, this is done per 256 Mbytes segments. The module area has exec
+> right, vmalloc area has noexec.
+> 
+> This can also be useful on other powerpc/32 in order to maximize the
+> chance of code being close enough to kernel core to avoid branch
+> trampolines.
+> 
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> Cc: Jason Wessel <jason.wessel@windriver.com>
+> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Douglas Anderson <dianders@chromium.org>
 
-Strange, but I don't see neither UFS_PHY_GDSC nor UFS_CARD_GDSC in 
-gcc-sm8150.c [1] (and accordingly not in 
-include/dt-bindings/clock/qcom,gcc-sm8150.h), but they are present in 
-corresponding files for sm8250 [2].
+Thanks for diligence in making sure kdb is up to date!
 
-By quick look at downstream sm8150-gdsc.dtsi addresses seem to be 
-similar to one used on sm8250, so I'm guessing gcc-sm8150 has to be 
-fixed first for this patch to work?
+Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
 
-[1] 
-https://elixir.bootlin.com/linux/v5.17-rc1/source/drivers/clk/qcom/gcc-sm8150.c#L3716
-[2] 
-https://elixir.bootlin.com/linux/v5.17-rc1/source/drivers/clk/qcom/gcc-sm8250.c#L3522
 
--- 
-Regards
-Alexey Minnekhanov
-postmarketOS developer
-https://www.postmarketos.org
+Daniel.
