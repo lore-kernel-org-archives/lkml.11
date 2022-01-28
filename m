@@ -2,142 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1614DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 09:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243715AbiA1JhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 04:37:12 -0500
-Received: from mga05.intel.com ([192.55.52.43]:18943 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238119AbiA1JhK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 04:37:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643362630; x=1674898630;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=VqXmCSG2Gq/rSqqdvuF6nNHGo04wgF2UCN2DCxhbrFA=;
-  b=fWMfYN6Wjap0Z3Rx4f+d5mhcQF1BjJFdaB+nBq9hoWdVZ1UVrK5Xq+pj
-   nYZTmUoDWeRp+0UbPbbJXibWuoJ6E/QQqSU2WCH/kUVGoYzYh1faQj5yL
-   Pr9oCaLKtD7URPQ04WuiavG0yfJyRpI1HcZoyPTaaQqlu59T6a1V20k++
-   tkHEodhFwppJfNRUhyc4pN8xTYKOxUOPBVzBbEAFnnXJbabUWMxjWWhjr
-   9Tn2IrM6b30f5IqdtebcDCLE4Yvkr4zpPndFnPXUZLOs4G+98fntdCLkj
-   IGfvlYictJRxuDIsw13f3gTL5Bjyfod6QqDRK+/Cp2vGTuCtm4mJdjarP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="333439738"
-X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="333439738"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 01:37:09 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="625582200"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 28 Jan 2022 01:37:07 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDNgp-000Ni1-8N; Fri, 28 Jan 2022 09:37:07 +0000
-Date:   Fri, 28 Jan 2022 17:36:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tom Zanussi <zanussi@kernel.org>
-Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [ammarfaizi2-block:rostedt/linux-trace/ftrace/core 13/13]
- include/linux/fortify-string.h:48:30: warning: '__builtin_strncpy' output
- truncated before terminating nul copying as many bytes from a string as its
- length
-Message-ID: <202201281716.fJjEsoAS-lkp@intel.com>
+        id S1347662AbiA1JiG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 04:38:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40719 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243717AbiA1JiE (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 04:38:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643362683;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bm7yntnZphNntlIzJBi7dLNf0/Xc6WFVcDglxuX1l/s=;
+        b=aFTWP+WHhD7wEd7pzcmPON/wed9pvTsnpBLYhEZo0FyfuZE6lfS/QQkpKwBU6F+RmGh9vN
+        6oPjdfEGRTz/zo/2+LdgoC2FHZo5tG0vUOlGcPtIJ2yHIUuJWctenctvSDFR+Umfa/ulWg
+        YxZ2GjFPgS7HP130HQn0FAZ8oZgsPFA=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-470-y75UnmHaNvKf6FbG6m9BBg-1; Fri, 28 Jan 2022 04:38:00 -0500
+X-MC-Unique: y75UnmHaNvKf6FbG6m9BBg-1
+Received: by mail-ej1-f72.google.com with SMTP id i21-20020a1709063c5500b006b4c7308c19so2612043ejg.14
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 01:38:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Bm7yntnZphNntlIzJBi7dLNf0/Xc6WFVcDglxuX1l/s=;
+        b=UtL1qSKknTjkP5snfaUvgV79UOKvLiWuEi/ZZyPCZ1t/+Se1wpCbNMsUwuv0Y0hYBi
+         qIs5SIOOFfCziEHCi28p1lkD2CXrZOUyYRo8mvRaHTDxuhqKCTwoW9iiqnOnjV6Gnikn
+         ejCSQRP2KKT/RaZ015PLD8lReCK8fJYMl9GmAf2sDRSG7v2OURXQIGnEplJcinMIUel5
+         M4iQSMJvZuc2M0d2N21QWADf1oAd/bKJEzoP3SFSWxrW0hgFIiNPoYT+tYATC8uh5lYi
+         gkbulns7Drd6BvCHLqt7qwK/tIffMDmudJyGoaEt5GOUROeuY8pC6lkVll0JNHIv6WPk
+         aUyQ==
+X-Gm-Message-State: AOAM533hbKRKKIBex08u1VYMZDC8rD8UaCQKFxaM1rP7huv7owhJ1K7b
+        utfC1BrBSR4QXkgJz+hIDXa9jprjkM8sIe8sAoAFk76MdRrMVMcb2uG94TIj5q/WFQt6kLvjlMv
+        ojFsgWTIldslgzrVvFvvgCq6/
+X-Received: by 2002:a05:6402:1d56:: with SMTP id dz22mr7685166edb.82.1643362679814;
+        Fri, 28 Jan 2022 01:37:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxKe5ZRNHAS83VQrBS/4wBXr4dcTtl5PfFvJSOQogMXJPMGg8ZrekzVaiQ6a5cLAX7JhbRYjQ==
+X-Received: by 2002:a05:6402:1d56:: with SMTP id dz22mr7685135edb.82.1643362679610;
+        Fri, 28 Jan 2022 01:37:59 -0800 (PST)
+Received: from krava ([83.240.63.12])
+        by smtp.gmail.com with ESMTPSA id v14sm9782631ejy.77.2022.01.28.01.37.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Jan 2022 01:37:58 -0800 (PST)
+Date:   Fri, 28 Jan 2022 10:37:56 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v5 1/9] ftrace: Add ftrace_set_filter_ips function
+Message-ID: <YfO5dLsrdRlN7D62@krava>
+References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
+ <164311270629.1933078.4596694198103138848.stgit@devnote2>
+ <20220125110659.2cc8df29@gandalf.local.home>
+ <YfApT8uAoCODPAGu@krava>
+ <20220128110523.de0e36317a34d48b793a7f6b@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220128110523.de0e36317a34d48b793a7f6b@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block rostedt/linux-trace/ftrace/core
-head:   f125ef075cd648a7794aa0cc61a188b1c40c8f94
-commit: f125ef075cd648a7794aa0cc61a188b1c40c8f94 [13/13] tracing: Remove size restriction on synthetic event cmd error logging
-config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220128/202201281716.fJjEsoAS-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/f125ef075cd648a7794aa0cc61a188b1c40c8f94
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block rostedt/linux-trace/ftrace/core
-        git checkout f125ef075cd648a7794aa0cc61a188b1c40c8f94
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/trace/
+On Fri, Jan 28, 2022 at 11:05:23AM +0900, Masami Hiramatsu wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+SNIP
 
-All warnings (new ones prefixed by >>):
+> 
+> So, I wrote a below change for the next version. Is that OK for you?
+> 
+> Thank you,
+> 
+> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+> index f305e18f699f..a28b1bdb234a 100644
+> --- a/kernel/trace/ftrace.c
+> +++ b/kernel/trace/ftrace.c
+> @@ -4985,8 +4985,13 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long *ips,
+>  
+>  	for (i = 0; i < cnt; i++) {
+>  		err = __ftrace_match_addr(hash, ips[i], remove);
+> -		if (err)
+> +		if (err) {
+> +			/*
+> +			 * This expects the @hash is a temporary hash and if this
+> +			 * fails the caller must free the @hash.
+> +			 */
+>  			return err;
+> +		}
+>  	}
+>  	return 0;
+>  }
+> @@ -5649,7 +5654,7 @@ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
+>  EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
+>  
+>  /**
+> - * ftrace_set_filter_ips - set a functions to filter on in ftrace by addresses
+> + * ftrace_set_filter_ips - set functions to filter on in ftrace by addresses
+>   * @ops - the ops to set the filter with
+>   * @ips - the array of addresses to add to or remove from the filter.
+>   * @cnt - the number of addresses in @ips
 
-   In file included from include/linux/string.h:253,
-                    from include/linux/bitmap.h:11,
-                    from include/linux/cpumask.h:12,
-                    from arch/x86/include/asm/cpumask.h:5,
-                    from arch/x86/include/asm/msr.h:11,
-                    from arch/x86/include/asm/processor.h:22,
-                    from arch/x86/include/asm/timex.h:5,
-                    from include/linux/timex.h:65,
-                    from include/linux/time32.h:13,
-                    from include/linux/time.h:60,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:13,
-                    from kernel/trace/trace_events_synth.c:8:
-   In function 'strncpy',
-       inlined from 'last_cmd_set.part.0' at kernel/trace/trace_events_synth.c:65:2:
->> include/linux/fortify-string.h:48:30: warning: '__builtin_strncpy' output truncated before terminating nul copying as many bytes from a string as its length [-Wstringop-truncation]
-      48 | #define __underlying_strncpy __builtin_strncpy
-         |                              ^
-   include/linux/fortify-string.h:59:9: note: in expansion of macro '__underlying_strncpy'
-      59 |  return __underlying_strncpy(p, q, size);
-         |         ^~~~~~~~~~~~~~~~~~~~
-   kernel/trace/trace_events_synth.c: In function 'last_cmd_set.part.0':
-   include/linux/fortify-string.h:46:29: note: length computed here
-      46 | #define __underlying_strlen __builtin_strlen
-         |                             ^
-   include/linux/fortify-string.h:102:10: note: in expansion of macro '__underlying_strlen'
-     102 |   return __underlying_strlen(p);
-         |          ^~~~~~~~~~~~~~~~~~~
+looks good, thanks
 
+jirka
 
-vim +/__builtin_strncpy +48 include/linux/fortify-string.h
-
-3009f891bb9f32 Kees Cook      2021-08-02  26  
-a28a6e860c6cf2 Francis Laniel 2021-02-25  27  #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
-a28a6e860c6cf2 Francis Laniel 2021-02-25  28  extern void *__underlying_memchr(const void *p, int c, __kernel_size_t size) __RENAME(memchr);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  29  extern int __underlying_memcmp(const void *p, const void *q, __kernel_size_t size) __RENAME(memcmp);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  30  extern void *__underlying_memcpy(void *p, const void *q, __kernel_size_t size) __RENAME(memcpy);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  31  extern void *__underlying_memmove(void *p, const void *q, __kernel_size_t size) __RENAME(memmove);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  32  extern void *__underlying_memset(void *p, int c, __kernel_size_t size) __RENAME(memset);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  33  extern char *__underlying_strcat(char *p, const char *q) __RENAME(strcat);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  34  extern char *__underlying_strcpy(char *p, const char *q) __RENAME(strcpy);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  35  extern __kernel_size_t __underlying_strlen(const char *p) __RENAME(strlen);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  36  extern char *__underlying_strncat(char *p, const char *q, __kernel_size_t count) __RENAME(strncat);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  37  extern char *__underlying_strncpy(char *p, const char *q, __kernel_size_t size) __RENAME(strncpy);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  38  #else
-a28a6e860c6cf2 Francis Laniel 2021-02-25  39  #define __underlying_memchr	__builtin_memchr
-a28a6e860c6cf2 Francis Laniel 2021-02-25  40  #define __underlying_memcmp	__builtin_memcmp
-a28a6e860c6cf2 Francis Laniel 2021-02-25  41  #define __underlying_memcpy	__builtin_memcpy
-a28a6e860c6cf2 Francis Laniel 2021-02-25  42  #define __underlying_memmove	__builtin_memmove
-a28a6e860c6cf2 Francis Laniel 2021-02-25  43  #define __underlying_memset	__builtin_memset
-a28a6e860c6cf2 Francis Laniel 2021-02-25  44  #define __underlying_strcat	__builtin_strcat
-a28a6e860c6cf2 Francis Laniel 2021-02-25  45  #define __underlying_strcpy	__builtin_strcpy
-a28a6e860c6cf2 Francis Laniel 2021-02-25  46  #define __underlying_strlen	__builtin_strlen
-a28a6e860c6cf2 Francis Laniel 2021-02-25  47  #define __underlying_strncat	__builtin_strncat
-a28a6e860c6cf2 Francis Laniel 2021-02-25 @48  #define __underlying_strncpy	__builtin_strncpy
-a28a6e860c6cf2 Francis Laniel 2021-02-25  49  #endif
-a28a6e860c6cf2 Francis Laniel 2021-02-25  50  
-
-:::::: The code at line 48 was first introduced by commit
-:::::: a28a6e860c6cf231cf3c5171c75c342adcd00406 string.h: move fortified functions definitions in a dedicated header.
-
-:::::: TO: Francis Laniel <laniel_francis@privacyrequired.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
