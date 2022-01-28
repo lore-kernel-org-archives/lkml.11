@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7537BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB87CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 13:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348788AbiA1NTM (ORCPT
+        id S1348790AbiA1NTO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 08:19:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54980 "EHLO
+        Fri, 28 Jan 2022 08:19:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244752AbiA1NTI (ORCPT
+        with ESMTP id S244893AbiA1NTI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 08:19:08 -0500
 Received: from server.lespinasse.org (server.lespinasse.org [IPv6:2001:470:82ab::100:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB370C061747
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB293C06173B
         for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 05:19:07 -0800 (PST)
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
  d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-52-ed;
  t=1643375407; h=from : to : cc : subject : date : message-id :
  in-reply-to : references : mime-version : content-transfer-encoding :
- from; bh=N1S1NesGU6Y8f8q9IeGf50c8McugHmVCalVHP9Er6AE=;
- b=G3mnG6iArJ3iUlnv5jmCwGBZSi4ZmZNvZum1Io0mtaiwsYz/3xaJREVHKG9TcE9hCnOxk
- eVwcUhjl24gy00cDA==
+ from; bh=oZA2R37ZdQsPKRya4evD/1AxU5M2JserIU8FqrANBD0=;
+ b=qW+sQ7HyABXKBsze8DrBwRseqXMce9RCfxlhrUvp9AMkFrpRRy4fHhhD3Kt+/3yVzvqTr
+ yudQB2bVFoLPLJEBA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
  i=@lespinasse.org; q=dns/txt; s=srv-52-rsa; t=1643375407; h=from : to
  : cc : subject : date : message-id : in-reply-to : references :
  mime-version : content-transfer-encoding : from;
- bh=N1S1NesGU6Y8f8q9IeGf50c8McugHmVCalVHP9Er6AE=;
- b=NdoeJxId3UHckIXu3hAFoxtvDqiwDvgJJSGGpoR05QXlMP89KsXW0W+ABD8b/gYA0BhuF
- Mz98ld9u1J576DPaXDTCzvCNgYfR16gNyveBozyLnxl41FS5UKO/RMnGzdj/+9sMR94QUI/
- /M5pshUxt3Oy4+uAL7EUNI195zLs+k05K4+MxeagX7bMTPd41C9gmqMf300MOIpeyNtBJai
- 3Ll/zt6OghuoLMkBvzux0MFzo8De6dNhImoV4VxrB+Zc1ap1bi4fpFoqsn6xXahNmU4U9fb
- vCcVuMqB4jx8MrwgeiRxeLbkVXdEzv1b7akE/LEXnrI1ONHHlFu9tlWe7kRQ==
-Received: from zeus.lespinasse.org (zeus.lespinasse.org [IPv6:fd00::150:0])
-        by server.lespinasse.org (Postfix) with ESMTPS id 0F8FE160985;
+ bh=oZA2R37ZdQsPKRya4evD/1AxU5M2JserIU8FqrANBD0=;
+ b=CTWnbr/BOodTzck8x1znoxdaW3l5DVCyKQbkGJ8mGFqrhPK4thb9kYgNu/C+uBXfuICLr
+ WB6qqJHNs96os/5WLhVkJGSRdtV8229d8QKw3uzPFMxnADFVZ1yziiZTrVi18UYqSryWkSa
+ OV0ZaV7NTu7wdGC9yxpIx7lPT1rMwu6hc+cRdXSy9x9rSRuU4CAQh+oYgx4k3e7d3AoGtPU
+ MgSSDjF6szOCkRHrmG69ho3BWQFZUDfi/TX4AUolM5NFpi5kPy00kdGGkMpj/1WfIJ9e7s4
+ EodZMIXxQC1pAukAcCBnXNhuzahxpjbkJbbWVbP85BvMtgdKmGCMyhKNmd5w==
+Received: from zeus.lespinasse.org (zeus.lespinasse.org [10.0.0.150])
+        by server.lespinasse.org (Postfix) with ESMTPS id 04071160968;
         Fri, 28 Jan 2022 05:10:07 -0800 (PST)
 Received: by zeus.lespinasse.org (Postfix, from userid 1000)
-        id E9CD020330; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
+        id DC56A2023B; Fri, 28 Jan 2022 05:10:06 -0800 (PST)
 From:   Michel Lespinasse <michel@lespinasse.org>
 To:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>
@@ -59,9 +59,9 @@ Cc:     kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Andy Lutomirski <luto@kernel.org>,
         Michel Lespinasse <michel@lespinasse.org>
-Subject: [PATCH v2 15/35] mm: refactor __handle_mm_fault() / handle_pte_fault()
-Date:   Fri, 28 Jan 2022 05:09:46 -0800
-Message-Id: <20220128131006.67712-16-michel@lespinasse.org>
+Subject: [PATCH v2 10/35] mm: add per-mm mmap sequence counter for speculative page fault handling.
+Date:   Fri, 28 Jan 2022 05:09:41 -0800
+Message-Id: <20220128131006.67712-11-michel@lespinasse.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220128131006.67712-1-michel@lespinasse.org>
 References: <20220128131006.67712-1-michel@lespinasse.org>
@@ -71,147 +71,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the code that initializes vmf->pte and vmf->orig_pte from
-handle_pte_fault() to its single call site in __handle_mm_fault().
+The counter's write side is hooked into the existing mmap locking API:
+mmap_write_lock() increments the counter to the next (odd) value, and
+mmap_write_unlock() increments it again to the next (even) value.
 
-This ensures vmf->pte is now initialized together with the higher levels
-of the page table hierarchy. This also prepares for speculative page fault
-handling, where the entire page table walk (higher levels down to ptes)
-needs special care in the speculative case.
+The counter's speculative read side is supposed to be used as follows:
+
+seq = mmap_seq_read_start(mm);
+if (seq & 1)
+	goto fail;
+.... speculative handling here ....
+if (!mmap_seq_read_check(mm, seq)
+	goto fail;
+
+This API guarantees that, if none of the "fail" tests abort
+speculative execution, the speculative code section did not run
+concurrently with any mmap writer.
+
+This is very similar to a seqlock, but both the writer and speculative
+readers are allowed to block. In the fail case, the speculative reader
+does not spin on the sequence counter; instead it should fall back to
+a different mechanism such as grabbing the mmap lock read side.
 
 Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
 ---
- mm/memory.c | 98 ++++++++++++++++++++++++++---------------------------
- 1 file changed, 49 insertions(+), 49 deletions(-)
+ include/linux/mm_types.h  |  4 +++
+ include/linux/mmap_lock.h | 58 +++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 60 insertions(+), 2 deletions(-)
 
-diff --git a/mm/memory.c b/mm/memory.c
-index 663952d14bad..37a4b92bd4bf 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3769,7 +3769,7 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
- 	if (pte_alloc(vma->vm_mm, vmf->pmd))
- 		return VM_FAULT_OOM;
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 0ae3bf854aad..e4965a6f34f2 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -523,6 +523,10 @@ struct mm_struct {
+ 		 * cacheline.
+ 		 */
+ 		struct rw_semaphore mmap_lock;
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
++		unsigned long mmap_seq;
++#endif
++
  
--	/* See comment in handle_pte_fault() */
-+	/* See comment in __handle_mm_fault() */
- 	if (unlikely(pmd_trans_unstable(vmf->pmd)))
- 		return 0;
+ 		struct list_head mmlist; /* List of maybe swapped mm's.	These
+ 					  * are globally strung together off
+diff --git a/include/linux/mmap_lock.h b/include/linux/mmap_lock.h
+index 1b14468183d7..a2459eb15a33 100644
+--- a/include/linux/mmap_lock.h
++++ b/include/linux/mmap_lock.h
+@@ -8,8 +8,16 @@
+ #include <linux/tracepoint-defs.h>
+ #include <linux/types.h>
  
-@@ -4062,7 +4062,7 @@ vm_fault_t finish_fault(struct vm_fault *vmf)
- 			return VM_FAULT_OOM;
- 	}
+-#define MMAP_LOCK_INITIALIZER(name) \
+-	.mmap_lock = __RWSEM_INITIALIZER((name).mmap_lock),
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
++#define MMAP_LOCK_SEQ_INITIALIZER(name) \
++	.mmap_seq = 0,
++#else
++#define MMAP_LOCK_SEQ_INITIALIZER(name)
++#endif
++
++#define MMAP_LOCK_INITIALIZER(name)				\
++	.mmap_lock = __RWSEM_INITIALIZER((name).mmap_lock),	\
++	MMAP_LOCK_SEQ_INITIALIZER(name)
  
--	/* See comment in handle_pte_fault() */
-+	/* See comment in __handle_mm_fault() */
- 	if (pmd_devmap_trans_unstable(vmf->pmd))
- 		return 0;
- 
-@@ -4527,53 +4527,6 @@ static vm_fault_t handle_pte_fault(struct vm_fault *vmf)
+ DECLARE_TRACEPOINT(mmap_lock_start_locking);
+ DECLARE_TRACEPOINT(mmap_lock_acquire_returned);
+@@ -63,13 +71,52 @@ static inline void __mmap_lock_trace_released(struct mm_struct *mm, bool write)
+ static inline void mmap_init_lock(struct mm_struct *mm)
  {
- 	pte_t entry;
+ 	init_rwsem(&mm->mmap_lock);
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
++	mm->mmap_seq = 0;
++#endif
+ }
  
--	if (unlikely(pmd_none(*vmf->pmd))) {
--		/*
--		 * Leave __pte_alloc() until later: because vm_ops->fault may
--		 * want to allocate huge page, and if we expose page table
--		 * for an instant, it will be difficult to retract from
--		 * concurrent faults and from rmap lookups.
--		 */
--		vmf->pte = NULL;
--	} else {
--		/*
--		 * If a huge pmd materialized under us just retry later.  Use
--		 * pmd_trans_unstable() via pmd_devmap_trans_unstable() instead
--		 * of pmd_trans_huge() to ensure the pmd didn't become
--		 * pmd_trans_huge under us and then back to pmd_none, as a
--		 * result of MADV_DONTNEED running immediately after a huge pmd
--		 * fault in a different thread of this mm, in turn leading to a
--		 * misleading pmd_trans_huge() retval. All we have to ensure is
--		 * that it is a regular pmd that we can walk with
--		 * pte_offset_map() and we can do that through an atomic read
--		 * in C, which is what pmd_trans_unstable() provides.
--		 */
--		if (pmd_devmap_trans_unstable(vmf->pmd))
--			return 0;
--		/*
--		 * A regular pmd is established and it can't morph into a huge
--		 * pmd from under us anymore at this point because we hold the
--		 * mmap_lock read mode and khugepaged takes it in write mode.
--		 * So now it's safe to run pte_offset_map().
--		 */
--		vmf->pte = pte_offset_map(vmf->pmd, vmf->address);
--		vmf->orig_pte = *vmf->pte;
--
--		/*
--		 * some architectures can have larger ptes than wordsize,
--		 * e.g.ppc44x-defconfig has CONFIG_PTE_64BIT=y and
--		 * CONFIG_32BIT=y, so READ_ONCE cannot guarantee atomic
--		 * accesses.  The code below just needs a consistent view
--		 * for the ifs and we later double check anyway with the
--		 * ptl lock held. So here a barrier will do.
--		 */
--		barrier();
--		if (pte_none(vmf->orig_pte)) {
--			pte_unmap(vmf->pte);
--			vmf->pte = NULL;
--		}
--	}
--
- 	if (!vmf->pte) {
- 		if (vma_is_anonymous(vmf->vma))
- 			return do_anonymous_page(vmf);
-@@ -4713,6 +4666,53 @@ static vm_fault_t __handle_mm_fault(struct vm_area_struct *vma,
- 		}
- 	}
++static inline void __mmap_seq_write_lock(struct mm_struct *mm)
++{
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
++	VM_BUG_ON_MM(mm->mmap_seq & 1, mm);
++	mm->mmap_seq++;
++	smp_wmb();
++#endif
++}
++
++static inline void __mmap_seq_write_unlock(struct mm_struct *mm)
++{
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
++	smp_wmb();
++	mm->mmap_seq++;
++	VM_BUG_ON_MM(mm->mmap_seq & 1, mm);
++#endif
++}
++
++#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
++static inline unsigned long mmap_seq_read_start(struct mm_struct *mm)
++{
++	unsigned long seq;
++
++	seq = READ_ONCE(mm->mmap_seq);
++	smp_rmb();
++	return seq;
++}
++
++static inline bool mmap_seq_read_check(struct mm_struct *mm, unsigned long seq)
++{
++	smp_rmb();
++	return seq == READ_ONCE(mm->mmap_seq);
++}
++#endif
++
+ static inline void mmap_write_lock(struct mm_struct *mm)
+ {
+ 	__mmap_lock_trace_start_locking(mm, true);
+ 	down_write(&mm->mmap_lock);
+ 	__mmap_lock_trace_acquire_returned(mm, true, true);
++	__mmap_seq_write_lock(mm);
+ }
  
-+	if (unlikely(pmd_none(*vmf.pmd))) {
-+		/*
-+		 * Leave __pte_alloc() until later: because vm_ops->fault may
-+		 * want to allocate huge page, and if we expose page table
-+		 * for an instant, it will be difficult to retract from
-+		 * concurrent faults and from rmap lookups.
-+		 */
-+		vmf.pte = NULL;
-+	} else {
-+		/*
-+		 * If a huge pmd materialized under us just retry later.  Use
-+		 * pmd_trans_unstable() via pmd_devmap_trans_unstable() instead
-+		 * of pmd_trans_huge() to ensure the pmd didn't become
-+		 * pmd_trans_huge under us and then back to pmd_none, as a
-+		 * result of MADV_DONTNEED running immediately after a huge pmd
-+		 * fault in a different thread of this mm, in turn leading to a
-+		 * misleading pmd_trans_huge() retval. All we have to ensure is
-+		 * that it is a regular pmd that we can walk with
-+		 * pte_offset_map() and we can do that through an atomic read
-+		 * in C, which is what pmd_trans_unstable() provides.
-+		 */
-+		if (pmd_devmap_trans_unstable(vmf.pmd))
-+			return 0;
-+		/*
-+		 * A regular pmd is established and it can't morph into a huge
-+		 * pmd from under us anymore at this point because we hold the
-+		 * mmap_lock read mode and khugepaged takes it in write mode.
-+		 * So now it's safe to run pte_offset_map().
-+		 */
-+		vmf.pte = pte_offset_map(vmf.pmd, vmf.address);
-+		vmf.orig_pte = *vmf.pte;
-+
-+		/*
-+		 * some architectures can have larger ptes than wordsize,
-+		 * e.g.ppc44x-defconfig has CONFIG_PTE_64BIT=y and
-+		 * CONFIG_32BIT=y, so READ_ONCE cannot guarantee atomic
-+		 * accesses.  The code below just needs a consistent view
-+		 * for the ifs and we later double check anyway with the
-+		 * ptl lock held. So here a barrier will do.
-+		 */
-+		barrier();
-+		if (pte_none(vmf.orig_pte)) {
-+			pte_unmap(vmf.pte);
-+			vmf.pte = NULL;
-+		}
-+	}
-+
- 	return handle_pte_fault(&vmf);
+ static inline void mmap_write_lock_nested(struct mm_struct *mm, int subclass)
+@@ -77,6 +124,7 @@ static inline void mmap_write_lock_nested(struct mm_struct *mm, int subclass)
+ 	__mmap_lock_trace_start_locking(mm, true);
+ 	down_write_nested(&mm->mmap_lock, subclass);
+ 	__mmap_lock_trace_acquire_returned(mm, true, true);
++	__mmap_seq_write_lock(mm);
+ }
+ 
+ static inline int mmap_write_lock_killable(struct mm_struct *mm)
+@@ -86,6 +134,8 @@ static inline int mmap_write_lock_killable(struct mm_struct *mm)
+ 	__mmap_lock_trace_start_locking(mm, true);
+ 	error = down_write_killable(&mm->mmap_lock);
+ 	__mmap_lock_trace_acquire_returned(mm, true, !error);
++	if (likely(!error))
++		__mmap_seq_write_lock(mm);
+ 	return error;
+ }
+ 
+@@ -96,18 +146,22 @@ static inline bool mmap_write_trylock(struct mm_struct *mm)
+ 	__mmap_lock_trace_start_locking(mm, true);
+ 	ok = down_write_trylock(&mm->mmap_lock) != 0;
+ 	__mmap_lock_trace_acquire_returned(mm, true, ok);
++	if (likely(ok))
++		__mmap_seq_write_lock(mm);
+ 	return ok;
+ }
+ 
+ static inline void mmap_write_unlock(struct mm_struct *mm)
+ {
+ 	__mmap_lock_trace_released(mm, true);
++	__mmap_seq_write_unlock(mm);
+ 	up_write(&mm->mmap_lock);
+ }
+ 
+ static inline void mmap_write_downgrade(struct mm_struct *mm)
+ {
+ 	__mmap_lock_trace_acquire_returned(mm, false, true);
++	__mmap_seq_write_unlock(mm);
+ 	downgrade_write(&mm->mmap_lock);
  }
  
 -- 
