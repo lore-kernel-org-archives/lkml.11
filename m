@@ -2,148 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2516AC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 21:04:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D747FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 21:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350934AbiA1VEO (ORCPT
+        id S1351222AbiA1VER (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 16:04:14 -0500
-Received: from mga06.intel.com ([134.134.136.31]:32648 "EHLO mga06.intel.com"
+        Fri, 28 Jan 2022 16:04:17 -0500
+Received: from mga01.intel.com ([192.55.52.88]:47290 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231409AbiA1VEE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 16:04:04 -0500
+        id S240302AbiA1VEG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 16:04:06 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643403844; x=1674939844;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ASgkFYwwTRZanrw0AK9YosZcIFPeg1uJvPc0GqPq9/E=;
-  b=VGh2sH5jYiaj0sPTJOjA8cbKvA6o9eVRo2r9Yj8QhX0N1MpjqQ9WEEJ3
-   onXi5lnih3BXWT9TpL1kF63D5LOx52ozVVsdmyhwMd191SocgDyO7S5Og
-   F0Fy4KyFneP8dMeGGgWnPFli/z5Xdvksav+skXYS+nKF+6FxSUpXVpncw
-   UIrgY0Hxvml9uDLCFCB7G71pVJyO9qv5+XsKLMuE/oGX9QBvMvxYRmLql
-   Pd0v18duwHTJVIiF6VrguBod4QN49HgtRjOCPUHSrnymBo5zggtiJ0mbB
-   3c1bf7zpiBK4Z6Y+Kp0GRANcViardsHnJvxxRhu/MQzNXpzHbvqtV33LR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="307926877"
+  t=1643403846; x=1674939846;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wtc0j7yTVPn/fGZgRzU9pGe00zSBwjJiSMdzaYkT8oo=;
+  b=npXSamgAbiA0ozWgP687mWMKNKlsXv3CD3vNX0yielFTM2K4BWzSYfue
+   fGIosUsxslWlwrSqpangQHJry76n5fVgZ6XLlC1Thvw1MMYp9y9sOc8DG
+   SSVn8eI9g4ukUB1WX5iYF7HVxSrIPEKNpQrlPg3YlwKjGMyXxjhhCALHs
+   3nEmNFwAI/eP7g0lrgduuhAM4qj/SrPtF9Tnp/hzoIH7LbUJhdoiGYJJG
+   iawO+BZi/NVOCqoHuz+HJSHP64IwNQ0QcsEYVz/zjz9kesmj+cyNmeDOZ
+   MUVhgIjnWlMARxzuisC6c2zIFM5sGfN2sConuX/GQneFgk59dxoNx27hl
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="271659604"
 X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="307926877"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 13:04:03 -0800
+   d="scan'208";a="271659604"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 13:04:05 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="496249913"
+   d="scan'208";a="480864144"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 28 Jan 2022 13:04:02 -0800
+  by orsmga006.jf.intel.com with ESMTP; 28 Jan 2022 13:04:02 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nDYPZ-000OJV-Sm; Fri, 28 Jan 2022 21:04:01 +0000
-Date:   Sat, 29 Jan 2022 05:03:35 +0800
+        id 1nDYPZ-000OJY-WC; Fri, 28 Jan 2022 21:04:01 +0000
+Date:   Sat, 29 Jan 2022 05:03:56 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: arch/mips/kvm/vz.c:1552: warning: expecting prototype for
- kvm_trap_vz_handle_cop_unusuable(). Prototype was for
- kvm_trap_vz_handle_cop_unusable() instead
-Message-ID: <202201290312.Zn2lLZub-lkp@intel.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [avpatel:memperf_test_v1 7/7]
+ include/asm-generic/memory_model.h:26:58: error: 'vmemmap' undeclared; did
+ you mean 'mem_map'?
+Message-ID: <202201290422.wXXPptlV-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
-
-First bad commit (maybe != root cause):
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   145d9b498fc827b79c1260b4caa29a8e59d4c2b9
-commit: 45c7e8af4a5e3f0bea4ac209eea34118dd57ac64 MIPS: Remove KVM_TE support
-date:   11 months ago
-config: mips-malta_kvm_defconfig (https://download.01.org/0day-ci/archive/20220129/202201290312.Zn2lLZub-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
+tree:   https://github.com/avpatel/linux.git memperf_test_v1
+head:   ad86979ac717673ec1647f1148a5c7cd214a1f39
+commit: ad86979ac717673ec1647f1148a5c7cd214a1f39 [7/7] lib: Add memperf test
+config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20220129/202201290422.wXXPptlV-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=45c7e8af4a5e3f0bea4ac209eea34118dd57ac64
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 45c7e8af4a5e3f0bea4ac209eea34118dd57ac64
+        # https://github.com/avpatel/linux/commit/ad86979ac717673ec1647f1148a5c7cd214a1f39
+        git remote add avpatel https://github.com/avpatel/linux.git
+        git fetch --no-tags avpatel memperf_test_v1
+        git checkout ad86979ac717673ec1647f1148a5c7cd214a1f39
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/kvm/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
-   arch/mips/kvm/vz.c:471: warning: Function parameter or member 'out_compare' not described in '_kvm_vz_save_htimer'
-   arch/mips/kvm/vz.c:471: warning: Function parameter or member 'out_cause' not described in '_kvm_vz_save_htimer'
-   arch/mips/kvm/vz.c:471: warning: Excess function parameter 'compare' description in '_kvm_vz_save_htimer'
-   arch/mips/kvm/vz.c:471: warning: Excess function parameter 'cause' description in '_kvm_vz_save_htimer'
->> arch/mips/kvm/vz.c:1552: warning: expecting prototype for kvm_trap_vz_handle_cop_unusuable(). Prototype was for kvm_trap_vz_handle_cop_unusable() instead
+   lib/memperf_test.c: In function 'memset_perf_test':
+   lib/memperf_test.c:33:15: error: implicit declaration of function 'page_to_virt'; did you mean 'phys_to_virt'? [-Werror=implicit-function-declaration]
+      33 |         dst = page_to_virt(dpage);
+         |               ^~~~~~~~~~~~
+         |               phys_to_virt
+   lib/memperf_test.c:33:13: warning: assignment to 'void *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+      33 |         dst = page_to_virt(dpage);
+         |             ^
+   In file included from arch/sparc/include/asm/page_64.h:130,
+                    from arch/sparc/include/asm/page.h:8,
+                    from include/linux/mm_types_task.h:16,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from lib/memperf_test.c:3:
+>> include/asm-generic/memory_model.h:26:58: error: 'vmemmap' undeclared (first use in this function); did you mean 'mem_map'?
+      26 | #define __page_to_pfn(page)     (unsigned long)((page) - vmemmap)
+         |                                                          ^~~~~~~
+   include/asm-generic/memory_model.h:52:21: note: in expansion of macro '__page_to_pfn'
+      52 | #define page_to_pfn __page_to_pfn
+         |                     ^~~~~~~~~~~~~
+   lib/memperf_test.c:44:27: note: in expansion of macro 'page_to_pfn'
+      44 |         free_contig_range(page_to_pfn(dpage), MEM_PAGES);
+         |                           ^~~~~~~~~~~
+   include/asm-generic/memory_model.h:26:58: note: each undeclared identifier is reported only once for each function it appears in
+      26 | #define __page_to_pfn(page)     (unsigned long)((page) - vmemmap)
+         |                                                          ^~~~~~~
+   include/asm-generic/memory_model.h:52:21: note: in expansion of macro '__page_to_pfn'
+      52 | #define page_to_pfn __page_to_pfn
+         |                     ^~~~~~~~~~~~~
+   lib/memperf_test.c:44:27: note: in expansion of macro 'page_to_pfn'
+      44 |         free_contig_range(page_to_pfn(dpage), MEM_PAGES);
+         |                           ^~~~~~~~~~~
+   lib/memperf_test.c: In function 'memcpy_memmove_perf_test':
+   lib/memperf_test.c:62:13: warning: assignment to 'void *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+      62 |         src = page_to_virt(spage);
+         |             ^
+   lib/memperf_test.c:64:13: warning: assignment to 'void *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+      64 |         dst = page_to_virt(dpage);
+         |             ^
+   In file included from arch/sparc/include/asm/page_64.h:130,
+                    from arch/sparc/include/asm/page.h:8,
+                    from include/linux/mm_types_task.h:16,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from lib/memperf_test.c:3:
+>> include/asm-generic/memory_model.h:26:58: error: 'vmemmap' undeclared (first use in this function); did you mean 'mem_map'?
+      26 | #define __page_to_pfn(page)     (unsigned long)((page) - vmemmap)
+         |                                                          ^~~~~~~
+   include/asm-generic/memory_model.h:52:21: note: in expansion of macro '__page_to_pfn'
+      52 | #define page_to_pfn __page_to_pfn
+         |                     ^~~~~~~~~~~~~
+   lib/memperf_test.c:83:27: note: in expansion of macro 'page_to_pfn'
+      83 |         free_contig_range(page_to_pfn(dpage), MEM_PAGES);
+         |                           ^~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
 
-vim +1552 arch/mips/kvm/vz.c
+vim +26 include/asm-generic/memory_model.h
 
-c992a4f6a9b0a3 James Hogan   2017-03-14  1543  
-c992a4f6a9b0a3 James Hogan   2017-03-14  1544  /**
-c992a4f6a9b0a3 James Hogan   2017-03-14  1545   * kvm_trap_vz_handle_cop_unusuable() - Guest used unusable coprocessor.
-c992a4f6a9b0a3 James Hogan   2017-03-14  1546   * @vcpu:	Virtual CPU context.
-c992a4f6a9b0a3 James Hogan   2017-03-14  1547   *
-c992a4f6a9b0a3 James Hogan   2017-03-14  1548   * Handle when the guest attempts to use a coprocessor which hasn't been allowed
-c992a4f6a9b0a3 James Hogan   2017-03-14  1549   * by the root context.
-c992a4f6a9b0a3 James Hogan   2017-03-14  1550   */
-c992a4f6a9b0a3 James Hogan   2017-03-14  1551  static int kvm_trap_vz_handle_cop_unusable(struct kvm_vcpu *vcpu)
-c992a4f6a9b0a3 James Hogan   2017-03-14 @1552  {
-c992a4f6a9b0a3 James Hogan   2017-03-14  1553  	u32 cause = vcpu->arch.host_cp0_cause;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1554  	enum emulation_result er = EMULATE_FAIL;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1555  	int ret = RESUME_GUEST;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1556  
-c992a4f6a9b0a3 James Hogan   2017-03-14  1557  	if (((cause & CAUSEF_CE) >> CAUSEB_CE) == 1) {
-c992a4f6a9b0a3 James Hogan   2017-03-14  1558  		/*
-c992a4f6a9b0a3 James Hogan   2017-03-14  1559  		 * If guest FPU not present, the FPU operation should have been
-c992a4f6a9b0a3 James Hogan   2017-03-14  1560  		 * treated as a reserved instruction!
-c992a4f6a9b0a3 James Hogan   2017-03-14  1561  		 * If FPU already in use, we shouldn't get this at all.
-c992a4f6a9b0a3 James Hogan   2017-03-14  1562  		 */
-c992a4f6a9b0a3 James Hogan   2017-03-14  1563  		if (WARN_ON(!kvm_mips_guest_has_fpu(&vcpu->arch) ||
-c992a4f6a9b0a3 James Hogan   2017-03-14  1564  			    vcpu->arch.aux_inuse & KVM_MIPS_AUX_FPU)) {
-c992a4f6a9b0a3 James Hogan   2017-03-14  1565  			preempt_enable();
-c992a4f6a9b0a3 James Hogan   2017-03-14  1566  			return EMULATE_FAIL;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1567  		}
-c992a4f6a9b0a3 James Hogan   2017-03-14  1568  
-c992a4f6a9b0a3 James Hogan   2017-03-14  1569  		kvm_own_fpu(vcpu);
-c992a4f6a9b0a3 James Hogan   2017-03-14  1570  		er = EMULATE_DONE;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1571  	}
-c992a4f6a9b0a3 James Hogan   2017-03-14  1572  	/* other coprocessors not handled */
-c992a4f6a9b0a3 James Hogan   2017-03-14  1573  
-c992a4f6a9b0a3 James Hogan   2017-03-14  1574  	switch (er) {
-c992a4f6a9b0a3 James Hogan   2017-03-14  1575  	case EMULATE_DONE:
-c992a4f6a9b0a3 James Hogan   2017-03-14  1576  		ret = RESUME_GUEST;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1577  		break;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1578  
-c992a4f6a9b0a3 James Hogan   2017-03-14  1579  	case EMULATE_FAIL:
-c34b26b98caca4 Tianjia Zhang 2020-06-23  1580  		vcpu->run->exit_reason = KVM_EXIT_INTERNAL_ERROR;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1581  		ret = RESUME_HOST;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1582  		break;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1583  
-c992a4f6a9b0a3 James Hogan   2017-03-14  1584  	default:
-c992a4f6a9b0a3 James Hogan   2017-03-14  1585  		BUG();
-c992a4f6a9b0a3 James Hogan   2017-03-14  1586  	}
-c992a4f6a9b0a3 James Hogan   2017-03-14  1587  	return ret;
-c992a4f6a9b0a3 James Hogan   2017-03-14  1588  }
-c992a4f6a9b0a3 James Hogan   2017-03-14  1589  
+8f6aac419bd590 Christoph Lameter  2007-10-16  23  
+af901ca181d92a André Goddard Rosa 2009-11-14  24  /* memmap is virtually contiguous.  */
+8f6aac419bd590 Christoph Lameter  2007-10-16  25  #define __pfn_to_page(pfn)	(vmemmap + (pfn))
+32272a26974d20 Martin Schwidefsky 2008-12-25 @26  #define __page_to_pfn(page)	(unsigned long)((page) - vmemmap)
+8f6aac419bd590 Christoph Lameter  2007-10-16  27  
 
-:::::: The code at line 1552 was first introduced by commit
-:::::: c992a4f6a9b0a37c8bd7dfc727ecc3fed125c16b KVM: MIPS: Implement VZ support
+:::::: The code at line 26 was first introduced by commit
+:::::: 32272a26974d2027384fd4010cd1780fca425d94 [S390] __page_to_pfn warnings
 
-:::::: TO: James Hogan <james.hogan@imgtec.com>
-:::::: CC: James Hogan <james.hogan@imgtec.com>
+:::::: TO: Martin Schwidefsky <schwidefsky@de.ibm.com>
+:::::: CC: Martin Schwidefsky <schwidefsky@de.ibm.com>
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
