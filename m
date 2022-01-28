@@ -2,117 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0CCC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 08:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32DBFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 08:08:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347181AbiA1II1 (ORCPT
+        id S1347191AbiA1IIa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 03:08:27 -0500
-Received: from mga18.intel.com ([134.134.136.126]:11371 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229758AbiA1IIY (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 03:08:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643357304; x=1674893304;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=pITGzVCbZRtpq2q1aOKadxl2UAcX3Welnaw3bRtitQo=;
-  b=iBllToQDx84abThRyPqwKZrzGLa9jBnVY3ybO6LSilOHu7tErHBvc4v5
-   Gm2o00DFv0vfsH6bTlVywTFORfOklGY6/+zWvaDU/t0g1J4ZlFjErcKBu
-   /IQymy6ZQ86VBOgySpyZln2NIbXovFMbveqjnOkOikV+vA013981D+HhL
-   9KUKf/TNlmkn7g1vRMiJy7MOHSSNEOgk3PUinyt1Y2grY/P1uljwzp0fa
-   F2s90QZwbypiUPXvJjXf8T+AO2p0P8x1khtvXnZRDSfZsOIBy5XlZbusQ
-   mJNxEKHRxWXUXs7p9v0Febh4a4QWcGZK+BDD7pyM5Rl5ESE88U4B/aULR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="230651803"
-X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="230651803"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 00:08:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="536041501"
-Received: from npg-dpdk-haiyue-1.sh.intel.com ([10.67.118.194])
-  by orsmga008.jf.intel.com with ESMTP; 28 Jan 2022 00:08:08 -0800
-From:   Haiyue Wang <haiyue.wang@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Haiyue Wang <haiyue.wang@intel.com>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Bailey Forrest <bcf@google.com>,
-        Shailend Chand <shailend@google.com>,
-        Sagi Shahar <sagis@google.com>,
-        Yangchun Fu <yangchun@google.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v1] gve: fix the wrong AdminQ buffer queue index check
-Date:   Fri, 28 Jan 2022 15:38:22 +0800
-Message-Id: <20220128073824.7209-1-haiyue.wang@intel.com>
-X-Mailer: git-send-email 2.35.0
+        Fri, 28 Jan 2022 03:08:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347184AbiA1II2 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 03:08:28 -0500
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C092C06173B;
+        Fri, 28 Jan 2022 00:08:28 -0800 (PST)
+Received: by mail-qv1-xf35.google.com with SMTP id b4so305278qvf.0;
+        Fri, 28 Jan 2022 00:08:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dUdMR4tvElt5mBvJJ0cqJizhQUejWTE0aS2LwZH55CA=;
+        b=nfDGaJmSoY3l6qtGDWVlwd64W5N/3tV3yLE9028Px0ZqpEzJEUIKTKXgEtmYazP5Zw
+         6NvL75F5QdSCXIpLrhsRsaTw5bqy3NUgEWZklIJxd9ab9yKICbQimA/jnHSqTjoRrWN2
+         KFuxmP+7Kp8uyO+HjfPfoNSEvUIEA4ubocyBylmABlrszO8oDx32nx6DOi9S3OQbxfDF
+         VNDXJxVGizC/K+LoSQ5NFUGsragZnX5chXvNickE7ez20DIszQhi50lF0ofg2khxZ2ya
+         tI+OGnDcICID/opGIW/qFVa0nFqjIUuuDAxlXiSsKsvk4lFxTzVx73zNzag4xZRpj+sF
+         0ARQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dUdMR4tvElt5mBvJJ0cqJizhQUejWTE0aS2LwZH55CA=;
+        b=FDazPfCMkcHdRbDR1RDq/MSu2fl/4RMRnmYyZWBdY9zmc4DNlrUBf2MeuZ+pNcGER2
+         jgrYeu1KMb7R9Y1Trd4EsMGk9oXg+tM8fYdnm1IKx01vZSZYX66qGOlEb58HuCXHY+iq
+         thoPxz3c7pULzclj1EkRpwkGO5cav0vZETQ+JtEMsA8fc5HqrH9teisVvamsafE4r68M
+         34+8cYMNavDm61RIJy+Si1j25PD2q304y01JbP7uE4OzoQHdxCldxbxL1IBdx66MKsUK
+         llb4qLKyUCHxKEXOl/XdXpYYvbdMaqEXvYCWNqADPlmojpDr/Qq/VFxjcz/anOrA12hy
+         cKKA==
+X-Gm-Message-State: AOAM531O0DWBGmB/fwEauPmPZyCKc/XO7n45buUPyUq/mIvHTAG/xy6M
+        P6gVGKIH650oJ6X19RcSdwo=
+X-Google-Smtp-Source: ABdhPJzPjjZUaMNtuhBqEvMsApIAGW4WDkZ2E/yGdpB7oU/dn7HNHjHjuMC5QaQ73tNJUkama0wq2A==
+X-Received: by 2002:a05:6214:4009:: with SMTP id kd9mr6589645qvb.53.1643357307878;
+        Fri, 28 Jan 2022 00:08:27 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id y5sm2682749qkj.28.2022.01.28.00.08.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Jan 2022 00:08:27 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] net/802: use struct_size over open coded arithmetic
+Date:   Fri, 28 Jan 2022 08:05:41 +0000
+Message-Id: <20220128080541.1211668-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 'tail' and 'head' are 'unsigned int' type free-running count, when
-'head' is overflow, the 'int i (= tail) < u32 head' will be false:
+From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 
-Only '- loop 0: idx = 63' result is shown, so it needs to use 'int' type
-to compare, it can handle the overflow correctly.
+Replace zero-length array with flexible-array member and make use
+of the struct_size() helper in kmalloc(). For example:
 
-typedef uint32_t u32;
+struct garp_attr {
+	struct rb_node			node;
+	enum garp_applicant_state	state;
+	u8				type;
+	u8				dlen;
+	unsigned char			data[];
+};
 
-int main()
-{
-        u32 tail, head;
-        int stail, shead;
-        int i, loop;
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes.
 
-        tail = 0xffffffff;
-        head = 0x00000000;
-
-        for (i = tail, loop = 0; i < head; i++) {
-                unsigned int idx = i & 63;
-
-                printf("+ loop %d: idx = %u\n", loop++, idx);
-        }
-
-        stail = tail;
-        shead = head;
-        for (i = stail, loop = 0; i < shead; i++) {
-                unsigned int idx = i & 63;
-
-                printf("- loop %d: idx = %u\n", loop++, idx);
-        }
-
-        return 0;
-}
-
-Fixes: 5cdad90de62c ("gve: Batch AQ commands for creating and destroying queues.")
-
-Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 ---
- drivers/net/ethernet/google/gve/gve_adminq.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/802/garp.c | 2 +-
+ net/802/mrp.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
-index 2ad7f57f7e5b..f7621ab672b9 100644
---- a/drivers/net/ethernet/google/gve/gve_adminq.c
-+++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-@@ -301,7 +301,7 @@ static int gve_adminq_parse_err(struct gve_priv *priv, u32 status)
-  */
- static int gve_adminq_kick_and_wait(struct gve_priv *priv)
- {
--	u32 tail, head;
-+	int tail, head;
- 	int i;
- 
- 	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
+diff --git a/net/802/garp.c b/net/802/garp.c
+index f6012f8e59f0..746763a76f83 100644
+--- a/net/802/garp.c
++++ b/net/802/garp.c
+@@ -184,7 +184,7 @@ static struct garp_attr *garp_attr_create(struct garp_applicant *app,
+ 			return attr;
+ 		}
+ 	}
+-	attr = kmalloc(sizeof(*attr) + len, GFP_ATOMIC);
++	attr = kmalloc(struct_size(*attr, data, len), GFP_ATOMIC);
+ 	if (!attr)
+ 		return attr;
+ 	attr->state = GARP_APPLICANT_VO;
+diff --git a/net/802/mrp.c b/net/802/mrp.c
+index 35e04cc5390c..ce3f1b610a3f 100644
+--- a/net/802/mrp.c
++++ b/net/802/mrp.c
+@@ -273,7 +273,7 @@ static struct mrp_attr *mrp_attr_create(struct mrp_applicant *app,
+ 			return attr;
+ 		}
+ 	}
+-	attr = kmalloc(sizeof(*attr) + len, GFP_ATOMIC);
++	attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
+ 	if (!attr)
+ 		return attr;
+ 	attr->state = MRP_APPLICANT_VO;
 -- 
-2.35.0
+2.25.1
 
