@@ -2,128 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A48E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 11:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5EACC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 11:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235986AbiA1LbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 06:31:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235774AbiA1LbN (ORCPT
+        id S236259AbiA1Lcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 06:32:53 -0500
+Received: from mail-sz.amlogic.com ([211.162.65.117]:19633 "EHLO
+        mail-sz.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235774AbiA1Lcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 06:31:13 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC68C061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 03:31:13 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nDPTB-0003hG-H3; Fri, 28 Jan 2022 12:31:09 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nDPTA-00Cldy-Hw; Fri, 28 Jan 2022 12:31:08 +0100
-Date:   Fri, 28 Jan 2022 12:31:08 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v1 1/1] usbnet: add devlink support
-Message-ID: <YfPT/CZCh9WPNYI3@pengutronix.de>
-References: <20220127110742.922752-1-o.rempel@pengutronix.de>
- <YfJ+ceEzvzMM1JsW@kroah.com>
- <20220127123152.GF9150@pengutronix.de>
- <YfKcqcq4Ii1qu2+8@kroah.com>
- <YfPPpkGjL2vcv4oH@pengutronix.de>
- <YfPSNSHwTLZBv7me@kroah.com>
+        Fri, 28 Jan 2022 06:32:41 -0500
+Received: from droid11-sz.amlogic.com (10.28.8.21) by mail-sz.amlogic.com
+ (10.28.11.5) with Microsoft SMTP Server id 15.1.2176.2; Fri, 28 Jan 2022
+ 19:32:39 +0800
+From:   Liang Yang <liang.yang@amlogic.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        <linux-mtd@lists.infradead.org>
+CC:     Liang Yang <liang.yang@amlogic.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jianxin Pan <jianxin.pan@amlogic.com>,
+        Victor Wan <victor.wan@amlogic.com>,
+        XianWei Zhao <xianwei.zhao@amlogic.com>,
+        Kelvin Zhang <kelvin.zhang@amlogic.com>,
+        BiChao Zheng <bichao.zheng@amlogic.com>,
+        YongHui Yu <yonghui.yu@amlogic.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH v2 0/2] refine the NFC clock framework
+Date:   Fri, 28 Jan 2022 19:32:35 +0800
+Message-ID: <20220128113237.39996-1-liang.yang@amlogic.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YfPSNSHwTLZBv7me@kroah.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 12:28:20 up 92 days, 17:55, 123 users,  load average: 2.68, 5.84,
- 7.25
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.28.8.21]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 12:23:33PM +0100, Greg KH wrote:
-> On Fri, Jan 28, 2022 at 12:12:38PM +0100, Oleksij Rempel wrote:
-> > On Thu, Jan 27, 2022 at 02:22:49PM +0100, Greg KH wrote:
-> > > On Thu, Jan 27, 2022 at 01:31:52PM +0100, Oleksij Rempel wrote:
-> > > > On Thu, Jan 27, 2022 at 12:13:53PM +0100, Greg KH wrote:
-> > > > > On Thu, Jan 27, 2022 at 12:07:42PM +0100, Oleksij Rempel wrote:
-> > > > > > The weakest link of usbnet devices is the USB cable.
-> > > > > 
-> > > > > The weakest link of any USB device is the cable, why is this somehow
-> > > > > special to usbnet devices?
-> > > > > 
-> > > > > > Currently there is
-> > > > > > no way to automatically detect cable related issues except of analyzing
-> > > > > > kernel log, which would differ depending on the USB host controller.
-> > > > > > 
-> > > > > > The Ethernet packet counter could potentially show evidence of some USB
-> > > > > > related issues, but can be Ethernet related problem as well.
-> > > > > > 
-> > > > > > To provide generic way to detect USB issues or HW issues on different
-> > > > > > levels we need to make use of devlink.
-> > > > > 
-> > > > > Please make this generic to all USB devices, usbnet is not special here
-> > > > > at all.
-> > > > 
-> > > > Ok. I'll need some help. What is the best place to attach devlink
-> > > > registration in the USB subsystem and the places to attach health
-> > > > reporters?
-> > > 
-> > > You tell us, you are the one that thinks this needs to be reported to
-> > > userspace. What is only being reported in kernel logs that userspace
-> > > somehow needs to see?  And what will userspace do with that information?
-> > 
-> > The user space should get an event in case there is a problem with the
-> > USB transfers, i.e. the URB status is != 0.
-> 
-> That's pretty brave, lots of things can have a urb status of != 0 in
-> semi-normal operation, have you tried this?
-> 
-> > The use space then can decide if the USB device needs to be reset, power
-> > cycled and so on.
-> > 
-> > What about calling a to-be-written devlink function that reports the USB
-> > status if the URB status is not 0:
-> > 
-> > diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
-> > index d0f45600b669..a90134854f32 100644
-> > --- a/drivers/usb/core/hcd.c
-> > +++ b/drivers/usb/core/hcd.c
-> > @@ -1648,6 +1648,8 @@ static void __usb_hcd_giveback_urb(struct urb *urb)
-> >  	usb_unanchor_urb(urb);
-> >  	if (likely(status == 0))
-> >  		usb_led_activity(USB_LED_EVENT_HOST);
-> > +	else
-> > +		devlink_report_usb_status(urb, status);
-> 
-> Try it and do lots of transfers, device additions and removals and other
-> things and let us know what it reports.
+Background firstly, 
+EMMC and NAND has the same clock control register named 'SD_EMMC_CLOCK' which is
+defined in EMMC port internally. bit0~5 of 'SD_EMMC_CLOCK' is the divider and
+bit6~7 is the mux for fix pll and xtal.
+Previously a common MMC sub clock framework is implemented and shared by EMMC and
+NAND, but that is coupling the EMMC and NAND, although EMMC and NAND is mutually
+exclusive. see the link:
+[https://lore.kernel.org/all/1jy23226sa.fsf@starbuckisacylon.baylibre.com/]
+Now we plan to abandon common mmc sub clock framework and recovery the series.
 
-Ok :)
+Changes since v1 [2]
+ - use clk_parent_data instead of parent_names
+ - define a reg resource instead of sd_emmc_c_clkc 
+ 
+[1]
+https://lore.kernel.org/r/20220106033130.37623-1-liang.yang@amlogic.com
+https://lore.kernel.org/r/20220106032504.23310-1-liang.yang@amlogic.com
+Liang Yang (2):
+  mtd: rawnand: meson: discard the common MMC sub clock framework
+  dt-bindings: nand: meson: refine Amlogic NAND controller driver
 
-I'll need make some other tasks next week, will respond ASAP as i'll
-continue on this task. 
+ .../bindings/mtd/amlogic,meson-nand.txt       |  60 -------
+ .../bindings/mtd/amlogic,meson-nand.yaml      |  70 ++++++++
+ drivers/mtd/nand/raw/meson_nand.c             | 161 ++++++++++--------
+ 3 files changed, 159 insertions(+), 132 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
+ create mode 100644 Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
 
-Regards,
-Oleksij
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.34.1
+
