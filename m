@@ -2,120 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE84C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 00:51:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF0B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 28 Jan 2022 00:52:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344684AbiA1Avi (ORCPT
+        id S1344728AbiA1Awt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 27 Jan 2022 19:51:38 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:49293 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344612AbiA1Avh (ORCPT
+        Thu, 27 Jan 2022 19:52:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344693AbiA1Awo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 27 Jan 2022 19:51:37 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20S0pCjT5017875, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20S0pCjT5017875
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 28 Jan 2022 08:51:12 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 28 Jan 2022 08:51:11 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 27 Jan 2022 16:51:11 -0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
- RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
- 15.01.2308.020; Fri, 28 Jan 2022 08:51:11 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Ed Swierk <eswierk@gh.st>
-Subject: RE: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
-Thread-Topic: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
-Thread-Index: AQHYBCp/WStseF16x0uJ7VAbWo+1y6xqJTFAgAMM/BCAA1dIAIAA+BTwgAWAeYCAALM9AA==
-Date:   Fri, 28 Jan 2022 00:51:11 +0000
-Message-ID: <53bea965043548539b995514d36f48e5@realtek.com>
-References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
- <423f474e15c948eda4db5bc9a50fd391@realtek.com>
- <CAFBinCBVEndU0t-6d5atE31OFYHzPyk7pOe78v0XrrFWcBec9w@mail.gmail.com>
- <5ef8ab4f78e448df9f823385d0daed88@realtek.com>
- <CAFBinCDjfKK3+WOXP2xbcAK-KToWof+kSzoxYztqRcc=7T1eyg@mail.gmail.com>
-In-Reply-To: <CAFBinCDjfKK3+WOXP2xbcAK-KToWof+kSzoxYztqRcc=7T1eyg@mail.gmail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEvMjcg5LiL5Y2IIDEwOjU1OjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Thu, 27 Jan 2022 19:52:44 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C593C061714;
+        Thu, 27 Jan 2022 16:52:44 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so4933394pjb.1;
+        Thu, 27 Jan 2022 16:52:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kJNJijaZP88bXaGh2neEJJTBJFiP0w2gHmp/ePTGmfE=;
+        b=Po0m9GwR4K5QGnYFsOD9VIGezFAmYKv8sSEdSQs73gaOb8zTj652zlhO0OM0JocENu
+         phKz4ktlibQH+zFL1blG7oFD1ZlZx30uYh2CObrVThOm0EbY6jbHrT3i0WaiDRjwAjnd
+         sx/umYh1v7K/ChixkoP0/+6F70WfrHLDGsyNw6mBg1sXbh+pb/Qa3EXYkfmcB8ehA6vv
+         lc2uYUtw4O3Rq+62BuvhdYq3sBgKRkT+S8+wnbikPY/tf239JndUPit6GRzjXeTSt0tQ
+         nQQ6BoTFj2M9V6Gk66qnPqIXLBRaP/RcF8FmYSYMJW+hRrbHTwGgcxjOgT1xhsJyI3PO
+         JstQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kJNJijaZP88bXaGh2neEJJTBJFiP0w2gHmp/ePTGmfE=;
+        b=EqUwkshUGUua1HcEukLKXabq8D3KFEowqDofeLjzhlClA80a16hrbk7PZaUVu0z1vy
+         /KNfIlEFoBNLps7MLZAIV0ZcEGbyDfyZI8fkuzmUZTwuWqNSaVPnHj2aGzTHJpl96WVj
+         Oh6UKwmnjigrDjfJa/wTR1oj7wzyo3KG1Zn6DpyviCyaOvqfB4i6N9Bzy7JN8rzKw/+T
+         fXwawa5fp4tgImveRelpYugOidRa13srMULZmOZKomSPtTPmQECfaDbYkNXpuWhYLzEW
+         hzgQB/7nxWy3vkSVupq7md2+4lElUacZj+fEmmQzs0WyCczYSDSZxYQgb1V+SL04jp8q
+         Qykg==
+X-Gm-Message-State: AOAM530jG4Ip362UFGFrTZptgBkHlVEUKEVES905PrJAMD+MUM1QOdlu
+        EgMD6BMfu+n5YIDZgaDjWiA=
+X-Google-Smtp-Source: ABdhPJyZvcGvnXTFOj9DXoRU8MIzgborilNzBKzkr9QYRaOpCf2XP6lo3DCpe2B59JJJvtpYn+yK7g==
+X-Received: by 2002:a17:902:6b02:: with SMTP id o2mr5684636plk.56.1643331163740;
+        Thu, 27 Jan 2022 16:52:43 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id z124sm6529852pfb.166.2022.01.27.16.52.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 16:52:42 -0800 (PST)
+Message-ID: <6bf2f177-93f9-c1fb-ac06-ffe946a72abf@gmail.com>
+Date:   Thu, 27 Jan 2022 16:52:40 -0800
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.15 00/12] 5.15.18-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com
+References: <20220127180259.078563735@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220127180259.078563735@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGksDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWFydGluIEJsdW1l
-bnN0aW5nbCA8bWFydGluLmJsdW1lbnN0aW5nbEBnb29nbGVtYWlsLmNvbT4NCj4gU2VudDogRnJp
-ZGF5LCBKYW51YXJ5IDI4LCAyMDIyIDU6NTMgQU0NCj4gVG86IFBrc2hpaCA8cGtzaGloQHJlYWx0
-ZWsuY29tPg0KPiBDYzogbGludXgtd2lyZWxlc3NAdmdlci5rZXJuZWwub3JnOyB0b255MDYyMGVt
-bWFAZ21haWwuY29tOyBrdmFsb0Bjb2RlYXVyb3JhLm9yZzsNCj4gam9oYW5uZXNAc2lwc29sdXRp
-b25zLm5ldDsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVs
-Lm9yZzsgTmVvIEpvdQ0KPiA8bmVvam91QGdtYWlsLmNvbT47IEplcm5laiBTa3JhYmVjIDxqZXJu
-ZWouc2tyYWJlY0BnbWFpbC5jb20+OyBFZCBTd2llcmsgPGVzd2llcmtAZ2guc3Q+DQo+IFN1Ympl
-Y3Q6IFJlOiBbUEFUQ0ggdjMgMC84XSBydHc4ODogcHJlcGFyZSBsb2NraW5nIGZvciBTRElPIHN1
-cHBvcnQNCj4gDQo+IEhpIFBpbmctS2UsDQo+IA0KPiBPbiBNb24sIEphbiAyNCwgMjAyMiBhdCAz
-OjU5IEFNIFBrc2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPiB3cm90ZToNCg0KWy4uLl0NCg0KPiA+
-DQo+ID4gVG8gYXZvaWQgdGhpcywgd2UgY2FuIGFkZCBhIGZsYWcgdG8gc3RydWN0IHJ0d192aWYs
-IGFuZCBzZXQgdGhpcyBmbGFnDQo+ID4gd2hlbiA6OnJlbW92ZV9pbnRlcmZhY2UuIFRoZW4sIG9u
-bHkgY29sbGVjdCB2aWYgd2l0aG91dCB0aGlzIGZsYWcgaW50byBsaXN0DQo+ID4gd2hlbiB3ZSB1
-c2UgaXRlcmF0ZV9hY3Rpb20oKS4NCj4gPg0KPiA+IEFzIHdlbGwgYXMgaWVlZTgwMjExX3N0YSBj
-YW4gZG8gc2ltaWxhciBmaXguDQo+ID4NCg0KSSB3b3VsZCBwcmVmZXIgbXkgbWV0aG9kIHRoYXQg
-YWRkcyBhICdib29sIGRpc2FibGVkJyBmbGFnIHRvIHN0cnVjdCBydHdfdmlmL3J0d19zdGENCmFu
-ZCBzZXQgaXQgd2hlbiA6OnJlbW92ZV9pbnRlcmZhY2UvOjpzdGFfcmVtb3ZlLiBUaGVuIHJ0d19p
-dGVyYXRlX3N0YXMoKSBjYW4NCmNoZWNrIHRoaXMgZmxhZyB0byBkZWNpZGUgd2hldGhlciBkb2Vz
-IHRoaW5nIG9yIG5vdC4NCg0KWy4uLl0NCg0KPiANCj4gRm9yIHRoZSBzdGEgdXNlLWNhc2UgSSB0
-aG91Z2h0IGFib3V0IGFkZGluZyBhIGRlZGljYXRlZCByd2xvY2sNCj4gKGluY2x1ZGUvbGludXgv
-cndsb2NrLmgpIGZvciBydHdfZGV2LT5tYWNfaWRfbWFwLg0KPiBydHdfc3RhX3thZGQscmVtb3Zl
-fSB3b3VsZCB0YWtlIGEgd3JpdGUtbG9jay4NCj4gcnR3X2l0ZXJhdGVfc3RhcygpIHRha2VzIHRo
-ZSByZWFkLWxvY2sgKHRoZSBsb2NrIHdvdWxkIGJlIGFjcXVpcmVkDQo+IGJlZm9yZSBjYWxsaW5n
-IGludG8gaWVlZTgwMjExX2l0ZXJhdGVfLi4uKS4gQWRkaXRpb25hbGx5DQo+IHJ0d19pdGVyYXRl
-X3N0YXMoKSBuZWVkcyB0byBjaGVjayBpZiB0aGUgc3RhdGlvbiBpcyBzdGlsbCB2YWxpZA0KPiBh
-Y2NvcmRpbmcgdG8gbWFjX2lkX21hcCAtIGlmIG5vdDogc2tpcC9pZ25vcmUgaXQgZm9yIHRoYXQg
-aXRlcmF0aW9uLg0KPiBUaGlzIGNvdWxkIGJlIGNvbWJpbmVkIHdpdGggeW91cg0KPiAwMDAxLXJ0
-dzg4LXVzZS1hdG9taWMtdG8tY29sbGVjdC1zdGFzLWFuZC1kb2VzLWl0ZXJhdG9ycy5wYXRjaC4N
-Cg0KVXNpbmcgYSAnZGlzYWJsZWQnIGZsYWcgd2l0aGluIHJ0d192aWYvcnR3X3N0YSB3aWxsIGJl
-IGludHVpdGl2ZSBhbmQNCmJldHRlciB0aGFuIGJpdG1hcCBvZiBtYWNfaWRfbWFwLiBQbGVhc2Ug
-cmVmZXJlbmNlIG15IG1lbnRpb24gYWJvdmUuDQoNCj4gDQo+IEZvciB0aGUgaW50ZXJmYWNlIHVz
-ZS1jYXNlIGl0J3Mgbm90IGNsZWFyIHRvIG1lIGhvdyB0aGlzIHdvcmtzIGF0IGFsbC4NCj4gcnR3
-X29wc19hZGRfaW50ZXJmYWNlKCkgaGFzIChpbiBhIHNpbXBsaWZpZWQgdmlldyk6DQo+ICAgICB1
-OCBwb3J0ID0gMDsNCj4gICAgIC8vIHRoZSBwb3J0IHZhcmlhYmxlIGlzIG5ldmVyIGNoYW5nZWQN
-Cj4gICAgIHJ0d3ZpZi0+cG9ydCA9IHBvcnQ7DQo+ICAgICBydHd2aWYtPmNvbmYgPSAmcnR3X3Zp
-Zl9wb3J0W3BvcnRdOw0KPiAgICAgcnR3X2luZm8ocnR3ZGV2LCAic3RhcnQgdmlmICVwTSBvbiBw
-b3J0ICVkXG4iLCB2aWYtPmFkZHIsIHJ0d3ZpZi0+cG9ydCk7DQo+IEhvdyBkbyBtdWx0aXBsZSBp
-bnRlcmZhY2VzICh2aWZzKSB3b3JrIGluIHJ0dzg4IGlmIHRoZSBwb3J0IGlzIGFsd2F5cw0KPiB6
-ZXJvPyBJcyBzb21lIGtpbmQgb2YgdHJhY2tpbmcgb2YgdGhlIHVzZWQgcG9ydHMgbWlzc2luZyAo
-c2ltaWxhciB0bw0KPiBob3cgd2UgdHJhY2sgdGhlIHVzZWQgc3RhdGlvbiBJRHMgLSBhbHNvIGNh
-bGxlZCBtYWNfaWQgLSBpbg0KPiBydHdfZGV2LT5tYWNfaWRfbWFwKT8NCg0KVGhlIHBvcnQgc2hv
-dWxkIGJlIGFsbG9jYXRlZCBkeW5hbWljYWxseSBpZiB3ZSBzdXBwb3J0IHR3byBvciBtb3JlIHZp
-ZnMuDQpXZSBoYXZlIGludGVybmFsIHRyZWUgdGhhdCBpcyBnb2luZyB0byBzdXBwb3J0IHAycCBi
-eSBzZWNvbmQgdmlmLg0KDQoNClBpbmctS2UNCg0K
+
+
+On 1/27/2022 10:09 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.18 release.
+> There are 12 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sat, 29 Jan 2022 18:02:51 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.18-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
