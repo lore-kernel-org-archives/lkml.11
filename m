@@ -2,137 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9DFC4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 06:52:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 06:59:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344656AbiA2Gwx (ORCPT
+        id S1347253AbiA2G7b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 01:52:53 -0500
-Received: from mga06.intel.com ([134.134.136.31]:50043 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242645AbiA2Gwr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 01:52:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643439167; x=1674975167;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=iOrxWhOWH43oPi0A9hvF4i2V+8/VR9WDyPilwlbyMSA=;
-  b=Ep5Mhu8VZ/TPjCUDMPuSW8ukajkJvkpUt48tk5vOd8buutlLOoz+OJkQ
-   qVNgdVB+Jnzeha5pLZk1XjBsqRSlctY3mAlxXubKo4MZZ1NCBWvS0+D6R
-   v9buBBU3QKetIuxmAH7L4c3C82s6wB1wJysQFKU/oUg4wuuIBwk7ZFMls
-   GYx+pNXkBjAyEcifKTuaKZW2Go9iDSNPQrjs2rA5u8mOAzUMf3mm6wu05
-   ri3D/Ch23CdQKphEiwUmLVWTR9Efp8DLWVw1I4u3UKk+8Fl8XNYG1xjWY
-   j2jk3zQ0fcLtXcp05nmJxU5i4SAT7L8yBGwSnEm8idMEeitBPKYW/7zYw
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="307979427"
-X-IronPort-AV: E=Sophos;i="5.88,326,1635231600"; 
-   d="scan'208";a="307979427"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 22:52:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,326,1635231600"; 
-   d="scan'208";a="582090112"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 28 Jan 2022 22:52:43 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDhbG-000Osw-Uj; Sat, 29 Jan 2022 06:52:42 +0000
-Date:   Sat, 29 Jan 2022 14:52:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Xu <peterx@redhat.com>
-Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Todd Kjos <tkjos@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Lokesh Gidra <lokeshgidra@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.10
- 78/9999] mm/hugetlb.c:5458:8: error: conflicting types for 'huge_pmd_share';
- have 'pte_t *(struct mm_struct *, struct vm_area_struct,  long unsigned int,
-  pud_t *)'
-Message-ID: <202201291327.GJQAX1sW-lkp@intel.com>
+        Sat, 29 Jan 2022 01:59:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47122 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241669AbiA2G73 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 29 Jan 2022 01:59:29 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05E1160BBC;
+        Sat, 29 Jan 2022 06:59:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFFB8C340E5;
+        Sat, 29 Jan 2022 06:59:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643439568;
+        bh=ZPTxWZwBUS/Xa5K43LPLu5fC9jzUrxlpXwWUqtiXjwA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PdjTfrB3VnsmoEBWkH+Zq6DlG758IBpRXOOl8s4tlKbNS/8vTNDU+iYqj/d1XH+SR
+         sWm8D8l8jQ76dIwJ7KtkXfZ1On7Fy62JOQ6DekL/knd1qcRFgvNDgjwPiRpQyVY09a
+         J8TPotZX1cKbbyX3Pa1HHLpW1uJL6bwwhesY642iEoaM4siuDHEksR4CPRtc9gnJkS
+         fFhnYLrCXCKV58YmXxkvkYxjYMB5rOKkl4O1lOBvx0tCZbS+YonC94jh1xRYuEgK5G
+         SLGZXP9aBSfpkcUOhwpmBcjSuV+0Jv9C7VUSQ0rtCyHJslRiyIVfr52GG56ittEF4q
+         lO56X8ajDF/Yg==
+Date:   Sat, 29 Jan 2022 14:59:22 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] arm64: dts: imx8m{m,n}_venice*: add gpio-line-names
+Message-ID: <20220129065922.GX4686@dragon>
+References: <20220128010603.17620-1-tharvey@gateworks.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220128010603.17620-1-tharvey@gateworks.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.10
-head:   8a98494ddc958f3f43d2411306524b505e2f4fa9
-commit: 59caf93f36aed4b7c5960672376b966e3f5b2bf1 [78/9999] BACKPORT: FROMGIT: hugetlb: pass vma into huge_pte_alloc() and huge_pmd_share()
-config: arm64-buildonly-randconfig-r001-20220124 (https://download.01.org/0day-ci/archive/20220129/202201291327.GJQAX1sW-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/59caf93f36aed4b7c5960672376b966e3f5b2bf1
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.10
-        git checkout 59caf93f36aed4b7c5960672376b966e3f5b2bf1
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+On Thu, Jan 27, 2022 at 05:06:03PM -0800, Tim Harvey wrote:
+> Add gpio-line-names for the various GPIO's used on Gateworks Venice
+> boards. Note that these GPIO's are typically 'configured' in Boot
+> Firmware via gpio-hog therefore we only configure line names to keep the
+> boot firmware configuration from changing on kernel init.
+> 
+> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-Note: the ammarfaizi2-block/google/android/kernel/common/android13-5.10 HEAD 8a98494ddc958f3f43d2411306524b505e2f4fa9 builds fine.
-      It only hurts bisectability.
-
-All errors (new ones prefixed by >>):
-
->> mm/hugetlb.c:5458:8: error: conflicting types for 'huge_pmd_share'; have 'pte_t *(struct mm_struct *, struct vm_area_struct,  long unsigned int,  pud_t *)'
-    5458 | pte_t *huge_pmd_share(struct mm_struct *mm, struct vm_area_struct vma,
-         |        ^~~~~~~~~~~~~~
-   In file included from mm/hugetlb.c:39:
-   include/linux/hugetlb.h:155:8: note: previous declaration of 'huge_pmd_share' with type 'pte_t *(struct mm_struct *, struct vm_area_struct *, long unsigned int,  pud_t *)'
-     155 | pte_t *huge_pmd_share(struct mm_struct *mm, struct vm_area_struct *vma,
-         |        ^~~~~~~~~~~~~~
-
-
-vim +5458 mm/hugetlb.c
-
-  5425	
-  5426	/*
-  5427	 * unmap huge page backed by shared pte.
-  5428	 *
-  5429	 * Hugetlb pte page is ref counted at the time of mapping.  If pte is shared
-  5430	 * indicated by page_count > 1, unmap is achieved by clearing pud and
-  5431	 * decrementing the ref count. If count == 1, the pte page is not shared.
-  5432	 *
-  5433	 * Called with page table lock held and i_mmap_rwsem held in write mode.
-  5434	 *
-  5435	 * returns: 1 successfully unmapped a shared pte page
-  5436	 *	    0 the underlying pte page is not shared, or it is the last user
-  5437	 */
-  5438	int huge_pmd_unshare(struct mm_struct *mm, struct vm_area_struct *vma,
-  5439						unsigned long *addr, pte_t *ptep)
-  5440	{
-  5441		pgd_t *pgd = pgd_offset(mm, *addr);
-  5442		p4d_t *p4d = p4d_offset(pgd, *addr);
-  5443		pud_t *pud = pud_offset(p4d, *addr);
-  5444	
-  5445		i_mmap_assert_write_locked(vma->vm_file->f_mapping);
-  5446		BUG_ON(page_count(virt_to_page(ptep)) == 0);
-  5447		if (page_count(virt_to_page(ptep)) == 1)
-  5448			return 0;
-  5449	
-  5450		pud_clear(pud);
-  5451		put_page(virt_to_page(ptep));
-  5452		mm_dec_nr_pmds(mm);
-  5453		*addr = ALIGN(*addr, HPAGE_SIZE * PTRS_PER_PTE) - HPAGE_SIZE;
-  5454		return 1;
-  5455	}
-  5456	#define want_pmd_share()	(1)
-  5457	#else /* !CONFIG_ARCH_WANT_HUGE_PMD_SHARE */
-> 5458	pte_t *huge_pmd_share(struct mm_struct *mm, struct vm_area_struct vma,
-  5459			      unsigned long addr, pud_t *pud)
-  5460	{
-  5461		return NULL;
-  5462	}
-  5463	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Applied, thanks!
