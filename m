@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B071C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 19:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 19:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353099AbiA2Th0 (ORCPT
+        id S1353267AbiA2Tho (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 14:37:26 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:60274
+        Sat, 29 Jan 2022 14:37:44 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:60306
         "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1353080AbiA2ThM (ORCPT
+        by vger.kernel.org with ESMTP id S1353122AbiA2ThN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 14:37:12 -0500
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        Sat, 29 Jan 2022 14:37:13 -0500
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A308340048
-        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 19:36:55 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 16823402AA
+        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 19:37:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643485015;
-        bh=XuPLAqAJ9YY2uh5AhVfTrXkOsUrsAC204eUS2kAaJyU=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=Y2uLP/Yl2zL6bTTctHi7wAAp/Uk2FJePeDaikYOYEazxdtIjhafuaZ9Lv8t8MP+3d
-         a34dyOwMw6MwCLFpATwWM7g8HyQH7vrIpp8Su1Q7/7jgDXODnUz7asEIyEv99RYeNi
-         /DbdLn3Fdm2Mr/b9378kh3uwRSqNgtuQsNxgeZI6sWI6gWQbehIMGjLOQdTNatadFa
-         0o+EpT4PD7anZpabDB9+ve9rIYW1OiiR6JbNRf+D579ynrokRb3zioymctO46DDXR4
-         /7THT0RWrimMUVe7UAJs2z4yR0nVZkzw8hP/aj1sS7fCwkKY/luxejPG5X9ZYEjg0F
-         9iU+LToJFRx4Q==
-Received: by mail-ed1-f72.google.com with SMTP id h11-20020a05640250cb00b003fa024f87c2so4786949edb.4
-        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 11:36:55 -0800 (PST)
+        s=20210705; t=1643485023;
+        bh=okF8bn5kqmciTynWklIDfopxJdHcfxeyGhxpgYWxZes=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=IidEq6TEBore2wxMYC5TfS/YN45NCoYhBweqvosG8vVFxT0ne+/GWMgQLtI8u3PC4
+         M7MYoDd3hLNzq68ErLRLw7lt+YWlucCWXJBDaX60ZLG8R7jscSVuKSGlK7refabJH+
+         yxGRp7pCLJtUzxL2XJDQjj9I1FE5u3fpFqh8Vh7CkAy5YOePX3klmQcLH9S/H1qa3e
+         UKVIr6zf2JUEI+F1Z/94fBVfn4TFhsZ9ZVwWlRh7LNVUY411nfRjcf13I3Kza7HYw4
+         nsIpJAILu8h1bnZdtidWduBZw9kDNin/fKuV+csl/MTWakD2j2im/OV9M6hbNYgD4X
+         s62Qf30wvVMyA==
+Received: by mail-ed1-f71.google.com with SMTP id ed6-20020a056402294600b004090fd8a936so4774984edb.23
+        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 11:37:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XuPLAqAJ9YY2uh5AhVfTrXkOsUrsAC204eUS2kAaJyU=;
-        b=eYM3hYcB5r+YOATI382x+cidz/4gFPjEPpcda7y2VYuYgK9JrHqhi8yKXMrAze1TRN
-         +3FcuCn5Ivwtdt3JGoDKPfVAAcFm2a8wq7fI4Lu/oIMBZ83t2XwmUSxSA46PPjeP6U5Z
-         aFns/mrJA1j0/C9ZwW9Us5FLw3ZeJX9KGUMoLpafWx94Je0FPcHwqCE90fgRBc+eDTni
-         6vee+6nHsNpzQAeHZnk6zwZrLonFVdJ+FI/OEvNcYlV8SvfPeZpon2dvwIkTK4mIdebH
-         yymuHVkTkX9pk7EWuqismrv7VMgJK7YsSUNhFepDhVGxwqBz4VMQ0R5VY9S4NC6Ts4Tn
-         Z5XQ==
-X-Gm-Message-State: AOAM531AfkVqQ3W0HKsZ5uuHYlZv/iyq391bws38knI7OEtMwiCJ2Hma
-        IfgiGVcs+kRATeuV6JeQhHq1+JJ9HEXSqmsNziKIS8WzAVaRhPVSzRsNaSaEY+QDyor3KNkpg2X
-        xwQcH4KoGxyllKxGFXXc4O5X0wQ+Xiro9qcT5YD9FQQ==
-X-Received: by 2002:aa7:cdc5:: with SMTP id h5mr13885347edw.293.1643485009962;
-        Sat, 29 Jan 2022 11:36:49 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwkRER9zOkkAySGx0C0YpNLKKRr5Djve4lerBLmDsvqlQap4YIrDFg+B4EOx7UpKxurUyVhXg==
-X-Received: by 2002:aa7:cdc5:: with SMTP id h5mr13885341edw.293.1643485009830;
-        Sat, 29 Jan 2022 11:36:49 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=okF8bn5kqmciTynWklIDfopxJdHcfxeyGhxpgYWxZes=;
+        b=qpRAnmezmGcAb2842j+xtVglEq+/6G8AAjKoT/3Zvy33nKMe9fpUpCXoK01QcawRjZ
+         +uj1cwkoLuWvYDOedT4ehZwi11Nuid+2Vf6rFObtY3dn4VxoSyAqspimD+/sJ6xXqjQe
+         j2v/Qi6jz/bFOfwsiYZDeTfeKCCjmRE2djIQYPAtezM5JAxXjzYNwXu5qQlf9NkMGxkH
+         4m3Wd3gCL7Hc1/drw9fqvtMSwIxEdw6W3omD3XvuV93buB3nCAVCjoEL9EQW6IjbIxq1
+         RiPR9e536M0lR68b4ZdjubAv5P/koB56Y2BA7g88ddGwp0Wj8NWqONvcY73zHNmeqfKu
+         TUrw==
+X-Gm-Message-State: AOAM533Ro0EvK/W7kAL0uu6mqAlTPN359W4KtY4dHOIInxR/+KVvCE4h
+        fkz81cQPEmr9DCJ1bHkjxHGzSF7TSDTKg/mYSLqUBUvxOgAAUoPdY6MiZINSmCVug0zpvcS7DGg
+        2OxmqWSLE7veo87662vIdm207/95wlChaHCkxlUcq7A==
+X-Received: by 2002:a17:906:99c6:: with SMTP id s6mr12264118ejn.522.1643485013704;
+        Sat, 29 Jan 2022 11:36:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy1xIjBHvse+WpQf8zil2xcWN1KmBQHJXw/Zj/fjql+p0Fm4NLryVA+s2m708rnsfFL8b/imw==
+X-Received: by 2002:a17:906:99c6:: with SMTP id s6mr12264102ejn.522.1643485013529;
+        Sat, 29 Jan 2022 11:36:53 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id bf21sm14968026edb.2.2022.01.29.11.36.48
+        by smtp.gmail.com with ESMTPSA id bf21sm14968026edb.2.2022.01.29.11.36.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Jan 2022 11:36:49 -0800 (PST)
+        Sat, 29 Jan 2022 11:36:52 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Kishon Vijay Abraham I <kishon@ti.com>,
         Vinod Koul <vkoul@kernel.org>,
@@ -66,41 +67,93 @@ To:     Kishon Vijay Abraham I <kishon@ti.com>,
         linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org
-Subject: [PATCH 1/8] arm64: dts: exynos: adjust USB DRD clocks with dtschema in Exynos7
-Date:   Sat, 29 Jan 2022 20:36:39 +0100
-Message-Id: <20220129193646.372481-1-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 4/8] dt-bindings: phy: samsung,dp-video-phy: convert to dtschema
+Date:   Sat, 29 Jan 2022 20:36:42 +0100
+Message-Id: <20220129193646.372481-4-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220129193646.372481-1-krzysztof.kozlowski@canonical.com>
+References: <20220129193646.372481-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the same order of USB 3.0 DRD controller clocks as in Exynos5433.
+Convert the Samsung SoC DisplayPort PHY bindings to DT schema format.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- arch/arm64/boot/dts/exynos/exynos7.dtsi | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ .../bindings/phy/samsung,dp-video-phy.yaml    | 41 +++++++++++++++++++
+ .../devicetree/bindings/phy/samsung-phy.txt   | 11 -----
+ 2 files changed, 41 insertions(+), 11 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/phy/samsung,dp-video-phy.yaml
 
-diff --git a/arch/arm64/boot/dts/exynos/exynos7.dtsi b/arch/arm64/boot/dts/exynos/exynos7.dtsi
-index 3364b09c3158..e38bb02a2152 100644
---- a/arch/arm64/boot/dts/exynos/exynos7.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos7.dtsi
-@@ -684,11 +684,10 @@ usbdrd_phy: phy@15500000 {
- 			reg = <0x15500000 0x100>;
- 			clocks = <&clock_fsys0 ACLK_USBDRD300>,
- 			       <&clock_fsys0 OSCCLK_PHY_CLKOUT_USB30_PHY>,
--			       <&clock_fsys0 PHYCLK_USBDRD300_UDRD30_PIPE_PCLK_USER>,
- 			       <&clock_fsys0 PHYCLK_USBDRD300_UDRD30_PHYCLK_USER>,
-+			       <&clock_fsys0 PHYCLK_USBDRD300_UDRD30_PIPE_PCLK_USER>,
- 			       <&clock_fsys0 SCLK_USBDRD300_REFCLK>;
--			clock-names = "phy", "ref", "phy_pipe",
--				"phy_utmi", "itp";
-+			clock-names = "phy", "ref", "phy_utmi", "phy_pipe", "itp";
- 			samsung,pmu-syscon = <&pmu_system_controller>;
- 			#phy-cells = <1>;
- 		};
+diff --git a/Documentation/devicetree/bindings/phy/samsung,dp-video-phy.yaml b/Documentation/devicetree/bindings/phy/samsung,dp-video-phy.yaml
+new file mode 100644
+index 000000000000..838c6d480ce6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/phy/samsung,dp-video-phy.yaml
+@@ -0,0 +1,41 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/phy/samsung,dp-video-phy.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Samsung Exynos SoC DisplayPort PHY
++
++maintainers:
++  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
++  - Marek Szyprowski <m.szyprowski@samsung.com>
++  - Sylwester Nawrocki <s.nawrocki@samsung.com>
++
++properties:
++  compatible:
++    enum:
++      - samsung,exynos5250-dp-video-phy
++      - samsung,exynos5420-dp-video-phy
++
++  "#phy-cells":
++    const: 0
++
++  samsung,pmu-syscon:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Phandle to PMU system controller interface.
++
++required:
++  - compatible
++  - "#phy-cells"
++  - samsung,pmu-syscon
++
++additionalProperties: false
++
++examples:
++  - |
++    phy {
++        compatible = "samsung,exynos5420-dp-video-phy";
++        samsung,pmu-syscon = <&pmu_system_controller>;
++        #phy-cells = <0>;
++    };
+diff --git a/Documentation/devicetree/bindings/phy/samsung-phy.txt b/Documentation/devicetree/bindings/phy/samsung-phy.txt
+index 6ab16734eb65..839ffe2a2d05 100644
+--- a/Documentation/devicetree/bindings/phy/samsung-phy.txt
++++ b/Documentation/devicetree/bindings/phy/samsung-phy.txt
+@@ -1,14 +1,3 @@
+-Samsung Exynos SoC series Display Port PHY
+--------------------------------------------------
+-
+-Required properties:
+-- compatible : should be one of the following supported values:
+-	 - "samsung,exynos5250-dp-video-phy"
+-	 - "samsung,exynos5420-dp-video-phy"
+-- samsung,pmu-syscon: phandle for PMU system controller interface, used to
+-		      control pmu registers for power isolation.
+-- #phy-cells : from the generic PHY bindings, must be 0;
+-
+ Samsung S5P/Exynos SoC series USB PHY
+ -------------------------------------------------
+ 
 -- 
 2.32.0
 
