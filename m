@@ -2,120 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 00:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4012AC43219
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 00:50:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241450AbiA2Arn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 19:47:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42824 "EHLO
+        id S243131AbiA2Aut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 19:50:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232089AbiA2Arl (ORCPT
+        with ESMTP id S241666AbiA2Aur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 19:47:41 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA5BC061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:47:41 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id ka4so21421793ejc.11
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:47:41 -0800 (PST)
+        Fri, 28 Jan 2022 19:50:47 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA60DC061749
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:50:47 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id p203so15523198oih.10
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:50:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kB67G3+aOp/BknIObLtkl/DFgO8sf3NUTmgGKY/E+24=;
-        b=m5JrgPX7rY1AXo8AND+SfpLXf3k2VCB5OjOQaBw9OBwOjk2D96RC5Zw5ntj8UhIMNB
-         rnS3z977Hf7D8NMVhUSdafGokY6KjItiXQY3sfZctdaQHLcLzfPEr3R/oy8OqvSlkoLh
-         gR87RUHh79Y+ZSQayph17cTUxnVTKd5tNRGuKF5C9sx2Yea1Y0EgxJAlIX2rAtcfhPGk
-         DeLm7ypYMnY3hh2xDTRvxlbWIlcdP1QYATq27qrII08uSYo2I1ssMMPYyK6AZylpFtDI
-         FGUDvkvo/fQoiFciCe1idMY6fyuchYRVnC3Nx4Jz6m/ZqT6ki+WXKhAFqbJFoc22ctjv
-         8OYg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wP9GUemZjobVvElhar7UqvhZ43XmUSMFie0l7uhdp34=;
+        b=mMl9H0qw9/VE5m1aO1VI4YZPm4cSdMe0mM3Q2l4V1XUz9/eB0ZKNP/bYFFaNoTXCCq
+         Gb2+GZx14nkjburIhdiga039yksG29/Xqy+EMFyFBXbTb9brMIhyntvWRT2RFU8KMwak
+         axohOsIVOumItT87Cf3fDnf7as+Xc/uKUaVRIXY6Jd/4Qajcb2OZzn9bVS05p9zHNv7w
+         O2gTlJblQuIQbtM0FSf9QnHWBfKzr1rHLNB5nbr7kGfX6jPyNR+0ZWoKB6hXAM3axWnx
+         1BB+IGZcE38YeWzvHZtY3adbMruKepDbVCuRUscZ2zLiqpxHsy3U2wBsA7vm0861LeO6
+         RNbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kB67G3+aOp/BknIObLtkl/DFgO8sf3NUTmgGKY/E+24=;
-        b=7ob3thO7r+2+Sj4s+kSNG2bjDl4GLH7yMq1cCcUUMmxRhUmQSKDo8tS5M0ciFddQgJ
-         MjagBFCIX+hhpP6py/ggOBUJq03kIu+n9sa8SDDwsF2ojvwQhHimiGqVVyFkULW7KNa8
-         IBAZ8PlsEp0GMODa7QY2doIXIEThqgYp1bpZFvhGvjGKxvK1bpP6OA3IfxUyMqiM81Sr
-         k11BSHDVJG6OUEt2NVKGUZ20ArLABQzSDBudF/hyBvg9lrjoHQa577OUZJCQnGY9cCZq
-         WIiVfc7URZ/tMzbTW1AZJMYo0HpIC8q/anXUWgeHT9ulDjag+EywSxpiomy3dob6u7kK
-         9Cdg==
-X-Gm-Message-State: AOAM5308P+h0/gu0trtCvsVWquMOVEGOduQ+49o2NMO8wR+J8BLw13u1
-        4IbuFk+SS9bEGO5ILu3qHfU=
-X-Google-Smtp-Source: ABdhPJyLPOWrHg5Qh5KESKL/LjIkKA+rI2w1NbdXIt5W/b98M05/Q+1LIAVjaiokBR5V0GOiAt72Tg==
-X-Received: by 2002:a17:906:7308:: with SMTP id di8mr9028450ejc.464.1643417260182;
-        Fri, 28 Jan 2022 16:47:40 -0800 (PST)
-Received: from localhost ([185.92.221.13])
-        by smtp.gmail.com with ESMTPSA id q23sm8124776ejz.30.2022.01.28.16.47.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 28 Jan 2022 16:47:39 -0800 (PST)
-Date:   Sat, 29 Jan 2022 00:47:39 +0000
-From:   Wei Yang <richard.weiyang@gmail.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Wei Yang <richard.weiyang@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        peterz@infradead.org, will@kernel.org, linyunsheng@huawei.com,
-        aarcange@redhat.com, feng.tang@intel.com, ebiederm@xmission.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: remove offset check on page->compound_head and
- folio->lru
-Message-ID: <20220129004739.d2b3dqiv3qw6dfhs@master>
-Reply-To: Wei Yang <richard.weiyang@gmail.com>
-References: <Ydi6iMbSZ/FewYPT@casper.infradead.org>
- <20220107160825.13c71fdd871d7d5611d116b9@linux-foundation.org>
- <YdjfsbAR0UlwyC6b@casper.infradead.org>
- <20220108081340.3oi2z2rm3cbqozzt@master>
- <20220123013852.mm7eyn3z26v3hkc2@master>
- <93c48e68-2266-72ee-0763-65805b94c968@suse.cz>
- <20220124225531.26yyse52yo5x3fr5@master>
- <581f4247-83b1-df39-6724-af0565d0c7ea@suse.cz>
- <20220127011054.zlqtydxbhi4ioj5d@master>
- <9451a3f7-ef63-6d01-1357-4953f3d1e566@suse.cz>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wP9GUemZjobVvElhar7UqvhZ43XmUSMFie0l7uhdp34=;
+        b=05ZBkwaXvxIKullVcyIt+TMqsnhRMEP0l62zSzPNqMBowboSGxnYypr4px4ToSHTAp
+         6TkWDGBzqi3wo7vjniNqlDwPiSaPRea/qbXxS+JVA1FgcvtKtAtVfRzOilvti0ZBej9Q
+         8JOgFZjBylep0z4rUvwtUkTLBtaem9ZN90m1a+eCM3H6HsrvXRs+OK8X3u4cbdIHfxbm
+         k60QJgSCWPM8aVVMBQUfCmiEEplCoTPAOZJj7dZOO+RGNIzzUkeImbjKJ43DS6Thcsvd
+         vwpTmEcN+VB7ruGsC2yGOOLnXUXGhwZJp9AfcU81mvdyHYZjE8B8tVLMc09SR+pO251Z
+         lsxQ==
+X-Gm-Message-State: AOAM531fJnqezakJwi4bwECI6PZFnHigxx+VMELpEgDghkSfikXkS6rB
+        7GiRVL3d886gQBMvIOjoZeOmeQ==
+X-Google-Smtp-Source: ABdhPJwERBnVifrHrrzYgx92kUQsmMqDK5Gg8Dx7QIQWHze+WTQMcJMbFY9jNW6BAwUh2FHD5fgivA==
+X-Received: by 2002:aca:100c:: with SMTP id 12mr7528496oiq.147.1643417446535;
+        Fri, 28 Jan 2022 16:50:46 -0800 (PST)
+Received: from yoga ([2600:1700:a0:3dc8:5c39:baff:fe03:898d])
+        by smtp.gmail.com with ESMTPSA id c26sm3619496otn.34.2022.01.28.16.50.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Jan 2022 16:50:45 -0800 (PST)
+Date:   Fri, 28 Jan 2022 18:50:42 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Marijn Suijten <marijn.suijten@somainline.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        Subbaraman Narayanamurthy <subbaram@codeaurora.org>
+Subject: Re: [PATCH v10 2/2] leds: Add driver for Qualcomm LPG
+Message-ID: <YfSPYkbTXMOUGKkG@yoga>
+References: <20211010043912.136640-1-bjorn.andersson@linaro.org>
+ <20211010043912.136640-2-bjorn.andersson@linaro.org>
+ <YXL0DyyPkS4/wfB7@ripper>
+ <20211027211928.tjybwy2lokj6eoun@SoMainline.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9451a3f7-ef63-6d01-1357-4953f3d1e566@suse.cz>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20211027211928.tjybwy2lokj6eoun@SoMainline.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 04:42:10PM +0100, Vlastimil Babka wrote:
->On 1/27/22 02:10, Wei Yang wrote:
->> On Tue, Jan 25, 2022 at 11:11:40AM +0100, Vlastimil Babka wrote:
->>>On 1/24/22 23:55, Wei Yang wrote:
->>>> On Mon, Jan 24, 2022 at 11:30:10AM +0100, Vlastimil Babka wrote:
->>>>>On 1/23/22 02:38, Wei Yang wrote:
->>>>>
->>>>>I can offer my insight (which might be of course wrong). Ideally one day
->>>>>page.lru will be gone and only folio will be used for LRU pages. Then there
->>>>>won't be a  FOLIO_MATCH(lru, lru); and FOLIO_MATCH(compound_head, lru);
->>>>>won't appear to be redundant anymore. lru is list_head so two pointers and
->>>> 
->>>> Thanks for your comment.
->>>> 
->>>> I can't imagine the final result. If we would remove page.lru, we could remove
->>>> FOLIO_MATCH(lru, lru) and add FOLIO_MATCH(compound_head, lru) at that moment?
->>>
->>>Yes, or we could forget to do it. Adding it right now is another option that
->>>Matthew has chosen and I don't see a strong reason to change it. Can you
->>>measure a kernel build speedup thanks to removing the now redundant check?
->>>
->> 
->> If we forget to do it, the compile would fail, right?
->
->No, FOLIO_MATCH is like a build-time assert. It can only fail if the assert
->is there, and the condition evaluates to false.
+On Wed 27 Oct 16:19 CDT 2021, Marijn Suijten wrote:
 
-Currently we have this check
+> Hi Bjorn,
+> 
+> On 2021-10-22 10:25:35, Bjorn Andersson wrote:
+> > On Sat 09 Oct 21:39 PDT 2021, Bjorn Andersson wrote:
+> > 
+> > > The Light Pulse Generator (LPG) is a PWM-block found in a wide range of
+> > > PMICs from Qualcomm. These PMICs typically comes with 1-8 LPG instances,
+> > > with their output being routed to various other components, such as
+> > > current sinks or GPIOs.
+> > > 
+> > > Each LPG instance can operate on fixed parameters or based on a shared
+> > > lookup-table, altering the duty cycle over time. This provides the means
+> > > for hardware assisted transitions of LED brightness.
+> > > 
+> > > A typical use case for the fixed parameter mode is to drive a PWM
+> > > backlight control signal, the driver therefor allows each LPG instance
+> > > to be exposed to the kernel either through the LED framework or the PWM
+> > > framework.
+> > > 
+> > > A typical use case for the LED configuration is to drive RGB LEDs in
+> > > smartphones etc, for which the driver support multiple channels to be
+> > > ganged up to a MULTICOLOR LED. In this configuration the pattern
+> > > generators will be synchronized, to allow for multi-color patterns.
+> > > 
+> > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > > ---
+> > 
+> > Any feedback on this?
+> 
+> I asked in #linux-msm whether anything is wrong with the patterns,
+> since my Sony Discovery (sdm630 with a pm660l) blinks way quicker on a
+> pattern that's supposed to stay on for 1s and off for 1s:
+> 
+>     echo "0 1000 255 1000" > /sys/class/leds/rgb\:status/hw_pattern
+> 
+> It however seems to be broken in the same way on an older version now
+> (this might be v9 or v8) which I don't remember to be the case.  Can you
+> double-check if this is all working fine on your side?  If so, I'll have
+> to find some time to debug it on my end.
+> 
 
-  FOLIO_MATCH(lru, lru)
+I had missed the fact that LPG_RAMP_DURATION_REG is two registers for
+msg and lsb, for a total of 9 bits of duration. So what you saw was
+probably ticking at 232ms.
 
-Which checks page->lru and folio->lru.
+Note though that the pattern uses the last time as "high pause", so I
+expect that you should have seen 232 ms of off, followed by 464ms of
+light.
 
-As you mentioned page->lru would be gone. So this check would fail at compile?
+I've fixed this for v11, both rejecting invalid input and writing out
+all 9 bits.
 
-
--- 
-Wei Yang
-Help you, Help me
+Thanks for spotting this!
+Bjorn
