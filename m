@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF8EC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 10:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC594C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 11:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235579AbiA2K7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 05:59:48 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36106 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233641AbiA2K7o (ORCPT
+        id S234194AbiA2K75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 29 Jan 2022 05:59:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52822 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235635AbiA2K7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 05:59:44 -0500
+        Sat, 29 Jan 2022 05:59:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E670860B27;
-        Sat, 29 Jan 2022 10:59:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A739AC340E5;
-        Sat, 29 Jan 2022 10:59:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2152B8235B;
+        Sat, 29 Jan 2022 10:59:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10258C340E5;
+        Sat, 29 Jan 2022 10:59:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643453983;
-        bh=E1fbyFHrZPmPEjzKZszGLqXvNwPzsORweGc41ybj3sw=;
+        s=korg; t=1643453986;
+        bh=rdBVwmalGs9PCn2hgZmVPkCLXkjXCVoYIZhnHcYTuuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A9VYOI6GkNtEV4Z9IYQwcLUNSMAxhYpjYMlRSr5G7cD+0spoFnZ5jPO2NGMLQ33ad
-         bmHpjFxPfc4gDcUURWX9TL4K1cRMLD++MtzyhUobS5an+dczgPWBiCpi+VzFGETBzt
-         Gj1eOionAGMlkLl0utvlBvDAW6sSSzHx/xAJ5NAM=
+        b=rQSAQWIsVnIFAx5M4nm0v+kGFJW4gfKSm31D27U1x8TDEFr2LijsUk6Imz4GB+VAl
+         fi8cGLjnL0mAIqcIeVOx7BGCyDsbPtJLSsUdLwyMcRetHcjp+5VPFkypN6jg2a2sW6
+         oaYIKlvVy4VOyfhf4UbygJHYrMcPq4n+GU21QlCw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 4.14.264
-Date:   Sat, 29 Jan 2022 11:59:30 +0100
-Message-Id: <1643453970171206@kroah.com>
+Subject: Re: Linux 4.19.227
+Date:   Sat, 29 Jan 2022 11:59:35 +0100
+Message-Id: <1643453975114131@kroah.com>
 X-Mailer: git-send-email 2.35.0
-In-Reply-To: <1643453970118134@kroah.com>
-References: <1643453970118134@kroah.com>
+In-Reply-To: <164345397562207@kroah.com>
+References: <164345397562207@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -44,23 +44,23 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 diff --git a/Makefile b/Makefile
-index 0d754c4d8925..c5508214fa1f 100644
+index 72399555ce88..1e9652cb9c1f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
- PATCHLEVEL = 14
--SUBLEVEL = 263
-+SUBLEVEL = 264
+ PATCHLEVEL = 19
+-SUBLEVEL = 226
++SUBLEVEL = 227
  EXTRAVERSION =
- NAME = Petit Gorille
+ NAME = "People's Front"
  
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index 816781f209d6..f8d13ee2d538 100644
+index 37c80cfecd09..c25ee6a02d65 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -2166,6 +2166,8 @@ struct drm_i915_private {
+@@ -1595,6 +1595,8 @@ struct drm_i915_private {
  
  	struct intel_uncore uncore;
  
@@ -70,10 +70,10 @@ index 816781f209d6..f8d13ee2d538 100644
  
  	struct intel_gvt *gvt;
 diff --git a/drivers/gpu/drm/i915/i915_gem.c b/drivers/gpu/drm/i915/i915_gem.c
-index 9263b65720bc..08d31744e2d9 100644
+index c7d05ac7af3c..5b0d6d8b3ab8 100644
 --- a/drivers/gpu/drm/i915/i915_gem.c
 +++ b/drivers/gpu/drm/i915/i915_gem.c
-@@ -2220,6 +2220,76 @@ static void __i915_gem_object_reset_page_iter(struct drm_i915_gem_object *obj)
+@@ -2446,6 +2446,78 @@ static void __i915_gem_object_reset_page_iter(struct drm_i915_gem_object *obj)
  	rcu_read_unlock();
  }
  
@@ -115,6 +115,8 @@ index 9263b65720bc..08d31744e2d9 100644
 +	if (INTEL_GEN(dev_priv) < 8)
 +		return;
 +
++	GEM_TRACE("\n");
++
 +	assert_rpm_wakelock_held(dev_priv);
 +
 +	mutex_lock(&dev_priv->tlb_invalidate_lock);
@@ -147,43 +149,39 @@ index 9263b65720bc..08d31744e2d9 100644
 +	mutex_unlock(&dev_priv->tlb_invalidate_lock);
 +}
 +
- void __i915_gem_object_put_pages(struct drm_i915_gem_object *obj,
- 				 enum i915_mm_subclass subclass)
+ static struct sg_table *
+ __i915_gem_object_unset_pages(struct drm_i915_gem_object *obj)
  {
-@@ -2257,8 +2327,18 @@ void __i915_gem_object_put_pages(struct drm_i915_gem_object *obj,
- 
+@@ -2475,6 +2547,15 @@ __i915_gem_object_unset_pages(struct drm_i915_gem_object *obj)
  	__i915_gem_object_reset_page_iter(obj);
+ 	obj->mm.page_sizes.phys = obj->mm.page_sizes.sg = 0;
  
--	if (!IS_ERR(pages))
-+	if (!IS_ERR(pages)) {
-+		if (test_and_clear_bit(I915_BO_WAS_BOUND_BIT, &obj->flags)) {
-+			struct drm_i915_private *i915 = to_i915(obj->base.dev);
++	if (test_and_clear_bit(I915_BO_WAS_BOUND_BIT, &obj->flags)) {
++		struct drm_i915_private *i915 = to_i915(obj->base.dev);
 +
-+			if (intel_runtime_pm_get_if_in_use(i915)) {
-+				invalidate_tlbs(i915);
-+				intel_runtime_pm_put(i915);
-+			}
++		if (intel_runtime_pm_get_if_in_use(i915)) {
++			invalidate_tlbs(i915);
++			intel_runtime_pm_put(i915);
 +		}
-+
- 		obj->ops->put_pages(obj, pages);
 +	}
++
+ 	return pages;
+ }
  
- unlock:
- 	mutex_unlock(&obj->mm.lock);
-@@ -4972,6 +5052,8 @@ i915_gem_load_init(struct drm_i915_private *dev_priv)
+@@ -5792,6 +5873,8 @@ int i915_gem_init_early(struct drm_i915_private *dev_priv)
  
  	spin_lock_init(&dev_priv->fb_tracking.lock);
  
 +	mutex_init(&dev_priv->tlb_invalidate_lock);
 +
- 	return 0;
- 
- err_priorities:
+ 	err = i915_gemfs_init(dev_priv);
+ 	if (err)
+ 		DRM_NOTE("Unable to create a private tmpfs mount, hugepage support will be disabled(%d).\n", err);
 diff --git a/drivers/gpu/drm/i915/i915_gem_object.h b/drivers/gpu/drm/i915/i915_gem_object.h
-index 39cfe04dcdb8..180a8bf24791 100644
+index 83e5e01fa9ea..2e3a713e9bcd 100644
 --- a/drivers/gpu/drm/i915/i915_gem_object.h
 +++ b/drivers/gpu/drm/i915/i915_gem_object.h
-@@ -135,6 +135,7 @@ struct drm_i915_gem_object {
+@@ -136,6 +136,7 @@ struct drm_i915_gem_object {
  	 * activity?
  	 */
  #define I915_BO_ACTIVE_REF 0
@@ -192,12 +190,12 @@ index 39cfe04dcdb8..180a8bf24791 100644
  	/*
  	 * Is the object to be mapped as read-only to the GPU
 diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
-index 1db70350af0b..333e94381789 100644
+index a6f4f32dd71c..830049985e56 100644
 --- a/drivers/gpu/drm/i915/i915_reg.h
 +++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -2380,6 +2380,12 @@ enum i915_power_well_id {
- #define GAMT_CHKN_BIT_REG	_MMIO(0x4ab8)
- #define   GAMT_CHKN_DISABLE_DYNAMIC_CREDIT_SHARING	(1<<28)
+@@ -2431,6 +2431,12 @@ enum i915_power_well_id {
+ #define   GAMT_CHKN_DISABLE_DYNAMIC_CREDIT_SHARING	(1 << 28)
+ #define   GAMT_CHKN_DISABLE_I2M_CYCLE_ON_WR_PORT	(1 << 24)
  
 +#define GEN8_RTCR	_MMIO(0x4260)
 +#define GEN8_M1TCR	_MMIO(0x4264)
@@ -209,10 +207,10 @@ index 1db70350af0b..333e94381789 100644
  #define PRB0_TAIL	_MMIO(0x2030)
  #define PRB0_HEAD	_MMIO(0x2034)
 diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
-index 76eed1fdac09..5653e7bac914 100644
+index 98358b4b36de..9aceacc43f4b 100644
 --- a/drivers/gpu/drm/i915/i915_vma.c
 +++ b/drivers/gpu/drm/i915/i915_vma.c
-@@ -272,6 +272,10 @@ int i915_vma_bind(struct i915_vma *vma, enum i915_cache_level cache_level,
+@@ -335,6 +335,10 @@ int i915_vma_bind(struct i915_vma *vma, enum i915_cache_level cache_level,
  		return ret;
  
  	vma->flags |= bind_flags;
@@ -224,10 +222,10 @@ index 76eed1fdac09..5653e7bac914 100644
  }
  
 diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
-index 8c65cc3b0dda..8f5321f09856 100644
+index 1abe21758b0d..bca0b8980c0e 100644
 --- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
 +++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
-@@ -837,15 +837,14 @@ extern int vmw_execbuf_fence_commands(struct drm_file *file_priv,
+@@ -855,15 +855,14 @@ extern int vmw_execbuf_fence_commands(struct drm_file *file_priv,
  				      struct vmw_private *dev_priv,
  				      struct vmw_fence_obj **p_fence,
  				      uint32_t *p_handle);
@@ -246,10 +244,10 @@ index 8c65cc3b0dda..8f5321f09856 100644
  				      struct ttm_buffer_object *bo,
  				      bool interruptible,
 diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
-index dc677ba4dc38..996696ad6f98 100644
+index 3834aa71c9c4..e65554f5a89d 100644
 --- a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
 +++ b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
-@@ -3848,20 +3848,19 @@ int vmw_execbuf_fence_commands(struct drm_file *file_priv,
+@@ -3873,20 +3873,19 @@ int vmw_execbuf_fence_commands(struct drm_file *file_priv,
   * object so we wait for it immediately, and then unreference the
   * user-space reference.
   */
@@ -273,7 +271,7 @@ index dc677ba4dc38..996696ad6f98 100644
  
  	memset(&fence_rep, 0, sizeof(fence_rep));
  
-@@ -3889,20 +3888,14 @@ vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
+@@ -3914,20 +3913,14 @@ vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
  	 * and unreference the handle.
  	 */
  	if (unlikely(ret != 0) && (fence_rep.error == 0)) {
@@ -296,7 +294,7 @@ index dc677ba4dc38..996696ad6f98 100644
  }
  
  /**
-@@ -4262,16 +4255,23 @@ int vmw_execbuf_process(struct drm_file *file_priv,
+@@ -4287,16 +4280,23 @@ int vmw_execbuf_process(struct drm_file *file_priv,
  
  			(void) vmw_fence_obj_wait(fence, false, false,
  						  VMW_FENCE_WAIT_TIMEOUT);
@@ -324,7 +322,7 @@ index dc677ba4dc38..996696ad6f98 100644
  	/* Don't unreference when handing fence out */
  	if (unlikely(out_fence != NULL)) {
  		*out_fence = fence;
-@@ -4290,7 +4290,7 @@ int vmw_execbuf_process(struct drm_file *file_priv,
+@@ -4315,7 +4315,7 @@ int vmw_execbuf_process(struct drm_file *file_priv,
  	 */
  	vmw_resource_list_unreference(sw_context, &resource_list);
  
@@ -334,10 +332,10 @@ index dc677ba4dc38..996696ad6f98 100644
  out_unlock_binding:
  	mutex_unlock(&dev_priv->binding_mutex);
 diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c b/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
-index d6b1c509ae01..7d2482644ef7 100644
+index 3d546d409334..72a75316d472 100644
 --- a/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
 +++ b/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
-@@ -1150,7 +1150,7 @@ int vmw_fence_event_ioctl(struct drm_device *dev, void *data,
+@@ -1169,7 +1169,7 @@ int vmw_fence_event_ioctl(struct drm_device *dev, void *data,
  	}
  
  	vmw_execbuf_copy_fence_user(dev_priv, vmw_fp, 0, user_fence_rep, fence,
@@ -347,10 +345,10 @@ index d6b1c509ae01..7d2482644ef7 100644
  	return 0;
  out_no_create:
 diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-index 848c9d009be2..fbba55edbfd0 100644
+index e486b6517ac5..d87bd2a8c75f 100644
 --- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
 +++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-@@ -2511,7 +2511,7 @@ void vmw_kms_helper_buffer_finish(struct vmw_private *dev_priv,
+@@ -2662,7 +2662,7 @@ void vmw_kms_helper_buffer_finish(struct vmw_private *dev_priv,
  	if (file_priv)
  		vmw_execbuf_copy_fence_user(dev_priv, vmw_fpriv(file_priv),
  					    ret, user_fence_rep, fence,
@@ -359,39 +357,105 @@ index 848c9d009be2..fbba55edbfd0 100644
  	if (out_fence)
  		*out_fence = fence;
  	else
-diff --git a/net/can/bcm.c b/net/can/bcm.c
-index 324c4cdc003e..b3f3b02ffd42 100644
---- a/net/can/bcm.c
-+++ b/net/can/bcm.c
-@@ -762,21 +762,21 @@ static struct bcm_op *bcm_find_op(struct list_head *ops,
- static void bcm_remove_op(struct bcm_op *op)
- {
- 	if (op->tsklet.func) {
--		while (test_bit(TASKLET_STATE_SCHED, &op->tsklet.state) ||
--		       test_bit(TASKLET_STATE_RUN, &op->tsklet.state) ||
--		       hrtimer_active(&op->timer)) {
--			hrtimer_cancel(&op->timer);
-+		do {
- 			tasklet_kill(&op->tsklet);
--		}
-+			hrtimer_cancel(&op->timer);
-+		} while (test_bit(TASKLET_STATE_SCHED, &op->tsklet.state) ||
-+			 test_bit(TASKLET_STATE_RUN, &op->tsklet.state) ||
-+			 hrtimer_active(&op->timer));
- 	}
+diff --git a/fs/select.c b/fs/select.c
+index 11a7051075b4..1c3985d0bcc3 100644
+--- a/fs/select.c
++++ b/fs/select.c
+@@ -431,9 +431,11 @@ static int max_select_fd(unsigned long n, fd_set_bits *fds)
+ 	return max;
+ }
  
- 	if (op->thrtsklet.func) {
--		while (test_bit(TASKLET_STATE_SCHED, &op->thrtsklet.state) ||
--		       test_bit(TASKLET_STATE_RUN, &op->thrtsklet.state) ||
--		       hrtimer_active(&op->thrtimer)) {
--			hrtimer_cancel(&op->thrtimer);
-+		do {
- 			tasklet_kill(&op->thrtsklet);
--		}
-+			hrtimer_cancel(&op->thrtimer);
-+		} while (test_bit(TASKLET_STATE_SCHED, &op->thrtsklet.state) ||
-+			 test_bit(TASKLET_STATE_RUN, &op->thrtsklet.state) ||
-+			 hrtimer_active(&op->thrtimer));
- 	}
+-#define POLLIN_SET (EPOLLRDNORM | EPOLLRDBAND | EPOLLIN | EPOLLHUP | EPOLLERR)
+-#define POLLOUT_SET (EPOLLWRBAND | EPOLLWRNORM | EPOLLOUT | EPOLLERR)
+-#define POLLEX_SET (EPOLLPRI)
++#define POLLIN_SET (EPOLLRDNORM | EPOLLRDBAND | EPOLLIN | EPOLLHUP | EPOLLERR |\
++			EPOLLNVAL)
++#define POLLOUT_SET (EPOLLWRBAND | EPOLLWRNORM | EPOLLOUT | EPOLLERR |\
++			 EPOLLNVAL)
++#define POLLEX_SET (EPOLLPRI | EPOLLNVAL)
  
- 	if ((op->frames) && (op->frames != &op->sframe))
+ static inline void wait_key_set(poll_table *wait, unsigned long in,
+ 				unsigned long out, unsigned long bit,
+@@ -500,6 +502,7 @@ static int do_select(int n, fd_set_bits *fds, struct timespec64 *end_time)
+ 					break;
+ 				if (!(bit & all_bits))
+ 					continue;
++				mask = EPOLLNVAL;
+ 				f = fdget(i);
+ 				if (f.file) {
+ 					wait_key_set(wait, in, out, bit,
+@@ -507,34 +510,34 @@ static int do_select(int n, fd_set_bits *fds, struct timespec64 *end_time)
+ 					mask = vfs_poll(f.file, wait);
+ 
+ 					fdput(f);
+-					if ((mask & POLLIN_SET) && (in & bit)) {
+-						res_in |= bit;
+-						retval++;
+-						wait->_qproc = NULL;
+-					}
+-					if ((mask & POLLOUT_SET) && (out & bit)) {
+-						res_out |= bit;
+-						retval++;
+-						wait->_qproc = NULL;
+-					}
+-					if ((mask & POLLEX_SET) && (ex & bit)) {
+-						res_ex |= bit;
+-						retval++;
+-						wait->_qproc = NULL;
+-					}
+-					/* got something, stop busy polling */
+-					if (retval) {
+-						can_busy_loop = false;
+-						busy_flag = 0;
+-
+-					/*
+-					 * only remember a returned
+-					 * POLL_BUSY_LOOP if we asked for it
+-					 */
+-					} else if (busy_flag & mask)
+-						can_busy_loop = true;
+-
+ 				}
++				if ((mask & POLLIN_SET) && (in & bit)) {
++					res_in |= bit;
++					retval++;
++					wait->_qproc = NULL;
++				}
++				if ((mask & POLLOUT_SET) && (out & bit)) {
++					res_out |= bit;
++					retval++;
++					wait->_qproc = NULL;
++				}
++				if ((mask & POLLEX_SET) && (ex & bit)) {
++					res_ex |= bit;
++					retval++;
++					wait->_qproc = NULL;
++				}
++				/* got something, stop busy polling */
++				if (retval) {
++					can_busy_loop = false;
++					busy_flag = 0;
++
++				/*
++				 * only remember a returned
++				 * POLL_BUSY_LOOP if we asked for it
++				 */
++				} else if (busy_flag & mask)
++					can_busy_loop = true;
++
+ 			}
+ 			if (res_in)
+ 				*rinp = res_in;
+diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+index a350c05b7ff5..7c6b1024dd4b 100644
+--- a/net/bridge/br_device.c
++++ b/net/bridge/br_device.c
+@@ -42,6 +42,8 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct ethhdr *eth;
+ 	u16 vid = 0;
+ 
++	memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
++
+ 	rcu_read_lock();
+ 	nf_ops = rcu_dereference(nf_br_ops);
+ 	if (nf_ops && nf_ops->br_dev_xmit_hook(skb)) {
