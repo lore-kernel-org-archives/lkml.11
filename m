@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1EEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 11:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F854C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 11:00:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237838AbiA2LAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 06:00:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35058 "EHLO
+        id S238021AbiA2LAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 29 Jan 2022 06:00:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237280AbiA2LAE (ORCPT
+        with ESMTP id S237036AbiA2LAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 06:00:04 -0500
+        Sat, 29 Jan 2022 06:00:02 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8EBC06174A;
-        Sat, 29 Jan 2022 03:00:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E37C06173B;
+        Sat, 29 Jan 2022 03:00:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B67E4B826FF;
-        Sat, 29 Jan 2022 11:00:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A25D5C340E5;
-        Sat, 29 Jan 2022 11:00:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71338B8235B;
+        Sat, 29 Jan 2022 10:59:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39437C340E5;
+        Sat, 29 Jan 2022 10:59:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643454001;
-        bh=t0CTPx+wLCTdhQzlS12HDoHYL9AspIkbZadw+1EVlvQ=;
+        s=korg; t=1643453998;
+        bh=DN8GLF4tJKMPj7YJ6KbE6SFtS4MaUVptW5GY8pTv934=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0ax5GFeIIwYe6s4Q0Spa1g+NXz+R9GOiejg6QmgAfPwgiE09A7BFtyWkPgIygusDA
-         NzbyS8/rHHIMCTB9xlFXjPaQyX7qJkP5u29HEYyDRrYE/+wDXhkoZN7MXtR5xSMW1j
-         BJR47GVpBWkxx06IHi6c0dgTnaxcCPP3YUmeafDs=
+        b=qv96gVCwUv4X1QxHXba40NDPEmmWiEI7S+Y62yG/5LBsjrLCr1PF/L38dBWgWKftB
+         8A9VltCZEiM1SeKl0VmMoXnJ0adhgQAuhV0HXvx+YC/AF62sV+ki6C8gcUPUjJavW/
+         DJVn9GHPMBvLfykG0javO/ISyd+w4hGuJk5rey1I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 5.10.95
-Date:   Sat, 29 Jan 2022 11:59:51 +0100
-Message-Id: <16434539913287@kroah.com>
+Subject: Re: Linux 5.4.175
+Date:   Sat, 29 Jan 2022 11:59:40 +0100
+Message-Id: <1643453979557@kroah.com>
 X-Mailer: git-send-email 2.35.0
-In-Reply-To: <16434539917541@kroah.com>
-References: <16434539917541@kroah.com>
+In-Reply-To: <16434539792375@kroah.com>
+References: <16434539792375@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -47,64 +47,58 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 diff --git a/Makefile b/Makefile
-index 1071ec486aa5..fa98893aae61 100644
+index 3075f06f7713..2f6c51097d00 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 5
- PATCHLEVEL = 10
--SUBLEVEL = 94
-+SUBLEVEL = 95
+ PATCHLEVEL = 4
+-SUBLEVEL = 174
++SUBLEVEL = 175
  EXTRAVERSION =
- NAME = Dare mighty things
+ NAME = Kleptomaniac Octopus
  
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index f2ddf663e72e..7e08efb06839 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1130,12 +1130,12 @@ static bool write_protect_gfn(struct kvm *kvm, struct kvm_mmu_page *root,
- 	bool spte_set = false;
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index 50c64146d492..af81f386793c 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -183,6 +183,7 @@
  
- 	tdp_root_for_each_leaf_pte(iter, root, gfn, gfn + 1) {
--		if (!is_writable_pte(iter.old_spte))
--			break;
--
- 		new_spte = iter.old_spte &
- 			~(PT_WRITABLE_MASK | SPTE_MMU_WRITEABLE);
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
++			gpio-ranges = <&gpio 0 0 54>;
  
-+		if (new_spte == iter.old_spte)
-+			break;
-+
- 		tdp_mmu_set_spte(kvm, &iter, new_spte);
- 		spte_set = true;
- 	}
+ 			/* Defines pin muxing groups according to
+ 			 * BCM2835-ARM-Peripherals.pdf page 102.
 diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-index d6711caa7f39..dbc88fc7136b 100644
+index 08b35587bc6d..352c102f3459 100644
 --- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
 +++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-@@ -159,6 +159,7 @@ struct drm_i915_gem_object {
- #define I915_BO_ALLOC_VOLATILE   BIT(1)
- #define I915_BO_ALLOC_FLAGS (I915_BO_ALLOC_CONTIGUOUS | I915_BO_ALLOC_VOLATILE)
- #define I915_BO_READONLY         BIT(2)
-+#define I915_BO_WAS_BOUND_BIT    3
+@@ -118,6 +118,9 @@ struct drm_i915_gem_object {
  
+ 	I915_SELFTEST_DECLARE(struct list_head st_link);
+ 
++	unsigned long flags;
++#define I915_BO_WAS_BOUND_BIT    0
++
  	/*
  	 * Is the object to be mapped as read-only to the GPU
+ 	 * Only honoured if hardware has relevant pte bit
 diff --git a/drivers/gpu/drm/i915/gem/i915_gem_pages.c b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
-index f60ca6dc911f..27d24cb38c0d 100644
+index 18f0ce0135c1..aa63fa0ab575 100644
 --- a/drivers/gpu/drm/i915/gem/i915_gem_pages.c
 +++ b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
-@@ -10,6 +10,8 @@
- #include "i915_gem_lmem.h"
- #include "i915_gem_mman.h"
+@@ -8,6 +8,8 @@
+ #include "i915_gem_object.h"
+ #include "i915_scatterlist.h"
  
 +#include "gt/intel_gt.h"
 +
  void __i915_gem_object_set_pages(struct drm_i915_gem_object *obj,
  				 struct sg_table *pages,
  				 unsigned int sg_page_sizes)
-@@ -186,6 +188,14 @@ __i915_gem_object_unset_pages(struct drm_i915_gem_object *obj)
+@@ -176,6 +178,14 @@ __i915_gem_object_unset_pages(struct drm_i915_gem_object *obj)
  	__i915_gem_object_reset_page_iter(obj);
  	obj->mm.page_sizes.phys = obj->mm.page_sizes.sg = 0;
  
@@ -112,7 +106,7 @@ index f60ca6dc911f..27d24cb38c0d 100644
 +		struct drm_i915_private *i915 = to_i915(obj->base.dev);
 +		intel_wakeref_t wakeref;
 +
-+		with_intel_runtime_pm_if_active(&i915->runtime_pm, wakeref)
++		with_intel_runtime_pm_if_in_use(&i915->runtime_pm, wakeref)
 +			intel_gt_invalidate_tlbs(&i915->gt);
 +	}
 +
@@ -120,10 +114,10 @@ index f60ca6dc911f..27d24cb38c0d 100644
  }
  
 diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
-index 39b428c5049c..6615eb5147e2 100644
+index d48ec9a76ed1..c8c070375d29 100644
 --- a/drivers/gpu/drm/i915/gt/intel_gt.c
 +++ b/drivers/gpu/drm/i915/gt/intel_gt.c
-@@ -26,6 +26,8 @@ void intel_gt_init_early(struct intel_gt *gt, struct drm_i915_private *i915)
+@@ -15,6 +15,8 @@ void intel_gt_init_early(struct intel_gt *gt, struct drm_i915_private *i915)
  
  	spin_lock_init(&gt->irq_lock);
  
@@ -132,9 +126,9 @@ index 39b428c5049c..6615eb5147e2 100644
  	INIT_LIST_HEAD(&gt->closed_vma);
  	spin_lock_init(&gt->closed_lock);
  
-@@ -661,3 +663,103 @@ void intel_gt_info_print(const struct intel_gt_info *info,
- 
- 	intel_sseu_dump(&info->sseu, p);
+@@ -266,3 +268,100 @@ void intel_gt_driver_late_release(struct intel_gt *gt)
+ 	intel_uc_driver_late_release(&gt->uc);
+ 	intel_gt_fini_reset(gt);
  }
 +
 +struct reg_and_bit {
@@ -149,8 +143,7 @@ index 39b428c5049c..6615eb5147e2 100644
 +	const unsigned int class = engine->class;
 +	struct reg_and_bit rb = { };
 +
-+	if (drm_WARN_ON_ONCE(&engine->i915->drm,
-+			     class >= num || !regs[class].reg))
++	if (WARN_ON_ONCE(class >= num || !regs[class].reg))
 +		return rb;
 +
 +	rb.reg = regs[class];
@@ -198,8 +191,7 @@ index 39b428c5049c..6615eb5147e2 100644
 +		return;
 +	}
 +
-+	if (drm_WARN_ONCE(&i915->drm, !num,
-+			  "Platform does not implement TLB invalidation!"))
++	if (WARN_ONCE(!num, "Platform does not implement TLB invalidation!"))
 +		return;
 +
 +	GEM_TRACE("\n");
@@ -228,30 +220,29 @@ index 39b428c5049c..6615eb5147e2 100644
 +						 rb.reg, rb.bit, 0,
 +						 timeout_us, timeout_ms,
 +						 NULL))
-+			drm_err_ratelimited(&gt->i915->drm,
-+					    "%s TLB invalidation did not complete in %ums!\n",
-+					    engine->name, timeout_ms);
++			DRM_ERROR_RATELIMITED("%s TLB invalidation did not complete in %ums!\n",
++					      engine->name, timeout_ms);
 +	}
 +
-+	intel_uncore_forcewake_put_delayed(uncore, FORCEWAKE_ALL);
++	intel_uncore_forcewake_put(uncore, FORCEWAKE_ALL);
 +	mutex_unlock(&gt->tlb_invalidate_lock);
 +}
 diff --git a/drivers/gpu/drm/i915/gt/intel_gt.h b/drivers/gpu/drm/i915/gt/intel_gt.h
-index 9157c7411f60..d9a1168172ae 100644
+index 4920cb351f10..4eab15bdcd97 100644
 --- a/drivers/gpu/drm/i915/gt/intel_gt.h
 +++ b/drivers/gpu/drm/i915/gt/intel_gt.h
-@@ -77,4 +77,6 @@ static inline bool intel_gt_is_wedged(const struct intel_gt *gt)
- void intel_gt_info_print(const struct intel_gt_info *info,
- 			 struct drm_printer *p);
+@@ -57,4 +57,6 @@ static inline bool intel_gt_is_wedged(struct intel_gt *gt)
+ 
+ void intel_gt_queue_hangcheck(struct intel_gt *gt);
  
 +void intel_gt_invalidate_tlbs(struct intel_gt *gt);
 +
  #endif /* __INTEL_GT_H__ */
 diff --git a/drivers/gpu/drm/i915/gt/intel_gt_types.h b/drivers/gpu/drm/i915/gt/intel_gt_types.h
-index 6d39a4a11bf3..78c061614d8b 100644
+index dc295c196d11..82a78719b32d 100644
 --- a/drivers/gpu/drm/i915/gt/intel_gt_types.h
 +++ b/drivers/gpu/drm/i915/gt/intel_gt_types.h
-@@ -36,6 +36,8 @@ struct intel_gt {
+@@ -40,6 +40,8 @@ struct intel_gt {
  
  	struct intel_uc uc;
  
@@ -261,10 +252,10 @@ index 6d39a4a11bf3..78c061614d8b 100644
  		spinlock_t lock; /* protects active_list */
  		struct list_head active_list;
 diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
-index ce8c91c5fdd3..12488996a7f4 100644
+index 7b6e68f082f8..1386d0f5eac6 100644
 --- a/drivers/gpu/drm/i915/i915_reg.h
 +++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -2639,6 +2639,12 @@ static inline bool i915_mmio_reg_valid(i915_reg_t reg)
+@@ -2519,6 +2519,12 @@ static inline bool i915_mmio_reg_valid(i915_reg_t reg)
  #define   GAMT_CHKN_DISABLE_DYNAMIC_CREDIT_SHARING	(1 << 28)
  #define   GAMT_CHKN_DISABLE_I2M_CYCLE_ON_WR_PORT	(1 << 24)
  
@@ -277,7 +268,7 @@ index ce8c91c5fdd3..12488996a7f4 100644
  #if 0
  #define PRB0_TAIL	_MMIO(0x2030)
  #define PRB0_HEAD	_MMIO(0x2034)
-@@ -2728,6 +2734,11 @@ static inline bool i915_mmio_reg_valid(i915_reg_t reg)
+@@ -2602,6 +2608,11 @@ static inline bool i915_mmio_reg_valid(i915_reg_t reg)
  #define   FAULT_VA_HIGH_BITS		(0xf << 0)
  #define   FAULT_GTT_SEL			(1 << 4)
  
@@ -286,99 +277,29 @@ index ce8c91c5fdd3..12488996a7f4 100644
 +#define GEN12_VE_TLB_INV_CR	_MMIO(0xcee0)
 +#define GEN12_BLT_TLB_INV_CR	_MMIO(0xcee4)
 +
- #define GEN12_AUX_ERR_DBG		_MMIO(0x43f4)
- 
  #define FPGA_DBG		_MMIO(0x42300)
+ #define   FPGA_DBG_RM_NOCLAIM	(1 << 31)
+ 
 diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
-index caa9b041616b..50a86fd89d00 100644
+index e0e677b2a3a9..c24f49ee10d7 100644
 --- a/drivers/gpu/drm/i915/i915_vma.c
 +++ b/drivers/gpu/drm/i915/i915_vma.c
-@@ -439,6 +439,9 @@ int i915_vma_bind(struct i915_vma *vma,
- 		vma->ops->bind_vma(vma->vm, NULL, vma, cache_level, bind_flags);
- 	}
+@@ -341,6 +341,10 @@ int i915_vma_bind(struct i915_vma *vma, enum i915_cache_level cache_level,
+ 		return ret;
  
+ 	vma->flags |= bind_flags;
++
 +	if (vma->obj)
 +		set_bit(I915_BO_WAS_BOUND_BIT, &vma->obj->flags);
 +
- 	atomic_or(bind_flags, &vma->flags);
  	return 0;
  }
-diff --git a/drivers/gpu/drm/i915/intel_uncore.c b/drivers/gpu/drm/i915/intel_uncore.c
-index 97ded2a59cf4..01849840ac56 100644
---- a/drivers/gpu/drm/i915/intel_uncore.c
-+++ b/drivers/gpu/drm/i915/intel_uncore.c
-@@ -694,7 +694,8 @@ void intel_uncore_forcewake_get__locked(struct intel_uncore *uncore,
- }
- 
- static void __intel_uncore_forcewake_put(struct intel_uncore *uncore,
--					 enum forcewake_domains fw_domains)
-+					 enum forcewake_domains fw_domains,
-+					 bool delayed)
- {
- 	struct intel_uncore_forcewake_domain *domain;
- 	unsigned int tmp;
-@@ -709,7 +710,11 @@ static void __intel_uncore_forcewake_put(struct intel_uncore *uncore,
- 			continue;
- 		}
- 
--		uncore->funcs.force_wake_put(uncore, domain->mask);
-+		if (delayed &&
-+		    !(domain->uncore->fw_domains_timer & domain->mask))
-+			fw_domain_arm_timer(domain);
-+		else
-+			uncore->funcs.force_wake_put(uncore, domain->mask);
- 	}
- }
- 
-@@ -730,7 +735,20 @@ void intel_uncore_forcewake_put(struct intel_uncore *uncore,
- 		return;
- 
- 	spin_lock_irqsave(&uncore->lock, irqflags);
--	__intel_uncore_forcewake_put(uncore, fw_domains);
-+	__intel_uncore_forcewake_put(uncore, fw_domains, false);
-+	spin_unlock_irqrestore(&uncore->lock, irqflags);
-+}
-+
-+void intel_uncore_forcewake_put_delayed(struct intel_uncore *uncore,
-+					enum forcewake_domains fw_domains)
-+{
-+	unsigned long irqflags;
-+
-+	if (!uncore->funcs.force_wake_put)
-+		return;
-+
-+	spin_lock_irqsave(&uncore->lock, irqflags);
-+	__intel_uncore_forcewake_put(uncore, fw_domains, true);
- 	spin_unlock_irqrestore(&uncore->lock, irqflags);
- }
- 
-@@ -772,7 +790,7 @@ void intel_uncore_forcewake_put__locked(struct intel_uncore *uncore,
- 	if (!uncore->funcs.force_wake_put)
- 		return;
- 
--	__intel_uncore_forcewake_put(uncore, fw_domains);
-+	__intel_uncore_forcewake_put(uncore, fw_domains, false);
- }
- 
- void assert_forcewakes_inactive(struct intel_uncore *uncore)
-diff --git a/drivers/gpu/drm/i915/intel_uncore.h b/drivers/gpu/drm/i915/intel_uncore.h
-index c4b22d9d0b45..034f04e0de8b 100644
---- a/drivers/gpu/drm/i915/intel_uncore.h
-+++ b/drivers/gpu/drm/i915/intel_uncore.h
-@@ -211,6 +211,8 @@ void intel_uncore_forcewake_get(struct intel_uncore *uncore,
- 				enum forcewake_domains domains);
- void intel_uncore_forcewake_put(struct intel_uncore *uncore,
- 				enum forcewake_domains domains);
-+void intel_uncore_forcewake_put_delayed(struct intel_uncore *uncore,
-+					enum forcewake_domains domains);
- void intel_uncore_forcewake_flush(struct intel_uncore *uncore,
- 				  enum forcewake_domains fw_domains);
  
 diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
-index 1523b51a7284..ad208a5f4ebe 100644
+index 5eb73ded8e07..765f7a62870d 100644
 --- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
 +++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
-@@ -1088,15 +1088,14 @@ extern int vmw_execbuf_fence_commands(struct drm_file *file_priv,
+@@ -1002,15 +1002,14 @@ extern int vmw_execbuf_fence_commands(struct drm_file *file_priv,
  				      struct vmw_private *dev_priv,
  				      struct vmw_fence_obj **p_fence,
  				      uint32_t *p_handle);
@@ -397,10 +318,10 @@ index 1523b51a7284..ad208a5f4ebe 100644
  
  /**
 diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
-index 83e1b54eb864..739cbc77d886 100644
+index ff86d49dc5e8..e3d20048075b 100644
 --- a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
 +++ b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
-@@ -3816,17 +3816,17 @@ int vmw_execbuf_fence_commands(struct drm_file *file_priv,
+@@ -3413,17 +3413,17 @@ int vmw_execbuf_fence_commands(struct drm_file *file_priv,
   * Also if copying fails, user-space will be unable to signal the fence object
   * so we wait for it immediately, and then unreference the user-space reference.
   */
@@ -421,7 +342,7 @@ index 83e1b54eb864..739cbc77d886 100644
  
  	memset(&fence_rep, 0, sizeof(fence_rep));
  
-@@ -3854,20 +3854,14 @@ vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
+@@ -3451,20 +3451,14 @@ vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
  	 * handle.
  	 */
  	if (unlikely(ret != 0) && (fence_rep.error == 0)) {
@@ -444,7 +365,7 @@ index 83e1b54eb864..739cbc77d886 100644
  }
  
  /**
-@@ -4209,16 +4203,23 @@ int vmw_execbuf_process(struct drm_file *file_priv,
+@@ -3806,16 +3800,23 @@ int vmw_execbuf_process(struct drm_file *file_priv,
  
  			(void) vmw_fence_obj_wait(fence, false, false,
  						  VMW_FENCE_WAIT_TIMEOUT);
@@ -472,7 +393,7 @@ index 83e1b54eb864..739cbc77d886 100644
  	/* Don't unreference when handing fence out */
  	if (unlikely(out_fence != NULL)) {
  		*out_fence = fence;
-@@ -4236,7 +4237,7 @@ int vmw_execbuf_process(struct drm_file *file_priv,
+@@ -3833,7 +3834,7 @@ int vmw_execbuf_process(struct drm_file *file_priv,
  	 */
  	vmw_validation_unref_lists(&val_ctx);
  
@@ -482,7 +403,7 @@ index 83e1b54eb864..739cbc77d886 100644
  out_unlock_binding:
  	mutex_unlock(&dev_priv->binding_mutex);
 diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c b/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
-index 0f8d29397157..8bc41ec97d71 100644
+index 178a6cd1a06f..874093a0b04f 100644
 --- a/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
 +++ b/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
 @@ -1171,7 +1171,7 @@ int vmw_fence_event_ioctl(struct drm_device *dev, void *data,
@@ -495,10 +416,10 @@ index 0f8d29397157..8bc41ec97d71 100644
  	return 0;
  out_no_create:
 diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-index 312ed0881a99..e58112997c88 100644
+index 33b151988747..0b800c354049 100644
 --- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
 +++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-@@ -2479,7 +2479,7 @@ void vmw_kms_helper_validation_finish(struct vmw_private *dev_priv,
+@@ -2570,7 +2570,7 @@ void vmw_kms_helper_validation_finish(struct vmw_private *dev_priv,
  	if (file_priv)
  		vmw_execbuf_copy_fence_user(dev_priv, vmw_fpriv(file_priv),
  					    ret, user_fence_rep, fence,
@@ -507,262 +428,409 @@ index 312ed0881a99..e58112997c88 100644
  	if (out_fence)
  		*out_fence = fence;
  	else
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-index d04994840b87..bb3ba614fb17 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-@@ -1850,6 +1850,14 @@ struct bnx2x {
- 
- 	/* Vxlan/Geneve related information */
- 	u16 udp_tunnel_ports[BNX2X_UDP_PORT_MAX];
-+
-+#define FW_CAP_INVALIDATE_VF_FP_HSI	BIT(0)
-+	u32 fw_cap;
-+
-+	u32 fw_major;
-+	u32 fw_minor;
-+	u32 fw_rev;
-+	u32 fw_eng;
+diff --git a/drivers/mmc/host/sdhci-esdhc-imx.c b/drivers/mmc/host/sdhci-esdhc-imx.c
+index 2c01e2ebef7a..d97c19ef7583 100644
+--- a/drivers/mmc/host/sdhci-esdhc-imx.c
++++ b/drivers/mmc/host/sdhci-esdhc-imx.c
+@@ -218,8 +218,7 @@ static struct esdhc_soc_data usdhc_imx7ulp_data = {
+ static struct esdhc_soc_data usdhc_imx8qxp_data = {
+ 	.flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_STD_TUNING
+ 			| ESDHC_FLAG_HAVE_CAP1 | ESDHC_FLAG_HS200
+-			| ESDHC_FLAG_HS400 | ESDHC_FLAG_HS400_ES
+-			| ESDHC_FLAG_CQHCI,
++			| ESDHC_FLAG_HS400 | ESDHC_FLAG_HS400_ES,
  };
  
- /* Tx queues may be less or equal to Rx queues */
-@@ -2526,5 +2534,6 @@ void bnx2x_register_phc(struct bnx2x *bp);
-  * Meant for implicit re-load flows.
-  */
- int bnx2x_vlan_reconfigure_vid(struct bnx2x *bp);
+ struct pltfm_imx_data {
+diff --git a/drivers/pinctrl/bcm/pinctrl-bcm2835.c b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+index 0de1a3a96984..fa742535f679 100644
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -19,6 +19,7 @@
+ #include <linux/irq.h>
+ #include <linux/irqdesc.h>
+ #include <linux/init.h>
++#include <linux/interrupt.h>
+ #include <linux/of_address.h>
+ #include <linux/of.h>
+ #include <linux/of_irq.h>
+@@ -37,12 +38,10 @@
+ 
+ #define MODULE_NAME "pinctrl-bcm2835"
+ #define BCM2835_NUM_GPIOS 54
++#define BCM2711_NUM_GPIOS 58
+ #define BCM2835_NUM_BANKS 2
+ #define BCM2835_NUM_IRQS  3
+ 
+-#define BCM2835_PIN_BITMAP_SZ \
+-	DIV_ROUND_UP(BCM2835_NUM_GPIOS, sizeof(unsigned long) * 8)
 -
-+int bnx2x_init_firmware(struct bnx2x *bp);
-+void bnx2x_release_firmware(struct bnx2x *bp);
- #endif /* bnx2x.h */
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-index b5d954cb409a..41ebbb2c7d3a 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-@@ -2364,10 +2364,8 @@ int bnx2x_compare_fw_ver(struct bnx2x *bp, u32 load_code, bool print_err)
- 	if (load_code != FW_MSG_CODE_DRV_LOAD_COMMON_CHIP &&
- 	    load_code != FW_MSG_CODE_DRV_LOAD_COMMON) {
- 		/* build my FW version dword */
--		u32 my_fw = (BCM_5710_FW_MAJOR_VERSION) +
--			(BCM_5710_FW_MINOR_VERSION << 8) +
--			(BCM_5710_FW_REVISION_VERSION << 16) +
--			(BCM_5710_FW_ENGINEERING_VERSION << 24);
-+		u32 my_fw = (bp->fw_major) + (bp->fw_minor << 8) +
-+				(bp->fw_rev << 16) + (bp->fw_eng << 24);
+ /* GPIO register offsets */
+ #define GPFSEL0		0x0	/* Function Select */
+ #define GPSET0		0x1c	/* Pin Output Set */
+@@ -78,13 +77,15 @@
+ struct bcm2835_pinctrl {
+ 	struct device *dev;
+ 	void __iomem *base;
++	int *wake_irq;
  
- 		/* read loaded FW from chip */
- 		u32 loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h
-index 3f8435208bf4..a84d015da5df 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h
-@@ -241,6 +241,8 @@
- 	IRO[221].m2))
- #define XSTORM_VF_TO_PF_OFFSET(funcId) \
- 	(IRO[48].base + ((funcId) * IRO[48].m1))
-+#define XSTORM_ETH_FUNCTION_INFO_FP_HSI_VALID_E2_OFFSET(fid)	\
-+	(IRO[386].base + ((fid) * IRO[386].m1))
- #define COMMON_ASM_INVALID_ASSERT_OPCODE 0x0
+ 	/* note: locking assumes each bank will have its own unsigned long */
+ 	unsigned long enabled_irq_map[BCM2835_NUM_BANKS];
+-	unsigned int irq_type[BCM2835_NUM_GPIOS];
++	unsigned int irq_type[BCM2711_NUM_GPIOS];
  
- /* eth hsi version */
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h
-index 622fadc50316..611efee75834 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h
-@@ -3024,7 +3024,8 @@ struct afex_stats {
+ 	struct pinctrl_dev *pctl_dev;
+ 	struct gpio_chip gpio_chip;
++	struct pinctrl_desc pctl_desc;
+ 	struct pinctrl_gpio_range gpio_range;
  
- #define BCM_5710_FW_MAJOR_VERSION			7
- #define BCM_5710_FW_MINOR_VERSION			13
--#define BCM_5710_FW_REVISION_VERSION		15
-+#define BCM_5710_FW_REVISION_VERSION		21
-+#define BCM_5710_FW_REVISION_VERSION_V15	15
- #define BCM_5710_FW_ENGINEERING_VERSION		0
- #define BCM_5710_FW_COMPILE_FLAGS			1
+ 	raw_spinlock_t irq_lock[BCM2835_NUM_BANKS];
+@@ -147,6 +148,10 @@ static struct pinctrl_pin_desc bcm2835_gpio_pins[] = {
+ 	BCM2835_GPIO_PIN(51),
+ 	BCM2835_GPIO_PIN(52),
+ 	BCM2835_GPIO_PIN(53),
++	BCM2835_GPIO_PIN(54),
++	BCM2835_GPIO_PIN(55),
++	BCM2835_GPIO_PIN(56),
++	BCM2835_GPIO_PIN(57),
+ };
  
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index 28069b290862..9a86367a2636 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -74,9 +74,19 @@
- 	__stringify(BCM_5710_FW_MINOR_VERSION) "."	\
- 	__stringify(BCM_5710_FW_REVISION_VERSION) "."	\
- 	__stringify(BCM_5710_FW_ENGINEERING_VERSION)
+ /* one pin per group */
+@@ -205,6 +210,10 @@ static const char * const bcm2835_gpio_groups[] = {
+ 	"gpio51",
+ 	"gpio52",
+ 	"gpio53",
++	"gpio54",
++	"gpio55",
++	"gpio56",
++	"gpio57",
+ };
+ 
+ enum bcm2835_fsel {
+@@ -355,6 +364,22 @@ static const struct gpio_chip bcm2835_gpio_chip = {
+ 	.can_sleep = false,
+ };
+ 
++static const struct gpio_chip bcm2711_gpio_chip = {
++	.label = "pinctrl-bcm2711",
++	.owner = THIS_MODULE,
++	.request = gpiochip_generic_request,
++	.free = gpiochip_generic_free,
++	.direction_input = bcm2835_gpio_direction_input,
++	.direction_output = bcm2835_gpio_direction_output,
++	.get_direction = bcm2835_gpio_get_direction,
++	.get = bcm2835_gpio_get,
++	.set = bcm2835_gpio_set,
++	.set_config = gpiochip_generic_config,
++	.base = -1,
++	.ngpio = BCM2711_NUM_GPIOS,
++	.can_sleep = false,
++};
 +
-+#define FW_FILE_VERSION_V15				\
-+	__stringify(BCM_5710_FW_MAJOR_VERSION) "."      \
-+	__stringify(BCM_5710_FW_MINOR_VERSION) "."	\
-+	__stringify(BCM_5710_FW_REVISION_VERSION_V15) "."	\
-+	__stringify(BCM_5710_FW_ENGINEERING_VERSION)
-+
- #define FW_FILE_NAME_E1		"bnx2x/bnx2x-e1-" FW_FILE_VERSION ".fw"
- #define FW_FILE_NAME_E1H	"bnx2x/bnx2x-e1h-" FW_FILE_VERSION ".fw"
- #define FW_FILE_NAME_E2		"bnx2x/bnx2x-e2-" FW_FILE_VERSION ".fw"
-+#define FW_FILE_NAME_E1_V15	"bnx2x/bnx2x-e1-" FW_FILE_VERSION_V15 ".fw"
-+#define FW_FILE_NAME_E1H_V15	"bnx2x/bnx2x-e1h-" FW_FILE_VERSION_V15 ".fw"
-+#define FW_FILE_NAME_E2_V15	"bnx2x/bnx2x-e2-" FW_FILE_VERSION_V15 ".fw"
- 
- /* Time in jiffies before concluding the transmitter is hung */
- #define TX_TIMEOUT		(5*HZ)
-@@ -747,9 +757,7 @@ static int bnx2x_mc_assert(struct bnx2x *bp)
- 		  CHIP_IS_E1(bp) ? "everest1" :
- 		  CHIP_IS_E1H(bp) ? "everest1h" :
- 		  CHIP_IS_E2(bp) ? "everest2" : "everest3",
--		  BCM_5710_FW_MAJOR_VERSION,
--		  BCM_5710_FW_MINOR_VERSION,
--		  BCM_5710_FW_REVISION_VERSION);
-+		  bp->fw_major, bp->fw_minor, bp->fw_rev);
- 
- 	return rc;
+ static void bcm2835_gpio_irq_handle_bank(struct bcm2835_pinctrl *pc,
+ 					 unsigned int bank, u32 mask)
+ {
+@@ -401,7 +426,7 @@ static void bcm2835_gpio_irq_handler(struct irq_desc *desc)
+ 		bcm2835_gpio_irq_handle_bank(pc, 0, 0xf0000000);
+ 		bcm2835_gpio_irq_handle_bank(pc, 1, 0x00003fff);
+ 		break;
+-	case 2: /* IRQ2 covers GPIOs 46-53 */
++	case 2: /* IRQ2 covers GPIOs 46-57 */
+ 		bcm2835_gpio_irq_handle_bank(pc, 1, 0x003fc000);
+ 		break;
+ 	}
+@@ -409,6 +434,11 @@ static void bcm2835_gpio_irq_handler(struct irq_desc *desc)
+ 	chained_irq_exit(host_chip, desc);
  }
-@@ -12355,6 +12363,15 @@ static int bnx2x_init_bp(struct bnx2x *bp)
  
- 	bnx2x_read_fwinfo(bp);
- 
-+	if (IS_PF(bp)) {
-+		rc = bnx2x_init_firmware(bp);
++static irqreturn_t bcm2835_gpio_wake_irq_handler(int irq, void *dev_id)
++{
++	return IRQ_HANDLED;
++}
 +
-+		if (rc) {
-+			bnx2x_free_mem_bp(bp);
-+			return rc;
-+		}
+ static inline void __bcm2835_gpio_irq_config(struct bcm2835_pinctrl *pc,
+ 	unsigned reg, unsigned offset, bool enable)
+ {
+@@ -608,6 +638,34 @@ static void bcm2835_gpio_irq_ack(struct irq_data *data)
+ 	bcm2835_gpio_set_bit(pc, GPEDS0, gpio);
+ }
+ 
++static int bcm2835_gpio_irq_set_wake(struct irq_data *data, unsigned int on)
++{
++	struct gpio_chip *chip = irq_data_get_irq_chip_data(data);
++	struct bcm2835_pinctrl *pc = gpiochip_get_data(chip);
++	unsigned gpio = irqd_to_hwirq(data);
++	unsigned int irqgroup;
++	int ret = -EINVAL;
++
++	if (!pc->wake_irq)
++		return ret;
++
++	if (gpio <= 27)
++		irqgroup = 0;
++	else if (gpio >= 28 && gpio <= 45)
++		irqgroup = 1;
++	else if (gpio >= 46 && gpio <= 57)
++		irqgroup = 2;
++	else
++		return ret;
++
++	if (on)
++		ret = enable_irq_wake(pc->wake_irq[irqgroup]);
++	else
++		ret = disable_irq_wake(pc->wake_irq[irqgroup]);
++
++	return ret;
++}
++
+ static struct irq_chip bcm2835_gpio_irq_chip = {
+ 	.name = MODULE_NAME,
+ 	.irq_enable = bcm2835_gpio_irq_enable,
+@@ -616,11 +674,13 @@ static struct irq_chip bcm2835_gpio_irq_chip = {
+ 	.irq_ack = bcm2835_gpio_irq_ack,
+ 	.irq_mask = bcm2835_gpio_irq_disable,
+ 	.irq_unmask = bcm2835_gpio_irq_enable,
++	.irq_set_wake = bcm2835_gpio_irq_set_wake,
++	.flags = IRQCHIP_MASK_ON_SUSPEND,
+ };
+ 
+ static int bcm2835_pctl_get_groups_count(struct pinctrl_dev *pctldev)
+ {
+-	return ARRAY_SIZE(bcm2835_gpio_groups);
++	return BCM2835_NUM_GPIOS;
+ }
+ 
+ static const char *bcm2835_pctl_get_group_name(struct pinctrl_dev *pctldev,
+@@ -778,7 +838,7 @@ static int bcm2835_pctl_dt_node_to_map(struct pinctrl_dev *pctldev,
+ 		err = of_property_read_u32_index(np, "brcm,pins", i, &pin);
+ 		if (err)
+ 			goto out;
+-		if (pin >= ARRAY_SIZE(bcm2835_gpio_pins)) {
++		if (pin >= pc->pctl_desc.npins) {
+ 			dev_err(pc->dev, "%pOF: invalid brcm,pins value %d\n",
+ 				np, pin);
+ 			err = -EINVAL;
+@@ -854,7 +914,7 @@ static int bcm2835_pmx_get_function_groups(struct pinctrl_dev *pctldev,
+ {
+ 	/* every pin can do every function */
+ 	*groups = bcm2835_gpio_groups;
+-	*num_groups = ARRAY_SIZE(bcm2835_gpio_groups);
++	*num_groups = BCM2835_NUM_GPIOS;
+ 
+ 	return 0;
+ }
+@@ -1054,29 +1114,66 @@ static const struct pinconf_ops bcm2711_pinconf_ops = {
+ 	.pin_config_set = bcm2711_pinconf_set,
+ };
+ 
+-static struct pinctrl_desc bcm2835_pinctrl_desc = {
++static const struct pinctrl_desc bcm2835_pinctrl_desc = {
+ 	.name = MODULE_NAME,
+ 	.pins = bcm2835_gpio_pins,
+-	.npins = ARRAY_SIZE(bcm2835_gpio_pins),
++	.npins = BCM2835_NUM_GPIOS,
+ 	.pctlops = &bcm2835_pctl_ops,
+ 	.pmxops = &bcm2835_pmx_ops,
+ 	.confops = &bcm2835_pinconf_ops,
+ 	.owner = THIS_MODULE,
+ };
+ 
+-static struct pinctrl_gpio_range bcm2835_pinctrl_gpio_range = {
++static const struct pinctrl_desc bcm2711_pinctrl_desc = {
++	.name = "pinctrl-bcm2711",
++	.pins = bcm2835_gpio_pins,
++	.npins = BCM2711_NUM_GPIOS,
++	.pctlops = &bcm2835_pctl_ops,
++	.pmxops = &bcm2835_pmx_ops,
++	.confops = &bcm2711_pinconf_ops,
++	.owner = THIS_MODULE,
++};
++
++static const struct pinctrl_gpio_range bcm2835_pinctrl_gpio_range = {
+ 	.name = MODULE_NAME,
+ 	.npins = BCM2835_NUM_GPIOS,
+ };
+ 
++static const struct pinctrl_gpio_range bcm2711_pinctrl_gpio_range = {
++	.name = "pinctrl-bcm2711",
++	.npins = BCM2711_NUM_GPIOS,
++};
++
++struct bcm_plat_data {
++	const struct gpio_chip *gpio_chip;
++	const struct pinctrl_desc *pctl_desc;
++	const struct pinctrl_gpio_range *gpio_range;
++};
++
++static const struct bcm_plat_data bcm2835_plat_data = {
++	.gpio_chip = &bcm2835_gpio_chip,
++	.pctl_desc = &bcm2835_pinctrl_desc,
++	.gpio_range = &bcm2835_pinctrl_gpio_range,
++};
++
++static const struct bcm_plat_data bcm2711_plat_data = {
++	.gpio_chip = &bcm2711_gpio_chip,
++	.pctl_desc = &bcm2711_pinctrl_desc,
++	.gpio_range = &bcm2711_pinctrl_gpio_range,
++};
++
+ static const struct of_device_id bcm2835_pinctrl_match[] = {
+ 	{
+ 		.compatible = "brcm,bcm2835-gpio",
+-		.data = &bcm2835_pinconf_ops,
++		.data = &bcm2835_plat_data,
+ 	},
+ 	{
+ 		.compatible = "brcm,bcm2711-gpio",
+-		.data = &bcm2711_pinconf_ops,
++		.data = &bcm2711_plat_data,
++	},
++	{
++		.compatible = "brcm,bcm7211-gpio",
++		.data = &bcm2711_plat_data,
+ 	},
+ 	{}
+ };
+@@ -1085,14 +1182,16 @@ static int bcm2835_pinctrl_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *np = dev->of_node;
++	const struct bcm_plat_data *pdata;
+ 	struct bcm2835_pinctrl *pc;
+ 	struct gpio_irq_chip *girq;
+ 	struct resource iomem;
+ 	int err, i;
+ 	const struct of_device_id *match;
++	int is_7211 = 0;
+ 
+-	BUILD_BUG_ON(ARRAY_SIZE(bcm2835_gpio_pins) != BCM2835_NUM_GPIOS);
+-	BUILD_BUG_ON(ARRAY_SIZE(bcm2835_gpio_groups) != BCM2835_NUM_GPIOS);
++	BUILD_BUG_ON(ARRAY_SIZE(bcm2835_gpio_pins) != BCM2711_NUM_GPIOS);
++	BUILD_BUG_ON(ARRAY_SIZE(bcm2835_gpio_groups) != BCM2711_NUM_GPIOS);
+ 
+ 	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
+ 	if (!pc)
+@@ -1111,7 +1210,14 @@ static int bcm2835_pinctrl_probe(struct platform_device *pdev)
+ 	if (IS_ERR(pc->base))
+ 		return PTR_ERR(pc->base);
+ 
+-	pc->gpio_chip = bcm2835_gpio_chip;
++	match = of_match_node(bcm2835_pinctrl_match, pdev->dev.of_node);
++	if (!match)
++		return -EINVAL;
++
++	pdata = match->data;
++	is_7211 = of_device_is_compatible(np, "brcm,bcm7211-gpio");
++
++	pc->gpio_chip = *pdata->gpio_chip;
+ 	pc->gpio_chip.parent = dev;
+ 	pc->gpio_chip.of_node = np;
+ 
+@@ -1135,6 +1241,18 @@ static int bcm2835_pinctrl_probe(struct platform_device *pdev)
+ 		raw_spin_lock_init(&pc->irq_lock[i]);
+ 	}
+ 
++	pc->pctl_desc = *pdata->pctl_desc;
++	pc->pctl_dev = devm_pinctrl_register(dev, &pc->pctl_desc, pc);
++	if (IS_ERR(pc->pctl_dev)) {
++		gpiochip_remove(&pc->gpio_chip);
++		return PTR_ERR(pc->pctl_dev);
 +	}
 +
- 	func = BP_FUNC(bp);
++	pc->gpio_range = *pdata->gpio_range;
++	pc->gpio_range.base = pc->gpio_chip.base;
++	pc->gpio_range.gc = &pc->gpio_chip;
++	pinctrl_add_gpio_range(pc->pctl_dev, &pc->gpio_range);
++
+ 	girq = &pc->gpio_chip.irq;
+ 	girq->chip = &bcm2835_gpio_irq_chip;
+ 	girq->parent_handler = bcm2835_gpio_irq_handler;
+@@ -1142,8 +1260,19 @@ static int bcm2835_pinctrl_probe(struct platform_device *pdev)
+ 	girq->parents = devm_kcalloc(dev, BCM2835_NUM_IRQS,
+ 				     sizeof(*girq->parents),
+ 				     GFP_KERNEL);
+-	if (!girq->parents)
++	if (!girq->parents) {
++		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
+ 		return -ENOMEM;
++	}
++
++	if (is_7211) {
++		pc->wake_irq = devm_kcalloc(dev, BCM2835_NUM_IRQS,
++					    sizeof(*pc->wake_irq),
++					    GFP_KERNEL);
++		if (!pc->wake_irq)
++			return -ENOMEM;
++	}
++
+ 	/*
+ 	 * Use the same handler for all groups: this is necessary
+ 	 * since we use one gpiochip to cover all lines - the
+@@ -1151,34 +1280,44 @@ static int bcm2835_pinctrl_probe(struct platform_device *pdev)
+ 	 * bank that was firing the IRQ and look up the per-group
+ 	 * and bank data.
+ 	 */
+-	for (i = 0; i < BCM2835_NUM_IRQS; i++)
++	for (i = 0; i < BCM2835_NUM_IRQS; i++) {
++		int len;
++		char *name;
++
+ 		girq->parents[i] = irq_of_parse_and_map(np, i);
++		if (!is_7211)
++			continue;
++
++		/* Skip over the all banks interrupts */
++		pc->wake_irq[i] = irq_of_parse_and_map(np, i +
++						       BCM2835_NUM_IRQS + 1);
++
++		len = strlen(dev_name(pc->dev)) + 16;
++		name = devm_kzalloc(pc->dev, len, GFP_KERNEL);
++		if (!name)
++			return -ENOMEM;
++
++		snprintf(name, len, "%s:bank%d", dev_name(pc->dev), i);
++
++		/* These are optional interrupts */
++		err = devm_request_irq(dev, pc->wake_irq[i],
++				       bcm2835_gpio_wake_irq_handler,
++				       IRQF_SHARED, name, pc);
++		if (err)
++			dev_warn(dev, "unable to request wake IRQ %d\n",
++				 pc->wake_irq[i]);
++	}
++
+ 	girq->default_type = IRQ_TYPE_NONE;
+ 	girq->handler = handle_level_irq;
  
- 	/* need to reset chip if undi was active */
-@@ -12367,6 +12384,7 @@ static int bnx2x_init_bp(struct bnx2x *bp)
- 
- 		rc = bnx2x_prev_unload(bp);
- 		if (rc) {
-+			bnx2x_release_firmware(bp);
- 			bnx2x_free_mem_bp(bp);
- 			return rc;
- 		}
-@@ -13366,16 +13384,11 @@ static int bnx2x_check_firmware(struct bnx2x *bp)
- 	/* Check FW version */
- 	offset = be32_to_cpu(fw_hdr->fw_version.offset);
- 	fw_ver = firmware->data + offset;
--	if ((fw_ver[0] != BCM_5710_FW_MAJOR_VERSION) ||
--	    (fw_ver[1] != BCM_5710_FW_MINOR_VERSION) ||
--	    (fw_ver[2] != BCM_5710_FW_REVISION_VERSION) ||
--	    (fw_ver[3] != BCM_5710_FW_ENGINEERING_VERSION)) {
-+	if (fw_ver[0] != bp->fw_major || fw_ver[1] != bp->fw_minor ||
-+	    fw_ver[2] != bp->fw_rev || fw_ver[3] != bp->fw_eng) {
- 		BNX2X_ERR("Bad FW version:%d.%d.%d.%d. Should be %d.%d.%d.%d\n",
--		       fw_ver[0], fw_ver[1], fw_ver[2], fw_ver[3],
--		       BCM_5710_FW_MAJOR_VERSION,
--		       BCM_5710_FW_MINOR_VERSION,
--		       BCM_5710_FW_REVISION_VERSION,
--		       BCM_5710_FW_ENGINEERING_VERSION);
-+			  fw_ver[0], fw_ver[1], fw_ver[2], fw_ver[3],
-+			  bp->fw_major, bp->fw_minor, bp->fw_rev, bp->fw_eng);
- 		return -EINVAL;
+ 	err = gpiochip_add_data(&pc->gpio_chip, pc);
+ 	if (err) {
+ 		dev_err(dev, "could not add GPIO chip\n");
++		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
+ 		return err;
  	}
  
-@@ -13453,34 +13466,51 @@ do {									\
- 	     (u8 *)bp->arr, len);					\
- } while (0)
- 
--static int bnx2x_init_firmware(struct bnx2x *bp)
-+int bnx2x_init_firmware(struct bnx2x *bp)
- {
--	const char *fw_file_name;
-+	const char *fw_file_name, *fw_file_name_v15;
- 	struct bnx2x_fw_file_hdr *fw_hdr;
- 	int rc;
- 
- 	if (bp->firmware)
- 		return 0;
- 
--	if (CHIP_IS_E1(bp))
-+	if (CHIP_IS_E1(bp)) {
- 		fw_file_name = FW_FILE_NAME_E1;
--	else if (CHIP_IS_E1H(bp))
-+		fw_file_name_v15 = FW_FILE_NAME_E1_V15;
-+	} else if (CHIP_IS_E1H(bp)) {
- 		fw_file_name = FW_FILE_NAME_E1H;
--	else if (!CHIP_IS_E1x(bp))
-+		fw_file_name_v15 = FW_FILE_NAME_E1H_V15;
-+	} else if (!CHIP_IS_E1x(bp)) {
- 		fw_file_name = FW_FILE_NAME_E2;
--	else {
-+		fw_file_name_v15 = FW_FILE_NAME_E2_V15;
-+	} else {
- 		BNX2X_ERR("Unsupported chip revision\n");
- 		return -EINVAL;
- 	}
-+
- 	BNX2X_DEV_INFO("Loading %s\n", fw_file_name);
- 
- 	rc = request_firmware(&bp->firmware, fw_file_name, &bp->pdev->dev);
- 	if (rc) {
--		BNX2X_ERR("Can't load firmware file %s\n",
--			  fw_file_name);
--		goto request_firmware_exit;
-+		BNX2X_DEV_INFO("Trying to load older fw %s\n", fw_file_name_v15);
-+
-+		/* try to load prev version */
-+		rc = request_firmware(&bp->firmware, fw_file_name_v15, &bp->pdev->dev);
-+
-+		if (rc)
-+			goto request_firmware_exit;
-+
-+		bp->fw_rev = BCM_5710_FW_REVISION_VERSION_V15;
-+	} else {
-+		bp->fw_cap |= FW_CAP_INVALIDATE_VF_FP_HSI;
-+		bp->fw_rev = BCM_5710_FW_REVISION_VERSION;
- 	}
- 
-+	bp->fw_major = BCM_5710_FW_MAJOR_VERSION;
-+	bp->fw_minor = BCM_5710_FW_MINOR_VERSION;
-+	bp->fw_eng = BCM_5710_FW_ENGINEERING_VERSION;
-+
- 	rc = bnx2x_check_firmware(bp);
- 	if (rc) {
- 		BNX2X_ERR("Corrupt firmware file %s\n", fw_file_name);
-@@ -13536,7 +13566,7 @@ static int bnx2x_init_firmware(struct bnx2x *bp)
- 	return rc;
+-	match = of_match_node(bcm2835_pinctrl_match, pdev->dev.of_node);
+-	if (match) {
+-		bcm2835_pinctrl_desc.confops =
+-			(const struct pinconf_ops *)match->data;
+-	}
+-
+-	pc->pctl_dev = devm_pinctrl_register(dev, &bcm2835_pinctrl_desc, pc);
+-	if (IS_ERR(pc->pctl_dev)) {
+-		gpiochip_remove(&pc->gpio_chip);
+-		return PTR_ERR(pc->pctl_dev);
+-	}
+-
+-	pc->gpio_range = bcm2835_pinctrl_gpio_range;
+-	pc->gpio_range.base = pc->gpio_chip.base;
+-	pc->gpio_range.gc = &pc->gpio_chip;
+-	pinctrl_add_gpio_range(pc->pctl_dev, &pc->gpio_range);
+-
+ 	return 0;
  }
  
--static void bnx2x_release_firmware(struct bnx2x *bp)
-+void bnx2x_release_firmware(struct bnx2x *bp)
- {
- 	kfree(bp->init_ops_offsets);
- 	kfree(bp->init_ops);
-@@ -14053,6 +14083,7 @@ static int bnx2x_init_one(struct pci_dev *pdev,
- 	return 0;
- 
- init_one_freemem:
-+	bnx2x_release_firmware(bp);
- 	bnx2x_free_mem_bp(bp);
- 
- init_one_exit:
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
-index 03eb0179ec00..08437eaacbb9 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
-@@ -758,9 +758,18 @@ static void bnx2x_vf_igu_reset(struct bnx2x *bp, struct bnx2x_virtf *vf)
- 
- void bnx2x_vf_enable_access(struct bnx2x *bp, u8 abs_vfid)
- {
-+	u16 abs_fid;
-+
-+	abs_fid = FW_VF_HANDLE(abs_vfid);
-+
- 	/* set the VF-PF association in the FW */
--	storm_memset_vf_to_pf(bp, FW_VF_HANDLE(abs_vfid), BP_FUNC(bp));
--	storm_memset_func_en(bp, FW_VF_HANDLE(abs_vfid), 1);
-+	storm_memset_vf_to_pf(bp, abs_fid, BP_FUNC(bp));
-+	storm_memset_func_en(bp, abs_fid, 1);
-+
-+	/* Invalidate fp_hsi version for vfs */
-+	if (bp->fw_cap & FW_CAP_INVALIDATE_VF_FP_HSI)
-+		REG_WR8(bp, BAR_XSTRORM_INTMEM +
-+			    XSTORM_ETH_FUNCTION_INFO_FP_HSI_VALID_E2_OFFSET(abs_fid), 0);
- 
- 	/* clear vf errors*/
- 	bnx2x_vf_semi_clear_err(bp, abs_vfid);
 diff --git a/fs/select.c b/fs/select.c
-index 945896d0ac9e..5edffee1162c 100644
+index e51796063cb6..7716d9d5be1e 100644
 --- a/fs/select.c
 +++ b/fs/select.c
 @@ -458,9 +458,11 @@ static int max_select_fd(unsigned long n, fd_set_bits *fds)
@@ -851,10 +919,10 @@ index 945896d0ac9e..5edffee1162c 100644
  			if (res_in)
  				*rinp = res_in;
 diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index b74e7ace4376..844c35803739 100644
+index 7777c35e0a17..5797cf2909b0 100644
 --- a/kernel/rcu/tree.c
 +++ b/kernel/rcu/tree.c
-@@ -1581,10 +1581,11 @@ static void __maybe_unused rcu_advance_cbs_nowake(struct rcu_node *rnp,
+@@ -1358,10 +1358,11 @@ static void __maybe_unused rcu_advance_cbs_nowake(struct rcu_node *rnp,
  						  struct rcu_data *rdp)
  {
  	rcu_lockdep_assert_cblist_protected(rdp);
