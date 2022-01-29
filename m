@@ -2,155 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B20C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 16:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD882C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 17:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352864AbiA2QwY (ORCPT
+        id S243991AbiA2RCI convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 11:52:24 -0500
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:50087 "EHLO mx1.molgen.mpg.de"
+        Sat, 29 Jan 2022 12:02:08 -0500
+Received: from mail-eopbgr120075.outbound.protection.outlook.com ([40.107.12.75]:14542
+        "EHLO FRA01-PR2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233791AbiA2QwT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 11:52:19 -0500
-Received: from [10.59.106.37] (unknown [77.235.169.38])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 0FD3B61EA1926;
-        Sat, 29 Jan 2022 17:52:15 +0100 (CET)
-Message-ID: <3534d781-7d01-b42a-8974-0b1c367946f0@molgen.mpg.de>
-Date:   Sat, 29 Jan 2022 17:52:12 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: BUG: Kernel NULL pointer dereference on write at 0x00000000
- (rtmsg_ifinfo_build_skb)
+        id S235519AbiA2RCF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 29 Jan 2022 12:02:05 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LkmIiCXT4ziPRqsLlezbz2h5AhfE8z9FKOljrTvAaJqSV7C+O/jNh8mqFHOg2MV3O6GzIdOg0kSvG/NxA4mC9l9Gr0qA9+V5F6fkmgQRXN9aHH4Ec6krYi6uPwfEwaHoXVEuEaxCGudkNaK0zCryNxyVlRLfmVERTsKFOaKpbg3fVGooQPMVVDL7F5W4QZ7lO04yYXIvJKuG3udVG3+QtXWfQVINiS7/XfhVHZRf2hqhNcICr3iFy/ZqmpeWggvT1YP+YnU4A55pjh5Y+lS2IRRTZTHIabVxlj5kezCLfqYGWJu1hesIkRAyBAPbB56ZT3BetRZx3Hs1sPEZvzRfrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DFe2jru4e765k+AtEaywltcFddJL0rBEMrtvg51fbp8=;
+ b=nwBiU1qFnoXLEw+8x7ZxGxgk62DZauDrHVgA2U8tOyZsU+mGEyX71bWPV1S1uEiqgGzIukk5oq5TnztBHU2MMGtdQWeBemdtqsZDRd2yk9MtSrb0o0qfF0+NKSP4+lpjfmZRNMwAkKQN8F88LiJZUWmprqDSSIefbSenNvK1sgaJzHx/y8rp9wGqFGFOFTiHD81wVfPoyPmkn6D+4cTGIVQVDwbZ9dPmLbDxkkpFsTDIn5czzhaPOSY2Z2+lhmbi65Qbnsn51dQmPKjvQFMTvaRLcmNmXi2OP2Qee1RfEtRSr3Edg4DdAQHvaEGDRkf2NNSuBiBxonI7+ovv5cg0Uw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by PR0P264MB2584.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:1e3::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Sat, 29 Jan
+ 2022 17:02:03 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::c9a2:1db0:5469:54e1]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::c9a2:1db0:5469:54e1%6]) with mapi id 15.20.4930.020; Sat, 29 Jan 2022
+ 17:02:03 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Luis Chamberlain <mcgrof@kernel.org>, Jessica Yu <jeyu@kernel.org>
+CC:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "kgdb-bugreport@lists.sourceforge.net" 
+        <kgdb-bugreport@lists.sourceforge.net>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>
+Subject: [PATCH v3 0/6] Allocate module text and data separately
+Thread-Topic: [PATCH v3 0/6] Allocate module text and data separately
+Thread-Index: AQHYFTHvUwh0xR1dj0+CyueZIq28OA==
+Date:   Sat, 29 Jan 2022 17:02:03 +0000
+Message-ID: <cover.1643475473.git.christophe.leroy@csgroup.eu>
+Accept-Language: fr-FR, en-US
 Content-Language: en-US
-To:     Zhouyi Zhou <zhouzhouyi@gmail.com>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <159db05f-539c-fe29-608b-91b036588033@molgen.mpg.de>
- <CAABZP2xampOLo8k93OLgaOfv9LreJ+f0g0_1mXwqtrv_LKewQg@mail.gmail.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <CAABZP2xampOLo8k93OLgaOfv9LreJ+f0g0_1mXwqtrv_LKewQg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 892d4223-8cff-472b-6752-08d9e3491279
+x-ms-traffictypediagnostic: PR0P264MB2584:EE_
+x-microsoft-antispam-prvs: <PR0P264MB2584A5D015F68D597D1E572EED239@PR0P264MB2584.FRAP264.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RKfoTkUtOawyjK5uczxHEECkyxYbemWn3txATQY9icTrbqBP8t8MGPN/9mIi/qPMlalfA3NzT5o7aSK6+bqO0Fd+phGV5a2+egkbzNq8eNQ6q+2Tuw5s5uHq0nFoRzj8tWZD+R5JdD+LwKjXh023r1ZnU6ZwvSG0x9x2OHb9qEfFyhPsEVGF0291F75yJ2iyx4Je5bigwgNf13gwIWM8d0yLQZXJT2oTzcDZSDLB3P7wyY7cWr+N2EtCiqXRn3imWUpzzTZniItsD0so2BDeXBTQbJJLY6fJ3Mcd4/oQz7wQ+1QMI1j04PF8vMrIDWVxQIrSqKf4iK7onxgoDrSPZp8bWgCPpzorFDWNmh/092DBOdEd2vCesyMhKubrLwxSma44E5WX9qho2XBtWornC3hMHZdkuqT2V5tQiazcXi8a/HEbxClufevt8hOVHEi8hr185WFyD2qZmvSfwUUy+vb4haPbEn19SQn9AcG5ktLCneNH1Vo6Nqx4yzIScIGIFta3QMCwlxxXG3Cugg6nQIMUpqpiKUu3ccTijdaPVNoVhJyXhicB8FS1IYEg1+Pdkb2Ce6MivnNqGXNLmI3g13xfRUsGZ7Lc62/cd+caobzqDIvzQEiGZMedm7dfwepkUTWvs053hrXPpyR6H1v0VY8W3U/f/NmveGclr0D/tw4fVsWYAF32ZG4vf2KCCe2fZls76ynsBX8oPwhLWs2A6Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(54906003)(110136005)(6512007)(2906002)(86362001)(6486002)(508600001)(4326008)(122000001)(38100700002)(91956017)(316002)(76116006)(26005)(64756008)(6506007)(8936002)(186003)(5660300002)(44832011)(66476007)(66556008)(71200400001)(66946007)(8676002)(66446008)(83380400001)(2616005)(36756003)(38070700005)(20210929001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?20FFZVBRKvjedqRUl/SSTnbdtLAYkCaoCuzqhwUGtys4VKy4HrtuzssWDR?=
+ =?iso-8859-1?Q?7X9M/JRHJh3FP+np6aBauLAPIRY7LlF2pP5GyqcdWJNXMy2orfkG6sxmZC?=
+ =?iso-8859-1?Q?VBZug+EAig9nedRdjzMj9SGTxBVkUDHPvAVRBSU09DJO+IIKyrVSX7BX7O?=
+ =?iso-8859-1?Q?bAKMEb3enosmeIelB297yzVU2YerWMJxa2EIsbRDnI9UgCGwkPrzWdOuX7?=
+ =?iso-8859-1?Q?SmJfX6vuucCOiuJDyG5AQtTAFXGW28TreBgqwncUK2TCil+2bRq23sY7LP?=
+ =?iso-8859-1?Q?9v9Ara+u9Nwd3RuI1utiR4XBxW4Gh3pVcUccyF3CWnXBWStJDtPefMI0Qj?=
+ =?iso-8859-1?Q?2NPWa2ZRdRGcwJLTuEYfeNAoJYoARJmVgQjc4C9rsUrBWidTZh2Ugy2m5k?=
+ =?iso-8859-1?Q?jVrSPTqmZSI4zvR/oJ4zFpLxAQqa+zcPWL+xVSyYVjqLXf+0mQbLODW964?=
+ =?iso-8859-1?Q?xHGqqfyFQ9mD5tsOxZRvtg0SbLQ8FGVPZg4oBrvtyI4m0kSuhqA/ic8AmR?=
+ =?iso-8859-1?Q?LiMA16eHozarleSUZAPD5zp7ycB2PTNTUq7zoLW8pva1l6m73ecG9ui0oy?=
+ =?iso-8859-1?Q?7PE6BZExxhsI+mqyyx3aezQS+iBcGueLe640LcwFwl/oKdnCJtkfKSrBCF?=
+ =?iso-8859-1?Q?cUPHDaD4Demp+zhbPdSovxaXGTE6oF6HMeE7vcjtjWYAw+6Vox//mnbUDu?=
+ =?iso-8859-1?Q?vUZfBQx6OdutWF8WFfj6vS9qh7UlTT/n5SZEASi1nMN+soXj6W4M1RGVYc?=
+ =?iso-8859-1?Q?IAevN8l5xTy9EY+hmmo4FqsCSmHu2Ha+MSi00eXoPZCChcNs772TimSqft?=
+ =?iso-8859-1?Q?mvDbMzb2I8itaODDqbohNpzp7Nzd86/Oy6MKKfg4Cd2qRs3DYr7ZHCPOcI?=
+ =?iso-8859-1?Q?b63lA6+tncllH0F586rSwhK+mfo0lwnD/m8W1G12OAfzpIXxkezdwj65ZB?=
+ =?iso-8859-1?Q?o4TVj2QJcg78UkAMC2e4b00cC+koXfQqcU2IwbYhD536FkWw4HdcFCzorQ?=
+ =?iso-8859-1?Q?NpwKXazzRfnIT1sxeKyLPk9KLgVF2VX4BNcO6HnmS314FECqmVSVZ7jMvd?=
+ =?iso-8859-1?Q?x8jgiKEhDtTZCGVKP/95mMz4OMsOkaaybj9Och8XvS4833OiPXsMLJ9b5v?=
+ =?iso-8859-1?Q?BHqpowX1FTnkG7yN12oseJlw2olcTsjUVd3bNs+UktcaNmKaGtK2q4bHqU?=
+ =?iso-8859-1?Q?Jc2+9UXdOPqEP9hHJMzfZomBiXbiBo+ajMFg/pdkDi+UgfMYao1eg/mc23?=
+ =?iso-8859-1?Q?4lBCFQR3EjOVU4sgFlC0b8JH7tG3o7euD4+TRvhunWkqosL8q7g6JIv5iC?=
+ =?iso-8859-1?Q?0ot2xzJB9hfL2uQjBadlMCH0CklzQbR5uJqFoeRzDOYQgOw1QMAVjjGwu4?=
+ =?iso-8859-1?Q?BbUZ0twOPEb12z6ri3xiweVKSHxW1qLjK7RfxwlrnTUvsC2n6dr3sCbZCn?=
+ =?iso-8859-1?Q?ZkzhmpFS8ohXLZjKpRiwAq12xEjIjExC6Yy4N5PzbL67jRenZ1C1AKoMUV?=
+ =?iso-8859-1?Q?boVshmuJxoUYUvTWi017IuXxLUCc2Hnsh9htcvyiM2aj7nbF8cDIZRYA2D?=
+ =?iso-8859-1?Q?/KTDBC8z0C12VLKQmzKuSoJid97Akj3TxhQPWunLOQrJPzWppcTIjMJRXj?=
+ =?iso-8859-1?Q?NNsdlCrF/BSNw9okwpAlpdAj56Icd66xahMBpkO5BGFxrQdZ4sHUHxztaq?=
+ =?iso-8859-1?Q?yoOs3qKmII1uZmXCCToJMqxEXftJeKPs3OdZNvzh6sV/ECcYuHui7X98Rk?=
+ =?iso-8859-1?Q?YObev7s6DDDu+oaqkJuZkNUmA=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 892d4223-8cff-472b-6752-08d9e3491279
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jan 2022 17:02:03.0606
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yMU6eVPzk9t5QNlyd7FgGd6fDDBSBK6/4w4wjs9bqsy31YHUXQoC5yuSbSyKke1IPtSEMfUydPDLLs4it14pucPnlsIoiXXzcTS8y6VPzh4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR0P264MB2584
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Zhouyi,
+This series allow architectures to request having modules data in
+vmalloc area instead of module area.
 
+This is required on powerpc book3s/32 in order to set data non
+executable, because it is not possible to set executability on page
+basis, this is done per 256 Mbytes segments. The module area has exec
+right, vmalloc area has noexec. Without this change module data
+remains executable regardless of CONFIG_STRICT_MODULES_RWX.
 
-Thank you for taking the time.
+This can also be useful on other powerpc/32 in order to maximize the
+chance of code being close enough to kernel core to avoid branch
+trampolines.
 
+Changes in v3:
+- Fixed the tree for data_layout at one place (Thanks Miroslav)
+- Moved removal of module_addr_min/module_addr_max macro out of patch 1 in a new patch at the end of the series to reduce churn.
 
-Am 29.01.22 um 03:23 schrieb Zhouyi Zhou:
+Changes in v2:
+- Dropped first two patches which are not necessary. They may be added back later as a follow-up series.
+- Fixed the printks in GDB
 
-> I don't have an IBM machine, but I tried to analyze the problem using
-> my x86_64 kvm virtual machine, I can't reproduce the bug using my
-> x86_64 kvm virtual machine.
+Christophe Leroy (6):
+  modules: Always have struct mod_tree_root
+  modules: Prepare for handling several RB trees
+  modules: Introduce data_layout
+  modules: Add CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
+  modules: Remove module_addr_min and module_addr_max
+  powerpc: Select ARCH_WANTS_MODULES_DATA_IN_VMALLOC on book3s/32 and
+    8xx
 
-No idea, if it’s architecture specific.
+ arch/Kconfig                |   6 ++
+ arch/powerpc/Kconfig        |   1 +
+ include/linux/module.h      |   8 ++
+ kernel/debug/kdb/kdb_main.c |  10 +-
+ kernel/module.c             | 193 +++++++++++++++++++++++++-----------
+ 5 files changed, 156 insertions(+), 62 deletions(-)
 
-> I saw the panic is caused by registration of sit device (A sit device
-> is a type of virtual network device that takes our IPv6 traffic,
-> encapsulates/decapsulates it in IPv4 packets, and sends/receives it
-> over the IPv4 Internet to another host)
-> 
-> sit device is registered in function sit_init_net:
-> 1895    static int __net_init sit_init_net(struct net *net)
-> 1896    {
-> 1897        struct sit_net *sitn = net_generic(net, sit_net_id);
-> 1898        struct ip_tunnel *t;
-> 1899        int err;
-> 1900
-> 1901        sitn->tunnels[0] = sitn->tunnels_wc;
-> 1902        sitn->tunnels[1] = sitn->tunnels_l;
-> 1903        sitn->tunnels[2] = sitn->tunnels_r;
-> 1904        sitn->tunnels[3] = sitn->tunnels_r_l;
-> 1905
-> 1906        if (!net_has_fallback_tunnels(net))
-> 1907            return 0;
-> 1908
-> 1909        sitn->fb_tunnel_dev = alloc_netdev(sizeof(struct ip_tunnel), "sit0",
-> 1910                           NET_NAME_UNKNOWN,
-> 1911                           ipip6_tunnel_setup);
-> 1912        if (!sitn->fb_tunnel_dev) {
-> 1913            err = -ENOMEM;
-> 1914            goto err_alloc_dev;
-> 1915        }
-> 1916        dev_net_set(sitn->fb_tunnel_dev, net);
-> 1917        sitn->fb_tunnel_dev->rtnl_link_ops = &sit_link_ops;
-> 1918        /* FB netdevice is special: we have one, and only one per netns.
-> 1919         * Allowing to move it to another netns is clearly unsafe.
-> 1920         */
-> 1921        sitn->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
-> 1922
-> 1923        err = register_netdev(sitn->fb_tunnel_dev);
-> register_netdev on line 1923 will call if_nlmsg_size indirectly.
-> 
-> On the other hand, the function that calls the paniced strlen is if_nlmsg_size:
-> (gdb) disassemble if_nlmsg_size
-> Dump of assembler code for function if_nlmsg_size:
->     0xffffffff81a0dc20 <+0>:    nopl   0x0(%rax,%rax,1)
->     0xffffffff81a0dc25 <+5>:    push   %rbp
->     0xffffffff81a0dc26 <+6>:    push   %r15
->     0xffffffff81a0dd04 <+228>:    je     0xffffffff81a0de20 <if_nlmsg_size+512>
->     0xffffffff81a0dd0a <+234>:    mov    0x10(%rbp),%rdi
->     ...
->   => 0xffffffff81a0dd0e <+238>:    callq  0xffffffff817532d0 <strlen>
->     0xffffffff81a0dd13 <+243>:    add    $0x10,%eax
->     0xffffffff81a0dd16 <+246>:    movslq %eax,%r12
-
-Excuse my ignorance, would that look the same for ppc64le? 
-Unfortunately, I didn’t save the problematic `vmlinuz` file, but on a 
-current build (without rcutorture) I have the line below, where strlen 
-shows up.
-
-     (gdb) disassemble if_nlmsg_size
-     […]
-     0xc000000000f7f82c <+332>:	bl      0xc000000000a10e30 <strlen>
-     […]
-
-> and the C code for 0xffffffff81a0dd0e is following (line 524):
-> 515    static size_t rtnl_link_get_size(const struct net_device *dev)
-> 516    {
-> 517        const struct rtnl_link_ops *ops = dev->rtnl_link_ops;
-> 518        size_t size;
-> 519
-> 520        if (!ops)
-> 521            return 0;
-> 522
-> 523        size = nla_total_size(sizeof(struct nlattr)) + /* IFLA_LINKINFO */
-> 524               nla_total_size(strlen(ops->kind) + 1);  /* IFLA_INFO_KIND */
-
-How do I connect the disassemby output with the corresponding line?
-
-> But ops is assigned the value of sit_link_ops in function sit_init_net
-> line 1917, so I guess something must happened between the calls.
-> 
-> Do we have KASAN in IBM machine? would KASAN help us find out what
-> happened in between?
-
-Unfortunately, KASAN is not support on Power, I have, as far as I can 
-see. From `arch/powerpc/Kconfig`:
-
-         select HAVE_ARCH_KASAN                  if PPC32 && 
-PPC_PAGE_SHIFT <= 14
-         select HAVE_ARCH_KASAN_VMALLOC          if PPC32 && 
-PPC_PAGE_SHIFT <= 14
-
-> Hope I can be of more helpful.
-
-Some distributions support multi-arch, so they easily allow 
-crosscompiling for different architectures.
-
-
-Kind regards,
-
-Paul
+-- 
+2.33.1
