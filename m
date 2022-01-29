@@ -2,74 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 500FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 00:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24802C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 01:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243092AbiA2A4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 19:56:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231846AbiA2A4T (ORCPT
+        id S1351943AbiA2BET (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 28 Jan 2022 20:04:19 -0500
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:57664 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231846AbiA2BES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 19:56:19 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA7DC061714
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:56:18 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id w81so1155805ybg.12
-        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:56:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nmGDwuvfkax3Sda7saTwAAxqwMsmlPhpVKCcAyRAE+4=;
-        b=g8yjPt4IeG+Szx3AUtuIzVZxmHIhM2XsIrQO8mD23tMBnH/IH9AWs+sRSsbRLkJCEB
-         ++gkH3G3WtjfV2VLWYUhdnjSWQ2WP+Syda59cci4Wmv3GYQCbNPimfY8fLFUC1fnnR+Z
-         Aylj+v5+p0FmA1i02GWJk3GmU4tejCH2xWdsAP8IWQ2g41kGy1l2BbVBJgu7ViZUFDk4
-         DoC2nW0E5tjN3czpD2RbtQkCYIvP53yLxDm/2V5nR/sLn7zvuOanvVhPmPYcc4jclwNY
-         KuiivmT0lHgtpOUFTQQk/AYXPdgYniimNqtRIGg4jT/y0LZw/jpHkh/9BxzsUe3YzYNK
-         H6uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nmGDwuvfkax3Sda7saTwAAxqwMsmlPhpVKCcAyRAE+4=;
-        b=zyX7xv8Bc9OGX60XRoUJYv4sdEoexwU5AIp/r8MMCvUX4cCHX+yWCwYNrS6f8IYlV6
-         eI15nAeBvyJj4QWwR5M9ewbD9ZejmhRPzOH6H4dLhzZWnHYGA3SM15vTYcGJPvbp0mnc
-         i1cdUBZqna5cyJg3MFKrfG2udUezftfE4fhwSgyPuIdwnqfD/DVVzlmhI4Rvi1E8GJJQ
-         uXQ0vAbPIttEKPO3xZPsbtTMv2xSa9/sKGTdyqtv8F2d/B/NdAPuzvBbiW7wS9HDFbyj
-         oPLVtMQEIMv+ojZoEVpnulI0nOnCFBzGLP9zCBxD7z0/UtR8BGfHeDt2jv2rCjHxPNaj
-         tDAg==
-X-Gm-Message-State: AOAM531+EIp4UBuwt0mpbDOWv/cUl9eVu3IrZ8oVLS3R0n/4dR/oreHR
-        ycaiJDmuDae1accV/LmAqZvZ7Nhm3BXaddfwCBq3jKjZvH4=
-X-Google-Smtp-Source: ABdhPJyWvdcU804CKXVZLmLkK6HbWC8olU8hvyg812kD7z4qs+CeseBUaCVnodiEtWpoWFivSUYVy22N4+xx6mVOD/w=
-X-Received: by 2002:a25:df56:: with SMTP id w83mr16041704ybg.110.1643417778032;
- Fri, 28 Jan 2022 16:56:18 -0800 (PST)
+        Fri, 28 Jan 2022 20:04:18 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0V34fUPz_1643418255;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V34fUPz_1643418255)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 29 Jan 2022 09:04:15 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     airlied@linux.ie
+Cc:     daniel@ffwll.ch, Xinhui.Pan@amd.com, christian.koenig@amd.com,
+        alexander.deucher@amd.com, Rodrigo.Siqueira@amd.com,
+        sunpeng.li@amd.com, harry.wentland@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] drm/amd/display: clean up some inconsistent indenting
+Date:   Sat, 29 Jan 2022 09:04:13 +0800
+Message-Id: <20220129010413.97801-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-References: <202201281045.Z9UBygXr-lkp@intel.com>
-In-Reply-To: <202201281045.Z9UBygXr-lkp@intel.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 29 Jan 2022 01:56:06 +0100
-Message-ID: <CACRpkdY0zN1RexZDyqdqX_QhtHMV61DBfxiNv1ODXo8KWy42fw@mail.gmail.com>
-Subject: Re: drivers/power/supply/ab8500_fg.c:2243:75: warning: variable 'b'
- set but not used
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 3:36 AM kernel test robot <lkp@intel.com> wrote:
+Eliminate the follow smatch warning:
+drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c:2246
+dp_perform_8b_10b_link_training() warn: inconsistent indenting
 
-> FYI, the error/warning still remains.
-(...)
->    drivers/power/supply/ab8500_fg.c: In function 'ab8500_fg_get_ext_psy_data':
-> >> drivers/power/supply/ab8500_fg.c:2243:75: warning: variable 'b' set but not used [-Wunused-but-set-variable]
->     2243 |                                         const struct ab8500_battery_type *b;
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-This is being addressed in a series I am working on (gets deleted) and this
-is not urgent to fix.
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+index daaec3164875..34ffcd5bb1d7 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+@@ -2243,11 +2243,11 @@ static enum link_training_result dp_perform_8b_10b_link_training(
+ 
+ 	if (status == LINK_TRAINING_SUCCESS) {
+ 		status = perform_clock_recovery_sequence(link, link_res, lt_settings, DPRX);
+-	if (status == LINK_TRAINING_SUCCESS) {
+-		status = perform_channel_equalization_sequence(link,
+-					link_res,
+-					lt_settings,
+-					DPRX);
++		if (status == LINK_TRAINING_SUCCESS) {
++			status = perform_channel_equalization_sequence(link,
++								       link_res,
++								       lt_settings,
++								       DPRX);
+ 		}
+ 	}
+ 
+-- 
+2.20.1.7.g153144c
 
-Yours.
-Linus Walleij
