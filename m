@@ -2,112 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EF6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 11:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C437FC43217
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 11:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241290AbiA2L5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 06:57:08 -0500
-Received: from mga06.intel.com ([134.134.136.31]:28873 "EHLO mga06.intel.com"
+        id S241840AbiA2L5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 29 Jan 2022 06:57:35 -0500
+Received: from mout.gmx.net ([212.227.15.18]:60127 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240332AbiA2L5G (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 06:57:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643457426; x=1674993426;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=6Qn6Nz3CVj0GK0u7Ow+pSh0AFpPGVF2G0H6EUY93syc=;
-  b=POL0cGzdvZz2XACcbpiS6Lr0JRy0FonGJbAf5VdCSGmo4qOtH0cHP5sc
-   Yf8aNYhv/i1mD56WuZTAXecHixg6V9BPbpiNoJljznlArRzAbzshQQFhT
-   NI6K9+mqvS5+r6tn2ZVLOUCurbIObkXX4nj4YRs+3TohrrSk3iHNXROAJ
-   nIWbYOGvk4JTduTUdIfRRJPjfRB33E0BjQgn3PmLggWRJkPbyiHw5nfKz
-   HkKcNyab3Nz0dBgFfR28hu8qK+4rP8eq24mSVhyAf/eGO/X2O6Nohz58h
-   RPJzkzsrGaWGjf1JFUHCrouWZFVgr6JSirma5Ks2rwEwQBoO6MhRAYdzU
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="307994510"
-X-IronPort-AV: E=Sophos;i="5.88,326,1635231600"; 
-   d="scan'208";a="307994510"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2022 03:57:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,326,1635231600"; 
-   d="scan'208";a="481027486"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 29 Jan 2022 03:57:05 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDmLo-000P9N-Cp; Sat, 29 Jan 2022 11:57:04 +0000
-Date:   Sat, 29 Jan 2022 19:56:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [avpatel:riscv_aclint_v5 3/12] arch/riscv/kernel/smp.c:166:50:
- sparse: sparse: incorrect type in argument 4 (different address spaces)
-Message-ID: <202201291952.3uJSTKvp-lkp@intel.com>
+        id S240332AbiA2L5e (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 29 Jan 2022 06:57:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1643457446;
+        bh=jI07oj6ZQKZI4SXgpi5iludWDQoXodJQyaeDRlTbCts=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=gJ4oIxK9rVzKDBcpkf+20Gj+/iYCpB/Atx1VVrPPCh0zNg8+2PWj3sJm0GWsDfC0F
+         KnV4sUE5BSoY56q3M+Mv4OI5BuciU1dK7tA9mG6fBRhxEcpJxFALsWf+667GcXWQPb
+         HbUA/HwuIonalH/7VlhxghqZZv3N7PWcHPO1LZGU=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MxUnz-1mKilj2IyP-00xwKK; Sat, 29
+ Jan 2022 12:57:26 +0100
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, openbmc@lists.ozlabs.org,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Joel Stanley <joel@jms.id.au>, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v5 1/9] dt-bindings: arm/npcm: Add binding for global control registers (GCR)
+Date:   Sat, 29 Jan 2022 12:52:20 +0100
+Message-Id: <20220129115228.2257310-2-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220129115228.2257310-1-j.neuschaefer@gmx.net>
+References: <20220129115228.2257310-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:02EDbgw1aWo9wwZ2hCE2GRIiaSUQ04z/cHtTktAVudX4/RIbZry
+ 8loU3I8s1IpTPaA9Bdi/N54iuGnis79b6JO1dQnH72ZoUzjfR5si+pRrzmLMhBUtsY+OYiz
+ fE+/yXtezAgzBT+X/TyFeB1m4BszI1ZySOZwX5p8iG70geceiobxhDsOTbze9uyJE5NZ/ca
+ ZRI6toxGGQzhcBTM6Rs7A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:jPAjAyxpmtE=:eOzq2mUyQpGbvQ6lsLzcMV
+ Qaa4Bna/j9J78/ULZoZTWi5CrIkp2i9V3O3JH2M6irxclEQImaFTYmrG68xSfJ35n5qCCyf0K
+ zFhlsMTj3Jm0g2eGMcOLDZjWlTjDcqqQTKdvcxRn+fXfVJDWg1t8DHt1eU8RdDoLdqAflPcvS
+ RSjlHyguKQrgqx20iicgt7UYScyToCsJozDXN38mwAvzR73e7Tc5cxbqQL60aK3TmEEmxLVHQ
+ PNYHYUuBdT1AbBznXVBy2bUljS7M0l+i23huysvcLGE9RACiC6McclQVd7Jfb6BFC08lMUhU1
+ mfSW/6bg6oyOr5MvbFCP8nauTEj+nhISe3BedaiwMDbse16zKdZen1JHPYZYq3BfLqMIjculO
+ 8jIcwER5gVr36xgJkDw1CjUfZfWiZL0TijtHilxK3tkJ2rjre1QrUa34V8Hk1+WE465OoNYQG
+ UVEiH3BiWqX2e01AQWTLnzTJAGgdPiZFyJZinnFztwR7Uk/iYb5hAytY5mmu6okSavEufTx2W
+ D3r7fmXL1amkYndQFeNQwCw8/92NeT/rZihpLZteCnbEbD0Onb5HNnuscT/OU7meVbrQC7Z41
+ vg/6iM+aq9SpVo5ItL34RkosFyTeaaKsEZLyq6jnLuxUcRYExbRZzsaCsc3dccxP0XEeE4nvq
+ 9elrmI/kyOdfDBj1urT3rVVe9L57pA7c0OD4qW9vXZRkKY0n6ot0kxCF5guZIaIMDmNoffNFt
+ U9ZPPYnx1kquCzjLz4yzQ9deXkkF0nOvzybumJ3Df5I8gl3+YbSUuYLEIvci7UCmECvQLaXMR
+ RH9gFC1QrHygDi2dH33bxoZjITRV+4uUnvmpNzm3/Cq0xB2JxHt0g/b/1KFFEhnkwgn72/3e0
+ +CSknAqVrqvP9QK5K+3glj/s/rC98EM9xSXsU2hu8jNFSotVY0bxK/oz0CS7BV9AGe4LsjQHa
+ RdQs5rJemIIG1C0Hd7ErsGSKwNlJs6jYiw7TF1yabOaboEND/CJu06xVgkdxLvp5sbv1PGxQ4
+ 4VSWon1mnW0yHeSdoWnjHoMdoHsXb0LqdCvRfgjRmFWejQsbWBufK3FhyVNU1yzFKDhHNHPnJ
+ uh/V+v0ids5Qw4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/avpatel/linux.git riscv_aclint_v5
-head:   7f4564bd884ddd6e785f4718ed46c5d4a59bf310
-commit: bbfd82cb293e2c4fe309a1c9bf59d3a4d9459d26 [3/12] RISC-V: Treat IPIs as normal Linux IRQs
-config: riscv-randconfig-s032-20220129 (https://download.01.org/0day-ci/archive/20220129/202201291952.3uJSTKvp-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/avpatel/linux/commit/bbfd82cb293e2c4fe309a1c9bf59d3a4d9459d26
-        git remote add avpatel https://github.com/avpatel/linux.git
-        git fetch --no-tags avpatel riscv_aclint_v5
-        git checkout bbfd82cb293e2c4fe309a1c9bf59d3a4d9459d26
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
+A nuvoton,*-gcr node is present in nuvoton-common-npcm7xx.dtsi and will
+be added to nuvoton-wpcm450.dtsi. It is necessary for the NPCM7xx and
+WPCM450 pinctrl drivers, and may later be used to retrieve SoC model and
+version information.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This patch adds a binding to describe this node.
 
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+Reviewed-by: Rob Herring <robh@kernel.org>
 
-sparse warnings: (new ones prefixed by >>)
->> arch/riscv/kernel/smp.c:166:50: sparse: sparse: incorrect type in argument 4 (different address spaces) @@     expected void [noderef] __percpu *percpu_dev_id @@     got int * @@
-   arch/riscv/kernel/smp.c:166:50: sparse:     expected void [noderef] __percpu *percpu_dev_id
-   arch/riscv/kernel/smp.c:166:50: sparse:     got int *
+=2D--
+v5:
+- no changes
 
-vim +166 arch/riscv/kernel/smp.c
+v4:
+- Add Rob's R-b
 
-   151	
-   152	void riscv_ipi_set_virq_range(int virq, int nr)
-   153	{
-   154		int i, err;
-   155	
-   156		if (WARN_ON(ipi_virq_base))
-   157			return;
-   158	
-   159		WARN_ON(nr < IPI_MAX);
-   160		nr_ipi = min(nr, IPI_MAX);
-   161		ipi_virq_base = virq;
-   162	
-   163		/* Request IPIs */
-   164		for (i = 0; i < nr_ipi; i++) {
-   165			err = request_percpu_irq(ipi_virq_base + i, handle_IPI,
- > 166						 "IPI", &ipi_virq_base);
-   167			WARN_ON(err);
-   168	
-   169			ipi_desc[i] = irq_to_desc(ipi_virq_base + i);
-   170			irq_set_status_flags(ipi_virq_base + i, IRQ_HIDDEN);
-   171		}
-   172	
-   173		/* Enabled IPIs for boot CPU immediately */
-   174		riscv_ipi_enable();
-   175	}
-   176	EXPORT_SYMBOL_GPL(riscv_ipi_set_virq_range);
-   177	
+v3:
+- Make a few changes suggested by Rob Herring
+- Change name of mux-controller node to appease the linter
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+v2:
+- https://lore.kernel.org/lkml/20211207210823.1975632-2-j.neuschaefer@gmx.=
+net/
+- Rename node in example to syscon@800000
+- Add subnode to example
+
+v1:
+- https://lore.kernel.org/lkml/20210602120329.2444672-2-j.neuschaefer@gmx.=
+net/
+=2D--
+ .../bindings/arm/npcm/nuvoton,gcr.yaml        | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr=
+.yaml
+
+diff --git a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml b=
+/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+new file mode 100644
+index 0000000000000..fcb211add7d37
+=2D-- /dev/null
++++ b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+@@ -0,0 +1,48 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/npcm/nuvoton,gcr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Global Control Registers block in Nuvoton SoCs
++
++maintainers:
++  - Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
++
++description:
++  The Global Control Registers (GCR) are a block of registers in Nuvoton =
+SoCs
++  that expose misc functionality such as chip model and version informati=
+on or
++  pinmux settings.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - nuvoton,wpcm450-gcr
++          - nuvoton,npcm750-gcr
++      - const: syscon
++      - const: simple-mfd
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties:
++  type: object
++
++examples:
++  - |
++    gcr: syscon@800000 {
++      compatible =3D "nuvoton,npcm750-gcr", "syscon", "simple-mfd";
++      reg =3D <0x800000 0x1000>;
++
++      mux-controller {
++        compatible =3D "mmio-mux";
++        #mux-control-cells =3D <1>;
++        mux-reg-masks =3D <0x38 0x07>;
++        idle-states =3D <2>;
++      };
++    };
+=2D-
+2.34.1
+
