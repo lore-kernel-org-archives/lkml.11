@@ -2,96 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7439C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 00:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D499EC43217
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 00:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344688AbiA2Auy (ORCPT
+        id S1345587AbiA2Axa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 19:50:54 -0500
-Received: from mout.gmx.net ([212.227.15.19]:57869 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241666AbiA2Aux (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 28 Jan 2022 19:50:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643417444;
-        bh=Diw1Yu38TMajSwVTyV0Mz3ACbBBVfaeWXm13ZtCuYo0=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=KJ2kLNq2Z32iYHQulMMlqmm8mb2Xok1JZW1B9uiqIX3Z+V4s/EuQ0fnlsIhZp68HS
-         9UEys9vIZhY77JqK6ktCXR48nzVaej5x/akPcby0yOeTfkAhFdrYpiMOqbbjRhzQKn
-         NDbMwRa+sKTOorynT5Fz4IHDjQvRL57xoHPTmZXI=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([89.0.80.162]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MOREi-1mtKiT1vAM-00Puwe; Sat, 29
- Jan 2022 01:50:44 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-doc@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH v2] scripts/get_abi.pl: Ignore hidden files
-Date:   Sat, 29 Jan 2022 01:50:18 +0100
-Message-Id: <20220129005019.2090996-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.34.1
+        Fri, 28 Jan 2022 19:53:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44142 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236412AbiA2Ax2 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 28 Jan 2022 19:53:28 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D83C061747
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:53:27 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id e21-20020a9d0195000000b005a3cd7c1e09so680617ote.6
+        for <linux-kernel@vger.kernel.org>; Fri, 28 Jan 2022 16:53:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kdgdtq3eOJHV51siqvXo/GLiap2Pd2Ct5h8leY/7+qQ=;
+        b=fiWptCh5t5yJTLtKKqW+Ag6RQ6RGNL8eRJ50PmEcFl2VOoxRJXMkyb1I3y6HYKfDow
+         1jLKcBqJxEG/r5+SaKi/+w4kkXXNEfluF3OJofOpTQCluSPdSZxnILu1AIkk7hCWLliS
+         CSN8Ixj5fTR5DhfUbaTZNrNip+mfxNpMtUgZrRb9XW2mow9xD43I+CBMK+7CKCWAqMgk
+         yMdIPEh36bjEuPHtgiY34m0AVB5zr4hq8irnnwDuxpukW2PZr6ticWOZSeKPwRumK5HN
+         ipxXKJFQXiO5o00GlbUHMYrXXspNv7RnkbMTN0fbHz9FIb5y0ucrEHFzJOUBPuEbRhYf
+         0wJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kdgdtq3eOJHV51siqvXo/GLiap2Pd2Ct5h8leY/7+qQ=;
+        b=Npsxhb3eOKnsBpS2mlIQr4xVUChZsY7giCAho7zQIU3dQPZAtKBdbh1rUxepFm6Jk9
+         K/L+lIiy6wnzpC0SZPJ5MOLgjJj5pqZb2WVvbhyeSmARHJhGB4dzO9Uqc5wJqdHTFYZb
+         Z4pBuQnwM0j6LVMu4izj21uvMlnhhQ8AC2uHk2cdMIcspMhweVFs6vJifk8Lhd4KcJPU
+         kub2QLHPMwXr7KxJB7eaTeCBQe/P5w5QogRqtRPSVPQpo0aPste6WYVIZkDe8yCB9E0W
+         qfKFTaLp79iEWM/0yndAn8C7vS3R6/sXNUq3RwLlRH+vB4qC5RNsoP60iF5m+V2DZEYM
+         8jKw==
+X-Gm-Message-State: AOAM532yejB6CLZ6plz8bKFBoGKUQLklTw8DP0xmAh1IEfHykMgDP3d4
+        0QdaGuZgNrStkt/tGUcfzNz0GQ==
+X-Google-Smtp-Source: ABdhPJwM/USBBDqcz3Mo0FpT+5QasQtoHcs2ePLRiKzk0nszAsYbzNIGGqS8hJcbJaiGnR5zlF5l2g==
+X-Received: by 2002:a05:6830:839:: with SMTP id t25mr6395244ots.372.1643417607223;
+        Fri, 28 Jan 2022 16:53:27 -0800 (PST)
+Received: from yoga ([2600:1700:a0:3dc8:5c39:baff:fe03:898d])
+        by smtp.gmail.com with ESMTPSA id 124sm12194246oif.7.2022.01.28.16.53.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Jan 2022 16:53:26 -0800 (PST)
+Date:   Fri, 28 Jan 2022 18:53:24 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Marijn Suijten <marijn.suijten@somainline.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        Subbaraman Narayanamurthy <subbaram@codeaurora.org>
+Subject: Re: [PATCH v10 2/2] leds: Add driver for Qualcomm LPG
+Message-ID: <YfSQBOHkwCKMGrbu@yoga>
+References: <20211010043912.136640-1-bjorn.andersson@linaro.org>
+ <20211010043912.136640-2-bjorn.andersson@linaro.org>
+ <YXL0DyyPkS4/wfB7@ripper>
+ <20211027211928.tjybwy2lokj6eoun@SoMainline.org>
+ <20211027212709.4ma5uzy5titmgzqv@SoMainline.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:j9u2Zu2cquDw+N6/3IDKCuTSyb2QKViD3fdHEOS3yJit5EzSvUa
- wzSgrqw4vFkrdpjdthP+AOCfKyLFqAnksVLmmbSh+K+twXh6lxWBnWjIb47SPyvId7Opxvr
- lJ5Ug9LgrtnnQhZFVUDIfz3qoAdb/OnkIcJ4qYx3cjzESzo3+IWPznTAwgWCqGBLB0OvjKw
- k5WNJYwdyvvzZsKJzOfsg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:hZ+ZOEekVhg=:vFWodCGU08dm9Bpf1qXdvx
- YpoKSxqtBqtUhTP88Z64L+uf3vdXUq+hJavKFRWcRo9p7ra3xvAzgwPpPnNw7h/vOr/jokqkI
- LZd5k7eDgPFUQ/69eXlErJAahHNKXGGxpvQt0D7pJRX6cQDnX/fT5/3mRZr8GI5VkQtxbSFPb
- Pshs300jKa5kZgae4d1GfR8dmC5A5uluIT5xNIXJU4EI+Q5B6yRTNQKUMqLOYPvj3KbCl6ajw
- CCC7YizbXG2SPjGhcX8h+zpQyQ9OwKSeCkMM4cMMIg/JJTNMg/by8dTketFv+qMv2IrKQWC7a
- etoCk+xaXACw/f91hSm5g5LBJ1KnwIgXka2XMtJxgWmN9b0sluyQpwyqgwZJF7+hbiQkL0WPf
- fb68KyNS1T5F9HEV/WRulZujQGrhZiuR1CaG0RhFG6+BRNVIrnGv43HBUgJl2VVNQ5vJm7r2c
- coEzDuBHPpaLUlNCPMF/ipz5GKcobKPYsjXGqi6wq6E5Rp5aD5OW3JiKzR0y/a51rI5BdC8sl
- E0jEWC6BGbKdvJp+sg8KrLA6RK0s3lk4CwK2eseqBCMXXJg0lu3Br+qL1CvL+OJru3i3hIL8v
- FGTadgMbJM8AfEhsvozg52tSYaU3FqyY4+l/Tho3cr6webWxFd3ZdeU3xsi7qUfpB34ijZ3Q8
- MLYZUwTwTDJnP6+c/FlfqsMRLXdcUNjY6fEKpZC5w7L1EFjANphr+xIUGuL+txXsCwMDgBh3u
- VuEW0KlpunAlF3HSJY4oNfnxuMyETPEMpxb/Qp49wa5JnR00O/li7yfWqNuAjTFOV++eWHIdf
- u+0i8VdmIaaB6KqqhCIV5nF4+kbpb1HuK89pjInFGylt5J+Y+magzwxijB/6BQMK1Qlot2jwa
- f42+B8LReS3wt/YUWZbzcXIgyD16SlzQ06mSSAJy6++tqdS58+trHSdsX18b1cOTGlsQfVUyc
- 54TrQqmHbUTy3Tt9/7Ch8T0lakoIxQC5Vqbj0lNXSoDv4n0kOt7hu9PyJ/aCnq2V2C0mUP39y
- XtbtjwXieejZIikxg2gzRaGNcNMvz7A2x1C38VrzGeesBZtvI2zFA2L9TpK5fnO0DrG9UuLPY
- r249Lbrqeqxars=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211027212709.4ma5uzy5titmgzqv@SoMainline.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-get_abi.pl currently collects every file in Documentation/ABI. This
-causes a UnicodeDecodeError in Documentation/sphinx/kernel_abi.py,
-when it finds my Vim swap files (.foo.swp) in the directory.
+On Wed 27 Oct 16:27 CDT 2021, Marijn Suijten wrote:
 
-To avoid such issues, ignore hidden files in get_abi.pl.
+> On 2021-10-27 23:19:30, Marijn Suijten wrote:
+> > Hi Bjorn,
+> > 
+> > On 2021-10-22 10:25:35, Bjorn Andersson wrote:
+> > > On Sat 09 Oct 21:39 PDT 2021, Bjorn Andersson wrote:
+> > > 
+> > > > The Light Pulse Generator (LPG) is a PWM-block found in a wide range of
+> > > > PMICs from Qualcomm. These PMICs typically comes with 1-8 LPG instances,
+> > > > with their output being routed to various other components, such as
+> > > > current sinks or GPIOs.
+> > > > 
+> > > > Each LPG instance can operate on fixed parameters or based on a shared
+> > > > lookup-table, altering the duty cycle over time. This provides the means
+> > > > for hardware assisted transitions of LED brightness.
+> > > > 
+> > > > A typical use case for the fixed parameter mode is to drive a PWM
+> > > > backlight control signal, the driver therefor allows each LPG instance
+> > > > to be exposed to the kernel either through the LED framework or the PWM
+> > > > framework.
+> > > > 
+> > > > A typical use case for the LED configuration is to drive RGB LEDs in
+> > > > smartphones etc, for which the driver support multiple channels to be
+> > > > ganged up to a MULTICOLOR LED. In this configuration the pattern
+> > > > generators will be synchronized, to allow for multi-color patterns.
+> > > > 
+> > > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > > > ---
+> > > 
+> > > Any feedback on this?
+> > 
+> > I asked in #linux-msm whether anything is wrong with the patterns,
+> > since my Sony Discovery (sdm630 with a pm660l) blinks way quicker on a
+> > pattern that's supposed to stay on for 1s and off for 1s:
+> > 
+> >     echo "0 1000 255 1000" > /sys/class/leds/rgb\:status/hw_pattern
+> > 
+> > It however seems to be broken in the same way on an older version now
+> > (this might be v9 or v8) which I don't remember to be the case.  Can you
+> > double-check if this is all working fine on your side?  If so, I'll have
+> > to find some time to debug it on my end.
+> > 
+> > Thanks!
+> > - Marijn
+> 
+> Another thing I just ran into: on both patch revisions the colors are
+> flipped.  multi_index reports "red green glue", but the values written
+> to multi_intensity correspond to "blue green red" instead.  Is it the
+> same on your side?
+> 
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-=2D--
+I booted one of my 8974 devices with RGB LED and the colors matches my
+expectations. Can you confirm that your mapping in the DT node is
+correct?
 
-v2:
-- Fix abi->api typo
-- Add R-b tag
-=2D--
- scripts/get_abi.pl | 1 +
- 1 file changed, 1 insertion(+)
+E.g. with pm8941 the mapping should be "backwards":
 
-diff --git a/scripts/get_abi.pl b/scripts/get_abi.pl
-index 6212f58b69c61..47b7eca5b0b71 100755
-=2D-- a/scripts/get_abi.pl
-+++ b/scripts/get_abi.pl
-@@ -92,6 +92,7 @@ sub parse_abi {
- 	my $mode =3D (stat($file))[2];
- 	return if ($mode & S_IFDIR);
- 	return if ($file =3D~ m,/README,);
-+	return if ($file =3D~ m,/\.,);
+lpg {
+    ...;
+    rgb-led {
+        color = <LED_COLOR_ID_RGB>;
+        function = LED_FUNCTION_STATUS;
 
- 	my $name =3D $file;
- 	$name =3D~ s,.*/,,;
-=2D-
-2.34.1
+        #address-cells = <1>;
+        #size-cells = <0>;
 
+        led@1 {
+            reg = <7>;
+            color = <LED_COLOR_ID_RED>;
+        };
+
+        led@2 {
+            reg = <6>;
+            color = <LED_COLOR_ID_GREEN>;
+        };
+
+        led@3 {
+            reg = <5>;
+            color = <LED_COLOR_ID_BLUE>;
+        };
+};
+
+Regards,
+Bjorn
