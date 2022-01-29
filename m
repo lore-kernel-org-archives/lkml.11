@@ -2,104 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D52EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 22:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E18F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 22:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353391AbiA2WFh (ORCPT
+        id S1346481AbiA2WO6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 17:05:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39560 "EHLO
+        Sat, 29 Jan 2022 17:14:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353381AbiA2WF2 (ORCPT
+        with ESMTP id S243417AbiA2WO4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 17:05:28 -0500
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACA9C061753;
-        Sat, 29 Jan 2022 14:05:04 -0800 (PST)
-Date:   Sat, 29 Jan 2022 23:04:55 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1643493900;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=n4D+U5HlMhytxF2oWJ6akeJdqZUw/giBlQQtt02lSdo=;
-        b=KoDi8BGMdKHj/IZ8Kam0jq/XfIKb1SjwVNTrk094cQArFm14cIEJ7sv5KPNPTn47neg/g9
-        ygizzb4Bssk54esqzhIcofiPW0yL2ZiKQzJsKOhVX9jkiMjpKtnzPLfXTWW/Nj5M82xVNz
-        vWgVIqkPag04UKdTQhw9vdwp26FUoDE=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Richard Leitner <richard.leitner@linux.dev>
-To:     Tommaso Merciai <tomm.merciai@gmail.com>
-Cc:     linuxfancy@googlegroups.com,
-        Richard Leitner <richard.leitner@skidata.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] usb: usb251xb: add boost-up property support
-Message-ID: <YfW6B4LANy11X5TQ@ltleri2>
-References: <20220128181713.96856-1-tomm.merciai@gmail.com>
+        Sat, 29 Jan 2022 17:14:56 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C50C061714;
+        Sat, 29 Jan 2022 14:14:56 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id j2so29020268ejk.6;
+        Sat, 29 Jan 2022 14:14:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=DXPthL+w0sdicyR+iIc/KNdalpGrrMEJ6fWoyKs18sc=;
+        b=S6lJTj3fb50uw/51dj+LRu9dMlOpmRhbp2bDakv2Vx4bXoOY7efD33zovna3DbLe2I
+         odXvFY90OhKQhCc5Wv+X0cmMmT0ECb7YAWkxDFLA/fPH8Lje9XBmKa+s6iA0ePi88OK7
+         DayuqboH5O2oHpa3hf7vP33hWPA4UU+yb1ox7yWapKLRSKYF7Yy4r/1pL3lRrn5iIT0l
+         51v/g8CfuBVqWVjIf0grKKRGo3F7M43KX3vBZ3mlW22oee4/BjUk9R5w9CNsP1TOYyUm
+         qVqAT2L5eMTqMQQZxcF+0UbLeU4QdW/W7tuT8DOZ9sq1u56SOmXrrj2RfTAaHgdtrmHf
+         x3yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=DXPthL+w0sdicyR+iIc/KNdalpGrrMEJ6fWoyKs18sc=;
+        b=24V8EufzpGMPixYSifmWz/8cbchBs8IGsmv1/CmuNUnWHgG7vokbFulVDusuCu5xZO
+         D7mekFHWL2KA2vEjxZloQINP5hZUDp7x//F5c1zsb4U3WZRvlpi64dDcMSoaZECISh5j
+         FkN7TWYkfsmaXQos5V6PZBAvtqswsZkvkpJGpBGAOVTO1hTAdMZI7ivzlqb5+FVKfQ6I
+         dJLLqsjQygceQKavS2crp5SyhY+o55HLMF4+lLRo/k+7HB1XJa0hpjGzPIF0eINmsBpA
+         IUcIKpP70ILPZYQzm2ciNvSv/1t5PbK9FiWhfMw9DLUKCPF8rG+tfkdfCvATlVgk/ds+
+         lQxA==
+X-Gm-Message-State: AOAM5333JqJxsUW3HrJpvvE9uDMHhyYgCUgAjec5Zt/ScVZHS4ycKDOZ
+        o1ipySsjCwF2jyGLlUD+CAzEGIRplD1qkA==
+X-Google-Smtp-Source: ABdhPJwFMzyc1rBAyO75lWJSNKxvOk61CJhL2rtuRKsbQmGDNdUxd+t40kGylnizKqk6p6evNBX1kQ==
+X-Received: by 2002:a17:907:c15:: with SMTP id ga21mr2687608ejc.356.1643494495014;
+        Sat, 29 Jan 2022 14:14:55 -0800 (PST)
+Received: from adroid (027-177-184-091.ip-addr.vsenet.de. [91.184.177.27])
+        by smtp.gmail.com with ESMTPSA id gj10sm7158005ejb.192.2022.01.29.14.14.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Jan 2022 14:14:54 -0800 (PST)
+Date:   Sat, 29 Jan 2022 23:14:52 +0100
+From:   Martin =?iso-8859-1?Q?J=FCcker?= <martin.juecker@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Martin =?iso-8859-1?Q?J=FCcker?= <martin.juecker@gmail.com>
+Subject: [PATCH] ARM: dts: add 533 MHz step to p4note GPU opp table
+Message-ID: <20220129221452.GA36524@adroid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220128181713.96856-1-tomm.merciai@gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-LGTM. Please feel free to add
+The p4note devices support 533 MHz GPU speed, so let's make use of it.
 
-Reviewed-by: Richard Leitner <richard.leitner@linux.dev>
+Signed-off-by: Martin Jücker <martin.juecker@gmail.com>
+---
+ arch/arm/boot/dts/exynos4412-p4note.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-On Fri, Jan 28, 2022 at 07:17:13PM +0100, Tommaso Merciai wrote:
-> Add support for boost-up register of usb251xb hub.
-> boost-up property control USB electrical drive strength
-> This register can be set:
-> 
->  - Normal mode -> 0x00
->  - Low         -> 0x01
->  - Medium      -> 0x10
->  - High        -> 0x11
-> 
-> (Normal Default)
-> 
-> References:
->  - http://www.mouser.com/catalog/specsheets/2514.pdf p29
-> 
-> Signed-off-by: Tommaso Merciai <tomm.merciai@gmail.com>
-> ---
-> Changes since v1:
->  - Fix patch as suggested by RLeitner
-> 
-> Changes since v2:
->  - Fix commit body as suggested by Shtylyov
->  - Fix commit msg
->  - Fix patch as suggested by RLeitner and Shtylyov
-> 
->  drivers/usb/misc/usb251xb.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/usb/misc/usb251xb.c b/drivers/usb/misc/usb251xb.c
-> index 507deef1f709..04c4e3fed094 100644
-> --- a/drivers/usb/misc/usb251xb.c
-> +++ b/drivers/usb/misc/usb251xb.c
-> @@ -543,6 +543,9 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
->  	if (of_property_read_u16_array(np, "language-id", &hub->lang_id, 1))
->  		hub->lang_id = USB251XB_DEF_LANGUAGE_ID;
->  
-> +	if (of_property_read_u8(np, "boost-up", &hub->boost_up))
-> +		hub->boost_up = USB251XB_DEF_BOOST_UP;
-> +
->  	cproperty_char = of_get_property(np, "manufacturer", NULL);
->  	strlcpy(str, cproperty_char ? : USB251XB_DEF_MANUFACTURER_STRING,
->  		sizeof(str));
-> @@ -584,7 +587,6 @@ static int usb251xb_get_ofdata(struct usb251xb *hub,
->  	 * may be as soon as needed.
->  	 */
->  	hub->bat_charge_en = USB251XB_DEF_BATTERY_CHARGING_ENABLE;
-> -	hub->boost_up = USB251XB_DEF_BOOST_UP;
->  	hub->boost_57 = USB251XB_DEF_BOOST_57;
->  	hub->boost_14 = USB251XB_DEF_BOOST_14;
->  	hub->port_map12 = USB251XB_DEF_PORT_MAP_12;
-> -- 
-> 2.25.1
-> 
+diff --git a/arch/arm/boot/dts/exynos4412-p4note.dtsi b/arch/arm/boot/dts/exynos4412-p4note.dtsi
+index 4ae6eb3091c4..d277b2337ae0 100644
+--- a/arch/arm/boot/dts/exynos4412-p4note.dtsi
++++ b/arch/arm/boot/dts/exynos4412-p4note.dtsi
+@@ -355,6 +355,13 @@ &gpu {
+ 	status = "okay";
+ };
+ 
++&gpu_opp_table {
++	opp-533000000 {
++		opp-hz = /bits/ 64 <533000000>;
++		opp-microvolt = <1075000>;
++	};
++};
++
+ &hsotg {
+ 	vusb_a-supply = <&ldo12_reg>;
+ 	dr_mode = "peripheral";
+-- 
+2.25.1
+
