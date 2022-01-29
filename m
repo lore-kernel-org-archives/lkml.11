@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 045B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 02:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD99C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 02:00:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344938AbiA2CAU (ORCPT
+        id S1345098AbiA2CAY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 28 Jan 2022 21:00:20 -0500
-Received: from mga03.intel.com ([134.134.136.65]:17567 "EHLO mga03.intel.com"
+        Fri, 28 Jan 2022 21:00:24 -0500
+Received: from mga01.intel.com ([192.55.52.88]:3769 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344749AbiA2CAR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S1344864AbiA2CAR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 28 Jan 2022 21:00:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643421617; x=1674957617;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zk/EhGuLGQZuABPr01o4taF9X2R/H/Bo5ThpAPze9Jw=;
-  b=bTkHcsaaaNzYRcQnzNkDES29xsoWroWdoKuRT1rByYGt4726adnjb+8P
-   1/taMYPMQX0jsqNbr1qzJ3entXeWTYzxakBpOysBpMTy3jP24uOtKqa3s
-   vDMd1FOo5qevyz+9/i7SL2/NEtdwaXEUOlE33jpdjfAyNE38eytCGn2An
-   iOGAXr7LiKK3lXolLYYFYhjhr6tkVLGb15sZ+nHd3zxprNt0IOjCSG7In
-   sBwiT1IuYDcz/4FKMcNj881wY39Amm1wl/R+ZsPF/uOXIHk6sqLmi0n42
-   gmnLb4OWWW8vTLlAUyImIPjPVtJCBl/JN2rUnSShit1bhlISJYoAgiFSM
+  bh=HwFzOUQ3ETlxvQNyfQGh+3gx+Q9wov9hHhNb1uvx0fc=;
+  b=YawP6mf7zq2DeBzpqytqXVnuzo29EcuC/AlfT/lKgjAySOqeSLGgtILP
+   JKUZLRSZz/70BCXNUrmkR/n5mGWBd20c2bZirmKtS2HMxr/2iBU6RcFbd
+   8vfnvKLQyUfnjBZfBDNsA6HRi4KHfhRtM04KUbNNs0jpGVWYouXckwso4
+   PN6/3V59xHZlW5U0GTOQzhx3GZ1QnAlcphZGmZOdDMTcW1vTDtlQUTbBP
+   70ArWPyjXHrlfWXpqesLIv8pk0Cl8uLMGbpEDRKI6XZEtTkcGQBTt9yAt
+   WJZkuIg2woZQs+p1OuMPSee3NM/fvsKA/Dxc0/ZX5MuG99I9eNzEUv2XM
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="247180180"
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="271693722"
 X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
-   d="scan'208";a="247180180"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 18:00:17 -0800
+   d="scan'208";a="271693722"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 18:00:17 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,325,1635231600"; 
-   d="scan'208";a="536364826"
+   d="scan'208";a="496313134"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 28 Jan 2022 18:00:16 -0800
+  by orsmga002.jf.intel.com with ESMTP; 28 Jan 2022 18:00:16 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nDd2F-000Ocw-Cu; Sat, 29 Jan 2022 02:00:15 +0000
-Date:   Sat, 29 Jan 2022 10:00:01 +0800
+        id 1nDd2F-000Ocy-Dn; Sat, 29 Jan 2022 02:00:15 +0000
+Date:   Sat, 29 Jan 2022 10:00:06 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [ardb:arm64-ro-page-tables-pkvm-v5.17 15/26]
- arch/arm64/kvm/hyp/nvhe/pgtable_protect.c:21:17: warning: suggest braces
- around empty body in an 'if' statement
-Message-ID: <202201290900.iZd18OR6-lkp@intel.com>
+To:     Jeff Layton <jlayton@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jlayton:ceph-fscrypt 53/53] net/ceph/osd_client.c:5775:3: error:
+ expected expression
+Message-ID: <202201290935.AEKKkabv-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -53,46 +53,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git arm64-ro-page-tables-pkvm-v5.17
-head:   b38f2df95cbf61e70bc32017da5318d1cb03e3e3
-commit: fd08c6c28e7fe82f8ee86abb3d1a0e1dd8c704d8 [15/26] arm64: kvm: use HYP helpers to perform page table updates
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220129/202201290900.iZd18OR6-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git ceph-fscrypt
+head:   3f014b82b65ebbf30b8e4cd0b307f1f2794d183f
+commit: 3f014b82b65ebbf30b8e4cd0b307f1f2794d183f [53/53] libceph: define a structure to track SPARSE_READ reply processing
+config: hexagon-randconfig-r002-20220127 (https://download.01.org/0day-ci/archive/20220129/202201290935.AEKKkabv-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/commit/?id=fd08c6c28e7fe82f8ee86abb3d1a0e1dd8c704d8
-        git remote add ardb git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git
-        git fetch --no-tags ardb arm64-ro-page-tables-pkvm-v5.17
-        git checkout fd08c6c28e7fe82f8ee86abb3d1a0e1dd8c704d8
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git/commit/?id=3f014b82b65ebbf30b8e4cd0b307f1f2794d183f
+        git remote add jlayton https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git
+        git fetch --no-tags jlayton ceph-fscrypt
+        git checkout 3f014b82b65ebbf30b8e4cd0b307f1f2794d183f
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kvm/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/ceph/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All error/warnings (new ones prefixed by >>):
 
-   arch/arm64/kvm/hyp/nvhe/pgtable_protect.c: In function 'inject_external_abort':
->> arch/arm64/kvm/hyp/nvhe/pgtable_protect.c:21:17: warning: suggest braces around empty body in an 'if' statement [-Wempty-body]
-      21 |                 ; // TODO
-         |                 ^
+>> net/ceph/osd_client.c:5775:3: error: expected expression
+                   u64 off = le64_to_cpu(sr->sr_extent[sr->sr_index].off);
+                   ^
+>> net/ceph/osd_client.c:5776:7: warning: mixing declarations and code is a C99 extension [-Wdeclaration-after-statement]
+                   u64 len = le64_to_cpu(sr->sr_extent[sr->sr_index].len);
+                       ^
+   1 warning and 1 error generated.
 
 
-vim +/if +21 arch/arm64/kvm/hyp/nvhe/pgtable_protect.c
+vim +5775 net/ceph/osd_client.c
 
-    15	
-    16	static void inject_external_abort(struct kvm_cpu_context *host_ctxt)
-    17	{
-    18		struct kvm_vcpu *vcpu = host_ctxt->__hyp_running_vcpu;
-    19	
-    20		if (vcpu)
-  > 21			; // TODO
-    22	
-    23		write_sysreg_el2(read_sysreg_el2(SYS_ELR) - 1, SYS_ELR);
-    24	}
-    25	
+  5746	
+  5747	static int osd_sparse_read(struct ceph_connection *con, u64 *len, char **buf)
+  5748	{
+  5749		struct ceph_osd *o = con->private;
+  5750		struct ceph_sparse_read *sr = &o->o_sparse_read;
+  5751		u32 count = __le32_to_cpu(sr->sr_count);
+  5752		int ret = 1;
+  5753	
+  5754		switch (sr->sr_state) {
+  5755		case CEPH_SPARSE_READ_COUNT:
+  5756			/* number of extents */
+  5757			*len = sizeof(sr->sr_count);
+  5758			*buf = (char *)&sr->sr_count;
+  5759			sr->sr_state = CEPH_SPARSE_READ_EXTENTS;
+  5760			break;
+  5761		case CEPH_SPARSE_READ_EXTENTS:
+  5762			/* the extent array */
+  5763			*len = count * sizeof(*sr->sr_extent);
+  5764			if (count > 1) {
+  5765				/* can't use the embedded extent array */
+  5766				sr->sr_extent = kmalloc_array(count, sizeof(*sr->sr_extent),
+  5767							   GFP_NOIO);
+  5768				if (!sr->sr_extent)
+  5769					return -ENOMEM;
+  5770			}
+  5771			*buf = (char *)sr->sr_extent;
+  5772			sr->sr_state = CEPH_SPARSE_READ_DATA;
+  5773			break;
+  5774		case CEPH_SPARSE_READ_DATA:
+> 5775			u64 off = le64_to_cpu(sr->sr_extent[sr->sr_index].off);
+> 5776			u64 len = le64_to_cpu(sr->sr_extent[sr->sr_index].len);
+  5777	
+  5778			/* ret to 0 if this is the last extent */
+  5779			++sr->sr_index;
+  5780			if (sr->sr_index >= count)
+  5781				ret = 0;
+  5782			break;
+  5783		}
+  5784		return ret;
+  5785	}
+  5786	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
