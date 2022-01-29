@@ -2,76 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCD2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 15:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A85C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 15:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243207AbiA2PGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 10:06:46 -0500
-Received: from mta-13-4.privateemail.com ([198.54.127.109]:53839 "EHLO
-        MTA-13-4.privateemail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241780AbiA2PGm (ORCPT
+        id S244629AbiA2PJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 29 Jan 2022 10:09:28 -0500
+Received: from isilmar-4.linta.de ([136.243.71.142]:37190 "EHLO
+        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232848AbiA2PJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 10:06:42 -0500
-X-Greylist: delayed 1740 seconds by postgrey-1.27 at vger.kernel.org; Sat, 29 Jan 2022 10:06:41 EST
-Received: from mta-13.privateemail.com (localhost [127.0.0.1])
-        by mta-13.privateemail.com (Postfix) with ESMTP id D991818000BE;
-        Sat, 29 Jan 2022 10:06:40 -0500 (EST)
-Received: from localhost.localdomain (unknown [10.20.151.172])
-        by mta-13.privateemail.com (Postfix) with ESMTPA id 3071B18000A5;
-        Sat, 29 Jan 2022 10:06:37 -0500 (EST)
-From:   Jordy Zomer <jordy@pwning.systems>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jordy Zomer <jordy@pwning.systems>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org
-Subject: [PATCH] dma-buf: heaps: Fix potential spectre v1 gadget
-Date:   Sat, 29 Jan 2022 16:06:04 +0100
-Message-Id: <20220129150604.3461652-1-jordy@pwning.systems>
-X-Mailer: git-send-email 2.27.0
+        Sat, 29 Jan 2022 10:09:26 -0500
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 39BAF201416;
+        Sat, 29 Jan 2022 15:09:25 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 549A28075E; Sat, 29 Jan 2022 16:08:46 +0100 (CET)
+Date:   Sat, 29 Jan 2022 16:08:46 +0100
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, tytso@mit.edu
+Subject: Re: [PATCH] random: wake up /dev/random writers after zap
+Message-ID: <YfVYfsDCVnKSfDSc@owl.dominikbrodowski.net>
+References: <20220128224906.104235-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128224906.104235-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It appears like nr could be a Spectre v1 gadget as it's supplied by a
-user and used as an array index. Prevent the contents
-of kernel memory from being leaked to userspace via speculative
-execution by using array_index_nospec.
+Am Fri, Jan 28, 2022 at 11:49:06PM +0100 schrieb Jason A. Donenfeld:
+> When account() is called, and the amount of entropy dips below
+> random_write_wakeup_bits, we wake up the random writers, so that they
+> can write some more in. However, the RNDZAPENTCNT/RNDCLEARPOOL ioctl
+> sets the entropy count to zero -- a potential reduction just like
+> account() -- but does not unblock writers. This commit adds the missing
+> logic to that ioctl to unblock waiting writers.
+> 
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Signed-off-by: Jordy Zomer <jordy@pwning.systems>
----
- drivers/dma-buf/dma-heap.c | 2 ++
- 1 file changed, 2 insertions(+)
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 
-diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
-index 56bf5ad01ad5..8f5848aa144f 100644
---- a/drivers/dma-buf/dma-heap.c
-+++ b/drivers/dma-buf/dma-heap.c
-@@ -14,6 +14,7 @@
- #include <linux/xarray.h>
- #include <linux/list.h>
- #include <linux/slab.h>
-+#include <linux/nospec.h>
- #include <linux/uaccess.h>
- #include <linux/syscalls.h>
- #include <linux/dma-heap.h>
-@@ -135,6 +136,7 @@ static long dma_heap_ioctl(struct file *file, unsigned int ucmd,
- 	if (nr >= ARRAY_SIZE(dma_heap_ioctl_cmds))
- 		return -EINVAL;
- 
-+	nr = array_index_nospec(nr, ARRAY_SIZE(dma_heap_ioctl_cmds));
- 	/* Get the kernel ioctl cmd that matches */
- 	kcmd = dma_heap_ioctl_cmds[nr];
- 
--- 
-2.27.0
-
+Thanks,
+	Dominik
