@@ -2,305 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38CCEC4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 11:59:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1836FC4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 12:02:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242555AbiA2L7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 06:59:38 -0500
-Received: from mout.gmx.net ([212.227.17.20]:40903 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242175AbiA2L5m (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 06:57:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643457452;
-        bh=cntpS7zEiYV12x5rJXS1Tqn/MpedloZ0hFjM6XbqZjc=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=dTZjRS9jGMzUqQkt6fCEuz13y/GR8MDy5Y5RXzrE+1QKpqXv8H0QG/kvI1Zr+NNg2
-         lSbezfTHlLPJpN0CWfY7GS1eMSlSZSM2g7eNuF9kqZOcKj6PFF/VMS/S/82Qm2G5qt
-         a9HmWf2U5PfPb7jA0CLJpKuo8udO+rDJaSf/c9Bs=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MK3Rm-1mxtOk1Ije-00LV8A; Sat, 29
- Jan 2022 12:57:32 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, openbmc@lists.ozlabs.org,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Joel Stanley <joel@jms.id.au>, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v5 4/9] dt-bindings: pinctrl: Add Nuvoton WPCM450
-Date:   Sat, 29 Jan 2022 12:52:23 +0100
-Message-Id: <20220129115228.2257310-5-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220129115228.2257310-1-j.neuschaefer@gmx.net>
-References: <20220129115228.2257310-1-j.neuschaefer@gmx.net>
+        id S243309AbiA2MC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 29 Jan 2022 07:02:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229989AbiA2MC1 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 29 Jan 2022 07:02:27 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1DCC061714;
+        Sat, 29 Jan 2022 04:02:26 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 2BF4B1EC01B7;
+        Sat, 29 Jan 2022 13:02:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1643457741;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=1SqI9kGrSv75+nJPwZYKxkcTL83Vduz6X2Q74CD9Idc=;
+        b=cpPOiblw8z2FwDfVV+8Cx0gJBEZNMWEIsqxMvsZI45g70BBWrD1cdgvk7WcuViGnXEW3Zt
+        w2dBeSBqEsUj1PwAVsBYj3Ix9UfYnGw4OVtjeo9/YFKg83b4EBpejQM5Gk0DJD94L1MujC
+        KQyEa3QGcWGmbyjQjsI3rua5JaZbDeo=
+Date:   Sat, 29 Jan 2022 13:02:18 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Brijesh Singh <brijesh.singh@amd.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: Re: [PATCH v8 36/40] x86/sev: Provide support for SNP guest request
+ NAEs
+Message-ID: <YfUsygRVgPCrUvFX@zn.tnic>
+References: <20211210154332.11526-1-brijesh.singh@amd.com>
+ <20211210154332.11526-37-brijesh.singh@amd.com>
+ <YfLGcp8q5f+OW72p@zn.tnic>
+ <87d4999a-14cc-5070-4f03-001dd5f1d2b1@amd.com>
+ <YfUWgeonL4tfGf8P@zn.tnic>
+ <fb90b0a5-a8cf-0c94-ebbe-a0d5343fe3b9@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:p75bAfhHHO/ZoMkprc2CaL9y/Zr4Y6hs++9rbb9iO3vcLQS9GmP
- rP3Hb3xmhBO21+vI3kGKij+1YgHzGOObU73JUGXILdUr6JdNXTzU8ws2s91ZReJ84xNbehw
- /WhPvlzRDoxLLle5W6cSiml1K/4W+TKdfukaC+Aqp8XKyg8a49A5hleH/Lqv5mpR4qmjyZw
- eKK/YzrGNxuJttXCXu4DQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Aot7sBbBbq0=:JpsX5ikzTK0uhVb74xfrU7
- +IbBA8sp1nfD8j+dTnBg0Xg5y5sLlw/N06baPTxxWm4HnLSRiMYSgNraps5DQm68nsJpCMvlp
- +coQNxOva3AncmYubXs/XXoyygymR6p8FZ+FmIkSB/E2OADcp/p+VWU1TwUiPydbAOwxWbRKX
- pYQweyww+Dy1O7Q3j4L9FUM72qL5/Y4Wv59Y96KFzatSav1wBGQxQIsBOF5gH4ENakJhRfirx
- qfcR3O/oP9adIrwNUuMchYqdYXA28nlDqKMHay57epWi+XhMUXgtMHqEcg+2hgfAn4YeT29M9
- Z7zDXYoeN+lOL9H+9+rifDKYs4kUkaX8tBhfoqpEAv4RD9mI0vgrF6h+ter1S8asKulAWBw6B
- biDXfYXpfOzQrK0Dp36Y0Q8WAt0yjuULVf7agxQOail0Pr1Gp5MDuLAI38zKK8zu/vTZ2ZmSo
- 6mvLhIs4mQA1kVn4A+FGJ7wfNs3+zg3560PB3BelItWg3VkbXXd6vuxGpxaC8lvAiM7tRle23
- 9RHmyWbc5/OwzIFlVQg5E2ze2uLnNQGdwaRguL6z/PGGkpdOMBMil+a9Soa2jlki3CP/gJuVr
- O986NmVNwzryH8F+jG5NmsJQxWDuuM4LQo9Ki2nrACW/9h38pgr7a8iW9rerMdx1JGlokXtEj
- 1h7w/mHWrhOSbhPJb5mtKbSCF8VBRdcn0+nST797837GFicsxbu8WhKNwIq5rltGal78cyYSZ
- yRfuzkz0eBcD791lfQrJPOkhaUxvTKQR2DcqCjI9DGq4nY95gSR9ZSdopyrJ17z6iVLHWB3vE
- 8FoV+UVkdeEfy8xgZRgYOLdJ1pM3ZbfZSPVtekSNItF+IfkmwKB+ZjO+Cdb3iFYRbDNNToe4l
- wVleF1SFMwKXOxjDAf9V7oMQZzMhJInTN4JlI61UdTSGh8pO01R6MslTf38vSa3TVhHz8Na45
- XoUxArQ7uktpn7QZycCdkr1r+YoWMF48JpTrb4XupTruQ5V+hnxTE/ZWRxMj9UhPs3iHxK7oH
- gPew8r2KsfpeF+QHHbDUM6xjrnY4FgVpf/cqK4gnqAegflnT19m9RebJJ08WWzpQlUHxaoSI5
- GBUVNZCiVhW3Lc=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <fb90b0a5-a8cf-0c94-ebbe-a0d5343fe3b9@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This binding is heavily based on the one for NPCM7xx, because the
-hardware is similar. There are some notable differences, however:
+On Sat, Jan 29, 2022 at 05:49:06AM -0600, Brijesh Singh wrote:
+> The hypervisor must validate that the guest has supplied enough pages to
+> hold the certificates that will be returned before performing the SNP
+> guest request. If there are not enough guest pages to hold the
+> certificate table and certificate data, the hypervisor will return the
+> required number of pages needed to hold the certificate table and
+> certificate data in the RBX register and set the SW_EXITINFO2 field to
+> 0x0000000100000000.
 
-- The addresses of GPIO banks are not physical addresses but simple
-  indices (0 to 7), because the GPIO registers are not laid out in
-  convenient blocks.
-- Pinmux settings can explicitly specify that the GPIO mode is used.
+Then you could call that one:
 
-Certain pins support blink patterns in hardware. This is currently not
-modelled in the DT binding.
+#define SNP_GUEST_REQ_ERR_NUM_PAGES       BIT_ULL(32)
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-Reviewed-by: Rob Herring <robh@kernel.org>
-=2D--
-v5:
-- Add Rob's R-b
+or so, to mean what exactly that error is. Because when you read the
+code, it is more "self-descriptive" this way:
 
-v4:
-- Small improvements around gpio node addresses, suggested by Rob Herring
+	...
+	ghcb->save.sw_exit_info_2 == SNP_GUEST_REQ_ERR_NUM_PAGES)
+		input->data_npages = ghcb_get_rbx(ghcb);
 
-v3:
-- https://lore.kernel.org/lkml/20211224200935.93817-5-j.neuschaefer@gmx.ne=
-t/
-- Make changes suggested by Rob Herring
-- Fix lint errors
-- Simplify child node patterns
-- Remove if/type=3Dobject/then trick
-- Reduce interrupts.maxItems to 3: 4 aren't necessary
-- Replace list of gpio0/1/2/etc. with pattern
-- Remove nuvoton,interrupt-map again, to simplify the binding
-- Make tuples clearer
+> It does not spell it as invalid length. However, for *similar* failure,
+> the SEV-SNP spec spells out it as INVALID_LENGTH, so, I choose macro
+> name as INVALID_LENGTH.
 
-v2:
-- https://lore.kernel.org/lkml/20211207210823.1975632-5-j.neuschaefer@gmx.=
-net/
-- Move GPIO into subnodes
-- Improve use of quotes
-- Remove unnecessary minItems/maxItems lines
-- Remove "phandle: true"
-- Use separate prefixes for pinmux and pincfg nodes
-- Add nuvoton,interrupt-map property
-- Make it possible to set pinmux to GPIO explicitly
+You can simply define a separate one here called ...INVALID_LENGTH.
 
-v1:
-- https://lore.kernel.org/lkml/20210602120329.2444672-5-j.neuschaefer@gmx.=
-net/
-=2D--
- .../pinctrl/nuvoton,wpcm450-pinctrl.yaml      | 160 ++++++++++++++++++
- 1 file changed, 160 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pinctrl/nuvoton,wpcm=
-450-pinctrl.yaml
+Thx.
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/nuvoton,wpcm450-pin=
-ctrl.yaml b/Documentation/devicetree/bindings/pinctrl/nuvoton,wpcm450-pinc=
-trl.yaml
-new file mode 100644
-index 0000000000000..47a56b83a610d
-=2D-- /dev/null
-+++ b/Documentation/devicetree/bindings/pinctrl/nuvoton,wpcm450-pinctrl.ya=
-ml
-@@ -0,0 +1,160 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pinctrl/nuvoton,wpcm450-pinctrl.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Nuvoton WPCM450 pin control and GPIO
-+
-+maintainers:
-+  - Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-+
-+properties:
-+  compatible:
-+    const: nuvoton,wpcm450-pinctrl
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 0
-+
-+patternProperties:
-+  # There are three kinds of subnodes:
-+  # 1. a GPIO controller node for each GPIO bank
-+  # 2. a pinmux node configures pin muxing for a group of pins (e.g. rmii=
-2)
-+  # 3. a pinconf node configures properties of a single pin
-+
-+  "^gpio@[0-7]$":
-+    type: object
-+
-+    description:
-+      Eight GPIO banks (gpio@0 to gpio@7), that each contain between 14 a=
-nd 18
-+      GPIOs. Some GPIOs support interrupts.
-+
-+    properties:
-+      reg:
-+        minimum: 0
-+        maximum: 7
-+
-+      gpio-controller: true
-+
-+      "#gpio-cells":
-+        const: 2
-+
-+      interrupt-controller: true
-+
-+      "#interrupt-cells":
-+        const: 2
-+
-+      interrupts:
-+        maxItems: 3
-+        description:
-+          The interrupts associated with this GPIO bank
-+
-+    required:
-+      - reg
-+      - gpio-controller
-+      - '#gpio-cells'
-+
-+  "^mux-":
-+    $ref: pinmux-node.yaml#
-+
-+    properties:
-+      groups:
-+        description:
-+          One or more groups of pins to mux to a certain function
-+        items:
-+          enum: [ smb3, smb4, smb5, scs1, scs2, scs3, smb0, smb1, smb2, b=
-sp,
-+                  hsp1, hsp2, r1err, r1md, rmii2, r2err, r2md, kbcc, dvo,
-+                  clko, smi, uinc, gspi, mben, xcs2, xcs1, sdio, sspi, fi=
-0,
-+                  fi1, fi2, fi3, fi4, fi5, fi6, fi7, fi8, fi9, fi10, fi11=
-,
-+                  fi12, fi13, fi14, fi15, pwm0, pwm1, pwm2, pwm3, pwm4, p=
-wm5,
-+                  pwm6, pwm7, hg0, hg1, hg2, hg3, hg4, hg5, hg6, hg7 ]
-+      function:
-+        description:
-+          The function that a group of pins is muxed to
-+        enum: [ smb3, smb4, smb5, scs1, scs2, scs3, smb0, smb1, smb2, bsp=
-,
-+                hsp1, hsp2, r1err, r1md, rmii2, r2err, r2md, kbcc, dvo0,
-+                dvo1, dvo2, dvo3, dvo4, dvo5, dvo6, dvo7, clko, smi, uinc=
-,
-+                gspi, mben, xcs2, xcs1, sdio, sspi, fi0, fi1, fi2, fi3, f=
-i4,
-+                fi5, fi6, fi7, fi8, fi9, fi10, fi11, fi12, fi13, fi14, fi=
-15,
-+                pwm0, pwm1, pwm2, pwm3, pwm4, pwm5, pwm6, pwm7, hg0, hg1,
-+                hg2, hg3, hg4, hg5, hg6, hg7, gpio ]
-+
-+    dependencies:
-+      groups: [ function ]
-+      function: [ groups ]
-+
-+    additionalProperties: false
-+
-+  "^cfg-":
-+    $ref: pincfg-node.yaml#
-+
-+    properties:
-+      pins:
-+        description:
-+          A list of pins to configure in certain ways, such as enabling
-+          debouncing
-+        items:
-+          pattern: "^gpio1?[0-9]{1,2}$"
-+
-+      input-debounce: true
-+
-+    additionalProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    pinctrl: pinctrl@b8003000 {
-+      compatible =3D "nuvoton,wpcm450-pinctrl";
-+      reg =3D <0xb8003000 0x1000>;
-+      #address-cells =3D <1>;
-+      #size-cells =3D <0>;
-+
-+      gpio0: gpio@0 {
-+        reg =3D <0>;
-+        gpio-controller;
-+        #gpio-cells =3D <2>;
-+        interrupts =3D <2 IRQ_TYPE_LEVEL_HIGH>,
-+                     <3 IRQ_TYPE_LEVEL_HIGH>,
-+                     <4 IRQ_TYPE_LEVEL_HIGH>;
-+      };
-+
-+      mux-rmii2 {
-+        groups =3D "rmii2";
-+        function =3D "rmii2";
-+      };
-+
-+      pinmux_uid: mux-uid {
-+        groups =3D "gspi", "sspi";
-+        function =3D "gpio";
-+      };
-+
-+      pinctrl_uid: cfg-uid {
-+        pins =3D "gpio14";
-+        input-debounce =3D <1>;
-+      };
-+    };
-+
-+    gpio-keys {
-+      compatible =3D "gpio-keys";
-+      pinctrl-names =3D "default";
-+      pinctrl-0 =3D <&pinctrl_uid>, <&pinmux_uid>;
-+
-+      uid {
-+        label =3D "UID";
-+        linux,code =3D <102>;
-+        gpios =3D <&gpio0 14 GPIO_ACTIVE_HIGH>;
-+      };
-+    };
-=2D-
-2.34.1
+-- 
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
