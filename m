@@ -2,175 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 037A8C43217
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 11:48:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 117BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 11:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239300AbiA2Lsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 06:48:50 -0500
-Received: from mail-sn1anam02on2063.outbound.protection.outlook.com ([40.107.96.63]:43366
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237490AbiA2Lss (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 06:48:48 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b1mMGSJPRin4ATPFNO8tC24c5pJEKj8/nZ1zglHtu7KbJ5zMCLxfs49wHHxhP0d+JzozRCWDuAFxhEnrOpiDyJYKQibMrNtQ7vzGMRBfSr/82uBD9YlVJlrv/u0AMo6KZk/rsPVltugOqipGyMVipU/Qlm0CFLujYY4MKvjpTBw9JByedxhLGWo7oUCSggB0DjDlpNUO5nJG+TkA2eIPayVtbU7aGq3Z6wNVyWzqspgLJCPm2jrShHDPAfFtZEwVnMN7HD/2LIpzX2LwpND2wZigrXvLuA7Ae8vLM6GER8nogaaLW+lLdCsF9rNJV4NWO7rbNm0cq+QdBRLFESChNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wU43uUqVo8BQh8M6lwMeKQIJ5bvOrNIWBqZDYrNlys8=;
- b=Oofoer7Ck0IyB8350lr0RmsFu1A3m+dAQNXz90kFR1+GfMKhIXl7vvfobnyPwkDB+tipNpEeNSr6n2nYD2grc6CU81vqCt0l1V/e5jybIXnt4WuWRRGK1gQ9MQsTp1KoiwHjBx8vpQI52K7mVjCPRAd8UPiVkN/4a5+J6C+IryLhVItW7puqrcLQVXdbHfT+csxu8KTnx/lHzlv0hqi5X+NvwaOtIMhDSkXh/fAYp2q8an3RFhLFcobRTtRHqGf/B+YHm4mk9FpAylwa1GhUVQPEzJnoY1ePdxnSA1dB0tFunDUnEuGcF0RQ5HJ5/vfh/Yei+Cm4Zw74I7TWFr327A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wU43uUqVo8BQh8M6lwMeKQIJ5bvOrNIWBqZDYrNlys8=;
- b=fca1unyRPAO4fxvZIJ+yepPMc8FbJHdST1DRGKiZwd/A9OznyPXaBuRjN8AePi9wgO26ksx9A/45BCafkoJq1tsuzCw818j85qwTs2Whb7XxGm8DcSwuR9l/Tq5hROx57410B2XI7njHLtIpjjPbt98i6EuVVnVt3w2hHUA7G3Q=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from SN6PR12MB2718.namprd12.prod.outlook.com (2603:10b6:805:6f::22)
- by DM5PR1201MB2537.namprd12.prod.outlook.com (2603:10b6:3:eb::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Sat, 29 Jan
- 2022 11:48:46 +0000
-Received: from SN6PR12MB2718.namprd12.prod.outlook.com
- ([fe80::500e:b264:8e8c:1817]) by SN6PR12MB2718.namprd12.prod.outlook.com
- ([fe80::500e:b264:8e8c:1817%4]) with mapi id 15.20.4930.020; Sat, 29 Jan 2022
- 11:48:45 +0000
-Message-ID: <fb90b0a5-a8cf-0c94-ebbe-a0d5343fe3b9@amd.com>
-Date:   Sat, 29 Jan 2022 05:49:06 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.0
-Cc:     brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v8 36/40] x86/sev: Provide support for SNP guest request
- NAEs
-Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>
-References: <20211210154332.11526-1-brijesh.singh@amd.com>
- <20211210154332.11526-37-brijesh.singh@amd.com> <YfLGcp8q5f+OW72p@zn.tnic>
- <87d4999a-14cc-5070-4f03-001dd5f1d2b1@amd.com> <YfUWgeonL4tfGf8P@zn.tnic>
-From:   Brijesh Singh <brijesh.singh@amd.com>
-In-Reply-To: <YfUWgeonL4tfGf8P@zn.tnic>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SN7PR04CA0017.namprd04.prod.outlook.com
- (2603:10b6:806:f2::22) To SN6PR12MB2718.namprd12.prod.outlook.com
- (2603:10b6:805:6f::22)
+        id S239640AbiA2LyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 29 Jan 2022 06:54:00 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:53508
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239048AbiA2Lx6 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 29 Jan 2022 06:53:58 -0500
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8BF1A3F32C
+        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 11:53:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643457236;
+        bh=f9YarTgrIqis8mFMQrsRDvw79rXZocKvl5NeRJU919w=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=ITmwqXjM97hgnFWTRxg0dTEwCBB9idRVvnGIJURLjR2m/kOQO5RQ8ePP4+27Ev5dk
+         rTTxG/2eEJhLfJJj8f4BQF3Djz1gL8BF2f4otIA3yaCmiBB8YX1NtWnV7bDy4NR3AI
+         IjZtKMzwOBXZDBo3ftwup4ljlHQfihm4vaWX9PMRVpYKWbDKKVzOMBsVt8bt+opJpM
+         vWFQHxJrF4KWKXSJ0NMQdWyyWepkG6DopXA/yob75cV/GUhM88bMPkI3oi5wv6YGAK
+         98qzfDs8zEoQCaPp037D6yE4XGNY6s0KpP88L0OOVIqczFoUqTdShHNMvSCmRg1jPt
+         U12Iboh055/tg==
+Received: by mail-ej1-f72.google.com with SMTP id fx12-20020a170906b74c00b006bbeab42f06so107793ejb.3
+        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 03:53:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f9YarTgrIqis8mFMQrsRDvw79rXZocKvl5NeRJU919w=;
+        b=GvL801h23nrU0YXBITb48ETSQAV1kNCAmJkSSgoblEJ7ZeElZCTC1An1VkYd9djMyt
+         Te+d0sJyAlP5TIUHZwoDQQLM0FdUnK37v9ziapdvzVgBFejU5QUTMiPPxKW+lAhVazfC
+         eq4WRQ2MaxawDh2mBor1D4Fgzbe7W5BL3PKR7bN+YHCvEqaO72GM8pRg7IfD5uARHBHQ
+         Lk8X4GxnrhwCpzpvWm+QDJV6i0DaGTq7cadJhdMfJIihq1WhESP7GwmQN6AMC7XD/P/1
+         WFPKn7GSRq9kFGtOHu3RfS6zYb3eFm9H6hVG2VN/SlwtEA8taUEiIEEJbA0+FL6Qjsfi
+         0hYA==
+X-Gm-Message-State: AOAM531SWQnBaXIDN3E5EIBslG+AxbasVQpVg+ywbrpNhBrZIAAaSCi+
+        ojFvPjwOLjt8ctgN2ukekfRdVRSocpkFppYe7ItY8vy4NHGcUdlSayc2/HzSAXzYXawSRe1d4ns
+        uHqXV06rPjNMg4t758dijo/oJFHfIPD8fxhU7ZBFvnA==
+X-Received: by 2002:a05:6402:1c94:: with SMTP id cy20mr12634652edb.150.1643457235368;
+        Sat, 29 Jan 2022 03:53:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxSkcHy2NlSdt2LYxLa/mdgfFxmbPLxCQiTUeVxH3opeeELyEbC7aTr1zrjwluLEcAImc0w/A==
+X-Received: by 2002:a05:6402:1c94:: with SMTP id cy20mr12634634edb.150.1643457235049;
+        Sat, 29 Jan 2022 03:53:55 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id qb30sm10985655ejc.27.2022.01.29.03.53.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Jan 2022 03:53:54 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        arm@kernel.org, soc@kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [GIT PULL] ARM: dts/drivers: samsung pinctrl for v5.18
+Date:   Sat, 29 Jan 2022 12:53:52 +0100
+Message-Id: <20220129115352.13274-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 11c363bf-8878-45ff-c058-08d9e31d4e2a
-X-MS-TrafficTypeDiagnostic: DM5PR1201MB2537:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1201MB2537ABAEC04814645F534FCFE5239@DM5PR1201MB2537.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ffyCtm/hPU/mgxxnMUTr9nQTR9cKW/2nGrtGY9Tf/ekthabGmxI3YazDLUe/X3NF31EtfbkxHzob0Na0RsrKk4zCDUkSzoZrJcr0nLUunGnCgHBQDULlROa3aBIvWdjY19NvdQXwV6vbbUUWv5DMW0/1qFNls7S/dD6ahIB1zHiteI28colFLfwcOAiJTXXUJIKVFnjIRHBFzbXTEkwz7zFRPZnndgCARQTeRlqOKuWtb3zBhTEqdfXYilS9cndaKlCmUqyizwM3nZMYwgPW1u814RA+e/+w2p7KkqQrDdXPoDIGdyhAfihz8vmyaAmeC9Iiu0NCTNOJorKx/EeVcd4rtgjRWrO8od688WIZLsbrKdcspUW7LC1p0c3Q3ZABcS5C1bS3FSsuJ7oUzVZchjMwpYVhJwdgFBFZiSO0fLWOX1YGcQhtRvbGKFthAjBX1RVyWanwM3n9PlHZqLoZ+Z9v83o7O5/kTMVZrov+Vnf5dEnf69lomO0yUdMe1h7Mf79HoJG86Ycp2zHwlMvNdpvMs+p0gajIzCNctxdUv6LLvMdrBOptpmBr+1RmMvG68cefreqlvN2Uoknt8k/yFEmXHGOlHW2kuvjmYNjFM9nJOwd1CYth+llCW25vh4p1nswZHFZTB4qikL9Sc9neToFnUBDqs7o816DbDKb3PepNtjK7vas9KZUf/5H+UhOcylyDdDWLLFr/BKF4dtf8vZECzi1GKPxltkYHsRjHFl8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR12MB2718.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(6506007)(5660300002)(44832011)(7416002)(7406005)(4326008)(66946007)(38100700002)(53546011)(8676002)(8936002)(6666004)(86362001)(2906002)(31696002)(6486002)(66556008)(2616005)(66476007)(83380400001)(26005)(6916009)(316002)(508600001)(54906003)(36756003)(186003)(31686004)(43740500002)(45980500001)(20210929001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MUJ1QkhZSHVtQjdueUxCM3BtckQxem4xTzlFY3RjRytlN2dRQmh5U01UTDcy?=
- =?utf-8?B?M1B3VEM2eXFIbkFtb0NtNFNMRm5yQnBBS3hMeDJtQ0NhN3ZDVTJQVHNwWGhU?=
- =?utf-8?B?c25OWEV2U242cm5TYzlCNy9kczBZd1Nrc2VyaU9uYk1YYzVhY1pmeGUrR3Ax?=
- =?utf-8?B?SEZGMktNL3dxUVdEUFRiakUwV1VaQi9EUW9aNUhHTjJoZCtQTWJvTldrWWZ0?=
- =?utf-8?B?U0g3NnQ4bWFxNXFCK1hFQ3BoTkVBdlhpUHNZOFpuY1NxRm05dEhxblFFc3ln?=
- =?utf-8?B?dU5GY2VHM242L3lwTGlIVlN6T1VESFNRTGRGbkViaFB3S3JNVklBMVN6QUdP?=
- =?utf-8?B?VkhFdDZkM0YvK1hyYXg0QlpxQTRuMEFDMElhSWxJRDBlVElIWXlCUEh0SXZq?=
- =?utf-8?B?N09EZnJjTTNCQVowd09DVWY0L2VBUmY2SWQwUk5WTjVobVo3TGZuUEg1K0JZ?=
- =?utf-8?B?UkZ3emd1U3IrQzZGQ2ZOd0EwT0RHR0orTkkzbUtZWkJXYU92NjBJby91cnZQ?=
- =?utf-8?B?QmFwK1gvZEEyN3BxWjVpdmRsbmxJeUhzWk9PQ29ESEl5VTFVQ05SbzFrNVZG?=
- =?utf-8?B?cFA4VDdPUm81MlY2VDNaOTFlQnhTN25Eb2F1U2xjaXBKTmkveElrTkc0TFd2?=
- =?utf-8?B?aWpBeWhMK2VkZitUN0YwV3NTemttcEs4MVFQY1hjVnF3MlhQalZHekh0b0dy?=
- =?utf-8?B?MnRSZkRQWVFMN2RqR3BJM2hxbGtjWEhvcURSK2lRWGpIbGtrc3hUb2E2b2Rk?=
- =?utf-8?B?eEw2a3FHZlBJZGl0TFE0TXBSRE9xdXJVNFV2MHhDRHlpUzMyR0tDTHBHa1NE?=
- =?utf-8?B?Q1VvZDJ0YU5qYTFLTlM4S01mUjZpQ05hQWNMZVRERDdwblBYcWJteXpQTXlk?=
- =?utf-8?B?NlNqdlJTcUJhd1dUNkNvakxYZ0Z3WmJDS1pHQVJpTlhhZGlhYjEyWkJ4eUpq?=
- =?utf-8?B?REJxT0lvS2hCV2toM21hYUFJVjA4VUN6R1oyRlY1Zk40OGx1cFlYMlZ5aDR3?=
- =?utf-8?B?ckN1UHRtaHhWRG9sdDY2U1k0WGd5WWdVZVdaOUdSS0l4aldIZ3h1WlNkRFh6?=
- =?utf-8?B?RGlqRDIrVjBwOVozWXF4aFJNOGcraVNJbjdFOFNxbWhKR0tRdlg2ZHVrVHA4?=
- =?utf-8?B?TEs5bFp0Z1hJM3AwVjh6MUk5bFVJWHkyblRmT3dLRGFWWFNTUkNNTDlsTWNm?=
- =?utf-8?B?UzRsMVBrRkpaMVhwQ3ZoeWR4MFZTZmdTQjlqYWswOUYwVCtyZXg4WGdNWmh4?=
- =?utf-8?B?U2dGaHBOaVVhME9YQ2xidEx1QW5DZHNnbnRoTXpxNHYrNk5HUUI3UUVlS3Aw?=
- =?utf-8?B?YkJodWlIUTVCaXF1NzNoZWRucUNjTStEWVRTaFN6K2ZPVmIxNUhrUllRRlV1?=
- =?utf-8?B?WEF4ODEzNjYxSEs0UzB1dFNkL3l1cEZibU4zajduZmxLVllqenNoRmpSaFZy?=
- =?utf-8?B?eEtZdWsvVWc0K0hpSml0QmZEdFJhMlZpNjdIRGg3OFU1RkE5dE1Fb2hZd3hQ?=
- =?utf-8?B?QzJqSXBaUDEyTERxSFlac2g5ekFsSTU2ZGpiMVNTaWh3SGtML1pRakFWUjFY?=
- =?utf-8?B?RzF3MTJLSUdTU2VNbTJNMWhKUk9vb2FMays2SmxDOFB2NDF4Rkc2MkZwSUlS?=
- =?utf-8?B?ZC9EQ29oRkxPWDdYeXNKMmhDcDdYY1VJYnZzYmpOTElqeHJtR0VUMzZBNm5X?=
- =?utf-8?B?UVFiNFEyU1c3NGIzZ3NUdFg5R1dydEkzL3pKWUlKem0xZ0w3UTVXbU4wRCtj?=
- =?utf-8?B?cUd4UnhxMnRMb0F0N3B2TllGSXcxWnMxUWRXeWNFc3hFZGRWdGJnSlpFK3RJ?=
- =?utf-8?B?cUpNaWRTVlMyMTZ3THMvQkJVbVExRk5pMXNnMW5HZ041Z1dZcGNGYWtHN094?=
- =?utf-8?B?THdpa1ZETDdzejZtbmZRWGkzeWJvNEorOUt1dE1ScGZuQ3pURyswTUl6U21E?=
- =?utf-8?B?c1ZNbk1CaSt5QXlqaUdvaVpWeTFlZ09pajRVS1VNeUNDK01FeXNBbHg1Ky9o?=
- =?utf-8?B?c1o4TnZNRm5QSzJOTjdvbklaTHYxVElZQ3I4N1U1L0VodnJ0OFlURloyZFlH?=
- =?utf-8?B?bmRncWRzbjA5VWlGTTJkMDdtWlJQa0JSTkFRaWhFdlhXVmJ3WjVYS1hqcDVH?=
- =?utf-8?B?cVFiZ09Xd2xFSnE2Ry92T3dDdHYvRkJkallNQ2ZnSTF4WVBvV0tidnlCVjc4?=
- =?utf-8?Q?vrcOqmUatzdLlp4zP6xqo5I=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11c363bf-8878-45ff-c058-08d9e31d4e2a
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR12MB2718.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jan 2022 11:48:45.7117
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 99jELdhg8I76TgIewNaOnhsoA+RRojuNzkjs57ZMOwa9aYScvMjK11GM4NBoiWl/18zrdzLXyIP5aEMBi9cgEQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB2537
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Arnd and Olof,
 
-On 1/29/22 4:27 AM, Borislav Petkov wrote:
-> On Thu, Jan 27, 2022 at 11:02:13AM -0600, Brijesh Singh wrote:
->> I am okay with using SZ_4G but per the spec they don't spell that its 4G
->> size. It says bit 32 will should be set on error.
-> What does the speck call it exactly? Is it "length"? Because that's what
-> confused me: SNP_GUEST_REQ_INVALID_LEN - that's a length and length you
-> don't usually specify with a bit position...
+There is quite a lot of changes in Samsung these days, so I am sending this one
+very early. It's also a controversial one because it combines pinctrl
+driver+dts into one. I mentioned it before in [1].
 
-Here is the text from the spec:
+The pinctrl driver changes have to go before DTS. The DTS has to go with
+dtschema, so the dtschema checks won't complain with warnings.
 
-----------
+The pinctrl driver changes are coming from my Samsung pinctrl repository and I
+will send them later also to Linus Walleij.
 
-The hypervisor must validate that the guest has supplied enough pages to
-hold the certificates that will be returned before performing the SNP
-guest request. If there are not enough guest pages to hold the
-certificate table and certificate data, the hypervisor will return the
-required number of pages needed to hold the certificate table and
-certificate data in the RBX register and set the SW_EXITINFO2 field to
-0x0000000100000000.
+Linus,
+I will send the pinctrl driver bits in separate pull to you.
 
----------
+[1] https://lore.kernel.org/all/CAOesGMg2eH1B94h+etPBDW3B1LMeHBytz0v2e0GfVRDv8gU0YA@mail.gmail.com/
 
-It does not spell it as invalid length. However, for *similar* failure,
-the SEV-SNP spec spells out it as INVALID_LENGTH, so, I choose macro
-name as INVALID_LENGTH.
+Best regards,
+Krzysztof
 
-thanks
 
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
+
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git tags/samsung-dt-pinctrl-5.18
+
+for you to fetch changes up to 41bd4354a1513afa4a9dd9940d8cd790fbd00e68:
+
+  arm64: dts: exynos: use dedicated wake-up pinctrl compatible in ExynosAutov9 (2022-01-23 17:54:59 +0100)
+
+----------------------------------------------------------------
+Samsung pinctrl DTS and driver changes for v5.18
+
+Conversion of Samsung pinctrl bindings to dtschema followed up with
+alignment of DTS files to the dtschema.
+
+The entire work consists of three parts but everything should be merged
+at once to avoid dtschema check errors:
+1. Samsung pinctrl driver change necessary to accept new DTS (driver
+   depends on node names and this has to be adjusted because of dtschema).
+2. Conversion to dtschema which brings requirement of different naming
+   of the GPIO nodes.
+3. DTS commits depending on driver (1) above, which convert all GPIO pin
+   bank names to new naming, required by dtschema.
+   This also includes few cleanups around DTS which are here to avoid
+   any merge conflicts.
+
+The Samsung pinctrl driver changes are backwards compatible.  However
+the DTS changes (renaming nodes) could cause problems in out-of-tree or
+other project implementations of the driver.
+
+----------------------------------------------------------------
+Krzysztof Kozlowski (28):
+      pinctrl: samsung: drop pin banks references on error paths
+      pinctrl: samsung: accept GPIO bank nodes with a suffix
+      dt-bindings: pinctrl: samsung: convert to dtschema
+      dt-bindings: pinctrl: samsung: describe Exynos850 and ExynosAutov9 wake-ups
+      pinctrl: samsung: add support for Exynos850 and ExynosAutov9 wake-ups
+      Merge tag 'samsung-pinctrl-5.18' of https://git.kernel.org/pub/scm/linux/kernel/git/pinctrl/samsung into for-v5.18/dt-pinctrl
+      ARM: dts: exynos: fix UART3 pins configuration in Exynos5250
+      ARM: dts: exynos: drop unused pinctrl defines in Exynos3250
+      ARM: dts: exynos: simplify PMIC DVS pin configuration in Odroid XU
+      ARM: dts: exynos: override pins by label in Peach Pit
+      ARM: dts: exynos: simplify PMIC DVS pin configuration in Peach Pit
+      ARM: dts: exynos: override pins by label in Peach Pi
+      ARM: dts: exynos: simplify PMIC DVS pin configuration in Peach Pi
+      ARM: dts: s3c64xx: drop unneeded pinctrl wake-up interrupt mapping
+      ARM: dts: exynos: align pinctrl with dtschema in Exynos3250
+      ARM: dts: exynos: align pinctrl with dtschema in Exynos4210
+      ARM: dts: exynos: align pinctrl with dtschema in Exynos4412
+      ARM: dts: exynos: align pinctrl with dtschema in Exynos5250
+      ARM: dts: exynos: align pinctrl with dtschema in Exynos5260
+      ARM: dts: exynos: align pinctrl with dtschema in Exynos5410
+      ARM: dts: exynos: align pinctrl with dtschema in Exynos542x/5800
+      arm64: dts: exynos: align pinctrl with dtschema in Exynos5433
+      arm64: dts: exynos: align pinctrl with dtschema in Exynos7
+      arm64: dts: exynos: align pinctrl with dtschema in ExynosAutov9
+      ARM: dts: s3c24xx: align pinctrl with dtschema
+      ARM: dts: s3c64xx: align pinctrl with dtschema
+      ARM: dts: s5pv210: align pinctrl with dtschema
+      arm64: dts: exynos: use dedicated wake-up pinctrl compatible in ExynosAutov9
+
+Sam Protsenko (1):
+      pinctrl: samsung: Remove EINT handler for Exynos850 ALIVE and CMGP gpios
+
+ .../pinctrl/samsung,pinctrl-gpio-bank.yaml         |  52 +++
+ .../bindings/pinctrl/samsung,pinctrl-pins-cfg.yaml |  81 +++++
+ .../pinctrl/samsung,pinctrl-wakeup-interrupt.yaml  | 106 ++++++
+ .../bindings/pinctrl/samsung,pinctrl.yaml          | 392 +++++++++++++++++++++
+ .../bindings/pinctrl/samsung-pinctrl.txt           | 383 --------------------
+ MAINTAINERS                                        |   2 +-
+ arch/arm/boot/dts/exynos3250-artik5.dtsi           |  10 +-
+ arch/arm/boot/dts/exynos3250-pinctrl.dtsi          | 165 ++++-----
+ arch/arm/boot/dts/exynos4210-i9100.dts             |  30 +-
+ arch/arm/boot/dts/exynos4210-origen.dts            |   2 +-
+ arch/arm/boot/dts/exynos4210-pinctrl.dtsi          | 226 ++++++------
+ arch/arm/boot/dts/exynos4210-smdkv310.dts          |   4 +-
+ arch/arm/boot/dts/exynos4210-trats.dts             |   6 +-
+ arch/arm/boot/dts/exynos4210-universal_c210.dts    |  12 +-
+ arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi        |   4 +-
+ arch/arm/boot/dts/exynos4412-itop-elite.dts        |   2 +-
+ arch/arm/boot/dts/exynos4412-itop-scp-core.dtsi    |   2 +-
+ arch/arm/boot/dts/exynos4412-midas.dtsi            |  30 +-
+ arch/arm/boot/dts/exynos4412-odroid-common.dtsi    |   8 +-
+ arch/arm/boot/dts/exynos4412-odroidx.dts           |   2 +-
+ arch/arm/boot/dts/exynos4412-origen.dts            |   4 +-
+ arch/arm/boot/dts/exynos4412-p4note.dtsi           |  44 +--
+ arch/arm/boot/dts/exynos4412-pinctrl.dtsi          | 252 ++++++-------
+ arch/arm/boot/dts/exynos4412-smdk4412.dts          |   4 +-
+ arch/arm/boot/dts/exynos5250-arndale.dts           |   2 +-
+ arch/arm/boot/dts/exynos5250-pinctrl.dtsi          | 222 ++++++------
+ arch/arm/boot/dts/exynos5250-smdk5250.dts          |   2 +-
+ arch/arm/boot/dts/exynos5250-snow-common.dtsi      |  22 +-
+ arch/arm/boot/dts/exynos5250-snow-rev5.dts         |   2 +-
+ arch/arm/boot/dts/exynos5250-snow.dts              |   2 +-
+ arch/arm/boot/dts/exynos5250-spring.dts            |  20 +-
+ arch/arm/boot/dts/exynos5260-pinctrl.dtsi          | 148 ++++----
+ arch/arm/boot/dts/exynos5260-xyref5260.dts         |   2 +-
+ arch/arm/boot/dts/exynos5410-odroidxu.dts          |  22 +-
+ arch/arm/boot/dts/exynos5410-pinctrl.dtsi          | 170 ++++-----
+ arch/arm/boot/dts/exynos5410-smdk5410.dts          |   4 +-
+ arch/arm/boot/dts/exynos5420-arndale-octa.dts      |   2 +-
+ arch/arm/boot/dts/exynos5420-peach-pit.dts         |  89 +++--
+ arch/arm/boot/dts/exynos5420-pinctrl.dtsi          | 194 +++++-----
+ arch/arm/boot/dts/exynos5420-smdk5420.dts          |   6 +-
+ arch/arm/boot/dts/exynos5422-odroid-core.dtsi      |   2 +-
+ arch/arm/boot/dts/exynos5422-odroidxu3-common.dtsi |   6 +-
+ arch/arm/boot/dts/exynos5800-peach-pi.dts          |  89 +++--
+ arch/arm/boot/dts/s3c2416-pinctrl.dtsi             |  60 ++--
+ arch/arm/boot/dts/s3c6410-mini6410.dts             |   4 +-
+ arch/arm/boot/dts/s3c64xx-pinctrl.dtsi             | 210 +++++------
+ arch/arm/boot/dts/s3c64xx.dtsi                     |  16 +-
+ arch/arm/boot/dts/s5pv210-aquila.dts               |   2 +-
+ arch/arm/boot/dts/s5pv210-aries.dtsi               |  40 +--
+ arch/arm/boot/dts/s5pv210-fascinate4g.dts          |  12 +-
+ arch/arm/boot/dts/s5pv210-galaxys.dts              |  16 +-
+ arch/arm/boot/dts/s5pv210-pinctrl.dtsi             | 226 ++++++------
+ arch/arm64/boot/dts/exynos/exynos5433-pinctrl.dtsi | 211 +++++------
+ .../boot/dts/exynos/exynos5433-tm2-common.dtsi     | 259 +++++++-------
+ arch/arm64/boot/dts/exynos/exynos7-espresso.dts    |   6 +-
+ arch/arm64/boot/dts/exynos/exynos7-pinctrl.dtsi    | 176 ++++-----
+ .../boot/dts/exynos/exynosautov9-pinctrl.dtsi      |  50 +--
+ arch/arm64/boot/dts/exynos/exynosautov9.dtsi       |   2 +-
+ drivers/pinctrl/samsung/pinctrl-exynos-arm64.c     |   2 -
+ drivers/pinctrl/samsung/pinctrl-exynos.c           |   4 +
+ drivers/pinctrl/samsung/pinctrl-samsung.c          |  87 ++++-
+ 61 files changed, 2234 insertions(+), 1978 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/samsung,pinctrl-gpio-bank.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/samsung,pinctrl-pins-cfg.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/samsung,pinctrl-wakeup-interrupt.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
+ delete mode 100644 Documentation/devicetree/bindings/pinctrl/samsung-pinctrl.txt
