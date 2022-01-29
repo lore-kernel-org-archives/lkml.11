@@ -2,236 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3965BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A715C433EF
 	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 14:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242253AbiA2OeI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 09:34:08 -0500
-Received: from mout.gmx.net ([212.227.17.22]:52471 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230431AbiA2OeG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 09:34:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643466832;
-        bh=taC2dJ+Qss3OD09RIyTYnVy9WqLukbC51BxQLCbK8TU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=Hgl5MpeqgmQGPgcIyTgcxiKqh2UDYBJcoCo6gqwRtq6l+0q/DqLJ5y2O169AusO7y
-         Gdqlj2LK4vw18tSv5FBMMdzz/2Jlnm/0iy9WM4Kkc6F6Tp7O37kTmSVMk5kkfHhmh2
-         MIOJlvy1e7qoKrApVgM5kjfNFZq+KzNR39Q43WWQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MlNp7-1mWpgb1rzR-00lm6m; Sat, 29
- Jan 2022 15:33:52 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     openbmc@lists.ozlabs.org
-Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hector Martin <marcan@marcan.st>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] soc: nuvoton: Add SoC info driver for WPCM450
-Date:   Sat, 29 Jan 2022 15:33:07 +0100
-Message-Id: <20220129143316.2321460-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.34.1
+        id S237487AbiA2OZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 29 Jan 2022 09:25:50 -0500
+Received: from mta-p8.oit.umn.edu ([134.84.196.208]:42588 "EHLO
+        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230431AbiA2OZs (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 29 Jan 2022 09:25:48 -0500
+X-Greylist: delayed 359 seconds by postgrey-1.27 at vger.kernel.org; Sat, 29 Jan 2022 09:25:48 EST
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 4JmGg464G4z9wKsP
+        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 14:19:44 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p8.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id ZJRs9isrw3wt for <linux-kernel@vger.kernel.org>;
+        Sat, 29 Jan 2022 08:19:44 -0600 (CST)
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 4JmGg44D7Nz9wKsJ
+        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 08:19:44 -0600 (CST)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p8.oit.umn.edu 4JmGg44D7Nz9wKsJ
+DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p8.oit.umn.edu 4JmGg44D7Nz9wKsJ
+Received: by mail-io1-f72.google.com with SMTP id n20-20020a6bed14000000b0060faa0aefd3so6445741iog.20
+        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 06:19:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PuqdS3L58mzSCSZWW4CaQY14KAX9H/IcMnqehYd1TcA=;
+        b=ojx5o+0AWIsHn6CLcmG9NAIUTp7/bL7NxVhwKewAHTEKEAN/wTmvkqeMwnoqF2EWxF
+         MzTDAYUO3ADkb+dmMgKibHfnSlTqcBfmshdXYyd2m7QuzM+VqVZVn6zJtsciQ1IMIzOL
+         lEgHz6PGyIgAKWgwprAtYfe6gbnQRc6k8oYFBPhxFQCo+CVzD2qTp/NayfpNsH6Ca3G8
+         tjQOaZEv1eVvb/6knAwZe4HRCPl/2jKVbBtq5+VLH+vd4KhmmZKlN3wXqU5dDEY9Qnr8
+         l5lvNw4Whkzf1y34AhkFdH6MufWo4LH1u/sWggFn/tJgY2q3gKtlkrj5dG4E4m9u/RFI
+         qG/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PuqdS3L58mzSCSZWW4CaQY14KAX9H/IcMnqehYd1TcA=;
+        b=745AQoJ5ICnGDMBqaaz1uN1ieMmMIc4h8ge63Qu/JoCoOfnqaDIMMKmPz+OtLBzvqL
+         fSfw3aGxc60rwsDKih+BE3zAWMX9A1R/2v50GTorNPPUkfXT9+pJZglGk87fxeQlLaWN
+         NkBqBE9UfaRePuCKkIpfAS0HIR+DVqVm7Ygek0Ws+SarLdRBvdOPhOeLCxI42SzzmpJI
+         631OCihOXb13mBScP0QK5gjhScvlzLn2lBJeVXUreBt+7LcdsZCTcCHYzvnsSfK2dinI
+         LVLtJClZRosnJTqrucnmiJBRACoYQiZfuHANad6FPlVknDwiG5lmQbDWEE4qOUeTtmQW
+         6OIw==
+X-Gm-Message-State: AOAM533ku93suQP4xedrS9PRXWoNf3AiyQKejb91ThQaRrCdEhUuRtC6
+        aG5xLyQIqnMZ3Dz6QaFKRDv7uREUXo5ItISZfAH8DDMRkUdX1i5vFABYN4B/ObkNQK+igxdjgTr
+        ze/wiPa91rB52dW4ff+W3sSeSLY8LS1JpTiCs5mEnObrF
+X-Received: by 2002:a05:6e02:174a:: with SMTP id y10mr3656066ill.135.1643465984095;
+        Sat, 29 Jan 2022 06:19:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzycOv74QwTAVhQJh+Rc3bAmgfW8CYMlJTqaiuCC50HrW7pW+VbHnCWzlyJTWYfqKN1vkFodBYbD679saM8mT4=
+X-Received: by 2002:a05:6e02:174a:: with SMTP id y10mr3656033ill.135.1643465983736;
+ Sat, 29 Jan 2022 06:19:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:G5UyEZgtCNbwbrQRFEb36mFglkcmK/qLhvzHOH1DipwTiYXP1ja
- 5h0PCE2G/Z9CVN1syJr1WFwYpyg+8eK3TxZP7NDcn0M9z10N2wibKf4yMdh9B79NPFr9IpU
- sHXc+KHy+sTJja3jVhlvZsBSf9PZPZMLDWd7qaVm/TizztJfRHMFCmTAFhkWboDd1XSJzXP
- iH/HUf9MVgAtrPo+hpHVA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:sa3TxCkDkfk=:DUv+30ZLikV+PotVOxo6fH
- TCQW0Dtmt1u5HClvmap9cDIsEqSFkrEgpS9kBYL+5g/mjHmKUPdDT/Jhyf/zc1NHL13I3DZgL
- Nv2Cmq7Gj5MCR8GQdcumcOt5L77KOq46M/zsQeqfjtzibXjg3KsILwoD6mUmvSbyMiIqHajAN
- BCFthsMYdW1/tdjqqb8nAJfv4LF1Bno0mlZqnkdzrHkr3eESc1R29pZwXpF6H5akx3DmnWekC
- pCVUxK2t0hPscmYZq00hoNsQj+vwwV51kMoL4q3I4Ed9c3ymoUhwQhC5cYMZSnRE/Xqr5xn/E
- 3MqJNkibCCDiscaQLrgBdyTKaPQ4AvqdzFdsLN5bsqm+1eHLKAk8Wk/Dlr8524ohmEUp9P0im
- RpK/W+bWbpRRHUEjJo1Kh6l5Z1L1tGex27OCMxsAqslQAnjHIk0a8eHIhowi3NdMXQKCbg0JW
- BzyXL/i8kOO1UX+sNh99rsActOyeKHKi5b8gLH4IZAOVna30oZBOGU6UtBVqIdGYHDF0s+Htg
- 6z9C6Ny267bj3Vkx+NJ4I9fuLWWHNab6qj7B5vgvgxBSt0htmVqG4FlD976NsS1cFXJMdEZGE
- IBA9t+eYA1rLNSLQe3SqBn4g9ZCUy2iWQ8TXc+6XJqgg6xYfuchEF7USPU1iz90swE/60sZ93
- nPnci0O6lvoNl+dssprWFtoyMe952LUhPwgXZIiO9JM0SHFl21Nt2SM0bxyDMs32idzTR7LFt
- ltDecTsvceSbSUOEOjO7RoBhcgyr2H80Q4/yp0doPxqJjrIAVa8jdwpAFtTyU9/Y0PjDda1XT
- cHJml5outm1/SPe6pijyZflSxoGzWmCTacisZcVm4iJbj1yLyY8vrutphCGHdwxIPPv6FKQ4/
- dopAehKmovRBGyrXEZZN5vgpwBTuqmIdCRm/wZXA4wRo60dFQUc6sRX78SZ4tPHoLKHZsav8t
- jtrC9s45FEh66KabX6PKr0Exnf/ndG/pC0/D6a6Io2xl8a6RHg6IlNEy7m31hBMBRoWfcNm9l
- Ta1ZYOJqMGuZYMWeaYpqlfdNl8e2vW5UbzKE51xJYla2cz6Vjsju3wKWEqPh/elHCpFLil8yB
- 4wbaoL21CsjBUA=
+References: <20220124165856.57022-1-zhou1615@umn.edu> <YfPC3N+H9Fu/gqpz@kroah.com>
+ <536c833413ccbe0b8ad653a50c5ea867bf975290.camel@redhat.com>
+ <CADnq5_MtMPNHbs92OMHEzvPYSHGt=nPJMdrny6Siuvj3SYTAXQ@mail.gmail.com> <CACO55tt4P+beifvS=jcDsfwybFynngc8DHLR0n3BseeDJNrHyw@mail.gmail.com>
+In-Reply-To: <CACO55tt4P+beifvS=jcDsfwybFynngc8DHLR0n3BseeDJNrHyw@mail.gmail.com>
+From:   Kangjie Lu <kjlu@umn.edu>
+Date:   Sat, 29 Jan 2022 08:18:55 -0600
+Message-ID: <CAK8Kejr6E76u2kf_OKxC1RT_qsCWXDf7q4WcTC13-OJz5CseWg@mail.gmail.com>
+Subject: Re: [PATCH] drm/nouveau/acr: Fix undefined behavior in nvkm_acr_hsfw_load_bl()
+To:     Karol Herbst <kherbst@redhat.com>
+Cc:     Alex Deucher <alexdeucher@gmail.com>,
+        Lyude Paul <lyude@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Zhou Qingyang <zhou1615@umn.edu>,
+        David Airlie <airlied@linux.ie>,
+        nouveau <nouveau@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>, Ben Skeggs <bskeggs@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a SoC information driver for Nuvoton WPCM450 SoCs. It provides
-information such as the SoC revision.
+On Fri, Jan 28, 2022 at 1:58 PM Karol Herbst <kherbst@redhat.com> wrote:
+>
+> On Fri, Jan 28, 2022 at 8:54 PM Alex Deucher <alexdeucher@gmail.com> wrote:
+> >
+> > On Fri, Jan 28, 2022 at 2:20 PM Lyude Paul <lyude@redhat.com> wrote:
+> > >
+> > > Sigh-thank you for catching this - I had totally forgot about the umn.edu ban.
+> > > I pushed this already but I will go ahead and send a revert for this patch.
+> > > Will cc you on it as well.
+> >
+> > This seems short-sighted.  If the patch is valid I see no reason to
+> > not accept it.  I'm not trying to downplay the mess umn got into, but
+> > as long as the patch is well scrutinized and fixes a valid issue, it
+> > should be applied rather than leaving potential bugs in place.
+> >
+> > Alex
+> >
+>
+> Even though knowing that malicious code can be introduced via
+> perfectly fine looking patches, and sometimes one will never spot the
+> problem, this patch isn't all that bad tbh.
+>
+> So should we reject patches out of "policies" or should we just be
+> extra careful? But not addressing the concerns as Greg pointed out is
+> also kind of a bad move, but also not knowing what the state of
+> resolving this mess is anyway.
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
 
-The "nuvoton,wpcm450-gcr" compatible string is defined in:
+Seeing some discussion here, I feel I owe you some quick updates on
+the state. We sent three testing patches in August 2020, which is a
+serious mistake. We never did that again and will never do that again.
+All other patches including recent ones were sent to fix real bugs,
+not to introduce problems. Clearly, although most of the patches are
+valid, some patches are still not good enough, but it is not about
+malice. Fixing bugs in Linux isn't an easy task and takes so much
+effort.
 
-  [PATCH v5 1/9] dt-bindings: arm/npcm: Add binding for global control reg=
-isters (GCR)
-  https://lore.kernel.org/lkml/20220129115228.2257310-2-j.neuschaefer@gmx.=
-net/
-=2D--
- drivers/soc/Kconfig               |  1 +
- drivers/soc/Makefile              |  1 +
- drivers/soc/nuvoton/Kconfig       | 11 ++++
- drivers/soc/nuvoton/Makefile      |  2 +
- drivers/soc/nuvoton/wpcm450-soc.c | 90 +++++++++++++++++++++++++++++++
- 5 files changed, 105 insertions(+)
- create mode 100644 drivers/soc/nuvoton/Kconfig
- create mode 100644 drivers/soc/nuvoton/Makefile
- create mode 100644 drivers/soc/nuvoton/wpcm450-soc.c
+We did not ignore the concerns pointed out by Greg, and have seriously
+taken some actions. For example, we explained how our static-analysis
+tool found the bugs, and members in my research group have internally
+cross-reviewed the found bugs. We sent these patches after contacting
+Greg---I thought Greg allowed us to send patches, but also requested
+us to work on the last process with our administration. Unfortunately,
+the process has been slow during the pandemic, but I hope this can be
+resolved soon. Of course, before this is resolved, we will not send
+any more patches.
 
-diff --git a/drivers/soc/Kconfig b/drivers/soc/Kconfig
-index a8562678c4370..310c7e3a17723 100644
-=2D-- a/drivers/soc/Kconfig
-+++ b/drivers/soc/Kconfig
-@@ -13,6 +13,7 @@ source "drivers/soc/imx/Kconfig"
- source "drivers/soc/ixp4xx/Kconfig"
- source "drivers/soc/litex/Kconfig"
- source "drivers/soc/mediatek/Kconfig"
-+source "drivers/soc/nuvoton/Kconfig"
- source "drivers/soc/qcom/Kconfig"
- source "drivers/soc/renesas/Kconfig"
- source "drivers/soc/rockchip/Kconfig"
-diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
-index adb30c2d4feaa..f02c9b091a513 100644
-=2D-- a/drivers/soc/Makefile
-+++ b/drivers/soc/Makefile
-@@ -18,6 +18,7 @@ obj-y				+=3D ixp4xx/
- obj-$(CONFIG_SOC_XWAY)		+=3D lantiq/
- obj-$(CONFIG_LITEX_SOC_CONTROLLER) +=3D litex/
- obj-y				+=3D mediatek/
-+obj-y				+=3D nuvoton/
- obj-y				+=3D amlogic/
- obj-y				+=3D qcom/
- obj-y				+=3D renesas/
-diff --git a/drivers/soc/nuvoton/Kconfig b/drivers/soc/nuvoton/Kconfig
-new file mode 100644
-index 0000000000000..50166f37096b7
-=2D-- /dev/null
-+++ b/drivers/soc/nuvoton/Kconfig
-@@ -0,0 +1,11 @@
-+# SPDX-License-Identifier: GPL-2.0
-+menuconfig WPCM450_SOC
-+	bool "Nuvoton WPCM450 SoC driver"
-+	default y if ARCH_WPCM450
-+	select SOC_BUS
-+	help
-+	  Say Y here to compile the SoC information driver for Nuvoton
-+	  WPCM450 SoCs.
-+
-+	  This driver provides information such as the SoC model and
-+	  revision.
-diff --git a/drivers/soc/nuvoton/Makefile b/drivers/soc/nuvoton/Makefile
-new file mode 100644
-index 0000000000000..e30317b4e8290
-=2D-- /dev/null
-+++ b/drivers/soc/nuvoton/Makefile
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-$(CONFIG_WPCM450_SOC)	+=3D wpcm450-soc.o
-diff --git a/drivers/soc/nuvoton/wpcm450-soc.c b/drivers/soc/nuvoton/wpcm4=
-50-soc.c
-new file mode 100644
-index 0000000000000..e5723d6c933bc
-=2D-- /dev/null
-+++ b/drivers/soc/nuvoton/wpcm450-soc.c
-@@ -0,0 +1,90 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Nuvoton WPCM450 SoC Identification
-+ *
-+ * Copyright (C) 2021 Jonathan Neusch=C3=A4fer
-+ */
-+
-+#include <linux/mfd/syscon.h>
-+#include <linux/of.h>
-+#include <linux/regmap.h>
-+#include <linux/sys_soc.h>
-+#include <linux/slab.h>
-+
-+#define GCR_PDID	0
-+#define PDID_CHIP(x)	((x) & 0x00ffffff)
-+#define CHIP_WPCM450	0x926450
-+#define PDID_REV(x)	((x) >> 24)
-+
-+struct revision {
-+	u8 number;
-+	const char *name;
-+};
-+
-+const struct revision revisions[] __initconst =3D {
-+	{ 0x00, "Z1" },
-+	{ 0x03, "Z2" },
-+	{ 0x04, "Z21" },
-+	{ 0x08, "A1" },
-+	{ 0x09, "A2" },
-+	{ 0x0a, "A3" },
-+	{}
-+};
-+
-+static const char * __init get_revision(u8 rev)
-+{
-+	int i;
-+
-+	for (i =3D 0; revisions[i].name; i++)
-+		if (revisions[i].number =3D=3D rev)
-+			return revisions[i].name;
-+	return NULL;
-+}
-+
-+static int __init wpcm450_soc_init(void)
-+{
-+	struct soc_device_attribute *attr;
-+	struct soc_device *soc;
-+	const char *revision;
-+	struct regmap *gcr;
-+	u32 pdid;
-+	int ret;
-+
-+	if (!of_machine_is_compatible("nuvoton,wpcm450"))
-+		return 0;
-+
-+	gcr =3D syscon_regmap_lookup_by_compatible("nuvoton,wpcm450-gcr");
-+	if (IS_ERR(gcr))
-+		return PTR_ERR(gcr);
-+	ret =3D regmap_read(gcr, GCR_PDID, &pdid);
-+	if (ret)
-+		return ret;
-+
-+	if (PDID_CHIP(pdid) !=3D CHIP_WPCM450) {
-+		pr_warn("Unknown chip ID in GCR.PDID: 0x%06x\n", PDID_CHIP(pdid));
-+		return -ENODEV;
-+	}
-+
-+	revision =3D get_revision(PDID_REV(pdid));
-+	if (!revision) {
-+		pr_warn("Unknown chip revision in GCR.PDID: 0x%02x\n", PDID_REV(pdid));
-+		return -ENODEV;
-+	}
-+
-+	attr =3D kzalloc(sizeof(*attr), GFP_KERNEL);
-+	if (!attr)
-+		return -ENOMEM;
-+
-+	attr->family =3D "Nuvoton NPCM";
-+	attr->soc_id =3D "WPCM450";
-+	attr->revision =3D revision;
-+	soc =3D soc_device_register(attr);
-+	if (IS_ERR(soc)) {
-+		kfree(attr);
-+		pr_warn("Could not register SoC device\n");
-+		return PTR_ERR(soc);
-+	}
-+
-+	return 0;
-+}
-+device_initcall(wpcm450_soc_init);
-=2D-
-2.34.1
 
+
+
+>
+> >
+> > >
+> > > On Fri, 2022-01-28 at 11:18 +0100, Greg KH wrote:
+> > > > On Tue, Jan 25, 2022 at 12:58:55AM +0800, Zhou Qingyang wrote:
+> > > > > In nvkm_acr_hsfw_load_bl(), the return value of kmalloc() is directly
+> > > > > passed to memcpy(), which could lead to undefined behavior on failure
+> > > > > of kmalloc().
+> > > > >
+> > > > > Fix this bug by using kmemdup() instead of kmalloc()+memcpy().
+> > > > >
+> > > > > This bug was found by a static analyzer.
+> > > > >
+> > > > > Builds with 'make allyesconfig' show no new warnings,
+> > > > > and our static analyzer no longer warns about this code.
+> > > > >
+> > > > > Fixes: 22dcda45a3d1 ("drm/nouveau/acr: implement new subdev to replace
+> > > > > "secure boot"")
+> > > > > Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+> > > > > ---
+> > > > > The analysis employs differential checking to identify inconsistent
+> > > > > security operations (e.g., checks or kfrees) between two code paths
+> > > > > and confirms that the inconsistent operations are not recovered in the
+> > > > > current function or the callers, so they constitute bugs.
+> > > > >
+> > > > > Note that, as a bug found by static analysis, it can be a false
+> > > > > positive or hard to trigger. Multiple researchers have cross-reviewed
+> > > > > the bug.
+> > > > >
+> > > > >  drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c | 9 +++++----
+> > > > >  1 file changed, 5 insertions(+), 4 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
+> > > > > b/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
+> > > > > index 667fa016496e..a6ea89a5d51a 100644
+> > > > > --- a/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
+> > > > > +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/acr/hsfw.c
+> > > > > @@ -142,11 +142,12 @@ nvkm_acr_hsfw_load_bl(struct nvkm_acr *acr, const
+> > > > > char *name, int ver,
+> > > > >
+> > > > >         hsfw->imem_size = desc->code_size;
+> > > > >         hsfw->imem_tag = desc->start_tag;
+> > > > > -       hsfw->imem = kmalloc(desc->code_size, GFP_KERNEL);
+> > > > > -       memcpy(hsfw->imem, data + desc->code_off, desc->code_size);
+> > > > > -
+> > > > > +       hsfw->imem = kmemdup(data + desc->code_off, desc->code_size,
+> > > > > GFP_KERNEL);
+> > > > >         nvkm_firmware_put(fw);
+> > > > > -       return 0;
+> > > > > +       if (!hsfw->imem)
+> > > > > +               return -ENOMEM;
+> > > > > +       else
+> > > > > +               return 0;
+> > > > >  }
+> > > > >
+> > > > >  int
+> > > > > --
+> > > > > 2.25.1
+> > > > >
+> > > >
+> > > > As stated before, umn.edu is still not allowed to contribute to the
+> > > > Linux kernel.  Please work with your administration to resolve this
+> > > > issue.
+> > > >
+> > >
+> > > --
+> > > Cheers,
+> > >  Lyude Paul (she/her)
+> > >  Software Engineer at Red Hat
+> > >
+> >
+>
+
+
+--
+Kangjie Lu
+Assistant Professor
+Department of Computer Science and Engineering
+University of Minnesota
+https://www-users.cs.umn.edu/~kjlu
