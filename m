@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED9AC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 06:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 06:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243040AbiA2Gwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 01:52:50 -0500
-Received: from mga09.intel.com ([134.134.136.24]:28236 "EHLO mga09.intel.com"
+        id S243837AbiA2Gwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 29 Jan 2022 01:52:51 -0500
+Received: from mga02.intel.com ([134.134.136.20]:54262 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242239AbiA2Gwp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 01:52:45 -0500
+        id S242130AbiA2Gwq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 29 Jan 2022 01:52:46 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643439165; x=1674975165;
+  t=1643439166; x=1674975166;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=a4scwx3pnuUHvUkzJJylpqNgUA2pXfEe+E0/+adCLLE=;
-  b=SqhNwIiRjNjkS2a1KhC6BjsDhxFD6skbNuBpimM/xGXQOarIM5RO3usI
-   G8012mY6kM2dZHiQeMtUD3aZb318E5O7wZsC/4bElwBert8/QOz2NNhl8
-   dA5CmFbhNkOssXVsKo9Gez2QGLbuxPVX0+pTf8VV/C0oBkF2M1ozdHAKJ
-   gHWJS0zbtNd3FtEMwePiLjEuXVr6B5CoAWemWWk0THlQLgsAds6tJqP8t
-   FOVuEXJ0T0LkD/jofh03n1ADn4BXKjFS/AMCbctvNIfYSsv5oJDTqBmDD
-   CSH9DCvSoz4omCR3i62yDeukgF1VjDskL1m/mAkQoQnP2je+TUWWZ1JvD
+  bh=FoB738ABfuKyQwAKFpU1eA7/cIJ+XYVb7z/u7AHbr3s=;
+  b=hb8TUndVc7tVR4H1q1PpGWisLD1HcSUZsanuTjuXF7nhgZO0U2r4T4NE
+   Yb9/jLWu0zOPbDwi8vrJG0fsrVeeCjO+KJEUdLAayBxNqCTFFY31vhxqs
+   t5+GdbL1ukKg89IF13h/vfCc6DS5W46gJPIV+sp1tFtxfbUfrOj05tIuB
+   CGNKOKdo60gh8iOTneaQG9P2XBSs3yh08Dc7VHBPQg6YIqu6g3u4/awBf
+   Yj0IWDWXAdkmOZcrqEKZLbMyU2RXfzYX6Kyr2rX8ut9YjBy2CPWPuubcm
+   PD3fKISwdcATh5FEuiQoDq4y7AEyrTinW9y4jyyvg1yjrg8rLzeU9rJgS
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="247020906"
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="234637066"
 X-IronPort-AV: E=Sophos;i="5.88,326,1635231600"; 
-   d="scan'208";a="247020906"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 22:52:45 -0800
+   d="scan'208";a="234637066"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 22:52:45 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,326,1635231600"; 
-   d="scan'208";a="625854351"
+   d="scan'208";a="533728520"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 28 Jan 2022 22:52:43 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 28 Jan 2022 22:52:43 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nDhbH-000OtE-2b; Sat, 29 Jan 2022 06:52:43 +0000
-Date:   Sat, 29 Jan 2022 14:52:36 +0800
+        id 1nDhbH-000OtB-1f; Sat, 29 Jan 2022 06:52:43 +0000
+Date:   Sat, 29 Jan 2022 14:52:21 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [ardb:arm64-ro-page-tables-pkvm-v5.17 26/26]
- mm/huge_memory.c:1956:66: error: 'PMD_TYPE_TABLE' undeclared
-Message-ID: <202201291432.X54lXKXd-lkp@intel.com>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [jgunthorpe:for-yishai 12/17] drivers/vfio/pci/mlx5/main.c:254:10:
+ warning: result of comparison of constant 9223372036854775807 with
+ expression of type 'size_t' (aka 'unsigned int') is always false
+Message-ID: <202201291323.OBtyolrA-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -51,109 +54,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git arm64-ro-page-tables-pkvm-v5.17
-head:   b38f2df95cbf61e70bc32017da5318d1cb03e3e3
-commit: b38f2df95cbf61e70bc32017da5318d1cb03e3e3 [26/26] mm: HACK provide target address when migrating a PMD entry
-config: riscv-buildonly-randconfig-r006-20220127 (https://download.01.org/0day-ci/archive/20220129/202201291432.X54lXKXd-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
+tree:   https://github.com/jgunthorpe/linux for-yishai
+head:   f63f92a10949b3ad5f769771001e82774bcef055
+commit: 70ccf2dd2a78780dd3fd87a7112938ce05da498c [12/17] vfio/mlx5: Implement vfio_pci driver for mlx5 devices
+config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20220129/202201291323.OBtyolrA-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/commit/?id=b38f2df95cbf61e70bc32017da5318d1cb03e3e3
-        git remote add ardb git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git
-        git fetch --no-tags ardb arm64-ro-page-tables-pkvm-v5.17
-        git checkout b38f2df95cbf61e70bc32017da5318d1cb03e3e3
+        # https://github.com/jgunthorpe/linux/commit/70ccf2dd2a78780dd3fd87a7112938ce05da498c
+        git remote add jgunthorpe https://github.com/jgunthorpe/linux
+        git fetch --no-tags jgunthorpe for-yishai
+        git checkout 70ccf2dd2a78780dd3fd87a7112938ce05da498c
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/vfio/pci/mlx5/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
-   In file included from arch/riscv/include/asm/pgtable.h:111,
-                    from include/linux/pgtable.h:6,
-                    from include/linux/mm.h:33,
-                    from mm/huge_memory.c:8:
-   mm/huge_memory.c: In function '__split_huge_zero_page_pmd':
->> mm/huge_memory.c:1956:66: error: 'PMD_TYPE_TABLE' undeclared (first use in this function)
-    1956 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
-         |                                                                  ^~~~~~~~~~~~~~
-   arch/riscv/include/asm/pgtable-64.h:47:37: note: in definition of macro '__pmd'
-      47 | #define __pmd(x)        ((pmd_t) { (x) })
-         |                                     ^
-   mm/huge_memory.c:1956:66: note: each undeclared identifier is reported only once for each function it appears in
-    1956 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
-         |                                                                  ^~~~~~~~~~~~~~
-   arch/riscv/include/asm/pgtable-64.h:47:37: note: in definition of macro '__pmd'
-      47 | #define __pmd(x)        ((pmd_t) { (x) })
-         |                                     ^
-   mm/huge_memory.c: In function '__split_huge_pmd_locked':
-   mm/huge_memory.c:2137:66: error: 'PMD_TYPE_TABLE' undeclared (first use in this function)
-    2137 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
-         |                                                                  ^~~~~~~~~~~~~~
-   arch/riscv/include/asm/pgtable-64.h:47:37: note: in definition of macro '__pmd'
-      47 | #define __pmd(x)        ((pmd_t) { (x) })
-         |                                     ^
---
-   In file included from arch/riscv/include/asm/pgtable.h:111,
-                    from include/linux/pgtable.h:6,
-                    from include/linux/mm.h:33,
-                    from mm/khugepaged.c:4:
-   mm/khugepaged.c: In function 'collapse_huge_page':
->> mm/khugepaged.c:1166:68: error: 'PMD_TYPE_TABLE' undeclared (first use in this function)
-    1166 |                 set_pmd_at(mm, address, pmd, __pmd(pmd_val(_pmd) | PMD_TYPE_TABLE));
-         |                                                                    ^~~~~~~~~~~~~~
-   arch/riscv/include/asm/pgtable-64.h:47:37: note: in definition of macro '__pmd'
-      47 | #define __pmd(x)        ((pmd_t) { (x) })
-         |                                     ^
-   mm/khugepaged.c:1166:68: note: each undeclared identifier is reported only once for each function it appears in
-    1166 |                 set_pmd_at(mm, address, pmd, __pmd(pmd_val(_pmd) | PMD_TYPE_TABLE));
-         |                                                                    ^~~~~~~~~~~~~~
-   arch/riscv/include/asm/pgtable-64.h:47:37: note: in definition of macro '__pmd'
-      47 | #define __pmd(x)        ((pmd_t) { (x) })
-         |                                     ^
+>> drivers/vfio/pci/mlx5/main.c:254:10: warning: result of comparison of constant 9223372036854775807 with expression of type 'size_t' (aka 'unsigned int') is always false [-Wtautological-constant-out-of-range-compare]
+           if (len > type_max(loff_t) || *pos < 0 ||
+               ~~~ ^ ~~~~~~~~~~~~~~~~
+   1 warning generated.
 
 
-vim +/PMD_TYPE_TABLE +1956 mm/huge_memory.c
+vim +254 drivers/vfio/pci/mlx5/main.c
 
-  1923	
-  1924	static void __split_huge_zero_page_pmd(struct vm_area_struct *vma,
-  1925			unsigned long haddr, pmd_t *pmd)
-  1926	{
-  1927		struct mm_struct *mm = vma->vm_mm;
-  1928		pgtable_t pgtable;
-  1929		pmd_t _pmd;
-  1930		int i;
-  1931	
-  1932		/*
-  1933		 * Leave pmd empty until pte is filled note that it is fine to delay
-  1934		 * notification until mmu_notifier_invalidate_range_end() as we are
-  1935		 * replacing a zero pmd write protected page with a zero pte write
-  1936		 * protected page.
-  1937		 *
-  1938		 * See Documentation/vm/mmu_notifier.rst
-  1939		 */
-  1940		pmdp_huge_clear_flush(vma, haddr, pmd);
-  1941	
-  1942		pgtable = pgtable_trans_huge_withdraw(mm, pmd);
-  1943		pmd_populate(mm, &_pmd, pgtable);
-  1944	
-  1945		for (i = 0; i < HPAGE_PMD_NR; i++, haddr += PAGE_SIZE) {
-  1946			pte_t *pte, entry;
-  1947			entry = pfn_pte(my_zero_pfn(haddr), vma->vm_page_prot);
-  1948			entry = pte_mkspecial(entry);
-  1949			pte = pte_offset_map(&_pmd, haddr);
-  1950			VM_BUG_ON(!pte_none(*pte));
-  1951			set_pte_at(mm, haddr, pte, entry);
-  1952			pte_unmap(pte);
-  1953		}
-  1954		smp_wmb(); /* make pte visible before pmd */
-  1955		//pmd_populate(mm, pmd, pgtable);
-> 1956		set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
-  1957	}
-  1958	
+   242	
+   243	static ssize_t mlx5vf_resume_write(struct file *filp, const char __user *buf,
+   244					   size_t len, loff_t *pos)
+   245	{
+   246		struct mlx5_vf_migration_file *migf = filp->private_data;
+   247		loff_t requested_length;
+   248		ssize_t done = 0;
+   249	
+   250		if (pos)
+   251			return -ESPIPE;
+   252		pos = &filp->f_pos;
+   253	
+ > 254		if (len > type_max(loff_t) || *pos < 0 ||
+   255		    check_add_overflow((loff_t)len, *pos, &requested_length))
+   256			return -EINVAL;
+   257	
+   258		if (requested_length > MAX_MIGRATION_SIZE)
+   259			return -ENOMEM;
+   260	
+   261		mutex_lock(&migf->lock);
+   262		if (migf->disabled) {
+   263			done = -ENODEV;
+   264			goto out_unlock;
+   265		}
+   266	
+   267		if (migf->allocated_length < requested_length) {
+   268			done = mlx5vf_add_migration_pages(
+   269				migf,
+   270				DIV_ROUND_UP(requested_length - migf->allocated_length,
+   271					     PAGE_SIZE));
+   272			if (done)
+   273				goto out_unlock;
+   274		}
+   275	
+   276		while (len) {
+   277			size_t page_offset;
+   278			struct page *page;
+   279			size_t page_len;
+   280			u8 *to_buff;
+   281			int ret;
+   282	
+   283			page_offset = (*pos) % PAGE_SIZE;
+   284			page = mlx5vf_get_migration_page(migf, *pos - page_offset);
+   285			if (!page) {
+   286				if (done == 0)
+   287					done = -EINVAL;
+   288				goto out_unlock;
+   289			}
+   290	
+   291			page_len = min_t(size_t, len, PAGE_SIZE - page_offset);
+   292			to_buff = kmap_local_page(page);
+   293			ret = copy_from_user(to_buff + page_offset, buf, page_len);
+   294			kunmap_local(to_buff);
+   295			if (ret) {
+   296				done = -EFAULT;
+   297				goto out_unlock;
+   298			}
+   299			*pos += page_len;
+   300			len -= page_len;
+   301			done += page_len;
+   302			buf += page_len;
+   303			migf->total_length += page_len;
+   304		}
+   305	out_unlock:
+   306		mutex_unlock(&migf->lock);
+   307		return done;
+   308	}
+   309	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
