@@ -2,158 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69247C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 14:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 872DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 14:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245009AbiA2OKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 09:10:18 -0500
-Received: from mga04.intel.com ([192.55.52.120]:31763 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234194AbiA2OKQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 09:10:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643465416; x=1675001416;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VFcCHcnZzHGge7LC66GRjpuVC7vd/ne1/nu/vMIi1JY=;
-  b=As8+9ej2p0Djm06Md9YqE+JE8Sbm7/usq3lcaKeSGgZhBH8uBjoxLmdF
-   8jPJQt0Vcu890r5cXNmHP/+lKmjPOH4As0+rtNQRCt/fQ0teYLUHsDU7T
-   30asKFjVYSEg5NKFsv4orz32N01cLRprP375dUDTGqs0E4/5OCM0H/K5r
-   9AoWR7d+c1mFsRO1vRkoO0NbJre2cliOkFxdNEeGWUQ2WDLTPVOH+rmAC
-   aP79ySq4D3c+a9BhqHuqMpDrqnPVeTBiJKn3AwMfz9JNjMewX2yVtGa8n
-   FGhJo8VZiZjFUwT0EU+cmx3kievQgo3C1JnIlAYQynaGLGfj3imjCxMZ6
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="246111818"
-X-IronPort-AV: E=Sophos;i="5.88,326,1635231600"; 
-   d="scan'208";a="246111818"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2022 06:10:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,326,1635231600"; 
-   d="scan'208";a="675344441"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 29 Jan 2022 06:10:13 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDoQe-000PHv-Tv; Sat, 29 Jan 2022 14:10:12 +0000
-Date:   Sat, 29 Jan 2022 22:09:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, openbmc@lists.ozlabs.org,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Joel Stanley <joel@jms.id.au>, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>
-Subject: Re: [PATCH v5 5/9] pinctrl: nuvoton: Add driver for WPCM450
-Message-ID: <202201292234.NpSNe4TD-lkp@intel.com>
-References: <20220129115228.2257310-6-j.neuschaefer@gmx.net>
+        id S245551AbiA2OT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 29 Jan 2022 09:19:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233450AbiA2OTv (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 29 Jan 2022 09:19:51 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC552C06173B
+        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 06:19:49 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id CCEE91EC0523;
+        Sat, 29 Jan 2022 15:19:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1643465983;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=mlgkQN30yKP1yyHab8epCYEqHFx4EKvPLpk45D+Gg4g=;
+        b=lhZQUwXgKfpVTKr8jpkl9oT2DfptDGoeXkzEocDK6ttv5boT0sMYUcsvIw+ZpvlI8ITC4U
+        T2+TBI5zzjGPpk4ChHtP4yblViSspzTsVGXvWctHdgZ0Vf+DAYE+oMG9oCCYG1Kpc3Rbsc
+        nOt23QX+t5i98zrLplL1L4QWsYZXSM8=
+Date:   Sat, 29 Jan 2022 15:19:39 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Jing Liu <jing2.liu@intel.com>, linux-kernel@vger.kernel.org,
+        "Bae, Chang Seok" <chang.seok.bae@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] x86/cpufeatures: Move the definition of
+ X86_FEATURE_AMX_* to the word 18
+Message-ID: <YfVM+xdDS76E3d6r@zn.tnic>
+References: <20220117062344.58862-1-likexu@tencent.com>
+ <8b274c5f-6b68-aed9-117d-f89249e57e18@intel.com>
+ <47362220-30d5-c513-a2aa-61187ee91c41@redhat.com>
+ <bc272301-af11-621a-3bda-ee398754fd0a@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220129115228.2257310-6-j.neuschaefer@gmx.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <bc272301-af11-621a-3bda-ee398754fd0a@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Jonathan,
+On Wed, Jan 19, 2022 at 11:41:31AM +0800, Like Xu wrote:
+> Thanks Dave and Paolo.  Just for your convenience:
+> 
+> From 588c2221999c1f5860188a7cbaeb0d4f80c6d727 Mon Sep 17 00:00:00 2001
+> From: Like Xu <likexu@tencent.com>
+> Date: Mon, 17 Jan 2022 14:23:44 +0800
+> Subject: [PATCH v2] x86/cpufeatures: Move AMX CPU feature defines to correct
+>  word location
+> 
+> From: Like Xu <likexu@tencent.com>
+> 
+> The word 18 for Intel-defined CPU features from CPUID level 0x00000007:0 (EDX)
+> has been defined in the same file. Move the definitions of X86_FEATURE_AMX_* to
+> the right entry to prevent misinterpretation. No functional change intended.
+> 
+> Signed-off-by: Like Xu <likexu@tencent.com>
+> Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
+> v1 -> v2 Changelog:
+> - Refine the commit message and subject; (Dave)
+> 
+>  arch/x86/include/asm/cpufeatures.h | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
-I love your patch! Perhaps something to improve:
+$ test-apply.sh /tmp/urgent.01
+checking file arch/x86/include/asm/cpufeatures.h
+Hunk #1 FAILED at 299.
+patch: **** malformed patch at line 45: IBPB) */
 
-[auto build test WARNING on linusw-pinctrl/devel]
-[also build test WARNING on robh/for-next linus/master v5.17-rc1 next-20220128]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Don't ever send patches from
 
-url:    https://github.com/0day-ci/linux/commits/Jonathan-Neusch-fer/Nuvoton-WPCM450-pinctrl-and-GPIO-driver/20220129-195955
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git devel
-config: um-allmodconfig (https://download.01.org/0day-ci/archive/20220129/202201292234.NpSNe4TD-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/3fd91ea1bad905592e89c8f987f6bd3740329b80
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jonathan-Neusch-fer/Nuvoton-WPCM450-pinctrl-and-GPIO-driver/20220129-195955
-        git checkout 3fd91ea1bad905592e89c8f987f6bd3740329b80
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=um SHELL=/bin/bash drivers/pinctrl/nuvoton/
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0) Gecko/20100101 Thunderbird/91.5.0
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+That thing mangles them.
 
-All warnings (new ones prefixed by >>):
+See Documentation/process/email-clients.rst for further info.
 
->> drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c:908: warning: "DS" redefined
-     908 | #define DS(lo, hi) (((lo) << DRIVE_STRENGTH_LO_SHIFT) | \
-         | 
-   In file included from arch/x86/um/shared/sysdep/ptrace.h:44,
-                    from arch/um/include/asm/ptrace-generic.h:11,
-                    from arch/x86/um/asm/ptrace.h:9,
-                    from arch/um/include/asm/processor-generic.h:13,
-                    from arch/x86/um/asm/processor.h:41,
-                    from include/linux/rcupdate.h:30,
-                    from include/linux/rculist.h:11,
-                    from include/linux/pid.h:5,
-                    from include/linux/sched.h:14,
-                    from include/linux/ratelimit.h:6,
-                    from include/linux/dev_printk.h:16,
-                    from include/linux/device.h:15,
-                    from drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c:5:
-   arch/x86/um/shared/sysdep/ptrace_64.h:38: note: this is the location of the previous definition
-      38 | #define DS (HOST_DS * sizeof(long))
-         | 
-   In file included from include/linux/printk.h:555,
-                    from include/asm-generic/bug.h:22,
-                    from ./arch/um/include/generated/asm/bug.h:1,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/current.h:5,
-                    from ./arch/um/include/generated/asm/current.h:1,
-                    from include/linux/sched.h:12,
-                    from include/linux/ratelimit.h:6,
-                    from include/linux/dev_printk.h:16,
-                    from include/linux/device.h:15,
-                    from drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c:5:
-   drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c: In function 'npcm7xx_get_groups_count':
-   drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c:1564:21: warning: format '%d' expects argument of type 'int', but argument 4 has type 'long unsigned int' [-Wformat=]
-    1564 |  dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
-         |                     ^~~~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:15: note: in definition of macro '__dynamic_func_call'
-     134 |   func(&id, ##__VA_ARGS__);  \
-         |               ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:166:2: note: in expansion of macro '_dynamic_func_call'
-     166 |  _dynamic_func_call(fmt,__dynamic_dev_dbg,   \
-         |  ^~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:2: note: in expansion of macro 'dynamic_dev_dbg'
-     155 |  dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |  ^~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:23: note: in expansion of macro 'dev_fmt'
-     155 |  dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                       ^~~~~~~
-   drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c:1564:2: note: in expansion of macro 'dev_dbg'
-    1564 |  dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
-         |  ^~~~~~~
-   drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c:1564:35: note: format string is defined here
-    1564 |  dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
-         |                                  ~^
-         |                                   |
-         |                                   int
-         |                                  %ld
+-- 
+Regards/Gruss,
+    Boris.
 
-
-vim +/DS +908 drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-
-3b588e43ee5c7ad Tomer Maimon 2018-08-08  907  
-3b588e43ee5c7ad Tomer Maimon 2018-08-08 @908  #define DS(lo, hi)	(((lo) << DRIVE_STRENGTH_LO_SHIFT) | \
-3b588e43ee5c7ad Tomer Maimon 2018-08-08  909  			 ((hi) << DRIVE_STRENGTH_HI_SHIFT))
-3b588e43ee5c7ad Tomer Maimon 2018-08-08  910  #define DSLO(x)		(((x) >> DRIVE_STRENGTH_LO_SHIFT) & 0xF)
-3b588e43ee5c7ad Tomer Maimon 2018-08-08  911  #define DSHI(x)		(((x) >> DRIVE_STRENGTH_HI_SHIFT) & 0xF)
-3b588e43ee5c7ad Tomer Maimon 2018-08-08  912  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+https://people.kernel.org/tglx/notes-about-netiquette
