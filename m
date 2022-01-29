@@ -2,114 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01EADC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 16:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F82C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 16:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351992AbiA2QP4 (ORCPT
+        id S1352063AbiA2QS4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 11:15:56 -0500
-Received: from mail-ua1-f42.google.com ([209.85.222.42]:33440 "EHLO
-        mail-ua1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243432AbiA2QPu (ORCPT
+        Sat, 29 Jan 2022 11:18:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48558 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242424AbiA2QSy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 11:15:50 -0500
-Received: by mail-ua1-f42.google.com with SMTP id u6so9479394uaq.0
-        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 08:15:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fViSxtqGswQQcDKgDoujfoDQRcc1fcJ5TVFc8e30+Ic=;
-        b=oHgQ2Zi/qaqye1Y80YjcscP4z6Zoc3xx3hmjmzW6x4JNVccl/mkUJrnPCwx5m5C7S7
-         ajIA1JfKt3CjKXYLSWXMFvVwbHmo7q3B95mcRKA9rOxZYSsEv8Jzn7TrpWqo4ijscSCt
-         kJYwu9cZeVR5NZndmznMjs12L72JvZ3epY5vbvydZbG32k0BX5maVB/exLgICwmW1dC8
-         pZDkuRS4/uhIEaqup7NzpKJ47sHOqMjdDXX1obrINRZUusVGVJfHxsP7FpjOUN+mXUJd
-         i9n0dYXMuhVkpxLtP8yLp7iJfXj3KhBCWkEmPui0xvMS4Ga4cohd/BOygukpiToC6bOE
-         Y75g==
-X-Gm-Message-State: AOAM530Oq+WcWh8JznSOM9MdMGGhlQs28QJQmlanWNiCZjO81XAZRENi
-        U3Pra/PAJyAWDwIGisHTbXc2afqPGmGyTA==
-X-Google-Smtp-Source: ABdhPJwbIEgUDjSqMHK4eQ7aCV51DJT2iKHSB+HNX7NeQqt1tEAXy3YkV+bS/P7X/dc3cX+OjMl5Lw==
-X-Received: by 2002:ab0:1631:: with SMTP id k46mr5686212uae.24.1643472947841;
-        Sat, 29 Jan 2022 08:15:47 -0800 (PST)
-Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com. [209.85.221.180])
-        by smtp.gmail.com with ESMTPSA id j37sm2500233vka.45.2022.01.29.08.15.47
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 29 Jan 2022 08:15:47 -0800 (PST)
-Received: by mail-vk1-f180.google.com with SMTP id o15so5715821vki.2
-        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 08:15:47 -0800 (PST)
-X-Received: by 2002:a05:6122:c8f:: with SMTP id ba15mr5900645vkb.39.1643472946991;
- Sat, 29 Jan 2022 08:15:46 -0800 (PST)
+        Sat, 29 Jan 2022 11:18:54 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FEB2C061714;
+        Sat, 29 Jan 2022 08:18:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=73CZnjVYHIXhRB/BsZv3cHKLBCrUj4dQX035/VBBClc=; b=oF6JCHX6oJfFHVw0T1Ej1ZyxqV
+        YFlVadlJ0l8r9yRM1sVyTv8B7UBO0L7aEqTPkPR4HAu3LhR3JC1pu1Zzxrg+vluL55X4iVGlyYiZ4
+        2W4wmC/3NVIYmGK9bhFJUIGdGlpEXNVQXKRpIm8gbLF1y5jVWaQVB/Smj8hcLsbxpoFag8KfdK/tt
+        NlP/Yd+0kEQupJKc6JvgqCiD/Hu/w2+NNBhC+6RfwtgX0O2aVGaLaj/QSjI4sFiliKcM7QcuJYq3d
+        VtdSupwypCe4MFT4E71zVDmUu3vizsVH9Q1rn30Aeqvkzjd3t2JyybPgcj3FeVBXtSXCTwxhmBc7A
+        +EOXCiag==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nDqR5-004tWW-GO; Sat, 29 Jan 2022 16:18:48 +0000
+Message-ID: <c2ec8677-e7a2-c9cd-b291-9785e7e2800c@infradead.org>
+Date:   Sat, 29 Jan 2022 08:18:41 -0800
 MIME-Version: 1.0
-References: <202201280855.Boip1DFz-lkp@intel.com>
-In-Reply-To: <202201280855.Boip1DFz-lkp@intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Sat, 29 Jan 2022 17:15:35 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVkdn_X=tEas5DxWz_o9QE2sktnfii=qPJRu1+u+97Fvg@mail.gmail.com>
-Message-ID: <CAMuHMdVkdn_X=tEas5DxWz_o9QE2sktnfii=qPJRu1+u+97Fvg@mail.gmail.com>
-Subject: Re: [esmil:visionfive 36/74] pwm-sifive-ptc.c:undefined reference to `__udivdi3'
-To:     kernel test robot <lkp@intel.com>
-Cc:     Chenjieqin <Jessica.Chen@starfivetech.com>,
-        kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] i2c: npcm7xx: Fix typos
+Content-Language: en-US
+To:     =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        linux-i2c@vger.kernel.org
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20220129093907.2196730-1-j.neuschaefer@gmx.net>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220129093907.2196730-1-j.neuschaefer@gmx.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 2:15 AM kernel test robot <lkp@intel.com> wrote:
-> tree:   https://github.com/esmil/linux visionfive
-> head:   31606e93b454de33cd75c74d622f35eee020dc5b
-> commit: d8f87b24049876b29ade8ed4e49f975d32eeec79 [36/74] drivers/pwm: Add SiFive PWM PTC driver
-> config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220128/202201280855.Boip1DFz-lkp@intel.com/config)
-> compiler: m68k-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/esmil/linux/commit/d8f87b24049876b29ade8ed4e49f975d32eeec79
->         git remote add esmil https://github.com/esmil/linux
->         git fetch --no-tags esmil visionfive
->         git checkout d8f87b24049876b29ade8ed4e49f975d32eeec79
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->    m68k-linux-ld: drivers/pwm/pwm-sifive-ptc.o: in function `sifive_pwm_ptc_apply':
-> >> pwm-sifive-ptc.c:(.text+0x1c2): undefined reference to `__udivdi3'
->    `.exit.text' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
 
-+       /* calculate period count */
-+       period_data = state->period / pwm_clk_ns;
 
-64-by-32 division (pwm_state.period is u64, pwm_clk_ns is uint32_t).
-Please #include <linux/math64.h> and use div_u64():
+On 1/29/22 01:39, Jonathan Neuschäfer wrote:
+> The comments in this driver have a few typos. Let's fix them.
+> 
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-    period_data = div_u64(period, pwm_clk_ns);
+Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
 
-+
-+       if (!state->enabled)
-+               /* if is unenable,just set duty_dat to 0 , means low
-level always */
-+               duty_data = 0;
-+       else
-+               /* calculate duty count*/
-+               duty_data = state->duty_cycle / pwm_clk_ns;
+Thanks.
 
-Likewise.
+> ---
+>  drivers/i2c/busses/i2c-npcm7xx.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+> index 2ad166355ec9b..71aad029425d8 100644
+> --- a/drivers/i2c/busses/i2c-npcm7xx.c
+> +++ b/drivers/i2c/busses/i2c-npcm7xx.c
+> @@ -781,7 +781,7 @@ static void npcm_i2c_set_fifo(struct npcm_i2c *bus, int nread, int nwrite)
+>  		/*
+>  		 * if we are about to read the first byte in blk rd mode,
+>  		 * don't NACK it. If slave returns zero size HW can't NACK
+> -		 * it immidiattly, it will read extra byte and then NACK.
+> +		 * it immediately, it will read extra byte and then NACK.
+>  		 */
+>  		if (bus->rd_ind == 0 && bus->read_block_use) {
+>  			/* set fifo to read one byte, no last: */
+> @@ -981,7 +981,7 @@ static void npcm_i2c_slave_xmit(struct npcm_i2c *bus, u16 nwrite,
+>  /*
+>   * npcm_i2c_slave_wr_buf_sync:
+>   * currently slave IF only supports single byte operations.
+> - * in order to utilyze the npcm HW FIFO, the driver will ask for 16 bytes
+> + * in order to utilize the npcm HW FIFO, the driver will ask for 16 bytes
+>   * at a time, pack them in buffer, and then transmit them all together
+>   * to the FIFO and onward to the bus.
+>   * NACK on read will be once reached to bus->adap->quirks->max_read_len.
+> @@ -1175,7 +1175,7 @@ static irqreturn_t npcm_i2c_int_slave_handler(struct npcm_i2c *bus)
+>  				/*
+>  				 * the i2c module can response to 10 own SA.
+>  				 * check which one was addressed by the master.
+> -				 * repond to the first one.
+> +				 * respond to the first one.
+>  				 */
+>  				addr = ((i2ccst3 & 0x07) << 7) |
+>  					(i2ccst2 & 0x7F);
+> @@ -1753,8 +1753,8 @@ static void npcm_i2c_recovery_init(struct i2c_adapter *_adap)
+>  	/*
+>  	 * npcm i2c HW allows direct reading of SCL and SDA.
+>  	 * However, it does not support setting SCL and SDA directly.
+> -	 * The recovery function can togle SCL when SDA is low (but not set)
+> -	 * Getter functions used internally, and can be used externaly.
+> +	 * The recovery function can toggle SCL when SDA is low (but not set)
+> +	 * Getter functions used internally, and can be used externally.
+>  	 */
+>  	rinfo->get_scl = npcm_i2c_get_SCL;
+>  	rinfo->get_sda = npcm_i2c_get_SDA;
+> @@ -1768,10 +1768,10 @@ static void npcm_i2c_recovery_init(struct i2c_adapter *_adap)
+> 
+>  /*
+>   * npcm_i2c_init_clk: init HW timing parameters.
+> - * NPCM7XX i2c module timing parameters are depenent on module core clk (APB)
+> + * NPCM7XX i2c module timing parameters are dependent on module core clk (APB)
+>   * and bus frequency.
+> - * 100kHz bus requires tSCL = 4 * SCLFRQ * tCLK. LT and HT are simetric.
+> - * 400kHz bus requires assymetric HT and LT. A different equation is recomended
+> + * 100kHz bus requires tSCL = 4 * SCLFRQ * tCLK. LT and HT are symmetric.
+> + * 400kHz bus requires asymmetric HT and LT. A different equation is recommended
+>   * by the HW designer, given core clock range (equations in comments below).
+>   *
+>   */
+> --
+> 2.34.1
+> 
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+~Randy
