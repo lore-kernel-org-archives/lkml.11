@@ -2,101 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B653C4321E
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 22:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2005C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 23:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353365AbiA2Wm3 (ORCPT
+        id S1353391AbiA2XAt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 17:42:29 -0500
-Received: from mout.kundenserver.de ([212.227.17.13]:36377 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243417AbiA2Wm1 (ORCPT
+        Sat, 29 Jan 2022 18:00:49 -0500
+Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:36141 "EHLO
+        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1347650AbiA2XAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 17:42:27 -0500
-Received: from mail-lf1-f41.google.com ([209.85.167.41]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MUXh8-1mnVab0iZs-00QVLS; Sat, 29 Jan 2022 23:42:25 +0100
-Received: by mail-lf1-f41.google.com with SMTP id x11so19043465lfa.2;
-        Sat, 29 Jan 2022 14:42:24 -0800 (PST)
-X-Gm-Message-State: AOAM531LPENl6+KXxvfJsA9tqS18HNo2D2KpIbD6R5kD8gHnUNXXe7de
-        vOZK5fCmxmvo+UsqeygBjhn1hKpGAJ88W4PTRMc=
-X-Google-Smtp-Source: ABdhPJzI0D41s8yrwHglCZkVEr0x+bK1CMwYgZgaz1NErnnr1PsIuPoCJo0tLrBweMwgRCKK6bnEP4/locNb0Mfr0Gg=
-X-Received: by 2002:a05:6000:3c6:: with SMTP id b6mr11705793wrg.12.1643494389446;
- Sat, 29 Jan 2022 14:13:09 -0800 (PST)
+        Sat, 29 Jan 2022 18:00:46 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id ACE413200BD2;
+        Sat, 29 Jan 2022 18:00:45 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Sat, 29 Jan 2022 18:00:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm1; bh=YkxZLU31+SkUNlHUtOK24HTfoaFsFV9ZeL8fTN7IANU=; b=DN0Cs
+        Y0uL7OacJJP6DjMeWSLekJ6lxxoVeNK90E0du8bUpWM2Qgtwmh1Wyke7caOOtuCP
+        IpqxXmF+1cbUCQgDyWofmBJ+xt+yeF6wz4xWCBFsHYoLg1JOJesyPaoC9RyjomD0
+        GxMScCieoDnO600IrdespphnKXITwGGPtPpBqVCXiu7A2WZNv8qG7oMagfRTAnVe
+        lXXTjCCh1bwhKMJAu8BhUZ4XXCWTiY+gvrH1FBHOTbLncv51cM73Z/CxW9A/whbf
+        5mysNnrXDADlP//G2XvlYhTicfVlPWyaEfRNasAMrVXlv2s0H6KKJpU4zUh4+u5C
+        64jSaDt03T2axw1Fg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
+        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm1; bh=YkxZLU31+SkUNlHUtOK24HTfoaFsF
+        V9ZeL8fTN7IANU=; b=f2ozszpEHxp86CgfPJ37x3TzJZOpnxqDEpObalYk9rQYj
+        uX8vqPGJyBOocABslqqqnaGAH59lbWqImEDbkmSRcI4z8CE3++1Jrtt5c6MjGT/C
+        B4StSLuM5A777OuClAwCwDWDjX4w6A2c/314rh+Pzw4GW7eaNjuiTb9EG5cLfwB1
+        ShSzZh9/btJtCGnt7fow7ho7hDd5lz5ACSRzWGzSa/w9ULro6odkUhcQiMWHrwp2
+        rAc3vxkB99lA10cdQvlIe3Pooa8URW6lJPA0lf009RkcrWRai9Hgg4XW4ybpNnka
+        3SUom63aBPLn7LHj1LWrAY0IWS1MnA+N51Mi1+lXw==
+X-ME-Sender: <xms:HMf1YUJjm6ltiifLxT_XCNkDgsFzqxq6KlgfV8g582Eoxdvg7W2WXw>
+    <xme:HMf1YUKrJNf0_eetJiqrVFQiYracB8YA2xVItWXSTkpiu-4DpmdC1zZF_zTKWAhkH
+    kxX8pIKhqp0jb6nPQ>
+X-ME-Received: <xmr:HMf1YUuPsqDVkfY2o_2Vhta85ZJmliyHLXjD8o7a1OppkvXeE7_VsTSeK9RC9VZDoStKEY1_MR4yUBZ07Pdr-lFiFFmTAk4JIdgLChdK7YaU2WwB27yDgWWM1B1UAuF2J_ehqA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrfeejgdduieelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
+    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
+    htthgvrhhnpeekkeefjeekvdetheejheekvdfgkeeigfffudehudeihfektdetheegiedv
+    gfevudenucffohhmrghinhepmhgvghhouhhsrdgtohhmpdhkvghrnhgvlhdrohhrghenuc
+    evlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsrghmuhgv
+    lhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:HMf1YRbRy0COhWV-STAEzQksBuJ0zQdfuzAJC6C_qAvQe1vTWiPGiw>
+    <xmx:HMf1YbaOLcX-nE9qCB8wbGuTO6x9QBDVL-J4j5b0fLrZD5vo5EJR1Q>
+    <xmx:HMf1YdDjS8c72uamIVrBLZWFPFJZaErZ71oy20sJ_aoeO-dMJ__03Q>
+    <xmx:Hcf1Yf6J9zVDXkjaI5xW6Z5p1sFhfpfFG6KKMc0hAe52AAHKgqvX7g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 29 Jan 2022 18:00:44 -0500 (EST)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-input@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-i2c@vger.kernel.org,
+        Wolfram Sang <wsa@kernel.org>, Ondrej Jirman <x@xff.cz>,
+        Samuel Holland <samuel@sholland.org>
+Subject: [PATCH 0/5] Pine64 PinePhone keyboard support
+Date:   Sat, 29 Jan 2022 17:00:37 -0600
+Message-Id: <20220129230043.12422-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <20220129121728.1079364-1-guoren@kernel.org> <20220129121728.1079364-9-guoren@kernel.org>
-In-Reply-To: <20220129121728.1079364-9-guoren@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Sat, 29 Jan 2022 23:12:53 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3JGP6fLVOyLgdNw2YpRSmArbEX8orUhRrN=GHmcdk=1g@mail.gmail.com>
-Message-ID: <CAK8P3a3JGP6fLVOyLgdNw2YpRSmArbEX8orUhRrN=GHmcdk=1g@mail.gmail.com>
-Subject: Re: [PATCH V4 08/17] riscv: compat: syscall: Add compat_sys_call_table
- implementation
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
-        Anup Patel <anup@brainfault.org>,
-        gregkh <gregkh@linuxfoundation.org>,
-        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:0Yzxyzy2LWbvcWRmp6MeESLeJNu4HiYS0v+nd8H1Q5aXbPkaH3h
- mmZ+2CBXPSpeBCHtzPy5un72C3Yx1seV3vXVkpHT+PrN/YcMbemmvbgD0jHrvhFjno+Tg0Y
- fvqULPUJqNJz+T/rMGy3qgjmCSeLRmCbzt/mIBDRXs4LkxVEYtw0btA1HB91O2De7iHcXyM
- MWdMgVoQ1PPCsUPLhdUVA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:dWjG/ko0EdY=:+zw7v6BvhXjWByWelgdfw6
- Q3AejGC3+HE8YYQOMcY+giFrl8yPSdiPa7+0ivr3Ipj1oiYMIStsvLVVvOY8ckTDM8oYnur8d
- pCR0f8xgp/UegOdYGfHTcYO1rm8N8sph8OxobFJFfrpIY0lW5cjCqOiNafseRDkhQxea28LWR
- fdb1R5Eg7T0rz8rq08gAxO01DFdaRkMoZXaD5K7Bb747a6m4JjuBfNrJkseFZJm2+W7mcByxw
- nk4ZYr9oPkHqtFRo3zVrt7E8Tk/2Var7bMvnGyk6GvuP8CzOYyUEmuKFFc/7hE5k8xpN/nywi
- I+6jt2iCtD8EV0DSW4pBvAUPYib8iuLvcRS1edR+G305Zao6WGB5+a7FmA6Uw3603dpIlOgB2
- F2y8megL4+vWzqKyv6eSeu8ZxR7/f4nOxveFRfDFpEtGwjvDNGl7cHj+ix2PH1mRfCfbmOkni
- q/w2/Kq50c4OAKOWhJ9rFHymKfb1kKJ1MpHy1rrG21kXl37KVdnm7u3XnSOg4DD0J/vlO0THX
- Enhjc8wH/8kr1DNcJLIog/ku3oTnUL2PUeTF9o8tJiAahGBk++9aEueAQUrZdu+uiY3ik85CZ
- PzVkPJ3bPZzaEEJn0XakE7dWgQ/PCdY7QGhdEVIcnw5rh4U8BIehof++NqNgeaSAZU/Spe5HT
- 0cGKu6qKg1XZUOjQPt7nihz+Gz7+b3pPTGlhvpYUnGJbUj8XSV5mveQs8u/f/80JOTHO9jWAG
- cE0wn/RVJklRA8VjUu2Oj7gXevld3Ox9fPQHMkkCVF1KzvVZ/TTSDT3zglwFcM3ZZPoopchfH
- d7OYU5Bhv76HpKNGmuP6lksZRTpQap8HmTAdW84KRODDXqchCk=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Implement compat sys_call_table and some system call functions:
-> truncate64, ftruncate64, fallocate, pread64, pwrite64,
-> sync_file_range, readahead, fadvise64_64 which need argument
-> translation.
->
-> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> Signed-off-by: Guo Ren <guoren@kernel.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
+This series adds support for the official keyboard case for the Pine64
+PinePhone and PinePhone Pro. This accessory contains a keyboard MCU and
+an IP5209 power bank IC. The keyboard MCU firmware[0] is free software.
+It exposes the keyboard scan matrix over I2C, and also provides commands
+for SMBus access to the IP5209. In order to keep the IP5209 driver[1]
+generic, this is modeled as an I2C bus child of the keyboard.
 
-This all looks really good, but I would change one detail:
+[0]: https://megous.com/git/pinephone-keyboard/about/
+[1]: https://lore.kernel.org/lkml/20220129222424.45707-1-samuel@sholland.org/T/
 
-> +#ifndef compat_arg_u64
-> +#define compat_arg_u64(name)           u32  name##_lo, u32  name##_hi
-> +#define compat_arg_u64_dual(name)      u32, name##_lo, u32, name##_hi
-> +#define compat_arg_u64_glue(name)      (((u64)name##_hi << 32) | \
-> +                                        ((u64)name##_lo & 0xffffffffUL))
-> +#endif
 
-I would make these endian-specific, and reverse them on big-endian
-architectures. That way it
-should be possible to share them across all compat architectures
-without needing the override
-option.
+Samuel Holland (5):
+  dt-bindings: input: Add the PinePhone keyboard binding
+  Input: pinephone-keyboard - Add PinePhone keyboard driver
+  Input: pinephone-keyboard - Build in the default keymap
+  Input: pinephone-keyboard - Support the proxied I2C bus
+  [DO NOT MERGE] arm64: dts: allwinner: pinephone: Add keyboard
 
-        Arnd
+ .../input/pine64,pinephone-keyboard.yaml      |  90 ++++
+ MAINTAINERS                                   |   6 +
+ .../dts/allwinner/sun50i-a64-pinephone.dtsi   |  18 +
+ drivers/input/keyboard/Kconfig                |  10 +
+ drivers/input/keyboard/Makefile               |   1 +
+ drivers/input/keyboard/pinephone-keyboard.c   | 449 ++++++++++++++++++
+ 6 files changed, 574 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml
+ create mode 100644 drivers/input/keyboard/pinephone-keyboard.c
+
+-- 
+2.33.1
+
