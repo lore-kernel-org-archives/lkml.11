@@ -2,116 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CABC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 06:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED9AC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 29 Jan 2022 06:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242009AbiA2GjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 29 Jan 2022 01:39:06 -0500
-Received: from www.zeus03.de ([194.117.254.33]:59938 "EHLO mail.zeus03.de"
+        id S243040AbiA2Gwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 29 Jan 2022 01:52:50 -0500
+Received: from mga09.intel.com ([134.134.136.24]:28236 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229958AbiA2GjD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 29 Jan 2022 01:39:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=Dja6htFOHSLuxcH15iAURADMtQRz
-        t7/bYoOfVYKbpvQ=; b=rSplA0hs6qX8Pvq2Bqyz4RIroxiIZfaJ9G+2DxyGcsQG
-        5s43dcMIZD7Zw9obz/YImxdMqMMZZf2yNhX01LY1+YEcFM5nyzy3NZ1eYUDAVHq3
-        +/MpAgOzIj/xpHhQ9UBmEK8PL8fHOe+swJ1wrJEpmSWzCtnLWFGe9WHQwnJZ8fA=
-Received: (qmail 511667 invoked from network); 29 Jan 2022 07:39:00 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 29 Jan 2022 07:39:00 +0100
-X-UD-Smtp-Session: l3s3148p1@sh9MzrLWDLO8ahEL
-Date:   Sat, 29 Jan 2022 07:38:56 +0100
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Krzysztof Adamski <krzysztof.adamski@nokia.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        Matija Glavinic-Pecotic <matija.glavinic-pecotic.ext@nokia.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] arm64: move efi_reboot to restart handler
-Message-ID: <YfThAF9U1DJx0Hja@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Krzysztof Adamski <krzysztof.adamski@nokia.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        Matija Glavinic-Pecotic <matija.glavinic-pecotic.ext@nokia.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <YfP0osb45uJldtM9@localhost.localdomain>
- <YfREAiRMjQ9ci4LC@shikoro>
- <YfRu86YoiFpVsqyn@localhost.localdomain>
+        id S242239AbiA2Gwp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 29 Jan 2022 01:52:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643439165; x=1674975165;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=a4scwx3pnuUHvUkzJJylpqNgUA2pXfEe+E0/+adCLLE=;
+  b=SqhNwIiRjNjkS2a1KhC6BjsDhxFD6skbNuBpimM/xGXQOarIM5RO3usI
+   G8012mY6kM2dZHiQeMtUD3aZb318E5O7wZsC/4bElwBert8/QOz2NNhl8
+   dA5CmFbhNkOssXVsKo9Gez2QGLbuxPVX0+pTf8VV/C0oBkF2M1ozdHAKJ
+   gHWJS0zbtNd3FtEMwePiLjEuXVr6B5CoAWemWWk0THlQLgsAds6tJqP8t
+   FOVuEXJ0T0LkD/jofh03n1ADn4BXKjFS/AMCbctvNIfYSsv5oJDTqBmDD
+   CSH9DCvSoz4omCR3i62yDeukgF1VjDskL1m/mAkQoQnP2je+TUWWZ1JvD
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="247020906"
+X-IronPort-AV: E=Sophos;i="5.88,326,1635231600"; 
+   d="scan'208";a="247020906"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 22:52:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,326,1635231600"; 
+   d="scan'208";a="625854351"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 28 Jan 2022 22:52:43 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nDhbH-000OtE-2b; Sat, 29 Jan 2022 06:52:43 +0000
+Date:   Sat, 29 Jan 2022 14:52:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [ardb:arm64-ro-page-tables-pkvm-v5.17 26/26]
+ mm/huge_memory.c:1956:66: error: 'PMD_TYPE_TABLE' undeclared
+Message-ID: <202201291432.X54lXKXd-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="GKPNAMI1pCuG617p"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YfRu86YoiFpVsqyn@localhost.localdomain>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git arm64-ro-page-tables-pkvm-v5.17
+head:   b38f2df95cbf61e70bc32017da5318d1cb03e3e3
+commit: b38f2df95cbf61e70bc32017da5318d1cb03e3e3 [26/26] mm: HACK provide target address when migrating a PMD entry
+config: riscv-buildonly-randconfig-r006-20220127 (https://download.01.org/0day-ci/archive/20220129/202201291432.X54lXKXd-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/commit/?id=b38f2df95cbf61e70bc32017da5318d1cb03e3e3
+        git remote add ardb git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git
+        git fetch --no-tags ardb arm64-ro-page-tables-pkvm-v5.17
+        git checkout b38f2df95cbf61e70bc32017da5318d1cb03e3e3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
 
---GKPNAMI1pCuG617p
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Hi Krzysztof,
-> I would use something like 250, or even 254, just to indicate that we
-> know that most certainly nothing should be run before efi_reboot(), but
-> still allow those silly people like me, to do what they want in their
-> system, without the need to run the custom kernel. I think we could even
-> add a proper comment, so it woudld become something like:
->=20
-> /**
->  * If you are running UEFI based system, you most certainly should let
->  * efi_reboot() do a reset for you. If you think you know better, we
->  * leave you a window of opportunity here by not using maximal priorty
->  * here.
->  */
->  .priority =3D 250,
+All errors (new ones prefixed by >>):
 
-For your patchset, this seems good enough for me because it is decoupled
-=66rom PSCI now. I still think a set of defines should be collected in
-linux/reboot.h so they can be used in reboot handlers. This is a
-different patch series, though.
+   In file included from arch/riscv/include/asm/pgtable.h:111,
+                    from include/linux/pgtable.h:6,
+                    from include/linux/mm.h:33,
+                    from mm/huge_memory.c:8:
+   mm/huge_memory.c: In function '__split_huge_zero_page_pmd':
+>> mm/huge_memory.c:1956:66: error: 'PMD_TYPE_TABLE' undeclared (first use in this function)
+    1956 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
+         |                                                                  ^~~~~~~~~~~~~~
+   arch/riscv/include/asm/pgtable-64.h:47:37: note: in definition of macro '__pmd'
+      47 | #define __pmd(x)        ((pmd_t) { (x) })
+         |                                     ^
+   mm/huge_memory.c:1956:66: note: each undeclared identifier is reported only once for each function it appears in
+    1956 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
+         |                                                                  ^~~~~~~~~~~~~~
+   arch/riscv/include/asm/pgtable-64.h:47:37: note: in definition of macro '__pmd'
+      47 | #define __pmd(x)        ((pmd_t) { (x) })
+         |                                     ^
+   mm/huge_memory.c: In function '__split_huge_pmd_locked':
+   mm/huge_memory.c:2137:66: error: 'PMD_TYPE_TABLE' undeclared (first use in this function)
+    2137 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
+         |                                                                  ^~~~~~~~~~~~~~
+   arch/riscv/include/asm/pgtable-64.h:47:37: note: in definition of macro '__pmd'
+      47 | #define __pmd(x)        ((pmd_t) { (x) })
+         |                                     ^
+--
+   In file included from arch/riscv/include/asm/pgtable.h:111,
+                    from include/linux/pgtable.h:6,
+                    from include/linux/mm.h:33,
+                    from mm/khugepaged.c:4:
+   mm/khugepaged.c: In function 'collapse_huge_page':
+>> mm/khugepaged.c:1166:68: error: 'PMD_TYPE_TABLE' undeclared (first use in this function)
+    1166 |                 set_pmd_at(mm, address, pmd, __pmd(pmd_val(_pmd) | PMD_TYPE_TABLE));
+         |                                                                    ^~~~~~~~~~~~~~
+   arch/riscv/include/asm/pgtable-64.h:47:37: note: in definition of macro '__pmd'
+      47 | #define __pmd(x)        ((pmd_t) { (x) })
+         |                                     ^
+   mm/khugepaged.c:1166:68: note: each undeclared identifier is reported only once for each function it appears in
+    1166 |                 set_pmd_at(mm, address, pmd, __pmd(pmd_val(_pmd) | PMD_TYPE_TABLE));
+         |                                                                    ^~~~~~~~~~~~~~
+   arch/riscv/include/asm/pgtable-64.h:47:37: note: in definition of macro '__pmd'
+      47 | #define __pmd(x)        ((pmd_t) { (x) })
+         |                                     ^
 
-> What is the downside of doing that? That we will run through atomic
-> notfier chain instead of calling efi_reboot directly? Sure this is
-> slightly more complicated but it works on all our platforms and is
-> battle proven and we don't worry about that there. And the upside is
-> that we give people possibility to use their beloved mechanism if they
-> really like to. Because flexibility is a good thing.
 
-I agree with the upside having more value than the downside.
+vim +/PMD_TYPE_TABLE +1956 mm/huge_memory.c
 
-Happy hacking,
+  1923	
+  1924	static void __split_huge_zero_page_pmd(struct vm_area_struct *vma,
+  1925			unsigned long haddr, pmd_t *pmd)
+  1926	{
+  1927		struct mm_struct *mm = vma->vm_mm;
+  1928		pgtable_t pgtable;
+  1929		pmd_t _pmd;
+  1930		int i;
+  1931	
+  1932		/*
+  1933		 * Leave pmd empty until pte is filled note that it is fine to delay
+  1934		 * notification until mmu_notifier_invalidate_range_end() as we are
+  1935		 * replacing a zero pmd write protected page with a zero pte write
+  1936		 * protected page.
+  1937		 *
+  1938		 * See Documentation/vm/mmu_notifier.rst
+  1939		 */
+  1940		pmdp_huge_clear_flush(vma, haddr, pmd);
+  1941	
+  1942		pgtable = pgtable_trans_huge_withdraw(mm, pmd);
+  1943		pmd_populate(mm, &_pmd, pgtable);
+  1944	
+  1945		for (i = 0; i < HPAGE_PMD_NR; i++, haddr += PAGE_SIZE) {
+  1946			pte_t *pte, entry;
+  1947			entry = pfn_pte(my_zero_pfn(haddr), vma->vm_page_prot);
+  1948			entry = pte_mkspecial(entry);
+  1949			pte = pte_offset_map(&_pmd, haddr);
+  1950			VM_BUG_ON(!pte_none(*pte));
+  1951			set_pte_at(mm, haddr, pte, entry);
+  1952			pte_unmap(pte);
+  1953		}
+  1954		smp_wmb(); /* make pte visible before pmd */
+  1955		//pmd_populate(mm, pmd, pgtable);
+> 1956		set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
+  1957	}
+  1958	
 
-   Wolfram
-
-
---GKPNAMI1pCuG617p
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmH04PwACgkQFA3kzBSg
-KbbUiw/+MH+ukDJlxKm1Hgf2mziYmP4CxKyEoAv+6iDgOr/7USa/rOtBKIjFlLpw
-JHHCSkbtLI8HQdxRy45T44wP5CZ6eMFnF2bAN2/pvSDVViz3DUqeAMQZ3C1GxUys
-WJ4Gx+Xxyyk9ZXApkN+X42NtbIJWxs2wyGmDTq6lGkOjZ5VpdjGdHVv1i8YUMaTN
-B7dS2o7c3Y5IlK/7BCPqrpwqdoNDVJCaaFy1xczFBa9iU3PYRDNczfOR+CItscE2
-JaRzIbQF10a5eM+j84OWYNK6K4qOBsad64yz+6xEpmVGh+XU9E5hVdPTbSY9lGc9
-HjtvIVmeSyz59JSgrga6iItzTPHIZOcNOeD8foe6YRgVZaCzE/jWM3bh4fkKj6+I
-5YrOuYFdg1QH3B6a6WljP+x85mfnVCbJ52mzYEyrJ4HGg/GIbWu81ySVMM7TX9zo
-Dw652+S9iAw8C4U7LH+2diE4wh/9qQgqPqEaQ8mDlyJgqBxgzTyy0tO2GJcBYcPJ
-IHbsc1pWCFlNN6bFtbfcJUU0ZgCBB9sWO+wsDg2Dt2akQbHOFg7OFwdqhPgKmMGy
-nOl3Jaa683bdY1v+zzUHq3mJMNhVnEqEM5N1AlSF5dMiowRyV4/02dthJxPCENX7
-tXTqqFTFH1RDbBXtHGdrJINMhiu4Pz+B9r2cY2fFQEzOZmTe1uY=
-=fL8U
------END PGP SIGNATURE-----
-
---GKPNAMI1pCuG617p--
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
