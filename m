@@ -2,132 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F2B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 11:27:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 11:29:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354602AbiA3LXI (ORCPT
+        id S1354624AbiA3L3B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 06:23:08 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:32820 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236930AbiA3LXH (ORCPT
+        Sun, 30 Jan 2022 06:29:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242943AbiA3L3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 06:23:07 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Sun, 30 Jan 2022 06:29:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD3AEC061714;
+        Sun, 30 Jan 2022 03:28:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 5D0F1210EB;
-        Sun, 30 Jan 2022 11:23:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643541786; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ccVJS9YZplsYEfpyaDlr7gvvQ4c9GcKLVegwcDeZexI=;
-        b=gakPX7k8jT1Yvrbgsntxr7CkR8OzB+yvL+6o0u5ZRVAF2Vsp3LHYnj1ejlKwonNs5t9qhF
-        FxVSOLBxng0RMkFnoXrKRQd6Gc0C6Ll6x+KBYGJOvyjo6oTSPx4TcLL0vhtcxMVvhzuO43
-        CLt863h865rIHPlrBshARDU0vjh+9aI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643541786;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ccVJS9YZplsYEfpyaDlr7gvvQ4c9GcKLVegwcDeZexI=;
-        b=5bM9qJOrdiQ1ZA7VTCmHvEY1Lwx3lJ5MvRPqGvlJTwpZOC40QEK0OT95AJ/v3vz9S6AxUh
-        sgwGtpD2qrjY+4Cg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 41BF713638;
-        Sun, 30 Jan 2022 11:23:06 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Kc6fDxp19mFVcQAAMHmgww
-        (envelope-from <bp@suse.de>); Sun, 30 Jan 2022 11:23:06 +0000
-Date:   Sun, 30 Jan 2022 12:23:05 +0100
-From:   Borislav Petkov <bp@suse.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] irq/urgent for v5.17-rc2
-Message-ID: <YfZ1GTDDVz5WzYOJ@zn.tnic>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77D1CB828FB;
+        Sun, 30 Jan 2022 11:28:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FD70C340E4;
+        Sun, 30 Jan 2022 11:28:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643542137;
+        bh=O3fxXoAXDyiaNpmyIMzruf5onAwLK+lMiucIKH0HQp8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NjdXPyQ2uz8w00/wHvUA0M7/DQ3NB4I4XI9uFpAjegKLclmoTnZp1sCGfwUo4BDgN
+         vjZ8lRlV0ujWxT08IlOLhbZdGANQJ6aUq4glFjIXnTH3ShCPGlYo3mCLbKcv5LAh1e
+         uGmZCr89ZcqzDRJDVfy6tRF+mf71bO3y+HF0+P+gAWY1I0A8nF4b/gIfQ+tv3un0f2
+         wuMYNiBre5vssUS1S2gorVRzQ6huedKKgRyJB5neLKIZJOGEDQmorYD6SpE1hwT0NT
+         QItIOW1bOosqOTNzWNXnRD6u/jS11sg+ySp/XEAbzUtGXJLGnFivzokW2jf6tBXf6V
+         MsQO5HcCrT7tw==
+Date:   Sun, 30 Jan 2022 11:35:15 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
+        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V1 0/6] i iio: accel: sca3300: add compitible for
+ scl3300
+Message-ID: <20220130113515.4e9ffe1b@jic23-huawei>
+In-Reply-To: <20220124093912.2429190-1-Qing-wu.Li@leica-geosystems.com.cn>
+References: <20220124093912.2429190-1-Qing-wu.Li@leica-geosystems.com.cn>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Mon, 24 Jan 2022 09:39:06 +0000
+LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
 
-please pull irq/urgent fixes courtesy of Marc Zyngier, for v5.17.
+> The current driver support sca3300 only.
+> Modifed for support SCL3300.
+> Verifed with SCL3300 on IMX8MM.
+> Splited the change for review.
+> 
+> LI Qingwu (6):
+>   iio: accel: sca3300: add define for temp channel for reuse.
+>   iio: accel: sca3300: Add interface for operation modes.
+>   iio: accel: sca3300: modified to support multi chips
+>   iio: accel: sca3300: Add support for SCL3300
+>   iio: accel: sca3300: Add inclination channels.
+>   dt-bindings: iio: accel: sca3300: Document murata,scl3300
+> 
+>  .../bindings/iio/accel/murata,sca3300.yaml    |   1 +
+>  drivers/iio/accel/sca3300.c                   | 284 +++++++++++++++---
+>  2 files changed, 238 insertions(+), 47 deletions(-)
+> 
 
-Thx.
+For v2, please make sure to cc linux-iio@vger.kernel.org
 
----
+I won't pick up any IIO changes that haven't been sent to that list.
 
-The following changes since commit a0af3d1104f752b6d0dba71788e3fddd67c857a7:
+Thanks,
 
-  PCI/MSI: Prevent UAF in error path (2022-01-21 02:14:46 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/irq_urgent_for_v5.17_rc2_p2
-
-for you to fetch changes up to 243d30803744155a54bfb8a844cc964945cfd9a1:
-
-  Merge tag 'irqchip-fixes-5.17-1' of git://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms into irq/urgent (2022-01-29 21:03:20 +0100)
-
-----------------------------------------------------------------
-- Drop an unused private data field in the AIC driver
-
-- Various fixes to the realtek-rtl driver
-
-- Make the GICv3 ITS driver compile again in !SMP configurations
-
-- Force reset of the GICv3 ITSs at probe time to avoid issues during kexec
-
-- Yet another kfree/bitmap_free conversion
-
-- Various DT updates (Renesas, SiFive)
-
-(from Marc Zyngier)
-
-----------------------------------------------------------------
-Ard Biesheuvel (1):
-      irqchip/gic-v3-its: Fix build for !SMP
-
-Christophe JAILLET (1):
-      irqchip/loongson-pch-ms: Use bitmap_free() to free bitmap
-
-Geert Uytterhoeven (3):
-      dt-bindings: irqchip: renesas-irqc: Add R-Car V3U support
-      dt-bindings: interrupt-controller: sifive,plic: Fix number of interrupts
-      dt-bindings: interrupt-controller: sifive,plic: Group interrupt tuples
-
-Marc Zyngier (2):
-      irqchip/apple-aic: Drop unused ipi_hwirq field
-      irqchip/gic-v3-its: Reset each ITS's BASERn register before probe
-
-Sander Vanheule (3):
-      irqchip/realtek-rtl: Map control data to virq
-      irqchip/realtek-rtl: Fix off-by-one in routing
-      irqchip/realtek-rtl: Service all pending interrupts
-
-Thomas Gleixner (1):
-      Merge tag 'irqchip-fixes-5.17-1' of git://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms into irq/urgent
-
- .../interrupt-controller/renesas,irqc.yaml         |   1 +
- .../interrupt-controller/sifive,plic-1.0.0.yaml    |  12 +-
- drivers/irqchip/irq-apple-aic.c                    |   1 -
- drivers/irqchip/irq-gic-v3-its.c                   | 123 +++++++++++++++++----
- drivers/irqchip/irq-loongson-pch-msi.c             |   2 +-
- drivers/irqchip/irq-realtek-rtl.c                  |  18 ++-
- 6 files changed, 121 insertions(+), 36 deletions(-)
-
--- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
+Jonathan
