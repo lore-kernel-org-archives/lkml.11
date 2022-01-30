@@ -2,134 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB4B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 15:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 15:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355372AbiA3PLR (ORCPT
+        id S1355383AbiA3PL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 10:11:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
+        Sun, 30 Jan 2022 10:11:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349175AbiA3PLN (ORCPT
+        with ESMTP id S1349175AbiA3PL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 10:11:13 -0500
+        Sun, 30 Jan 2022 10:11:57 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9D6C061714;
-        Sun, 30 Jan 2022 07:11:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B564C061714;
+        Sun, 30 Jan 2022 07:11:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8ADB6123B;
-        Sun, 30 Jan 2022 15:11:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9DDEC340E4;
-        Sun, 30 Jan 2022 15:11:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA2426124C;
+        Sun, 30 Jan 2022 15:11:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19190C340F1;
+        Sun, 30 Jan 2022 15:11:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643555472;
-        bh=oYvKAImQNUHKveacXyI4MjLN9QGhpLq3yA19e/9Eri8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NreeKZBiXnASrKDL6r3UzlLBbK4CgrRFna25soR7h/Q1u7RhIMSmf2IJLhKaBfXGU
-         /zXrkRPbJNSKfD5YCS1Kx0SwJl1qmawCgqOgzYAS0/iM3C9+dL+maAhXXw1XaTsbL8
-         o9YczUxPc05DfRlQN2yt3XoArE/+ASqQqlz4mhCych6rZKmauHj4RusfKbIoeeJRLN
-         ZGcoC/OtZ6e3+SlRNRyIEs4gT7kNWlO3wruFk6YlkLwsVdzhDqlYWnK+V2Hc6E2G3O
-         0uLXaSiPOaKYMKpjeMHLLWzUh61NpwtRQFSsLrI3h+qmgIk6fr7y9RUlTsoKXhueg4
-         JF8D+dpHx9E1Q==
-Date:   Sun, 30 Jan 2022 15:17:37 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Nikos Latmos <n.latmos@deepsea.ai>
-Cc:     jmaneyrol@invensense.com, lars@metafoo.de,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PROBLEM]: Error during probing process in inv_icm42600_i2c
- driver
-Message-ID: <20220130151737.43ef5b08@jic23-huawei>
-In-Reply-To: <CAC-bbXbkt0oYPn+EWLdEYKyj8G_muWGDZWTApyFv3cb591dc0A@mail.gmail.com>
-References: <20211208135644.3523024-1-n.latmos@deepsea.ai>
-        <CAC-bbXbkt0oYPn+EWLdEYKyj8G_muWGDZWTApyFv3cb591dc0A@mail.gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        s=k20201202; t=1643555516;
+        bh=bjY5Bd8WmnLHJ0/+E+BfU396MaNZGVNtIYeOtwQvt6g=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=mZ0ZlJ/lU2kQQdZJe9lUTm5uIlQm/lY0zHmBxzHKgOsEruCpf2svcyi0SNqfmgbVj
+         iaLel856SEz8fiB+B6LJae2tOUcOu9CELIlhAjC3h1wbRCxxkN3GeWvGObTCGtIJy9
+         jodkfRf6SZV/ADfbpvozpjMxcwx+HoPFMW7Uzky3QWFBvuL3SVNtLDbb5CVL7ROW/f
+         +VpSwqB8weruf1R3hbV/ad7Oz99myFABa2EUTS59+o17a5VWgys9iBoP3WFjGcdpNw
+         t6h82+/TbPhnCG6A4uTjkaWbNEy/oXyZ82g+NATSCYw07jif2P2KEkKRDHzyYHfuAJ
+         voFTwRfEwAQjw==
+Received: by mail-vs1-f48.google.com with SMTP id f6so8831175vsa.5;
+        Sun, 30 Jan 2022 07:11:56 -0800 (PST)
+X-Gm-Message-State: AOAM533SvSQgq2yenh6dgyX7kTTIXq0PZpXL4eV7uBhoxFIg6lHme34z
+        eJwOB0vbvkVMhD9PXGa8lvtFDsMHZMxakypPKXA=
+X-Google-Smtp-Source: ABdhPJwMK9DUIzKUAIOWlaq0Ta5XXx5E4OMuiq5shsMOycqIZItMc4Gr9hUgonYaoC8Fda1dzq199JcGzBkeL2fUibA=
+X-Received: by 2002:a67:e947:: with SMTP id p7mr6666466vso.59.1643555515158;
+ Sun, 30 Jan 2022 07:11:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220129162726.1154501-1-guoren@kernel.org> <20220129162726.1154501-3-guoren@kernel.org>
+ <87r18qxui9.wl-maz@kernel.org> <CAJF2gTTYN0bxnnMtP9L1KvaH0h6ny+Lr3+fC7GP-YWnwjAYd4A@mail.gmail.com>
+ <35b1838d-ef80-1816-46f6-9cba7afc813e@sholland.org> <CAJF2gTQsi6uT8ea6MTu6oDA-9xsd3fW5ETHAtpzGZxapLpLsWA@mail.gmail.com>
+ <87o83ty0ti.wl-maz@kernel.org> <CAJF2gTR=Gyw33dt36g+uqDSMckqJW+bifpue2N_+FAMEn4NqAQ@mail.gmail.com>
+ <87mtjdxoam.wl-maz@kernel.org>
+In-Reply-To: <87mtjdxoam.wl-maz@kernel.org>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Sun, 30 Jan 2022 23:11:44 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTROgAuj0j2qC6AZFgP+k3erU7erQRadH5ugaVPkj_=1hQ@mail.gmail.com>
+Message-ID: <CAJF2gTROgAuj0j2qC6AZFgP+k3erU7erQRadH5ugaVPkj_=1hQ@mail.gmail.com>
+Subject: Re: [PATCH V6 2/2] irqchip/sifive-plic: Fixup thead,c900-plic dt
+ parse in opensbi
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Anup Patel <anup@brainfault.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Dec 2021 16:33:52 +0200
-Nikos Latmos <n.latmos@deepsea.ai> wrote:
+On Sun, Jan 30, 2022 at 10:59 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On Sun, 30 Jan 2022 13:09:21 +0000,
+> Guo Ren <guoren@kernel.org> wrote:
+> >
+> > On Sun, Jan 30, 2022 at 6:28 PM Marc Zyngier <maz@kernel.org> wrote:
+> > >
+> > > On Sun, 30 Jan 2022 04:39:34 +0000,
+> > > Guo Ren <guoren@kernel.org> wrote:
+> > > >
+> > > > > +IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init);
+> > > > I think we should give clear info in /proc/interrupts. I hope we could
+> > > > keep thead_plic_init.
+> > >
+> > > Why? There is no material difference at the driver level, and
+> > > /proc/interrupts won't be the target of a branding exercise (which
+> > > this series seems to be all about).
+> > It's not a branding exercise, the series just correct the broken code
+> > & incorrect /proc/interrupts display.
+>
+> There is *nothing* incorrect in /proc/interrupt. If anything, changing
+> the string *is* an ABI change, for no good reason.
+I've minimized the modification to fix the problem, please have a look:
 
-> Hello,
-> 
-> I have an ARM device based on the Broadcom BCM2837 processor (quad-core
-> ARM Cortex-A53, 1.2GHz), which has an Invensense ICM-42605 IMU chip
-> connected over I2C. I'm running an unmodified Linux 5.4.83 kernel. The I2C
-> driver for my device is in the following path:
-> drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c.
-> 
-> The problem is that the device driver cannot be probed. More specifically,
-> dmesg returns the following error message:
-> 
-> inv-icm42600-i2c 0-0068: mounting matrix not found: using identity...
-> inv-icm42600-i2c 0-0068: 0-0068 supply vdd not found, using dummy regulator
-> inv-icm42600-i2c 0-0068: 0-0068 supply vddio not found, using dummy regulator
-> inv-icm42600-i2c: probe of 0-0068 failed with error -121
-> 
-> During the debugging procedure, I found out that the failure occurred when
-> the driver tried to set up the I2C bus parameters. More precisely, by setting
-> the INV_ICM42600_REG_INTF_CONFIG6 register according to the values described
-> in the datasheet for the I2C communication, actually caused the probe function
-> to fail and return the error -121.
-> 
-> After I experimented with different values in the specific register bits,
-> I came to the conclusion, that the setting of the bit
-> INV_ICM42600_INTF_CONFIG6_I3C_SDR_EN caused the system to successfully
-> probe the driver. Any other bit setting combinations failed to do so.
-> 
-> Any hints on why would the driver behave so?
-> 
-> Here is a patch that I have so far and it seems to solve the issue.
-> 
-> Best regards,
-> Nick Latmos
+https://lore.kernel.org/linux-riscv/20220130135634.1213301-3-guoren@kernel.org/T/#u
 
-Hi All,
-
-Anyone familiar with this part able to help Nick?
-
-Thanks,
-
-Jonathan
-
-> 
-> 
-> From d7b3922cd0182ba880ff729edb4a156b55dfb6f0 Mon Sep 17 00:00:00 2001
-> From: nicklat <n.latmos@deepsea.ai>
-> Date: Wed, 8 Dec 2021 15:51:28 +0200
-> Subject: [PATCH] iio: imu: inv_icm42600: enable SDR mode
-> 
-> Add SDR (Single Data Rate) support.
-> In SDR mode, data is only clocked on one edge of the clock.
-> 
-> Without this option enabled, the probing process fails.
-> 
-> Signed-off-by: nicklat <n.latmos@deepsea.ai>
-> ---
->  drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-> b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-> index 85b1934cec60..ea31f102fbca 100644
-> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-> @@ -21,7 +21,8 @@ static int inv_icm42600_i2c_bus_setup(struct
-> inv_icm42600_state *st)
->         /* setup interface registers */
->         ret = regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG6,
->                                  INV_ICM42600_INTF_CONFIG6_MASK,
-> -                                INV_ICM42600_INTF_CONFIG6_I3C_EN);
-> +                                INV_ICM42600_INTF_CONFIG6_I3C_EN |
-> +                                INV_ICM42600_INTF_CONFIG6_I3C_SDR_EN);
->         if (ret)
->                 return ret;
-> 
+>
+>         M.
+>
 > --
-> 2.25.1
+> Without deviation from the norm, progress is not possible.
 
+--
+Best Regards
+ Guo Ren
+
+ML: https://lore.kernel.org/linux-csky/
