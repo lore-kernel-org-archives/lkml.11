@@ -2,76 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2762C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 10:55:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB40EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 11:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239317AbiA3KzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 05:55:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239076AbiA3KzV (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 05:55:21 -0500
-X-Greylist: delayed 1780 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 30 Jan 2022 02:55:21 PST
-Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAD9C061714;
-        Sun, 30 Jan 2022 02:55:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-        s=the; h=Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Sender:
-        Reply-To:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date
-        :Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
-        List-Owner:List-Archive; bh=zynwQsXAChbzANQqprwMGE7qGv9t50Oo07QICLYU9a0=; b=Z
-        K8tRPtlmUhokQQlgSXpHDLec4xjYjkTQl6oFZ1GPCWgQy2YyrGnhNmtUr8GG4q3NR0jhiKh9A2y61
-        pfq1eOPalgLqQ47fxD6JmCK8r/Sb6cXRKYN3OZ8NiEC9yhT8uxEqYe1tTUJL6RVfepb6+yFT5sp2Y
-        Osx4iy/QAibB+/8I6lhU5Tb35eztlYgE+/Mky3gIAhyM5kvHjcj4/S6i6Sw2UW27P3tuvH0JetOT6
-        OFx58fSC5azHX6pNGqx+Na+tHVtfBMkIiOpdumXyswfZDNqGvg6eXTMPsSZUJ269N1dkqPLBB7Mwz
-        jtBcyMpAaEbN7MJWuh2h0DMYmTymlFFrg==;
-Received: from noodles by the.earth.li with local (Exim 4.94.2)
-        (envelope-from <noodles@earth.li>)
-        id 1nE7Oi-00A0XI-KA; Sun, 30 Jan 2022 10:25:28 +0000
-Date:   Sun, 30 Jan 2022 10:25:28 +0000
-From:   Jonathan McDowell <noodles@earth.li>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Luo Jie <luoj@codeaurora.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Robert Marko <robimarko@gmail.com>
-Subject: [PATCH net] net: phy: Fix qca8081 with speeds lower than 2.5Gb/s
-Message-ID: <YfZnmMteVry/A1XR@earth.li>
+        id S241796AbiA3LCX convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 30 Jan 2022 06:02:23 -0500
+Received: from gloria.sntech.de ([185.11.138.130]:52384 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231959AbiA3LCV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 30 Jan 2022 06:02:21 -0500
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nE7yL-0000hT-5q; Sun, 30 Jan 2022 12:02:17 +0100
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Piotr Oniszczuk <piotr.oniszczuk@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>
+Cc:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Liang Chen <cl@rock-chips.com>
+Subject: Re: [PATCH 1/2] arm64: dts: rockchip: rename and sort the rk356x usb2 phy handles
+Date:   Sun, 30 Jan 2022 12:02:16 +0100
+Message-ID: <14752572.ChuAC8jng2@diego>
+In-Reply-To: <d203569c-bae1-c35a-204a-53617170d3b3@wolfvision.net>
+References: <20220127190456.2195527-1-michael.riesch@wolfvision.net> <3736463.EBuT6JFcjP@diego> <d203569c-bae1-c35a-204a-53617170d3b3@wolfvision.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A typo in qca808x_read_status means we try to set SMII mode on the port
-rather than SGMII when the link speed is not 2.5Gb/s. This results in no
-traffic due to the mismatch in configuration between the phy and the
-mac.
+Am Sonntag, 30. Januar 2022, 10:56:08 CET schrieb Michael Riesch:
+> Hello Heiko,
+> 
+> On 1/29/22 16:28, Heiko Stübner wrote:
+> > Am Samstag, 29. Januar 2022, 10:59:32 CET schrieb Michael Riesch:
+> >> Hello Peter and Piotr,
+> >>
+> >> On 1/29/22 10:23, Piotr Oniszczuk wrote:
+> >>>
+> >>>
+> >>>>
+> >>>> Good Evening,
+> >>>>
+> >>>> While I'm not against this idea, my main concern still stands.
+> >>>> I spent a great deal of thought on this, and decided to go the route I
+> >>>> did to maintain consistency with previous generations.
+> >>>> As such, I see one of three paths here:
+> >>>> - Pull this patch only and depart rk356x from previous SoCs.
+> >>>> - Do the same for previous SoCs to maintain consistency.
+> >>>> - Drop this patch to maintain consistency with previous SoCs.
+> >>>>
+> >>>> I ask that others weigh in here, as offline discussion has produced
+> >>>> mixed results already.
+> >>>
+> >>> just pure user perspective
+> >>>
+> >>> (who spent last weeks considerable time to develop DT for rk3566 tvbox. 99% of my work was by reading/learning from other boards existing DT's. Any inconsistencies in DTs makes work for such ppl like me much more harder):
+> >>>
+> >>> For option 1 - i don't see value
+> >>> For option 2 - what is reward for extra work needs to be done on all other SoCs?
+> >>>
+> >>> so option 3 seems to be natural choice...
+> >>>
+> >>> in other words:
+> >>>
+> >>> for me:
+> >>> option 1 brings practically zero value + increased inconsistency.
+> >>> option 2: extra work - but consistency is like in option 3 (so where is value?)
+> >>>
+> >>> so option 3 offers the same consistency - but without extra work...
+> >>>  
+> >>> just my 0.02$
+> >>
+> >> Of course this change is purely cosmetic and it is reasonable to ask for
+> >> the practical value. It is just that technically the quartz64 dts is not
+> >> sorted alphabetically at the moment. The u2phy* nodes should be but
+> >> before the uart* nodes to follow the convention. On the other hand, it
+> >> may be nice to have the usb2 phys and controllers grouped in the dts.
+> >> The proposed renaming would allow all the mentioned nodes sorted
+> >> alphabetically and grouped logically.
+> >>
+> >> Therefore I had option 1 in mind. I don't see any dependencies between
+> >> the different SoCs and think we can make a fresh start here.
+> > 
+> > correct :-) .
+> > 
+> > I do see each SoC individually and while I try to have people follow some
+> > styling guidelines everywhere (ordering of properties, ordering of nodes)
+> > I don't really want people to fear what some other SoC has done before.
+> > 
+> > But even these rules evolve sometimes, when something seems to work
+> > better than before.
+> > 
+> > We have nowadays 9 years of Rockchip SoC history in the kernel.
+> > Thanks to general dt-binding conventions most nodes have specific
+> > names anyway (mmc@... etc), but for example trying to rename stuff
+> > in older SoCs that has worked for years now is for one error-prone
+> > as Michael pointed out, but also introduces unnecessary churn,
+> > when these old SoCs (thinking of rk3188, rk3288 and friends but also things
+> > like the rk3368) are essentially "finished" and most likely won't see that
+> > much additional support for stuff added.
+> 
+> So... may I take it that you are going to apply the patches in this series?
 
-Fixes: 79c7bc0521545 ("net: phy: add qca8081 read_status")
-Signed-off-by: Jonathan McDowell <noodles@earth.li>
----
- drivers/net/phy/at803x.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+that was the intention behind that "wall of text" :-D
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 5b6c0d120e09..7077e3a92d31 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -1691,7 +1691,7 @@ static int qca808x_read_status(struct phy_device *phydev)
- 	if (phydev->link && phydev->speed == SPEED_2500)
- 		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
- 	else
--		phydev->interface = PHY_INTERFACE_MODE_SMII;
-+		phydev->interface = PHY_INTERFACE_MODE_SGMII;
- 
- 	/* generate seed as a lower random value to make PHY linked as SLAVE easily,
- 	 * except for master/slave configuration fault detected.
--- 
-2.30.2
+Heiko
+
+
+> Or should I switch to option 3 and re-submit?
+> 
+> Thanks and best regards,
+> Michael
+> 
+> > 
+> > 
+> > Heiko
+> > 
+> > 
+> >> Option 2 is not really feasible, we would almost definitely break
+> >> something existent.
+> >>
+> >> Option 3 is feasible, of course. However, I would sort the nodes
+> >> alphabetically (u2phy*, then uart*, then usb*). Works for me as well,
+> >> although it is not that nice IMHO.
+> >>
+> >> Since many boards with the RK3566 and RK3568 will pop up in near future
+> >> we should do the change right now (if we want to do it), as of course
+> >> all the board files need to be changed. Therefore I wanted to bring this
+> >> matter up now. Let's agree on something and move on.
+> >>
+> >> Best regards,
+> >> Michael
+> >>
+> > 
+> > 
+> > 
+> > 
+> 
+
+
+
 
