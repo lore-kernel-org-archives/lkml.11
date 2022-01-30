@@ -2,151 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0169FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 05:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB18C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 05:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235005AbiA3FIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 00:08:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229532AbiA3FIq (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 00:08:46 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A27C061714
-        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 21:08:46 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id j16so9712889plx.4
-        for <linux-kernel@vger.kernel.org>; Sat, 29 Jan 2022 21:08:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=K+srP5VtjGUVfkF3Gd4z8iDliRUZYWBlpiguTbcMjJ0=;
-        b=KN7STkDHGeQZ+/fNT/PQ+6ccsDcfJnLHbvGFF0XJC+T28JDxFH7W55A0ieHnZg5U+C
-         K/y9H+pNTIB/Pddn0z6vP/z6k4eUsng+Pz0ooMsO3VQAKq/pIYK+4PcXNR0iBfUJfolu
-         Z9kAth7ajWR4RyfDMpMYjJgVobBuY+xKVADMP4S4bp/IWqCHzCnZ5baaE/Q+/lRaE22y
-         qE5lFkWNw+Q9uSVntysvwOh5ft/jLQ5wk5TQpO5buEHe/S4v8+RJD/KTFDrLGVbxQQ2E
-         jffDFflrXZps3bkFA2xJFQFyWb9vptBOfEeS1QB6rtT64pXfA2AsyHLWN13CIcC9YttJ
-         9PiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=K+srP5VtjGUVfkF3Gd4z8iDliRUZYWBlpiguTbcMjJ0=;
-        b=V54hBZmn4r11CHhfveur25y1nT4PvuNwOoCQSEyRGi395twQWE+dwFew1LJ1Mb4ZH3
-         zrCmT5scd51bL4kWagtdhpvCeLhqACBuO8FJTLpUKjmGSoyUvdXyGjAdv6HgO/BEa7HL
-         eW6mtYqxcqFO5/9aHUREXGYH9uYazebfMMcZiMSO8OzdtuH7HF/Mtb7kxslYIpvWEll9
-         yQyhHlE/ZCIvSEH/sCq400g8L+CvRy5EVDnoLcNOE6tdNw2yJCSv6epF+rF6Mpm6Ed3F
-         /NluhirS/si1XRIPTnv7iIMp+BIypzR1WKVlze2vqjwzO7gmeqdWRbiCqJWf0UaeUW/A
-         cUXA==
-X-Gm-Message-State: AOAM532FdVo3Ul0u1gY+l0cWdVsbCziaT3cNgvtgdP8Gh44M26YuRUjh
-        G38FiVdWzLBCXQe30k1N2VBn36MhesxbYCOA
-X-Google-Smtp-Source: ABdhPJzg5kvfXicnLxOB+7t6a/SutVJjX2J8kjE0aEuyT7W7WExZP2ys9vjwywim6+Pox8l0rSrYkg==
-X-Received: by 2002:a17:90a:17a5:: with SMTP id q34mr27892356pja.1.1643519325450;
-        Sat, 29 Jan 2022 21:08:45 -0800 (PST)
-Received: from mail.google.com (122-58-164-114-fibre.sparkbb.co.nz. [122.58.164.114])
-        by smtp.gmail.com with ESMTPSA id p16sm1081948pgj.79.2022.01.29.21.08.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Jan 2022 21:08:44 -0800 (PST)
-Date:   Sun, 30 Jan 2022 18:08:38 +1300
-From:   Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
-To:     gregkh@linuxfoundation.org, paulo.miguel.almeida.rodenas@gmail.com,
-        realwakka@gmail.com
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: pi433: remove coding style item from the TODO file
-Message-ID: <YfYdVokxsQ+Adl+T@mail.google.com>
+        id S240322AbiA3FdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 30 Jan 2022 00:33:24 -0500
+Received: from mga11.intel.com ([192.55.52.93]:20891 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235695AbiA3FdW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 30 Jan 2022 00:33:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643520802; x=1675056802;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=nFtjbMYQUJKLsc2kTCy7pstMArinbqOSpq480PNgxbY=;
+  b=ckbscICaCsw4x0QaodJgMDstkRRvD0awq3LaZ87DTNLXbVc/KADeNG9K
+   h0czZaVTFFsaeRDE/8ZmX7a8ob2+pzY8bcG7rzjXs4nGc6I4trb2BXcTG
+   AMSNCHfLaARse/7nMhjFByrcsfavVEGFh6i8biO9xkMKUUZDDDcmjQ5+D
+   gHBMZyNHdI8X5HUEbrfQrKKD1A3YtHqQWWuFAtiFEpmtOnLpnufo7qmYA
+   z9U+KfHFcv1Z3Xml65NqeW+Xr/oqxkVGvic778ORmKSyvYLfXke6wG847
+   vzdpOIWaYZxvIIVhPkrlORM0Az3QvETUSDgi5qMnRXc/UMVZ/COvJg96a
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10242"; a="244916661"
+X-IronPort-AV: E=Sophos;i="5.88,328,1635231600"; 
+   d="scan'208";a="244916661"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2022 21:33:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,328,1635231600"; 
+   d="scan'208";a="478693980"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 29 Jan 2022 21:33:20 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nE2pz-000Q5o-R4; Sun, 30 Jan 2022 05:33:19 +0000
+Date:   Sun, 30 Jan 2022 13:33:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [avpatel:riscv_kvm_aia_v1 28/29] arch/riscv/kvm/aia_aplic.c:264:6:
+ warning: variable 'inject' is used uninitialized whenever 'if' condition is
+ true
+Message-ID: <202201301340.5ZMPdDsQ-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After several patches sent by the community along the last couple of
-years, it's possible to remove the coding style item from the TODO file
-in the driver's folder.
+tree:   https://github.com/avpatel/linux.git riscv_kvm_aia_v1
+head:   2aca1bad96b476d6e8043db556d43de866e527ff
+commit: 1c3226c0cd04a531ee9141bffa933f844c717191 [28/29] RISC-V: KVM: Add in-kernel emulation of AIA APLIC
+config: riscv-randconfig-r036-20220130 (https://download.01.org/0day-ci/archive/20220130/202201301340.5ZMPdDsQ-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/avpatel/linux/commit/1c3226c0cd04a531ee9141bffa933f844c717191
+        git remote add avpatel https://github.com/avpatel/linux.git
+        git fetch --no-tags avpatel riscv_kvm_aia_v1
+        git checkout 1c3226c0cd04a531ee9141bffa933f844c717191
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
 
-This patch addresses the last code formatting inconsistences and remove
-the coding style item from the TODO file.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
+All warnings (new ones prefixed by >>):
+
+>> arch/riscv/kvm/aia_aplic.c:264:6: warning: variable 'inject' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+           if (irqd->sourcecfg & APLIC_SOURCECFG_D)
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   arch/riscv/kvm/aia_aplic.c:303:6: note: uninitialized use occurs here
+           if (inject)
+               ^~~~~~
+   arch/riscv/kvm/aia_aplic.c:264:2: note: remove the 'if' if its condition is always false
+           if (irqd->sourcecfg & APLIC_SOURCECFG_D)
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   arch/riscv/kvm/aia_aplic.c:252:13: note: initialize the variable 'inject' to silence this warning
+           bool inject, ie;
+                      ^
+                       = 0
+   1 warning generated.
+
+
+vim +264 arch/riscv/kvm/aia_aplic.c
+
+   248	
+   249	int kvm_riscv_aia_aplic_inject(struct kvm *kvm, u32 source, bool level)
+   250	{
+   251		u32 target;
+   252		bool inject, ie;
+   253		unsigned long flags;
+   254		struct aplic_irq *irqd;
+   255		struct aplic *aplic = kvm->arch.aia.aplic_state;
+   256	
+   257		if (!aplic || !source || (aplic->nr_irqs <= source))
+   258			return -ENODEV;
+   259		irqd = &aplic->irqs[source];
+   260		ie = (aplic->domaincfg & APLIC_DOMAINCFG_IE) ? true : false;
+   261	
+   262		raw_spin_lock_irqsave(&irqd->lock, flags);
+   263	
+ > 264		if (irqd->sourcecfg & APLIC_SOURCECFG_D)
+   265			goto skip_unlock;
+   266	
+   267		switch (irqd->sourcecfg & APLIC_SOURCECFG_SM_MASK) {
+   268		case APLIC_SOURCECFG_SM_EDGE_RISE:
+   269			if (level && !(irqd->state & APLIC_IRQ_STATE_INPUT) &&
+   270			    !(irqd->state & APLIC_IRQ_STATE_PENDING))
+   271				irqd->state |= APLIC_IRQ_STATE_PENDING;
+   272			break;
+   273		case APLIC_SOURCECFG_SM_EDGE_FALL:
+   274			if (!level && (irqd->state & APLIC_IRQ_STATE_INPUT) &&
+   275			    !(irqd->state & APLIC_IRQ_STATE_PENDING))
+   276				irqd->state |= APLIC_IRQ_STATE_PENDING;
+   277			break;
+   278		case APLIC_SOURCECFG_SM_LEVEL_HIGH:
+   279			if (level && !(irqd->state & APLIC_IRQ_STATE_PENDING))
+   280				irqd->state |= APLIC_IRQ_STATE_PENDING;
+   281			break;
+   282		case APLIC_SOURCECFG_SM_LEVEL_LOW:
+   283			if (!level && !(irqd->state & APLIC_IRQ_STATE_PENDING))
+   284				irqd->state |= APLIC_IRQ_STATE_PENDING;
+   285			break;
+   286		}
+   287	
+   288		if (level)
+   289			irqd->state |= APLIC_IRQ_STATE_INPUT;
+   290		else
+   291			irqd->state &= ~APLIC_IRQ_STATE_INPUT;
+   292	
+   293		inject = false;
+   294		target = irqd->target;
+   295		if (ie && (irqd->state & APLIC_IRQ_STATE_ENPEND)) {
+   296			irqd->state &= ~APLIC_IRQ_STATE_PENDING;
+   297			inject = true;
+   298		}
+   299	
+   300	skip_unlock:
+   301		raw_spin_unlock_irqrestore(&irqd->lock, flags);
+   302	
+   303		if (inject)
+   304			aplic_inject_msi(kvm, source, target);
+   305	
+   306		return 0;
+   307	}
+   308	
+
 ---
-Patch dependency:
-
-- https://lore.kernel.org/lkml/YfX+llwDWZZMz+NY@mail.google.com/
-
----
- drivers/staging/pi433/TODO       |  1 -
- drivers/staging/pi433/pi433_if.c | 12 ++++--------
- drivers/staging/pi433/rf69.c     |  3 ++-
- 3 files changed, 6 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/staging/pi433/TODO b/drivers/staging/pi433/TODO
-index b9e6c01a0..8d0f1b579 100644
---- a/drivers/staging/pi433/TODO
-+++ b/drivers/staging/pi433/TODO
-@@ -1,4 +1,3 @@
--* coding style does not fully comply with the kernel style guide.
- * still TODOs, annotated in the code
- * currently the code introduces new IOCTLs. I'm afraid this is a bad idea.
-   -> Replace this with another interface, hints are welcome!
-diff --git a/drivers/staging/pi433/pi433_if.c b/drivers/staging/pi433/pi433_if.c
-index 74748d3cd..02d4ccebf 100644
---- a/drivers/staging/pi433/pi433_if.c
-+++ b/drivers/staging/pi433/pi433_if.c
-@@ -364,8 +364,7 @@ rf69_set_tx_cfg(struct pi433_device *dev, struct pi433_tx_cfg *tx_cfg)
- 
- /*-------------------------------------------------------------------------*/
- 
--static int
--pi433_start_rx(struct pi433_device *dev)
-+static int pi433_start_rx(struct pi433_device *dev)
- {
- 	int retval;
- 
-@@ -405,8 +404,7 @@ pi433_start_rx(struct pi433_device *dev)
- 
- /*-------------------------------------------------------------------------*/
- 
--static int
--pi433_receive(void *data)
-+static int pi433_receive(void *data)
- {
- 	struct pi433_device *dev = data;
- 	struct spi_device *spi = dev->spi;
-@@ -557,8 +555,7 @@ pi433_receive(void *data)
- 		return bytes_total;
- }
- 
--static int
--pi433_tx_thread(void *data)
-+static int pi433_tx_thread(void *data)
- {
- 	struct pi433_device *device = data;
- 	struct spi_device *spi = device->spi;
-@@ -883,8 +880,7 @@ pi433_write(struct file *filp, const char __user *buf,
- 	return -EAGAIN;
- }
- 
--static long
--pi433_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
-+static long pi433_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
- {
- 	struct pi433_instance	*instance;
- 	struct pi433_device	*device;
-diff --git a/drivers/staging/pi433/rf69.c b/drivers/staging/pi433/rf69.c
-index b1a3382f4..2ab3bf46e 100644
---- a/drivers/staging/pi433/rf69.c
-+++ b/drivers/staging/pi433/rf69.c
-@@ -654,7 +654,8 @@ bool rf69_get_flag(struct spi_device *spi, enum flag flag)
- 		return (rf69_read_reg(spi, REG_IRQFLAGS2) & MASK_IRQFLAGS2_CRC_OK);
- 	case battery_low:
- 		return (rf69_read_reg(spi, REG_IRQFLAGS2) & MASK_IRQFLAGS2_LOW_BAT);
--	default:			 return false;
-+	default:
-+		return false;
- 	}
- }
- 
--- 
-2.34.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
