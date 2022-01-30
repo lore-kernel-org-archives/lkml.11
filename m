@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C638DC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 08:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC9BC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 08:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354443AbiA3Iyj (ORCPT
+        id S1354452AbiA3Iyl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 03:54:39 -0500
+        Sun, 30 Jan 2022 03:54:41 -0500
 Received: from mga07.intel.com ([134.134.136.100]:10225 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354397AbiA3Iy3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 03:54:29 -0500
+        id S1354402AbiA3Iya (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 30 Jan 2022 03:54:30 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643532869; x=1675068869;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=DVBUvvGVuqe8bIyRb/vS+xq8iR7677KjfrHOC3cjuVs=;
-  b=hac/tozt9taK5KihB8Xcrd7x6/NveHqt6vhmx+m9RD2LQNseonIj/t+q
-   dX08O07ger7esRJMiv/Uo6XZenu5HNOLAMvhUaf6sfO1BtE4o7a+6AqWs
-   0ezT8SqvUzFVsrrox2X663o2tgOKNyZD24UHoU692w3MGRpapEZDW+APd
-   UvSUY0kg9yVO/G1BZLFTiKvK04tCkkuOTqVJk6W4RQSSZonGQUiqJ2aUd
-   1YEIbizkWyTl+N0/YjBc6X+zlehamuvRcPp5xU+bapciiOdZISkm4WQHg
-   8Xg7INvvBaotHLZm0zFqHCRUwM+YvtI23LJiFfRC81tzhz+7yZ/0ZYv78
+  bh=Q0NDDtBiEM8z5ti1owuk2Dmv4VzlaMxUi93mnwNgEs4=;
+  b=jUG8svwCgAeKKPzgUmyRLJqT9NQ3lwvyM4MRLTXhxnGepdHNlhN9sxga
+   17c/5MQSV1zXzs1W3T+8kNhgnjkSklcb+bDXkYgj9nEjqFQXVu6IUKziX
+   ggYJk+uaWtkSovXllnafQ9Nfb/jYNhmYOQeafAf9b6lyCiRJgdKIaUH+y
+   CefLas1DatKfCnUoKXl9ihVtW1ZzV57TFg0LuVhMWqEdKGYd2ZurwRkSF
+   emXQqTzRnpgivBKq3m2ku+rMaBGhXCMzqn1ayA3tMjXEXtNFbz+fIHOQv
+   HOY6/SbCUTXZqT5BBA4SsLyULbE+Os9Kig0yJjrGPJ9EakTkGQocX6Jto
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10242"; a="310640863"
+X-IronPort-AV: E=McAfee;i="6200,9189,10242"; a="310640866"
 X-IronPort-AV: E=Sophos;i="5.88,328,1635231600"; 
-   d="scan'208";a="310640863"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2022 00:54:28 -0800
+   d="scan'208";a="310640866"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2022 00:54:29 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,328,1635231600"; 
-   d="scan'208";a="619110856"
+   d="scan'208";a="675472668"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 30 Jan 2022 00:54:26 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 30 Jan 2022 00:54:26 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nE5yc-000QHY-79; Sun, 30 Jan 2022 08:54:26 +0000
-Date:   Sun, 30 Jan 2022 16:53:53 +0800
+        id 1nE5yc-000QHW-6Z; Sun, 30 Jan 2022 08:54:26 +0000
+Date:   Sun, 30 Jan 2022 16:53:25 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [linux-stable-rc:queue/4.14 9175/9999]
- arch/xtensa/platforms/xtfpga/include/platform/hardware.h:59:26: error:
- initializer element is not constant
-Message-ID: <202201301621.BORpg7L3-lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Marco Elver <elver@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: arch/s390/lib/spinlock.c:78:3: error: expected absolute expression
+Message-ID: <202201301448.qXX8mRNr-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -55,259 +54,327 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Max,
-
-FYI, the error/warning still remains.
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/4.14
-head:   113f0cfeac7f8d899386af2e8e47edba426d9fd3
-commit: fe700bd139564d097d1ebed90da637b80bd7f5c1 [9175/9999] xtensa: xtfpga: use CONFIG_USE_OF instead of CONFIG_OF
-config: xtensa-randconfig-r005-20220130 (https://download.01.org/0day-ci/archive/20220130/202201301621.BORpg7L3-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 7.5.0
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   f8c7e4ede46fe63ff10000669652648aab09d112
+commit: 69d0db01e210e07fe915e5da91b54a867cda040f ubsan: remove CONFIG_UBSAN_OBJECT_SIZE
+date:   10 days ago
+config: s390-randconfig-c005-20220130 (https://download.01.org/0day-ci/archive/20220130/202201301448.qXX8mRNr-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=fe700bd139564d097d1ebed90da637b80bd7f5c1
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc queue/4.14
-        git checkout fe700bd139564d097d1ebed90da637b80bd7f5c1
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=69d0db01e210e07fe915e5da91b54a867cda040f
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 69d0db01e210e07fe915e5da91b54a867cda040f
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-7.5.0 make.cross O=build_dir ARCH=xtensa SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-                           ^~~~~~~~~~~~~~~~
-   include/asm-generic/bug.h:59:36: note: in expansion of macro 'unlikely'
-    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-                                       ^~~~~~~~
-   include/linux/dma-mapping.h:327:2: note: in expansion of macro 'BUG_ON'
-     BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-     ^~~~~~
-   include/linux/dma-mapping.h:327:9: note: in expansion of macro 'pfn_valid'
-     BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-            ^~~~~~~~~
-   arch/xtensa/include/asm/page.h:185:9: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
-     ((pfn) >= ARCH_PFN_OFFSET && ((pfn) - ARCH_PFN_OFFSET) < max_mapnr)
+   In file included from arch/s390/lib/spinlock.c:17:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from arch/s390/lib/spinlock.c:17:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from arch/s390/lib/spinlock.c:17:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> arch/s390/lib/spinlock.c:78:3: error: expected absolute expression
+                   ALTERNATIVE("", ".long 0xb2fa0040", 49) /* NIAI 4 */
+                   ^
+   arch/s390/include/asm/alternative.h:111:2: note: expanded from macro 'ALTERNATIVE'
+           ALTINSTR_REPLACEMENT(altinstr, 1)                               \
+           ^
+   arch/s390/include/asm/alternative.h:106:2: note: expanded from macro 'ALTINSTR_REPLACEMENT'
+           INSTR_LEN_SANITY_CHECK(altinstr_len(num))
+           ^
+   arch/s390/include/asm/alternative.h:62:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           ".if " len " > 254\n"                                           \
             ^
-   include/linux/compiler.h:58:42: note: in definition of macro '__trace_if'
-     if (__builtin_constant_p(!!(cond)) ? !!(cond) :   \
-                                             ^~~~
-   include/asm-generic/bug.h:59:32: note: in expansion of macro 'if'
-    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-                                   ^~
-   include/linux/compiler.h:48:24: note: in expansion of macro '__branch_check__'
-    #  define unlikely(x) (__branch_check__(x, 0, __builtin_constant_p(x)))
-                           ^~~~~~~~~~~~~~~~
-   include/asm-generic/bug.h:59:36: note: in expansion of macro 'unlikely'
-    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-                                       ^~~~~~~~
-   include/linux/dma-mapping.h:327:2: note: in expansion of macro 'BUG_ON'
-     BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-     ^~~~~~
-   include/linux/dma-mapping.h:327:9: note: in expansion of macro 'pfn_valid'
-     BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-            ^~~~~~~~~
-   arch/xtensa/include/asm/page.h:185:9: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
-     ((pfn) >= ARCH_PFN_OFFSET && ((pfn) - ARCH_PFN_OFFSET) < max_mapnr)
+   <inline asm>:5:5: note: instantiated into assembly here
+   .if 6651b-6641b > 254
+       ^
+>> arch/s390/lib/spinlock.c:78:3: error: cpu alternatives does not support instructions blocks > 254 bytes
+                   ALTERNATIVE("", ".long 0xb2fa0040", 49) /* NIAI 4 */
+                   ^
+   arch/s390/include/asm/alternative.h:111:2: note: expanded from macro 'ALTERNATIVE'
+           ALTINSTR_REPLACEMENT(altinstr, 1)                               \
+           ^
+   arch/s390/include/asm/alternative.h:106:2: note: expanded from macro 'ALTINSTR_REPLACEMENT'
+           INSTR_LEN_SANITY_CHECK(altinstr_len(num))
+           ^
+   arch/s390/include/asm/alternative.h:63:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           "\t.error \"cpu alternatives does not support instructions "    \
             ^
-   include/linux/compiler.h:58:42: note: in definition of macro '__trace_if'
-     if (__builtin_constant_p(!!(cond)) ? !!(cond) :   \
-                                             ^~~~
-   include/asm-generic/bug.h:59:32: note: in expansion of macro 'if'
-    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-                                   ^~
-   include/linux/compiler.h:48:24: note: in expansion of macro '__branch_check__'
-    #  define unlikely(x) (__branch_check__(x, 0, __builtin_constant_p(x)))
-                           ^~~~~~~~~~~~~~~~
-   include/asm-generic/bug.h:59:36: note: in expansion of macro 'unlikely'
-    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-                                       ^~~~~~~~
-   include/linux/dma-mapping.h:327:2: note: in expansion of macro 'BUG_ON'
-     BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-     ^~~~~~
-   include/linux/dma-mapping.h:327:9: note: in expansion of macro 'pfn_valid'
-     BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-            ^~~~~~~~~
-   arch/xtensa/include/asm/page.h:185:9: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
-     ((pfn) >= ARCH_PFN_OFFSET && ((pfn) - ARCH_PFN_OFFSET) < max_mapnr)
+   <inline asm>:6:2: note: instantiated into assembly here
+           .error "cpu alternatives does not support instructions blocks > 254 bytes"
+           ^
+>> arch/s390/lib/spinlock.c:78:3: error: expected absolute expression
+                   ALTERNATIVE("", ".long 0xb2fa0040", 49) /* NIAI 4 */
+                   ^
+   arch/s390/include/asm/alternative.h:111:2: note: expanded from macro 'ALTERNATIVE'
+           ALTINSTR_REPLACEMENT(altinstr, 1)                               \
+           ^
+   arch/s390/include/asm/alternative.h:106:2: note: expanded from macro 'ALTINSTR_REPLACEMENT'
+           INSTR_LEN_SANITY_CHECK(altinstr_len(num))
+           ^
+   arch/s390/include/asm/alternative.h:66:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           ".if (" len ") %% 2\n"                                          \
             ^
-   include/linux/compiler.h:69:16: note: in definition of macro '__trace_if'
-      ______r = !!(cond);     \
-                   ^~~~
-   include/asm-generic/bug.h:59:32: note: in expansion of macro 'if'
-    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-                                   ^~
-   include/linux/compiler.h:48:24: note: in expansion of macro '__branch_check__'
-    #  define unlikely(x) (__branch_check__(x, 0, __builtin_constant_p(x)))
-                           ^~~~~~~~~~~~~~~~
-   include/asm-generic/bug.h:59:36: note: in expansion of macro 'unlikely'
-    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-                                       ^~~~~~~~
-   include/linux/dma-mapping.h:327:2: note: in expansion of macro 'BUG_ON'
-     BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-     ^~~~~~
-   include/linux/dma-mapping.h:327:9: note: in expansion of macro 'pfn_valid'
-     BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-            ^~~~~~~~~
-   arch/xtensa/include/asm/page.h:185:9: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
-     ((pfn) >= ARCH_PFN_OFFSET && ((pfn) - ARCH_PFN_OFFSET) < max_mapnr)
+   <inline asm>:8:5: note: instantiated into assembly here
+   .if (6651b-6641b) % 2
+       ^
+>> arch/s390/lib/spinlock.c:78:3: error: cpu alternatives instructions length is odd
+                   ALTERNATIVE("", ".long 0xb2fa0040", 49) /* NIAI 4 */
+                   ^
+   arch/s390/include/asm/alternative.h:111:2: note: expanded from macro 'ALTERNATIVE'
+           ALTINSTR_REPLACEMENT(altinstr, 1)                               \
+           ^
+   arch/s390/include/asm/alternative.h:106:2: note: expanded from macro 'ALTINSTR_REPLACEMENT'
+           INSTR_LEN_SANITY_CHECK(altinstr_len(num))
+           ^
+   arch/s390/include/asm/alternative.h:67:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           "\t.error \"cpu alternatives instructions length is odd\"\n"    \
             ^
-   include/linux/compiler.h:69:16: note: in definition of macro '__trace_if'
-      ______r = !!(cond);     \
-                   ^~~~
-   include/asm-generic/bug.h:59:32: note: in expansion of macro 'if'
-    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-                                   ^~
-   include/linux/compiler.h:48:24: note: in expansion of macro '__branch_check__'
-    #  define unlikely(x) (__branch_check__(x, 0, __builtin_constant_p(x)))
-                           ^~~~~~~~~~~~~~~~
-   include/asm-generic/bug.h:59:36: note: in expansion of macro 'unlikely'
-    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-                                       ^~~~~~~~
-   include/linux/dma-mapping.h:327:2: note: in expansion of macro 'BUG_ON'
-     BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-     ^~~~~~
-   include/linux/dma-mapping.h:327:9: note: in expansion of macro 'pfn_valid'
-     BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-            ^~~~~~~~~
-   In file included from arch/xtensa/include/asm/processor.h:14:0,
-                    from arch/xtensa/include/asm/bitops.h:22,
-                    from include/linux/bitops.h:19,
-                    from include/linux/kernel.h:11,
-                    from arch/xtensa/platforms/xtfpga/setup.c:19:
-   arch/xtensa/platforms/xtfpga/setup.c: At top level:
->> arch/xtensa/platforms/xtfpga/include/platform/hardware.h:59:26: error: initializer element is not constant
-    #define OETH_REGS_PADDR  (XCHAL_KIO_PADDR + 0x0D030000)
-                             ^
-   arch/xtensa/platforms/xtfpga/setup.c:168:12: note: in expansion of macro 'OETH_REGS_PADDR'
-      .start = OETH_REGS_PADDR,
-               ^~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:59:26: note: (near initialization for 'ethoc_res[0].start')
-    #define OETH_REGS_PADDR  (XCHAL_KIO_PADDR + 0x0D030000)
-                             ^
-   arch/xtensa/platforms/xtfpga/setup.c:168:12: note: in expansion of macro 'OETH_REGS_PADDR'
-      .start = OETH_REGS_PADDR,
-               ^~~~~~~~~~~~~~~
->> arch/xtensa/platforms/xtfpga/include/platform/hardware.h:59:26: error: initializer element is not constant
-    #define OETH_REGS_PADDR  (XCHAL_KIO_PADDR + 0x0D030000)
-                             ^
-   arch/xtensa/platforms/xtfpga/setup.c:169:12: note: in expansion of macro 'OETH_REGS_PADDR'
-      .end   = OETH_REGS_PADDR + OETH_REGS_SIZE - 1,
-               ^~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:59:26: note: (near initialization for 'ethoc_res[0].end')
-    #define OETH_REGS_PADDR  (XCHAL_KIO_PADDR + 0x0D030000)
-                             ^
-   arch/xtensa/platforms/xtfpga/setup.c:169:12: note: in expansion of macro 'OETH_REGS_PADDR'
-      .end   = OETH_REGS_PADDR + OETH_REGS_SIZE - 1,
-               ^~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:61:29: error: initializer element is not constant
-    #define OETH_SRAMBUFF_PADDR (XCHAL_KIO_PADDR + 0x0D800000)
-                                ^
-   arch/xtensa/platforms/xtfpga/setup.c:173:12: note: in expansion of macro 'OETH_SRAMBUFF_PADDR'
-      .start = OETH_SRAMBUFF_PADDR,
-               ^~~~~~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:61:29: note: (near initialization for 'ethoc_res[1].start')
-    #define OETH_SRAMBUFF_PADDR (XCHAL_KIO_PADDR + 0x0D800000)
-                                ^
-   arch/xtensa/platforms/xtfpga/setup.c:173:12: note: in expansion of macro 'OETH_SRAMBUFF_PADDR'
-      .start = OETH_SRAMBUFF_PADDR,
-               ^~~~~~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:61:29: error: initializer element is not constant
-    #define OETH_SRAMBUFF_PADDR (XCHAL_KIO_PADDR + 0x0D800000)
-                                ^
-   arch/xtensa/platforms/xtfpga/setup.c:174:12: note: in expansion of macro 'OETH_SRAMBUFF_PADDR'
-      .end   = OETH_SRAMBUFF_PADDR + OETH_SRAMBUFF_SIZE - 1,
-               ^~~~~~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:61:29: note: (near initialization for 'ethoc_res[1].end')
-    #define OETH_SRAMBUFF_PADDR (XCHAL_KIO_PADDR + 0x0D800000)
-                                ^
-   arch/xtensa/platforms/xtfpga/setup.c:174:12: note: in expansion of macro 'OETH_SRAMBUFF_PADDR'
-      .end   = OETH_SRAMBUFF_PADDR + OETH_SRAMBUFF_SIZE - 1,
-               ^~~~~~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:66:23: error: initializer element is not constant
-    #define C67X00_PADDR  (XCHAL_KIO_PADDR + 0x0D0D0000)
-                          ^
-   arch/xtensa/platforms/xtfpga/setup.c:211:12: note: in expansion of macro 'C67X00_PADDR'
-      .start = C67X00_PADDR,
-               ^~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:66:23: note: (near initialization for 'c67x00_res[0].start')
-    #define C67X00_PADDR  (XCHAL_KIO_PADDR + 0x0D0D0000)
-                          ^
-   arch/xtensa/platforms/xtfpga/setup.c:211:12: note: in expansion of macro 'C67X00_PADDR'
-      .start = C67X00_PADDR,
-               ^~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:66:23: error: initializer element is not constant
-    #define C67X00_PADDR  (XCHAL_KIO_PADDR + 0x0D0D0000)
-                          ^
-   arch/xtensa/platforms/xtfpga/setup.c:212:12: note: in expansion of macro 'C67X00_PADDR'
-      .end   = C67X00_PADDR + C67X00_SIZE - 1,
-               ^~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:66:23: note: (near initialization for 'c67x00_res[0].end')
-    #define C67X00_PADDR  (XCHAL_KIO_PADDR + 0x0D0D0000)
-                          ^
-   arch/xtensa/platforms/xtfpga/setup.c:212:12: note: in expansion of macro 'C67X00_PADDR'
-      .end   = C67X00_PADDR + C67X00_SIZE - 1,
-               ^~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:46:26: error: initializer element is not constant
-    #define DUART16552_PADDR (XCHAL_KIO_PADDR + 0x0D050020)
-                             ^
-   arch/xtensa/platforms/xtfpga/setup.c:242:11: note: in expansion of macro 'DUART16552_PADDR'
-     .start = DUART16552_PADDR,
-              ^~~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:46:26: note: (near initialization for 'serial_resource.start')
-    #define DUART16552_PADDR (XCHAL_KIO_PADDR + 0x0D050020)
-                             ^
-   arch/xtensa/platforms/xtfpga/setup.c:242:11: note: in expansion of macro 'DUART16552_PADDR'
-     .start = DUART16552_PADDR,
-              ^~~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:46:26: error: initializer element is not constant
-    #define DUART16552_PADDR (XCHAL_KIO_PADDR + 0x0D050020)
-                             ^
-   arch/xtensa/platforms/xtfpga/setup.c:243:9: note: in expansion of macro 'DUART16552_PADDR'
-     .end = DUART16552_PADDR + 0x1f,
-            ^~~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:46:26: note: (near initialization for 'serial_resource.end')
-    #define DUART16552_PADDR (XCHAL_KIO_PADDR + 0x0D050020)
-                             ^
-   arch/xtensa/platforms/xtfpga/setup.c:243:9: note: in expansion of macro 'DUART16552_PADDR'
-     .end = DUART16552_PADDR + 0x1f,
-            ^~~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:46:26: error: initializer element is not constant
-    #define DUART16552_PADDR (XCHAL_KIO_PADDR + 0x0D050020)
-                             ^
-   arch/xtensa/platforms/xtfpga/setup.c:249:14: note: in expansion of macro 'DUART16552_PADDR'
-      .mapbase = DUART16552_PADDR,
-                 ^~~~~~~~~~~~~~~~
-   arch/xtensa/platforms/xtfpga/include/platform/hardware.h:46:26: note: (near initialization for 'serial_platform_data[0].mapbase')
-    #define DUART16552_PADDR (XCHAL_KIO_PADDR + 0x0D050020)
-                             ^
-   arch/xtensa/platforms/xtfpga/setup.c:249:14: note: in expansion of macro 'DUART16552_PADDR'
-      .mapbase = DUART16552_PADDR,
-                 ^~~~~~~~~~~~~~~~
+   <inline asm>:9:2: note: instantiated into assembly here
+           .error "cpu alternatives instructions length is odd"
+           ^
+>> arch/s390/lib/spinlock.c:78:3: error: expected absolute expression
+                   ALTERNATIVE("", ".long 0xb2fa0040", 49) /* NIAI 4 */
+                   ^
+   arch/s390/include/asm/alternative.h:113:2: note: expanded from macro 'ALTERNATIVE'
+           OLDINSTR(oldinstr, 1)                                           \
+           ^
+   arch/s390/include/asm/alternative.h:83:2: note: expanded from macro 'OLDINSTR'
+           OLDINSTR_PADDING(oldinstr, num)                                 \
+           ^
+   arch/s390/include/asm/alternative.h:71:3: note: expanded from macro 'OLDINSTR_PADDING'
+           ".if " oldinstr_pad_len(num) " > 6\n"                           \
+            ^
+   <inline asm>:15:5: note: instantiated into assembly here
+   .if -(((6651b-6641b)-(662b-661b)) > 0) * ((6651b-6641b)-(662b-661b)) > 6
+       ^
+>> arch/s390/lib/spinlock.c:78:3: error: expected absolute expression
+                   ALTERNATIVE("", ".long 0xb2fa0040", 49) /* NIAI 4 */
+                   ^
+   arch/s390/include/asm/alternative.h:113:2: note: expanded from macro 'ALTERNATIVE'
+           OLDINSTR(oldinstr, 1)                                           \
+           ^
+   arch/s390/include/asm/alternative.h:85:2: note: expanded from macro 'OLDINSTR'
+           INSTR_LEN_SANITY_CHECK(oldinstr_len)
+           ^
+   arch/s390/include/asm/alternative.h:62:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           ".if " len " > 254\n"                                           \
+            ^
+   <inline asm>:25:5: note: instantiated into assembly here
+   .if 662b-661b > 254
+       ^
+>> arch/s390/lib/spinlock.c:78:3: error: cpu alternatives does not support instructions blocks > 254 bytes
+                   ALTERNATIVE("", ".long 0xb2fa0040", 49) /* NIAI 4 */
+                   ^
+   arch/s390/include/asm/alternative.h:113:2: note: expanded from macro 'ALTERNATIVE'
+           OLDINSTR(oldinstr, 1)                                           \
+           ^
+   arch/s390/include/asm/alternative.h:85:2: note: expanded from macro 'OLDINSTR'
+           INSTR_LEN_SANITY_CHECK(oldinstr_len)
+           ^
+   arch/s390/include/asm/alternative.h:63:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           "\t.error \"cpu alternatives does not support instructions "    \
+            ^
+   <inline asm>:26:2: note: instantiated into assembly here
+           .error "cpu alternatives does not support instructions blocks > 254 bytes"
+           ^
+>> arch/s390/lib/spinlock.c:78:3: error: expected absolute expression
+                   ALTERNATIVE("", ".long 0xb2fa0040", 49) /* NIAI 4 */
+                   ^
+   arch/s390/include/asm/alternative.h:113:2: note: expanded from macro 'ALTERNATIVE'
+           OLDINSTR(oldinstr, 1)                                           \
+           ^
+   arch/s390/include/asm/alternative.h:85:2: note: expanded from macro 'OLDINSTR'
+           INSTR_LEN_SANITY_CHECK(oldinstr_len)
+           ^
+   arch/s390/include/asm/alternative.h:66:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           ".if (" len ") %% 2\n"                                          \
+            ^
+   <inline asm>:28:5: note: instantiated into assembly here
+   .if (662b-661b) % 2
+       ^
+>> arch/s390/lib/spinlock.c:78:3: error: cpu alternatives instructions length is odd
+                   ALTERNATIVE("", ".long 0xb2fa0040", 49) /* NIAI 4 */
+                   ^
+   arch/s390/include/asm/alternative.h:113:2: note: expanded from macro 'ALTERNATIVE'
+           OLDINSTR(oldinstr, 1)                                           \
+           ^
+   arch/s390/include/asm/alternative.h:85:2: note: expanded from macro 'OLDINSTR'
+           INSTR_LEN_SANITY_CHECK(oldinstr_len)
+           ^
+   arch/s390/include/asm/alternative.h:67:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           "\t.error \"cpu alternatives instructions length is odd\"\n"    \
+            ^
+   <inline asm>:29:2: note: instantiated into assembly here
+           .error "cpu alternatives instructions length is odd"
+           ^
+   arch/s390/lib/spinlock.c:89:3: error: expected absolute expression
+                   ALTERNATIVE("", ".long 0xb2fa0080", 49) /* NIAI 8 */
+                   ^
+   arch/s390/include/asm/alternative.h:111:2: note: expanded from macro 'ALTERNATIVE'
+           ALTINSTR_REPLACEMENT(altinstr, 1)                               \
+           ^
+   arch/s390/include/asm/alternative.h:106:2: note: expanded from macro 'ALTINSTR_REPLACEMENT'
+           INSTR_LEN_SANITY_CHECK(altinstr_len(num))
+           ^
+   arch/s390/include/asm/alternative.h:62:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           ".if " len " > 254\n"                                           \
+            ^
+   <inline asm>:5:5: note: instantiated into assembly here
+   .if 6651b-6641b > 254
+       ^
+   arch/s390/lib/spinlock.c:89:3: error: cpu alternatives does not support instructions blocks > 254 bytes
+                   ALTERNATIVE("", ".long 0xb2fa0080", 49) /* NIAI 8 */
+                   ^
+   arch/s390/include/asm/alternative.h:111:2: note: expanded from macro 'ALTERNATIVE'
+           ALTINSTR_REPLACEMENT(altinstr, 1)                               \
+           ^
+   arch/s390/include/asm/alternative.h:106:2: note: expanded from macro 'ALTINSTR_REPLACEMENT'
+           INSTR_LEN_SANITY_CHECK(altinstr_len(num))
+           ^
+   arch/s390/include/asm/alternative.h:63:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           "\t.error \"cpu alternatives does not support instructions "    \
+            ^
+   <inline asm>:6:2: note: instantiated into assembly here
+           .error "cpu alternatives does not support instructions blocks > 254 bytes"
+           ^
+   arch/s390/lib/spinlock.c:89:3: error: expected absolute expression
+                   ALTERNATIVE("", ".long 0xb2fa0080", 49) /* NIAI 8 */
+                   ^
+   arch/s390/include/asm/alternative.h:111:2: note: expanded from macro 'ALTERNATIVE'
+           ALTINSTR_REPLACEMENT(altinstr, 1)                               \
+           ^
+   arch/s390/include/asm/alternative.h:106:2: note: expanded from macro 'ALTINSTR_REPLACEMENT'
+           INSTR_LEN_SANITY_CHECK(altinstr_len(num))
+           ^
+   arch/s390/include/asm/alternative.h:66:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           ".if (" len ") %% 2\n"                                          \
+            ^
+   <inline asm>:8:5: note: instantiated into assembly here
+   .if (6651b-6641b) % 2
+       ^
+   arch/s390/lib/spinlock.c:89:3: error: cpu alternatives instructions length is odd
+                   ALTERNATIVE("", ".long 0xb2fa0080", 49) /* NIAI 8 */
+                   ^
+   arch/s390/include/asm/alternative.h:111:2: note: expanded from macro 'ALTERNATIVE'
+           ALTINSTR_REPLACEMENT(altinstr, 1)                               \
+           ^
+   arch/s390/include/asm/alternative.h:106:2: note: expanded from macro 'ALTINSTR_REPLACEMENT'
+           INSTR_LEN_SANITY_CHECK(altinstr_len(num))
+           ^
+   arch/s390/include/asm/alternative.h:67:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           "\t.error \"cpu alternatives instructions length is odd\"\n"    \
+            ^
+   <inline asm>:9:2: note: instantiated into assembly here
+           .error "cpu alternatives instructions length is odd"
+           ^
+   arch/s390/lib/spinlock.c:89:3: error: expected absolute expression
+                   ALTERNATIVE("", ".long 0xb2fa0080", 49) /* NIAI 8 */
+                   ^
+   arch/s390/include/asm/alternative.h:113:2: note: expanded from macro 'ALTERNATIVE'
+           OLDINSTR(oldinstr, 1)                                           \
+           ^
+   arch/s390/include/asm/alternative.h:83:2: note: expanded from macro 'OLDINSTR'
+           OLDINSTR_PADDING(oldinstr, num)                                 \
+           ^
+   arch/s390/include/asm/alternative.h:71:3: note: expanded from macro 'OLDINSTR_PADDING'
+           ".if " oldinstr_pad_len(num) " > 6\n"                           \
+            ^
+   <inline asm>:15:5: note: instantiated into assembly here
+   .if -(((6651b-6641b)-(662b-661b)) > 0) * ((6651b-6641b)-(662b-661b)) > 6
+       ^
+   arch/s390/lib/spinlock.c:89:3: error: expected absolute expression
+                   ALTERNATIVE("", ".long 0xb2fa0080", 49) /* NIAI 8 */
+                   ^
+   arch/s390/include/asm/alternative.h:113:2: note: expanded from macro 'ALTERNATIVE'
+           OLDINSTR(oldinstr, 1)                                           \
+           ^
+   arch/s390/include/asm/alternative.h:85:2: note: expanded from macro 'OLDINSTR'
+           INSTR_LEN_SANITY_CHECK(oldinstr_len)
+           ^
+   arch/s390/include/asm/alternative.h:62:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
+           ".if " len " > 254\n"                                           \
 
 
-vim +59 arch/xtensa/platforms/xtfpga/include/platform/hardware.h
+vim +78 arch/s390/lib/spinlock.c
 
-0d456bad36d42d Max Filippov 2012-11-05  56  
-0d456bad36d42d Max Filippov 2012-11-05  57  /*  OpenCores Ethernet controller:  */
-0d456bad36d42d Max Filippov 2012-11-05  58  				/* regs + RX/TX descriptors */
-0d456bad36d42d Max Filippov 2012-11-05 @59  #define OETH_REGS_PADDR		(XCHAL_KIO_PADDR + 0x0D030000)
-0d456bad36d42d Max Filippov 2012-11-05  60  #define OETH_REGS_SIZE		0x1000
-0d456bad36d42d Max Filippov 2012-11-05  61  #define OETH_SRAMBUFF_PADDR	(XCHAL_KIO_PADDR + 0x0D800000)
-0d456bad36d42d Max Filippov 2012-11-05  62  
-0d456bad36d42d Max Filippov 2012-11-05  63  				/* 5*rx buffs + 5*tx buffs */
-0d456bad36d42d Max Filippov 2012-11-05  64  #define OETH_SRAMBUFF_SIZE	(5 * 0x600 + 5 * 0x600)
-0d456bad36d42d Max Filippov 2012-11-05  65  
+b96f7d881ad942 Martin Schwidefsky 2017-03-24  72  
+7f7e6e28cd3285 Martin Schwidefsky 2017-04-19  73  static inline int arch_load_niai4(int *lock)
+7f7e6e28cd3285 Martin Schwidefsky 2017-04-19  74  {
+7f7e6e28cd3285 Martin Schwidefsky 2017-04-19  75  	int owner;
+7f7e6e28cd3285 Martin Schwidefsky 2017-04-19  76  
+cceb018377a123 Heiko Carstens     2019-10-18  77  	asm_inline volatile(
+f554be42fd0fd8 Vasily Gorbik      2017-10-12 @78  		ALTERNATIVE("", ".long 0xb2fa0040", 49)	/* NIAI 4 */
+7f7e6e28cd3285 Martin Schwidefsky 2017-04-19  79  		"	l	%0,%1\n"
+7f7e6e28cd3285 Martin Schwidefsky 2017-04-19  80  		: "=d" (owner) : "Q" (*lock) : "memory");
+7f7e6e28cd3285 Martin Schwidefsky 2017-04-19  81  	return owner;
+7f7e6e28cd3285 Martin Schwidefsky 2017-04-19  82  }
+7f7e6e28cd3285 Martin Schwidefsky 2017-04-19  83  
 
-:::::: The code at line 59 was first introduced by commit
-:::::: 0d456bad36d42d16022be045c8a53ddbb59ee478 xtensa: add support for the XTFPGA boards
+:::::: The code at line 78 was first introduced by commit
+:::::: f554be42fd0fd8dd14680c67f2db26b3e7de9670 s390/spinlock: use cpu alternatives to enable niai instruction
 
-:::::: TO: Max Filippov <jcmvbkbc@gmail.com>
-:::::: CC: Chris Zankel <chris@zankel.net>
+:::::: TO: Vasily Gorbik <gor@linux.vnet.ibm.com>
+:::::: CC: Martin Schwidefsky <schwidefsky@de.ibm.com>
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
