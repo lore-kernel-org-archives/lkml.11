@@ -2,146 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE020C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 15:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D992C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 15:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355431AbiA3PXQ (ORCPT
+        id S1355447AbiA3P1K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 10:23:16 -0500
-Received: from mail-yb1-f175.google.com ([209.85.219.175]:34537 "EHLO
-        mail-yb1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355421AbiA3PXO (ORCPT
+        Sun, 30 Jan 2022 10:27:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40008 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355439AbiA3P1H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 10:23:14 -0500
-Received: by mail-yb1-f175.google.com with SMTP id v186so33170232ybg.1;
-        Sun, 30 Jan 2022 07:23:13 -0800 (PST)
+        Sun, 30 Jan 2022 10:27:07 -0500
+Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A92C06173B
+        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 07:27:06 -0800 (PST)
+Received: by mail-vs1-xe2f.google.com with SMTP id u14so8878097vsg.13
+        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 07:27:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=QX+g1hCOW91cXXnSggcw6gj04u3NWBZ31aKJT4qy8z4=;
+        b=HD/4qz2z/NdjjLU1lR4H3U15s5msIFLg7DBqWhui4lujSGMlzrXXW637fmJHyj7rJg
+         9ZSLBqe0C+Gv5VtDiUFNtMoyYHNHXkH1NpFo+NqijUSbm0XwOJGMaZ5h+0pmGbWRKG28
+         QnPjy7wB8St3ENbSz7Gx/BOgxWyQ04LuBZggu9IcCAiI3HQNAYvlPeZ8tTB9kxKwOZxb
+         E4HRukFXNvmbOGDV1Vgfj7yxjC6SEy1wIsQ8jtKL4zdIx4x9GJP+TTiN2ONPMM9M0tYf
+         zIqUquFg4g0eiezyCtsEWtknBXBlTPEUfphOElqsiWhlniImPrlSNO89ou/k6U1S+FFZ
+         ShwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DnaGa9i2/yIHISXAioqft9HOSE9O/Wi5g9EfNGqVIvQ=;
-        b=xZ0bs5tB0Ls0Z4Pzf0qU51RUDw3Qkbm+PnVZdxVuAivKtwyHL8VJFfeL3AAVGaW1oo
-         FLJ+NBo/VmZHnsGVKyentWpdQQMmaqU3gP6b87dLAd1cvWfBR3c149LDyGRF1XdTLlt0
-         nUVj3908uHaESTfQJgUQ7U62IG4zBtgQZYV8f37CHzo4wjbBNKzrAgaQ8BmvMIq8ao2h
-         djNExZMbvvi3lDQ9HhFnlpzGgHmCO8JNHs7rwQViTBAQzmFagJWNETQyxKRmzq6q/5EH
-         S+2hkxl3wyxBJY27LGMbR3QugLCMjr9fyHim03rdRZxzTVbpMBRKvEjm/E4PfLJuZ14B
-         bmGw==
-X-Gm-Message-State: AOAM5311em6HY4dNB2WyFcMIclmqsGahFi5ghtcdB2MPjBqGvQIhgfKm
-        scuBhtrwdiL/Q4oYDcRYX+/7EjK6ukRLX9g7yuE=
-X-Google-Smtp-Source: ABdhPJxmxan+KUOGEZoo1TI2DjjpSddqkIhdH4H8VP41kvwb8gci9GcdbLTs0OtgdEyvUv7O73o6JRQ/9p8uxtjsRVc=
-X-Received: by 2002:a25:2fca:: with SMTP id v193mr25873075ybv.475.1643556193485;
- Sun, 30 Jan 2022 07:23:13 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=QX+g1hCOW91cXXnSggcw6gj04u3NWBZ31aKJT4qy8z4=;
+        b=D4nr5r7asqWYhER/f2w2FVL8O+Bj9NsDXkUId2OqixSg/yyb4LvZFAP+ui1pyw68dv
+         MzowqOXcdvq+r5YfQyO4+Tt/bu9fcK0spgOPD52XFrXf3pVjSyVAp8a8ku6niEAVVThh
+         /ACJ765+QMVJGQSn5mJ0ts7ijT5kWGHTUYsbNZZBroKUZChsR7iAo9T48BW4Ksujdyxg
+         KdkFowHwScarzXHcMowUdI+PkTTLdpofbHrOMsxTjjn5raYW+uyCEMw1W2O39Bsn0O+g
+         HxiRsWV6SIrOjx2/nRe9O7pHHFJDpFswmTTKf7BKXxMxcdvfxalM5lt6FF5rGljAdKLO
+         YamA==
+X-Gm-Message-State: AOAM532MeLRkHh8RhFHKp5CLsVesjUPZpPuYnGGAkzzTXWUL25qDw5zU
+        gxPhfshM2yelX3ovhpXDLu7nrA==
+X-Google-Smtp-Source: ABdhPJxkGrsc+o2xJu08YhAkeRNFOz6+5hhYb5WDUPUWhPpwgPKwhiHccgAA6hO+d1qRqqhfQPS+dQ==
+X-Received: by 2002:a05:6102:5490:: with SMTP id bk16mr6607320vsb.33.1643556425648;
+        Sun, 30 Jan 2022 07:27:05 -0800 (PST)
+Received: from fedora ([187.36.236.204])
+        by smtp.gmail.com with ESMTPSA id w5sm3139815vkf.12.2022.01.30.07.27.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Jan 2022 07:27:05 -0800 (PST)
+Date:   Sun, 30 Jan 2022 12:27:00 -0300
+From:   =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>
+To:     gregkh@linuxfoundation.org, tj@kernel.org, viro@zeniv.linux.org.uk,
+        nathan@kernel.org, ndesaulniers@google.com
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH] seq_file: fix NULL pointer arithmetic warning
+Message-ID: <YfauRJpYiAT3yEnK@fedora>
 MIME-Version: 1.0
-References: <20220127193454.12814-1-ricardo.neri-calderon@linux.intel.com>
-In-Reply-To: <20220127193454.12814-1-ricardo.neri-calderon@linux.intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Sun, 30 Jan 2022 16:23:02 +0100
-Message-ID: <CAJZ5v0gcK10TiVbc8+j1pVN+T2p3EZHEK9Ga2=2ZxeGd=iVkhw@mail.gmail.com>
-Subject: Re: [PATCH v5 0/7] Thermal: Introduce the Hardware Feedback Interface
- for thermal and performance management
-To:     Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Len Brown <len.brown@intel.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 8:33 PM Ricardo Neri
-<ricardo.neri-calderon@linux.intel.com> wrote:
->
-> Hi,
->
-> This is v5 of this patchset after having incorporated the feedback from
-> reviewers. Please find v1, v2, v3, and v4 in [1], [2], [3], and [4],
-> respectively.
->
-> The Intel Hardware Feedback Interface (HFI) [5] provides information about
-> the performance and energy efficiency of each CPU in the system. It uses a
-> table that is shared between hardware and the operating system. The
-> contents of the table may be updated as a result of changes in the
-> operating conditions of the system (e.g., reaching a thermal limit) or the
-> action of external factors (e.g., changes in the thermal design power).
->
-> The information that HFI provides are specified as numeric, unit-less
-> capabilities relative to other CPUs in the system. These capabilities have
-> a range of [0-255] where higher numbers represent higher capabilities.
-> Energy efficiency and performance are reported in separate capabilities.
-> If either the performance or energy capabilities efficiency of a CPU are 0,
-> the hardware recommends to not schedule any tasks on such CPU for
-> performance, energy efficiency or thermal reasons, respectively.
->
-> The kernel or user space may use the information from the HFI to modify
-> task placement and/or adjust power limits. This patchset focuses on the
-> user space. The thermal notification framework is extended to relay
-> updates of CPU capacity. Thus, a userspace daemon can affinitize workloads
-> to certain CPUs and/or offline CPUs whose capabilities are zero.
->
-> The frequency of HFI updates is specific to each processor model. On some
-> systems, there is just a single HFI update at boot. On other systems, there
-> may be updates every tens of milliseconds. In order to not overwhelm
-> userspace with too many updates, they are limited to one update every
-> CONFIG_HZ jiffies.
->
-> Thanks and BR,
-> Ricardo
->
-> [1]. https://lore.kernel.org/lkml/20211106013312.26698-1-ricardo.neri-calderon@linux.intel.com/
-> [2]. https://lore.kernel.org/lkml/20211220151438.1196-1-ricardo.neri-calderon@linux.intel.com/
-> [3]. https://lore.kernel.org/lkml/20220106025059.25847-8-ricardo.neri-calderon@linux.intel.com/
-> [4]. https://lore.kernel.org/lkml/20220108034743.31277-1-ricardo.neri-calderon@linux.intel.com/
-> [5]. https://www.intel.com/sdm
->
-> Changes since v4:
->  ++ Unchanged patches: 1, 2.
->  * Reworded description hfi_instance::hdr and hfi_instance::data.
->    (Patch 3; Srinivas)
->  * Call intel_hfi_online() before enabling the thermal vector at the
->    local APIC is enabled. This makes sure that a CPU has an associated
->    HFI instance when an HFI event happens. Reworded the commit message to
->    reflect this change. (Patch 4; Srinivas)
->  * Set hfi_instances to NULL if we fail to allocate memory for
->    hfi_instance::cpus. (Patch 4; Srinivas)
->  * Delayed initialization of local variables until after the check for a
->    non-NULL hfi_instances in intel_hfi_online(). (Patch 4; Srinivas)
->  * Optimized the error path in init_hfi_init() to not needlessly
->    free the memory of cpumasks that have not been allocated. (Patch 4;
->    Srinivas)
->  * Removed pointless checks for X86_FEATURE_HFI in
->    intel_hfi_[on|off]line(). It is sufficient to check for a non-NULL
->    hfi_instances or a CPU's hfi_instance. (Patch 4)
->  * Added a dedicated (i.e., not system_wq) workqueue to process HFI updates.
->    Reworded commit message accordingly. (Patch 5; Rafael)
->  * Repurposed comment on possibly receiving an HFI event with a NULL
->    hfi_cpu_info::instance. Patch 4 fixed this potential issue. Instead,
->    add a debug statement. (Patch 5; Srinivas)
->  * Wrapped check for NULL hfi_cpu_info::instance in the unlikely macro.
->    (Patch 5; Srinivas)
->  * Renamed struct cpu_capability as struct thermal_genl_cpu_caps.
->    (Patch 6; Rafael)
->  * Removed automatic variable ret from
->    thermal_genl_event_cpu_capability_change() and instead always return
->    -EMSGSIZE on error. (Patch 6; Rafael)
->  * Reworked parsing of HFI capabilities into chunks of
->    HFI_MAX_THERM_NOTIFY_COUNT CPUs at a time to reduce the time
->    we spend with interrupts disabled. (Patch7; Srinivas)
->  * Protected hfi_instance::cpus when iterating over them. (Patch 7;
->    Rafael)
+Implement conditional logic in order to replace NULL pointer arithmetic.
 
-All patches in the series look good to me now, so I will be queuing it
-up for 5.18 unless there are any objections or concerns.
+The use of NULL pointer arithmetic was pointed out by clang with the
+following warning:
 
-Thanks!
+fs/kernfs/file.c:128:15: warning: performing pointer arithmetic on a
+null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+                return NULL + !*ppos;
+                       ~~~~ ^
+fs/seq_file.c:559:14: warning: performing pointer arithmetic on a
+null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+        return NULL + (*pos == 0);
+
+Signed-off-by: Maíra Canal <maira.canal@usp.br>
+---
+ fs/kernfs/file.c | 6 ++++--
+ fs/seq_file.c    | 2 +-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
+index 9414a7a60a9f..3a6990c7fe8e 100644
+--- a/fs/kernfs/file.c
++++ b/fs/kernfs/file.c
+@@ -120,12 +120,14 @@ static void *kernfs_seq_start(struct seq_file *sf, loff_t *ppos)
+ 		if (next == ERR_PTR(-ENODEV))
+ 			kernfs_seq_stop_active(sf, next);
+ 		return next;
+-	} else {
++	} else if (*ppos) {
+ 		/*
+ 		 * The same behavior and code as single_open().  Returns
+ 		 * !NULL if pos is at the beginning; otherwise, NULL.
+ 		 */
+-		return NULL + !*ppos;
++		return NULL;
++	} else {
++		return (void *) 1;
+ 	}
+ }
+ 
+diff --git a/fs/seq_file.c b/fs/seq_file.c
+index f8e1f4ee87ff..7b6165d5d829 100644
+--- a/fs/seq_file.c
++++ b/fs/seq_file.c
+@@ -556,7 +556,7 @@ EXPORT_SYMBOL(seq_dentry);
+ 
+ static void *single_start(struct seq_file *p, loff_t *pos)
+ {
+-	return NULL + (*pos == 0);
++	return *pos ? NULL : (void *) 1;
+ }
+ 
+ static void *single_next(struct seq_file *p, void *v, loff_t *pos)
+-- 
+2.34.1
+
