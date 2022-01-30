@@ -2,98 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAA7C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 14:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A8CC4167D
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 14:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355009AbiA3OdQ (ORCPT
+        id S1355028AbiA3Ody (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 09:33:16 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50260 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355003AbiA3OdN (ORCPT
+        Sun, 30 Jan 2022 09:33:54 -0500
+Received: from mout.kundenserver.de ([212.227.17.24]:34591 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355010AbiA3Odw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 09:33:13 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B92A7B8295F;
-        Sun, 30 Jan 2022 14:33:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C93B6C340E4;
-        Sun, 30 Jan 2022 14:33:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643553190;
-        bh=TFefdRhPLf81qj1p1gXB2Ss7XyPQr+9Ehf+Zq1TKv1c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hJ7NfX/RF1rTizn+NIJGmFIksXhdfn0cc1dVhJtzyLMpXIgOHuQWKMnxedNH9qw/G
-         pdIGes6GclGBaRMhBEn/oNhH8NGreaA2bNBmQLNcRL1NwmXHM2EYZfR1oNq2lYLQXd
-         tbZxuzgJmQwqMeLzBWecStl0mFbb3TTTgDgJ5X9Y6NRWuFgSibN+I84ZA2/4hwOkuq
-         ko4rH05TBertwgbo+3d5qdiTUULMzIBUqUbztc4DRgWgU+CPinSqy0jCFn/hy71uOf
-         hG4ZC0G78lnlGPnB1xO2E9LFbDc7GT1XqsbHLPrxAJQlZqAPjTIS1btALXbIfPh8we
-         jzmQixhqGbcog==
-Date:   Sun, 30 Jan 2022 14:39:33 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Liam Beguin <liambeguin@gmail.com>, Peter Rosin <peda@axentia.se>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v12 00/16] iio: afe: add temperature rescaling support
-Message-ID: <20220130143933.7711025a@jic23-huawei>
-In-Reply-To: <CAHp75VdyujSuTCr_+oFP9t=tardioG69k7uNkBSRAmPvqiyT7w@mail.gmail.com>
-References: <20220108205319.2046348-1-liambeguin@gmail.com>
-        <CAHp75VdyujSuTCr_+oFP9t=tardioG69k7uNkBSRAmPvqiyT7w@mail.gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sun, 30 Jan 2022 09:33:52 -0500
+Received: from quad ([82.142.10.94]) by mrelayeu.kundenserver.de (mreue107
+ [212.227.15.183]) with ESMTPSA (Nemesis) id 1MS4WT-1mpkdt3G9L-00TVRi; Sun, 30
+ Jan 2022 15:33:39 +0100
+From:   Laurent Vivier <laurent@vivier.eu>
+To:     linux-kernel@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>, linux-rtc@vger.kernel.org,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Laurent Vivier <laurent@vivier.eu>
+Subject: [PATCH v14 1/5] m68k: add asm/config.h
+Date:   Sun, 30 Jan 2022 15:33:29 +0100
+Message-Id: <20220130143333.552646-2-laurent@vivier.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220130143333.552646-1-laurent@vivier.eu>
+References: <20220130143333.552646-1-laurent@vivier.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:kMSKGKkxNv1a1eN2ypugXU4Ago5SMMMeVURxMVgqYjNxTYxgj7S
+ 2o4SwgztjInAztiJRdM5JV2pPgaf/mXSyNkNmtvKKQApiIObNHuAIYz5zwLTudQTCNoZNhy
+ dsdZA1a3VwCBaJTbZctjssKotDKxTyXahVqAsqONnzwupuwEZr71FGhONzxieYToIf5Wjil
+ OEqMGIAl3ftcP5cnvp2AQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bqb3pZsELRI=:piZ7DDAbAUCE3qblElJuwP
+ Ed8q3odP2rkxynXfoEOkqoqqWR3iV5UtBJvhFP028NpEetH/rJ9IJJyUeLAlTpgetWxu4z3cG
+ 8+OEiExfUZDdY00QKqTjM+AcVMjLojqKmCtLr3pXH+Dn3Mncb8cDjDu3uDMa/7dcqg0hmk1Eq
+ 7Ys4gahTmHHLmHPhN8/Q/+CWOfWMoQf6MPi5tuGbOsisaYQgjpvaFXiQsMOQxV8WMgzzMiMt0
+ wleRAjWFzMpkEpzg/vAOsnp2msg4I9qr60JoletHhGqF56kos58YTUW7KPJXLeddlj6qQPD4V
+ eS6vjDRf0ib0Q14WmaMpnSUuikkNXFEbAhj+fzW/UO0TWqfq0FyEnIZVZDOnhEkEeun/VMnaP
+ oRR+LJjFBvJUB3ubb6A6dS33qwUhUvbsO/vWYPqTNgAPrfOnbcQEA65wpbihZ+ROKtImOiPkz
+ My+3o09rjDYqDrM6oLsIe+bx+QWxKI6JxPuKjKsse9nYz1pRFQu299YGdpxgvTElhE+ThHgzW
+ +o2WBKviEj5QOVUf3422cIfZkzHueGLzwqA7KKNIdJicmt8bTgu1gUSJAalVnwZ4A9CokZOL/
+ x6GMDq8w8iE0jGiIzDNmdsSw5b5lL62J3ysnlFFxMhowJvIsx3l7D8+Cvu/OT1nAyPvtUm3Hu
+ grDnsqW6IwoWPejtnxNYAESOVbHNr90ATVqml9ENK764gwwAH6E3aD/02wfKmNgKYvv8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 9 Jan 2022 15:10:36 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+To avoid 'warning: no previous prototype for' error, declare all
+the parse_bootinfo and config functions prototypes into asm/config.h
+and include it in arch/m68k/kernel/setup_mm.c and arch/m68k/*/config.c
 
-> On Sat, Jan 8, 2022 at 10:53 PM Liam Beguin <liambeguin@gmail.com> wrote:
-> >
-> > Jonathan, Peter, Andy,
-> >
-> > I left out IIO_VAL_INT overflows for now, so that I can focus on getting
-> > the rest of these changes pulled in, but I don't mind adding a patch for
-> > that later on.
-> >
-> > This series focuses on adding temperature rescaling support to the IIO
-> > Analog Front End (AFE) driver.
-> >
-> > The first few patches address minor bugs in IIO inkernel functions, and
-> > prepare the AFE driver for the additional features.
-> >
-> > The main changes to the AFE driver include an initial Kunit test suite,
-> > support for IIO_VAL_INT_PLUS_{NANO,MICRO} scales, and support for RTDs
-> > and temperature transducer sensors.
-> >
-> > My apologies Andy for misunderstanding your left-shift comments, I don't
-> > know where my head was at... Thanks for your patience!  
-> 
-> For the patches 1-5
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> 
-> Jonathan, perhaps you may apply them, so Liam will have less burden in
-> the near future.
-> 
-done, Patches 1-5 applied to the togreg branch of iio.git and pushed out
-as testing for 0-day to see if it can find anything we missed.
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ arch/m68k/amiga/config.c       |  1 +
+ arch/m68k/apollo/config.c      |  1 +
+ arch/m68k/atari/config.c       |  1 +
+ arch/m68k/bvme6000/config.c    |  1 +
+ arch/m68k/hp300/config.c       |  1 +
+ arch/m68k/include/asm/config.h | 33 +++++++++++++++++++++++++++++++++
+ arch/m68k/kernel/setup_mm.c    | 23 +----------------------
+ arch/m68k/mac/config.c         |  1 +
+ arch/m68k/mvme147/config.c     |  1 +
+ arch/m68k/mvme16x/config.c     |  1 +
+ arch/m68k/q40/config.c         |  1 +
+ 11 files changed, 43 insertions(+), 22 deletions(-)
+ create mode 100644 arch/m68k/include/asm/config.h
 
-I've marked the fixes for stable, but am taking these the slow way
-(via next merge window) so as to keep things simple for applying the
-rest of the series later this cycle.
-
-I got a bit lost in the discussion but seems there are some minor
-requests for changes so I guess I'll see a v13 of patches 6-12.
-
-Thanks,
-
-Jonathan
-
+diff --git a/arch/m68k/amiga/config.c b/arch/m68k/amiga/config.c
+index be2dfab48fd4..3137b45750df 100644
+--- a/arch/m68k/amiga/config.c
++++ b/arch/m68k/amiga/config.c
+@@ -37,6 +37,7 @@
+ #include <asm/irq.h>
+ #include <asm/machdep.h>
+ #include <asm/io.h>
++#include <asm/config.h>
+ 
+ static unsigned long amiga_model;
+ 
+diff --git a/arch/m68k/apollo/config.c b/arch/m68k/apollo/config.c
+index 581a5f68d102..42a8b8e2b664 100644
+--- a/arch/m68k/apollo/config.c
++++ b/arch/m68k/apollo/config.c
+@@ -16,6 +16,7 @@
+ #include <asm/apollohw.h>
+ #include <asm/irq.h>
+ #include <asm/machdep.h>
++#include <asm/config.h>
+ 
+ u_long sio01_physaddr;
+ u_long sio23_physaddr;
+diff --git a/arch/m68k/atari/config.c b/arch/m68k/atari/config.c
+index 261a0f57cc9a..38a7c0578105 100644
+--- a/arch/m68k/atari/config.c
++++ b/arch/m68k/atari/config.c
+@@ -46,6 +46,7 @@
+ #include <asm/machdep.h>
+ #include <asm/hwtest.h>
+ #include <asm/io.h>
++#include <asm/config.h>
+ 
+ u_long atari_mch_cookie;
+ EXPORT_SYMBOL(atari_mch_cookie);
+diff --git a/arch/m68k/bvme6000/config.c b/arch/m68k/bvme6000/config.c
+index 0c6feafbbd11..9b060d466e03 100644
+--- a/arch/m68k/bvme6000/config.c
++++ b/arch/m68k/bvme6000/config.c
+@@ -36,6 +36,7 @@
+ #include <asm/traps.h>
+ #include <asm/machdep.h>
+ #include <asm/bvme6000hw.h>
++#include <asm/config.h>
+ 
+ static void bvme6000_get_model(char *model);
+ extern void bvme6000_sched_init(void);
+diff --git a/arch/m68k/hp300/config.c b/arch/m68k/hp300/config.c
+index ce1eb3d3d55d..2c92843397c3 100644
+--- a/arch/m68k/hp300/config.c
++++ b/arch/m68k/hp300/config.c
+@@ -22,6 +22,7 @@
+ #include <asm/blinken.h>
+ #include <asm/io.h>                               /* readb() and writeb() */
+ #include <asm/hp300hw.h>
++#include <asm/config.h>
+ 
+ #include "time.h"
+ 
+diff --git a/arch/m68k/include/asm/config.h b/arch/m68k/include/asm/config.h
+new file mode 100644
+index 000000000000..aae61070628b
+--- /dev/null
++++ b/arch/m68k/include/asm/config.h
+@@ -0,0 +1,33 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/*
++ * This file contains prototypes provided by each m68k machine
++ * to parse bootinfo data structures and to configure the machine
++ */
++
++#ifndef _M68K_CONFIG_H
++#define _M68K_CONFIG_H
++
++extern int amiga_parse_bootinfo(const struct bi_record *record);
++extern int atari_parse_bootinfo(const struct bi_record *record);
++extern int mac_parse_bootinfo(const struct bi_record *record);
++extern int q40_parse_bootinfo(const struct bi_record *record);
++extern int bvme6000_parse_bootinfo(const struct bi_record *record);
++extern int mvme16x_parse_bootinfo(const struct bi_record *record);
++extern int mvme147_parse_bootinfo(const struct bi_record *record);
++extern int hp300_parse_bootinfo(const struct bi_record *record);
++extern int apollo_parse_bootinfo(const struct bi_record *record);
++
++extern void config_amiga(void);
++extern void config_atari(void);
++extern void config_mac(void);
++extern void config_sun3(void);
++extern void config_apollo(void);
++extern void config_mvme147(void);
++extern void config_mvme16x(void);
++extern void config_bvme6000(void);
++extern void config_hp300(void);
++extern void config_q40(void);
++extern void config_sun3x(void);
++
++#endif /* _M68K_CONFIG_H */
+diff --git a/arch/m68k/kernel/setup_mm.c b/arch/m68k/kernel/setup_mm.c
+index 49e573b94326..8228275aae3e 100644
+--- a/arch/m68k/kernel/setup_mm.c
++++ b/arch/m68k/kernel/setup_mm.c
+@@ -47,6 +47,7 @@
+ #endif
+ #include <asm/macintosh.h>
+ #include <asm/natfeat.h>
++#include <asm/config.h>
+ 
+ #if !FPSTATESIZE || !NR_IRQS
+ #warning No CPU/platform type selected, your kernel will not work!
+@@ -113,28 +114,6 @@ EXPORT_SYMBOL(isa_type);
+ EXPORT_SYMBOL(isa_sex);
+ #endif
+ 
+-extern int amiga_parse_bootinfo(const struct bi_record *);
+-extern int atari_parse_bootinfo(const struct bi_record *);
+-extern int mac_parse_bootinfo(const struct bi_record *);
+-extern int q40_parse_bootinfo(const struct bi_record *);
+-extern int bvme6000_parse_bootinfo(const struct bi_record *);
+-extern int mvme16x_parse_bootinfo(const struct bi_record *);
+-extern int mvme147_parse_bootinfo(const struct bi_record *);
+-extern int hp300_parse_bootinfo(const struct bi_record *);
+-extern int apollo_parse_bootinfo(const struct bi_record *);
+-
+-extern void config_amiga(void);
+-extern void config_atari(void);
+-extern void config_mac(void);
+-extern void config_sun3(void);
+-extern void config_apollo(void);
+-extern void config_mvme147(void);
+-extern void config_mvme16x(void);
+-extern void config_bvme6000(void);
+-extern void config_hp300(void);
+-extern void config_q40(void);
+-extern void config_sun3x(void);
+-
+ #define MASK_256K 0xfffc0000
+ 
+ extern void paging_init(void);
+diff --git a/arch/m68k/mac/config.c b/arch/m68k/mac/config.c
+index 5d16f9b47aa9..65d124ec80bb 100644
+--- a/arch/m68k/mac/config.c
++++ b/arch/m68k/mac/config.c
+@@ -47,6 +47,7 @@
+ #include <asm/mac_via.h>
+ #include <asm/mac_oss.h>
+ #include <asm/mac_psc.h>
++#include <asm/config.h>
+ 
+ /* Mac bootinfo struct */
+ struct mac_booter_data mac_bi_data;
+diff --git a/arch/m68k/mvme147/config.c b/arch/m68k/mvme147/config.c
+index dfd6202fd403..b96ea7c76a19 100644
+--- a/arch/m68k/mvme147/config.c
++++ b/arch/m68k/mvme147/config.c
+@@ -34,6 +34,7 @@
+ #include <asm/traps.h>
+ #include <asm/machdep.h>
+ #include <asm/mvme147hw.h>
++#include <asm/config.h>
+ 
+ 
+ static void mvme147_get_model(char *model);
+diff --git a/arch/m68k/mvme16x/config.c b/arch/m68k/mvme16x/config.c
+index b4422c2dfbbf..88cbdc10925b 100644
+--- a/arch/m68k/mvme16x/config.c
++++ b/arch/m68k/mvme16x/config.c
+@@ -37,6 +37,7 @@
+ #include <asm/traps.h>
+ #include <asm/machdep.h>
+ #include <asm/mvme16xhw.h>
++#include <asm/config.h>
+ 
+ extern t_bdid mvme_bdid;
+ 
+diff --git a/arch/m68k/q40/config.c b/arch/m68k/q40/config.c
+index 5caf1e5be1c2..9237243077ce 100644
+--- a/arch/m68k/q40/config.c
++++ b/arch/m68k/q40/config.c
+@@ -34,6 +34,7 @@
+ #include <asm/traps.h>
+ #include <asm/machdep.h>
+ #include <asm/q40_master.h>
++#include <asm/config.h>
+ 
+ extern void q40_init_IRQ(void);
+ static void q40_get_model(char *model);
+-- 
+2.34.1
 
