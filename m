@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6207DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 12:11:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE97C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 12:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354751AbiA3MLD (ORCPT
+        id S1354764AbiA3MY2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 07:11:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53522 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345500AbiA3MLB (ORCPT
+        Sun, 30 Jan 2022 07:24:28 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56526 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354425AbiA3MY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 07:11:01 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D97C061714;
-        Sun, 30 Jan 2022 04:11:01 -0800 (PST)
+        Sun, 30 Jan 2022 07:24:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AAE9BCE0E8B;
-        Sun, 30 Jan 2022 12:10:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47F16C340E4;
-        Sun, 30 Jan 2022 12:10:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAD15B80DEF;
+        Sun, 30 Jan 2022 12:24:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 414C7C340E4;
+        Sun, 30 Jan 2022 12:24:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643544658;
-        bh=3OyJ49EmCju1DvvhXIuA6J36rxsK/GREk9R0i8V2Shg=;
+        s=k20201202; t=1643545463;
+        bh=pwp+GnroCdFEJWcK92qTVzMBdnxk6NQt6J0zB3LNVFw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZOxLAYGXPMZMP0uzaw/EOhD4xLah0MQv4rd+PJQY2p78iszb/D9LtyGAX9JqQzCw1
-         XWWbr/6WBulW6/BOeK5VrG+AtJPZ45kEFjUBX1C6LbqGkbceq4dSF3vIGxEotBzJer
-         +tI7u3O/tfDGtebC+M9dzX1PVlAUnXdbqcc6fU5VHbKXst5sXSmrIMTF0PepdoxSVq
-         RbvADtoxukgJnncQTqw6W58K+OuqL62P0bPLWg01+x2Qiguv3PkNYzHIpqCrVP6Vor
-         cOUN7Wx9sU8Zu9a0cJaDaNTbZ3zXMiHjKb4Rw0F8EyKU7FaWodGvmdnmMicRNQ2ABR
-         0nicgkmVl0omA==
-Date:   Sun, 30 Jan 2022 12:17:21 +0000
+        b=MKwSQ4Kc2eZERUl547NyXjpkmgDhFlbBAXPMGgkB/2IF1avODl8A5zheoOiuhdvBK
+         PUkZ/XHPlQ3tw6XTJy5ib8Qq3tkemLckKabLfO0+iXpwBeP2JOP/1udQ4zHYCNKIVc
+         QCcU8V6K04kNc0Y7+uwicf0LZ4otCFrL99yTkqMW+N6dwzb7ldYFRMQLewoi2Gs0Pd
+         UepBAywLrbMA7nsrzatHNRnuRAtCJ1pB8WTLMja4xXECRmb6kXbhORfWunr6qJkpom
+         QkJbEmSGkCR+w57Xt9LWGGHhXbWNnzrJxwDoV5rTjdRO17ox4L0xhiUDmXInSTU/EP
+         ItvlnGt61ip0Q==
+Date:   Sun, 30 Jan 2022 12:30:47 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: iio/adc: qcom,spmi-iadc: Fix 'reg'
- property in example
-Message-ID: <20220130121721.62cc90db@jic23-huawei>
-In-Reply-To: <20220126231217.1633935-1-robh@kernel.org>
-References: <20220126231217.1633935-1-robh@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andreas Kemnade <andreas@kemnade.info>,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v4 1/4] math.h: Introduce data types for fractional
+ numbers
+Message-ID: <20220130123034.708543ad@jic23-huawei>
+In-Reply-To: <20220126135353.24007-1-andriy.shevchenko@linux.intel.com>
+References: <20220126135353.24007-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -51,40 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 26 Jan 2022 17:12:17 -0600
-Rob Herring <robh@kernel.org> wrote:
+On Wed, 26 Jan 2022 15:53:50 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> The QCom SPMI PMIC child nodes are defined to have a single address cell,
-> but the example has an erroneous size cell. Remove it.
+> Introduce a macro to produce data types like
 > 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-Probably should have a fixes tag...
-Fixes: a4e6bf69418c ("dt-bindings:iio:adc:qcom,spmi-iadc: txt to yaml format conversion.")
+> 	struct TYPE_fract {
+> 		__TYPE numerator;
+> 		__TYPE denominator;
+> 	};
+> 
+> to be used in the code wherever it's needed.
+> 
+> In the following changes convert some users to it.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Given it's been there a long time I'm guessing no great rush on this so I'll
-queue it up for then next merge window.
+I'm not 100% sold on this, but I'm going to give them the benefit
+of the doubt as to long term usefulness and apply them.
 
-Shout if you want to pick it up sooner.
+Basically I'm taking the view Andy is often right :)
+
+Applied to the togreg branch of iio.git and pushed out as testing
+for 0-day to see if we missed anything.
 
 Thanks,
 
 Jonathan
 
 > ---
->  Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.yaml
-> index 27e3108661c0..2a94db688830 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.yaml
-> @@ -51,7 +51,7 @@ examples:
->          #size-cells = <0>;
->          pmic_iadc: adc@3600 {
->              compatible = "qcom,spmi-iadc";
-> -            reg = <0x3600 0x100>;
-> +            reg = <0x3600>;
->              interrupts = <0x0 0x36 0x0 IRQ_TYPE_EDGE_RISING>;
->              qcom,external-resistor-micro-ohms = <10000>;
->              #io-channel-cells  = <1>;
+> May be pulled via IIO tree.
+> 
+> v4: no changes
+> v3: no changes
+> v2: no changes
+> 
+>  include/linux/math.h | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/include/linux/math.h b/include/linux/math.h
+> index 53674a327e39..439b8f0b9ebd 100644
+> --- a/include/linux/math.h
+> +++ b/include/linux/math.h
+> @@ -2,6 +2,7 @@
+>  #ifndef _LINUX_MATH_H
+>  #define _LINUX_MATH_H
+>  
+> +#include <linux/types.h>
+>  #include <asm/div64.h>
+>  #include <uapi/linux/kernel.h>
+>  
+> @@ -106,6 +107,17 @@
+>  }							\
+>  )
+>  
+> +#define __STRUCT_FRACT(type)				\
+> +struct type##_fract {					\
+> +	__##type numerator;				\
+> +	__##type denominator;				\
+> +};
+> +__STRUCT_FRACT(s16)
+> +__STRUCT_FRACT(u16)
+> +__STRUCT_FRACT(s32)
+> +__STRUCT_FRACT(u32)
+> +#undef __STRUCT_FRACT
+> +
+>  /*
+>   * Multiplies an integer by a fraction, while avoiding unnecessary
+>   * overflow or loss of precision.
 
