@@ -2,113 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85163C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 21:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EFB6C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 21:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347738AbiA3VkW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 16:40:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37128 "EHLO
+        id S231383AbiA3V65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 30 Jan 2022 16:58:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242760AbiA3VkT (ORCPT
+        with ESMTP id S229472AbiA3V6y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 16:40:19 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF251C061714;
-        Sun, 30 Jan 2022 13:40:18 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id ka4so36536742ejc.11;
-        Sun, 30 Jan 2022 13:40:18 -0800 (PST)
+        Sun, 30 Jan 2022 16:58:54 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A721AC061714;
+        Sun, 30 Jan 2022 13:58:54 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id s1so10072793ilj.7;
+        Sun, 30 Jan 2022 13:58:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=rIsQmiCYLNWlEDt7j0E7mZU87pG2DkpHuzF5PvCdiJg=;
-        b=NeOjQDxixyaZwWdkgZDXDFvksKjZYcEyncdgFZm7N4ZYMk7lzV86mQhC0VSFy//eZT
-         1yixt5xvqP+eHVrrwQtVcHsHEVViBYo1nNvR/v1zqWJ7o2eCkiBGXKMS+TCTf+w2f+tq
-         XzdFnOxHDLY8YNfNCElr5gxwVRVQej+vFz4hF9EqLhyUq5JzSEAPOpS8waYiwFqSsE4z
-         uuRjn/QO++bJ19fZYk9Z/M9h+PXLzO6kixr+Zsm1AE/7ZwIy2tHHxUXWqL2WToSGrJqO
-         pRB3admZ4LtSRu5gjuw4WHuM3Fg/+iYWB8cV91aONhzh19EKqeonzGMrVYlU0Sw2p43j
-         bxcw==
+        bh=2WzkOWbIGCxdnVfXxbYeaOq1kkhUVPgWWkMq9T4jHSE=;
+        b=bvWeAhe+cBYkOf8yfESB8c/eVFNJtaz5kGSi0Obb7CJpqjJPQsAf3Hm4uoD9OE7IyB
+         /5AIwx60UF9dAHw5Nt7hRhionD80uqShGX2FTE5oikDnODb+eiLIxZnlJEYWkv69IhaH
+         WCXyqyPV9qxsH87vTvbr2XZvEvS58ShPSoFDDSwmvCi6geLTP/cXJGcmyRa/eNVPvvjC
+         nbFBb3W2Psi2CyrC+J0Ps4WmGwUzFuAWKJlRe9w/0RliAk9WPm7/P87aC14sNjFubkT1
+         JPptaX0e4fmcdQBIxDJybUWpYlQvC3tiFcDGYfeANiTUyQcECPChvs/rTzEhvm+ALMN3
+         K63Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=rIsQmiCYLNWlEDt7j0E7mZU87pG2DkpHuzF5PvCdiJg=;
-        b=aoq7rpnczeR6it3CM/wWPdVcvxjt1yqwTJjNMlWmNgGW8rlI3OGxqhT1tHEjBI6Y8I
-         2o4pgFfH9PxkYl+ItBOr5a7E0APKbE05cazdiV3mF/7kGfeKKKDlXBP9Qh1OrRu7/0Xt
-         wUWkJC7RVeNyK2u+klYq47xvRtsQjtNminuT/wH9jGjYKA9zJSO7UkdieoyXN+NrXCTM
-         lNSpfgowh3n+DAOKChIwN5a/88IwcSaSA5+cHLh/vXISKQaV1fbkN+2zRQlrPnWDlpii
-         NvdZiovAwqSRhRHjzXrZBzdsPwiTY8iQh8lI7C16N0Qm0biJeFFM6OthS+wTFUl1J5W6
-         3lag==
-X-Gm-Message-State: AOAM530Czf3s5t74QMK++k2XamL8GORxYIUhdQQbnRvlUeEQxCgczHMK
-        PnI3/COXpVgz2XOvJC6+mwHNZl8ruKa+Qj6E5d4=
-X-Google-Smtp-Source: ABdhPJxXlS15ErRcsLX0t7qINUkTOvPGy9q2BXQi9sgDktA7CNItfeZWd2hK29DVWwnklpQb3sufYabIFP6jxYigf90=
-X-Received: by 2002:a17:907:1c9d:: with SMTP id nb29mr15277424ejc.281.1643578817092;
- Sun, 30 Jan 2022 13:40:17 -0800 (PST)
+        bh=2WzkOWbIGCxdnVfXxbYeaOq1kkhUVPgWWkMq9T4jHSE=;
+        b=UsLMPLk4XFonEYTDE4i7S5JQYfXCPqI34TuedepdI1/triAuZShGTNQxh+KtvJJIRJ
+         HZ9Tsm9J0cilpwWPgh4IxGP0xI5UsSPQ/qaMra4apy09AvB5VTyZjs64W+XliQtOOohS
+         fjbjk4Oo1BoUu0wfWjtYsNZvTzk33Uq5Ua+fIa9wTKx7NFjB8Mi8jS1J7d9HrTJKoP5e
+         jedVaGp+nO+jBVqwQDpMkRk/mGEw82lTqv8DgIBiFKDdI11cx3UpYzuL+bzDgatYR2Q2
+         CIl+gDSY8Ue0a75x3rEnXLX/lc6EHZFDO4FNYV7RkjKFMjPJB83p9tLFb+A5MW2H0awK
+         B7jg==
+X-Gm-Message-State: AOAM533MnQTFwNze2uK336Jq7lpeCEuO5kof/2iBSyvKYv7UVOObtacs
+        ao2CWw/GU/DbJA6VZIgeMXLRfvZPqXbr7MonfPI=
+X-Google-Smtp-Source: ABdhPJzdNxGsjYLUnKAgvNscB7weXb0Tpcw2mQrzlxcr5RkfUXLhB6PciOFtfhw/stH614ok3qe9r0CiU01gh1SZm0E=
+X-Received: by 2002:a05:6e02:1244:: with SMTP id j4mr11187403ilq.28.1643579933258;
+ Sun, 30 Jan 2022 13:58:53 -0800 (PST)
 MIME-Version: 1.0
-References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
- <423f474e15c948eda4db5bc9a50fd391@realtek.com> <CAFBinCBVEndU0t-6d5atE31OFYHzPyk7pOe78v0XrrFWcBec9w@mail.gmail.com>
- <5ef8ab4f78e448df9f823385d0daed88@realtek.com> <CAFBinCDjfKK3+WOXP2xbcAK-KToWof+kSzoxYztqRcc=7T1eyg@mail.gmail.com>
- <53bea965043548539b995514d36f48e5@realtek.com>
-In-Reply-To: <53bea965043548539b995514d36f48e5@realtek.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sun, 30 Jan 2022 22:40:06 +0100
-Message-ID: <CAFBinCBcgEKB3Zak9oGrZ-azqgot691gFSRGGeOP-hr4e+9C4Q@mail.gmail.com>
-Subject: Re: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
-To:     Pkshih <pkshih@realtek.com>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Ed Swierk <eswierk@gh.st>
+References: <20220126205214.2149936-1-jannh@google.com> <CA+fCnZe_p+JwUWwumgGm185vWSdAK_z-UFDp7-HWKANB4YjA=g@mail.gmail.com>
+ <CAG48ez0pke5fqEuWGecMAKLpsdVoW3JM3M-SkajHcq_dsrQ_4A@mail.gmail.com> <CA+fCnZdXpBHFN3u5exkbLkUsPaFVsbFi=evsPd3uMMfV=tKAeg@mail.gmail.com>
+In-Reply-To: <CA+fCnZdXpBHFN3u5exkbLkUsPaFVsbFi=evsPd3uMMfV=tKAeg@mail.gmail.com>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Sun, 30 Jan 2022 22:58:42 +0100
+Message-ID: <CA+fCnZc4kavuHbGXAbzQJSLG=f9Oc--O-H=OT_xkKb0AooyyAQ@mail.gmail.com>
+Subject: Re: [PATCH] usb: raw-gadget: fix handling of dual-direction-capable endpoints
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jann Horn <jannh@google.com>, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ping-Ke,
-
-On Fri, Jan 28, 2022 at 1:51 AM Pkshih <pkshih@realtek.com> wrote:
-[...]
+On Wed, Jan 26, 2022 at 11:37 PM Andrey Konovalov <andreyknvl@gmail.com> wrote:
 >
-> > >
-> > > To avoid this, we can add a flag to struct rtw_vif, and set this flag
-> > > when ::remove_interface. Then, only collect vif without this flag into list
-> > > when we use iterate_actiom().
-> > >
-> > > As well as ieee80211_sta can do similar fix.
-> > >
+> On Wed, Jan 26, 2022 at 11:31 PM Jann Horn <jannh@google.com> wrote:
+> >
+> > On Wed, Jan 26, 2022 at 11:12 PM Andrey Konovalov <andreyknvl@gmail.com> wrote:
+> > > On Wed, Jan 26, 2022 at 9:52 PM Jann Horn <jannh@google.com> wrote:
+> > > >
+> > > > Under dummy_hcd, every available endpoint is *either* IN or OUT capable.
+> > > > But with some real hardware, there are endpoints that support both IN and
+> > > > OUT. In particular, the PLX 2380 has four available endpoints that each
+> > > > support both IN and OUT.
+> > > >
+> > > > raw-gadget currently gets confused and thinks that any endpoint that is
+> > > > usable as an IN endpoint can never be used as an OUT endpoint.
+> > > >
+> > > > Fix it by looking at the direction in the configured endpoint descriptor
+> > > > instead of looking at the hardware capabilities.
+> > > >
+> > > > With this change, I can use the PLX 2380 with raw-gadget.
+> > > >
+> > > > Fixes: f2c2e717642c ("usb: gadget: add raw-gadget interface")
+> > > > Signed-off-by: Jann Horn <jannh@google.com>
+> > > > ---
+> > > >  drivers/usb/gadget/legacy/raw_gadget.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
+> > > > index c5a2c734234a..d86c3a36441e 100644
+> > > > --- a/drivers/usb/gadget/legacy/raw_gadget.c
+> > > > +++ b/drivers/usb/gadget/legacy/raw_gadget.c
+> > > > @@ -1004,7 +1004,7 @@ static int raw_process_ep_io(struct raw_dev *dev, struct usb_raw_ep_io *io,
+> > > >                 ret = -EBUSY;
+> > > >                 goto out_unlock;
+> > > >         }
+> > > > -       if ((in && !ep->ep->caps.dir_in) || (!in && ep->ep->caps.dir_in)) {
+> > > > +       if (in != usb_endpoint_dir_in(ep->ep->desc)) {
+> > > >                 dev_dbg(&dev->gadget->dev, "fail, wrong direction\n");
+> > > >                 ret = -EINVAL;
+> > > >                 goto out_unlock;
+> > > >
+> > > > base-commit: 0280e3c58f92b2fe0e8fbbdf8d386449168de4a8
+> > > > --
+> > > > 2.35.0.rc0.227.g00780c9af4-goog
+> > > >
 >
-> I would prefer my method that adds a 'bool disabled' flag to struct rtw_vif/rtw_sta
-> and set it when ::remove_interface/::sta_remove. Then rtw_iterate_stas() can
-> check this flag to decide whether does thing or not.
-That would indeed be a very straight forward approach and easy to read.
-In net/mac80211/iface.c there's some cases where after
-drv_remove_interface() (which internally calls our .remove_interface
-op) will kfree the vif (sdata). Doesn't that then result in a
-use-after-free if we rely on a boolean within rtw_vif?
+> Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
+> Tested-by: Andrey Konovalov <andreyknvl@gmail.com>
 
-[...]
-> > For the interface use-case it's not clear to me how this works at all.
-> > rtw_ops_add_interface() has (in a simplified view):
-> >     u8 port = 0;
-> >     // the port variable is never changed
-> >     rtwvif->port = port;
-> >     rtwvif->conf = &rtw_vif_port[port];
-> >     rtw_info(rtwdev, "start vif %pM on port %d\n", vif->addr, rtwvif->port);
-> > How do multiple interfaces (vifs) work in rtw88 if the port is always
-> > zero? Is some kind of tracking of the used ports missing (similar to
-> > how we track the used station IDs - also called mac_id - in
-> > rtw_dev->mac_id_map)?
->
-> The port should be allocated dynamically if we support two or more vifs.
-> We have internal tree that is going to support p2p by second vif.
-I see, thanks for clarifying this!
+Greg, could you PTAL and pick this up?
 
+It also makes sense to include this fix into stable kernels.
 
-Best regards,
-Martin
+Cc: <stable@vger.kernel.org>
+
+Thanks!
