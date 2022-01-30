@@ -2,143 +2,259 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 13:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40001C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 13:09:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347105AbiA3NHN (ORCPT
+        id S1354862AbiA3NJj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 08:07:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347045AbiA3NHK (ORCPT
+        Sun, 30 Jan 2022 08:09:39 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36424 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347097AbiA3NJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 08:07:10 -0500
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0974C061714;
-        Sun, 30 Jan 2022 05:07:09 -0800 (PST)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 2C4C9C01E; Sun, 30 Jan 2022 14:07:05 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1643548025; bh=WzIC+v4+UrPRQhCkj2dIOPEwY3tXxjMgRe2rgwvMEZY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=A/eTCDAYeVJIxX5tbvB12/4/652HP6a+M3FpLRcse+Sc/SEjEpfTDPYqr1LDWJh1v
-         mKGkEQeNIvKnL7zXo0of38hdfHCmurruuAq1RVuh/WRkZ29Azka74FfWZ2FMPKPa7E
-         OFzMujNAmlWwYryiv62a1n0xCvaQolZw3yZ4TE8ZNDfbF1x4cKDIA1DmHKvN902c1R
-         CHdTs98gR/dogx6TZ8YrpA42dOjVmuR57wwsv/Oe8z1gb3TAn8r2u07I6qF7QdICHx
-         wkg7Bzw9y1kIem4Y6uVmScgtSqVubnftN4Gv2MpiYgmAfNmiW/4DcWSBnHarALyF7n
-         aXKrUoaYdnxKQ==
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id C0393C01B;
-        Sun, 30 Jan 2022 14:07:01 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1643548024; bh=WzIC+v4+UrPRQhCkj2dIOPEwY3tXxjMgRe2rgwvMEZY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=f92Lnoe7HN1ufdYJSbNXcyVI/iMnA8btHbNuPezzvvhOQa41J/nJcEc7dibLwCS/G
-         YeXUlLJlorVVVAc8ayShvappXCEwRTXw5F+AqipPbYGKmZx4rMs4qqDYrNN1VLfrGX
-         7MXSoeDVhEvNk6X/KUVxjalJXF/G5wdlvkpC3qhwkzyNBfkbF27SOy5jmqhZXFgqxK
-         vFqD7IzAAuFQw0AF9Xnm5zcLo+PSxECkbrsiGK3GQGuYfpKbXdVW+/cyBgRvLoly8V
-         I8r1O5bdT9amTUA81wljgpkQ72J2meQt5rJNlmxiy2rkVPoTm+p1o/tP2m6WtYBamU
-         fmdHqvKGboAbA==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id b42ff00b;
-        Sun, 30 Jan 2022 13:06:57 +0000 (UTC)
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     v9fs-developer@lists.sourceforge.net, ericvh@gmail.com,
-        lucho@ionkov.net
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        stable@vger.kernel.org, ron minnich <rminnich@gmail.com>,
-        ng@0x80.stream
-Subject: [PATCH] Revert "fs/9p: search open fids first"
-Date:   Sun, 30 Jan 2022 22:06:51 +0900
-Message-Id: <20220130130651.712293-1-asmadeus@codewreck.org>
-X-Mailer: git-send-email 2.33.1
+        Sun, 30 Jan 2022 08:09:36 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E434B82910;
+        Sun, 30 Jan 2022 13:09:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C551DC340F0;
+        Sun, 30 Jan 2022 13:09:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643548173;
+        bh=IEVaiXWmbvcl7fE6hskN08SZEi8quAo9Gg2OKQQyfEo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=DwxFA/cg+r7Cw0WKrj8AMg0whBHb3GMZ5VOw5gu6qc5VBlFwizPp3iyvePS9W8lQ3
+         Sp+mDI01a+mIXFiVbQ6eegDbDJsXHS20GzR77b2or++jS87wuaVmnvw9oVBUQV6qcG
+         TY/CbFJuJZBnDU4M0hXNEjckWzDg3whhO0Nh6Z5khN7iQy/0+zKhCmnHdQIj/LS/lE
+         1+ym1QX+qSyXuPZQiGzhOkG2dfLjk3SMFKrXn7FdxXgbUcfWG6rOhxe/g2vCBYTRsL
+         yLAHuvlWND38aJW9RnGvkCB6DWJg3KUpYj2zAupASVgDftnCaJwyRnpXdVOQKYb9VF
+         07I0tYoITLyxA==
+Received: by mail-vs1-f46.google.com with SMTP id a7so8622621vsc.6;
+        Sun, 30 Jan 2022 05:09:33 -0800 (PST)
+X-Gm-Message-State: AOAM531G5053Z1rOCfIqgVWWxybmm1TO8h7yMZb4EaCvERMCc/RopgsJ
+        Eb6Ytoc6WkgKYef5B4MUkhYHNeljm+VMfPMY7c8=
+X-Google-Smtp-Source: ABdhPJz/wqFW6kQRs/KIXn3iRbrlyamat4Ax8X17S8CkP6sb4dqKjGhOyfvgmh80FmQojhLAJAzFpS2GdxSCUhdoyLQ=
+X-Received: by 2002:a67:f94e:: with SMTP id u14mr7206294vsq.2.1643548172776;
+ Sun, 30 Jan 2022 05:09:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220129162726.1154501-1-guoren@kernel.org> <20220129162726.1154501-3-guoren@kernel.org>
+ <87r18qxui9.wl-maz@kernel.org> <CAJF2gTTYN0bxnnMtP9L1KvaH0h6ny+Lr3+fC7GP-YWnwjAYd4A@mail.gmail.com>
+ <35b1838d-ef80-1816-46f6-9cba7afc813e@sholland.org> <CAJF2gTQsi6uT8ea6MTu6oDA-9xsd3fW5ETHAtpzGZxapLpLsWA@mail.gmail.com>
+ <87o83ty0ti.wl-maz@kernel.org>
+In-Reply-To: <87o83ty0ti.wl-maz@kernel.org>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Sun, 30 Jan 2022 21:09:21 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTR=Gyw33dt36g+uqDSMckqJW+bifpue2N_+FAMEn4NqAQ@mail.gmail.com>
+Message-ID: <CAJF2gTR=Gyw33dt36g+uqDSMckqJW+bifpue2N_+FAMEn4NqAQ@mail.gmail.com>
+Subject: Re: [PATCH V6 2/2] irqchip/sifive-plic: Fixup thead,c900-plic dt
+ parse in opensbi
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Anup Patel <anup@brainfault.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 478ba09edc1f2f2ee27180a06150cb2d1a686f9c.
+On Sun, Jan 30, 2022 at 6:28 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On Sun, 30 Jan 2022 04:39:34 +0000,
+> Guo Ren <guoren@kernel.org> wrote:
+> >
+> > On Sun, Jan 30, 2022 at 10:50 AM Samuel Holland <samuel@sholland.org> wrote:
+> > >
+> > > On 1/29/22 8:08 PM, Guo Ren wrote:
+> > > > On Sun, Jan 30, 2022 at 2:32 AM Marc Zyngier <maz@kernel.org> wrote:
+> > > >>
+> > > >> On Sat, 29 Jan 2022 16:27:26 +0000,
+> > > >> guoren@kernel.org wrote:
+> > > >>>
+> > > >>> From: Guo Ren <guoren@linux.alibaba.com>
+> > > >>>
+> > > >>> The thead,c900-plic has been used in opensbi to distinguish
+> > > >>> PLIC [1]. Although PLICs have the same behaviors in Linux,
+> > > >>> they are different hardware with some custom initializing in
+> > > >>> firmware(opensbi).
+> > > >>>
+> > > >>> [1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
+> > > >>>
+> > > >>> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> > > >>> Cc: Anup Patel <anup@brainfault.org>
+> > > >>> Cc: Marc Zyngier <maz@kernel.org>
+> > > >>> Cc: Palmer Dabbelt <palmer@dabbelt.com>
+> > > >>> Cc: Samuel Holland <samuel@sholland.org>
+> > > >>> Cc: Thomas Gleixner <tglx@linutronix.de>
+> > > >>> ---
+> > > >>>  drivers/irqchip/irq-sifive-plic.c | 25 +++++++++++++++++++++++--
+> > > >>>  1 file changed, 23 insertions(+), 2 deletions(-)
+> > > >>>
+> > > >>> diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
+> > > >>> index 259065d271ef..245655928076 100644
+> > > >>> --- a/drivers/irqchip/irq-sifive-plic.c
+> > > >>> +++ b/drivers/irqchip/irq-sifive-plic.c
+> > > >>> @@ -172,7 +172,7 @@ static void plic_irq_eoi(struct irq_data *d)
+> > > >>>       }
+> > > >>>  }
+> > > >>>
+> > > >>> -static struct irq_chip plic_chip = {
+> > > >>> +static struct irq_chip sifive_plic_chip = {
+> > > >>>       .name           = "SiFive PLIC",
+> > > >>>       .irq_mask       = plic_irq_mask,
+> > > >>>       .irq_unmask     = plic_irq_unmask,
+> > > >>> @@ -182,12 +182,24 @@ static struct irq_chip plic_chip = {
+> > > >>>  #endif
+> > > >>>  };
+> > > >>>
+> > > >>> +static struct irq_chip thead_plic_chip = {
+> > > >>> +     .name           = "T-Head PLIC",
+> > > >>> +     .irq_mask       = plic_irq_mask,
+> > > >>> +     .irq_unmask     = plic_irq_unmask,
+> > > >>> +     .irq_eoi        = plic_irq_eoi,
+> > > >>> +#ifdef CONFIG_SMP
+> > > >>> +     .irq_set_affinity = plic_set_affinity,
+> > > >>> +#endif
+> > > >>> +};
+> > > >>
+> > > >> For pure entertainment, let's compare the two structures:
+> > > >>
+> > > >> static struct irq_chip plic_chip = {
+> > > >>         .name           = "SiFive PLIC",
+> > > >>         .irq_mask       = plic_irq_mask,
+> > > >>         .irq_unmask     = plic_irq_unmask,
+> > > >>         .irq_eoi        = plic_irq_eoi,
+> > > >> #ifdef CONFIG_SMP
+> > > >>         .irq_set_affinity = plic_set_affinity,
+> > > >> #endif
+> > > >> };
+> > > >>
+> > > >> Oh wait: a string. Must be really important. Not.
+> > > > No, pls see below comment.
+> > > >
+> > > >>
+> > > >>> +
+> > > >>> +static struct irq_chip *def_plic_chip = &sifive_plic_chip;
+> > > >>> +
+> > > >>>  static int plic_irqdomain_map(struct irq_domain *d, unsigned int irq,
+> > > >>>                             irq_hw_number_t hwirq)
+> > > >>>  {
+> > > >>>       struct plic_priv *priv = d->host_data;
+> > > >>>
+> > > >>> -     irq_domain_set_info(d, irq, hwirq, &plic_chip, d->host_data,
+> > > >>> +     irq_domain_set_info(d, irq, hwirq, def_plic_chip, d->host_data,
+> > > >>>                           handle_fasteoi_irq, NULL, NULL);
+> > > >>>       irq_set_noprobe(irq);
+> > > >>>       irq_set_affinity(irq, &priv->lmask);
+> > > >>> @@ -396,5 +408,14 @@ static int __init plic_init(struct device_node *node,
+> > > >>>       return error;
+> > > >>>  }
+> > > >>>
+> > > >>> +static int __init thead_c900_plic_init(struct device_node *node,
+> > > >>> +             struct device_node *parent)
+> > > >>> +{
+> > > >>> +     def_plic_chip = &thead_plic_chip;
+> > > >>> +
+> > > >>> +     return plic_init(node, parent);
+> > > >>> +}
+> > > >>> +
+> > > >>>  IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
+> > > >>>  IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
+> > > >>> +IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", thead_c900_plic_init);
+> > > >>
+> > > >> Sorry, but I can't see any point to this patch.
+> > > > You didn't see the link I've put in the patch. In that opensbi patch:
+>
+> No. If you can't explain why you need this in the commit message, why
+> should I reverse engineer that from some obscure piece of firmware?
 
-That commit was meant as a fix for setattrs with by fd (e.g. ftruncate)
-to use an open fid instead of the first fid it found on lookup.
-The proper fix for that is to use the fid associated with the open file
-struct, available in iattr->ia_file for such operations, and was
-actually done just before in 66246641609b ("9p: retrieve fid from file
-when file instance exist.")
-As such, this commit is no longer required.
+I've explaned that in the commit message:
 
-Furthermore, changing lookup to return open fids first had unwanted side
-effects, as it turns out the protocol forbids the use of open fids for
-further walks (e.g. clone_fid) and we broke mounts for some servers
-enforcing this rule.
+The thead,c900-plic has been used in opensbi to distinguish
+PLIC [1]. Although PLICs have the same behaviors in Linux,
+they are different hardware with some custom initializing in
+firmware(opensbi).
 
-Note this only reverts to the old working behaviour, but it's still
-possible for lookup to return open fids if dentry->d_fsdata is not set,
-so more work is needed to make sure we respect this rule in the future,
-for example by adding a flag to the lookup functions to only match
-certain fid open modes depending on caller requirements.
+[1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
 
-Fixes: 478ba09edc1f ("fs/9p: search open fids first")
-Cc: stable@vger.kernel.org # v5.11+
-Reported-by: ron minnich <rminnich@gmail.com>
-Reported-by: ng@0x80.stream
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
----
+If you think the above doesn't satisfy you, please point it out. Then
+I can improve the commit-msg.
 
-I'm sorry I didn't find time to check this properly fixes the clone
-open fid issues, but Ron reported it did so I'll assume it did for now.
-I'll try to find time to either implement the check in ganesha or use
-another server -- if you have a suggestion that'd run either a ramfs or
-export a local filesystem from linux I'm all ears, I couldn't get go9p
-to work in the very little time I tried.
+>
+> > > >                 intc: interrupt-controller@10000000 {
+> > > >                         #interrupt-cells = <1>;
+> > > > -                       compatible = "riscv,plic0";
+> > > > +                       compatible = "allwinner,sun20i-d1-plic",
+> > > > +                                    "thead,c900-plic";
+> > > >
+> > > > +#define THEAD_PLIC_CTRL_REG 0x1ffffc
+> > > > +
+> > > > +static void thead_plic_plat_init(struct plic_data *pd)
+> > > > +{
+> > > > +       writel_relaxed(BIT(0), (void *)pd->addr + THEAD_PLIC_CTRL_REG);
+> > > > +}
+> > > > +
+> > > >  static const struct fdt_match irqchip_plic_match[] = {
+> > > >         { .compatible = "riscv,plic0" },
+> > > >         { .compatible = "sifive,plic-1.0.0" },
+> > > > +       { .compatible = "thead,c900-plic",
+> > > > +         .data = thead_plic_plat_init },
+> > > >         { },
+> > > >  };
+> > > >
+> > > > We've changed the compatible name for thead,c900-plic, and there is no
+> > > > riscv,plic0 / sifive,plic-1.0.0 in dts. Without the patch, the newest
+> > > > opensbi + newest Linux would be broken in the Allwinner D1 dev board.
+>
+> So the firmware changes things in incompatible ways. Why does it
+> matter to Linux?
+The opensbi (firmware) reuses dts with the Linux, so PLIC driver
+separates into two parts: firmware & linux. For firmware part, we need
+another name to distinguish.
 
-I did however check that Greg's original open/chmod 0/ftruncate pattern
-works (while truncate was refused).
-Also, before revert the truncate by path wasn't refused, and now is
-again, so that's definitely good.
+>  Why isn't the fix directly applied to the firmware instead?
+The opensbi patch commit-msg has explained:
+The T-HEAD PLIC implementation requires setting a delegation bit to
+allow access from S-mode. Now that the T-HEAD PLIC has its own
+compatible string, set this bit automatically from the PLIC driver,
+instead of reaching into the PLIC's MMIO space from another driver.
 
-I've also tested open-unlink-ftruncate and it works properly with
-ganesha, but not with qemu -- it looks like qemu tries to access the
-file by path in setattr even if the fid has an associated fd, so that'd
-be a qemu bug, but it's unrelated to this patch anyway.
+If we can't modify the Linux driver, then we must abandon that patch in opensbi.
+
+>  Why isn't the riscv,plic0 fallback appropriate?
+We can't use riscv,plic0 as the tag of thead,plic, because it's
+reserved for past.
+
+>
+> > > Yes, some patch is still necessary, because the hardware is indeed incompatible
+> > > with riscv,plic0. However, this driver does not care about the difference. So
+> > > all you need to do is hook up the existing code to the new compatible:
+> > >
+> > > +IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init);
+> > I think we should give clear info in /proc/interrupts. I hope we could
+> > keep thead_plic_init.
+>
+> Why? There is no material difference at the driver level, and
+> /proc/interrupts won't be the target of a branding exercise (which
+> this series seems to be all about).
+It's not a branding exercise, the series just correct the broken code
+& incorrect /proc/interrupts display.
+
+>
+>         M.
+>
+> --
+> Without deviation from the norm, progress is not possible.
 
 
-Unless there are issues with this patch I'll send it to Linus around
-Friday
 
- fs/9p/fid.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
-
-diff --git a/fs/9p/fid.c b/fs/9p/fid.c
-index 6aab046c98e2..79df61fe0e59 100644
---- a/fs/9p/fid.c
-+++ b/fs/9p/fid.c
-@@ -96,12 +96,8 @@ static struct p9_fid *v9fs_fid_find(struct dentry *dentry, kuid_t uid, int any)
- 		 dentry, dentry, from_kuid(&init_user_ns, uid),
- 		 any);
- 	ret = NULL;
--
--	if (d_inode(dentry))
--		ret = v9fs_fid_find_inode(d_inode(dentry), uid);
--
- 	/* we'll recheck under lock if there's anything to look in */
--	if (!ret && dentry->d_fsdata) {
-+	if (dentry->d_fsdata) {
- 		struct hlist_head *h = (struct hlist_head *)&dentry->d_fsdata;
- 
- 		spin_lock(&dentry->d_lock);
-@@ -113,6 +109,9 @@ static struct p9_fid *v9fs_fid_find(struct dentry *dentry, kuid_t uid, int any)
- 			}
- 		}
- 		spin_unlock(&dentry->d_lock);
-+	} else {
-+		if (dentry->d_inode)
-+			ret = v9fs_fid_find_inode(dentry->d_inode, uid);
- 	}
- 
- 	return ret;
 -- 
-2.34.1
+Best Regards
+ Guo Ren
 
+ML: https://lore.kernel.org/linux-csky/
