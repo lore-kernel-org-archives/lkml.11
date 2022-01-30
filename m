@@ -2,85 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E4BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 11:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1444AC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 11:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348174AbiA3LMb (ORCPT
+        id S1344866AbiA3LMe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 06:12:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40526 "EHLO
+        Sun, 30 Jan 2022 06:12:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344623AbiA3LM1 (ORCPT
+        with ESMTP id S1345648AbiA3LM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 06:12:27 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A69CC061714
-        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 03:12:27 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id n10so20913675edv.2
-        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 03:12:27 -0800 (PST)
+        Sun, 30 Jan 2022 06:12:29 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04E5C061741
+        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 03:12:28 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id w14so20957176edd.10
+        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 03:12:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fBqhdQDBJRGoBLP7N57YtbXFLEg4i5iAZLmqRoUPvx0=;
-        b=dXIOQfjcCa9oro1DdBhyRD2GfQlKwq8gWPz/p4iWbpJM0ZEEHpoJzS1yTMgqBXRjwk
-         1OIjFfyMSJOgAzZ/FoVjf6dTxMiMMi2Mma/QAwPmSJ98WqDxf+bGw9QxmegVp8oU+d2W
-         uyYphjUt+0PzOvNjBjuSYUwTQNCXBL7fRRSASVevBQj5jAxeKhGIrjmNOCcb6j5Iqjrp
-         NOYoN80lz2ychKggU/s5WUw3aTxtH4JRQb0xmey2FlHxapZIE/inGyLPtq91ubNsijk3
-         wdaeA5QiazGsSV6/06HCWHebPNTb+KDPGoVKWr/Hhr1NNfAhAMckp20DK0pMKWJHY33t
-         iI5w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1AVN0e7+wSCiMDsgVXe5hxd5jK8h7WXEx+niad3RkKM=;
+        b=WIX5Uw146iMBjci2EHosCeX+KCz9g06Fel/rdo63DdjpuFbWYHM1SSYBgRT+7/4RNN
+         1x2lQmXMS+9KwyjU5b1+PUZaNZd+Ri/6PUDxm86TsVGKijnhwQllx+ja0XBzJKcqUJp7
+         dZP/rT+tollXnqjSujFZgaC2wCHO0m0YZNVEOtLnKb5Ne9qj9JSD/L4oNMQnEyps9Dzi
+         LrTQPn0EhIm5pbjLHljeDjTgGVXYV2jjupfb2lpbVD+xCLoeo2GgR/8nw4y6NuIJdsMc
+         2F2DE3qOjfL1WH3WJjlQu1WIUZTM2oaHAntTa0i/3W2xsIVsrGENMJuoBWA0dxR8qajh
+         HxBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fBqhdQDBJRGoBLP7N57YtbXFLEg4i5iAZLmqRoUPvx0=;
-        b=6Sm8c1L60bPJ93HN9BUi+SDJmio1Zac4pfIeoHp31+SNsP1OvtsIptXJXzAC5Wn3P9
-         Pz4PhjxA/zq5hNftjQMxC59DiDKYnUBWUE4bC4xKqFZBbKKvuAyz72No/O8wlwQqYBXB
-         5BXuJ5UvrVb4TuWhwGZ6WYMDueAy+VyTmTHpyvkwaDeFRAR3vAAUZCo7PnyNqXixHk4F
-         yIhZl5eLUdTMG3rsm1WiAaTGtBtjPViy4V1Cy9d8iMJNhAZq6Ru6+UuvmAgbcTFwQUXO
-         k82lWY3KumCFmaUESFaDnEFEv0F4P5ITCCnsxKPOzvEos7qcWtsYmdX/NqnXzt8tpCm3
-         0V9Q==
-X-Gm-Message-State: AOAM530tE6X3P7jvx32V+kEvKldZqopz6cy5eMLMPzOaEZu/Db3zhubl
-        iLuX2zqmT2pfxy16S0/xNUf1JhvfrPM=
-X-Google-Smtp-Source: ABdhPJwj6gVPg5wkvarYkfHovH7XPab80gbraUv3eTCbmjY1Pf0pKANgFAdGYaVsEDIzdwqDu2gZfg==
-X-Received: by 2002:a05:6402:2c7:: with SMTP id b7mr16530788edx.217.1643541146085;
-        Sun, 30 Jan 2022 03:12:26 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1AVN0e7+wSCiMDsgVXe5hxd5jK8h7WXEx+niad3RkKM=;
+        b=4r9IrlF25LVr41yPIEqwWbE1RqNAPu/UU6ljzMY32clsft3J4aOCuz8LXz5iXwrUqY
+         AQvCHVt68SaCSBuE942vLgHx4ijmCAyNDZMk3ir1bL1A1+ltIKTknHEgrwF/Q7UinufJ
+         W4G5KC1MzF6TZZ4+vtFM1aDgMNioxEcO2OQZaZmNjMOXajzF5leevG56uS3HHyeG35AE
+         AfKx8hL8HGu2Ev6g8Fy5Ui9aTQ+okuZJvoEOVD0KG26qf0rHjB/+HIZirR7Ya905yxmd
+         ME9RL3omTZls5k/2AoGI0sqR9e/odCvanWFl1ftv7PLIKZX27v8IQqaq9GBWAvLDYxwz
+         w0Mw==
+X-Gm-Message-State: AOAM531t353ePWeImdgdo5YHXHsxScJkbTPqa3DwJqJViqw6yI60X/C4
+        H7v07emGUM41c5QuCMByGIA=
+X-Google-Smtp-Source: ABdhPJxLt2+gku5XsKep2reM7iU2/MjVVZqNEs/B6nGbEk9D0CC14SZ5FQ+XP+5xm9xdbAeiCjijbQ==
+X-Received: by 2002:aa7:dbcc:: with SMTP id v12mr16266757edt.263.1643541147394;
+        Sun, 30 Jan 2022 03:12:27 -0800 (PST)
 Received: from localhost.localdomain (ip5f5abb5a.dynamic.kabel-deutschland.de. [95.90.187.90])
-        by smtp.gmail.com with ESMTPSA id nd9sm12129510ejc.169.2022.01.30.03.12.25
+        by smtp.gmail.com with ESMTPSA id nd9sm12129510ejc.169.2022.01.30.03.12.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Jan 2022 03:12:25 -0800 (PST)
+        Sun, 30 Jan 2022 03:12:27 -0800 (PST)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 0/3] staging: r8188eu: remove two wrappers
-Date:   Sun, 30 Jan 2022 12:12:16 +0100
-Message-Id: <20220130111219.6390-1-straube.linux@gmail.com>
+Subject: [PATCH 2/3] staging: r8188eu: remove unused parameter from hw_var_set_*
+Date:   Sun, 30 Jan 2022 12:12:18 +0100
+Message-Id: <20220130111219.6390-3-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220130111219.6390-1-straube.linux@gmail.com>
+References: <20220130111219.6390-1-straube.linux@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This set removes the wrapper functions c2h_evt_clear() and
-hal_init_macaddr().
+Remove the unused parameter 'variable' from hw_var_set_* functions.
 
-Tested on x86_64 with Inter-Tech DMG-02.
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+ drivers/staging/r8188eu/hal/usb_halinit.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-Michael Straube (3):
-  staging: r8188eu: remove c2h_evt_clear()
-  staging: r8188eu: remove unused parameter from hw_var_set_*
-  staging: r8188eu: remove hal_init_macaddr()
-
- drivers/staging/r8188eu/core/rtw_cmd.c     |  2 +-
- drivers/staging/r8188eu/hal/hal_com.c      | 12 +------
- drivers/staging/r8188eu/hal/usb_halinit.c  | 39 ++++++++++------------
- drivers/staging/r8188eu/include/hal_com.h  |  3 --
- drivers/staging/r8188eu/include/hal_intf.h |  1 -
- 5 files changed, 20 insertions(+), 37 deletions(-)
-
+diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+index 3aa5289a61f0..c5282603a42c 100644
+--- a/drivers/staging/r8188eu/hal/usb_halinit.c
++++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+@@ -970,7 +970,7 @@ static void StopTxBeacon(struct adapter *adapt)
+ 	 /* todo: CheckFwRsvdPageContent(Adapter);  2010.06.23. Added by tynli. */
+ }
+ 
+-static void hw_var_set_opmode(struct adapter *Adapter, u8 variable, u8 *val)
++static void hw_var_set_opmode(struct adapter *Adapter, u8 *val)
+ {
+ 	u8 val8;
+ 	u8 mode = *((u8 *)val);
+@@ -1027,7 +1027,7 @@ static void hw_var_set_opmode(struct adapter *Adapter, u8 variable, u8 *val)
+ 	}
+ }
+ 
+-static void hw_var_set_macaddr(struct adapter *Adapter, u8 variable, u8 *val)
++static void hw_var_set_macaddr(struct adapter *Adapter, u8 *val)
+ {
+ 	u8 idx = 0;
+ 	u32 reg_macid;
+@@ -1038,7 +1038,7 @@ static void hw_var_set_macaddr(struct adapter *Adapter, u8 variable, u8 *val)
+ 		rtw_write8(Adapter, (reg_macid + idx), val[idx]);
+ }
+ 
+-static void hw_var_set_bssid(struct adapter *Adapter, u8 variable, u8 *val)
++static void hw_var_set_bssid(struct adapter *Adapter, u8 *val)
+ {
+ 	u8 idx = 0;
+ 	u32 reg_bssid;
+@@ -1049,7 +1049,7 @@ static void hw_var_set_bssid(struct adapter *Adapter, u8 variable, u8 *val)
+ 		rtw_write8(Adapter, (reg_bssid + idx), val[idx]);
+ }
+ 
+-static void hw_var_set_bcn_func(struct adapter *Adapter, u8 variable, u8 *val)
++static void hw_var_set_bcn_func(struct adapter *Adapter, u8 *val)
+ {
+ 	u32 bcn_ctrl_reg;
+ 
+@@ -1078,13 +1078,13 @@ void SetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
+ 		}
+ 		break;
+ 	case HW_VAR_SET_OPMODE:
+-		hw_var_set_opmode(Adapter, variable, val);
++		hw_var_set_opmode(Adapter, val);
+ 		break;
+ 	case HW_VAR_MAC_ADDR:
+-		hw_var_set_macaddr(Adapter, variable, val);
++		hw_var_set_macaddr(Adapter, val);
+ 		break;
+ 	case HW_VAR_BSSID:
+-		hw_var_set_bssid(Adapter, variable, val);
++		hw_var_set_bssid(Adapter, val);
+ 		break;
+ 	case HW_VAR_BASIC_RATE:
+ 		{
+@@ -1122,7 +1122,7 @@ void SetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
+ 		}
+ 		break;
+ 	case HW_VAR_BCN_FUNC:
+-		hw_var_set_bcn_func(Adapter, variable, val);
++		hw_var_set_bcn_func(Adapter, val);
+ 		break;
+ 	case HW_VAR_CORRECT_TSF:
+ 		{
 -- 
 2.34.1
 
