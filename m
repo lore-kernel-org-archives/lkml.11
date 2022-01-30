@@ -2,95 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C21C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 12:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE592C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 12:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354777AbiA3MZk (ORCPT
+        id S1354631AbiA3MlL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 07:25:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
+        Sun, 30 Jan 2022 07:41:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354768AbiA3MZj (ORCPT
+        with ESMTP id S240805AbiA3MlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 07:25:39 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AED6C061748
-        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 04:25:38 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id p15so33971665ejc.7
-        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 04:25:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=PMTYH8vYxJzYzIKQ4wJ1Cn/QVbnABT43BbzXgdJrWQI=;
-        b=apo0H/0Dyl2t3hk8E0D2z85aDd6iOJNXpJKyEbBY7/JTNGPCdkbdnzGkICjahHHvdg
-         ikbaCSmfvGWZBU6IZXUhNElfru0/txxioJdYFDH5e/cXST9poMaEGPF58kTHE38lu4h0
-         h8EdekFT0o5IRjk4tqQ0MYnPW0lGioEBYLaYk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=PMTYH8vYxJzYzIKQ4wJ1Cn/QVbnABT43BbzXgdJrWQI=;
-        b=nlZ0v9B9VN6infWexZZ5+Ya6tuu5a9sMWMbwCKO33JiWxizq0IgrfdkZJF2R9piiWC
-         pO4JnLQJX8e6svBK6iUbU9XqPpPBNmylLWX410BF6JED/HdT8kYjHTkB2H6nx4i+mxYQ
-         8o7Wt1W/dbmxEd0sNUnR3+XPoxbRNnrzbD9t2ev/qNgNADuT/kVZ8t3+aaC7GkneE2dW
-         OFJIYh1JGnMRR8g+Kko3hCT1m206m2w+duoe+vQUH1eGCwAx9UF6nWSfHAL7Kld69li3
-         /dk42i0Lunzj0bn10G0C9uXLqzPv1fj9vz8cBXQhU7j5fAKehwrD/PUpwjHlwdWz5/QZ
-         0gQQ==
-X-Gm-Message-State: AOAM5318N57dW6ME0J7AqLaCQrhgOO7ZCWA6o1O5o1KCLP2VLSN8nYJ4
-        tYdL14bchfwRUQE5y+IeOZIcgQ==
-X-Google-Smtp-Source: ABdhPJy3rWsVAeaHCILbvxyPLUIcCktog468JC/fPRiLCOsjiBYoYIRU/3dSm2dhcMilSbKwZrs6iA==
-X-Received: by 2002:a17:906:730a:: with SMTP id di10mr13618818ejc.489.1643545536662;
-        Sun, 30 Jan 2022 04:25:36 -0800 (PST)
-Received: from cloudflare.com ([2a01:110f:4809:d800::e00])
-        by smtp.gmail.com with ESMTPSA id s19sm13891576edr.23.2022.01.30.04.25.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Jan 2022 04:25:36 -0800 (PST)
-References: <20220130030352.2710479-1-hefengqing@huawei.com>
- <CAADnVQLsom4MQq2oonzfCqrHbhfg9y7YMPCk6Wg6r4bp3Su03g@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     He Fengqing <hefengqing@huawei.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [bpf-next] bpf: Add CAP_NET_ADMIN for sk_lookup program type
-In-reply-to: <CAADnVQLsom4MQq2oonzfCqrHbhfg9y7YMPCk6Wg6r4bp3Su03g@mail.gmail.com>
-Date:   Sun, 30 Jan 2022 13:25:35 +0100
-Message-ID: <87zgndqukg.fsf@cloudflare.com>
+        Sun, 30 Jan 2022 07:41:10 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55008C061714;
+        Sun, 30 Jan 2022 04:41:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=kZB5ahdLUol5/N8DBSN+3qX+veD/LzUVPKh58HExSNk=; b=DgPu0Q3DwXvjAcD1HMncfoPpm/
+        OZGmGlgvMXRpX6yICg6YxkcSVqgxV4jBkRh4Dpkk5bOS/W9sAS7LIFqqHBRPFjxORv5Pe0NRi2ZtQ
+        2X2q182H9jLgAI3RFaCzOzfhIoFv1kCHVzUAX7ON1mJYSDFJJ5BQLiSaOjlqFEt07hQyXFdUyyVm4
+        ndyEYoBzAsKL1QJdtt/sl1Infty025qni+VEIGpVPibCpCGQURMtDAbABWY21zePcJJDtMEcivbCQ
+        3T6UNxnZLaRoirm4jcNncS9Xc4Vh+K+mx8NXRdMVWr5xUeEvAwKH9/ZCkXXE/y8I3wK/AKgb34qW2
+        ZpoHu3Lg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56932)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nE9Vr-0007MR-Qy; Sun, 30 Jan 2022 12:40:59 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nE9Vp-0000A2-Ka; Sun, 30 Jan 2022 12:40:57 +0000
+Date:   Sun, 30 Jan 2022 12:40:57 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Jonathan McDowell <noodles@earth.li>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luo Jie <luoj@codeaurora.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Robert Marko <robimarko@gmail.com>
+Subject: Re: [PATCH net] net: phy: Fix qca8081 with speeds lower than 2.5Gb/s
+Message-ID: <YfaHWSe+FvZC7w/x@shell.armlinux.org.uk>
+References: <YfZnmMteVry/A1XR@earth.li>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfZnmMteVry/A1XR@earth.li>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 30, 2022 at 04:24 AM CET, Alexei Starovoitov wrote:
-> On Sat, Jan 29, 2022 at 6:16 PM He Fengqing <hefengqing@huawei.com> wrote:
->>
->> SK_LOOKUP program type was introduced in commit e9ddbb7707ff
->> ("bpf: Introduce SK_LOOKUP program type with a dedicated attach point"),
->> but the commit did not add SK_LOOKUP program type in net admin prog type.
->> I think SK_LOOKUP program type should need CAP_NET_ADMIN, so add SK_LOOKUP
->> program type in net_admin_prog_type.
->
-> I'm afraid it's too late to change.
->
-> Jakub, Marek, wdyt?
+On Sun, Jan 30, 2022 at 10:25:28AM +0000, Jonathan McDowell wrote:
+> A typo in qca808x_read_status means we try to set SMII mode on the port
+> rather than SGMII when the link speed is not 2.5Gb/s. This results in no
+> traffic due to the mismatch in configuration between the phy and the
+> mac.
+> 
+> Fixes: 79c7bc0521545 ("net: phy: add qca8081 read_status")
+> Signed-off-by: Jonathan McDowell <noodles@earth.li>
+> ---
+>  drivers/net/phy/at803x.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index 5b6c0d120e09..7077e3a92d31 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -1691,7 +1691,7 @@ static int qca808x_read_status(struct phy_device *phydev)
+>  	if (phydev->link && phydev->speed == SPEED_2500)
+>  		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
+>  	else
+> -		phydev->interface = PHY_INTERFACE_MODE_SMII;
+> +		phydev->interface = PHY_INTERFACE_MODE_SGMII;
 
-That's definitely an oversight on my side, considering that CAP_BPF came
-in 5.8, and sk_lookup program first appeared in 5.9.
+Is it intentional to set the interface to SGMII also when there is no
+link?
 
-Today it's possible to build a usable sk_lookup program without
-CAP_NET_ADMIN if you go for REUSEPORT_SOCKARRAY map instead of
-SOCKMAP/HASH.
-
-Best I can come up is a "phase it out" approach. Put the CAP_NET_ADMIN
-load-time check behind a config option, defaulting to true?, and wait
-for it to become obsolete.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
