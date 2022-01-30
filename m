@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D408C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 14:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FDE2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 14:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355177AbiA3Orb (ORCPT
+        id S1355191AbiA3OuZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 09:47:31 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:10913 "EHLO
+        Sun, 30 Jan 2022 09:50:25 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:9743 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355139AbiA3Or1 (ORCPT
+        with ESMTP id S1347259AbiA3OuV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 09:47:27 -0500
+        Sun, 30 Jan 2022 09:50:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643554047; x=1675090047;
+  t=1643554222; x=1675090222;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=UhHNiXx69gpQDiVL4ThrTpVjnBHgjFuy06EgsxtjySA=;
-  b=l0ZbBdgnOHU92wQza1c19YVhq7EnbqPGKNs7IvWkcbtyGATAvF/YS+06
-   Awrh7jk6euyr69k9Mn9qlwKleObBeLddcdHhevn3Eo3aYglGHkMH/tz8X
-   7ewcN2FDdYsI+n/CdDFq1iGXvvxVH5sLydkzUSlFPmMoObY99g8q4Qt29
-   eu1/X/G9viERd42I2ckSzDwEvvA4LZvSmJVCwAfDRwWv5YSIeHk2d9lJr
-   5cEKbKgqN+mU6KoDYL6q77QSdmiqJpP+Y3t54Iitco6cbCyCRHsYRkL+Z
-   jvk/p7n/FYkta52nzxcRrVjitwFtnYBin7ePFA+TjWzcfo1prCSAImXpN
-   g==;
-IronPort-SDR: YhRO6tvz9JO1zCj2s1DRMZIEAsNKisA3cAGuDZFgoLrAvrLO/TVjUySzRPEOeYB2ZwVBTsSpsh
- 3nH6Gr9Ock3wLICS4riSk4OaveNgSu4WVPWSHebuw81GuQQJ9z9IIU28jv01Ks/PHxksKLCMCw
- g29rG9qsrrkXmJ18OyrhCnN8Rh9JJqL0tFLgN7ZZkj1n/2g5UfldaxwbqBV9WyLcqOoUk9Mp+s
- U+Hl/48aBfwDb/5nV/67XpnMx3sLBMJKLjST8iTXDX+cMxm1xa0vPBmXfjIlCkslNJ3V7Yio99
- hDvHYKYmaUNWCsqxPcbSiDkN
+  bh=FJIF3Ym7W2GedFgY8vVihKuSIe0hGh7F+YW1ik4rU9M=;
+  b=mzT+FV/bFRsEcTWmRd6N3DU3+HCqelvhRNEPWJCnEIGoOt2K8bnRP3MP
+   rNAAmVAGby4J3dXO3YTzMgPjGgxuNQMnemXTZR64fxJHNoI8g39H/BeN1
+   no5E4toAaIqqcU9O1TIN7E7LUryaNGHUe0JGQ8lohYh1Gu2zf+noQOlbJ
+   B30vN6WZCvGbnpvaVisz+UA2kljGial82/SnHKZoc+8nOJi3Y0OyLMhDm
+   lo/NXX2DjgWtFQglEk+wZ330qAk/RsC6cwiIM0eXsa5Zas3bmuG2L23ZK
+   mny03SK1ezkWii2HkgMASgPAAvpt+oLoo7S9+u4hLz87UYuv+gf17kVn3
+   A==;
+IronPort-SDR: 7bHwPrJtn3Cw+MpFB4tKb5ygCsHG0Yhs5iZOFISiS39dncdf9jmqdolJ+QF0/Cn8Hvp8FmOg/S
+ fniARjOU6g2leBOeoXZ7dU5EcMUEVwgORXO+j7WMefheYnxFlAFMXiIrxkI9o9510l953bxDJP
+ NEauPgQ9OCCzdU7ntN/PM3rvWuc6b/Jp43ML6py4FaPgbg/75A+4oWwkYZk7TUPLwDGAyXBBeP
+ vcgLIgI+COovX/8dHF4iKJiYMe9ucEk/q36q0IB20opoIIiANxDGCw1m+L+A5YEkJ7+9kNrvrn
+ esP+YSZbK++RKmeU8fccHskw
 X-IronPort-AV: E=Sophos;i="5.88,328,1635231600"; 
-   d="scan'208";a="147058656"
+   d="scan'208";a="147058778"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jan 2022 07:47:27 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jan 2022 07:50:21 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 30 Jan 2022 07:47:26 -0700
-Received: from ness.home (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Sun, 30 Jan 2022 07:47:24 -0700
+ 15.1.2375.17; Sun, 30 Jan 2022 07:50:20 -0700
+Received: from ness.home (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Sun, 30 Jan 2022 07:50:18 -0700
 From:   <nicolas.ferre@microchip.com>
 To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Ludovic Desroches <ludovic.desroches@microchip.com>,
         Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Jonathan Cameron <jic23@kernel.org>
 CC:     <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
         Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH] dt-bindings: rng: atmel,at91-trng: update maintainers entry
-Date:   Sun, 30 Jan 2022 15:47:08 +0100
-Message-ID: <d84760e0b81c338e01f7856e1ce3c5b600b08f23.1643553619.git.nicolas.ferre@microchip.com>
+Subject: [PATCH 1/1] dt-bindings: iio: adc: at91-sama5d2: update maintainers entry
+Date:   Sun, 30 Jan 2022 15:50:08 +0100
+Message-ID: <6acdb66592baf395a77a431c0cb9a37b0f178097.1643554065.git.nicolas.ferre@microchip.com>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -65,7 +65,9 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Update according to new MAINTAINERS entry.
+Update the maintainers entry to match the changes made back in
+mid-2020 with 853fa48717c2 ("MAINTAINERS: adc: at91-sama5d2_adc:
+remove myself as co-maintainer").
 
 Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 ---
@@ -77,22 +79,21 @@ https://lore.kernel.org/linux-arm-kernel/23819d8baa635815d0893955197561fe4f044d5
 Regards,
   Nicolas
 
- Documentation/devicetree/bindings/rng/atmel,at91-trng.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/iio/adc/atmel,sama5d2-adc.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/rng/atmel,at91-trng.yaml b/Documentation/devicetree/bindings/rng/atmel,at91-trng.yaml
-index c1527637eb74..3ce45456d867 100644
---- a/Documentation/devicetree/bindings/rng/atmel,at91-trng.yaml
-+++ b/Documentation/devicetree/bindings/rng/atmel,at91-trng.yaml
-@@ -9,7 +9,7 @@ title: Atmel AT91 True Random Number Generator
+diff --git a/Documentation/devicetree/bindings/iio/adc/atmel,sama5d2-adc.yaml b/Documentation/devicetree/bindings/iio/adc/atmel,sama5d2-adc.yaml
+index efed361215b4..9a2292e7defc 100644
+--- a/Documentation/devicetree/bindings/iio/adc/atmel,sama5d2-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/atmel,sama5d2-adc.yaml
+@@ -7,7 +7,6 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: AT91 SAMA5D2 Analog to Digital Converter (ADC)
+ 
  maintainers:
-   - Nicolas Ferre <nicolas.ferre@microchip.com>
-   - Alexandre Belloni <alexandre.belloni@bootlin.com>
--  - Ludovic Desroches <ludovic.desroches@microchip.com>
-+  - Claudiu Beznea <claudiu.beznea@microchip.com>
+-  - Ludovic Desroches <ludovic.desroches@atmel.com>
+   - Eugen Hristev <eugen.hristev@microchip.com>
  
  properties:
-   compatible:
 -- 
 2.32.0
 
