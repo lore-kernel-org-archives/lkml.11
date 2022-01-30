@@ -2,121 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB97C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 12:45:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F357C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 12:48:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354751AbiA3Mpa (ORCPT
+        id S1354801AbiA3MsB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 07:45:30 -0500
-Received: from hostingweb31-40.netsons.net ([89.40.174.40]:59659 "EHLO
-        hostingweb31-40.netsons.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240805AbiA3MpZ (ORCPT
+        Sun, 30 Jan 2022 07:48:01 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60180 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354798AbiA3Mrt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 07:45:25 -0500
-Received: from [77.244.183.192] (port=61998 helo=[192.168.178.41])
-        by hostingweb31.netsons.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <luca@lucaceresoli.net>)
-        id 1nE9a7-0009fc-63; Sun, 30 Jan 2022 13:45:23 +0100
-Message-ID: <3a186067-50e9-ce20-0ed6-696ca658de4a@lucaceresoli.net>
-Date:   Sun, 30 Jan 2022 13:45:18 +0100
+        Sun, 30 Jan 2022 07:47:49 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 196FAB82923;
+        Sun, 30 Jan 2022 12:47:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE6ABC340E4;
+        Sun, 30 Jan 2022 12:47:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643546866;
+        bh=aVDc8Yu/ogmHGWUx29IlMTDDegp/e73DqnCrg8ODuZM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Nq98CGrIZ9nAbhUKlKnlO1se4qC21zkur0zkN9RF0QmQi7sRv3hgrCPDO3KeXkk/N
+         LwBhir3pOpKJ/eYM+PMrYYsBVEgUJ715DysFda3xnH4J8wHJLxPsSvcRDVvUp+Nuek
+         VdiLYIxlTlaLWEgDRGPFTxoCkk8BsMe4ql2/Ok1jVsBoIwotEswkzlZAkYtMKOiTFU
+         Nk+Twtf1OSlTXocd5i6I+l6Wm6/wIxVDa/yDzA5C1yegc297stc0eESw2yjI/vpWuz
+         mruHdwN6FwQX77xQckDBK4qNhwh91pAeUCwpzQHpovNMO4iHJ4R+CiMtLpoK2esNSu
+         /GpbCT5mXKvWw==
+Date:   Sun, 30 Jan 2022 12:54:08 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 29/54] drivers/iio: replace bitmap_weight() with
+ bitmap_weight_{eq,gt} where appropriate
+Message-ID: <20220130125408.0cca0b66@jic23-huawei>
+In-Reply-To: <Ye6fsynB1/q0ZLui@smile.fi.intel.com>
+References: <20220123183925.1052919-1-yury.norov@gmail.com>
+        <20220123183925.1052919-30-yury.norov@gmail.com>
+        <Ye6fsynB1/q0ZLui@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v5 0/9] Add MAX77714 PMIC minimal driver (RTC and watchdog
- only)
-Content-Language: en-US
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     linux-rtc@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Chiwoong Byun <woong.byun@samsung.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-kernel@vger.kernel.org
-References: <20211211175951.30763-1-luca@lucaceresoli.net>
- <d8aacb8a-5e41-fd96-daac-e9257358ca71@lucaceresoli.net>
- <4532b372-f16a-7658-623d-71af93306e44@lucaceresoli.net>
- <900e896a-f1c3-aafa-2ed4-a23104d65b74@roeck-us.net>
-From:   Luca Ceresoli <luca@lucaceresoli.net>
-In-Reply-To: <900e896a-f1c3-aafa-2ed4-a23104d65b74@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lucaceresoli.net
-X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca@lucaceresoli.net
-X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guenter,
+On Mon, 24 Jan 2022 14:46:43 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-On 30/01/22 02:48, Guenter Roeck wrote:
-> On 1/29/22 00:40, Luca Ceresoli wrote:
->> Hi Lee, all,
->>
->> On 11/01/22 11:10, Luca Ceresoli wrote:
->>> Hi All,
->>>
->>> On 11/12/21 18:59, Luca Ceresoli wrote:
->>>> Hi,
->>>>
->>>> this series adds minimal drivers for the Maxim Semiconductor MAX77714
->>>> (https://www.maximintegrated.com/en/products/power/power-management-ics/MAX77714.html).
->>>>
->>>> Only RTC and watchdog are implemented by these patches.
->>>>
->>>> All implemented functionality is tested and working: RTC read/write,
->>>> watchdog start/stop/ping/set_timeout.
->>>>
->>>> Patches 1-3 + 6 are trivial cleanups to the max77686 drivers and
->>>> Kconfig
->>>> indentation and can probably be applied easily.
->>>>
->>>> Patches 4, 5, 7, 8 and 9 add: dt bindings, mfd driver, watchdog
->>>> driver and
->>>> rtc driver.
->>>
->>> A gentle ping about this series. It's at v5, all patches have at least
->>> one ack/review tag and most patches are unchanged since ~v2. It applies
->>> cleanly on current master.
->>>
->>> Is there anything I should do to help making progress?
->>
->> Apologies for pinging again... but as I got no further comments about
->> these patches I guess I can really do nothing at the moment.
->>
->> Lee, is this series completely in charge to you or should it be applied
->> by the respective subsystem maintainers?
->>
+> On Sun, Jan 23, 2022 at 10:39:00AM -0800, Yury Norov wrote:
+> > drivers/iio calls bitmap_weight() to compare the weight of bitmap with
+> > a given number. We can do it more efficiently with bitmap_weight_{eq, gt}
+> > because conditional bitmap_weight may stop traversing the bitmap earlier,
+> > as soon as condition is met.  
 > 
-> I hesitated to take the watchdog patches because an earlier patch of the
-> series
-> introduces MFD_MAX77714 and the watchdog Kconfig entry lists it as
-> dependency.
-> I now added patch 7/9 and 8/9 to my watchdog-next tree anyway. If the
-> mfd part
-> doesn't make it we can still decide to take it out at some point.
+> ...
+> 
+> >  		int i, j;
+> >  
+> >  		for (i = 0, j = 0;
+> > -		     i < bitmap_weight(indio_dev->active_scan_mask,
+> > -				       indio_dev->masklength);
+> > +		     bitmap_weight_gt(indio_dev->active_scan_mask,
+> > +				       indio_dev->masklength, i);
+> >  		     i++, j++) {
+> >  			j = find_next_bit(indio_dev->active_scan_mask,
+> >  					  indio_dev->masklength, j);  
+> 
+> This smells like room for improvement. Have you checked this deeply?
+> 
 
-OK, thank you! In the meanwhile the kernel test robot also reported a
-build failure due to missing max77714.h file, which is added by patch 5.
+I have no idea what I was smoking that day.
+It was near 10 years ago, so I'll blame my younger self ;)
 
-> Note that patch 6/9 has already been applied.
-
-Indeed, it's in Linus' master already.
-
-Regards.
--- 
-Luca
+Jonathan
