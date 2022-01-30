@@ -2,106 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ACC9C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 12:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0BCCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 12:50:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354808AbiA3Mtf (ORCPT
+        id S1354814AbiA3Muf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 07:49:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33584 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347052AbiA3Mt2 (ORCPT
+        Sun, 30 Jan 2022 07:50:35 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60782 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347113AbiA3Mud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 07:49:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3AEC061714;
-        Sun, 30 Jan 2022 04:49:28 -0800 (PST)
+        Sun, 30 Jan 2022 07:50:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A4A9611A1;
-        Sun, 30 Jan 2022 12:49:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E639CC340E4;
-        Sun, 30 Jan 2022 12:49:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643546967;
-        bh=SvHf990N9OZ/M53+ectTQRnyiCwRR/WpgplqgrfkeB8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NsZY3c9fANhTPm0mjJ9UXS3XPMOr7N2xk0ByXa6g1q+5Zw7APZtjao+WdhABzjT5J
-         jKHH/m+xfacLDrOIwRV9h09R64R5/MMKie4MUdFeVbgj6hB90CsqfCkeOaFu1PcMQo
-         SSWfG5QLs+fFWgprj5TNcGqa5gawQqxvbLJO2/xrx6iALKhCqF+tT+psDSxL/6zMbF
-         csX3avDq09m+Lz5PcsBv+tOyqSpkLnuuKnuN3m8oBp5Yn5H0C3B2FBr+nyhnfbjyA+
-         x+k5y1bkJf6sccMW2lf0wlDlTk9LZRS/wpWGczcBruw+9SgO0CnTgdTknrFm34VD2l
-         u2Ua0Z5/8Y9/g==
-Date:   Sun, 30 Jan 2022 12:55:51 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     eajames@linux.ibm.com, andy.shevchenko@gmail.com,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: dps310: Add ACPI HID table
-Message-ID: <20220130125551.7fc9bcd7@jic23-huawei>
-In-Reply-To: <20220128023144.2050615-1-kai.heng.feng@canonical.com>
-References: <20220128023144.2050615-1-kai.heng.feng@canonical.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D38ADB8285B;
+        Sun, 30 Jan 2022 12:50:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21BE7C340E4;
+        Sun, 30 Jan 2022 12:50:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643547030;
+        bh=iyo+mlHxHiMCbs0SnF8JOaLkc59upPWg3JbFGcSEqpM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=yE85WGOJQqUx9mVNtXLXPMTV/8Y4YzBUzS9c7wxTJfFwrZeegbSrNMm+4LlmXAAc/
+         g0kxwwK9OfPRsrbE+lefYqYvfs2oBm1YaMQZu1eXSm+CmdRol2cqE6VD0GfCO8Kzb+
+         bqxLexM8FpZ51CvS4mK/rPK8v56QMsRzXhBwdTKk=
+Date:   Sun, 30 Jan 2022 13:50:27 +0100
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Maxime Bizon <mbizon@freebox.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH] [Modified for 5.16 and 5.15] powerpc/32s: Fix
+ kasan_init_region() for KASAN
+Message-ID: <YfaJk9dUMmiQOJJT@kroah.com>
+References: <247bff242993dd6c8975a4f1248d822a448701ac.1643476812.git.christophe.leroy@csgroup.eu>
+ <383707b74eac769f971ea72ea3db39aaf08e5111.1643476880.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <383707b74eac769f971ea72ea3db39aaf08e5111.1643476880.git.christophe.leroy@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 28 Jan 2022 10:31:44 +0800
-Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
-
-> x86 boards may use ACPI HID "IFX3100" for the dps310 device.
+On Sat, Jan 29, 2022 at 05:26:10PM +0000, Christophe Leroy wrote:
+> This is a backport for 5.16 and 5.15.
 > 
-> Vendor told us feel free to add the ID and contact
-> "Saumitra.Chafekar@infineon.com" for further questions.
-> 
-> So add an ACPI match table for that accordingly.
-> 
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> To apply, it also requires commit 37eb7ca91b69 ("powerpc/32s: Allocate
+> one 256k IBAT instead of two consecutives 128k IBATs")
 
-Applied to the togreg branch of iio.git and pushed out as testing
-on the off chance 0-day finds something we missed.
+Thanks for these, now queued up.
 
-Thanks,
-
-Jonathan
-
-> ---
-> v3:
->  - Drop redundant line and comma.
->  - Wording change.
-> 
-> v2:
->  - Drop ACPI_PTR().
->  - Add info from vendor.
-> 
->  drivers/iio/pressure/dps310.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-> index 0730380ceb692..36fb7ae0d0a9d 100644
-> --- a/drivers/iio/pressure/dps310.c
-> +++ b/drivers/iio/pressure/dps310.c
-> @@ -812,9 +812,16 @@ static const struct i2c_device_id dps310_id[] = {
->  };
->  MODULE_DEVICE_TABLE(i2c, dps310_id);
->  
-> +static const struct acpi_device_id dps310_acpi_match[] = {
-> +	{ "IFX3100" },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(acpi, dps310_acpi_match);
-> +
->  static struct i2c_driver dps310_driver = {
->  	.driver = {
->  		.name = DPS310_DEV_NAME,
-> +		.acpi_match_table = dps310_acpi_match,
->  	},
->  	.probe = dps310_probe,
->  	.id_table = dps310_id,
-
+greg k-h
