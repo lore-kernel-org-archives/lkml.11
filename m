@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 155D4C4167D
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 20:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 20:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356304AbiA3Uro (ORCPT
+        id S1356378AbiA3Urv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 15:47:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:46534 "EHLO
+        Sun, 30 Jan 2022 15:47:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36602 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1356295AbiA3Urb (ORCPT
+        by vger.kernel.org with ESMTP id S1356355AbiA3Uri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 15:47:31 -0500
+        Sun, 30 Jan 2022 15:47:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643575650;
+        s=mimecast20190719; t=1643575658;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NSFllL0K7X0KVTucBJnSMumxKusMGygWrLDj1HKAn7A=;
-        b=PLBM4ETc7YDlKromNM5tkujHsbTg3OzEyv2ORYdckfWaCSnY2u5pawF9dDbixzQv74P/s2
-        0QUPk4bgwexW7TGkuUPU5eHRM2Xzfoo7+ue508GI4TNt2Z6HcqNufW+EhfLY0gHQ7EDCcl
-        tzvK5riFIzWebc4f9dHmeuI9FHm9jHM=
+        bh=A90HaalXBx1gVGuJBR3n6goMO3ddmchQxDA4Piw5CdM=;
+        b=UbuH4vL6ugm7QRrXfE7e/UOC0HxlzRI2iG4OZDBNfag2rl5rc0lPtrWBDKm4LB2Ks3xO9o
+        4NXnp6pkTo2p8OMqklLTIwRYv2cR3qDEE7N8xyoyDM0HZofLYZGdgSSJQcAxzt1p3YRWfq
+        DTWV35pBmpK9aTc7o5e1tkJL51xWBV8=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-539-x_bNB88xPy2MWfIC91eylg-1; Sun, 30 Jan 2022 15:47:24 -0500
-X-MC-Unique: x_bNB88xPy2MWfIC91eylg-1
+ us-mta-524-9YUagjr8NeuwZS4pdvgEIQ-1; Sun, 30 Jan 2022 15:47:36 -0500
+X-MC-Unique: 9YUagjr8NeuwZS4pdvgEIQ-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4971E18397A7;
-        Sun, 30 Jan 2022 20:47:22 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 431681083F60;
+        Sun, 30 Jan 2022 20:47:34 +0000 (UTC)
 Received: from shalem.redhat.com (unknown [10.39.192.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D9FFB61093;
-        Sun, 30 Jan 2022 20:47:18 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2DB7461093;
+        Sun, 30 Jan 2022 20:47:30 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     "Rafael J . Wysocki" <rafael@kernel.org>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
@@ -53,9 +53,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>, Len Brown <lenb@kernel.org>,
         Fabio Aiuto <fabioaiuto83@gmail.com>,
         platform-driver-x86@vger.kernel.org, linux-pm@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org
-Subject: [PATCH v4 13/20] power: supply: bq25890: Use the devm_regmap_field_bulk_alloc() helper
-Date:   Sun, 30 Jan 2022 21:45:50 +0100
-Message-Id: <20220130204557.15662-14-hdegoede@redhat.com>
+Subject: [PATCH v4 16/20] extcon: intel-cht-wc: Use new cht_wc_model intel_soc_pmic field
+Date:   Sun, 30 Jan 2022 21:45:53 +0100
+Message-Id: <20220130204557.15662-17-hdegoede@redhat.com>
 In-Reply-To: <20220130204557.15662-1-hdegoede@redhat.com>
 References: <20220130204557.15662-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -65,49 +65,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the devm_regmap_field_bulk_alloc() helper function instead of
-open-coding this ourselves.
+The CHT_WC_VBUS_GPIO_CTLO GPIO actually driving an external 5V Vboost
+converter for Vbus depends on the board on which the Cherry Trail -
+Whiskey Cove PMIC is actually used.
 
+Since the information about the exact PMIC setup is necessary in other
+places too, struct intel_soc_pmic now has a new cht_wc_model field
+indicating the board model.
+
+Only poke the CHT_WC_VBUS_GPIO_CTLO GPIO if this new field is set to
+INTEL_CHT_WC_GPD_WIN_POCKET, which indicates the Type-C (with PD and
+DP-altmode) setup used on the GPD pocket and GPD win; and on which
+this GPIO actually controls an external 5V Vboost converter.
+
+Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
 Changes in v3:
-- This is a new patch in v3 of this patch-series
+- Use the new cht_wc_model intel_soc_pmic field which replaces the
+  intel_cht_wc_get_model() helper and adjust the commit msg to match
 ---
- drivers/power/supply/bq25890_charger.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ drivers/extcon/extcon-intel-cht-wc.c | 35 +++++++++++++++++-----------
+ 1 file changed, 21 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/power/supply/bq25890_charger.c b/drivers/power/supply/bq25890_charger.c
-index 179abed92f9b..852a6fec4339 100644
---- a/drivers/power/supply/bq25890_charger.c
-+++ b/drivers/power/supply/bq25890_charger.c
-@@ -1165,7 +1165,6 @@ static int bq25890_probe(struct i2c_client *client,
- 	struct device *dev = &client->dev;
- 	struct bq25890_device *bq;
- 	int ret;
--	int i;
+diff --git a/drivers/extcon/extcon-intel-cht-wc.c b/drivers/extcon/extcon-intel-cht-wc.c
+index 771f6f4cf92e..81cae8c75850 100644
+--- a/drivers/extcon/extcon-intel-cht-wc.c
++++ b/drivers/extcon/extcon-intel-cht-wc.c
+@@ -14,6 +14,7 @@
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/platform_device.h>
++#include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
  
- 	bq = devm_kzalloc(dev, sizeof(*bq), GFP_KERNEL);
- 	if (!bq)
-@@ -1182,15 +1181,10 @@ static int bq25890_probe(struct i2c_client *client,
- 		return dev_err_probe(dev, PTR_ERR(bq->rmap),
- 				     "failed to allocate register map\n");
+@@ -358,20 +359,26 @@ static int cht_wc_extcon_probe(struct platform_device *pdev)
+ 	if (IS_ERR(ext->edev))
+ 		return PTR_ERR(ext->edev);
  
--	for (i = 0; i < ARRAY_SIZE(bq25890_reg_fields); i++) {
--		const struct reg_field *reg_fields = bq25890_reg_fields;
--
--		bq->rmap_fields[i] = devm_regmap_field_alloc(dev, bq->rmap,
--							     reg_fields[i]);
--		if (IS_ERR(bq->rmap_fields[i]))
--			return dev_err_probe(dev, PTR_ERR(bq->rmap_fields[i]),
--					     "cannot allocate regmap field\n");
--	}
-+	ret = devm_regmap_field_bulk_alloc(dev, bq->rmap, bq->rmap_fields,
-+					   bq25890_reg_fields, F_MAX_FIELDS);
-+	if (ret)
-+		return ret;
+-	/*
+-	 * When a host-cable is detected the BIOS enables an external 5v boost
+-	 * converter to power connected devices there are 2 problems with this:
+-	 * 1) This gets seen by the external battery charger as a valid Vbus
+-	 *    supply and it then tries to feed Vsys from this creating a
+-	 *    feedback loop which causes aprox. 300 mA extra battery drain
+-	 *    (and unless we drive the external-charger-disable pin high it
+-	 *    also tries to charge the battery causing even more feedback).
+-	 * 2) This gets seen by the pwrsrc block as a SDP USB Vbus supply
+-	 * Since the external battery charger has its own 5v boost converter
+-	 * which does not have these issues, we simply turn the separate
+-	 * external 5v boost converter off and leave it off entirely.
+-	 */
+-	cht_wc_extcon_set_5v_boost(ext, false);
++	switch (pmic->cht_wc_model) {
++	case INTEL_CHT_WC_GPD_WIN_POCKET:
++		/*
++		 * When a host-cable is detected the BIOS enables an external 5v boost
++		 * converter to power connected devices there are 2 problems with this:
++		 * 1) This gets seen by the external battery charger as a valid Vbus
++		 *    supply and it then tries to feed Vsys from this creating a
++		 *    feedback loop which causes aprox. 300 mA extra battery drain
++		 *    (and unless we drive the external-charger-disable pin high it
++		 *    also tries to charge the battery causing even more feedback).
++		 * 2) This gets seen by the pwrsrc block as a SDP USB Vbus supply
++		 * Since the external battery charger has its own 5v boost converter
++		 * which does not have these issues, we simply turn the separate
++		 * external 5v boost converter off and leave it off entirely.
++		 */
++		cht_wc_extcon_set_5v_boost(ext, false);
++		break;
++	default:
++		break;
++	}
  
- 	i2c_set_clientdata(client, bq);
- 
+ 	/* Enable sw control */
+ 	ret = cht_wc_extcon_sw_control(ext, true);
 -- 
 2.33.1
 
