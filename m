@@ -2,155 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB40EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 11:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 791EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 11:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241796AbiA3LCX convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 06:02:23 -0500
-Received: from gloria.sntech.de ([185.11.138.130]:52384 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231959AbiA3LCV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 06:02:21 -0500
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nE7yL-0000hT-5q; Sun, 30 Jan 2022 12:02:17 +0100
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Piotr Oniszczuk <piotr.oniszczuk@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>
-Cc:     "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Liang Chen <cl@rock-chips.com>
-Subject: Re: [PATCH 1/2] arm64: dts: rockchip: rename and sort the rk356x usb2 phy handles
-Date:   Sun, 30 Jan 2022 12:02:16 +0100
-Message-ID: <14752572.ChuAC8jng2@diego>
-In-Reply-To: <d203569c-bae1-c35a-204a-53617170d3b3@wolfvision.net>
-References: <20220127190456.2195527-1-michael.riesch@wolfvision.net> <3736463.EBuT6JFcjP@diego> <d203569c-bae1-c35a-204a-53617170d3b3@wolfvision.net>
+        id S242943AbiA3LEd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 30 Jan 2022 06:04:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242270AbiA3LEa (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 30 Jan 2022 06:04:30 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBBCC061714
+        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 03:04:29 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id n8so20964965lfq.4
+        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 03:04:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:user-agent:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bxlyxF/EC8bTAR3d0TLEeaeVlQi35TqmVD7n3vCbavI=;
+        b=Rb+lSRxHbxob/Ic74S73x7dboMK/vjsrOhLRmlHXTY0UcvDe+A01djucQTLJ5aF0ee
+         xaJgTd18lCL2S8NbZijvYwTjO8qchTw30veISMMMDYNrugj94BEtCr15/4cPBQWS+4gU
+         tcauokmFlOU8h724lMEBMYYiRfvei97Sdk61ECGSY1+BmRvyJban3pz4329P7NNUTUF4
+         sVVzfmUYpidWtqVlrS8fKR8LvLk2TqINYr1FU6qvbgRJs3Igr1BcVMcVBtPHlVrMhsLW
+         f3eoZ8ev9id5iL7KT4BWNbCoj5uS+FZO0JUXc8Jd0l0osPFfN7A9UsH5kVWogfQHxXeF
+         8S4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=bxlyxF/EC8bTAR3d0TLEeaeVlQi35TqmVD7n3vCbavI=;
+        b=2iuK/29Eq4zoiBdUpeJqNZ9yNQvmXDA8Ttz6JBpeCv3gb6R4zHGWeNCPWmZmLvuRLM
+         KAYLEG1t48zeQy4qNTNyavctQgTjeVmsWgYqMwbFpJl7tSitlYOajCMU6dYdU381tCRR
+         H8vN7UZ8YJlXF576AzWa2bJBtaV4PMZ9kmbDFlH/o4yykYZpehA+0K6lMVzdSZwtrSOD
+         tslB8SENrbpXKy0iFB8Sw74faWB8j020hlYD95aBvx9M12u7HxSL+8XSy/6LLB+2fHka
+         rFFLlNrmhmyvPbEZjrto7yW1INaAXVij0T+/poNgHKYFdmNq2EZF6jOOxk1LYLxfwohH
+         QNwA==
+X-Gm-Message-State: AOAM533/DMCMYDXN+Bj1dMCUlvNMn8ghJ7UAsGvdanFYf32JvDPo4kau
+        jkl5dza4tz6MXMFkUTzWZmQ=
+X-Google-Smtp-Source: ABdhPJwjyY27OzuJcBoolWvFSnRfBiH5kr2z5VBWsTElJy1GUg5fFtub5fpPbFklnrBgvEpgTiJrfw==
+X-Received: by 2002:a05:6512:3223:: with SMTP id f3mr11654547lfe.203.1643540668159;
+        Sun, 30 Jan 2022 03:04:28 -0800 (PST)
+Received: from localhost.localdomain (broadband-95-84-228-163.ip.moscow.rt.ru. [95.84.228.163])
+        by smtp.gmail.com with ESMTPSA id z3sm3247459lfu.8.2022.01.30.03.04.26
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Sun, 30 Jan 2022 03:04:27 -0800 (PST)
+Date:   Sun, 30 Jan 2022 14:10:20 +0300
+From:   Alexander Sergeyev <sergeev917@gmail.com>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
+        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
+        Kailang Yang <kailang@realtek.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jian-Hong Pan <jhp@endlessos.org>,
+        Hui Wang <hui.wang@canonical.com>,
+        PeiSen Hou <pshou@realtek.com>
+Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
+ G8
+Message-ID: <20220130111020.44gzrm5ckrakjta2@localhost.localdomain>
+User-Agent: mtt
+References: <s5ha6fy46jt.wl-tiwai@suse.de>
+ <20220114183720.n46wealclg6spxkp@localhost.localdomain>
+ <s5hsftp3027.wl-tiwai@suse.de>
+ <20220115152215.kprws5nja2i43qax@localhost.localdomain>
+ <s5hilugw0l0.wl-tiwai@suse.de>
+ <20220119093249.eaxem33bjqjxcher@localhost.localdomain>
+ <20220122190522.ycaygrqcen7d3hj2@localhost.localdomain>
+ <20220122205637.7gzurdu7xl4sthxw@localhost.localdomain>
+ <s5ho83yldu3.wl-tiwai@suse.de>
+ <20220129144704.xlmeylllvy3b3fum@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220129144704.xlmeylllvy3b3fum@localhost.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Sonntag, 30. Januar 2022, 10:56:08 CET schrieb Michael Riesch:
-> Hello Heiko,
-> 
-> On 1/29/22 16:28, Heiko Stübner wrote:
-> > Am Samstag, 29. Januar 2022, 10:59:32 CET schrieb Michael Riesch:
-> >> Hello Peter and Piotr,
-> >>
-> >> On 1/29/22 10:23, Piotr Oniszczuk wrote:
-> >>>
-> >>>
-> >>>>
-> >>>> Good Evening,
-> >>>>
-> >>>> While I'm not against this idea, my main concern still stands.
-> >>>> I spent a great deal of thought on this, and decided to go the route I
-> >>>> did to maintain consistency with previous generations.
-> >>>> As such, I see one of three paths here:
-> >>>> - Pull this patch only and depart rk356x from previous SoCs.
-> >>>> - Do the same for previous SoCs to maintain consistency.
-> >>>> - Drop this patch to maintain consistency with previous SoCs.
-> >>>>
-> >>>> I ask that others weigh in here, as offline discussion has produced
-> >>>> mixed results already.
-> >>>
-> >>> just pure user perspective
-> >>>
-> >>> (who spent last weeks considerable time to develop DT for rk3566 tvbox. 99% of my work was by reading/learning from other boards existing DT's. Any inconsistencies in DTs makes work for such ppl like me much more harder):
-> >>>
-> >>> For option 1 - i don't see value
-> >>> For option 2 - what is reward for extra work needs to be done on all other SoCs?
-> >>>
-> >>> so option 3 seems to be natural choice...
-> >>>
-> >>> in other words:
-> >>>
-> >>> for me:
-> >>> option 1 brings practically zero value + increased inconsistency.
-> >>> option 2: extra work - but consistency is like in option 3 (so where is value?)
-> >>>
-> >>> so option 3 offers the same consistency - but without extra work...
-> >>>  
-> >>> just my 0.02$
-> >>
-> >> Of course this change is purely cosmetic and it is reasonable to ask for
-> >> the practical value. It is just that technically the quartz64 dts is not
-> >> sorted alphabetically at the moment. The u2phy* nodes should be but
-> >> before the uart* nodes to follow the convention. On the other hand, it
-> >> may be nice to have the usb2 phys and controllers grouped in the dts.
-> >> The proposed renaming would allow all the mentioned nodes sorted
-> >> alphabetically and grouped logically.
-> >>
-> >> Therefore I had option 1 in mind. I don't see any dependencies between
-> >> the different SoCs and think we can make a fresh start here.
-> > 
-> > correct :-) .
-> > 
-> > I do see each SoC individually and while I try to have people follow some
-> > styling guidelines everywhere (ordering of properties, ordering of nodes)
-> > I don't really want people to fear what some other SoC has done before.
-> > 
-> > But even these rules evolve sometimes, when something seems to work
-> > better than before.
-> > 
-> > We have nowadays 9 years of Rockchip SoC history in the kernel.
-> > Thanks to general dt-binding conventions most nodes have specific
-> > names anyway (mmc@... etc), but for example trying to rename stuff
-> > in older SoCs that has worked for years now is for one error-prone
-> > as Michael pointed out, but also introduces unnecessary churn,
-> > when these old SoCs (thinking of rk3188, rk3288 and friends but also things
-> > like the rk3368) are essentially "finished" and most likely won't see that
-> > much additional support for stuff added.
-> 
-> So... may I take it that you are going to apply the patches in this series?
+On Sat, Jan 29, 2022 at 05:47:07PM +0300, Alexander Sergeyev wrote:
+> But unbind-bind problems with IO_PAGE_FAULT and "out of range cmd" are not 
+> eliminated. IO_PAGE_FAULT are often logged without accompanying "out of range 
+> cmd". And after adding debugging printk() I haven't managed to trigger "out 
+> of range cmd" yet. But IO_PAGE_FAULT are more easily triggered.
 
-that was the intention behind that "wall of text" :-D
+IO_PAGE_FAULTs go away with CONFIG_IOMMU_DEFAULT_PASSTHROUGH enabled. As I 
+understand, this leads to reduced DMA device isolation which is generally not 
+desirable. I was initially thinking about races between some delayed code and 
+io-memory pages unmapping, but first IO_PAGE_FAULTs (running non-passthrough 
+iommu) happen during bind operations as well.
 
-Heiko
+What is also interesting, unbind & bind consistently fails on 31th bind:
 
+echo -n '0000:05:00.6' > /sys/bus/pci/drivers/snd_hda_intel/bind
+-bash: echo: write error: No such device
 
-> Or should I switch to option 3 and re-submit?
-> 
-> Thanks and best regards,
-> Michael
-> 
-> > 
-> > 
-> > Heiko
-> > 
-> > 
-> >> Option 2 is not really feasible, we would almost definitely break
-> >> something existent.
-> >>
-> >> Option 3 is feasible, of course. However, I would sort the nodes
-> >> alphabetically (u2phy*, then uart*, then usb*). Works for me as well,
-> >> although it is not that nice IMHO.
-> >>
-> >> Since many boards with the RK3566 and RK3568 will pop up in near future
-> >> we should do the change right now (if we want to do it), as of course
-> >> all the board files need to be changed. Therefore I wanted to bring this
-> >> matter up now. Let's agree on something and move on.
-> >>
-> >> Best regards,
-> >> Michael
-> >>
-> > 
-> > 
-> > 
-> > 
-> 
-
-
-
-
+And does not recover from there until a reboot.
