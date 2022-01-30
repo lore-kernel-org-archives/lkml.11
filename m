@@ -2,104 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CDCAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 01:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A99FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 02:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357318AbiAaBrs (ORCPT
+        id S1357336AbiAaCQZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 20:47:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230269AbiAaBrq (ORCPT
+        Sun, 30 Jan 2022 21:16:25 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:33883 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233994AbiAaCQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 20:47:46 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9960AC061714;
-        Sun, 30 Jan 2022 17:47:45 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id k25so37557464ejp.5;
-        Sun, 30 Jan 2022 17:47:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=GkhcVI15gZvcXdR5pviGmh2yWHBWlCX9+d8RaY4e+NM=;
-        b=PfyBxdltlF5w8FdwbosIkSlZzhAS88lLwzicvgGmn7xMF0OiLXyFp7jBJ+KYSOI8tr
-         NbPMvTbcV4JbZNNp20xGFl3AMeb/E+EMXetLXJwImVXPbXX1kWO6/DDtB7T2mDRL3cyp
-         4WgU+haILaHGlh+fgujO8pp7nejO5xH8eEnak74PC/dNK6jU8ClUnq7oO4M3AeM0exEH
-         ZOvXBdgV7hP7WUEUXXxJ0TaXCPNbO2iCYVuxqGSjBA234DinG1NHNrZ7t2sV1Pkwi58t
-         DTDDI4UG3KN/ephUzZ/QvJEDWEbtuY/qVcNiXhKuWk2Tf673dInDX8sgdpMUTh4VNO58
-         6TFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=GkhcVI15gZvcXdR5pviGmh2yWHBWlCX9+d8RaY4e+NM=;
-        b=CK+dNIeif7sUHOTvYuwk1gpBLi0SdGXU2jYIbPKJGU956ACFgUejqH0g6tijuUw3qx
-         SPaxBLszHrrkI1f+r44R2jdLX1DQ17thMVtOPaYQoXkl1fyyA8twj7WOxCtel7B12PNf
-         /aHwxOVOSPMTJS00e0LC+ZZc/7aX3XHml1t2LIixkIZgZ0xHE9oG/er84Tcf1IAgtmR8
-         qOHW9XZ7L+U7MSdvboU/U/wH+CpiQUEa5DCByO/OJ5FKbSGI3WXIWysz6CWU1prseaOW
-         i6rnr84M4oWngk83dchI/VVLYjFoDSCJ1lhhR9TdRCO0a6uJZbbIzcTL762GQc773UIU
-         do4w==
-X-Gm-Message-State: AOAM5312AmUIJDqTuY+USlCnB4HkCfzk9DwxTWSTHOdpXoHWbnKAJC+n
-        TAFfKG0rfnQoO5IuidSBojtJ1qljvx8=
-X-Google-Smtp-Source: ABdhPJzfYskGQVCQ6wlLyAtq1snJ/WfxGxvPFR8YnzeiPFr+T1v1iY4Je9WzafGVZ+KwY9OEoJrNxw==
-X-Received: by 2002:a17:907:9726:: with SMTP id jg38mr7677174ejc.384.1643593664095;
-        Sun, 30 Jan 2022 17:47:44 -0800 (PST)
-Received: from localhost ([185.92.221.13])
-        by smtp.gmail.com with ESMTPSA id hq28sm10407000ejc.204.2022.01.30.17.47.43
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 30 Jan 2022 17:47:43 -0800 (PST)
-Date:   Mon, 31 Jan 2022 01:47:42 +0000
-From:   Wei Yang <richard.weiyang@gmail.com>
-To:     akpm@linux-foundation.org
-Cc:     hannes@cmpxchg.org, mhocko@kernel.org, vdavydov.dev@gmail.com,
-        akpm@linux-foundation.org, shakeelb@google.com, guro@fb.com,
-        vbabka@suse.cz, willy@infradead.org, songmuchun@bytedance.com,
-        shy828301@gmail.com, surenb@google.com,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 1/4] mm/memcg: use NUMA_NO_NODE to indicate allocation
- from unspecified node
-Message-ID: <20220131014742.oxcrctcg6sqwvzij@master>
-Reply-To: Wei Yang <richard.weiyang@gmail.com>
-References: <20220111010302.8864-1-richard.weiyang@gmail.com>
+        Sun, 30 Jan 2022 21:16:22 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id C60A95800EF;
+        Sun, 30 Jan 2022 21:16:21 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Sun, 30 Jan 2022 21:16:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=turner.link; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; bh=P9iOim4NrWctmEwZ8zPw3HEkn6EbbINyR5zkQ2
+        23ptE=; b=WhZLbraCfAbAiaXMYxdU0JtimnEgffIECycU2prEgxs57Qiv3otomd
+        LxciAIQ404Tr+R0QA39S0Sh6TphRwSsKbTW/YyVossjjt9UUp71KVqGDjZU9ha2o
+        5kIawzsFib+RlISzbDxQ5dboN1jldudrXsbVhsDG+LAGRN7ibAMaNBi9eIvrejU3
+        TZwuD2V1Eh8s5VjcaN+mbp91bSPGhAFy5e8xxRyR6lHU7Fgs0FCJehomiy708/iL
+        WotvDHVyRRIPtZo83WBNjzbFgp63qAcmVRjLU0+Zr2lsIUskSzgsjSJ1RqxT/LJc
+        YNOPuVMLmuTLqq5zGyYgqMP+g1t6LuAg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=P9iOim4NrWctmEwZ8
+        zPw3HEkn6EbbINyR5zkQ223ptE=; b=drCIdtq56LgKKAk04BhqRdtXtrABgGh37
+        2dky3hCczhXDUV0ToEuDeuG4UJO94oDrN1SsnA8QQX5xq5xAjL0K/CEHgYwergbJ
+        1LpooZ28Gk0+tnyKL0jADrmqTwREg3XvV86Tj1NhzvO9a53TDiCWxd5OsUKBQBLM
+        dLKo/cF+OCSUk8yaumj02qn5zLVMpqLrpMDr00Hy+0CdfnrjHp7xkGVQQ7x08+jD
+        7+in0yYBg4ohQs9Ffyhjvi742vXn8PBYjVsf8EVmi+GYpoaNhcj8Vu8AlUV1xG74
+        xwY4XgXI7mBo42ThRuNldJDCdYPh6wWlTmiXnE41qDd9C1BPHgZ4w==
+X-ME-Sender: <xms:dUb3YUIhCChgHZeIrE6zkc_6ZfrKQKcLHkLjStd0ZEwlraTF916dKw>
+    <xme:dUb3YUKRJYYPlLanL6aHmp8kkMXnlah7UZR_cBEfcLa5zoGQx0XHdCXw-e-RPt6WZ
+    UexBb3iuIqgvWpskw>
+X-ME-Received: <xmr:dUb3YUt9uPq2KyJJ885awi3jgnQvVZ5VtYouDk-uTK4eGPEAKydpsEZsMQ41>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrgedtgdegvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpehfhffvufffjgfkgggtsehttdertddttddtnecuhfhrohhmpeflihhmucfvuhhr
+    nhgvrhcuoehlihhnuhigkhgvrhhnvghlrdhfohhsshesughmrghrtgdqnhhonhgvrdhtuh
+    hrnhgvrhdrlhhinhhkqeenucggtffrrghtthgvrhhnpeetheegvdetueefudelffejieff
+    feetuefhveffveffffffhffguddtleehueevleenucffohhmrghinhepsghoohhtlhhinh
+    drtghomhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhm
+    pehlihhnuhigkhgvrhhnvghlrdhfohhsshesughmrghrtgdqnhhonhgvrdhtuhhrnhgvrh
+    drlhhinhhk
+X-ME-Proxy: <xmx:dUb3YRYnJlFBzWHktQ4HgM8Bt_RRoMAMwcO58jagwk9FezN-eHnFng>
+    <xmx:dUb3YbYs6CyZ00DMOTIk1DepRhSGlr0ziQ-wT3HGC6fAlmVs6M4mKQ>
+    <xmx:dUb3YdAptUPRB1unQeUulNxudWKbYRYzLTdQBd3ZfdZUabb-HMGPow>
+    <xmx:dUb3YXqLKN47jCphongm7KUYYsj-mkg-zU2tnMhW-lf3ulkV4JRMIg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 30 Jan 2022 21:16:21 -0500 (EST)
+References: <87ee57c8fu.fsf@turner.link>
+ <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
+ <87a6ftk9qy.fsf@dmarc-none.turner.link> <87zgnp96a4.fsf@turner.link>
+ <fc2b7593-db8f-091c-67a0-ae5ffce71700@leemhuis.info>
+ <CADnq5_Nr5-FR2zP1ViVsD_ZMiW=UHC1wO8_HEGm26K_EG2KDoA@mail.gmail.com>
+ <87czkk1pmt.fsf@dmarc-none.turner.link>
+ <BYAPR12MB46140BE09E37244AE129C01A975C9@BYAPR12MB4614.namprd12.prod.outlook.com>
+ <87sftfqwlx.fsf@dmarc-none.turner.link>
+ <BYAPR12MB4614E2CFEDDDEAABBAB986A0975E9@BYAPR12MB4614.namprd12.prod.outlook.com>
+ <87ee4wprsx.fsf@turner.link>
+ <4b3ed7f6-d2b6-443c-970e-d963066ebfe3@amd.com>
+From:   Jim Turner <linuxkernel.foss@dmarc-none.turner.link>
+To:     "Lazar, Lijo" <lijo.lazar@amd.com>
+Cc:     Alex Deucher <alexdeucher@gmail.com>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Koenig, Christian" <Christian.Koenig@amd.com>
+Subject: Re: [REGRESSION] Too-low frequency limit for AMD GPU
+ PCI-passed-through to Windows VM
+Date:   Sat, 29 Jan 2022 19:25:07 -0500
+In-reply-to: <4b3ed7f6-d2b6-443c-970e-d963066ebfe3@amd.com>
+Message-ID: <87pmo8r6ob.fsf@turner.link>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220111010302.8864-1-richard.weiyang@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Andrew
+Hi Lijo,
 
-Would you pick up this patch set, or prefer me to send a v2?
-
-On Tue, Jan 11, 2022 at 01:02:59AM +0000, Wei Yang wrote:
->Instead of use "-1", let's use NUMA_NO_NODE for consistency.
+> Specifically, I was looking for any events happening at these two
+> places because of the patch-
 >
->Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
->---
-> mm/memcontrol.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
+> https://elixir.bootlin.com/linux/v5.16/source/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c#L411
 >
->diff --git a/mm/memcontrol.c b/mm/memcontrol.c
->index 2ed5f2a0879d..11715f7323c0 100644
->--- a/mm/memcontrol.c
->+++ b/mm/memcontrol.c
->@@ -5054,7 +5054,7 @@ static int alloc_mem_cgroup_per_node_info(struct mem_cgroup *memcg, int node)
-> 	 *       function.
-> 	 */
-> 	if (!node_state(node, N_NORMAL_MEMORY))
->-		tmp = -1;
->+		tmp = NUMA_NO_NODE;
-> 	pn = kzalloc_node(sizeof(*pn), GFP_KERNEL, tmp);
-> 	if (!pn)
-> 		return 1;
->-- 
->2.33.1
+> https://elixir.bootlin.com/linux/v5.16/source/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c#L653
 
--- 
-Wei Yang
-Help you, Help me
+I searched the logs generated with all drm debug messages enabled
+(drm.debug=0x1ff) for "device_class", "ATCS", "atcs", "ATIF", and
+"atif", for both f1688bd69ec4 and f9b7f3703ff9. Other than the few lines
+mentioning ATIF from my previous email, there weren't any matches.
+
+Since "device_class" didn't appear in the logs, we know that
+`amdgpu_atif_handler` was not called for either version.
+
+I also patched f9b7f3703ff9 to add the line
+
+  DRM_DEBUG_DRIVER("Entered amdgpu_acpi_pcie_performance_request");
+
+at the top (below the variable declarations) of
+`amdgpu_acpi_pcie_performance_request`, and then tested again with all
+drm debug messages enabled (0x1ff). That debug message didn't show up.
+
+So, `amdgpu_acpi_pcie_performance_request` was not called either, at
+least with f9b7f3703ff9. (I didn't try adding this patch to
+f1688bd69ec4.)
+
+Would anything else be helpful?
+
+James
