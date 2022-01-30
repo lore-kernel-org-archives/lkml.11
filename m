@@ -2,171 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 14:45:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABEE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 30 Jan 2022 14:46:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355152AbiA3OpP (ORCPT
+        id S1355196AbiA3OqY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 09:45:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58738 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355136AbiA3Oo6 (ORCPT
+        Sun, 30 Jan 2022 09:46:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54302 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355122AbiA3OpZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 09:44:58 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F87CC061749
-        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 06:44:57 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id o16-20020a17090aac1000b001b62f629953so8242238pjq.3
-        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 06:44:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WGfvZ4r5TNIGEOPtoPqp/tnebkonKtzqdtDq9GKibjo=;
-        b=DCQ4wOWh7wbjPwKsG2kS/BtCMPVysyqL9LOqvMGLG4V1toRNTEb16VJAT4wqd2pR1x
-         5hrF/f76JKpDU6AfJwPF9fztVwuonsFV+kNYBGGdhAh08FfUVUEEubME1MU+iZ6HrmPH
-         dgc5C7ashZFBQuSFbJoGpAISr0s/6fb03gb/DLgPAq41JOAnOPYkTcoXsXPwRtjH1smI
-         sjoji3hJt8ZuhXSwCTWaR1kMqu81Eq8Kf/5N2ueH7kfZOCdNdWwfOO3rlxh5t7VIL6Up
-         e5IJxDqzhQR7v9ljussgD5QUXsPYoLonPyGdyDpTaB/nX0R5gr8EGWhQ4/K5oyP9win2
-         Az1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WGfvZ4r5TNIGEOPtoPqp/tnebkonKtzqdtDq9GKibjo=;
-        b=l20EWyhUCvuP2XlUS6mzZYcT7Kb+7jAT2+LVywXLgmbV/RGWKfG6jMftgruRsOG0YM
-         G2c003PIrfTzrN4vPZdMDtQGS9xoMifiEXju1DHNS5cGHWFyhA8wFXcZZbrBay3Lupa5
-         QIB6lmG4A2d4ZT3fQbgbVYvgZ157Idy3DI30+sV6QzX9FE6lGAXh0wRfxhY2UKxy1q7/
-         e5ka4XAbWRcCVedZAF5lzc90kZMtNDixQzksYmuGFp0kbSUIGEUKcQtl00nwnVp+dYHT
-         Zlh+UIUvQzmOAOb/G/R3+J282sg52IeooeYJ20C13FV4x7EtR/UDClXcG624EcL2pe5q
-         dZZw==
-X-Gm-Message-State: AOAM530I2C+icUwN4b2DtC8Tk20euwHd3/zRjQHHXZeTypJad7G5O58C
-        Jdkz4pCat50A8zagPu7DCnc=
-X-Google-Smtp-Source: ABdhPJyAO/VWNHNdKZk29Qw2uZmLYX0jLr4thopMMI8bIQ/KbMZXevMquwGYprRYmUUNkwH3Sj/+6w==
-X-Received: by 2002:a17:90b:380f:: with SMTP id mq15mr20032842pjb.66.1643553897259;
-        Sun, 30 Jan 2022 06:44:57 -0800 (PST)
-Received: from localhost.localdomain (li567-56.members.linode.com. [192.155.81.56])
-        by smtp.gmail.com with ESMTPSA id w8sm10502126pfu.128.2022.01.30.06.44.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Jan 2022 06:44:56 -0800 (PST)
-From:   Jeff Xie <xiehuan09@gmail.com>
-To:     rostedt@goodmis.org
-Cc:     mhiramat@kernel.org, mingo@redhat.com, zanussi@kernel.org,
-        linux-kernel@vger.kernel.org, Jeff Xie <xiehuan09@gmail.com>
-Subject: [PATCH v8 4/4] trace/objtrace: Add documentation for objtrace
-Date:   Sun, 30 Jan 2022 22:44:30 +0800
-Message-Id: <20220130144430.453221-5-xiehuan09@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220130144430.453221-1-xiehuan09@gmail.com>
-References: <20220130144430.453221-1-xiehuan09@gmail.com>
+        Sun, 30 Jan 2022 09:45:25 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 077A9B82973;
+        Sun, 30 Jan 2022 14:45:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 161E5C340E8;
+        Sun, 30 Jan 2022 14:45:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643553922;
+        bh=5HmiHVeprudoa5Q4aruSHZTv9jVzOD5vFnAOcy/m0zY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=clqj16mVniI09/7yffpGOBTFfPpUTpDqWQlRd3/1dJwTRc59CoU+T83nPom24EfHP
+         PkLBfWL98h0RRhSt4n15TlJCn7k9h45WnP4znvbXd2SqTQCCxDucrPt50HG603Pz3K
+         aAJLZqfYvbcvMOOJsLwtqFc9+RUSkmu2T/+awMwHtY9w+3ULoyEiKDQ/sEAMuDnYQ9
+         8ILIa8FkvGRzd+CdpujN30LxDC63HjGVhQq7HAwTm6nTKiAz+eciTJg1kmB9zo+yV2
+         cc7qi1JAcIc0abxsy9E/DL+FHUrbs8kJdWrCn8cPqnK0qkYK6Yn5UNqv2Fr37ryzVG
+         TaEhoayOFrVVw==
+Date:   Sun, 30 Jan 2022 14:51:46 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Miaoqian Lin <linmq006@gmail.com>, adi.reus@gmail.com,
+        ardeleanalex@gmail.com, gwendal@chromium.org, lars@metafoo.de,
+        linus.walleij@linaro.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stephan@gerhold.net
+Subject: Re: [PATCH v2] iio: Fix error handling for PM
+Message-ID: <20220130145146.2d666289@jic23-huawei>
+In-Reply-To: <YdgrMwCkqzOG8j/j@smile.fi.intel.com>
+References: <YdWjHWowWXy01zaE@smile.fi.intel.com>
+        <20220106112309.16879-1-linmq006@gmail.com>
+        <YdgrMwCkqzOG8j/j@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added documentation explaining how to use objtrace trigger to get the value
-of the object.
+On Fri, 7 Jan 2022 13:59:47 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Signed-off-by: Jeff Xie <xiehuan09@gmail.com>
----
- Documentation/trace/events.rst | 83 ++++++++++++++++++++++++++++++++++
- 1 file changed, 83 insertions(+)
+> On Thu, Jan 06, 2022 at 11:23:09AM +0000, Miaoqian Lin wrote:
+> > The pm_runtime_enable will increase power disable depth.
+> > If the probe fails, we should use pm_runtime_disable() to balance
+> > pm_runtime_enable(). In the PM Runtime docs:
+> >     Drivers in ->remove() callback should undo the runtime PM changes done
+> >     in ->probe(). Usually this means calling pm_runtime_disable(),
+> >     pm_runtime_dont_use_autosuspend() etc.
+> > We should do this in error handling.
+> > 
+> > Fix this problem for the following drivers: bmc150, bmg160, kmx61,
+> > kxcj-1013, mma9551, mma9553.  
+> 
+> LGTM, FWIW,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-diff --git a/Documentation/trace/events.rst b/Documentation/trace/events.rst
-index c47f381d0c00..383fff5ca9ba 100644
---- a/Documentation/trace/events.rst
-+++ b/Documentation/trace/events.rst
-@@ -546,6 +546,89 @@ The following commands are supported:
- 
-   See Documentation/trace/histogram.rst for details and examples.
- 
-+- objtrace
-+
-+  This command provides a way to get the value of any object, The object
-+  can be obtained from the dynamic event(kprobe_event/uprobe_event) or the
-+  static event(tracepoint).
-+
-+  Usage:
-+  When using the kprobe event, only need to set the objtrace(a new trigger),
-+  we can get the value of the object. The object is from the setting of the
-+  kprobe event.
-+
-+  For example:
-+  For the function bio_add_page():
-+
-+  int bio_add_page(struct bio *bio, struct page *page,
-+	unsigned int len, unsigned int offset)
-+
-+  Firstly, we can set the base of the object, thus the first string "arg1"
-+  stands for the value of the first parameter of this function bio_add_gage(),
-+
-+  # echo 'p bio_add_page arg1=$arg1' > ./kprobe_events
-+
-+  Secondly, we can get the value dynamically based on above object.
-+
-+  find the offset of the bi_size in struct bio:
-+  $ gdb vmlinux
-+  (gdb) p &(((struct bio *)0)->bi_iter.bi_size)
-+  $1 = (unsigned int *) 0x28
-+
-+  # echo 'objtrace:add:arg1,0x28:u32:1 if comm == "cat"' > ./events/kprobes/ \
-+	p_bio_add_page_0/trigger
-+
-+  # cd /sys/kernel/debug/tracing/
-+  # echo 'p bio_add_page arg1=$arg1' > ./kprobe_events
-+  # echo 'objtrace:add:arg1,0x28:u32:1 if comm == "cat"' > ./events/kprobes/p_bio_add_page_0/trigger
-+
-+  # du -sh /test.txt
-+  12.0K   /test.txt
-+
-+  # cat  /test.txt > /dev/null
-+  # cat ./trace
-+  # tracer: nop
-+  #
-+  # entries-in-buffer/entries-written: 128/128   #P:4
-+  #
-+  #                                _-----=> irqs-off/BH-disabled
-+  #                               / _----=> need-resched
-+  #                              | / _---=> hardirq/softirq
-+  #                              || / _--=> preempt-depth
-+  #                              ||| / _-=> migrate-disable
-+  #                              |||| /     delay
-+  #           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
-+  #              | |         |   |||||     |         |
-+               cat-117     [002] ...1.     1.602243: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x0
-+               cat-117     [002] ...1.     1.602244: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x0
-+               cat-117     [002] ...2.     1.602244: bio_add_page <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x1000
-+               cat-117     [002] ...1.     1.602245: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x1000
-+               cat-117     [002] ...1.     1.602245: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x1000
-+               cat-117     [002] ...2.     1.602245: bio_add_page <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x2000
-+               cat-117     [002] ...1.     1.602245: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x2000
-+               cat-117     [002] ...1.     1.602245: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x2000
-+               cat-117     [002] ...1.     1.602245: submit_bio <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602245: submit_bio_noacct <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602246: __submit_bio <-submit_bio_noacct object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602246: submit_bio_checks <-__submit_bio object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602246: __cond_resched <-submit_bio_checks object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602246: should_fail_bio <-submit_bio_checks object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602246: blk_mq_submit_bio <-submit_bio_noacct object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602246: blk_attempt_plug_merge <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602246: blk_mq_sched_bio_merge <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602247: __rcu_read_lock <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602247: __rcu_read_unlock <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
-+               cat-117     [002] ...1.     1.602247: __blk_mq_alloc_requests <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
-+            <idle>-0       [002] d..3.     1.602298: bio_endio <-blk_update_request object:0xffff88811bee4000 value:0x0
-+            <idle>-0       [002] d..3.     1.602298: mpage_end_io <-blk_update_request object:0xffff88811bee4000 value:0x0
-+            <idle>-0       [002] d..3.     1.602298: __read_end_io <-blk_update_request object:0xffff88811bee4000 value:0x0
-+            <idle>-0       [002] d..3.     1.602300: bio_put <-blk_update_request object:0xffff88811bee4000 value:0x0
-+            <idle>-0       [002] d..3.     1.602300: bio_free <-blk_update_request object:0xffff88811bee4000 value:0x0
-+            <idle>-0       [002] d..3.     1.602300: mempool_free <-blk_update_request object:0xffff88811bee4000 value:0x0
-+            <idle>-0       [002] d..3.     1.602300: mempool_free_slab <-blk_update_request object:0xffff88811bee4000 value:0x0
-+            <idle>-0       [002] d..3.     1.602300: kmem_cache_free <-blk_update_request object:0xffff88811bee4000 value:0x0
-+             ...
-+
- 7. In-kernel trace event API
- ============================
- 
--- 
-2.25.1
+Thanks,
+
+Jonathan
+
+> 
+> > Fixes: 7d0ead5c3f00 ("iio: Reconcile operation order between iio_register/unregister and pm functions")
+> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> > ---
+> > Changes in v2:
+> > - fix the fixes tag
+> > - fix similar problems introduced by the same commit
+> > ---
+> >  drivers/iio/accel/bmc150-accel-core.c  | 5 ++++-
+> >  drivers/iio/accel/kxcjk-1013.c         | 5 ++++-
+> >  drivers/iio/accel/mma9551.c            | 5 ++++-
+> >  drivers/iio/accel/mma9553.c            | 5 ++++-
+> >  drivers/iio/gyro/bmg160_core.c         | 5 ++++-
+> >  drivers/iio/imu/kmx61.c                | 5 ++++-
+> >  drivers/iio/magnetometer/bmc150_magn.c | 5 +++--
+> >  7 files changed, 27 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> > index b0678c351e82..c3a2b4c0b3b2 100644
+> > --- a/drivers/iio/accel/bmc150-accel-core.c
+> > +++ b/drivers/iio/accel/bmc150-accel-core.c
+> > @@ -1783,11 +1783,14 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+> >  	ret = iio_device_register(indio_dev);
+> >  	if (ret < 0) {
+> >  		dev_err(dev, "Unable to register iio device\n");
+> > -		goto err_trigger_unregister;
+> > +		goto err_pm_cleanup;
+> >  	}
+> >  
+> >  	return 0;
+> >  
+> > +err_pm_cleanup:
+> > +	pm_runtime_dont_use_autosuspend(dev);
+> > +	pm_runtime_disable(dev);
+> >  err_trigger_unregister:
+> >  	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+> >  err_buffer_cleanup:
+> > diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> > index 24c9387c2968..ba6c8ca488b1 100644
+> > --- a/drivers/iio/accel/kxcjk-1013.c
+> > +++ b/drivers/iio/accel/kxcjk-1013.c
+> > @@ -1589,11 +1589,14 @@ static int kxcjk1013_probe(struct i2c_client *client,
+> >  	ret = iio_device_register(indio_dev);
+> >  	if (ret < 0) {
+> >  		dev_err(&client->dev, "unable to register iio device\n");
+> > -		goto err_buffer_cleanup;
+> > +		goto err_pm_cleanup;
+> >  	}
+> >  
+> >  	return 0;
+> >  
+> > +err_pm_cleanup:
+> > +	pm_runtime_dont_use_autosuspend(&client->dev);
+> > +	pm_runtime_disable(&client->dev);
+> >  err_buffer_cleanup:
+> >  	iio_triggered_buffer_cleanup(indio_dev);
+> >  err_trigger_unregister:
+> > diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+> > index 4c359fb05480..c53a3398b14c 100644
+> > --- a/drivers/iio/accel/mma9551.c
+> > +++ b/drivers/iio/accel/mma9551.c
+> > @@ -495,11 +495,14 @@ static int mma9551_probe(struct i2c_client *client,
+> >  	ret = iio_device_register(indio_dev);
+> >  	if (ret < 0) {
+> >  		dev_err(&client->dev, "unable to register iio device\n");
+> > -		goto out_poweroff;
+> > +		goto err_pm_cleanup;
+> >  	}
+> >  
+> >  	return 0;
+> >  
+> > +err_pm_cleanup:
+> > +	pm_runtime_dont_use_autosuspend(&client->dev);
+> > +	pm_runtime_disable(&client->dev);
+> >  out_poweroff:
+> >  	mma9551_set_device_state(client, false);
+> >  
+> > diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+> > index ba3ecb3b57dc..1599b75724d4 100644
+> > --- a/drivers/iio/accel/mma9553.c
+> > +++ b/drivers/iio/accel/mma9553.c
+> > @@ -1134,12 +1134,15 @@ static int mma9553_probe(struct i2c_client *client,
+> >  	ret = iio_device_register(indio_dev);
+> >  	if (ret < 0) {
+> >  		dev_err(&client->dev, "unable to register iio device\n");
+> > -		goto out_poweroff;
+> > +		goto err_pm_cleanup;
+> >  	}
+> >  
+> >  	dev_dbg(&indio_dev->dev, "Registered device %s\n", name);
+> >  	return 0;
+> >  
+> > +err_pm_cleanup:
+> > +	pm_runtime_dont_use_autosuspend(&client->dev);
+> > +	pm_runtime_disable(&client->dev);
+> >  out_poweroff:
+> >  	mma9551_set_device_state(client, false);
+> >  	return ret;
+> > diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+> > index 17b939a367ad..81a6d09788bd 100644
+> > --- a/drivers/iio/gyro/bmg160_core.c
+> > +++ b/drivers/iio/gyro/bmg160_core.c
+> > @@ -1188,11 +1188,14 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
+> >  	ret = iio_device_register(indio_dev);
+> >  	if (ret < 0) {
+> >  		dev_err(dev, "unable to register iio device\n");
+> > -		goto err_buffer_cleanup;
+> > +		goto err_pm_cleanup;
+> >  	}
+> >  
+> >  	return 0;
+> >  
+> > +err_pm_cleanup:
+> > +	pm_runtime_dont_use_autosuspend(dev);
+> > +	pm_runtime_disable(dev);
+> >  err_buffer_cleanup:
+> >  	iio_triggered_buffer_cleanup(indio_dev);
+> >  err_trigger_unregister:
+> > diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+> > index 1dabfd615dab..f89724481df9 100644
+> > --- a/drivers/iio/imu/kmx61.c
+> > +++ b/drivers/iio/imu/kmx61.c
+> > @@ -1385,7 +1385,7 @@ static int kmx61_probe(struct i2c_client *client,
+> >  	ret = iio_device_register(data->acc_indio_dev);
+> >  	if (ret < 0) {
+> >  		dev_err(&client->dev, "Failed to register acc iio device\n");
+> > -		goto err_buffer_cleanup_mag;
+> > +		goto err_pm_cleanup;
+> >  	}
+> >  
+> >  	ret = iio_device_register(data->mag_indio_dev);
+> > @@ -1398,6 +1398,9 @@ static int kmx61_probe(struct i2c_client *client,
+> >  
+> >  err_iio_unregister_acc:
+> >  	iio_device_unregister(data->acc_indio_dev);
+> > +err_pm_cleanup:
+> > +	pm_runtime_dont_use_autosuspend(&client->dev);
+> > +	pm_runtime_disable(&client->dev);
+> >  err_buffer_cleanup_mag:
+> >  	if (client->irq > 0)
+> >  		iio_triggered_buffer_cleanup(data->mag_indio_dev);
+> > diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
+> > index f96f53175349..3d4d21f979fa 100644
+> > --- a/drivers/iio/magnetometer/bmc150_magn.c
+> > +++ b/drivers/iio/magnetometer/bmc150_magn.c
+> > @@ -962,13 +962,14 @@ int bmc150_magn_probe(struct device *dev, struct regmap *regmap,
+> >  	ret = iio_device_register(indio_dev);
+> >  	if (ret < 0) {
+> >  		dev_err(dev, "unable to register iio device\n");
+> > -		goto err_disable_runtime_pm;
+> > +		goto err_pm_cleanup;
+> >  	}
+> >  
+> >  	dev_dbg(dev, "Registered device %s\n", name);
+> >  	return 0;
+> >  
+> > -err_disable_runtime_pm:
+> > +err_pm_cleanup:
+> > +	pm_runtime_dont_use_autosuspend(dev);
+> >  	pm_runtime_disable(dev);
+> >  err_buffer_cleanup:
+> >  	iio_triggered_buffer_cleanup(indio_dev);
+> > -- 
+> > 2.17.1
+> >   
+> 
 
