@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28045C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:14:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 393F0C47080
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376703AbiAaLNK (ORCPT
+        id S1377172AbiAaLNp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:13:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43040 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377155AbiAaLJp (ORCPT
+        Mon, 31 Jan 2022 06:13:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377551AbiAaLKL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:45 -0500
+        Mon, 31 Jan 2022 06:10:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED88C061755;
+        Mon, 31 Jan 2022 03:08:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E678F60ECF;
-        Mon, 31 Jan 2022 11:09:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF12EC340E8;
-        Mon, 31 Jan 2022 11:09:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E37D60F96;
+        Mon, 31 Jan 2022 11:08:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1652AC340EE;
+        Mon, 31 Jan 2022 11:08:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627384;
-        bh=LK2UuLpJtYpIxmjyjas8oJvOtSJV5qT3NTNnNy9ERhQ=;
+        s=korg; t=1643627295;
+        bh=rKBRTnq04Yzo8Z/MnBV36rCnaH7mpKFBSO8XF2AqEE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e28gjGUNlrr5Px5PR/DDVAhLcAmTO0rpWREfjxj0h0tJtG0bm0vHn01A28iZ9paXj
-         +R40xGngWkCASuczyQg817+2MOvzAoIZX9H/b2oR76y/OBEvCRWwH6firnolOB2A4d
-         mkWRthNULfM+HvM9tQwsZVNdnZn4oYuiLykupRLU=
+        b=k+8TIJUII8estkbKpFvMhZT9WNoPnH9P0LE1QuTrsWl34pd9Vi9Q5QjpaX06Uql6Q
+         U6XnM2GuwmfCKy34Dug+jazr5L5zwq9rsj/kgvjJU1OlOL8yDTEz0T/5o72JgD8TkL
+         otefjhU+hjunyHvx6VAxtPnNXsJ9bGQ+WT0QdVyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 033/171] drm/amd/display: Fix FP start/end for dcn30_internal_validate_bw.
-Date:   Mon, 31 Jan 2022 11:54:58 +0100
-Message-Id: <20220131105231.139478639@linuxfoundation.org>
+        syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 038/171] KVM: x86: Forcibly leave nested virt when SMM state is toggled
+Date:   Mon, 31 Jan 2022 11:55:03 +0100
+Message-Id: <20220131105231.310433402@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -47,48 +51,173 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 72a8d87b87270bff0c0b2fed4d59c48d0dd840d7 upstream.
+commit f7e570780efc5cec9b2ed1e0472a7da14e864fdb upstream.
 
-It calls populate_dml_pipes which uses doubles to initialize the
-scale_ratio_depth params. Mirrors the dcn20 logic.
+Forcibly leave nested virtualization operation if userspace toggles SMM
+state via KVM_SET_VCPU_EVENTS or KVM_SYNC_X86_EVENTS.  If userspace
+forces the vCPU out of SMM while it's post-VMXON and then injects an SMI,
+vmx_enter_smm() will overwrite vmx->nested.smm.vmxon and end up with both
+vmxon=false and smm.vmxon=false, but all other nVMX state allocated.
+
+Don't attempt to gracefully handle the transition as (a) most transitions
+are nonsencial, e.g. forcing SMM while L2 is running, (b) there isn't
+sufficient information to handle all transitions, e.g. SVM wants access
+to the SMRAM save state, and (c) KVM_SET_VCPU_EVENTS must precede
+KVM_SET_NESTED_STATE during state restore as the latter disallows putting
+the vCPU into L2 if SMM is active, and disallows tagging the vCPU as
+being post-VMXON in SMM if SMM is not active.
+
+Abuse of KVM_SET_VCPU_EVENTS manifests as a WARN and memory leak in nVMX
+due to failure to free vmcs01's shadow VMCS, but the bug goes far beyond
+just a memory leak, e.g. toggling SMM on while L2 is active puts the vCPU
+in an architecturally impossible state.
+
+  WARNING: CPU: 0 PID: 3606 at free_loaded_vmcs arch/x86/kvm/vmx/vmx.c:2665 [inline]
+  WARNING: CPU: 0 PID: 3606 at free_loaded_vmcs+0x158/0x1a0 arch/x86/kvm/vmx/vmx.c:2656
+  Modules linked in:
+  CPU: 1 PID: 3606 Comm: syz-executor725 Not tainted 5.17.0-rc1-syzkaller #0
+  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+  RIP: 0010:free_loaded_vmcs arch/x86/kvm/vmx/vmx.c:2665 [inline]
+  RIP: 0010:free_loaded_vmcs+0x158/0x1a0 arch/x86/kvm/vmx/vmx.c:2656
+  Code: <0f> 0b eb b3 e8 8f 4d 9f 00 e9 f7 fe ff ff 48 89 df e8 92 4d 9f 00
+  Call Trace:
+   <TASK>
+   kvm_arch_vcpu_destroy+0x72/0x2f0 arch/x86/kvm/x86.c:11123
+   kvm_vcpu_destroy arch/x86/kvm/../../../virt/kvm/kvm_main.c:441 [inline]
+   kvm_destroy_vcpus+0x11f/0x290 arch/x86/kvm/../../../virt/kvm/kvm_main.c:460
+   kvm_free_vcpus arch/x86/kvm/x86.c:11564 [inline]
+   kvm_arch_destroy_vm+0x2e8/0x470 arch/x86/kvm/x86.c:11676
+   kvm_destroy_vm arch/x86/kvm/../../../virt/kvm/kvm_main.c:1217 [inline]
+   kvm_put_kvm+0x4fa/0xb00 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1250
+   kvm_vm_release+0x3f/0x50 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1273
+   __fput+0x286/0x9f0 fs/file_table.c:311
+   task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+   exit_task_work include/linux/task_work.h:32 [inline]
+   do_exit+0xb29/0x2a30 kernel/exit.c:806
+   do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+   get_signal+0x4b0/0x28c0 kernel/signal.c:2862
+   arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
+   handle_signal_work kernel/entry/common.c:148 [inline]
+   exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+   exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
+   __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+   syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+   do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
 
 Cc: stable@vger.kernel.org
-Signed-off-by: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Reported-by: syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220125220358.2091737-1-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/kvm_host.h |    1 +
+ arch/x86/kvm/svm/nested.c       |    9 +++++----
+ arch/x86/kvm/svm/svm.c          |    2 +-
+ arch/x86/kvm/svm/svm.h          |    2 +-
+ arch/x86/kvm/vmx/nested.c       |    1 +
+ arch/x86/kvm/x86.c              |    4 +++-
+ 6 files changed, 12 insertions(+), 7 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c
-@@ -1879,7 +1879,6 @@ static noinline bool dcn30_internal_vali
- 	dc->res_pool->funcs->update_soc_for_wm_a(dc, context);
- 	pipe_cnt = dc->res_pool->funcs->populate_dml_pipes(dc, context, pipes, fast_validate);
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1487,6 +1487,7 @@ struct kvm_x86_ops {
+ };
  
--	DC_FP_START();
- 	if (!pipe_cnt) {
- 		out = true;
- 		goto validate_out;
-@@ -2103,7 +2102,6 @@ validate_fail:
- 	out = false;
+ struct kvm_x86_nested_ops {
++	void (*leave_nested)(struct kvm_vcpu *vcpu);
+ 	int (*check_events)(struct kvm_vcpu *vcpu);
+ 	bool (*hv_timer_pending)(struct kvm_vcpu *vcpu);
+ 	void (*triple_fault)(struct kvm_vcpu *vcpu);
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -942,9 +942,9 @@ void svm_free_nested(struct vcpu_svm *sv
+ /*
+  * Forcibly leave nested mode in order to be able to reset the VCPU later on.
+  */
+-void svm_leave_nested(struct vcpu_svm *svm)
++void svm_leave_nested(struct kvm_vcpu *vcpu)
+ {
+-	struct kvm_vcpu *vcpu = &svm->vcpu;
++	struct vcpu_svm *svm = to_svm(vcpu);
  
- validate_out:
--	DC_FP_END();
- 	return out;
+ 	if (is_guest_mode(vcpu)) {
+ 		svm->nested.nested_run_pending = 0;
+@@ -1313,7 +1313,7 @@ static int svm_set_nested_state(struct k
+ 		return -EINVAL;
+ 
+ 	if (!(kvm_state->flags & KVM_STATE_NESTED_GUEST_MODE)) {
+-		svm_leave_nested(svm);
++		svm_leave_nested(vcpu);
+ 		svm_set_gif(svm, !!(kvm_state->flags & KVM_STATE_NESTED_GIF_SET));
+ 		return 0;
+ 	}
+@@ -1378,7 +1378,7 @@ static int svm_set_nested_state(struct k
+ 	 */
+ 
+ 	if (is_guest_mode(vcpu))
+-		svm_leave_nested(svm);
++		svm_leave_nested(vcpu);
+ 	else
+ 		svm->nested.vmcb02.ptr->save = svm->vmcb01.ptr->save;
+ 
+@@ -1432,6 +1432,7 @@ static bool svm_get_nested_state_pages(s
  }
  
-@@ -2304,7 +2302,9 @@ bool dcn30_validate_bandwidth(struct dc
+ struct kvm_x86_nested_ops svm_nested_ops = {
++	.leave_nested = svm_leave_nested,
+ 	.check_events = svm_check_nested_events,
+ 	.triple_fault = nested_svm_triple_fault,
+ 	.get_nested_state_pages = svm_get_nested_state_pages,
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -281,7 +281,7 @@ int svm_set_efer(struct kvm_vcpu *vcpu,
  
- 	BW_VAL_TRACE_COUNT();
+ 	if ((old_efer & EFER_SVME) != (efer & EFER_SVME)) {
+ 		if (!(efer & EFER_SVME)) {
+-			svm_leave_nested(svm);
++			svm_leave_nested(vcpu);
+ 			svm_set_gif(svm, true);
+ 			/* #GP intercept is still needed for vmware backdoor */
+ 			if (!enable_vmware_backdoor)
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -461,7 +461,7 @@ static inline bool nested_exit_on_nmi(st
  
-+	DC_FP_START();
- 	out = dcn30_internal_validate_bw(dc, context, pipes, &pipe_cnt, &vlevel, fast_validate);
-+	DC_FP_END();
+ int enter_svm_guest_mode(struct kvm_vcpu *vcpu,
+ 			 u64 vmcb_gpa, struct vmcb *vmcb12, bool from_vmrun);
+-void svm_leave_nested(struct vcpu_svm *svm);
++void svm_leave_nested(struct kvm_vcpu *vcpu);
+ void svm_free_nested(struct vcpu_svm *svm);
+ int svm_allocate_nested(struct vcpu_svm *svm);
+ int nested_svm_vmrun(struct kvm_vcpu *vcpu);
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -6748,6 +6748,7 @@ __init int nested_vmx_hardware_setup(int
+ }
  
- 	if (pipe_cnt == 0)
- 		goto validate_out;
+ struct kvm_x86_nested_ops vmx_nested_ops = {
++	.leave_nested = vmx_leave_nested,
+ 	.check_events = vmx_check_nested_events,
+ 	.hv_timer_pending = nested_vmx_preemption_timer_pending,
+ 	.triple_fault = nested_vmx_triple_fault,
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4727,8 +4727,10 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_e
+ 		vcpu->arch.apic->sipi_vector = events->sipi_vector;
+ 
+ 	if (events->flags & KVM_VCPUEVENT_VALID_SMM) {
+-		if (!!(vcpu->arch.hflags & HF_SMM_MASK) != events->smi.smm)
++		if (!!(vcpu->arch.hflags & HF_SMM_MASK) != events->smi.smm) {
++			kvm_x86_ops.nested_ops->leave_nested(vcpu);
+ 			kvm_smm_changed(vcpu, events->smi.smm);
++		}
+ 
+ 		vcpu->arch.smi_pending = events->smi.pending;
+ 
 
 
