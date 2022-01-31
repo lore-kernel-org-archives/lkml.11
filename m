@@ -2,71 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C04AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 19:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 19:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359789AbiAaTZv (ORCPT
+        id S1376391AbiAaT3X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 14:25:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49284 "EHLO
+        Mon, 31 Jan 2022 14:29:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359630AbiAaTZr (ORCPT
+        with ESMTP id S1359797AbiAaT3Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 14:25:47 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D13AC06173D
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 11:25:46 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id p125so13154753pga.2
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 11:25:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eXGf5WCTdRujs8c3iA+q8x9yw63xl/p7dIlJ18j1g0k=;
-        b=ViXsl44S7dZb5JWKzVTj8IGlfi04XDzigxkaEgZXxp0J1OA6KHZAH4XcM+XtwbQUv7
-         IhLtdQ2eDQmm67OwyiJNE3ndCZIKWV+lXNQcdNyDH5jQ9/MFI+TXWQUHFv5v8eL/PHlW
-         6kIL2/4tXvMtyQS7HPfovb5wBAUE061JG/E8gnHwCPLRzgOG8G2uDGGkZn8tI475nECo
-         5z4MtIjG8/TkTg17A625vsqxlNSbwmBf01dUfnu3jX3doz0l1kFNfflZcK9UJITMzjno
-         BwZf9ai7avQe2WTDzCHwSf13n3qTjTLbhBTs1VcSyicyzB9jiA+7K3+KSNH7AXb63SFH
-         0R1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eXGf5WCTdRujs8c3iA+q8x9yw63xl/p7dIlJ18j1g0k=;
-        b=nluURAtUUhwf8T802Sq06a8BvKykmrx+4CQrqyzpTD9Wl+koeaa6i6cSFlNrTBv7Oh
-         4GEq8qgCgKkDKPlg4HtlNVpRQslhPTkReR98FQDnVcFYF1R4gbRs7hJc0v6Cn5hKIEPH
-         pqdRitzyFx82CXeT7zgPTqKyw30RaBzm5I1J3GbIgXwzAk2Gy2JecTXoeBU02+aggJDy
-         6gSsyLoPYlS+8wCHoVf3xFgnLUVYcVYAqH/xgqmSbtYU0HG4WjG/Vg/D3qoRxj3bfp23
-         co20QL3IlZ2sGD3YlICM+EfukTZw00Q5p9bS78kZ0Ljdsk9hXfE2ySNjVj7Vskb7knw/
-         s0/Q==
-X-Gm-Message-State: AOAM532Y6NgJHsikijJljBtiwZsYCEjZkz+naOuJLPByBwImayUgaaY0
-        kWmF5vbv3R4iVHf+8mTIStK3hKTSTDo7FcKwBtiddg==
-X-Google-Smtp-Source: ABdhPJw1vhNusZ1GU768T+2P42NMgdzvrqkQF9yGWmPGojl/h4JYNENm9wG9shwRx4UMfimo1130MnYsuRfSPPVeWfw=
-X-Received: by 2002:aa7:8a14:: with SMTP id m20mr21629811pfa.63.1643657145867;
- Mon, 31 Jan 2022 11:25:45 -0800 (PST)
+        Mon, 31 Jan 2022 14:29:16 -0500
+X-Greylist: delayed 329 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 31 Jan 2022 11:29:15 PST
+Received: from mail.namespace.at (mail.namespace.at [IPv6:2a01:190:1801:100::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE72AC061714;
+        Mon, 31 Jan 2022 11:29:15 -0800 (PST)
+Date:   Mon, 31 Jan 2022 20:23:37 +0100
+From:   Chris Hofstaedtler <zeha@debian.org>
+To:     Karel Zak <kzak@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        util-linux@vger.kernel.org
+Subject: Re: [ANNOUNCE] util-linux v2.38-rc1
+Message-ID: <20220131192337.lzpofr4pz3lhgtl3@zeha.at>
+References: <20220131151432.mfk62bwskotc6w64@ws.net.home>
 MIME-Version: 1.0
-References: <20220127221710.165733-1-dlatypov@google.com>
-In-Reply-To: <20220127221710.165733-1-dlatypov@google.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Mon, 31 Jan 2022 14:25:34 -0500
-Message-ID: <CAFd5g45gQ=05eRTGGbVsd2kA1iMKuUahPL6u-8zrOXpyNgSF9w@mail.gmail.com>
-Subject: Re: [PATCH] kunit: fix missing f in f-string in run_checks.py
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     davidgow@google.com, linux-kernel@vger.kernel.org,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        skhan@linuxfoundation.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220131151432.mfk62bwskotc6w64@ws.net.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 5:17 PM Daniel Latypov <dlatypov@google.com> wrote:
->
-> We're missing the `f` prefix to have python do string interpolation, so
-> we'd never end up printing what the actual "unexpected" error is.
->
-> Fixes: ee92ed38364e ("kunit: add run_checks.py script to validate kunit changes")
-> Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Hello,
 
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+* Karel Zak <kzak@redhat.com> [220131 16:15]:
+> 
+> The util-linux release v2.38-rc1 is available at
+>      
+>   http://www.kernel.org/pub/linux/utils/util-linux/v2.38/
+>      
+> Feedback and bug reports, as always, are welcomed.
+
+Thanks.
+
+Some lsfd tests appear to fail in a Debian sbuild build environment,
+in that they differ in the expected/actual values of DEV[STR] (see
+below). I did not find time to investigate this closer, but thought
+it would be best to report it sooner than later.
+
+Best,
+Chris
+
+---snip---
+     script: /<<PKGBUILDDIR>>/tests/ts/lsfd/mkfds-ro-regular-file
+   commands: /<<PKGBUILDDIR>>/
+    helpers: /<<PKGBUILDDIR>>/
+    sub dir: /<<PKGBUILDDIR>>/tests/ts/lsfd
+    top dir: /<<PKGBUILDDIR>>/tests
+       self: /<<PKGBUILDDIR>>/tests/ts/lsfd
+  test name: mkfds-ro-regular-file
+  test desc: read-only regular file
+  component: lsfd
+  namespace: lsfd/mkfds-ro-regular-file
+    verbose: yes
+     output: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file
+  error log: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file.err
+  exit code: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file.exit_code
+   valgrind: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file.vgdump
+   expected: /<<PKGBUILDDIR>>/tests/expected/lsfd/mkfds-ro-regular-file{.err}
+ mountpoint: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file-mnt
+
+         lsfd: read-only regular file         ... FAILED (lsfd/mkfds-ro-regular-file)
+========= script: /<<PKGBUILDDIR>>/tests/ts/lsfd/mkfds-ro-regular-file =================
+================= OUTPUT =====================
+     1  ABC         3  r--  REG /etc/passwd   1
+     2  COMMAND,ASSOC,MODE,TYPE,NAME,POS: 0
+     3  PID[RUN]: 0
+     4  PID[STR]: 0
+     5  INODE[RUN]: 0
+     6  INODE[STR]: 0
+     7  UID[RUN]: 0
+     8  UID[STR]: 0
+     9  USER[RUN]: 0
+    10  USER[STR]: 0
+    11  SIZE[RUN]: 0
+    12  SIZE[STR]: 0
+    13  MNTID[RUN]: 0
+    14  DEV[RUN]: 0
+    15  FINDMNT[RUN]: 0
+    16  DEV[STR]: 1
+================= EXPECTED ===================
+     1  ABC         3  r--  REG /etc/passwd   1
+     2  COMMAND,ASSOC,MODE,TYPE,NAME,POS: 0
+     3  PID[RUN]: 0
+     4  PID[STR]: 0
+     5  INODE[RUN]: 0
+     6  INODE[STR]: 0
+     7  UID[RUN]: 0
+     8  UID[STR]: 0
+     9  USER[RUN]: 0
+    10  USER[STR]: 0
+    11  SIZE[RUN]: 0
+    12  SIZE[STR]: 0
+    13  MNTID[RUN]: 0
+    14  DEV[RUN]: 0
+    15  FINDMNT[RUN]: 0
+    16  DEV[STR]: 0
+================= O/E diff ===================
+--- /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file    2022-01-31 19:12:43.802603811 +0000
++++ /<<PKGBUILDDIR>>/tests/expected/lsfd/mkfds-ro-regular-file  2022-01-31 14:57:47.000000000 +0000
+@@ -13,4 +13,4 @@
+ MNTID[RUN]: 0
+ DEV[RUN]: 0
+ FINDMNT[RUN]: 0
+-DEV[STR]: 1
++DEV[STR]: 0
+==============================================
+
+     script: /<<PKGBUILDDIR>>/tests/ts/lsfd/mkfds-rw-character-device
+   commands: /<<PKGBUILDDIR>>/
+    helpers: /<<PKGBUILDDIR>>/
+    sub dir: /<<PKGBUILDDIR>>/tests/ts/lsfd
+    top dir: /<<PKGBUILDDIR>>/tests
+       self: /<<PKGBUILDDIR>>/tests/ts/lsfd
+  test name: mkfds-rw-character-device
+  test desc: character device with O_RDWR
+  component: lsfd
+  namespace: lsfd/mkfds-rw-character-device
+    verbose: yes
+     output: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device
+  error log: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device.err
+  exit code: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device.exit_code
+   valgrind: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device.vgdump
+   expected: /<<PKGBUILDDIR>>/tests/expected/lsfd/mkfds-rw-character-device{.err}
+ mountpoint: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device-mnt
+
+         lsfd: character device with O_RDWR   ... FAILED (lsfd/mkfds-rw-character-device)
+========= script: /<<PKGBUILDDIR>>/tests/ts/lsfd/mkfds-rw-character-device =================
+================= OUTPUT =====================
+     1      3  rw-  CHR /dev/zero  mem:5   0     1:5    mem    char  1:5
+     2  ASSOC,MODE,TYPE,NAME,SOURCE,POS,MAJ:MIN,CHRDRV,DEVTYPE,RDEV: 0
+     3  MNTID[RUN]: 0
+     4  DEV[RUN]: 0
+     5  FINDMNT[RUN]: 0
+     6  DEV[STR]: 1
+================= EXPECTED ===================
+     1      3  rw-  CHR /dev/zero  mem:5   0     1:5    mem    char  1:5
+     2  ASSOC,MODE,TYPE,NAME,SOURCE,POS,MAJ:MIN,CHRDRV,DEVTYPE,RDEV: 0
+     3  MNTID[RUN]: 0
+     4  DEV[RUN]: 0
+     5  FINDMNT[RUN]: 0
+     6  DEV[STR]: 0
+================= O/E diff ===================
+--- /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device        2022-01-31 19:12:44.358597427 +0000
++++ /<<PKGBUILDDIR>>/tests/expected/lsfd/mkfds-rw-character-device      2022-01-31 14:57:47.000000000 +0000
+@@ -3,4 +3,4 @@
+ MNTID[RUN]: 0
+ DEV[RUN]: 0
+ FINDMNT[RUN]: 0
+-DEV[STR]: 1
++DEV[STR]: 0
+==============================================
+
+---snip---
+
