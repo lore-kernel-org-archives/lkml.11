@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA0F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 237ECC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378675AbiAaL24 (ORCPT
+        id S1378724AbiAaL3D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:28:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47144 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376532AbiAaLR3 (ORCPT
+        Mon, 31 Jan 2022 06:29:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37606 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377402AbiAaLSM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:17:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE422C0617AF;
-        Mon, 31 Jan 2022 03:11:33 -0800 (PST)
+        Mon, 31 Jan 2022 06:18:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62F37B82A66;
-        Mon, 31 Jan 2022 11:11:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9408CC36AE5;
-        Mon, 31 Jan 2022 11:11:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5336EB82A61;
+        Mon, 31 Jan 2022 11:18:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 976A9C340E8;
+        Mon, 31 Jan 2022 11:18:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627492;
-        bh=IaqLZl+CdXYL64x6EZzxtDxk/aOj4h8gnttrGM8rZnM=;
+        s=korg; t=1643627890;
+        bh=zQGbytej+hfBcd7CzPG1kNgAXhdOl0s9NMF5c/xeaWE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kbC6bBBLDw1RAnu8/Y2PHXRM5TFwkhW38WEnrbPriubv0QBgwVoP28JDmyNxedoTt
-         v5uE3sZViP/yqHPDl9bQMA1lgKQdZaA2CGm2dQEp2j7IJSHi9upAVYTTVxF6shmBl5
-         OQzNCF3v+rNxJIEWHzzt7JJOkIdQGoXgEno7V9jg=
+        b=bDrZm5o+Ud6MsANM2c2iC9ECTrA7QC71lAr6Zb7Oo7mX9TPjPm/LvKsJ2OTLkpmBS
+         6AFQNsT3AQtSoafXgrkUIHZMHy6MTRpPwzpMictZu1qRkFgRw5SIZN9Qi7MK5dMhzE
+         H7Fa1sFfOXbghPrmheNeD5JKUfEftBPGg4ufdTTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 068/171] sched/membarrier: Fix membarrier-rseq fence command missing from query bitmask
-Date:   Mon, 31 Jan 2022 11:55:33 +0100
-Message-Id: <20220131105232.345969651@linuxfoundation.org>
+        stable@vger.kernel.org, Qian Cai <quic_qiancai@quicinc.com>,
+        Mathias Krause <minipli@grsecurity.net>,
+        Alexey Gladkov <legion@kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.16 024/200] ucount:  Make get_ucount a safe get_user replacement
+Date:   Mon, 31 Jan 2022 11:54:47 +0100
+Message-Id: <20220131105234.384457549@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,65 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 809232619f5b15e31fb3563985e705454f32621f upstream.
+commit f9d87929d451d3e649699d0f1d74f71f77ad38f5 upstream.
 
-The membarrier command MEMBARRIER_CMD_QUERY allows querying the
-available membarrier commands. When the membarrier-rseq fence commands
-were added, a new MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK was
-introduced with the intent to expose them with the MEMBARRIER_CMD_QUERY
-command, the but it was never added to MEMBARRIER_CMD_BITMASK.
+When the ucount code was refactored to create get_ucount it was missed
+that some of the contexts in which a rlimit is kept elevated can be
+the only reference to the user/ucount in the system.
 
-The membarrier-rseq fence commands are therefore not wired up with the
-query command.
+Ordinary ucount references exist in places that also have a reference
+to the user namspace, but in POSIX message queues, the SysV shm code,
+and the SIGPENDING code there is no independent user namespace
+reference.
 
-Rename MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK to
-MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK (the bitmask is not a command
-per-se), and change the erroneous
-MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ_BITMASK (which does not
-actually exist) to MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ.
+Inspection of the the user_namespace show no instance of circular
+references between struct ucounts and the user_namespace.  So
+hold a reference from struct ucount to i's user_namespace to
+resolve this problem.
 
-Wire up MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK in
-MEMBARRIER_CMD_BITMASK. Fixing this allows discovering availability of
-the membarrier-rseq fence feature.
-
-Fixes: 2a36ab717e8f ("rseq/membarrier: Add MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ")
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: <stable@vger.kernel.org> # 5.10+
-Link: https://lkml.kernel.org/r/20220117203010.30129-1-mathieu.desnoyers@efficios.com
+Link: https://lore.kernel.org/lkml/YZV7Z+yXbsx9p3JN@fixkernel.com/
+Reported-by: Qian Cai <quic_qiancai@quicinc.com>
+Reported-by: Mathias Krause <minipli@grsecurity.net>
+Tested-by: Mathias Krause <minipli@grsecurity.net>
+Reviewed-by: Mathias Krause <minipli@grsecurity.net>
+Reviewed-by: Alexey Gladkov <legion@kernel.org>
+Fixes: d64696905554 ("Reimplement RLIMIT_SIGPENDING on top of ucounts")
+Fixes: 6e52a9f0532f ("Reimplement RLIMIT_MSGQUEUE on top of ucounts")
+Fixes: d7c9e99aee48 ("Reimplement RLIMIT_MEMLOCK on top of ucounts")
+Cc: stable@vger.kernel.org
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/membarrier.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ kernel/ucount.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/kernel/sched/membarrier.c
-+++ b/kernel/sched/membarrier.c
-@@ -147,11 +147,11 @@
- #endif
- 
- #ifdef CONFIG_RSEQ
--#define MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK		\
-+#define MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK		\
- 	(MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ			\
--	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ_BITMASK)
-+	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ)
- #else
--#define MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK	0
-+#define MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK	0
- #endif
- 
- #define MEMBARRIER_CMD_BITMASK						\
-@@ -159,7 +159,8 @@
- 	| MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED			\
- 	| MEMBARRIER_CMD_PRIVATE_EXPEDITED				\
- 	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED			\
--	| MEMBARRIER_PRIVATE_EXPEDITED_SYNC_CORE_BITMASK)
-+	| MEMBARRIER_PRIVATE_EXPEDITED_SYNC_CORE_BITMASK		\
-+	| MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK)
- 
- static void ipi_mb(void *info)
- {
+--- a/kernel/ucount.c
++++ b/kernel/ucount.c
+@@ -190,6 +190,7 @@ struct ucounts *alloc_ucounts(struct use
+ 			kfree(new);
+ 		} else {
+ 			hlist_add_head(&new->node, hashent);
++			get_user_ns(new->ns);
+ 			spin_unlock_irq(&ucounts_lock);
+ 			return new;
+ 		}
+@@ -210,6 +211,7 @@ void put_ucounts(struct ucounts *ucounts
+ 	if (atomic_dec_and_lock_irqsave(&ucounts->count, &ucounts_lock, flags)) {
+ 		hlist_del_init(&ucounts->node);
+ 		spin_unlock_irqrestore(&ucounts_lock, flags);
++		put_user_ns(ucounts->ns);
+ 		kfree(ucounts);
+ 	}
+ }
 
 
