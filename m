@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C326C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71985C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379203AbiAaL36 (ORCPT
+        id S1379232AbiAaLaA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
+        Mon, 31 Jan 2022 06:30:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378564AbiAaLUV (ORCPT
+        with ESMTP id S1378549AbiAaLUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:20:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E97C061401;
-        Mon, 31 Jan 2022 03:12:57 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B75C0604D6;
+        Mon, 31 Jan 2022 03:12:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F779B82A60;
-        Mon, 31 Jan 2022 11:12:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23A00C340EF;
-        Mon, 31 Jan 2022 11:12:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAECD60ED0;
+        Mon, 31 Jan 2022 11:12:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95FA8C340E8;
+        Mon, 31 Jan 2022 11:12:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627574;
-        bh=sYWhTE2WPmqrRkWAOOA4xl4ixQavnpiet0lmQ/VYkgQ=;
+        s=korg; t=1643627559;
+        bh=KdRHcHHtBNtTHvxsQm/KjAEIXD/uEpMZHgfXut/QXvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H3Q7PM5oP0eIpNn62f3yg71o+5BPSLC5OzLcite8sECa3v5xJR+ri6kZtJq4KCkyf
-         kWhgAo99xf8B4QJ2pgFVS3ZjvcMP3JTHaoSuiIX0m4weVzaCqQ1Rq8wGsd7dpId0n8
-         4CZSPNnzoDIO0L3S+X4om4o/UhEsHxfLKFZkqWek=
+        b=MgPOXam37npqd9bwZDeA8hPsNGhW7f7DVLW8bkodpxpTZDG/rrcvGzU/Fhc6ahelQ
+         voetgO0fTyoJ0R8rvY6YMq2wvkFCmKdOANc5XdKRj85tARBLx2+9SE+xDf1DO8cC41
+         yme04r8LmvavKH7Q7Am2LG5nctptBakgfnS8GeSE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
+        stable@vger.kernel.org, Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
         Sunil Goutham <sgoutham@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 127/171] octeontx2-pf: Forward error codes to VF
-Date:   Mon, 31 Jan 2022 11:56:32 +0100
-Message-Id: <20220131105234.315936007@linuxfoundation.org>
+Subject: [PATCH 5.15 123/171] octeontx2-pf: cn10k: Ensure valid pointers are freed to aura
+Date:   Mon, 31 Jan 2022 11:56:28 +0100
+Message-Id: <20220131105234.195446079@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -51,46 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+From: Geetha sowjanya <gakula@marvell.com>
 
-[ Upstream commit a8db854be28622a2477cb21cdf7f829adbb2c42d ]
+[ Upstream commit c5d731c54a17677939bd59ee8be4ed74d7485ba4 ]
 
-PF forwards its VF messages to AF and corresponding
-replies from AF to VF. AF sets proper error code in the
-replies after processing message requests. Currently PF
-checks the error codes in replies and sends invalid
-message to VF. This way VF lacks the information of
-error code set by AF for its messages. This patch
-changes that such that PF simply forwards AF replies
-so that VF can handle error codes.
+While freeing SQB pointers to aura, driver first memcpy to
+target address and then triggers lmtst operation to free pointer
+to the aura. We need to ensure(by adding dmb barrier)that memcpy
+is finished before pointers are freed to the aura. This patch also
+adds the missing sq context structure entry in debugfs.
 
-Fixes: d424b6c02415 ("octeontx2-pf: Enable SRIOV and added VF mbox handling")
+Fixes: ef6c8da71eaf ("octeontx2-pf: cn10K: Reserve LMTST lines per core")
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c  | 2 ++
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 53a3e8de1a51e..b1894d4045b8d 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -386,7 +386,12 @@ static int otx2_forward_vf_mbox_msgs(struct otx2_nic *pf,
- 		dst_mdev->msg_size = mbox_hdr->msg_size;
- 		dst_mdev->num_msgs = num_msgs;
- 		err = otx2_sync_mbox_msg(dst_mbox);
--		if (err) {
-+		/* Error code -EIO indicate there is a communication failure
-+		 * to the AF. Rest of the error codes indicate that AF processed
-+		 * VF messages and set the error codes in response messages
-+		 * (if any) so simply forward responses to VF.
-+		 */
-+		if (err == -EIO) {
- 			dev_warn(pf->dev,
- 				 "AF not responding to VF%d messages\n", vf);
- 			/* restore PF mbase and exit */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index 49d822a98adab..f001579569a2b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -1131,6 +1131,8 @@ static void print_nix_cn10k_sq_ctx(struct seq_file *m,
+ 	seq_printf(m, "W3: head_offset\t\t\t%d\nW3: smenq_next_sqb_vld\t\t%d\n\n",
+ 		   sq_ctx->head_offset, sq_ctx->smenq_next_sqb_vld);
+ 
++	seq_printf(m, "W3: smq_next_sq_vld\t\t%d\nW3: smq_pend\t\t\t%d\n",
++		   sq_ctx->smq_next_sq_vld, sq_ctx->smq_pend);
+ 	seq_printf(m, "W4: next_sqb \t\t\t%llx\n\n", sq_ctx->next_sqb);
+ 	seq_printf(m, "W5: tail_sqb \t\t\t%llx\n\n", sq_ctx->tail_sqb);
+ 	seq_printf(m, "W6: smenq_sqb \t\t\t%llx\n\n", sq_ctx->smenq_sqb);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index a51ecd771d075..637450de189c8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -591,6 +591,7 @@ static inline void __cn10k_aura_freeptr(struct otx2_nic *pfvf, u64 aura,
+ 			size++;
+ 		tar_addr |=  ((size - 1) & 0x7) << 4;
+ 	}
++	dma_wmb();
+ 	memcpy((u64 *)lmt_info->lmt_addr, ptrs, sizeof(u64) * num_ptrs);
+ 	/* Perform LMTST flush */
+ 	cn10k_lmt_flush(val, tar_addr);
 -- 
 2.34.1
 
