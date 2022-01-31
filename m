@@ -2,108 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B94D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CFB2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359668AbiAaL0d (ORCPT
+        id S1377351AbiAaL0i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:26:33 -0500
-Received: from mga18.intel.com ([134.134.136.126]:3561 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1377258AbiAaLR4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:17:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643627876; x=1675163876;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dmFtQZnXn+jCdVmYXidE6MNfkFywoIFKCcy975zz+ko=;
-  b=R8KZZZMEjuEUlmA1JRzzs937mbxu5zy2HnCq1vu6KISAA/649bJbFxGH
-   PDHZZzMSSbGdZRxEhLd8BvG4Y6/Zh+GSqohuoSscs6L/mT4s0pGbhRa9D
-   9nT/aM5yfR5X6i6+IuoTUB0Kn6mRfy+Zta7mwVwW5/nljyy5RDdpfGnuX
-   9pnk1UEV4D0Hev0H1+5q5wDOwOs3FUDpIRVG6Lt1jS8vqMCaIsscMpSoq
-   xrJaMNqyN0dM7DbBJWKnCuggyHJUli9OppBlrGNCb+TllpXd1IVZV0IIK
-   Z81iN50nie3EK1xCQmxjfLCczAHL4g+7oAdOfHIGHPoWAWw5w7xu/wRTp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="231011315"
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="231011315"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:13:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="675695757"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 31 Jan 2022 03:13:18 -0800
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 31 Jan 2022 13:13:18 +0200
-Date:   Mon, 31 Jan 2022 13:13:18 +0200
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, Alyssa Ross <hi@alyssa.is>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>
-Subject: Re: [PATCH v2] platform/chrome: cros_ec_typec: Check for EC device
-Message-ID: <YffETvxepY2uU/qT@kuha.fi.intel.com>
-References: <20220126190219.3095419-1-pmalani@chromium.org>
+        Mon, 31 Jan 2022 06:26:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35518 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377310AbiAaLR7 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:17:59 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6D81B82A5C;
+        Mon, 31 Jan 2022 11:17:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECD3DC340EE;
+        Mon, 31 Jan 2022 11:17:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643627877;
+        bh=3PhrSa9o0GNXbS7Lmn2NAFstnx7nk83jQUk7CopRbo0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UOzfMaYzVDdp8ZiyHI6BegYZAsh/bCwVYtWtp4ejEB66ngz1G9T82rhTYJmAIUuFa
+         eX5YlLOpYd+qcDOwtm/DqyH/mHX96VpYN/g3EzsXPjBe1ubrxyaXoxox7DH0mRyled
+         kFfm1xURAlN+jlLexpoxahQDalYrJRW9uV3dx8OQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 052/200] KVM: x86: Move CPUID.(EAX=0x12,ECX=1) mangling to __kvm_update_cpuid_runtime()
+Date:   Mon, 31 Jan 2022 11:55:15 +0100
+Message-Id: <20220131105235.324283439@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126190219.3095419-1-pmalani@chromium.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 07:02:20PM +0000, Prashant Malani wrote:
-> The Type C ACPI device on older Chromebooks is not generated correctly
-> (since their EC firmware doesn't support the new commands required). In
-> such cases, the crafted ACPI device doesn't have an EC parent, and it is
-> therefore not useful (it shouldn't be generated in the first place since
-> the EC firmware doesn't support any of the Type C commands).
-> 
-> To handle devices which use these older firmware revisions, check for
-> the parent EC device handle, and fail the probe if it's not found.
-> 
-> Fixes: fdc6b21e2444 ("platform/chrome: Add Type C connector class driver")
-> Reported-by: Alyssa Ross <hi@alyssa.is>
-> Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
-> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-FWIW:
+commit 5c89be1dd5cfb697614bc13626ba3bd0781aa160 upstream.
 
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Full equality check of CPUID data on update (kvm_cpuid_check_equal()) may
+fail for SGX enabled CPUs as CPUID.(EAX=0x12,ECX=1) is currently being
+mangled in kvm_vcpu_after_set_cpuid(). Move it to
+__kvm_update_cpuid_runtime() and split off cpuid_get_supported_xcr0()
+helper  as 'vcpu->arch.guest_supported_xcr0' update needs (logically)
+to stay in kvm_vcpu_after_set_cpuid().
 
-> ---
-> Hi Alyssa, could you kindly test this with your existing setup? Thanks!
-> 
-> Changes in v2:
-> - Added newlines as suggested by reviewers.
-> - Added Reviewed-by tag from Tzung-Bi.
-> 
->  drivers/platform/chrome/cros_ec_typec.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
-> index 5de0bfb0bc4d..952c1756f59e 100644
-> --- a/drivers/platform/chrome/cros_ec_typec.c
-> +++ b/drivers/platform/chrome/cros_ec_typec.c
-> @@ -1075,7 +1075,13 @@ static int cros_typec_probe(struct platform_device *pdev)
->  		return -ENOMEM;
->  
->  	typec->dev = dev;
-> +
->  	typec->ec = dev_get_drvdata(pdev->dev.parent);
-> +	if (!typec->ec) {
-> +		dev_err(dev, "couldn't find parent EC device\n");
-> +		return -ENODEV;
-> +	}
-> +
->  	platform_set_drvdata(pdev, typec);
->  
->  	ret = cros_typec_get_cmd_version(typec);
-> -- 
-> 2.35.0.rc0.227.g00780c9af4-goog
+Cc: stable@vger.kernel.org
+Fixes: feb627e8d6f6 ("KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN")
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220124103606.2630588-2-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kvm/cpuid.c |   54 +++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 33 insertions(+), 21 deletions(-)
 
--- 
-heikki
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -176,10 +176,26 @@ void kvm_update_pv_runtime(struct kvm_vc
+ 		vcpu->arch.pv_cpuid.features = best->eax;
+ }
+ 
++/*
++ * Calculate guest's supported XCR0 taking into account guest CPUID data and
++ * supported_xcr0 (comprised of host configuration and KVM_SUPPORTED_XCR0).
++ */
++static u64 cpuid_get_supported_xcr0(struct kvm_cpuid_entry2 *entries, int nent)
++{
++	struct kvm_cpuid_entry2 *best;
++
++	best = cpuid_entry2_find(entries, nent, 0xd, 0);
++	if (!best)
++		return 0;
++
++	return (best->eax | ((u64)best->edx << 32)) & supported_xcr0;
++}
++
+ static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *entries,
+ 				       int nent)
+ {
+ 	struct kvm_cpuid_entry2 *best;
++	u64 guest_supported_xcr0 = cpuid_get_supported_xcr0(entries, nent);
+ 
+ 	best = cpuid_entry2_find(entries, nent, 1, 0);
+ 	if (best) {
+@@ -218,6 +234,21 @@ static void __kvm_update_cpuid_runtime(s
+ 					   vcpu->arch.ia32_misc_enable_msr &
+ 					   MSR_IA32_MISC_ENABLE_MWAIT);
+ 	}
++
++	/*
++	 * Bits 127:0 of the allowed SECS.ATTRIBUTES (CPUID.0x12.0x1) enumerate
++	 * the supported XSAVE Feature Request Mask (XFRM), i.e. the enclave's
++	 * requested XCR0 value.  The enclave's XFRM must be a subset of XCRO
++	 * at the time of EENTER, thus adjust the allowed XFRM by the guest's
++	 * supported XCR0.  Similar to XCR0 handling, FP and SSE are forced to
++	 * '1' even on CPUs that don't support XSAVE.
++	 */
++	best = cpuid_entry2_find(entries, nent, 0x12, 0x1);
++	if (best) {
++		best->ecx &= guest_supported_xcr0 & 0xffffffff;
++		best->edx &= guest_supported_xcr0 >> 32;
++		best->ecx |= XFEATURE_MASK_FPSSE;
++	}
+ }
+ 
+ void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
+@@ -241,27 +272,8 @@ static void kvm_vcpu_after_set_cpuid(str
+ 		kvm_apic_set_version(vcpu);
+ 	}
+ 
+-	best = kvm_find_cpuid_entry(vcpu, 0xD, 0);
+-	if (!best)
+-		vcpu->arch.guest_supported_xcr0 = 0;
+-	else
+-		vcpu->arch.guest_supported_xcr0 =
+-			(best->eax | ((u64)best->edx << 32)) & supported_xcr0;
+-
+-	/*
+-	 * Bits 127:0 of the allowed SECS.ATTRIBUTES (CPUID.0x12.0x1) enumerate
+-	 * the supported XSAVE Feature Request Mask (XFRM), i.e. the enclave's
+-	 * requested XCR0 value.  The enclave's XFRM must be a subset of XCRO
+-	 * at the time of EENTER, thus adjust the allowed XFRM by the guest's
+-	 * supported XCR0.  Similar to XCR0 handling, FP and SSE are forced to
+-	 * '1' even on CPUs that don't support XSAVE.
+-	 */
+-	best = kvm_find_cpuid_entry(vcpu, 0x12, 0x1);
+-	if (best) {
+-		best->ecx &= vcpu->arch.guest_supported_xcr0 & 0xffffffff;
+-		best->edx &= vcpu->arch.guest_supported_xcr0 >> 32;
+-		best->ecx |= XFEATURE_MASK_FPSSE;
+-	}
++	vcpu->arch.guest_supported_xcr0 =
++		cpuid_get_supported_xcr0(vcpu->arch.cpuid_entries, vcpu->arch.cpuid_nent);
+ 
+ 	kvm_update_pv_runtime(vcpu);
+ 
+
+
