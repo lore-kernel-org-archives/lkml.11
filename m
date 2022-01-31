@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A43ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 569E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244845AbiAaLfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:35:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41558 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377945AbiAaLXe (ORCPT
+        id S1350546AbiAaLfo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:35:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378245AbiAaLXx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:23:34 -0500
+        Mon, 31 Jan 2022 06:23:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD3CC061756;
+        Mon, 31 Jan 2022 03:14:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 410BAB82A75;
-        Mon, 31 Jan 2022 11:23:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 645CAC340E8;
-        Mon, 31 Jan 2022 11:23:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BA0EB82A74;
+        Mon, 31 Jan 2022 11:14:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7CDFC340E8;
+        Mon, 31 Jan 2022 11:14:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628212;
-        bh=d4NMCRYFez7Dv/xaGO0VoOIytB742aa78WOrxB63pdc=;
+        s=korg; t=1643627685;
+        bh=Exd2l5co6Rjj9v95rwrcLjP0ecH68GmgHFV3YrX0Lds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yxhw+/VFjmrn+Nikg+LkKXTBuN67skWNCqBz3pxDR+0xzjbPjxvCpHkEcNgnAOYcD
-         +YXPdlULN7IPAgNI7Dk/m/TIcCXZUr7sgMPpRrjNSUyQO/NypBPNT44+mv/f/v3uGb
-         xGbH7ai2YKDnLy+P6np8ka37JlEv/o0zBBOgtFec=
+        b=GOfnYvOIgQ6sIJZOFG68zQNasoSMsh0x0N1PcDmOegrv4k0rn4cdlDmxpj166U0+A
+         ogyf7FdusrEz633AKrj4CNsLbeBQcIEAjoCRs1q6HYDH3OQYvfOZN5y700fqANPFAy
+         8Qkt3HDcl0R6eu1Bgh6KgAYlPZK0+wgh6RLFLjuM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 159/200] hwmon: (adt7470) Prevent divide by zero in adt7470_fan_write()
-Date:   Mon, 31 Jan 2022 11:57:02 +0100
-Message-Id: <20220131105238.901810839@linuxfoundation.org>
+        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 163/171] irqchip/realtek-rtl: Fix off-by-one in routing
+Date:   Mon, 31 Jan 2022 11:57:08 +0100
+Message-Id: <20220131105235.524654480@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,39 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Sander Vanheule <sander@svanheule.net>
 
-[ Upstream commit c1ec0cabc36718efc7fe8b4157d41b82d08ec1d2 ]
+commit 91351b5dd0fd494eb2d85e1bb6aca77b067447e0 upstream.
 
-The "val" variable is controlled by the user and comes from
-hwmon_attr_store().  The FAN_RPM_TO_PERIOD() macro divides by "val"
-so a zero will crash the system.  Check for that and return -EINVAL.
-Negatives are also invalid so return -EINVAL for those too.
+There is an offset between routing values (1..6) and the connected MIPS
+CPU interrupts (2..7), but no distinction was made between these two
+values.
 
-Fixes: fc958a61ff6d ("hwmon: (adt7470) Convert to devm_hwmon_device_register_with_info API")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+This issue was previously hidden during testing, because an interrupt
+mapping was used where for each required interrupt another (unused)
+routing was configured, with an offset of +1.
+
+Offset the CPU IRQ numbers by -1 to retrieve the correct routing value.
+
+Fixes: 9f3a0f34b84a ("irqchip: Add support for Realtek RTL838x/RTL839x interrupt controller")
+Signed-off-by: Sander Vanheule <sander@svanheule.net>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/177b920aa8d8610615692d0e657e509f363c85ca.1641739718.git.sander@svanheule.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/adt7470.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/irqchip/irq-realtek-rtl.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/hwmon/adt7470.c b/drivers/hwmon/adt7470.c
-index d519aca4a9d64..fb6d14d213a18 100644
---- a/drivers/hwmon/adt7470.c
-+++ b/drivers/hwmon/adt7470.c
-@@ -662,6 +662,9 @@ static int adt7470_fan_write(struct device *dev, u32 attr, int channel, long val
- 	struct adt7470_data *data = dev_get_drvdata(dev);
- 	int err;
+--- a/drivers/irqchip/irq-realtek-rtl.c
++++ b/drivers/irqchip/irq-realtek-rtl.c
+@@ -95,7 +95,8 @@ out:
+  * SoC interrupts are cascaded to MIPS CPU interrupts according to the
+  * interrupt-map in the device tree. Each SoC interrupt gets 4 bits for
+  * the CPU interrupt in an Interrupt Routing Register. Max 32 SoC interrupts
+- * thus go into 4 IRRs.
++ * thus go into 4 IRRs. A routing value of '0' means the interrupt is left
++ * disconnected. Routing values {1..15} connect to output lines {0..14}.
+  */
+ static int __init map_interrupts(struct device_node *node, struct irq_domain *domain)
+ {
+@@ -134,7 +135,7 @@ static int __init map_interrupts(struct
+ 		of_node_put(cpu_ictl);
  
-+	if (val <= 0)
-+		return -EINVAL;
-+
- 	val = FAN_RPM_TO_PERIOD(val);
- 	val = clamp_val(val, 1, 65534);
+ 		cpu_int = be32_to_cpup(imap + 2);
+-		if (cpu_int > 7)
++		if (cpu_int > 7 || cpu_int < 2)
+ 			return -EINVAL;
  
--- 
-2.34.1
-
+ 		if (!(mips_irqs_set & BIT(cpu_int))) {
+@@ -143,7 +144,8 @@ static int __init map_interrupts(struct
+ 			mips_irqs_set |= BIT(cpu_int);
+ 		}
+ 
+-		regs[(soc_int * 4) / 32] |= cpu_int << (soc_int * 4) % 32;
++		/* Use routing values (1..6) for CPU interrupts (2..7) */
++		regs[(soc_int * 4) / 32] |= (cpu_int - 1) << (soc_int * 4) % 32;
+ 		imap += 3;
+ 	}
+ 
 
 
