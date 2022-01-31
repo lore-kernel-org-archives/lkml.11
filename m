@@ -2,124 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E81C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 21:19:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 177EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 21:20:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380260AbiAaVTn (ORCPT
+        id S1380457AbiAaVT7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 16:19:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47246 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241083AbiAaVTj (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 16:19:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98201C061714;
-        Mon, 31 Jan 2022 13:19:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54E37B82CA1;
-        Mon, 31 Jan 2022 21:19:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF0E4C340E8;
-        Mon, 31 Jan 2022 21:19:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643663977;
-        bh=bydv7gfSFyvaJwR+P/7cGzOvsDym3JsAo7rfZrr7r/w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=t6Vk68zSyrlVBRQoLyQEefza0TDiislHx/Z7lsiaTafTymNdJ+L+Ga3ysGKXae/t2
-         7W60y03whPQ/BK4ZI7BNUVOSfjBWiELrkLhDxpjf5GB+gT0knZxcYgvelw/luAevQa
-         ztcsrr9ihLE04UKepEZUAPn1VWb8biP7WB8f98x2Nna8ghkt1s22BtPrsBSiCrOFzt
-         YU24oZWvkilw7M5xw3ZyEeSRSwMEj8dflJvYpoMp2jZFtPoBWZsdSPiyplwDLfS9KO
-         MgKBlhw/6VM38ikvQ+sBUIa1qXnNJ73ZIwC/32M21qs3A7gXh6br+hb1gVYciPX0SM
-         UEKuQ2rbXPQjQ==
-Date:   Mon, 31 Jan 2022 15:26:37 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Martin Uecker <Martin.Uecker@med.uni-goettingen.de>,
-        Ingo Molnar <mingo@kernel.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] linux/const.h: Explain how __is_constexpr() works
-Message-ID: <20220131212637.GA198787@embeddedor>
-References: <20220131204357.1133674-1-keescook@chromium.org>
+        Mon, 31 Jan 2022 16:19:59 -0500
+Received: from mout.gmx.net ([212.227.17.20]:56743 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1380248AbiAaVTz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 16:19:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1643663978;
+        bh=FOFujHvQnEpMpVsD8VvD4ru3ELqywq3krdj9gT8xkiA=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=l6hyOXE8BtJva1j6zBFAyvaUjN4EKghbx3UEmcVxZwDf/t75loGneTzPA8PelJS+R
+         ExLfzqMOOadtnfdEC0hv27urTI5RoKSWXFSDEOLbz9jQ50QaCkFHO7mpjR6eGQb++W
+         WiTw0KDAXSPBCcV7PtUsN7A5GXmzvQNbK/knGx/Q=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from esprimo-mx.fritz.box ([91.137.126.34]) by mail.gmx.net
+ (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 1MEUz4-1mzou33cRm-00G18a; Mon, 31 Jan 2022 22:19:37 +0100
+From:   Armin Wolf <W_Armin@gmx.de>
+To:     hdegoede@redhat.com
+Cc:     jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/4] hwmon: (sch56xx) Automatically load on supported hardware
+Date:   Mon, 31 Jan 2022 22:19:31 +0100
+Message-Id: <20220131211935.3656-1-W_Armin@gmx.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220131204357.1133674-1-keescook@chromium.org>
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:HBFB0UQ5EOKYUbThiep7rd/sOBgxxY06DNZWR9dRtk+wxRmMgxJ
+ VEmlxGiH7tTBlN3PpUG7C9jSsexalJU9w6h8BRDWyzJ79WS20lw9ThvJSykwXDBaHNNyHC9
+ vtty+iq/hLhCyHPeklP3ba4rbbZZ6JC+qJDFAAITrARkTVEwuqZXMbIChlJAZY487r0ZGkr
+ mt7gwNP973hv0g1hZL6+w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:LanMCbDTJLM=:jy++/dveCPJ9YWHf39XZLw
+ oiahXLPfZMhsmdGDDytgV3PxGcHYCI/GYk6vVFEIpmVI1oUasFxf0hpN0NfOXDXvF+H961R64
+ a50ckn518FZVkYxEJof7QsCEJ1RgSHLQc7M1/Obedd9iVlKF7cC27HJM3cVJZ9VRZfkd/IThl
+ ZurOlXSQTMsIV9xaShHHJR3cQyBBPFVhwgo7yfMo7ROlJByi5e/Sm3PaxgJMl3vKSBvDoCWr6
+ VJWl2BrcLUUcEVGvHQN5N5CpbVc+MxfY9r2pDszFWbbcUY1UYkqeRURWVLcgtSqxMFEAfPKRT
+ +OwPgvCzuyIBQ1Fbq8oyHV52v7+DPnd0ObjNv9tXlF49XPVZaT2P95e232ku8+cE3cFOt66wo
+ G/bPPen5LEsxYWdsJ91F1XD7sqGN5mrA+0+m5f2Lh+8T/FyNpnEV8Yvq8cjfU0vDYfQ1WVe4I
+ 5LU9vVcI5Bxk9vENPWcQxJZ4aE89cHugBGmm56ytmfsqFxbDX+FHc5a7cr9iehP9U1QoKvS8I
+ 5/MuQb8SndJ16vpgw1UA+IEgZabvNTf0n5LI+zg9K1J+4mSnUbuFbwlDz8s7m2JNCB08ut5oK
+ Zwzz+uKl7l90FgF9qaFeZdyIARsYzQPCd0XJCz7kpgxsBP+saJs4BT46nbp0nRV2Se2dLWC7K
+ nxivfKJ5z4l9GaF7lX4KRJBAQu+Os+Y7O5fo0fYNPjbSkha7+61sHBnNl5lEAuMTvwUEuH8+T
+ a1G2ojArB0m/eXhssjja3c2/egwP3Fhhks4+R7+u0xmjSR7w28qjobLlkDWm3+iW2bAU00jsr
+ lKPExFaLZmaFI6EnisO565OUEHMjCL1e/IdDSJ/Sl5pOKQTY4F9mgsIg2QvqwWlLC266dy1e7
+ axXs8UciFMO7UTKpm4qR7lkiZyT/3PzIsCkXgXbw5GrNKCRgue5DPSV+CnjP5YQFozHbxjrF7
+ Zf/pULWguBBido/Xf/+0ngiLsUHTpXRKKj3KLV3Vg/pGLUYxft9xfVk8ZvBeMAJ4rVwujF4hr
+ +6dq9wPjGlgARMzOLU+PpFeE36oqLALGQbDnRSb0TzKS7TI3yzsTqLLhYSX4x12IfxldMecYO
+ WvbLA5Wn68crDk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 12:43:57PM -0800, Kees Cook wrote:
-> The __is_constexpr() macro is dark magic. Shed some light on it with
-> a comment to explain how and why it works.
-> 
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Martin Uecker <Martin.Uecker@med.uni-goettingen.de>
-> Cc: Ingo Molnar <mingo@kernel.org>
-> Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-> Cc: Rikard Falkeborn <rikard.falkeborn@gmail.com>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: linux-doc@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+The hardware monitoring solutions supported by the sch5627 and
+sch5636 drivers are Fujitsu-specific.
+After some online searching, i found out that the solution used
+with the SCH5627 is called "Antiope" by Fujitsu, just like the
+"Theseus" solution inside the SCH5636.
+I also found out that "Antiope" and "Theseus" are listed as
+DMI onboard devices on supported Fujitsu devices, so the
+sch56xx_common module can be loaded automatically an check
+for the DMI devices. However some devices like the Esprimo C700
+have both devices, so after verifying that at least one onboard
+device is present, sch56xx_common still has to detect which chip
+is present.
+This is safe however if at least one device is present.
 
-Acked-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Tested on a Fujitsu Esprimo P720.
 
-Thanks
---
-Gustavo
+=2D--
+Changes in v3:
+- fix usleep_range using the same value as msleep
 
-> ---
-> Jon, since this is pure comment, do you want to take it through the docs tree?
-> ---
->  include/linux/const.h | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/include/linux/const.h b/include/linux/const.h
-> index 435ddd72d2c4..7122d6a1f8ce 100644
-> --- a/include/linux/const.h
-> +++ b/include/linux/const.h
-> @@ -7,6 +7,30 @@
->   * This returns a constant expression while determining if an argument is
->   * a constant expression, most importantly without evaluating the argument.
->   * Glory to Martin Uecker <Martin.Uecker@med.uni-goettingen.de>
-> + *
-> + * Details:
-> + * - sizeof() is an integer constant expression, and does not evaluate the
-> + *   value of its operand; it only examines the type of its operand.
-> + * - The results of comparing two integer constant expressions is also
-> + *   an integer constant expression.
-> + * - The use of literal "8" is to avoid warnings about unaligned pointers;
-> + *   these could otherwise just be "1"s.
-> + * - (long)(x) is used to avoid warnings about 64-bit types on 32-bit
-> + *   architectures.
-> + * - The C standard defines an "integer constant expression" as different
-> + *   from a "null pointer constant" (an integer constant 0 pointer).
-> + * - The conditional operator ("... ? ... : ...") returns the type of the
-> + *   operand that isn't a null pointer constant. This behavior is the
-> + *   central mechanism of the macro.
-> + * - If (x) is an integer constant expression, then the "* 0l" resolves it
-> + *   into a null pointer constant, which forces the conditional operator
-> + *   to return the type of the last operand: "(int *)".
-> + * - If (x) is not an integer constant expression, then the type of the
-> + *   conditional operator is from the first operand: "(void *)".
-> + * - sizeof(int) == 4 and sizeof(void) == 1.
-> + * - The ultimate comparison to "sizeof(int)" chooses between either:
-> + *     sizeof(*((int *) (8)) == sizeof(int)   (x was a constant expression)
-> + *     sizeof(*((void *)(8)) == sizeof(void)  (x was not a constant expression)
->   */
->  #define __is_constexpr(x) \
->  	(sizeof(int) == sizeof(*(8 ? ((void *)((long)(x) * 0l)) : (int *)8)))
-> -- 
-> 2.30.2
-> 
+Changes in v2:
+- fix unused variable issue reported by the kernel test robot
+by assinging the platform device id list in sch5627/sch5636
+to platform_driver->id_table.
+
+Armin Wolf (4):
+  hwmon: (sch56xx) Autoload modules on platform device creation
+  hwmon: (sch56xx-common) Add automatic module loading on supported
+    devices
+  hwmon: (sch56xx-common) Replace msleep() with usleep_range()
+  hwmon: (sch56xx-common) Replace WDOG_ACTIVE with WDOG_HW_RUNNING
+
+ drivers/hwmon/sch5627.c        | 10 ++++++++
+ drivers/hwmon/sch5636.c        | 10 ++++++++
+ drivers/hwmon/sch56xx-common.c | 44 ++++++++++++++++++++++++++++++----
+ 3 files changed, 60 insertions(+), 4 deletions(-)
+
+=2D-
+2.30.2
+
