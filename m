@@ -2,129 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 930D7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 13:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F84C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 13:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377301AbiAaNx5 (ORCPT
+        id S1377880AbiAaNzJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 08:53:57 -0500
-Received: from mga17.intel.com ([192.55.52.151]:7957 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232774AbiAaNx4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 08:53:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643637236; x=1675173236;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AEaiGMVj7unyqE7VbRmUuqcbF86FB7Qs3mepDVHeyeU=;
-  b=h0P2hU0knm3eJLXavKEaJHC+qsjFw518ImSKH3XXc1GSOov6bJ4O4Ur5
-   wPyWxcfSluoff5sAmKo55dA+g8X5VRjoa7cJb1L/KcOp2dXbOuZTNausR
-   ChZwEx3jtQ57E6yQINP5wY/YOjLYPImlWKGBgMwSbTqQWy8IwYw3sHURV
-   aASJdQs7A7qB04ZIa0sxxEid08e2xYfw16moLz4BCyYs7LH2dujx6BoxB
-   uvHP5GgNdHuwWAg51qltZXJJhPzLvChkTQjbvWrsu+5pFg0RnZG/RqrP5
-   FsQIN1KTUaGLameQtwMilyHLTyEXmk/qejbxuGKM94uLEWE31T1Xo7j5C
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="228124509"
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="228124509"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 05:53:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="619385285"
-Received: from linux.intel.com ([10.54.29.200])
-  by FMSMGA003.fm.intel.com with ESMTP; 31 Jan 2022 05:53:55 -0800
-Received: from [10.209.18.139] (kliang2-MOBL.ccr.corp.intel.com [10.209.18.139])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Mon, 31 Jan 2022 08:55:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243076AbiAaNzI (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 08:55:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C47AC061714;
+        Mon, 31 Jan 2022 05:55:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id A3D1C5809EB;
-        Mon, 31 Jan 2022 05:53:53 -0800 (PST)
-Message-ID: <c574f164-e1f4-0166-492d-b5feaf219f54@linux.intel.com>
-Date:   Mon, 31 Jan 2022 08:53:52 -0500
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E15C7612C8;
+        Mon, 31 Jan 2022 13:55:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA89BC340EE;
+        Mon, 31 Jan 2022 13:55:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643637307;
+        bh=Mux+ePrY92AdNvLzvqVcgpb98PfbvNDN5o5jwmjyfww=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bCGy+cUsKVh1qxUrE4zCpjye+OJAvX7e3cTfdxgTndfpBEZz+UwzMFXmJvXr5aiQy
+         SuIxQWsSjykVcYiw59O41KScLb862vSFn98HsWXbJXsJ/ANaVb5/xO5xHN70SQkTBO
+         DKPJmvLCJYfzgJOi58r2C58pLlptCOs8LolavgwUS+Lvkoclal/EzQKfPzIy+1ZYMz
+         UzypcFTal4H9gH0YHh+Ha4n01PS8Gf3RLbj4GXhKIk8WyzROpPaxwWvdXeUA22zaQX
+         0km23LsI4JZX/OwphBxMAORiU4Y4RIHo2AUr0X1xiguTWQdycyIlkm/tlbHck8F6TY
+         0JRZ0yiXxWyDg==
+Date:   Mon, 31 Jan 2022 13:55:00 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Pratyush Yadav <p.yadav@ti.com>
+Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Takahiro Kuwano <tkuw584924@gmail.com>,
+        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] spi: spi-mem: check if data buffers are on stack
+Message-ID: <YffqNEzjIkApR1HS@sirena.org.uk>
+References: <20220131114508.1028306-1-p.yadav@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 03/26] perf vendor events: Update metrics for Broadwell DE
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        James Clark <james.clark@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>
-References: <20220129080929.837293-1-irogers@google.com>
- <20220129080929.837293-4-irogers@google.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <20220129080929.837293-4-irogers@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dgw4aAEj6xocjt/W"
+Content-Disposition: inline
+In-Reply-To: <20220131114508.1028306-1-p.yadav@ti.com>
+X-Cookie: I will never lie to you.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+--dgw4aAEj6xocjt/W
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 1/29/2022 3:09 AM, Ian Rogers wrote:
-> Based on TMA_metrics-full.csv version 4.3 at 01.org:
->      https://download.01.org/perfmon/
-> Events are still at version 7:
->      https://download.01.org/perfmon/BDW-DE
-> Json files generated by:
->      https://github.com/intel/event-converter-for-linux-perf
-> 
-> This adds TopdownL1_SMT metrics to bdwde-metrics.json as
-> generated by the extract-tmam.py script.
-> 
-> Tested:
-> ...
->    6: Parse event definition strings                                  : Ok
->    7: Simple expression parser                                        : Ok
-> ...
->    9: Parse perf pmu format                                           : Ok
->   10: PMU events                                                      :
->   10.1: PMU event table sanity                                        : Ok
->   10.2: PMU event map aliases                                         : Ok
->   10.3: Parsing of PMU event table metrics                            : Skip (some metrics failed)
->   10.4: Parsing of PMU event table metrics with fake PMUs             : Ok
-> ...
->   68: Parse and process metrics                                       : Ok
-> ...
->   88: perf stat metrics (shadow stat) test                            : Ok
->   89: perf all metricgroups test                                      : FAILED!
->   90: perf all metrics test                                           : FAILED!
->   91: perf all PMU test                                               : Ok
-> ...
-> The failures/skips relate to:
-> event syntax error: '{arb/event=0x84,umask=0x1,metric-id=arb!3event!20x84!0umask!20x1!3/,arb/even..'
->                       \___ Cannot find PMU `arb'. Missing kernel support?
-> 
+On Mon, Jan 31, 2022 at 05:15:08PM +0530, Pratyush Yadav wrote:
+> The buffers passed in the data phase must be DMA-able. Programmers often
+> don't realise this requirement and pass in buffers that reside on the
+> stack. This can be hard to spot when reviewing code. Reject ops if their
+> data buffer is on the stack to avoid this.
 
-ARB is an uncore unit for client platforms. Broadwell DE should be a 
-server platform. It looks like an issue of TMA_metrics-full.csv.
-I will check and see whether we can fix the TMA file.
+Acked-by: Mark Brown <broonie@kernel.org>
 
-Thanks,
-Kan
+> +	/* Buffers must be DMA-able. */
+> +	if (op->data.dir == SPI_MEM_DATA_IN &&
+> +	    object_is_on_stack(op->data.buf.in))
 
-> Signed-off-by: Ian Rogers<irogers@google.com>
-> ---
->   .../arch/x86/broadwellde/bdwde-metrics.json   |  401 +++-
->   .../arch/x86/broadwellde/cache.json           | 1122 +++++-----
->   .../arch/x86/broadwellde/floating-point.json  |  222 +-
->   .../arch/x86/broadwellde/frontend.json        |  335 +--
->   .../arch/x86/broadwellde/memory.json          |  608 +++---
->   .../arch/x86/broadwellde/other.json           |   28 +-
->   .../arch/x86/broadwellde/pipeline.json        | 1892 ++++++++---------
->   .../arch/x86/broadwellde/virtual-memory.json  |  394 ++--
->   8 files changed, 2646 insertions(+), 2356 deletions(-)
+Might be worth a WARN_ON_ONCE() for debuggability?
+
+--dgw4aAEj6xocjt/W
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmH36jMACgkQJNaLcl1U
+h9Do6Af+PYxmL6o8QTkbuSMNCf4zLsOLWsjug+Pzqn02yk4lNTbwV29h3+FEqewh
+trvMCVQgaMabgUOf/9hZhlYOJHod52b77dQI7iBolONua4wUPqHsNtO+p9FP7V46
+gjUkTp54ArBKRRI8rlP/IpJy9ZAlzEEZEeXzGn/FZtw+Sdh8RDsFPSiB2X265XQG
+dYLDlWfbrKc/2rSAoi46iZY9J9lcm86V44LAdJ1GoLXUf/esHiOtLftGUA+9xGb+
+MoOIrMhQ1+AtnAx6fdg0DwD6aKNBFT7gCVqUOvteLnFGGCYKTMSF1OAuywY+4CSj
+n1ri3jkVecHB15q9WpPtuVniim+7fA==
+=ywN3
+-----END PGP SIGNATURE-----
+
+--dgw4aAEj6xocjt/W--
