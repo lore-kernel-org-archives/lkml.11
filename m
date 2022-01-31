@@ -2,139 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 17:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD38C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 17:56:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347736AbiAaRzh (ORCPT
+        id S1350423AbiAaR4X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 12:55:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56546 "EHLO
+        Mon, 31 Jan 2022 12:56:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231383AbiAaRzg (ORCPT
+        with ESMTP id S240641AbiAaR4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 12:55:36 -0500
-Received: from mail-wm1-x34a.google.com (mail-wm1-x34a.google.com [IPv6:2a00:1450:4864:20::34a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADFBBC06173D
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 09:55:35 -0800 (PST)
-Received: by mail-wm1-x34a.google.com with SMTP id s1-20020a1ca901000000b0034ece94dd8cso10688677wme.5
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 09:55:35 -0800 (PST)
+        Mon, 31 Jan 2022 12:56:21 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90545C06173D
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 09:56:20 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id y23so28086053oia.13
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 09:56:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=VrZHx8N8g0O6dwodQoj1XNHskBjb0HhFafa31s7VMgk=;
-        b=nWvfixk4yh5PbGt79V2iCqFfkTKH5zKzS8MudKMCUHNxfzJ4GZQ4rDpJ5LZnx64IfZ
-         82NcdxxTdh7gbNVTzwrGx2wnF+7hFQBoEg41y98HTzrEGgvdt46ilZZ9pmOnUaPQDpqr
-         eeuTcLIulvK64P6i1YryEEYbWwUZwQ9od/5QIircH4FpZHy9HTEQF/IcTTObip1vvPcd
-         bQzec5cMP3yP01KrIg3SqLrkAYSGz4Hui7eAaDKjGyaJKT1e35L8b7zZNk4gV+wBJ1ru
-         OdKKIA4pqS8D5PuNyTT8LZ4RtMfZ1xup6/C4Ypo/eB3/zLpb97esmkvf1iXzYSAtdxtv
-         k3Mw==
+        d=usp.br; s=usp-google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=BVD0NSbX3nj02sBgzS26Hzi8d1ZIOHSSU47jm/3MiI0=;
+        b=kEM6rNetZF01SR0pi5B+qDDKi3p/QNb3xolAKlDE3PbprwbOww1d0ZRLalVqU9fwHY
+         1kKtnwvoE65sHCs7JX+ZVlBmfLYE4sslG9hvPFVcL104Gy/BhEQd+zKVCXZppeg4xMUe
+         3wh4tKonjg/Zp7Qm9yrxLgQzZ3i575Hj5ddAai/sxziVCoaVs8cEl1my7e0R0TWl4EdV
+         GBlDZX6fxsr3P33VRf0nN1pGgqVQK9uJLFdzVeOlxjzvPfNBKXHPlaEZ9Zz0nAuzp/q5
+         ICqxDNCecVtvhOx8QLvMJTu26eovXTbxs/0HflbKs4Tf8qIaYjw30c8LFME3hXPs5mOB
+         VmaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=VrZHx8N8g0O6dwodQoj1XNHskBjb0HhFafa31s7VMgk=;
-        b=iSl1EqJKAA3EzWStExyazjhulhWtjvY5AkoPJ8KrnpWO8KtpPAh8/PfoBQMa/OK/y1
-         Pr6hyTUhj7sfuhF6AAw3W1uGyhXELcCP0KofPb/vBgbt4rDQCL5AFE2H3J/dYXpK276P
-         j627UYo9C9u7Wx3FgzS9Uj8+SO9sasdZle8bZNAgun2dkZYmUeOUGX+QdrM4niqnHPr9
-         fLr7nWshmL7K0CZn+ePdpOL9FsmEBSbVsdamaP3ijZdxcqiaAJ8RK78+oOTKGqjHXXgL
-         fZpcr/RUPfdOBsYHn3s0Ujqru4FMSdfGxVIPRM/J3/TfveXSt1m3L/oIi2LfJbK66yns
-         nRFA==
-X-Gm-Message-State: AOAM531F6eqgpfwisD5+QyKzccoSFd1fHT2vh3wR9p3wBTSJqw7It2b1
-        QksCXWUEjQ9CFX6lsYbEgbMY+HIDqUQK
-X-Google-Smtp-Source: ABdhPJxHennodC/+cd6ZOUruQWTb8/+u1dzSds30IHTelkH7rDf5BlnRcQNdPhCCRMet202osOz3eiou1nVC
-X-Received: from dvyukov-desk.muc.corp.google.com ([2a00:79e0:15:13:70c0:d6e6:d591:3fd1])
- (user=dvyukov job=sendgmr) by 2002:a5d:518c:: with SMTP id
- k12mr18236072wrv.169.1643651734018; Mon, 31 Jan 2022 09:55:34 -0800 (PST)
-Date:   Mon, 31 Jan 2022 18:55:26 +0100
-In-Reply-To: <bfa0af18-04ac-857d-d3d8-ad9290f912c8@huawei.com>
-Message-Id: <20220131175526.1777801-1-dvyukov@google.com>
-Mime-Version: 1.0
-References: <bfa0af18-04ac-857d-d3d8-ad9290f912c8@huawei.com>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
-Subject: Test 73 Sig_trap fails on arm64
-From:   Dmitry Vyukov <dvyukov@google.com>
-To:     john.garry@huawei.com, will@kernel.org
-Cc:     acme@kernel.org, elver@google.com, gor@linux.ibm.com,
-        hca@linux.ibm.com, leo.yan@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        sumanthk@linux.ibm.com, svens@linux.ibm.com, tmricht@linux.ibm.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=BVD0NSbX3nj02sBgzS26Hzi8d1ZIOHSSU47jm/3MiI0=;
+        b=Z4TZLo0BkihgF3jQ3EAgJvW7AZULNB+2Fl5qeHRG6LqH0YmLqaPl5tMyqjoVlDP2kE
+         HjxDm829uI6IVEbN/NbAZ5DsZA5hjRnFDnmQFuXuFYfXRf0JjN8sEScJH//OUxmloAix
+         1dszKE+ShNOkPEQ+BRPEmWF/NhvfJw3m0EjdxkObQ/rHg0yb7W6Ba2P7gpf2AEjksR7P
+         KPWjQ+fGf8sSQ+g7PHQAUlffwAkUMFSWgXoopk2eflU31Jtr0xa8Be39xCa9TuORX5bI
+         cDH5OZgpRJcFs+gPKXZ3xeGck7tNyifNNZEK1YUP8fJmh+UbzHXkRmwRGI2kNs214LHF
+         /PBA==
+X-Gm-Message-State: AOAM532NMfQbhLwsRNuMBkYxNnGOSReYNipmaxN0V2CBQVtymDzUo07m
+        a+dVYhFUo3DfWqcK6LGtdHj8mA==
+X-Google-Smtp-Source: ABdhPJxTt13DSu5K/UgSNfsHqPrBctZ8yNK463AzxV13RIocT8h2aaYGcoAZcFFPegFyhHACuSBw/Q==
+X-Received: by 2002:a05:6808:1583:: with SMTP id t3mr18106273oiw.248.1643651779818;
+        Mon, 31 Jan 2022 09:56:19 -0800 (PST)
+Received: from fedora ([187.36.236.204])
+        by smtp.gmail.com with ESMTPSA id w191sm13425965oiw.42.2022.01.31.09.56.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 09:56:19 -0800 (PST)
+Date:   Mon, 31 Jan 2022 14:56:13 -0300
+From:   =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>
+To:     gregkh@linuxfoundation.org, tj@kernel.org, viro@zeniv.linux.org.uk,
+        nathan@kernel.org, ndesaulniers@google.com
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH v2] seq_file: fix NULL pointer arithmetic warning
+Message-ID: <YfgivbCgwKjJu9ec@fedora>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On 18/01/2022 12:43, Leo Yan wrote:
->
-> Hi Will,
->
-> Can you kindly check below the question from Leo on this issue?
->
-> You were cc'ed earlier in this thread so should be able to find more
-> context, if needed.
+Implement conditional logic in order to replace NULL pointer arithmetic.
 
-Hi Will, John,
+The use of NULL pointer arithmetic was pointed out by clang with the
+following warning:
 
-I wonder if PSTATE.D flag can be used to resolve this
-(similar to x86's use of EFLAGS.RF)?
-I naively tried to do:
+fs/kernfs/file.c:128:15: warning: performing pointer arithmetic on a
+null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+                return NULL + !*ppos;
+                       ~~~~ ^
+fs/seq_file.c:559:14: warning: performing pointer arithmetic on a
+null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+        return NULL + (*pos == 0);
 
-void OnSigtrap(int sig, siginfo_t* info, void* uctx) {
-  auto& mctx =3D static_cast<ucontext_t*>(uctx)->uc_mcontext;
-  mctx.pstate |=3D PSR_D_BIT;
-}
+Signed-off-by: Maíra Canal <maira.canal@usp.br>
+---
+V1 -> V2:
+- Use SEQ_START_TOKEN instead of open-coding it
+- kernfs_seq_start call single_start instead of open-coding it
+---
+ fs/kernfs/file.c         | 7 +------
+ fs/seq_file.c            | 5 +++--
+ include/linux/seq_file.h | 1 +
+ 3 files changed, 5 insertions(+), 8 deletions(-)
 
-But then I got a SIGSEGV from kernel.
-But I wasn't able to track yet what part of the kernel did
-not like setting of D bit.
+diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
+index 9414a7a60a9f..7aefaca876a0 100644
+--- a/fs/kernfs/file.c
++++ b/fs/kernfs/file.c
+@@ -120,13 +120,8 @@ static void *kernfs_seq_start(struct seq_file *sf, loff_t *ppos)
+ 		if (next == ERR_PTR(-ENODEV))
+ 			kernfs_seq_stop_active(sf, next);
+ 		return next;
+-	} else {
+-		/*
+-		 * The same behavior and code as single_open().  Returns
+-		 * !NULL if pos is at the beginning; otherwise, NULL.
+-		 */
+-		return NULL + !*ppos;
+ 	}
++	return single_start(sf, ppos);
+ }
+ 
+ static void *kernfs_seq_next(struct seq_file *sf, void *v, loff_t *ppos)
+diff --git a/fs/seq_file.c b/fs/seq_file.c
+index f8e1f4ee87ff..bb2b15d3f1c5 100644
+--- a/fs/seq_file.c
++++ b/fs/seq_file.c
+@@ -554,10 +554,11 @@ int seq_dentry(struct seq_file *m, struct dentry *dentry, const char *esc)
+ }
+ EXPORT_SYMBOL(seq_dentry);
+ 
+-static void *single_start(struct seq_file *p, loff_t *pos)
++void *single_start(struct seq_file *p, loff_t *pos)
+ {
+-	return NULL + (*pos == 0);
++	return *pos ? NULL : SEQ_START_TOKEN;
+ }
++EXPORT_SYMBOL(single_start);
+ 
+ static void *single_next(struct seq_file *p, void *v, loff_t *pos)
+ {
+diff --git a/include/linux/seq_file.h b/include/linux/seq_file.h
+index 88cc16444b43..60820ab511d2 100644
+--- a/include/linux/seq_file.h
++++ b/include/linux/seq_file.h
+@@ -162,6 +162,7 @@ int seq_dentry(struct seq_file *, struct dentry *, const char *);
+ int seq_path_root(struct seq_file *m, const struct path *path,
+ 		  const struct path *root, const char *esc);
+ 
++void *single_start(struct seq_file *, loff_t *);
+ int single_open(struct file *, int (*)(struct seq_file *, void *), void *);
+ int single_open_size(struct file *, int (*)(struct seq_file *, void *), void *, size_t);
+ int single_release(struct inode *, struct file *);
+-- 
+2.34.1
 
-
-> Cheers,
-> John
->
-> > On Tue, Jan 18, 2022 at 12:40:04PM +0100, Marco Elver wrote:
-> >
-> > [...]
-> >
-> >>> Both Arm and Arm64 platforms cannot support signal handler with
-> >>> breakpoint, please see the details in [1]. =C2=A0So I think we need
-> >>> something like below:
-> >>>
-> >>> static int test__sigtrap(struct test_suite *test __maybe_unused, int =
-subtest __maybe_unused)
-> >>> {
-> >>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0...
-> >>>
-> >>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (!BP_SIGNAL_IS_SUPPORTED) {
-> >>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0pr_debu=
-g("Test not supported on this architecture");
-> >>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return =
-TEST_SKIP;
-> >>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}
-> >>>
-> >>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0...
-> >>> }
-> >>>
-> >>> Since we have defined BP_SIGNAL_IS_SUPPORTED, I think we can reuse it=
- at
-> >>> here.
-> >>>
-> >>> [1]https://lore.kernel.org/lkml/157169993406.29376.124737710291797557=
-67.tip-bot2@tip-bot2/
-> >> Does this limitation also exist for address watchpoints? The sigtrap
-> >> test does not make use of instruction breakpoints, but instead just
-> >> sets up a watchpoint on access to a data address.
-> > Yes, after reading the code, the flow for either instrution breakpoint
-> > or watchpoint both use the single step [1], thus the signal handler wil=
-l
-> > take the single step execution and lead to the infinite loop.
-> >
-> > I am not the best person to answer this question; @Will, could you
-> > confirm for this? =C2=A0Thanks!
-> >
-> > Leo
-> >
-> > [1]https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/t=
-ree/arch/arm64/kernel/hw_breakpoint.c
