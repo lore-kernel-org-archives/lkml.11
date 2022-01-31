@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0116C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6325C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376892AbiAaLgY (ORCPT
+        id S1377300AbiAaLge (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:36:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47178 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358626AbiAaLVE (ORCPT
+        Mon, 31 Jan 2022 06:36:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56700 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377703AbiAaLYU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:21:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C0EC0797A9;
-        Mon, 31 Jan 2022 03:14:10 -0800 (PST)
+        Mon, 31 Jan 2022 06:24:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CCF8B82A66;
-        Mon, 31 Jan 2022 11:14:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC25BC340E8;
-        Mon, 31 Jan 2022 11:14:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C55261237;
+        Mon, 31 Jan 2022 11:24:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C79A8C340EE;
+        Mon, 31 Jan 2022 11:24:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627648;
-        bh=dM3iea27OHICyc17xNvr5LK/MG0brUjiMVVrlnGqQ5k=;
+        s=korg; t=1643628259;
+        bh=g3KRHvx21d6YBX7mUnSWSI64yk84o0QhYsXMVsF/jUA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TB+9gBIr5r0oMlsJH6L+xt3THgvDvs2CqnZ8W42NGiegAe7HF2v479ySfWdFtRb+G
-         bYtwgJEIGE9BBbMAAJxgDgsHjvoaiuCHep4bFpGyF3J2vGeJY3Kz1d2yl185lw0pJq
-         yED0aIFci55Lf1UoEyPaEtu4n7CvSoNfWJWS4K/8=
+        b=CM5zhFcQUXSdnrpGRYA8b3Lc40PGtVIjJqrT4jVh8YWM9VqT0XtL9kpdNRiTmhK+d
+         EpejG0/dIgwbOBITQtIAjBluJ8/kRpTyUhEpxEhBBgfMvU8MGMeabsI3ZkEQmWc26I
+         rX4d967qPBE6cwlO7vviKVhsWzk0ykzf2WbCuUsg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 152/171] KVM: selftests: Dont skip L2s VMCALL in SMM test for SVM guest
-Date:   Mon, 31 Jan 2022 11:56:57 +0100
-Message-Id: <20220131105235.157600309@linuxfoundation.org>
+Subject: [PATCH 5.16 176/200] sch_htb: Fail on unsupported parameters when offload is requested
+Date:   Mon, 31 Jan 2022 11:57:19 +0100
+Message-Id: <20220131105239.464153705@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,43 +48,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 4cf3d3ebe8794c449af3e0e8c1d790c97e461d20 ]
+[ Upstream commit 429c3be8a5e2695b5b92a6a12361eb89eb185495 ]
 
-Don't skip the vmcall() in l2_guest_code() prior to re-entering L2, doing
-so will result in L2 running to completion, popping '0' off the stack for
-RET, jumping to address '0', and ultimately dying with a triple fault
-shutdown.
+The current implementation of HTB offload doesn't support some
+parameters. Instead of ignoring them, actively return the EINVAL error
+when they are set to non-defaults.
 
-It's not at all obvious why the test re-enters L2 and re-executes VMCALL,
-but presumably it serves a purpose.  The VMX path doesn't skip vmcall(),
-and the test can't possibly have passed on SVM, so just do what VMX does.
+As this patch goes to stable, the driver API is not changed here. If
+future drivers support more offload parameters, the checks can be moved
+to the driver side.
 
-Fixes: d951b2210c1a ("KVM: selftests: smm_test: Test SMM enter from L2")
-Cc: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220125221725.2101126-1-seanjc@google.com>
-Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Tested-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Note that the buffer and cbuffer parameters are also not supported, but
+the tc userspace tool assigns some default values derived from rate and
+ceil, and identifying these defaults in sch_htb would be unreliable, so
+they are still ignored.
+
+Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Link: https://lore.kernel.org/r/20220125100654.424570-1-maximmi@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/x86_64/smm_test.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/sched/sch_htb.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/smm_test.c b/tools/testing/selftests/kvm/x86_64/smm_test.c
-index d0fe2fdce58c4..db2a17559c3d5 100644
---- a/tools/testing/selftests/kvm/x86_64/smm_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/smm_test.c
-@@ -105,7 +105,6 @@ static void guest_code(void *arg)
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index 9267922ea9c37..23a9d6242429f 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -1810,6 +1810,26 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+ 	if (!hopt->rate.rate || !hopt->ceil.rate)
+ 		goto failure;
  
- 		if (cpu_has_svm()) {
- 			run_guest(svm->vmcb, svm->vmcb_gpa);
--			svm->vmcb->save.rip += 3;
- 			run_guest(svm->vmcb, svm->vmcb_gpa);
- 		} else {
- 			vmlaunch();
++	if (q->offload) {
++		/* Options not supported by the offload. */
++		if (hopt->rate.overhead || hopt->ceil.overhead) {
++			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the overhead parameter");
++			goto failure;
++		}
++		if (hopt->rate.mpu || hopt->ceil.mpu) {
++			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the mpu parameter");
++			goto failure;
++		}
++		if (hopt->quantum) {
++			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the quantum parameter");
++			goto failure;
++		}
++		if (hopt->prio) {
++			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the prio parameter");
++			goto failure;
++		}
++	}
++
+ 	/* Keeping backward compatible with rate_table based iproute2 tc */
+ 	if (hopt->rate.linklayer == TC_LINKLAYER_UNAWARE)
+ 		qdisc_put_rtab(qdisc_get_rtab(&hopt->rate, tb[TCA_HTB_RTAB],
 -- 
 2.34.1
 
