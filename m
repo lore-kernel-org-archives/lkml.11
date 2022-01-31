@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C84C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB24AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359320AbiAaLQs (ORCPT
+        id S1359397AbiAaLQv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:16:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44856 "EHLO
+        Mon, 31 Jan 2022 06:16:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377130AbiAaLJn (ORCPT
+        with ESMTP id S1377169AbiAaLJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FF6C0604C5;
-        Mon, 31 Jan 2022 03:06:23 -0800 (PST)
+        Mon, 31 Jan 2022 06:09:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88691C0604CA;
+        Mon, 31 Jan 2022 03:06:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3DD5B82A65;
-        Mon, 31 Jan 2022 11:06:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16B7FC340EE;
-        Mon, 31 Jan 2022 11:06:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2794460FB5;
+        Mon, 31 Jan 2022 11:06:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA66BC340E8;
+        Mon, 31 Jan 2022 11:06:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627181;
-        bh=xpJRa1/Hqa4J8TOwr9A3cijO2CHMQKV430HfQznfbS0=;
+        s=korg; t=1643627187;
+        bh=Nc46HbOlscxH1ZoeqPE08D0tvHM0jh6dbN/WgavK4V0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lFiMa59K9cxN/pzfLs6G1UMLaDL04NRpdofAdrj6sH5rjIu+twCTQ7s+u02C3ZooX
-         d0Eiar52KAg86LHIHX+yFnH+D376HIk+yWMYbnK6T6yWz8RGN/ws6mKrop5QGkEo43
-         qb8I8nMed92rTGUPTSA1I8LwUNig8fC5Yhw1nF7U=
+        b=18Qr1qrSSg2IJjB7PRReUVX8Q85srXRZWUZINWKYyT2n1ByOHOJstErZ5Z9aEIYy9
+         MLJiL+TZqXdjFDvzORVc3FBd/LjAzRx2YHtPEVARu8PaVD0ecG2EbPn7cWTBiU/9r+
+         2aM8sZm3vfXRtyabPrUaQd8UmaxVmrgC2BVJsr50=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ivan Delalande <colona@arista.com>,
-        Amir Goldstein <amir73il@gmail.com>, Jan Kara <jack@suse.cz>
-Subject: [PATCH 5.10 099/100] fsnotify: invalidate dcache before IN_DELETE event
-Date:   Mon, 31 Jan 2022 11:57:00 +0100
-Message-Id: <20220131105223.775234099@linuxfoundation.org>
+        stable@vger.kernel.org, Rick Yiu <rickyiu@google.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sachin Sant <sachinp@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 072/100] sched/pelt: Relax the sync of util_sum with util_avg
+Date:   Mon, 31 Jan 2022 11:56:33 +0100
+Message-Id: <20220131105222.848675855@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -49,173 +53,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amir Goldstein <amir73il@gmail.com>
+From: Vincent Guittot <vincent.guittot@linaro.org>
 
-commit a37d9a17f099072fe4d3a9048b0321978707a918 upstream.
+[ Upstream commit 98b0d890220d45418cfbc5157b3382e6da5a12ab ]
 
-Apparently, there are some applications that use IN_DELETE event as an
-invalidation mechanism and expect that if they try to open a file with
-the name reported with the delete event, that it should not contain the
-content of the deleted file.
+Rick reported performance regressions in bugzilla because of cpu frequency
+being lower than before:
+    https://bugzilla.kernel.org/show_bug.cgi?id=215045
 
-Commit 49246466a989 ("fsnotify: move fsnotify_nameremove() hook out of
-d_delete()") moved the fsnotify delete hook before d_delete() so fsnotify
-will have access to a positive dentry.
+He bisected the problem to:
+commit 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
 
-This allowed a race where opening the deleted file via cached dentry
-is now possible after receiving the IN_DELETE event.
+This commit forces util_sum to be synced with the new util_avg after
+removing the contribution of a task and before the next periodic sync. By
+doing so util_sum is rounded to its lower bound and might lost up to
+LOAD_AVG_MAX-1 of accumulated contribution which has not yet been
+reflected in util_avg.
 
-To fix the regression, create a new hook fsnotify_delete() that takes
-the unlinked inode as an argument and use a helper d_delete_notify() to
-pin the inode, so we can pass it to fsnotify_delete() after d_delete().
+Instead of always setting util_sum to the low bound of util_avg, which can
+significantly lower the utilization of root cfs_rq after propagating the
+change down into the hierarchy, we revert the change of util_sum and
+propagate the difference.
 
-Backporting hint: this regression is from v5.3. Although patch will
-apply with only trivial conflicts to v5.4 and v5.10, it won't build,
-because fsnotify_delete() implementation is different in each of those
-versions (see fsnotify_link()).
+In addition, we also check that cfs's util_sum always stays above the
+lower bound for a given util_avg as it has been observed that
+sched_entity's util_sum is sometimes above cfs one.
 
-A follow up patch will fix the fsnotify_unlink/rmdir() calls in pseudo
-filesystem that do not need to call d_delete().
-
-Link: https://lore.kernel.org/r/20220120215305.282577-1-amir73il@gmail.com
-Reported-by: Ivan Delalande <colona@arista.com>
-Link: https://lore.kernel.org/linux-fsdevel/YeNyzoDM5hP5LtGW@visor/
-Fixes: 49246466a989 ("fsnotify: move fsnotify_nameremove() hook out of d_delete()")
-Cc: stable@vger.kernel.org # v5.3+
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
+Reported-by: Rick Yiu <rickyiu@google.com>
+Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+Link: https://lkml.kernel.org/r/20220111134659.24961-2-vincent.guittot@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/ioctl.c         |    6 +----
- fs/namei.c               |   10 ++++-----
- include/linux/fsnotify.h |   48 +++++++++++++++++++++++++++++++++++++++++------
- 3 files changed, 49 insertions(+), 15 deletions(-)
+ kernel/sched/fair.c | 16 +++++++++++++---
+ kernel/sched/pelt.h |  4 +++-
+ 2 files changed, 16 insertions(+), 4 deletions(-)
 
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -3103,10 +3103,8 @@ static noinline int btrfs_ioctl_snap_des
- 	inode_lock(inode);
- 	err = btrfs_delete_subvolume(dir, dentry);
- 	inode_unlock(inode);
--	if (!err) {
--		fsnotify_rmdir(dir, dentry);
--		d_delete(dentry);
--	}
-+	if (!err)
-+		d_delete_notify(dir, dentry);
- 
- out_dput:
- 	dput(dentry);
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -3709,13 +3709,12 @@ int vfs_rmdir(struct inode *dir, struct
- 	dentry->d_inode->i_flags |= S_DEAD;
- 	dont_mount(dentry);
- 	detach_mounts(dentry);
--	fsnotify_rmdir(dir, dentry);
- 
- out:
- 	inode_unlock(dentry->d_inode);
- 	dput(dentry);
- 	if (!error)
--		d_delete(dentry);
-+		d_delete_notify(dir, dentry);
- 	return error;
- }
- EXPORT_SYMBOL(vfs_rmdir);
-@@ -3825,7 +3824,6 @@ int vfs_unlink(struct inode *dir, struct
- 			if (!error) {
- 				dont_mount(dentry);
- 				detach_mounts(dentry);
--				fsnotify_unlink(dir, dentry);
- 			}
- 		}
- 	}
-@@ -3833,9 +3831,11 @@ out:
- 	inode_unlock(target);
- 
- 	/* We don't d_delete() NFS sillyrenamed files--they still exist. */
--	if (!error && !(dentry->d_flags & DCACHE_NFSFS_RENAMED)) {
-+	if (!error && dentry->d_flags & DCACHE_NFSFS_RENAMED) {
-+		fsnotify_unlink(dir, dentry);
-+	} else if (!error) {
- 		fsnotify_link_count(target);
--		d_delete(dentry);
-+		d_delete_notify(dir, dentry);
- 	}
- 
- 	return error;
---- a/include/linux/fsnotify.h
-+++ b/include/linux/fsnotify.h
-@@ -204,16 +204,52 @@ static inline void fsnotify_link(struct
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 8d2f238fdd2ac..acd9833b8ec22 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3379,7 +3379,6 @@ void set_task_rq_fair(struct sched_entity *se,
+ 	se->avg.last_update_time = n_last_update_time;
  }
  
+-
  /*
-+ * fsnotify_delete - @dentry was unlinked and unhashed
-+ *
-+ * Caller must make sure that dentry->d_name is stable.
-+ *
-+ * Note: unlike fsnotify_unlink(), we have to pass also the unlinked inode
-+ * as this may be called after d_delete() and old_dentry may be negative.
-+ */
-+static inline void fsnotify_delete(struct inode *dir, struct inode *inode,
-+				   struct dentry *dentry)
-+{
-+	__u32 mask = FS_DELETE;
-+
-+	if (S_ISDIR(inode->i_mode))
-+		mask |= FS_ISDIR;
-+
-+	fsnotify_name(dir, mask, inode, &dentry->d_name, 0);
-+}
-+
-+/**
-+ * d_delete_notify - delete a dentry and call fsnotify_delete()
-+ * @dentry: The dentry to delete
-+ *
-+ * This helper is used to guaranty that the unlinked inode cannot be found
-+ * by lookup of this name after fsnotify_delete() event has been delivered.
-+ */
-+static inline void d_delete_notify(struct inode *dir, struct dentry *dentry)
-+{
-+	struct inode *inode = d_inode(dentry);
-+
-+	ihold(inode);
-+	d_delete(dentry);
-+	fsnotify_delete(dir, inode, dentry);
-+	iput(inode);
-+}
-+
-+/*
-  * fsnotify_unlink - 'name' was unlinked
+  * When on migration a sched_entity joins/leaves the PELT hierarchy, we need to
+  * propagate its contribution. The key to this propagation is the invariant
+@@ -3447,7 +3446,6 @@ void set_task_rq_fair(struct sched_entity *se,
+  * XXX: only do this for the part of runnable > running ?
   *
-  * Caller must make sure that dentry->d_name is stable.
   */
- static inline void fsnotify_unlink(struct inode *dir, struct dentry *dentry)
+-
+ static inline void
+ update_tg_cfs_util(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq *gcfs_rq)
  {
--	/* Expected to be called before d_delete() */
--	WARN_ON_ONCE(d_is_negative(dentry));
-+	if (WARN_ON_ONCE(d_is_negative(dentry)))
-+		return;
+@@ -3676,7 +3674,19 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
  
--	fsnotify_dirent(dir, dentry, FS_DELETE);
-+	fsnotify_delete(dir, d_inode(dentry), dentry);
+ 		r = removed_util;
+ 		sub_positive(&sa->util_avg, r);
+-		sa->util_sum = sa->util_avg * divider;
++		sub_positive(&sa->util_sum, r * divider);
++		/*
++		 * Because of rounding, se->util_sum might ends up being +1 more than
++		 * cfs->util_sum. Although this is not a problem by itself, detaching
++		 * a lot of tasks with the rounding problem between 2 updates of
++		 * util_avg (~1ms) can make cfs->util_sum becoming null whereas
++		 * cfs_util_avg is not.
++		 * Check that util_sum is still above its lower bound for the new
++		 * util_avg. Given that period_contrib might have moved since the last
++		 * sync, we are only sure that util_sum must be above or equal to
++		 *    util_avg * minimum possible divider
++		 */
++		sa->util_sum = max_t(u32, sa->util_sum, sa->util_avg * PELT_MIN_DIVIDER);
+ 
+ 		r = removed_runnable;
+ 		sub_positive(&sa->runnable_avg, r);
+diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
+index 0b9aeebb9c325..45bf08e22207c 100644
+--- a/kernel/sched/pelt.h
++++ b/kernel/sched/pelt.h
+@@ -37,9 +37,11 @@ update_irq_load_avg(struct rq *rq, u64 running)
+ }
+ #endif
+ 
++#define PELT_MIN_DIVIDER	(LOAD_AVG_MAX - 1024)
++
+ static inline u32 get_pelt_divider(struct sched_avg *avg)
+ {
+-	return LOAD_AVG_MAX - 1024 + avg->period_contrib;
++	return PELT_MIN_DIVIDER + avg->period_contrib;
  }
  
- /*
-@@ -233,10 +269,10 @@ static inline void fsnotify_mkdir(struct
-  */
- static inline void fsnotify_rmdir(struct inode *dir, struct dentry *dentry)
- {
--	/* Expected to be called before d_delete() */
--	WARN_ON_ONCE(d_is_negative(dentry));
-+	if (WARN_ON_ONCE(d_is_negative(dentry)))
-+		return;
- 
--	fsnotify_dirent(dir, dentry, FS_DELETE | FS_ISDIR);
-+	fsnotify_delete(dir, d_inode(dentry), dentry);
- }
- 
- /*
+ static inline void cfs_se_util_change(struct sched_avg *avg)
+-- 
+2.34.1
+
 
 
