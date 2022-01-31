@@ -2,115 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42014C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D32FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377729AbiAaLUk (ORCPT
+        id S1350001AbiAaLUw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:20:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358567AbiAaLKj (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D695C061714;
-        Mon, 31 Jan 2022 03:10:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E706B82A5C;
-        Mon, 31 Jan 2022 11:10:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7970FC340EF;
-        Mon, 31 Jan 2022 11:10:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627437;
-        bh=tB7JCLFXx3Iwrv0oV3/fnaCWjJ379uUPqtNDv1Sgty0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WNtvRJGxrSvjm/AnZEUhP0ksYdLmT6EhPxvxMH65Lppb67b9MZTvoJWmREvNrduue
-         hbXiFbHyxUVZT8S8NGbH/m8//HTUXh7BODJazYCfVeh9YTNfktSadKaNfP7kPHmLdR
-         q+GJaP7s5S6JneRflQZfgCA7SgJ3x0ndHo+XT2dE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+        Mon, 31 Jan 2022 06:20:52 -0500
+Received: from mga03.intel.com ([134.134.136.65]:8631 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244984AbiAaLKl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:10:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643627441; x=1675163441;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3Qe71J8eT5usx5RJhTq+fzVJR188euFd7ew8XpamjHc=;
+  b=ItJuix0pFVGpy3MyepBW71SfS+Oedw+cf+zfgj0GuZYvTpuh9gbUYhhq
+   c8ABdGbkY/HtITbdWqwbEevDtpXF1UbYG917RmTNgc16BxjIlkQOPbudJ
+   n4+azqT+8/RwCk50ixzdO8DcmPmUpn4UEg67EOhpkCwVWGRi3PLCyJijH
+   4cBl1vnC6RHGMYVTBfneHsSfElewjhCL+nri36TSgV0RTJdm6sdP7Rzfw
+   Jtlxq0QbVXukINZw+Mb4e7LpjDv9X5jVy+ENRjwSsjjUElt2tqk8+Qzvv
+   FEuG9toLY77AJ0hLtL6Q9LTOs7XE1mr5PlEnEmyVE2PKO8zYJe4UD2upc
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="247393448"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="247393448"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:08:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="675694290"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 31 Jan 2022 03:08:38 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 31 Jan 2022 13:08:37 +0200
+Date:   Mon, 31 Jan 2022 13:08:37 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Sean Anderson <sean.anderson@seco.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        James Smart <jsmart2021@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 083/171] scsi: elx: efct: Dont use GFP_KERNEL under spin lock
-Date:   Mon, 31 Jan 2022 11:55:48 +0100
-Message-Id: <20220131105232.832270331@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
-User-Agent: quilt/0.66
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] usb: ulpi: Call of_node_put correctly
+Message-ID: <YffDNS3uArqg6rm8@kuha.fi.intel.com>
+References: <20220127190004.1446909-1-sean.anderson@seco.com>
+ <20220127190004.1446909-3-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127190004.1446909-3-sean.anderson@seco.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+On Thu, Jan 27, 2022 at 02:00:03PM -0500, Sean Anderson wrote:
+> of_node_put should always be called on device nodes gotten from
+> of_get_*. Additionally, it should only be called after there are no
+> remaining users. To address the first issue, call of_node_put if later
+> steps in ulpi_register fail. To address the latter, call put_device if
+> device_register fails, which will call ulpi_dev_release if necessary.
+> 
+> Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 
-commit 61263b3a11a2594b4e898f166c31162236182b5c upstream.
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-GFP_KERNEL/GFP_DMA can't be used under a spin lock. According the comment,
-els_ios_lock is used to protect els ios list so we can move down the spin
-lock to avoid using this flag under the lock.
+> ---
+> 
+> Changes in v3:
+> - Add Fixes tag
+> - Call put_device if device_register fails
+> 
+> Changes in v2:
+> - New
+> 
+>  drivers/usb/common/ulpi.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/usb/common/ulpi.c b/drivers/usb/common/ulpi.c
+> index c90a1ab705a3..dedcb749a02f 100644
+> --- a/drivers/usb/common/ulpi.c
+> +++ b/drivers/usb/common/ulpi.c
+> @@ -245,12 +245,16 @@ static int ulpi_register(struct device *dev, struct ulpi *ulpi)
+>  		return ret;
+>  
+>  	ret = ulpi_read_id(ulpi);
+> -	if (ret)
+> +	if (ret) {
+> +		of_node_put(ulpi->dev.of_node);
+>  		return ret;
+> +	}
+>  
+>  	ret = device_register(&ulpi->dev);
+> -	if (ret)
+> +	if (ret) {
+> +		put_device(&ulpi->dev);
+>  		return ret;
+> +	}
+>  
+>  	dev_dbg(&ulpi->dev, "registered ULPI PHY: vendor %04x, product %04x\n",
+>  		ulpi->id.vendor, ulpi->id.product);
+> -- 
+> 2.25.1
 
-Link: https://lore.kernel.org/r/20220111012441.3232527-1-yangyingliang@huawei.com
-Fixes: 8f406ef72859 ("scsi: elx: libefc: Extended link Service I/O handling")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Reviewed-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/scsi/elx/libefc/efc_els.c |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+thanks,
 
---- a/drivers/scsi/elx/libefc/efc_els.c
-+++ b/drivers/scsi/elx/libefc/efc_els.c
-@@ -46,18 +46,14 @@ efc_els_io_alloc_size(struct efc_node *n
- 
- 	efc = node->efc;
- 
--	spin_lock_irqsave(&node->els_ios_lock, flags);
--
- 	if (!node->els_io_enabled) {
- 		efc_log_err(efc, "els io alloc disabled\n");
--		spin_unlock_irqrestore(&node->els_ios_lock, flags);
- 		return NULL;
- 	}
- 
- 	els = mempool_alloc(efc->els_io_pool, GFP_ATOMIC);
- 	if (!els) {
- 		atomic_add_return(1, &efc->els_io_alloc_failed_count);
--		spin_unlock_irqrestore(&node->els_ios_lock, flags);
- 		return NULL;
- 	}
- 
-@@ -74,7 +70,6 @@ efc_els_io_alloc_size(struct efc_node *n
- 					      &els->io.req.phys, GFP_DMA);
- 	if (!els->io.req.virt) {
- 		mempool_free(els, efc->els_io_pool);
--		spin_unlock_irqrestore(&node->els_ios_lock, flags);
- 		return NULL;
- 	}
- 
-@@ -94,10 +89,11 @@ efc_els_io_alloc_size(struct efc_node *n
- 
- 		/* add els structure to ELS IO list */
- 		INIT_LIST_HEAD(&els->list_entry);
-+		spin_lock_irqsave(&node->els_ios_lock, flags);
- 		list_add_tail(&els->list_entry, &node->els_ios_list);
-+		spin_unlock_irqrestore(&node->els_ios_lock, flags);
- 	}
- 
--	spin_unlock_irqrestore(&node->els_ios_lock, flags);
- 	return els;
- }
- 
-
-
+-- 
+heikki
