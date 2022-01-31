@@ -2,87 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F6DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B602C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377837AbiAaL1l (ORCPT
+        id S1377979AbiAaL1w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:27:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51856 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377929AbiAaLTU (ORCPT
+        Mon, 31 Jan 2022 06:27:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378098AbiAaLTn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:19:20 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9854260B28;
-        Mon, 31 Jan 2022 11:19:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D556C340E8;
-        Mon, 31 Jan 2022 11:19:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627959;
-        bh=/O5ULg9U3NkwqzR/0Avq3jo3LXQjoxTI7QzSubb6GLA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JZA2o2iwNAvZhKuorIJ+B2SXic8lLQBznuX2c5QLBaYZ9r76dn33M+A4xkTsZz9Uq
-         cdMC77ao5i6M5yi4hbzzrivCTu9/0kOE04CT23XHq3PzBSGMddMvB8H99qhB1Udwdi
-         aGN6SH540M76DExZvAeMX3nZdNpTgFJPczMe4z10=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH 5.16 079/200] usb: dwc3: xilinx: Fix error handling when getting USB3 PHY
-Date:   Mon, 31 Jan 2022 11:55:42 +0100
-Message-Id: <20220131105236.257332377@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 31 Jan 2022 06:19:43 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927A1C0612F4;
+        Mon, 31 Jan 2022 03:11:56 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 3C1B71F4323B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1643627515;
+        bh=bih+YpN7Bu9FDncTaHYjpoZqdzNV5LPiHw6/cv1cfhQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=hKRtf4cDoo1ygR4TE6AVz3KwgVq9I2wipi4rIcHIGgpe4sBTYjAxOsd2Kf7TyyOys
+         tcCjMJOIJjFy9IwzerMUjdbmP1MW8aRsU1mwqccSQAZGK6MiYYTIVzUU62IJS2evjN
+         v2ybCwImU3qGLqu44MtMpNG+od93c0ze1Jo0k/1WMx5nW1fjzNx4bBNE4dch9yN2in
+         oGRNDJQQjPrfD61oTV/yKPQa7DwOXZzaLfqi9zaMpRFiXS7vY6pcD8Ge8UnXnJhO+p
+         lLERwen3qfXz8zdm4FsGqmtK2XkAK6LBUbHVT0wKUOcY3i1JRCEjeN/hM8NjeMiXXt
+         QKJ6fsA1asRpw==
+Message-ID: <0846872b-03da-ee5d-6a9d-e6c9fa754191@collabora.com>
+Date:   Mon, 31 Jan 2022 12:11:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v22 5/7] soc: mediatek: SVS: add debug commands
+Content-Language: en-US
+To:     Roger Lu <roger.lu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Enric Balletbo Serra <eballetbo@gmail.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Nicolas Boichat <drinkcat@google.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Fan Chen <fan.chen@mediatek.com>,
+        HenryC Chen <HenryC.Chen@mediatek.com>,
+        Xiaoqing Liu <Xiaoqing.Liu@mediatek.com>,
+        Charles Yang <Charles.Yang@mediatek.com>,
+        Angus Lin <Angus.Lin@mediatek.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nishanth Menon <nm@ti.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Guenter Roeck <linux@roeck-us.net>
+References: <20220127033956.24585-1-roger.lu@mediatek.com>
+ <20220127033956.24585-6-roger.lu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220127033956.24585-6-roger.lu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
-
-commit 2cc9b1c93b1c4caa2d971856c0780fb5f7d04692 upstream.
-
-The code that looked up the USB3 PHY was ignoring all errors other than
-EPROBE_DEFER in an attempt to handle the PHY not being present. Fix and
-simplify the code by using devm_phy_optional_get and dev_err_probe so
-that a missing PHY is not treated as an error and unexpected errors
-are handled properly.
-
-Fixes: 84770f028fab ("usb: dwc3: Add driver for Xilinx platforms")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220126000253.1586760-3-robert.hancock@calian.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/dwc3/dwc3-xilinx.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
---- a/drivers/usb/dwc3/dwc3-xilinx.c
-+++ b/drivers/usb/dwc3/dwc3-xilinx.c
-@@ -102,12 +102,12 @@ static int dwc3_xlnx_init_zynqmp(struct
- 	int			ret;
- 	u32			reg;
- 
--	usb3_phy = devm_phy_get(dev, "usb3-phy");
--	if (PTR_ERR(usb3_phy) == -EPROBE_DEFER) {
--		ret = -EPROBE_DEFER;
-+	usb3_phy = devm_phy_optional_get(dev, "usb3-phy");
-+	if (IS_ERR(usb3_phy)) {
-+		ret = PTR_ERR(usb3_phy);
-+		dev_err_probe(dev, ret,
-+			      "failed to get USB3 PHY\n");
- 		goto err;
--	} else if (IS_ERR(usb3_phy)) {
--		usb3_phy = NULL;
- 	}
- 
- 	/*
+Il 27/01/22 04:39, Roger Lu ha scritto:
+> The purpose of SVS is to help find the suitable voltages
+> for DVFS. Therefore, if SVS bank voltages are concerned
+> to be wrong, we can adjust SVS bank voltages by this patch.
+> 
+> Signed-off-by: Roger Lu <roger.lu@mediatek.com>
 
 
+Hello Roger,
+I was thinking about what this patch is adding... and I have a few considerations.
+
+It's nice to have a debugging mechanism to read the status and dump registers, as
+that's very helpful when doing heavy debugging of the IP... but adding the
+possibility to write a voltage offset may be very dangerous: think about the case
+in which, either for misconfiguration, or for any other reason, the debugfs entry
+that allows writing voffset becomes user-writable, or a user writes an impossibly
+high voffset.
+In case a very low (negative) voffset is entered, the platform would crash (denial
+of service); if a very high voffset is entered, hardware damage may occur.
+
+For this reason, there are two proposals:
+1. If you want to keep the debugfs voffset write, please constrain the permissible
+    voffset to an acceptable range that at least makes it unlikely to damage the HW;
+    Moreover, since voffset write is a feature that would be used in very limited
+    debugging cases, I think that this should be implemented over a build-time
+    configuration barrier... something like CONFIG_MTK_SVS_DEBUG_ALLOW_WRITE, or
+    similar;
+2. Since it's very unlikely for someone to really play that much with a voltage
+    offset during runtime, and since this looks like something very machine specific
+    (perhaps addressing board-specific quirks?), I would suggest to add this as a
+    device-tree parameter instead, such as "mediatek,svs-voffset", as it is indeed
+    possible to specify both positive or negative values in DT.
+
+I would prefer proposal 2, as it looks generally cleaner and way less risky.
+
+Regards,
+Angelo
