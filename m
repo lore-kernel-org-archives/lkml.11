@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BFEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377836AbiAaLuF (ORCPT
+        id S1378242AbiAaLuK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:50:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51510 "EHLO
+        Mon, 31 Jan 2022 06:50:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358648AbiAaLft (ORCPT
+        with ESMTP id S1351433AbiAaLft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:35:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6E3C0797A0;
-        Mon, 31 Jan 2022 03:23:56 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2D2C07979F;
+        Mon, 31 Jan 2022 03:23:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C0B4B82A61;
-        Mon, 31 Jan 2022 11:23:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F841C340E8;
-        Mon, 31 Jan 2022 11:23:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B15361299;
+        Mon, 31 Jan 2022 11:23:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E101EC340E8;
+        Mon, 31 Jan 2022 11:23:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628233;
-        bh=5fxfTELMQUQVDkvIVOXfIZzFJxL7rjRhJULPrrz4ABU=;
+        s=korg; t=1643628230;
+        bh=AAFbgHTuVLoosPstvmMwWF1hZ3d/CR6g4fr+HnCPCsk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b4ICpwzS6myprAhfNa4HeXP3yTPv8fIsd20CBI7qk3W7V8crzgj/X7bi/JhGAv2Vw
-         ML2Lci4pMC7qBMq3vXiuO1n3V+p1L15l9s+NJJBCx7NAg8oyVukQPsMPy3VnM5Yp2j
-         lhy6CYHbX5jHxigJyE9DpGwTMKRORg3XxYwiFuec=
+        b=qWtXUY+zvy8AWtTgpdxF4JBeq/zhER0DV01WO23Iz1cZU4a2PdhscTsUVSX3ozgGY
+         c/MZAykTHLZKuxl7VZCoXGbbN/09IlOCMBqFnIcWmS62gB8Qa8MVPyoI5nSXVHg+Dq
+         3ymweKgbj1zm4Ls18aOgiVwB959eYfeepfW5a0io=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 134/200] net: stmmac: dwmac-visconti: Fix clock configuration for RMII mode
-Date:   Mon, 31 Jan 2022 11:56:37 +0100
-Message-Id: <20220131105238.062966793@linuxfoundation.org>
+Subject: [PATCH 5.16 133/200] net: stmmac: dwmac-visconti: Fix bit definitions for ETHER_CLK_SEL
+Date:   Mon, 31 Jan 2022 11:56:36 +0100
+Message-Id: <20220131105238.031813020@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -54,10 +54,15 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
 
-[ Upstream commit 0959bc4bd4206433ed101a1332a23e93ad16ec77 ]
+[ Upstream commit 1ba1a4a90fa416a6f389206416c5f488cf8b1543 ]
 
-Bit pattern of the ETHER_CLOCK_SEL register for RMII/MII mode should be fixed.
-Also, some control bits should be modified with a specific sequence.
+just 0 should be used to represent cleared bits
+
+* ETHER_CLK_SEL_DIV_SEL_20
+* ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN
+* ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN
+* ETHER_CLK_SEL_TX_CLK_O_TX_I
+* ETHER_CLK_SEL_RMII_CLK_SEL_IN
 
 Fixes: b38dd98ff8d0 ("net: stmmac: Add Toshiba Visconti SoCs glue driver")
 Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
@@ -65,66 +70,40 @@ Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/stmicro/stmmac/dwmac-visconti.c  | 32 ++++++++++++-------
- 1 file changed, 21 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-index 43a446ceadf7a..dde5b772a5af7 100644
+index e2e0f977875d7..43a446ceadf7a 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-@@ -96,31 +96,41 @@ static void visconti_eth_fix_mac_speed(void *priv, unsigned int speed)
- 	val |= ETHER_CLK_SEL_TX_O_E_N_IN;
- 	writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
+@@ -22,21 +22,21 @@
+ #define ETHER_CLK_SEL_RMII_CLK_EN BIT(2)
+ #define ETHER_CLK_SEL_RMII_CLK_RST BIT(3)
+ #define ETHER_CLK_SEL_DIV_SEL_2 BIT(4)
+-#define ETHER_CLK_SEL_DIV_SEL_20 BIT(0)
++#define ETHER_CLK_SEL_DIV_SEL_20 0
+ #define ETHER_CLK_SEL_FREQ_SEL_125M	(BIT(9) | BIT(8))
+ #define ETHER_CLK_SEL_FREQ_SEL_50M	BIT(9)
+ #define ETHER_CLK_SEL_FREQ_SEL_25M	BIT(8)
+ #define ETHER_CLK_SEL_FREQ_SEL_2P5M	0
+-#define ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN BIT(0)
++#define ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN 0
+ #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_TXC BIT(10)
+ #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_DIV BIT(11)
+-#define ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN  BIT(0)
++#define ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN  0
+ #define ETHER_CLK_SEL_RX_CLK_EXT_SEL_RXC BIT(12)
+ #define ETHER_CLK_SEL_RX_CLK_EXT_SEL_DIV BIT(13)
+-#define ETHER_CLK_SEL_TX_CLK_O_TX_I	 BIT(0)
++#define ETHER_CLK_SEL_TX_CLK_O_TX_I	 0
+ #define ETHER_CLK_SEL_TX_CLK_O_RMII_I	 BIT(14)
+ #define ETHER_CLK_SEL_TX_O_E_N_IN	 BIT(15)
+-#define ETHER_CLK_SEL_RMII_CLK_SEL_IN	 BIT(0)
++#define ETHER_CLK_SEL_RMII_CLK_SEL_IN	 0
+ #define ETHER_CLK_SEL_RMII_CLK_SEL_RX_C	 BIT(16)
  
-+	/* Set Clock-Mux, Start clock, Set TX_O direction */
- 	switch (dwmac->phy_intf_sel) {
- 	case ETHER_CONFIG_INTF_RGMII:
- 		val = clk_sel_val | ETHER_CLK_SEL_RX_CLK_EXT_SEL_RXC;
-+		writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
-+
-+		val |= ETHER_CLK_SEL_RX_TX_CLK_EN;
-+		writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
-+
-+		val &= ~ETHER_CLK_SEL_TX_O_E_N_IN;
-+		writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
- 		break;
- 	case ETHER_CONFIG_INTF_RMII:
- 		val = clk_sel_val | ETHER_CLK_SEL_RX_CLK_EXT_SEL_DIV |
--			ETHER_CLK_SEL_TX_CLK_EXT_SEL_TXC | ETHER_CLK_SEL_TX_O_E_N_IN |
-+			ETHER_CLK_SEL_TX_CLK_EXT_SEL_DIV | ETHER_CLK_SEL_TX_O_E_N_IN |
- 			ETHER_CLK_SEL_RMII_CLK_SEL_RX_C;
-+		writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
-+
-+		val |= ETHER_CLK_SEL_RMII_CLK_RST;
-+		writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
-+
-+		val |= ETHER_CLK_SEL_RMII_CLK_EN | ETHER_CLK_SEL_RX_TX_CLK_EN;
-+		writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
- 		break;
- 	case ETHER_CONFIG_INTF_MII:
- 	default:
- 		val = clk_sel_val | ETHER_CLK_SEL_RX_CLK_EXT_SEL_RXC |
--			ETHER_CLK_SEL_TX_CLK_EXT_SEL_DIV | ETHER_CLK_SEL_TX_O_E_N_IN |
--			ETHER_CLK_SEL_RMII_CLK_EN;
-+			ETHER_CLK_SEL_TX_CLK_EXT_SEL_TXC | ETHER_CLK_SEL_TX_O_E_N_IN;
-+		writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
-+
-+		val |= ETHER_CLK_SEL_RX_TX_CLK_EN;
-+		writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
- 		break;
- 	}
- 
--	/* Start clock */
--	writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
--	val |= ETHER_CLK_SEL_RX_TX_CLK_EN;
--	writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
--
--	val &= ~ETHER_CLK_SEL_TX_O_E_N_IN;
--	writel(val, dwmac->reg + REG_ETHER_CLOCK_SEL);
--
- 	spin_unlock_irqrestore(&dwmac->lock, flags);
- }
- 
+ #define ETHER_CLK_SEL_RX_TX_CLK_EN (ETHER_CLK_SEL_RX_CLK_EN | ETHER_CLK_SEL_TX_CLK_EN)
 -- 
 2.34.1
 
