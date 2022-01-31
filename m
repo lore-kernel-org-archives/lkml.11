@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F422BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:15:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C899C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:15:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358907AbiAaLO5 (ORCPT
+        id S1359730AbiAaLPD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:14:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349210AbiAaLGv (ORCPT
+        Mon, 31 Jan 2022 06:15:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41462 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245096AbiAaLHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:06:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334DBC061394;
-        Mon, 31 Jan 2022 03:04:49 -0800 (PST)
+        Mon, 31 Jan 2022 06:07:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2D22B82A59;
-        Mon, 31 Jan 2022 11:04:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3979FC340E8;
-        Mon, 31 Jan 2022 11:04:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AA9B6102A;
+        Mon, 31 Jan 2022 11:07:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 014C7C340E8;
+        Mon, 31 Jan 2022 11:06:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627086;
-        bh=A87i1zJgpgfpgVNLS/bYqudetWowmmB8GJRnlDrhw9M=;
+        s=korg; t=1643627220;
+        bh=ZcdLGpwrRzM4z270cG3mVxCpval/I4K+QpVb6FH+tZk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qzvc0p+oQf2nZqzS5n6jfCvaioZK6f0IDsX+/uyRehccWYf+s+Nb4iNphDVlcb0Un
-         3ysgIzOJfmliAxEMgR5c0q6LbmXN5eAjGS0rmhn8/LN6YWht2Qq728U7P3V50T6kBU
-         Hnyxc0ZoHrtUSulKriZPH8YjxTZIuydrpFVOc0h4=
+        b=oVW3//QlpyPkh9Ze0zzydhmJKWkzY4dg1hUuTDV3QXLyBh33g4/GcPa7HNKuvLOH/
+         O5BIyg/9SjyMHwgYVSKb2yQD105TAzN6nF63HxQZXZMGq3uGcdlgBMxIoLSfW5hV30
+         nH+Y5vRSDBXM36t98QXj99VLgpvDbTtjpi9KwarY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.10 037/100] sched/membarrier: Fix membarrier-rseq fence command missing from query bitmask
-Date:   Mon, 31 Jan 2022 11:55:58 +0100
-Message-Id: <20220131105221.694727913@linuxfoundation.org>
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 013/171] powerpc32/bpf: Fix codegen for bpf-to-bpf calls
+Date:   Mon, 31 Jan 2022 11:54:38 +0100
+Message-Id: <20220131105230.458734217@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,65 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 
-commit 809232619f5b15e31fb3563985e705454f32621f upstream.
+commit fab07611fb2e6a15fac05c4583045ca5582fd826 upstream.
 
-The membarrier command MEMBARRIER_CMD_QUERY allows querying the
-available membarrier commands. When the membarrier-rseq fence commands
-were added, a new MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK was
-introduced with the intent to expose them with the MEMBARRIER_CMD_QUERY
-command, the but it was never added to MEMBARRIER_CMD_BITMASK.
+Pad instructions emitted for BPF_CALL so that the number of instructions
+generated does not change for different function addresses. This is
+especially important for calls to other bpf functions, whose address
+will only be known during extra pass.
 
-The membarrier-rseq fence commands are therefore not wired up with the
-query command.
-
-Rename MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK to
-MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK (the bitmask is not a command
-per-se), and change the erroneous
-MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ_BITMASK (which does not
-actually exist) to MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ.
-
-Wire up MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK in
-MEMBARRIER_CMD_BITMASK. Fixing this allows discovering availability of
-the membarrier-rseq fence feature.
-
-Fixes: 2a36ab717e8f ("rseq/membarrier: Add MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ")
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: <stable@vger.kernel.org> # 5.10+
-Link: https://lkml.kernel.org/r/20220117203010.30129-1-mathieu.desnoyers@efficios.com
+Fixes: 51c66ad849a703 ("powerpc/bpf: Implement extended BPF on PPC32")
+Cc: stable@vger.kernel.org # v5.13+
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/52d8fe51f7620a6f27f377791564d79d75463576.1641468127.git.naveen.n.rao@linux.vnet.ibm.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/membarrier.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/powerpc/net/bpf_jit_comp32.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/kernel/sched/membarrier.c
-+++ b/kernel/sched/membarrier.c
-@@ -19,11 +19,11 @@
- #endif
+--- a/arch/powerpc/net/bpf_jit_comp32.c
++++ b/arch/powerpc/net/bpf_jit_comp32.c
+@@ -191,6 +191,9 @@ void bpf_jit_emit_func_call_rel(u32 *ima
  
- #ifdef CONFIG_RSEQ
--#define MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK		\
-+#define MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK		\
- 	(MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ			\
--	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ_BITMASK)
-+	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ)
- #else
--#define MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK	0
-+#define MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK	0
- #endif
- 
- #define MEMBARRIER_CMD_BITMASK						\
-@@ -31,7 +31,8 @@
- 	| MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED			\
- 	| MEMBARRIER_CMD_PRIVATE_EXPEDITED				\
- 	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED			\
--	| MEMBARRIER_PRIVATE_EXPEDITED_SYNC_CORE_BITMASK)
-+	| MEMBARRIER_PRIVATE_EXPEDITED_SYNC_CORE_BITMASK		\
-+	| MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK)
- 
- static void ipi_mb(void *info)
- {
+ 	if (image && rel < 0x2000000 && rel >= -0x2000000) {
+ 		PPC_BL_ABS(func);
++		EMIT(PPC_RAW_NOP());
++		EMIT(PPC_RAW_NOP());
++		EMIT(PPC_RAW_NOP());
+ 	} else {
+ 		/* Load function address into r0 */
+ 		EMIT(PPC_RAW_LIS(_R0, IMM_H(func)));
 
 
