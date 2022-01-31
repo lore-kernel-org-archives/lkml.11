@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CD0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 402AFC35273
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379625AbiAaLjX (ORCPT
+        id S1379663AbiAaLj2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:39:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50064 "EHLO
+        Mon, 31 Jan 2022 06:39:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378950AbiAaL3i (ORCPT
+        with ESMTP id S1379033AbiAaL3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:29:38 -0500
+        Mon, 31 Jan 2022 06:29:44 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C31C0613EF;
-        Mon, 31 Jan 2022 03:18:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1EEC0613FF;
+        Mon, 31 Jan 2022 03:18:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B9AD61219;
-        Mon, 31 Jan 2022 11:18:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4470FC340E8;
-        Mon, 31 Jan 2022 11:18:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BBFB61257;
+        Mon, 31 Jan 2022 11:18:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FCCEC340EF;
+        Mon, 31 Jan 2022 11:18:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627908;
-        bh=q4g6WrY1W9xY5WRkJbOfJqxiyiK4Xyb8TkSLTc0u194=;
+        s=korg; t=1643627936;
+        bh=p9gzYhntkEFFU0kZCVkx2X3WS7L38CrCbtyOn9AY4Z0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ee9mHCjzY4v6CCig+yyrE8+ExcLbdeQWB7OGpW8mcIaeQKyeeIp2z0cqGLdN+NtvF
-         kByCkNaONlkTmRISipPRBU9Rk3kjjXzXKfWwtSWeDQjdWDCPtkjUsWQnCGKRyLCB/6
-         rq/m9Arh+YSXds7Repm2FDVFDkvcdtv2txHX5kck=
+        b=ZkeGDZsXp0H4D5ieDbo8PqjRWZNH1zNMpX9Cr30aAm1OxDoHSO1krqEsTsyFQo0Td
+         MUk3DVXI1ezFxVESpfrQLvbGOr3wdcoPZ2+RTgZVdLDJxkw2bBNYpDQIqc872baDUd
+         BgYo/wm2ymrk0y8t9ueaICXfuYmTcre3kzgGodfY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Subject: [PATCH 5.16 020/200] s390/nmi: handle vector validity failures for KVM guests
-Date:   Mon, 31 Jan 2022 11:54:43 +0100
-Message-Id: <20220131105234.241981031@linuxfoundation.org>
+        stable@vger.kernel.org, DocMAX <mail@vacharakis.de>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
+Subject: [PATCH 5.16 073/200] usb-storage: Add unusual-devs entry for VL817 USB-SATA bridge
+Date:   Mon, 31 Jan 2022 11:55:36 +0100
+Message-Id: <20220131105236.043195423@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -50,42 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Borntraeger <borntraeger@linux.ibm.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit f094a39c6ba168f2df1edfd1731cca377af5f442 upstream.
+commit 5b67b315037250a61861119683e7fcb509deea25 upstream.
 
-The machine check validity bit tells about the context. If a KVM guest
-was running the bit tells about the guest validity and the host state is
-not affected. As a guest can disable the guest validity this might
-result in unwanted host errors on machine checks.
+Two people have reported (and mentioned numerous other reports on the
+web) that VIA's VL817 USB-SATA bridge does not work with the uas
+driver.  Typical log messages are:
 
-Cc: stable@vger.kernel.org
-Fixes: c929500d7a5a ("s390/nmi: s390: New low level handling for machine check happening in guest")
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+[ 3606.232149] sd 14:0:0:0: [sdg] tag#2 uas_zap_pending 0 uas-tag 1 inflight: CMD
+[ 3606.232154] sd 14:0:0:0: [sdg] tag#2 CDB: Write(16) 8a 00 00 00 00 00 18 0c c9 80 00 00 00 80 00 00
+[ 3606.306257] usb 4-4.4: reset SuperSpeed Plus Gen 2x1 USB device number 11 using xhci_hcd
+[ 3606.328584] scsi host14: uas_eh_device_reset_handler success
+
+Surprisingly, the devices do seem to work okay for some other people.
+The cause of the differing behaviors is not known.
+
+In the hope of getting the devices to work for the most users, even at
+the possible cost of degraded performance for some, this patch adds an
+unusual_devs entry for the VL817 to block it from binding to the uas
+driver by default.  Users will be able to override this entry by means
+of a module parameter, if they want.
+
+CC: <stable@vger.kernel.org>
+Reported-by: DocMAX <mail@vacharakis.de>
+Reported-and-tested-by: Thomas Weißschuh <linux@weissschuh.net>
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/Ye8IsK2sjlEv1rqU@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/kernel/nmi.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/usb/storage/unusual_devs.h |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/arch/s390/kernel/nmi.c
-+++ b/arch/s390/kernel/nmi.c
-@@ -273,7 +273,14 @@ static int notrace s390_validate_registe
- 		/* Validate vector registers */
- 		union ctlreg0 cr0;
+--- a/drivers/usb/storage/unusual_devs.h
++++ b/drivers/usb/storage/unusual_devs.h
+@@ -2301,6 +2301,16 @@ UNUSUAL_DEV(  0x2027, 0xa001, 0x0000, 0x
+ 		USB_SC_DEVICE, USB_PR_DEVICE, usb_stor_euscsi_init,
+ 		US_FL_SCM_MULT_TARG ),
  
--		if (!mci.vr) {
-+		/*
-+		 * The vector validity must only be checked if not running a
-+		 * KVM guest. For KVM guests the machine check is forwarded by
-+		 * KVM and it is the responsibility of the guest to take
-+		 * appropriate actions. The host vector or FPU values have been
-+		 * saved by KVM and will be restored by KVM.
-+		 */
-+		if (!mci.vr && !test_cpu_flag(CIF_MCCK_GUEST)) {
- 			/*
- 			 * Vector registers can't be restored. If the kernel
- 			 * currently uses vector registers the system is
++/*
++ * Reported by DocMAX <mail@vacharakis.de>
++ * and Thomas Weißschuh <linux@weissschuh.net>
++ */
++UNUSUAL_DEV( 0x2109, 0x0715, 0x9999, 0x9999,
++		"VIA Labs, Inc.",
++		"VL817 SATA Bridge",
++		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
++		US_FL_IGNORE_UAS),
++
+ UNUSUAL_DEV( 0x2116, 0x0320, 0x0001, 0x0001,
+ 		"ST",
+ 		"2A",
 
 
