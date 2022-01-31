@@ -2,41 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB0DC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA29C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359093AbiAaLK6 (ORCPT
+        id S1359201AbiAaLLD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:10:58 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40980 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348507AbiAaLGb (ORCPT
+        Mon, 31 Jan 2022 06:11:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53620 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348313AbiAaLFo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:06:31 -0500
+        Mon, 31 Jan 2022 06:05:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BBC26104B;
-        Mon, 31 Jan 2022 11:06:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AB5AC36AE3;
-        Mon, 31 Jan 2022 11:06:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2F3BB82A62;
+        Mon, 31 Jan 2022 11:05:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0210C340E8;
+        Mon, 31 Jan 2022 11:05:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627190;
-        bh=i/qDGYIStvA+YTvPwrw5QtUqxP1K+kAf+KVBEzQxREI=;
+        s=korg; t=1643627141;
+        bh=8fNIaFx9lhn2hazd1oRZnR9hgJM4vILphr4g949FZmE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1BosN7zXh58OxuN54z9NnVW7AbWtak0/3Hlz5E4dK1D+RdlGpNwFTH90ZqARKazJG
-         qiVwZUKx+/X1dctg3LCtcq/eU5ILSxrSbILOrN/MMybZIiWnY8t93ezi/NIbfmrMHO
-         BqdIEJLKVHmdRV6Rn0DPv7qMMKcfNAHymZOfcTNM=
+        b=egM2xsFYX2o0/Ij2KVcj6L89RpGmyE8OPOq3vh+PPGD4rCLs3iCgGOvw7PJ1eGfSn
+         2bartePYwsKX9EJk2g8OZmWcLd0oZ2ga5HQR9+E/VxijAl2CWV/wxwyuDvOtRoVa3M
+         qA3ez2kYKwDSLdns0+KOsOiusMAPXlF10bG6UkG0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 073/100] net: phy: broadcom: hook up soft_reset for BCM54616S
-Date:   Mon, 31 Jan 2022 11:56:34 +0100
-Message-Id: <20220131105222.877560759@linuxfoundation.org>
+Subject: [PATCH 5.10 070/100] kernel: delete repeated words in comments
+Date:   Mon, 31 Jan 2022 11:56:31 +0100
+Message-Id: <20220131105222.784795044@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -48,59 +56,170 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit d15c7e875d44367005370e6a82e8f3a382a04f9b ]
+[ Upstream commit c034f48e99907d5be147ac8f0f3e630a9307c2be ]
 
-A problem was encountered with the Bel-Fuse 1GBT-SFP05 SFP module (which
-is a 1 Gbps copper module operating in SGMII mode with an internal
-BCM54616S PHY device) using the Xilinx AXI Ethernet MAC core, where the
-module would work properly on the initial insertion or boot of the
-device, but after the device was rebooted, the link would either only
-come up at 100 Mbps speeds or go up and down erratically.
+Drop repeated words in kernel/events/.
+{if, the, that, with, time}
 
-I found no meaningful changes in the PHY configuration registers between
-the working and non-working boots, but the status registers seemed to
-have a lot of error indications set on the SERDES side of the device on
-the non-working boot. I suspect the problem is that whatever happens on
-the SGMII link when the device is rebooted and the FPGA logic gets
-reloaded ends up putting the module's onboard PHY into a bad state.
+Drop repeated words in kernel/locking/.
+{it, no, the}
 
-Since commit 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
-the genphy_soft_reset call is not made automatically by the PHY core
-unless the callback is explicitly specified in the driver structure. For
-most of these Broadcom devices, there is probably a hardware reset that
-gets asserted to reset the PHY during boot, however for SFP modules
-(where the BCM54616S is commonly found) no such reset line exists, so if
-the board keeps the SFP cage powered up across a reboot, it will end up
-with no reset occurring during reboots.
+Drop repeated words in kernel/sched/.
+{in, not}
 
-Hook up the genphy_soft_reset callback for BCM54616S to ensure that a
-PHY reset is performed before the device is initialized. This appears to
-fix the issue with erratic operation after a reboot with this SFP
-module.
-
-Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lkml.kernel.org/r/20210127023412.26292-1-rdunlap@infradead.org
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Will Deacon <will@kernel.org>	[kernel/locking/]
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/broadcom.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/events/core.c       | 8 ++++----
+ kernel/events/uprobes.c    | 2 +-
+ kernel/locking/rtmutex.c   | 4 ++--
+ kernel/locking/rwsem.c     | 2 +-
+ kernel/locking/semaphore.c | 2 +-
+ kernel/sched/fair.c        | 2 +-
+ kernel/sched/membarrier.c  | 2 +-
+ 7 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index dbed15dc0fe77..644861366d544 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -789,6 +789,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.phy_id_mask	= 0xfffffff0,
- 	.name		= "Broadcom BCM54616S",
- 	/* PHY_GBIT_FEATURES */
-+	.soft_reset     = genphy_soft_reset,
- 	.config_init	= bcm54xx_config_init,
- 	.config_aneg	= bcm54616s_config_aneg,
- 	.ack_interrupt	= bcm_phy_ack_intr,
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index e2d774cc470ee..8dc7c4d12b789 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -266,7 +266,7 @@ static void event_function_call(struct perf_event *event, event_f func, void *da
+ 	if (!event->parent) {
+ 		/*
+ 		 * If this is a !child event, we must hold ctx::mutex to
+-		 * stabilize the the event->ctx relation. See
++		 * stabilize the event->ctx relation. See
+ 		 * perf_event_ctx_lock().
+ 		 */
+ 		lockdep_assert_held(&ctx->mutex);
+@@ -1300,7 +1300,7 @@ static void put_ctx(struct perf_event_context *ctx)
+  * life-time rules separate them. That is an exiting task cannot fork, and a
+  * spawning task cannot (yet) exit.
+  *
+- * But remember that that these are parent<->child context relations, and
++ * But remember that these are parent<->child context relations, and
+  * migration does not affect children, therefore these two orderings should not
+  * interact.
+  *
+@@ -1439,7 +1439,7 @@ static u64 primary_event_id(struct perf_event *event)
+ /*
+  * Get the perf_event_context for a task and lock it.
+  *
+- * This has to cope with with the fact that until it is locked,
++ * This has to cope with the fact that until it is locked,
+  * the context could get moved to another task.
+  */
+ static struct perf_event_context *
+@@ -2492,7 +2492,7 @@ static void perf_set_shadow_time(struct perf_event *event,
+ 	 * But this is a bit hairy.
+ 	 *
+ 	 * So instead, we have an explicit cgroup call to remain
+-	 * within the time time source all along. We believe it
++	 * within the time source all along. We believe it
+ 	 * is cleaner and simpler to understand.
+ 	 */
+ 	if (is_cgroup_event(event))
+diff --git a/kernel/events/uprobes.c b/kernel/events/uprobes.c
+index 00b0358739ab3..e1bbb3b92921d 100644
+--- a/kernel/events/uprobes.c
++++ b/kernel/events/uprobes.c
+@@ -1735,7 +1735,7 @@ void uprobe_free_utask(struct task_struct *t)
+ }
+ 
+ /*
+- * Allocate a uprobe_task object for the task if if necessary.
++ * Allocate a uprobe_task object for the task if necessary.
+  * Called when the thread hits a breakpoint.
+  *
+  * Returns:
+diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
+index 2f8cd616d3b29..f00dd928fc711 100644
+--- a/kernel/locking/rtmutex.c
++++ b/kernel/locking/rtmutex.c
+@@ -1438,7 +1438,7 @@ rt_mutex_fasttrylock(struct rt_mutex *lock,
+ }
+ 
+ /*
+- * Performs the wakeup of the the top-waiter and re-enables preemption.
++ * Performs the wakeup of the top-waiter and re-enables preemption.
+  */
+ void rt_mutex_postunlock(struct wake_q_head *wake_q)
+ {
+@@ -1832,7 +1832,7 @@ struct task_struct *rt_mutex_next_owner(struct rt_mutex *lock)
+  *			been started.
+  * @waiter:		the pre-initialized rt_mutex_waiter
+  *
+- * Wait for the the lock acquisition started on our behalf by
++ * Wait for the lock acquisition started on our behalf by
+  * rt_mutex_start_proxy_lock(). Upon failure, the caller must call
+  * rt_mutex_cleanup_proxy_lock().
+  *
+diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
+index a163542d178ee..cc5cc889b5b7f 100644
+--- a/kernel/locking/rwsem.c
++++ b/kernel/locking/rwsem.c
+@@ -1177,7 +1177,7 @@ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
+ 
+ 		/*
+ 		 * If there were already threads queued before us and:
+-		 *  1) there are no no active locks, wake the front
++		 *  1) there are no active locks, wake the front
+ 		 *     queued process(es) as the handoff bit might be set.
+ 		 *  2) there are no active writers and some readers, the lock
+ 		 *     must be read owned; so we try to wake any read lock
+diff --git a/kernel/locking/semaphore.c b/kernel/locking/semaphore.c
+index d9dd94defc0a9..9aa855a96c4ae 100644
+--- a/kernel/locking/semaphore.c
++++ b/kernel/locking/semaphore.c
+@@ -119,7 +119,7 @@ EXPORT_SYMBOL(down_killable);
+  * @sem: the semaphore to be acquired
+  *
+  * Try to acquire the semaphore atomically.  Returns 0 if the semaphore has
+- * been acquired successfully or 1 if it it cannot be acquired.
++ * been acquired successfully or 1 if it cannot be acquired.
+  *
+  * NOTE: This return value is inverted from both spin_trylock and
+  * mutex_trylock!  Be careful about this when converting code.
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 2a33cb5a10e59..8d2f238fdd2ac 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -5149,7 +5149,7 @@ static void do_sched_cfs_slack_timer(struct cfs_bandwidth *cfs_b)
+ /*
+  * When a group wakes up we want to make sure that its quota is not already
+  * expired/exceeded, otherwise it may be allowed to steal additional ticks of
+- * runtime as update_curr() throttling can not not trigger until it's on-rq.
++ * runtime as update_curr() throttling can not trigger until it's on-rq.
+  */
+ static void check_enqueue_throttle(struct cfs_rq *cfs_rq)
+ {
+diff --git a/kernel/sched/membarrier.c b/kernel/sched/membarrier.c
+index 4d4dd349c05be..cc7cd512e4e33 100644
+--- a/kernel/sched/membarrier.c
++++ b/kernel/sched/membarrier.c
+@@ -316,7 +316,7 @@ static int sync_runqueues_membarrier_state(struct mm_struct *mm)
+ 
+ 	/*
+ 	 * For each cpu runqueue, if the task's mm match @mm, ensure that all
+-	 * @mm's membarrier state set bits are also set in in the runqueue's
++	 * @mm's membarrier state set bits are also set in the runqueue's
+ 	 * membarrier state. This ensures that a runqueue scheduling
+ 	 * between threads which are users of @mm has its membarrier state
+ 	 * updated.
 -- 
 2.34.1
 
