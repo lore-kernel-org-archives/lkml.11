@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14731C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8251EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377811AbiAaLdf (ORCPT
+        id S1377890AbiAaLdm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:33:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56104 "EHLO
+        Mon, 31 Jan 2022 06:33:42 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56172 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377735AbiAaLXR (ORCPT
+        with ESMTP id S1377819AbiAaLX0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:23:17 -0500
+        Mon, 31 Jan 2022 06:23:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9A7F6125A;
-        Mon, 31 Jan 2022 11:23:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B40B7C340E8;
-        Mon, 31 Jan 2022 11:23:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44A5161257;
+        Mon, 31 Jan 2022 11:23:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27224C340E8;
+        Mon, 31 Jan 2022 11:23:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628196;
-        bh=MdEWgjRKDfc9GzOB4w6Dt4/YiyXxToHdfVqILfT/0eE=;
+        s=korg; t=1643628205;
+        bh=02YNfxBTAXGk1kudiryNLknHRfDdaEviTnNWVcDeb3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wwPJujxxv6JJmqiGRYqriDRH9zK19nHjviaUIHNRKGLJt7OEeDETLvIga34ut11lM
-         GMxkvO3Mvdrg0Evk/BFYvx2xkhQeUWRXyb7CF1fVU8m1YHqb8xIJC4lxY1UxO1xX57
-         L4hiIRNxDpqiKqB4tTxCUiKTITYH4VJVF+evKN68=
+        b=gIcsMstJ2VHvd6mtRxJRnEpQ5v3htCjmaSreaE1lLSAsv0urXSppQAl6PQCmc5/b5
+         2H2W7g1tivP2IYpEuTK2V5At8kDkyrCvel3Kk8GaI8/HNiS7ZIzns/7clTUSovCIW6
+         Kio9zqnazAJ89PougbHh0eTB9svACzhlFQ/3lbrk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        Yanming Liu <yanminglr@gmail.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 155/200] Drivers: hv: balloon: account for vmbus packet header in max_pkt_size
-Date:   Mon, 31 Jan 2022 11:56:58 +0100
-Message-Id: <20220131105238.770439085@linuxfoundation.org>
+        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 158/200] hwmon: (lm90) Fix sysfs and udev notifications
+Date:   Mon, 31 Jan 2022 11:57:01 +0100
+Message-Id: <20220131105238.871005763@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -49,56 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yanming Liu <yanminglr@gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit 96d9d1fa5cd505078534113308ced0aa56d8da58 ]
+[ Upstream commit d379880d9adb9f1ada3f1266aa49ea2561328e08 ]
 
-Commit adae1e931acd ("Drivers: hv: vmbus: Copy packets sent by Hyper-V
-out of the ring buffer") introduced a notion of maximum packet size in
-vmbus channel and used that size to initialize a buffer holding all
-incoming packet along with their vmbus packet header. hv_balloon uses
-the default maximum packet size VMBUS_DEFAULT_MAX_PKT_SIZE which matches
-its maximum message size, however vmbus_open expects this size to also
-include vmbus packet header. This leads to 4096 bytes
-dm_unballoon_request messages being truncated to 4080 bytes. When the
-driver tries to read next packet it starts from a wrong read_index,
-receives garbage and prints a lot of "Unhandled message: type:
-<garbage>" in dmesg.
+sysfs and udev notifications need to be sent to the _alarm
+attributes, not to the value attributes.
 
-Allocate the buffer with HV_HYP_PAGE_SIZE more bytes to make room for
-the header.
-
-Fixes: adae1e931acd ("Drivers: hv: vmbus: Copy packets sent by Hyper-V out of the ring buffer")
-Suggested-by: Michael Kelley (LINUX) <mikelley@microsoft.com>
-Suggested-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Signed-off-by: Yanming Liu <yanminglr@gmail.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Link: https://lore.kernel.org/r/20220119202052.3006981-1-yanminglr@gmail.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Fixes: 94dbd23ed88c ("hwmon: (lm90) Use hwmon_notify_event()")
+Cc: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/hv_balloon.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/hwmon/lm90.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
-index ca873a3b98dbe..f2d05bff42453 100644
---- a/drivers/hv/hv_balloon.c
-+++ b/drivers/hv/hv_balloon.c
-@@ -1660,6 +1660,13 @@ static int balloon_connect_vsp(struct hv_device *dev)
- 	unsigned long t;
- 	int ret;
+diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
+index ba01127c1deb1..1c9493c708132 100644
+--- a/drivers/hwmon/lm90.c
++++ b/drivers/hwmon/lm90.c
+@@ -1808,22 +1808,22 @@ static bool lm90_is_tripped(struct i2c_client *client, u16 *status)
  
-+	/*
-+	 * max_pkt_size should be large enough for one vmbus packet header plus
-+	 * our receive buffer size. Hyper-V sends messages up to
-+	 * HV_HYP_PAGE_SIZE bytes long on balloon channel.
-+	 */
-+	dev->channel->max_pkt_size = HV_HYP_PAGE_SIZE * 2;
-+
- 	ret = vmbus_open(dev->channel, dm_ring_size, dm_ring_size, NULL, 0,
- 			 balloon_onchannelcallback, dev);
- 	if (ret)
+ 	if (st & LM90_STATUS_LLOW)
+ 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+-				   hwmon_temp_min, 0);
++				   hwmon_temp_min_alarm, 0);
+ 	if (st & LM90_STATUS_RLOW)
+ 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+-				   hwmon_temp_min, 1);
++				   hwmon_temp_min_alarm, 1);
+ 	if (st2 & MAX6696_STATUS2_R2LOW)
+ 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+-				   hwmon_temp_min, 2);
++				   hwmon_temp_min_alarm, 2);
+ 	if (st & LM90_STATUS_LHIGH)
+ 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+-				   hwmon_temp_max, 0);
++				   hwmon_temp_max_alarm, 0);
+ 	if (st & LM90_STATUS_RHIGH)
+ 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+-				   hwmon_temp_max, 1);
++				   hwmon_temp_max_alarm, 1);
+ 	if (st2 & MAX6696_STATUS2_R2HIGH)
+ 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+-				   hwmon_temp_max, 2);
++				   hwmon_temp_max_alarm, 2);
+ 
+ 	return true;
+ }
 -- 
 2.34.1
 
