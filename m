@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE19C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC879C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358804AbiAaLCf (ORCPT
+        id S1348648AbiAaLDV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:02:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34148 "EHLO
+        Mon, 31 Jan 2022 06:03:21 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34528 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358768AbiAaLBY (ORCPT
+        with ESMTP id S1358809AbiAaLBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:01:24 -0500
+        Mon, 31 Jan 2022 06:01:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F27F60E83;
-        Mon, 31 Jan 2022 11:01:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC1A1C340E8;
-        Mon, 31 Jan 2022 11:01:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A454A60B2C;
+        Mon, 31 Jan 2022 11:01:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79602C340E8;
+        Mon, 31 Jan 2022 11:01:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626883;
-        bh=O8hN4RHA2dNA3i8vREGTpfrzZsh7MozUKG5wA36Ztw0=;
+        s=korg; t=1643626899;
+        bh=RlAyw1yro2XvdUgx7Zcqs3E/pvyLS4SrAYRZUEphfIw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MNG7HaeYmrX9tIMNYAiTOOxpPPMu667c2dNw3BUKZzwyKD1lppPe1z2EqnQ3zGUNX
-         5mUl8eESWGzJeI+dug4Ov8wYjrO759evhGY3QWV65ItNBI21LAd6Pw6pPxABagdjDT
-         unbb4u2DnMLFIi3uTc7o8icNJlnvq99KPeIMtUx8=
+        b=z/1Y/TocN0gRZ7ZmNoPJ0tzJvajHC7UFfuUQkAiS3uMcew3N88PN45xBTLC/uGOFS
+         olbD8l8pO3rFiVV05aRVxgHl2f+0itQEnN21284Ds+DA6yv+JbI/20Iol6ICF5sJyh
+         /f5QeTymU3qG0nhBH8mDCmzlH7xnct5U4rJ5m6eY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 43/64] drm/msm: Fix wrong size calculation
-Date:   Mon, 31 Jan 2022 11:56:28 +0100
-Message-Id: <20220131105217.138108037@linuxfoundation.org>
+        stable@vger.kernel.org, Jeremy Kerr <jk@ozlabs.org>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Aditya Garg <gargaditya08@live.com>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: [PATCH 5.10 011/100] efi: runtime: avoid EFIv2 runtime services on Apple x86 machines
+Date:   Mon, 31 Jan 2022 11:55:32 +0100
+Message-Id: <20220131105220.835281614@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
-References: <20220131105215.644174521@linuxfoundation.org>
+In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
+References: <20220131105220.424085452@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,42 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit 0a727b459ee39bd4c5ced19d6024258ac87b6b2e upstream.
+commit f5390cd0b43c2e54c7cf5506c7da4a37c5cef746 upstream.
 
-For example, memory-region in .dts as below,
-	reg = <0x0 0x50000000 0x0 0x20000000>
+Aditya reports [0] that his recent MacbookPro crashes in the firmware
+when using the variable services at runtime. The culprit appears to be a
+call to QueryVariableInfo(), which we did not use to call on Apple x86
+machines in the past as they only upgraded from EFI v1.10 to EFI v2.40
+firmware fairly recently, and QueryVariableInfo() (along with
+UpdateCapsule() et al) was added in EFI v2.00.
 
-We can get below values,
-struct resource r;
-r.start = 0x50000000;
-r.end	= 0x6fffffff;
+The only runtime service introduced in EFI v2.00 that we actually use in
+Linux is QueryVariableInfo(), as the capsule based ones are optional,
+generally not used at runtime (all the LVFS/fwupd firmware update
+infrastructure uses helper EFI programs that invoke capsule update at
+boot time, not runtime), and not implemented by Apple machines in the
+first place. QueryVariableInfo() is used to 'safely' set variables,
+i.e., only when there is enough space. This prevents machines with buggy
+firmwares from corrupting their NVRAMs when they run out of space.
 
-So the size should be:
-size = r.end - r.start + 1 = 0x20000000
+Given that Apple machines have been using EFI v1.10 services only for
+the longest time (the EFI v2.0 spec was released in 2006, and Linux
+support for the newly introduced runtime services was added in 2011, but
+the MacbookPro12,1 released in 2015 still claims to be EFI v1.10 only),
+let's avoid the EFI v2.0 ones on all Apple x86 machines.
 
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Fixes: 072f1f9168ed ("drm/msm: add support for "stolen" mem")
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220112123334.749776-1-xianting.tian@linux.alibaba.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+[0] https://lore.kernel.org/all/6D757C75-65B1-468B-842D-10410081A8E4@live.com/
+
+Cc: <stable@vger.kernel.org>
+Cc: Jeremy Kerr <jk@ozlabs.org>
+Cc: Matthew Garrett <mjg59@srcf.ucam.org>
+Reported-by: Aditya Garg <gargaditya08@live.com>
+Tested-by: Orlando Chamberlain <redecorating@protonmail.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Aditya Garg <gargaditya08@live.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215277
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_drv.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/firmware/efi/efi.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -337,7 +337,7 @@ static int msm_init_vram(struct drm_devi
- 		of_node_put(node);
- 		if (ret)
- 			return ret;
--		size = r.end - r.start;
-+		size = r.end - r.start + 1;
- 		DRM_INFO("using VRAM carveout: %lx@%pa\n", size, &r.start);
+--- a/drivers/firmware/efi/efi.c
++++ b/drivers/firmware/efi/efi.c
+@@ -719,6 +719,13 @@ void __init efi_systab_report_header(con
+ 		systab_hdr->revision >> 16,
+ 		systab_hdr->revision & 0xffff,
+ 		vendor);
++
++	if (IS_ENABLED(CONFIG_X86_64) &&
++	    systab_hdr->revision > EFI_1_10_SYSTEM_TABLE_REVISION &&
++	    !strcmp(vendor, "Apple")) {
++		pr_info("Apple Mac detected, using EFI v1.10 runtime services only\n");
++		efi.runtime_version = EFI_1_10_SYSTEM_TABLE_REVISION;
++	}
+ }
  
- 		/* if we have no IOMMU, then we need to use carveout allocator.
+ static __initdata char memory_type_name[][13] = {
 
 
