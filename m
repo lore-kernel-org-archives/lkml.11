@@ -2,152 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0A5C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E65A2C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379546AbiAaLjN (ORCPT
+        id S1379568AbiAaLjP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:39:13 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:56750 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378790AbiAaL3N (ORCPT
+        Mon, 31 Jan 2022 06:39:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378754AbiAaL3F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:29:13 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 31 Jan 2022 06:29:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F5CC0613E9;
+        Mon, 31 Jan 2022 03:18:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D2EE61F381;
-        Mon, 31 Jan 2022 11:29:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643628551; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zPNgT+q/xCKlHkk0NSxMXUpAG7WHosAzjep0b1A8ezM=;
-        b=lKSXmvHjOIOlrrCXwbW4K0iLQAck2LuyaNX6qflNmUAeoSr7BL5hii9qNzgMhsPfIMtOHU
-        WPdoKeGRitFIxnG8yMQDhoWwKWtIiIsCFhshk6NsrDTw047ub768uwI4yOgjKshSFnzNMz
-        VXExSJzB0ijMPhL+RVX/zuPaXve6UBs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643628551;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zPNgT+q/xCKlHkk0NSxMXUpAG7WHosAzjep0b1A8ezM=;
-        b=jjVPeQGL8OIm5kTWIXgqdb+cNASKA4AuzhPOxpzJ6YIwDwRFvTjEwnjihZ5lp7phyQVaKF
-        Nw7A01/hvRTWRWAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3D74413C23;
-        Mon, 31 Jan 2022 11:29:11 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id lDF5CwfI92EZTgAAMHmgww
-        (envelope-from <osalvador@suse.de>); Mon, 31 Jan 2022 11:29:11 +0000
-Date:   Mon, 31 Jan 2022 12:29:09 +0100
-From:   Oscar Salvador <osalvador@suse.de>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Rafael Parra <rparrazo@redhat.com>
-Subject: Re: [PATCH v1 2/2] drivers/base/memory: determine and store zone for
- single-zone memory blocks
-Message-ID: <20220131112909.GB18027@linux>
-References: <20220128152620.168715-1-david@redhat.com>
- <20220128152620.168715-3-david@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41119B82A61;
+        Mon, 31 Jan 2022 11:18:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68676C340E8;
+        Mon, 31 Jan 2022 11:18:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643627884;
+        bh=3r11YKvFLd98zKbcMgGZsptqi5YqBn2ob50MhchgOx4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eudU5boxAKPh0DyVYD5GaBjbnZ8Z11D+vwsXkWdte/9vntpJYNjpwjYg/OxPvA9Rb
+         JjTEnIlpwPEdOUnmJeItuG/9SXSj9r3z61ib38n8lRM4kltTYrnyVSCEXxjyf8O61e
+         tLTJ15ix9hgjpLyJE82orNc0OMu7vE1PyUgEccLY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 054/200] KVM: x86: Forcibly leave nested virt when SMM state is toggled
+Date:   Mon, 31 Jan 2022 11:55:17 +0100
+Message-Id: <20220131105235.391097746@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128152620.168715-3-david@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 04:26:20PM +0100, David Hildenbrand wrote:
-> For memory hot(un)plug, we only really care about memory blocks that:
-> * span a single zone (and, thereby, a single node)
-> * are completely System RAM (IOW, no holes, no ZONE_DEVICE)
-> If one of these conditions is not met, we reject memory offlining.
-> Hotplugged memory blocks (starting out offline), always meet both
-> conditions.
+From: Sean Christopherson <seanjc@google.com>
 
-This has been always hard for me to follow, so bear with me.
+commit f7e570780efc5cec9b2ed1e0472a7da14e864fdb upstream.
 
-I remember we changed the memory-hotplug policy, not long ago, wrt.
-what we can online/offline so we could get rid of certain assumptions like
-"there are no holes in this memblock, so it can go" etc.
+Forcibly leave nested virtualization operation if userspace toggles SMM
+state via KVM_SET_VCPU_EVENTS or KVM_SYNC_X86_EVENTS.  If userspace
+forces the vCPU out of SMM while it's post-VMXON and then injects an SMI,
+vmx_enter_smm() will overwrite vmx->nested.smm.vmxon and end up with both
+vmxon=false and smm.vmxon=false, but all other nVMX state allocated.
 
-AFAIR, we can only offline if the memory
+Don't attempt to gracefully handle the transition as (a) most transitions
+are nonsencial, e.g. forcing SMM while L2 is running, (b) there isn't
+sufficient information to handle all transitions, e.g. SVM wants access
+to the SMRAM save state, and (c) KVM_SET_VCPU_EVENTS must precede
+KVM_SET_NESTED_STATE during state restore as the latter disallows putting
+the vCPU into L2 if SMM is active, and disallows tagging the vCPU as
+being post-VMXON in SMM if SMM is not active.
 
-1) belongs to a single node ("which is always the case for
-   hotplugged-memory, boot memory is trickier")
-2) does not have any holes
-3) spans a single zone
+Abuse of KVM_SET_VCPU_EVENTS manifests as a WARN and memory leak in nVMX
+due to failure to free vmcs01's shadow VMCS, but the bug goes far beyond
+just a memory leak, e.g. toggling SMM on while L2 is active puts the vCPU
+in an architecturally impossible state.
 
-These are the only requeriments we have atm, right?
+  WARNING: CPU: 0 PID: 3606 at free_loaded_vmcs arch/x86/kvm/vmx/vmx.c:2665 [inline]
+  WARNING: CPU: 0 PID: 3606 at free_loaded_vmcs+0x158/0x1a0 arch/x86/kvm/vmx/vmx.c:2656
+  Modules linked in:
+  CPU: 1 PID: 3606 Comm: syz-executor725 Not tainted 5.17.0-rc1-syzkaller #0
+  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+  RIP: 0010:free_loaded_vmcs arch/x86/kvm/vmx/vmx.c:2665 [inline]
+  RIP: 0010:free_loaded_vmcs+0x158/0x1a0 arch/x86/kvm/vmx/vmx.c:2656
+  Code: <0f> 0b eb b3 e8 8f 4d 9f 00 e9 f7 fe ff ff 48 89 df e8 92 4d 9f 00
+  Call Trace:
+   <TASK>
+   kvm_arch_vcpu_destroy+0x72/0x2f0 arch/x86/kvm/x86.c:11123
+   kvm_vcpu_destroy arch/x86/kvm/../../../virt/kvm/kvm_main.c:441 [inline]
+   kvm_destroy_vcpus+0x11f/0x290 arch/x86/kvm/../../../virt/kvm/kvm_main.c:460
+   kvm_free_vcpus arch/x86/kvm/x86.c:11564 [inline]
+   kvm_arch_destroy_vm+0x2e8/0x470 arch/x86/kvm/x86.c:11676
+   kvm_destroy_vm arch/x86/kvm/../../../virt/kvm/kvm_main.c:1217 [inline]
+   kvm_put_kvm+0x4fa/0xb00 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1250
+   kvm_vm_release+0x3f/0x50 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1273
+   __fput+0x286/0x9f0 fs/file_table.c:311
+   task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+   exit_task_work include/linux/task_work.h:32 [inline]
+   do_exit+0xb29/0x2a30 kernel/exit.c:806
+   do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+   get_signal+0x4b0/0x28c0 kernel/signal.c:2862
+   arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
+   handle_signal_work kernel/entry/common.c:148 [inline]
+   exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+   exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
+   __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+   syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+   do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
 
-By default, hotplugged memory already complies with they all three,
-only in case of ZONE_DEVICE stuff we might violate 2) and 3).
+Cc: stable@vger.kernel.org
+Reported-by: syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220125220358.2091737-1-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/include/asm/kvm_host.h |    1 +
+ arch/x86/kvm/svm/nested.c       |    9 +++++----
+ arch/x86/kvm/svm/svm.c          |    2 +-
+ arch/x86/kvm/svm/svm.h          |    2 +-
+ arch/x86/kvm/vmx/nested.c       |    1 +
+ arch/x86/kvm/x86.c              |    4 +++-
+ 6 files changed, 12 insertions(+), 7 deletions(-)
 
-> There are three scenarios to handle:
-...
-...
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1497,6 +1497,7 @@ struct kvm_x86_ops {
+ };
+ 
+ struct kvm_x86_nested_ops {
++	void (*leave_nested)(struct kvm_vcpu *vcpu);
+ 	int (*check_events)(struct kvm_vcpu *vcpu);
+ 	bool (*hv_timer_pending)(struct kvm_vcpu *vcpu);
+ 	void (*triple_fault)(struct kvm_vcpu *vcpu);
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -964,9 +964,9 @@ void svm_free_nested(struct vcpu_svm *sv
+ /*
+  * Forcibly leave nested mode in order to be able to reset the VCPU later on.
+  */
+-void svm_leave_nested(struct vcpu_svm *svm)
++void svm_leave_nested(struct kvm_vcpu *vcpu)
+ {
+-	struct kvm_vcpu *vcpu = &svm->vcpu;
++	struct vcpu_svm *svm = to_svm(vcpu);
+ 
+ 	if (is_guest_mode(vcpu)) {
+ 		svm->nested.nested_run_pending = 0;
+@@ -1345,7 +1345,7 @@ static int svm_set_nested_state(struct k
+ 		return -EINVAL;
+ 
+ 	if (!(kvm_state->flags & KVM_STATE_NESTED_GUEST_MODE)) {
+-		svm_leave_nested(svm);
++		svm_leave_nested(vcpu);
+ 		svm_set_gif(svm, !!(kvm_state->flags & KVM_STATE_NESTED_GIF_SET));
+ 		return 0;
+ 	}
+@@ -1410,7 +1410,7 @@ static int svm_set_nested_state(struct k
+ 	 */
+ 
+ 	if (is_guest_mode(vcpu))
+-		svm_leave_nested(svm);
++		svm_leave_nested(vcpu);
+ 	else
+ 		svm->nested.vmcb02.ptr->save = svm->vmcb01.ptr->save;
+ 
+@@ -1464,6 +1464,7 @@ static bool svm_get_nested_state_pages(s
+ }
+ 
+ struct kvm_x86_nested_ops svm_nested_ops = {
++	.leave_nested = svm_leave_nested,
+ 	.check_events = svm_check_nested_events,
+ 	.triple_fault = nested_svm_triple_fault,
+ 	.get_nested_state_pages = svm_get_nested_state_pages,
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -290,7 +290,7 @@ int svm_set_efer(struct kvm_vcpu *vcpu,
+ 
+ 	if ((old_efer & EFER_SVME) != (efer & EFER_SVME)) {
+ 		if (!(efer & EFER_SVME)) {
+-			svm_leave_nested(svm);
++			svm_leave_nested(vcpu);
+ 			svm_set_gif(svm, true);
+ 			/* #GP intercept is still needed for vmware backdoor */
+ 			if (!enable_vmware_backdoor)
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -470,7 +470,7 @@ static inline bool nested_exit_on_nmi(st
+ 
+ int enter_svm_guest_mode(struct kvm_vcpu *vcpu,
+ 			 u64 vmcb_gpa, struct vmcb *vmcb12, bool from_vmrun);
+-void svm_leave_nested(struct vcpu_svm *svm);
++void svm_leave_nested(struct kvm_vcpu *vcpu);
+ void svm_free_nested(struct vcpu_svm *svm);
+ int svm_allocate_nested(struct vcpu_svm *svm);
+ int nested_svm_vmrun(struct kvm_vcpu *vcpu);
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -6744,6 +6744,7 @@ __init int nested_vmx_hardware_setup(int
+ }
+ 
+ struct kvm_x86_nested_ops vmx_nested_ops = {
++	.leave_nested = vmx_leave_nested,
+ 	.check_events = vmx_check_nested_events,
+ 	.hv_timer_pending = nested_vmx_preemption_timer_pending,
+ 	.triple_fault = nested_vmx_triple_fault,
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4784,8 +4784,10 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_e
+ 		vcpu->arch.apic->sipi_vector = events->sipi_vector;
+ 
+ 	if (events->flags & KVM_VCPUEVENT_VALID_SMM) {
+-		if (!!(vcpu->arch.hflags & HF_SMM_MASK) != events->smi.smm)
++		if (!!(vcpu->arch.hflags & HF_SMM_MASK) != events->smi.smm) {
++			kvm_x86_ops.nested_ops->leave_nested(vcpu);
+ 			kvm_smm_changed(vcpu, events->smi.smm);
++		}
+ 
+ 		vcpu->arch.smi_pending = events->smi.pending;
+ 
 
-> @@ -225,6 +226,9 @@ static int memory_block_offline(struct memory_block *mem)
->  	unsigned long nr_vmemmap_pages = mem->nr_vmemmap_pages;
->  	int ret;
->  
-> +	if (!mem->zone)
-> +		return -EBUSY;
 
-Should not we return -EINVAL? I mean, -EBUSY reads like this might be a
-temporary error which might get fixed later on, but that isn't the case.
-
-> @@ -234,7 +238,7 @@ static int memory_block_offline(struct memory_block *mem)
->  					  -nr_vmemmap_pages);
->  
->  	ret = offline_pages(start_pfn + nr_vmemmap_pages,
-> -			    nr_pages - nr_vmemmap_pages, mem->group);
-> +			    nr_pages - nr_vmemmap_pages, mem->zone, mem->group);
-
-Why not passing the node as well? 
-
-> +static struct zone *early_node_zone_for_memory_block(struct memory_block *mem,
-> +						     int nid)
-> +{
-> +	const unsigned long start_pfn = section_nr_to_pfn(mem->start_section_nr);
-> +	const unsigned long nr_pages = PAGES_PER_SECTION * sections_per_block;
-> +	struct zone *zone, *matching_zone = NULL;
-> +	pg_data_t *pgdat = NODE_DATA(nid);
-
-I was about to complain because in init_memory_block() you call
-early_node_zone_for_memory_block() with nid == NUMA_NODE_NODE, but then
-I saw that NODE_DATA on !CONFIG_NUMA falls to contig_page_data.
-So, I guess we cannot really reach this on CONFIG_NUMA machines with nid
-being NUMA_NO_NODE, right? (do we want to add a check just in case?)
-
-> +#ifdef CONFIG_NUMA
-> +void memory_block_set_nid(struct memory_block *mem, int nid,
-> +			  enum meminit_context context)
-
-But we also set the zone? (Only for boot memory)
-
-> @@ -663,6 +734,17 @@ static int init_memory_block(unsigned long block_id, unsigned long state,
->  	mem->nr_vmemmap_pages = nr_vmemmap_pages;
->  	INIT_LIST_HEAD(&mem->group_next);
->  
-> +#ifndef CONFIG_NUMA
-> +	if (state == MEM_ONLINE)
-> +		/*
-> +		 * MEM_ONLINE at this point imples early memory. With NUMA,
-                                            implies
-
-
--- 
-Oscar Salvador
-SUSE Labs
