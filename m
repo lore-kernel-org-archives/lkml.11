@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B43C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B046C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377339AbiAaLSD (ORCPT
+        id S1377403AbiAaLSM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:18:03 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57770 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377535AbiAaLKL (ORCPT
+        Mon, 31 Jan 2022 06:18:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377587AbiAaLKN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:11 -0500
+        Mon, 31 Jan 2022 06:10:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C035C06175A;
+        Mon, 31 Jan 2022 03:10:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36345B82A59;
-        Mon, 31 Jan 2022 11:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B2E3C340EF;
-        Mon, 31 Jan 2022 11:10:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE8EE60B98;
+        Mon, 31 Jan 2022 11:10:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D62C340E8;
+        Mon, 31 Jan 2022 11:10:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627409;
-        bh=GQCI7RBVW0ex3uiYAQNe3UR52tlP5on/Kt1jiANIWBE=;
+        s=korg; t=1643627403;
+        bh=V85WzOgCwLckSgV8LMDwMMvpDSkvj/dQx6sx28b70qM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y8km3tBCIw+JELKof+VctBasdco0wYPzz6E5eszajXrkNnGDPgdwNyK+LufQuxMwz
-         iQJU1I1xlKh3xxXz1ZKXqrGoO9TmFzFiis4i5JLmkS7VLKBx+NZXNo5rAYrp9ul1sV
-         mu3giXiamSmKt9Ka/Mltx9TbERUp9wipT94YkLfw=
+        b=YCIlR5SJzVomQ0n3jM81x/oUZ5HrV75lFP2uL9Y5ztj/VXHq3rxrs2KPxBUrstCl5
+         TpzDYK+DGpMcHoRTve2v6AWGRibpUJKM3H1iAv0anDQYve6g4+qCchT9/s0E1KHWts
+         uMnVMyfJnn6QkxS6+bE39yrWfTT05RNNNlyABUEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 075/171] i40e: Increase delay to 1 s after global EMP reset
-Date:   Mon, 31 Jan 2022 11:55:40 +0100
-Message-Id: <20220131105232.580384291@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 073/171] powerpc/32s: Fix kasan_init_region() for KASAN
+Date:   Mon, 31 Jan 2022 11:55:38 +0100
+Message-Id: <20220131105232.501856804@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -49,47 +50,195 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 9b13bd53134c9ddd544a790125199fdbdb505e67 upstream.
+commit d37823c3528e5e0705fc7746bcbc2afffb619259 upstream.
 
-Recently simplified i40e_rebuild causes that FW sometimes
-is not ready after NVM update, the ping does not return.
+It has been reported some configuration where the kernel doesn't
+boot with KASAN enabled.
 
-Increase the delay in case of EMP reset.
-Old delay of 300 ms was introduced for specific cards for 710 series.
-Now it works for all the cards and delay was increased.
+This is due to wrong BAT allocation for the KASAN area:
 
-Fixes: 1fa51a650e1d ("i40e: Add delay after EMP reset for firmware to recover")
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+	---[ Data Block Address Translation ]---
+	0: 0xc0000000-0xcfffffff 0x00000000       256M Kernel rw      m
+	1: 0xd0000000-0xdfffffff 0x10000000       256M Kernel rw      m
+	2: 0xe0000000-0xefffffff 0x20000000       256M Kernel rw      m
+	3: 0xf8000000-0xf9ffffff 0x2a000000        32M Kernel rw      m
+	4: 0xfa000000-0xfdffffff 0x2c000000        64M Kernel rw      m
+
+A BAT must have both virtual and physical addresses alignment matching
+the size of the BAT. This is not the case for BAT 4 above.
+
+Fix kasan_init_region() by using block_size() function that is in
+book3s32/mmu.c. To be able to reuse it here, make it non static and
+change its name to bat_block_size() in order to avoid name conflict
+with block_size() defined in <linux/blkdev.h>
+
+Also reuse find_free_bat() to avoid an error message from setbat()
+when no BAT is available.
+
+And allocate memory outside of linear memory mapping to avoid
+wasting that precious space.
+
+With this change we get correct alignment for BATs and KASAN shadow
+memory is allocated outside the linear memory space.
+
+	---[ Data Block Address Translation ]---
+	0: 0xc0000000-0xcfffffff 0x00000000       256M Kernel rw
+	1: 0xd0000000-0xdfffffff 0x10000000       256M Kernel rw
+	2: 0xe0000000-0xefffffff 0x20000000       256M Kernel rw
+	3: 0xf8000000-0xfbffffff 0x7c000000        64M Kernel rw
+	4: 0xfc000000-0xfdffffff 0x7a000000        32M Kernel rw
+
+Fixes: 7974c4732642 ("powerpc/32s: Implement dedicated kasan_init_region()")
+Cc: stable@vger.kernel.org
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Tested-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/7a50ef902494d1325227d47d33dada01e52e5518.1641818726.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ arch/powerpc/include/asm/book3s/32/mmu-hash.h |    2 
+ arch/powerpc/mm/book3s32/mmu.c                |   10 ++--
+ arch/powerpc/mm/kasan/book3s_32.c             |   57 +++++++++++++-------------
+ 3 files changed, 37 insertions(+), 32 deletions(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -10574,15 +10574,9 @@ static void i40e_rebuild(struct i40e_pf
- 	}
- 	i40e_get_oem_version(&pf->hw);
+--- a/arch/powerpc/include/asm/book3s/32/mmu-hash.h
++++ b/arch/powerpc/include/asm/book3s/32/mmu-hash.h
+@@ -143,6 +143,8 @@ static __always_inline void update_user_
+ 	update_user_segment(15, val);
+ }
  
--	if (test_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state) &&
--	    ((hw->aq.fw_maj_ver == 4 && hw->aq.fw_min_ver <= 33) ||
--	     hw->aq.fw_maj_ver < 4) && hw->mac.type == I40E_MAC_XL710) {
--		/* The following delay is necessary for 4.33 firmware and older
--		 * to recover after EMP reset. 200 ms should suffice but we
--		 * put here 300 ms to be sure that FW is ready to operate
--		 * after reset.
--		 */
--		mdelay(300);
-+	if (test_and_clear_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state)) {
-+		/* The following delay is necessary for firmware update. */
-+		mdelay(1000);
- 	}
++int __init find_free_bat(void);
++unsigned int bat_block_size(unsigned long base, unsigned long top);
+ #endif /* !__ASSEMBLY__ */
  
- 	/* re-verify the eeprom if we just had an EMP reset */
+ /* We happily ignore the smaller BATs on 601, we don't actually use
+--- a/arch/powerpc/mm/book3s32/mmu.c
++++ b/arch/powerpc/mm/book3s32/mmu.c
+@@ -76,7 +76,7 @@ unsigned long p_block_mapped(phys_addr_t
+ 	return 0;
+ }
+ 
+-static int find_free_bat(void)
++int __init find_free_bat(void)
+ {
+ 	int b;
+ 	int n = mmu_has_feature(MMU_FTR_USE_HIGH_BATS) ? 8 : 4;
+@@ -100,7 +100,7 @@ static int find_free_bat(void)
+  * - block size has to be a power of two. This is calculated by finding the
+  *   highest bit set to 1.
+  */
+-static unsigned int block_size(unsigned long base, unsigned long top)
++unsigned int bat_block_size(unsigned long base, unsigned long top)
+ {
+ 	unsigned int max_size = SZ_256M;
+ 	unsigned int base_shift = (ffs(base) - 1) & 31;
+@@ -145,7 +145,7 @@ static unsigned long __init __mmu_mapin_
+ 	int idx;
+ 
+ 	while ((idx = find_free_bat()) != -1 && base != top) {
+-		unsigned int size = block_size(base, top);
++		unsigned int size = bat_block_size(base, top);
+ 
+ 		if (size < 128 << 10)
+ 			break;
+@@ -201,12 +201,12 @@ void mmu_mark_initmem_nx(void)
+ 	unsigned long size;
+ 
+ 	for (i = 0; i < nb - 1 && base < top;) {
+-		size = block_size(base, top);
++		size = bat_block_size(base, top);
+ 		setibat(i++, PAGE_OFFSET + base, base, size, PAGE_KERNEL_TEXT);
+ 		base += size;
+ 	}
+ 	if (base < top) {
+-		size = block_size(base, top);
++		size = bat_block_size(base, top);
+ 		if ((top - base) > size) {
+ 			size <<= 1;
+ 			if (strict_kernel_rwx_enabled() && base + size > border)
+--- a/arch/powerpc/mm/kasan/book3s_32.c
++++ b/arch/powerpc/mm/kasan/book3s_32.c
+@@ -10,48 +10,51 @@ int __init kasan_init_region(void *start
+ {
+ 	unsigned long k_start = (unsigned long)kasan_mem_to_shadow(start);
+ 	unsigned long k_end = (unsigned long)kasan_mem_to_shadow(start + size);
+-	unsigned long k_cur = k_start;
+-	int k_size = k_end - k_start;
+-	int k_size_base = 1 << (ffs(k_size) - 1);
++	unsigned long k_nobat = k_start;
++	unsigned long k_cur;
++	phys_addr_t phys;
+ 	int ret;
+-	void *block;
+ 
+-	block = memblock_alloc(k_size, k_size_base);
++	while (k_nobat < k_end) {
++		unsigned int k_size = bat_block_size(k_nobat, k_end);
++		int idx = find_free_bat();
++
++		if (idx == -1)
++			break;
++		if (k_size < SZ_128K)
++			break;
++		phys = memblock_phys_alloc_range(k_size, k_size, 0,
++						 MEMBLOCK_ALLOC_ANYWHERE);
++		if (!phys)
++			break;
+ 
+-	if (block && k_size_base >= SZ_128K && k_start == ALIGN(k_start, k_size_base)) {
+-		int shift = ffs(k_size - k_size_base);
+-		int k_size_more = shift ? 1 << (shift - 1) : 0;
+-
+-		setbat(-1, k_start, __pa(block), k_size_base, PAGE_KERNEL);
+-		if (k_size_more >= SZ_128K)
+-			setbat(-1, k_start + k_size_base, __pa(block) + k_size_base,
+-			       k_size_more, PAGE_KERNEL);
+-		if (v_block_mapped(k_start))
+-			k_cur = k_start + k_size_base;
+-		if (v_block_mapped(k_start + k_size_base))
+-			k_cur = k_start + k_size_base + k_size_more;
+-
+-		update_bats();
++		setbat(idx, k_nobat, phys, k_size, PAGE_KERNEL);
++		k_nobat += k_size;
+ 	}
++	if (k_nobat != k_start)
++		update_bats();
+ 
+-	if (!block)
+-		block = memblock_alloc(k_size, PAGE_SIZE);
+-	if (!block)
+-		return -ENOMEM;
++	if (k_nobat < k_end) {
++		phys = memblock_phys_alloc_range(k_end - k_nobat, PAGE_SIZE, 0,
++						 MEMBLOCK_ALLOC_ANYWHERE);
++		if (!phys)
++			return -ENOMEM;
++	}
+ 
+ 	ret = kasan_init_shadow_page_tables(k_start, k_end);
+ 	if (ret)
+ 		return ret;
+ 
+-	kasan_update_early_region(k_start, k_cur, __pte(0));
++	kasan_update_early_region(k_start, k_nobat, __pte(0));
+ 
+-	for (; k_cur < k_end; k_cur += PAGE_SIZE) {
++	for (k_cur = k_nobat; k_cur < k_end; k_cur += PAGE_SIZE) {
+ 		pmd_t *pmd = pmd_off_k(k_cur);
+-		void *va = block + k_cur - k_start;
+-		pte_t pte = pfn_pte(PHYS_PFN(__pa(va)), PAGE_KERNEL);
++		pte_t pte = pfn_pte(PHYS_PFN(phys + k_cur - k_nobat), PAGE_KERNEL);
+ 
+ 		__set_pte_at(&init_mm, k_cur, pte_offset_kernel(pmd, k_cur), pte, 0);
+ 	}
+ 	flush_tlb_kernel_range(k_start, k_end);
++	memset(kasan_mem_to_shadow(start), 0, k_end - k_start);
++
+ 	return 0;
+ }
 
 
