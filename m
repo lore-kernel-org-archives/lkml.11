@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C36C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D43C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378286AbiAaLXz (ORCPT
+        id S1377891AbiAaLXa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:23:55 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48110 "EHLO
+        Mon, 31 Jan 2022 06:23:30 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45836 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359149AbiAaLOk (ORCPT
+        with ESMTP id S1377259AbiAaLNx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:14:40 -0500
+        Mon, 31 Jan 2022 06:13:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7C6160E76;
-        Mon, 31 Jan 2022 11:14:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9110FC340E8;
-        Mon, 31 Jan 2022 11:14:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73F896114F;
+        Mon, 31 Jan 2022 11:13:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3087EC340E8;
+        Mon, 31 Jan 2022 11:13:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627679;
-        bh=d4NMCRYFez7Dv/xaGO0VoOIytB742aa78WOrxB63pdc=;
+        s=korg; t=1643627632;
+        bh=PkNlFSXkB/ip+PcF+kXge0gQV1xVzpWX/F3a461szwM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jcsXmGOCy8ioKbJ+l6/U62+bFs+LlwJOEWXLdJhDBr5GjhHr+7K+sv3xZSdcwBCt7
-         GL/JBPQ/2gVCRLR2NtjRDwbJLuC5mD+zPQ8FNfQhRGS2dD1p4UmMaQKBhB7O4PabHW
-         wpz5wiWqk70VRy2Iop9Oh7+PmC/+tLO6bjLmPxy8=
+        b=DRoOuqoH/OYKPVfo++J+AdGILakfgLw2tHDoym5M1yvLLmQXxu8Vku7W94iPcnPC/
+         J+0Eee+nSJ1NrEq4KvM54bpjAhznsxN1Cu2QIZEAp0QxhAbpky5TLXA66OysVxwv1C
+         ibb//iS0xgpbbrK7NCNggQF6gdnF4ao//rOAOmg8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org,
+        Colin Foster <colin.foster@in-advantage.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 135/171] hwmon: (adt7470) Prevent divide by zero in adt7470_fan_write()
-Date:   Mon, 31 Jan 2022 11:56:40 +0100
-Message-Id: <20220131105234.571572094@linuxfoundation.org>
+Subject: [PATCH 5.15 148/171] net: cpsw: Properly initialise struct page_pool_params
+Date:   Mon, 31 Jan 2022 11:56:53 +0100
+Message-Id: <20220131105235.022007491@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -47,37 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-[ Upstream commit c1ec0cabc36718efc7fe8b4157d41b82d08ec1d2 ]
+[ Upstream commit c63003e3d99761afb280add3b30de1cf30fa522b ]
 
-The "val" variable is controlled by the user and comes from
-hwmon_attr_store().  The FAN_RPM_TO_PERIOD() macro divides by "val"
-so a zero will crash the system.  Check for that and return -EINVAL.
-Negatives are also invalid so return -EINVAL for those too.
+The cpsw driver didn't properly initialise the struct page_pool_params
+before calling page_pool_create(), which leads to crashes after the struct
+has been expanded with new parameters.
 
-Fixes: fc958a61ff6d ("hwmon: (adt7470) Convert to devm_hwmon_device_register_with_info API")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+The second Fixes tag below is where the buggy code was introduced, but
+because the code was moved around this patch will only apply on top of the
+commit in the first Fixes tag.
+
+Fixes: c5013ac1dd0e ("net: ethernet: ti: cpsw: move set of common functions in cpsw_priv")
+Fixes: 9ed4050c0d75 ("net: ethernet: ti: cpsw: add XDP support")
+Reported-by: Colin Foster <colin.foster@in-advantage.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Tested-by: Colin Foster <colin.foster@in-advantage.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/adt7470.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/ti/cpsw_priv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hwmon/adt7470.c b/drivers/hwmon/adt7470.c
-index d519aca4a9d64..fb6d14d213a18 100644
---- a/drivers/hwmon/adt7470.c
-+++ b/drivers/hwmon/adt7470.c
-@@ -662,6 +662,9 @@ static int adt7470_fan_write(struct device *dev, u32 attr, int channel, long val
- 	struct adt7470_data *data = dev_get_drvdata(dev);
- 	int err;
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+index 6bb5ac51d23c3..f8e591d69d2cb 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -1144,7 +1144,7 @@ int cpsw_fill_rx_channels(struct cpsw_priv *priv)
+ static struct page_pool *cpsw_create_page_pool(struct cpsw_common *cpsw,
+ 					       int size)
+ {
+-	struct page_pool_params pp_params;
++	struct page_pool_params pp_params = {};
+ 	struct page_pool *pool;
  
-+	if (val <= 0)
-+		return -EINVAL;
-+
- 	val = FAN_RPM_TO_PERIOD(val);
- 	val = clamp_val(val, 1, 65534);
- 
+ 	pp_params.order = 0;
 -- 
 2.34.1
 
