@@ -2,55 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC09C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F3BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:26:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377159AbiAaLZ4 (ORCPT
+        id S1377214AbiAaLZ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:25:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46146 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359805AbiAaLRN (ORCPT
+        Mon, 31 Jan 2022 06:25:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37078 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376389AbiAaLRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:17:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2494C0617A6;
-        Mon, 31 Jan 2022 03:11:31 -0800 (PST)
+        Mon, 31 Jan 2022 06:17:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F544B82A61;
-        Mon, 31 Jan 2022 11:11:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A9EEC340E8;
-        Mon, 31 Jan 2022 11:11:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 655D8B82A66;
+        Mon, 31 Jan 2022 11:17:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF68C340E8;
+        Mon, 31 Jan 2022 11:17:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627489;
-        bh=X0VcEdGakIz6rEue8sRTEPf3AQkU+2J1McCJq0WJgpk=;
+        s=korg; t=1643627836;
+        bh=k2DtKHgtpZaa9V38EPljyP+xKLOCVtkX+3w5cWza7bc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EgFATjTB4QvE5aJNazF34CZCLuqvkhBwda6psgSsZbctJmzPRBoTx5HqpIDhFwAMH
-         xuJg51rYA6fp0I88ZNvnqdjtolNTy2qMGrRW34XTVe8zjbl5tsDNimD+Z4kSmPXx4M
-         XaESXsIjAkJwQLpTVQrmPixyWQtCHSBxOGYRbljY=
+        b=L2lHbDrntZokbYei1hWvENjP7kPQnkl1+AzNfExB+AuULUOcIdAEG7yFvdIBEtldd
+         +L+FkJqBUQIpkXznvEJvbyggpQJx0lOUhTQB9qMxOh4l6d+hzaAIo8UV2hqACpDjpk
+         jKevOo1aLO3oZKIZj5OxJheIYMxCDIoOeqfpuDoc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>,
-        Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>,
-        "Theodore Tso" <tytso@mit.edu>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Jun Piao <piaojun@huawei.com>,
-        Junxiao Bi <junxiao.bi@oracle.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 067/171] ocfs2: fix a deadlock when commit trans
-Date:   Mon, 31 Jan 2022 11:55:32 +0100
-Message-Id: <20220131105232.307231263@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH 5.16 040/200] perf/x86/intel/uncore: Fix CAS_COUNT_WRITE issue for ICX
+Date:   Mon, 31 Jan 2022 11:55:03 +0100
+Message-Id: <20220131105234.910777465@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -59,87 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joseph Qi <joseph.qi@linux.alibaba.com>
+From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 
-commit ddf4b773aa40790dfa936bd845c18e735a49c61c upstream.
+commit 96fd2e89fba1aaada6f4b1e5d25a9d9ecbe1943d upstream.
 
-commit 6f1b228529ae introduces a regression which can deadlock as
-follows:
+The user recently report a perf issue in the ICX platform, when test by
+perf event “uncore_imc_x/cas_count_write”,the write bandwidth is always
+very small (only 0.38MB/s), it is caused by the wrong "umask" for the
+"cas_count_write" event. When double-checking, find "cas_count_read"
+also is wrong.
 
-  Task1:                              Task2:
-  jbd2_journal_commit_transaction     ocfs2_test_bg_bit_allocatable
-  spin_lock(&jh->b_state_lock)        jbd_lock_bh_journal_head
-  __jbd2_journal_remove_checkpoint    spin_lock(&jh->b_state_lock)
-  jbd2_journal_put_journal_head
-  jbd_lock_bh_journal_head
+The public document for ICX uncore:
 
-Task1 and Task2 lock bh->b_state and jh->b_state_lock in different
-order, which finally result in a deadlock.
+3rd Gen Intel® Xeon® Processor Scalable Family, Codename Ice Lake,Uncore
+Performance Monitoring Reference Manual, Revision 1.00, May 2021
 
-So use jbd2_journal_[grab|put]_journal_head instead in
-ocfs2_test_bg_bit_allocatable() to fix it.
+On 2.4.7, it defines Unit Masks for CAS_COUNT:
+RD b00001111
+WR b00110000
 
-Link: https://lkml.kernel.org/r/20220121071205.100648-3-joseph.qi@linux.alibaba.com
-Fixes: 6f1b228529ae ("ocfs2: fix race between searching chunks and release journal_head from buffer_head")
-Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
-Reported-by: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
-Tested-by: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
-Reported-by: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
-Cc: "Theodore Ts'o" <tytso@mit.edu>
-Cc: Andreas Dilger <adilger.kernel@dilger.ca>
-Cc: Changwei Ge <gechangwei@live.cn>
-Cc: Gang He <ghe@suse.com>
-Cc: Joel Becker <jlbec@evilplan.org>
-Cc: Jun Piao <piaojun@huawei.com>
-Cc: Junxiao Bi <junxiao.bi@oracle.com>
-Cc: Mark Fasheh <mark@fasheh.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+So corrected both "cas_count_read" and "cas_count_write" for ICX.
+
+Old settings:
+ hswep_uncore_imc_events
+	INTEL_UNCORE_EVENT_DESC(cas_count_read,  "event=0x04,umask=0x03")
+	INTEL_UNCORE_EVENT_DESC(cas_count_write, "event=0x04,umask=0x0c")
+
+New settings:
+ snr_uncore_imc_events
+	INTEL_UNCORE_EVENT_DESC(cas_count_read,  "event=0x04,umask=0x0f")
+	INTEL_UNCORE_EVENT_DESC(cas_count_write, "event=0x04,umask=0x30")
+
+Fixes: 2b3b76b5ec67 ("perf/x86/intel/uncore: Add Ice Lake server uncore support")
+Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20211223144826.841267-1-zhengjun.xing@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ocfs2/suballoc.c |   25 +++++++++++--------------
- 1 file changed, 11 insertions(+), 14 deletions(-)
+ arch/x86/events/intel/uncore_snbep.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ocfs2/suballoc.c
-+++ b/fs/ocfs2/suballoc.c
-@@ -1251,26 +1251,23 @@ static int ocfs2_test_bg_bit_allocatable
- {
- 	struct ocfs2_group_desc *bg = (struct ocfs2_group_desc *) bg_bh->b_data;
- 	struct journal_head *jh;
--	int ret = 1;
-+	int ret;
- 
- 	if (ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap))
- 		return 0;
- 
--	if (!buffer_jbd(bg_bh))
-+	jh = jbd2_journal_grab_journal_head(bg_bh);
-+	if (!jh)
- 		return 1;
- 
--	jbd_lock_bh_journal_head(bg_bh);
--	if (buffer_jbd(bg_bh)) {
--		jh = bh2jh(bg_bh);
--		spin_lock(&jh->b_state_lock);
--		bg = (struct ocfs2_group_desc *) jh->b_committed_data;
--		if (bg)
--			ret = !ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap);
--		else
--			ret = 1;
--		spin_unlock(&jh->b_state_lock);
--	}
--	jbd_unlock_bh_journal_head(bg_bh);
-+	spin_lock(&jh->b_state_lock);
-+	bg = (struct ocfs2_group_desc *) jh->b_committed_data;
-+	if (bg)
-+		ret = !ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap);
-+	else
-+		ret = 1;
-+	spin_unlock(&jh->b_state_lock);
-+	jbd2_journal_put_journal_head(jh);
- 
- 	return ret;
- }
+--- a/arch/x86/events/intel/uncore_snbep.c
++++ b/arch/x86/events/intel/uncore_snbep.c
+@@ -5482,7 +5482,7 @@ static struct intel_uncore_type icx_unco
+ 	.fixed_ctr_bits	= 48,
+ 	.fixed_ctr	= SNR_IMC_MMIO_PMON_FIXED_CTR,
+ 	.fixed_ctl	= SNR_IMC_MMIO_PMON_FIXED_CTL,
+-	.event_descs	= hswep_uncore_imc_events,
++	.event_descs	= snr_uncore_imc_events,
+ 	.perf_ctr	= SNR_IMC_MMIO_PMON_CTR0,
+ 	.event_ctl	= SNR_IMC_MMIO_PMON_CTL0,
+ 	.event_mask	= SNBEP_PMON_RAW_EVENT_MASK,
 
 
