@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB79C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E17AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:12:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359838AbiAaLMN (ORCPT
+        id S1376260AbiAaLMS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:12:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376504AbiAaLIe (ORCPT
+        Mon, 31 Jan 2022 06:12:18 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56826 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376522AbiAaLIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:08:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C859BC0619C0;
-        Mon, 31 Jan 2022 03:05:19 -0800 (PST)
+        Mon, 31 Jan 2022 06:08:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92001B82A5F;
-        Mon, 31 Jan 2022 11:05:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA563C340E8;
-        Mon, 31 Jan 2022 11:05:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6FF4B82A59;
+        Mon, 31 Jan 2022 11:08:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D96CC340EF;
+        Mon, 31 Jan 2022 11:08:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627117;
-        bh=I0uXQkDbhcrgFlOrWUKs2lEyJYwQN3pii/jlSjzk5Z0=;
+        s=korg; t=1643627313;
+        bh=E9EIDomCPCgL962F5vKhUfJoH4Jp6t+QuYTdmvDJ98A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v4YoXnq0U2NoZGCn/J83NydPWzjXIUpBk7HxFCNFazQZHnR5MOqWrTezbOYQbuO1l
-         PMK+shbyDDOGR4JLMQOp5nlPVJUPAX/KN9wTXtFS5eB5F3VPFtcejR7SajtBMrsLrc
-         YlOMVIVvPlvVtQVOfbU5lcPDNdxE73QxFPtVmVGw=
+        b=QqIWf6BWGplTr+UWozLXA66lRxlJGwuJiga0gzNLrzdxvgCcGqNVp5bfQCONaEkHx
+         MfhIZib4swzvq2dIpeF0UjCECg0z12cmKRal/uERfH2QrltONG3wF70N8T3DG/V2eV
+         YXjJvbcAvPJLtF9TJG2m2YJuHlyGcF569Jf+C+3I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 080/100] net: ipv4: Move ip_options_fragment() out of loop
-Date:   Mon, 31 Jan 2022 11:56:41 +0100
-Message-Id: <20220131105223.127439495@linuxfoundation.org>
+        stable@vger.kernel.org, Liam Merwick <liam.merwick@oracle.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 026/171] Revert "KVM: SVM: avoid infinite loop on NPF from bad address"
+Date:   Mon, 31 Jan 2022 11:54:51 +0100
+Message-Id: <20220131105230.912100778@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,79 +47,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yajun Deng <yajun.deng@linux.dev>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit faf482ca196a5b16007190529b3b2dd32ab3f761 ]
+commit 31c25585695abdf03d6160aa6d829e855b256329 upstream.
 
-The ip_options_fragment() only called when iter->offset is equal to zero,
-so move it out of loop, and inline 'Copy the flags to each fragment.'
-As also, remove the unused parameter in ip_frag_ipcb().
+Revert a completely broken check on an "invalid" RIP in SVM's workaround
+for the DecodeAssists SMAP errata.  kvm_vcpu_gfn_to_memslot() obviously
+expects a gfn, i.e. operates in the guest physical address space, whereas
+RIP is a virtual (not even linear) address.  The "fix" worked for the
+problematic KVM selftest because the test identity mapped RIP.
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fully revert the hack instead of trying to translate RIP to a GPA, as the
+non-SEV case is now handled earlier, and KVM cannot access guest page
+tables to translate RIP.
+
+This reverts commit e72436bc3a5206f95bb384e741154166ddb3202e.
+
+Fixes: e72436bc3a52 ("KVM: SVM: avoid infinite loop on NPF from bad address")
+Reported-by: Liam Merwick <liam.merwick@oracle.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
+Message-Id: <20220120010719.711476-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ip_output.c | 19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
+ arch/x86/kvm/svm/svm.c |    7 -------
+ virt/kvm/kvm_main.c    |    1 -
+ 2 files changed, 8 deletions(-)
 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 10d4cde31c6bf..fb91a466b2d34 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -614,18 +614,6 @@ void ip_fraglist_init(struct sk_buff *skb, struct iphdr *iph,
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4456,13 +4456,6 @@ static bool svm_can_emulate_instruction(
+ 	if (likely(!insn || insn_len))
+ 		return true;
+ 
+-	/*
+-	 * If RIP is invalid, go ahead with emulation which will cause an
+-	 * internal error exit.
+-	 */
+-	if (!kvm_vcpu_gfn_to_memslot(vcpu, kvm_rip_read(vcpu) >> PAGE_SHIFT))
+-		return true;
+-
+ 	cr4 = kvm_read_cr4(vcpu);
+ 	smep = cr4 & X86_CR4_SMEP;
+ 	smap = cr4 & X86_CR4_SMAP;
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -2104,7 +2104,6 @@ struct kvm_memory_slot *kvm_vcpu_gfn_to_
+ 
+ 	return NULL;
  }
- EXPORT_SYMBOL(ip_fraglist_init);
+-EXPORT_SYMBOL_GPL(kvm_vcpu_gfn_to_memslot);
  
--static void ip_fraglist_ipcb_prepare(struct sk_buff *skb,
--				     struct ip_fraglist_iter *iter)
--{
--	struct sk_buff *to = iter->frag;
--
--	/* Copy the flags to each fragment. */
--	IPCB(to)->flags = IPCB(skb)->flags;
--
--	if (iter->offset == 0)
--		ip_options_fragment(to);
--}
--
- void ip_fraglist_prepare(struct sk_buff *skb, struct ip_fraglist_iter *iter)
+ bool kvm_is_visible_gfn(struct kvm *kvm, gfn_t gfn)
  {
- 	unsigned int hlen = iter->hlen;
-@@ -671,7 +659,7 @@ void ip_frag_init(struct sk_buff *skb, unsigned int hlen,
- EXPORT_SYMBOL(ip_frag_init);
- 
- static void ip_frag_ipcb(struct sk_buff *from, struct sk_buff *to,
--			 bool first_frag, struct ip_frag_state *state)
-+			 bool first_frag)
- {
- 	/* Copy the flags to each fragment. */
- 	IPCB(to)->flags = IPCB(from)->flags;
-@@ -845,12 +833,13 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
- 
- 		/* Everything is OK. Generate! */
- 		ip_fraglist_init(skb, iph, hlen, &iter);
-+		ip_options_fragment(iter.frag);
- 
- 		for (;;) {
- 			/* Prepare header of the next frame,
- 			 * before previous one went down. */
- 			if (iter.frag) {
--				ip_fraglist_ipcb_prepare(skb, &iter);
-+				IPCB(iter.frag)->flags = IPCB(skb)->flags;
- 				ip_fraglist_prepare(skb, &iter);
- 			}
- 
-@@ -905,7 +894,7 @@ slow_path:
- 			err = PTR_ERR(skb2);
- 			goto fail;
- 		}
--		ip_frag_ipcb(skb, skb2, first_frag, &state);
-+		ip_frag_ipcb(skb, skb2, first_frag);
- 
- 		/*
- 		 *	Put this fragment into the sending queue.
--- 
-2.34.1
-
 
 
