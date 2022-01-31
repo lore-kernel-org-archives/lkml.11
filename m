@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE67C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C00ACC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376393AbiAaLIX (ORCPT
+        id S1376431AbiAaLI0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:08:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51960 "EHLO
+        Mon, 31 Jan 2022 06:08:26 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52000 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359210AbiAaLFE (ORCPT
+        with ESMTP id S1358897AbiAaLFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:05:04 -0500
+        Mon, 31 Jan 2022 06:05:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6AE20B82A31;
-        Mon, 31 Jan 2022 11:05:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFD11C340E8;
-        Mon, 31 Jan 2022 11:05:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80E6FB82A4D;
+        Mon, 31 Jan 2022 11:05:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BC1C340E8;
+        Mon, 31 Jan 2022 11:05:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627102;
-        bh=qPmn2951N6S0rKBmkYyFf7WnPt8+8/bb8blm2+jhRxw=;
+        s=korg; t=1643627105;
+        bh=OUhEJvXOgBhzU0u44Xd5EN8/jjiRO3tNqHcCjxWqQWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rq4JaleEY6Rh9AwcviYa7bBg8cSaBNCErPiHOnQkkhAPxCsEmJiKGIC7XxvyFur2w
-         LQDuMxJZRWqUFEjffM+Uxke8OYGwxijylBCRIczEqzJYJFdcs63ZB0Yc9R8Je6u9mO
-         9isNDtCiIANc9pt8G8vh3e8J89WSUgbqaiW/eLsA=
+        b=KDXdrTsZUAOC81xYn7YHII6954FFocynvZ7Bt8w0badzGoh6hMhrxjUx3jqev8Zio
+         PhXb9xD6+uSgWjVYC6Jp8qIm3kPFNJnZS6sYcVH6aelz6UHrGps9mShXzrWn1sCvKF
+         QbjKHr7+U4mWnchpu4hlseX9Ag0D0y+uuW4vdqhA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.10 042/100] i40e: Increase delay to 1 s after global EMP reset
-Date:   Mon, 31 Jan 2022 11:56:03 +0100
-Message-Id: <20220131105221.852233473@linuxfoundation.org>
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Badhri Jagan Sridharan <badhri@google.com>
+Subject: [PATCH 5.10 033/100] usb: typec: tcpm: Do not disconnect while receiving VBUS off
+Date:   Mon, 31 Jan 2022 11:55:54 +0100
+Message-Id: <20220131105221.560972591@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -49,47 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Badhri Jagan Sridharan <badhri@google.com>
 
-commit 9b13bd53134c9ddd544a790125199fdbdb505e67 upstream.
+commit 90b8aa9f5b09edae6928c0561f933fec9f7a9987 upstream.
 
-Recently simplified i40e_rebuild causes that FW sometimes
-is not ready after NVM update, the ping does not return.
+With some chargers, vbus might momentarily raise above VSAFE5V and fall
+back to 0V before tcpm gets to read port->tcpc->get_vbus. This will
+will report a VBUS off event causing TCPM to transition to
+SNK_UNATTACHED where it should be waiting in either SNK_ATTACH_WAIT
+or SNK_DEBOUNCED state. This patch makes TCPM avoid vbus off events
+while in SNK_ATTACH_WAIT or SNK_DEBOUNCED state.
 
-Increase the delay in case of EMP reset.
-Old delay of 300 ms was introduced for specific cards for 710 series.
-Now it works for all the cards and delay was increased.
+Stub from the spec:
+    "4.5.2.2.4.2 Exiting from AttachWait.SNK State
+    A Sink shall transition to Unattached.SNK when the state of both
+    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce.
+    A DRP shall transition to Unattached.SRC when the state of both
+    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce."
 
-Fixes: 1fa51a650e1d ("i40e: Add delay after EMP reset for firmware to recover")
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+[23.194131] CC1: 0 -> 0, CC2: 0 -> 5 [state SNK_UNATTACHED, polarity 0, connected]
+[23.201777] state change SNK_UNATTACHED -> SNK_ATTACH_WAIT [rev3 NONE_AMS]
+[23.209949] pending state change SNK_ATTACH_WAIT -> SNK_DEBOUNCED @ 170 ms [rev3 NONE_AMS]
+[23.300579] VBUS off
+[23.300668] state change SNK_ATTACH_WAIT -> SNK_UNATTACHED [rev3 NONE_AMS]
+[23.301014] VBUS VSAFE0V
+[23.301111] Start toggling
+
+Fixes: f0690a25a140b8 ("staging: typec: USB Type-C Port Manager (tcpm)")
+Cc: stable@vger.kernel.org
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
+Link: https://lore.kernel.org/r/20220122015520.332507-1-badhri@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ drivers/usb/typec/tcpm/tcpm.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -10130,15 +10130,9 @@ static void i40e_rebuild(struct i40e_pf
- 	}
- 	i40e_get_oem_version(&pf->hw);
+--- a/drivers/usb/typec/tcpm/tcpm.c
++++ b/drivers/usb/typec/tcpm/tcpm.c
+@@ -4164,7 +4164,8 @@ static void _tcpm_pd_vbus_off(struct tcp
+ 	case SNK_TRYWAIT_DEBOUNCE:
+ 		break;
+ 	case SNK_ATTACH_WAIT:
+-		tcpm_set_state(port, SNK_UNATTACHED, 0);
++	case SNK_DEBOUNCED:
++		/* Do nothing, as TCPM is still waiting for vbus to reaach VSAFE5V to connect */
+ 		break;
  
--	if (test_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state) &&
--	    ((hw->aq.fw_maj_ver == 4 && hw->aq.fw_min_ver <= 33) ||
--	     hw->aq.fw_maj_ver < 4) && hw->mac.type == I40E_MAC_XL710) {
--		/* The following delay is necessary for 4.33 firmware and older
--		 * to recover after EMP reset. 200 ms should suffice but we
--		 * put here 300 ms to be sure that FW is ready to operate
--		 * after reset.
--		 */
--		mdelay(300);
-+	if (test_and_clear_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state)) {
-+		/* The following delay is necessary for firmware update. */
-+		mdelay(1000);
- 	}
- 
- 	/* re-verify the eeprom if we just had an EMP reset */
+ 	case SNK_NEGOTIATE_CAPABILITIES:
 
 
