@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE33DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358731AbiAaLDu (ORCPT
+        id S1348956AbiAaLEC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:03:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43362 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358969AbiAaLCU (ORCPT
+        Mon, 31 Jan 2022 06:04:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34148 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358754AbiAaLCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:02:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2BCC06135C;
-        Mon, 31 Jan 2022 03:00:29 -0800 (PST)
+        Mon, 31 Jan 2022 06:02:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A3FDB82A67;
-        Mon, 31 Jan 2022 11:00:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFB79C340EF;
-        Mon, 31 Jan 2022 11:00:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D97960ED2;
+        Mon, 31 Jan 2022 11:02:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1170CC340E8;
+        Mon, 31 Jan 2022 11:02:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626827;
-        bh=pEbtwk1Tu+AIA9m5CSRw9WEv78RmSuPWfYDqnGxqOKo=;
+        s=korg; t=1643626943;
+        bh=5tY0CAlJUzcoaiWnUY4WMVkJA9mAYKR3uGYW2xPE+5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LB4O2HILfFH2tzPXcRk2HeMhXzJUeN18Qrp2B2FULy9Ll6CR+SIUvN6KHjJIEC5Zv
-         imB1alJKorMIIpxP/DajX/G3AyFs+biFUxb+5OEbn5WJz9sbGbJC4NxLLOBxry9cY2
-         5JFgGvYCkkzdvVu2bGHlXBlQq3H4WXgdwTbtim3g=
+        b=w52s5dTlfY1qzVGUgsb/POxhGNNWep5QOEDBC28vDU64OLUeT8YZDnUEX8gdwABqY
+         AoQucmbTkITKamnwriEnE5GeU8ShYiEoPzPwEVYQsTK8K3wNyaohs7f4q2CmUbquk6
+         VtA+lFhltZ5nG4IISiBa8f+FhDSghS1czrEy0CUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Lehan <krellan@google.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 53/64] hwmon: (lm90) Mark alert as broken for MAX6654
-Date:   Mon, 31 Jan 2022 11:56:38 +0100
-Message-Id: <20220131105217.468698771@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
+Subject: [PATCH 5.10 024/100] serial: 8250: of: Fix mapped region size when using reg-offset property
+Date:   Mon, 31 Jan 2022 11:55:45 +0100
+Message-Id: <20220131105221.278180857@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
-References: <20220131105215.644174521@linuxfoundation.org>
+In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
+References: <20220131105220.424085452@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +45,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit a53fff96f35763d132a36c620b183fdf11022d7a ]
+commit d06b1cf28297e27127d3da54753a3a01a2fa2f28 upstream.
 
-Experiments with MAX6654 show that its alert function is broken,
-similar to other chips supported by the lm90 driver. Mark it accordingly.
+8250_of supports a reg-offset property which is intended to handle
+cases where the device registers start at an offset inside the region
+of memory allocated to the device. The Xilinx 16550 UART, for which this
+support was initially added, requires this. However, the code did not
+adjust the overall size of the mapped region accordingly, causing the
+driver to request an area of memory past the end of the device's
+allocation. For example, if the UART was allocated an address of
+0xb0130000, size of 0x10000 and reg-offset of 0x1000 in the device
+tree, the region of memory reserved was b0131000-b0140fff, which caused
+the driver for the region starting at b0140000 to fail to probe.
 
-Fixes: 229d495d8189 ("hwmon: (lm90) Add max6654 support to lm90 driver")
-Cc: Josh Lehan <krellan@google.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by subtracting reg-offset from the mapped region size.
+
+Fixes: b912b5e2cfb3 ([POWERPC] Xilinx: of_serial support for Xilinx uart 16550.)
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Link: https://lore.kernel.org/r/20220112194214.881844-1-robert.hancock@calian.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/lm90.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/8250/8250_of.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
-index 0e3304d1c3f28..28b408728282d 100644
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -400,6 +400,7 @@ static const struct lm90_params lm90_params[] = {
- 		.reg_local_ext = MAX6657_REG_R_LOCAL_TEMPL,
- 	},
- 	[max6654] = {
-+		.flags = LM90_HAVE_BROKEN_ALERT,
- 		.alert_alarms = 0x7c,
- 		.max_convrate = 7,
- 		.reg_local_ext = MAX6657_REG_R_LOCAL_TEMPL,
--- 
-2.34.1
-
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -83,8 +83,17 @@ static int of_platform_serial_setup(stru
+ 		port->mapsize = resource_size(&resource);
+ 
+ 		/* Check for shifted address mapping */
+-		if (of_property_read_u32(np, "reg-offset", &prop) == 0)
++		if (of_property_read_u32(np, "reg-offset", &prop) == 0) {
++			if (prop >= port->mapsize) {
++				dev_warn(&ofdev->dev, "reg-offset %u exceeds region size %pa\n",
++					 prop, &port->mapsize);
++				ret = -EINVAL;
++				goto err_unprepare;
++			}
++
+ 			port->mapbase += prop;
++			port->mapsize -= prop;
++		}
+ 
+ 		port->iotype = UPIO_MEM;
+ 		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
 
 
