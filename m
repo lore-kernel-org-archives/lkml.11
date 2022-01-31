@@ -2,98 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08594C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 13:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5EFC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 13:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378824AbiAaNgw (ORCPT
+        id S1378889AbiAaNhn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 08:36:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378432AbiAaNgv (ORCPT
+        Mon, 31 Jan 2022 08:37:43 -0500
+Received: from mail-oi1-f171.google.com ([209.85.167.171]:38872 "EHLO
+        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243165AbiAaNhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 08:36:51 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBF8C06173D
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 05:36:51 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id g13so12775265qvw.4
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 05:36:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=peHChX+dvslYcsfWY/zH1GowU+5RzB6143fTrnE3G1k=;
-        b=FfYz3immfNmV2Ogq9ENoGUGQQehPwGA634TJY02OdFPo8zSOR4+aiae4kWBPbYUAjo
-         cUKCyAiy9oVjQIu8ca2px+rsYMfFeyCKLWtWUrmOeioAx3rT9zCX/N8ESD0FBP7mON1u
-         lo0EUlSrU4QyTEHtAqv0tklUx9c2MvvQNtR12CMxvP06BKOo243zDzN1BUw1lAKf4TUk
-         6FXZz+ySNaw3UXYXhUc60HnVkC/QxXZ1S2p2bys3QwNqdfg9sVggE4QqG1W5UC8SAtHc
-         B8StRzKL30QxPM/XX2Sp6CO5iu5LE9ZL16o9PFxBRDJFB4XWaQMOB3ByXS3rwavGHZzq
-         a5CA==
+        Mon, 31 Jan 2022 08:37:33 -0500
+Received: by mail-oi1-f171.google.com with SMTP id u13so10447984oie.5;
+        Mon, 31 Jan 2022 05:37:33 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=peHChX+dvslYcsfWY/zH1GowU+5RzB6143fTrnE3G1k=;
-        b=TLSVVehmSIlz+ClBfZW4TWEB5gYjdelRASGagl8YI8+rrTMz6GVnmjXAbw3/pvwzJZ
-         TbI+q052hcaQTXXL+nkgn6yXrEdTz5RJTWCCsKI1lKu2vJkuDvVZ9ZhquuebfePkhzE2
-         lAYPtEVlalMl+4NguRJ0i7rCWwePwtI8r/Eo5O2gzgdDb1jRul5lNfDmuD8Y4AQsuxTl
-         H/mzTx/ENPfEZ57K5bKbiK7zWYueQAYfZzwYU0Y1jrWtUgk6WaZ4Nzv4Nc1EXBYjJoHQ
-         evJDKKiArwXjqxyHHsZAYmVArQ2JxmiqLFd+KkypcQx6DNt6im6PWPHlTSV6I8PV36t/
-         PQWA==
-X-Gm-Message-State: AOAM533Y2U5oluSpjEtGSprEUcFt1ktMAwQaz/RFv5kBilGxxggRmD/M
-        BVORVUL+glm2KjJ7V2cYz+7A7w==
-X-Google-Smtp-Source: ABdhPJyJAFDRWh93YYkcOp0erQ9kaor7TK6x8MrA0tVsMQonos37ig40QR1WKbJaFxAvB+UkwsfTyw==
-X-Received: by 2002:a05:6214:e8c:: with SMTP id hf12mr17115912qvb.68.1643636210280;
-        Mon, 31 Jan 2022 05:36:50 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id i18sm8130480qka.80.2022.01.31.05.36.49
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=nlm4zvylRWmR5WREUgtSyLjF6ZgmNI+EjSE9SwmaUK8=;
+        b=BDV6dvPtIrNxrGKW5P+ZRCI/4uZmjmTjyXEmFwPU1UZS1hPBzY7muIxVLoGD5MnVow
+         ejKUDPCwilPZ39zzgI5ftr9bqgqVgcWe4TSuiw8LuCenSvmAZeWZGwj79T9zvaHu/DLm
+         BWuj6KWPc5E4ebvS+gLKK62N68l8SFUbXtdssEcBZBYKHRGcbX/GueNtnBfmrzv4XLP9
+         nokJGvHUpHqyc9dYpdD2y+GIye54Wsk4YEJrsDLMoxu57np97s2n+6LL41pb67lGkzqU
+         o5w1W9d0HqQPqxdiT2+/lkZwlCE3NyhgiEkoAD50PWV3ibDlQc8iRRyZ7aW5DqllZ6Nx
+         s2zQ==
+X-Gm-Message-State: AOAM533L4g1O7pGFxC2FfLbrdjS2mdxOsgyRkkO4bK/DDd0E4T+xR4kh
+        UXq8PjMJzOYcnceDGsb6Yw==
+X-Google-Smtp-Source: ABdhPJy6dpxtxfz7tIcUHdfKGqrjKfLSw8aJ+wWpPL2BHO8kYigVTZ2NIUwG4avYBAOlLZD4pPdkGA==
+X-Received: by 2002:a05:6808:1784:: with SMTP id bg4mr18144861oib.286.1643636253100;
+        Mon, 31 Jan 2022 05:37:33 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id c13sm9111957otf.5.2022.01.31.05.37.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 05:36:49 -0800 (PST)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nEWrR-009WBP-5e; Mon, 31 Jan 2022 09:36:49 -0400
-Date:   Mon, 31 Jan 2022 09:36:49 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Peter Xu <peterx@redhat.com>, Jan Kara <jack@suse.cz>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        =?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org
-Subject: Re: [PATCH 2/4] mm/gup: clean up follow_pfn_pte() slightly
-Message-ID: <20220131133649.GX8034@ziepe.ca>
-References: <20220131051752.447699-1-jhubbard@nvidia.com>
- <20220131051752.447699-3-jhubbard@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220131051752.447699-3-jhubbard@nvidia.com>
+        Mon, 31 Jan 2022 05:37:32 -0800 (PST)
+Received: (nullmailer pid 140166 invoked by uid 1000);
+        Mon, 31 Jan 2022 13:37:31 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     conor.dooley@microchip.com
+Cc:     atishp@rivosinc.com, krzysztof.kozlowski@canonical.com,
+        devicetree@vger.kernel.org, bin.meng@windriver.com,
+        u.kleine-koenig@pengutronix.de, aou@eecs.berkeley.edu,
+        paul.walmsley@sifive.com, lee.jones@linaro.org,
+        linux-gpio@vger.kernel.org, daire.mcnamara@microchip.com,
+        heiko@sntech.de, lewis.hanly@microchip.com, brgl@bgdev.pl,
+        linux-pwm@vger.kernel.org, geert@linux-m68k.org,
+        jassisinghbrar@gmail.com, alexandre.belloni@bootlin.com,
+        linus.walleij@linaro.org, palmer@dabbelt.com,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, a.zummo@towertech.it,
+        ivan.griffin@microchip.com, thierry.reding@gmail.com,
+        linux-riscv@lists.infradead.org, linux-rtc@vger.kernel.org
+In-Reply-To: <20220131114726.973690-4-conor.dooley@microchip.com>
+References: <20220131114726.973690-1-conor.dooley@microchip.com> <20220131114726.973690-4-conor.dooley@microchip.com>
+Subject: Re: [PATCH v5 03/12] dt-bindings: i2c: add bindings for microchip mpfs i2c
+Date:   Mon, 31 Jan 2022 07:37:31 -0600
+Message-Id: <1643636251.086670.140165.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 30, 2022 at 09:17:50PM -0800, John Hubbard wrote:
-> Regardless of any FOLL_* flags, get_user_pages() and its variants should
-> handle PFN-only entries by stopping early, if the caller expected
-> **pages to be filled in.
+On Mon, 31 Jan 2022 11:47:18 +0000, conor.dooley@microchip.com wrote:
+> From: Conor Dooley <conor.dooley@microchip.com>
 > 
-> This makes for a more reliable API, as compared to the previous approach
-> of skipping over such entries (and thus leaving them silently
-> unwritten).
+> Add device tree bindings for the i2c controller on
+> the Microchip PolarFire SoC.
 > 
-> Cc: Peter Xu <peterx@redhat.com>
-> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> 
+> Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 > ---
->  mm/gup.c | 12 +++++++-----
->  1 file changed, 7 insertions(+), 5 deletions(-)
+>  .../bindings/i2c/microchip,mpfs-i2c.yaml      | 57 +++++++++++++++++++
+>  1 file changed, 57 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/i2c/microchip,mpfs-i2c.yaml
+> 
 
-I still think it should be squashed into the previous path, but
-otherwise
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/i2c/microchip,mpfs-i2c.yaml:19:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
 
-Jason
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/i2c/microchip,mpfs-i2c.example.dts:19:18: fatal error: dt-bindings/clock/microchip,mpfs-clock.h: No such file or directory
+   19 |         #include <dt-bindings/clock/microchip,mpfs-clock.h>
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [scripts/Makefile.lib:378: Documentation/devicetree/bindings/i2c/microchip,mpfs-i2c.example.dt.yaml] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1398: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1586674
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
