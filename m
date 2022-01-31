@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:32:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69476C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233490AbiAaLcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:32:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55130 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377002AbiAaLWU (ORCPT
+        id S1359621AbiAaLc2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:32:28 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40904 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377066AbiAaLW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:22:20 -0500
+        Mon, 31 Jan 2022 06:22:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5972A61298;
-        Mon, 31 Jan 2022 11:22:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35676C340E8;
-        Mon, 31 Jan 2022 11:22:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63A3FB82A74;
+        Mon, 31 Jan 2022 11:22:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DA84C340E8;
+        Mon, 31 Jan 2022 11:22:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628139;
-        bh=tcdbW/8UqgiCGn1wuJRWV1j3SX/4Fj4DznIlan+YDvo=;
+        s=korg; t=1643628146;
+        bh=KeSCS5JSeW0z2O3YsGsaW4UWS4R/ZiOqcq2qFNg7iRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ITemSXb4Mw+AlxiC/pViOyB8Cqk/JjeROoQDoNbJ2P5fI1Xifg6qlFK1fzirTnqak
-         6IDLqq1KPyptEHAjLFVBTCOSiwJNRolGpfmBrQkgvJfDJ9wikwu5tj/Ll9cI70YRFo
-         VSXNiy/Rs4WsfdJWvdUfnT0oNu0UfCU0R8aoR7KE=
+        b=oR8TnpEEWwrybB3I1mALK9pZNBRO1gIKTzDPbZx8d8fo5aOBWMCnKIQqGs3nlDNp+
+         FXNXDKVD/IwCDFHEDIO/Vzf7/cqbr2tDAEAIU5qDTyhsyr0x5PpLYjLJGqIPlAP3eH
+         r0+VnwBgsDDx0paNHIzLtceZ7R3pckm87PxQbdQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rick Yiu <rickyiu@google.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Sachin Sant <sachinp@linux.ibm.com>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 130/200] sched/pelt: Relax the sync of util_sum with util_avg
-Date:   Mon, 31 Jan 2022 11:56:33 +0100
-Message-Id: <20220131105237.926644981@linuxfoundation.org>
+Subject: [PATCH 5.16 140/200] mptcp: fix removing ids bitmap setting
+Date:   Mon, 31 Jan 2022 11:56:43 +0100
+Message-Id: <20220131105238.259851443@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -49,103 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Guittot <vincent.guittot@linaro.org>
+From: Geliang Tang <geliang.tang@suse.com>
 
-[ Upstream commit 98b0d890220d45418cfbc5157b3382e6da5a12ab ]
+[ Upstream commit a4c0214fbee97c46e3f41fee37931d66c0fc3cb1 ]
 
-Rick reported performance regressions in bugzilla because of cpu frequency
-being lower than before:
-    https://bugzilla.kernel.org/show_bug.cgi?id=215045
+In mptcp_pm_nl_rm_addr_or_subflow(), the bit of rm_list->ids[i] in the
+id_avail_bitmap should be set, not rm_list->ids[1]. This patch fixed it.
 
-He bisected the problem to:
-commit 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
-
-This commit forces util_sum to be synced with the new util_avg after
-removing the contribution of a task and before the next periodic sync. By
-doing so util_sum is rounded to its lower bound and might lost up to
-LOAD_AVG_MAX-1 of accumulated contribution which has not yet been
-reflected in util_avg.
-
-Instead of always setting util_sum to the low bound of util_avg, which can
-significantly lower the utilization of root cfs_rq after propagating the
-change down into the hierarchy, we revert the change of util_sum and
-propagate the difference.
-
-In addition, we also check that cfs's util_sum always stays above the
-lower bound for a given util_avg as it has been observed that
-sched_entity's util_sum is sometimes above cfs one.
-
-Fixes: 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
-Reported-by: Rick Yiu <rickyiu@google.com>
-Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Tested-by: Sachin Sant <sachinp@linux.ibm.com>
-Link: https://lkml.kernel.org/r/20220111134659.24961-2-vincent.guittot@linaro.org
+Fixes: 86e39e04482b ("mptcp: keep track of local endpoint still available for each msk")
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/fair.c | 16 +++++++++++++---
- kernel/sched/pelt.h |  4 +++-
- 2 files changed, 16 insertions(+), 4 deletions(-)
+ net/mptcp/pm_netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index f2cf047b25e56..069e01772d922 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -3382,7 +3382,6 @@ void set_task_rq_fair(struct sched_entity *se,
- 	se->avg.last_update_time = n_last_update_time;
- }
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 35abcce604b4d..14e6d6f745186 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -781,7 +781,7 @@ static void mptcp_pm_nl_rm_addr_or_subflow(struct mptcp_sock *msk,
+ 			msk->pm.subflows--;
+ 			__MPTCP_INC_STATS(sock_net(sk), rm_type);
+ 		}
+-		__set_bit(rm_list->ids[1], msk->pm.id_avail_bitmap);
++		__set_bit(rm_list->ids[i], msk->pm.id_avail_bitmap);
+ 		if (!removed)
+ 			continue;
  
--
- /*
-  * When on migration a sched_entity joins/leaves the PELT hierarchy, we need to
-  * propagate its contribution. The key to this propagation is the invariant
-@@ -3450,7 +3449,6 @@ void set_task_rq_fair(struct sched_entity *se,
-  * XXX: only do this for the part of runnable > running ?
-  *
-  */
--
- static inline void
- update_tg_cfs_util(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq *gcfs_rq)
- {
-@@ -3682,7 +3680,19 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
- 
- 		r = removed_util;
- 		sub_positive(&sa->util_avg, r);
--		sa->util_sum = sa->util_avg * divider;
-+		sub_positive(&sa->util_sum, r * divider);
-+		/*
-+		 * Because of rounding, se->util_sum might ends up being +1 more than
-+		 * cfs->util_sum. Although this is not a problem by itself, detaching
-+		 * a lot of tasks with the rounding problem between 2 updates of
-+		 * util_avg (~1ms) can make cfs->util_sum becoming null whereas
-+		 * cfs_util_avg is not.
-+		 * Check that util_sum is still above its lower bound for the new
-+		 * util_avg. Given that period_contrib might have moved since the last
-+		 * sync, we are only sure that util_sum must be above or equal to
-+		 *    util_avg * minimum possible divider
-+		 */
-+		sa->util_sum = max_t(u32, sa->util_sum, sa->util_avg * PELT_MIN_DIVIDER);
- 
- 		r = removed_runnable;
- 		sub_positive(&sa->runnable_avg, r);
-diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
-index e06071bf3472c..c336f5f481bca 100644
---- a/kernel/sched/pelt.h
-+++ b/kernel/sched/pelt.h
-@@ -37,9 +37,11 @@ update_irq_load_avg(struct rq *rq, u64 running)
- }
- #endif
- 
-+#define PELT_MIN_DIVIDER	(LOAD_AVG_MAX - 1024)
-+
- static inline u32 get_pelt_divider(struct sched_avg *avg)
- {
--	return LOAD_AVG_MAX - 1024 + avg->period_contrib;
-+	return PELT_MIN_DIVIDER + avg->period_contrib;
- }
- 
- static inline void cfs_se_util_change(struct sched_avg *avg)
 -- 
 2.34.1
 
