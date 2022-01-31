@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06259C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:27:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376267AbiAaL1f (ORCPT
+        id S1377837AbiAaL1l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:27:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50544 "EHLO
+        Mon, 31 Jan 2022 06:27:41 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51856 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377802AbiAaLTE (ORCPT
+        with ESMTP id S1377929AbiAaLTU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:19:04 -0500
+        Mon, 31 Jan 2022 06:19:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B4E661120;
-        Mon, 31 Jan 2022 11:19:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A515C340E8;
-        Mon, 31 Jan 2022 11:19:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9854260B28;
+        Mon, 31 Jan 2022 11:19:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D556C340E8;
+        Mon, 31 Jan 2022 11:19:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627943;
-        bh=41Bn7dpcwKdRVGJAeUT3KkBCidaikRKvL17gJkZ77QY=;
+        s=korg; t=1643627959;
+        bh=/O5ULg9U3NkwqzR/0Avq3jo3LXQjoxTI7QzSubb6GLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DrE+UvEzFioLZjxsERTdn9xxcM+hxuAjgXLqZNe2ptL16Ubza0IkDdrjKmtUaN6iJ
-         xQvwRKVeefdGwJtmf3/Yxi9XGSYMIVmfVDWOg0m3JZnLdLOpm90VdqNDcHaSejaHI2
-         8r8wo0h0jKKrJJZylRDOAp10so1z4S9yzTMnC88o=
+        b=JZA2o2iwNAvZhKuorIJ+B2SXic8lLQBznuX2c5QLBaYZ9r76dn33M+A4xkTsZz9Uq
+         cdMC77ao5i6M5yi4hbzzrivCTu9/0kOE04CT23XHq3PzBSGMddMvB8H99qhB1Udwdi
+         aGN6SH540M76DExZvAeMX3nZdNpTgFJPczMe4z10=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>
-Subject: [PATCH 5.16 075/200] usb: common: ulpi: Fix crash in ulpi_match()
-Date:   Mon, 31 Jan 2022 11:55:38 +0100
-Message-Id: <20220131105236.108873020@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
+Subject: [PATCH 5.16 079/200] usb: dwc3: xilinx: Fix error handling when getting USB3 PHY
+Date:   Mon, 31 Jan 2022 11:55:42 +0100
+Message-Id: <20220131105236.257332377@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -45,47 +45,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Hunter <jonathanh@nvidia.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit 2e3dd4a6246945bf84ea6f478365d116e661554c upstream.
+commit 2cc9b1c93b1c4caa2d971856c0780fb5f7d04692 upstream.
 
-Commit 7495af930835 ("ARM: multi_v7_defconfig: Enable drivers for
-DragonBoard 410c") enables the CONFIG_PHY_QCOM_USB_HS for the ARM
-multi_v7_defconfig. Enabling this Kconfig is causing the kernel to crash
-on the Tegra20 Ventana platform in the ulpi_match() function.
+The code that looked up the USB3 PHY was ignoring all errors other than
+EPROBE_DEFER in an attempt to handle the PHY not being present. Fix and
+simplify the code by using devm_phy_optional_get and dev_err_probe so
+that a missing PHY is not treated as an error and unexpected errors
+are handled properly.
 
-The Qualcomm USB HS PHY driver that is enabled by CONFIG_PHY_QCOM_USB_HS,
-registers a ulpi_driver but this driver does not provide an 'id_table',
-so when ulpi_match() is called on the Tegra20 Ventana platform, it
-crashes when attempting to deference the id_table pointer which is not
-valid. The Qualcomm USB HS PHY driver uses device-tree for matching the
-ULPI driver with the device and so fix this crash by using device-tree
-for matching if the id_table is not valid.
-
-Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
+Fixes: 84770f028fab ("usb: dwc3: Add driver for Xilinx platforms")
 Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
-Link: https://lore.kernel.org/r/20220117150039.44058-1-jonathanh@nvidia.com
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Link: https://lore.kernel.org/r/20220126000253.1586760-3-robert.hancock@calian.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/common/ulpi.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/usb/dwc3/dwc3-xilinx.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/drivers/usb/common/ulpi.c
-+++ b/drivers/usb/common/ulpi.c
-@@ -39,8 +39,11 @@ static int ulpi_match(struct device *dev
- 	struct ulpi *ulpi = to_ulpi_dev(dev);
- 	const struct ulpi_device_id *id;
+--- a/drivers/usb/dwc3/dwc3-xilinx.c
++++ b/drivers/usb/dwc3/dwc3-xilinx.c
+@@ -102,12 +102,12 @@ static int dwc3_xlnx_init_zynqmp(struct
+ 	int			ret;
+ 	u32			reg;
  
--	/* Some ULPI devices don't have a vendor id so rely on OF match */
--	if (ulpi->id.vendor == 0)
-+	/*
-+	 * Some ULPI devices don't have a vendor id
-+	 * or provide an id_table so rely on OF match.
-+	 */
-+	if (ulpi->id.vendor == 0 || !drv->id_table)
- 		return of_driver_match_device(dev, driver);
+-	usb3_phy = devm_phy_get(dev, "usb3-phy");
+-	if (PTR_ERR(usb3_phy) == -EPROBE_DEFER) {
+-		ret = -EPROBE_DEFER;
++	usb3_phy = devm_phy_optional_get(dev, "usb3-phy");
++	if (IS_ERR(usb3_phy)) {
++		ret = PTR_ERR(usb3_phy);
++		dev_err_probe(dev, ret,
++			      "failed to get USB3 PHY\n");
+ 		goto err;
+-	} else if (IS_ERR(usb3_phy)) {
+-		usb3_phy = NULL;
+ 	}
  
- 	for (id = drv->id_table; id->vendor; id++)
+ 	/*
 
 
