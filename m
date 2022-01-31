@@ -2,114 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 263FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 17:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7001C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 17:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381146AbiAaRvZ (ORCPT
+        id S1355061AbiAaRvo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 12:51:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55448 "EHLO
+        Mon, 31 Jan 2022 12:51:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381117AbiAaRuu (ORCPT
+        with ESMTP id S1381120AbiAaRvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 12:50:50 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7FAC061758;
-        Mon, 31 Jan 2022 09:50:38 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id d10so45396765eje.10;
-        Mon, 31 Jan 2022 09:50:38 -0800 (PST)
+        Mon, 31 Jan 2022 12:51:07 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89ACFC06173B;
+        Mon, 31 Jan 2022 09:50:58 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id z7so12092966ilb.6;
+        Mon, 31 Jan 2022 09:50:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8GVlcbMKWd6sknSwsJTkH3UkvUcDFFWA5/+PxWk1FBQ=;
-        b=qs/2h+iV23o0KF6R03dAhdmE/axbeR2qE3rbz2GJhNRV8SEeiSPsrQvFC/thNvlcq3
-         tTd4TlCTVFHUDFxii5lU12QyqpTgkiRelenS4rYVY0Sfee7VxRLN0+8GR9UuI7veR/iA
-         +YkLnJki9Cx2spbdIizoVgoLPnWBKCN/5S7KIOrRI64Pk7y13ep90GrkWV2rHSVtnbkB
-         vAM3w5yjo3enrcXZLSVsERNyQVsgoDnssO0Icrxlvhiof74tIw9lz6oJ2341W2TnbIJW
-         rcHcO6r177JPjXbSgyEFt59HgZcDPB3p5dXLBD+1L/F/G1qppe/y/FbWQiVi2csNbac1
-         yAbQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=TKO8y1qSdLIKch3b1v9WYdHjEs86qCAXlfLNQVKqV5A=;
+        b=TWAb7sn96e9On3v+k3CtLLU36XJCGDBLGhmevMRdMQ2Shovy3wXIhc7zSsPJ2WAtoh
+         SOzsI4naZjvfjPmgLLHRU/01t7LauOXeIkiTq4LdepgKU9ftty+x3TYXU6/NBaX3sh3F
+         ninr1Tvu09+6C/yvR4dBP/rajaYJQU4LMW/HiAv3i2TbguGcTiT+lsUSxl/FG0oynzYZ
+         lUfgskq1SyWEE9KtrUCjvEdqKsdDW+a9wv4zf39TR2xfDU5WH7KjLlloJW2IBa0fhnnK
+         14cC94o9TCckBLlVU23T4980gnhb8Dpl9f3CKQfnzMhhm+XbNex4wCE+C4F7XFS4JtVo
+         Kmqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8GVlcbMKWd6sknSwsJTkH3UkvUcDFFWA5/+PxWk1FBQ=;
-        b=FGxIua/McK9OFm9d56Ta9BY1ZCWQGA3aYXJTxf1J1djaGs8xgzc69hW75Dwm+JXpeO
-         Cc6qpdCLWuBw7g6DhSv++3ctQJPuXgpZs9A2VElDgOWkMzUs9ErRs0HRqVAERFJEouVY
-         UZT+KPlT70y6jjvDZ9sK85W8vJ9Z0DRj9dAcO2xpSbbx3SEf+vYhMlRoodePoTUvjwYI
-         Ixi7ypce8bqtXBwz5Cyier+L7SPbdaEfPaU0ztApa9ixcwprFD5qb1kkMaZo5UE5cjg5
-         IIH+gSUYAh5GPARmlgXv0hdQHHNKcvlbtCxoT11w4nR1hq/MiRAMBbPA65M4OxmTscX2
-         WXGw==
-X-Gm-Message-State: AOAM530itlxnCLONZYEVz60EjY10pZWbvIyvnMU1E1A6fi6B8CkLADoZ
-        RO44EtzH3jhtSShlxiakz3uSsfJpt/R80ocElrc=
-X-Google-Smtp-Source: ABdhPJySPMLXG826MvbuUjwZ2lW9naA71Uho8Hz9ED+TkkBh3xJuWPCfQq50w2zCupQdwrxSAXqrKp3+CE1fa/VpIeM=
-X-Received: by 2002:a17:907:2d92:: with SMTP id gt18mr17433897ejc.579.1643651436652;
- Mon, 31 Jan 2022 09:50:36 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TKO8y1qSdLIKch3b1v9WYdHjEs86qCAXlfLNQVKqV5A=;
+        b=cGANed/DyKwdjrwkDekgqXglOlgbxC9C5Kzwq0Fu4WUP9kfES4oo1dOidYj9g9tFrt
+         AssY1aPEUNqWQAL3PfEqNTWkst/ctXlAQOxptu9hVwiCwHW6xuuWhAzx8suoYZZSJ6//
+         xQb0h1yEaPn5/mRCK5fkK9oq+Qq6WjGEhK0SXPBrI42nBc1tmKC0w4+AejDCjb2tZ2DZ
+         iwdlO3iI7ErwgirG8ahaWzuRDsNRs1VtDPrYWe4T26Pv/5ZPq8W326EgL9Ut5AI0bJty
+         ZaQfy/xmcHHNHgddYWXqtX6HkZ5/HpcN2PB+r39oiEIxpC3uiKeYef4ukmpAfhkVM6Lz
+         7FXQ==
+X-Gm-Message-State: AOAM531Vwc0IV4ZkhbXCwRH1+SFPDKQMoFra9XjVLJM44fxnjOmV2uyg
+        NBwrLYEY93g+RZQpTadJkF4=
+X-Google-Smtp-Source: ABdhPJxaT/Q1EXE0wr5jCKiS6z59gDW7huwzkdaku4pBS7X2g/IXhqLsnClKoVzkzU0lTDUzfdw3lQ==
+X-Received: by 2002:a05:6e02:1ba1:: with SMTP id n1mr12885031ili.99.1643651458055;
+        Mon, 31 Jan 2022 09:50:58 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:8870:ce19:2c7:3513? ([2601:282:800:dc80:8870:ce19:2c7:3513])
+        by smtp.googlemail.com with ESMTPSA id t15sm12650904ioj.24.2022.01.31.09.50.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 09:50:57 -0800 (PST)
+Message-ID: <d2916b79-9252-861c-2992-5f36e30ef611@gmail.com>
+Date:   Mon, 31 Jan 2022 10:50:56 -0700
 MIME-Version: 1.0
-References: <20220131160713.245637-1-marcan@marcan.st> <20220131160713.245637-4-marcan@marcan.st>
- <CAHp75VdgXdYXio8pTDdxsYy-iCXMvVpZM1T6gNmcxo3c1V+uJA@mail.gmail.com> <878ruvetpy.fsf@kernel.org>
-In-Reply-To: <878ruvetpy.fsf@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 31 Jan 2022 19:49:00 +0200
-Message-ID: <CAHp75Vc+HS0ytF3fuyEiwaG_-tLQMQriz48HLdPVyYn==jr7aA@mail.gmail.com>
-Subject: Re: [PATCH v4 3/9] brcmfmac: firmware: Do not crash on a NULL board_type
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Hector Martin <marcan@marcan.st>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH v3 net-next 6/7] net: udp: use kfree_skb_reason() in
+ udp_queue_rcv_one_skb()
+Content-Language: en-US
+To:     menglong8.dong@gmail.com, dsahern@kernel.org, kuba@kernel.org
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, pablo@netfilter.org, kadlec@netfilter.org,
+        fw@strlen.de, imagedong@tencent.com, edumazet@google.com,
+        alobakin@pm.me, paulb@nvidia.com, keescook@chromium.org,
+        talalahmad@google.com, haokexin@gmail.com, memxor@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        cong.wang@bytedance.com, mengensun@tencent.com
+References: <20220128073319.1017084-1-imagedong@tencent.com>
+ <20220128073319.1017084-7-imagedong@tencent.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220128073319.1017084-7-imagedong@tencent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 6:49 PM Kalle Valo <kvalo@kernel.org> wrote:
-> Andy Shevchenko <andy.shevchenko@gmail.com> writes:
-> > On Mon, Jan 31, 2022 at 6:07 PM Hector Martin <marcan@marcan.st> wrote:
+On 1/28/22 12:33 AM, menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> Replace kfree_skb() with kfree_skb_reason() in udp_queue_rcv_one_skb().
+> 
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> ---
+> v2:
+> - use SKB_DROP_REASON_SOCKET_FILTER instead of
+>   SKB_DROP_REASON_UDP_FILTER
+> ---
+>  net/ipv4/udp.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
 
-...
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-> >> +       if (!board_type)
-> >> +               return NULL;
-> >
-> > I still think it's better to have both callers do the same thing.
-> >
-> > Now it will be the double check in one case,
->
-> I already applied a similar patch:
->
-> https://git.kernel.org/wireless/wireless/c/665408f4c3a5
-
-"Similar" means that it took into account the concern I expressed here :-)
-I would have done slightly differently, but the main idea is the same.
-Thank you!
-
--- 
-With Best Regards,
-Andy Shevchenko
