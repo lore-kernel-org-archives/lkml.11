@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32064C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F708C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359664AbiAaLLz (ORCPT
+        id S1359699AbiAaLL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:11:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54076 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376275AbiAaLIG (ORCPT
+        Mon, 31 Jan 2022 06:11:58 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42274 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376299AbiAaLIH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:08:06 -0500
+        Mon, 31 Jan 2022 06:08:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAE3EB82A4D;
-        Mon, 31 Jan 2022 11:08:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AEA3C340E8;
-        Mon, 31 Jan 2022 11:08:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25BF760B98;
+        Mon, 31 Jan 2022 11:08:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E93F3C340E8;
+        Mon, 31 Jan 2022 11:08:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627283;
-        bh=k70UCGaKdelyUX4hLZO2WfvpGsnNzGI95PXnQiEeiXU=;
+        s=korg; t=1643627286;
+        bh=tZDQBq/qO6TsFqwPJb6+scacLa0iS0cC5ClrL9EoY+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FwthVCYnQi3B/4v7UcZV21m4/wx8jfuGtoMLJ0ByLWfBo5eVLYQhcsAAh3cAPkEZW
-         iaC5hlpnwYjJxMXqbbRG7cGwmHJ3JV8kvgqlRRNC2U5qrpja+jYbrT+WZbux3beDfV
-         +R8GnXadS6lI7lVkXCvMJJfA9df+Tkg2dLpwQDYU=
+        b=RHEreCl15ed38OC7oNOjf75ubU24PSS0pDjJeXgR9S3oyWUqvQVbbEb9HzQMg4e6s
+         kj0EuDFI1zVAhmlKXMH6Oc7qH/eBDEPUWzvU4VECFifWUfgVv3W3aLNDJ829H+QcdS
+         ZLOx6TSes/RQIJMMmQOj5qgjkuSEtPrWEpbLzsvk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Liam Merwick <liam.merwick@oracle.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 034/171] KVM: LAPIC: Also cancel preemption timer during SET_LAPIC
-Date:   Mon, 31 Jan 2022 11:54:59 +0100
-Message-Id: <20220131105231.168825677@linuxfoundation.org>
+Subject: [PATCH 5.15 035/171] KVM: SVM: Never reject emulation due to SMAP errata for !SEV guests
+Date:   Mon, 31 Jan 2022 11:55:00 +0100
+Message-Id: <20220131105231.206060647@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -46,53 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 35fe7cfbab2e81f1afb23fc4212210b1de6d9633 upstream.
+commit 55467fcd55b89c622e62b4afe60ac0eb2fae91f2 upstream.
 
-The below warning is splatting during guest reboot.
+Always signal that emulation is possible for !SEV guests regardless of
+whether or not the CPU provided a valid instruction byte stream.  KVM can
+read all guest state (memory and registers) for !SEV guests, i.e. can
+fetch the code stream from memory even if the CPU failed to do so because
+of the SMAP errata.
 
-  ------------[ cut here ]------------
-  WARNING: CPU: 0 PID: 1931 at arch/x86/kvm/x86.c:10322 kvm_arch_vcpu_ioctl_run+0x874/0x880 [kvm]
-  CPU: 0 PID: 1931 Comm: qemu-system-x86 Tainted: G          I       5.17.0-rc1+ #5
-  RIP: 0010:kvm_arch_vcpu_ioctl_run+0x874/0x880 [kvm]
-  Call Trace:
-   <TASK>
-   kvm_vcpu_ioctl+0x279/0x710 [kvm]
-   __x64_sys_ioctl+0x83/0xb0
-   do_syscall_64+0x3b/0xc0
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-  RIP: 0033:0x7fd39797350b
-
-This can be triggered by not exposing tsc-deadline mode and doing a reboot in
-the guest. The lapic_shutdown() function which is called in sys_reboot path
-will not disarm the flying timer, it just masks LVTT. lapic_shutdown() clears
-APIC state w/ LVT_MASKED and timer-mode bit is 0, this can trigger timer-mode
-switch between tsc-deadline and oneshot/periodic, which can result in preemption
-timer be cancelled in apic_update_lvtt(). However, We can't depend on this when
-not exposing tsc-deadline mode and oneshot/periodic modes emulated by preemption
-timer. Qemu will synchronise states around reset, let's cancel preemption timer
-under KVM_SET_LAPIC.
-
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1643102220-35667-1-git-send-email-wanpengli@tencent.com>
+Fixes: 05d5a4863525 ("KVM: SVM: Workaround errata#1096 (insn_len maybe zero on SMAP violation)")
 Cc: stable@vger.kernel.org
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Brijesh Singh <brijesh.singh@amd.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
+Message-Id: <20220120010719.711476-2-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/lapic.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/svm/svm.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2623,7 +2623,7 @@ int kvm_apic_set_state(struct kvm_vcpu *
- 	kvm_apic_set_version(vcpu);
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4407,8 +4407,13 @@ static bool svm_can_emulate_instruction(
+ 	bool smep, smap, is_user;
+ 	unsigned long cr4;
  
- 	apic_update_ppr(apic);
--	hrtimer_cancel(&apic->lapic_timer.timer);
-+	cancel_apic_timer(apic);
- 	apic->lapic_timer.expired_tscdeadline = 0;
- 	apic_update_lvtt(apic);
- 	apic_manage_nmi_watchdog(apic, kvm_lapic_get_reg(apic, APIC_LVT0));
++	/* Emulation is always possible when KVM has access to all guest state. */
++	if (!sev_guest(vcpu->kvm))
++		return true;
++
+ 	/*
+-	 * When the guest is an SEV-ES guest, emulation is not possible.
++	 * Emulation is impossible for SEV-ES guests as KVM doesn't have access
++	 * to guest register state.
+ 	 */
+ 	if (sev_es_guest(vcpu->kvm))
+ 		return false;
+@@ -4461,9 +4466,6 @@ static bool svm_can_emulate_instruction(
+ 	smap = cr4 & X86_CR4_SMAP;
+ 	is_user = svm_get_cpl(vcpu) == 3;
+ 	if (smap && (!smep || is_user)) {
+-		if (!sev_guest(vcpu->kvm))
+-			return true;
+-
+ 		pr_err_ratelimited("KVM: SEV Guest triggered AMD Erratum 1096\n");
+ 		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
+ 	}
 
 
