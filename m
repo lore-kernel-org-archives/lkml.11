@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C3D4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359165AbiAaLEf (ORCPT
+        id S1359186AbiAaLEh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:04:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
+        Mon, 31 Jan 2022 06:04:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359135AbiAaLDB (ORCPT
+        with ESMTP id S1359118AbiAaLC7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:03:01 -0500
+        Mon, 31 Jan 2022 06:02:59 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AE1C06137E;
-        Mon, 31 Jan 2022 03:01:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3B8C0613E9;
+        Mon, 31 Jan 2022 03:01:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAC4660B2D;
-        Mon, 31 Jan 2022 11:01:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAA68C340E8;
-        Mon, 31 Jan 2022 11:01:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D11E260BA2;
+        Mon, 31 Jan 2022 11:01:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAC6DC340E8;
+        Mon, 31 Jan 2022 11:01:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626886;
-        bh=yvLfEvfM1S9QsM+cfwQvHnI2a+N1nMMw0orbNRBlg70=;
+        s=korg; t=1643626880;
+        bh=eqaDUaWKBeWkcDFPzgRykjEQnCAlLdBYpvHrHiPgvio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M3AnDFXea3VB0ZgIy8XR6MIY8RmJM4jChf/nrWFisqMF8GoiCr9WxrvEU1Iz9loz1
-         Q1n5OiDU2aX/KczyuxjtZ60tXcEsWAp6t4AN7FVddatqtxH2H4iEigOch0tEH3b+rH
-         pSCCu3HCasAnTqjGlw/UAs1pIW1f2WBWmvhVKOxQ=
+        b=jBFsRpDn/rSx54J91L+wCaODl84GYP5b+mPYyy/5mBpjZ17fTmXtO9wFaHjhzWn2A
+         SfzHwPrwqnGt6jEPaym5MquyapsOKuexQIWhmLR2XO25nnXhoYdJ448V4jdhB0nkKW
+         ZJ8QzDrKBDcveVi0AyVBq11GwYVTLBt5GAJNZtnQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH 5.4 44/64] drm/msm/dsi: Fix missing put_device() call in dsi_get_phy
-Date:   Mon, 31 Jan 2022 11:56:29 +0100
-Message-Id: <20220131105217.168931203@linuxfoundation.org>
+        stable@vger.kernel.org, Jianguo Wu <wujianguo@chinatelecom.cn>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 42/64] net-procfs: show net devices bound packet types
+Date:   Mon, 31 Jan 2022 11:56:27 +0100
+Message-Id: <20220131105217.100841787@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -49,39 +49,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jianguo Wu <wujianguo@chinatelecom.cn>
 
-commit c04c3148ca12227d92f91b355b4538cc333c9922 upstream.
+commit 1d10f8a1f40b965d449e8f2d5ed7b96a7c138b77 upstream.
 
-If of_find_device_by_node() succeeds, dsi_get_phy() doesn't
-a corresponding put_device(). Thus add put_device() to fix the exception
-handling.
+After commit:7866a621043f ("dev: add per net_device packet type chains"),
+we can not get packet types that are bound to a specified net device by
+/proc/net/ptype, this patch fix the regression.
 
-Fixes: ec31abf ("drm/msm/dsi: Separate PHY to another platform device")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20211230070943.18116-1-linmq006@gmail.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Run "tcpdump -i ens192 udp -nns0" Before and after apply this patch:
+
+Before:
+  [root@localhost ~]# cat /proc/net/ptype
+  Type Device      Function
+  0800          ip_rcv
+  0806          arp_rcv
+  86dd          ipv6_rcv
+
+After:
+  [root@localhost ~]# cat /proc/net/ptype
+  Type Device      Function
+  ALL  ens192   tpacket_rcv
+  0800          ip_rcv
+  0806          arp_rcv
+  86dd          ipv6_rcv
+
+v1 -> v2:
+  - fix the regression rather than adding new /proc API as
+    suggested by Stephen Hemminger.
+
+Fixes: 7866a621043f ("dev: add per net_device packet type chains")
+Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/dsi/dsi.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/core/net-procfs.c |   35 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 32 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/msm/dsi/dsi.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi.c
-@@ -33,7 +33,12 @@ static int dsi_get_phy(struct msm_dsi *m
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -182,12 +182,23 @@ static const struct seq_operations softn
+ 	.show  = softnet_seq_show,
+ };
  
- 	of_node_put(phy_node);
+-static void *ptype_get_idx(loff_t pos)
++static void *ptype_get_idx(struct seq_file *seq, loff_t pos)
+ {
++	struct list_head *ptype_list = NULL;
+ 	struct packet_type *pt = NULL;
++	struct net_device *dev;
+ 	loff_t i = 0;
+ 	int t;
  
--	if (!phy_pdev || !msm_dsi->phy) {
-+	if (!phy_pdev) {
-+		DRM_DEV_ERROR(&pdev->dev, "%s: phy driver is not ready\n", __func__);
-+		return -EPROBE_DEFER;
++	for_each_netdev_rcu(seq_file_net(seq), dev) {
++		ptype_list = &dev->ptype_all;
++		list_for_each_entry_rcu(pt, ptype_list, list) {
++			if (i == pos)
++				return pt;
++			++i;
++		}
 +	}
-+	if (!msm_dsi->phy) {
-+		put_device(&phy_pdev->dev);
- 		DRM_DEV_ERROR(&pdev->dev, "%s: phy driver is not ready\n", __func__);
- 		return -EPROBE_DEFER;
- 	}
++
+ 	list_for_each_entry_rcu(pt, &ptype_all, list) {
+ 		if (i == pos)
+ 			return pt;
+@@ -208,22 +219,40 @@ static void *ptype_seq_start(struct seq_
+ 	__acquires(RCU)
+ {
+ 	rcu_read_lock();
+-	return *pos ? ptype_get_idx(*pos - 1) : SEQ_START_TOKEN;
++	return *pos ? ptype_get_idx(seq, *pos - 1) : SEQ_START_TOKEN;
+ }
+ 
+ static void *ptype_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ {
++	struct net_device *dev;
+ 	struct packet_type *pt;
+ 	struct list_head *nxt;
+ 	int hash;
+ 
+ 	++*pos;
+ 	if (v == SEQ_START_TOKEN)
+-		return ptype_get_idx(0);
++		return ptype_get_idx(seq, 0);
+ 
+ 	pt = v;
+ 	nxt = pt->list.next;
++	if (pt->dev) {
++		if (nxt != &pt->dev->ptype_all)
++			goto found;
++
++		dev = pt->dev;
++		for_each_netdev_continue_rcu(seq_file_net(seq), dev) {
++			if (!list_empty(&dev->ptype_all)) {
++				nxt = dev->ptype_all.next;
++				goto found;
++			}
++		}
++
++		nxt = ptype_all.next;
++		goto ptype_all;
++	}
++
+ 	if (pt->type == htons(ETH_P_ALL)) {
++ptype_all:
+ 		if (nxt != &ptype_all)
+ 			goto found;
+ 		hash = 0;
 
 
