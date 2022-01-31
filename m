@@ -2,116 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D88C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358151AbiAaSsB (ORCPT
+        id S1358076AbiAaSsF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 13:48:01 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:50845 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357574AbiAaSro (ORCPT
+        Mon, 31 Jan 2022 13:48:05 -0500
+Received: from out02.mta.xmission.com ([166.70.13.232]:59644 "EHLO
+        out02.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357716AbiAaSro (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 13:47:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643654864; x=1675190864;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=IYhSZ/tzFqcI2juAz94tHNjGagZXt+e1KImDPdpb4Bo=;
-  b=r7bZgf3XeY2ddfI0ElDypk5MC+E1lYyowymakwHA8am0INIxp4ybe1th
-   GzA64i8u/7tKsAXp/MecWLo+QArKGUBDJ9m0kDk8c8D9ifuOkYAxBrs7o
-   qjUQVlj8HAukj1b1VsCFjgH6UgTnMD8u7Rb4tWWUbOTTkPokJ6Hib8s4M
-   M=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 31 Jan 2022 10:47:44 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 10:47:43 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Mon, 31 Jan 2022 10:47:03 -0800
-Received: from [10.110.97.226] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 31 Jan
- 2022 10:47:02 -0800
-Message-ID: <6a00d247-da34-c499-8d2a-b3f336a3d136@quicinc.com>
-Date:   Mon, 31 Jan 2022 10:47:00 -0800
+Received: from in02.mta.xmission.com ([166.70.13.52]:42370)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nEbiI-00HXSu-1F; Mon, 31 Jan 2022 11:47:43 -0700
+Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:56392 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nEbiG-007mQf-FJ; Mon, 31 Jan 2022 11:47:41 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Jann Horn <jannh@google.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Denys Vlasenko <vda.linux@googlemail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Liam R . Howlett" <liam.howlett@oracle.com>
+References: <20220131153740.2396974-1-willy@infradead.org>
+        <871r0nriy4.fsf@email.froward.int.ebiederm.org>
+        <YfgKw5z2uswzMVRQ@casper.infradead.org>
+        <877dafq3bw.fsf@email.froward.int.ebiederm.org>
+        <YfgPwPvopO1aqcVC@casper.infradead.org>
+        <CAG48ez3MCs8d8hjBfRSQxwUTW3o64iaSwxF=UEVtk+SEme0chQ@mail.gmail.com>
+        <87bkzroica.fsf_-_@email.froward.int.ebiederm.org>
+Date:   Mon, 31 Jan 2022 12:47:34 -0600
+In-Reply-To: <87bkzroica.fsf_-_@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Mon, 31 Jan 2022 12:44:53 -0600")
+Message-ID: <87iltzn3nd.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 3/4] input: misc: pm8941-pwrkey: add software key press
- debouncing support
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <dmitry.torokhov@gmail.com>
-CC:     <linux-input@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <collinsd@codeaurora.org>,
-        <bjorn.andersson@linaro.org>, <skakit@codeaurora.org>
-References: <20220127210024.25597-1-quic_amelende@quicinc.com>
- <20220127210024.25597-4-quic_amelende@quicinc.com>
- <CAE-0n53oQEs+GO8+SXf1Zp4RT3FNvFzpDT+jYJA4fub77w+utw@mail.gmail.com>
-From:   Anjelique Melendez <quic_amelende@quicinc.com>
-In-Reply-To: <CAE-0n53oQEs+GO8+SXf1Zp4RT3FNvFzpDT+jYJA4fub77w+utw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain
+X-XM-SPF: eid=1nEbiG-007mQf-FJ;;;mid=<87iltzn3nd.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1/oGpZ9UFLzbnQWhkV7XiMYkWr0BtePZic=
+X-SA-Exim-Connect-IP: 68.110.24.146
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 5/5] coredump: Use the vma snapshot in fill_files_note
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+Matthew Wilcox reported that there is a missing mmap_lock in
+file_files_note that could possibly lead to a user after free.
 
-On 1/27/2022 2:44 PM, Stephen Boyd wrote:
-> Quoting Anjelique Melendez (2022-01-27 13:00:27)
->> diff --git a/drivers/input/misc/pm8941-pwrkey.c b/drivers/input/misc/pm8941-pwrkey.c
->> index 7005aede4f81..bcdbe260b684 100644
->> --- a/drivers/input/misc/pm8941-pwrkey.c
->> +++ b/drivers/input/misc/pm8941-pwrkey.c
-> [...]
->> +static int pm8941_pwrkey_sw_debounce_init(struct pm8941_pwrkey *pwrkey)
->> +{
->> +       unsigned int val, addr, mask;
->> +       int error;
->> +
->> +       if (pwrkey->data->has_pon_pbs && !pwrkey->pon_pbs_baseaddr) {
->> +               dev_err(pwrkey->dev, "PON_PBS address missing, can't read HW debounce time\n");
->> +               return 0;
->> +       }
->> +
->> +       if (pwrkey->pon_pbs_baseaddr)
->> +               addr = pwrkey->pon_pbs_baseaddr + PON_DBC_CTL;
->> +       else
->> +               addr = pwrkey->baseaddr + PON_DBC_CTL;
->> +       error = regmap_read(pwrkey->regmap, addr, &val);
->> +       if (error)
->> +               return error;
->> +
->> +       if (pwrkey->subtype >= PON_SUBTYPE_GEN2_PRIMARY)
->> +               mask = 0xf;
->> +       else
->> +               mask = 0x7;
->> +
->> +       pwrkey->sw_debounce_time_us = 2 * USEC_PER_SEC /
->> +                                               (1 << (mask - (val & mask)));
->          pwrkey->sw_debounce_time_us = 2 * USEC_PER_SEC / (1 << (mask
-> - (val & mask)));
->
-> Nitpick: Put this one one line?
+Solve this by using the existing vma snapshot for consistency
+and to avoid the need to take the mmap_lock anywhere in the
+coredump code except for dump_vma_snapshot.
 
-ACK
+Update the dump_vma_snapshot to capture vm_pgoff and vm_file
+that are neeeded by fill_files_note.
 
->
->> +
->> +       dev_dbg(pwrkey->dev, "SW debounce time = %u us\n",
->> +               pwrkey->sw_debounce_time_us);
->> +
->> +       return 0;
->> +}
->> +
->>  static int __maybe_unused pm8941_pwrkey_suspend(struct device *dev)
->>  {
->>         struct pm8941_pwrkey *pwrkey = dev_get_drvdata(dev);
+Add free_vma_snapshot to free the captured values of vm_file.
+
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Link: https://lkml.kernel.org/r/20220131153740.2396974-1-willy@infradead.org
+Cc: stable@vger.kernel.org
+Fixes: a07279c9a8cd ("binfmt_elf, binfmt_elf_fdpic: use a VMA list snapshot")
+Fixes: 2aa362c49c31 ("coredump: extend core dump note section to contain file names of mapped files")
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+---
+ fs/binfmt_elf.c          | 19 ++++++++++---------
+ fs/coredump.c            | 22 +++++++++++++++++++++-
+ include/linux/coredump.h |  2 ++
+ 3 files changed, 33 insertions(+), 10 deletions(-)
+
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index 272032b1f9a2..5fcaa01d211e 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -1619,14 +1619,14 @@ static void fill_siginfo_note(struct memelfnote *note, user_siginfo_t *csigdata,
+  *   long file_ofs
+  * followed by COUNT filenames in ASCII: "FILE1" NUL "FILE2" NUL...
+  */
+-static int fill_files_note(struct memelfnote *note)
++static int fill_files_note(struct memelfnote *note, struct coredump_params *cprm)
+ {
+ 	struct mm_struct *mm = current->mm;
+-	struct vm_area_struct *vma;
+ 	unsigned count, size, names_ofs, remaining, n;
+ 	user_long_t *data;
+ 	user_long_t *start_end_ofs;
+ 	char *name_base, *name_curpos;
++	int i;
+ 
+ 	/* *Estimated* file count and total data size needed */
+ 	count = mm->map_count;
+@@ -1651,11 +1651,12 @@ static int fill_files_note(struct memelfnote *note)
+ 	name_base = name_curpos = ((char *)data) + names_ofs;
+ 	remaining = size - names_ofs;
+ 	count = 0;
+-	for (vma = mm->mmap; vma != NULL; vma = vma->vm_next) {
++	for (i = 0; i < cprm->vma_count; i++) {
++		struct core_vma_metadata *m = &cprm->vma_meta[i];
+ 		struct file *file;
+ 		const char *filename;
+ 
+-		file = vma->vm_file;
++		file = m->file;
+ 		if (!file)
+ 			continue;
+ 		filename = file_path(file, name_curpos, remaining);
+@@ -1675,9 +1676,9 @@ static int fill_files_note(struct memelfnote *note)
+ 		memmove(name_curpos, filename, n);
+ 		name_curpos += n;
+ 
+-		*start_end_ofs++ = vma->vm_start;
+-		*start_end_ofs++ = vma->vm_end;
+-		*start_end_ofs++ = vma->vm_pgoff;
++		*start_end_ofs++ = m->start;
++		*start_end_ofs++ = m->end;
++		*start_end_ofs++ = m->pgoff;
+ 		count++;
+ 	}
+ 
+@@ -1887,7 +1888,7 @@ static int fill_note_info(struct elfhdr *elf, int phdrs,
+ 	fill_auxv_note(&info->auxv, current->mm);
+ 	info->size += notesize(&info->auxv);
+ 
+-	if (fill_files_note(&info->files) == 0)
++	if (fill_files_note(&info->files, cprm) == 0)
+ 		info->size += notesize(&info->files);
+ 
+ 	return 1;
+@@ -2076,7 +2077,7 @@ static int fill_note_info(struct elfhdr *elf, int phdrs,
+ 	fill_auxv_note(info->notes + 3, current->mm);
+ 	info->numnote = 4;
+ 
+-	if (fill_files_note(info->notes + info->numnote) == 0) {
++	if (fill_files_note(info->notes + info->numnote, cprm) == 0) {
+ 		info->notes_files = info->notes + info->numnote;
+ 		info->numnote++;
+ 	}
+diff --git a/fs/coredump.c b/fs/coredump.c
+index c5e7d63525c6..6a97a8ea7295 100644
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -54,6 +54,7 @@
+ #include <trace/events/sched.h>
+ 
+ static bool dump_vma_snapshot(struct coredump_params *cprm);
++static void free_vma_snapshot(struct coredump_params *cprm);
+ 
+ static int core_uses_pid;
+ static unsigned int core_pipe_limit;
+@@ -764,7 +765,7 @@ void do_coredump(const kernel_siginfo_t *siginfo)
+ 			dump_emit(&cprm, "", 1);
+ 		}
+ 		file_end_write(cprm.file);
+-		kvfree(cprm.vma_meta);
++		free_vma_snapshot(&cprm);
+ 	}
+ 	if (ispipe && core_pipe_limit)
+ 		wait_for_dump_helpers(cprm.file);
+@@ -1085,6 +1086,20 @@ static struct vm_area_struct *next_vma(struct vm_area_struct *this_vma,
+ 	return gate_vma;
+ }
+ 
++static void free_vma_snapshot(struct coredump_params *cprm)
++{
++	if (cprm->vma_meta) {
++		int i;
++		for (i = 0; i < cprm->vma_count; i++) {
++			struct file *file = cprm->vma_meta[i].file;
++			if (file)
++				fput(file);
++		}
++		kvfree(cprm->vma_meta);
++		cprm->vma_meta = NULL;
++	}
++}
++
+ /*
+  * Under the mmap_lock, take a snapshot of relevant information about the task's
+  * VMAs.
+@@ -1121,6 +1136,11 @@ static bool dump_vma_snapshot(struct coredump_params *cprm)
+ 		m->end = vma->vm_end;
+ 		m->flags = vma->vm_flags;
+ 		m->dump_size = vma_dump_size(vma, cprm->mm_flags);
++		m->pgoff = vma->vm_pgoff;
++
++		m->file = vma->vm_file;
++		if (m->file)
++			get_file(m->file);
+ 
+ 		cprm->vma_data_size += m->dump_size;
+ 	}
+diff --git a/include/linux/coredump.h b/include/linux/coredump.h
+index 7d05370e555e..08a1d3e7e46d 100644
+--- a/include/linux/coredump.h
++++ b/include/linux/coredump.h
+@@ -12,6 +12,8 @@ struct core_vma_metadata {
+ 	unsigned long start, end;
+ 	unsigned long flags;
+ 	unsigned long dump_size;
++	unsigned long pgoff;
++	struct file   *file;
+ };
+ 
+ struct coredump_params {
+-- 
+2.29.2
 
