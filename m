@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA03C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C326C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379182AbiAaL3z (ORCPT
+        id S1379203AbiAaL36 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46962 "EHLO
+        Mon, 31 Jan 2022 06:29:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378574AbiAaLUW (ORCPT
+        with ESMTP id S1378564AbiAaLUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353CFC061748;
-        Mon, 31 Jan 2022 03:13:14 -0800 (PST)
+        Mon, 31 Jan 2022 06:20:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E97C061401;
+        Mon, 31 Jan 2022 03:12:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCBC4611D8;
-        Mon, 31 Jan 2022 11:13:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C2EDC340E8;
-        Mon, 31 Jan 2022 11:13:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F779B82A60;
+        Mon, 31 Jan 2022 11:12:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23A00C340EF;
+        Mon, 31 Jan 2022 11:12:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627593;
-        bh=CtmX/A58SH25qW4/T+m5wAWeHt9TEkel110jnyl9Uao=;
+        s=korg; t=1643627574;
+        bh=sYWhTE2WPmqrRkWAOOA4xl4ixQavnpiet0lmQ/VYkgQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JAUCmZk8cz563654exYmY7Gikc+5ppXjxnQw1EmMpr0pNHdbtOVQITn+/dUIKmMt8
-         5Iv8eGAOnF0CxA29VVRswDkRruUOpGrTGSu7LKzvH0gKgbMytLD58IMfvY/6uA5jcL
-         rZyO3VwfftuijiDS/g5Npu9TAM1hKYNwWmTU08po=
+        b=H3Q7PM5oP0eIpNn62f3yg71o+5BPSLC5OzLcite8sECa3v5xJR+ri6kZtJq4KCkyf
+         kWhgAo99xf8B4QJ2pgFVS3ZjvcMP3JTHaoSuiIX0m4weVzaCqQ1Rq8wGsd7dpId0n8
+         4CZSPNnzoDIO0L3S+X4om4o/UhEsHxfLKFZkqWek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 101/171] NFS: Ensure the server has an up to date ctime before renaming
-Date:   Mon, 31 Jan 2022 11:56:06 +0100
-Message-Id: <20220131105233.463646276@linuxfoundation.org>
+Subject: [PATCH 5.15 127/171] octeontx2-pf: Forward error codes to VF
+Date:   Mon, 31 Jan 2022 11:56:32 +0100
+Message-Id: <20220131105234.315936007@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -51,32 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-[ Upstream commit 6ff9d99bb88faebf134ca668842349d9718e5464 ]
+[ Upstream commit a8db854be28622a2477cb21cdf7f829adbb2c42d ]
 
-Renaming a file is required by POSIX to update the file ctime, so
-ensure that the file data is synced to disk so that we don't clobber the
-updated ctime by writing back after creating the hard link.
+PF forwards its VF messages to AF and corresponding
+replies from AF to VF. AF sets proper error code in the
+replies after processing message requests. Currently PF
+checks the error codes in replies and sends invalid
+message to VF. This way VF lacks the information of
+error code set by AF for its messages. This patch
+changes that such that PF simply forwards AF replies
+so that VF can handle error codes.
 
-Fixes: f2c2c552f119 ("NFS: Move delegation recall into the NFSv4 callback for rename_setup()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Fixes: d424b6c02415 ("octeontx2-pf: Enable SRIOV and added VF mbox handling")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/dir.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -2490,6 +2490,8 @@ int nfs_rename(struct user_namespace *mn
- 		}
- 	}
- 
-+	if (S_ISREG(old_inode->i_mode))
-+		nfs_sync_inode(old_inode);
- 	task = nfs_async_rename(old_dir, new_dir, old_dentry, new_dentry, NULL);
- 	if (IS_ERR(task)) {
- 		error = PTR_ERR(task);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 53a3e8de1a51e..b1894d4045b8d 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -386,7 +386,12 @@ static int otx2_forward_vf_mbox_msgs(struct otx2_nic *pf,
+ 		dst_mdev->msg_size = mbox_hdr->msg_size;
+ 		dst_mdev->num_msgs = num_msgs;
+ 		err = otx2_sync_mbox_msg(dst_mbox);
+-		if (err) {
++		/* Error code -EIO indicate there is a communication failure
++		 * to the AF. Rest of the error codes indicate that AF processed
++		 * VF messages and set the error codes in response messages
++		 * (if any) so simply forward responses to VF.
++		 */
++		if (err == -EIO) {
+ 			dev_warn(pf->dev,
+ 				 "AF not responding to VF%d messages\n", vf);
+ 			/* restore PF mbase and exit */
+-- 
+2.34.1
+
 
 
