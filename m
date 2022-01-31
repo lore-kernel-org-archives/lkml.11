@@ -2,98 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 149BFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:00:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8489C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378218AbiAaN77 (ORCPT
+        id S1377170AbiAaOGv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 08:59:59 -0500
-Received: from mail.skyhub.de ([5.9.137.197]:41116 "EHLO mail.skyhub.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348918AbiAaN75 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 08:59:57 -0500
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B1C931EC0347;
-        Mon, 31 Jan 2022 14:59:51 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1643637591;
+        Mon, 31 Jan 2022 09:06:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:60037 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1359088AbiAaOGr (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 09:06:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643638007;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=OiqGrPMnbQIGw2+zC+4XudA/cLM9mrsP0jF/0Bd4QuQ=;
-        b=B1bfoGuvGOFIzbVcNaBP0Z+si2wluMNhvOWIaHfam12kzi8OhDQJzZzYFskxalWY3v/4qM
-        9Qo7hkumcoibiHxtCvVrlvKKDUEQxhWIx/KwrVoGGy7ZSSCr/1g1jtlzZAzV5ZptuacS1F
-        nGg+nK3P5+PoYvWU2nuxS3TDH2dVBeM=
-Date:   Mon, 31 Jan 2022 14:59:48 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     David Woodhouse <dwmw2@infradead.org>
-Cc:     Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sean Christopherson <seanjc@google.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "mimoja@mimoja.de" <mimoja@mimoja.de>,
-        "hewenliang4@huawei.com" <hewenliang4@huawei.com>,
-        "hushiyuan@huawei.com" <hushiyuan@huawei.com>,
-        "luolongjun@huawei.com" <luolongjun@huawei.com>,
-        "hejingxian@huawei.com" <hejingxian@huawei.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Cooper <andrew.cooper3@citrix.com>
-Subject: Re: [PATCH v3 6/9] x86/smpboot: Support parallel startup of
- secondary CPUs
-Message-ID: <YffrVMiO/NalRZjL@zn.tnic>
-References: <20211215145633.5238-1-dwmw2@infradead.org>
- <20211215145633.5238-7-dwmw2@infradead.org>
- <d10f529e-b1ee-6220-c6fc-80435f0061ee@amd.com>
- <f25c6ad00689fee6ce3e294393c13f3dcdd5985f.camel@infradead.org>
- <3d8e2d0d-1830-48fb-bc2d-995099f39ef0@amd.com>
- <e742473935bf81be84adea6fa8061ce0846cc630.camel@infradead.org>
- <330bedfee12022c1180d8752fb4abe908dac08d1.camel@infradead.org>
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lq4puUkj4hgrag1BwbEA+M/NEvqmLEeOxbVsYJ+Z5vo=;
+        b=NXaiQz2ogwQi2v+UsH3XJXPOsVktObvfOPO3K4v8pabgycMiayLkTFzpqXxnH23rvWIDay
+        atVs1MI7kTiSNnDDwQ69la49yAK5Jx1SGtooePOmF/d6YdtKKypa/XDCpseRsoUqnxnOzc
+        3nIlaY6lc2dXU3WePF5XXJOhZBRTOOc=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-277-O5_NTByiOxiHJpcdU2q3ZA-1; Mon, 31 Jan 2022 09:06:46 -0500
+X-MC-Unique: O5_NTByiOxiHJpcdU2q3ZA-1
+Received: by mail-ed1-f72.google.com with SMTP id l16-20020aa7c3d0000000b004070ea10e7fso6949420edr.3
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:06:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=lq4puUkj4hgrag1BwbEA+M/NEvqmLEeOxbVsYJ+Z5vo=;
+        b=MTkFCm6cKTupoZuqF6s8BFj5oRx1ev44u3wQ4MqMr9tuNFpHtx4VYjgmfhTtvG9M5d
+         IL7v6SXbauGQUgvCZFb6lDxO26rMLksfFM/RWpLTjEyShICKU8cKusEgEl/NUiIcv5JN
+         JXGC5/y74Oi82WHHEcJsvxciW3sp1EIGGJohF4b0tzJJ+SeoAiaU5ICmA/tLOdtmRJEh
+         RPfKqpWJn8o4YzkyO7aN1Kmlmr27sBmtfzflF7Lpe96GPJMiJu8Pewz2ASGbpqP2VCsC
+         guHx1948WQw/sbyx5AYOn33r+D3NWCzxptI4MSG7OUfKGnrzV+UssE3eaii1HfTeE7lx
+         zNIA==
+X-Gm-Message-State: AOAM531D9caPhOBN2odxFfYb3K7RTFgOePwdRhjeQsgNwSRVuviTr4NC
+        P7Xr12jKGbvCQMXxaPHxvqzpJjzFVLX4U2JvQgKe+PQAgHKUZWj6ADbvxMo4V4OjtG2y7N/JwkM
+        xfLYeRojDDnWHqZTXQQRuDFsJ
+X-Received: by 2002:a17:906:6a19:: with SMTP id qw25mr17483340ejc.558.1643638005079;
+        Mon, 31 Jan 2022 06:06:45 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxAO4eS7yGV8BJ6dApQRUxgeb4fW4AamF/LYz6ovahRis752lzaJ3TJIm62SEUFaDMA+X5X2Q==
+X-Received: by 2002:a17:906:6a19:: with SMTP id qw25mr17483320ejc.558.1643638004923;
+        Mon, 31 Jan 2022 06:06:44 -0800 (PST)
+Received: from ?IPV6:2003:cb:c709:b200:f007:5a26:32e7:8ef5? (p200300cbc709b200f0075a2632e78ef5.dip0.t-ipconnect.de. [2003:cb:c709:b200:f007:5a26:32e7:8ef5])
+        by smtp.gmail.com with ESMTPSA id p29sm17930429edi.11.2022.01.31.06.06.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 06:06:44 -0800 (PST)
+Message-ID: <c668a7a2-35c1-dea7-440a-bffaf2868701@redhat.com>
+Date:   Mon, 31 Jan 2022 15:06:43 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <330bedfee12022c1180d8752fb4abe908dac08d1.camel@infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 3/4] mm/gup: remove unused pin_user_pages_locked()
+Content-Language: en-US
+To:     John Hubbard <jhubbard@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jan Kara <jack@suse.cz>, Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org
+References: <20220131051752.447699-1-jhubbard@nvidia.com>
+ <20220131051752.447699-4-jhubbard@nvidia.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220131051752.447699-4-jhubbard@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 12:04:19PM +0000, David Woodhouse wrote:
-> I've rebased and pushed to
-> https://git.infradead.org/users/dwmw2/linux.git/shortlog/refs/heads/parallel-5.17
+On 31.01.22 06:17, John Hubbard wrote:
+> This routine was used for a short while, but then the calling code was
+> refactored and the only caller was removed.
 > 
-> I'll do some more testing and repost the series during next week. The
-> win is slightly more modest than the original patch sets because it now
-> only parallelises x86/cpu:kick. I'm going to do more careful review and
-> testing before doing the same for x86/cpu:wait-init in a later series.
-> You can see that coming together in the git tree but I'm only going to
-> post up to the 'Serialise topology updates' patch again for now.
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> ---
 
-Btw, Mr. Cooper points out a very important aspect and I don't know
-whether you've verified this already or whether this is not affected
-by your series ... yet. In any case it should be checked: microcode
-loading.
-
-See __reload_late() and all that dance we do to keep SMT siblings do
-nothing at the same time while updating microcode.
-
-With the current boot order, the APs should all do nothing so they won't
-need that sync for early loading - load_ucode_{ap,bsp} - but I don't
-know if you're changing that order with the parallel startup.
-
-If you do, you'll probably need such syncing for the early loading
-too...
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
 -- 
-Regards/Gruss,
-    Boris.
+Thanks,
 
-https://people.kernel.org/tglx/notes-about-netiquette
+David / dhildenb
+
