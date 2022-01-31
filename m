@@ -2,157 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60643C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD84C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378582AbiAaLwC (ORCPT
+        id S1378129AbiAaLwM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:52:02 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:2742 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380565AbiAaLpj (ORCPT
+        Mon, 31 Jan 2022 06:52:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:20535 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1380480AbiAaLpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:45:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643629538; x=1675165538;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FOsmUbbny+ixBX3cWHAy4nowHDLKpppGZfGFKSKvMPc=;
-  b=FN8A9/qyJO+pJEQliZe1mx08YZkndEommwiXCOB7U2ZYurZuNITdY0at
-   wtUKJm5Y++HvVyfBRQuaoHKf2bRc9JC60eS6syHtvzXRnAd4UR4dJC4Q3
-   Q9Mdics6rxwsChA6j3RwVcM0MWNK/qWAqTGIsWPSbaWYmEK4+X7Ju7FBI
-   lRLPmZmxypT0p3fI8RL53Uaj60N8AHSn2dnA3pY4gUANNUfiulcnYm+1m
-   a0Yx0AHzdLJO50ObnpCZkTPdi8TWsd8KgCUSH23mSgi86TpV5DYtVOmq/
-   um2GujQb4dLn1Wes3GF2xypT8EejXJtRxeWdoshraBlPnpMXmxputSxID
-   w==;
-IronPort-SDR: F454A3WrrP8zSsgW3ADCsbQeZhdF0hDc2QcfhGt472B+aWTLyRd2sPpc/qMB00RBaf6hAiq5c7
- 4Y9Xe11uJzqwn7kvCCNfnf46JQniG15U8spYFCWBsT22nhp2fGgCiZWzeUwK59cxZwTjUTLCpQ
- 2g1CsJTTWvJfeUwjBkKCvTG9i8WMUbEhbCUVyImilxodHg03mRISqYXQd+PQ9Nv2xKP7hoJpS9
- 2b1/KckhxINvpgmMQWNOA+HzyVasrWS4pJqT2J0YzUZSR+JVoLJN1wAtt0X+tw7OetXxGulFw+
- LPFiuYwUjS4NOgKalW335jUa
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="144390590"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Jan 2022 04:45:37 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 31 Jan 2022 04:45:37 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 31 Jan 2022 04:45:31 -0700
-From:   <conor.dooley@microchip.com>
-To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
-        <jassisinghbrar@gmail.com>, <thierry.reding@gmail.com>,
-        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
-        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <aou@eecs.berkeley.edu>, <geert@linux-m68k.org>,
-        <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-CC:     <krzysztof.kozlowski@canonical.com>, <bin.meng@windriver.com>,
-        <heiko@sntech.de>, <lewis.hanly@microchip.com>,
-        <conor.dooley@microchip.com>, <daire.mcnamara@microchip.com>,
-        <ivan.griffin@microchip.com>, <atishp@rivosinc.com>
-Subject: [PATCH v5 01/12] dt-bindings: soc/microchip: update syscontroller compatibles
-Date:   Mon, 31 Jan 2022 11:47:16 +0000
-Message-ID: <20220131114726.973690-2-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220131114726.973690-1-conor.dooley@microchip.com>
-References: <20220131114726.973690-1-conor.dooley@microchip.com>
+        Mon, 31 Jan 2022 06:45:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643629533;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hoFYGfluPusdpIx0z7ulqarblavPkRMbOpbOY+hsnMc=;
+        b=MV737yRD1x/d8P8JQ1cDvzQJ6y0CKGxZMuhHOQwDKfvhfWoNTa+1KdU0p8czjKWh7kkLuq
+        mXFURA07tN6Qzrnumv7/QY2qQLx9/NxBMRogFPUQ+yJ9NPPpQ4GAlxgd4Yuq+YFtUsTwN/
+        Bkk4GsMl4wpGEFXdzyt7+djx4kb8cI0=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-662-mWmEK7ZDOFKaiZvBFMUGqQ-1; Mon, 31 Jan 2022 06:45:32 -0500
+X-MC-Unique: mWmEK7ZDOFKaiZvBFMUGqQ-1
+Received: by mail-ej1-f70.google.com with SMTP id k16-20020a17090632d000b006ae1cdb0f07so4884380ejk.16
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:45:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hoFYGfluPusdpIx0z7ulqarblavPkRMbOpbOY+hsnMc=;
+        b=x+eBjHeOSLETEF6DstVLVf8RLofzU9S4dYZqnkq0h4AAp7Okw9IKwyufGZ8rSQGMmN
+         1ysp+Y3XFcwTK0EzRMawScaJdF2zGD1m5Ty2aY5Xu6gpAgHX7GmQwohexiusMo+8miUa
+         7SwlPKXFQqPkb/Oxl06x31bAxobGXm8Aav+I5/PYDiD/39Kzfd/1TYVlRK7mKaMVcGBP
+         VOG/3ymeogg9dFO1oh/HWApvKeiyTO252eaLm2cQQO5oICzg/6iHTSbTbj0J0u0Mlx24
+         DTngEwLjyLdAEoVrZbbq/OXdNshVa7ksWv4/irHQiQMk5tVnTDWz0aakBB08xWt3u34V
+         QkAQ==
+X-Gm-Message-State: AOAM530rVz/eCbWPAL8AXUUzg06xQAPB7wy78dIS2lL79rMaTCuTYGV9
+        ckRlexn8aHn/UPJPMJTI3gIR75LBrg76OA37Kgq7TcWnTg09HpNqBPOJoJ5wIT1b858cxE0/Rp8
+        fMrx3V1Zun3w3UxjWqN5cmSxw
+X-Received: by 2002:a17:907:3da8:: with SMTP id he40mr16485024ejc.146.1643629530793;
+        Mon, 31 Jan 2022 03:45:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwCPhmof2SHR2F4XPyoMObAr+XVZm4kbJ1j/8/xs2Yhwh/IbSeGoCugGupte2SySXNP0UDA1w==
+X-Received: by 2002:a17:907:3da8:: with SMTP id he40mr16485014ejc.146.1643629530591;
+        Mon, 31 Jan 2022 03:45:30 -0800 (PST)
+Received: from krava ([83.240.63.12])
+        by smtp.gmail.com with ESMTPSA id y23sm13375678ejp.116.2022.01.31.03.45.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 03:45:30 -0800 (PST)
+Date:   Mon, 31 Jan 2022 12:45:28 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v7 00/10] fprobe: Introduce fprobe function entry/exit
+ probe
+Message-ID: <YffL2G7XCAhB2cC1@krava>
+References: <164360522462.65877.1891020292202285106.stgit@devnote2>
+ <20220131183642.aba575006314b3988110a7e5@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131183642.aba575006314b3988110a7e5@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+On Mon, Jan 31, 2022 at 06:36:42PM +0900, Masami Hiramatsu wrote:
+> Hi Jiri,
+> 
+> On Mon, 31 Jan 2022 14:00:24 +0900
+> Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> 
+> > Hi,
+> > 
+> > Here is the 7th version of fprobe. This version fixes unregister_fprobe()
+> > ensures that exit_handler is not called after returning from the
+> > unregister_fprobe(), and fixes some comments and documents.
+> > 
+> > The previous version is here[1];
+> > 
+> > [1] https://lore.kernel.org/all/164338031590.2429999.6203979005944292576.stgit@devnote2/T/#u
+> > 
+> > This series introduces the fprobe, the function entry/exit probe
+> > with multiple probe point support. This also introduces the rethook
+> > for hooking function return as same as the kretprobe does. This
+> > abstraction will help us to generalize the fgraph tracer,
+> > because we can just switch to it from the rethook in fprobe,
+> > depending on the kernel configuration.
+> > 
+> > The patch [1/10] is from Jiri's series[2].
+> > 
+> > [2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
+> > 
+> > And the patch [9/10] adds the FPROBE_FL_KPROBE_SHARED flag for the case
+> > if user wants to share the same code (or share a same resource) on the
+> > fprobe and the kprobes.
+> 
+> If you want to work on this series, I pushed my working branch on here;
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/mhiramat/linux.git/ kprobes/fprobe
 
-The Polarfire SoC is currently using two different compatible string
-prefixes. Fix this by changing "polarfire-soc-*" strings to "mpfs-*" in
-its system controller in order to match the compatible string used in
-the soc binding and device tree
+great, I was going to ask for that ;-) thanks
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- ...larfire-soc-mailbox.yaml => microchip,mpfs-mailbox.yaml} | 6 +++---
- ...s-controller.yaml => microchip,mpfs-sys-controller.yaml} | 6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
- rename Documentation/devicetree/bindings/mailbox/{microchip,polarfire-soc-mailbox.yaml => microchip,mpfs-mailbox.yaml} (82%)
- rename Documentation/devicetree/bindings/soc/microchip/{microchip,polarfire-soc-sys-controller.yaml => microchip,mpfs-sys-controller.yaml} (75%)
+jirka
 
-diff --git a/Documentation/devicetree/bindings/mailbox/microchip,polarfire-soc-mailbox.yaml b/Documentation/devicetree/bindings/mailbox/microchip,mpfs-mailbox.yaml
-similarity index 82%
-rename from Documentation/devicetree/bindings/mailbox/microchip,polarfire-soc-mailbox.yaml
-rename to Documentation/devicetree/bindings/mailbox/microchip,mpfs-mailbox.yaml
-index bbb173ea483c..082d397d3e89 100644
---- a/Documentation/devicetree/bindings/mailbox/microchip,polarfire-soc-mailbox.yaml
-+++ b/Documentation/devicetree/bindings/mailbox/microchip,mpfs-mailbox.yaml
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/mailbox/microchip,polarfire-soc-mailbox.yaml#"
-+$id: "http://devicetree.org/schemas/mailbox/microchip,mpfs-mailbox.yaml#"
- $schema: "http://devicetree.org/meta-schemas/core.yaml#"
- 
- title: Microchip PolarFire SoC (MPFS) MSS (microprocessor subsystem) mailbox controller
-@@ -11,7 +11,7 @@ maintainers:
- 
- properties:
-   compatible:
--    const: microchip,polarfire-soc-mailbox
-+    const: microchip,mpfs-mailbox
- 
-   reg:
-     items:
-@@ -38,7 +38,7 @@ examples:
-       #address-cells = <2>;
-       #size-cells = <2>;
-       mbox: mailbox@37020000 {
--        compatible = "microchip,polarfire-soc-mailbox";
-+        compatible = "microchip,mpfs-mailbox";
-         reg = <0x0 0x37020000 0x0 0x1000>, <0x0 0x2000318c 0x0 0x40>;
-         interrupt-parent = <&L1>;
-         interrupts = <96>;
-diff --git a/Documentation/devicetree/bindings/soc/microchip/microchip,polarfire-soc-sys-controller.yaml b/Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
-similarity index 75%
-rename from Documentation/devicetree/bindings/soc/microchip/microchip,polarfire-soc-sys-controller.yaml
-rename to Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
-index 2cd3bc6bd8d6..f699772fedf3 100644
---- a/Documentation/devicetree/bindings/soc/microchip/microchip,polarfire-soc-sys-controller.yaml
-+++ b/Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/soc/microchip/microchip,polarfire-soc-sys-controller.yaml#"
-+$id: "http://devicetree.org/schemas/soc/microchip/microchip,mpfs-sys-controller.yaml#"
- $schema: "http://devicetree.org/meta-schemas/core.yaml#"
- 
- title: Microchip PolarFire SoC (MPFS) MSS (microprocessor subsystem) system controller
-@@ -19,7 +19,7 @@ properties:
-     maxItems: 1
- 
-   compatible:
--    const: microchip,polarfire-soc-sys-controller
-+    const: microchip,mpfs-sys-controller
- 
- required:
-   - compatible
-@@ -30,6 +30,6 @@ additionalProperties: false
- examples:
-   - |
-     syscontroller: syscontroller {
--      compatible = "microchip,polarfire-soc-sys-controller";
-+      compatible = "microchip,mpfs-sys-controller";
-       mboxes = <&mbox 0>;
-     };
--- 
-2.35.0
+> 
+> Thank you,
+> 
+> > 
+> > Thank you,
+> > 
+> > ---
+> > 
+> > Jiri Olsa (1):
+> >       ftrace: Add ftrace_set_filter_ips function
+> > 
+> > Masami Hiramatsu (9):
+> >       fprobe: Add ftrace based probe APIs
+> >       rethook: Add a generic return hook
+> >       rethook: x86: Add rethook x86 implementation
+> >       ARM: rethook: Add rethook arm implementation
+> >       arm64: rethook: Add arm64 rethook implementation
+> >       fprobe: Add exit_handler support
+> >       fprobe: Add sample program for fprobe
+> >       fprobe: Introduce FPROBE_FL_KPROBE_SHARED flag for fprobe
+> >       docs: fprobe: Add fprobe description to ftrace-use.rst
+> > 
+> > 
+> >  Documentation/trace/fprobe.rst                |  171 +++++++++++++
+> >  Documentation/trace/index.rst                 |    1 
+> >  arch/arm/Kconfig                              |    1 
+> >  arch/arm/include/asm/stacktrace.h             |    4 
+> >  arch/arm/kernel/stacktrace.c                  |    6 
+> >  arch/arm/probes/Makefile                      |    1 
+> >  arch/arm/probes/rethook.c                     |   71 +++++
+> >  arch/arm64/Kconfig                            |    1 
+> >  arch/arm64/include/asm/stacktrace.h           |    2 
+> >  arch/arm64/kernel/probes/Makefile             |    1 
+> >  arch/arm64/kernel/probes/rethook.c            |   25 ++
+> >  arch/arm64/kernel/probes/rethook_trampoline.S |   87 ++++++
+> >  arch/arm64/kernel/stacktrace.c                |    7 -
+> >  arch/x86/Kconfig                              |    1 
+> >  arch/x86/include/asm/unwind.h                 |    8 +
+> >  arch/x86/kernel/Makefile                      |    1 
+> >  arch/x86/kernel/kprobes/common.h              |    1 
+> >  arch/x86/kernel/rethook.c                     |  115 ++++++++
+> >  include/linux/fprobe.h                        |   97 +++++++
+> >  include/linux/ftrace.h                        |    3 
+> >  include/linux/kprobes.h                       |    3 
+> >  include/linux/rethook.h                       |  100 +++++++
+> >  include/linux/sched.h                         |    3 
+> >  kernel/exit.c                                 |    2 
+> >  kernel/fork.c                                 |    3 
+> >  kernel/trace/Kconfig                          |   26 ++
+> >  kernel/trace/Makefile                         |    2 
+> >  kernel/trace/fprobe.c                         |  341 +++++++++++++++++++++++++
+> >  kernel/trace/ftrace.c                         |   58 ++++
+> >  kernel/trace/rethook.c                        |  313 +++++++++++++++++++++++
+> >  samples/Kconfig                               |    7 +
+> >  samples/Makefile                              |    1 
+> >  samples/fprobe/Makefile                       |    3 
+> >  samples/fprobe/fprobe_example.c               |  120 +++++++++
+> >  34 files changed, 1572 insertions(+), 14 deletions(-)
+> >  create mode 100644 Documentation/trace/fprobe.rst
+> >  create mode 100644 arch/arm/probes/rethook.c
+> >  create mode 100644 arch/arm64/kernel/probes/rethook.c
+> >  create mode 100644 arch/arm64/kernel/probes/rethook_trampoline.S
+> >  create mode 100644 arch/x86/kernel/rethook.c
+> >  create mode 100644 include/linux/fprobe.h
+> >  create mode 100644 include/linux/rethook.h
+> >  create mode 100644 kernel/trace/fprobe.c
+> >  create mode 100644 kernel/trace/rethook.c
+> >  create mode 100644 samples/fprobe/Makefile
+> >  create mode 100644 samples/fprobe/fprobe_example.c
+> > 
+> > --
+> > Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
+> 
+> 
+> -- 
+> Masami Hiramatsu <mhiramat@kernel.org>
+> 
 
