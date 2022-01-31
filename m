@@ -2,165 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C37C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 13:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68DB7C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 13:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379171AbiAaNt5 (ORCPT
+        id S1379184AbiAaNvM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 08:49:57 -0500
-Received: from mga14.intel.com ([192.55.52.115]:62889 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1379143AbiAaNtv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 08:49:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643636991; x=1675172991;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CCvnVIfnnsg4Om7JyESlCrRRmCTTcyTfYzN4cwo7ytw=;
-  b=DeFdaTz/knNxNi+CbMLscPuDPIF/G1uOhVFBngH1Z8QYIAC7vel14gl7
-   e3EJOsU0cElivTIfHeTWQ00BS2yqh3uI34HmabpH5q4x7ca/OW3CDFmx9
-   zlAEFaspslHC1lfmhFbt4c8pOjt/PjM8izGkNLe1TTz7TB479pQcceak5
-   o8DCbhh2fwsT/UADRfgFB+cATjsY5MjEfFlOgwdvtKMF8SAlvI4kdoSTb
-   Nc8+IChA9KXVfSNFx5Ql+nYdxDVGAJtyWarHVraFZZ9NpPm8muNI1mZOg
-   E3xjJ6XCwLjqtXW1IfTccqM3WlMLAtWxfli5YW5nh72884h3w8Irnfx4F
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="247677792"
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="247677792"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 05:49:49 -0800
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="481753169"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 05:49:44 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1nEX2v-00Gt4F-Iy;
-        Mon, 31 Jan 2022 15:48:41 +0200
-Date:   Mon, 31 Jan 2022 15:48:41 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Ard Biesheuvel <ardb@kernel.org>, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        Fabio Aiuto <fabioaiuto83@gmail.com>,
-        platform-driver-x86@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org
-Subject: Re: [PATCH v4 12/20] power: supply: bq25890: Support higher charging
- voltages through Pump Express+ protocol
-Message-ID: <YffouVvL9M4fch0I@smile.fi.intel.com>
-References: <20220130204557.15662-1-hdegoede@redhat.com>
- <20220130204557.15662-13-hdegoede@redhat.com>
+        Mon, 31 Jan 2022 08:51:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40002 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234242AbiAaNvL (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 08:51:11 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 03C11612D4;
+        Mon, 31 Jan 2022 13:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 644FCC340EE;
+        Mon, 31 Jan 2022 13:51:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643637070;
+        bh=Zm6bqi0OhyogvNh7aVMw7s3EunV9nSGhxKYNcbdO5KQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=VB1HtyLzdS8WyvTpKJiOpoPPxcoguxNbLzYv4abyqilCHSyogINouv1glvQJZFH4Q
+         klN9Wf3wTM0XCcb+sbaTp/p8xQ3BGlv3yDFVAn7mISzfv+RJ6uwysKLrZqcIeuZsV0
+         BafaHReeaiYXGCqOvoDbXH50/QdF/KmcOkwUxcC6z5s7S+ynuf4rtQHXbffR8BjGLb
+         OitbrZLld31AnRz+oX2yFY1TO1RrEA5ZhTTBsfnzjWQo8vsm9Slf91RTtqGsq68Oz9
+         hbWbewIN8h4nsorfwtz6FBkTHNk15L724FloIzYmecGANavOB6kIoQwYSRDlSCKONR
+         zPKyniu/L1/aw==
+Received: by mail-vs1-f44.google.com with SMTP id a19so11839475vsi.2;
+        Mon, 31 Jan 2022 05:51:10 -0800 (PST)
+X-Gm-Message-State: AOAM5330A0mXBUdcy4Y3G+5BgP2ej2DwUNFPV+d3Qv289jE2pfndtfD2
+        PfSBnVOuYMiutKOz5WJYyxyt+FItoI2qMeWNa+0=
+X-Google-Smtp-Source: ABdhPJz6ty+HfMaRNZhEmkeOc11XYS0No2YCxA7dV1DvlPk1ApPFjUS4E1RUl7Xx1jtPl3XXvKrXpTneiT3oAugpR68=
+X-Received: by 2002:a67:e947:: with SMTP id p7mr7921986vso.59.1643637069468;
+ Mon, 31 Jan 2022 05:51:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220130204557.15662-13-hdegoede@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220129121728.1079364-1-guoren@kernel.org> <20220129121728.1079364-17-guoren@kernel.org>
+ <YffVZZg9GNcjgVdm@infradead.org>
+In-Reply-To: <YffVZZg9GNcjgVdm@infradead.org>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Mon, 31 Jan 2022 21:50:58 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTRXDotO1L1FMojQs6msrqvCzA782Pux8rg3AfZgA=y0ew@mail.gmail.com>
+Message-ID: <CAJF2gTRXDotO1L1FMojQs6msrqvCzA782Pux8rg3AfZgA=y0ew@mail.gmail.com>
+Subject: Re: [PATCH V4 16/17] riscv: compat: Add COMPAT Kbuild skeletal support
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
+        Anup Patel <anup@brainfault.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 30, 2022 at 09:45:49PM +0100, Hans de Goede wrote:
-> From: Yauhen Kharuzhy <jekhor@gmail.com>
-> 
-> Add a "linux,pump-express-vbus-max" property which indicates if the Pump
-> Express+ protocol should be used to increase the charging protocol.
-> 
-> If this new property is set and a DCP charger is detected then request
-> a higher charging voltage through the Pump Express+ protocol.
-> 
-> So far this new property is only used on x86/ACPI (non devicetree) devs,
-> IOW it is not used in actual devicetree files. The devicetree-bindings
-> maintainers have requested properties like these to not be added to the
-> devicetree-bindings, so the new property is deliberately not added
-> to the existing devicetree-bindings.
-> 
-> Changes by Hans de Goede:
-> - Port to my bq25890 patch-series + various cleanups
-> - Make behavior configurable through a new "linux,pump-express-vbus-max"
->   device-property
-> - Sleep 1 second before re-checking the Vbus voltage after requesting
->   it to be raised, to ensure that the ADC has time to sampled the new Vbus
-> - Add VBUSV bq25890_tables[] entry and use it in bq25890_get_vbus_voltage()
-> - Tweak commit message
+On Mon, Jan 31, 2022 at 8:26 PM Christoph Hellwig <hch@infradead.org> wrote:
+>
+> Given that most rv64 implementations can't run in rv32 mode, what is the
+> failure mode if someone tries it with the compat mode enabled?
+A static linked simple hello_world could still run on a non-compat
+support hardware. But most rv32 apps would meet different userspace
+segment faults.
 
-...
+Current code would let the machine try the rv32 apps without detecting
+whether hw support or not.
 
-> +static void bq25890_pump_express_work(struct work_struct *data)
-> +{
-> +	struct bq25890_device *bq =
-> +		container_of(data, struct bq25890_device, pump_express_work.work);
-> +	int voltage, i, ret;
-> +
-> +	dev_dbg(bq->dev, "Start to request input voltage increasing\n");
-> +
-> +	/* Enable current pulse voltage control protocol */
-> +	ret = bq25890_field_write(bq, F_PUMPX_EN, 1);
-> +	if (ret < 0)
-> +		goto error_print;
-> +
-> +	for (i = 0; i < PUMP_EXPRESS_MAX_TRIES; i++) {
-
-> +		voltage = bq25890_get_vbus_voltage(bq);
-> +		if (voltage < 0)
-> +			goto error_print;
-
-It also can be (at least in align with the rest error paths)
-
-		ret = bq25890_get_vbus_voltage(bq);
-		if (ret < 0)
-			goto error_print;
-		voltage = ret;
-
-followed up (but not necessarily)...
-
-> +		dev_dbg(bq->dev, "input voltage = %d uV\n", voltage);
-> +
-> +		if ((voltage + PUMP_EXPRESS_VBUS_MARGIN_uV) >
-> +					bq->pump_express_vbus_max)
-> +			break;
-> +
-> +		ret = bq25890_field_write(bq, F_PUMPX_UP, 1);
-> +		if (ret < 0)
-> +			goto error_print;
-> +
-> +		/* Note a single PUMPX up pulse-sequence takes 2.1s */
-> +		ret = regmap_field_read_poll_timeout(bq->rmap_fields[F_PUMPX_UP],
-> +						     ret, !ret, 100000, 3000000);
-> +		if (ret < 0)
-> +			goto error_print;
-> +
-> +		/* Make sure ADC has sampled Vbus before checking again */
-> +		msleep(1000);
-> +	}
-> +
-> +	bq25890_field_write(bq, F_PUMPX_EN, 0);
-> +
-> +	dev_info(bq->dev, "Hi-voltage charging requested, input voltage is %d mV\n",
-> +		 voltage);
-
-> +	return;
-> +error_print:
-
-	if (ret < 0)
-
-But it's up to you.
-
-> +	dev_err(bq->dev, "Failed to request hi-voltage charging\n");
-> +}
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Best Regards
+ Guo Ren
 
-
+ML: https://lore.kernel.org/linux-csky/
