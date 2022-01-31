@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED300C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5DFC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378144AbiAaLsE (ORCPT
+        id S1378097AbiAaLsA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:48:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
+        Mon, 31 Jan 2022 06:48:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378507AbiAaLeV (ORCPT
+        with ESMTP id S1350844AbiAaLfD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:34:21 -0500
+        Mon, 31 Jan 2022 06:35:03 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFE1C02B8E3;
-        Mon, 31 Jan 2022 03:22:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62494C07979E;
+        Mon, 31 Jan 2022 03:23:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D14B460B98;
-        Mon, 31 Jan 2022 11:22:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B583C340E8;
-        Mon, 31 Jan 2022 11:22:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0120F60B28;
+        Mon, 31 Jan 2022 11:23:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C2F0C340E8;
+        Mon, 31 Jan 2022 11:23:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628149;
-        bh=lzpqt2sgSR1A2ZFii+Gn6LLSdhI+k/qi5rmXGC98Gt8=;
+        s=korg; t=1643628227;
+        bh=83B0RS1DnVdZj+VKZkF1dGNsghRhMUMNT7KwBhdnqcI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UceXN38nlFMmOtYS97EM00zAo6pw/VCDL8RoWFq6AKidxc0ivmTLs9TI0GBNlau77
-         rIplBtZ4I+6c+a7Nhv6qdx0pTFyj/ot3Uv5rZC8wkheUEVvMhekMS6MkJHVmKEFNEq
-         Srd+kMjdNVNCJmSgTDBx0yhlws/aKjvKZ9mkh4MA=
+        b=kPzaoEIJextPTvvAyE7vaWE/YHNabs4FCTXakkHP2+sBnkr+5w8nHFxyvoG3nyc1+
+         7RWm2clJxE8qVqMLbnicEFdNpPCEydLelAyYJBdGw4/sjAZ1WcEN+VborF9dr0W4RA
+         RYFJeNHHdn8agCfwOBNQ2NjtLc+5infvWDiTUALg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>
-Subject: [PATCH 5.16 141/200] selftests: mptcp: fix ipv6 routing setup
-Date:   Mon, 31 Jan 2022 11:56:44 +0100
-Message-Id: <20220131105238.299505133@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Dany Madden <drt@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 164/200] ibmvnic: dont spin in tasklet
+Date:   Mon, 31 Jan 2022 11:57:07 +0100
+Message-Id: <20220131105239.065797582@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -52,58 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-[ Upstream commit 9846921dba4936d92f7608315b5d1e0a8ec3a538 ]
+[ Upstream commit 48079e7fdd0269d66b1d7d66ae88bd03162464ad ]
 
-MPJ ipv6 selftests currently lack per link route to the server
-net. Additionally, ipv6 subflows endpoints are created without any
-interface specified. The end-result is that in ipv6 self-tests
-subflows are created all on the same link, leading to expected delays
-and sporadic self-tests failures.
+ibmvnic_tasklet() continuously spins waiting for responses to all
+capability requests. It does this to avoid encountering an error
+during initialization of the vnic. However if there is a bug in the
+VIOS and we do not receive a response to one or more queries the
+tasklet ends up spinning continuously leading to hard lock ups.
 
-Fix the issue by adding the missing setup bits.
+If we fail to receive a message from the VIOS it is reasonable to
+timeout the login attempt rather than spin indefinitely in the tasklet.
 
-Fixes: 523514ed0a99 ("selftests: mptcp: add ADD_ADDR IPv6 test cases")
-Reported-and-tested-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 249168ad07cd ("ibmvnic: Make CRQ interrupt tasklet wait for all capabilities crqs")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/mptcp/mptcp_join.sh | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index bbafa4cf54538..d188ea0a5fc50 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -75,6 +75,7 @@ init()
- 
- 		# let $ns2 reach any $ns1 address from any interface
- 		ip -net "$ns2" route add default via 10.0.$i.1 dev ns2eth$i metric 10$i
-+		ip -net "$ns2" route add default via dead:beef:$i::1 dev ns2eth$i metric 10$i
- 	done
- }
- 
-@@ -1389,7 +1390,7 @@ ipv6_tests()
- 	reset
- 	ip netns exec $ns1 ./pm_nl_ctl limits 0 1
- 	ip netns exec $ns2 ./pm_nl_ctl limits 0 1
--	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 flags subflow
-+	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 dev ns2eth3 flags subflow
- 	run_tests $ns1 $ns2 dead:beef:1::1 0 0 0 slow
- 	chk_join_nr "single subflow IPv6" 1 1 1
- 
-@@ -1424,7 +1425,7 @@ ipv6_tests()
- 	ip netns exec $ns1 ./pm_nl_ctl limits 0 2
- 	ip netns exec $ns1 ./pm_nl_ctl add dead:beef:2::1 flags signal
- 	ip netns exec $ns2 ./pm_nl_ctl limits 1 2
--	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 flags subflow
-+	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 dev ns2eth3 flags subflow
- 	run_tests $ns1 $ns2 dead:beef:1::1 0 -1 -1 slow
- 	chk_join_nr "remove subflow and signal IPv6" 2 2 2
- 	chk_add_nr 1 1
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index acd488310bbce..682a440151a87 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -5491,12 +5491,6 @@ static void ibmvnic_tasklet(struct tasklet_struct *t)
+ 			ibmvnic_handle_crq(crq, adapter);
+ 			crq->generic.first = 0;
+ 		}
+-
+-		/* remain in tasklet until all
+-		 * capabilities responses are received
+-		 */
+-		if (!adapter->wait_capability)
+-			done = true;
+ 	}
+ 	/* if capabilities CRQ's were sent in this tasklet, the following
+ 	 * tasklet must wait until all responses are received
 -- 
 2.34.1
 
