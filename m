@@ -2,153 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E374FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0179EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:04:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349239AbiAaO6j (ORCPT
+        id S1349317AbiAaPEd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 09:58:39 -0500
-Received: from mga03.intel.com ([134.134.136.65]:12947 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232149AbiAaO6d (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 09:58:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643641112; x=1675177112;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=BxH+tZ/fu2IEVr/ao5807gbpeXmiy9cIQ6HmY7vsj8A=;
-  b=h/lKA8rwBqH9QijjbZk6acVqASFgEs+U/ue3KPsvQJZX/NYkeiV7mrG9
-   dr56FjyJNOlCLYo72N9hr6hvin821+YlsRFMZSPhDFTPcIRJjCjC53RtA
-   AWWcKvBnleA5XlBYhmS8j/Ntc4RKP8EossvwD65GkRq4t6V/5VfUH8VXB
-   Q46Kuyd9rZuMZNZyLwDh4TuaYLmJ1Nl0SI/HPO+mYt8DGDZ+kwmlFLraF
-   5iQGb6qSNFSK17lNxQ3zfvkveKhf/IaXrVU4B5V++xa/Ttchx9T3gqEah
-   DUE9MRtPpo8mGFXXh+FKAKlqMpNbFOXdzMSoAVN6jtUdiOrTcVKMzxKFd
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="247429261"
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="247429261"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 06:58:31 -0800
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="626388374"
-Received: from yeidelbe-mobl1.ger.corp.intel.com (HELO [10.249.254.103]) ([10.249.254.103])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 06:58:29 -0800
-Message-ID: <8ecf5706-84c2-2e30-9ee3-0f428ed95961@linux.intel.com>
-Date:   Mon, 31 Jan 2022 15:58:26 +0100
+        Mon, 31 Jan 2022 10:04:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239118AbiAaPEb (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 10:04:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF62C061714;
+        Mon, 31 Jan 2022 07:04:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57BC361354;
+        Mon, 31 Jan 2022 15:04:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5857C340E8;
+        Mon, 31 Jan 2022 15:04:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643641470;
+        bh=c9/aIQISNVasonKIg80yJ8DZ+88ghTU7a4R5TV5BYqA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=OPTJsPH+qSZMU4HGxrApk5aDXgrJngzDT9NNg9Cvcc1sggkGjNaw5qFwjitt0BkM/
+         W8mSWspwRga6zBOuJKsyWudlu7CkindXn5XvO26oZOnMdbUBCQbVHFlwUPOuqRBNU3
+         aZLvDSLqKbYiJwdPAgeR8xGW9Sve1XPnKbDqDdkODaDeROSzl/6LKQta1M/iAsFhXw
+         gmZzwaGvf7ls3eefPxSNlCZYgPFr8IsutQ9EEdUB3FW3wqQ72eOqb9gCb5VGCnhGpf
+         6D0udCbX0joArdkwrbDS/OkyDVpGQmknC4fe6zQM9JGTJnFXz39rVAu+LCmZuP8t4y
+         urbOrrtrHYb5g==
+Received: by mail-ej1-f42.google.com with SMTP id d10so43929184eje.10;
+        Mon, 31 Jan 2022 07:04:30 -0800 (PST)
+X-Gm-Message-State: AOAM530qrhxbm+B9sUx6DunIOWKBdzD18RyGRPFpu1sajRJz2OBRVLXS
+        +0g2VGl+FUuwu9i0aCQi57LC6N+aYNNfaK3FpQ==
+X-Google-Smtp-Source: ABdhPJxCvifa8NdYiEd4LyN7DFBZmLM72HV5P4vfP2HKXZuIDTpk/LDTi+doPtRjQ8yJaV0xkntHpAIuWP+Q24LNcxE=
+X-Received: by 2002:a17:907:7f1a:: with SMTP id qf26mr11560631ejc.20.1643641469027;
+ Mon, 31 Jan 2022 07:04:29 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [Intel-gfx] [PATCH v5 1/5] drm/i915: add needs_compact_pt flag
-Content-Language: en-US
-To:     Robert Beckett <bob.beckett@collabora.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Matthew Auld <matthew.auld@intel.com>
-References: <20220125193530.3272386-1-bob.beckett@collabora.com>
- <20220125193530.3272386-2-bob.beckett@collabora.com>
- <6d0a57e7-daf7-6436-e806-7cc8794c2d50@shipmail.org>
- <19bf8290-9308-b5c6-eb73-4020fa81aa66@collabora.com>
- <ce91e091-0df1-5c4d-a070-7b82d74d3f42@shipmail.org>
- <094b3a2d-0829-c34c-3a3d-e9639095f469@collabora.com>
-From:   =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
-        <thomas.hellstrom@linux.intel.com>
-In-Reply-To: <094b3a2d-0829-c34c-3a3d-e9639095f469@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220127192643.2534941-1-frowand.list@gmail.com>
+In-Reply-To: <20220127192643.2534941-1-frowand.list@gmail.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 31 Jan 2022 09:04:17 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLSsHJMKqOcLYR6uegghy8acLmu7iOX40gp__XVaShBUg@mail.gmail.com>
+Message-ID: <CAL_JsqLSsHJMKqOcLYR6uegghy8acLmu7iOX40gp__XVaShBUg@mail.gmail.com>
+Subject: Re: [PATCH 1/1] of: unittest: update text of expected warnings
+To:     Frank Rowand <frowand.list@gmail.com>
+Cc:     devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 1/31/22 15:19, Robert Beckett wrote:
+On Thu, Jan 27, 2022 at 1:26 PM <frowand.list@gmail.com> wrote:
 >
+> From: Frank Rowand <frank.rowand@sony.com>
 >
-> On 27/01/2022 09:37, Thomas Hellström (Intel) wrote:
->>
->> On 1/26/22 18:11, Robert Beckett wrote:
->>>
->>>
->>> On 26/01/2022 13:49, Thomas Hellström (Intel) wrote:
->>>>
->>>> On 1/25/22 20:35, Robert Beckett wrote:
->>>>> From: Ramalingam C <ramalingam.c@intel.com>
->>>>>
->>>>> Add a new platform flag, needs_compact_pt, to mark the requirement of
->>>>> compact pt layout support for the ppGTT when using 64K GTT pages.
->>>>>
->>>>> With this flag has_64k_pages will only indicate requirement of 64K
->>>>> GTT page sizes or larger for device local memory access.
->>>>>
->>>>> Suggested-by: Matthew Auld <matthew.auld@intel.com>
->>>>> Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
->>>>> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
->>>>> ---
->>>>>   drivers/gpu/drm/i915/i915_drv.h          | 10 +++++++---
->>>>>   drivers/gpu/drm/i915/i915_pci.c          |  2 ++
->>>>>   drivers/gpu/drm/i915/intel_device_info.h |  1 +
->>>>>   3 files changed, 10 insertions(+), 3 deletions(-)
->>>>>
->>>>> diff --git a/drivers/gpu/drm/i915/i915_drv.h 
->>>>> b/drivers/gpu/drm/i915/i915_drv.h
->>>>> index 44c1f98144b4..1258b7779705 100644
->>>>> --- a/drivers/gpu/drm/i915/i915_drv.h
->>>>> +++ b/drivers/gpu/drm/i915/i915_drv.h
->>>>> @@ -1512,12 +1512,16 @@ IS_SUBPLATFORM(const struct 
->>>>> drm_i915_private *i915,
->>>>>   /*
->>>>>    * Set this flag, when platform requires 64K GTT page sizes or 
->>>>> larger for
->>>>> - * device local memory access. Also this flag implies that we 
->>>>> require or
->>>>> - * at least support the compact PT layout for the ppGTT when 
->>>>> using the 64K
->>>>> - * GTT pages.
->>>>
->>>> Why do we remove these comment lines?
->>> Because HAS_64K_PAGES now means just 64K page, it no longer means 
->>> also requires compact pt.
->>> This is to support other products that will have 64K but not have 
->>> the PDE non-sharing restriction in future.
->>>
->>> Those lines moved to the next change NEEDS_COMPACT_PT, which is now 
->>> separate.
->>
->> Yes, NEEDS_COMPACT_PT indicates that compact is *required* but does 
->> "HAS_64K_PAGES" still mean compact is supported? That information is 
->> lost.
-> Not any more.
-> I discussed the ambiguity of the original wording with mauld on irc.
-> We came to the conclusion that HAS_64K_PAGES should mean just that, 
-> that the hw has support for 64K pages, and says nothing about 
-> compact-pt at all.
+> The text of various warning messages triggered by unittest has
+> changed.  Update the text of expected warnings to match.
 >
-> NEEDS_COMPACT_PT means that the hw has compact-pt support and the 
-> driver is required to use it as it is a hw limitation.
->
-> There will be other devices that can support compact-pt but do not 
-> mandate its use. In this case, the current code would not use them, 
-> but there is potential for some future opportunistic use of that in 
-> the driver if desired (currently expected to include accelerated 
-> move/clear). If any opportunistic use is added to the driver, a new 
-> flag can be added along with the code that uses it to indicate 
-> compact-pt availability that is not mandatory (HAS_COMPACT_PT most 
-> likely), but as there is no code requiring it currently it should not 
-> be added yet, and the comments left as this patch does.
->
-Ok, Thanks for the clarification.
+> The expected vs actual warnings are most easily seen by filtering
+> the boot console messages with the of_unittest_expect program at
+> https://github.com/frowand/dt_tools.git.  The filter prefixes
 
-Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+News to me there's such a tool. Normally, I just give up staring at
+the wall of text spewed out and check failures. Can we add this tool
+to the kernel tree? Then there might be some hope that I'll run it.
 
-
-
->>
->> /Thomas
->>
->>
+Rob
