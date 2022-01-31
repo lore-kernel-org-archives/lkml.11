@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE19C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78339C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349550AbiAaL0n (ORCPT
+        id S1377744AbiAaL1E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:26:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35628 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377330AbiAaLSC (ORCPT
+        Mon, 31 Jan 2022 06:27:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47356 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377399AbiAaLSL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:18:02 -0500
+        Mon, 31 Jan 2022 06:18:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741E6C061341;
+        Mon, 31 Jan 2022 03:11:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB0FDB82A5F;
-        Mon, 31 Jan 2022 11:18:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C979C340E8;
-        Mon, 31 Jan 2022 11:18:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 419C2B82A61;
+        Mon, 31 Jan 2022 11:11:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84E3EC340EF;
+        Mon, 31 Jan 2022 11:11:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627880;
-        bh=6nGHR68tqwvSOPGIC33WzZoogKKn5O2wpwNOB+osxdE=;
+        s=korg; t=1643627501;
+        bh=qqoB7EHQVor5f/OMG+syvKtFAeHTFIo6BetQX1TMjn0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JD5A+vo1ergqxa74UUvw2tYTMojzNlwRQ3B2kcLO3LCfTRztAtC/cws5Q58hRRbh/
-         UFICmOOFVxw6KdNS37HQ4/B2rRb3cgcfKt+6whPfYxZhRvqhgsW5csa5p1vdi618A1
-         WubVcZT2AjqjaMAMbqAhy7IYy7i8MmfNPmUwkTNI=
+        b=JwejdGVXzwmBxtzThM156vDaape/tIeQrYJCoiAF5Oamh20Stn0a/oCixsMo3MfJT
+         UdlXgcMvJ8xrfJ9CkLGpbiE7EjSvqkXpWqMV0E44BUZcmHMSTTtaTw87EMEPcWc7KP
+         aho2+A1xi/hcfxoDCZzPS11dC26pR8IN6twAlNGk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+be576ad7655690586eec@syzkaller.appspotmail.com,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 053/200] KVM: x86: Free kvm_cpuid_entry2 array on post-KVM_RUN KVM_SET_CPUID{,2}
-Date:   Mon, 31 Jan 2022 11:55:16 +0100
-Message-Id: <20220131105235.355525631@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: [PATCH 5.15 097/171] drm/msm/dsi: Fix missing put_device() call in dsi_get_phy
+Date:   Mon, 31 Jan 2022 11:56:02 +0100
+Message-Id: <20220131105233.316426858@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,66 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 811f95ff95270e6048197821434d9301e3d7f07c upstream.
+commit c04c3148ca12227d92f91b355b4538cc333c9922 upstream.
 
-Free the "struct kvm_cpuid_entry2" array on successful post-KVM_RUN
-KVM_SET_CPUID{,2} to fix a memory leak, the callers of kvm_set_cpuid()
-free the array only on failure.
+If of_find_device_by_node() succeeds, dsi_get_phy() doesn't
+a corresponding put_device(). Thus add put_device() to fix the exception
+handling.
 
- BUG: memory leak
- unreferenced object 0xffff88810963a800 (size 2048):
-  comm "syz-executor025", pid 3610, jiffies 4294944928 (age 8.080s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 0d 00 00 00  ................
-    47 65 6e 75 6e 74 65 6c 69 6e 65 49 00 00 00 00  GenuntelineI....
-  backtrace:
-    [<ffffffff814948ee>] kmalloc_node include/linux/slab.h:604 [inline]
-    [<ffffffff814948ee>] kvmalloc_node+0x3e/0x100 mm/util.c:580
-    [<ffffffff814950f2>] kvmalloc include/linux/slab.h:732 [inline]
-    [<ffffffff814950f2>] vmemdup_user+0x22/0x100 mm/util.c:199
-    [<ffffffff8109f5ff>] kvm_vcpu_ioctl_set_cpuid2+0x8f/0xf0 arch/x86/kvm/cpuid.c:423
-    [<ffffffff810711b9>] kvm_arch_vcpu_ioctl+0xb99/0x1e60 arch/x86/kvm/x86.c:5251
-    [<ffffffff8103e92d>] kvm_vcpu_ioctl+0x4ad/0x950 arch/x86/kvm/../../../virt/kvm/kvm_main.c:4066
-    [<ffffffff815afacc>] vfs_ioctl fs/ioctl.c:51 [inline]
-    [<ffffffff815afacc>] __do_sys_ioctl fs/ioctl.c:874 [inline]
-    [<ffffffff815afacc>] __se_sys_ioctl fs/ioctl.c:860 [inline]
-    [<ffffffff815afacc>] __x64_sys_ioctl+0xfc/0x140 fs/ioctl.c:860
-    [<ffffffff844a3335>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff844a3335>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fixes: c6617c61e8fe ("KVM: x86: Partially allow KVM_SET_CPUID{,2} after KVM_RUN")
-Cc: stable@vger.kernel.org
-Reported-by: syzbot+be576ad7655690586eec@syzkaller.appspotmail.com
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220125210445.2053429-1-seanjc@google.com>
-Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: ec31abf ("drm/msm/dsi: Separate PHY to another platform device")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20211230070943.18116-1-linmq006@gmail.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/cpuid.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/dsi/dsi.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -338,8 +338,14 @@ static int kvm_set_cpuid(struct kvm_vcpu
- 	 * KVM_SET_CPUID{,2} again. To support this legacy behavior, check
- 	 * whether the supplied CPUID data is equal to what's already set.
- 	 */
--	if (vcpu->arch.last_vmentry_cpu != -1)
--		return kvm_cpuid_check_equal(vcpu, e2, nent);
-+	if (vcpu->arch.last_vmentry_cpu != -1) {
-+		r = kvm_cpuid_check_equal(vcpu, e2, nent);
-+		if (r)
-+			return r;
-+
-+		kvfree(e2);
-+		return 0;
-+	}
+--- a/drivers/gpu/drm/msm/dsi/dsi.c
++++ b/drivers/gpu/drm/msm/dsi/dsi.c
+@@ -40,7 +40,12 @@ static int dsi_get_phy(struct msm_dsi *m
  
- 	r = kvm_check_cpuid(e2, nent);
- 	if (r)
+ 	of_node_put(phy_node);
+ 
+-	if (!phy_pdev || !msm_dsi->phy) {
++	if (!phy_pdev) {
++		DRM_DEV_ERROR(&pdev->dev, "%s: phy driver is not ready\n", __func__);
++		return -EPROBE_DEFER;
++	}
++	if (!msm_dsi->phy) {
++		put_device(&phy_pdev->dev);
+ 		DRM_DEV_ERROR(&pdev->dev, "%s: phy driver is not ready\n", __func__);
+ 		return -EPROBE_DEFER;
+ 	}
 
 
