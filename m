@@ -2,102 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 214B0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 21:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B796C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 21:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379491AbiAaVGJ (ORCPT
+        id S1357241AbiAaVGi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 16:06:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
+        Mon, 31 Jan 2022 16:06:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbiAaVGI (ORCPT
+        with ESMTP id S231445AbiAaVGg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 16:06:08 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5911AC06173B
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 13:06:08 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id b1-20020a17090a990100b001b14bd47532so386144pjp.0
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 13:06:08 -0800 (PST)
+        Mon, 31 Jan 2022 16:06:36 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6FFC061714
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 13:06:36 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id m13-20020a05600c3b0d00b00353951c3f62so119228wms.5
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 13:06:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SU2C5Ut+6pVhWNusD7rQJSCoDPKXcj6KPViieB+X2lo=;
-        b=hoQPs3vvKd7f1xYDysO+MqUCq4Iv27DRIoE1LCB2rYcxtJxZsOpFbFs/dzUF4N+KB7
-         YOvrYpJQ6TEndtT426TWvnQaEdc8kuPAvKL1ohdSugHUSz5qDExR/NXy0vXMuNI258E+
-         TfjMsP0xEQN9+BRl5R2eCk8q0PFJoH0jSWOzU=
+        d=ffwll.ch; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YEN1WalulXHp5psdK77RRQL6YIodekwef+OLqnVkw3U=;
+        b=BXlMSbrQQm45vIk8G32qbGBElJQXMtQzu20EGflvpycDYmJI5dd/dpdizoRxFh9F6A
+         Q12yPGrID201GhrqQY0R0n9gUPWn9gxBXaGIedKulXZuktfd/I9uM7X8oO7R29VT8fzx
+         NV157eRcr1zgYtAH7SrPMYSIVYhCix3PV5+i8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SU2C5Ut+6pVhWNusD7rQJSCoDPKXcj6KPViieB+X2lo=;
-        b=DERV8FSZ6Ukeg2XlyWUt6sE8i5blSsVSPvEFlHebVRIjgsiCWRkAuHaZUzv2Phjl4z
-         VwZdHJ6z3doO6EHhNjsoSh2ao8G5ZyhIvino1JoavPa/ex3IOd1P5pQkbBFI0lpVTm9Y
-         vFvnT2Krz4/rP3Zr+2CC6jz9H+rDnH7D2smHrozo+wqX2Z3KxU0Y6zVXjQZuNp4F17ZO
-         7gTBUwz9ce7Xc4wi9HJldmrZsK4zSc1hQKXFml6T6MxTULjwiWXs3Qezor3HlylC2+Zf
-         ofsAcsnKov+6fARIu5LRnEc+WyXiq8GWfi5AGS194RLD0OHvsVeeBHdWbrcRlFbvMg19
-         D3gQ==
-X-Gm-Message-State: AOAM532gnY515Py4WH9ROJAc3VCUiaQCuI3DDV63jSH7azM+HGHBKCBs
-        Jy8m9TAlzcq7Apel7SmuIAQ0PRyW9lRXbQ==
-X-Google-Smtp-Source: ABdhPJw3mk7g/0+d8ppkglsn7LnLQZW0nlmnZxQQxVqkVpoCYTS2/ssuThB0561M1pMoYV+W9kT4YA==
-X-Received: by 2002:a17:902:c215:: with SMTP id 21mr21063159pll.134.1643663167174;
-        Mon, 31 Jan 2022 13:06:07 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id z6sm5913634pfb.171.2022.01.31.13.06.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YEN1WalulXHp5psdK77RRQL6YIodekwef+OLqnVkw3U=;
+        b=GZW2nwjkCpWDjstJy4yPTXLDSJxDz8rS8qYjR39skfSN26YmXb07+hFHNkM8KuyaMR
+         3LtfWxiPQDzwJYZon82kJa98AcfM8eSePyGOoX7u5+xk1c3T/Q6S4uk5F0FX3wtSf0bt
+         kmj4kdOblDt5SkWNn1zP6N4HLfaqPIBq6eRMEBjobCXSGhg+spq6yuJOm6+o2Cfauu7L
+         uZNTgCIO2gcdZJ7uwLWuoPtvnBF2I+0X6kOaBIw5fUeRAvHlL2naZp+qDlDh5uMUS+Ei
+         E4GESRBS0bSyG17HCHg1fSoetyfSAT1uReTQDzskdAeFikB7tHHUzA4vuNGQe82IpUmE
+         HmRg==
+X-Gm-Message-State: AOAM531Dk8ZC1Llz5Bad6vco6aqfemOI6VtuRivk8/tV7YbP0RED1Exh
+        Co29MRjoczwXh1+MHnqP9zArRg==
+X-Google-Smtp-Source: ABdhPJyB1hSzGYw1XHzZs/Ba7cdy3A7msMyTjt4I8mWUBqVQeVt4E+n2y/Bz/unKl/ZTEyvt8+HEIQ==
+X-Received: by 2002:a05:600c:288:: with SMTP id 8mr28455267wmk.25.1643663194637;
+        Mon, 31 Jan 2022 13:06:34 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id b11sm314961wmq.46.2022.01.31.13.06.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 13:06:06 -0800 (PST)
-Date:   Mon, 31 Jan 2022 13:06:06 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Leon Romanovsky <leon@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: linux-next: build failure after merge of the kspp tree
-Message-ID: <202201311300.39BE058A1@keescook>
-References: <20220131100954.74a2034f@canb.auug.org.au>
- <202201302002.41A8DDA2@keescook>
- <20220131155932.3f88ec71@canb.auug.org.au>
- <202201302216.97F2691@keescook>
- <20220131191019.fpa5sn5u4kuov5ub@sx1>
+        Mon, 31 Jan 2022 13:06:34 -0800 (PST)
+From:   Daniel Vetter <daniel.vetter@ffwll.ch>
+To:     DRI Development <dri-devel@lists.freedesktop.org>
+Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Subject: [PATCH 00/21] some fbcon patches, mostly locking
+Date:   Mon, 31 Jan 2022 22:05:31 +0100
+Message-Id: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220131191019.fpa5sn5u4kuov5ub@sx1>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 11:10:19AM -0800, Saeed Mahameed wrote:
-> On 30 Jan 22:19, Kees Cook wrote:
-> > On Mon, Jan 31, 2022 at 03:59:32PM +1100, Stephen Rothwell wrote:
-> > > On Sun, 30 Jan 2022 20:04:00 -0800 Kees Cook <keescook@chromium.org> wrote:
-> > > > https://lore.kernel.org/linux-hardening/20220124172242.2410996-1-keescook@chromium.org/
+Hi all,
 
-Fixes: 34802a42b352 ("net/mlx5e: Do not modify the TX SKB")
+This took way longer than I hoped, but well I got lost in head-scratching
+locking problems. Anyway ended up typing a pile of fbcon patches. Rough
+overview:
 
-> > > > https://lore.kernel.org/linux-hardening/20220124172028.2410761-1-keescook@chromium.org/
+- MAINTAINER entry for fbdev core in drm-misc, with the usual group
+  maintainering
 
-Fixes: b5503b994ed5 ("net/mlx5e: XDP TX forwarding support")
+- The reverts, but with a compile time option. I looked into combining
+  this with the RFC from Helge, but it looked like worse than either
+  approach, so I've kept mine. I think merging either is fine, no personal
+  stake here on the bikeshed color.
 
-> > > yeah, neither has made it yet.  However, it would not have helped as I
-> > > am merging the kspp tree very early so that new bugs get fixed in the
-> > > trees that introduce them.  These 2 are in Linus tree (for a long time)
-> > > and so it would be better if these fixes went int the net tree and then
-> > > Linus' tree as bug fixes.
-> 
-> I need proper fixes tags to submit to net, can you provide ?
+- The real distraction, aka a bunch of cleanups and mostly locking work
+  for fbcon. I managed to ditch at least one locking FIXME from fbcon.c.
 
-Sure! See above.
+The bad news that I spent a bunch more time pondering about the bigger
+locking issues in fbcon.c, and I think as-is they're unfixable. We need
+the threaded printk support to land first, so that we're not adding
+lock_fb_info() to all printk() contexts. Because that just cannot work.
 
-> another option is to use a shared branch with those fixes and pull it to
-> both net-next and kspp.
+That also means we'll likely have another fbcon regression to face, in the
+form of worse oops printing ability. And that one I don't think we can fix
+with clever application of #ifdef, because changing locking rules at
+compile time in fundamental ways is just not a very good idea.
 
-It's just a handful left now, so I think we'll avoid this for now.
+Anyway, testing, review, feedback and all that very much welcome, as
+usual.
 
-Thanks!
+Cheers, Daniel
+
+Daniel Vetter (21):
+  MAINTAINERS: Add entry for fbdev core
+  fbcon: Resurrect fbcon accelerated scrolling code
+  fbcon: Restore fbcon scrolling acceleration
+  fbcon: delete a few unneeded forward decl
+  fbcon: Introduce wrapper for console->fb_info lookup
+  fbcon: delete delayed loading code
+  fbdev/sysfs: Fix locking
+  fbcon: Use delayed work for cursor
+  fbcon: Replace FBCON_FLAGS_INIT with a boolean
+  fb: Delete fb_info->queue
+  fbcon: Extract fbcon_open/release helpers
+  fbcon: Ditch error handling for con2fb_release_oldinfo
+  fbcon: move more common code into fb_open()
+  fbcon: use lock_fb_info in fbcon_open/release
+  fbcon: Consistently protect deferred_takeover with console_lock()
+  fbcon: Move console_lock for register/unlink/unregister
+  fbcon: Move more code into fbcon_release
+  fbcon: untangle fbcon_exit
+  fbcon: Maintain a private array of fb_info
+  Revert "fbdev: Prevent probing generic drivers if a FB is already
+    registered"
+  fbdev: Make registered_fb[] private to fbmem.c
+
+ Documentation/gpu/todo.rst              |   13 +-
+ MAINTAINERS                             |    6 +
+ drivers/video/console/Kconfig           |   11 +
+ drivers/video/fbdev/core/bitblit.c      |   16 +
+ drivers/video/fbdev/core/fbcon.c        | 1072 +++++++++++++++++------
+ drivers/video/fbdev/core/fbcon.h        |   67 +-
+ drivers/video/fbdev/core/fbcon_ccw.c    |   28 +-
+ drivers/video/fbdev/core/fbcon_cw.c     |   28 +-
+ drivers/video/fbdev/core/fbcon_rotate.h |   21 +
+ drivers/video/fbdev/core/fbcon_ud.c     |   37 +-
+ drivers/video/fbdev/core/fbmem.c        |   35 +-
+ drivers/video/fbdev/core/fbsysfs.c      |    2 +
+ drivers/video/fbdev/core/tileblit.c     |   16 +
+ drivers/video/fbdev/efifb.c             |   11 -
+ drivers/video/fbdev/simplefb.c          |   11 -
+ drivers/video/fbdev/skeletonfb.c        |   12 +-
+ include/linux/fb.h                      |   10 +-
+ 17 files changed, 1017 insertions(+), 379 deletions(-)
 
 -- 
-Kees Cook
+2.33.0
+
