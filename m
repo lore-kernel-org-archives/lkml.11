@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C01C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:15:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376506AbiAaLPY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:15:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376381AbiAaLIW (ORCPT
+        id S245594AbiAaLPc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:15:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42434 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376372AbiAaLIU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:08:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85861C06137D;
-        Mon, 31 Jan 2022 03:05:09 -0800 (PST)
+        Mon, 31 Jan 2022 06:08:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0E5360B2D;
-        Mon, 31 Jan 2022 11:05:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA995C340E8;
-        Mon, 31 Jan 2022 11:05:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7238060F96;
+        Mon, 31 Jan 2022 11:08:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B0BEC340E8;
+        Mon, 31 Jan 2022 11:08:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627108;
-        bh=zvyNwOr93+rBG2GHu7E1w57INMl7TdbBKGqvr/NBZrE=;
+        s=korg; t=1643627298;
+        bh=SJVbZ4ndkvI29KQrm+pGAliRpePgPYkwDJRiSLl383g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ICap4FEnYet9l77TP33XCFgIxV7HeEHYlrr1XvbqcllNSDLYjOkesLoyHZ8NR4DiT
-         FATuXxZCzawaIJ2/Us9aWHGCI+m/HR9eFBdEh7yHVIOSvldM9sHTVhlw24edZwa+fd
-         KXZsbr89EbChoBagHKGLHzUeTUUHMSjT/fMrs/oE=
+        b=YtW9FGYlHSkyEY3l83+r5jF9pQ8SowV069p6YVqRA4k2RY50Q3sRhCbgdCqktxWlF
+         brI4RZb8YROxY0N1cCC/luGbUhkk0VTtNEpSrL/mlVXHrvtgvOTbH3nY/5WnHlmxcC
+         RCkvzAuWfvBiDtMh0igKOX2BLDr86g1LNSuHHpw4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 069/100] netfilter: conntrack: dont increment invalid counter on NF_REPEAT
-Date:   Mon, 31 Jan 2022 11:56:30 +0100
-Message-Id: <20220131105222.755280957@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoyao Li <xiaoyao.li@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 039/171] KVM: x86: Keep MSR_IA32_XSS unchanged for INIT
+Date:   Mon, 31 Jan 2022 11:55:04 +0100
+Message-Id: <20220131105231.341874862@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +46,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Xiaoyao Li <xiaoyao.li@intel.com>
 
-[ Upstream commit 830af2eba40327abec64325a5b08b1e85c37a2e0 ]
+commit be4f3b3f82271c3193ce200a996dc70682c8e622 upstream.
 
-The packet isn't invalid, REPEAT means we're trying again after cleaning
-out a stale connection, e.g. via tcp tracker.
+It has been corrected from SDM version 075 that MSR_IA32_XSS is reset to
+zero on Power up and Reset but keeps unchanged on INIT.
 
-This caused increases of invalid stat counter in a test case involving
-frequent connection reuse, even though no packet is actually invalid.
-
-Fixes: 56a62e2218f5 ("netfilter: conntrack: fix NF_REPEAT handling")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: a554d207dc46 ("KVM: X86: Processor States following Reset or INIT")
+Cc: stable@vger.kernel.org
+Signed-off-by: Xiaoyao Li <xiaoyao.li@intel.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220126172226.2298529-2-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_conntrack_core.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/x86/kvm/x86.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index f4cf26b606f92..8369af0c50eab 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1832,15 +1832,17 @@ repeat:
- 		pr_debug("nf_conntrack_in: Can't track with proto module\n");
- 		nf_conntrack_put(&ct->ct_general);
- 		skb->_nfct = 0;
--		NF_CT_STAT_INC_ATOMIC(state->net, invalid);
--		if (ret == -NF_DROP)
--			NF_CT_STAT_INC_ATOMIC(state->net, drop);
- 		/* Special case: TCP tracker reports an attempt to reopen a
- 		 * closed/aborted connection. We have to go back and create a
- 		 * fresh conntrack.
- 		 */
- 		if (ret == -NF_REPEAT)
- 			goto repeat;
-+
-+		NF_CT_STAT_INC_ATOMIC(state->net, invalid);
-+		if (ret == -NF_DROP)
-+			NF_CT_STAT_INC_ATOMIC(state->net, drop);
-+
- 		ret = -ret;
- 		goto out;
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -10990,6 +10990,7 @@ void kvm_vcpu_reset(struct kvm_vcpu *vcp
+ 		vcpu->arch.msr_misc_features_enables = 0;
+ 
+ 		vcpu->arch.xcr0 = XFEATURE_MASK_FP;
++		vcpu->arch.ia32_xss = 0;
  	}
--- 
-2.34.1
-
+ 
+ 	memset(vcpu->arch.regs, 0, sizeof(vcpu->arch.regs));
+@@ -11008,8 +11009,6 @@ void kvm_vcpu_reset(struct kvm_vcpu *vcp
+ 		eax = 0x600;
+ 	kvm_rdx_write(vcpu, eax);
+ 
+-	vcpu->arch.ia32_xss = 0;
+-
+ 	static_call(kvm_x86_vcpu_reset)(vcpu, init_event);
+ 
+ 	kvm_set_rflags(vcpu, X86_EFLAGS_FIXED);
 
 
