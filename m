@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BE8C35272
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E75C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376540AbiAaLM4 (ORCPT
+        id S1376618AbiAaLND (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:12:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377072AbiAaLJg (ORCPT
+        Mon, 31 Jan 2022 06:13:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42912 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377063AbiAaLJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C291C0613E7;
-        Mon, 31 Jan 2022 03:06:21 -0800 (PST)
+        Mon, 31 Jan 2022 06:09:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F195B82A65;
-        Mon, 31 Jan 2022 11:06:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6F8C340E8;
-        Mon, 31 Jan 2022 11:06:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92E8860ED0;
+        Mon, 31 Jan 2022 11:09:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6018BC340E8;
+        Mon, 31 Jan 2022 11:09:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627178;
-        bh=bZ6ukf/XeQnZfTLzn0CS/fdzDUU9lgLzWoBo03yH37s=;
+        s=korg; t=1643627372;
+        bh=k2DtKHgtpZaa9V38EPljyP+xKLOCVtkX+3w5cWza7bc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FiSNH/rlUtEazYOQnE971InUJ1M2Rz2/nwZKFtV7eLtoODRjm9xuzQFUnkxnZE6Qj
-         mQzq4p7IbP6qH245N3yy7TXdj7nmkPaCRpwqavD+4llJRJEK6YnW25q2Mg9/2QoSmG
-         /YqhP8rSbyg/xKJemZ0VLHNxzEjLeGj9z7txrJl0=
+        b=lrYxfmT3l5vqYLOVHIv/s2jwOkuyEm0fm1JNqq2qeUNVgCricB7aH2DG7C6pYd4ni
+         UT3qjSavyEitwDssMK1DYWlf0fmJOQx6zYxEvwcyX+rosyBQy3Kh7q/XUKDGhjU4N8
+         IUjNHc9hChR4Qxn0rhEsMuF353JR6oeXsFN0XkGc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Dmitry V. Levin" <ldv@altlinux.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 5.10 098/100] usr/include/Makefile: add linux/nfc.h to the compile-test coverage
-Date:   Mon, 31 Jan 2022 11:56:59 +0100
-Message-Id: <20220131105223.745422665@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH 5.15 029/171] perf/x86/intel/uncore: Fix CAS_COUNT_WRITE issue for ICX
+Date:   Mon, 31 Jan 2022 11:54:54 +0100
+Message-Id: <20220131105231.002398524@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,32 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry V. Levin <ldv@altlinux.org>
+From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 
-commit 10756dc5b02bff370ddd351d7744bc99ada659c2 upstream.
+commit 96fd2e89fba1aaada6f4b1e5d25a9d9ecbe1943d upstream.
 
-As linux/nfc.h userspace compilation was finally fixed by commits
-79b69a83705e ("nfc: uapi: use kernel size_t to fix user-space builds")
-and 7175f02c4e5f ("uapi: fix linux/nfc.h userspace compilation errors"),
-there is no need to keep the compile-test exception for it in
-usr/include/Makefile.
+The user recently report a perf issue in the ICX platform, when test by
+perf event “uncore_imc_x/cas_count_write”,the write bandwidth is always
+very small (only 0.38MB/s), it is caused by the wrong "umask" for the
+"cas_count_write" event. When double-checking, find "cas_count_read"
+also is wrong.
 
-Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+The public document for ICX uncore:
+
+3rd Gen Intel® Xeon® Processor Scalable Family, Codename Ice Lake,Uncore
+Performance Monitoring Reference Manual, Revision 1.00, May 2021
+
+On 2.4.7, it defines Unit Masks for CAS_COUNT:
+RD b00001111
+WR b00110000
+
+So corrected both "cas_count_read" and "cas_count_write" for ICX.
+
+Old settings:
+ hswep_uncore_imc_events
+	INTEL_UNCORE_EVENT_DESC(cas_count_read,  "event=0x04,umask=0x03")
+	INTEL_UNCORE_EVENT_DESC(cas_count_write, "event=0x04,umask=0x0c")
+
+New settings:
+ snr_uncore_imc_events
+	INTEL_UNCORE_EVENT_DESC(cas_count_read,  "event=0x04,umask=0x0f")
+	INTEL_UNCORE_EVENT_DESC(cas_count_write, "event=0x04,umask=0x30")
+
+Fixes: 2b3b76b5ec67 ("perf/x86/intel/uncore: Add Ice Lake server uncore support")
+Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20211223144826.841267-1-zhengjun.xing@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- usr/include/Makefile |    1 -
- 1 file changed, 1 deletion(-)
+ arch/x86/events/intel/uncore_snbep.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/usr/include/Makefile
-+++ b/usr/include/Makefile
-@@ -34,7 +34,6 @@ no-header-test += linux/hdlc/ioctl.h
- no-header-test += linux/ivtv.h
- no-header-test += linux/kexec.h
- no-header-test += linux/matroxfb.h
--no-header-test += linux/nfc.h
- no-header-test += linux/omap3isp.h
- no-header-test += linux/omapfb.h
- no-header-test += linux/patchkey.h
+--- a/arch/x86/events/intel/uncore_snbep.c
++++ b/arch/x86/events/intel/uncore_snbep.c
+@@ -5482,7 +5482,7 @@ static struct intel_uncore_type icx_unco
+ 	.fixed_ctr_bits	= 48,
+ 	.fixed_ctr	= SNR_IMC_MMIO_PMON_FIXED_CTR,
+ 	.fixed_ctl	= SNR_IMC_MMIO_PMON_FIXED_CTL,
+-	.event_descs	= hswep_uncore_imc_events,
++	.event_descs	= snr_uncore_imc_events,
+ 	.perf_ctr	= SNR_IMC_MMIO_PMON_CTR0,
+ 	.event_ctl	= SNR_IMC_MMIO_PMON_CTL0,
+ 	.event_mask	= SNBEP_PMON_RAW_EVENT_MASK,
 
 
