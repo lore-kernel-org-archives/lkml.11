@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C00ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 037FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376431AbiAaLI0 (ORCPT
+        id S1376470AbiAaLIb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:08:26 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52000 "EHLO
+        Mon, 31 Jan 2022 06:08:31 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53200 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358897AbiAaLFJ (ORCPT
+        with ESMTP id S1359357AbiAaLFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:05:09 -0500
+        Mon, 31 Jan 2022 06:05:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80E6FB82A4D;
-        Mon, 31 Jan 2022 11:05:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BC1C340E8;
-        Mon, 31 Jan 2022 11:05:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A4E8B82A5E;
+        Mon, 31 Jan 2022 11:05:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAA41C340E8;
+        Mon, 31 Jan 2022 11:05:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627105;
-        bh=OUhEJvXOgBhzU0u44Xd5EN8/jjiRO3tNqHcCjxWqQWY=;
+        s=korg; t=1643627114;
+        bh=UZqAeWaT4UU0ub23NmEW130ffEa5NGj+ACSVG0Tkre8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KDXdrTsZUAOC81xYn7YHII6954FFocynvZ7Bt8w0badzGoh6hMhrxjUx3jqev8Zio
-         PhXb9xD6+uSgWjVYC6Jp8qIm3kPFNJnZS6sYcVH6aelz6UHrGps9mShXzrWn1sCvKF
-         QbjKHr7+U4mWnchpu4hlseX9Ag0D0y+uuW4vdqhA=
+        b=XNr/BTh28u2Lmv5Vn95gAayqgrWbI4lGA82hJcryCnk2pSGvRmwBANmH5c9b5wa6B
+         htT1rqTWVHLmlLtGLwmYKmz32VyROOsFfseoKXvZ7BLGybsaNsqMNQyZ3u9Bvtg9jN
+         nmDbjwwusK5O5c0Xl6JmH9EIf2pGQXc30JVY2R/M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Badhri Jagan Sridharan <badhri@google.com>
-Subject: [PATCH 5.10 033/100] usb: typec: tcpm: Do not disconnect while receiving VBUS off
-Date:   Mon, 31 Jan 2022 11:55:54 +0100
-Message-Id: <20220131105221.560972591@linuxfoundation.org>
+        stable@vger.kernel.org, Sachin Sant <sachinp@linux.ibm.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 079/100] powerpc/perf: Fix power_pmu_disable to call clear_pmi_irq_pending only if PMI is pending
+Date:   Mon, 31 Jan 2022 11:56:40 +0100
+Message-Id: <20220131105223.086890433@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -47,53 +49,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Badhri Jagan Sridharan <badhri@google.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-commit 90b8aa9f5b09edae6928c0561f933fec9f7a9987 upstream.
+[ Upstream commit fb6433b48a178d4672cb26632454ee0b21056eaa ]
 
-With some chargers, vbus might momentarily raise above VSAFE5V and fall
-back to 0V before tcpm gets to read port->tcpc->get_vbus. This will
-will report a VBUS off event causing TCPM to transition to
-SNK_UNATTACHED where it should be waiting in either SNK_ATTACH_WAIT
-or SNK_DEBOUNCED state. This patch makes TCPM avoid vbus off events
-while in SNK_ATTACH_WAIT or SNK_DEBOUNCED state.
+Running selftest with CONFIG_PPC_IRQ_SOFT_MASK_DEBUG enabled in kernel
+triggered below warning:
 
-Stub from the spec:
-    "4.5.2.2.4.2 Exiting from AttachWait.SNK State
-    A Sink shall transition to Unattached.SNK when the state of both
-    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce.
-    A DRP shall transition to Unattached.SRC when the state of both
-    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce."
+[  172.851380] ------------[ cut here ]------------
+[  172.851391] WARNING: CPU: 8 PID: 2901 at arch/powerpc/include/asm/hw_irq.h:246 power_pmu_disable+0x270/0x280
+[  172.851402] Modules linked in: dm_mod bonding nft_ct nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ip_set nf_tables rfkill nfnetlink sunrpc xfs libcrc32c pseries_rng xts vmx_crypto uio_pdrv_genirq uio sch_fq_codel ip_tables ext4 mbcache jbd2 sd_mod t10_pi sg ibmvscsi ibmveth scsi_transport_srp fuse
+[  172.851442] CPU: 8 PID: 2901 Comm: lost_exception_ Not tainted 5.16.0-rc5-03218-g798527287598 #2
+[  172.851451] NIP:  c00000000013d600 LR: c00000000013d5a4 CTR: c00000000013b180
+[  172.851458] REGS: c000000017687860 TRAP: 0700   Not tainted  (5.16.0-rc5-03218-g798527287598)
+[  172.851465] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 48004884  XER: 20040000
+[  172.851482] CFAR: c00000000013d5b4 IRQMASK: 1
+[  172.851482] GPR00: c00000000013d5a4 c000000017687b00 c000000002a10600 0000000000000004
+[  172.851482] GPR04: 0000000082004000 c0000008ba08f0a8 0000000000000000 00000008b7ed0000
+[  172.851482] GPR08: 00000000446194f6 0000000000008000 c00000000013b118 c000000000d58e68
+[  172.851482] GPR12: c00000000013d390 c00000001ec54a80 0000000000000000 0000000000000000
+[  172.851482] GPR16: 0000000000000000 0000000000000000 c000000015d5c708 c0000000025396d0
+[  172.851482] GPR20: 0000000000000000 0000000000000000 c00000000a3bbf40 0000000000000003
+[  172.851482] GPR24: 0000000000000000 c0000008ba097400 c0000000161e0d00 c00000000a3bb600
+[  172.851482] GPR28: c000000015d5c700 0000000000000001 0000000082384090 c0000008ba0020d8
+[  172.851549] NIP [c00000000013d600] power_pmu_disable+0x270/0x280
+[  172.851557] LR [c00000000013d5a4] power_pmu_disable+0x214/0x280
+[  172.851565] Call Trace:
+[  172.851568] [c000000017687b00] [c00000000013d5a4] power_pmu_disable+0x214/0x280 (unreliable)
+[  172.851579] [c000000017687b40] [c0000000003403ac] perf_pmu_disable+0x4c/0x60
+[  172.851588] [c000000017687b60] [c0000000003445e4] __perf_event_task_sched_out+0x1d4/0x660
+[  172.851596] [c000000017687c50] [c000000000d1175c] __schedule+0xbcc/0x12a0
+[  172.851602] [c000000017687d60] [c000000000d11ea8] schedule+0x78/0x140
+[  172.851608] [c000000017687d90] [c0000000001a8080] sys_sched_yield+0x20/0x40
+[  172.851615] [c000000017687db0] [c0000000000334dc] system_call_exception+0x18c/0x380
+[  172.851622] [c000000017687e10] [c00000000000c74c] system_call_common+0xec/0x268
 
-[23.194131] CC1: 0 -> 0, CC2: 0 -> 5 [state SNK_UNATTACHED, polarity 0, connected]
-[23.201777] state change SNK_UNATTACHED -> SNK_ATTACH_WAIT [rev3 NONE_AMS]
-[23.209949] pending state change SNK_ATTACH_WAIT -> SNK_DEBOUNCED @ 170 ms [rev3 NONE_AMS]
-[23.300579] VBUS off
-[23.300668] state change SNK_ATTACH_WAIT -> SNK_UNATTACHED [rev3 NONE_AMS]
-[23.301014] VBUS VSAFE0V
-[23.301111] Start toggling
+The warning indicates that MSR_EE being set(interrupt enabled) when
+there was an overflown PMC detected. This could happen in
+power_pmu_disable since it runs under interrupt soft disable
+condition ( local_irq_save ) and not with interrupts hard disabled.
+commit 2c9ac51b850d ("powerpc/perf: Fix PMU callbacks to clear
+pending PMI before resetting an overflown PMC") intended to clear
+PMI pending bit in Paca when disabling the PMU. It could happen
+that PMC gets overflown while code is in power_pmu_disable
+callback function. Hence add a check to see if PMI pending bit
+is set in Paca before clearing it via clear_pmi_pending.
 
-Fixes: f0690a25a140b8 ("staging: typec: USB Type-C Port Manager (tcpm)")
-Cc: stable@vger.kernel.org
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
-Link: https://lore.kernel.org/r/20220122015520.332507-1-badhri@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2c9ac51b850d ("powerpc/perf: Fix PMU callbacks to clear pending PMI before resetting an overflown PMC")
+Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220122033429.25395-1-atrajeev@linux.vnet.ibm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/tcpm/tcpm.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/powerpc/perf/core-book3s.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/typec/tcpm/tcpm.c
-+++ b/drivers/usb/typec/tcpm/tcpm.c
-@@ -4164,7 +4164,8 @@ static void _tcpm_pd_vbus_off(struct tcp
- 	case SNK_TRYWAIT_DEBOUNCE:
- 		break;
- 	case SNK_ATTACH_WAIT:
--		tcpm_set_state(port, SNK_UNATTACHED, 0);
-+	case SNK_DEBOUNCED:
-+		/* Do nothing, as TCPM is still waiting for vbus to reaach VSAFE5V to connect */
- 		break;
+diff --git a/arch/powerpc/perf/core-book3s.c b/arch/powerpc/perf/core-book3s.c
+index bd34e062bd290..e49aa8fc6a491 100644
+--- a/arch/powerpc/perf/core-book3s.c
++++ b/arch/powerpc/perf/core-book3s.c
+@@ -1273,9 +1273,20 @@ static void power_pmu_disable(struct pmu *pmu)
+ 		 * Otherwise provide a warning if there is PMI pending, but
+ 		 * no counter is found overflown.
+ 		 */
+-		if (any_pmc_overflown(cpuhw))
+-			clear_pmi_irq_pending();
+-		else
++		if (any_pmc_overflown(cpuhw)) {
++			/*
++			 * Since power_pmu_disable runs under local_irq_save, it
++			 * could happen that code hits a PMC overflow without PMI
++			 * pending in paca. Hence only clear PMI pending if it was
++			 * set.
++			 *
++			 * If a PMI is pending, then MSR[EE] must be disabled (because
++			 * the masked PMI handler disabling EE). So it is safe to
++			 * call clear_pmi_irq_pending().
++			 */
++			if (pmi_irq_pending())
++				clear_pmi_irq_pending();
++		} else
+ 			WARN_ON(pmi_irq_pending());
  
- 	case SNK_NEGOTIATE_CAPABILITIES:
+ 		val = mmcra = cpuhw->mmcr.mmcra;
+-- 
+2.34.1
+
 
 
