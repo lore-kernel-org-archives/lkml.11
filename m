@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B05DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D20C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358793AbiAaLEq (ORCPT
+        id S1359230AbiAaLEr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:04:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358449AbiAaLCW (ORCPT
+        Mon, 31 Jan 2022 06:04:47 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35926 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358435AbiAaLCV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:02:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B613C061769;
-        Mon, 31 Jan 2022 03:00:36 -0800 (PST)
+        Mon, 31 Jan 2022 06:02:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08196B82A5F;
-        Mon, 31 Jan 2022 11:00:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6370EC340E8;
-        Mon, 31 Jan 2022 11:00:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09D3060B28;
+        Mon, 31 Jan 2022 11:02:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C27B3C340E8;
+        Mon, 31 Jan 2022 11:02:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626833;
-        bh=pprbZsg+C92F/5sdWdHZshcc/eOL9hMtUXknEI2V4gg=;
+        s=korg; t=1643626940;
+        bh=FdwPPk2gvLjIFkl3+JgjvyKrpdqDALAn+JhXfZlZT9I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XotECHmPjk9O0L5lvD/cEr/tH6iE418LtXaPGdAdsxzokpA+NWo4zBpW8mq6E67x+
-         ycDuBTikh0v3hWZrAkEC0KPqh1Iz3KtX7IqUwuf7JDtRcB941wYT9qwWWaT2Xi4M1L
-         6/emaA0T9OCkwh4ZohjQz7WtFU4l+1D9F7dgIWmg=
+        b=uVOqhDUTD67ga+CnNODF1ce83f/l0G+77SxIOx/nUWYwNWt0lyJn52Bx5/wK86VEp
+         bdXGdSjPCFh3G/j31q0toSmRQH30nda6H86JxA1mnjLO2OE6Jm7U+eFM2X2MlkkEVo
+         LHoYv5wme+azyrNhKtnsKo0+wtozw1I30qb/s/Rk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 37/64] ping: fix the sk_bound_dev_if match in ping_lookup
-Date:   Mon, 31 Jan 2022 11:56:22 +0100
-Message-Id: <20220131105216.930543828@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Steffen Weinreich <steve@weinreich.org>
+Subject: [PATCH 5.10 023/100] netfilter: nft_payload: do not update layer 4 checksum when mangling fragments
+Date:   Mon, 31 Jan 2022 11:55:44 +0100
+Message-Id: <20220131105221.236589643@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
-References: <20220131105215.644174521@linuxfoundation.org>
+In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
+References: <20220131105220.424085452@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,47 +47,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 2afc3b5a31f9edf3ef0f374f5d70610c79c93a42 upstream.
+commit 4e1860a3863707e8177329c006d10f9e37e097a8 upstream.
 
-When 'ping' changes to use PING socket instead of RAW socket by:
+IP fragments do not come with the transport header, hence skip bogus
+layer 4 checksum updates.
 
-   # sysctl -w net.ipv4.ping_group_range="0 100"
-
-the selftests 'router_broadcast.sh' will fail, as such command
-
-  # ip vrf exec vrf-h1 ping -I veth0 198.51.100.255 -b
-
-can't receive the response skb by the PING socket. It's caused by mismatch
-of sk_bound_dev_if and dif in ping_rcv() when looking up the PING socket,
-as dif is vrf-h1 if dif's master was set to vrf-h1.
-
-This patch is to fix this regression by also checking the sk_bound_dev_if
-against sdif so that the packets can stil be received even if the socket
-is not bound to the vrf device but to the real iif.
-
-Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 1814096980bb ("netfilter: nft_payload: layer 4 checksum adjustment for pseudoheader fields")
+Reported-and-tested-by: Steffen Weinreich <steve@weinreich.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ping.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/netfilter/nft_payload.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -220,7 +220,8 @@ static struct sock *ping_lookup(struct n
- 			continue;
- 		}
- 
--		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif)
-+		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
-+		    sk->sk_bound_dev_if != inet_sdif(skb))
- 			continue;
- 
- 		sock_hold(sk);
+--- a/net/netfilter/nft_payload.c
++++ b/net/netfilter/nft_payload.c
+@@ -502,6 +502,9 @@ static int nft_payload_l4csum_offset(con
+ 				     struct sk_buff *skb,
+ 				     unsigned int *l4csum_offset)
+ {
++	if (pkt->xt.fragoff)
++		return -1;
++
+ 	switch (pkt->tprot) {
+ 	case IPPROTO_TCP:
+ 		*l4csum_offset = offsetof(struct tcphdr, check);
 
 
