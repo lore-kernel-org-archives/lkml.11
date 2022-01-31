@@ -2,62 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F3C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 09:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2053CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 09:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244357AbiAaJ5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 04:57:55 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:57744 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242276AbiAaJ5x (ORCPT
+        id S1348167AbiAaJ7N (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 04:59:13 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:39032 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240974AbiAaJ7G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 04:57:53 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id E429F1F42EBB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1643623071;
-        bh=EEi29dsWai5AtPWSIO5AT3qqVcaOhrIJ5p08/cthRIQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=BaVHoXjRJWFx7OC5C42/hLgEuAvv+qcmn2tFaG1/BDyCT6qZFgUIBicbgzhNXKXMR
-         HvQzs2GUzlYTDPXmDYyBjvLBIeuCVW5lhF9dbHfuX5nYNPU2gavZ6WhKXxZARlGThN
-         Vvfo7obqK3vipniGOOiTV7cKBgOr1hNCY7QT+QUc9B5SUYooMPoMAeQkYkdGADMJOb
-         eXKqbSioyGQ/WeuW6ii71EiQr3yjicqgj1IQ2+QsFOKw5Wfsf4NbCptgwVo7N/GuvG
-         xIwMvcP758TRuw5jAFLBWX3ere6Dws0GQ8aHDd614QoTG5vU24VIKRLygnQmY0kX+x
-         8bCZ/ndGJ7gDw==
-Message-ID: <2b5e6475-97db-b6b8-363a-7b33857a436b@collabora.com>
-Date:   Mon, 31 Jan 2022 10:57:48 +0100
+        Mon, 31 Jan 2022 04:59:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643623146; x=1675159146;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=qS1GC/CazYtSayzRKGgsGj77mNORqaMQUiAVPaNI34o=;
+  b=LHNg/hv+nxNiPLPWnyru42M52SyzAZ4r1bZigZTx3zAeS0Ij0a1sLdPc
+   9vgHwmg4A9sKTOKQnupoeOL7UJoGO5EmNKgsIt+HjYPE7MbLNHjMeCP7i
+   DA+yRYGCILbPu2FphwqkYWyYclDHmu8OzR0tJmUL9/YPu1mxtvutyH6sL
+   XDKAM96EEZytElifX2qVkoPINlolb8Q3Jmtf/P6+HrmlJMtLj7+12ydp1
+   0NfICSExtOWjUl8RsbP5WEMzzDavU8iwdIInyakPWN6Z/GpkoyYU0wFSl
+   jWMruTeYSVU1H1jk35AvPnBlRXbznBUlI0i/LQHBmxgO4sRzP3KYYOYSg
+   A==;
+IronPort-SDR: y87pzpOEuryJ2hDaMLSndUXzoNKTPoXptC1M7EcqkQIkOjL9mzOa5QEgOScKM6OFUNyjTDUKTz
+ OmHi4qwKmW4QVTR5H7rtWNq8eutqz9rdo7vEDXIPPc/eVS8nWlm2bTjUpEUYluGxpvJf33L28w
+ QAPt3OQlI5qNHcE985MhNMlOUFWJOjWSOAu6Rw0lsB2XxdYg0v2ABLR+WNt4bAyfpR2D5Hwmiz
+ nwuxpC3fbXdovN6vNMBErrt9ylCDSexqjsyoPrNmNtmVVgH/gyQjKDf2am6lc0h6nYwkwVuFQO
+ q5OmgnWr3/cKQ/x4x1HAznQe
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="84173548"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Jan 2022 02:59:05 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 31 Jan 2022 02:59:04 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 31 Jan 2022 02:59:02 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
+        <richardcochran@gmail.com>, <f.fainelli@gmail.com>,
+        <vivien.didelot@gmail.com>, <vladimir.oltean@nxp.com>,
+        <andrew@lunn.ch>, Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2 0/7] net: lan966x: Add PTP Hardward Clock support
+Date:   Mon, 31 Jan 2022 11:01:15 +0100
+Message-ID: <20220131100122.423164-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2 3/4] arm64: dts: mediatek: mt8195: add efuse node and
- cells
-Content-Language: en-US
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Tianping Fang <tianping.fang@mediatek.com>,
-        Eddie Hung <eddie.hung@mediatek.com>
-References: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
- <20220128062902.26273-3-chunfeng.yun@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220128062902.26273-3-chunfeng.yun@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 28/01/22 07:29, Chunfeng Yun ha scritto:
-> Add efuse node and cells used by t-phy to fix the bit shift issue
-> 
-> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Add support for PTP Hardware Clock (PHC) for lan966x. The switch supports
+both PTP 1-step and 2-step modes.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+v1->v2:
+- fix commit messages
+- reduce the scope of the lock ptp_lock inside the function
+  lan966x_ptp_hwtstamp_set
+- the rx timestamping is always enabled for all packages
+
+Horatiu Vultur (7):
+  dt-bindings: net: lan966x: Extend with the ptp interrupt
+  net: lan966x: Add registers that are use for ptp functionality
+  net: lan966x: Add support for ptp clocks
+  net: lan966x: Implement SIOCSHWTSTAMP and SIOCGHWTSTAMP
+  net: lan966x: Update extraction/injection for timestamping
+  net: lan966x: Add support for ptp interrupts
+  net: lan966x: Implement get_ts_info
+
+ .../net/microchip,lan966x-switch.yaml         |   2 +
+ .../net/ethernet/microchip/lan966x/Makefile   |   3 +-
+ .../microchip/lan966x/lan966x_ethtool.c       |  34 +
+ .../ethernet/microchip/lan966x/lan966x_main.c |  89 ++-
+ .../ethernet/microchip/lan966x/lan966x_main.h |  51 ++
+ .../ethernet/microchip/lan966x/lan966x_ptp.c  | 618 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_regs.h | 103 +++
+ 7 files changed, 894 insertions(+), 6 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
+
+-- 
+2.33.0
 
