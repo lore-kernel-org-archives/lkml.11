@@ -2,111 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1345C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:04:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B253C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380007AbiAaQEN (ORCPT
+        id S1380021AbiAaQEV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 11:04:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380002AbiAaQEL (ORCPT
+        Mon, 31 Jan 2022 11:04:21 -0500
+Received: from out02.mta.xmission.com ([166.70.13.232]:42236 "EHLO
+        out02.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380008AbiAaQEO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 11:04:11 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD61C06173E
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 08:04:11 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id oa14-20020a17090b1bce00b001b61aed4a03so12959145pjb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 08:04:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iQH5onptg6s877J45y8Fks8F6bmcOMzezi8xj98jFE4=;
-        b=EastST5ZIcLSESMsp5gzxuTqcCSNgh5+VOlWEXH6hIDH/Y+6Yi35lcJ+cnIcbEKd7m
-         ys4Lc9gV7R1lfGNhqxJc+0ZWjEjrfRAh03XbwNQJ53zVIlzmP/zQztsQ3zILrR4XJDYD
-         rdDAzYkP/5wsiH5bx7EUldm57nS/S/pVfNhfrTxu0WxmmGgw9Ah3xuHFcL6fj+0NqSGV
-         ZkvPlQ/0AC4dX++DpJqmn/6luHcfdGPKTHwysX/OSTavRqfsce1g9gsT8z2fFQGeXmvM
-         CrHvh4ovORh0oE2mshQS/a7a4kDp+bt1wsKPtyuevVZy/noM5LRw2Sk8WpFt2yMPhny8
-         JFnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iQH5onptg6s877J45y8Fks8F6bmcOMzezi8xj98jFE4=;
-        b=5nBzFdGIklv+1uAaoEpDMPP452gIdO5lWOunxh5G7SajaHj0/qnSh5nL7HTfgkROOo
-         L+SiTYCug7suo/Dh3ysEErUo6b5CxCXcWqNPN2EcgRIKCSy9la8vg1k8k21mwT6jJlt+
-         jCZUZnrlbo5AtpuPOPspEKHw7RGoVzSxtSa+w9nIF6IEHLaTyuBlr3d5fD2o4eeY1ekY
-         uSUKm84ziV+waqluvk8iqQBX4OPTra3eLm0uJ9p3yGgn6R+UfpD6rRwDkN825UFjK5c4
-         B+R6RMG70C0DNxMlSvlu4ELqwWRNIqoup0uPiORTO8edTYBb5J+FteXb0/u6zR6BYGuD
-         ul6g==
-X-Gm-Message-State: AOAM530nGiVnlu5GkQBURvNlLd/nHn0iLHwwtQaJYDx789Jac4LqzmwG
-        7s6wN6EagPratD33YNVuaD+NOg==
-X-Google-Smtp-Source: ABdhPJyKqjzk6JU+7cZI+lIZKz8qJV0tOrsdnXMJaAquGWsMKIiUnglaRbBHuWSf5yL2XPDGOcbabQ==
-X-Received: by 2002:a17:90b:1952:: with SMTP id nk18mr34913304pjb.101.1643645051035;
-        Mon, 31 Jan 2022 08:04:11 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.244])
-        by smtp.gmail.com with ESMTPSA id n42sm17940716pfv.29.2022.01.31.08.04.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 08:04:10 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     akpm@linux-foundation.org, zi.yan@cs.rutgers.edu,
-        kirill.shutemov@linux.intel.com, rientjes@google.com,
-        lars.persson@axis.com, mike.kravetz@oracle.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com,
-        Muchun Song <songmuchun@bytedance.com>, Zi Yan <ziy@nvidia.com>
-Subject: [PATCH v3 2/5] mm: fix missing cache flush for all tail pages of compound page
-Date:   Tue,  1 Feb 2022 00:02:51 +0800
-Message-Id: <20220131160254.43211-3-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220131160254.43211-1-songmuchun@bytedance.com>
-References: <20220131160254.43211-1-songmuchun@bytedance.com>
+        Mon, 31 Jan 2022 11:04:14 -0500
+Received: from in02.mta.xmission.com ([166.70.13.52]:59860)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nEZA5-00HCAt-KS; Mon, 31 Jan 2022 09:04:13 -0700
+Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:48638 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nEZA3-007DnS-4X; Mon, 31 Jan 2022 09:04:13 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Denys Vlasenko <vda.linux@googlemail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, Vlastimil Babka <vbabka@suse.cz>,
+        "Liam R . Howlett" <Liam.Howlett@Oracle.com>
+References: <20220131153740.2396974-1-willy@infradead.org>
+Date:   Mon, 31 Jan 2022 10:03:31 -0600
+In-Reply-To: <20220131153740.2396974-1-willy@infradead.org> (Matthew Wilcox's
+        message of "Mon, 31 Jan 2022 15:37:40 +0000")
+Message-ID: <871r0nriy4.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nEZA3-007DnS-4X;;;mid=<871r0nriy4.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1+pHxZIM9Z0F/v54hDEFvV4FtGm43/Bzjs=
+X-SA-Exim-Connect-IP: 68.110.24.146
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH] binfmt_elf: Take the mmap lock when walking the VMA list
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The D-cache maintenance inside move_to_new_page() only consider one page,
-there is still D-cache maintenance issue for tail pages of compound page
-(e.g. THP or HugeTLB).  THP migration is only enabled on x86_64, ARM64
-and powerpc, while powerpc and arm64 need to maintain the consistency
-between I-Cache and D-Cache, which depends on flush_dcache_page() to
-maintain the consistency between I-Cache and D-Cache.  In theory, the
-issue can be found on arm64 and powerpc.  HugeTLB migration is enabled
-on arm, arm64, mips, parisc, powerpc, riscv, s390 and sh, while arm
-has handled the compound page cache flush in flush_dcache_page(), but
-most others do not.  In theory, the issue exists on many architectures.
-Fix this by not using flush_dcache_folio() since it is not backportable.
+"Matthew Wilcox (Oracle)" <willy@infradead.org> writes:
 
-Fixes: 616b8371539a ("mm: thp: enable thp migration in generic path")
-Fixes: 290408d4a250 ("hugetlb: hugepage migration core")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Zi Yan <ziy@nvidia.com>
----
- mm/migrate.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+> I'm not sure if the VMA list can change under us, but dump_vma_snapshot()
+> is very careful to take the mmap_lock in write mode.  We only need to
+> take it in read mode here as we do not care if the size of the stack
+> VMA changes underneath us.
+>
+> If it can be changed underneath us, this is a potential use-after-free
+> for a multithreaded process which is dumping core.
 
-diff --git a/mm/migrate.c b/mm/migrate.c
-index c9296d63878d..c418e8d92b9c 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -933,9 +933,12 @@ static int move_to_new_page(struct page *newpage, struct page *page,
- 		if (!PageMappingFlags(page))
- 			page->mapping = NULL;
- 
--		if (likely(!is_zone_device_page(newpage)))
--			flush_dcache_page(newpage);
-+		if (likely(!is_zone_device_page(newpage))) {
-+			int i, nr = compound_nr(newpage);
- 
-+			for (i = 0; i < nr; i++)
-+				flush_dcache_page(newpage + i);
-+		}
- 	}
- out:
- 	return rc;
--- 
-2.11.0
+The problem is not multi-threaded process so much as processes that
+share their mm.
 
+I think rather than take a lock we should be using the snapshot captured
+with dump_vma_snapshot.  Otherwise we have the very real chance that the
+two get out of sync.  Which would result in a non-sense core file.
+
+Probably that means that dump_vma_snapshot needs to call get_file on
+vma->vm_file store it in core_vma_metadata.
+
+Do you think you can fix it something like that?
+
+Eric
+
+
+> Fixes: 2aa362c49c31 ("coredump: extend core dump note section to contain file names of mapped files")
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> Reviewed-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+> ---
+>  fs/binfmt_elf.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+> index 605017eb9349..dc2318355762 100644
+> --- a/fs/binfmt_elf.c
+> +++ b/fs/binfmt_elf.c
+> @@ -1651,6 +1651,7 @@ static int fill_files_note(struct memelfnote *note)
+>  	name_base = name_curpos = ((char *)data) + names_ofs;
+>  	remaining = size - names_ofs;
+>  	count = 0;
+> +	mmap_read_lock(mm);
+>  	for (vma = mm->mmap; vma != NULL; vma = vma->vm_next) {
+>  		struct file *file;
+>  		const char *filename;
+> @@ -1661,6 +1662,7 @@ static int fill_files_note(struct memelfnote *note)
+>  		filename = file_path(file, name_curpos, remaining);
+>  		if (IS_ERR(filename)) {
+>  			if (PTR_ERR(filename) == -ENAMETOOLONG) {
+> +				mmap_read_unlock(mm);
+>  				kvfree(data);
+>  				size = size * 5 / 4;
+>  				goto alloc;
+> @@ -1680,6 +1682,7 @@ static int fill_files_note(struct memelfnote *note)
+>  		*start_end_ofs++ = vma->vm_pgoff;
+>  		count++;
+>  	}
+> +	mmap_read_unlock(mm);
+>  
+>  	/* Now we know exact count of files, can store it */
+>  	data[0] = count;
