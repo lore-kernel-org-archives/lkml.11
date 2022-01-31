@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB24C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA18C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377249AbiAaLNx (ORCPT
+        id S1376842AbiAaLN5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:13:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44624 "EHLO
+        Mon, 31 Jan 2022 06:13:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377576AbiAaLKM (ORCPT
+        with ESMTP id S1377578AbiAaLKM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:10:12 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E76DC061741;
-        Mon, 31 Jan 2022 03:09:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805D5C061748;
+        Mon, 31 Jan 2022 03:10:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D254FB82A4E;
-        Mon, 31 Jan 2022 11:09:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F1EAC340EE;
-        Mon, 31 Jan 2022 11:09:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CC92B82A5C;
+        Mon, 31 Jan 2022 11:10:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54B5CC340E8;
+        Mon, 31 Jan 2022 11:09:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627393;
-        bh=zwiU95XlAqjjQ5x55QP+OnJxi3RwJFumGLDhTZB/Yo8=;
+        s=korg; t=1643627399;
+        bh=iR9hY3IqjOE1ue4iMbGK2j5YSp6jRQF+xRAFaUlFEMQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S4RCylMZdLw9dTShjiu2Joui13yQd09RZjNibCP+kcRczd481W4J64sOiRnXU0D2C
-         ximv8bTo+CBY1JdNPq0fpniWVaPfHCg2OpI3ePXdCyF5sa7nbPYJ9B3GU4nGimMhtb
-         luv9ynS63F/I9rmL89Q5vFQEDbdzTGjuc2DdTSvs=
+        b=xCudqSCJzPau45j6nakr4Ot9one0G4JxTKsYQZVlCnx9ANupr0mUM8N13NiV/8ZDG
+         zUaeKORaMyE7r1daYwuNVWpXCgcGkavylQfFGS3AMxiBghl8499dkWuNX+RrfXW7vo
+         TTI3vIzVlkQKzFHggHXJCPKHiXp0WnLryZwZXetQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yazen Ghannam <yazen.ghannam@amd.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 070/171] x86/MCE/AMD: Allow thresholding interface updates after init
-Date:   Mon, 31 Jan 2022 11:55:35 +0100
-Message-Id: <20220131105232.409495677@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 072/171] powerpc/32s: Allocate one 256k IBAT instead of two consecutives 128k IBATs
+Date:   Mon, 31 Jan 2022 11:55:37 +0100
+Message-Id: <20220131105232.471574454@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -49,39 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yazen Ghannam <yazen.ghannam@amd.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 1f52b0aba6fd37653416375cb8a1ca673acf8d5f upstream.
+commit 37eb7ca91b692e8e49e7dd50158349a6c8fb5b09 upstream.
 
-Changes to the AMD Thresholding sysfs code prevents sysfs writes from
-updating the underlying registers once CPU init is completed, i.e.
-"threshold_banks" is set.
+Today we have the following IBATs allocated:
 
-Allow the registers to be updated if the thresholding interface is
-already initialized or if in the init path. Use the "set_lvt_off" value
-to indicate if running in the init path, since this value is only set
-during init.
+	---[ Instruction Block Address Translation ]---
+	0: 0xc0000000-0xc03fffff 0x00000000         4M Kernel   x     m
+	1: 0xc0400000-0xc05fffff 0x00400000         2M Kernel   x     m
+	2: 0xc0600000-0xc06fffff 0x00600000         1M Kernel   x     m
+	3: 0xc0700000-0xc077ffff 0x00700000       512K Kernel   x     m
+	4: 0xc0780000-0xc079ffff 0x00780000       128K Kernel   x     m
+	5: 0xc07a0000-0xc07bffff 0x007a0000       128K Kernel   x     m
+	6:         -
+	7:         -
 
-Fixes: a037f3ca0ea0 ("x86/mce/amd: Make threshold bank setting hotplug robust")
-Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220117161328.19148-1-yazen.ghannam@amd.com
+The two 128K should be a single 256K instead.
+
+When _etext is not aligned to 128Kbytes, the system will allocate
+all necessary BATs to the lower 128Kbytes boundary, then allocate
+an additional 128Kbytes BAT for the remaining block.
+
+Instead, align the top to 128Kbytes so that the function directly
+allocates a 256Kbytes last block:
+
+	---[ Instruction Block Address Translation ]---
+	0: 0xc0000000-0xc03fffff 0x00000000         4M Kernel   x     m
+	1: 0xc0400000-0xc05fffff 0x00400000         2M Kernel   x     m
+	2: 0xc0600000-0xc06fffff 0x00600000         1M Kernel   x     m
+	3: 0xc0700000-0xc077ffff 0x00700000       512K Kernel   x     m
+	4: 0xc0780000-0xc07bffff 0x00780000       256K Kernel   x     m
+	5:         -
+	6:         -
+	7:         -
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/ab58b296832b0ec650e2203200e060adbcb2677d.1637930421.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/mce/amd.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/mm/book3s32/mmu.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kernel/cpu/mce/amd.c
-+++ b/arch/x86/kernel/cpu/mce/amd.c
-@@ -400,7 +400,7 @@ static void threshold_restart_bank(void
- 	u32 hi, lo;
+--- a/arch/powerpc/mm/book3s32/mmu.c
++++ b/arch/powerpc/mm/book3s32/mmu.c
+@@ -196,18 +196,17 @@ void mmu_mark_initmem_nx(void)
+ 	int nb = mmu_has_feature(MMU_FTR_USE_HIGH_BATS) ? 8 : 4;
+ 	int i;
+ 	unsigned long base = (unsigned long)_stext - PAGE_OFFSET;
+-	unsigned long top = (unsigned long)_etext - PAGE_OFFSET;
++	unsigned long top = ALIGN((unsigned long)_etext - PAGE_OFFSET, SZ_128K);
+ 	unsigned long border = (unsigned long)__init_begin - PAGE_OFFSET;
+ 	unsigned long size;
  
- 	/* sysfs write might race against an offline operation */
--	if (this_cpu_read(threshold_banks))
-+	if (!this_cpu_read(threshold_banks) && !tr->set_lvt_off)
- 		return;
- 
- 	rdmsr(tr->b->address, lo, hi);
+-	for (i = 0; i < nb - 1 && base < top && top - base > (128 << 10);) {
++	for (i = 0; i < nb - 1 && base < top;) {
+ 		size = block_size(base, top);
+ 		setibat(i++, PAGE_OFFSET + base, base, size, PAGE_KERNEL_TEXT);
+ 		base += size;
+ 	}
+ 	if (base < top) {
+ 		size = block_size(base, top);
+-		size = max(size, 128UL << 10);
+ 		if ((top - base) > size) {
+ 			size <<= 1;
+ 			if (strict_kernel_rwx_enabled() && base + size > border)
 
 
