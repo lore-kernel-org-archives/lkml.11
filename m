@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB25EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA7E4C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 05:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357757AbiAaFSQ (ORCPT
+        id S1357719AbiAaFSN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 00:18:16 -0500
-Received: from mail-co1nam11on2087.outbound.protection.outlook.com ([40.107.220.87]:51744
+        Mon, 31 Jan 2022 00:18:13 -0500
+Received: from mail-co1nam11on2082.outbound.protection.outlook.com ([40.107.220.82]:4562
         "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1357710AbiAaFSC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 00:18:02 -0500
+        id S1357706AbiAaFSB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 00:18:01 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XOpzvs8yBaMidb/quJNuERyw/E2sH4FNu1cCmo0gafWqnZEmBC/rRFx6/kggLByhwABOSUCuzLLnEzDMQVMX8GBItylfWH3AkUw0XY9MpZICEBfBcmmKfplxjRbfnGLJaYzsvJ2OCbe2LlVzNxmOoTUvK/KxY0aC4sJdi3xIF5vKQ4bZ91K4gkWbBZ1CUsP6XH9Ob+oxZyKIYfe7iv0100N1Ws0KdLxkfixJAKKJbuFEXm48nvWjB9Qfwg/r0chutb8TE7n0P8HAllyxXOmLk+DHJo69dG8Nz91ECbXTNVdq8TncRi/Ud8VlinDJ30n3vSuChx+Ct2GYfy2g7mjC+w==
+ b=YiGqts87PS8Kn5xxihaXGCVJqpUcapPrjW+Y/caV7pCoZk5xsvfXyMLcMITVna4BQunIO4LCYqByqv3PNDzxuFx0LL8V7xK6ofjahxHZvbuKTPpLAkLKqAgFzDEdIY0lHG5Jfgs7AK/cpc8HrR3jZsbskhSwes2zASuPT5wllciZzagLNlUh7Ea4FX8PQ7+77aLESX7lBvXYiYBFN0eMuIFn8CQYVsAU4QCkZ6WT9CZJ/sBwgoZtHMNuNyQcigktY7GOiS11rqPiHk9YziAVXtNrSjtmLSDVLq+19ARYFxwNXO+CPgJGeNraWApC+PTa2yF9MpPEjuXkbPAGuEiltQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=c7xQ7coTmXR1ejOtu/2zz56yYo0Rs9naSy458p5QBjU=;
- b=P/Byc2XoiAkmd5a94bdNpuAqksI1bTlakXWoBxe5Yuizb0e5FyTYVyAWawjMzcQmE4auy+IDB+ZhOuUNwvaxztuY+Orrxoe4NCo/ZF+2X0mo2m713qSBI+1xIc0zOaq7az/aB2PXWhQMo8PT5re3XUmkkgj6n2Hc8LZGiVMX2MTMyxvw6RwklwCWpIoBIwO4HM/+yDNACsK2FH2zOB21WkLlmZ1yAHNIGb/o8NbMW8PFZAQCwBS6yxBoQegK7A/oZpS7CPN/0HRraG7bH4y6X67IyStHsnpABGYlYlg0sR8sXoXY2tuHjnkuhQfpJ6nZ//meCgN8yeJLWkIpVLGIUQ==
+ bh=9Kk9+4kEkcKxj6kf0o9k3q2cGrwV89GKLhSq1i0xxEE=;
+ b=EbVs3wrP8oAnIRoDZwwGosmhcZvFctKf+UblTf/YnskZSAZf6/GBY319N7BWKI3M0AGp2DnNnqb4bG9Lm0zQvir6WHRIHOXdCmAl0toVUAytQeU9+tGZskV85uCfLpLsqLQ3mizgalXkuRbVbXCL3+GOV4sU0Qew13SJB/Mg4o9bc/sVdqPe26XQVCjRYC8RA1JBBdtRbhFqdCOjPtG1SGhphItqHnKZemyE2tTwN0a+0ZAfJ9GsJNO9OSG49MHr0KamCmv8S+vp4irhZVjTNF/u4yW0Z+YUJoXDD9ptlLSsr5HXqUfEWIGNy1LY3GHW4Q0IIsBGhBoEuXqshldMUw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 12.22.5.234) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c7xQ7coTmXR1ejOtu/2zz56yYo0Rs9naSy458p5QBjU=;
- b=Y40rHM0ayuxmsyhoe3Cw+pyW7aV0KOW3rX0Xz+my7stDsqLsn5Kcq/nb0Bc2UIGHhyzj9OJImYyDjiTWxFFmQEYgY+ErM3yF3x0mK+TWcAhEjejtp/IIBvYFs4tsh1LR0dzOcUtb9vMVaM1+Y+OgB4WMeSdezqAtWW6GCSF2WRXr20vZ8+UiD1Rpd/wVILUAmbjhnv+XBwAM2KtljZHIBCvOPSfM4ThymnIVbWC7IaFmARWX414m2qd8wlTw3o74jM62dxkr2FvG1mM+6/jqfZkpyR4uzGfe+TRKCVlIzfaA6/5Q9ONLot3q1nueG7GMH9XlZW4IWmkp8cpv6d7Dhw==
-Received: from BN6PR1401CA0023.namprd14.prod.outlook.com
- (2603:10b6:405:4b::33) by BN8PR12MB3537.namprd12.prod.outlook.com
- (2603:10b6:408:6d::12) with Microsoft SMTP Server (version=TLS1_2,
+ bh=9Kk9+4kEkcKxj6kf0o9k3q2cGrwV89GKLhSq1i0xxEE=;
+ b=J+1oh2cyjLJJhtsNXxotlz2zs6bClB2LmqktcgAZat1TB1nQ69EEbziXTuyXpJQj1gyVV4hNFEJst/ZzV3Glc7+S/GHFPSWmZW0ug+Nbee4IDah7Y3z/c4HopW+USy5i36j0Vo/4p7qv6WW7A3I9JjLSjxi53ex/we2SXG0J00/esi5FiJ2BN+T2BPiXfEndFn1IcfHmg/+F1XwbAmvACqqZD8crOcehifYla8CtT3suIh1L0rLnrmA6cpq9DIUDu+FDoL0mB/7o5r29BZgfwiaG+v6wONXtrpcNL+rU55tep4UeAfDBUWOWK96TY4Mqbi5ZF/zCfDpvTZonhkxTpg==
+Received: from BN9PR03CA0570.namprd03.prod.outlook.com (2603:10b6:408:138::35)
+ by BY5PR12MB3698.namprd12.prod.outlook.com (2603:10b6:a03:194::30) with
+ Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Mon, 31 Jan
- 2022 05:17:59 +0000
-Received: from BN8NAM11FT033.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:4b:cafe::2f) by BN6PR1401CA0023.outlook.office365.com
- (2603:10b6:405:4b::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.18 via Frontend
- Transport; Mon, 31 Jan 2022 05:17:59 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ 2022 05:17:57 +0000
+Received: from BN8NAM11FT046.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:138:cafe::2c) by BN9PR03CA0570.outlook.office365.com
+ (2603:10b6:408:138::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.17 via Frontend
+ Transport; Mon, 31 Jan 2022 05:17:56 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT033.mail.protection.outlook.com (10.13.177.149) with Microsoft SMTP
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT046.mail.protection.outlook.com (10.13.177.127) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4930.15 via Frontend Transport; Mon, 31 Jan 2022 05:17:59 +0000
+ 15.20.4930.15 via Frontend Transport; Mon, 31 Jan 2022 05:17:56 +0000
 Received: from drhqmail203.nvidia.com (10.126.190.182) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.18; Mon, 31 Jan 2022 05:17:54 +0000
+ DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.18; Mon, 31 Jan 2022 05:17:55 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
  drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
@@ -69,9 +69,9 @@ CC:     Jan Kara <jack@suse.cz>, Claudio Imbrenda <imbrenda@linux.ibm.com>,
         =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
         LKML <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
         John Hubbard <jhubbard@nvidia.com>
-Subject: [PATCH 2/4] mm/gup: clean up follow_pfn_pte() slightly
-Date:   Sun, 30 Jan 2022 21:17:50 -0800
-Message-ID: <20220131051752.447699-3-jhubbard@nvidia.com>
+Subject: [PATCH 4/4] mm/gup: remove get_user_pages_locked()
+Date:   Sun, 30 Jan 2022 21:17:52 -0800
+Message-ID: <20220131051752.447699-5-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20220131051752.447699-1-jhubbard@nvidia.com>
 References: <20220131051752.447699-1-jhubbard@nvidia.com>
@@ -81,75 +81,175 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 41b0f511-fe5a-4557-0024-08d9e4790c1b
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3537:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR12MB35379AEEE547684CD9D7CB87A8259@BN8PR12MB3537.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Office365-Filtering-Correlation-Id: 058af1f6-fcc0-49da-1c64-08d9e4790a60
+X-MS-TrafficTypeDiagnostic: BY5PR12MB3698:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB3698E778D0285DFFC96902FFA8259@BY5PR12MB3698.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1RBG7HNrhcYeEjPxUMsFwTImecF/ZMl603mDrx0F2PkNkAiBbX5A0E1DgtAFykPXQM370bvgzHD+n1vS5OoriONkonlmnp7pqBu9zsohe2t5Gz7BMTBQuGgp7BmVdMpe24gvpQEqJpYyu+QJx8ksB/xnedcgFl1WvJxC3rGxCAcWV5LSgb9ZVHli85van0dTfCa2OZfeQgfILZBYSbfQWyIyZyG9NC8lztOEeeonHY+X1qt9s5Y/MAjwRiYNXIO7lM5800qPVevP2xnbNnW18eo7efVJzESHWTvYmkw1sERPjkG/eC1XWnFS4x9+JVp8V0ma9dybR3mojUR8lmoTU3DnlSPuMN9bRcj+GPMAVAP3H9vApOIq+YXUQoi0GeUHhrQ2aA2YRW/24gn08AZs8DTgXygVfOxastqIW4sQ8b7D544SQtM2Z8gIIoys9Ak/sYOPIxjSeKsfirY02pTxhu1ZJHbYp+kBHjBZunHAxGy5KX1mVNtg59oS426KcKuLULTHzKrUWcceWaYuc9CbBwsFP2ijX/nLCBgIEjImXwz9MIJ5npNLCJfgutTWLtwtBw/DthGip3msLDpl0BzLju9U1hClmnRL2JnBKT6uykVqIywe0dpkmI1Md6LFwKowuCGHCGjhFcep/zqJQmND9ih4I97VWLa/7J7N9vXQeb4zmdlXTWPt0IeNdWW3tddhBqZXHEgHCQT3jLX7csNbdA==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(7416002)(5660300002)(1076003)(186003)(26005)(83380400001)(336012)(36860700001)(82310400004)(2616005)(2906002)(107886003)(426003)(47076005)(86362001)(316002)(40460700003)(110136005)(54906003)(508600001)(4326008)(356005)(6666004)(36756003)(70586007)(70206006)(81166007)(8936002)(8676002)(36900700001)(20210929001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Htr9nMywcMjGFOxARl6uVx0g9YyQHdCQBV0CmdDV0l2aEEQq0P8THGdHNJ42D1oTYXB9ixPVhyAdQ11pt7qtQHbok9oTz/lzPz0QNUWFgyVaBsfpiBJUvvYk8aVBJD+9Sm4pcTjbHBbyQioJc3WkQfU6TfCVWoZ7t+sUjiOwDmIcF3Ua4Z7i5VqlEyglD8uyfmFUDlSGGwxfXlBNei3I5iMzNJb3FypwnnnHF47HHE4UYse9ulYaKCABZAJri7fqrigYA4AaigMeOoFiEJyzp2Zoqhvz5ZaKh8tr/6whGqB3AKugbR9M7P2CDDu/Ah93+GGw75LS7DSQi78igwt/Tcg0YMfgacuMS6J0VBhNL4tC+nbtxUYyUxGLn0pWqluUgvsWiDHkzxmyzLxi4LQ5BJ88Kr/U2BnTvA7QSAtSlgVcKKKSMv4i5bogaoXGJmIDT2AOPKSfMK+4Jm2b54o5SrruyRnwFSKxmyGQjf0qJt3kOGbfCRZ/vEFUoF3AInt1V+j17FD+2dDG5+9xG2dQ0ckVNoxUQKCtHDp+ksq0ZqSaDmQ1GWHzkFmxLdnC8ZPV9O+kJTF6QbdkgQ7quxWbBuwxUcNWfgWYdgaRZaOK296Cp3Q/eJ8CH/u+rlQ+dQa3qGQELr/nGQnjhyktZdZO3/1MZ2cAxxnA7e/ExgAPwycfA604359CfL9nCtMk4y4Ecve5FvKP02xKxNLyh9WkMw==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(8936002)(8676002)(2906002)(508600001)(356005)(81166007)(316002)(54906003)(110136005)(4326008)(426003)(1076003)(336012)(107886003)(186003)(2616005)(86362001)(26005)(7416002)(47076005)(5660300002)(36756003)(70586007)(70206006)(83380400001)(40460700003)(82310400004)(36860700001)(36900700001)(20210929001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jan 2022 05:17:59.3189
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jan 2022 05:17:56.4163
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 41b0f511-fe5a-4557-0024-08d9e4790c1b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 058af1f6-fcc0-49da-1c64-08d9e4790a60
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT033.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT046.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3537
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3698
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Regardless of any FOLL_* flags, get_user_pages() and its variants should
-handle PFN-only entries by stopping early, if the caller expected
-**pages to be filled in.
+Unraveling the rat's nest set of APIs in mm/gup.c a bit more.
+get_user_pages_locked() was not helping at all, so remove it.
 
-This makes for a more reliable API, as compared to the previous approach
-of skipping over such entries (and thus leaving them silently
-unwritten).
+Also, lookup_node() has only a single caller, but it is still worth
+having a clearer locking policy there. Changing it so that the caller
+both takes and releases the mmap_lock, thus leaving lookup_node() with
+the sole job of translating a virtual address into a numa node ID.
 
-Cc: Peter Xu <peterx@redhat.com>
-Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- mm/gup.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ include/linux/mm.h |  2 --
+ mm/gup.c           | 59 ----------------------------------------------
+ mm/mempolicy.c     | 22 ++++++++---------
+ 3 files changed, 10 insertions(+), 73 deletions(-)
 
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 80c540c17d83..528ef1cb4f3a 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1916,8 +1916,6 @@ long get_user_pages(unsigned long start, unsigned long nr_pages,
+ long pin_user_pages(unsigned long start, unsigned long nr_pages,
+ 		    unsigned int gup_flags, struct page **pages,
+ 		    struct vm_area_struct **vmas);
+-long get_user_pages_locked(unsigned long start, unsigned long nr_pages,
+-		    unsigned int gup_flags, struct page **pages, int *locked);
+ long get_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
+ 		    struct page **pages, unsigned int gup_flags);
+ long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
 diff --git a/mm/gup.c b/mm/gup.c
-index 65575ae3602f..8633bca12eab 100644
+index 58d01a96ab30..4a43c79f0972 100644
 --- a/mm/gup.c
 +++ b/mm/gup.c
-@@ -439,10 +439,6 @@ static struct page *no_page_table(struct vm_area_struct *vma,
- static int follow_pfn_pte(struct vm_area_struct *vma, unsigned long address,
- 		pte_t *pte, unsigned int flags)
- {
--	/* No page to get reference */
--	if (flags & (FOLL_GET | FOLL_PIN))
--		return -EFAULT;
--
- 	if (flags & FOLL_TOUCH) {
- 		pte_t entry = *pte;
+@@ -2119,65 +2119,6 @@ long get_user_pages(unsigned long start, unsigned long nr_pages,
+ }
+ EXPORT_SYMBOL(get_user_pages);
  
-@@ -1180,8 +1176,14 @@ static long __get_user_pages(struct mm_struct *mm,
- 		} else if (PTR_ERR(page) == -EEXIST) {
+-/**
+- * get_user_pages_locked() - variant of get_user_pages()
+- *
+- * @start:      starting user address
+- * @nr_pages:   number of pages from start to pin
+- * @gup_flags:  flags modifying lookup behaviour
+- * @pages:      array that receives pointers to the pages pinned.
+- *              Should be at least nr_pages long. Or NULL, if caller
+- *              only intends to ensure the pages are faulted in.
+- * @locked:     pointer to lock flag indicating whether lock is held and
+- *              subsequently whether VM_FAULT_RETRY functionality can be
+- *              utilised. Lock must initially be held.
+- *
+- * It is suitable to replace the form:
+- *
+- *      mmap_read_lock(mm);
+- *      do_something()
+- *      get_user_pages(mm, ..., pages, NULL);
+- *      mmap_read_unlock(mm);
+- *
+- *  to:
+- *
+- *      int locked = 1;
+- *      mmap_read_lock(mm);
+- *      do_something()
+- *      get_user_pages_locked(mm, ..., pages, &locked);
+- *      if (locked)
+- *          mmap_read_unlock(mm);
+- *
+- * We can leverage the VM_FAULT_RETRY functionality in the page fault
+- * paths better by using either get_user_pages_locked() or
+- * get_user_pages_unlocked().
+- *
+- */
+-long get_user_pages_locked(unsigned long start, unsigned long nr_pages,
+-			   unsigned int gup_flags, struct page **pages,
+-			   int *locked)
+-{
+-	/*
+-	 * FIXME: Current FOLL_LONGTERM behavior is incompatible with
+-	 * FAULT_FLAG_ALLOW_RETRY because of the FS DAX check requirement on
+-	 * vmas.  As there are no users of this flag in this call we simply
+-	 * disallow this option for now.
+-	 */
+-	if (WARN_ON_ONCE(gup_flags & FOLL_LONGTERM))
+-		return -EINVAL;
+-	/*
+-	 * FOLL_PIN must only be set internally by the pin_user_pages*() APIs,
+-	 * never directly by the caller, so enforce that:
+-	 */
+-	if (WARN_ON_ONCE(gup_flags & FOLL_PIN))
+-		return -EINVAL;
+-
+-	return __get_user_pages_locked(current->mm, start, nr_pages,
+-				       pages, NULL, locked,
+-				       gup_flags | FOLL_TOUCH);
+-}
+-EXPORT_SYMBOL(get_user_pages_locked);
+-
+ /*
+  * get_user_pages_unlocked() is suitable to replace the form:
+  *
+diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+index 028e8dd82b44..040d88354cfa 100644
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -907,17 +907,15 @@ static void get_policy_nodemask(struct mempolicy *p, nodemask_t *nodes)
+ static int lookup_node(struct mm_struct *mm, unsigned long addr)
+ {
+ 	struct page *p = NULL;
+-	int err;
++	int ret;
+ 
+-	int locked = 1;
+-	err = get_user_pages_locked(addr & PAGE_MASK, 1, 0, &p, &locked);
+-	if (err > 0) {
+-		err = page_to_nid(p);
++	mmap_assert_locked(mm);
++	ret = get_user_pages(addr & PAGE_MASK, 1, 0, &p, NULL);
++	if (ret > 0) {
++		ret = page_to_nid(p);
+ 		put_page(p);
+ 	}
+-	if (locked)
+-		mmap_read_unlock(mm);
+-	return err;
++	return ret;
+ }
+ 
+ /* Retrieve NUMA policy */
+@@ -968,15 +966,15 @@ static long do_get_mempolicy(int *policy, nodemask_t *nmask,
+ 	if (flags & MPOL_F_NODE) {
+ 		if (flags & MPOL_F_ADDR) {
  			/*
- 			 * Proper page table entry exists, but no corresponding
--			 * struct page.
-+			 * struct page. If the caller expects **pages to be
-+			 * filled in, bail out now, because that can't be done
-+			 * for this page.
+-			 * Take a refcount on the mpol, lookup_node()
+-			 * will drop the mmap_lock, so after calling
+-			 * lookup_node() only "pol" remains valid, "vma"
+-			 * is stale.
++			 * Take a refcount on the mpol, because we are about to
++			 * drop the mmap_lock, after which only "pol" remains
++			 * valid, "vma" is stale.
  			 */
-+			if (pages) {
-+				page = ERR_PTR(-EFAULT);
-+				goto out;
-+			}
- 			goto next_page;
- 		} else if (IS_ERR(page)) {
- 			ret = PTR_ERR(page);
+ 			pol_refcount = pol;
+ 			vma = NULL;
+ 			mpol_get(pol);
+ 			err = lookup_node(mm, addr);
++			mmap_read_unlock(mm);
+ 			if (err < 0)
+ 				goto out;
+ 			*policy = err;
 -- 
 2.35.0
 
