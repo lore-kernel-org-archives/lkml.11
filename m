@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C64CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA033C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378014AbiAaLlm (ORCPT
+        id S1378035AbiAaLlp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:41:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
+        Mon, 31 Jan 2022 06:41:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377592AbiAaL1B (ORCPT
+        with ESMTP id S1350901AbiAaL0k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:27:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2296EC03327E;
-        Mon, 31 Jan 2022 03:16:33 -0800 (PST)
+        Mon, 31 Jan 2022 06:26:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C1EC08ED70;
+        Mon, 31 Jan 2022 03:16:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5E54611DB;
-        Mon, 31 Jan 2022 11:16:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF441C340EE;
-        Mon, 31 Jan 2022 11:16:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33892B82A60;
+        Mon, 31 Jan 2022 11:16:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FA31C340EE;
+        Mon, 31 Jan 2022 11:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627792;
-        bh=Ii7bXh798F+1fkbQs8ohe5qE2OvgUqgwk72WPGEicF8=;
+        s=korg; t=1643627767;
+        bh=mSPsDwVGe2ggIIrr8GuSkvCuU4GuWcD6DNl1KssB0Kg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=evc/tphnmuIlq5A5xA/XnsP8Rcq7dUpTEfw5CUVwe3w2MKXLTBwGdJalZiE6olhRa
-         nkdTU3dU1WWUaOpgwReTJ+L7ljyyWgfPh9Q8pMl6hcwAZ4rE688ac3Oq4AHqMKvRhP
-         +WqBph+wQE8LJZ4uXfRKqWwSkHGqW/6pV2lEVBVw=
+        b=BZ/xzjo0cDasD2QqKJuw0ihXSyX09ASfQRAk7ZDXmc/tWa4bUosUFDJz01bWfjbo1
+         /fccq54LC9KPJx1bKVydo2VPqJ+T4AXpezWF8HBANvNyKi3AHGyvnYkydNTxFj6BQK
+         A2qbhMCeFjaA4X3XuQ0SXsxQLkDC9ZDJZ7jzf1SM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Kline <matt@bitbashing.io>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Michael Anochin <anochin@photo-meter.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.16 009/200] can: m_can: m_can_fifo_{read,write}: dont read or write from/to FIFO if length is 0
-Date:   Mon, 31 Jan 2022 11:54:32 +0100
-Message-Id: <20220131105233.868161646@linuxfoundation.org>
+        stable@vger.kernel.org, Carsten Otte <cotte@de.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>
+Subject: [PATCH 5.16 019/200] s390/nmi: handle guarded storage validity failures for KVM guests
+Date:   Mon, 31 Jan 2022 11:54:42 +0100
+Message-Id: <20220131105234.207279728@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -51,60 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Christian Borntraeger <borntraeger@linux.ibm.com>
 
-commit db72589c49fd260bfc99c7160c079675bc7417af upstream.
+commit 1ea1d6a847d2b1d17fefd9196664b95f052a0775 upstream.
 
-In order to optimize FIFO access, especially on m_can cores attached
-to slow busses like SPI, in patch
+machine check validity bits reflect the state of the machine check. If a
+guest does not make use of guarded storage, the validity bit might be
+off. We can not use the host CR bit to decide if the validity bit must
+be on. So ignore "invalid" guarded storage controls for KVM guests in
+the host and rely on the machine check being forwarded to the guest.  If
+no other errors happen from a host perspective everything is fine and no
+process must be killed and the host can continue to run.
 
-| e39381770ec9 ("can: m_can: Disable IRQs on FIFO bus errors")
-
-bulk read/write support has been added to the m_can_fifo_{read,write}
-functions.
-
-That change leads to the tcan driver to call
-regmap_bulk_{read,write}() with a length of 0 (for CAN frames with 0
-data length). regmap treats this as an error:
-
-| tcan4x5x spi1.0 tcan4x5x0: FIFO write returned -22
-
-This patch fixes the problem by not calling the
-cdev->ops->{read,write)_fifo() in case of a 0 length read/write.
-
-Fixes: e39381770ec9 ("can: m_can: Disable IRQs on FIFO bus errors")
-Link: https://lore.kernel.org/all/20220114155751.2651888-1-mkl@pengutronix.de
 Cc: stable@vger.kernel.org
-Cc: Matt Kline <matt@bitbashing.io>
-Cc: Chandrasekar Ramakrishnan <rcsekar@samsung.com>
-Reported-by: Michael Anochin <anochin@photo-meter.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: c929500d7a5a ("s390/nmi: s390: New low level handling for machine check happening in guest")
+Reported-by: Carsten Otte <cotte@de.ibm.com>
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Tested-by: Carsten Otte <cotte@de.ibm.com>
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/m_can/m_can.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/s390/kernel/nmi.c |   18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -336,6 +336,9 @@ m_can_fifo_read(struct m_can_classdev *c
- 	u32 addr_offset = cdev->mcfg[MRAM_RXF0].off + fgi * RXF0_ELEMENT_SIZE +
- 		offset;
- 
-+	if (val_count == 0)
-+		return 0;
-+
- 	return cdev->ops->read_fifo(cdev, addr_offset, val, val_count);
- }
- 
-@@ -346,6 +349,9 @@ m_can_fifo_write(struct m_can_classdev *
- 	u32 addr_offset = cdev->mcfg[MRAM_TXB].off + fpi * TXB_ELEMENT_SIZE +
- 		offset;
- 
-+	if (val_count == 0)
-+		return 0;
-+
- 	return cdev->ops->write_fifo(cdev, addr_offset, val, val_count);
- }
- 
+--- a/arch/s390/kernel/nmi.c
++++ b/arch/s390/kernel/nmi.c
+@@ -316,11 +316,21 @@ static int notrace s390_validate_registe
+ 	if (cr2.gse) {
+ 		if (!mci.gs) {
+ 			/*
+-			 * Guarded storage register can't be restored and
+-			 * the current processes uses guarded storage.
+-			 * It has to be terminated.
++			 * 2 cases:
++			 * - machine check in kernel or userspace
++			 * - machine check while running SIE (KVM guest)
++			 * For kernel or userspace the userspace values of
++			 * guarded storage control can not be recreated, the
++			 * process must be terminated.
++			 * For SIE the guest values of guarded storage can not
++			 * be recreated. This is either due to a bug or due to
++			 * GS being disabled in the guest. The guest will be
++			 * notified by KVM code and the guests machine check
++			 * handling must take care of this.  The host values
++			 * are saved by KVM and are not affected.
+ 			 */
+-			kill_task = 1;
++			if (!test_cpu_flag(CIF_MCCK_GUEST))
++				kill_task = 1;
+ 		} else {
+ 			load_gs_cb((struct gs_cb *)mcesa->guarded_storage_save_area);
+ 		}
 
 
