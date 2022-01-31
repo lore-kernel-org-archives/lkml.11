@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BFEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA4C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378242AbiAaLuK (ORCPT
+        id S1378226AbiAaLuP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:50:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
+        Mon, 31 Jan 2022 06:50:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351433AbiAaLft (ORCPT
+        with ESMTP id S1377982AbiAaLds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:35:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2D2C07979F;
-        Mon, 31 Jan 2022 03:23:51 -0800 (PST)
+        Mon, 31 Jan 2022 06:33:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2146DC0604DA;
+        Mon, 31 Jan 2022 03:22:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B15361299;
-        Mon, 31 Jan 2022 11:23:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E101EC340E8;
-        Mon, 31 Jan 2022 11:23:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDAE2B82A64;
+        Mon, 31 Jan 2022 11:22:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E31C9C36AE7;
+        Mon, 31 Jan 2022 11:21:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628230;
-        bh=AAFbgHTuVLoosPstvmMwWF1hZ3d/CR6g4fr+HnCPCsk=;
+        s=korg; t=1643628120;
+        bh=wvUlsKNiZszStL8rCLGexJjyh8bvLFNLhEH5NRdIVT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qWtXUY+zvy8AWtTgpdxF4JBeq/zhER0DV01WO23Iz1cZU4a2PdhscTsUVSX3ozgGY
-         c/MZAykTHLZKuxl7VZCoXGbbN/09IlOCMBqFnIcWmS62gB8Qa8MVPyoI5nSXVHg+Dq
-         3ymweKgbj1zm4Ls18aOgiVwB959eYfeepfW5a0io=
+        b=Cll/rZaRl7O1jJTfCeuhPAx2dk547xmbIUTPVM87fxVTaAZktzjAnbHiVA5CQ5/Mn
+         fxY03ckHOhdQ2hGzGlwn6Ce65n8dVgHkIkU20NPq7puXYoFI4psCdkGNjgAIJWVbM4
+         yzxcd1TQ0+cUdfX0KbhDjg9FV2rsnikmnpoDg6us=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 133/200] net: stmmac: dwmac-visconti: Fix bit definitions for ETHER_CLK_SEL
-Date:   Mon, 31 Jan 2022 11:56:36 +0100
-Message-Id: <20220131105238.031813020@linuxfoundation.org>
+        stable@vger.kernel.org, Jaroslaw Gawin <jaroslawx.gawin@intel.com>,
+        Slawomir Laba <slawomirx.laba@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.16 097/200] i40e: Fix issue when maximum queues is exceeded
+Date:   Mon, 31 Jan 2022 11:56:00 +0100
+Message-Id: <20220131105236.868988071@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -52,60 +52,195 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
 
-[ Upstream commit 1ba1a4a90fa416a6f389206416c5f488cf8b1543 ]
+commit d701658a50a471591094b3eb3961b4926cc8f104 upstream.
 
-just 0 should be used to represent cleared bits
+Before this patch VF interface vanished when
+maximum queue number was exceeded. Driver tried
+to add next queues even if there was not enough
+space. PF sent incorrect number of queues to
+the VF when there were not enough of them.
 
-* ETHER_CLK_SEL_DIV_SEL_20
-* ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN
-* ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN
-* ETHER_CLK_SEL_TX_CLK_O_TX_I
-* ETHER_CLK_SEL_RMII_CLK_SEL_IN
+Add an additional condition introduced to check
+available space in 'qp_pile' before proceeding.
+This condition makes it impossible to add queues
+if they number is greater than the number resulting
+from available space.
+Also add the search for free space in PF queue
+pair piles.
 
-Fixes: b38dd98ff8d0 ("net: stmmac: Add Toshiba Visconti SoCs glue driver")
-Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Without this patch VF interfaces are not seen
+when available space for queues has been
+exceeded and following logs appears permanently
+in dmesg:
+"Unable to get VF config (-32)".
+"VF 62 failed opcode 3, retval: -5"
+"Unable to get VF config due to PF error condition, not retrying"
+
+Fixes: 7daa6bf3294e ("i40e: driver core headers")
+Fixes: 41c445ff0f48 ("i40e: main driver core")
+Signed-off-by: Jaroslaw Gawin <jaroslawx.gawin@intel.com>
+Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e.h             |    1 
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |   14 ----
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c |   59 +++++++++++++++++++++
+ 3 files changed, 61 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-index e2e0f977875d7..43a446ceadf7a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-@@ -22,21 +22,21 @@
- #define ETHER_CLK_SEL_RMII_CLK_EN BIT(2)
- #define ETHER_CLK_SEL_RMII_CLK_RST BIT(3)
- #define ETHER_CLK_SEL_DIV_SEL_2 BIT(4)
--#define ETHER_CLK_SEL_DIV_SEL_20 BIT(0)
-+#define ETHER_CLK_SEL_DIV_SEL_20 0
- #define ETHER_CLK_SEL_FREQ_SEL_125M	(BIT(9) | BIT(8))
- #define ETHER_CLK_SEL_FREQ_SEL_50M	BIT(9)
- #define ETHER_CLK_SEL_FREQ_SEL_25M	BIT(8)
- #define ETHER_CLK_SEL_FREQ_SEL_2P5M	0
--#define ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN BIT(0)
-+#define ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN 0
- #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_TXC BIT(10)
- #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_DIV BIT(11)
--#define ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN  BIT(0)
-+#define ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN  0
- #define ETHER_CLK_SEL_RX_CLK_EXT_SEL_RXC BIT(12)
- #define ETHER_CLK_SEL_RX_CLK_EXT_SEL_DIV BIT(13)
--#define ETHER_CLK_SEL_TX_CLK_O_TX_I	 BIT(0)
-+#define ETHER_CLK_SEL_TX_CLK_O_TX_I	 0
- #define ETHER_CLK_SEL_TX_CLK_O_RMII_I	 BIT(14)
- #define ETHER_CLK_SEL_TX_O_E_N_IN	 BIT(15)
--#define ETHER_CLK_SEL_RMII_CLK_SEL_IN	 BIT(0)
-+#define ETHER_CLK_SEL_RMII_CLK_SEL_IN	 0
- #define ETHER_CLK_SEL_RMII_CLK_SEL_RX_C	 BIT(16)
+--- a/drivers/net/ethernet/intel/i40e/i40e.h
++++ b/drivers/net/ethernet/intel/i40e/i40e.h
+@@ -174,7 +174,6 @@ enum i40e_interrupt_policy {
  
- #define ETHER_CLK_SEL_RX_TX_CLK_EN (ETHER_CLK_SEL_RX_CLK_EN | ETHER_CLK_SEL_TX_CLK_EN)
--- 
-2.34.1
-
+ struct i40e_lump_tracking {
+ 	u16 num_entries;
+-	u16 search_hint;
+ 	u16 list[0];
+ #define I40E_PILE_VALID_BIT  0x8000
+ #define I40E_IWARP_IRQ_PILE_ID  (I40E_PILE_VALID_BIT - 2)
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -196,10 +196,6 @@ int i40e_free_virt_mem_d(struct i40e_hw
+  * @id: an owner id to stick on the items assigned
+  *
+  * Returns the base item index of the lump, or negative for error
+- *
+- * The search_hint trick and lack of advanced fit-finding only work
+- * because we're highly likely to have all the same size lump requests.
+- * Linear search time and any fragmentation should be minimal.
+  **/
+ static int i40e_get_lump(struct i40e_pf *pf, struct i40e_lump_tracking *pile,
+ 			 u16 needed, u16 id)
+@@ -214,8 +210,7 @@ static int i40e_get_lump(struct i40e_pf
+ 		return -EINVAL;
+ 	}
+ 
+-	/* start the linear search with an imperfect hint */
+-	i = pile->search_hint;
++	i = 0;
+ 	while (i < pile->num_entries) {
+ 		/* skip already allocated entries */
+ 		if (pile->list[i] & I40E_PILE_VALID_BIT) {
+@@ -234,7 +229,6 @@ static int i40e_get_lump(struct i40e_pf
+ 			for (j = 0; j < needed; j++)
+ 				pile->list[i+j] = id | I40E_PILE_VALID_BIT;
+ 			ret = i;
+-			pile->search_hint = i + j;
+ 			break;
+ 		}
+ 
+@@ -257,7 +251,7 @@ static int i40e_put_lump(struct i40e_lum
+ {
+ 	int valid_id = (id | I40E_PILE_VALID_BIT);
+ 	int count = 0;
+-	int i;
++	u16 i;
+ 
+ 	if (!pile || index >= pile->num_entries)
+ 		return -EINVAL;
+@@ -269,8 +263,6 @@ static int i40e_put_lump(struct i40e_lum
+ 		count++;
+ 	}
+ 
+-	if (count && index < pile->search_hint)
+-		pile->search_hint = index;
+ 
+ 	return count;
+ }
+@@ -11786,7 +11778,6 @@ static int i40e_init_interrupt_scheme(st
+ 		return -ENOMEM;
+ 
+ 	pf->irq_pile->num_entries = vectors;
+-	pf->irq_pile->search_hint = 0;
+ 
+ 	/* track first vector for misc interrupts, ignore return */
+ 	(void)i40e_get_lump(pf, pf->irq_pile, 1, I40E_PILE_VALID_BIT - 1);
+@@ -12589,7 +12580,6 @@ static int i40e_sw_init(struct i40e_pf *
+ 		goto sw_init_done;
+ 	}
+ 	pf->qp_pile->num_entries = pf->hw.func_caps.num_tx_qp;
+-	pf->qp_pile->search_hint = 0;
+ 
+ 	pf->tx_timeout_recovery_level = 1;
+ 
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -2618,6 +2618,59 @@ error_param:
+ }
+ 
+ /**
++ * i40e_check_enough_queue - find big enough queue number
++ * @vf: pointer to the VF info
++ * @needed: the number of items needed
++ *
++ * Returns the base item index of the queue, or negative for error
++ **/
++static int i40e_check_enough_queue(struct i40e_vf *vf, u16 needed)
++{
++	unsigned int  i, cur_queues, more, pool_size;
++	struct i40e_lump_tracking *pile;
++	struct i40e_pf *pf = vf->pf;
++	struct i40e_vsi *vsi;
++
++	vsi = pf->vsi[vf->lan_vsi_idx];
++	cur_queues = vsi->alloc_queue_pairs;
++
++	/* if current allocated queues are enough for need */
++	if (cur_queues >= needed)
++		return vsi->base_queue;
++
++	pile = pf->qp_pile;
++	if (cur_queues > 0) {
++		/* if the allocated queues are not zero
++		 * just check if there are enough queues for more
++		 * behind the allocated queues.
++		 */
++		more = needed - cur_queues;
++		for (i = vsi->base_queue + cur_queues;
++			i < pile->num_entries; i++) {
++			if (pile->list[i] & I40E_PILE_VALID_BIT)
++				break;
++
++			if (more-- == 1)
++				/* there is enough */
++				return vsi->base_queue;
++		}
++	}
++
++	pool_size = 0;
++	for (i = 0; i < pile->num_entries; i++) {
++		if (pile->list[i] & I40E_PILE_VALID_BIT) {
++			pool_size = 0;
++			continue;
++		}
++		if (needed <= ++pool_size)
++			/* there is enough */
++			return i;
++	}
++
++	return -ENOMEM;
++}
++
++/**
+  * i40e_vc_request_queues_msg
+  * @vf: pointer to the VF info
+  * @msg: pointer to the msg buffer
+@@ -2651,6 +2704,12 @@ static int i40e_vc_request_queues_msg(st
+ 			 req_pairs - cur_pairs,
+ 			 pf->queues_left);
+ 		vfres->num_queue_pairs = pf->queues_left + cur_pairs;
++	} else if (i40e_check_enough_queue(vf, req_pairs) < 0) {
++		dev_warn(&pf->pdev->dev,
++			 "VF %d requested %d more queues, but there is not enough for it.\n",
++			 vf->vf_id,
++			 req_pairs - cur_pairs);
++		vfres->num_queue_pairs = cur_pairs;
+ 	} else {
+ 		/* successful request */
+ 		vf->num_req_queues = req_pairs;
 
 
