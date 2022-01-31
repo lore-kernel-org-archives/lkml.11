@@ -2,148 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65125C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB454C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:39:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238746AbiAaOjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 09:39:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35065 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238406AbiAaOjk (ORCPT
+        id S239007AbiAaOjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 09:39:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238836AbiAaOjo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 09:39:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643639979;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R0oDEaFGdibME6lqfi97Zey91X/PgbW0htlflxKdk5k=;
-        b=Lt718/7zxLrylDXof826XEVZDl4FuiQ8DOBycpbkeXeIdoiTHs98UryBeOJI9OBQhJE/q4
-        TLQqH3hAuawP5RviXQ9ATkoaSZWGptIZZyOD5gVg8yiXGMrmwYBR3NwBoiQuFZNLQIhqoO
-        r9MJnZgL1hH8/eBPKacUqkmsqfFDs2c=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-228-JLZ4TfytPPKBBdCvi3jlmA-1; Mon, 31 Jan 2022 09:39:38 -0500
-X-MC-Unique: JLZ4TfytPPKBBdCvi3jlmA-1
-Received: by mail-ej1-f69.google.com with SMTP id x16-20020a170906135000b006b5b4787023so5107798ejb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:39:38 -0800 (PST)
+        Mon, 31 Jan 2022 09:39:44 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D316C061714
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:39:44 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id u14so27228469lfo.11
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:39:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qzKdvDWI9cfPi4ztVSGxYkBmrqKhHHJF23hXiByBnDU=;
+        b=E/PA4Gz5Ivfh437Err49tSH/yazlUur3pqzJa27lvXl1M9+J/QDuV3toSkQnz+Jskl
+         Jd3/qtkEZ6jzbb+VwEUuMWc6w6mgJ9kOKUaW6MtMoyYQeE07t9k8q3nxVYv8RzA558nC
+         u+msb7MptubGrtAq5/Zihy+IQdWygGTUH7iXrzpRX8bk93/6B/2zkIjJ8lVTDf0miCb4
+         ZblPe8ZooX7mhVKQqxQrTlbL/bg9xKVQMwUZylSNiTBpaBeZaHUAZaaHUXKO3od/9N+X
+         pWUeHFzhIsN6j5WdhGMWxy+0xcY/VWV9f54siehUeyLQeJLHuorLjvUDmg+kQ/iespaq
+         EDEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=R0oDEaFGdibME6lqfi97Zey91X/PgbW0htlflxKdk5k=;
-        b=o1HwQnnJRgtT3DnsK4EfryrQXvZlFuFftGIBw3ixHLQTDUcP5DNk9Mp0AUw4piQEOt
-         5D4BTKmGzErM0GTRblaTpVFmQHWNrzmCXLcURSiDX62Vvy3jGwbBZiDmkkpgjWIPUYkd
-         OHvrAEaRxI7wklD8Gbq6rsYtR8OEhrxVkm+r3ntlJbFXMFeEl0iXk+QFczAt3zIsodVQ
-         Fa9l8SW6gxQ0cIujAw/f8sFXC0vvZDaxSy0cUTLzioAMhL2ouhxdUMgGI+FfP1QdDefZ
-         KweDqHGF3dUjavhyMQa3IXWm+EEuJHy2lebfX32XYJAb0W/IJI86n8+ig5Vf+F+D3E84
-         hYZw==
-X-Gm-Message-State: AOAM532tdVgZpEfjk73N6wrCrfWf6EwQrueDZrCZ34XcLgziO/lIsocu
-        eM+OtjcI4EgLyVvsZWpm7PSJALGeo24RsY3YFuYz9pjVPlFNfjDvraO21XW46jS+MHFXu+lbQ2S
-        ntlunMfJ3ukynp/3B2KHRvQnH
-X-Received: by 2002:a17:907:3d01:: with SMTP id gm1mr1106338ejc.695.1643639977301;
-        Mon, 31 Jan 2022 06:39:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzix88rypjQ9PzeqG917MJ5ZswKyPWRnGuIiC5bkUAy88MpUabwzv3XiWV6ICCl8U202+QhVQ==
-X-Received: by 2002:a17:907:3d01:: with SMTP id gm1mr1106311ejc.695.1643639977039;
-        Mon, 31 Jan 2022 06:39:37 -0800 (PST)
-Received: from [10.40.98.142] ([78.108.130.194])
-        by smtp.gmail.com with ESMTPSA id s20sm13504159ejc.189.2022.01.31.06.39.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 06:39:36 -0800 (PST)
-Message-ID: <91bfb535-9442-9413-cfca-1b5cb08826ed@redhat.com>
-Date:   Mon, 31 Jan 2022 15:39:35 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qzKdvDWI9cfPi4ztVSGxYkBmrqKhHHJF23hXiByBnDU=;
+        b=nGxBUBT0APVoTQKkctWlh8grEmUn+xypL+Pkgc7re/PY3DChEclNV7o1BU1SQMGNYN
+         wgjGLjKobWt1swhbCuq+4ZsUUVMKZ5fRNgjJMNF1q5IDVPcG7F+9xMMlehymh/yDtA3O
+         LjFEmMrfka5i9fgLvEENRm3Iu1DfJ7hmAZsnXyoV9yyEdNMxs0GLOcjQ99D4FcaM7z7D
+         oKCh3bNI1G7PXfBhVqcRy6yBC+tYfbi+RqskbXeZ43kgpFvMfKWCWLrF6IF+YS8Fe2sd
+         PGZzqXNR7F8wYFHkfhA0QsIb0Y7DhBsfxHeFoASF19scFZp9xtbiyFnEuxEdN70X0BrB
+         VGyg==
+X-Gm-Message-State: AOAM532zfwdeJNciKYTDC8PFZ3Mbl09UcIewdJlALCVVcODssWkaZ2Yr
+        DcrL6MFwDWY/DlAewAsU2m1WvUvmtdDiS4VhfqQD0w==
+X-Google-Smtp-Source: ABdhPJzr4AKuGZb0oc8Yf7NlZTAeVKsk1H3sQ+ng+YzTmdG0pZdvebsY68Y4jem072HHkTrkeurPblMrSmZ1lgc5BZE=
+X-Received: by 2002:a05:6512:3b9a:: with SMTP id g26mr14254558lfv.71.1643639982851;
+ Mon, 31 Jan 2022 06:39:42 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v4 01/20] power: supply: core: Refactor
- power_supply_set_input_current_limit_from_supplier()
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Ard Biesheuvel <ardb@kernel.org>, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        Fabio Aiuto <fabioaiuto83@gmail.com>,
-        platform-driver-x86@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org
-References: <20220130204557.15662-1-hdegoede@redhat.com>
- <20220130204557.15662-2-hdegoede@redhat.com>
- <YffmDCHY6csr0uyD@smile.fi.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <YffmDCHY6csr0uyD@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220127071638.4057899-1-gregkh@linuxfoundation.org>
+In-Reply-To: <20220127071638.4057899-1-gregkh@linuxfoundation.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 31 Jan 2022 15:39:06 +0100
+Message-ID: <CAPDyKFqt0aeLL1K3wRR1HF4Lf6t6UU94PmMxXys5Wc6fYjDBdA@mail.gmail.com>
+Subject: Re: [PATCH v2] moxart: fix potential use-after-free on remove path
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        linux-mmc@vger.kernel.org, stable <stable@vger.kernel.org>,
+        whitehat002 <hackyzh002@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+On Thu, 27 Jan 2022 at 08:16, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> It was reported that the mmc host structure could be accessed after it
+> was freed in moxart_remove(), so fix this by saving the base register of
+> the device and using it instead of the pointer dereference.
+>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+> Cc: Xin Xiong <xiongx18@fudan.edu.cn>
+> Cc: Xin Tan <tanxin.ctf@gmail.com>
+> Cc: Tony Lindgren <tony@atomide.com>
+> Cc: Yang Li <yang.lee@linux.alibaba.com>
+> Cc: linux-mmc@vger.kernel.org
+> Cc: stable <stable@vger.kernel.org>
+> Reported-by: whitehat002 <hackyzh002@gmail.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Thank you for the reviews.
+Applied for fixes, thanks!
 
-On 1/31/22 14:37, Andy Shevchenko wrote:
-> On Sun, Jan 30, 2022 at 09:45:38PM +0100, Hans de Goede wrote:
->> Some (USB) charger ICs have variants with USB D+ and D- pins to do their
->> own builtin charger-type detection, like e.g. the bq24190 and bq25890 and
->> also variants which lack this functionality, e.g. the bq24192 and bq25892.
->>
->> In case the charger-type; and thus the input-current-limit detection is
->> done outside the charger IC then we need some way to communicate this to
->> the charger IC. In the past extcon was used for this, but if the external
->> detection does e.g. full USB PD negotiation then the extcon cable-types do
->> not convey enough information.
->>
->> For these setups it was decided to model the external charging "brick"
->> and the parameters negotiated with it as a power_supply class-device
->> itself; and power_supply_set_input_current_limit_from_supplier() was
->> introduced to allow drivers to get the input-current-limit this way.
->>
->> But in some cases psy drivers may want to know other properties, e.g. the
->> bq25892 can do "quick-charge" negotiation by pulsing its current draw,
->> but this should only be done if the usb_type psy-property of its supplier
->> is set to DCP (and device-properties indicate the board allows higher
->> voltages).
->>
->> Instead of adding extra helper functions for each property which
->> a psy-driver wants to query from its supplier, refactor
->> power_supply_set_input_current_limit_from_supplier() into a
->> more generic power_supply_get_property_from_supplier() function.
-> 
-> ...
-> 
->> +	ret = power_supply_get_property_from_supplier(bdi->charger,
->> +						      POWER_SUPPLY_PROP_CURRENT_MAX,
->> +						      &val);
->> +	if (ret == 0)
-> 
-> Can it be as simple as
-> 
-> 	if (ret)
-> 		return;
-> 
-> 	...
-> 
-> 
-> ?
-> 
-> Or did I misunderstand the meaning of 0?
+Kind regards
+Uffe
 
-Yes that would be better and together with some of the other tweaks
-you've suggested I believe that this warrants a version 5. So I'll
-address a v5 addressing all your comment.
-
-Regards,
-
-Hans
-
+> ---
+> v2: changed to only move mmc_free_host() call as per Ulf's request
+>
+>  drivers/mmc/host/moxart-mmc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/mmc/host/moxart-mmc.c b/drivers/mmc/host/moxart-mmc.c
+> index 16d1c7a43d33..b6eb75f4bbfc 100644
+> --- a/drivers/mmc/host/moxart-mmc.c
+> +++ b/drivers/mmc/host/moxart-mmc.c
+> @@ -705,12 +705,12 @@ static int moxart_remove(struct platform_device *pdev)
+>         if (!IS_ERR_OR_NULL(host->dma_chan_rx))
+>                 dma_release_channel(host->dma_chan_rx);
+>         mmc_remove_host(mmc);
+> -       mmc_free_host(mmc);
+>
+>         writel(0, host->base + REG_INTERRUPT_MASK);
+>         writel(0, host->base + REG_POWER_CONTROL);
+>         writel(readl(host->base + REG_CLOCK_CONTROL) | CLK_OFF,
+>                host->base + REG_CLOCK_CONTROL);
+> +       mmc_free_host(mmc);
+>
+>         return 0;
+>  }
+> --
+> 2.35.0
+>
