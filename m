@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B30DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:12:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB79C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:12:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359797AbiAaLMI (ORCPT
+        id S1359838AbiAaLMN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:12:08 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56764 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376451AbiAaLIa (ORCPT
+        Mon, 31 Jan 2022 06:12:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44678 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376504AbiAaLIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:08:30 -0500
+        Mon, 31 Jan 2022 06:08:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C859BC0619C0;
+        Mon, 31 Jan 2022 03:05:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E30CBB82A5F;
-        Mon, 31 Jan 2022 11:08:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 330A0C340EF;
-        Mon, 31 Jan 2022 11:08:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92001B82A5F;
+        Mon, 31 Jan 2022 11:05:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA563C340E8;
+        Mon, 31 Jan 2022 11:05:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627307;
-        bh=I2vpxdTzHoTigqEtBiKo4GOPjxCVeueE+HHjONE84zs=;
+        s=korg; t=1643627117;
+        bh=I0uXQkDbhcrgFlOrWUKs2lEyJYwQN3pii/jlSjzk5Z0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tOPErTdyC7Z0NWgzIZoLW3HyUEulx0jw/B2gGyeUtyfO6hghA/gE9U7+OVK87lzM1
-         Wf60tabem6UwFSkSLZLNero3cywI64pcT+zsi4ldt8PWnWsb7hP/zD1aksKNJhDdUo
-         Q9ktWwt4CtkVx0uzUGhsyu6F91hyfzmPm4wi4nSg=
+        b=v4YoXnq0U2NoZGCn/J83NydPWzjXIUpBk7HxFCNFazQZHnR5MOqWrTezbOYQbuO1l
+         PMK+shbyDDOGR4JLMQOp5nlPVJUPAX/KN9wTXtFS5eB5F3VPFtcejR7SajtBMrsLrc
+         YlOMVIVvPlvVtQVOfbU5lcPDNdxE73QxFPtVmVGw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.15 042/171] KVM: PPC: Book3S HV Nested: Fix nested HFSCR being clobbered with multiple vCPUs
-Date:   Mon, 31 Jan 2022 11:55:07 +0100
-Message-Id: <20220131105231.447529036@linuxfoundation.org>
+        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 080/100] net: ipv4: Move ip_options_fragment() out of loop
+Date:   Mon, 31 Jan 2022 11:56:41 +0100
+Message-Id: <20220131105223.127439495@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
+References: <20220131105220.424085452@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,80 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Yajun Deng <yajun.deng@linux.dev>
 
-commit 22f7ff0dea9491e90b6fe808ed40c30bd791e5c2 upstream.
+[ Upstream commit faf482ca196a5b16007190529b3b2dd32ab3f761 ]
 
-The L0 is storing HFSCR requested by the L1 for the L2 in struct
-kvm_nested_guest when the L1 requests a vCPU enter L2. kvm_nested_guest
-is not a per-vCPU structure. Hilarity ensues.
+The ip_options_fragment() only called when iter->offset is equal to zero,
+so move it out of loop, and inline 'Copy the flags to each fragment.'
+As also, remove the unused parameter in ip_frag_ipcb().
 
-Fix it by moving the nested hfscr into the vCPU structure together with
-the other per-vCPU nested fields.
-
-Fixes: 8b210a880b35 ("KVM: PPC: Book3S HV Nested: Make nested HFSCR state accessible")
-Cc: stable@vger.kernel.org # v5.15+
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220122105530.3477250-1-npiggin@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/kvm_book3s_64.h |    1 -
- arch/powerpc/include/asm/kvm_host.h      |    1 +
- arch/powerpc/kvm/book3s_hv.c             |    3 +--
- arch/powerpc/kvm/book3s_hv_nested.c      |    2 +-
- 4 files changed, 3 insertions(+), 4 deletions(-)
+ net/ipv4/ip_output.c | 19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
 
---- a/arch/powerpc/include/asm/kvm_book3s_64.h
-+++ b/arch/powerpc/include/asm/kvm_book3s_64.h
-@@ -39,7 +39,6 @@ struct kvm_nested_guest {
- 	pgd_t *shadow_pgtable;		/* our page table for this guest */
- 	u64 l1_gr_to_hr;		/* L1's addr of part'n-scoped table */
- 	u64 process_table;		/* process table entry for this guest */
--	u64 hfscr;			/* HFSCR that the L1 requested for this nested guest */
- 	long refcnt;			/* number of pointers to this struct */
- 	struct mutex tlb_lock;		/* serialize page faults and tlbies */
- 	struct kvm_nested_guest *next;
---- a/arch/powerpc/include/asm/kvm_host.h
-+++ b/arch/powerpc/include/asm/kvm_host.h
-@@ -814,6 +814,7 @@ struct kvm_vcpu_arch {
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 10d4cde31c6bf..fb91a466b2d34 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -614,18 +614,6 @@ void ip_fraglist_init(struct sk_buff *skb, struct iphdr *iph,
+ }
+ EXPORT_SYMBOL(ip_fraglist_init);
  
- 	/* For support of nested guests */
- 	struct kvm_nested_guest *nested;
-+	u64 nested_hfscr;	/* HFSCR that the L1 requested for the nested guest */
- 	u32 nested_vcpu_id;
- 	gpa_t nested_io_gpr;
- #endif
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -1731,7 +1731,6 @@ static int kvmppc_handle_exit_hv(struct
- 
- static int kvmppc_handle_nested_exit(struct kvm_vcpu *vcpu)
+-static void ip_fraglist_ipcb_prepare(struct sk_buff *skb,
+-				     struct ip_fraglist_iter *iter)
+-{
+-	struct sk_buff *to = iter->frag;
+-
+-	/* Copy the flags to each fragment. */
+-	IPCB(to)->flags = IPCB(skb)->flags;
+-
+-	if (iter->offset == 0)
+-		ip_options_fragment(to);
+-}
+-
+ void ip_fraglist_prepare(struct sk_buff *skb, struct ip_fraglist_iter *iter)
  {
--	struct kvm_nested_guest *nested = vcpu->arch.nested;
- 	int r;
- 	int srcu_idx;
+ 	unsigned int hlen = iter->hlen;
+@@ -671,7 +659,7 @@ void ip_frag_init(struct sk_buff *skb, unsigned int hlen,
+ EXPORT_SYMBOL(ip_frag_init);
  
-@@ -1831,7 +1830,7 @@ static int kvmppc_handle_nested_exit(str
- 		 * it into a HEAI.
- 		 */
- 		if (!(vcpu->arch.hfscr_permitted & (1UL << cause)) ||
--					(nested->hfscr & (1UL << cause))) {
-+				(vcpu->arch.nested_hfscr & (1UL << cause))) {
- 			vcpu->arch.trap = BOOK3S_INTERRUPT_H_EMUL_ASSIST;
+ static void ip_frag_ipcb(struct sk_buff *from, struct sk_buff *to,
+-			 bool first_frag, struct ip_frag_state *state)
++			 bool first_frag)
+ {
+ 	/* Copy the flags to each fragment. */
+ 	IPCB(to)->flags = IPCB(from)->flags;
+@@ -845,12 +833,13 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
  
- 			/*
---- a/arch/powerpc/kvm/book3s_hv_nested.c
-+++ b/arch/powerpc/kvm/book3s_hv_nested.c
-@@ -362,7 +362,7 @@ long kvmhv_enter_nested_guest(struct kvm
- 	/* set L1 state to L2 state */
- 	vcpu->arch.nested = l2;
- 	vcpu->arch.nested_vcpu_id = l2_hv.vcpu_token;
--	l2->hfscr = l2_hv.hfscr;
-+	vcpu->arch.nested_hfscr = l2_hv.hfscr;
- 	vcpu->arch.regs = l2_regs;
+ 		/* Everything is OK. Generate! */
+ 		ip_fraglist_init(skb, iph, hlen, &iter);
++		ip_options_fragment(iter.frag);
  
- 	/* Guest must always run with ME enabled, HV disabled. */
+ 		for (;;) {
+ 			/* Prepare header of the next frame,
+ 			 * before previous one went down. */
+ 			if (iter.frag) {
+-				ip_fraglist_ipcb_prepare(skb, &iter);
++				IPCB(iter.frag)->flags = IPCB(skb)->flags;
+ 				ip_fraglist_prepare(skb, &iter);
+ 			}
+ 
+@@ -905,7 +894,7 @@ slow_path:
+ 			err = PTR_ERR(skb2);
+ 			goto fail;
+ 		}
+-		ip_frag_ipcb(skb, skb2, first_frag, &state);
++		ip_frag_ipcb(skb, skb2, first_frag);
+ 
+ 		/*
+ 		 *	Put this fragment into the sending queue.
+-- 
+2.34.1
+
 
 
