@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12719C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:22:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA165C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:22:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377153AbiAaLWf (ORCPT
+        id S1377257AbiAaLWi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:22:35 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58344 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359040AbiAaLK5 (ORCPT
+        Mon, 31 Jan 2022 06:22:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46080 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376288AbiAaLMY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:57 -0500
+        Mon, 31 Jan 2022 06:12:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B3EAB82A72;
-        Mon, 31 Jan 2022 11:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A5A4C340E8;
-        Mon, 31 Jan 2022 11:10:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B91960E76;
+        Mon, 31 Jan 2022 11:12:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34A69C340EE;
+        Mon, 31 Jan 2022 11:12:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627455;
-        bh=0EFvWCyzPTR972W2aSbT7/hxxvBhl8DPD0Oj9l1LhLE=;
+        s=korg; t=1643627543;
+        bh=kF8zBOnPG19rVxt1/WRDHi/NZ4XcLWzX6Qw/i0Lye+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=psvL7yjnO4jDIIRdbwDjsb5NojN0mivf9/+Pq+tyhrmJmgKlX+OnMwD92fQgKaUxY
-         2F+mm3JEBYRm67PIjB7YUs3m6SUZf4RzUfCt3CveG5i4VfHbnEaeLlKnVRCO0vGm3G
-         /bEe//KTJA8InGniDtSqnYC26UkrVV4Ap0e6hKnI=
+        b=cGSZxiorZQn3A0P1j6jERULXBbcFH92ATdVlsl6snhACi/xtZWpySnyy1UfInvV9t
+         e6pwY9sZGNYNzcInvtOnnc2DULWFjo/C2Rt61JfhoN5EDv+In4D+xhpSs2/9quDbQF
+         YGqdpiDBcfnXjGZRGfhOMQHjTHAAm8rQYvG6TWG8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 089/171] hwmon: (lm90) Mark alert as broken for MAX6680
-Date:   Mon, 31 Jan 2022 11:55:54 +0100
-Message-Id: <20220131105233.045950528@linuxfoundation.org>
+Subject: [PATCH 5.15 118/171] mptcp: fix removing ids bitmap setting
+Date:   Mon, 31 Jan 2022 11:56:23 +0100
+Message-Id: <20220131105234.037190388@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -46,32 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Geliang Tang <geliang.tang@suse.com>
 
-commit 94746b0ba479743355e0d3cc1cb9cfe3011fb8be upstream.
+[ Upstream commit a4c0214fbee97c46e3f41fee37931d66c0fc3cb1 ]
 
-Experiments with MAX6680 and MAX6681 show that the alert function of those
-chips is broken, similar to other chips supported by the lm90 driver.
-Mark it accordingly.
+In mptcp_pm_nl_rm_addr_or_subflow(), the bit of rm_list->ids[i] in the
+id_avail_bitmap should be set, not rm_list->ids[1]. This patch fixed it.
 
-Fixes: 4667bcb8d8fc ("hwmon: (lm90) Introduce chip parameter structure")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 86e39e04482b ("mptcp: keep track of local endpoint still available for each msk")
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/lm90.c |    2 +-
+ net/mptcp/pm_netlink.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -418,7 +418,7 @@ static const struct lm90_params lm90_par
- 	},
- 	[max6680] = {
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_CRIT
--		  | LM90_HAVE_CRIT_ALRM_SWP,
-+		  | LM90_HAVE_CRIT_ALRM_SWP | LM90_HAVE_BROKEN_ALERT,
- 		.alert_alarms = 0x7c,
- 		.max_convrate = 7,
- 	},
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 7f11eb3e35137..84e6b55375e1d 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -781,7 +781,7 @@ static void mptcp_pm_nl_rm_addr_or_subflow(struct mptcp_sock *msk,
+ 			msk->pm.subflows--;
+ 			__MPTCP_INC_STATS(sock_net(sk), rm_type);
+ 		}
+-		__set_bit(rm_list->ids[1], msk->pm.id_avail_bitmap);
++		__set_bit(rm_list->ids[i], msk->pm.id_avail_bitmap);
+ 		if (!removed)
+ 			continue;
+ 
+-- 
+2.34.1
+
 
 
