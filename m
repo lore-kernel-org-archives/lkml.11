@@ -2,452 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3000CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:00:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD367C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358145AbiAaKAH (ORCPT
+        id S1358011AbiAaKBJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:00:07 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:2797 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357978AbiAaJ7V (ORCPT
+        Mon, 31 Jan 2022 05:01:09 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:46682 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1358119AbiAaJ7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 04:59:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643623161; x=1675159161;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=X6bjyrhtY2Ay34xUDayuQ0cQfH994nPZQ3ppTl2op7I=;
-  b=gn2t4BXOJNdGMFqnDSgiD3NvzOn220KQRaKHR+0cHT7mrF9eekV0ZXNG
-   QgC7Ku8gQc0mf/wHlRQPO6Ug96Jse+5TXUKaPFuqcvPO3ABcUplipa2l/
-   3RxnfNLp8dfsC9EXXTWErKHVZEY+8VP/UOjacHgrb1o5P10QyWFceW9Xp
-   3veK3N/NsX+POyChJhKz534yYVjEYgj6deefkFPA89EMZzAksmlJ5n0pq
-   D4Mg+8oeasNPd3t0xGlqzTlR9zAAEpYwCzxjjpS7NZG+u/DNqsP8Gez+q
-   a2HZdJauSh7o7V4iqTZducscUdhsm5T4Bvmi/dD8oPFzNA/ArIxf8EN30
-   g==;
-IronPort-SDR: /z0frFkLaNKNULew9KAJ5N6xYVNDTLBXNiQc3dRv+emuBgO6iY99yj2PtsRGywIlJHtr6/vtiy
- MNN0mQaAfGRTUGDzodZYfU/ZbmE4VxrEQceF6YNTEYzFzOPec73V2vGf6vsjtW2y3nQY6y3MFU
- XeMcBEkzfHRMW2oKxG1XulozNRjJukxCAVIRzofuaJHifl2PihKKQR/y2n8LsfcColN0ZH0uL6
- LkUVAzvILTjl0CRG4RieYXvDSwn1THtjOGhIWXw+76Mx3TibOGh4ZGzyv+JMJjIM0nCJ8OJvO9
- z/MEHv7EYgQf42XEEpKgDWHm
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="147108399"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Jan 2022 02:59:20 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 31 Jan 2022 02:59:19 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 31 Jan 2022 02:59:16 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
-        <richardcochran@gmail.com>, <f.fainelli@gmail.com>,
-        <vivien.didelot@gmail.com>, <vladimir.oltean@nxp.com>,
-        <andrew@lunn.ch>, Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2 5/7] net: lan966x: Update extraction/injection for timestamping
-Date:   Mon, 31 Jan 2022 11:01:20 +0100
-Message-ID: <20220131100122.423164-6-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220131100122.423164-1-horatiu.vultur@microchip.com>
-References: <20220131100122.423164-1-horatiu.vultur@microchip.com>
+        Mon, 31 Jan 2022 04:59:54 -0500
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20V8vMwx027165;
+        Mon, 31 Jan 2022 10:59:21 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=wYNNkm/t/7b5hr9n2LuviOHiASEdotR00BRcy3HUpZQ=;
+ b=3rT+XieKN+pTmcrsxGnXKfJjCeZUpnlUDZYZwp/onZN3ANvRAAwCmnAyKlb8pRB+fVu8
+ guiJWDTijMaBg+hVYELiV/kP4z1laFdxOvxZJFHq4fVQJZ1y+7dwFiIe4QgvtLOU7XB2
+ t4yzVRH1nV9nV1JkNACIHrdms9EEezqas80SF02+3myigNanMh4Lct0s2fhlsiihUKff
+ DyLcum3NQyvlpoxOVI7cYX811m6Dw6IuaCGlwV0Ex5b9TPXO61/Bxwz23rboG08fzWtb
+ 3kM0SkCQjUi0D14HaSdRiiwe4jv38OylcEhZBxrOXcRo7qNOSkW9iHYSZA0mJ11CLS/M tg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dwwf3uktj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 10:59:21 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3DF7110002A;
+        Mon, 31 Jan 2022 10:59:21 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3303B210F85;
+        Mon, 31 Jan 2022 10:59:21 +0100 (CET)
+Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 31 Jan 2022 10:59:20
+ +0100
+From:   Christophe Kerello <christophe.kerello@foss.st.com>
+To:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
+        <robh+dt@kernel.org>, <srinivas.kandagatla@linaro.org>
+CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <devicetree@vger.kernel.org>, <chenshumin86@sina.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>
+Subject: [PATCH v2 3/4] nvmem: core: Fix a conflict between MTD and NVMEM on wp-gpios property
+Date:   Mon, 31 Jan 2022 10:57:54 +0100
+Message-ID: <20220131095755.8981-4-christophe.kerello@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220131095755.8981-1-christophe.kerello@foss.st.com>
+References: <20220131095755.8981-1-christophe.kerello@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-31_02,2022-01-28_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update both the extraction and injection to do timestamping of the
-frames. The extraction is always doing the timestamping while for
-injection is doing the timestamping only if it is configured.
+Wp-gpios property can be used on NVMEM nodes and the same property can
+be also used on MTD NAND nodes. In case of the wp-gpios property is
+defined at NAND level node, the GPIO management is done at NAND driver
+level. Write protect is disabled when the driver is probed or resumed
+and is enabled when the driver is released or suspended.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+When no partitions are defined in the NAND DT node, then the NAND DT node
+will be passed to NVMEM framework. If wp-gpios property is defined in
+this node, the GPIO resource is taken twice and the NAND controller
+driver fails to probe.
+
+It would be possible to set config->wp_gpio at MTD level before calling
+nvmem_register function but NVMEM framework will toggle this GPIO on
+each write when this GPIO should only be controlled at NAND level driver
+to ensure that the Write Protect has not been enabled.
+
+A way to fix this conflict is to add a new boolean flag in nvmem_config
+named skip_wp_gpio. In case skip_wp_gpio is set, the GPIO resource will
+be managed by the provider.
+
+Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
 ---
- .../ethernet/microchip/lan966x/lan966x_main.c |  51 ++++++-
- .../ethernet/microchip/lan966x/lan966x_main.h |  20 +++
- .../ethernet/microchip/lan966x/lan966x_ptp.c  | 141 ++++++++++++++++++
- 3 files changed, 207 insertions(+), 5 deletions(-)
+Changes in v2:
+ - rework the proposal done to fix a conflict between MTD and NVMEM on
+   wp-gpios property.
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index c62615b9d101..3c19763118ea 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -202,7 +202,7 @@ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
- 	val = lan_rd(lan966x, QS_INJ_STATUS);
- 	if (!(QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp)) ||
- 	    (QS_INJ_STATUS_WMARK_REACHED_GET(val) & BIT(grp)))
--		return NETDEV_TX_BUSY;
-+		goto err;
+ drivers/nvmem/core.c           | 2 +-
+ include/linux/nvmem-provider.h | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+index 23a38dcf0fc4..cb40dca6a51d 100644
+--- a/drivers/nvmem/core.c
++++ b/drivers/nvmem/core.c
+@@ -771,7 +771,7 @@ struct nvmem_device *nvmem_register(const struct nvmem_config *config)
  
- 	/* Write start of frame */
- 	lan_wr(QS_INJ_CTRL_GAP_SIZE_SET(1) |
-@@ -214,7 +214,7 @@ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
- 		/* Wait until the fifo is ready */
- 		err = lan966x_port_inj_ready(lan966x, grp);
- 		if (err)
--			return NETDEV_TX_BUSY;
-+			goto err;
- 
- 		lan_wr((__force u32)ifh[i], lan966x, QS_INJ_WR(grp));
- 	}
-@@ -226,7 +226,7 @@ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
- 		/* Wait until the fifo is ready */
- 		err = lan966x_port_inj_ready(lan966x, grp);
- 		if (err)
--			return NETDEV_TX_BUSY;
-+			goto err;
- 
- 		lan_wr(((u32 *)skb->data)[i], lan966x, QS_INJ_WR(grp));
- 	}
-@@ -236,7 +236,7 @@ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
- 		/* Wait until the fifo is ready */
- 		err = lan966x_port_inj_ready(lan966x, grp);
- 		if (err)
--			return NETDEV_TX_BUSY;
-+			goto err;
- 
- 		lan_wr(0, lan966x, QS_INJ_WR(grp));
- 		++i;
-@@ -256,8 +256,19 @@ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
- 	dev->stats.tx_packets++;
- 	dev->stats.tx_bytes += skb->len;
- 
-+	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
-+	    LAN966X_SKB_CB(skb)->rew_op == IFH_REW_OP_TWO_STEP_PTP)
-+		return NETDEV_TX_OK;
-+
- 	dev_consume_skb_any(skb);
- 	return NETDEV_TX_OK;
-+
-+err:
-+	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
-+	    LAN966X_SKB_CB(skb)->rew_op == IFH_REW_OP_TWO_STEP_PTP)
-+		lan966x_ptp_txtstamp_release(port, skb);
-+
-+	return NETDEV_TX_BUSY;
- }
- 
- static void lan966x_ifh_set_bypass(void *ifh, u64 bypass)
-@@ -290,10 +301,23 @@ static void lan966x_ifh_set_vid(void *ifh, u64 vid)
- 		IFH_POS_TCI, IFH_LEN * 4, PACK, 0);
- }
- 
-+static void lan966x_ifh_set_rew_op(void *ifh, u64 rew_op)
-+{
-+	packing(ifh, &rew_op, IFH_POS_REW_CMD + IFH_WID_REW_CMD - 1,
-+		IFH_POS_REW_CMD, IFH_LEN * 4, PACK, 0);
-+}
-+
-+static void lan966x_ifh_set_timestamp(void *ifh, u64 timestamp)
-+{
-+	packing(ifh, &timestamp, IFH_POS_TIMESTAMP + IFH_WID_TIMESTAMP - 1,
-+		IFH_POS_TIMESTAMP, IFH_LEN * 4, PACK, 0);
-+}
-+
- static int lan966x_port_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct lan966x_port *port = netdev_priv(dev);
- 	__be32 ifh[IFH_LEN];
-+	int err;
- 
- 	memset(ifh, 0x0, sizeof(__be32) * IFH_LEN);
- 
-@@ -303,6 +327,15 @@ static int lan966x_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 	lan966x_ifh_set_ipv(ifh, skb->priority >= 7 ? 0x7 : skb->priority);
- 	lan966x_ifh_set_vid(ifh, skb_vlan_tag_get(skb));
- 
-+	if (port->lan966x->ptp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
-+		err = lan966x_ptp_txtstamp_request(port, skb);
-+		if (err)
-+			return err;
-+
-+		lan966x_ifh_set_rew_op(ifh, LAN966X_SKB_CB(skb)->rew_op);
-+		lan966x_ifh_set_timestamp(ifh, LAN966X_SKB_CB(skb)->ts_id);
-+	}
-+
- 	return lan966x_port_ifh_xmit(skb, ifh, dev);
- }
- 
-@@ -453,6 +486,12 @@ static void lan966x_ifh_get_len(void *ifh, u64 *len)
- 		IFH_POS_LEN, IFH_LEN * 4, UNPACK, 0);
- }
- 
-+static void lan966x_ifh_get_timestamp(void *ifh, u64 *timestamp)
-+{
-+	packing(ifh, timestamp, IFH_POS_TIMESTAMP + IFH_WID_TIMESTAMP - 1,
-+		IFH_POS_TIMESTAMP, IFH_LEN * 4, UNPACK, 0);
-+}
-+
- static irqreturn_t lan966x_xtr_irq_handler(int irq, void *args)
- {
- 	struct lan966x *lan966x = args;
-@@ -462,10 +501,10 @@ static irqreturn_t lan966x_xtr_irq_handler(int irq, void *args)
- 		return IRQ_NONE;
- 
- 	do {
-+		u64 src_port, len, timestamp;
- 		struct net_device *dev;
- 		struct sk_buff *skb;
- 		int sz = 0, buf_len;
--		u64 src_port, len;
- 		u32 ifh[IFH_LEN];
- 		u32 *buf;
- 		u32 val;
-@@ -480,6 +519,7 @@ static irqreturn_t lan966x_xtr_irq_handler(int irq, void *args)
- 
- 		lan966x_ifh_get_src_port(ifh, &src_port);
- 		lan966x_ifh_get_len(ifh, &len);
-+		lan966x_ifh_get_timestamp(ifh, &timestamp);
- 
- 		WARN_ON(src_port >= lan966x->num_phys_ports);
- 
-@@ -520,6 +560,7 @@ static irqreturn_t lan966x_xtr_irq_handler(int irq, void *args)
- 			*buf = val;
- 		}
- 
-+		lan966x_ptp_rxtstamp(lan966x, skb, timestamp);
- 		skb->protocol = eth_type_trans(skb, dev);
- 
- 		if (lan966x->bridge_mask & BIT(src_port))
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 55fa5e56b8d1..03c6a4f34ae2 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -86,6 +86,16 @@ struct lan966x_phc {
- 	u8 index;
- };
- 
-+struct lan966x_skb_cb {
-+	u8 rew_op;
-+	u16 ts_id;
-+	unsigned long jiffies;
-+};
-+
-+#define LAN966X_PTP_TIMEOUT		msecs_to_jiffies(10)
-+#define LAN966X_SKB_CB(skb) \
-+	((struct lan966x_skb_cb *)((skb)->cb))
-+
- struct lan966x {
- 	struct device *dev;
- 
-@@ -134,7 +144,9 @@ struct lan966x {
- 	bool ptp;
- 	struct lan966x_phc phc[LAN966X_PHC_COUNT];
- 	spinlock_t ptp_clock_lock; /* lock for phc */
-+	spinlock_t ptp_ts_id_lock; /* lock for ts_id */
- 	struct mutex ptp_lock; /* lock for ptp interface state */
-+	u16 ptp_skbs;
- };
- 
- struct lan966x_port_config {
-@@ -166,6 +178,8 @@ struct lan966x_port {
- 	struct fwnode_handle *fwnode;
- 
- 	u8 ptp_cmd;
-+	u16 ts_id;
-+	struct sk_buff_head tx_skbs;
- };
- 
- extern const struct phylink_mac_ops lan966x_phylink_mac_ops;
-@@ -256,6 +270,12 @@ int lan966x_ptp_init(struct lan966x *lan966x);
- void lan966x_ptp_deinit(struct lan966x *lan966x);
- int lan966x_ptp_hwtstamp_set(struct lan966x_port *port, struct ifreq *ifr);
- int lan966x_ptp_hwtstamp_get(struct lan966x_port *port, struct ifreq *ifr);
-+void lan966x_ptp_rxtstamp(struct lan966x *lan966x, struct sk_buff *skb,
-+			  u64 timestamp);
-+int lan966x_ptp_txtstamp_request(struct lan966x_port *port,
-+				 struct sk_buff *skb);
-+void lan966x_ptp_txtstamp_release(struct lan966x_port *port,
-+				  struct sk_buff *skb);
- 
- static inline void __iomem *lan_addr(void __iomem *base[],
- 				     int id, int tinst, int tcnt,
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-index a92a16b728b2..11c9f9d3aa5b 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-@@ -107,6 +107,103 @@ int lan966x_ptp_hwtstamp_get(struct lan966x_port *port, struct ifreq *ifr)
- 			    sizeof(phc->hwtstamp_config)) ? -EFAULT : 0;
- }
- 
-+static int lan966x_ptp_classify(struct lan966x_port *port, struct sk_buff *skb)
-+{
-+	struct ptp_header *header;
-+	u8 msgtype;
-+	int type;
-+
-+	if (port->ptp_cmd == IFH_REW_OP_NOOP)
-+		return IFH_REW_OP_NOOP;
-+
-+	type = ptp_classify_raw(skb);
-+	if (type == PTP_CLASS_NONE)
-+		return IFH_REW_OP_NOOP;
-+
-+	header = ptp_parse_header(skb, type);
-+	if (!header)
-+		return IFH_REW_OP_NOOP;
-+
-+	if (port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
-+		return IFH_REW_OP_TWO_STEP_PTP;
-+
-+	/* If it is sync and run 1 step then set the correct operation,
-+	 * otherwise run as 2 step
-+	 */
-+	msgtype = ptp_get_msgtype(header, type);
-+	if ((msgtype & 0xf) == 0)
-+		return IFH_REW_OP_ONE_STEP_PTP;
-+
-+	return IFH_REW_OP_TWO_STEP_PTP;
-+}
-+
-+static void lan966x_ptp_txtstamp_old_release(struct lan966x_port *port)
-+{
-+	struct sk_buff *skb, *skb_tmp;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->tx_skbs.lock, flags);
-+	skb_queue_walk_safe(&port->tx_skbs, skb, skb_tmp) {
-+		if time_after(LAN966X_SKB_CB(skb)->jiffies + LAN966X_PTP_TIMEOUT,
-+			      jiffies)
-+			break;
-+
-+		__skb_unlink(skb, &port->tx_skbs);
-+		dev_kfree_skb_any(skb);
-+	}
-+	spin_unlock_irqrestore(&port->tx_skbs.lock, flags);
-+}
-+
-+int lan966x_ptp_txtstamp_request(struct lan966x_port *port,
-+				 struct sk_buff *skb)
-+{
-+	struct lan966x *lan966x = port->lan966x;
-+	unsigned long flags;
-+	u8 rew_op;
-+
-+	rew_op = lan966x_ptp_classify(port, skb);
-+	LAN966X_SKB_CB(skb)->rew_op = rew_op;
-+
-+	if (rew_op != IFH_REW_OP_TWO_STEP_PTP)
-+		return 0;
-+
-+	lan966x_ptp_txtstamp_old_release(port);
-+
-+	spin_lock_irqsave(&lan966x->ptp_ts_id_lock, flags);
-+	if (lan966x->ptp_skbs == LAN966X_MAX_PTP_ID) {
-+		spin_unlock_irqrestore(&lan966x->ptp_ts_id_lock, flags);
-+		return -EBUSY;
-+	}
-+
-+	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
-+
-+	skb_queue_tail(&port->tx_skbs, skb);
-+	LAN966X_SKB_CB(skb)->ts_id = port->ts_id;
-+	LAN966X_SKB_CB(skb)->jiffies = jiffies;
-+
-+	lan966x->ptp_skbs++;
-+	port->ts_id++;
-+	if (port->ts_id == LAN966X_MAX_PTP_ID)
-+		port->ts_id = 0;
-+
-+	spin_unlock_irqrestore(&lan966x->ptp_ts_id_lock, flags);
-+
-+	return 0;
-+}
-+
-+void lan966x_ptp_txtstamp_release(struct lan966x_port *port,
-+				  struct sk_buff *skb)
-+{
-+	struct lan966x *lan966x = port->lan966x;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&lan966x->ptp_ts_id_lock, flags);
-+	port->ts_id--;
-+	lan966x->ptp_skbs--;
-+	skb_unlink(skb, &port->tx_skbs);
-+	spin_unlock_irqrestore(&lan966x->ptp_ts_id_lock, flags);
-+}
-+
- static int lan966x_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- {
- 	struct lan966x_phc *phc = container_of(ptp, struct lan966x_phc, info);
-@@ -312,6 +409,7 @@ static int lan966x_ptp_phc_init(struct lan966x *lan966x,
- int lan966x_ptp_init(struct lan966x *lan966x)
- {
- 	u64 tod_adj = lan966x_ptp_get_nominal_value();
-+	struct lan966x_port *port;
- 	int err, i;
- 
- 	if (!lan966x->ptp)
-@@ -324,6 +422,7 @@ int lan966x_ptp_init(struct lan966x *lan966x)
- 	}
- 
- 	spin_lock_init(&lan966x->ptp_clock_lock);
-+	spin_lock_init(&lan966x->ptp_ts_id_lock);
- 	mutex_init(&lan966x->ptp_lock);
- 
- 	/* Disable master counters */
-@@ -348,13 +447,55 @@ int lan966x_ptp_init(struct lan966x *lan966x)
- 	/* Enable master counters */
- 	lan_wr(PTP_DOM_CFG_ENA_SET(0x7), lan966x, PTP_DOM_CFG);
- 
-+	for (i = 0; i < lan966x->num_phys_ports; i++) {
-+		port = lan966x->ports[i];
-+		if (!port)
-+			continue;
-+
-+		skb_queue_head_init(&port->tx_skbs);
-+	}
-+
- 	return 0;
- }
- 
- void lan966x_ptp_deinit(struct lan966x *lan966x)
- {
-+	struct lan966x_port *port;
- 	int i;
- 
-+	for (i = 0; i < lan966x->num_phys_ports; i++) {
-+		port = lan966x->ports[i];
-+		if (!port)
-+			continue;
-+
-+		skb_queue_purge(&port->tx_skbs);
-+	}
-+
- 	for (i = 0; i < LAN966X_PHC_COUNT; ++i)
- 		ptp_clock_unregister(lan966x->phc[i].clock);
- }
-+
-+void lan966x_ptp_rxtstamp(struct lan966x *lan966x, struct sk_buff *skb,
-+			  u64 timestamp)
-+{
-+	struct skb_shared_hwtstamps *shhwtstamps;
-+	struct lan966x_phc *phc;
-+	struct timespec64 ts;
-+	u64 full_ts_in_ns;
-+
-+	if (!lan966x->ptp)
-+		return;
-+
-+	phc = &lan966x->phc[LAN966X_PHC_PORT];
-+	lan966x_ptp_gettime64(&phc->info, &ts);
-+
-+	/* Drop the sub-ns precision */
-+	timestamp = timestamp >> 2;
-+	if (ts.tv_nsec < timestamp)
-+		ts.tv_sec--;
-+	ts.tv_nsec = timestamp;
-+	full_ts_in_ns = ktime_set(ts.tv_sec, ts.tv_nsec);
-+
-+	shhwtstamps = skb_hwtstamps(skb);
-+	shhwtstamps->hwtstamp = full_ts_in_ns;
-+}
+ 	if (config->wp_gpio)
+ 		nvmem->wp_gpio = config->wp_gpio;
+-	else
++	else if (!config->skip_wp_gpio)
+ 		nvmem->wp_gpio = gpiod_get_optional(config->dev, "wp",
+ 						    GPIOD_OUT_HIGH);
+ 	if (IS_ERR(nvmem->wp_gpio)) {
+diff --git a/include/linux/nvmem-provider.h b/include/linux/nvmem-provider.h
+index 98efb7b5660d..4b480023c265 100644
+--- a/include/linux/nvmem-provider.h
++++ b/include/linux/nvmem-provider.h
+@@ -70,7 +70,8 @@ struct nvmem_keepout {
+  * @word_size:	Minimum read/write access granularity.
+  * @stride:	Minimum read/write access stride.
+  * @priv:	User context passed to read/write callbacks.
+- * @wp-gpio:   Write protect pin
++ * @wp-gpio:	Write protect pin
++ * @skip_wp_gpio: Write Protect pin is managed by the provider.
+  *
+  * Note: A default "nvmem<id>" name will be assigned to the device if
+  * no name is specified in its configuration. In such case "<id>" is
+@@ -92,6 +93,7 @@ struct nvmem_config {
+ 	enum nvmem_type		type;
+ 	bool			read_only;
+ 	bool			root_only;
++	bool			skip_wp_gpio;
+ 	struct device_node	*of_node;
+ 	bool			no_of_node;
+ 	nvmem_reg_read_t	reg_read;
 -- 
-2.33.0
+2.25.1
 
