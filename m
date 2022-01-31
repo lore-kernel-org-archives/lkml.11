@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAFA9C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96161C3525A
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376773AbiAaLNN (ORCPT
+        id S1376730AbiAaLNL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:13:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377235AbiAaLJt (ORCPT
+        Mon, 31 Jan 2022 06:13:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57144 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377223AbiAaLJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:09:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CE9C061398;
-        Mon, 31 Jan 2022 03:06:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A79E5B82A60;
-        Mon, 31 Jan 2022 11:06:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25373C340EF;
-        Mon, 31 Jan 2022 11:06:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD382B82A4C;
+        Mon, 31 Jan 2022 11:09:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFED7C340E8;
+        Mon, 31 Jan 2022 11:09:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627199;
-        bh=hRKTuIsnl4WN0VxrzUwjAAfV/KmgykqxL+AVfx9ryCM=;
+        s=korg; t=1643627387;
+        bh=GRxFcrspBDZRFlASEt8oRRx66DaP085lVTs5yNE/Bvk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RCUdZo/h1DrWQTvBFsIjnh1ZkJRwuCuVYZ9ea/VYApRNJ69DAV2V2y23FWJfwTTBL
-         IIi1hx8e6upOs/H6zx+NHcJhhUmDH+QljbRrmVWrMzsSOf7sSTooSOdqYgs8nW7BkA
-         trE35hylR4zBtE79ceB9EWy3RDP7STzTacrxKS9w=
+        b=aMhjUnZAyimGGAEzcEq4Wcs5Cym+Ruo6KsxNzDtVbq/AfKOZ5yefxzQGEu9lRdUuz
+         Bhg6JehVkqF1XxaZRH0mOZ4dF5ucqI90hG6ATi+OzcdNXmQ/5Ypp/3n53A2IASCk3q
+         dkyUBf8eYB8nmRJosAxZB1HYFvKNTOaeB5Y+L6nM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 076/100] rxrpc: Adjust retransmission backoff
-Date:   Mon, 31 Jan 2022 11:56:37 +0100
-Message-Id: <20220131105222.987434426@linuxfoundation.org>
+        stable@vger.kernel.org, Dan van der Ster <dan@vanderster.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>
+Subject: [PATCH 5.15 024/171] ceph: set pool_ns in new inode layout for async creates
+Date:   Mon, 31 Jan 2022 11:54:49 +0100
+Message-Id: <20220131105230.842077669@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,93 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-[ Upstream commit 2c13c05c5ff4b9fc907b07f7311821910ebaaf8a ]
+commit 4584a768f22b7669cdebabc911543621ac661341 upstream.
 
-Improve retransmission backoff by only backing off when we retransmit data
-packets rather than when we set the lost ack timer.
+Dan reported that he was unable to write to files that had been
+asynchronously created when the client's OSD caps are restricted to a
+particular namespace.
 
-To this end:
+The issue is that the layout for the new inode is only partially being
+filled. Ensure that we populate the pool_ns_data and pool_ns_len in the
+iinfo before calling ceph_fill_inode.
 
- (1) In rxrpc_resend(), use rxrpc_get_rto_backoff() when setting the
-     retransmission timer and only tell it that we are retransmitting if we
-     actually have things to retransmit.
-
-     Note that it's possible for the retransmission algorithm to race with
-     the processing of a received ACK, so we may see no packets needing
-     retransmission.
-
- (2) In rxrpc_send_data_packet(), don't bump the backoff when setting the
-     ack_lost_at timer, as it may then get bumped twice.
-
-With this, when looking at one particular packet, the retransmission
-intervals were seen to be 1.5ms, 2ms, 3ms, 5ms, 9ms, 17ms, 33ms, 71ms,
-136ms, 264ms, 544ms, 1.088s, 2.1s, 4.2s and 8.3s.
-
-Fixes: c410bf01933e ("rxrpc: Fix the excessive initial retransmission timeout")
-Suggested-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: https://lore.kernel.org/r/164138117069.2023386.17446904856843997127.stgit@warthog.procyon.org.uk/
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+URL: https://tracker.ceph.com/issues/54013
+Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
+Reported-by: Dan van der Ster <dan@vanderster.com>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/rxrpc/call_event.c | 8 +++-----
- net/rxrpc/output.c     | 2 +-
- 2 files changed, 4 insertions(+), 6 deletions(-)
+ fs/ceph/file.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index 6be2672a65eab..df864e6922679 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -157,7 +157,7 @@ static void rxrpc_congestion_timeout(struct rxrpc_call *call)
- static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
- {
- 	struct sk_buff *skb;
--	unsigned long resend_at, rto_j;
-+	unsigned long resend_at;
- 	rxrpc_seq_t cursor, seq, top;
- 	ktime_t now, max_age, oldest, ack_ts;
- 	int ix;
-@@ -165,10 +165,8 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -577,6 +577,7 @@ static int ceph_finish_async_create(stru
+ 	struct ceph_inode_info *ci = ceph_inode(dir);
+ 	struct inode *inode;
+ 	struct timespec64 now;
++	struct ceph_string *pool_ns;
+ 	struct ceph_mds_client *mdsc = ceph_sb_to_mdsc(dir->i_sb);
+ 	struct ceph_vino vino = { .ino = req->r_deleg_ino,
+ 				  .snap = CEPH_NOSNAP };
+@@ -626,6 +627,12 @@ static int ceph_finish_async_create(stru
+ 	in.max_size = cpu_to_le64(lo->stripe_unit);
  
- 	_enter("{%d,%d}", call->tx_hard_ack, call->tx_top);
+ 	ceph_file_layout_to_legacy(lo, &in.layout);
++	/* lo is private, so pool_ns can't change */
++	pool_ns = rcu_dereference_raw(lo->pool_ns);
++	if (pool_ns) {
++		iinfo.pool_ns_len = pool_ns->len;
++		iinfo.pool_ns_data = pool_ns->str;
++	}
  
--	rto_j = call->peer->rto_j;
--
- 	now = ktime_get_real();
--	max_age = ktime_sub(now, jiffies_to_usecs(rto_j));
-+	max_age = ktime_sub(now, jiffies_to_usecs(call->peer->rto_j));
- 
- 	spin_lock_bh(&call->lock);
- 
-@@ -213,7 +211,7 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
- 	}
- 
- 	resend_at = nsecs_to_jiffies(ktime_to_ns(ktime_sub(now, oldest)));
--	resend_at += jiffies + rto_j;
-+	resend_at += jiffies + rxrpc_get_rto_backoff(call->peer, retrans);
- 	WRITE_ONCE(call->resend_at, resend_at);
- 
- 	if (unacked)
-diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
-index 10f2bf2e9068a..a45c83f22236e 100644
---- a/net/rxrpc/output.c
-+++ b/net/rxrpc/output.c
-@@ -468,7 +468,7 @@ done:
- 			if (call->peer->rtt_count > 1) {
- 				unsigned long nowj = jiffies, ack_lost_at;
- 
--				ack_lost_at = rxrpc_get_rto_backoff(call->peer, retrans);
-+				ack_lost_at = rxrpc_get_rto_backoff(call->peer, false);
- 				ack_lost_at += nowj;
- 				WRITE_ONCE(call->ack_lost_at, ack_lost_at);
- 				rxrpc_reduce_call_timer(call, ack_lost_at, nowj,
--- 
-2.34.1
-
+ 	down_read(&mdsc->snap_rwsem);
+ 	ret = ceph_fill_inode(inode, NULL, &iinfo, NULL, req->r_session,
 
 
