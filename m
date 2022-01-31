@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2038C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376709AbiAaLPw (ORCPT
+        id S1344277AbiAaLP5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:15:52 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42612 "EHLO
+        Mon, 31 Jan 2022 06:15:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42662 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376636AbiAaLIq (ORCPT
+        with ESMTP id S1376717AbiAaLIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:08:46 -0500
+        Mon, 31 Jan 2022 06:08:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57AB861120;
-        Mon, 31 Jan 2022 11:08:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EE9CC340E8;
-        Mon, 31 Jan 2022 11:08:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB6A360ECF;
+        Mon, 31 Jan 2022 11:08:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E1F0C340E8;
+        Mon, 31 Jan 2022 11:08:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627325;
-        bh=5tY0CAlJUzcoaiWnUY4WMVkJA9mAYKR3uGYW2xPE+5s=;
+        s=korg; t=1643627335;
+        bh=CF/4MY7FKckAGskhdW8kSRtZt/dF4cnf9veiaqT7nkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dmv09OoNkSMZkJoXhzH0aFGCkVvu+aih8uDhgGLEGY20jg4d99ljpTQQUDCF5kPVB
-         lZt33Au0oxV6hZFlNuMUKn8++eU+XYWveJLTqzj7qcSUacEy0yyb0PrQzCx+U3XQ+O
-         oFtl4rwrfsCV0Ud7+Q8QeX939Ycu16p7JqnhsUSo=
+        b=tyWoezdi7gRs0se67aSL1Z1MUhUXH/qh8E/sIfimsozvmHz6GeKB0H+6iiAN2ilUL
+         eJocobwj4n0rKpBdqUc9gx0yz4wpXi0zxxoG/A5jIiYz4bX5bKNAkBlg1LtJnPMvU8
+         ExuIF3WwTCQKWhHAtT/0ZU1TZgy2E1kkbCDEoG88=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH 5.15 047/171] serial: 8250: of: Fix mapped region size when using reg-offset property
-Date:   Mon, 31 Jan 2022 11:55:12 +0100
-Message-Id: <20220131105231.618648179@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        "Maciej W. Rozycki" <macro@embecosm.com>
+Subject: [PATCH 5.15 050/171] tty: Partially revert the removal of the Cyclades public API
+Date:   Mon, 31 Jan 2022 11:55:15 +0100
+Message-Id: <20220131105231.721191500@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -45,52 +46,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Maciej W. Rozycki <macro@embecosm.com>
 
-commit d06b1cf28297e27127d3da54753a3a01a2fa2f28 upstream.
+commit f23653fe64479d96910bfda2b700b1af17c991ac upstream.
 
-8250_of supports a reg-offset property which is intended to handle
-cases where the device registers start at an offset inside the region
-of memory allocated to the device. The Xilinx 16550 UART, for which this
-support was initially added, requires this. However, the code did not
-adjust the overall size of the mapped region accordingly, causing the
-driver to request an area of memory past the end of the device's
-allocation. For example, if the UART was allocated an address of
-0xb0130000, size of 0x10000 and reg-offset of 0x1000 in the device
-tree, the region of memory reserved was b0131000-b0140fff, which caused
-the driver for the region starting at b0140000 to fail to probe.
+Fix a user API regression introduced with commit f76edd8f7ce0 ("tty:
+cyclades, remove this orphan"), which removed a part of the API and
+caused compilation errors for user programs using said part, such as
+GCC 9 in its libsanitizer component[1]:
 
-Fix this by subtracting reg-offset from the mapped region size.
+.../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
+  160 | #include <linux/cyclades.h>
+      |          ^~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
 
-Fixes: b912b5e2cfb3 ([POWERPC] Xilinx: of_serial support for Xilinx uart 16550.)
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220112194214.881844-1-robert.hancock@calian.com
+As the absolute minimum required bring `struct cyclades_monitor' and
+ioctl numbers back then so as to make the library build again.  Add a
+preprocessor warning as to the obsolescence of the features provided.
+
+
+[1] GCC PR sanitizer/100379, "cyclades.h is removed from linux kernel
+    header files", <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100379>
+
+Fixes: f76edd8f7ce0 ("tty: cyclades, remove this orphan")
+Cc: stable@vger.kernel.org # v5.13+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Maciej W. Rozycki <macro@embecosm.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_of.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ include/uapi/linux/cyclades.h |   35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+ create mode 100644 include/uapi/linux/cyclades.h
 
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -83,8 +83,17 @@ static int of_platform_serial_setup(stru
- 		port->mapsize = resource_size(&resource);
- 
- 		/* Check for shifted address mapping */
--		if (of_property_read_u32(np, "reg-offset", &prop) == 0)
-+		if (of_property_read_u32(np, "reg-offset", &prop) == 0) {
-+			if (prop >= port->mapsize) {
-+				dev_warn(&ofdev->dev, "reg-offset %u exceeds region size %pa\n",
-+					 prop, &port->mapsize);
-+				ret = -EINVAL;
-+				goto err_unprepare;
-+			}
+--- /dev/null
++++ b/include/uapi/linux/cyclades.h
+@@ -0,0 +1,35 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 +
- 			port->mapbase += prop;
-+			port->mapsize -= prop;
-+		}
- 
- 		port->iotype = UPIO_MEM;
- 		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
++#ifndef _UAPI_LINUX_CYCLADES_H
++#define _UAPI_LINUX_CYCLADES_H
++
++#warning "Support for features provided by this header has been removed"
++#warning "Please consider updating your code"
++
++struct cyclades_monitor {
++	unsigned long int_count;
++	unsigned long char_count;
++	unsigned long char_max;
++	unsigned long char_last;
++};
++
++#define CYGETMON		0x435901
++#define CYGETTHRESH		0x435902
++#define CYSETTHRESH		0x435903
++#define CYGETDEFTHRESH		0x435904
++#define CYSETDEFTHRESH		0x435905
++#define CYGETTIMEOUT		0x435906
++#define CYSETTIMEOUT		0x435907
++#define CYGETDEFTIMEOUT		0x435908
++#define CYSETDEFTIMEOUT		0x435909
++#define CYSETRFLOW		0x43590a
++#define CYGETRFLOW		0x43590b
++#define CYSETRTSDTR_INV		0x43590c
++#define CYGETRTSDTR_INV		0x43590d
++#define CYZSETPOLLCYCLE		0x43590e
++#define CYZGETPOLLCYCLE		0x43590f
++#define CYGETCD1400VER		0x435910
++#define CYSETWAIT		0x435912
++#define CYGETWAIT		0x435913
++
++#endif /* _UAPI_LINUX_CYCLADES_H */
 
 
