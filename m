@@ -2,110 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DEE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:06:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B60E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359579AbiAaLGG (ORCPT
+        id S1359595AbiAaLGI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:06:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
+        Mon, 31 Jan 2022 06:06:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358799AbiAaLDb (ORCPT
+        with ESMTP id S1358809AbiAaLDb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:03:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10453C0617BA;
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D71C0617BC
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:02:32 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id i34so5710489lfv.2
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:02:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=czeOm2pkfIYtlH8bieE/wFkWMyQace30JcDwxXQeWDY=;
+        b=NAM+paj077GlbsSEbAhREf9Ku6Zelpm258xyJs/uNE2AuRvKnCy48gfwZAgwyslTFR
+         m3FwDtohPmEJwRAkIVNJawuANbhmN7JaxgRofyQ/AdWTlQb60iLuWwhb63Vy8Kso+QP0
+         7e2+p6p/6JWa/AfN5eIUs1nzVxb1IJYuYjzQA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=czeOm2pkfIYtlH8bieE/wFkWMyQace30JcDwxXQeWDY=;
+        b=5OH9flTwaNilJWtepeowFM89w55S1DLYiMs8qa99IvQIhksZd13wjR4mxuUq/Qz7nZ
+         QA/VK4HN76hjgwmoh1Mb/6uJIFWKGIfvC9W+n6bEw/hOeRomJiSUeE/KlWMaYPyoO1RJ
+         6OPqL03oTXY5mpFIIEmWCc57ok2SJcoh+8ZO3EIplDLYde9ZSjmuov9sZeg4WPOsq/F6
+         tMrI3SP0erDk/hhzUtk2Vz2FKyW2DzGTqI/UJfZ1S4LmVCqMVCXdPG6mNZp9z21nV7qi
+         RxS36mmDlO3MAdOt/6At68sUz3tgiFzb57k+qLcA2pYpSr4f02tdYPSq0eFaj+hRTEJp
+         oVJQ==
+X-Gm-Message-State: AOAM532yr0Pb4HD0A/aHz7gF0XpPPsjw3krNj4I2c0YezDHMq82Pelm1
+        Jk42GhQoNRk7dlVw0sv8xYo2MA==
+X-Google-Smtp-Source: ABdhPJz1ok/mMVMmC6806RcAq8MH2XjtwH5h47J/+uzZ8Kh+q34vMsAK2Yo0+uhGrtutG1qy+aMGMg==
+X-Received: by 2002:a05:6512:12c5:: with SMTP id p5mr16013020lfg.89.1643626951003;
         Mon, 31 Jan 2022 03:02:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A20F760ECE;
-        Mon, 31 Jan 2022 11:02:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62C57C340E8;
-        Mon, 31 Jan 2022 11:02:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626950;
-        bh=E79E0lKCQV1oboAUSdeW3yn4oz2jqkP+d4CnVeC9Gmc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wiMRXmnhXre5xuJ3ibg1cMiQz/p4sQm7HaU3P30AHappJ63eJksqkNh8kH20120jc
-         MwR0vA8OUEE6+9BFQmWdTj9iw8Y7hKgKPsuKRszNdtK81vu78r1T5IhNFHqP7GTLXO
-         sv08F+i7erMctt3h44m4CHN39Baw+ivYFwAAp3+I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 026/100] tty: n_gsm: fix SW flow control encoding/handling
-Date:   Mon, 31 Jan 2022 11:55:47 +0100
-Message-Id: <20220131105221.341392054@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from [172.16.11.74] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id g7sm1962543ljk.83.2022.01.31.03.02.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 03:02:30 -0800 (PST)
+Subject: Re: [PATCH v2 1/3] lib/vsprintf: Avoid redundant work with 0 size
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Rientjes <rientjes@google.com>
+Cc:     Waiman Long <longman@redhat.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Rafael Aquini <aquini@redhat.com>
+References: <20220129205315.478628-1-longman@redhat.com>
+ <20220129205315.478628-2-longman@redhat.com>
+ <d99b3c4b-7b6e-529-6e4b-b91b65c92d81@google.com>
+ <Yfe5Bb3U6Uil7Y6g@smile.fi.intel.com> <Yfe6SfG4CqzWSaMM@smile.fi.intel.com>
+ <Yfe7Q5cx+MoaOev/@smile.fi.intel.com>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Message-ID: <d44824d4-2dd1-a8ab-d3ee-ac67b749ca6f@rasmusvillemoes.dk>
+Date:   Mon, 31 Jan 2022 12:02:29 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yfe7Q5cx+MoaOev/@smile.fi.intel.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+On 31/01/2022 11.34, Andy Shevchenko wrote:
+> On Mon, Jan 31, 2022 at 12:30:33PM +0200, Andy Shevchenko wrote:
+>> On Mon, Jan 31, 2022 at 12:25:09PM +0200, Andy Shevchenko wrote:
+>>> On Sun, Jan 30, 2022 at 12:49:37PM -0800, David Rientjes wrote:
+>>>> On Sat, 29 Jan 2022, Waiman Long wrote:
+>>>>
+>>>>> For *scnprintf(), vsnprintf() is always called even if the input size is
+>>>>> 0. That is a waste of time, so just return 0 in this case.
+>>>
+>>> Why do you think it's not legit?
+>>
+>> I have to elaborate.
+>>
+>> For *nprintf() the size=0 is quite useful to have.
+>> For *cnprintf() the size=0 makes less sense, but, if we read `man snprintf()`:
+>>
+>>   The  functions  snprintf() and vsnprintf() do not write more than size bytes
+>>   (including the terminating null byte ('\0')). If the output was truncated due
+>>   to this limit, then the return value is the  number of  characters (excluding
+>>   the terminating null byte) which would have been written to the final string
+>>   if enough space had been available. Thus, a return value of size or more
+>>   means  that  the  output  was truncated.  (See also below under NOTES.)
+>>
+>>   If an output error is encountered, a negative value is returned.
+>>
+>> Note the last sentence there. You need to answer to it in the commit message
+>> why your change is okay and it will show that you thought through all possible
+>> scenarios.
+> 
+> Also it seems currently the kernel documentation is not aligned with the code
+> 
+>   "If @size is == 0 the function returns 0."
+> 
+> It should mention the (theoretical?) possibility of getting negative value,
+> if vsnprintf() returns negative value.
+> 
 
-commit 8838b2af23caf1ff0610caef2795d6668a013b2d upstream.
+The kernel's vsnprintf _will never_ return a negative value. There is
+way too much code which relies on that. It also has to work from any
+context, so we'll never do any memory allocation or anything else that
+could possibly force us to error out, and even if we encounter some
+impossible situation, we do not return a negative value, but just stop
+the output where we are.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.2.7.3 states that DC1 (XON) and DC3 (XOFF)
-are the control characters defined in ISO/IEC 646. These shall be quoted if
-seen in the data stream to avoid interpretation as flow control characters.
+So yes, micro-optimizing [v]scnprintf() is completely valid, but I've
+never bothered to send the patch because the use case for scnprintf() is
+primarily the
 
-ISO/IEC 646 refers to the set of ISO standards described as the ISO
-7-bit coded character set for information interchange. Its final version
-is also known as ITU T.50.
-See https://www.itu.int/rec/T-REC-T.50-199209-I/en
+  ret += scnprintf(buf + ret, size - ret, ...);
 
-To abide the standard it is needed to quote DC1 and DC3 correctly if these
-are seen as data bytes and not as control characters. The current
-implementation already tries to enforce this but fails to catch all
-defined cases. 3GPP 27.010 chapter 5.2.7.3 clearly states that the most
-significant bit shall be ignored for DC1 and DC3 handling. The current
-implementation handles only the case with the most significant bit set 0.
-Cases in which DC1 and DC3 have the most significant bit set 1 are left
-unhandled.
+pattern, with ret starting out at 0 and size being some non-zero number.
+When given a non-zero size, scnprintf() is guaranteed to return
+something _strictly less_ than that value; that invariant guarantees
+that the size-ret expression never becomes 0. So if scnprintf() is
+properly used, I can't think of any situation where size will be 0,
+hence I see that patch as correct-but-mostly-pointless.
 
-This patch fixes this by masking the data bytes with ISO_IEC_646_MASK (only
-the 7 least significant bits set 1) before comparing them with XON
-(a.k.a. DC1) and XOFF (a.k.a. DC3) when testing which byte values need
-quotation via byte stuffing.
-
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220120101857.2509-1-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/n_gsm.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -317,6 +317,7 @@ static struct tty_driver *gsm_tty_driver
- #define GSM1_ESCAPE_BITS	0x20
- #define XON			0x11
- #define XOFF			0x13
-+#define ISO_IEC_646_MASK	0x7F
- 
- static const struct tty_port_operations gsm_port_ops;
- 
-@@ -526,7 +527,8 @@ static int gsm_stuff_frame(const u8 *inp
- 	int olen = 0;
- 	while (len--) {
- 		if (*input == GSM1_SOF || *input == GSM1_ESCAPE
--		    || *input == XON || *input == XOFF) {
-+		    || (*input & ISO_IEC_646_MASK) == XON
-+		    || (*input & ISO_IEC_646_MASK) == XOFF) {
- 			*output++ = GSM1_ESCAPE;
- 			*output++ = *input++ ^ GSM1_ESCAPE_BITS;
- 			olen++;
-
-
+Rasmus
