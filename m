@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B97AC3525A
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3320EC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379844AbiAaLan (ORCPT
+        id S1380011AbiAaLav (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:30:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47082 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378714AbiAaLUh (ORCPT
+        Mon, 31 Jan 2022 06:30:51 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39258 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236724AbiAaLVL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2627C0698C2;
-        Mon, 31 Jan 2022 03:13:36 -0800 (PST)
+        Mon, 31 Jan 2022 06:21:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7146FB82A66;
-        Mon, 31 Jan 2022 11:13:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A29BFC340E8;
-        Mon, 31 Jan 2022 11:13:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9DEADB82A60;
+        Mon, 31 Jan 2022 11:21:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1B0AC340EF;
+        Mon, 31 Jan 2022 11:21:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627614;
-        bh=MBN22VmzfNkPcLqzGiCFTU1wm89FYeeBn5uoaTj78F8=;
+        s=korg; t=1643628067;
+        bh=WLQ26RHE/xOeDgBXZ1JjZPLrVq1aL2E3bOVJqLyonmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pe6m7crt6ZGmh8GbGO5otDk1zex59zFQXK5UhyNJSKi8x0Ve0hKXWZ4llidUIM3SP
-         WhgvAGDQBFdLGDMdISwxqXaYvN61CmphsN2SWfK2It8bfQomChKRY5ZO7EsiP2CHp4
-         D9+KA1+Nlc9jNN4MjYLpANG7pQtEv9heImBadpng=
+        b=LqEOgAc/1j8p6ShFzdN050h0vjPA9YIkokvLid/ibipjqklb9ztgTz1ktyPptnrBJ
+         ZXcXGu6wV8aszFTr24ZG8OH3BTXUM9YmFI1xhKl44KEUJd2QK5e47WT/BMwzWUqCOd
+         11MnLgppN/x008NfLLbHbxJ21dzA8ZznsFASPDTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Helge Deller <deller@gmx.de>, Wei Liu <wei.liu@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 142/171] video: hyperv_fb: Fix validation of screen resolution
-Date:   Mon, 31 Jan 2022 11:56:47 +0100
-Message-Id: <20220131105234.808706620@linuxfoundation.org>
+        stable@vger.kernel.org, Lyu Tao <tao.lyu@epfl.ch>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>
+Subject: [PATCH 5.16 114/200] NFSv4: Handle case where the lookup of a directory fails
+Date:   Mon, 31 Jan 2022 11:56:17 +0100
+Message-Id: <20220131105237.415872921@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,99 +47,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kelley <mikelley@microsoft.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 9ff5549b1d1d3c3a9d71220d44bd246586160f1d ]
+commit ac795161c93699d600db16c1a8cc23a65a1eceaf upstream.
 
-In the WIN10 version of the Synthetic Video protocol with Hyper-V,
-Hyper-V reports a list of supported resolutions as part of the protocol
-negotiation. The driver calculates the maximum width and height from
-the list of resolutions, and uses those maximums to validate any screen
-resolution specified in the video= option on the kernel boot line.
+If the application sets the O_DIRECTORY flag, and tries to open a
+regular file, nfs_atomic_open() will punt to doing a regular lookup.
+If the server then returns a regular file, we will happily return a
+file descriptor with uninitialised open state.
 
-This method of validation is incorrect. For example, the list of
-supported resolutions could contain 1600x1200 and 1920x1080, both of
-which fit in an 8 Mbyte frame buffer.  But calculating the max width
-and height yields 1920 and 1200, and 1920x1200 resolution does not fit
-in an 8 Mbyte frame buffer.  Unfortunately, this resolution is accepted,
-causing a kernel fault when the driver accesses memory outside the
-frame buffer.
+The fix is to return the expected ENOTDIR error in these cases.
 
-Instead, validate the specified screen resolution by calculating
-its size, and comparing against the frame buffer size.  Delete the
-code for calculating the max width and height from the list of
-resolutions, since these max values have no use.  Also add the
-frame buffer size to the info message to aid in understanding why
-a resolution might be rejected.
-
-Fixes: 67e7cdb4829d ("video: hyperv: hyperv_fb: Obtain screen resolution from Hyper-V host")
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Acked-by: Helge Deller <deller@gmx.de>
-Link: https://lore.kernel.org/r/1642360711-2335-1-git-send-email-mikelley@microsoft.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Lyu Tao <tao.lyu@epfl.ch>
+Fixes: 0dd2b474d0b6 ("nfs: implement i_op->atomic_open()")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/hyperv_fb.c | 16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+ fs/nfs/dir.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
-index 23999df527393..c8e0ea27caf1d 100644
---- a/drivers/video/fbdev/hyperv_fb.c
-+++ b/drivers/video/fbdev/hyperv_fb.c
-@@ -287,8 +287,6 @@ struct hvfb_par {
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -1967,6 +1967,19 @@ out:
  
- static uint screen_width = HVFB_WIDTH;
- static uint screen_height = HVFB_HEIGHT;
--static uint screen_width_max = HVFB_WIDTH;
--static uint screen_height_max = HVFB_HEIGHT;
- static uint screen_depth;
- static uint screen_fb_size;
- static uint dio_fb_size; /* FB size for deferred IO */
-@@ -582,7 +580,6 @@ static int synthvid_get_supported_resolution(struct hv_device *hdev)
- 	int ret = 0;
- 	unsigned long t;
- 	u8 index;
--	int i;
- 
- 	memset(msg, 0, sizeof(struct synthvid_msg));
- 	msg->vid_hdr.type = SYNTHVID_RESOLUTION_REQUEST;
-@@ -613,13 +610,6 @@ static int synthvid_get_supported_resolution(struct hv_device *hdev)
- 		goto out;
- 	}
- 
--	for (i = 0; i < msg->resolution_resp.resolution_count; i++) {
--		screen_width_max = max_t(unsigned int, screen_width_max,
--		    msg->resolution_resp.supported_resolution[i].width);
--		screen_height_max = max_t(unsigned int, screen_height_max,
--		    msg->resolution_resp.supported_resolution[i].height);
--	}
--
- 	screen_width =
- 		msg->resolution_resp.supported_resolution[index].width;
- 	screen_height =
-@@ -941,7 +931,7 @@ static void hvfb_get_option(struct fb_info *info)
- 
- 	if (x < HVFB_WIDTH_MIN || y < HVFB_HEIGHT_MIN ||
- 	    (synthvid_ver_ge(par->synthvid_version, SYNTHVID_VERSION_WIN10) &&
--	    (x > screen_width_max || y > screen_height_max)) ||
-+	    (x * y * screen_depth / 8 > screen_fb_size)) ||
- 	    (par->synthvid_version == SYNTHVID_VERSION_WIN8 &&
- 	     x * y * screen_depth / 8 > SYNTHVID_FB_SIZE_WIN8) ||
- 	    (par->synthvid_version == SYNTHVID_VERSION_WIN7 &&
-@@ -1194,8 +1184,8 @@ static int hvfb_probe(struct hv_device *hdev,
- 	}
- 
- 	hvfb_get_option(info);
--	pr_info("Screen resolution: %dx%d, Color depth: %d\n",
--		screen_width, screen_height, screen_depth);
-+	pr_info("Screen resolution: %dx%d, Color depth: %d, Frame buffer size: %d\n",
-+		screen_width, screen_height, screen_depth, screen_fb_size);
- 
- 	ret = hvfb_getmem(hdev, info);
- 	if (ret) {
--- 
-2.34.1
-
+ no_open:
+ 	res = nfs_lookup(dir, dentry, lookup_flags);
++	if (!res) {
++		inode = d_inode(dentry);
++		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
++		    !S_ISDIR(inode->i_mode))
++			res = ERR_PTR(-ENOTDIR);
++	} else if (!IS_ERR(res)) {
++		inode = d_inode(res);
++		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
++		    !S_ISDIR(inode->i_mode)) {
++			dput(res);
++			res = ERR_PTR(-ENOTDIR);
++		}
++	}
+ 	if (switched) {
+ 		d_lookup_done(dentry);
+ 		if (!res)
 
 
