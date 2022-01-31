@@ -2,194 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED68C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:15:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 643CFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379650AbiAaPPH (ORCPT
+        id S1379423AbiAaPPI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 10:15:07 -0500
-Received: from mga07.intel.com ([134.134.136.100]:19436 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1378546AbiAaPOS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 10:14:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643642058; x=1675178058;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=DQQn7QRxsnft+dSOK1ITrRsadeRRoBZ/hz1rB+81nUA=;
-  b=FnMFIWHeXawEQKxj6Bzn6m8O87VKwraDygqouSlAEzJaFhOni6A4yHj+
-   m/VxTo3do7PaApSNE276bxbn6u0ALfRySjfj/GuDZm1X4ZdRCLgCC60zB
-   KYZjqeBWL8WMp9duEcGTrWIMnhgEEKhtq9X7NDPFOOJamBRm8MxHJN+OC
-   DNwM/IACn1rsLDI7hzPvNKSvbWSrBsbZbZHwm9chBVRkAgQ1oiDaIpLLs
-   PYmRp4lSBC8PqUUhGC+iJHaffwOvE2bLQvtcE7OMxWD1MJTavv+iCXLw4
-   SHpAde+T6iXrLIdiMOc1zqic7lHJWtxW2fiIvLtP/1gC9yNiTLG5UF/on
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="310787744"
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="310787744"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 07:14:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="619408651"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 31 Jan 2022 07:14:08 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 175D7496; Mon, 31 Jan 2022 17:14:16 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Tan Jui Nee <jui.nee.tan@intel.com>,
-        Kate Hsuan <hpa@redhat.com>,
-        Jonathan Yong <jonathan.yong@intel.com>,
-        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Peter Tyser <ptyser@xes-inc.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Henning Schild <henning.schild@siemens.com>
-Subject: [PATCH v4 6/8] i2c: i801: convert to use common P2SB accessor
-Date:   Mon, 31 Jan 2022 17:13:44 +0200
-Message-Id: <20220131151346.45792-7-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
-References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
+        Mon, 31 Jan 2022 10:15:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40640 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1377843AbiAaPOO (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 10:14:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643642048;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5gBtosB0UfmfYr5zZy3baE9jgYgCk/escq5rx8anoDY=;
+        b=YAWLtUaEedxK2uVbMem5PFUFCBR2vWtddzUfecQO0rqNyFEHU7IZgY1H8NBwqJm54rzdV7
+        cxhNoeW8x19pM+MjVvySwptDQpiGGVUeySK8wlNmCdxc0+Js3U1BTlhFqu1iyvo6zzZixZ
+        rLepBct50CwCKOBvJCEjes7sGLd2Z+s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-428-spLipaAGOEWk4R9t29eT7g-1; Mon, 31 Jan 2022 10:14:04 -0500
+X-MC-Unique: spLipaAGOEWk4R9t29eT7g-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5993418C89C4;
+        Mon, 31 Jan 2022 15:14:03 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 39D117243D;
+        Mon, 31 Jan 2022 15:14:01 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH 4/5] cachefiles: Use I_EXCL_INUSE instead of S_KERNEL_FILE
+From:   David Howells <dhowells@redhat.com>
+To:     Amir Goldstein <amir73il@gmail.com>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>, linux-cachefs@redhat.com,
+        linux-unionfs@vger.kernel.org, dhowells@redhat.com,
+        Christoph Hellwig <hch@infradead.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Jeff Layton <jlayton@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        torvalds@linux-foundation.org, linux-unionfs@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 31 Jan 2022 15:14:00 +0000
+Message-ID: <164364204024.1476539.3811417846576668364.stgit@warthog.procyon.org.uk>
+In-Reply-To: <164364196407.1476539.8450117784231043601.stgit@warthog.procyon.org.uk>
+References: <164364196407.1476539.8450117784231043601.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we have a common P2SB accessor in tree we may use it instead of
-open coded variants.
+Get rid of S_KERNEL_FILE and use I_EXCL_INUSE instead, thereby sharing that
+flag with overlayfs.  This is used by cachefiles for two purposes: firstly,
+to prevent simultaneous access to a backing file, which could cause data
+corruption, and secondly, to allow cachefilesd to find out if it's allowed
+to cull a backing file without having to have duplicate lookup
+infrastructure (the VFS already has all the infrastructure that is
+necessary to do the lookup; cachefiles just needs a single bit flag).
 
-Replace custom code by p2sb_bar() call.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Amir Goldstein <amir73il@gmail.com>
+cc: Miklos Szeredi <miklos@szeredi.hu>
+cc: linux-cachefs@redhat.com
+cc: linux-unionfs@vger.kernel.org
+Link: https://lore.kernel.org/r/CAOQ4uxhRS3MGEnCUDcsB1RL0d1Oy0g0Rzm75hVFAJw2dJ7uKSA@mail.gmail.com/ [1]
 ---
- drivers/i2c/busses/Kconfig        |  1 +
- drivers/i2c/busses/i2c-i801.c     | 39 +++++++------------------------
- drivers/platform/x86/intel/p2sb.c |  6 +++++
- 3 files changed, 16 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index 42da31c1ab70..286f3b14712b 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -101,6 +101,7 @@ config I2C_HIX5HD2
- config I2C_I801
- 	tristate "Intel 82801 (ICH/PCH)"
- 	depends on PCI
-+	select P2SB if X86
- 	select CHECK_SIGNATURE if X86 && DMI
- 	select I2C_SMBUS
- 	help
-diff --git a/drivers/i2c/busses/i2c-i801.c b/drivers/i2c/busses/i2c-i801.c
-index 7428cc6af5cc..950a9b444adf 100644
---- a/drivers/i2c/busses/i2c-i801.c
-+++ b/drivers/i2c/busses/i2c-i801.c
-@@ -110,6 +110,7 @@
- #include <linux/err.h>
- #include <linux/platform_device.h>
- #include <linux/platform_data/itco_wdt.h>
-+#include <linux/platform_data/x86/p2sb.h>
- #include <linux/pm_runtime.h>
- #include <linux/mutex.h>
+ fs/cachefiles/namei.c |   46 ++++++++++++++++++++--------------------------
+ include/linux/fs.h    |    2 +-
+ 2 files changed, 21 insertions(+), 27 deletions(-)
+
+diff --git a/fs/cachefiles/namei.c b/fs/cachefiles/namei.c
+index 8930c767d93a..0c88c82c188f 100644
+--- a/fs/cachefiles/namei.c
++++ b/fs/cachefiles/namei.c
+@@ -18,22 +18,19 @@ static bool __cachefiles_mark_inode_in_use(struct cachefiles_object *object,
+ 					   struct dentry *dentry)
+ {
+ 	struct inode *inode = d_backing_inode(dentry);
+-	bool can_use = false;
++	bool locked;
  
-@@ -139,7 +140,6 @@
- #define TCOBASE		0x050
- #define TCOCTL		0x054
- 
--#define SBREG_BAR		0x10
- #define SBREG_SMBCTRL		0xc6000c
- #define SBREG_SMBCTRL_DNV	0xcf000c
- 
-@@ -1474,45 +1474,24 @@ i801_add_tco_spt(struct i801_priv *priv, struct pci_dev *pci_dev,
- 		.version = 4,
- 	};
- 	struct resource *res;
--	unsigned int devfn;
--	u64 base64_addr;
--	u32 base_addr;
--	u8 hidden;
-+	int ret;
- 
- 	/*
- 	 * We must access the NO_REBOOT bit over the Primary to Sideband
--	 * bridge (P2SB). The BIOS prevents the P2SB device from being
--	 * enumerated by the PCI subsystem, so we need to unhide/hide it
--	 * to lookup the P2SB BAR.
-+	 * (P2SB) bridge.
- 	 */
--	pci_lock_rescan_remove();
+-	spin_lock(&inode->i_lock);
+-	if (!(inode->i_flags & S_KERNEL_FILE)) {
+-		inode->i_flags |= S_KERNEL_FILE;
++	locked = inode_excl_inuse_trylock(dentry, object ? object->debug_id : 0,
++					  inode_excl_inuse_by_cachefiles);
++	if (locked) {
++		spin_lock(&inode->i_lock);
+ 		inode->i_state |= I_NO_REMOVE;
+-		trace_cachefiles_mark_active(object, inode);
+-		can_use = true;
++		spin_unlock(&inode->i_lock);
+ 	} else {
+-		trace_cachefiles_mark_failed(object, inode);
+ 		pr_notice("cachefiles: Inode already in use: %pd (B=%lx)\n",
+ 			  dentry, inode->i_ino);
+ 	}
+-	spin_unlock(&inode->i_lock);
 -
--	devfn = PCI_DEVFN(PCI_SLOT(pci_dev->devfn), 1);
--
--	/* Unhide the P2SB device, if it is hidden */
--	pci_bus_read_config_byte(pci_dev->bus, devfn, 0xe1, &hidden);
--	if (hidden)
--		pci_bus_write_config_byte(pci_dev->bus, devfn, 0xe1, 0x0);
--
--	pci_bus_read_config_dword(pci_dev->bus, devfn, SBREG_BAR, &base_addr);
--	base64_addr = base_addr & 0xfffffff0;
--
--	pci_bus_read_config_dword(pci_dev->bus, devfn, SBREG_BAR + 0x4, &base_addr);
--	base64_addr |= (u64)base_addr << 32;
--
--	/* Hide the P2SB device, if it was hidden before */
--	if (hidden)
--		pci_bus_write_config_byte(pci_dev->bus, devfn, 0xe1, hidden);
--	pci_unlock_rescan_remove();
+-	return can_use;
++	return locked;
+ }
  
- 	res = &tco_res[1];
-+	ret = p2sb_bar(pci_dev->bus, 0, res);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
- 	if (pci_dev->device == PCI_DEVICE_ID_INTEL_DNV_SMBUS)
--		res->start = (resource_size_t)base64_addr + SBREG_SMBCTRL_DNV;
-+		res->start += SBREG_SMBCTRL_DNV;
- 	else
--		res->start = (resource_size_t)base64_addr + SBREG_SMBCTRL;
-+		res->start += SBREG_SMBCTRL;
+ static bool cachefiles_mark_inode_in_use(struct cachefiles_object *object,
+@@ -57,10 +54,9 @@ static void __cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
+ 	struct inode *inode = d_backing_inode(dentry);
  
- 	res->end = res->start + 3;
--	res->flags = IORESOURCE_MEM;
+ 	spin_lock(&inode->i_lock);
+-	inode->i_flags &= ~S_KERNEL_FILE;
+-	inode->i_state &= ~I_NO_REMOVE;
++	inode->i_state |= I_NO_REMOVE;
+ 	spin_unlock(&inode->i_lock);
+-	trace_cachefiles_mark_inactive(object, inode);
++	inode_excl_inuse_unlock(dentry, object ? object->debug_id : 0);
+ }
  
- 	return platform_device_register_resndata(&pci_dev->dev, "iTCO_wdt", -1,
- 					tco_res, 2, &pldata, sizeof(pldata));
-diff --git a/drivers/platform/x86/intel/p2sb.c b/drivers/platform/x86/intel/p2sb.c
-index 8c12882d0bde..644cdee4853b 100644
---- a/drivers/platform/x86/intel/p2sb.c
-+++ b/drivers/platform/x86/intel/p2sb.c
-@@ -29,6 +29,12 @@
+ /*
+@@ -754,7 +750,7 @@ static struct dentry *cachefiles_lookup_for_cull(struct cachefiles_cache *cache,
+ 		goto lookup_error;
+ 	if (d_is_negative(victim))
+ 		goto lookup_put;
+-	if (d_inode(victim)->i_flags & S_KERNEL_FILE)
++	if (inode_is_excl_inuse(victim))
+ 		goto lookup_busy;
+ 	return victim;
  
- static const struct x86_cpu_id p2sb_cpu_ids[] = {
- 	X86_MATCH_INTEL_FAM6_MODEL(ATOM_GOLDMONT,	PCI_DEVFN(13, 0)),
-+	X86_MATCH_INTEL_FAM6_MODEL(ATOM_GOLDMONT_D,	PCI_DEVFN(31, 1)),
-+	X86_MATCH_INTEL_FAM6_MODEL(ATOM_SILVERMONT_D,	PCI_DEVFN(31, 1)),
-+	X86_MATCH_INTEL_FAM6_MODEL(KABYLAKE,		PCI_DEVFN(31, 1)),
-+	X86_MATCH_INTEL_FAM6_MODEL(KABYLAKE_L,		PCI_DEVFN(31, 1)),
-+	X86_MATCH_INTEL_FAM6_MODEL(SKYLAKE,		PCI_DEVFN(31, 1)),
-+	X86_MATCH_INTEL_FAM6_MODEL(SKYLAKE_L,		PCI_DEVFN(31, 1)),
- 	{}
+@@ -790,6 +786,7 @@ int cachefiles_cull(struct cachefiles_cache *cache, struct dentry *dir,
+ {
+ 	struct dentry *victim;
+ 	struct inode *inode;
++	bool locked;
+ 	int ret;
+ 
+ 	_enter(",%pd/,%s", dir, filename);
+@@ -798,19 +795,16 @@ int cachefiles_cull(struct cachefiles_cache *cache, struct dentry *dir,
+ 	if (IS_ERR(victim))
+ 		return PTR_ERR(victim);
+ 
+-	/* check to see if someone is using this object */
++	/* Check to see if someone is using this object and, if not, stop the
++	 * cache from picking it back up.
++	 */
+ 	inode = d_inode(victim);
+ 	inode_lock(inode);
+-	if (inode->i_flags & S_KERNEL_FILE) {
+-		ret = -EBUSY;
+-	} else {
+-		/* Stop the cache from picking it back up */
+-		inode->i_flags |= S_KERNEL_FILE;
+-		ret = 0;
+-	}
++	locked = inode_excl_inuse_trylock(victim, 0,
++					  inode_excl_inuse_by_cachefiles);
+ 	inode_unlock(inode);
+-	if (ret < 0)
+-		goto error_unlock;
++	if (!locked)
++		goto busy;
+ 
+ 	ret = cachefiles_bury_object(cache, NULL, dir, victim,
+ 				     FSCACHE_OBJECT_WAS_CULLED);
+@@ -822,8 +816,8 @@ int cachefiles_cull(struct cachefiles_cache *cache, struct dentry *dir,
+ 	_leave(" = 0");
+ 	return 0;
+ 
+-error_unlock:
+-	inode_unlock(d_inode(dir));
++busy:
++	ret = -EBUSY;
+ error:
+ 	dput(victim);
+ 	if (ret == -ENOENT)
+diff --git a/include/linux/fs.h b/include/linux/fs.h
+index a273d5cde731..009ca9f783bd 100644
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -2161,7 +2161,6 @@ struct super_operations {
+ #define S_ENCRYPTED	(1 << 14) /* Encrypted file (using fs/crypto/) */
+ #define S_CASEFOLD	(1 << 15) /* Casefolded file */
+ #define S_VERITY	(1 << 16) /* Verity file (using fs/verity/) */
+-#define S_KERNEL_FILE	(1 << 17) /* File is in use by the kernel (eg. fs/cachefiles) */
+ 
+ /*
+  * Note that nosuid etc flags are inode-specific: setting some file-system
+@@ -2394,6 +2393,7 @@ static inline bool inode_is_dirtytime_only(struct inode *inode)
+ }
+ 
+ enum inode_excl_inuse_by {
++	inode_excl_inuse_by_cachefiles,
+ 	inode_excl_inuse_by_overlayfs,
  };
  
--- 
-2.34.1
+
 
