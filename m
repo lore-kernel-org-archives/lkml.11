@@ -2,83 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9068C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D064C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376600AbiAaLkt (ORCPT
+        id S1376675AbiAaLkz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:40:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
+        Mon, 31 Jan 2022 06:40:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379419AbiAaLaS (ORCPT
+        with ESMTP id S1379405AbiAaLaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:30:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F38BC06173D;
-        Mon, 31 Jan 2022 03:20:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF07CB82A60;
-        Mon, 31 Jan 2022 11:20:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9E7D9C340F3;
-        Mon, 31 Jan 2022 11:20:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643628035;
-        bh=slJQhhIF1yugtff6Mq8MOTUVyIvIlTYUiNSbLsEt32c=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=U5H/J6gyB5De+L98jmh8CMbi4gVmNLyY6i8vVCCYLCg1qj7/PLvmwWcgzifLq9dL7
-         Vl7dLQ0s1XLeqKWB1iEzmKD+Qe6khLUqUN7CXnHbDBYbDL6Vk8+uS9CrHSI9/m6heV
-         QM5prsznIE+qjTazj7+CXQSahpc7WEsWWAfNvTyO3lzmvf/W45k13EP0G5OOtmvG3r
-         ao3cNTjD0RMNU8gFP3cfuAaD0FY+YyBYyzciSHEGk0394CmHVwBEZU3Ebhc27RkXGn
-         OJ+yepN90m89vMgDjBUrHYPqx6TmZ4uwQVje/qsooStS4xg1WcfVQESCy47GszvZIm
-         HzJReDVFmAZkA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 89005E6BAC6;
-        Mon, 31 Jan 2022 11:20:35 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 31 Jan 2022 06:30:17 -0500
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65C2C0617AD
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:20:07 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:58b3:216b:d287:833])
+        by baptiste.telenet-ops.be with bizsmtp
+        id pPL3260072lsq0X01PL3R0; Mon, 31 Jan 2022 12:20:03 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nEUj4-00CZlM-Sc; Mon, 31 Jan 2022 12:20:02 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nEU2M-00GXJ8-EI; Mon, 31 Jan 2022 11:35:54 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        =?UTF-8?q?Mikko=20Salom=C3=A4ki?= <ms@datarespons.se>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] gpio: aggregator: Fix calling into sleeping GPIO controllers
+Date:   Mon, 31 Jan 2022 11:35:53 +0100
+Message-Id: <6a62a531227cd4f20d77d50cdde60c7a18b9f052.1643625325.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/smc: Forward wakeup to smc socket waitqueue after
- fallback
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164362803555.29436.10145818429007332261.git-patchwork-notify@kernel.org>
-Date:   Mon, 31 Jan 2022 11:20:35 +0000
-References: <1643211184-53645-1-git-send-email-guwen@linux.alibaba.com>
-In-Reply-To: <1643211184-53645-1-git-send-email-guwen@linux.alibaba.com>
-To:     Wen Gu <guwen@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+If the parent GPIO controller is a sleeping controller (e.g. a GPIO
+controller connected to I2C), getting or setting a GPIO triggers a
+might_sleep() warning.  This happens because the GPIO Aggregator takes
+the can_sleep flag into account only for its internal locking, not for
+calling into the parent GPIO controller.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Fix this by using the gpiod_[gs]et*_cansleep() APIs when calling into a
+sleeping GPIO controller.
 
-On Wed, 26 Jan 2022 23:33:04 +0800 you wrote:
-> When we replace TCP with SMC and a fallback occurs, there may be
-> some socket waitqueue entries remaining in smc socket->wq, such
-> as eppoll_entries inserted by userspace applications.
-> 
-> After the fallback, data flows over TCP/IP and only clcsocket->wq
-> will be woken up. Applications can't be notified by the entries
-> which were inserted in smc socket->wq before fallback. So we need
-> a mechanism to wake up smc socket->wq at the same time if some
-> entries remaining in it.
-> 
-> [...]
+Reported-by: Mikko Salomäki <ms@datarespons.se>
+Fixes: 828546e24280f721 ("gpio: Add GPIO Aggregator")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+I considered splitting the .[gs]et{_multiple}() callbacks for the
+sleeping vs. nonsleeping cases, but the code size increase (measured on
+ARM) would be substantial:
+  +64 bytes for gpio_fwd_[gs]et_cansleep(),
+  +296 bytes for gpio_fwd_[gs]et_multiple_cansleep().
+---
+ drivers/gpio/gpio-aggregator.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-Here is the summary with links:
-  - [net] net/smc: Forward wakeup to smc socket waitqueue after fallback
-    https://git.kernel.org/netdev/net/c/341adeec9ada
-
-You are awesome, thank you!
+diff --git a/drivers/gpio/gpio-aggregator.c b/drivers/gpio/gpio-aggregator.c
+index 869dc952cf45218b..0cb2664085cf8314 100644
+--- a/drivers/gpio/gpio-aggregator.c
++++ b/drivers/gpio/gpio-aggregator.c
+@@ -278,7 +278,8 @@ static int gpio_fwd_get(struct gpio_chip *chip, unsigned int offset)
+ {
+ 	struct gpiochip_fwd *fwd = gpiochip_get_data(chip);
+ 
+-	return gpiod_get_value(fwd->descs[offset]);
++	return chip->can_sleep ? gpiod_get_value_cansleep(fwd->descs[offset])
++			       : gpiod_get_value(fwd->descs[offset]);
+ }
+ 
+ static int gpio_fwd_get_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+@@ -293,7 +294,10 @@ static int gpio_fwd_get_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+ 	for_each_set_bit(i, mask, fwd->chip.ngpio)
+ 		descs[j++] = fwd->descs[i];
+ 
+-	error = gpiod_get_array_value(j, descs, NULL, values);
++	if (fwd->chip.can_sleep)
++		error = gpiod_get_array_value_cansleep(j, descs, NULL, values);
++	else
++		error = gpiod_get_array_value(j, descs, NULL, values);
+ 	if (error)
+ 		return error;
+ 
+@@ -328,7 +332,10 @@ static void gpio_fwd_set(struct gpio_chip *chip, unsigned int offset, int value)
+ {
+ 	struct gpiochip_fwd *fwd = gpiochip_get_data(chip);
+ 
+-	gpiod_set_value(fwd->descs[offset], value);
++	if (chip->can_sleep)
++		gpiod_set_value_cansleep(fwd->descs[offset], value);
++	else
++		gpiod_set_value(fwd->descs[offset], value);
+ }
+ 
+ static void gpio_fwd_set_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+@@ -343,7 +350,10 @@ static void gpio_fwd_set_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+ 		descs[j++] = fwd->descs[i];
+ 	}
+ 
+-	gpiod_set_array_value(j, descs, NULL, values);
++	if (fwd->chip.can_sleep)
++		gpiod_set_array_value_cansleep(j, descs, NULL, values);
++	else
++		gpiod_set_array_value(j, descs, NULL, values);
+ }
+ 
+ static void gpio_fwd_set_multiple_locked(struct gpio_chip *chip,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
