@@ -2,40 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22240C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0204DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378306AbiAaL2V (ORCPT
+        id S1378192AbiAaL2J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:28:21 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49820 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376775AbiAaLQY (ORCPT
+        Mon, 31 Jan 2022 06:28:09 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37606 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378177AbiAaLTs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:16:24 -0500
+        Mon, 31 Jan 2022 06:19:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B21611D6;
-        Mon, 31 Jan 2022 11:16:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83DB9C340E8;
-        Mon, 31 Jan 2022 11:16:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9630B82A61;
+        Mon, 31 Jan 2022 11:19:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 044EEC340E8;
+        Mon, 31 Jan 2022 11:19:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627783;
-        bh=xpyLcomK8xH4GvgyWZ/0+QziSchBb1NMFls8dDiycGM=;
+        s=korg; t=1643627986;
+        bh=JhNyRXEnciQM5KD9GQGTUIzpN68e3QP+BIvXRa1scdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qO0/Kvl4mMMZPZrKGFHSJDYslb/DTH1BweGHNF+ceIQku3xMQGY4eq6LVAsoEFLzU
-         H6RT//iDAJvA3z4LbqZgdUVleBUcurytSpuZYbBEVCqCc0izRhZI0K1pKP/1K/sZ8W
-         XdXpC2zhPIQcCcLgyznWGEuUMWeZr85yvRGtsb8g=
+        b=mrvRgI2UJfvfFnyzns6GQOIDhaCBKR3H91PMaHaRwd78YmWR+leQQ0lDquOc9qr9P
+         wqGiaU68DMC0RsGPTl8ypDVMWB1/mAdPBu6naor2e6sMdhwqIvq9QHUsVrH8GGN85Q
+         AS1fGKN3/LYJmCcG43ispPTk/NkRinzHLT5c2SsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 006/200] btrfs: fix deadlock when reserving space during defrag
-Date:   Mon, 31 Jan 2022 11:54:29 +0100
-Message-Id: <20220131105233.776255625@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Junxiao Bi <junxiao.bi@oracle.com>,
+        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
+        Jun Piao <piaojun@huawei.com>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>,
+        Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>,
+        "Theodore Tso" <tytso@mit.edu>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 087/200] jbd2: export jbd2_journal_[grab|put]_journal_head
+Date:   Mon, 31 Jan 2022 11:55:50 +0100
+Message-Id: <20220131105236.539401298@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,96 +56,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Joseph Qi <joseph.qi@linux.alibaba.com>
 
-commit 0cb5950f3f3b51a4e8657d106f897f2b913e0586 upstream.
+commit 4cd1103d8c66b2cdb7e64385c274edb0ac5e8887 upstream.
 
-When defragging we can end up collecting a range for defrag that has
-already pages under delalloc (dirty), as long as the respective extent
-map for their range is not mapped to a hole, a prealloc extent or
-the extent map is from an old generation.
+Patch series "ocfs2: fix a deadlock case".
 
-Most of the time that is harmless from a functional perspective at
-least, however it can result in a deadlock:
+This fixes a deadlock case in ocfs2.  We firstly export jbd2 symbols
+jbd2_journal_[grab|put]_journal_head as preparation and later use them
+in ocfs2 insread of jbd_[lock|unlock]_bh_journal_head to fix the
+deadlock.
 
-1) At defrag_collect_targets() we find an extent map that meets all
-   requirements but there's delalloc for the range it covers, and we add
-   its range to list of ranges to defrag;
+This patch (of 2):
 
-2) The defrag_collect_targets() function is called at defrag_one_range(),
-   after it locked a range that overlaps the range of the extent map;
+This exports symbols jbd2_journal_[grab|put]_journal_head, which will be
+used outside modules, e.g.  ocfs2.
 
-3) At defrag_one_range(), while the range is still locked, we call
-   defrag_one_locked_target() for the range associated to the extent
-   map we collected at step 1);
-
-4) Then finally at defrag_one_locked_target() we do a call to
-   btrfs_delalloc_reserve_space(), which will reserve data and metadata
-   space. If the space reservations can not be satisfied right away, the
-   flusher might be kicked in and start flushing delalloc and wait for
-   the respective ordered extents to complete. If this happens we will
-   deadlock, because both flushing delalloc and finishing an ordered
-   extent, requires locking the range in the inode's io tree, which was
-   already locked at defrag_collect_targets().
-
-So fix this by skipping extent maps for which there's already delalloc.
-
-Fixes: eb793cf857828d ("btrfs: defrag: introduce helper to collect target file extents")
-CC: stable@vger.kernel.org # 5.16
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Link: https://lkml.kernel.org/r/20220121071205.100648-2-joseph.qi@linux.alibaba.com
+Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+Cc: Mark Fasheh <mark@fasheh.com>
+Cc: Joel Becker <jlbec@evilplan.org>
+Cc: Junxiao Bi <junxiao.bi@oracle.com>
+Cc: Changwei Ge <gechangwei@live.cn>
+Cc: Gang He <ghe@suse.com>
+Cc: Jun Piao <piaojun@huawei.com>
+Cc: Andreas Dilger <adilger.kernel@dilger.ca>
+Cc: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
+Cc: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
+Cc: "Theodore Ts'o" <tytso@mit.edu>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/ioctl.c |   31 ++++++++++++++++++++++++++++++-
- 1 file changed, 30 insertions(+), 1 deletion(-)
+ fs/jbd2/journal.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -1188,6 +1188,35 @@ static int defrag_collect_targets(struct
- 			goto next;
+--- a/fs/jbd2/journal.c
++++ b/fs/jbd2/journal.c
+@@ -2970,6 +2970,7 @@ struct journal_head *jbd2_journal_grab_j
+ 	jbd_unlock_bh_journal_head(bh);
+ 	return jh;
+ }
++EXPORT_SYMBOL(jbd2_journal_grab_journal_head);
  
- 		/*
-+		 * Our start offset might be in the middle of an existing extent
-+		 * map, so take that into account.
-+		 */
-+		range_len = em->len - (cur - em->start);
-+		/*
-+		 * If this range of the extent map is already flagged for delalloc,
-+		 * skip it, because:
-+		 *
-+		 * 1) We could deadlock later, when trying to reserve space for
-+		 *    delalloc, because in case we can't immediately reserve space
-+		 *    the flusher can start delalloc and wait for the respective
-+		 *    ordered extents to complete. The deadlock would happen
-+		 *    because we do the space reservation while holding the range
-+		 *    locked, and starting writeback, or finishing an ordered
-+		 *    extent, requires locking the range;
-+		 *
-+		 * 2) If there's delalloc there, it means there's dirty pages for
-+		 *    which writeback has not started yet (we clean the delalloc
-+		 *    flag when starting writeback and after creating an ordered
-+		 *    extent). If we mark pages in an adjacent range for defrag,
-+		 *    then we will have a larger contiguous range for delalloc,
-+		 *    very likely resulting in a larger extent after writeback is
-+		 *    triggered (except in a case of free space fragmentation).
-+		 */
-+		if (test_range_bit(&inode->io_tree, cur, cur + range_len - 1,
-+				   EXTENT_DELALLOC, 0, NULL))
-+			goto next;
-+
-+		/*
- 		 * For do_compress case, we want to compress all valid file
- 		 * extents, thus no @extent_thresh or mergeable check.
- 		 */
-@@ -1195,7 +1224,7 @@ static int defrag_collect_targets(struct
- 			goto add;
+ static void __journal_remove_journal_head(struct buffer_head *bh)
+ {
+@@ -3022,6 +3023,7 @@ void jbd2_journal_put_journal_head(struc
+ 		jbd_unlock_bh_journal_head(bh);
+ 	}
+ }
++EXPORT_SYMBOL(jbd2_journal_put_journal_head);
  
- 		/* Skip too large extent */
--		if (em->len >= extent_thresh)
-+		if (range_len >= extent_thresh)
- 			goto next;
- 
- 		next_mergeable = defrag_check_next_extent(&inode->vfs_inode, em,
+ /*
+  * Initialize jbd inode head
 
 
