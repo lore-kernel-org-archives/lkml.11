@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B150C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C40C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377976AbiAaLtz (ORCPT
+        id S1378070AbiAaLuB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:49:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51120 "EHLO
+        Mon, 31 Jan 2022 06:50:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378636AbiAaLiS (ORCPT
+        with ESMTP id S1351507AbiAaLft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:38:18 -0500
+        Mon, 31 Jan 2022 06:35:49 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2149DC02B8F7;
-        Mon, 31 Jan 2022 03:25:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8732BC0797A1;
+        Mon, 31 Jan 2022 03:23:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DBD1DB82A72;
-        Mon, 31 Jan 2022 11:25:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8890C36AE2;
-        Mon, 31 Jan 2022 11:25:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29B4CB82A72;
+        Mon, 31 Jan 2022 11:23:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 797BCC340E8;
+        Mon, 31 Jan 2022 11:23:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628303;
-        bh=DoZ1E/+8ix+OgIbNqPUNVDPpuSpcbXv83pH9UB60g/M=;
+        s=korg; t=1643628236;
+        bh=giCp4s0/ObBi6URBALepPvO7HL9lVo29k6r7zgB7ylA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B7oafBfaQLHNY9uhfpb8sjkS9tSd5EaZba41ee3qwRWFhPWP3BLrRyIae8Dj3HEgw
-         7u4RSTl19Rew7AfjTA0EqDdHs/uLg0okUsXQo79NJllFXE6Rsa42LEnOeyyVnkCYjB
-         58ddBE9gneiRm1OJT1I7rQXwXlmK1abADbqKXKq4=
+        b=IW4wepkYqH2xIwKQACgVs784MOky2pWlQGfspbvt5nTn7ZC0aYRU9TEJSNkvntnZ+
+         MhPkPvBctANO8bWyJL1DLL7z0qhd/l7RgSLV2683r4wRmvfEztTh3ZVNYErXbTDEjZ
+         7AIPkRMvP7gszmKgSXYMpOaMD4STMWiIoHk2Rv24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.16 189/200] dt-bindings: can: tcan4x5x: fix mram-cfg RX FIFO config
-Date:   Mon, 31 Jan 2022 11:57:32 +0100
-Message-Id: <20220131105239.896944614@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 135/200] phylib: fix potential use-after-free
+Date:   Mon, 31 Jan 2022 11:56:38 +0100
+Message-Id: <20220131105238.099938176@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -48,31 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Marek Behún <kabel@kernel.org>
 
-commit 17a30422621c0e04cb6060d20d7edcefd7463347 upstream.
+[ Upstream commit cbda1b16687580d5beee38273f6241ae3725960c ]
 
-This tcan4x5x only comes with 2K of MRAM, a RX FIFO with a dept of 32
-doesn't fit into the MRAM. Use a depth of 16 instead.
+Commit bafbdd527d56 ("phylib: Add device reset GPIO support") added call
+to phy_device_reset(phydev) after the put_device() call in phy_detach().
 
-Fixes: 4edd396a1911 ("dt-bindings: can: tcan4x5x: Add DT bindings for TCAN4x5X driver")
-Link: https://lore.kernel.org/all/20220119062951.2939851-1-mkl@pengutronix.de
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The comment before the put_device() call says that the phydev might go
+away with put_device().
+
+Fix potential use-after-free by calling phy_device_reset() before
+put_device().
+
+Fixes: bafbdd527d56 ("phylib: Add device reset GPIO support")
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220119162748.32418-1-kabel@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/net/can/tcan4x5x.txt |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/phy_device.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-+++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-@@ -31,7 +31,7 @@ tcan4x5x: tcan4x5x@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		spi-max-frequency = <10000000>;
--		bosch,mram-cfg = <0x0 0 0 32 0 0 1 1>;
-+		bosch,mram-cfg = <0x0 0 0 16 0 0 1 1>;
- 		interrupt-parent = <&gpio1>;
- 		interrupts = <14 IRQ_TYPE_LEVEL_LOW>;
- 		device-state-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 74d8e1dc125f8..ce0bb5951b81e 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1746,6 +1746,9 @@ void phy_detach(struct phy_device *phydev)
+ 	    phy_driver_is_genphy_10g(phydev))
+ 		device_release_driver(&phydev->mdio.dev);
+ 
++	/* Assert the reset signal */
++	phy_device_reset(phydev, 1);
++
+ 	/*
+ 	 * The phydev might go away on the put_device() below, so avoid
+ 	 * a use-after-free bug by reading the underlying bus first.
+@@ -1757,9 +1760,6 @@ void phy_detach(struct phy_device *phydev)
+ 		ndev_owner = dev->dev.parent->driver->owner;
+ 	if (ndev_owner != bus->owner)
+ 		module_put(bus->owner);
+-
+-	/* Assert the reset signal */
+-	phy_device_reset(phydev, 1);
+ }
+ EXPORT_SYMBOL(phy_detach);
+ 
+-- 
+2.34.1
+
 
 
