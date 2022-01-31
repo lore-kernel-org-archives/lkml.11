@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC88CC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359860AbiAaLVg (ORCPT
+        id S1350379AbiAaLVn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:21:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358707AbiAaLLs (ORCPT
+        Mon, 31 Jan 2022 06:21:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45430 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359663AbiAaLLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:11:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86CC4C06174A;
-        Mon, 31 Jan 2022 03:10:54 -0800 (PST)
+        Mon, 31 Jan 2022 06:11:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C50AB82A68;
-        Mon, 31 Jan 2022 11:10:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78387C340E8;
-        Mon, 31 Jan 2022 11:10:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D33A60B28;
+        Mon, 31 Jan 2022 11:11:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E50C6C36AE3;
+        Mon, 31 Jan 2022 11:11:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627452;
-        bh=7E9ERDVZttx1BEkbi9cB6zU2U3oaHnyBYoXJvVBibGo=;
+        s=korg; t=1643627513;
+        bh=CDQvcNd51qORtHk1aEkLx93b0VacLGE0an/9B/R4oO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1zry8+B172uPlfiOhVy1P2PBjWVaMvjVRmu6p1B/ogpetdZfxDtD1wQ0NeCakp6L8
-         Eq+bdTmTNmVZrOVVwRvLC++4f216tuZ6zrpOskPRVOIwBSGLeGopwtpowijoEcK1Wf
-         R4FJD9UvZ/Uf/B/kr2i4fi/8UrwiZDi7AmhOmJHM=
+        b=L412AXBMKqGOc+zzVEiVU5m6nMrBpWyJbYqGfyWd7/z1GBAtwLxU4jkaKIFAwQwtF
+         A2+4doWwPIZ8kv242aqdHAiSGNfQ6uBIds98eF/E4xarbTgejlrKJU7O50N2rHUfKX
+         WfWSfaj2T/QQGGXLueQ/byv/zGmAt7y0zWqN95Q4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 5.15 088/171] hwmon: (lm90) Mark alert as broken for MAX6646/6647/6649
-Date:   Mon, 31 Jan 2022 11:55:53 +0100
-Message-Id: <20220131105233.006476006@linuxfoundation.org>
+        stable@vger.kernel.org, Rick Yiu <rickyiu@google.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sachin Sant <sachinp@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 109/171] sched/pelt: Relax the sync of util_sum with util_avg
+Date:   Mon, 31 Jan 2022 11:56:14 +0100
+Message-Id: <20220131105233.728252176@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -48,31 +50,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Vincent Guittot <vincent.guittot@linaro.org>
 
-commit f614629f9c1080dcc844a8430e3fb4c37ebbf05d upstream.
+[ Upstream commit 98b0d890220d45418cfbc5157b3382e6da5a12ab ]
 
-Experiments with MAX6646 and MAX6648 show that the alert function of those
-chips is broken, similar to other chips supported by the lm90 driver.
-Mark it accordingly.
+Rick reported performance regressions in bugzilla because of cpu frequency
+being lower than before:
+    https://bugzilla.kernel.org/show_bug.cgi?id=215045
 
-Fixes: 4667bcb8d8fc ("hwmon: (lm90) Introduce chip parameter structure")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+He bisected the problem to:
+commit 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
+
+This commit forces util_sum to be synced with the new util_avg after
+removing the contribution of a task and before the next periodic sync. By
+doing so util_sum is rounded to its lower bound and might lost up to
+LOAD_AVG_MAX-1 of accumulated contribution which has not yet been
+reflected in util_avg.
+
+Instead of always setting util_sum to the low bound of util_avg, which can
+significantly lower the utilization of root cfs_rq after propagating the
+change down into the hierarchy, we revert the change of util_sum and
+propagate the difference.
+
+In addition, we also check that cfs's util_sum always stays above the
+lower bound for a given util_avg as it has been observed that
+sched_entity's util_sum is sometimes above cfs one.
+
+Fixes: 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
+Reported-by: Rick Yiu <rickyiu@google.com>
+Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+Link: https://lkml.kernel.org/r/20220111134659.24961-2-vincent.guittot@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/lm90.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sched/fair.c | 16 +++++++++++++---
+ kernel/sched/pelt.h |  4 +++-
+ 2 files changed, 16 insertions(+), 4 deletions(-)
 
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -394,7 +394,7 @@ static const struct lm90_params lm90_par
- 		.max_convrate = 9,
- 	},
- 	[max6646] = {
--		.flags = LM90_HAVE_CRIT,
-+		.flags = LM90_HAVE_CRIT | LM90_HAVE_BROKEN_ALERT,
- 		.alert_alarms = 0x7c,
- 		.max_convrate = 6,
- 		.reg_local_ext = MAX6657_REG_R_LOCAL_TEMPL,
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index d41f966f5866a..6420580f2730b 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3422,7 +3422,6 @@ void set_task_rq_fair(struct sched_entity *se,
+ 	se->avg.last_update_time = n_last_update_time;
+ }
+ 
+-
+ /*
+  * When on migration a sched_entity joins/leaves the PELT hierarchy, we need to
+  * propagate its contribution. The key to this propagation is the invariant
+@@ -3490,7 +3489,6 @@ void set_task_rq_fair(struct sched_entity *se,
+  * XXX: only do this for the part of runnable > running ?
+  *
+  */
+-
+ static inline void
+ update_tg_cfs_util(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq *gcfs_rq)
+ {
+@@ -3722,7 +3720,19 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
+ 
+ 		r = removed_util;
+ 		sub_positive(&sa->util_avg, r);
+-		sa->util_sum = sa->util_avg * divider;
++		sub_positive(&sa->util_sum, r * divider);
++		/*
++		 * Because of rounding, se->util_sum might ends up being +1 more than
++		 * cfs->util_sum. Although this is not a problem by itself, detaching
++		 * a lot of tasks with the rounding problem between 2 updates of
++		 * util_avg (~1ms) can make cfs->util_sum becoming null whereas
++		 * cfs_util_avg is not.
++		 * Check that util_sum is still above its lower bound for the new
++		 * util_avg. Given that period_contrib might have moved since the last
++		 * sync, we are only sure that util_sum must be above or equal to
++		 *    util_avg * minimum possible divider
++		 */
++		sa->util_sum = max_t(u32, sa->util_sum, sa->util_avg * PELT_MIN_DIVIDER);
+ 
+ 		r = removed_runnable;
+ 		sub_positive(&sa->runnable_avg, r);
+diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
+index e06071bf3472c..c336f5f481bca 100644
+--- a/kernel/sched/pelt.h
++++ b/kernel/sched/pelt.h
+@@ -37,9 +37,11 @@ update_irq_load_avg(struct rq *rq, u64 running)
+ }
+ #endif
+ 
++#define PELT_MIN_DIVIDER	(LOAD_AVG_MAX - 1024)
++
+ static inline u32 get_pelt_divider(struct sched_avg *avg)
+ {
+-	return LOAD_AVG_MAX - 1024 + avg->period_contrib;
++	return PELT_MIN_DIVIDER + avg->period_contrib;
+ }
+ 
+ static inline void cfs_se_util_change(struct sched_avg *avg)
+-- 
+2.34.1
+
 
 
