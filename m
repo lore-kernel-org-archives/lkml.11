@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E527C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86636C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376590AbiAaLIk (ORCPT
+        id S1348439AbiAaLKh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:08:40 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52194 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244106AbiAaLFg (ORCPT
+        Mon, 31 Jan 2022 06:10:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359487AbiAaLFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:05:36 -0500
+        Mon, 31 Jan 2022 06:05:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B14EC061343;
+        Mon, 31 Jan 2022 03:04:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2CDDB82A69;
-        Mon, 31 Jan 2022 11:05:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 026AAC340E8;
-        Mon, 31 Jan 2022 11:05:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F63960F30;
+        Mon, 31 Jan 2022 11:04:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66CACC340EE;
+        Mon, 31 Jan 2022 11:04:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627132;
-        bh=ST2g1u3enQMTIQJwFsAGphaXguH4KWHUMg1J47wQY6M=;
+        s=korg; t=1643627048;
+        bh=cyrUHQ/bV6GZ/AT9V/xmKq9w0SJfnB1JiyEl7DchvfA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=in68ONs0jGke3eOPcjSU+knQINYhn40HGs+phqbnZQPSAk/NNW+kyvW+CtmX35vqL
-         AMsBVox1APV5gZK8ygXlLX1DMXv1EKwVd3C+yRe6l13kl8phibAWrGA+YuuKZwJA9m
-         rVXZwRO+v5nAunOk9TvcCcgMqNf8QDwnGe0FrgUo=
+        b=kkno23gHTbkwfig28rmM04qUZoqVbQjJC0vvSPHA5HVol7wzfuWnZ1VI8tSJn4Bmq
+         QJZuySOqMZTlsghklnGOumRB4jXbY5vAM5hO4w81/DhHSk3++i5ecsA/gU4+BjzA2X
+         fYnw/O+lht3KFhBfMn2WNawuQqzYSDDexI5sYulk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Helge Deller <deller@gmx.de>, Wei Liu <wei.liu@kernel.org>,
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 085/100] video: hyperv_fb: Fix validation of screen resolution
-Date:   Mon, 31 Jan 2022 11:56:46 +0100
-Message-Id: <20220131105223.314368801@linuxfoundation.org>
+Subject: [PATCH 5.10 058/100] hwmon: (lm90) Reduce maximum conversion rate for G781
+Date:   Mon, 31 Jan 2022 11:56:19 +0100
+Message-Id: <20220131105222.388646211@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -48,99 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kelley <mikelley@microsoft.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit 9ff5549b1d1d3c3a9d71220d44bd246586160f1d ]
+[ Upstream commit a66c5ed539277b9f2363bbace0dba88b85b36c26 ]
 
-In the WIN10 version of the Synthetic Video protocol with Hyper-V,
-Hyper-V reports a list of supported resolutions as part of the protocol
-negotiation. The driver calculates the maximum width and height from
-the list of resolutions, and uses those maximums to validate any screen
-resolution specified in the video= option on the kernel boot line.
+According to its datasheet, G781 supports a maximum conversion rate value
+of 8 (62.5 ms). However, chips labeled G781 and G780 were found to only
+support a maximum conversion rate value of 7 (125 ms). On the other side,
+chips labeled G781-1 and G784 were found to support a conversion rate value
+of 8. There is no known means to distinguish G780 from G781 or G784; all
+chips report the same manufacturer ID and chip revision.
+Setting the conversion rate register value to 8 on chips not supporting
+it causes unexpected behavior since the real conversion rate is set to 0
+(16 seconds) if a value of 8 is written into the conversion rate register.
+Limit the conversion rate register value to 7 for all G78x chips to avoid
+the problem.
 
-This method of validation is incorrect. For example, the list of
-supported resolutions could contain 1600x1200 and 1920x1080, both of
-which fit in an 8 Mbyte frame buffer.  But calculating the max width
-and height yields 1920 and 1200, and 1920x1200 resolution does not fit
-in an 8 Mbyte frame buffer.  Unfortunately, this resolution is accepted,
-causing a kernel fault when the driver accesses memory outside the
-frame buffer.
-
-Instead, validate the specified screen resolution by calculating
-its size, and comparing against the frame buffer size.  Delete the
-code for calculating the max width and height from the list of
-resolutions, since these max values have no use.  Also add the
-frame buffer size to the info message to aid in understanding why
-a resolution might be rejected.
-
-Fixes: 67e7cdb4829d ("video: hyperv: hyperv_fb: Obtain screen resolution from Hyper-V host")
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Acked-by: Helge Deller <deller@gmx.de>
-Link: https://lore.kernel.org/r/1642360711-2335-1-git-send-email-mikelley@microsoft.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Fixes: ae544f64cc7b ("hwmon: (lm90) Add support for GMT G781")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/hyperv_fb.c | 16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+ drivers/hwmon/lm90.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
-index 4dc9077dd2ac0..3c309ab208874 100644
---- a/drivers/video/fbdev/hyperv_fb.c
-+++ b/drivers/video/fbdev/hyperv_fb.c
-@@ -286,8 +286,6 @@ struct hvfb_par {
- 
- static uint screen_width = HVFB_WIDTH;
- static uint screen_height = HVFB_HEIGHT;
--static uint screen_width_max = HVFB_WIDTH;
--static uint screen_height_max = HVFB_HEIGHT;
- static uint screen_depth;
- static uint screen_fb_size;
- static uint dio_fb_size; /* FB size for deferred IO */
-@@ -581,7 +579,6 @@ static int synthvid_get_supported_resolution(struct hv_device *hdev)
- 	int ret = 0;
- 	unsigned long t;
- 	u8 index;
--	int i;
- 
- 	memset(msg, 0, sizeof(struct synthvid_msg));
- 	msg->vid_hdr.type = SYNTHVID_RESOLUTION_REQUEST;
-@@ -612,13 +609,6 @@ static int synthvid_get_supported_resolution(struct hv_device *hdev)
- 		goto out;
- 	}
- 
--	for (i = 0; i < msg->resolution_resp.resolution_count; i++) {
--		screen_width_max = max_t(unsigned int, screen_width_max,
--		    msg->resolution_resp.supported_resolution[i].width);
--		screen_height_max = max_t(unsigned int, screen_height_max,
--		    msg->resolution_resp.supported_resolution[i].height);
--	}
--
- 	screen_width =
- 		msg->resolution_resp.supported_resolution[index].width;
- 	screen_height =
-@@ -940,7 +930,7 @@ static void hvfb_get_option(struct fb_info *info)
- 
- 	if (x < HVFB_WIDTH_MIN || y < HVFB_HEIGHT_MIN ||
- 	    (synthvid_ver_ge(par->synthvid_version, SYNTHVID_VERSION_WIN10) &&
--	    (x > screen_width_max || y > screen_height_max)) ||
-+	    (x * y * screen_depth / 8 > screen_fb_size)) ||
- 	    (par->synthvid_version == SYNTHVID_VERSION_WIN8 &&
- 	     x * y * screen_depth / 8 > SYNTHVID_FB_SIZE_WIN8) ||
- 	    (par->synthvid_version == SYNTHVID_VERSION_WIN7 &&
-@@ -1193,8 +1183,8 @@ static int hvfb_probe(struct hv_device *hdev,
- 	}
- 
- 	hvfb_get_option(info);
--	pr_info("Screen resolution: %dx%d, Color depth: %d\n",
--		screen_width, screen_height, screen_depth);
-+	pr_info("Screen resolution: %dx%d, Color depth: %d, Frame buffer size: %d\n",
-+		screen_width, screen_height, screen_depth, screen_fb_size);
- 
- 	ret = hvfb_getmem(hdev, info);
- 	if (ret) {
--- 
-2.34.1
-
+--- a/drivers/hwmon/lm90.c
++++ b/drivers/hwmon/lm90.c
+@@ -373,7 +373,7 @@ static const struct lm90_params lm90_par
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+ 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_CRIT,
+ 		.alert_alarms = 0x7c,
+-		.max_convrate = 8,
++		.max_convrate = 7,
+ 	},
+ 	[lm86] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
 
 
