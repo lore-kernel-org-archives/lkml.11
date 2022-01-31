@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6AF4C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6778C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378433AbiAaL2g (ORCPT
+        id S1378514AbiAaL2p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:28:36 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48110 "EHLO
+        Mon, 31 Jan 2022 06:28:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50168 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359155AbiAaLQm (ORCPT
+        with ESMTP id S1359336AbiAaLQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:16:42 -0500
+        Mon, 31 Jan 2022 06:16:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EC4661234;
-        Mon, 31 Jan 2022 11:16:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F24BAC340EE;
-        Mon, 31 Jan 2022 11:16:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8772461267;
+        Mon, 31 Jan 2022 11:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63309C340F2;
+        Mon, 31 Jan 2022 11:16:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627801;
-        bh=sinWUBPcepgMXWlm0Ar/8nKT1gvDMz9hj/gu+P1tCg8=;
+        s=korg; t=1643627811;
+        bh=X2NLHHrc8/3gNl+DOPHGYjac8IB7EXpwxxT1Q3LKgYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TXBYlisIaLYn+HlNQOqj4YmhtPOl3LqK96vdpYiCBo79aiGQjtWKSBROxc8xNg5sd
-         ixZWFatNNphtLDmV3JxCRWWnhsDOJhrZ/6kJUNW0aM03Z4gWWi1b7rIBJI4ybj4+2W
-         xlZzgYQ6zVo4YGsGR2sQPDuMztOOYMfoT25m5cj8=
+        b=1+aVqLcVlCHqhZQmaN77HcUa+ICZi3rL8ltU+LnXUpvYs6o8vQgSgu9vkNMDvh69h
+         YKXjomCp7E/lqiYgTyjeZcJ5CPQBwZkWQzt0nQXdUZjnrptFeLvyDbIZj4FFR9rSbY
+         ddmlo532oc3qjretz9H0nZcBDjoK9kScCsfuxmpU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.16 030/200] tracing/histogram: Fix a potential memory leak for kstrdup()
-Date:   Mon, 31 Jan 2022 11:54:53 +0100
-Message-Id: <20220131105234.583723810@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>
+Subject: [PATCH 5.16 033/200] ceph: properly put ceph_string reference after async create attempt
+Date:   Mon, 31 Jan 2022 11:54:56 +0100
+Message-Id: <20220131105234.680676359@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -46,37 +46,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-commit e629e7b525a179e29d53463d992bdee759c950fb upstream.
+commit 932a9b5870d38b87ba0a9923c804b1af7d3605b9 upstream.
 
-kfree() is missing on an error path to free the memory allocated by
-kstrdup():
-
-  p = param = kstrdup(data->params[i], GFP_KERNEL);
-
-So it is better to free it via kfree(p).
-
-Link: https://lkml.kernel.org/r/tencent_C52895FD37802832A3E5B272D05008866F0A@qq.com
+The reference acquired by try_prep_async_create is currently leaked.
+Ensure we put it.
 
 Cc: stable@vger.kernel.org
-Fixes: d380dcde9a07c ("tracing: Fix now invalid var_ref_vals assumption in trace action")
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events_hist.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/ceph/file.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -3919,6 +3919,7 @@ static int trace_action_create(struct hi
- 
- 			var_ref_idx = find_var_ref_idx(hist_data, var_ref);
- 			if (WARN_ON(var_ref_idx < 0)) {
-+				kfree(p);
- 				ret = var_ref_idx;
- 				goto err;
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -746,8 +746,10 @@ retry:
+ 				restore_deleg_ino(dir, req->r_deleg_ino);
+ 				ceph_mdsc_put_request(req);
+ 				try_async = false;
++				ceph_put_string(rcu_dereference_raw(lo.pool_ns));
+ 				goto retry;
  			}
++			ceph_put_string(rcu_dereference_raw(lo.pool_ns));
+ 			goto out_req;
+ 		}
+ 	}
 
 
