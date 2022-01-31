@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98569C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E045C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348228AbiAaKBb (ORCPT
+        id S1357958AbiAaKBd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:01:31 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:36502 "EHLO
+        Mon, 31 Jan 2022 05:01:33 -0500
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:36576 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1358115AbiAaJ7y (ORCPT
+        by vger.kernel.org with ESMTP id S1358051AbiAaJ7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 04:59:54 -0500
 Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20V8xZdc020730;
-        Mon, 31 Jan 2022 10:59:16 +0100
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20V90gQ3001004;
+        Mon, 31 Jan 2022 10:59:19 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=wzdINB6TXcHoYv1nIdbxUF4R5rhgqfyM3nZV0FfhVpc=;
- b=yaKIGIEbUArqGdA+jcBGWKMgdw8Ar3FvHDd/SX8B0ePI0rmwEL+nMDxqbi2V0vVO82Mm
- JefRg2YOvt3B1d7Kkv7QAoauQMSAyUD609OKxPjO0Tpf+5za2cMkGT8ilHaeg8zZH+mg
- SHU7yjetZVFFaD8nd1q6+BkwEJVqtKH7LaSx4Brs1OTRkzvAu4qYZMJstgXnzSl04pK9
- zCKwEh1npVx66Tbk6yqPHzQpzioeLms96qvBan3c4uvQJuUsxfyJ0bw3EvJwhm0R5qsL
- 1RS4Rpm0QFu/8Q+jtUpl5uy/e4PrEJSMdtNQdjkOrFmNeTDrlsdXMo+5RPWIE/jOTUIX 9A== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=vJYKJrfoZTOxidHtgmggToIXf7luT4gK50tpphfihR8=;
+ b=pQpHKnyPFtzLhX3a1LRnAHWBr4F3cIWdjbCWA4x7nlBHSzzvw5aH84wKwis8wCvG2pjj
+ KN8rJBMPSUMqowZWI2XI01iKE9WHBeFQTHlq9oIG1gJagS9SCx31YjDqF/8h85krvv7r
+ 2Cp/v49iIYzB+HM0xG8DTkZVrY8VFFY99VsUciDwraGax2/M20Lp/a7gqpatL89pSwWH
+ aLWm5GyUUzl+4s19klElj2Cgem2T3kEM6J3+dG7Fl8ijTyS+Psf2a+UgZVQXx4f/dLhT
+ nWNwYlSEz3Cxf7mK60XcjA6WGmG6SLMyeuQTlw+r8UZ2E7WF2C7hbnI2RvP+/7U+FXFH vA== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dx0pya91v-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dx0pya922-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 31 Jan 2022 10:59:16 +0100
+        Mon, 31 Jan 2022 10:59:19 +0100
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4852C10002A;
-        Mon, 31 Jan 2022 10:59:14 +0100 (CET)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4686110002A;
+        Mon, 31 Jan 2022 10:59:19 +0100 (CET)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 319A021230E;
-        Mon, 31 Jan 2022 10:59:14 +0100 (CET)
-Received: from localhost (10.75.127.48) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 31 Jan 2022 10:59:13
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3E581210F85;
+        Mon, 31 Jan 2022 10:59:19 +0100 (CET)
+Received: from localhost (10.75.127.51) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 31 Jan 2022 10:59:18
  +0100
 From:   Christophe Kerello <christophe.kerello@foss.st.com>
 To:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
@@ -45,14 +45,16 @@ CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <devicetree@vger.kernel.org>, <chenshumin86@sina.com>,
         Christophe Kerello <christophe.kerello@foss.st.com>
-Subject: [PATCH v2 0/4] mtd: rawnand: stm32_fmc2: Add NAND Write Protect support
-Date:   Mon, 31 Jan 2022 10:57:51 +0100
-Message-ID: <20220131095755.8981-1-christophe.kerello@foss.st.com>
+Subject: [PATCH v2 2/4] mtd: rawnand: stm32_fmc2: Add NAND Write Protect support
+Date:   Mon, 31 Jan 2022 10:57:53 +0100
+Message-ID: <20220131095755.8981-3-christophe.kerello@foss.st.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220131095755.8981-1-christophe.kerello@foss.st.com>
+References: <20220131095755.8981-1-christophe.kerello@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.48]
+X-Originating-IP: [10.75.127.51]
 X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
  (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -62,31 +64,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset adds the management of the WP# signal in FMC2 driver.
-WP will be disabled in probe/resume callbacks and will be enabled
-in remove/suspend callbacks.
+This patch adds the support of the WP# signal. WP will be disabled in
+probe/resume callbacks and will be enabled in remove/suspend callbacks.
 
-This patchset also fixes a conflict on wp-gpios property between
-MTD and NVMEN.
+Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
+---
+ drivers/mtd/nand/raw/stm32_fmc2_nand.c | 40 +++++++++++++++++++++++++-
+ 1 file changed, 39 insertions(+), 1 deletion(-)
 
-Changes in v2:
- - add Rob Acked-by for the bindings part.
- - rework the proposal done to fix a conflict between MTD and NVMEM on
-   wp-gpios property.
-
-Christophe Kerello (4):
-  dt-binding: mtd: nand: Document the wp-gpios property
-  mtd: rawnand: stm32_fmc2: Add NAND Write Protect support
-  nvmem: core: Fix a conflict between MTD and NVMEM on wp-gpios property
-  mtd: core: Fix a conflict between MTD and NVMEM on wp-gpios property
-
- .../bindings/mtd/nand-controller.yaml         |  7 ++++
- drivers/mtd/mtdcore.c                         |  2 +
- drivers/mtd/nand/raw/stm32_fmc2_nand.c        | 40 ++++++++++++++++++-
- drivers/nvmem/core.c                          |  2 +-
- include/linux/nvmem-provider.h                |  4 +-
- 5 files changed, 52 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/mtd/nand/raw/stm32_fmc2_nand.c b/drivers/mtd/nand/raw/stm32_fmc2_nand.c
+index 97b4e02e43e4..87c1c7dd97eb 100644
+--- a/drivers/mtd/nand/raw/stm32_fmc2_nand.c
++++ b/drivers/mtd/nand/raw/stm32_fmc2_nand.c
+@@ -9,6 +9,7 @@
+ #include <linux/dmaengine.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/errno.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/interrupt.h>
+ #include <linux/iopoll.h>
+ #include <linux/mfd/syscon.h>
+@@ -231,6 +232,7 @@ struct stm32_fmc2_timings {
+ 
+ struct stm32_fmc2_nand {
+ 	struct nand_chip chip;
++	struct gpio_desc *wp_gpio;
+ 	struct stm32_fmc2_timings timings;
+ 	int ncs;
+ 	int cs_used[FMC2_MAX_CE];
+@@ -1747,6 +1749,18 @@ static const struct nand_controller_ops stm32_fmc2_nfc_controller_ops = {
+ 	.setup_interface = stm32_fmc2_nfc_setup_interface,
+ };
+ 
++static void stm32_fmc2_nfc_wp_enable(struct stm32_fmc2_nand *nand)
++{
++	if (nand->wp_gpio)
++		gpiod_set_value(nand->wp_gpio, 1);
++}
++
++static void stm32_fmc2_nfc_wp_disable(struct stm32_fmc2_nand *nand)
++{
++	if (nand->wp_gpio)
++		gpiod_set_value(nand->wp_gpio, 0);
++}
++
+ static int stm32_fmc2_nfc_parse_child(struct stm32_fmc2_nfc *nfc,
+ 				      struct device_node *dn)
+ {
+@@ -1785,6 +1799,18 @@ static int stm32_fmc2_nfc_parse_child(struct stm32_fmc2_nfc *nfc,
+ 		nand->cs_used[i] = cs;
+ 	}
+ 
++	nand->wp_gpio = devm_gpiod_get_from_of_node(nfc->dev, dn,
++						    "wp-gpios", 0,
++						    GPIOD_OUT_HIGH, "wp");
++	if (IS_ERR(nand->wp_gpio)) {
++		ret = PTR_ERR(nand->wp_gpio);
++		if (ret != -ENOENT)
++			return dev_err_probe(nfc->dev, ret,
++					     "failed to request WP GPIO\n");
++
++		nand->wp_gpio = NULL;
++	}
++
+ 	nand_set_flash_node(&nand->chip, dn);
+ 
+ 	return 0;
+@@ -1956,10 +1982,12 @@ static int stm32_fmc2_nfc_probe(struct platform_device *pdev)
+ 	chip->options |= NAND_BUSWIDTH_AUTO | NAND_NO_SUBPAGE_WRITE |
+ 			 NAND_USES_DMA;
+ 
++	stm32_fmc2_nfc_wp_disable(nand);
++
+ 	/* Scan to find existence of the device */
+ 	ret = nand_scan(chip, nand->ncs);
+ 	if (ret)
+-		goto err_release_dma;
++		goto err_wp_enable;
+ 
+ 	ret = mtd_device_register(mtd, NULL, 0);
+ 	if (ret)
+@@ -1972,6 +2000,9 @@ static int stm32_fmc2_nfc_probe(struct platform_device *pdev)
+ err_nand_cleanup:
+ 	nand_cleanup(chip);
+ 
++err_wp_enable:
++	stm32_fmc2_nfc_wp_enable(nand);
++
+ err_release_dma:
+ 	if (nfc->dma_ecc_ch)
+ 		dma_release_channel(nfc->dma_ecc_ch);
+@@ -2012,15 +2043,20 @@ static int stm32_fmc2_nfc_remove(struct platform_device *pdev)
+ 
+ 	clk_disable_unprepare(nfc->clk);
+ 
++	stm32_fmc2_nfc_wp_enable(nand);
++
+ 	return 0;
+ }
+ 
+ static int __maybe_unused stm32_fmc2_nfc_suspend(struct device *dev)
+ {
+ 	struct stm32_fmc2_nfc *nfc = dev_get_drvdata(dev);
++	struct stm32_fmc2_nand *nand = &nfc->nand;
+ 
+ 	clk_disable_unprepare(nfc->clk);
+ 
++	stm32_fmc2_nfc_wp_enable(nand);
++
+ 	pinctrl_pm_select_sleep_state(dev);
+ 
+ 	return 0;
+@@ -2042,6 +2078,8 @@ static int __maybe_unused stm32_fmc2_nfc_resume(struct device *dev)
+ 
+ 	stm32_fmc2_nfc_init(nfc);
+ 
++	stm32_fmc2_nfc_wp_disable(nand);
++
+ 	for (chip_cs = 0; chip_cs < FMC2_MAX_CE; chip_cs++) {
+ 		if (!(nfc->cs_assigned & BIT(chip_cs)))
+ 			continue;
 -- 
 2.25.1
 
