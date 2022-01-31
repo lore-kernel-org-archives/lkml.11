@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC1FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A47CC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359570AbiAaLbN (ORCPT
+        id S1378169AbiAaLbG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:31:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48174 "EHLO
+        Mon, 31 Jan 2022 06:31:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376598AbiAaLVu (ORCPT
+        with ESMTP id S1376261AbiAaLVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:21:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD6FAC0797B8;
-        Mon, 31 Jan 2022 03:14:18 -0800 (PST)
+        Mon, 31 Jan 2022 06:21:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC715C0797B3;
+        Mon, 31 Jan 2022 03:14:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8681E611D8;
-        Mon, 31 Jan 2022 11:14:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3C4C340E8;
-        Mon, 31 Jan 2022 11:14:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE806B82A77;
+        Mon, 31 Jan 2022 11:14:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C2FDC340E8;
+        Mon, 31 Jan 2022 11:14:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627658;
-        bh=zswzNO2HKzY+6xdUru5NZf7GVc9OVOevY31Jj/qwN88=;
+        s=korg; t=1643627654;
+        bh=9dVBKrbhU02MiuWvg/Ym6NPghHGBb13fV1UFCzSdg4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sz9fR1IQjzxOxV77c2yPAnw0h4k4dDuhZRf+BuW4qkq/7rGQ86y3Ftnv/JxcaJNu9
-         OMK3kojJOB684HZtV36bu63PY6YwBwPX7VpKFgu6/FBpVkXCk4CNayRc/4inKZt3kx
-         lvkBJbmbKkB2He4YfBFv+2MdtdowWEvJ02twW7Vc=
+        b=pWdKtEVD16/TvhwHANJlP50UgBPnrMgmihbzMYV5NvC98W5BCkOuho7+9h5+pW1DA
+         EJ8BB9/3ZlyR0usdURE8QrUA7rAde0x48WhPVvdfA4iYBwMJcbPTNxVWg25LGsPDhu
+         vvj8GgeIwTNAwYESkVQ9iB4vCOlXPq2KkuM4Y1GU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 155/171] Revert "ipv6: Honor all IPv6 PIO Valid Lifetime values"
-Date:   Mon, 31 Jan 2022 11:57:00 +0100
-Message-Id: <20220131105235.267308908@linuxfoundation.org>
+Subject: [PATCH 5.15 154/171] gve: Fix GFP flags when allocing pages
+Date:   Mon, 31 Jan 2022 11:56:59 +0100
+Message-Id: <20220131105235.229765300@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -50,94 +51,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Catherine Sullivan <csully@google.com>
 
-[ Upstream commit 36268983e90316b37000a005642af42234dabb36 ]
+[ Upstream commit a92f7a6feeb3884c69c1c7c1f13bccecb2228ad0 ]
 
-This reverts commit b75326c201242de9495ff98e5d5cff41d7fc0d9d.
+Use GFP_ATOMIC when allocating pages out of the hotpath,
+continue to use GFP_KERNEL when allocating pages during setup.
 
-This commit breaks Linux compatibility with USGv6 tests. The RFC this
-commit was based on is actually an expired draft: no published RFC
-currently allows the new behaviour it introduced.
+GFP_KERNEL will allow blocking which allows it to succeed
+more often in a low memory enviornment but in the hotpath we do
+not want to allow the allocation to block.
 
-Without full IETF endorsement, the flash renumbering scenario this
-patch was supposed to enable is never going to work, as other IPv6
-equipements on the same LAN will keep the 2 hours limit.
-
-Fixes: b75326c20124 ("ipv6: Honor all IPv6 PIO Valid Lifetime values")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: f5cedc84a30d2 ("gve: Add transmit and receive support")
+Signed-off-by: Catherine Sullivan <csully@google.com>
+Signed-off-by: David Awogbemila <awogbemila@google.com>
+Link: https://lore.kernel.org/r/20220126003843.3584521-1-awogbemila@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/addrconf.h |  2 ++
- net/ipv6/addrconf.c    | 27 ++++++++++++++++++++-------
- 2 files changed, 22 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/google/gve/gve.h        | 2 +-
+ drivers/net/ethernet/google/gve/gve_main.c   | 6 +++---
+ drivers/net/ethernet/google/gve/gve_rx.c     | 3 ++-
+ drivers/net/ethernet/google/gve/gve_rx_dqo.c | 2 +-
+ 4 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index 78ea3e332688f..e7ce719838b5e 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -6,6 +6,8 @@
- #define RTR_SOLICITATION_INTERVAL	(4*HZ)
- #define RTR_SOLICITATION_MAX_INTERVAL	(3600*HZ)	/* 1 hour */
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index c1d4042671f9f..b1273dce4795b 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -815,7 +815,7 @@ static inline bool gve_is_gqi(struct gve_priv *priv)
+ /* buffers */
+ int gve_alloc_page(struct gve_priv *priv, struct device *dev,
+ 		   struct page **page, dma_addr_t *dma,
+-		   enum dma_data_direction);
++		   enum dma_data_direction, gfp_t gfp_flags);
+ void gve_free_page(struct device *dev, struct page *page, dma_addr_t dma,
+ 		   enum dma_data_direction);
+ /* tx handling */
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 959352fceead7..68552848d3888 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -746,9 +746,9 @@ static void gve_free_rings(struct gve_priv *priv)
  
-+#define MIN_VALID_LIFETIME		(2*3600)	/* 2 hours */
-+
- #define TEMP_VALID_LIFETIME		(7*86400)
- #define TEMP_PREFERRED_LIFETIME		(86400)
- #define REGEN_MAX_RETRY			(3)
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 846037e73723f..bf13865426340 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -2587,7 +2587,7 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
- 				 __u32 valid_lft, u32 prefered_lft)
+ int gve_alloc_page(struct gve_priv *priv, struct device *dev,
+ 		   struct page **page, dma_addr_t *dma,
+-		   enum dma_data_direction dir)
++		   enum dma_data_direction dir, gfp_t gfp_flags)
  {
- 	struct inet6_ifaddr *ifp = ipv6_get_ifaddr(net, addr, dev, 1);
--	int create = 0;
-+	int create = 0, update_lft = 0;
+-	*page = alloc_page(GFP_KERNEL);
++	*page = alloc_page(gfp_flags);
+ 	if (!*page) {
+ 		priv->page_alloc_fail++;
+ 		return -ENOMEM;
+@@ -792,7 +792,7 @@ static int gve_alloc_queue_page_list(struct gve_priv *priv, u32 id,
+ 	for (i = 0; i < pages; i++) {
+ 		err = gve_alloc_page(priv, &priv->pdev->dev, &qpl->pages[i],
+ 				     &qpl->page_buses[i],
+-				     gve_qpl_dma_dir(priv, id));
++				     gve_qpl_dma_dir(priv, id), GFP_KERNEL);
+ 		/* caller handles clean up */
+ 		if (err)
+ 			return -ENOMEM;
+diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+index 16169f291ad9f..629d8ed08fc61 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx.c
++++ b/drivers/net/ethernet/google/gve/gve_rx.c
+@@ -79,7 +79,8 @@ static int gve_rx_alloc_buffer(struct gve_priv *priv, struct device *dev,
+ 	dma_addr_t dma;
+ 	int err;
  
- 	if (!ifp && valid_lft) {
- 		int max_addresses = in6_dev->cnf.max_addresses;
-@@ -2631,19 +2631,32 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
- 		unsigned long now;
- 		u32 stored_lft;
+-	err = gve_alloc_page(priv, dev, &page, &dma, DMA_FROM_DEVICE);
++	err = gve_alloc_page(priv, dev, &page, &dma, DMA_FROM_DEVICE,
++			     GFP_ATOMIC);
+ 	if (err)
+ 		return err;
  
--		/* Update lifetime (RFC4862 5.5.3 e)
--		 * We deviate from RFC4862 by honoring all Valid Lifetimes to
--		 * improve the reaction of SLAAC to renumbering events
--		 * (draft-gont-6man-slaac-renum-06, Section 4.2)
--		 */
-+		/* update lifetime (RFC2462 5.5.3 e) */
- 		spin_lock_bh(&ifp->lock);
- 		now = jiffies;
- 		if (ifp->valid_lft > (now - ifp->tstamp) / HZ)
- 			stored_lft = ifp->valid_lft - (now - ifp->tstamp) / HZ;
- 		else
- 			stored_lft = 0;
--
- 		if (!create && stored_lft) {
-+			const u32 minimum_lft = min_t(u32,
-+				stored_lft, MIN_VALID_LIFETIME);
-+			valid_lft = max(valid_lft, minimum_lft);
-+
-+			/* RFC4862 Section 5.5.3e:
-+			 * "Note that the preferred lifetime of the
-+			 *  corresponding address is always reset to
-+			 *  the Preferred Lifetime in the received
-+			 *  Prefix Information option, regardless of
-+			 *  whether the valid lifetime is also reset or
-+			 *  ignored."
-+			 *
-+			 * So we should always update prefered_lft here.
-+			 */
-+			update_lft = 1;
-+		}
-+
-+		if (update_lft) {
- 			ifp->valid_lft = valid_lft;
- 			ifp->prefered_lft = prefered_lft;
- 			ifp->tstamp = now;
+diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+index 8500621b2cd41..7b18b4fd9e548 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
++++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+@@ -157,7 +157,7 @@ static int gve_alloc_page_dqo(struct gve_priv *priv,
+ 	int err;
+ 
+ 	err = gve_alloc_page(priv, &priv->pdev->dev, &buf_state->page_info.page,
+-			     &buf_state->addr, DMA_FROM_DEVICE);
++			     &buf_state->addr, DMA_FROM_DEVICE, GFP_KERNEL);
+ 	if (err)
+ 		return err;
+ 
 -- 
 2.34.1
 
