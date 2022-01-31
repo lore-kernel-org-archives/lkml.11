@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00171C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47519C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379337AbiAaLi4 (ORCPT
+        id S1379358AbiAaLi5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:38:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
+        Mon, 31 Jan 2022 06:38:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377885AbiAaL1o (ORCPT
+        with ESMTP id S1377988AbiAaL1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:27:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B3EC094257;
-        Mon, 31 Jan 2022 03:16:55 -0800 (PST)
+        Mon, 31 Jan 2022 06:27:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6138CC094265;
+        Mon, 31 Jan 2022 03:17:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9B3761170;
-        Mon, 31 Jan 2022 11:16:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7699DC340E8;
-        Mon, 31 Jan 2022 11:16:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FCD9B82A5D;
+        Mon, 31 Jan 2022 11:17:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56491C340EF;
+        Mon, 31 Jan 2022 11:17:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627814;
-        bh=yCdY9W4lizVQOQitcORHyijLSocRxrJhHdT9YQ2SzMw=;
+        s=korg; t=1643627829;
+        bh=3tSqRNYVVEdgFU/5z8VN14xz614uvr0H+s+4uqrS/JM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bmyuWa26LvW8ChkQ/bQ7OGYo20fiQ7c1QYbqgTMjfqScN84Fz9lNBetjZnpbVSKZG
-         7dWTzBwJpdMdWV12tPlOoMa/dc/orSFujscmLXb7/BsKaibcpBbqsjn2kbLGrGX2Jh
-         dw6Us8PwgWBtkJGAXqwa137AFKTm81qHSmkFeIkY=
+        b=xB+uNL073H5EQO4xgL7RjvRg24Bhdb2klWM3HiXeLPLKjWk5aNAniFXl1Iz4IA1+4
+         lxikQtgiq+3JO0gRRA7B91buBaFzZeO8MbVK7ak/hTdIdsLgyvKBRx9GNkT7yyfMBA
+         T6n3iwGkmG4idAJ7FJmDC3+1Ihq2SF59Su18J8Bg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan van der Ster <dan@vanderster.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.16 034/200] ceph: set pool_ns in new inode layout for async creates
-Date:   Mon, 31 Jan 2022 11:54:57 +0100
-Message-Id: <20220131105234.711759172@linuxfoundation.org>
+        stable@vger.kernel.org, "Dmitry V. Levin" <ldv@altlinux.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.16 039/200] powerpc/audit: Fix syscall_get_arch()
+Date:   Mon, 31 Jan 2022 11:55:02 +0100
+Message-Id: <20220131105234.870772429@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -50,52 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 4584a768f22b7669cdebabc911543621ac661341 upstream.
+commit 252745240ba0ae774d2f80c5e185ed59fbc4fb41 upstream.
 
-Dan reported that he was unable to write to files that had been
-asynchronously created when the client's OSD caps are restricted to a
-particular namespace.
+Commit 770cec16cdc9 ("powerpc/audit: Simplify syscall_get_arch()")
+and commit 898a1ef06ad4 ("powerpc/audit: Avoid unneccessary #ifdef
+in syscall_get_arguments()")
+replaced test_tsk_thread_flag(task, TIF_32BIT)) by is_32bit_task().
 
-The issue is that the layout for the new inode is only partially being
-filled. Ensure that we populate the pool_ns_data and pool_ns_len in the
-iinfo before calling ceph_fill_inode.
+But is_32bit_task() applies on current task while be want the test
+done on task 'task'
 
+So add a new macro is_tsk_32bit_task() to check any task.
+
+Fixes: 770cec16cdc9 ("powerpc/audit: Simplify syscall_get_arch()")
+Fixes: 898a1ef06ad4 ("powerpc/audit: Avoid unneccessary #ifdef in syscall_get_arguments()")
 Cc: stable@vger.kernel.org
-URL: https://tracker.ceph.com/issues/54013
-Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
-Reported-by: Dan van der Ster <dan@vanderster.com>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Reported-by: Dmitry V. Levin <ldv@altlinux.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/c55cddb8f65713bf5859ed675d75a50cb37d5995.1642159570.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ceph/file.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/powerpc/include/asm/syscall.h     |    4 ++--
+ arch/powerpc/include/asm/thread_info.h |    2 ++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -579,6 +579,7 @@ static int ceph_finish_async_create(stru
- 	struct ceph_inode_info *ci = ceph_inode(dir);
- 	struct inode *inode;
- 	struct timespec64 now;
-+	struct ceph_string *pool_ns;
- 	struct ceph_mds_client *mdsc = ceph_sb_to_mdsc(dir->i_sb);
- 	struct ceph_vino vino = { .ino = req->r_deleg_ino,
- 				  .snap = CEPH_NOSNAP };
-@@ -628,6 +629,12 @@ static int ceph_finish_async_create(stru
- 	in.max_size = cpu_to_le64(lo->stripe_unit);
+--- a/arch/powerpc/include/asm/syscall.h
++++ b/arch/powerpc/include/asm/syscall.h
+@@ -90,7 +90,7 @@ static inline void syscall_get_arguments
+ 	unsigned long val, mask = -1UL;
+ 	unsigned int n = 6;
  
- 	ceph_file_layout_to_legacy(lo, &in.layout);
-+	/* lo is private, so pool_ns can't change */
-+	pool_ns = rcu_dereference_raw(lo->pool_ns);
-+	if (pool_ns) {
-+		iinfo.pool_ns_len = pool_ns->len;
-+		iinfo.pool_ns_data = pool_ns->str;
-+	}
+-	if (is_32bit_task())
++	if (is_tsk_32bit_task(task))
+ 		mask = 0xffffffff;
  
- 	down_read(&mdsc->snap_rwsem);
- 	ret = ceph_fill_inode(inode, NULL, &iinfo, NULL, req->r_session,
+ 	while (n--) {
+@@ -105,7 +105,7 @@ static inline void syscall_get_arguments
+ 
+ static inline int syscall_get_arch(struct task_struct *task)
+ {
+-	if (is_32bit_task())
++	if (is_tsk_32bit_task(task))
+ 		return AUDIT_ARCH_PPC;
+ 	else if (IS_ENABLED(CONFIG_CPU_LITTLE_ENDIAN))
+ 		return AUDIT_ARCH_PPC64LE;
+--- a/arch/powerpc/include/asm/thread_info.h
++++ b/arch/powerpc/include/asm/thread_info.h
+@@ -168,8 +168,10 @@ static inline bool test_thread_local_fla
+ 
+ #ifdef CONFIG_COMPAT
+ #define is_32bit_task()	(test_thread_flag(TIF_32BIT))
++#define is_tsk_32bit_task(tsk)	(test_tsk_thread_flag(tsk, TIF_32BIT))
+ #else
+ #define is_32bit_task()	(IS_ENABLED(CONFIG_PPC32))
++#define is_tsk_32bit_task(tsk)	(IS_ENABLED(CONFIG_PPC32))
+ #endif
+ 
+ #if defined(CONFIG_PPC64)
 
 
