@@ -2,116 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51908C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:45:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 616BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357399AbiAaSp3 (ORCPT
+        id S1357525AbiAaSpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 13:45:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33876 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1357318AbiAaSp1 (ORCPT
+        Mon, 31 Jan 2022 13:45:40 -0500
+Received: from out02.mta.xmission.com ([166.70.13.232]:58930 "EHLO
+        out02.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357451AbiAaSpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 13:45:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643654726;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vtLdnydhSAxPSqAH4Eff+DcCHxcUpx4pphU3ycHuRAA=;
-        b=F8RHP4PDheT8vRCH7jAa9+p7kRmYpHs+8gYXnCfcbOznv89LMGpFm8CPdEKs5FtDBMPxzF
-        p+ungUpoSZcVzy4JytulTDg5lk+IgctmUDHY/Ig5+AwYYVQdil/6CXiCGxVb1IQqCtaZzD
-        xGeoKwAYNlExlVK5zfFNgVyEw8BicNQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-145-gIdbnm9XMoie-uVd8V9g0g-1; Mon, 31 Jan 2022 13:45:25 -0500
-X-MC-Unique: gIdbnm9XMoie-uVd8V9g0g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 011FF1923B8D;
-        Mon, 31 Jan 2022 18:45:21 +0000 (UTC)
-Received: from oldenburg.str.redhat.com (unknown [10.39.193.205])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 42C7B7D526;
-        Mon, 31 Jan 2022 18:45:12 +0000 (UTC)
-From:   Florian Weimer <fweimer@redhat.com>
-To:     "H.J. Lu" <hjl.tools@gmail.com>
-Cc:     Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Balbir Singh <bsingharora@gmail.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cyrill Gorcunov <gorcunov@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Eugene Syromiatnikov <esyr@redhat.com>,
-        Jann Horn <jannh@google.com>, Jonathan Corbet <corbet@lwn.net>,
+        Mon, 31 Jan 2022 13:45:31 -0500
+Received: from in01.mta.xmission.com ([166.70.13.51]:43508)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nEbg7-00HX5m-Ap; Mon, 31 Jan 2022 11:45:27 -0700
+Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:56304 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nEbg6-00ExG7-Ey; Mon, 31 Jan 2022 11:45:26 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Jann Horn <jannh@google.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Denys Vlasenko <vda.linux@googlemail.com>,
         Kees Cook <keescook@chromium.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
-        Dave Martin <Dave.Martin@arm.com>,
-        Weijiang Yang <weijiang.yang@intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
-        Kostya Serebryany <kcc@google.com>,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH 34/35] x86/cet/shstk: Support wrss for userspace
-References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
-        <20220130211838.8382-35-rick.p.edgecombe@intel.com>
-        <87wnig8hj6.fsf@oldenburg.str.redhat.com>
-        <CAMe9rOrVvjL1F3UgOWL-gAGRyyiG6r20TWUusEUFhZMEEAjH7w@mail.gmail.com>
-Date:   Mon, 31 Jan 2022 19:45:10 +0100
-In-Reply-To: <CAMe9rOrVvjL1F3UgOWL-gAGRyyiG6r20TWUusEUFhZMEEAjH7w@mail.gmail.com>
-        (H. J. Lu's message of "Mon, 31 Jan 2022 10:26:49 -0800")
-Message-ID: <87a6fb7nih.fsf@oldenburg.str.redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Liam R . Howlett" <liam.howlett@oracle.com>
+References: <20220131153740.2396974-1-willy@infradead.org>
+        <871r0nriy4.fsf@email.froward.int.ebiederm.org>
+        <YfgKw5z2uswzMVRQ@casper.infradead.org>
+        <877dafq3bw.fsf@email.froward.int.ebiederm.org>
+        <YfgPwPvopO1aqcVC@casper.infradead.org>
+        <CAG48ez3MCs8d8hjBfRSQxwUTW3o64iaSwxF=UEVtk+SEme0chQ@mail.gmail.com>
+Date:   Mon, 31 Jan 2022 12:44:53 -0600
+In-Reply-To: <CAG48ez3MCs8d8hjBfRSQxwUTW3o64iaSwxF=UEVtk+SEme0chQ@mail.gmail.com>
+        (Jann Horn's message of "Mon, 31 Jan 2022 18:13:42 +0100")
+Message-ID: <87bkzroica.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-XM-SPF: eid=1nEbg6-00ExG7-Ey;;;mid=<87bkzroica.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX19oFCEDmwWeui1ca5Jl0D8bAX1MI6wleEw=
+X-SA-Exim-Connect-IP: 68.110.24.146
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 0/5] Fix fill_files_note
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* H. J. Lu:
 
-> On Sun, Jan 30, 2022 at 11:57 PM Florian Weimer <fweimer@redhat.com> wrote:
->>
->> * Rick Edgecombe:
->>
->> > For the current shadow stack implementation, shadow stacks contents cannot
->> > be arbitrarily provisioned with data. This property helps apps protect
->> > themselves better, but also restricts any potential apps that may want to
->> > do exotic things at the expense of a little security.
->> >
->> > The x86 shadow stack feature introduces a new instruction, wrss, which
->> > can be enabled to write directly to shadow stack permissioned memory from
->> > userspace. Allow it to get enabled via the prctl interface.
->>
->> Why can't this be turned on unconditionally?
->
-> WRSS can be a security risk since it defeats the whole purpose of
-> Shadow Stack.  If an application needs to write to shadow stack,
-> it can make a syscall to enable it.  After the CET patches are checked
-> in Linux kernel, I will make a proposal to allow applications or shared
-> libraries to opt-in WRSS through a linker option, a compiler option or
-> a function attribute.
+Matthew Wilcox has reported that a missing mmap_lock in file_files_note,
+which could cause trouble.
 
-Ahh, that makes sense.  I assumed that without WRSS, the default was to
-allow plain writes. 8-)
+Refactor the code and clean it up so that the vma snapshot makes
+it to fill_files_note, and then use the vma snapshot in fill_files_note.
 
-Thanks,
-Florian
+Folks please review this as this looks correct to me but I haven't done
+anything beyond compile testing this yet.
 
+Eric W. Biederman (5):
+      coredump: Move definition of struct coredump_params into coredump.h
+      coredump: Snapshot the vmas in do_coredump
+      coredump: Remove the WARN_ON in dump_vma_snapshot
+      coredump/elf: Pass coredump_params into fill_note_info
+      coredump: Use the vma snapshot in fill_files_note
+
+ fs/binfmt_elf.c          | 61 ++++++++++++++++++++++--------------------------
+ fs/binfmt_elf_fdpic.c    | 18 +++++---------
+ fs/coredump.c            | 55 +++++++++++++++++++++++++++++--------------
+ include/linux/binfmts.h  | 13 +----------
+ include/linux/coredump.h | 20 ++++++++++++----
+ 5 files changed, 88 insertions(+), 79 deletions(-)
+
+
+Eric
