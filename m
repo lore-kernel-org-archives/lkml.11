@@ -2,82 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19613C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5455C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376435AbiAaLMn (ORCPT
+        id S1376473AbiAaLMq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:12:43 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:58840 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376845AbiAaLJM (ORCPT
+        Mon, 31 Jan 2022 06:12:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53778 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376850AbiAaLJM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:09:12 -0500
-Date:   Mon, 31 Jan 2022 12:09:09 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643627350;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3CXtlXLTYIfo3z5h+Q2OsJCQ12poAJsYf5yCuql9h1s=;
-        b=c+YABeix0gi4ppJRFkLpKFxjY+Ytig8FpkSfuk/SZHFOHJ1gJQsbiGwZ6nfjejBPU8ERO5
-        CYdn0GkZDT+VVJqI1WdZkpwPUQpeAi/n4+glk2vYUpuJetL9z4UGT2NCM1k/ey8x3dsRp9
-        22j7zX0gciD3hf8NQNSeO/JfDgjz1zaZ+hpQUKYpH4ZYqdfBI2wJUOWRtUSCH4Zb2PAmtN
-        ncatMzLntfDNR4ypAo4d8tRT+tx1CW0JOzEBBZf539Y0AVqw30qfM8cxcAmLcJYpBUMkVJ
-        GkpokhJd/lbvLcVc5JPDox7q2v01KvGzwvT1wi0qPHNLn0SSKDrfzERT+GrNZQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643627350;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3CXtlXLTYIfo3z5h+Q2OsJCQ12poAJsYf5yCuql9h1s=;
-        b=5s9Py6ARZQ6qDeei7b7BBr531WGkrJ236qvkaU0qhDyMd7g05rEbO+FeMqY4ay3u5mDJzN
-        PY0FMItDPWWIGpAw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Oleksandr Natalenko <oleksandr@natalenko.name>
-Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Michael Below <below@judiz.de>,
-        Salvatore Bonaccorso <carnil@debian.org>
-Subject: Re: [PATCH 2/7] i2c: core: Use generic_handle_irq_safe() in
- i2c_handle_smbus_host_notify().
-Message-ID: <YffDVXN7fGFqYs1Y@linutronix.de>
-References: <20220127113303.3012207-1-bigeasy@linutronix.de>
- <20220127113303.3012207-3-bigeasy@linutronix.de>
- <4929165.31r3eYUQgx@natalenko.name>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4E8EB82A72;
+        Mon, 31 Jan 2022 11:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA02DC340E8;
+        Mon, 31 Jan 2022 11:09:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643627350;
+        bh=YP3uc33jwRUfDk9XScnitxmKQ9R/hWEnLuZ4nu+AswA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qPt6z8XCtN0joPTfttrvtFyM3okdnVgjI4w8s1l2s0vxUvInu+Xi8V4OdRNpTQBAZ
+         ftJdZmIy1WPdGErsMGg/jboGVRftUIAhnnxACKhh8HOZeh4+nMwENJWYqiLrm54vyT
+         s4K1OpkH8rzQHr+2Xbgf3tMyvxMcDiotU3JfgQuE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
+        Frank Li <Frank.Li@nxp.com>, Abel Vesa <abel.vesa@nxp.com>
+Subject: [PATCH 5.15 054/171] usb: xhci-plat: fix crash when suspend if remote wake enable
+Date:   Mon, 31 Jan 2022 11:55:19 +0100
+Message-Id: <20220131105231.852924360@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <4929165.31r3eYUQgx@natalenko.name>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-27 15:41:24 [+0100], Oleksandr Natalenko wrote:
-> Hello.
-Hi,
+From: Frank Li <Frank.Li@nxp.com>
 
-> Reviewed-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-> 
-> Worth linking [1] [2] and [3] as well maybe?
+commit 9df478463d9feb90dae24f183383961cf123a0ec upstream.
 
-no, they are fixed since commit
-   81e2073c175b8 ("genirq: Disable interrupts for force threaded handlers")
+Crashed at i.mx8qm platform when suspend if enable remote wakeup
 
-> [1] https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1873673
-> [2] https://bugzilla.kernel.org/show_bug.cgi?id=202453
-> [3] https://lore.kernel.org/lkml/20201204201930.vtvitsq6xcftjj3o@spock.localdomain/
+Internal error: synchronous external abort: 96000210 [#1] PREEMPT SMP
+Modules linked in:
+CPU: 2 PID: 244 Comm: kworker/u12:6 Not tainted 5.15.5-dirty #12
+Hardware name: Freescale i.MX8QM MEK (DT)
+Workqueue: events_unbound async_run_entry_fn
+pstate: 600000c5 (nZCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : xhci_disable_hub_port_wake.isra.62+0x60/0xf8
+lr : xhci_disable_hub_port_wake.isra.62+0x34/0xf8
+sp : ffff80001394bbf0
+x29: ffff80001394bbf0 x28: 0000000000000000 x27: ffff00081193b578
+x26: ffff00081193b570 x25: 0000000000000000 x24: 0000000000000000
+x23: ffff00081193a29c x22: 0000000000020001 x21: 0000000000000001
+x20: 0000000000000000 x19: ffff800014e90490 x18: 0000000000000000
+x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
+x14: 0000000000000000 x13: 0000000000000002 x12: 0000000000000000
+x11: 0000000000000000 x10: 0000000000000960 x9 : ffff80001394baa0
+x8 : ffff0008145d1780 x7 : ffff0008f95b8e80 x6 : 000000001853b453
+x5 : 0000000000000496 x4 : 0000000000000000 x3 : ffff00081193a29c
+x2 : 0000000000000001 x1 : 0000000000000000 x0 : ffff000814591620
+Call trace:
+ xhci_disable_hub_port_wake.isra.62+0x60/0xf8
+ xhci_suspend+0x58/0x510
+ xhci_plat_suspend+0x50/0x78
+ platform_pm_suspend+0x2c/0x78
+ dpm_run_callback.isra.25+0x50/0xe8
+ __device_suspend+0x108/0x3c0
 
-Sebastian
+The basic flow:
+	1. run time suspend call xhci_suspend, xhci parent devices gate the clock.
+        2. echo mem >/sys/power/state, system _device_suspend call xhci_suspend
+        3. xhci_suspend call xhci_disable_hub_port_wake, which access register,
+	   but clock already gated by run time suspend.
+
+This problem was hidden by power domain driver, which call run time resume before it.
+
+But the below commit remove it and make this issue happen.
+	commit c1df456d0f06e ("PM: domains: Don't runtime resume devices at genpd_prepare()")
+
+This patch call run time resume before suspend to make sure clock is on
+before access register.
+
+Reviewed-by: Peter Chen <peter.chen@kernel.org>
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Testeb-by: Abel Vesa <abel.vesa@nxp.com>
+Link: https://lore.kernel.org/r/20220110172738.31686-1-Frank.Li@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/usb/host/xhci-plat.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/drivers/usb/host/xhci-plat.c
++++ b/drivers/usb/host/xhci-plat.c
+@@ -437,6 +437,9 @@ static int __maybe_unused xhci_plat_susp
+ 	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
+ 	int ret;
+ 
++	if (pm_runtime_suspended(dev))
++		pm_runtime_resume(dev);
++
+ 	ret = xhci_priv_suspend_quirk(hcd);
+ 	if (ret)
+ 		return ret;
+
+
