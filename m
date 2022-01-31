@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 237ECC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 395FAC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378724AbiAaL3D (ORCPT
+        id S1378791AbiAaL3M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:03 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37606 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377402AbiAaLSM (ORCPT
+        Mon, 31 Jan 2022 06:29:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50168 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377523AbiAaLSX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:18:12 -0500
+        Mon, 31 Jan 2022 06:18:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5336EB82A61;
-        Mon, 31 Jan 2022 11:18:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 976A9C340E8;
-        Mon, 31 Jan 2022 11:18:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 446856114D;
+        Mon, 31 Jan 2022 11:18:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C843C340E8;
+        Mon, 31 Jan 2022 11:18:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627890;
-        bh=zQGbytej+hfBcd7CzPG1kNgAXhdOl0s9NMF5c/xeaWE=;
+        s=korg; t=1643627902;
+        bh=8bbaXZER4a2mhUTdrkD8ZgmE7ImLm7ZobG8EiC1hc94=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bDrZm5o+Ud6MsANM2c2iC9ECTrA7QC71lAr6Zb7Oo7mX9TPjPm/LvKsJ2OTLkpmBS
-         6AFQNsT3AQtSoafXgrkUIHZMHy6MTRpPwzpMictZu1qRkFgRw5SIZN9Qi7MK5dMhzE
-         H7Fa1sFfOXbghPrmheNeD5JKUfEftBPGg4ufdTTI=
+        b=RlJ0p4QVHqbmwRul9ZoZcEpVCFotwuPWocC5ESOAcQ/lzn2vx3XqQVzr4KBSzp8mL
+         fj0irXYdkiyGgfdrA9yVF9deYjRaRKoa/Uan1SmN72IG4wRYgvFAlyBqKeEvwrPsWM
+         EnUsz2pR/t4eVbly29TIrd6KAphq5T0wD7mNJJxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qian Cai <quic_qiancai@quicinc.com>,
-        Mathias Krause <minipli@grsecurity.net>,
-        Alexey Gladkov <legion@kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.16 024/200] ucount:  Make get_ucount a safe get_user replacement
-Date:   Mon, 31 Jan 2022 11:54:47 +0100
-Message-Id: <20220131105234.384457549@linuxfoundation.org>
+        stable@vger.kernel.org, Jeremy Kerr <jk@ozlabs.org>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Aditya Garg <gargaditya08@live.com>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: [PATCH 5.16 028/200] efi: runtime: avoid EFIv2 runtime services on Apple x86 machines
+Date:   Mon, 31 Jan 2022 11:54:51 +0100
+Message-Id: <20220131105234.520022336@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -48,57 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit f9d87929d451d3e649699d0f1d74f71f77ad38f5 upstream.
+commit f5390cd0b43c2e54c7cf5506c7da4a37c5cef746 upstream.
 
-When the ucount code was refactored to create get_ucount it was missed
-that some of the contexts in which a rlimit is kept elevated can be
-the only reference to the user/ucount in the system.
+Aditya reports [0] that his recent MacbookPro crashes in the firmware
+when using the variable services at runtime. The culprit appears to be a
+call to QueryVariableInfo(), which we did not use to call on Apple x86
+machines in the past as they only upgraded from EFI v1.10 to EFI v2.40
+firmware fairly recently, and QueryVariableInfo() (along with
+UpdateCapsule() et al) was added in EFI v2.00.
 
-Ordinary ucount references exist in places that also have a reference
-to the user namspace, but in POSIX message queues, the SysV shm code,
-and the SIGPENDING code there is no independent user namespace
-reference.
+The only runtime service introduced in EFI v2.00 that we actually use in
+Linux is QueryVariableInfo(), as the capsule based ones are optional,
+generally not used at runtime (all the LVFS/fwupd firmware update
+infrastructure uses helper EFI programs that invoke capsule update at
+boot time, not runtime), and not implemented by Apple machines in the
+first place. QueryVariableInfo() is used to 'safely' set variables,
+i.e., only when there is enough space. This prevents machines with buggy
+firmwares from corrupting their NVRAMs when they run out of space.
 
-Inspection of the the user_namespace show no instance of circular
-references between struct ucounts and the user_namespace.  So
-hold a reference from struct ucount to i's user_namespace to
-resolve this problem.
+Given that Apple machines have been using EFI v1.10 services only for
+the longest time (the EFI v2.0 spec was released in 2006, and Linux
+support for the newly introduced runtime services was added in 2011, but
+the MacbookPro12,1 released in 2015 still claims to be EFI v1.10 only),
+let's avoid the EFI v2.0 ones on all Apple x86 machines.
 
-Link: https://lore.kernel.org/lkml/YZV7Z+yXbsx9p3JN@fixkernel.com/
-Reported-by: Qian Cai <quic_qiancai@quicinc.com>
-Reported-by: Mathias Krause <minipli@grsecurity.net>
-Tested-by: Mathias Krause <minipli@grsecurity.net>
-Reviewed-by: Mathias Krause <minipli@grsecurity.net>
-Reviewed-by: Alexey Gladkov <legion@kernel.org>
-Fixes: d64696905554 ("Reimplement RLIMIT_SIGPENDING on top of ucounts")
-Fixes: 6e52a9f0532f ("Reimplement RLIMIT_MSGQUEUE on top of ucounts")
-Fixes: d7c9e99aee48 ("Reimplement RLIMIT_MEMLOCK on top of ucounts")
-Cc: stable@vger.kernel.org
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+[0] https://lore.kernel.org/all/6D757C75-65B1-468B-842D-10410081A8E4@live.com/
+
+Cc: <stable@vger.kernel.org>
+Cc: Jeremy Kerr <jk@ozlabs.org>
+Cc: Matthew Garrett <mjg59@srcf.ucam.org>
+Reported-by: Aditya Garg <gargaditya08@live.com>
+Tested-by: Orlando Chamberlain <redecorating@protonmail.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Aditya Garg <gargaditya08@live.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215277
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/ucount.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/firmware/efi/efi.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/kernel/ucount.c
-+++ b/kernel/ucount.c
-@@ -190,6 +190,7 @@ struct ucounts *alloc_ucounts(struct use
- 			kfree(new);
- 		} else {
- 			hlist_add_head(&new->node, hashent);
-+			get_user_ns(new->ns);
- 			spin_unlock_irq(&ucounts_lock);
- 			return new;
- 		}
-@@ -210,6 +211,7 @@ void put_ucounts(struct ucounts *ucounts
- 	if (atomic_dec_and_lock_irqsave(&ucounts->count, &ucounts_lock, flags)) {
- 		hlist_del_init(&ucounts->node);
- 		spin_unlock_irqrestore(&ucounts_lock, flags);
-+		put_user_ns(ucounts->ns);
- 		kfree(ucounts);
- 	}
+--- a/drivers/firmware/efi/efi.c
++++ b/drivers/firmware/efi/efi.c
+@@ -722,6 +722,13 @@ void __init efi_systab_report_header(con
+ 		systab_hdr->revision >> 16,
+ 		systab_hdr->revision & 0xffff,
+ 		vendor);
++
++	if (IS_ENABLED(CONFIG_X86_64) &&
++	    systab_hdr->revision > EFI_1_10_SYSTEM_TABLE_REVISION &&
++	    !strcmp(vendor, "Apple")) {
++		pr_info("Apple Mac detected, using EFI v1.10 runtime services only\n");
++		efi.runtime_version = EFI_1_10_SYSTEM_TABLE_REVISION;
++	}
  }
+ 
+ static __initdata char memory_type_name[][13] = {
 
 
