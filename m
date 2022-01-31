@@ -2,38 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348462AbiAaK7P (ORCPT
+        id S1358368AbiAaK7V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:59:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46996 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348403AbiAaK6l (ORCPT
+        Mon, 31 Jan 2022 05:59:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244667AbiAaK6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:58:41 -0500
+        Mon, 31 Jan 2022 05:58:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC141C061741;
+        Mon, 31 Jan 2022 02:58:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3DF3B82A5E;
-        Mon, 31 Jan 2022 10:58:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C68C340E8;
-        Mon, 31 Jan 2022 10:58:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E56460AD6;
+        Mon, 31 Jan 2022 10:58:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD49C340E8;
+        Mon, 31 Jan 2022 10:58:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626719;
-        bh=41Bn7dpcwKdRVGJAeUT3KkBCidaikRKvL17gJkZ77QY=;
+        s=korg; t=1643626726;
+        bh=kvmeKDKq4ruE2gAqLGR7+eCTMNUXOvT8e/qFwT9YNBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XIxjDb3c21FkzYEuVqiM45ESjB23w6UEuXWmEXPkk4TwEosjUzIDD/AhFEsH/8wV9
-         JKXNpGwYLTdcgnbbTeNF7GP/2H1jJFXspbUQVVR9/8bvXUpbDWT326t4vKG6KUKwFh
-         Dydl67cqncuc6+F52bVuQXOCDEduFWXhAbos8zyM=
+        b=ALnPbrkjpcpjzEm5aVTjxP78DNrDkT6AV5guUuXGqTBXHV1lTl1ftqFPzlemMH8fM
+         VWi1yIY5YUPbAP5CxhXeeiY9237LRvUMB71fYq8Ns7eF/KPwM9lFp6OmDIxSFITqI2
+         dTa08UXHIunXpQfjK4qgTdlBoHVdZ0TnyIv7vz4o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>
-Subject: [PATCH 5.4 18/64] usb: common: ulpi: Fix crash in ulpi_match()
-Date:   Mon, 31 Jan 2022 11:56:03 +0100
-Message-Id: <20220131105216.275584125@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 5.4 02/64] s390/hypfs: include z/VM guests with access control group set
+Date:   Mon, 31 Jan 2022 11:55:47 +0100
+Message-Id: <20220131105215.724794699@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -45,47 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Hunter <jonathanh@nvidia.com>
+From: Vasily Gorbik <gor@linux.ibm.com>
 
-commit 2e3dd4a6246945bf84ea6f478365d116e661554c upstream.
+commit 663d34c8df98740f1e90241e78e456d00b3c6cad upstream.
 
-Commit 7495af930835 ("ARM: multi_v7_defconfig: Enable drivers for
-DragonBoard 410c") enables the CONFIG_PHY_QCOM_USB_HS for the ARM
-multi_v7_defconfig. Enabling this Kconfig is causing the kernel to crash
-on the Tegra20 Ventana platform in the ulpi_match() function.
+Currently if z/VM guest is allowed to retrieve hypervisor performance
+data globally for all guests (privilege class B) the query is formed in a
+way to include all guests but the group name is left empty. This leads to
+that z/VM guests which have access control group set not being included
+in the results (even local vm).
 
-The Qualcomm USB HS PHY driver that is enabled by CONFIG_PHY_QCOM_USB_HS,
-registers a ulpi_driver but this driver does not provide an 'id_table',
-so when ulpi_match() is called on the Tegra20 Ventana platform, it
-crashes when attempting to deference the id_table pointer which is not
-valid. The Qualcomm USB HS PHY driver uses device-tree for matching the
-ULPI driver with the device and so fix this crash by using device-tree
-for matching if the id_table is not valid.
+Change the query group identifier from empty to "any" to retrieve
+information about all guests from any groups (or without a group set).
 
-Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
-Link: https://lore.kernel.org/r/20220117150039.44058-1-jonathanh@nvidia.com
+Cc: stable@vger.kernel.org
+Fixes: 31cb4bd31a48 ("[S390] Hypervisor filesystem (s390_hypfs) for z/VM")
+Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/common/ulpi.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/s390/hypfs/hypfs_vm.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/common/ulpi.c
-+++ b/drivers/usb/common/ulpi.c
-@@ -39,8 +39,11 @@ static int ulpi_match(struct device *dev
- 	struct ulpi *ulpi = to_ulpi_dev(dev);
- 	const struct ulpi_device_id *id;
+--- a/arch/s390/hypfs/hypfs_vm.c
++++ b/arch/s390/hypfs/hypfs_vm.c
+@@ -20,6 +20,7 @@
  
--	/* Some ULPI devices don't have a vendor id so rely on OF match */
--	if (ulpi->id.vendor == 0)
-+	/*
-+	 * Some ULPI devices don't have a vendor id
-+	 * or provide an id_table so rely on OF match.
-+	 */
-+	if (ulpi->id.vendor == 0 || !drv->id_table)
- 		return of_driver_match_device(dev, driver);
+ static char local_guest[] = "        ";
+ static char all_guests[] = "*       ";
++static char *all_groups = all_guests;
+ static char *guest_query;
  
- 	for (id = drv->id_table; id->vendor; id++)
+ struct diag2fc_data {
+@@ -62,10 +63,11 @@ static int diag2fc(int size, char* query
+ 
+ 	memcpy(parm_list.userid, query, NAME_LEN);
+ 	ASCEBC(parm_list.userid, NAME_LEN);
+-	parm_list.addr = (unsigned long) addr ;
++	memcpy(parm_list.aci_grp, all_groups, NAME_LEN);
++	ASCEBC(parm_list.aci_grp, NAME_LEN);
++	parm_list.addr = (unsigned long)addr;
+ 	parm_list.size = size;
+ 	parm_list.fmt = 0x02;
+-	memset(parm_list.aci_grp, 0x40, NAME_LEN);
+ 	rc = -1;
+ 
+ 	diag_stat_inc(DIAG_STAT_X2FC);
 
 
