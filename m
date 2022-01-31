@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC510C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E17AC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378174AbiAaLXr (ORCPT
+        id S1378328AbiAaLYB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:23:47 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34010 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349461AbiAaLO1 (ORCPT
+        Mon, 31 Jan 2022 06:24:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46066 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359252AbiAaLOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:14:27 -0500
+        Mon, 31 Jan 2022 06:14:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFF3C061768;
+        Mon, 31 Jan 2022 03:11:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 312C5B82A66;
-        Mon, 31 Jan 2022 11:14:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57529C340E8;
-        Mon, 31 Jan 2022 11:14:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4240B82A75;
+        Mon, 31 Jan 2022 11:11:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D749FC340EF;
+        Mon, 31 Jan 2022 11:11:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627663;
-        bh=kqixgHuG+URH4/WIHqTyBQYlAt5GsN60kfi/ZYQmzI4=;
+        s=korg; t=1643627461;
+        bh=pprbZsg+C92F/5sdWdHZshcc/eOL9hMtUXknEI2V4gg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ncBQ6L0V5E/IuH5CPGMkqf7//bAm8oF6IZ4Cx3RVRyNJC05jAZcoHz95qHmqrJRgv
-         WNwCg68F0hBjnlPfTnsyVmkVLX7Qx+bv+Rf+wdF0MLJIx0PljsHJzSzNEStxAbK1S6
-         eZ8Qx8Y41t7m9dlYzvfkOYjqDG79NwHJXVoEjd8U=
+        b=JKxNDJ3xSe3UQbxdtcnBcjjGff46Ylcn1SdiQ69BR8YVLLGLl2fBD8zhShVsfbe+a
+         qQzKF7khiq3P0eX2BBxuiXl8yL2M27d2eFtXALsxtvJ0+a27nFOnfCm0o63T7wMUSx
+         H9rBXZOVBe6VSp519kHuOgWWDbE2nRtt2DIW143U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
+        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 157/171] ipv4: raw: lock the socket in raw_bind()
-Date:   Mon, 31 Jan 2022 11:57:02 +0100
-Message-Id: <20220131105235.329762392@linuxfoundation.org>
+Subject: [PATCH 5.15 090/171] ping: fix the sk_bound_dev_if match in ping_lookup
+Date:   Mon, 31 Jan 2022 11:55:55 +0100
+Message-Id: <20220131105233.081930249@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -48,78 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit 153a0d187e767c68733b8e9f46218eb1f41ab902 ]
+commit 2afc3b5a31f9edf3ef0f374f5d70610c79c93a42 upstream.
 
-For some reason, raw_bind() forgot to lock the socket.
+When 'ping' changes to use PING socket instead of RAW socket by:
 
-BUG: KCSAN: data-race in __ip4_datagram_connect / raw_bind
+   # sysctl -w net.ipv4.ping_group_range="0 100"
 
-write to 0xffff8881170d4308 of 4 bytes by task 5466 on cpu 0:
- raw_bind+0x1b0/0x250 net/ipv4/raw.c:739
- inet_bind+0x56/0xa0 net/ipv4/af_inet.c:443
- __sys_bind+0x14b/0x1b0 net/socket.c:1697
- __do_sys_bind net/socket.c:1708 [inline]
- __se_sys_bind net/socket.c:1706 [inline]
- __x64_sys_bind+0x3d/0x50 net/socket.c:1706
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+the selftests 'router_broadcast.sh' will fail, as such command
 
-read to 0xffff8881170d4308 of 4 bytes by task 5468 on cpu 1:
- __ip4_datagram_connect+0xb7/0x7b0 net/ipv4/datagram.c:39
- ip4_datagram_connect+0x2a/0x40 net/ipv4/datagram.c:89
- inet_dgram_connect+0x107/0x190 net/ipv4/af_inet.c:576
- __sys_connect_file net/socket.c:1900 [inline]
- __sys_connect+0x197/0x1b0 net/socket.c:1917
- __do_sys_connect net/socket.c:1927 [inline]
- __se_sys_connect net/socket.c:1924 [inline]
- __x64_sys_connect+0x3d/0x50 net/socket.c:1924
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+  # ip vrf exec vrf-h1 ping -I veth0 198.51.100.255 -b
 
-value changed: 0x00000000 -> 0x0003007f
+can't receive the response skb by the PING socket. It's caused by mismatch
+of sk_bound_dev_if and dif in ping_rcv() when looking up the PING socket,
+as dif is vrf-h1 if dif's master was set to vrf-h1.
 
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 5468 Comm: syz-executor.5 Not tainted 5.17.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+This patch is to fix this regression by also checking the sk_bound_dev_if
+against sdif so that the packets can stil be received even if the socket
+is not bound to the vrf device but to the real iif.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/raw.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/ipv4/ping.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index bb446e60cf580..b8689052079cd 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -721,6 +721,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 	int ret = -EINVAL;
- 	int chk_addr_ret;
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -220,7 +220,8 @@ static struct sock *ping_lookup(struct n
+ 			continue;
+ 		}
  
-+	lock_sock(sk);
- 	if (sk->sk_state != TCP_CLOSE || addr_len < sizeof(struct sockaddr_in))
- 		goto out;
+-		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif)
++		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
++		    sk->sk_bound_dev_if != inet_sdif(skb))
+ 			continue;
  
-@@ -740,7 +741,9 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 		inet->inet_saddr = 0;  /* Use device */
- 	sk_dst_reset(sk);
- 	ret = 0;
--out:	return ret;
-+out:
-+	release_sock(sk);
-+	return ret;
- }
- 
- /*
--- 
-2.34.1
-
+ 		sock_hold(sk);
 
 
