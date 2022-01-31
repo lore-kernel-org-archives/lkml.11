@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79629C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3811C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:14:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359172AbiAaLOk (ORCPT
+        id S1359237AbiAaLOo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:14:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40292 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359543AbiAaLFz (ORCPT
+        Mon, 31 Jan 2022 06:14:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53918 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359584AbiAaLGG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:05:55 -0500
+        Mon, 31 Jan 2022 06:06:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F3A160ECF;
-        Mon, 31 Jan 2022 11:05:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58129C340E8;
-        Mon, 31 Jan 2022 11:05:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC82FB82A70;
+        Mon, 31 Jan 2022 11:06:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0C14C340E8;
+        Mon, 31 Jan 2022 11:06:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627154;
-        bh=qlYEMax3/uk+lIMXDR6HWYREniDkhu3SiEJfvPNDbaw=;
+        s=korg; t=1643627163;
+        bh=YCch70a1xuaiG3umi4jdkuzRFuQOW2nax+is+noWyYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pyLQsk79Z5vtfWl8PP7CbSgvphyHHcUTr4QxMJB3HsY0yk6rSHaLS5tQ7tdAtYoy5
-         xB7LqDqwkL989CYRflcUSv4okxxI9X6N1WaDe1Mr4ICgR+3XMIHqG+jdj2/OIWjIPH
-         WaCm7oDTWUtn3Txsd3lpieF/5dd2W7SV5sJz6jX4=
+        b=XmINA14dD37ib8KiUUEo7RKt5viWzzqZyFAkwCIckNbgXcSMb4vz4UbcuHwlUWAOL
+         xCFxqSHcgqgA38Hbf2Uvdb1wFlu1CMPk2Eo5q7b5M+1ENvBD8BzIP9UM6yWoQ5x5TP
+         Ch/CV1eVREcgangkGpZH1lJbVp5VUY/c+5MCEU80=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Ray Che <xijiache@gmail.com>, David Ahern <dsahern@kernel.org>,
+        Geoff Alexander <alexandg@cs.unm.edu>,
+        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 091/100] Revert "ipv6: Honor all IPv6 PIO Valid Lifetime values"
-Date:   Mon, 31 Jan 2022 11:56:52 +0100
-Message-Id: <20220131105223.513846641@linuxfoundation.org>
+Subject: [PATCH 5.10 094/100] ipv4: tcp: send zero IPID in SYNACK messages
+Date:   Mon, 31 Jan 2022 11:56:55 +0100
+Message-Id: <20220131105223.613060330@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -47,94 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 36268983e90316b37000a005642af42234dabb36 ]
+[ Upstream commit 970a5a3ea86da637471d3cd04d513a0755aba4bf ]
 
-This reverts commit b75326c201242de9495ff98e5d5cff41d7fc0d9d.
+In commit 431280eebed9 ("ipv4: tcp: send zero IPID for RST and
+ACK sent in SYN-RECV and TIME-WAIT state") we took care of some
+ctl packets sent by TCP.
 
-This commit breaks Linux compatibility with USGv6 tests. The RFC this
-commit was based on is actually an expired draft: no published RFC
-currently allows the new behaviour it introduced.
+It turns out we need to use a similar strategy for SYNACK packets.
 
-Without full IETF endorsement, the flash renumbering scenario this
-patch was supposed to enable is never going to work, as other IPv6
-equipements on the same LAN will keep the 2 hours limit.
+By default, they carry IP_DF and IPID==0, but there are ways
+to ask them to use the hashed IP ident generator and thus
+be used to build off-path attacks.
+(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
 
-Fixes: b75326c20124 ("ipv6: Honor all IPv6 PIO Valid Lifetime values")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+One of this way is to force (before listener is started)
+echo 1 >/proc/sys/net/ipv4/ip_no_pmtu_disc
+
+Another way is using forged ICMP ICMP_FRAG_NEEDED
+with a very small MTU (like 68) to force a false return from
+ip_dont_fragment()
+
+In this patch, ip_build_and_send_pkt() uses the following
+heuristics.
+
+1) Most SYNACK packets are smaller than IPV4_MIN_MTU and therefore
+can use IP_DF regardless of the listener or route pmtu setting.
+
+2) In case the SYNACK packet is bigger than IPV4_MIN_MTU,
+we use prandom_u32() generator instead of the IPv4 hashed ident one.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Ray Che <xijiache@gmail.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Cc: Geoff Alexander <alexandg@cs.unm.edu>
+Cc: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/addrconf.h |  2 ++
- net/ipv6/addrconf.c    | 27 ++++++++++++++++++++-------
- 2 files changed, 22 insertions(+), 7 deletions(-)
+ net/ipv4/ip_output.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index 78ea3e332688f..e7ce719838b5e 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -6,6 +6,8 @@
- #define RTR_SOLICITATION_INTERVAL	(4*HZ)
- #define RTR_SOLICITATION_MAX_INTERVAL	(3600*HZ)	/* 1 hour */
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 4f76e8183f403..5e48b3d3a00db 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -162,12 +162,19 @@ int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
+ 	iph->daddr    = (opt && opt->opt.srr ? opt->opt.faddr : daddr);
+ 	iph->saddr    = saddr;
+ 	iph->protocol = sk->sk_protocol;
+-	if (ip_dont_fragment(sk, &rt->dst)) {
++	/* Do not bother generating IPID for small packets (eg SYNACK) */
++	if (skb->len <= IPV4_MIN_MTU || ip_dont_fragment(sk, &rt->dst)) {
+ 		iph->frag_off = htons(IP_DF);
+ 		iph->id = 0;
+ 	} else {
+ 		iph->frag_off = 0;
+-		__ip_select_ident(net, iph, 1);
++		/* TCP packets here are SYNACK with fat IPv4/TCP options.
++		 * Avoid using the hashed IP ident generator.
++		 */
++		if (sk->sk_protocol == IPPROTO_TCP)
++			iph->id = (__force __be16)prandom_u32();
++		else
++			__ip_select_ident(net, iph, 1);
+ 	}
  
-+#define MIN_VALID_LIFETIME		(2*3600)	/* 2 hours */
-+
- #define TEMP_VALID_LIFETIME		(7*86400)
- #define TEMP_PREFERRED_LIFETIME		(86400)
- #define REGEN_MAX_RETRY			(3)
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 29526937077b3..4dde49e628fab 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -2577,7 +2577,7 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
- 				 __u32 valid_lft, u32 prefered_lft)
- {
- 	struct inet6_ifaddr *ifp = ipv6_get_ifaddr(net, addr, dev, 1);
--	int create = 0;
-+	int create = 0, update_lft = 0;
- 
- 	if (!ifp && valid_lft) {
- 		int max_addresses = in6_dev->cnf.max_addresses;
-@@ -2621,19 +2621,32 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
- 		unsigned long now;
- 		u32 stored_lft;
- 
--		/* Update lifetime (RFC4862 5.5.3 e)
--		 * We deviate from RFC4862 by honoring all Valid Lifetimes to
--		 * improve the reaction of SLAAC to renumbering events
--		 * (draft-gont-6man-slaac-renum-06, Section 4.2)
--		 */
-+		/* update lifetime (RFC2462 5.5.3 e) */
- 		spin_lock_bh(&ifp->lock);
- 		now = jiffies;
- 		if (ifp->valid_lft > (now - ifp->tstamp) / HZ)
- 			stored_lft = ifp->valid_lft - (now - ifp->tstamp) / HZ;
- 		else
- 			stored_lft = 0;
--
- 		if (!create && stored_lft) {
-+			const u32 minimum_lft = min_t(u32,
-+				stored_lft, MIN_VALID_LIFETIME);
-+			valid_lft = max(valid_lft, minimum_lft);
-+
-+			/* RFC4862 Section 5.5.3e:
-+			 * "Note that the preferred lifetime of the
-+			 *  corresponding address is always reset to
-+			 *  the Preferred Lifetime in the received
-+			 *  Prefix Information option, regardless of
-+			 *  whether the valid lifetime is also reset or
-+			 *  ignored."
-+			 *
-+			 * So we should always update prefered_lft here.
-+			 */
-+			update_lft = 1;
-+		}
-+
-+		if (update_lft) {
- 			ifp->valid_lft = valid_lft;
- 			ifp->prefered_lft = prefered_lft;
- 			ifp->tstamp = now;
+ 	if (opt && opt->opt.optlen) {
 -- 
 2.34.1
 
