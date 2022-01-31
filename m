@@ -2,77 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE231C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359805AbiAaLz7 (ORCPT
+        id S1343590AbiAaL61 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:55:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379359AbiAaLxq (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:53:46 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC3EC08ED78;
-        Mon, 31 Jan 2022 03:16:12 -0800 (PST)
-Date:   Mon, 31 Jan 2022 12:16:09 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643627771;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ll9KYARRuBZxRo09tM644QKrs5m7bsyeSqNKNu1Ai5c=;
-        b=QJK53clJumtX9s0dxa4QZmUp1wdIpcTFOVfNRju6Mii59Nhxumj5PbxnCD4YIG6qIWTVVG
-        9L7zxyNwgikDsUUyIwuFK79UyAeB34C+zuMtZVMYKBmjkuR9krx0gpQDlQPK4+LdR/hKIO
-        glESyBcvyQY/QjgcDDId0hHYsvzPtwUcRjmBx6KqGp8v/FiZfC/U1uDAy8SOrpX4zhIQlZ
-        7cbm/5T0Ho6nnUB/CjuX0+tMSEIVp+RcWNWYTuPWnyoNOgoq9jUcEt0XYk+6vRxVBq2GUG
-        lYIpoR7WuPpkoKOyFN212omM6hjlz6bith9xh+KRpvxYnyQJZncfYA0ZyoDiaA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643627771;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ll9KYARRuBZxRo09tM644QKrs5m7bsyeSqNKNu1Ai5c=;
-        b=3nJZTRll2KKofcUlVbQaYLwLfUrkueiuloW8jj5eVHwVhU6NIL3VsqQeF07eMJyqEHZJnY
-        e4MwZh8L7xEN4GCQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH 4/7] mfd: hi6421-spmi-pmic: Use generic_handle_irq_safe().
-Message-ID: <YffE+XxLpFKw+7HS@linutronix.de>
-References: <20220127113303.3012207-1-bigeasy@linutronix.de>
- <20220127113303.3012207-5-bigeasy@linutronix.de>
- <44b42c37-67a4-1d20-e2ff-563d4f9bfae2@gmail.com>
+        Mon, 31 Jan 2022 06:58:27 -0500
+Received: from ni.piap.pl ([195.187.100.5]:39372 "EHLO ni.piap.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1359597AbiAaL4Z (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:56:25 -0500
+Received: from t19.piap.pl (OSB1819.piap.pl [10.0.9.19])
+        by ni.piap.pl (Postfix) with ESMTPSA id 75D85C3F3EF4;
+        Mon, 31 Jan 2022 12:56:18 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ni.piap.pl 75D85C3F3EF4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=piap.pl; s=mail;
+        t=1643630179; bh=/+mLaOy/51TWJQwY1+C7KvOgFe0ubYBePwOJGJ3IXvM=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=K+tGCoIgRmsF/33DcDBfv/wNu/hz4XBXLkxRSRFqEW6E63nPRc0p6iDVzVdTshPh1
+         BCnvamxWBw//dw2/YT4ba8wjG8vTi+/7VcWQvj5cDJxSM+TJaCjdGU2woAy3i3DH0D
+         dO9wt1A+6X704q43Qdcts9vm6LXH99S5Q8oyRXhY=
+From:   =?utf-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+Subject: Re: PCI: Race condition in pci_create_sysfs_dev_files (can't boot)
+References: <20220121165707.GA1129091@bhelgaas>
+Sender: khalasa@piap.pl
+Date:   Mon, 31 Jan 2022 12:56:18 +0100
+In-Reply-To: <20220121165707.GA1129091@bhelgaas> (Bjorn Helgaas's message of
+        "Fri, 21 Jan 2022 10:57:07 -0600")
+Message-ID: <m38ruwxgnx.fsf@t19.piap.pl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <44b42c37-67a4-1d20-e2ff-563d4f9bfae2@gmail.com>
+Content-Transfer-Encoding: quoted-printable
+X-KLMS-Rule-ID: 3
+X-KLMS-Message-Action: skipped
+X-KLMS-AntiSpam-Status: not scanned, whitelist
+X-KLMS-AntiPhishing: not scanned, whitelist
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, not scanned, whitelist
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-28 13:23:08 [+0300], Sergei Shtylyov wrote:
-> On 1/27/22 2:33 PM, Sebastian Andrzej Siewior wrote:
-> 
-> > generic_handle_irq() is invoked from a regular interrupt service
-> > routing. This handler will become a forced-threaded handler on
-> 
->    s/routing/routine/?
+Bjorn Helgaas <helgaas@kernel.org> writes:
 
-Yes, thank you.
+> Thanks.  e1d3f3268b0e and related patches converted individual files
+> ("config", "rom", "vpd", etc) to static attributes, but since the
+> problem you're seeing is with a directory, it's likely different.
+>
+> I opened this bugzilla report to try to keep this from getting lost:
+> https://bugzilla.kernel.org/show_bug.cgi?id=3D215515
 
-Sebastian
+Ok, thanks.
+--=20
+Krzysztof "Chris" Ha=C5=82asa
+
+Sie=C4=87 Badawcza =C5=81ukasiewicz
+Przemys=C5=82owy Instytut Automatyki i Pomiar=C3=B3w PIAP
+Al. Jerozolimskie 202, 02-486 Warszawa
