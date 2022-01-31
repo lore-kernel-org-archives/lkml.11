@@ -2,79 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADEB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 17:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23EB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 17:49:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381105AbiAaRrM (ORCPT
+        id S1381111AbiAaRtI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 12:47:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54582 "EHLO
+        Mon, 31 Jan 2022 12:49:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379995AbiAaRrH (ORCPT
+        with ESMTP id S1379995AbiAaRtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 12:47:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA5EC061714;
-        Mon, 31 Jan 2022 09:47:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7D4A6102C;
-        Mon, 31 Jan 2022 17:47:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D284C340ED;
-        Mon, 31 Jan 2022 17:47:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643651226;
-        bh=2X2BmVHS2Tyjnx4FsGnmfBWniGfTti/23qtfZG8b/w0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PawOG8f8o4aF/bLUiHEASQ7YacziQOSLTt198ijQrbmmLbGCicg8MhuHzFos8GDeY
-         kPU3C4pcxtQOgVrElDGIBGv4D7iDWFMlFWAM92idBXorZ0PIJ6G6dvBNZbTOYz9g7o
-         ipdrAdtLzvAWm0ki7Wnypj2FbjqkWIEJC4vWjuSt/6G4LO+hGVpKSUOTS1H5iA514n
-         EqJNMjWKIoWn1Cic2UCOtBDOj3XSE1O4HEEpdZp//K78TaQYGA2ncGPSKQTNXMLjBr
-         Kj9DFGgrH2enEGZcu2HbJYkQXY31JW2ecC7ZXPOavbajQWj+14VPGcvQCpyxh76bTk
-         OScGnZcTWkIFA==
-Date:   Mon, 31 Jan 2022 09:47:04 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jan Kiszka <jan.kiszka@siemens.com>
-Cc:     Georgi Valkov <gvalkov@abv.bg>,
-        Greg KH <gregkh@linuxfoundation.org>, <davem@davemloft.net>,
-        <mhabets@solarflare.com>, <luc.vanoostenryck@gmail.com>,
-        <snelson@pensando.io>, <mst@redhat.com>,
-        <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <corsac@corsac.net>,
-        <matti.vuorela@bitfactor.fi>, <stable@vger.kernel.org>
-Subject: Re: ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
-Message-ID: <20220131094704.0e255169@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <6108f260-36bf-0059-ccb9-8189f4a2d0c1@siemens.com>
-References: <B60B8A4B-92A0-49B3-805D-809A2433B46C@abv.bg>
-        <20210720122215.54abaf53@cakuba>
-        <5D0CFF83-439B-4A10-A276-D2D17B037704@abv.bg>
-        <YPa4ZelG2k8Z826E@kroah.com>
-        <C6AA954F-8382-461D-835F-E5CA03363D84@abv.bg>
-        <YPbHoScEo8ZJyox6@kroah.com>
-        <AEC79E3B-FA7F-4A36-95CE-B6D0F3063DF8@abv.bg>
-        <80a13e9b-e026-1238-39ed-32deb5ff17b0@siemens.com>
-        <20220131092726.3864b19f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <6108f260-36bf-0059-ccb9-8189f4a2d0c1@siemens.com>
+        Mon, 31 Jan 2022 12:49:06 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA65CC061714;
+        Mon, 31 Jan 2022 09:49:05 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id p63so17074650iod.11;
+        Mon, 31 Jan 2022 09:49:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nNGCzkv6NyCSXM2+5tyOUFI7y2uK9Tss8SGh1iEIk7w=;
+        b=htGB5/BkWPRWN1Y5bvGpfvADqRb+6Ud5NS4b4u9ZmItvUREEBKwPbS177S52LURGq3
+         pIf9Qu0CA/YP3wR8YQg3POvLe3gLvgVRZt8aiGtGlanNvrVntppEGMnaVCAdCovdDPGH
+         u9aG3qaml4dEY+9fEPtKbroK71D4yo3Jlh1E23K27ELl7yij4VQBiCO+SgQiw66b5quL
+         HVil9XgRbY5QHuBgYQhuhX2Q4mbl1lAQ4hXhEch2fkdu5FdOlx0E/unqqVLMvUuiOVir
+         HJppYBavStihTqW+SUWVqdCM3l83PhVLIcY9VGuwRKku9Rs3LM1Q8MZJZ2ZeZZaw3qyl
+         IAyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nNGCzkv6NyCSXM2+5tyOUFI7y2uK9Tss8SGh1iEIk7w=;
+        b=gLuUP3yxZYAgZnNafMwBOE0W9Ofoo7XGEe8+VyuL4uyeVYytidLWuhPL0fR5UvAhmj
+         DbNGvlhe/8IbHBgdoqEci7bvZHta8PwfsJJYxOEXGkD5XnLhBu//Pj9yFlS6fyuxBgrG
+         vVqFAhGedFCYfszs/BpkcCCMJtvtHgpIJ65x0tfBvAgkaoE+j4Zl237EZAxzdILFYLdM
+         N/+CjiYpsShySZiFZdxYtDc+0PxxblrdZIcvJgfxGttGUxoBFLRlCeOFk7D6GSQNxZs6
+         LJJp/CVfKXQxfn4AcXNNL87rk3i1hyPAX2dGCWpQNos8slJox/X9tNZdqtXdQbLj234S
+         Vo5w==
+X-Gm-Message-State: AOAM532on7D1Zg/7Fd9QqmdX1wHzIibfnbflH9nX6KVxVEkb2eAQvc7m
+        Nc/lxmqPQpyy2T5djhU1Upc=
+X-Google-Smtp-Source: ABdhPJye6Ml2eCaUjrPOerm+ZoA6J7x6MviAAWdeVJBSeGNaZp2AToLoNYihw9vPAro144d5n8fimg==
+X-Received: by 2002:a02:7f02:: with SMTP id r2mr11142997jac.148.1643651345209;
+        Mon, 31 Jan 2022 09:49:05 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:8870:ce19:2c7:3513? ([2601:282:800:dc80:8870:ce19:2c7:3513])
+        by smtp.googlemail.com with ESMTPSA id f4sm5657927iow.53.2022.01.31.09.49.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 09:49:04 -0800 (PST)
+Message-ID: <1a89b1ca-bab8-2ae5-668a-d9b89730fb8d@gmail.com>
+Date:   Mon, 31 Jan 2022 10:49:03 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH v3 net-next 5/7] net: ipv4: use kfree_skb_reason() in
+ ip_protocol_deliver_rcu()
+Content-Language: en-US
+To:     menglong8.dong@gmail.com, dsahern@kernel.org, kuba@kernel.org
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, pablo@netfilter.org, kadlec@netfilter.org,
+        fw@strlen.de, imagedong@tencent.com, edumazet@google.com,
+        alobakin@pm.me, paulb@nvidia.com, keescook@chromium.org,
+        talalahmad@google.com, haokexin@gmail.com, memxor@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        cong.wang@bytedance.com, mengensun@tencent.com
+References: <20220128073319.1017084-1-imagedong@tencent.com>
+ <20220128073319.1017084-6-imagedong@tencent.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220128073319.1017084-6-imagedong@tencent.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 31 Jan 2022 18:35:44 +0100 Jan Kiszka wrote:
-> On 31.01.22 18:27, Jakub Kicinski wrote:
-> > On Mon, 31 Jan 2022 10:45:23 +0100 Jan Kiszka wrote:  
-> >> What happened here afterwards?
-> >>
-> >> I just found out the hard way that this patch is still not in mainline
-> >> but really needed.  
-> > 
-> > I have not seen the repost :(  
+On 1/28/22 12:33 AM, menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
 > 
-> Would it help if I do that on behalf of Georgi? Meanwhile, I can add a 
-> tested-by to it, after almost a full working day with it applied.
+> Replace kfree_skb() with kfree_skb_reason() in ip_protocol_deliver_rcu().
+> Following new drop reasons are introduced:
+> 
+> SKB_DROP_REASON_XFRM_POLICY
+> SKB_DROP_REASON_IP_NOPROTO
+> 
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> ---
+> v2:
+> - add document for the introduced drop reasons
+> ---
+>  include/linux/skbuff.h     | 2 ++
+>  include/trace/events/skb.h | 2 ++
+>  net/ipv4/ip_input.c        | 5 +++--
+>  3 files changed, 7 insertions(+), 2 deletions(-)
+> 
 
-That's probably the most expedient way to close the issue, yup.
-Real Fixes: tag would be useful as well.
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
