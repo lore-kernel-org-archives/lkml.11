@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDCA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:17:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55ADAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359656AbiAaLRA (ORCPT
+        id S1359708AbiAaLRE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:17:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44470 "EHLO
+        Mon, 31 Jan 2022 06:17:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377226AbiAaLJt (ORCPT
+        with ESMTP id S1377216AbiAaLJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:49 -0500
+        Mon, 31 Jan 2022 06:09:48 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32406C0613FC;
-        Mon, 31 Jan 2022 03:06:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3350CC0604D4;
+        Mon, 31 Jan 2022 03:06:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDA89B82A60;
-        Mon, 31 Jan 2022 11:06:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD48C340EE;
-        Mon, 31 Jan 2022 11:06:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E760BB82A5C;
+        Mon, 31 Jan 2022 11:06:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39E48C340EF;
+        Mon, 31 Jan 2022 11:06:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627196;
-        bh=pdE/ftul88bx3uGjcDMp1tLlzo0wwAG4y/GYzI/oO7A=;
+        s=korg; t=1643627193;
+        bh=fwtUg8Y8iUk8jIUE8qbO9EPXZyhnyzScNpHop/rrleU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kbndM2cRJI6gclSUB2ugjYg7q30V5L6VANTJp9xFSH/aSjfBSuXM0ZXmisxudaKhZ
-         w11zTyr7jnfsBPwzmfKw4Ex0/uke1IoS2rqdAlks+GwfOY9RLhcJgV5hSVcd3MVBjk
-         8kig/mEtXuHURdktV5TBpN1Rb4Z9mdqkJBOBSlt4=
+        b=xWDc+pOiguFC7IEfLsIlnY0PT41t7VOWSqXsmpZAlP7mURjT/svW3gjYBOeux0qjn
+         MI9G5+24s7GL9/H+nk7a2u/hopas68UklEuQTEogN1F004v90bkIcTERe58TyT1BUT
+         gSnXxuVYyBzFqfNhFPIXzutSEco4rPZsa4EPJTGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 075/100] octeontx2-pf: Forward error codes to VF
-Date:   Mon, 31 Jan 2022 11:56:36 +0100
-Message-Id: <20220131105222.951181036@linuxfoundation.org>
+Subject: [PATCH 5.10 074/100] phylib: fix potential use-after-free
+Date:   Mon, 31 Jan 2022 11:56:35 +0100
+Message-Id: <20220131105222.910242948@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -51,46 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+From: Marek Behún <kabel@kernel.org>
 
-[ Upstream commit a8db854be28622a2477cb21cdf7f829adbb2c42d ]
+[ Upstream commit cbda1b16687580d5beee38273f6241ae3725960c ]
 
-PF forwards its VF messages to AF and corresponding
-replies from AF to VF. AF sets proper error code in the
-replies after processing message requests. Currently PF
-checks the error codes in replies and sends invalid
-message to VF. This way VF lacks the information of
-error code set by AF for its messages. This patch
-changes that such that PF simply forwards AF replies
-so that VF can handle error codes.
+Commit bafbdd527d56 ("phylib: Add device reset GPIO support") added call
+to phy_device_reset(phydev) after the put_device() call in phy_detach().
 
-Fixes: d424b6c02415 ("octeontx2-pf: Enable SRIOV and added VF mbox handling")
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The comment before the put_device() call says that the phydev might go
+away with put_device().
+
+Fix potential use-after-free by calling phy_device_reset() before
+put_device().
+
+Fixes: bafbdd527d56 ("phylib: Add device reset GPIO support")
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220119162748.32418-1-kabel@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/phy/phy_device.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 044a5b1196acb..161174be51c31 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -386,7 +386,12 @@ static int otx2_forward_vf_mbox_msgs(struct otx2_nic *pf,
- 		dst_mdev->msg_size = mbox_hdr->msg_size;
- 		dst_mdev->num_msgs = num_msgs;
- 		err = otx2_sync_mbox_msg(dst_mbox);
--		if (err) {
-+		/* Error code -EIO indicate there is a communication failure
-+		 * to the AF. Rest of the error codes indicate that AF processed
-+		 * VF messages and set the error codes in response messages
-+		 * (if any) so simply forward responses to VF.
-+		 */
-+		if (err == -EIO) {
- 			dev_warn(pf->dev,
- 				 "AF not responding to VF%d messages\n", vf);
- 			/* restore PF mbase and exit */
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 85f3cde5ffd09..d2f6d8107595a 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1682,6 +1682,9 @@ void phy_detach(struct phy_device *phydev)
+ 	    phy_driver_is_genphy_10g(phydev))
+ 		device_release_driver(&phydev->mdio.dev);
+ 
++	/* Assert the reset signal */
++	phy_device_reset(phydev, 1);
++
+ 	/*
+ 	 * The phydev might go away on the put_device() below, so avoid
+ 	 * a use-after-free bug by reading the underlying bus first.
+@@ -1693,9 +1696,6 @@ void phy_detach(struct phy_device *phydev)
+ 		ndev_owner = dev->dev.parent->driver->owner;
+ 	if (ndev_owner != bus->owner)
+ 		module_put(bus->owner);
+-
+-	/* Assert the reset signal */
+-	phy_device_reset(phydev, 1);
+ }
+ EXPORT_SYMBOL(phy_detach);
+ 
 -- 
 2.34.1
 
