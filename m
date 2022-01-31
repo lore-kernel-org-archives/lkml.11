@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F16D4C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378988AbiAaLn1 (ORCPT
+        id S1378749AbiAaLnI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:43:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
+        Mon, 31 Jan 2022 06:43:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379950AbiAaLas (ORCPT
+        with ESMTP id S1379032AbiAaL3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:30:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4109C061362;
-        Mon, 31 Jan 2022 03:21:34 -0800 (PST)
+        Mon, 31 Jan 2022 06:29:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E852BC061783;
+        Mon, 31 Jan 2022 03:19:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 686FEB82A5D;
-        Mon, 31 Jan 2022 11:21:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 624F6C340E8;
-        Mon, 31 Jan 2022 11:21:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87F6C61257;
+        Mon, 31 Jan 2022 11:19:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69760C340E8;
+        Mon, 31 Jan 2022 11:18:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628092;
-        bh=cwtwlYgAv/JlO2bKYsQ6eIWumQYgPraGE5TBaPhsXr8=;
+        s=korg; t=1643627940;
+        bh=YP3uc33jwRUfDk9XScnitxmKQ9R/hWEnLuZ4nu+AswA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GcRyFKKlR1RJK8/5wy34R/EJ+vjV/2mdWqqSnVdNAmP8JFAtc20kog47nJE+i7wFh
-         IHzs8uOZTdEapc6gyH6ToqeE/jYW7oLhsTjctmvFM/IIKC1YUnldpJv1/l8hqgCvXt
-         pEoTD0soF+Eloa2sOK7uhUeB56aT9bVVl6IXp5zM=
+        b=XNXNhDwspRyqwa/hhixWOECiczQnsPh0TNsIso/nH6zdCgayojasnmmSRLzsfUrkW
+         u6IHoElt+DbGQtqk4prVn3GZI6gOZJdvktIdAWkzyKMrdSQ6m9U4EN7UNm8SEyoUO4
+         ftY+2rD9YzJ/3W+rugmokQgfBgYfph64jDwR+w8E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 095/200] powerpc/32: Fix boot failure with GCC latent entropy plugin
-Date:   Mon, 31 Jan 2022 11:55:58 +0100
-Message-Id: <20220131105236.806668426@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
+        Frank Li <Frank.Li@nxp.com>, Abel Vesa <abel.vesa@nxp.com>
+Subject: [PATCH 5.16 074/200] usb: xhci-plat: fix crash when suspend if remote wake enable
+Date:   Mon, 31 Jan 2022 11:55:37 +0100
+Message-Id: <20220131105236.075903042@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -50,54 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Frank Li <Frank.Li@nxp.com>
 
-commit bba496656a73fc1d1330b49c7f82843836e9feb1 upstream.
+commit 9df478463d9feb90dae24f183383961cf123a0ec upstream.
 
-Boot fails with GCC latent entropy plugin enabled.
+Crashed at i.mx8qm platform when suspend if enable remote wakeup
 
-This is due to early boot functions trying to access 'latent_entropy'
-global data while the kernel is not relocated at its final
-destination yet.
+Internal error: synchronous external abort: 96000210 [#1] PREEMPT SMP
+Modules linked in:
+CPU: 2 PID: 244 Comm: kworker/u12:6 Not tainted 5.15.5-dirty #12
+Hardware name: Freescale i.MX8QM MEK (DT)
+Workqueue: events_unbound async_run_entry_fn
+pstate: 600000c5 (nZCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : xhci_disable_hub_port_wake.isra.62+0x60/0xf8
+lr : xhci_disable_hub_port_wake.isra.62+0x34/0xf8
+sp : ffff80001394bbf0
+x29: ffff80001394bbf0 x28: 0000000000000000 x27: ffff00081193b578
+x26: ffff00081193b570 x25: 0000000000000000 x24: 0000000000000000
+x23: ffff00081193a29c x22: 0000000000020001 x21: 0000000000000001
+x20: 0000000000000000 x19: ffff800014e90490 x18: 0000000000000000
+x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
+x14: 0000000000000000 x13: 0000000000000002 x12: 0000000000000000
+x11: 0000000000000000 x10: 0000000000000960 x9 : ffff80001394baa0
+x8 : ffff0008145d1780 x7 : ffff0008f95b8e80 x6 : 000000001853b453
+x5 : 0000000000000496 x4 : 0000000000000000 x3 : ffff00081193a29c
+x2 : 0000000000000001 x1 : 0000000000000000 x0 : ffff000814591620
+Call trace:
+ xhci_disable_hub_port_wake.isra.62+0x60/0xf8
+ xhci_suspend+0x58/0x510
+ xhci_plat_suspend+0x50/0x78
+ platform_pm_suspend+0x2c/0x78
+ dpm_run_callback.isra.25+0x50/0xe8
+ __device_suspend+0x108/0x3c0
 
-As there is no way to tell GCC to use PTRRELOC() to access it,
-disable latent entropy plugin in early_32.o and feature-fixups.o and
-code-patching.o
+The basic flow:
+	1. run time suspend call xhci_suspend, xhci parent devices gate the clock.
+        2. echo mem >/sys/power/state, system _device_suspend call xhci_suspend
+        3. xhci_suspend call xhci_disable_hub_port_wake, which access register,
+	   but clock already gated by run time suspend.
 
-Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
-Cc: stable@vger.kernel.org # v4.9+
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215217
-Link: https://lore.kernel.org/r/2bac55483b8daf5b1caa163a45fa5f9cdbe18be4.1640178426.git.christophe.leroy@csgroup.eu
+This problem was hidden by power domain driver, which call run time resume before it.
+
+But the below commit remove it and make this issue happen.
+	commit c1df456d0f06e ("PM: domains: Don't runtime resume devices at genpd_prepare()")
+
+This patch call run time resume before suspend to make sure clock is on
+before access register.
+
+Reviewed-by: Peter Chen <peter.chen@kernel.org>
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Testeb-by: Abel Vesa <abel.vesa@nxp.com>
+Link: https://lore.kernel.org/r/20220110172738.31686-1-Frank.Li@nxp.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/Makefile |    1 +
- arch/powerpc/lib/Makefile    |    3 +++
- 2 files changed, 4 insertions(+)
+ drivers/usb/host/xhci-plat.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/powerpc/kernel/Makefile
-+++ b/arch/powerpc/kernel/Makefile
-@@ -11,6 +11,7 @@ CFLAGS_prom_init.o      += -fPIC
- CFLAGS_btext.o		+= -fPIC
- endif
+--- a/drivers/usb/host/xhci-plat.c
++++ b/drivers/usb/host/xhci-plat.c
+@@ -437,6 +437,9 @@ static int __maybe_unused xhci_plat_susp
+ 	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
+ 	int ret;
  
-+CFLAGS_early_32.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_cputable.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_prom_init.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_btext.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
---- a/arch/powerpc/lib/Makefile
-+++ b/arch/powerpc/lib/Makefile
-@@ -19,6 +19,9 @@ CFLAGS_code-patching.o += -DDISABLE_BRAN
- CFLAGS_feature-fixups.o += -DDISABLE_BRANCH_PROFILING
- endif
- 
-+CFLAGS_code-patching.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
-+CFLAGS_feature-fixups.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
++	if (pm_runtime_suspended(dev))
++		pm_runtime_resume(dev);
 +
- obj-y += alloc.o code-patching.o feature-fixups.o pmem.o test_code-patching.o
- 
- ifndef CONFIG_KASAN
+ 	ret = xhci_priv_suspend_quirk(hcd);
+ 	if (ret)
+ 		return ret;
 
 
