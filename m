@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C62C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 119D4C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377943AbiAaL1u (ORCPT
+        id S1378290AbiAaL2R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:27:50 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51924 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378019AbiAaLT3 (ORCPT
+        Mon, 31 Jan 2022 06:28:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38490 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378270AbiAaLTz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:19:29 -0500
+        Mon, 31 Jan 2022 06:19:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CADB761234;
-        Mon, 31 Jan 2022 11:19:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DDBBC340E8;
-        Mon, 31 Jan 2022 11:19:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A066B82A5C;
+        Mon, 31 Jan 2022 11:19:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4227AC340E8;
+        Mon, 31 Jan 2022 11:19:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627968;
-        bh=gOB0qW5mpoVbfHMiPHf4l2UoTQFpZUMr9AmBl6RFO6Y=;
+        s=korg; t=1643627992;
+        bh=IaqLZl+CdXYL64x6EZzxtDxk/aOj4h8gnttrGM8rZnM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QjhOnh4F+7l4vMlEXO3krEfNAZRVDiZVFv1j61l8Ug9T8ddUffqHAQl3ju0Hz32HW
-         a+nuGLo5flHyrdfBuKNyOMeVg59fB9zos+YaEp3h0tMeS/AV6jadELLhA1b5CYm5Tn
-         5kKmBMw3VKJvMps3M+zwatmOF0FR+7BFnupMjFjw=
+        b=Ly49jgZKwtqnlozoATkQN7uM1bB0k023+3EJpLEpsYoERnWTMQOhygGI5EkQd+8UT
+         Wd/tCWRbj++dC2b4Fhr6JkvyUSfW9HwPkbZK9YXGclO+ZnN2XK+R1anPiSWsQRiEYP
+         x6IAbuYiCqoNmNvUQ1cz/CABtUINPUqXzZ5rU0kY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Badhri Jagan Sridharan <badhri@google.com>
-Subject: [PATCH 5.16 082/200] usb: typec: tcpm: Do not disconnect while receiving VBUS off
-Date:   Mon, 31 Jan 2022 11:55:45 +0100
-Message-Id: <20220131105236.350854345@linuxfoundation.org>
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.16 089/200] sched/membarrier: Fix membarrier-rseq fence command missing from query bitmask
+Date:   Mon, 31 Jan 2022 11:55:52 +0100
+Message-Id: <20220131105236.604221272@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,53 +47,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Badhri Jagan Sridharan <badhri@google.com>
+From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 
-commit 90b8aa9f5b09edae6928c0561f933fec9f7a9987 upstream.
+commit 809232619f5b15e31fb3563985e705454f32621f upstream.
 
-With some chargers, vbus might momentarily raise above VSAFE5V and fall
-back to 0V before tcpm gets to read port->tcpc->get_vbus. This will
-will report a VBUS off event causing TCPM to transition to
-SNK_UNATTACHED where it should be waiting in either SNK_ATTACH_WAIT
-or SNK_DEBOUNCED state. This patch makes TCPM avoid vbus off events
-while in SNK_ATTACH_WAIT or SNK_DEBOUNCED state.
+The membarrier command MEMBARRIER_CMD_QUERY allows querying the
+available membarrier commands. When the membarrier-rseq fence commands
+were added, a new MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK was
+introduced with the intent to expose them with the MEMBARRIER_CMD_QUERY
+command, the but it was never added to MEMBARRIER_CMD_BITMASK.
 
-Stub from the spec:
-    "4.5.2.2.4.2 Exiting from AttachWait.SNK State
-    A Sink shall transition to Unattached.SNK when the state of both
-    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce.
-    A DRP shall transition to Unattached.SRC when the state of both
-    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce."
+The membarrier-rseq fence commands are therefore not wired up with the
+query command.
 
-[23.194131] CC1: 0 -> 0, CC2: 0 -> 5 [state SNK_UNATTACHED, polarity 0, connected]
-[23.201777] state change SNK_UNATTACHED -> SNK_ATTACH_WAIT [rev3 NONE_AMS]
-[23.209949] pending state change SNK_ATTACH_WAIT -> SNK_DEBOUNCED @ 170 ms [rev3 NONE_AMS]
-[23.300579] VBUS off
-[23.300668] state change SNK_ATTACH_WAIT -> SNK_UNATTACHED [rev3 NONE_AMS]
-[23.301014] VBUS VSAFE0V
-[23.301111] Start toggling
+Rename MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK to
+MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK (the bitmask is not a command
+per-se), and change the erroneous
+MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ_BITMASK (which does not
+actually exist) to MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ.
 
-Fixes: f0690a25a140b8 ("staging: typec: USB Type-C Port Manager (tcpm)")
-Cc: stable@vger.kernel.org
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
-Link: https://lore.kernel.org/r/20220122015520.332507-1-badhri@google.com
+Wire up MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK in
+MEMBARRIER_CMD_BITMASK. Fixing this allows discovering availability of
+the membarrier-rseq fence feature.
+
+Fixes: 2a36ab717e8f ("rseq/membarrier: Add MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ")
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: <stable@vger.kernel.org> # 5.10+
+Link: https://lkml.kernel.org/r/20220117203010.30129-1-mathieu.desnoyers@efficios.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/tcpm/tcpm.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/sched/membarrier.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/typec/tcpm/tcpm.c
-+++ b/drivers/usb/typec/tcpm/tcpm.c
-@@ -5156,7 +5156,8 @@ static void _tcpm_pd_vbus_off(struct tcp
- 	case SNK_TRYWAIT_DEBOUNCE:
- 		break;
- 	case SNK_ATTACH_WAIT:
--		tcpm_set_state(port, SNK_UNATTACHED, 0);
-+	case SNK_DEBOUNCED:
-+		/* Do nothing, as TCPM is still waiting for vbus to reaach VSAFE5V to connect */
- 		break;
+--- a/kernel/sched/membarrier.c
++++ b/kernel/sched/membarrier.c
+@@ -147,11 +147,11 @@
+ #endif
  
- 	case SNK_NEGOTIATE_CAPABILITIES:
+ #ifdef CONFIG_RSEQ
+-#define MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK		\
++#define MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK		\
+ 	(MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ			\
+-	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ_BITMASK)
++	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ)
+ #else
+-#define MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK	0
++#define MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK	0
+ #endif
+ 
+ #define MEMBARRIER_CMD_BITMASK						\
+@@ -159,7 +159,8 @@
+ 	| MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED			\
+ 	| MEMBARRIER_CMD_PRIVATE_EXPEDITED				\
+ 	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED			\
+-	| MEMBARRIER_PRIVATE_EXPEDITED_SYNC_CORE_BITMASK)
++	| MEMBARRIER_PRIVATE_EXPEDITED_SYNC_CORE_BITMASK		\
++	| MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK)
+ 
+ static void ipi_mb(void *info)
+ {
 
 
