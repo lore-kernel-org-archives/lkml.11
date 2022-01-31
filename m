@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24BB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD582C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:03:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358950AbiAaLDi (ORCPT
+        id S1358445AbiAaLDo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:03:38 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49566 "EHLO
+        Mon, 31 Jan 2022 06:03:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50160 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358412AbiAaLB5 (ORCPT
+        with ESMTP id S1358918AbiAaLCK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:01:57 -0500
+        Mon, 31 Jan 2022 06:02:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1F7DB82A62;
-        Mon, 31 Jan 2022 11:01:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1708AC340EF;
-        Mon, 31 Jan 2022 11:01:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0439BB82A63;
+        Mon, 31 Jan 2022 11:02:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18676C340E8;
+        Mon, 31 Jan 2022 11:02:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626914;
-        bh=GRxFcrspBDZRFlASEt8oRRx66DaP085lVTs5yNE/Bvk=;
+        s=korg; t=1643626927;
+        bh=roTSABubN/Wi/NZrtktszAYxy/Lk9Du0dr9/MHsZBl4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PhA5rpgAwzh1tJMjto3IYP3sdWkmiDknoy8TLtgRG2Ajb8mteGHRI6dLuB35PFmjt
-         Px/SHpm4smH7eZ62uMiH6zcBiKR1fI/sQUCRPdK/UEfQm935RUeR1b62wYIoT6nuTQ
-         02UIBdCVJzEEJd+1SBOjyJXfMpU3ImwYgu7eJOyw=
+        b=eYFrd1U3FFANIpgpYn81v8KfRWbfa4LDTav8UjwzL83JVbvM8yZr7okldw7HXaPy1
+         XMu8XKT+Vb74LI0c0mepfZ+X/FLlsRl9bjDlzIb+7L5+6o86f+GD4qndpcqVu8Sgfy
+         VueXcp4bR+K3I5UxBlvNoHKbbMtn9nnzabbr0Gqc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan van der Ster <dan@vanderster.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.10 016/100] ceph: set pool_ns in new inode layout for async creates
-Date:   Mon, 31 Jan 2022 11:55:37 +0100
-Message-Id: <20220131105221.005308257@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Martin Faltesek <mfaltesek@google.com>,
+        Guenter Roeck <groeck@google.com>,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>
+Subject: [PATCH 5.10 002/100] media: venus: core: Drop second v4l2 device unregister
+Date:   Mon, 31 Jan 2022 11:55:23 +0100
+Message-Id: <20220131105220.504209945@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -47,52 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
 
-commit 4584a768f22b7669cdebabc911543621ac661341 upstream.
+commit ddbcd0c58a6a53e2f1600b9de0ce6a20667c031c upstream.
 
-Dan reported that he was unable to write to files that had been
-asynchronously created when the client's OSD caps are restricted to a
-particular namespace.
+Wrong solution of rebase conflict leads to calling twice
+v4l2_device_unregister in .venus_remove. Delete the second one.
 
-The issue is that the layout for the new inode is only partially being
-filled. Ensure that we populate the pool_ns_data and pool_ns_len in the
-iinfo before calling ceph_fill_inode.
-
-Cc: stable@vger.kernel.org
-URL: https://tracker.ceph.com/issues/54013
-Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
-Reported-by: Dan van der Ster <dan@vanderster.com>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc: Martin Faltesek <mfaltesek@google.com>
+Cc: Guenter Roeck <groeck@google.com>
+Cc: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ceph/file.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/media/platform/qcom/venus/core.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -577,6 +577,7 @@ static int ceph_finish_async_create(stru
- 	struct ceph_inode_info *ci = ceph_inode(dir);
- 	struct inode *inode;
- 	struct timespec64 now;
-+	struct ceph_string *pool_ns;
- 	struct ceph_mds_client *mdsc = ceph_sb_to_mdsc(dir->i_sb);
- 	struct ceph_vino vino = { .ino = req->r_deleg_ino,
- 				  .snap = CEPH_NOSNAP };
-@@ -626,6 +627,12 @@ static int ceph_finish_async_create(stru
- 	in.max_size = cpu_to_le64(lo->stripe_unit);
+--- a/drivers/media/platform/qcom/venus/core.c
++++ b/drivers/media/platform/qcom/venus/core.c
+@@ -375,8 +375,6 @@ static int venus_remove(struct platform_
  
- 	ceph_file_layout_to_legacy(lo, &in.layout);
-+	/* lo is private, so pool_ns can't change */
-+	pool_ns = rcu_dereference_raw(lo->pool_ns);
-+	if (pool_ns) {
-+		iinfo.pool_ns_len = pool_ns->len;
-+		iinfo.pool_ns_data = pool_ns->str;
-+	}
+ 	hfi_destroy(core);
  
- 	down_read(&mdsc->snap_rwsem);
- 	ret = ceph_fill_inode(inode, NULL, &iinfo, NULL, req->r_session,
+-	v4l2_device_unregister(&core->v4l2_dev);
+-
+ 	mutex_destroy(&core->pm_lock);
+ 	mutex_destroy(&core->lock);
+ 	venus_dbgfs_deinit(core);
 
 
